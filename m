@@ -2,190 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC2BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76461C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344861AbiFMVa2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
+        id S235022AbiFMVae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 17:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352673AbiFMV2w (ORCPT
+        with ESMTP id S1353164AbiFMV3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:28:52 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38FA2BAD;
-        Mon, 13 Jun 2022 14:21:38 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25DJdRPJ016594;
-        Mon, 13 Jun 2022 21:21:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type :
- content-transfer-encoding : in-reply-to : mime-version; s=corp-2021-07-09;
- bh=UBf0bPbXwpUZnidM+EsPS8ze3lapPTHHHevFzawgO6I=;
- b=rz9IZT/Vllo4BymLwSPdZrXfMTXD/jxDvLko1A4OLhiwNKFyflZSCvZ5yZ+h+r4lGUq4
- Xt/CPs1p2v3JfhYZGocHXAtu1RRAxd5N2sUPVmFzVtb/OSDLCzA8kasPPnmkSrduFydm
- geVIT+vxcvbQcWBczBfzdV/ttTOT03ZoryCCdTqofyQaTkCL/D06+l+rdOyq3ORKPLNd
- 06jTCLOksveEp+zYqfPJYM57QVqCjXY5DFYg+HXi6W/5ptsnpkh9qmfn6Uj1XW1Dq+ri
- 1ityCE45bAmGupMzpk0sKP2QlylMxW0aJfooqYqxKYlsa7r3sjwe+IWTLj9SSStpMcH6 uQ== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmhfcm6h1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 13 Jun 2022 21:21:32 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25DLA6Gi012694;
-        Mon, 13 Jun 2022 21:21:30 GMT
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2108.outbound.protection.outlook.com [104.47.58.108])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gpcqhrg3e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 13 Jun 2022 21:21:29 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Co3wMKl26ew1ODWkSJi5QQmUw4xIOFPYnCaxCtdLeXk+C8MtG1iHv4yYupM0zxM+zSga5BVqiW7LG8/n/zXQ1uqR8Gy3i8GlCjJlQCfxDSGsdtDu+WZ1yvqa14XDz1fYI8ueT1jfZaLw+NTEzNud/FXgM0sBHp/1TInjLnSEcVmnpTF09985+a1jt0h61lZTlRexE3ruDLsfIn0lwwRIDjhOoE3FsiLZdlN9xHJNf5uTgt+yYDgAFVy4nOHob8Au1OSKhgROdUK6z0kiB0aAVh6uXiLPtVIHteV1VtwLD19TVmtfHdcgwCuEID445sJl3zT+8SLH7wsC+/3qdLIZJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UBf0bPbXwpUZnidM+EsPS8ze3lapPTHHHevFzawgO6I=;
- b=SqgUgZGYtnxPlgrduADT+QHfhkhQlMJxbxrm7iH1HzFXXRQhzAIkbmZbnZHh5CCylUb9CB6s8syOGT09/YtQjweI92Xkrny/e7WCDc5hVEYsJVnZpZ6zxI3yStvTXcuKoNQvdj0Z/YhVoE+G5YNLY2BZwQUG8JmbmX0g/93rqlt/Y+iJN8km9GOcnRqMUuIVrvus+L5y20OBvISIFrDULjlhnrl8On9BGpA5GMtOSqgHleDW2ZF8tVcWyXlbj7MAldOZgvhz73jgrWLH9IPcY9MUPER86dTyH23ulbWxikrBgxMH+ibXXnjNFs3ofOX12dxzX77qXRfSINWcnh5TcQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Mon, 13 Jun 2022 17:29:22 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B856B397
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:35 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id k73-20020a25244c000000b0065ca88b381aso6033299ybk.2
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UBf0bPbXwpUZnidM+EsPS8ze3lapPTHHHevFzawgO6I=;
- b=n1P2gOx9mvwJXywlTPpF9Nt0JE+MreVd1/SV5dp00uzfKIeaWKbfHpQF5rd67H6puyedxgcVbGyPtcqKJiITydlhWlVMHbkaecBaKmvwyjqDkECgJ4TVt7WC7/rbGr/e+t/27N2AZ6pDlgALS5KYYJqpbjoP/G2RMgHeR/lLNtk=
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
- by CH0PR10MB5081.namprd10.prod.outlook.com (2603:10b6:610:c2::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Mon, 13 Jun
- 2022 21:19:48 +0000
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::2125:9bb7:bfeb:81f9]) by BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::2125:9bb7:bfeb:81f9%8]) with mapi id 15.20.5332.022; Mon, 13 Jun 2022
- 21:19:48 +0000
-Date:   Mon, 13 Jun 2022 14:19:45 -0700
-From:   Mike Kravetz <mike.kravetz@oracle.com>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     david@redhat.com, akpm@linux-foundation.org, corbet@lwn.net,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH 3/6] mm: hugetlb_vmemmap: introduce the name HVO
-Message-ID: <Yqep8QwtfcRCCPsI@monkey>
-References: <20220613063512.17540-1-songmuchun@bytedance.com>
- <20220613063512.17540-4-songmuchun@bytedance.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220613063512.17540-4-songmuchun@bytedance.com>
-X-ClientProxiedBy: MW4P222CA0028.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:303:114::33) To BY5PR10MB4196.namprd10.prod.outlook.com
- (2603:10b6:a03:20d::23)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e0b0bf48-354c-452c-4c1c-08da4d8271de
-X-MS-TrafficTypeDiagnostic: CH0PR10MB5081:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR10MB50813D7C0E04798A43C91A17E2AB9@CH0PR10MB5081.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Q/5iVE5Uyg6ZGTk9j+lxUKAB2ugnxTAXcZTXtVchHB4HXszw+rmIYGjLaOBM7b2up3O0RCa9GsVnPyLTJGv+ZvnE3cDvTqQeXdpX9PcAHqjQnPK/UFHaXBUaTWERR6pUEBSsvDTtGuh2Som4x8l63h2trzwWzaJ0ffRJ2DsIqh+dbhr84BM0NbJJzQAXkgXxS26Bn6OT6zYZFFnDLunq2N+fzGhaHFpIL9kGhllZ0ogAT9fLv0pzMuGSShS0g0Gj/htqq9Pb7bYpWyZMxHVXLpBoBP8tbIiESnbGkI+vpatandsLZdTDGQvwz2mq1qrJ9/eBxOvFQyq1pUgvqg7KDirlYQIR5W8WmmO56Bi9UBkeYnNoKuq2xqKbyXxmWLuZVgnArI3D2zBTEeIwXtR4d7YeARGc+BfAI8lZNI0lFBRVK0/cIGUXXusaxwp/IKBEEWhuS8pjTAeQPceX/bJoPrFjmkSkrKvhrf42IJBUcw/zJ+M96bAMmGckU7h5BSSjClmQK1lW6BADBSmz0Vv2YaCAe8qoh1fUnLMZffB2UNDolepxDMZL3uwO8IiAhX+bxm+ClIYjOtS0Ziwwdz3HZXHX/azSaoQVQMybBD9VhrQfxC3cI0SuVzomSYGxnRYdtUEYgbEkl82Wdud4K3Dm4iv47vBBC7OHmwtz2jo9meyArKNxLDFBYZrjkqGGeOYUmF+jUmSxvycLyPtrmp1FygNC1RG8kxEnhzVCtqV4e58=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(6486002)(966005)(33716001)(4326008)(66556008)(8936002)(508600001)(86362001)(6916009)(8676002)(38100700002)(66946007)(66476007)(186003)(316002)(6506007)(26005)(6666004)(83380400001)(9686003)(6512007)(44832011)(5660300002)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cE5JWno1T0kraGI3THFuZXgyOXlRdjQrLzhGNlFZQkdDbVQwSW5pcFlueC9r?=
- =?utf-8?B?VmV3eEZ1azJYS3VMRzIyRGhFTWdEOEZUemM2bnJQNy9HOWVyN2prWWxIN01j?=
- =?utf-8?B?eksyRDR2d0tnNWZNZ0J1ZTExVnpLQ0NXeEJRMWhNdVE3QkJoU2VpSURJNm40?=
- =?utf-8?B?aVdQSTk0SWI2enlRb1BIUDFjcmRGU3gzaWxxa3MwOVVqbHJBNzNKNXA2dFEz?=
- =?utf-8?B?Tndwd3ZqUVRxL0VHZHhZeFJvOW50cm1LMFlYNFB0RW5CazhWczFVWmNzWnhT?=
- =?utf-8?B?cjlKV1MrSDBONDBlY3BRaElBR1F2aTZyN1ltQWZqOVVSMFV1Z1pqendBTnJP?=
- =?utf-8?B?SmI1bm1Xd1RUZUk4c25JSG83Mm04b01sZEJMc0FncEtvR1dVbENlYlZESzNC?=
- =?utf-8?B?WGZVR296cUowblB3T3hZMGg4WWhGRmFOSldJNkpxV2x0UlMwV2NuaFY5c3dK?=
- =?utf-8?B?TkhEY2pyUm5pVzBuWUg3QnVUbTBERlFMZkE1eitzNUdadGtxQUpnY1M4a0d1?=
- =?utf-8?B?TW01aVRHUTE0cWhwb0xCdEhLcjdKQ1NVLytqbUlPeklQZjMxRjUyNWV0Z0N2?=
- =?utf-8?B?ZXg3d1kydkg5d2dFSGZuNU1iWWo0RFR3MWdjdndEcTJBRzlPNFlGQkJ4SmRx?=
- =?utf-8?B?bmJpN1RBVGJXT3FQQzc2dkY4aEZCMWlIckJtWmNPaktoZmhYUHpFbFlZZHVr?=
- =?utf-8?B?d3dub1NDM0xnOUdmcjRtWmZvUVJ3ZFVqaHBwcEJ3OE1zNEdRNzdmcmJZZjdr?=
- =?utf-8?B?RExQVWFGc0Q0SGVweUVmZzRSdFU3L2ZFRk9kN25pNGR1WWt3VWxJN25zNVl0?=
- =?utf-8?B?TjhWQ24wZjJaTDVlajZQUnloaUwvYVRtUlV0SnA4Z1lkT0tqb0pBZVRBMHR1?=
- =?utf-8?B?eHk2VjZ5ZmRWcGNDR1ZJRHVkQjJicHBZSFlqRTFzNElkNXhsVGhMOFlxdGpi?=
- =?utf-8?B?VFBOMHdzVFlwOS9DdFp4RW90aW9PVzNSczRENWxiWi9FSW94Mi9wL2FMbDY4?=
- =?utf-8?B?VWFlUG5aYlk3dUViUUtlUmlvRWFnWW9mcWNQZkY3eXJoMmlCU0Y4NE13Zmxv?=
- =?utf-8?B?cTZQUXEycnF1Y25JTTh0ZHZPOVVtREVCR2UxK0NDcUozZWwyTjhrOVIzaEFx?=
- =?utf-8?B?QUZEcXJHenM1REFsa3dlRkJJM1RHZ0xYQzJONmovOGJqUTVpL3pRdVBRSVpB?=
- =?utf-8?B?WGxvSjQrK2Jzc1Rvcm1TZFk5N2h2cHVvQVJVR0NDdlllYkhrQi9wOHBncU5L?=
- =?utf-8?B?ckJkRnVXNm52UEhjcUdlRDhJSHZzdTFXWTJlTFFEVnlrUkN0YVBud2R4VlNM?=
- =?utf-8?B?NTJwRWxwV3NyQWJhMFBtVFNGdzE3dHNCWXVuMUI0RGVyNnZZcTlBcllGelpP?=
- =?utf-8?B?R3hKT04vNmpBUkVOUDAramtwbTl5REpjWU5tY2UvY0JMb0pvMUhVb3NrMUtr?=
- =?utf-8?B?TFQ3TFVLQzJSZDlBclVqYk9zRXJLZTEzbVFEdS9YWUMvdUFkK25aaS9JdFht?=
- =?utf-8?B?ZW5SdWVJWGU3R1UvQjVOVVY2a3FXQXBGb0o2bWdpdVVIQjBSZDdsZ2YyRXRC?=
- =?utf-8?B?S3prUDBOL3RUMEZaUmFhT09oaEZMQUQzL05HUGN3UW9IT29ZWEVSQlFvZG84?=
- =?utf-8?B?eHhVdzlIY3Y2bjhwVEVHcGdGUjByK0hkN21DM2dTYkVzL2JTQkF6amZPdGZT?=
- =?utf-8?B?bWhsdTVva3FNaG1PN2VKOUdpU2svRGFKK0xIWS9YYWg5WnJFbG5zY3QzRmRN?=
- =?utf-8?B?TzN2OHFaL3JaZUtKUVY4QnBVc2RhWllOdmVoTGY3eHBHMFpCZHh1MkpYSHB4?=
- =?utf-8?B?MVdWaFZpandLU0NoVDdtay9SRjBweE1qcStBY3hJRWhYSGttdGV2WjdOUmVp?=
- =?utf-8?B?RjFSaXhDY1c3L3RqNUp5ZEpNYUdwSTBJbFNuOTFDTDllMVkwOGtJaEgrSE5a?=
- =?utf-8?B?bmpqMDc1RDA2ZGtEakFGbXV1NHhtU1dzNEo5UmoxUENqVWQ5OFU2MmdOa2hC?=
- =?utf-8?B?UW5kckpPYmtuNmw3Vy9mWlIwTmt2WVBlRG56K2l3VUNLTzJGcXJWQWU1eHQz?=
- =?utf-8?B?dDR3QzdGUk16RHpTNHY0Z25nVDYxaTNRTnBrVGRKMGR3MzIrQjNETjczSVpN?=
- =?utf-8?B?WVBIMEVmRXNiN1pPQVI3ejBadk1iT0lRSjFGYlBrVWFZbG54My8rZFlpTUh3?=
- =?utf-8?B?blErTGRYYnkxV1hnaEhlbGxHWlV6bXJwUVJlQ2VObGcwWHhzYThhZnhxcWha?=
- =?utf-8?B?U0pteVpBYUh4ZkZOWGo1TkRtRXdCL1oxQ2cyQ1NTcEtGdVBvTUYrV0VtTEhj?=
- =?utf-8?B?ajVmaDdQRFE4MHBucHgyL2kvV01FQUtPYm9NUHVLNWVmSjkwbGhTaWYvNmNi?=
- =?utf-8?Q?7KugvSYIW2P9BLVs=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e0b0bf48-354c-452c-4c1c-08da4d8271de
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 21:19:48.0639
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QdXfvGF0cPJj9MjiF1KWcZrQ9BiMKd1a90dJe35zYWQNFjGV8LaHkceGMWHpmvoU4h5XczpqJqKmVxAYDiy43g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5081
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
- definitions=2022-06-13_09:2022-06-13,2022-06-13 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0 phishscore=0
- bulkscore=0 malwarescore=0 adultscore=0 spamscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206130084
-X-Proofpoint-ORIG-GUID: xgKAGu3OuQfxZHwFSkUL7qT8mfw-5gzv
-X-Proofpoint-GUID: xgKAGu3OuQfxZHwFSkUL7qT8mfw-5gzv
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=ZzUThN+xouEXvquQYC3DjLFRmnBgRRe1A4CrkgI7ln4=;
+        b=sHRyLYL421Xs0PblSrY0pePkWWuCbev2uWNsbFVqXMw40pLxEjaugtFZH9hHbSx7HR
+         1NRAaX3xND50k/oiJGPt2gfpQw5CCLDxrwJ1UddD3gWct9pbidECcF7B0SiF2sZj1Fi7
+         jhMPI8hV3cd37iDSymmTrD8JUZL8E4M1t/6n0Uy16fIpFJRGWTDuy0ToyJQaujRUPAwi
+         /jSl4bUG8WzViV5GMDtPalVnzRSw81d+nyCjDLsK7uaQFuNNemWBTka3EPFqYXyLoCq1
+         oqjRs/x595w3x3i7jjjg9Q/p31wQHgWAVTtF/0CNX7Xl6kkXITVorHa5fHfB9KAaBP0K
+         XAUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=ZzUThN+xouEXvquQYC3DjLFRmnBgRRe1A4CrkgI7ln4=;
+        b=XCfTUVcOmQUVqgDHsnvXEDwh7w3YnmAXhKi8X2jJXIXCcw1yMW4t5ROEE4mpBitA4q
+         NaSE/qBgqz/Cy2B89qhQ6x09fpXqWm1jy5st8CUwHL/quXS7xX36lzWIr7VFUWWTFYUQ
+         98bA/N8ho5OHLeRO5BC1CGy5y+BzdhSyqm/29Wd3boQVVmVK6PNTSqw4QoB8QHyb4cK5
+         85ksYmLLoxvFpLtIiawXKPWmSs1R5KF4EkYOCOvsOQ9tNFySv3T6Exn3zWIZkex6l4dD
+         ex3UFCqtlGnXMTjFWx4HEllx2FNm7EGEk0JdFQuaFLsrequtUoaZWObHySf7L/P2qNRk
+         72Hw==
+X-Gm-Message-State: AJIora+d5xdx6e4beMUj2Q8Smt+R5laYFjKww/ilNQrVVrxnQz7jTqUT
+        EnN45KHUylnt6NxJmHvRSTKBHDbMqyr0
+X-Google-Smtp-Source: AGRyM1sXk21WOlgWX4dQMcaAZ1rEcbnnYGTFH9DeiQwG9O2E9jG7cqqfX4nk+5lfn4xuFhinU/bIu6fC/ZmM
+X-Received: from sweer.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:e45])
+ (user=bgardon job=sendgmr) by 2002:a81:a95:0:b0:30c:7063:ff2e with SMTP id
+ 143-20020a810a95000000b0030c7063ff2emr1915851ywk.65.1655155534947; Mon, 13
+ Jun 2022 14:25:34 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 21:25:18 +0000
+In-Reply-To: <20220613212523.3436117-1-bgardon@google.com>
+Message-Id: <20220613212523.3436117-6-bgardon@google.com>
+Mime-Version: 1.0
+References: <20220613212523.3436117-1-bgardon@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH v9 05/10] KVM: selftests: Read binary stat data in lib
+From:   Ben Gardon <bgardon@google.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>,
+        Ben Gardon <bgardon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 02:35:09PM +0800”, Muchun Song wrote:
-> It it inconvenient to mention the feature of optimizing vmemmap pages associated
-> with HugeTLB pages when communicating with others since there is no specific or
-> abbreviated name for it when it is first introduced.  Let us give it a name HVO
-> (HugeTLB Vmemmap Optimization) from now.
-> 
-> This commit also updates the document about "hugetlb_free_vmemmap" by the way
-> discussed in thread [1].
-> 
-> Link: https://lore.kernel.org/all/21aae898-d54d-cc4b-a11f-1bb7fddcfffa@redhat.com/ [1]
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> ---
+Move the code to read the binary stats data to the KVM selftests
+library. It will be re-used by other tests to check KVM behavior.
 
-> diff --git a/Documentation/admin-guide/mm/hugetlbpage.rst b/Documentation/admin-guide/mm/hugetlbpage.rst
-> index a90330d0a837..64e0d5c512e7 100644
-> --- a/Documentation/admin-guide/mm/hugetlbpage.rst
-> +++ b/Documentation/admin-guide/mm/hugetlbpage.rst
-> @@ -164,8 +164,7 @@ default_hugepagesz
->  	will all result in 256 2M huge pages being allocated.  Valid default
->  	huge page size is architecture dependent.
->  hugetlb_free_vmemmap
-> -	When CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP is set, this enables optimizing
-> -	unused vmemmap pages associated with each HugeTLB page.
-> +	When CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP is set, this enables HVO.
+Also opportunistically remove an unnecessary calculation with
+"size_data" in stats_test.
 
-I think we need to define HVO before using it here.  Readers may be able
-to determine the meaning, but to be sure I would suggest:
+Reviewed-by: David Matlack <dmatlack@google.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: Ben Gardon <bgardon@google.com>
+---
+ .../selftests/kvm/include/kvm_util_base.h     |  4 +++
+ .../selftests/kvm/kvm_binary_stats_test.c     |  9 ++---
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 35 +++++++++++++++++++
+ 3 files changed, 41 insertions(+), 7 deletions(-)
 
-When CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP is set this enables
-HugeTLB Vmemmap Optimization (HVO).
-
-Everything else looks good to me.
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 6c66c6ef485b..aa7f8b681944 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -336,6 +336,10 @@ static inline struct kvm_stats_desc *get_stats_descriptor(struct kvm_stats_desc
+ 	return (void *)stats + index * get_stats_descriptor_size(header);
+ }
+ 
++void read_stat_data(int stats_fd, struct kvm_stats_header *header,
++		    struct kvm_stats_desc *desc, uint64_t *data,
++		    size_t max_elements);
++
+ void vm_create_irqchip(struct kvm_vm *vm);
+ 
+ void vm_set_user_memory_region(struct kvm_vm *vm, uint32_t slot, uint32_t flags,
+diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+index 3002fab2bbf1..98b882ec8f98 100644
+--- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
++++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+@@ -147,15 +147,10 @@ static void stats_test(int stats_fd)
+ 	ret = pread(stats_fd, stats_data, size_data, header.data_offset);
+ 	TEST_ASSERT(ret == size_data, "Read KVM stats data");
+ 	/* Read kvm stats data one by one */
+-	size_data = 0;
+ 	for (i = 0; i < header.num_desc; ++i) {
+ 		pdesc = get_stats_descriptor(stats_desc, i, &header);
+-		ret = pread(stats_fd, stats_data,
+-				pdesc->size * sizeof(*stats_data),
+-				header.data_offset + size_data);
+-		TEST_ASSERT(ret == pdesc->size * sizeof(*stats_data),
+-				"Read data of KVM stats: %s", pdesc->name);
+-		size_data += pdesc->size * sizeof(*stats_data);
++		read_stat_data(stats_fd, &header, pdesc, stats_data,
++			       pdesc->size);
+ 	}
+ 
+ 	free(stats_data);
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index fc957a385a0a..5b8249a0e1de 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -1890,3 +1890,38 @@ struct kvm_stats_desc *read_stats_descriptors(int stats_fd,
+ 
+ 	return stats_desc;
+ }
++
++/*
++ * Read stat data for a particular stat
++ *
++ * Input Args:
++ *   stats_fd - the file descriptor for the binary stats file from which to read
++ *   header - the binary stats metadata header corresponding to the given FD
++ *   desc - the binary stat metadata for the particular stat to be read
++ *   max_elements - the maximum number of 8-byte values to read into data
++ *
++ * Output Args:
++ *   data - the buffer into which stat data should be read
++ *
++ * Read the data values of a specified stat from the binary stats interface.
++ */
++void read_stat_data(int stats_fd, struct kvm_stats_header *header,
++		    struct kvm_stats_desc *desc, uint64_t *data,
++		    size_t max_elements)
++{
++	size_t nr_elements = min_t(ssize_t, desc->size, max_elements);
++	size_t size = nr_elements * sizeof(*data);
++	ssize_t ret;
++
++	TEST_ASSERT(desc->size, "No elements in stat '%s'", desc->name);
++	TEST_ASSERT(max_elements, "Zero elements requested for stat '%s'", desc->name);
++
++	ret = pread(stats_fd, data, size,
++		    header->data_offset + desc->offset);
++
++	TEST_ASSERT(ret >= 0, "pread() failed on stat '%s', errno: %i (%s)",
++		    desc->name, errno, strerror(errno));
++	TEST_ASSERT(ret == size,
++		    "pread() on stat '%s' read %ld bytes, wanted %lu bytes",
++		    desc->name, size, ret);
++}
 -- 
-Mike Kravetz
+2.36.1.476.g0c4daa206d-goog
+
