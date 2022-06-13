@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD36C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B625AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:37:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345021AbiFMKhL (ORCPT
+        id S1346422AbiFMKhQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
+        Mon, 13 Jun 2022 06:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345580AbiFMKgL (ORCPT
+        with ESMTP id S1345601AbiFMKgL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:36:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEC8E0DF;
-        Mon, 13 Jun 2022 03:22:40 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB7CE0BC;
+        Mon, 13 Jun 2022 03:22:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAD6C60AE8;
-        Mon, 13 Jun 2022 10:22:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E631DC3411C;
-        Mon, 13 Jun 2022 10:22:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FFA6B80E5E;
+        Mon, 13 Jun 2022 10:22:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12D9AC3411E;
+        Mon, 13 Jun 2022 10:22:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115759;
-        bh=OtZwQqjMLMDpXEyiQeZWI1ClYUMVsDpjKCfDYqgZlO0=;
+        s=korg; t=1655115756;
+        bh=l+X116IPdIcDhimPMpbxyK/QJ3o3fL8KICaWCEnn5fo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=prfiSgpPp6C+uCC5L+n4rRU7pOLKOpZLXFr63DevVPqKwcYSdonVNKOPnIivCg57/
-         ob72GxSGKT9RvqZ9lXiCpwzTTrBikVdNTIsXheWk7Btj7NKjeOKjzytG2Tb5UXg3SX
-         X61xt/0ShnRTkw43FevpzRKCh5LVI/zJ2/i0UeTY=
+        b=FTFmuS4a4zB9HyXA/79OOvDs7n1P6zDn7VDmTJhDBfdKXqr0hahzcMuFq7ETDMele
+         nNDSeVRjy1jazo6Cn4iqQ37fbQq9aIKLV7NNh5s9KU0GDXA0hNb8lXT9vkY6eEtr8j
+         Ep6/KTB+nCjPfS9TwLQyFSp0dDBqAR+kVD0PseE8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Evan Quan <evan.quan@amd.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 021/218] drm/amd/pm: fix the compile warning
-Date:   Mon, 13 Jun 2022 12:07:59 +0200
-Message-Id: <20220613094913.320060602@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 020/218] scsi: megaraid: Fix error check return value of register_chrdev()
+Date:   Mon, 13 Jun 2022 12:07:58 +0200
+Message-Id: <20220613094913.090196163@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,49 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
+[ Upstream commit c5acd61dbb32b6bda0f3a354108f2b8dcb788985 ]
 
-Fix the compile warning below:
-drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
-kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
+If major equals 0, register_chrdev() returns an error code when it fails.
+This function dynamically allocates a major and returns its number on
+success, so we should use "< 0" to check it instead of "!".
 
-Reported-by: kernel test robot <lkp@intel.com>
-CC: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Link: https://lore.kernel.org/r/20220418105755.2558828-1-lv.ruyi@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/kv_dpm.c | 14 +-------------
- 1 file changed, 1 insertion(+), 13 deletions(-)
+ drivers/scsi/megaraid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
-index c76073b422d6..d99fb88341f4 100644
---- a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
-@@ -1608,19 +1608,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
- 
- static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
- {
--	u8 i;
--	struct amdgpu_clock_voltage_dependency_table *table =
--		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
--
--	for (i = 0; i < table->count; i++) {
--		if (table->entries[i].clk >= 0) /* XXX */
--			break;
--	}
--
--	if (i >= table->count)
--		i = table->count - 1;
--
--	return i;
-+	return 0;
- }
- 
- static void kv_update_acp_boot_level(struct amdgpu_device *adev)
+diff --git a/drivers/scsi/megaraid.c b/drivers/scsi/megaraid.c
+index f5c09bbf9374..eed6d45b8025 100644
+--- a/drivers/scsi/megaraid.c
++++ b/drivers/scsi/megaraid.c
+@@ -4707,7 +4707,7 @@ static int __init megaraid_init(void)
+ 	 * major number allocation.
+ 	 */
+ 	major = register_chrdev(0, "megadev_legacy", &megadev_fops);
+-	if (!major) {
++	if (major < 0) {
+ 		printk(KERN_WARNING
+ 				"megaraid: failed to register char device\n");
+ 	}
 -- 
 2.35.1
 
