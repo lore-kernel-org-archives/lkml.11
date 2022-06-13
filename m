@@ -2,56 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D9CCCCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BE3CCA486
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354815AbiFMLeJ (ORCPT
+        id S1354929AbiFMLeQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
+        Mon, 13 Jun 2022 07:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354370AbiFML3X (ORCPT
+        with ESMTP id S1354381AbiFML30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D012314F;
-        Mon, 13 Jun 2022 03:43:37 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ACEFD107;
+        Mon, 13 Jun 2022 03:43:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2850FB80D3B;
-        Mon, 13 Jun 2022 10:43:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5905EC34114;
-        Mon, 13 Jun 2022 10:43:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0777F60FDB;
+        Mon, 13 Jun 2022 10:43:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B5E3C34114;
+        Mon, 13 Jun 2022 10:43:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117014;
-        bh=1deBv8pWO4EhlblSV+d3qc0OS1zA34siQuYQ1ppkR98=;
+        s=korg; t=1655117028;
+        bh=zLNYGnhl3HROVhvLdtptN+k7B+4om0XZMN1MPs90rtQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bxcBibQvBElkkDbmkwCo0mKwVVL7xeDVGL6wQvvKMOetj2sXXnNDgMa1XkYOpE91L
-         DByhTGyRmlM32GoRTTmCZdry1hjZ/FNY1zetXQ5d42WpBBcO1mXtgzDM7jQWApo0sU
-         Qaa1q5VTBEjJpJq69E7Xpnl0NI1em+K3xS2iRwrs=
+        b=dBx6XGcSJh+Pim1UqCxqCoV1aJHt/jmccN2TpJ00x+0rrrOulxkvHqll5FKXoc+O8
+         CIQVn0ofGVaaD8zAhW4H4Onw4/oVLBZerHq7CfYvfR+1wTJ4e7yjet9Pk6zUJtDG9R
+         RM5karNFTKrpVmMBe/jpLOSdkPv/6AZq+Kx9nLUQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe de Dinechin <christophe@dinechin.org>,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ben Segall <bsegall@google.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH 5.4 256/411] nodemask.h: fix compilation error with GCC12
-Date:   Mon, 13 Jun 2022 12:08:49 +0200
-Message-Id: <20220613094936.441817314@linuxfoundation.org>
+        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.4 272/411] RDMA/rxe: Generate a completion for unsupported/invalid opcode
+Date:   Mon, 13 Jun 2022 12:09:05 +0200
+Message-Id: <20220613094936.914688291@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -63,92 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe de Dinechin <dinechin@redhat.com>
+From: Xiao Yang <yangx.jy@fujitsu.com>
 
-commit 37462a920392cb86541650a6f4121155f11f1199 upstream.
+commit 2f917af777011c88e977b9b9a5d00b280d3a59ce upstream.
 
-With gcc version 12.0.1 20220401 (Red Hat 12.0.1-0), building with
-defconfig results in the following compilation error:
+Current rxe_requester() doesn't generate a completion when processing an
+unsupported/invalid opcode. If rxe driver doesn't support a new opcode
+(e.g. RDMA Atomic Write) and RDMA library supports it, an application
+using the new opcode can reproduce this issue. Fix the issue by calling
+"goto err;".
 
-|   CC      mm/swapfile.o
-| mm/swapfile.c: In function `setup_swap_info':
-| mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds
-|  of `struct plist_node[]' [-Werror=array-bounds]
-|  2291 |                                 p->avail_lists[i].prio = 1;
-|       |                                 ~~~~~~~~~~~~~~^~~
-| In file included from mm/swapfile.c:16:
-| ./include/linux/swap.h:292:27: note: while referencing `avail_lists'
-|   292 |         struct plist_node avail_lists[]; /*
-|       |                           ^~~~~~~~~~~
-
-This is due to the compiler detecting that the mask in
-node_states[__state] could theoretically be zero, which would lead to
-first_node() returning -1 through find_first_bit.
-
-I believe that the warning/error is legitimate.  I first tried adding a
-test to check that the node mask is not emtpy, since a similar test exists
-in the case where MAX_NUMNODES == 1.
-
-However, adding the if statement causes other warnings to appear in
-for_each_cpu_node_but, because it introduces a dangling else ambiguity.
-And unfortunately, GCC is not smart enough to detect that the added test
-makes the case where (node) == -1 impossible, so it still complains with
-the same message.
-
-This is why I settled on replacing that with a harmless, but relatively
-useless (node) >= 0 test.  Based on the warning for the dangling else, I
-also decided to fix the case where MAX_NUMNODES == 1 by moving the
-condition inside the for loop.  It will still only be tested once.  This
-ensures that the meaning of an else following for_each_node_mask or
-derivatives would not silently have a different meaning depending on the
-configuration.
-
-Link: https://lkml.kernel.org/r/20220414150855.2407137-3-dinechin@redhat.com
-Signed-off-by: Christophe de Dinechin <christophe@dinechin.org>
-Signed-off-by: Christophe de Dinechin <dinechin@redhat.com>
-Reviewed-by: Andrew Morton <akpm@linux-foundation.org>
-Cc: Ben Segall <bsegall@google.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20220410113513.27537-1-yangx.jy@fujitsu.com
+Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/nodemask.h |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/infiniband/sw/rxe/rxe_req.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -375,14 +375,13 @@ static inline void __nodes_fold(nodemask
- }
+--- a/drivers/infiniband/sw/rxe/rxe_req.c
++++ b/drivers/infiniband/sw/rxe/rxe_req.c
+@@ -680,7 +680,7 @@ next_wqe:
+ 	opcode = next_opcode(qp, wqe, wqe->wr.opcode);
+ 	if (unlikely(opcode < 0)) {
+ 		wqe->status = IB_WC_LOC_QP_OP_ERR;
+-		goto exit;
++		goto err;
+ 	}
  
- #if MAX_NUMNODES > 1
--#define for_each_node_mask(node, mask)			\
--	for ((node) = first_node(mask);			\
--		(node) < MAX_NUMNODES;			\
--		(node) = next_node((node), (mask)))
-+#define for_each_node_mask(node, mask)				    \
-+	for ((node) = first_node(mask);				    \
-+	     (node >= 0) && (node) < MAX_NUMNODES;		    \
-+	     (node) = next_node((node), (mask)))
- #else /* MAX_NUMNODES == 1 */
--#define for_each_node_mask(node, mask)			\
--	if (!nodes_empty(mask))				\
--		for ((node) = 0; (node) < 1; (node)++)
-+#define for_each_node_mask(node, mask)                                  \
-+	for ((node) = 0; (node) < 1 && !nodes_empty(mask); (node)++)
- #endif /* MAX_NUMNODES */
- 
- /*
+ 	mask = rxe_opcode[opcode].mask;
 
 
