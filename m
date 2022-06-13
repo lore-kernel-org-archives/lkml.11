@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21916C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4961C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357548AbiFMNPT (ORCPT
+        id S1359442AbiFMNN1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38602 "EHLO
+        Mon, 13 Jun 2022 09:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359138AbiFMNJb (ORCPT
+        with ESMTP id S1357254AbiFMNHR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:31 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7A438BE8;
-        Mon, 13 Jun 2022 04:19:21 -0700 (PDT)
+        Mon, 13 Jun 2022 09:07:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE9B381B2;
+        Mon, 13 Jun 2022 04:18:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C1BD8CE1174;
-        Mon, 13 Jun 2022 11:19:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C243CC34114;
-        Mon, 13 Jun 2022 11:19:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32D73B80EAB;
+        Mon, 13 Jun 2022 11:18:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B58AC34114;
+        Mon, 13 Jun 2022 11:18:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119158;
-        bh=rhAYimTtxz80OEZFM8rXb6yoxjM11WKvOvsRYWx+t6w=;
+        s=korg; t=1655119114;
+        bh=dwTBRByocbJ8UGwNR2U6VMjbYtsFF+Xh/didYYZH2vY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eSZkHn7w9A9YYNeCQmc9GCeS+1StK5YkkpUJvlCgDjRLXmg34AsJf8zaln6fJTNrm
-         14fXlL9dtOLyp1fZVoK7Rs+bL9m6aCjC/ee76qaZX1dg21peikeK6orRIlw54HwxBM
-         /0EoM6Gp+GzwNKNiQKr4hDb291OIi5kUKrWWKnGg=
+        b=a5oauioiUeuvR6wojwPaBI6JCKUywCnduvNX/Va1ovOxodP6uuCcI/oo/MU0VaUdA
+         oaxu/PNERWil/65WAp1LAo8uyIVaF13rbg77NO36XTX6XVj6jrgJ3AIPObHJXCb4eh
+         y59wHWqtstgFpVieFDpDiX9ZlXBYseGJrTOREfbU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Eric Dumazet <edumazet@google.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 161/247] tcp: use alloc_large_system_hash() to allocate table_perturb
-Date:   Mon, 13 Jun 2022 12:11:03 +0200
-Message-Id: <20220613094927.838678012@linuxfoundation.org>
+Subject: [PATCH 5.15 146/247] net: dsa: lantiq_gswip: Fix refcount leak in gswip_gphy_fw_list
+Date:   Mon, 13 Jun 2022 12:10:48 +0200
+Message-Id: <20220613094927.384042771@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,45 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit e67b72b90b7e19a4be4d9c29f3feea6f58ab43f8 ]
+[ Upstream commit 0737e018a05e2aa352828c52bdeed3b02cff2930 ]
 
-In our server, there may be no high order (>= 6) memory since we reserve
-lots of HugeTLB pages when booting.  Then the system panic.  So use
-alloc_large_system_hash() to allocate table_perturb.
+Every iteration of for_each_available_child_of_node() decrements
+the reference count of the previous node.
+when breaking early from a for_each_available_child_of_node() loop,
+we need to explicitly call of_node_put() on the gphy_fw_np.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: e9261476184b ("tcp: dynamically allocate the perturb table used by source ports")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220607070214.94443-1-songmuchun@bytedance.com
+Fixes: 14fceff4771e ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220605072335.11257-1-linmq006@gmail.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/inet_hashtables.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/net/dsa/lantiq_gswip.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index ee9c587031b4..342f3df77835 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -917,10 +917,12 @@ void __init inet_hashinfo2_init(struct inet_hashinfo *h, const char *name,
- 	init_hashinfo_lhash2(h);
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 8a8f392813d8..2240a3d35122 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -2047,8 +2047,10 @@ static int gswip_gphy_fw_list(struct gswip_priv *priv,
+ 	for_each_available_child_of_node(gphy_fw_list_np, gphy_fw_np) {
+ 		err = gswip_gphy_fw_probe(priv, &priv->gphy_fw[i],
+ 					  gphy_fw_np, i);
+-		if (err)
++		if (err) {
++			of_node_put(gphy_fw_np);
+ 			goto remove_gphy;
++		}
+ 		i++;
+ 	}
  
- 	/* this one is used for source ports of outgoing connections */
--	table_perturb = kmalloc_array(INET_TABLE_PERTURB_SIZE,
--				      sizeof(*table_perturb), GFP_KERNEL);
--	if (!table_perturb)
--		panic("TCP: failed to alloc table_perturb");
-+	table_perturb = alloc_large_system_hash("Table-perturb",
-+						sizeof(*table_perturb),
-+						INET_TABLE_PERTURB_SIZE,
-+						0, 0, NULL, NULL,
-+						INET_TABLE_PERTURB_SIZE,
-+						INET_TABLE_PERTURB_SIZE);
- }
- 
- int inet_hashinfo2_init_mod(struct inet_hashinfo *h)
 -- 
 2.35.1
 
