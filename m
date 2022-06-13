@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C70CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 900AFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:56:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349819AbiFMU4n (ORCPT
+        id S1351359AbiFMU4r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:56:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
+        Mon, 13 Jun 2022 16:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351910AbiFMUyC (ORCPT
+        with ESMTP id S1352083AbiFMUyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:54:02 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1983725C6D
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:18:41 -0700 (PDT)
+        Mon, 13 Jun 2022 16:54:10 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BBEF29CA9
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:19:46 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1655151519;
+        t=1655151585;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=T+1jiBrKGTOAkQ9I8eaP4PIHMCNWMSHqgu/PvHey6xE=;
-        b=F5EnSyRzoYiX0f3p7v1JZyYXYCdly4dsV81EJcSjrE5AgBjsvqGzsSPNsrhg9xnJINY22B
-        JTqZ7R3jNHwJvMGgFjl3QeawSgC3InukMau/z4kNEB+Yd8GVk9awFkEbF9PJy7T04jE2a2
-        yUW14maYFKV3Zq0LX4bXhSJ6v+M/U7E=
+        bh=bgGIoP7jXmxJI/MRAshv+0ZSBU3qLuiELKkrVE3erv8=;
+        b=Tx3ufgGib+OSKMRv+3CRINt/7OLqN5cTferSwJ6ogYbMF4V+m/d6x2YflQZxIH1DxTkbs+
+        djLDhQRR9ITw8i3XavtHbQZ4Xi93tpCSo+pVwH6pNEdeNdh3NKk7rEyn4uB+qK7BZVTgjf
+        ongP+RFoY9TadvbK5JxiwaupvUxSI3c=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -39,9 +39,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 20/32] kasan: move kasan_get_alloc/free_track definitions
-Date:   Mon, 13 Jun 2022 22:14:11 +0200
-Message-Id: <8c647863a2ea158fd2ddc0c79e5e937bb03d86f0.1655150842.git.andreyknvl@google.com>
+Subject: [PATCH 27/32] kasan: introduce complete_report_info
+Date:   Mon, 13 Jun 2022 22:14:18 +0200
+Message-Id: <dcc8dd2856119f660f7402977de9da2b2419b175.1655150842.git.andreyknvl@google.com>
 In-Reply-To: <cover.1655150842.git.andreyknvl@google.com>
 References: <cover.1655150842.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -54,118 +54,91 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Move the definitions of kasan_get_alloc/free_track() to report_*.c, as
-they belong with other the reporting code.
+Introduce a complete_report_info() function that fills in the
+first_bad_addr field of kasan_report_info instead of doing it in
+kasan_report_*().
+
+This function will be extended in the next patch.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- mm/kasan/generic.c        | 21 ---------------------
- mm/kasan/report_generic.c | 21 +++++++++++++++++++++
- mm/kasan/report_tags.c    | 12 ++++++++++++
- mm/kasan/tags.c           | 12 ------------
- 4 files changed, 33 insertions(+), 33 deletions(-)
+ mm/kasan/kasan.h  |  5 ++++-
+ mm/kasan/report.c | 17 +++++++++++++++--
+ 2 files changed, 19 insertions(+), 3 deletions(-)
 
-diff --git a/mm/kasan/generic.c b/mm/kasan/generic.c
-index aff39af3c532..d8b5590f9484 100644
---- a/mm/kasan/generic.c
-+++ b/mm/kasan/generic.c
-@@ -512,24 +512,3 @@ void kasan_save_free_info(struct kmem_cache *cache, void *object)
- 	/* The object was freed and has free track set. */
- 	*(u8 *)kasan_mem_to_shadow(object) = KASAN_SLAB_FREETRACK;
- }
--
--struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
--						void *object)
--{
--	struct kasan_alloc_meta *alloc_meta;
--
--	alloc_meta = kasan_get_alloc_meta(cache, object);
--	if (!alloc_meta)
--		return NULL;
--
--	return &alloc_meta->alloc_track;
--}
--
--struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
--						void *object, u8 tag)
--{
--	if (*(u8 *)kasan_mem_to_shadow(object) != KASAN_SLAB_FREETRACK)
--		return NULL;
--	/* Free meta must be present with KASAN_SLAB_FREETRACK. */
--	return &kasan_get_free_meta(cache, object)->free_track;
--}
-diff --git a/mm/kasan/report_generic.c b/mm/kasan/report_generic.c
-index 348dc207d462..74d21786ef09 100644
---- a/mm/kasan/report_generic.c
-+++ b/mm/kasan/report_generic.c
-@@ -127,6 +127,27 @@ const char *kasan_get_bug_type(struct kasan_report_info *info)
- 	return get_wild_bug_type(info);
+diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
+index e3f100833154..0261d1530055 100644
+--- a/mm/kasan/kasan.h
++++ b/mm/kasan/kasan.h
+@@ -147,12 +147,15 @@ static inline bool kasan_requires_meta(void)
+ #define META_ROWS_AROUND_ADDR 2
+ 
+ struct kasan_report_info {
++	/* Filled in by kasan_report_*(). */
+ 	void *access_addr;
+-	void *first_bad_addr;
+ 	size_t access_size;
+ 	bool is_free;
+ 	bool is_write;
+ 	unsigned long ip;
++
++	/* Filled in by the common reporting code. */
++	void *first_bad_addr;
+ };
+ 
+ /* Do not change the struct layout: compiler ABI. */
+diff --git a/mm/kasan/report.c b/mm/kasan/report.c
+index cc35c8c1a367..214ba7cb654c 100644
+--- a/mm/kasan/report.c
++++ b/mm/kasan/report.c
+@@ -407,6 +407,17 @@ static void print_report(struct kasan_report_info *info)
+ 	}
  }
  
-+struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
-+						void *object)
++static void complete_report_info(struct kasan_report_info *info)
 +{
-+	struct kasan_alloc_meta *alloc_meta;
++	void *addr = kasan_reset_tag(info->access_addr);
 +
-+	alloc_meta = kasan_get_alloc_meta(cache, object);
-+	if (!alloc_meta)
-+		return NULL;
-+
-+	return &alloc_meta->alloc_track;
++	if (info->is_free)
++		info->first_bad_addr = addr;
++	else
++		info->first_bad_addr = kasan_find_first_bad_addr(
++					info->access_addr, info->access_size);
 +}
 +
-+struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
-+						void *object, u8 tag)
-+{
-+	if (*(u8 *)kasan_mem_to_shadow(object) != KASAN_SLAB_FREETRACK)
-+		return NULL;
-+	/* Free meta must be present with KASAN_SLAB_FREETRACK. */
-+	return &kasan_get_free_meta(cache, object)->free_track;
-+}
-+
- void kasan_metadata_fetch_row(char *buffer, void *row)
+ void kasan_report_invalid_free(void *ptr, unsigned long ip)
  {
- 	memcpy(buffer, kasan_mem_to_shadow(row), META_BYTES_PER_ROW);
-diff --git a/mm/kasan/report_tags.c b/mm/kasan/report_tags.c
-index 35cf3cae4aa4..79b6497d8a81 100644
---- a/mm/kasan/report_tags.c
-+++ b/mm/kasan/report_tags.c
-@@ -21,3 +21,15 @@ const char *kasan_get_bug_type(struct kasan_report_info *info)
+ 	unsigned long flags;
+@@ -423,12 +434,13 @@ void kasan_report_invalid_free(void *ptr, unsigned long ip)
+ 	start_report(&flags, true);
  
- 	return "invalid-access";
- }
+ 	info.access_addr = ptr;
+-	info.first_bad_addr = kasan_reset_tag(ptr);
+ 	info.access_size = 0;
+ 	info.is_write = false;
+ 	info.is_free = true;
+ 	info.ip = ip;
+ 
++	complete_report_info(&info);
 +
-+struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
-+						void *object)
-+{
-+	return NULL;
-+}
+ 	print_report(&info);
+ 
+ 	end_report(&flags, ptr);
+@@ -456,12 +468,13 @@ bool kasan_report(unsigned long addr, size_t size, bool is_write,
+ 	start_report(&irq_flags, true);
+ 
+ 	info.access_addr = ptr;
+-	info.first_bad_addr = kasan_find_first_bad_addr(ptr, size);
+ 	info.access_size = size;
+ 	info.is_write = is_write;
+ 	info.is_free = false;
+ 	info.ip = ip;
+ 
++	complete_report_info(&info);
 +
-+struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
-+						void *object, u8 tag)
-+{
-+	return NULL;
-+}
-diff --git a/mm/kasan/tags.c b/mm/kasan/tags.c
-index fd11d10a4ffc..39a0481e5228 100644
---- a/mm/kasan/tags.c
-+++ b/mm/kasan/tags.c
-@@ -24,15 +24,3 @@ void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
- void kasan_save_free_info(struct kmem_cache *cache, void *object)
- {
- }
--
--struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
--						void *object)
--{
--	return NULL;
--}
--
--struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
--						void *object, u8 tag)
--{
--	return NULL;
--}
+ 	print_report(&info);
+ 
+ 	end_report(&irq_flags, ptr);
 -- 
 2.25.1
 
