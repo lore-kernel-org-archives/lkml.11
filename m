@@ -2,131 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ADEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12649C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:36:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239946AbiFMRf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37860 "EHLO
+        id S240413AbiFMRgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244911AbiFMRbN (ORCPT
+        with ESMTP id S244919AbiFMRbO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:31:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438B5663D6;
-        Mon, 13 Jun 2022 05:57:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6379B80FCD;
-        Mon, 13 Jun 2022 12:57:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE2BDC3411C;
-        Mon, 13 Jun 2022 12:57:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655125051;
-        bh=KDhPN0EJSPqVJzBkGZYZ/spitiiOUeilcgOvShhrFB0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nMJ5e6gBSI7FEY6Te1788d11iJlulxXuHGGuL9TFl9R5J/Fi1mTnAbFFEwc9sVdqG
-         /gfYi9COCxRzBF4bqk4wOlkpnMT5E1gkLYpSZBE3RIQHpZjkXxkdhtRBvdTPICAKEp
-         j+onTRZedv5xDqdbcECM32Wc5IWYXJeN4XSW9cHtTj9wm7SaZsazli+NlPcyjRsFzE
-         /rsjvMHBqJuoUyXL/GMHOj9800A6o4X66xFIorh/uzTDrf3UxlJlDdXeHyEfErYSVs
-         heThHqdyy3FhrH/ZHx+EWxGDhEFgoXgPXComQNGT9GReuajxWkZ41ikVfXD2hEXEBM
-         b3dsu2DO2eNoA==
-Date:   Mon, 13 Jun 2022 13:57:25 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Jerome NEANNE <jneanne@baylibre.com>
-Cc:     lgirdwood@gmail.com, robh+dt@kernel.org, nm@ti.com,
-        kristo@kernel.org, will@kernel.org, lee.jones@linaro.org,
-        khilman@baylibre.com, narmstrong@baylibre.com, msp@baylibre.com,
-        j-keerthy@ti.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [RFC PATCH 2/5] mfd: drivers: Add TI TPS65219 PMIC support
-Message-ID: <Yqc0NQSLO2j2IHI3@sirena.org.uk>
-References: <20220613090604.9975-1-jneanne@baylibre.com>
- <20220613090604.9975-3-jneanne@baylibre.com>
+        Mon, 13 Jun 2022 13:31:14 -0400
+Received: from outbound-smtp57.blacknight.com (outbound-smtp57.blacknight.com [46.22.136.241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5F4663E5
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:57:36 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail06.blacknight.ie [81.17.255.152])
+        by outbound-smtp57.blacknight.com (Postfix) with ESMTPS id 0F8E3FA773
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:57:35 +0100 (IST)
+Received: (qmail 29889 invoked from network); 13 Jun 2022 12:57:34 -0000
+Received: from unknown (HELO morpheus.112glenside.lan) (mgorman@techsingularity.net@[84.203.198.246])
+  by 81.17.254.9 with ESMTPA; 13 Jun 2022 12:57:34 -0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@kernel.org>,
+        Hugh Dickins <hughd@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Mel Gorman <mgorman@techsingularity.net>
+Subject: [PATCH 6/7] mm/page_alloc: Remotely drain per-cpu lists
+Date:   Mon, 13 Jun 2022 13:56:21 +0100
+Message-Id: <20220613125622.18628-7-mgorman@techsingularity.net>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220613125622.18628-1-mgorman@techsingularity.net>
+References: <20220613125622.18628-1-mgorman@techsingularity.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="U2vy66mGJShhsnPN"
-Content-Disposition: inline
-In-Reply-To: <20220613090604.9975-3-jneanne@baylibre.com>
-X-Cookie: innovate, v.:
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Nicolas Saenz Julienne <nsaenzju@redhat.com>
 
---U2vy66mGJShhsnPN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Some setups, notably NOHZ_FULL CPUs, are too busy to handle the per-cpu
+drain work queued by __drain_all_pages().  So introduce a new mechanism to
+remotely drain the per-cpu lists.  It is made possible by remotely locking
+'struct per_cpu_pages' new per-cpu spinlocks.  A benefit of this new
+scheme is that drain operations are now migration safe.
 
-On Mon, Jun 13, 2022 at 11:06:01AM +0200, Jerome NEANNE wrote:
+There was no observed performance degradation vs.  the previous scheme.
+Both netperf and hackbench were run in parallel to triggering the
+__drain_all_pages(NULL, true) code path around ~100 times per second.  The
+new scheme performs a bit better (~5%), although the important point here
+is there are no performance regressions vs.  the previous mechanism.
+Per-cpu lists draining happens only in slow paths.
 
-> +/**
-> + * tps65219_reg_read: Read a single tps65219 register.
-> + *
-> + * @tps: Device to read from.
-> + * @reg: Register to read.
-> + * @val: Contians the value
-> + */
-> +int tps65219_reg_read(struct tps65219 *tps, unsigned int reg,
-> +			unsigned int *val)
-> +{
-> +	return regmap_read(tps->regmap, reg, val);
-> +}
-> +EXPORT_SYMBOL_GPL(tps65219_reg_read);
+Minchan Kim tested this independently and reported;
 
-It is better practice to just expose the regmap and let the function
-drivers use it, that means the function drivers can just use standard
-helper functions.
+	My workload is not NOHZ CPUs but run apps under heavy memory
+	pressure so they goes to direct reclaim and be stuck on
+	drain_all_pages until work on workqueue run.
 
-> +static int tps65219_update_bits(struct tps65219 *tps, unsigned int reg,
-> +		unsigned int mask, unsigned int val)
-> +{
-> +	int ret;
-> +	unsigned int data;
-> +
-> +	ret = regmap_read(tps->regmap, reg, &data);
-> +	if (ret) {
-> +		dev_err(tps->dev, "Read from reg 0x%x failed\n", reg);
-> +		return ret;
-> +	}
-> +
-> +	data &= ~mask;
-> +	data |= val & mask;
-> +
-> +	mutex_lock(&tps->tps_lock);
-> +	ret = tps65219_reg_write(tps, reg, data);
-> +	if (ret)
-> +		dev_err(tps->dev, "Write for reg 0x%x failed\n", reg);
-> +	mutex_unlock(&tps->tps_lock);
+	unit: nanosecond
+	max(dur)        avg(dur)                count(dur)
+	166713013       487511.77786438033      1283
 
-It's not clear what this locking is intended to protect.  It looks like
-this should just be using regmap_update_bits().
+	From traces, system encountered the drain_all_pages 1283 times and
+	worst case was 166ms and avg was 487us.
 
-> +static const struct regmap_range tps65219_yes_ranges[] = {
-> +	regmap_reg_range(TPS65219_REG_INT_SOURCE, TPS65219_REG_POWER_UP_STATUS),
-> +};
-> +
-> +static const struct regmap_access_table tps65219_volatile_table = {
-> +	.yes_ranges = tps65219_yes_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(tps65219_yes_ranges),
-> +};
+	The other problem was alloc_contig_range in CMA. The PCP draining
+	takes several hundred millisecond sometimes though there is no
+	memory pressure or a few of pages to be migrated out but CPU were
+	fully booked.
 
-tps65219_yes_ranges probably needs a clearer name.
+	Your patch perfectly removed those wasted time.
 
---U2vy66mGJShhsnPN
-Content-Type: application/pgp-signature; name="signature.asc"
+Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+Tested-by: Minchan Kim <minchan@kernel.org>
+Acked-by: Minchan Kim <minchan@kernel.org>
+---
+ mm/page_alloc.c | 58 ++++---------------------------------------------
+ 1 file changed, 4 insertions(+), 54 deletions(-)
 
------BEGIN PGP SIGNATURE-----
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 533fc5527582..03882ce7765f 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -165,13 +165,7 @@ DEFINE_PER_CPU(int, _numa_mem_);		/* Kernel "local memory" node */
+ EXPORT_PER_CPU_SYMBOL(_numa_mem_);
+ #endif
+ 
+-/* work_structs for global per-cpu drains */
+-struct pcpu_drain {
+-	struct zone *zone;
+-	struct work_struct work;
+-};
+ static DEFINE_MUTEX(pcpu_drain_mutex);
+-static DEFINE_PER_CPU(struct pcpu_drain, pcpu_drain);
+ 
+ #ifdef CONFIG_GCC_PLUGIN_LATENT_ENTROPY
+ volatile unsigned long latent_entropy __latent_entropy;
+@@ -3105,9 +3099,6 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
+  * Called from the vmstat counter updater to drain pagesets of this
+  * currently executing processor on remote nodes after they have
+  * expired.
+- *
+- * Note that this function must be called with the thread pinned to
+- * a single processor.
+  */
+ void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
+ {
+@@ -3132,10 +3123,6 @@ void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
+ 
+ /*
+  * Drain pcplists of the indicated processor and zone.
+- *
+- * The processor must either be the current processor and the
+- * thread pinned to the current processor or a processor that
+- * is not online.
+  */
+ static void drain_pages_zone(unsigned int cpu, struct zone *zone)
+ {
+@@ -3154,10 +3141,6 @@ static void drain_pages_zone(unsigned int cpu, struct zone *zone)
+ 
+ /*
+  * Drain pcplists of all zones on the indicated processor.
+- *
+- * The processor must either be the current processor and the
+- * thread pinned to the current processor or a processor that
+- * is not online.
+  */
+ static void drain_pages(unsigned int cpu)
+ {
+@@ -3170,9 +3153,6 @@ static void drain_pages(unsigned int cpu)
+ 
+ /*
+  * Spill all of this CPU's per-cpu pages back into the buddy allocator.
+- *
+- * The CPU has to be pinned. When zone parameter is non-NULL, spill just
+- * the single zone's pages.
+  */
+ void drain_local_pages(struct zone *zone)
+ {
+@@ -3184,24 +3164,6 @@ void drain_local_pages(struct zone *zone)
+ 		drain_pages(cpu);
+ }
+ 
+-static void drain_local_pages_wq(struct work_struct *work)
+-{
+-	struct pcpu_drain *drain;
+-
+-	drain = container_of(work, struct pcpu_drain, work);
+-
+-	/*
+-	 * drain_all_pages doesn't use proper cpu hotplug protection so
+-	 * we can race with cpu offline when the WQ can move this from
+-	 * a cpu pinned worker to an unbound one. We can operate on a different
+-	 * cpu which is alright but we also have to make sure to not move to
+-	 * a different one.
+-	 */
+-	migrate_disable();
+-	drain_local_pages(drain->zone);
+-	migrate_enable();
+-}
+-
+ /*
+  * The implementation of drain_all_pages(), exposing an extra parameter to
+  * drain on all cpus.
+@@ -3222,13 +3184,6 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
+ 	 */
+ 	static cpumask_t cpus_with_pcps;
+ 
+-	/*
+-	 * Make sure nobody triggers this path before mm_percpu_wq is fully
+-	 * initialized.
+-	 */
+-	if (WARN_ON_ONCE(!mm_percpu_wq))
+-		return;
+-
+ 	/*
+ 	 * Do not drain if one is already in progress unless it's specific to
+ 	 * a zone. Such callers are primarily CMA and memory hotplug and need
+@@ -3278,14 +3233,11 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
+ 	}
+ 
+ 	for_each_cpu(cpu, &cpus_with_pcps) {
+-		struct pcpu_drain *drain = per_cpu_ptr(&pcpu_drain, cpu);
+-
+-		drain->zone = zone;
+-		INIT_WORK(&drain->work, drain_local_pages_wq);
+-		queue_work_on(cpu, mm_percpu_wq, &drain->work);
++		if (zone)
++			drain_pages_zone(cpu, zone);
++		else
++			drain_pages(cpu);
+ 	}
+-	for_each_cpu(cpu, &cpus_with_pcps)
+-		flush_work(&per_cpu_ptr(&pcpu_drain, cpu)->work);
+ 
+ 	mutex_unlock(&pcpu_drain_mutex);
+ }
+@@ -3294,8 +3246,6 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
+  * Spill all the per-cpu pages from all CPUs back into the buddy allocator.
+  *
+  * When zone parameter is non-NULL, spill just the single zone's pages.
+- *
+- * Note that this can be extremely slow as the draining happens in a workqueue.
+  */
+ void drain_all_pages(struct zone *zone)
+ {
+-- 
+2.35.3
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKnNDQACgkQJNaLcl1U
-h9Bqegf/anATfCIwadSoj3K2+Sm8a/mvOi3cqdrwn+9BBtO5fPW8QB0iEMMVyX9W
-5+AhfxMMfQ9icgu5/ciWCWFuhQ5s0jI5xCbkCdKI9z9wXrIahFJLd0p7UN8Qszen
-pGvT/TIF3PTfcQoLt7YNDxLvwNchi9A26stCHUpvZXDInzbeqSvA6JZraL8BE2bw
-1uoRmHRfb28iPl8J6v9Jbhb1GOrjpzZKosWB1Awlet0COCWYSGdnRWepEGt0RCfi
-JB9PmDmt9Hzx+JaDTu1+2pMiLkzCShs3Sd/oOWAiSB9PKHI73tVll1G1tJ26lWFv
-aPxmboun/NkcNpq7jgX0z3UN/AKG7w==
-=Q4Fu
------END PGP SIGNATURE-----
-
---U2vy66mGJShhsnPN--
