@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A7F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A12C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359699AbiFMNQU (ORCPT
+        id S1359734AbiFMNQY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:16:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
+        Mon, 13 Jun 2022 09:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359292AbiFMNJq (ORCPT
+        with ESMTP id S1359225AbiFMNJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FEB81FCFC;
-        Mon, 13 Jun 2022 04:20:01 -0700 (PDT)
+        Mon, 13 Jun 2022 09:09:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A8A38D93;
+        Mon, 13 Jun 2022 04:19:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A90860F2B;
-        Mon, 13 Jun 2022 11:20:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16BE4C3411C;
-        Mon, 13 Jun 2022 11:19:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8D15B80E59;
+        Mon, 13 Jun 2022 11:19:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F3A4C34114;
+        Mon, 13 Jun 2022 11:19:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119200;
-        bh=KPi+PDnXetNqe8k0T50PiyVPHdsSkTnx9m4diIFuL3I=;
+        s=korg; t=1655119169;
+        bh=+3ZqZfclM2ETNB5Ya+rViISbhqJhLgqU6wC3f8lsBfI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e6Gsg2pDc/0ChDZ3E+zaOVStERshRlPcW4MM7xHQTKsWIRKV084SXsZ7nNXolSihc
-         I1UO/HaWGpMhSS2+5rvJLapQOlqt7DaiWVwaVJF7hCfcumjr+SC3gSR8X7h7Xa9vrY
-         T5fp7CsaSstA0aRYxM8uIUeBkeT9zyFoHAg9fRhg=
+        b=trmNl7h71avKtrL0IbaSYJssQAQdKQKn96909RkiFFRBPhoF5fnADhbjAyzAW/UX4
+         juhRKgw4a/ivqlzaoUOzHtI0ctbHbxf3xQfWwOHRrpWdvGSVVVHxAZwZpwzomFX8h+
+         f4olttM6W3BanLVL9V8Zkr8dEqbi4LXyaqqBg9V4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 177/247] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Mon, 13 Jun 2022 12:11:19 +0200
-Message-Id: <20220613094928.323142816@linuxfoundation.org>
+Subject: [PATCH 5.15 139/247] netfilter: nf_tables: release new hooks on unsupported flowtable flags
+Date:   Mon, 13 Jun 2022 12:10:41 +0200
+Message-Id: <20220613094927.171901921@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,59 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
+[ Upstream commit c271cc9febaaa1bcbc0842d1ee30466aa6148ea8 ]
 
-There is a deadlock in sa1100_set_termios(), which is shown
-below:
+Release the list of new hooks that are pending to be registered in case
+that unsupported flowtable flags are provided.
 
-   (Thread 1)              |      (Thread 2)
-                           | sa1100_enable_ms()
-sa1100_set_termios()       |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | sa1100_timeout()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
-
-We hold sport->port.lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need sport->port.lock in position (2) of thread 2. As a result,
-sa1100_set_termios() will block forever.
-
-This patch moves del_timer_sync() before spin_lock_irqsave()
-in order to prevent the deadlock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 78d9f48f7f44 ("netfilter: nf_tables: add devices to existing flowtable")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sa1100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/netfilter/nf_tables_api.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index 697b6a002a16..4ddcc985621a 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -446,6 +446,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 5c0379394b4a..af2ae42cc5c7 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -7332,11 +7332,15 @@ static int nft_flowtable_update(struct nft_ctx *ctx, const struct nlmsghdr *nlh,
  
-+	del_timer_sync(&sport->timer);
-+
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
-@@ -476,8 +478,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 				UTSR1_TO_SM(UTSR1_ROR);
+ 	if (nla[NFTA_FLOWTABLE_FLAGS]) {
+ 		flags = ntohl(nla_get_be32(nla[NFTA_FLOWTABLE_FLAGS]));
+-		if (flags & ~NFT_FLOWTABLE_MASK)
+-			return -EOPNOTSUPP;
++		if (flags & ~NFT_FLOWTABLE_MASK) {
++			err = -EOPNOTSUPP;
++			goto err_flowtable_update_hook;
++		}
+ 		if ((flowtable->data.flags & NFT_FLOWTABLE_HW_OFFLOAD) ^
+-		    (flags & NFT_FLOWTABLE_HW_OFFLOAD))
+-			return -EOPNOTSUPP;
++		    (flags & NFT_FLOWTABLE_HW_OFFLOAD)) {
++			err = -EOPNOTSUPP;
++			goto err_flowtable_update_hook;
++		}
+ 	} else {
+ 		flags = flowtable->data.flags;
  	}
- 
--	del_timer_sync(&sport->timer);
--
- 	/*
- 	 * Update the per-port timeout.
- 	 */
 -- 
 2.35.1
 
