@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FC5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD00CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:34:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344361AbiFMKbe (ORCPT
+        id S1344433AbiFMKbf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:31:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
+        Mon, 13 Jun 2022 06:31:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345551AbiFMK3k (ORCPT
+        with ESMTP id S1345617AbiFMK3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:29:40 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EAA20F77;
-        Mon, 13 Jun 2022 03:20:53 -0700 (PDT)
+        Mon, 13 Jun 2022 06:29:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94DF21252;
+        Mon, 13 Jun 2022 03:20:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BF2ACCE0EEB;
-        Mon, 13 Jun 2022 10:20:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD311C34114;
-        Mon, 13 Jun 2022 10:20:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED5CAB80E90;
+        Mon, 13 Jun 2022 10:20:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579E4C3411E;
+        Mon, 13 Jun 2022 10:20:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115650;
-        bh=8HQm4g74yzZGpbnIQ9UppM7IGC+JDkrxAdIatCQcOfc=;
+        s=korg; t=1655115652;
+        bh=YE0pJrDeJoyTrRbMq3cux7zcBCmalMxfwe9xAefkfg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aY2snc2+gFAHB3Amx+3Ufv5/omV3MT0cKvE33fOy2o52JI3O2ITAaFTeMy+jHYOOE
-         btzqc6SOFH3CrjnoeQgL4ivuWuqrza9a1Bn8EdGWJyTymWWKFb1maPVG7YytjU5wUP
-         q79rqi1O5pSX311H4ky+DY09WFLdSbqgOjtglt4Y=
+        b=ayLKSLangtXNBnfX94Dyn9oepIuiL4UYBHkhHfJEgBKgt2p45RnZoauOoBWZ07F2B
+         Tw15rtxRvT52Tcy4LizGdiJsb0X+ozD/516Qj+CN5Rx/PB+2ONvQJ2AP9G93ElNfsN
+         MqTsv/GAPf4VUTmVQtPmKKaXe22hG+lLemtN4dgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Huang Guobin <huangguobin4@huawei.com>,
+        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 141/167] tty: Fix a possible resource leak in icom_probe
-Date:   Mon, 13 Jun 2022 12:10:15 +0200
-Message-Id: <20220613094913.926872686@linuxfoundation.org>
+Subject: [PATCH 4.9 154/167] drm/radeon: fix a possible null pointer dereference
+Date:   Mon, 13 Jun 2022 12:10:28 +0200
+Message-Id: <20220613094917.020108028@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -50,35 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huang Guobin <huangguobin4@huawei.com>
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
+[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
+is assigned to mode, which will lead to a NULL pointer dereference
+on failure of drm_mode_duplicate(). Add a check to avoid npd.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
-Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The failure status of drm_cvt_mode() on the other path is checked too.
+
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index c60a8d5e4020..a3e420669674 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1515,7 +1515,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index 9e6c2be0cc7d..a759955e3797 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -489,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 	    native_mode->vdisplay != 0 &&
+ 	    native_mode->clock != 0) {
+ 		mode = drm_mode_duplicate(dev, native_mode);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		drm_mode_set_name(mode);
  
- 	pci_write_config_dword(dev, PCI_COMMAND,
+@@ -503,6 +505,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 		 * simpler.
+ 		 */
+ 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
+ 	}
 -- 
 2.35.1
 
