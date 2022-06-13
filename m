@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2460CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A8DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355704AbiFMLlZ (ORCPT
+        id S1355735AbiFMLl3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:41:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33060 "EHLO
+        Mon, 13 Jun 2022 07:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354723AbiFMLdz (ORCPT
+        with ESMTP id S1354576AbiFMLdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:33:55 -0400
+        Mon, 13 Jun 2022 07:33:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888C32B27F;
-        Mon, 13 Jun 2022 03:47:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB48B275E7;
+        Mon, 13 Jun 2022 03:47:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6AA54B80E59;
-        Mon, 13 Jun 2022 10:47:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8111C34114;
-        Mon, 13 Jun 2022 10:47:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 149EAB80E07;
+        Mon, 13 Jun 2022 10:47:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BEE9C34114;
+        Mon, 13 Jun 2022 10:47:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117251;
-        bh=xPcgBRSfr5jQH33uHUptWoxOIqvw9e3w0/H5vZ+95sA=;
+        s=korg; t=1655117245;
+        bh=Vsx/QCh4dOhsv+MH8znzyGSqiAyUjJoyK3m1U3HMMp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jl+BmaOxXGrIMdl1wvRpExol+9cciSPqyO1sirLwDHn2dfNIDzP4TjiZwnG96yIXV
-         c2/1X5DPPAMZKQ0PRgXZPpxvohf+B1xDsHzo8a5LpQT3K/V/IZA7KV2joTziPyRlRQ
-         ntfBqDTDRd0Ra5FFfCc+bV6kk5cjv6jNDqLl/25g=
+        b=cRijtFNE8ZzuuFVm+5c0lyrxl1GeDn1dTr6aMb83MpZ5SXsiuYtcSDPqvlCTW8OTN
+         0yuzqKUY69rw9kbNCQxvcDA/i1F3Dd+LzfQcGsh5jiIfBgEHuun3cw5q/cRbJYQ+Ei
+         OyLhZqb4kxRenqD8o5pu5Ytvt065pCtNDWtf6EFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Guoju Fang <gjfang@linux.alibaba.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 334/411] afs: Fix infinite loop found by xfstest generic/676
-Date:   Mon, 13 Jun 2022 12:10:07 +0200
-Message-Id: <20220613094938.736647699@linuxfoundation.org>
+Subject: [PATCH 5.4 332/411] net: sched: add barrier to fix packet stuck problem for lockless qdisc
+Date:   Mon, 13 Jun 2022 12:10:05 +0200
+Message-Id: <20220613094938.678918996@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,63 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Guoju Fang <gjfang@linux.alibaba.com>
 
-[ Upstream commit 17eabd42560f4636648ad65ba5b20228071e2363 ]
+[ Upstream commit 2e8728c955ce0624b958eee6e030a37aca3a5d86 ]
 
-In AFS, a directory is handled as a file that the client downloads and
-parses locally for the purposes of performing lookup and getdents
-operations.  The in-kernel afs filesystem has a number of functions that
-do this.
+In qdisc_run_end(), the spin_unlock() only has store-release semantic,
+which guarantees all earlier memory access are visible before it. But
+the subsequent test_bit() has no barrier semantics so may be reordered
+ahead of the spin_unlock(). The store-load reordering may cause a packet
+stuck problem.
 
-A directory file is arranged as a series of 2K blocks divided into
-32-byte slots, where a directory entry occupies one or more slots, plus
-each block starts with one or more metadata blocks.
+The concurrent operations can be described as below,
+         CPU 0                      |          CPU 1
+   qdisc_run_end()                  |     qdisc_run_begin()
+          .                         |           .
+ ----> /* may be reorderd here */   |           .
+|         .                         |           .
+|     spin_unlock()                 |         set_bit()
+|         .                         |         smp_mb__after_atomic()
+ ---- test_bit()                    |         spin_trylock()
+          .                         |          .
 
-When parsing a block, if the last slots are occupied by a dirent that
-occupies more than a single slot and the file position points at a slot
-that's not the initial one, the logic in afs_dir_iterate_block() that
-skips over it won't advance the file pointer to the end of it.  This
-will cause an infinite loop in getdents() as it will keep retrying that
-block and failing to advance beyond the final entry.
+Consider the following sequence of events:
+    CPU 0 reorder test_bit() ahead and see MISSED = 0
+    CPU 1 calls set_bit()
+    CPU 1 calls spin_trylock() and return fail
+    CPU 0 executes spin_unlock()
 
-Fix this by advancing the file pointer if the next entry will be beyond
-it when we skip a block.
+At the end of the sequence, CPU 0 calls spin_unlock() and does nothing
+because it see MISSED = 0. The skb on CPU 1 has beed enqueued but no one
+take it, until the next cpu pushing to the qdisc (if ever ...) will
+notice and dequeue it.
 
-This was found by the generic/676 xfstest but can also be triggered with
-something like:
+This patch fix this by adding one explicit barrier. As spin_unlock() and
+test_bit() ordering is a store-load ordering, a full memory barrier
+smp_mb() is needed here.
 
-	~/xfstests-dev/src/t_readdir_3 /xfstest.test/z 4000 1
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lore.kernel.org/r/165391973497.110268.2939296942213894166.stgit@warthog.procyon.org.uk/
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: a90c57f2cedd ("net: sched: fix packet stuck problem for lockless qdisc")
+Signed-off-by: Guoju Fang <gjfang@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220528101628.120193-1-gjfang@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/dir.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ include/net/sch_generic.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/fs/afs/dir.c b/fs/afs/dir.c
-index 8c39533d122a..3a355a209919 100644
---- a/fs/afs/dir.c
-+++ b/fs/afs/dir.c
-@@ -415,8 +415,11 @@ static int afs_dir_iterate_block(struct afs_vnode *dvnode,
- 		}
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 90fb413d9fd7..1ee396ce0eda 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -194,6 +194,12 @@ static inline void qdisc_run_end(struct Qdisc *qdisc)
+ 	if (qdisc->flags & TCQ_F_NOLOCK) {
+ 		spin_unlock(&qdisc->seqlock);
  
- 		/* skip if starts before the current position */
--		if (offset < curr)
-+		if (offset < curr) {
-+			if (next > curr)
-+				ctx->pos = blkoff + next * sizeof(union afs_xdr_dirent);
- 			continue;
-+		}
- 
- 		/* found the next entry */
- 		if (!dir_emit(ctx, dire->u.name, nlen,
++		/* spin_unlock() only has store-release semantic. The unlock
++		 * and test_bit() ordering is a store-load ordering, so a full
++		 * memory barrier is needed here.
++		 */
++		smp_mb();
++
+ 		if (unlikely(test_bit(__QDISC_STATE_MISSED,
+ 				      &qdisc->state))) {
+ 			clear_bit(__QDISC_STATE_MISSED, &qdisc->state);
 -- 
 2.35.1
 
