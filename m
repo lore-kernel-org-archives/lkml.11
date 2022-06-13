@@ -2,128 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A691CCA490
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:57:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1170C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355515AbiFMM5n (ORCPT
+        id S1356141AbiFMM5q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
+        Mon, 13 Jun 2022 08:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357752AbiFMMyo (ORCPT
+        with ESMTP id S1357794AbiFMMyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:54:44 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D01A6668C;
-        Mon, 13 Jun 2022 04:13:16 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id g186so5263190pgc.1;
-        Mon, 13 Jun 2022 04:13:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hf4jIbSC0d5YY8s9rqomM6DgVm8XNv+YrOYwUOgBoNA=;
-        b=LXWqlDW2i8o2CD+D6fikYhundWq6bCB6giHGiPurlzrtGHlwsplK3mx8a1NdxqTICD
-         wQUiqLRKDT8VJLctE8Qyo1+yYsGZFNdBFubmnLWippbPRgB6MF9yVDZQoRuKJIdueXwO
-         FM0jRPYl1fOnL/6rWLdXogGSFa2a5FpcWfZvQwec1lfsdVIoykmgXW9fd6LWHSAckdDP
-         uxwPG0WS7/ESWkyuaAWgiASgRQQTdn9KLVQX1N8MvZI5kykft1vw8fvoOyjrwfEHNHKq
-         p+yMOHkQEeFAkgJboqBBrgVM9NFCYLmM+itqsX9KU3HC5HJKe4SKoCUiaIXnJh74LlB5
-         p/uQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hf4jIbSC0d5YY8s9rqomM6DgVm8XNv+YrOYwUOgBoNA=;
-        b=NmwbDYhl3VGN2ebjU71r6d69RRr9cIfeejRJz9ljtFxe0LRcJYyvWpX6ndRG4lZOFQ
-         01vrftUsjYJQz68lfwVGFg1MlfdD8eMK1/KQPuBvUR3hpOvCDaLUtjM4iF5L6VkXEaNh
-         igbzEmI98k/PvwYF/YtRvq9kQISOGoGhjCWWacbB8o1esThgCww2yFY6xlju2zxDmhCP
-         05Tb/tRtuHxRfHkf8Fs6R7gh89jYILAxM1sjhEX9sI8ILkZujq158R4cqB80xw7jQPP0
-         +fxLiPcZATTAK0x7VqfF3+GYtwTw358hP109Oq0nW05wm7lLKd8Rd3zU0gRDoH72/A3K
-         0/vw==
-X-Gm-Message-State: AOAM533zOyYifau3evdfQzm6/0Yafz0v/kAy+f7vfg9dKJV/ok0Cc0Tk
-        /IvC37P5SlFPch0qUICBmZ8=
-X-Google-Smtp-Source: ABdhPJy91L1cAhQPwaeU8vYLmrVlKb6COYEVKqbPaII+8J9gUc3Xz+wkNkvJMcJwWCAFDLtI1fb5tQ==
-X-Received: by 2002:a05:6a00:18a9:b0:51b:f63b:6f7c with SMTP id x41-20020a056a0018a900b0051bf63b6f7cmr47127824pfh.49.1655118796098;
-        Mon, 13 Jun 2022 04:13:16 -0700 (PDT)
-Received: from RD-3580-24288.rt.l (42-72-115-109.emome-ip.hinet.net. [42.72.115.109])
-        by smtp.gmail.com with ESMTPSA id g17-20020a056a000b9100b0051b4e53c487sm5199989pfj.45.2022.06.13.04.13.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 04:13:15 -0700 (PDT)
-From:   ChiaEn Wu <peterwu.pub@gmail.com>
-To:     jic23@kernel.org, lars@metafoo.de, matthias.bgg@gmail.com,
-        lee.jones@linaro.org, daniel.thompson@linaro.org,
-        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com, ChiaEn Wu <chiaen_wu@richtek.com>
-Subject: [PATCH v2 07/15] Documentation: ABI: testing: mt6370: Add ADC sysfs guideline
-Date:   Mon, 13 Jun 2022 19:11:38 +0800
-Message-Id: <20220613111146.25221-8-peterwu.pub@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220613111146.25221-1-peterwu.pub@gmail.com>
-References: <20220613111146.25221-1-peterwu.pub@gmail.com>
+        Mon, 13 Jun 2022 08:54:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47B13465E;
+        Mon, 13 Jun 2022 04:13:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69C9760B6E;
+        Mon, 13 Jun 2022 11:13:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A044C3411C;
+        Mon, 13 Jun 2022 11:13:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655118801;
+        bh=plVLEt9OaQUGl7w2Xcl9A2bkuGQT8eMPuXEdMYK+rY8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=w9iPw+jeOnkPNERMUoKwnNal1Xstc5h1dYm0+U5Ypzyzxr5Ob0qxvSjQcN4toN3Cl
+         kJYnZBRHN0WcoMLFrOpViQTuwdy+Zk0gc1KL5otgGUftXwUHpJoGk70G1YjNzgP9E4
+         9/sWHiqPd0Pmcpmxq1VY9XHjLIF5w4HJB/7XF1D8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mihai Carabas <mihai.carabas@oracle.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 033/247] pvpanic: Fix typos in the comments
+Date:   Mon, 13 Jun 2022 12:08:55 +0200
+Message-Id: <20220613094923.940994903@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
+References: <20220613094922.843438024@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChiaEn Wu <chiaen_wu@richtek.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Add ABI documentation for mt6370 non-standard ADC sysfs interfaces.
+[ Upstream commit cc5b392d0f94f27743583140d819fa35a46899db ]
 
-Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
+Fix a few spelling typos in the comments.
+
+Reviewed-by: Mihai Carabas <mihai.carabas@oracle.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20210829124354.81653-2-andriy.shevchenko@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ABI/testing/sysfs-bus-iio-adc-mt6370      | 36 +++++++++++++++++++
- 1 file changed, 36 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-mt6370
+ drivers/misc/pvpanic/pvpanic-mmio.c | 2 +-
+ drivers/misc/pvpanic/pvpanic.c      | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6370 b/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6370
-new file mode 100644
-index 000000000000..039b3381176a
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6370
-@@ -0,0 +1,36 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/in_voltage0_raw
-+KernelVersion:	5.18
-+Contact:	chiaen_wu@richtek.com
-+Description:
-+		Indicated MT6370 VBUS ADC with lower accuracy(+-75mA)
-+		higher measure range(1~22V)
-+		Calculating with scale returns voltage in uV
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_voltage1_raw
-+KernelVersion:	5.18
-+Contact:	chiaen_wu@richtek.com
-+Description:
-+		Indicated MT6370 VBUS ADC with higher accuracy(+-30mA)
-+		lower measure range(1~9.76V)
-+		Calculating with scale offset returns voltage in uV
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_voltage4_raw
-+KernelVersion:	5.18
-+Contact:	chiaen_wu@richtek.com
-+Description:
-+		Indicated MT6370 TS_BAT ADC
-+		Calculating with scale returns voltage in uV
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_voltage7_raw
-+KernelVersion:	5.18
-+Contact:	chiaen_wu@richtek.com
-+Description:
-+		Indicated MT6370 CHG_VDDP ADC
-+		Calculating with scale returns voltage in mV
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_temp8_raw
-+KernelVersion:	5.18
-+Contact:	chiaen_wu@richtek.com
-+Description:
-+		Indicated MT6370 IC junction temperature
-+		Calculating with scale and offset returns temperature in degree
+diff --git a/drivers/misc/pvpanic/pvpanic-mmio.c b/drivers/misc/pvpanic/pvpanic-mmio.c
+index be4016084979..61dbff5f0065 100644
+--- a/drivers/misc/pvpanic/pvpanic-mmio.c
++++ b/drivers/misc/pvpanic/pvpanic-mmio.c
+@@ -100,7 +100,7 @@ static int pvpanic_mmio_probe(struct platform_device *pdev)
+ 	pi->base = base;
+ 	pi->capability = PVPANIC_PANICKED | PVPANIC_CRASH_LOADED;
+ 
+-	/* initlize capability by RDPT */
++	/* initialize capability by RDPT */
+ 	pi->capability &= ioread8(base);
+ 	pi->events = pi->capability;
+ 
+diff --git a/drivers/misc/pvpanic/pvpanic.c b/drivers/misc/pvpanic/pvpanic.c
+index bb7aa6368538..700d7d02c800 100644
+--- a/drivers/misc/pvpanic/pvpanic.c
++++ b/drivers/misc/pvpanic/pvpanic.c
+@@ -58,7 +58,7 @@ pvpanic_panic_notify(struct notifier_block *nb, unsigned long code,
+ 
+ static struct notifier_block pvpanic_panic_nb = {
+ 	.notifier_call = pvpanic_panic_notify,
+-	.priority = 1, /* let this called before broken drm_fb_helper */
++	.priority = 1, /* let this called before broken drm_fb_helper() */
+ };
+ 
+ static void pvpanic_remove(void *param)
 -- 
-2.25.1
+2.35.1
+
+
 
