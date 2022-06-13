@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F18FCCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D632CCA48F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357567AbiFMLyc (ORCPT
+        id S1357638AbiFMLyr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55952 "EHLO
+        Mon, 13 Jun 2022 07:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355813AbiFMLtr (ORCPT
+        with ESMTP id S1356163AbiFMLuD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:49:47 -0400
+        Mon, 13 Jun 2022 07:50:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27CD4D6AA;
-        Mon, 13 Jun 2022 03:53:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F202EA0A;
+        Mon, 13 Jun 2022 03:53:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 626EFB80D3F;
-        Mon, 13 Jun 2022 10:53:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B90F1C34114;
-        Mon, 13 Jun 2022 10:53:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51F1CB80E07;
+        Mon, 13 Jun 2022 10:53:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D1F0C34114;
+        Mon, 13 Jun 2022 10:53:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117613;
-        bh=k+/pVrIT8QfqIWbATLK3wlWEq5hh0GwRx7H7a3D01Zw=;
+        s=korg; t=1655117632;
+        bh=UXuQefQutvPn6nHbF+TpBNd3dPHMCJ67gIY7ZQM4Km4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z4Xsj2Elr2VEsZT6T+5XJ2q7n8+I1b6VPKA9WTHuotSre4xL0y4jIa5dr8bZ3DxK7
-         pCM3Ub6NOXgC70emscTWQPeGrqK8/W/z3MsQGlFAi6oZmzhr+S1EykUYmJAkkdhypX
-         OsMdMJpd3+wfiFZh9UUNi6uzzZa44hV2i5Ujplk8=
+        b=eXBHIPjNS2RaP66OZT+TXxnumEAhCwfJjDY6LlBmtGdvFo/puoJFJrpA8Gb0qjkUd
+         Sifo7THAlbAMZvF8GIJHmxe54c2/vuVCQ4fqASfJpUwwKK6LIeYjKC4zR4QJMailWS
+         6XapUvXckdou85HDp/UnyM6AiiLRie+HnpdFmBUs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 399/411] scripts/gdb: change kernel config dumping method
-Date:   Mon, 13 Jun 2022 12:11:12 +0200
-Message-Id: <20220613094940.790327325@linuxfoundation.org>
+        stable@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 075/287] inotify: show inotify mask flags in proc fdinfo
+Date:   Mon, 13 Jun 2022 12:08:19 +0200
+Message-Id: <20220613094926.148511904@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,41 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+From: Amir Goldstein <amir73il@gmail.com>
 
-[ Upstream commit 1f7a6cf6b07c74a17343c2559cd5f5018a245961 ]
+[ Upstream commit a32e697cda27679a0327ae2cafdad8c7170f548f ]
 
-MAGIC_START("IKCFG_ST") and MAGIC_END("IKCFG_ED") are moved out
-from the kernel_config_data variable.
+The inotify mask flags IN_ONESHOT and IN_EXCL_UNLINK are not "internal
+to kernel" and should be exposed in procfs fdinfo so CRIU can restore
+them.
 
-Thus, we parse kernel_config_data directly instead of considering
-offset of MAGIC_START and MAGIC_END.
-
-Fixes: 13610aa908dc ("kernel/configs: use .incbin directive to embed config_data.gz")
-Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Fixes: 6933599697c9 ("inotify: hide internal kernel bits from fdinfo")
+Link: https://lore.kernel.org/r/20220422120327.3459282-2-amir73il@gmail.com
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/gdb/linux/config.py | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/notify/fdinfo.c               | 11 ++---------
+ fs/notify/inotify/inotify.h      | 12 ++++++++++++
+ fs/notify/inotify/inotify_user.c |  2 +-
+ 3 files changed, 15 insertions(+), 10 deletions(-)
 
-diff --git a/scripts/gdb/linux/config.py b/scripts/gdb/linux/config.py
-index 90e1565b1967..8843ab3cbadd 100644
---- a/scripts/gdb/linux/config.py
-+++ b/scripts/gdb/linux/config.py
-@@ -24,9 +24,9 @@ class LxConfigDump(gdb.Command):
-             filename = arg
+diff --git a/fs/notify/fdinfo.c b/fs/notify/fdinfo.c
+index 86fcf5814279..74aeabbf0ea4 100644
+--- a/fs/notify/fdinfo.c
++++ b/fs/notify/fdinfo.c
+@@ -83,16 +83,9 @@ static void inotify_fdinfo(struct seq_file *m, struct fsnotify_mark *mark)
+ 	inode_mark = container_of(mark, struct inotify_inode_mark, fsn_mark);
+ 	inode = igrab(fsnotify_conn_inode(mark->connector));
+ 	if (inode) {
+-		/*
+-		 * IN_ALL_EVENTS represents all of the mask bits
+-		 * that we expose to userspace.  There is at
+-		 * least one bit (FS_EVENT_ON_CHILD) which is
+-		 * used only internally to the kernel.
+-		 */
+-		u32 mask = mark->mask & IN_ALL_EVENTS;
+-		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:%x ",
++		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:0 ",
+ 			   inode_mark->wd, inode->i_ino, inode->i_sb->s_dev,
+-			   mask, mark->ignored_mask);
++			   inotify_mark_user_mask(mark));
+ 		show_mark_fhandle(m, inode);
+ 		seq_putc(m, '\n');
+ 		iput(inode);
+diff --git a/fs/notify/inotify/inotify.h b/fs/notify/inotify/inotify.h
+index 7e4578d35b61..5d94c00b1233 100644
+--- a/fs/notify/inotify/inotify.h
++++ b/fs/notify/inotify/inotify.h
+@@ -21,6 +21,18 @@ static inline struct inotify_event_info *INOTIFY_E(struct fsnotify_event *fse)
+ 	return container_of(fse, struct inotify_event_info, fse);
+ }
  
-         try:
--            py_config_ptr = gdb.parse_and_eval("kernel_config_data + 8")
--            py_config_size = gdb.parse_and_eval(
--                    "sizeof(kernel_config_data) - 1 - 8 * 2")
-+            py_config_ptr = gdb.parse_and_eval("&kernel_config_data")
-+            py_config_ptr_end = gdb.parse_and_eval("&kernel_config_data_end")
-+            py_config_size = py_config_ptr_end - py_config_ptr
-         except gdb.error as e:
-             raise gdb.GdbError("Can't find config, enable CONFIG_IKCONFIG?")
++/*
++ * INOTIFY_USER_FLAGS represents all of the mask bits that we expose to
++ * userspace.  There is at least one bit (FS_EVENT_ON_CHILD) which is
++ * used only internally to the kernel.
++ */
++#define INOTIFY_USER_MASK (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK)
++
++static inline __u32 inotify_mark_user_mask(struct fsnotify_mark *fsn_mark)
++{
++	return fsn_mark->mask & INOTIFY_USER_MASK;
++}
++
+ extern void inotify_ignored_and_remove_idr(struct fsnotify_mark *fsn_mark,
+ 					   struct fsnotify_group *group);
+ extern int inotify_handle_event(struct fsnotify_group *group,
+diff --git a/fs/notify/inotify/inotify_user.c b/fs/notify/inotify/inotify_user.c
+index 97a51690338e..83d0b9356844 100644
+--- a/fs/notify/inotify/inotify_user.c
++++ b/fs/notify/inotify/inotify_user.c
+@@ -96,7 +96,7 @@ static inline __u32 inotify_arg_to_mask(u32 arg)
+ 	mask = (FS_IN_IGNORED | FS_EVENT_ON_CHILD | FS_UNMOUNT);
  
+ 	/* mask off the flags used to open the fd */
+-	mask |= (arg & (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK));
++	mask |= (arg & INOTIFY_USER_MASK);
+ 
+ 	return mask;
+ }
 -- 
 2.35.1
 
