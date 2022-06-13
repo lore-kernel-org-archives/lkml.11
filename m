@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78CDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:12:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5492CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381947AbiFMOMC (ORCPT
+        id S1381970AbiFMOMM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52012 "EHLO
+        Mon, 13 Jun 2022 10:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381462AbiFMOEW (ORCPT
+        with ESMTP id S1381650AbiFMOEi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:04:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB6B2408B;
-        Mon, 13 Jun 2022 04:39:42 -0700 (PDT)
+        Mon, 13 Jun 2022 10:04:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506AD2CDF6;
+        Mon, 13 Jun 2022 04:39:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4A72B80D31;
-        Mon, 13 Jun 2022 11:39:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 527A4C34114;
-        Mon, 13 Jun 2022 11:39:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8BE92B80E2C;
+        Mon, 13 Jun 2022 11:39:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7493C3411B;
+        Mon, 13 Jun 2022 11:39:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120379;
-        bh=canv2ps0GiqtAbGVbJ9EVEBrbwZCmvW6Vj5g/tdJqck=;
+        s=korg; t=1655120396;
+        bh=QPpyqDNcc0ZpC7vz0Bfvva8MxCf7bn2sJAenfa8zVWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=glvUL0GQbapZtve8M3/+EVaGNQTSNkhJVCYB33t6mteZv+ABGPy5I3XU99IX4fihX
-         q8dE3oPKko+pQY8mdgOfIPGcIchiLoVLpjHsoiRFJFklt2+8QTzkkX/dMG/m5I7ooM
-         bS7OBHXoGFUBqusb/qRDr9Yne3vD5bbXzt95KTuQ=
+        b=MCQhJ4+3ZuUj85LC5ElNwFvBdxkwy2VocFEY7O93VtvagvErPGK4M1L7WUQhuuSwX
+         K+T7WlTlSruVSwaovI6wT7QLHaKSN0O7BUtreUDA1Dtz8W3d0Naiwjux4hdpUeuRkL
+         9edBM3Fm2hu+uZeN03UNb2pBn0Ed+5cS/qmYKvsM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org, Sherry Sun <sherry.sun@nxp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 004/298] lkdtm/bugs: Check for the NULL pointer after calling kmalloc
-Date:   Mon, 13 Jun 2022 12:08:18 +0200
-Message-Id: <20220613094925.053490364@linuxfoundation.org>
+Subject: [PATCH 5.17 010/298] tty: serial: fsl_lpuart: fix potential bug when using both of_alias_get_id and ida_simple_get
+Date:   Mon, 13 Jun 2022 12:08:24 +0200
+Message-Id: <20220613094925.236514375@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,45 +49,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Sherry Sun <sherry.sun@nxp.com>
 
-[ Upstream commit 4a9800c81d2f34afb66b4b42e0330ae8298019a2 ]
+[ Upstream commit f398e0aa325c61fa20903833a5b534ecb8e6e418 ]
 
-As the possible failure of the kmalloc(), the not_checked and checked
-could be NULL pointer.
-Therefore, it should be better to check it in order to avoid the
-dereference of the NULL pointer.
-Also, we need to kfree the 'not_checked' and 'checked' to avoid
-the memory leak if fails.
-And since it is just a test, it may directly return without error
-number.
+Now fsl_lpuart driver use both of_alias_get_id() and ida_simple_get() in
+.probe(), which has the potential bug. For example, when remove the
+lpuart7 alias in dts, of_alias_get_id() will return error, then call
+ida_simple_get() to allocate the id 0 for lpuart7, this may confilct
+with the lpuart4 which has alias 0.
 
-Fixes: ae2e1aad3e48 ("drivers/misc/lkdtm/bugs.c: add arithmetic overflow and array bounds checks")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220120092936.1874264-1-jiasheng@iscas.ac.cn
+    aliases {
+	...
+        serial0 = &lpuart4;
+        serial1 = &lpuart5;
+        serial2 = &lpuart6;
+        serial3 = &lpuart7;
+    }
+
+So remove the ida_simple_get() in .probe(), return an error directly
+when calling of_alias_get_id() fails, which is consistent with other
+uart drivers behavior.
+
+Fixes: 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node dependence")
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Link: https://lore.kernel.org/r/20220321112211.8895-1-sherry.sun@nxp.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/lkdtm/bugs.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/tty/serial/fsl_lpuart.c | 24 ++++--------------------
+ 1 file changed, 4 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
-index f21854ac5cc2..4f2808b2ca3c 100644
---- a/drivers/misc/lkdtm/bugs.c
-+++ b/drivers/misc/lkdtm/bugs.c
-@@ -327,6 +327,11 @@ void lkdtm_ARRAY_BOUNDS(void)
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index d32c25bc973b..b1307ef34468 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -239,8 +239,6 @@
+ /* IMX lpuart has four extra unused regs located at the beginning */
+ #define IMX_REG_OFF	0x10
  
- 	not_checked = kmalloc(sizeof(*not_checked) * 2, GFP_KERNEL);
- 	checked = kmalloc(sizeof(*checked) * 2, GFP_KERNEL);
-+	if (!not_checked || !checked) {
-+		kfree(not_checked);
-+		kfree(checked);
-+		return;
-+	}
+-static DEFINE_IDA(fsl_lpuart_ida);
+-
+ enum lpuart_type {
+ 	VF610_LPUART,
+ 	LS1021A_LPUART,
+@@ -276,7 +274,6 @@ struct lpuart_port {
+ 	int			rx_dma_rng_buf_len;
+ 	unsigned int		dma_tx_nents;
+ 	wait_queue_head_t	dma_wait;
+-	bool			id_allocated;
+ };
  
- 	pr_info("Array access within bounds ...\n");
- 	/* For both, touch all bytes in the actual member size. */
+ struct lpuart_soc_data {
+@@ -2711,23 +2708,18 @@ static int lpuart_probe(struct platform_device *pdev)
+ 
+ 	ret = of_alias_get_id(np, "serial");
+ 	if (ret < 0) {
+-		ret = ida_simple_get(&fsl_lpuart_ida, 0, UART_NR, GFP_KERNEL);
+-		if (ret < 0) {
+-			dev_err(&pdev->dev, "port line is full, add device failed\n");
+-			return ret;
+-		}
+-		sport->id_allocated = true;
++		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
++		return ret;
+ 	}
+ 	if (ret >= ARRAY_SIZE(lpuart_ports)) {
+ 		dev_err(&pdev->dev, "serial%d out of range\n", ret);
+-		ret = -EINVAL;
+-		goto failed_out_of_range;
++		return -EINVAL;
+ 	}
+ 	sport->port.line = ret;
+ 
+ 	ret = lpuart_enable_clks(sport);
+ 	if (ret)
+-		goto failed_clock_enable;
++		return ret;
+ 	sport->port.uartclk = lpuart_get_baud_clk_rate(sport);
+ 
+ 	lpuart_ports[sport->port.line] = sport;
+@@ -2775,10 +2767,6 @@ static int lpuart_probe(struct platform_device *pdev)
+ 	uart_remove_one_port(&lpuart_reg, &sport->port);
+ failed_attach_port:
+ 	lpuart_disable_clks(sport);
+-failed_clock_enable:
+-failed_out_of_range:
+-	if (sport->id_allocated)
+-		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
+ 	return ret;
+ }
+ 
+@@ -2788,9 +2776,6 @@ static int lpuart_remove(struct platform_device *pdev)
+ 
+ 	uart_remove_one_port(&lpuart_reg, &sport->port);
+ 
+-	if (sport->id_allocated)
+-		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
+-
+ 	lpuart_disable_clks(sport);
+ 
+ 	if (sport->dma_tx_chan)
+@@ -2920,7 +2905,6 @@ static int __init lpuart_serial_init(void)
+ 
+ static void __exit lpuart_serial_exit(void)
+ {
+-	ida_destroy(&fsl_lpuart_ida);
+ 	platform_driver_unregister(&lpuart_driver);
+ 	uart_unregister_driver(&lpuart_reg);
+ }
 -- 
 2.35.1
 
