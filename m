@@ -2,96 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46300CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241945AbiFMPzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 11:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39840 "EHLO
+        id S243170AbiFMP4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 11:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344395AbiFMPxm (ORCPT
+        with ESMTP id S242820AbiFMP4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 11:53:42 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE1F1CB29;
-        Mon, 13 Jun 2022 06:38:26 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 6F44F660166E;
-        Mon, 13 Jun 2022 14:38:24 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655127505;
-        bh=gVWwzUQD324E96x3GSZda+R9Ken/Uibhk/lfU0iPevc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TWmX/XgYYEOcwHmYmMUJRVaFRF8wk/ZECf4svK6CwHtR4MXBb8DbOVGYqDfuwUAAY
-         2bsq17iIdFMhRO1PHr7iL0Bcp3mW9kPd80FDpfKXXhCZ/9e8qQ6FuqwVZaSs8bjvdO
-         1rCWx8dI0ULZ+Sg/dDIG/mVZcgjOa/jskqlPWz6k/g1lIA3LwilAycfjWMByyogQgH
-         3mOFxkLoMd9X30U28caPmUmAHMQId/G0Xmye/Kc1Qnke3LYWZVuP4DU9Xt6KI9YhBk
-         kGE0IzphD1fldvhjCI+ey+/QtNhlEho64RaIUrbfuUo+Msr0JUvuOJdsKfptW3ujWA
-         VumFyFpRaD3sA==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     daniel.lezcano@linaro.org
-Cc:     tglx@linutronix.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, konrad.dybcio@somainline.org,
-        marijn.suijten@somainline.org, martin.botka@somainline.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        paul.bouchara@somainline.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 1/2] dt-bindings: timer: mediatek: Add CPUX System Timer and MT6795 compatible
-Date:   Mon, 13 Jun 2022 15:38:18 +0200
-Message-Id: <20220613133819.35318-2-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220613133819.35318-1-angelogioacchino.delregno@collabora.com>
-References: <20220613133819.35318-1-angelogioacchino.delregno@collabora.com>
+        Mon, 13 Jun 2022 11:56:08 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5DD019321D
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:46:52 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id k24so7807265oij.2
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:46:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=F8034aqgQYOIDnTJYbKnqdxe/P3NxT2RcNrYib0/ruQ=;
+        b=R4MMR5hyemRuM3l2mh4JZIS+Ysd67mGMs9w57QzxuAYNivT2oR2uA0ccLItOXx/Nff
+         HI6/bkCTWcHzuf8uaxK0aZVKIRxAzJmo3pQ4NckjHUXisjQlQKqlTIlGGFMleFZ26TS5
+         XrbPJQzMEXp3LBINHndQ9fwG3XW2+NnK70OZQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=F8034aqgQYOIDnTJYbKnqdxe/P3NxT2RcNrYib0/ruQ=;
+        b=QsFOZX3A0Qk7GG+94uEhGqQ10zr0fsyK3yQcUtdV8GLJ36ucpMM01GeEnkV9EXJUe+
+         eX4ds9u2KQVjwTP9vLtYhJ7if8HkSNmSZL9wi7jG0BrZX6cN3IPm14+wI6dk37mj/EGw
+         IEtOgnv/ydxY7Ch0U47glJ1IYuFuG4wLZNzttAySsEe7FGbr2GoOlNCqAevcAKEfP+ti
+         lsuqyHURKkG1QUR7vle4fcimjelajxX3XUh9ZSZbpP+FAQM45/Zv9/YkxxpSNQXGdW1d
+         PzXtNu/W62pexEkF/MTNJe6STeJ0aBFi2SxYi9MOCPgWvfw9M62Ik7gcwtg4qxAF498L
+         8aGw==
+X-Gm-Message-State: AOAM531bIi/vMie7sIxm8ECZBym3eDm5Ik4LDsWg3WG1HyFgeqR++28G
+        X/+jD9TYWwo+IkUsJfvm1ljmPw==
+X-Google-Smtp-Source: ABdhPJxMf2Qm5H8GA35Xq5n+x+nRvAKUAEETko5C92sldqd/ieCBtB6EHAADbYtdN68bTfZpGjw0Ow==
+X-Received: by 2002:aca:b744:0:b0:32f:4c19:cec1 with SMTP id h65-20020acab744000000b0032f4c19cec1mr1696209oif.43.1655128012170;
+        Mon, 13 Jun 2022 06:46:52 -0700 (PDT)
+Received: from [192.168.0.41] ([184.4.90.121])
+        by smtp.gmail.com with ESMTPSA id o20-20020a4ad494000000b0035eb4e5a6b5sm3699171oos.11.2022.06.13.06.46.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 06:46:51 -0700 (PDT)
+Message-ID: <b4113083-73de-3ab6-e23f-32c6627d177e@cloudflare.com>
+Date:   Mon, 13 Jun 2022 08:46:49 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
+Content-Language: en-US
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, selinux@vger.kernel.org,
+        serge@hallyn.com, amir73il@gmail.com, kernel-team@cloudflare.com,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Paul Moore <paul@paul-moore.com>
+References: <20220608150942.776446-1-fred@cloudflare.com>
+ <YqJ/0W3wxPThWqgC@sol.localdomain>
+From:   Frederick Lawler <fred@cloudflare.com>
+In-Reply-To: <YqJ/0W3wxPThWqgC@sol.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the "CPUXGPT" CPU General Purpose Timer, used as ARM/ARM64
-System Timer on MediaTek platforms and add the MT6795 compatible for it.
+Hi Eric,
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
----
- .../devicetree/bindings/timer/mediatek,mtk-timer.txt        | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+On 6/9/22 6:18 PM, Eric Biggers wrote:
+> On Wed, Jun 08, 2022 at 10:09:42AM -0500, Frederick Lawler wrote:
+>> diff --git a/fs/aio.c b/fs/aio.c
+>> index 3c249b938632..5abbe88c3ca7 100644
+>> --- a/fs/aio.c
+>> +++ b/fs/aio.c
+>> @@ -1620,6 +1620,8 @@ static void aio_fsync_work(struct work_struct *work)
+>>   static int aio_fsync(struct fsync_iocb *req, const struct iocb *iocb,
+>>   		     bool datasync)
+>>   {
+>> +	int err;
+>> +
+>>   	if (unlikely(iocb->aio_buf || iocb->aio_offset || iocb->aio_nbytes ||
+>>   			iocb->aio_rw_flags))
+>>   		return -EINVAL;
+>> @@ -1628,8 +1630,11 @@ static int aio_fsync(struct fsync_iocb *req, const struct iocb *iocb,
+>>   		return -EINVAL;
+>>   
+>>   	req->creds = prepare_creds();
+>> -	if (!req->creds)
+>> -		return -ENOMEM;
+>> +	if (IS_ERR(req->creds)) {
+>> +		err = PTR_ERR(req->creds);
+>> +		req->creds = NULL;
+>> +		return err;
+>> +	}
+> 
+> This part is a little ugly.  How about doing:
+> 
+> 	creds = prepare_creds();
+> 	if (IS_ERR(creds))
+> 		return PTR_ERR(creds);
+> 	req->creds = creds;
+> 
 
-diff --git a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-index 6f1f9dba6e88..f1c848af91d3 100644
---- a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-+++ b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-@@ -1,7 +1,8 @@
- MediaTek Timers
- ---------------
- 
--MediaTek SoCs have two different timers on different platforms,
-+MediaTek SoCs have different timers on different platforms,
-+- CPUX (ARM/ARM64 System Timer)
- - GPT (General Purpose Timer)
- - SYST (System Timer)
- 
-@@ -29,6 +30,9 @@ Required properties:
- 	* "mediatek,mt7629-timer" for MT7629 compatible timers (SYST)
- 	* "mediatek,mt6765-timer" for MT6765 and all above compatible timers (SYST)
- 
-+	For those SoCs that use CPUX
-+	* "mediatek,mt6795-systimer" for MT6795 compatible timers (CPUX)
-+
- - reg: Should contain location and length for timer register.
- - clocks: Should contain system clock.
- 
--- 
-2.35.1
+I can do that, and same for below.
+
+>> diff --git a/fs/exec.c b/fs/exec.c
+>> index 0989fb8472a1..02624783e40e 100644
+>> --- a/fs/exec.c
+>> +++ b/fs/exec.c
+>> @@ -1468,15 +1468,19 @@ EXPORT_SYMBOL(finalize_exec);
+>>    */
+>>   static int prepare_bprm_creds(struct linux_binprm *bprm)
+>>   {
+>> +	int err = -ERESTARTNOINTR;
+>>   	if (mutex_lock_interruptible(&current->signal->cred_guard_mutex))
+>> -		return -ERESTARTNOINTR;
+>> +		return err;
+>>   
+>>   	bprm->cred = prepare_exec_creds();
+>> -	if (likely(bprm->cred))
+>> -		return 0;
+>> +	if (IS_ERR(bprm->cred)) {
+>> +		err = PTR_ERR(bprm->cred);
+>> +		bprm->cred = NULL;
+>> +		mutex_unlock(&current->signal->cred_guard_mutex);
+>> +		return err;
+>> +	}
+>>   
+>> -	mutex_unlock(&current->signal->cred_guard_mutex);
+>> -	return -ENOMEM;
+>> +	return 0;
+>>   }
+> 
+> Similarly:
+> 
+> static int prepare_bprm_creds(struct linux_binprm *bprm)
+> {
+> 	struct cred *cred;
+> 
+> 	if (mutex_lock_interruptible(&current->signal->cred_guard_mutex))
+> 		return -ERESTARTNOINTR;
+> 
+> 	cred = prepare_exec_creds();
+> 	if (IS_ERR(cred)) {
+> 		mutex_unlock(&current->signal->cred_guard_mutex);
+> 		return PTR_ERR(cred);
+> 	}
+> 	bprm->cred = cred;
+> 	return 0;
+> }
+> 
+>> diff --git a/kernel/nsproxy.c b/kernel/nsproxy.c
+>> index eec72ca962e2..6cf75aa83b6c 100644
+>> --- a/kernel/nsproxy.c
+>> +++ b/kernel/nsproxy.c
+>> @@ -311,6 +311,7 @@ static void put_nsset(struct nsset *nsset)
+>>   
+>>   static int prepare_nsset(unsigned flags, struct nsset *nsset)
+>>   {
+>> +	int err = -ENOMEM;
+>>   	struct task_struct *me = current;
+>>   
+>>   	nsset->nsproxy = create_new_namespaces(0, me, current_user_ns(), me->fs);
+>> @@ -324,6 +325,12 @@ static int prepare_nsset(unsigned flags, struct nsset *nsset)
+>>   	if (!nsset->cred)
+>>   		goto out;
+>>   
+>> +	if (IS_ERR(nsset->cred)) {
+>> +		err = PTR_ERR(nsset->cred);
+>> +		nsset->cred = NULL;
+>> +		goto out;
+>> +	}
+> 
+> Why is the NULL check above being kept?
+> 
+
+In the branch prior:
+
+	if (flags & CLONE_NEWUSER) {
+		nsset->cred = prepare_creds();
+	else
+		nsset->cred = current_cred();
+
+I don't see cases where others are checking for null after 
+current_cred(), therefore I can remove that check.
+
+> Also, drivers/crypto/ccp/sev-dev.c needs to be updated.
+> 
+
+Nice catch! I clearly missed addition after the merge window.
+
+> - Eric
 
