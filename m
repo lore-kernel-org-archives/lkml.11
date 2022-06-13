@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0FA6CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5030CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380054AbiFMN5Z (ORCPT
+        id S1380091AbiFMN51 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52982 "EHLO
+        Mon, 13 Jun 2022 09:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379228AbiFMNwS (ORCPT
+        with ESMTP id S1379554AbiFMNwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:52:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E719D2AC48;
-        Mon, 13 Jun 2022 04:33:35 -0700 (PDT)
+        Mon, 13 Jun 2022 09:52:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215856A070;
+        Mon, 13 Jun 2022 04:33:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5361E61037;
-        Mon, 13 Jun 2022 11:33:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CCF7C34114;
-        Mon, 13 Jun 2022 11:33:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBE5BB80E5E;
+        Mon, 13 Jun 2022 11:33:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B92EC34114;
+        Mon, 13 Jun 2022 11:33:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120014;
-        bh=MPqngkyWRGF0MKYbHq/zJexVoWbbL6X2z8Cd8fJ9cCE=;
+        s=korg; t=1655120017;
+        bh=8KNUHWcpRAAuYhUOkPQ0KX/3juHfqnzEcvNvPSBvoZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I5+6pgzQxRRBToInOg9FsvBBdE1RZiiW7pp1py+TzqkZr6fp8iWQmcqDGzahEGYan
-         Y8xumHO8gQzcHSVKtIIQGoip5+XJjIb6pxSapTZN4mDMUxzjutgDTLlXfeom6JQEiK
-         GNW6TGp4cscshGNf/bRLeLMAYhB1dWThpZ7i6sw8=
+        b=RVFpwbTMyPg1Hdd8QnjXOHmV1cpIF0B8nyb18P08xXkk2+r+krT0zcWqmpadLX9gm
+         lFbqwJuHme6MupIVpyLrlbMzX0NdQOhf7I7ddxfsh/7b7dX/pr87/bIbgWchywvzpY
+         cjxFoLzzGNKnGxqARMGhZbhroorK78zLtvYIHTIA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 200/339] bpf, arm64: Clear prog->jited_len along prog->jited
-Date:   Mon, 13 Jun 2022 12:10:25 +0200
-Message-Id: <20220613094932.731322677@linuxfoundation.org>
+Subject: [PATCH 5.18 201/339] net: dsa: lantiq_gswip: Fix refcount leak in gswip_gphy_fw_list
+Date:   Mon, 13 Jun 2022 12:10:26 +0200
+Message-Id: <20220613094932.761128971@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -53,98 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 10f3b29c65bb2fe0d47c2945cd0b4087be1c5218 ]
+[ Upstream commit 0737e018a05e2aa352828c52bdeed3b02cff2930 ]
 
-syzbot reported an illegal copy_to_user() attempt
-from bpf_prog_get_info_by_fd() [1]
+Every iteration of for_each_available_child_of_node() decrements
+the reference count of the previous node.
+when breaking early from a for_each_available_child_of_node() loop,
+we need to explicitly call of_node_put() on the gphy_fw_np.
+Add missing of_node_put() to avoid refcount leak.
 
-There was no repro yet on this bug, but I think
-that commit 0aef499f3172 ("mm/usercopy: Detect vmalloc overruns")
-is exposing a prior bug in bpf arm64.
-
-bpf_prog_get_info_by_fd() looks at prog->jited_len
-to determine if the JIT image can be copied out to user space.
-
-My theory is that syzbot managed to get a prog where prog->jited_len
-has been set to 43, while prog->bpf_func has ben cleared.
-
-It is not clear why copy_to_user(uinsns, NULL, ulen) is triggering
-this particular warning.
-
-I thought find_vma_area(NULL) would not find a vm_struct.
-As we do not hold vmap_area_lock spinlock, it might be possible
-that the found vm_struct was garbage.
-
-[1]
-usercopy: Kernel memory exposure attempt detected from vmalloc (offset 792633534417210172, size 43)!
-kernel BUG at mm/usercopy.c:101!
-Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-Modules linked in:
-CPU: 0 PID: 25002 Comm: syz-executor.1 Not tainted 5.18.0-syzkaller-10139-g8291eaafed36 #0
-Hardware name: linux,dummy-virt (DT)
-pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-pc : usercopy_abort+0x90/0x94 mm/usercopy.c:101
-lr : usercopy_abort+0x90/0x94 mm/usercopy.c:89
-sp : ffff80000b773a20
-x29: ffff80000b773a30 x28: faff80000b745000 x27: ffff80000b773b48
-x26: 0000000000000000 x25: 000000000000002b x24: 0000000000000000
-x23: 00000000000000e0 x22: ffff80000b75db67 x21: 0000000000000001
-x20: 000000000000002b x19: ffff80000b75db3c x18: 00000000fffffffd
-x17: 2820636f6c6c616d x16: 76206d6f72662064 x15: 6574636574656420
-x14: 74706d6574746120 x13: 2129333420657a69 x12: 73202c3237313031
-x11: 3237313434333533 x10: 3336323937207465 x9 : 657275736f707865
-x8 : ffff80000a30c550 x7 : ffff80000b773830 x6 : ffff80000b773830
-x5 : 0000000000000000 x4 : ffff00007fbbaa10 x3 : 0000000000000000
-x2 : 0000000000000000 x1 : f7ff000028fc0000 x0 : 0000000000000064
-Call trace:
- usercopy_abort+0x90/0x94 mm/usercopy.c:89
- check_heap_object mm/usercopy.c:186 [inline]
- __check_object_size mm/usercopy.c:252 [inline]
- __check_object_size+0x198/0x36c mm/usercopy.c:214
- check_object_size include/linux/thread_info.h:199 [inline]
- check_copy_size include/linux/thread_info.h:235 [inline]
- copy_to_user include/linux/uaccess.h:159 [inline]
- bpf_prog_get_info_by_fd.isra.0+0xf14/0xfdc kernel/bpf/syscall.c:3993
- bpf_obj_get_info_by_fd+0x12c/0x510 kernel/bpf/syscall.c:4253
- __sys_bpf+0x900/0x2150 kernel/bpf/syscall.c:4956
- __do_sys_bpf kernel/bpf/syscall.c:5021 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:5019 [inline]
- __arm64_sys_bpf+0x28/0x40 kernel/bpf/syscall.c:5019
- __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
- invoke_syscall+0x48/0x114 arch/arm64/kernel/syscall.c:52
- el0_svc_common.constprop.0+0x44/0xec arch/arm64/kernel/syscall.c:142
- do_el0_svc+0xa0/0xc0 arch/arm64/kernel/syscall.c:206
- el0_svc+0x44/0xb0 arch/arm64/kernel/entry-common.c:624
- el0t_64_sync_handler+0x1ac/0x1b0 arch/arm64/kernel/entry-common.c:642
- el0t_64_sync+0x198/0x19c arch/arm64/kernel/entry.S:581
-Code: aa0003e3 d00038c0 91248000 97fff65f (d4210000)
-
-Fixes: db496944fdaa ("bpf: arm64: add JIT support for multi-function programs")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20220531215113.1100754-1-eric.dumazet@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: 14fceff4771e ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220605072335.11257-1-linmq006@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/net/bpf_jit_comp.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/dsa/lantiq_gswip.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-index fcc675aa1670..c779e604edac 100644
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -1261,6 +1261,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 			bpf_jit_binary_free(header);
- 			prog->bpf_func = NULL;
- 			prog->jited = 0;
-+			prog->jited_len = 0;
- 			goto out_off;
- 		}
- 		bpf_jit_binary_lock_ro(header);
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 12c15da55664..9284373222fa 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -2069,8 +2069,10 @@ static int gswip_gphy_fw_list(struct gswip_priv *priv,
+ 	for_each_available_child_of_node(gphy_fw_list_np, gphy_fw_np) {
+ 		err = gswip_gphy_fw_probe(priv, &priv->gphy_fw[i],
+ 					  gphy_fw_np, i);
+-		if (err)
++		if (err) {
++			of_node_put(gphy_fw_np);
+ 			goto remove_gphy;
++		}
+ 		i++;
+ 	}
+ 
 -- 
 2.35.1
 
