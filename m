@@ -2,90 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63852CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06148CCA48B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385978AbiFMOqf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
+        id S242054AbiFMOqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385910AbiFMOoE (ORCPT
+        with ESMTP id S1385893AbiFMOn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:44:04 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51B3B41DC;
+        Mon, 13 Jun 2022 10:43:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A6EB41D1;
         Mon, 13 Jun 2022 04:51:03 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id v25so6754374eda.6;
-        Mon, 13 Jun 2022 04:51:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=zgX/PVEPf8nMw9zVAy2wbzfkUCGcHSawa+uHP8BTd9Q=;
-        b=W0U6MAI0+IGC5YwFTD8F834ELZTvP7B5fUkYdbdyuxf0nQu4SdET6AOTpyLBIeqGI4
-         gIS9CHA+sbJFRkAhQC30VY8LVz7DnVV48C508IaDcJXkUp6ai4kCIc8i5K2fZ6sB/nO+
-         hcfYVV54+yUh0QOQs5dFwnoUTelOGVKVrN86EuiOaXj64jRdErGVFRbTPe+icFNxNCsL
-         oyBkAf3dCzi+g/+RiGvtc58+65OH4uIJ2S3OstdxpYJx/PMsxIOEnvF/pl/fA1RmiQ4X
-         TZb2Kf3qdDtosTlCPhRiFkJpb2U4ii4INFWR0pSbFBTqMTW7m+0nLByM3mnZb4lNI94f
-         mDPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=zgX/PVEPf8nMw9zVAy2wbzfkUCGcHSawa+uHP8BTd9Q=;
-        b=0KtzXGea8ir2QQ0c1uh7Ve7bNSTtE3jzV1Z2Z4N4+LAwUMLqg6dqeIeLjEFtslZtZ2
-         pToj0E2Lp57SjXdMBtRouzs28pQz8BQ8QjC8zbn92K08fgGyHFwRbXdAEsO7baJTiizq
-         8c30AcuhN3c7P6IjY1MDPgBR8NpozYxAFpE41DBJAlSg+fi8k057LkfdyyoHNb90oraN
-         NT4axKBfe8eDJQTtKMCiT/MvvG2lY3egir/4VTsnWhiU1TisDd5egzk2Wo3leBVD1bld
-         XO+CGwCfIfgHC9whgg+wKf3rmgIv+VVGn2xlRc+7qli1Oh11M0WeXAVvqG+KBUxhTwi5
-         r4PQ==
-X-Gm-Message-State: AOAM533MRhmHjZqi/7z9wemTPHvwTaMkz6nQQFX4u/vND+U4+5dcxkjt
-        5php7zIgIKi3hIn4vTZlfiB9Hm1AckE=
-X-Google-Smtp-Source: ABdhPJxeyfxnfKceAb/4rg82X1D+qsKnKPtx3yG4v5B5zF0L2yMkiRBXOD5V0dybGThWRkSMqexNCw==
-X-Received: by 2002:aa7:c34d:0:b0:42d:ce57:5df2 with SMTP id j13-20020aa7c34d000000b0042dce575df2mr64383362edr.315.1655121061007;
-        Mon, 13 Jun 2022 04:51:01 -0700 (PDT)
-Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
-        by smtp.gmail.com with ESMTPSA id 12-20020a170906308c00b006ff0b457cdasm3734771ejv.53.2022.06.13.04.51.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 04:51:00 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: add include/dt-bindings/iio to IIO SUBSYSTEM AND DRIVERS
-Date:   Mon, 13 Jun 2022 13:50:45 +0200
-Message-Id: <20220613115045.24326-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B90F1B80EDF;
+        Mon, 13 Jun 2022 11:51:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C41DC34114;
+        Mon, 13 Jun 2022 11:51:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655121061;
+        bh=IBXMgi2m7jjJOg4V5lMk5wKC20WA1H57SOGcxCiq9to=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rndYg5vwt+ygcOBIIoYm3Ag/XV/+7XTwUien2pawSwEuC3i7YmT56qLhCaAg2RMxm
+         z72GqCeRp1bwlkrHzgTGnuG/eOLtopkzLXP6T6FuGwwhqnI/nqFEw5g85gjfF2XWeR
+         D5dO1G9ieSqLqU+RtG5nRaLc7WchkAT7HWleEqys=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        =?UTF-8?q?Andr=C3=A9=20Kapelrud?= <a.kapelrud@gmail.com>
+Subject: [PATCH 5.17 258/298] ALSA: usb-audio: Set up (implicit) sync for Saffire 6
+Date:   Mon, 13 Jun 2022 12:12:32 +0200
+Message-Id: <20220613094932.902572931@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
+References: <20220613094924.913340374@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maintainers of the directory Documentation/devicetree/bindings/iio
-are also the maintainers of the corresponding directory
-include/dt-bindings/iio.
+From: Takashi Iwai <tiwai@suse.de>
 
-Add the file entry for include/dt-bindings/iio to the appropriate
-section in MAINTAINERS.
+commit e0469d6581aecb0e34e2ec64f39f88e6985cc52f upstream.
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Focusrite Saffire 6 has fixed audioformat quirks with multiple
+endpoints assigned to a single altsetting.  Unfortunately the generic
+parser couldn't detect the sync endpoint correctly as the implicit
+sync due to the missing EP attribute bits.  In the former kernels, it
+used to work somehow casually, but it's been broken for a while after
+the large code change in 5.11.
+
+This patch cures the regression by the following:
+- Allow the static quirk table to provide the sync EP information;
+  we just need to fill the fields and let the generic parser skipping
+  parsing if sync_ep is already set.
+- Add the sync endpoint information to the entry for Saffire 6.
+
+Fixes: 7b0efea4baf0 ("ALSA: usb-audio: Add missing ep_idx in fixed EP quirks")
+Reported-and-tested-by: André Kapelrud <a.kapelrud@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220606160910.6926-3-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Jonathan, Lars-Peter, please pick this MAINTAINERS addition to your section.
+ sound/usb/pcm.c          |    3 +++
+ sound/usb/quirks-table.h |    7 ++++++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2b8aec742e6e..503b8042784e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9656,6 +9656,7 @@ F:	Documentation/ABI/testing/sysfs-bus-iio*
- F:	Documentation/devicetree/bindings/iio/
- F:	drivers/iio/
- F:	drivers/staging/iio/
-+F:	include/dt-bindings/iio/
- F:	include/linux/iio/
- F:	tools/iio/
+--- a/sound/usb/pcm.c
++++ b/sound/usb/pcm.c
+@@ -291,6 +291,9 @@ int snd_usb_audioformat_set_sync_ep(stru
+ 	bool is_playback;
+ 	int err;
  
--- 
-2.17.1
++	if (fmt->sync_ep)
++		return 0; /* already set up */
++
+ 	alts = snd_usb_get_host_interface(chip, fmt->iface, fmt->altsetting);
+ 	if (!alts)
+ 		return 0;
+--- a/sound/usb/quirks-table.h
++++ b/sound/usb/quirks-table.h
+@@ -2658,7 +2658,12 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 					.nr_rates = 2,
+ 					.rate_table = (unsigned int[]) {
+ 						44100, 48000
+-					}
++					},
++					.sync_ep = 0x82,
++					.sync_iface = 0,
++					.sync_altsetting = 1,
++					.sync_ep_idx = 1,
++					.implicit_fb = 1,
+ 				}
+ 			},
+ 			{
+
 
