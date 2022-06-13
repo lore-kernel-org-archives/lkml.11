@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56B99C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C1EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353733AbiFMLYo (ORCPT
+        id S1353751AbiFMLYz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
+        Mon, 13 Jun 2022 07:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352406AbiFMLQn (ORCPT
+        with ESMTP id S1352627AbiFMLQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:16:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5133513FB2;
-        Mon, 13 Jun 2022 03:40:03 -0700 (PDT)
+        Mon, 13 Jun 2022 07:16:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9472C38BF9;
+        Mon, 13 Jun 2022 03:40:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E3EDE611AD;
-        Mon, 13 Jun 2022 10:40:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E51C36B00;
-        Mon, 13 Jun 2022 10:40:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0B15B80EA3;
+        Mon, 13 Jun 2022 10:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D5A9C3411C;
+        Mon, 13 Jun 2022 10:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116802;
-        bh=/KA418GLVD+9TzUQqWQ1Xutqsaeu0rJn2Am7XBzKav8=;
+        s=korg; t=1655116810;
+        bh=MU2+vNNvD/C4Et7c0mjGwxnPA8RogRxCydOV6Jl+oY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sstcZuv/exFYagTJyQKo4drym8HjpQhl3kBG+m8tpQdkiHnX5/ZotYtfGr4HEAD2e
-         Qc33j0kwrwlZqyAD9mQOwOchqjUItQ0kguZ8cE5grPrUJ1qD4fzGIpTibOtqbFWmwR
-         iXR76d9RhAjYzFrsKzXzDllGtCxaj4KdRr7zeoYI=
+        b=Eg+nkekb1nHCLOXXkwF8QtLMN9fNmw1nL4wy1tRinVKsjxbGrx2CzIFgPxfEBFzgU
+         vesG1VR7E0rnemEhk3RV4zErCo/TAAbwXkXx9NheNV7RkWHkGqUs+6dvApd2cSPlr/
+         Z2plP+ySpd8FOKqVVp3i2D2GLnAjwH3bq8Pyu8gI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Bj=C3=B6rn=20Ard=C3=B6?= <bjorn.ardo@axis.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 190/411] macintosh: via-pmu and via-cuda need RTC_LIB
-Date:   Mon, 13 Jun 2022 12:07:43 +0200
-Message-Id: <20220613094934.358068710@linuxfoundation.org>
+Subject: [PATCH 5.4 193/411] mailbox: forward the hrtimer if not queued and under a lock
+Date:   Mon, 13 Jun 2022 12:07:46 +0200
+Message-Id: <20220613094934.448101736@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -53,50 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Björn Ardö <bjorn.ardo@axis.com>
 
-[ Upstream commit 9a9c5ff5fff87eb1a43db0d899473554e408fd7b ]
+[ Upstream commit bca1a1004615efe141fd78f360ecc48c60bc4ad5 ]
 
-Fix build when RTC_LIB is not set/enabled.
-Eliminates these build errors:
+This reverts commit c7dacf5b0f32957b24ef29df1207dc2cd8307743,
+"mailbox: avoid timer start from callback"
 
-m68k-linux-ld: drivers/macintosh/via-pmu.o: in function `pmu_set_rtc_time':
-drivers/macintosh/via-pmu.c:1769: undefined reference to `rtc_tm_to_time64'
-m68k-linux-ld: drivers/macintosh/via-cuda.o: in function `cuda_set_rtc_time':
-drivers/macintosh/via-cuda.c:797: undefined reference to `rtc_tm_to_time64'
+The previous commit was reverted since it lead to a race that
+caused the hrtimer to not be started at all. The check for
+hrtimer_active() in msg_submit() will return true if the
+callback function txdone_hrtimer() is currently running. This
+function could return HRTIMER_NORESTART and then the timer
+will not be restarted, and also msg_submit() will not start
+the timer. This will lead to a message actually being submitted
+but no timer will start to check for its compleation.
 
-Fixes: 0792a2c8e0bb ("macintosh: Use common code to access RTC")
-Reported-by: kernel test robot <lkp@intel.com>
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220410161035.592-1-rdunlap@infradead.org
+The original fix that added checking hrtimer_active() was added to
+avoid a warning with hrtimer_forward. Looking in the kernel
+another solution to avoid this warning is to check hrtimer_is_queued()
+before calling hrtimer_forward_now() instead. This however requires a
+lock so the timer is not started by msg_submit() inbetween this check
+and the hrtimer_forward() call.
+
+Fixes: c7dacf5b0f32 ("mailbox: avoid timer start from callback")
+Signed-off-by: Björn Ardö <bjorn.ardo@axis.com>
+Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/macintosh/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/mailbox/mailbox.c          | 19 +++++++++++++------
+ include/linux/mailbox_controller.h |  1 +
+ 2 files changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
-index abaf1401cca6..b5a534206edd 100644
---- a/drivers/macintosh/Kconfig
-+++ b/drivers/macintosh/Kconfig
-@@ -44,6 +44,7 @@ config ADB_IOP
- config ADB_CUDA
- 	bool "Support for Cuda/Egret based Macs and PowerMacs"
- 	depends on (ADB || PPC_PMAC) && !PPC_PMAC64
-+	select RTC_LIB
- 	help
- 	  This provides support for Cuda/Egret based Macintosh and
- 	  Power Macintosh systems. This includes most m68k based Macs,
-@@ -57,6 +58,7 @@ config ADB_CUDA
- config ADB_PMU
- 	bool "Support for PMU based PowerMacs and PowerBooks"
- 	depends on PPC_PMAC || MAC
-+	select RTC_LIB
- 	help
- 	  On PowerBooks, iBooks, and recent iMacs and Power Macintoshes, the
- 	  PMU is an embedded microprocessor whose primary function is to
+diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
+index 3e7d4b20ab34..4229b9b5da98 100644
+--- a/drivers/mailbox/mailbox.c
++++ b/drivers/mailbox/mailbox.c
+@@ -82,11 +82,11 @@ static void msg_submit(struct mbox_chan *chan)
+ exit:
+ 	spin_unlock_irqrestore(&chan->lock, flags);
+ 
+-	/* kick start the timer immediately to avoid delays */
+ 	if (!err && (chan->txdone_method & TXDONE_BY_POLL)) {
+-		/* but only if not already active */
+-		if (!hrtimer_active(&chan->mbox->poll_hrt))
+-			hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
++		/* kick start the timer immediately to avoid delays */
++		spin_lock_irqsave(&chan->mbox->poll_hrt_lock, flags);
++		hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
++		spin_unlock_irqrestore(&chan->mbox->poll_hrt_lock, flags);
+ 	}
+ }
+ 
+@@ -120,20 +120,26 @@ static enum hrtimer_restart txdone_hrtimer(struct hrtimer *hrtimer)
+ 		container_of(hrtimer, struct mbox_controller, poll_hrt);
+ 	bool txdone, resched = false;
+ 	int i;
++	unsigned long flags;
+ 
+ 	for (i = 0; i < mbox->num_chans; i++) {
+ 		struct mbox_chan *chan = &mbox->chans[i];
+ 
+ 		if (chan->active_req && chan->cl) {
+-			resched = true;
+ 			txdone = chan->mbox->ops->last_tx_done(chan);
+ 			if (txdone)
+ 				tx_tick(chan, 0);
++			else
++				resched = true;
+ 		}
+ 	}
+ 
+ 	if (resched) {
+-		hrtimer_forward_now(hrtimer, ms_to_ktime(mbox->txpoll_period));
++		spin_lock_irqsave(&mbox->poll_hrt_lock, flags);
++		if (!hrtimer_is_queued(hrtimer))
++			hrtimer_forward_now(hrtimer, ms_to_ktime(mbox->txpoll_period));
++		spin_unlock_irqrestore(&mbox->poll_hrt_lock, flags);
++
+ 		return HRTIMER_RESTART;
+ 	}
+ 	return HRTIMER_NORESTART;
+@@ -500,6 +506,7 @@ int mbox_controller_register(struct mbox_controller *mbox)
+ 		hrtimer_init(&mbox->poll_hrt, CLOCK_MONOTONIC,
+ 			     HRTIMER_MODE_REL);
+ 		mbox->poll_hrt.function = txdone_hrtimer;
++		spin_lock_init(&mbox->poll_hrt_lock);
+ 	}
+ 
+ 	for (i = 0; i < mbox->num_chans; i++) {
+diff --git a/include/linux/mailbox_controller.h b/include/linux/mailbox_controller.h
+index 36d6ce673503..6fee33cb52f5 100644
+--- a/include/linux/mailbox_controller.h
++++ b/include/linux/mailbox_controller.h
+@@ -83,6 +83,7 @@ struct mbox_controller {
+ 				      const struct of_phandle_args *sp);
+ 	/* Internal to API */
+ 	struct hrtimer poll_hrt;
++	spinlock_t poll_hrt_lock;
+ 	struct list_head node;
+ };
+ 
 -- 
 2.35.1
 
