@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36BB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B82C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240923AbiFMNFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45310 "EHLO
+        id S1357219AbiFMNGJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358285AbiFMMzK (ORCPT
+        with ESMTP id S1358234AbiFMMzJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A5C9589;
-        Mon, 13 Jun 2022 04:14:57 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC031638B;
+        Mon, 13 Jun 2022 04:14:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7F2760B6B;
-        Mon, 13 Jun 2022 11:14:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3AA3C3411E;
-        Mon, 13 Jun 2022 11:14:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2816B80EA7;
+        Mon, 13 Jun 2022 11:14:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17EB0C34114;
+        Mon, 13 Jun 2022 11:14:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118896;
-        bh=wBCeYx+pNV/e5mIu30VKRdK4jv593PGbP3FGh/J2fMQ=;
+        s=korg; t=1655118890;
+        bh=L8pNPXENcGl4mTBVoi1vnDoV48D1r2hQ4ShnGOv7jDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZTTaPqSY9My2GXqy/8r5IVKGV6nCCyS6BWJfjQdAFYe8IKKtAMpL8FVwAiZVC8Mjy
-         Vq7sPEf2S9IJ7aDc5tyAfWu7ZTi4+2UO1Jdymi1ajqS+1gUfA0U5Fvbo9/t4BLWCqW
-         RM8cxPgOcKlCACRqkdF3uGAO8WDzo8jiMHp7I1w4=
+        b=LXn9y9FKkqcVraBEj6BWF3l+6w0NHvpjk+bSSB5SUda7Cu/ylnMLfaFiX7E4eYKI+
+         ZvOHR1WUPgu8WPAcDErAk6rx+YsEz33SAwrECcr0siueqJql2MhvlS7eZ7J8D6JP+D
+         sTYlRFQqSH0XPRTl0TpXA6HZMAsSxjVGku1Qx9nY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 066/247] watchdog: rti-wdt: Fix pm_runtime_get_sync() error checking
-Date:   Mon, 13 Jun 2022 12:09:28 +0200
-Message-Id: <20220613094924.960433521@linuxfoundation.org>
+Subject: [PATCH 5.15 065/247] driver core: fix deadlock in __device_attach
+Date:   Mon, 13 Jun 2022 12:09:27 +0200
+Message-Id: <20220613094924.930494278@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,38 +49,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Zhang Wensheng <zhangwensheng5@huawei.com>
 
-[ Upstream commit b3ac0c58fa8934926360268f3d89ec7680644d7b ]
+[ Upstream commit b232b02bf3c205b13a26dcec08e53baddd8e59ed ]
 
-If the device is already in a runtime PM enabled state
-pm_runtime_get_sync() will return 1, so a test for negative
-value should be used to check for errors.
+In __device_attach function, The lock holding logic is as follows:
+...
+__device_attach
+device_lock(dev)      // get lock dev
+  async_schedule_dev(__device_attach_async_helper, dev); // func
+    async_schedule_node
+      async_schedule_node_domain(func)
+        entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
+	/* when fail or work limit, sync to execute func, but
+	   __device_attach_async_helper will get lock dev as
+	   well, which will lead to A-A deadlock.  */
+	if (!entry || atomic_read(&entry_count) > MAX_WORK) {
+	  func;
+	else
+	  queue_work_node(node, system_unbound_wq, &entry->work)
+  device_unlock(dev)
 
-Fixes: 2d63908bdbfb ("watchdog: Add K3 RTI watchdog support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220412070824.23708-1-linmq006@gmail.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+As shown above, when it is allowed to do async probes, because of
+out of memory or work limit, async work is not allowed, to do
+sync execute instead. it will lead to A-A deadlock because of
+__device_attach_async_helper getting lock dev.
+
+To fix the deadlock, move the async_schedule_dev outside device_lock,
+as we can see, in async_schedule_node_domain, the parameter of
+queue_work_node is system_unbound_wq, so it can accept concurrent
+operations. which will also not change the code logic, and will
+not lead to deadlock.
+
+Fixes: 765230b5f084 ("driver-core: add asynchronous probing support for drivers")
+Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+Link: https://lore.kernel.org/r/20220518074516.1225580-1-zhangwensheng5@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/rti_wdt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/base/dd.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/watchdog/rti_wdt.c b/drivers/watchdog/rti_wdt.c
-index ae7f9357bb87..46c2a4bd9ebe 100644
---- a/drivers/watchdog/rti_wdt.c
-+++ b/drivers/watchdog/rti_wdt.c
-@@ -227,7 +227,7 @@ static int rti_wdt_probe(struct platform_device *pdev)
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 95ae347df137..a480004b9897 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -944,6 +944,7 @@ static void __device_attach_async_helper(void *_dev, async_cookie_t cookie)
+ static int __device_attach(struct device *dev, bool allow_async)
+ {
+ 	int ret = 0;
++	bool async = false;
  
- 	pm_runtime_enable(dev);
- 	ret = pm_runtime_get_sync(dev);
--	if (ret) {
-+	if (ret < 0) {
- 		pm_runtime_put_noidle(dev);
- 		pm_runtime_disable(&pdev->dev);
- 		return dev_err_probe(dev, ret, "runtime pm failed\n");
+ 	device_lock(dev);
+ 	if (dev->p->dead) {
+@@ -982,7 +983,7 @@ static int __device_attach(struct device *dev, bool allow_async)
+ 			 */
+ 			dev_dbg(dev, "scheduling asynchronous probe\n");
+ 			get_device(dev);
+-			async_schedule_dev(__device_attach_async_helper, dev);
++			async = true;
+ 		} else {
+ 			pm_request_idle(dev);
+ 		}
+@@ -992,6 +993,8 @@ static int __device_attach(struct device *dev, bool allow_async)
+ 	}
+ out_unlock:
+ 	device_unlock(dev);
++	if (async)
++		async_schedule_dev(__device_attach_async_helper, dev);
+ 	return ret;
+ }
+ 
 -- 
 2.35.1
 
