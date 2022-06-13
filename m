@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA2DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 083E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351817AbiFMMMz (ORCPT
+        id S1350857AbiFMMM6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:12:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59928 "EHLO
+        Mon, 13 Jun 2022 08:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359106AbiFMMJB (ORCPT
+        with ESMTP id S1359268AbiFMMJJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:09:01 -0400
+        Mon, 13 Jun 2022 08:09:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCA45252F;
-        Mon, 13 Jun 2022 04:00:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF3752B0D;
+        Mon, 13 Jun 2022 04:00:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4C16611B3;
-        Mon, 13 Jun 2022 11:00:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1632C34114;
-        Mon, 13 Jun 2022 11:00:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 337E3613EF;
+        Mon, 13 Jun 2022 11:00:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39FE7C34114;
+        Mon, 13 Jun 2022 11:00:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118025;
-        bh=mKCy2VSksGrDe/nNB/Q3+imgZ7hyqsETHFRAvYagaQ4=;
+        s=korg; t=1655118033;
+        bh=E3fW5isBZENEgCAej2WJLcurVlyNAEnwu5BhzhfLZCs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZGofcTRpX3XxW1NHwDokSBkt2OWHn3IGwqAz7e/9w17c8TUSDQi7RqLoidVgjpS2P
-         x/OUKnD1z3pDYYhx0ewBjQdQVIR75cBspztIZ9BIg2GLLB0v/hV0PC4NM4S1hSesYT
-         eeoavsKdnIObuBGVtPOx1oW65HdLVqrM5LmZbdWI=
+        b=qgEqTMjWCVpQIeSXMziFjLI9dlJ06vfAbYY2/y96D4Igr5eq/6knHkj6EnAFQ5gIB
+         jDARr8ytSSvBRJDSGbsHpe76CaJM1SkaYLvKw66yMsEV+R5+i0JpjaJybi/pInof1b
+         xLpFy3ZCjv1IKQa3RZjgTq6v6fMT+mOhQkFUVVWw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        John Ogness <john.ogness@linutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 202/287] soc: rockchip: Fix refcount leak in rockchip_grf_init
-Date:   Mon, 13 Jun 2022 12:10:26 +0200
-Message-Id: <20220613094929.988994727@linuxfoundation.org>
+Subject: [PATCH 4.19 205/287] serial: meson: acquire port->lock in startup()
+Date:   Mon, 13 Jun 2022 12:10:29 +0200
+Message-Id: <20220613094930.078697897@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,42 +54,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit 9b59588d8be91c96bfb0371e912ceb4f16315dbf ]
+[ Upstream commit 589f892ac8ef244e47c5a00ffd8605daa1eaef8e ]
 
-of_find_matching_node_and_match returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+The uart_ops startup() callback is called without interrupts
+disabled and without port->lock locked, relatively late during the
+boot process (from the call path of console_on_rootfs()). If the
+device is a console, it was already previously registered and could
+be actively printing messages.
 
-Fixes: 4c58063d4258 ("soc: rockchip: add driver handling grf setup")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220516072013.19731-1-linmq006@gmail.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Since the startup() callback is reading/writing registers used by
+the console write() callback (AML_UART_CONTROL), its access must
+be synchronized using the port->lock. Currently it is not.
+
+The startup() callback is the only function that explicitly enables
+interrupts. Without the synchronization, it is possible that
+interrupts become accidentally permanently disabled.
+
+CPU0                           CPU1
+meson_serial_console_write     meson_uart_startup
+--------------------------     ------------------
+spin_lock(port->lock)
+val = readl(AML_UART_CONTROL)
+uart_console_write()
+                               writel(INT_EN, AML_UART_CONTROL)
+writel(val, AML_UART_CONTROL)
+spin_unlock(port->lock)
+
+Add port->lock synchronization to meson_uart_startup() to avoid
+racing with meson_serial_console_write().
+
+Also add detailed comments to meson_uart_reset() explaining why it
+is *not* using port->lock synchronization.
+
+Link: https://lore.kernel.org/lkml/2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com
+Fixes: ff7693d079e5 ("ARM: meson: serial: add MesonX SoC on-chip uart driver")
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20220508103547.626355-1-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/rockchip/grf.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/meson_uart.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/soc/rockchip/grf.c b/drivers/soc/rockchip/grf.c
-index 3b81e1d75a97..3e7e999ee324 100644
---- a/drivers/soc/rockchip/grf.c
-+++ b/drivers/soc/rockchip/grf.c
-@@ -151,12 +151,14 @@ static int __init rockchip_grf_init(void)
- 		return -ENODEV;
- 	if (!match || !match->data) {
- 		pr_err("%s: missing grf data\n", __func__);
-+		of_node_put(np);
- 		return -EINVAL;
- 	}
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 8a842591b37c..1838d0be3704 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -255,6 +255,14 @@ static const char *meson_uart_type(struct uart_port *port)
+ 	return (port->type == PORT_MESON) ? "meson_uart" : NULL;
+ }
  
- 	grf_info = match->data;
++/*
++ * This function is called only from probe() using a temporary io mapping
++ * in order to perform a reset before setting up the device. Since the
++ * temporarily mapped region was successfully requested, there can be no
++ * console on this port at this time. Hence it is not necessary for this
++ * function to acquire the port->lock. (Since there is no console on this
++ * port at this time, the port->lock is not initialized yet.)
++ */
+ static void meson_uart_reset(struct uart_port *port)
+ {
+ 	u32 val;
+@@ -269,9 +277,12 @@ static void meson_uart_reset(struct uart_port *port)
  
- 	grf = syscon_node_to_regmap(np);
-+	of_node_put(np);
- 	if (IS_ERR(grf)) {
- 		pr_err("%s: could not get grf syscon\n", __func__);
- 		return PTR_ERR(grf);
+ static int meson_uart_startup(struct uart_port *port)
+ {
++	unsigned long flags;
+ 	u32 val;
+ 	int ret = 0;
+ 
++	spin_lock_irqsave(&port->lock, flags);
++
+ 	val = readl(port->membase + AML_UART_CONTROL);
+ 	val |= AML_UART_CLEAR_ERR;
+ 	writel(val, port->membase + AML_UART_CONTROL);
+@@ -287,6 +298,8 @@ static int meson_uart_startup(struct uart_port *port)
+ 	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
+ 	writel(val, port->membase + AML_UART_MISC);
+ 
++	spin_unlock_irqrestore(&port->lock, flags);
++
+ 	ret = request_irq(port->irq, meson_uart_interrupt, 0,
+ 			  port->name, port);
+ 
 -- 
 2.35.1
 
