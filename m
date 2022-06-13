@@ -2,79 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D477DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B69BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:57:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351092AbiFMTxo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57986 "EHLO
+        id S245419AbiFMT5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350670AbiFMTx1 (ORCPT
+        with ESMTP id S1346056AbiFMT4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:53:27 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CE743AFC;
-        Mon, 13 Jun 2022 11:24:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655144647;
-        bh=bVGiDRebCQI8O/oB+gLLRhDE/ot0FVdxkEqKV3VwdKY=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=haFr5JwGO5BjdgIWG/Q5knW81ZkuemiBokpiiBPrviHJQbwseERogBpUO5KleX679
-         47DGkihfFF+5D79YMPn3efnlIf2D9aYDuWvuPrjbYHT+HWIo2KrR1ePeaSJSlcRMo9
-         PLOWzaCfVJWbksLkl7XDyfc5UJ6uMAjLaeU1VIak=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.100.20] ([46.142.35.13]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M7b6l-1o64b40Luv-0082oE; Mon, 13
- Jun 2022 20:24:07 +0200
-Message-ID: <c25a1a40-3188-e81b-4e05-7ca379ba78a8@gmx.de>
-Date:   Mon, 13 Jun 2022 20:24:06 +0200
+        Mon, 13 Jun 2022 15:56:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A25A5015;
+        Mon, 13 Jun 2022 11:27:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A83F61295;
+        Mon, 13 Jun 2022 18:27:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7195FC34114;
+        Mon, 13 Jun 2022 18:27:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655144873;
+        bh=4acUEF/GtiroxdkX0QUJJTf/NNYdtRPoMippfdF+Tbs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=aEcS3c5PuXqEnaTpZNKg40R3God3d+LK8yPhQQejAGjRW1qBwC32okVmksKg2N2+z
+         yofbKTOOIypSFItFnYzAA1W79a9xS2NBzZLYopWs2Nr4x8FhfqjGrfTXjFKP5hPHPc
+         SAD1t6ahlh9v5DCGkHYm629+mfQETe8iketrGHBBTGoxehe9P2+H/DRZdJsGBGxJ9b
+         /DIXDBa6qIdjJ8jkJ6iNWbzHMGV3fBBub3ItPHhQEAhcnE3kcwKfWRFPCFSvozpIck
+         /Ot+ri4rcFjzH0npaiOlzwZ0zY/ajcIScCJTpHOwdu69UtJeEtA2PpBlOMUrJU66gw
+         SCYoOfOmuqNHQ==
+Message-ID: <d933f30b-4d53-eb97-d029-1c321ba84b62@kernel.org>
+Date:   Mon, 13 Jun 2022 21:27:45 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-From:   Ronald Warsow <rwarsow@gmx.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Language: de-DE
-Subject: Re: [PATCH 5.18 000/339] 5.18.4-rc1 review
+Subject: Re: [PATCH 2/8] interconnect: add device managed bulk API
+Content-Language: en-US
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, festevam@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, abel.vesa@nxp.com,
+        abailon@baylibre.com, l.stach@pengutronix.de,
+        laurent.pinchart@ideasonboard.com, marex@denx.de,
+        paul.elder@ideasonboard.com, Markus.Niebel@ew.tq-group.com,
+        aford173@gmail.com
+Cc:     kernel@pengutronix.de, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        Peng Fan <peng.fan@nxp.com>
+References: <20220601094156.3388454-1-peng.fan@oss.nxp.com>
+ <20220601094156.3388454-3-peng.fan@oss.nxp.com>
+From:   Georgi Djakov <djakov@kernel.org>
+In-Reply-To: <20220601094156.3388454-3-peng.fan@oss.nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:wbo4RI/n6a8x0XeCXyby9At/vv7kDjXMb0bwQZl0d9yjeP5xT/G
- eSbSOjFgHxB6DJpvofD/mec3NiH8jcPuf6sNMbK77vod2wNwaGy4dhR9mymg3zKdCJdwy4E
- IXhjyAreU0ZDBx+656jVEK1AA4nmVLeSQWGSsB2VyCRnc62vHynrWvBCnx9IQUWdxgAJ2bq
- RwdeA+QjySnETmoNYRJ5w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ixaIEcaD6VI=:Tbkxml3KTJIQ4Pya6+/0lN
- ZDkXGzzgoj49lh4l8GTIfU37CekOfycVPGRqwtNXabuaXJYJ6bDBV26GNtRDgKvFcFsAFDDMN
- AV52sr7pr1GWH9Uzf4TIX0oamhqfTgChr6HXc5bUsXilsb/XJzyyRXNtQxOsuJpEbDjhq56Vh
- XsMA7++OrobZD4JhyKRWLg7hwKQ9IEoMlO0fCB5e7ds5sUTcgJwP5+wES+rEhfJnT7Te1ouk9
- kR6qSTmnE+u894QfO1rwEYg72WEiLuaIDg6wsY9rXAeeXqu9Jysa0wYpFYfFXQ6I7EMBUu3Kv
- AOhjGxdvAckPb+TKqGErl+O2CQ2LgWjC96qSdfssqfVeU1SxFePNPGD6ns7nuFf7WLZmcWmjm
- Mo4qWC4zRj0BZEiMxhut65aqJXKXgkXqc0m6jPFbEfGQ0PLmaoyxoBs6og2cssgf3NnmtifOC
- wvIYPV0k5OmJtUU/XM9p1iZhwaIcd5QxyGgnIqgs8GXHvjwt2WsgJdAS+aCP5CM/NNUiusm5G
- Czi9trulY2CPqtTFihZUYqt8TDAuv2tFbpPNtuZ+HeJ5om1It/zcYXbtQ7a9mvQMym9MSKzUr
- tVx4iluPYU1nA7SBH5Q7yOneDxZigoCSoIsw+ftRjwLF9La1zCx9zyCDCvDFINOVaBpRyxH5O
- gB95+pgLCNMFTYD1hlwMti1M+CFoeLndRrc+6SB4G7vNu0irSfdoCqkaWGnwGdgCP/vaRuTjc
- BlqAOx7h6ZgI4BS+2TvTdyJC0xBF1YiE2x1lUuUnKDgLoyBeJ90sFNzah31p/nstCdJzMPH1q
- RoW/BqdU+Om7mXYpxxYxvtZOGES2SNWFXxiI/lwaAgwGV6B8GUWuTkMi5LwGtxmkppVsMFl3s
- VVZHRAPnwWsBL1QN06slXQNUzMbhGnuqjycbN1QokHPGaPeM010arQP0J+nBXVdQS0nZeIv7A
- GcGMhgr22zaDjnElV5FdI+tdkVz6LV7lc8YSLKK0o54XMgJPL6bVw7Rp0p8IYrlFlECQ2qWwm
- Aw6ztlOsj+LIiXjL/hpBllHAFy1hhM5pyDEsspnb6G7mXVcmyl0VnQh5wmdbWQOcF+MM1IPB5
- tUcKHHalJusTkrzMdQ9It4ktfEmNsVRwWLo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hallo Greg
+Hi Peng,
 
-5.18.4-rc1
+Thanks for the patches!
 
-compiles (not without warnings), boots and runs here on x86_64
-(Intel i5-11400, Fedora 36)
+On 1.06.22 12:41, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> Add device managed bulk API to simplify driver.
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+>   drivers/interconnect/bulk.c  | 34 ++++++++++++++++++++++++++++++++++
+>   include/linux/interconnect.h |  6 ++++++
+>   2 files changed, 40 insertions(+)
+> 
+> diff --git a/drivers/interconnect/bulk.c b/drivers/interconnect/bulk.c
+> index 448cc536aa79..4918844bfe0d 100644
+> --- a/drivers/interconnect/bulk.c
+> +++ b/drivers/interconnect/bulk.c
+> @@ -115,3 +115,37 @@ void icc_bulk_disable(int num_paths, const struct icc_bulk_data *paths)
+>   		icc_disable(paths[num_paths].path);
+>   }
+>   EXPORT_SYMBOL_GPL(icc_bulk_disable);
+> +
+> +struct icc_bulk_devres {
+> +	struct icc_bulk_data *paths;
+> +	int num_paths;
+> +};
+> +
+> +static void devm_icc_bulk_release(struct device *dev, void *res)
+> +{
+> +	struct icc_bulk_devres *devres = res;
+> +
+> +	icc_bulk_put(devres->num_paths, devres->paths);
+> +}
+> +
+> +int devm_of_icc_bulk_get(struct device *dev, int num_paths, struct icc_bulk_data *paths)
 
-Tested-by: Ronald Warsow <rwarsow@gmx.de
+Adding a kerneldoc would be nice.
 
+> +{
+> +	struct icc_bulk_devres *devres;
+> +	int ret;
+> +
+> +	devres = devres_alloc(devm_icc_bulk_release, sizeof(*devres), GFP_KERNEL);
+> +	if (!devres)
+> +		return -ENOMEM;
+> +
+> +	ret = of_icc_bulk_get(dev, num_paths, paths);
+> +	if (!ret) {
+> +		devres->paths = paths;
+> +		devres->num_paths = num_paths;
+> +		devres_add(dev, devres);
+> +	} else {
+> +		devres_free(devres);
+> +	}
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(devm_of_icc_bulk_get);
+> diff --git a/include/linux/interconnect.h b/include/linux/interconnect.h
+> index f685777b875e..1a5fdf049edd 100644
+> --- a/include/linux/interconnect.h
+> +++ b/include/linux/interconnect.h
+> @@ -44,6 +44,7 @@ struct icc_path *icc_get(struct device *dev, const int src_id,
+>   			 const int dst_id);
+>   struct icc_path *of_icc_get(struct device *dev, const char *name);
+>   struct icc_path *devm_of_icc_get(struct device *dev, const char *name);
+> +int devm_of_icc_bulk_get(struct device *dev, int num_paths, struct icc_bulk_data *paths);
+>   struct icc_path *of_icc_get_by_index(struct device *dev, int idx);
+>   void icc_put(struct icc_path *path);
+>   int icc_enable(struct icc_path *path);
+> @@ -116,6 +117,11 @@ static inline int of_icc_bulk_get(struct device *dev, int num_paths, struct icc_
+>   	return 0;
+>   }
+>   
+> +int devm_of_icc_bulk_get(struct device *dev, int num_paths, struct icc_bulk_data *paths)
 
-Thanks
+Please make this static inline. The rest looks good!
 
-Ronald
+Thanks,
+Georgi
+
+> +{
+> +	return 0;
+> +}
+> +
+>   static inline void icc_bulk_put(int num_paths, struct icc_bulk_data *paths)
+>   {
+>   }
 
