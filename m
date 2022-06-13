@@ -2,119 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00ED6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE3B2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241357AbiFMU5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:57:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
+        id S1351256AbiFMU51 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352213AbiFMUyR (ORCPT
+        with ESMTP id S1352279AbiFMUyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:54:17 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3429D29353
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:20:58 -0700 (PDT)
-Received: from sequoia (162-237-133-238.lightspeed.rcsntx.sbcglobal.net [162.237.133.238])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 8640820C154C;
-        Mon, 13 Jun 2022 13:20:57 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8640820C154C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1655151657;
-        bh=Nft++AK4Xo5eRcdhC/+nOVQRH0imfgMDAanvnC8iCGY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g0bSIsfsfTpuWw1wxebHkd2aPkjo0Gyxb/hYPwXstl6EQLvknbiRYqW/HO1jZAlxi
-         4RY8Zijlv9dmd3IldYIG/q1jLlzlna24bgt4BfAHvvaknQNpNVG7Ot1ZgVD5WZ74Je
-         ImAB7VOaW0frx6XujBx9pjxOV9fEfwVu7CY4sv0I=
-Date:   Mon, 13 Jun 2022 15:20:53 -0500
-From:   Tyler Hicks <tyhicks@linux.microsoft.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
-        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/06] fid refcounting improvements and fixes
-Message-ID: <20220613202053.GI7401@sequoia>
-References: <20220612085330.1451496-1-asmadeus@codewreck.org>
+        Mon, 13 Jun 2022 16:54:20 -0400
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D371D2872B;
+        Mon, 13 Jun 2022 13:22:46 -0700 (PDT)
+Received: by mail-ot1-f54.google.com with SMTP id e67-20020a9d01c9000000b0060c221b1420so5170439ote.0;
+        Mon, 13 Jun 2022 13:22:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kRE4DxNwjv4AxQ1uZcDHj0eGTvbkuAx+bI1tJP4tNF8=;
+        b=rcLxtbJrvJMZkY9P+bsX20fp0p9WZQpoDe3FLc6Yue6smpNla3i+T22rL6FPzNhBJj
+         +t4OM3C4i/JAU6kB2nDnPOcLJxbMnftpDQwoF4lTinJJ37AMpp6+PfcWT232DUbT/9C4
+         cOzLMZdf23oJdrBs7Z1PFdqhNLBTKz1ZL5aA7Z82lEkPMoAN3nqg6t75t68hyK+C+TVa
+         IXRXCP2JzvEA9dCdkaQEcaKysHF9kH40Z3zxMY3Xumda01CLItbiMoei9i9Ztv7hNf7k
+         a182M3jomipMY0bom/DduEOhesNhnQ5T/UU1gZFGAJ3sy5C5eErk8F6t4KxR3UaLnqYL
+         HlgQ==
+X-Gm-Message-State: AOAM532WDyvAexcgBzQ3huvwh1pWsdbu7NzJtVl24d8FVjSKprBREVcF
+        9FDFm7euAaVBR0zymF4LPw==
+X-Google-Smtp-Source: ABdhPJwFCeHBhkZZ3wgWk/c0LFQGgWIk9LDpt9EhgErOdrn2Gq3/2kfSJ/kP1kY3/1Bhzk0Ie/1qmw==
+X-Received: by 2002:a05:6830:3101:b0:60c:472b:7d44 with SMTP id b1-20020a056830310100b0060c472b7d44mr696526ots.139.1655151766157;
+        Mon, 13 Jun 2022 13:22:46 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:20d2:bb97:4381:7341:60ed:a4a1])
+        by smtp.gmail.com with ESMTPSA id d67-20020aca3646000000b0032f0fd7e1f8sm3647731oia.39.2022.06.13.13.22.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 13:22:45 -0700 (PDT)
+Received: (nullmailer pid 4193325 invoked by uid 1000);
+        Mon, 13 Jun 2022 20:09:58 -0000
+Date:   Mon, 13 Jun 2022 14:09:58 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Joao Pinto <jpinto@synopsys.com>,
+        Niklas Cassel <niklas.cassel@axis.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 05/18] PCI: dwc: Deallocate EPC memory on EP init error
+Message-ID: <20220613200958.GB4188875-robh@kernel.org>
+References: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
+ <20220610082535.12802-6-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220612085330.1451496-1-asmadeus@codewreck.org>
+In-Reply-To: <20220610082535.12802-6-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-12 17:53:23, Dominique Martinet wrote:
-> So:
->  - I could reproduce Tyler's generic 531 leak, fixed it by the first
->    commit in v9fs_vfs_atomic_open_dotl
->  - Found another less likely leak while reworking code
->  - Christian's comment that it's not obvious that clunk is just a
->    refcount decrease was very true: I think it's worth the churn,
->    so I've rename this all through a new helper...
->  - ... with the not-so-hidden intent to improve debugging by adding
->    a tracepoint for them, which I have also done.
+On Fri, Jun 10, 2022 at 11:25:21AM +0300, Serge Semin wrote:
+> If the dw_pcie_ep_init() method fails to perform any action after the EPC
+> memory is initialized and the MSI memory region is allocated, the later
+> parts won't be undone thus causing the memory leak.  Let's fix that by
+> introducing the cleanup-on-error path in the dw_pcie_ep_init() method,
+> which will be taken should any consequent erroneous situation happens.
 > 
-> I've also taken my comment in the other thread further and went ahead
-> and made it in its own commit. Tyler, if you're ok with this I'll just
-> squash it up. You can see rebased patches here:
-> https://github.com/martinetd/linux/
+> Fixes: 2fd0c9d966cc ("PCI: designware-ep: Pre-allocate memory for MSI in dw_pcie_ep_init")
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 > 
-> Note that I also took the permission to add back '/* clone */' as a
-> comment to your changing p9_client_walk's arguments: while I can agree
-> variables are hard to track, figuring out what the heck that boolean
-> argument means is much harder to me and I honestly preferred the
-> variable.
-> Having both through a comment is good enough for me if you'll accept
-> this:
-> ----
-> @@ -222,7 +221,8 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
->                  * We need to hold rename lock when doing a multipath
->                  * walk to ensure none of the patch component change
->                  */
-> -               fid = p9_client_walk(old_fid, l, &wnames[i], clone);
-> +               fid = p9_client_walk(old_fid, l, &wnames[i],
-> +                                    old_fid == root_fid /* clone */);
+> ---
+> 
+> Changelog v2:
+> - This is a new patch create as a result of the discussion in:
+>   Link: https://lore.kernel.org/linux-pci/20220324014836.19149-26-Sergey.Semin@baikalelectronics.ru
+> ---
+>  .../pci/controller/dwc/pcie-designware-ep.c    | 18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
 
-This is no problem at all. The rebased patches look good to me. Squash
-your fix to my fix and it should be ready to go.
+Reviewed-by: Rob Herring <robh@kernel.org>
 
-Thanks again!
-
-Tyler
-
->                 /* non-cloning walk will return the same fid */
->                 if (fid != old_fid) {
->                         p9_client_clunk(old_fid);
-> ----
-> 
-> 
-> The last commit is just cleanups and should be no real change.
-> 
-> Dominique Martinet (6):
->   9p: fix fid refcount leak in v9fs_vfs_atomic_open_dotl
->   9p: fix fid refcount leak in v9fs_vfs_get_link
->   9p: v9fs_fid_lookup_with_uid fix's fix suggestion
->   9p fid refcount: add p9_fid_get/put wrappers
->   9p fid refcount: add a 9p_fid_ref tracepoint
->   9p fid refcount: cleanup p9_fid_put calls
-> 
-> 
-> (diff stats include Tyler's commits)
-> 
->  fs/9p/fid.c               | 71 +++++++++++++++-------------
->  fs/9p/fid.h               |  6 +--
->  fs/9p/vfs_addr.c          |  4 +-
->  fs/9p/vfs_dentry.c        |  4 +-
->  fs/9p/vfs_dir.c           |  2 +-
->  fs/9p/vfs_file.c          |  9 ++--
->  fs/9p/vfs_inode.c         | 97 +++++++++++++++++----------------------
->  fs/9p/vfs_inode_dotl.c    | 79 ++++++++++++-------------------
->  fs/9p/vfs_super.c         |  8 ++--
->  fs/9p/xattr.c             |  8 ++--
->  include/net/9p/client.h   |  3 ++
->  include/trace/events/9p.h | 48 +++++++++++++++++++
->  net/9p/client.c           | 42 +++++++++++------
->  13 files changed, 211 insertions(+), 170 deletions(-)
-> 
-> -- 
-> 2.35.1
-> 
