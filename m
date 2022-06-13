@@ -2,158 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D01C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:20:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84435C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:22:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236461AbiFMIUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51540 "EHLO
+        id S239253AbiFMIW2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:22:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233189AbiFMIUA (ORCPT
+        with ESMTP id S238957AbiFMIWX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:20:00 -0400
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E9C1EAE5;
-        Mon, 13 Jun 2022 01:19:58 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 25D8Hqcs011074;
-        Mon, 13 Jun 2022 17:17:52 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 25D8Hqcs011074
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1655108273;
-        bh=CmhbukpBhZs7hao25rQlICLG+Ns0/87DXmi5jDvd2iE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hBKp+jS9P7HmrcT7zp7l6kQNJUNh88ugzYtEluVI0KDn7TlAkLIDc8ju3Mi1RuIeH
-         N5S8Z6ThORDDGC/9XFYl+0Zod6QhGHMSD7Ds4vB+DnLevHTpIi8lZcB6NtoxMxRfbX
-         bTCLu7klIZirLYKtICeNotC+RVxKTvmM+qAH2v7jrhz5zjVquH0z4tSbw+U510lBrN
-         oh5JlCQJy7sMEamM1ncpm4+yIe8e/puiVt2+HU+ka2BNfHM9hZY2hio62Oy2Ir1vVO
-         UwKckHWfho3ccbl9oir28ZefJYO1uSj4xgWcjC4wI3buDWwwhHoYScccyxw7eWa4K2
-         IFrRwCAKfKCZg==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>, linux-modules@vger.kernel.org
-Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alex Shi <alexs@kernel.org>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthias Maennich <maennich@google.com>,
-        Yanteng Si <siyanteng@loongson.cn>, linux-doc@vger.kernel.org,
+        Mon, 13 Jun 2022 04:22:23 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9715225CF;
+        Mon, 13 Jun 2022 01:22:21 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 08:22:17 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655108539;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xXXl7tlInLHreKiAzdYD4t4G3JyFW5ACW+PT+Cm/5M8=;
+        b=Jn2uUAwXAxSAf0wGqJ62/PCpHlPp/UjmRb7dOdkDyB6MMPn9sQIpUkKAobccsj3p7qvFAd
+        XuMlKEgvCy0kGfqjputq0Y07MnztO23Ba4IDMRz5g1/xahZiQjajA4bLPiQ/OXJtMVQ3BE
+        MVP6gH1dKB06L5p6WPQ9yswzR9cqexnSSKXDRzOBXE7+GXrpLaSPJJX6YQOYhj2TyvtnHP
+        efTUxCIp2Sut5wg2dmZZ5vtVFaHqHAZeFICeZwm0WXvGlp4VQCKYlVgsM9pjqPi5ck82JJ
+        GWWYHKyDgR6k1hPRVY8y/Zw5rFeg6bysCOIWvCoRfHXNPsjMD2aaU3vm4jyFNw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655108539;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xXXl7tlInLHreKiAzdYD4t4G3JyFW5ACW+PT+Cm/5M8=;
+        b=U0lNliAn9qD2YA1cMKLHDd+v3tDhhbeJbw18WJBaponf1FzIQK/prJIU1YlhRlyvIOVX0z
+        JhUM67rZ6LTiFpBA==
+From:   "tip-bot2 for Josh Poimboeuf" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/mm: Fix RESERVE_BRK() for older binutils
+Cc:     Joe Damato <jdamato@fastly.com>,
+        Byungchul Park <byungchul.park@lge.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] doc: module: update file references
-Date:   Mon, 13 Jun 2022 17:17:40 +0900
-Message-Id: <20220613081741.1699713-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+In-Reply-To: <22d07a44c80d8e8e1e82b9a806ddc8c6bbb2606e.1654759036.git.jpoimboe@kernel.org>
+References: <22d07a44c80d8e8e1e82b9a806ddc8c6bbb2606e.1654759036.git.jpoimboe@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <165510853780.4207.497514321420713760.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adjust documents to the file moves made by commit cfc1d277891e ("module:
-Move all into module/").
+The following commit has been merged into the x86/urgent branch of tip:
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Commit-ID:     e32683c6f7d22ba624e0bfc58b02cf3348bdca63
+Gitweb:        https://git.kernel.org/tip/e32683c6f7d22ba624e0bfc58b02cf3348bdca63
+Author:        Josh Poimboeuf <jpoimboe@kernel.org>
+AuthorDate:    Thu, 09 Jun 2022 00:17:32 -07:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Mon, 13 Jun 2022 10:15:04 +02:00
+
+x86/mm: Fix RESERVE_BRK() for older binutils
+
+With binutils 2.26, RESERVE_BRK() causes a build failure:
+
+  /tmp/ccnGOKZ5.s: Assembler messages:
+  /tmp/ccnGOKZ5.s:98: Error: missing ')'
+  /tmp/ccnGOKZ5.s:98: Error: missing ')'
+  /tmp/ccnGOKZ5.s:98: Error: missing ')'
+  /tmp/ccnGOKZ5.s:98: Error: junk at end of line, first unrecognized
+  character is `U'
+
+The problem is this line:
+
+  RESERVE_BRK(early_pgt_alloc, INIT_PGT_BUF_SIZE)
+
+Specifically, the INIT_PGT_BUF_SIZE macro which (via PAGE_SIZE's use
+_AC()) has a "1UL", which makes older versions of the assembler unhappy.
+Unfortunately the _AC() macro doesn't work for inline asm.
+
+Inline asm was only needed here to convince the toolchain to add the
+STT_NOBITS flag.  However, if a C variable is placed in a section whose
+name is prefixed with ".bss", GCC and Clang automatically set
+STT_NOBITS.  In fact, ".bss..page_aligned" already relies on this trick.
+
+So fix the build failure (and simplify the macro) by allocating the
+variable in C.
+
+Also, add NOLOAD to the ".brk" output section clause in the linker
+script.  This is a failsafe in case the ".bss" prefix magic trick ever
+stops working somehow.  If there's a section type mismatch, the GNU
+linker will force the ".brk" output section to be STT_NOBITS.  The LLVM
+linker will fail with a "section type mismatch" error.
+
+Note this also changes the name of the variable from .brk.##name to
+__brk_##name.  The variable names aren't actually used anywhere, so it's
+harmless.
+
+Fixes: a1e2c031ec39 ("x86/mm: Simplify RESERVE_BRK()")
+Reported-by: Joe Damato <jdamato@fastly.com>
+Reported-by: Byungchul Park <byungchul.park@lge.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: Joe Damato <jdamato@fastly.com>
+Link: https://lore.kernel.org/r/22d07a44c80d8e8e1e82b9a806ddc8c6bbb2606e.1654759036.git.jpoimboe@kernel.org
 ---
+ arch/x86/include/asm/setup.h  | 38 ++++++++++++++++++----------------
+ arch/x86/kernel/setup.c       |  5 +----
+ arch/x86/kernel/vmlinux.lds.S |  4 ++--
+ 3 files changed, 23 insertions(+), 24 deletions(-)
 
-I did not touch
-
-  Documentation/translations/zh_CN/core-api/kernel-api.rst
-
-because I cannot modify it.
-
- Documentation/core-api/kernel-api.rst                  |  2 +-
- Documentation/core-api/symbol-namespaces.rst           |  4 ++--
- Documentation/livepatch/module-elf-format.rst          | 10 +++++-----
- .../translations/it_IT/core-api/symbol-namespaces.rst  |  6 +++---
- .../translations/zh_CN/core-api/symbol-namespaces.rst  |  2 +-
- 5 files changed, 12 insertions(+), 12 deletions(-)
-
-diff --git a/Documentation/core-api/kernel-api.rst b/Documentation/core-api/kernel-api.rst
-index d6b3f94b9f1f..0793c400d4b0 100644
---- a/Documentation/core-api/kernel-api.rst
-+++ b/Documentation/core-api/kernel-api.rst
-@@ -223,7 +223,7 @@ Module Loading
- Inter Module support
- --------------------
+diff --git a/arch/x86/include/asm/setup.h b/arch/x86/include/asm/setup.h
+index 7590ac2..f8b9ee9 100644
+--- a/arch/x86/include/asm/setup.h
++++ b/arch/x86/include/asm/setup.h
+@@ -108,19 +108,16 @@ extern unsigned long _brk_end;
+ void *extend_brk(size_t size, size_t align);
  
--Refer to the file kernel/module.c for more information.
-+Refer to the files in kernel/module/ for more information.
+ /*
+- * Reserve space in the brk section.  The name must be unique within the file,
+- * and somewhat descriptive.  The size is in bytes.
++ * Reserve space in the .brk section, which is a block of memory from which the
++ * caller is allowed to allocate very early (before even memblock is available)
++ * by calling extend_brk().  All allocated memory will be eventually converted
++ * to memblock.  Any leftover unallocated memory will be freed.
+  *
+- * The allocation is done using inline asm (rather than using a section
+- * attribute on a normal variable) in order to allow the use of @nobits, so
+- * that it doesn't take up any space in the vmlinux file.
++ * The size is in bytes.
+  */
+-#define RESERVE_BRK(name, size)						\
+-	asm(".pushsection .brk_reservation,\"aw\",@nobits\n\t"		\
+-	    ".brk." #name ":\n\t"					\
+-	    ".skip " __stringify(size) "\n\t"				\
+-	    ".size .brk." #name ", " __stringify(size) "\n\t"		\
+-	    ".popsection\n\t")
++#define RESERVE_BRK(name, size)					\
++	__section(".bss..brk") __aligned(1) __used	\
++	static char __brk_##name[size]
  
- Hardware Interfaces
- ===================
-diff --git a/Documentation/core-api/symbol-namespaces.rst b/Documentation/core-api/symbol-namespaces.rst
-index 5ad9e0abe42c..12e4aecdae94 100644
---- a/Documentation/core-api/symbol-namespaces.rst
-+++ b/Documentation/core-api/symbol-namespaces.rst
-@@ -51,8 +51,8 @@ namespace ``USB_STORAGE``, use::
- The corresponding ksymtab entry struct ``kernel_symbol`` will have the member
- ``namespace`` set accordingly. A symbol that is exported without a namespace will
- refer to ``NULL``. There is no default namespace if none is defined. ``modpost``
--and kernel/module.c make use the namespace at build time or module load time,
--respectively.
-+and kernel/module/main.c make use the namespace at build time or module load
-+time, respectively.
+ extern void probe_roms(void);
+ #ifdef __i386__
+@@ -133,12 +130,19 @@ asmlinkage void __init x86_64_start_reservations(char *real_mode_data);
  
- 2.2 Using the DEFAULT_SYMBOL_NAMESPACE define
- =============================================
-diff --git a/Documentation/livepatch/module-elf-format.rst b/Documentation/livepatch/module-elf-format.rst
-index dbe9b400e39f..7347638895a0 100644
---- a/Documentation/livepatch/module-elf-format.rst
-+++ b/Documentation/livepatch/module-elf-format.rst
-@@ -210,11 +210,11 @@ module->symtab.
- =====================================
- Normally, a stripped down copy of a module's symbol table (containing only
- "core" symbols) is made available through module->symtab (See layout_symtab()
--in kernel/module.c). For livepatch modules, the symbol table copied into memory
--on module load must be exactly the same as the symbol table produced when the
--patch module was compiled. This is because the relocations in each livepatch
--relocation section refer to their respective symbols with their symbol indices,
--and the original symbol indices (and thus the symtab ordering) must be
-+in kernel/module/kallsyms.c). For livepatch modules, the symbol table copied
-+into memory on module load must be exactly the same as the symbol table produced
-+when the patch module was compiled. This is because the relocations in each
-+livepatch relocation section refer to their respective symbols with their symbol
-+indices, and the original symbol indices (and thus the symtab ordering) must be
- preserved in order for apply_relocate_add() to find the right symbol.
+ #endif /* __i386__ */
+ #endif /* _SETUP */
+-#else
+-#define RESERVE_BRK(name,sz)				\
+-	.pushsection .brk_reservation,"aw",@nobits;	\
+-.brk.name:						\
+-1:	.skip sz;					\
+-	.size .brk.name,.-1b;				\
++
++#else  /* __ASSEMBLY */
++
++.macro __RESERVE_BRK name, size
++	.pushsection .bss..brk, "aw"
++SYM_DATA_START(__brk_\name)
++	.skip \size
++SYM_DATA_END(__brk_\name)
+ 	.popsection
++.endm
++
++#define RESERVE_BRK(name, size) __RESERVE_BRK name, size
++
+ #endif /* __ASSEMBLY__ */
++
+ #endif /* _ASM_X86_SETUP_H */
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 3ebb853..bd6c6fd 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -67,11 +67,6 @@ RESERVE_BRK(dmi_alloc, 65536);
+ #endif
  
- For example, take this particular rela from a livepatch module:::
-diff --git a/Documentation/translations/it_IT/core-api/symbol-namespaces.rst b/Documentation/translations/it_IT/core-api/symbol-namespaces.rst
-index 42f5d04e38ec..0f6898860d6d 100644
---- a/Documentation/translations/it_IT/core-api/symbol-namespaces.rst
-+++ b/Documentation/translations/it_IT/core-api/symbol-namespaces.rst
-@@ -50,9 +50,9 @@ Di conseguenza, nella tabella dei simboli del kernel ci sarà una voce
- rappresentata dalla struttura ``kernel_symbol`` che avrà il campo
- ``namespace`` (spazio dei nomi) impostato. Un simbolo esportato senza uno spazio
- dei nomi avrà questo campo impostato a ``NULL``. Non esiste uno spazio dei nomi
--di base. Il programma ``modpost`` e il codice in kernel/module.c usano lo spazio
--dei nomi, rispettivamente, durante la compilazione e durante il caricamento
--di un modulo.
-+di base. Il programma ``modpost`` e il codice in kernel/module/main.c usano lo
-+spazio dei nomi, rispettivamente, durante la compilazione e durante il
-+caricamento di un modulo.
  
- 2.2 Usare il simbolo di preprocessore DEFAULT_SYMBOL_NAMESPACE
- ==============================================================
-diff --git a/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst b/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst
-index 6abf7ed534ca..bb16f0611046 100644
---- a/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst
-+++ b/Documentation/translations/zh_CN/core-api/symbol-namespaces.rst
-@@ -52,7 +52,7 @@
+-/*
+- * Range of the BSS area. The size of the BSS area is determined
+- * at link time, with RESERVE_BRK() facility reserving additional
+- * chunks.
+- */
+ unsigned long _brk_start = (unsigned long)__brk_base;
+ unsigned long _brk_end   = (unsigned long)__brk_base;
  
- 相应的 ksymtab 条目结构体 ``kernel_symbol`` 将有相应的成员 ``命名空间`` 集。
- 导出时未指明命名空间的符号将指向 ``NULL`` 。如果没有定义命名空间，则默认没有。
--``modpost`` 和kernel/module.c分别在构建时或模块加载时使用名称空间。
-+``modpost`` 和kernel/module/main.c分别在构建时或模块加载时使用名称空间。
+diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
+index f5f6dc2..81aba71 100644
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -385,10 +385,10 @@ SECTIONS
+ 	__end_of_kernel_reserve = .;
  
- 2.2 使用DEFAULT_SYMBOL_NAMESPACE定义
- ====================================
--- 
-2.32.0
-
+ 	. = ALIGN(PAGE_SIZE);
+-	.brk : AT(ADDR(.brk) - LOAD_OFFSET) {
++	.brk (NOLOAD) : AT(ADDR(.brk) - LOAD_OFFSET) {
+ 		__brk_base = .;
+ 		. += 64 * 1024;		/* 64k alignment slop space */
+-		*(.brk_reservation)	/* areas brk users have reserved */
++		*(.bss..brk)		/* areas brk users have reserved */
+ 		__brk_limit = .;
+ 	}
+ 
