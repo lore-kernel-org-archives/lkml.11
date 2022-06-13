@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A164C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDDDCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356819AbiFMLvY (ORCPT
+        id S1355818AbiFMLvm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
+        Mon, 13 Jun 2022 07:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357171AbiFMLpo (ORCPT
+        with ESMTP id S1357186AbiFMLpq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:45:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0DA749C98;
-        Mon, 13 Jun 2022 03:51:47 -0700 (PDT)
+        Mon, 13 Jun 2022 07:45:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066D849F2F;
+        Mon, 13 Jun 2022 03:51:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E95DB80D3C;
-        Mon, 13 Jun 2022 10:51:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99443C34114;
-        Mon, 13 Jun 2022 10:51:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F709611B3;
+        Mon, 13 Jun 2022 10:51:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BF45C3411C;
+        Mon, 13 Jun 2022 10:51:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117505;
-        bh=wZ952zhWikajxX9H/+8SDddrcd170PgC6i07FK0S+K4=;
+        s=korg; t=1655117507;
+        bh=Th3DUZqFk8+1/xRoOYXgybjrLnW/ivzgL1Rlj1RfciY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1U28CCCJ+6E2XO8Wnd9UttOzz27/+c5lel1Z7aEwQWdnuuXIgq9s88TJXH4o7K1km
-         /WIc1bLzf4w1/nQF0UxhMSjS4jbq5Fkzr6LGZt2QEtLlGzeYJ9Hrt1+e3o7bvA6xsT
-         /MAc+euMqGLnSkHAYym9o1w6b7kQTeYvijcN76mw=
+        b=RySDj4QIlxpXrQ3fAMUhsXRL6Ddpkg8SdS9Czx4vyDnuSrOtBuxCZXCCMVAmZqbSg
+         wJlyMSmLY1wis9Y7tdNmzFTXARpWRpw5tWyyjqCMPgyfG6kvTiz6HjFffUW7QqOvQw
+         ae4pzPZJ0+GVMknKfhl9m0uF4ROqzhy/QakoDcSQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kyle Smith <kyles@hpe.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Hannes Reinecke <hare@suse.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 037/287] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
-Date:   Mon, 13 Jun 2022 12:07:41 +0200
-Message-Id: <20220613094924.990921410@linuxfoundation.org>
+Subject: [PATCH 5.4 386/411] scsi: myrb: Fix up null pointer access on myrb_cleanup()
+Date:   Mon, 13 Jun 2022 12:10:59 +0200
+Message-Id: <20220613094940.242459061@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,43 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Smith, Kyle Miller (Nimble Kernel) <kyles@hpe.com>
+From: Hannes Reinecke <hare@suse.de>
 
-[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
+[ Upstream commit f9f0a46141e2e39bedb4779c88380d1b5f018c14 ]
 
-In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
--ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
-is checked immediately after the call. However, when we return the error
-message up the stack, to nvme_reset_work the error takes us to
-nvme_remove_dead_ctrl()
-  nvme_dev_disable()
-   nvme_suspend_queue(&dev->queues[0]).
+When myrb_probe() fails the callback might not be set, so we need to
+validate the 'disable_intr' callback in myrb_cleanup() to not cause a null
+pointer exception. And while at it do not call myrb_cleanup() if we cannot
+enable the PCI device at all.
 
-Here, we only check that the admin_q is non-NULL, rather than not
-an error or NULL, and begin quiescing a queue that never existed, leading
-to bad / NULL pointer dereference.
-
-Signed-off-by: Kyle Smith <kyles@hpe.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220523120244.99515-1-hare@suse.de
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Tested-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/myrb.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index d7cf3202cdd3..b06d2b6bd3fe 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -1522,6 +1522,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
- 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
- 		if (IS_ERR(dev->ctrl.admin_q)) {
- 			blk_mq_free_tag_set(&dev->admin_tagset);
-+			dev->ctrl.admin_q = NULL;
- 			return -ENOMEM;
- 		}
- 		if (!blk_get_queue(dev->ctrl.admin_q)) {
+diff --git a/drivers/scsi/myrb.c b/drivers/scsi/myrb.c
+index 539ac8ce4fcd..35b32920a94a 100644
+--- a/drivers/scsi/myrb.c
++++ b/drivers/scsi/myrb.c
+@@ -1241,7 +1241,8 @@ static void myrb_cleanup(struct myrb_hba *cb)
+ 	myrb_unmap(cb);
+ 
+ 	if (cb->mmio_base) {
+-		cb->disable_intr(cb->io_base);
++		if (cb->disable_intr)
++			cb->disable_intr(cb->io_base);
+ 		iounmap(cb->mmio_base);
+ 	}
+ 	if (cb->irq)
+@@ -3516,9 +3517,13 @@ static struct myrb_hba *myrb_detect(struct pci_dev *pdev,
+ 	mutex_init(&cb->dcmd_mutex);
+ 	mutex_init(&cb->dma_mutex);
+ 	cb->pdev = pdev;
++	cb->host = shost;
+ 
+-	if (pci_enable_device(pdev))
+-		goto failure;
++	if (pci_enable_device(pdev)) {
++		dev_err(&pdev->dev, "Failed to enable PCI device\n");
++		scsi_host_put(shost);
++		return NULL;
++	}
+ 
+ 	if (privdata->hw_init == DAC960_PD_hw_init ||
+ 	    privdata->hw_init == DAC960_P_hw_init) {
 -- 
 2.35.1
 
