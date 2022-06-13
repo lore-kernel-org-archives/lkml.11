@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7859FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:15:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:15:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354298AbiFMMNc (ORCPT
+        id S1352012AbiFMMPV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39058 "EHLO
+        Mon, 13 Jun 2022 08:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358685AbiFMMJn (ORCPT
+        with ESMTP id S1353816AbiFMMJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:09:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D8452E67;
-        Mon, 13 Jun 2022 04:00:44 -0700 (PDT)
+        Mon, 13 Jun 2022 08:09:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97997532CE;
+        Mon, 13 Jun 2022 04:00:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBC8F60F9A;
-        Mon, 13 Jun 2022 11:00:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 072A8C34114;
-        Mon, 13 Jun 2022 11:00:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65F41B80EA7;
+        Mon, 13 Jun 2022 11:00:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B61A3C3411C;
+        Mon, 13 Jun 2022 11:00:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118036;
-        bh=yWhz9TOyrS1uXK3v/oK9K3AnSwUT7ipuFe3JPeHhx50=;
+        s=korg; t=1655118039;
+        bh=am04AjD6owRvnb+LGNB0GWp0pAqfo+ZlLBOerBB7Xe0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BOmw7Z4b6Hj6p0+BfolQvP3lkyGJ/nj4jmpPh985THy5iKkaALuzUym/6PgTKBpD4
-         GC0nzOIgstng8fd54Xi9EKL3RWB3lNX2t3VU6rDoa5HI4iQ1SeFgZEGa9jKf6YRVHo
-         XqIZ+XHdgipP4l5Mdc4ZKSbNNjuK8PM3jRnhKRBo=
+        b=KW0hIOWHec03gc3rHIvevK/IwGzafCPBTk18NnviEXeg+goVBcXnLbNCQZyHAKRKm
+         DHP2HbERMQsDXqT5rtpYlUK4ZWFuqhjxF2OgjFjOiEitEKKGrpQsqI8hJdThxdj/Ck
+         44DldnC+ijbgw5KlpU/vuV4ToDA5xve5r1Ewi6dY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        stable@vger.kernel.org, Romain Naour <romain.naour@smile.fr>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 196/287] pwm: lp3943: Fix duty calculation in case period was clamped
-Date:   Mon, 13 Jun 2022 12:10:20 +0200
-Message-Id: <20220613094929.807154557@linuxfoundation.org>
+Subject: [PATCH 4.19 213/287] bus: ti-sysc: Fix warnings for unbind for serial
+Date:   Mon, 13 Jun 2022 12:10:37 +0200
+Message-Id: <20220613094930.321973001@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,35 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Tony Lindgren <tony@atomide.com>
 
-[ Upstream commit 5e3b07ca5cc78cd4a987e78446849e41288d87cb ]
+[ Upstream commit c337125b8834f9719dfda0e40b25eaa266f1b8cf ]
 
-The hardware only supports periods <= 1.6 ms and if a bigger period is
-requested it is clamped to 1.6 ms. In this case duty_cycle might be bigger
-than 1.6 ms and then the duty cycle register is written with a value
-bigger than LP3943_MAX_DUTY. So clamp duty_cycle accordingly.
+We can get "failed to disable" clock_unprepare warnings on unbind at least
+for the serial console device if the unbind is done before the device has
+been idled.
 
-Fixes: af66b3c0934e ("pwm: Add LP3943 PWM driver")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+As some devices are using deferred idle, we must check the status for
+pending idle work to idle the device.
+
+Fixes: 76f0f772e469 ("bus: ti-sysc: Improve handling for no-reset-on-init and no-idle-on-init")
+Cc: Romain Naour <romain.naour@smile.fr>
+Reviewed-by: Romain Naour <romain.naour@smile.fr>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Link: https://lore.kernel.org/r/20220512053021.61650-1-tony@atomide.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-lp3943.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/bus/ti-sysc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
-index 5055ba2c6c94..a5f4c39eeb21 100644
---- a/drivers/pwm/pwm-lp3943.c
-+++ b/drivers/pwm/pwm-lp3943.c
-@@ -128,6 +128,7 @@ static int lp3943_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (err)
- 		return err;
+diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
+index b6a278183d82..bc274ddb9767 100644
+--- a/drivers/bus/ti-sysc.c
++++ b/drivers/bus/ti-sysc.c
+@@ -1801,7 +1801,9 @@ static int sysc_remove(struct platform_device *pdev)
+ 	struct sysc *ddata = platform_get_drvdata(pdev);
+ 	int error;
  
-+	duty_ns = min(duty_ns, period_ns);
- 	val = (u8)(duty_ns * LP3943_MAX_DUTY / period_ns);
+-	cancel_delayed_work_sync(&ddata->idle_work);
++	/* Device can still be enabled, see deferred idle quirk in probe */
++	if (cancel_delayed_work_sync(&ddata->idle_work))
++		ti_sysc_idle(&ddata->idle_work.work);
  
- 	return lp3943_write_byte(lp3943, reg_duty, val);
+ 	error = pm_runtime_get_sync(ddata->dev);
+ 	if (error < 0) {
 -- 
 2.35.1
 
