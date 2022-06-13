@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A69CCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15307CCA488
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383760AbiFMOX6 (ORCPT
+        id S1384504AbiFMOZp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
+        Mon, 13 Jun 2022 10:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382963AbiFMOV2 (ORCPT
+        with ESMTP id S1382866AbiFMOWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:21:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2873A2E092;
-        Mon, 13 Jun 2022 04:44:00 -0700 (PDT)
+        Mon, 13 Jun 2022 10:22:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39879A26FF;
+        Mon, 13 Jun 2022 04:44:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 09C9B6124E;
-        Mon, 13 Jun 2022 11:44:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1519FC34114;
-        Mon, 13 Jun 2022 11:43:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9EFDB80D31;
+        Mon, 13 Jun 2022 11:44:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CB21C34114;
+        Mon, 13 Jun 2022 11:44:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120639;
-        bh=ifA7lA7FbfM0V7ZenCFcpEE+5IR5N5Fy03biaMdVr9A=;
+        s=korg; t=1655120650;
+        bh=hHXElzreZ9LF69NloOsVdVXf/pv3tv3lyHSk/iLVSBM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i2AGIeky2qGcPCN2mlpfN5hMfrZf3ZiYOEGqhYnGapdAANd0QF+opk+rrcA3/juse
-         aXHZYqidjo3Sa9+dssQ9UeiBqIObOblFCe5bTne4Wfn1jBmSM8mXUR6TUw2L6tpGkn
-         UZg6uFq7aTUHshP2VsPETxDMZQZFARlqDP6MlHVQ=
+        b=y1uW94obYBJyfTICNxeXGx+Ze5MzwqIADCL5XPEKP9n8mrLR3+1aC3SAXQayeMMR9
+         uv/gRzACib/JAdxMreUswFqE/eB+uGxbv15ZuLTgjxxEGsLAkaW3njyjMKn9R29EVh
+         h+3R3Aw1pXigdFGp8NuKLnVtpXSFEcrvN9HMG4YQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 104/298] block: make bioset_exit() fully resilient against being called twice
-Date:   Mon, 13 Jun 2022 12:09:58 +0200
-Message-Id: <20220613094928.104799885@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 107/298] virtio: pci: Fix an error handling path in vp_modern_probe()
+Date:   Mon, 13 Jun 2022 12:10:01 +0200
+Message-Id: <20220613094928.194453365@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,40 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 605f7415ecfb426610195dd6c7577b30592b3369 ]
+[ Upstream commit 7a836a2aba09479c8e71fa43249eecc4af945f61 ]
 
-Most of bioset_exit() is fine being called twice, as it clears the
-various allocations etc when they are freed. The exception is
-bio_alloc_cache_destroy(), which does not clear ->cache when it has
-freed it.
+If an error occurs after a successful pci_request_selected_regions() call,
+it should be undone by a corresponding pci_release_selected_regions() call,
+as already done in vp_modern_remove().
 
-This isn't necessarily a bug, but can be if buggy users does call the
-exit path more then once, or with just a memset() bioset which has
-never been initialized. dm appears to be one such user.
-
-Fixes: be4d234d7aeb ("bio: add allocation cache abstraction")
-Link: https://lore.kernel.org/linux-block/YpK7m+14A+pZKs5k@casper.infradead.org/
-Reported-by: Matthew Wilcox <willy@infradead.org>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: fd502729fbbf ("virtio-pci: introduce modern device module")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Message-Id: <237109725aad2c3c03d14549f777b1927c84b045.1648977064.git.christophe.jaillet@wanadoo.fr>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bio.c | 1 +
+ drivers/virtio/virtio_pci_modern_dev.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/block/bio.c b/block/bio.c
-index 738fea03edbf..dc6940621d7d 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -668,6 +668,7 @@ static void bio_alloc_cache_destroy(struct bio_set *bs)
- 		bio_alloc_cache_prune(cache, -1U);
- 	}
- 	free_percpu(bs->cache);
-+	bs->cache = NULL;
+diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
+index e8b3ff2b9fbc..6f6187fe8893 100644
+--- a/drivers/virtio/virtio_pci_modern_dev.c
++++ b/drivers/virtio/virtio_pci_modern_dev.c
+@@ -340,6 +340,7 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
+ err_map_isr:
+ 	pci_iounmap(pci_dev, mdev->common);
+ err_map_common:
++	pci_release_selected_regions(pci_dev, mdev->modern_bars);
+ 	return err;
  }
- 
- /**
+ EXPORT_SYMBOL_GPL(vp_modern_probe);
 -- 
 2.35.1
 
