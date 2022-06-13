@@ -2,93 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB6E4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D92F4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377448AbiFMN04 (ORCPT
+        id S1377459AbiFMN1C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:26:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42984 "EHLO
+        Mon, 13 Jun 2022 09:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376980AbiFMNYv (ORCPT
+        with ESMTP id S1357425AbiFMNYx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:24:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCCE6BFE7;
-        Mon, 13 Jun 2022 04:24:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 13 Jun 2022 09:24:53 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D4D6C0D8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 04:24:15 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 50D7C21CC7;
+        Mon, 13 Jun 2022 11:24:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1655119454; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oVDyyQNRZdOpJs5Ykd60IDoqlaom7m+VsdjwLrey5C4=;
+        b=l7TxDF/FRkFqe6u/FqVZiF7Ihqp5aGKfbXpdYa9J5gK2wPjMO7VFhYqh42d1WpkPlSFmlV
+        mPRuubJBOa4M4vF19l1U3+6IU3ee+UOpbo5JyDQ9EMDrSDxvRmjpzsCekD2hspvQC7fwKg
+        pdEsnXGZvSTphJrd1x52d/duHpuQ6iQ=
+Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84A176101F;
-        Mon, 13 Jun 2022 11:24:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B886C34114;
-        Mon, 13 Jun 2022 11:24:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119451;
-        bh=VMEpLp3jl/DqBn9a/YOkRUBB4mDMM4VZdl9IrsDdYLE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uACcyfvFhkcnowmqZJrmj+H/yZ+ckDpMGEHcTVgX9S0dQKtLV0esFaZQOf+3bFHzc
-         urDSumTNd41YHYiD7jOkLPWVl2WLpyZZX3lVcDXOO4TeAWNi/WS+4wj4SO5Diy0Tsz
-         PY1ghPDAo+6N1/Rx2/94tkw7vsMyCACj9oljxlv0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Vaibhav Agarwal <vaibhav.sr@gmail.com>,
-        Mark Greer <mgreer@animalcreek.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 002/339] staging: greybus: codecs: fix type confusion of list iterator variable
-Date:   Mon, 13 Jun 2022 12:07:07 +0200
-Message-Id: <20220613094926.577273779@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
-References: <20220613094926.497929857@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by relay2.suse.de (Postfix) with ESMTPS id 29D2C2C141;
+        Mon, 13 Jun 2022 11:24:14 +0000 (UTC)
+Date:   Mon, 13 Jun 2022 13:24:10 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Peter Geis <pgwipeout@gmail.com>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
+Subject: Re: [BUG] Threaded printk breaks early debugging
+Message-ID: <YqceWi1524yuVITi@alley>
+References: <CAMdYzYpF4FNTBPZsEFeWRuEwSies36QM_As8osPWZSr2q-viEA@mail.gmail.com>
+ <87y1y48spg.fsf@jogness.linutronix.de>
+ <CAMdYzYr-Wo713Y4qjboTpoK6GcrYfKCfRJAEizwXw6-=dymVzg@mail.gmail.com>
+ <87zgihlbst.fsf@jogness.linutronix.de>
+ <CAMdYzYosXiQc9=t7daPaWWS=rnTVT6nnZvVBXDycBQvfR-1FAA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMdYzYosXiQc9=t7daPaWWS=rnTVT6nnZvVBXDycBQvfR-1FAA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+On Sun 2022-06-12 19:30:27, Peter Geis wrote:
+> On Sun, Jun 12, 2022 at 7:08 PM John Ogness <john.ogness@linutronix.de> wrote:
+> >
+> > On 2022-06-10, Peter Geis <pgwipeout@gmail.com> wrote:
+> > > This might be a side effect of the fact that this is on a low powered
+> > > arm64 board. I noticed with threading enabled during large bursts the
+> > > console drops an excessive amount of messages.
 
-[ Upstream commit 84ef256550196bc06e6849a34224c998b45bd557 ]
+What do you mean that console drops an excessive amount of messages,
+please?
 
-If the list does not exit early then data == NULL and 'module' does not
-point to a valid list element.
-Using 'module' in such a case is not valid and was therefore removed.
+Do you see "dropped XXX messages" in the console output?
+Or something else?
 
-Fixes: 6dd67645f22c ("greybus: audio: Use single codec driver registration")
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Vaibhav Agarwal <vaibhav.sr@gmail.com>
-Reviewed-by: Mark Greer <mgreer@animalcreek.com>
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Link: https://lore.kernel.org/r/20220321123626.3068639-1-jakobkoschel@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/staging/greybus/audio_codec.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> > > It's especially
+> > > apparent during the handover from earlycon to the normal console.
+> >
+> > I guess you have a very small kernel buffer and are generating unusually
+> > high amounts of messages? Is there a reason you cannot use a larger
+> > buffer?
+> 
+> The buffer isn't an issue here, everything is available in dmesg when
+> userspace becomes available. Instead some messages bound for the
+> serial console are never output.
 
-diff --git a/drivers/staging/greybus/audio_codec.c b/drivers/staging/greybus/audio_codec.c
-index b589cf6b1d03..e19b91e7a72e 100644
---- a/drivers/staging/greybus/audio_codec.c
-+++ b/drivers/staging/greybus/audio_codec.c
-@@ -599,8 +599,8 @@ static int gbcodec_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
- 			break;
- 	}
- 	if (!data) {
--		dev_err(dai->dev, "%s:%s DATA connection missing\n",
--			dai->name, module->name);
-+		dev_err(dai->dev, "%s DATA connection missing\n",
-+			dai->name);
- 		mutex_unlock(&codec->lock);
- 		return -ENODEV;
- 	}
--- 
-2.35.1
+This is strage. The message "dropped XXX messages" is printed only
+when the buffer was full and the oldest messages were overwritten
+before they were pushed to the console. If "dmesg" shows all messages
+it means that no messages were overwritten.
 
-
-
+Best Regards,
+Petr
