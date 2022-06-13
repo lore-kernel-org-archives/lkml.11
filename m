@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D60CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9546ECCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239651AbiFMIMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:12:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36786 "EHLO
+        id S239700AbiFMIMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239726AbiFMILr (ORCPT
+        with ESMTP id S239558AbiFMILe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:11:47 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461A71EAE7;
-        Mon, 13 Jun 2022 01:11:39 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LM42C4Z3rzRj2S;
-        Mon, 13 Jun 2022 16:08:19 +0800 (CST)
+        Mon, 13 Jun 2022 04:11:34 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A9E1E3EE;
+        Mon, 13 Jun 2022 01:11:32 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LM43f4RsPz1K9V7;
+        Mon, 13 Jun 2022 16:09:34 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 16:11:07 +0800
+ 15.1.2375.24; Mon, 13 Jun 2022 16:11:02 +0800
 Received: from thunder-town.china.huawei.com (10.174.178.55) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 16:11:05 +0800
+ 15.1.2375.24; Mon, 13 Jun 2022 16:11:01 +0800
 From:   Zhen Lei <thunder.leizhen@huawei.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
@@ -47,9 +47,9 @@ CC:     Zhen Lei <thunder.leizhen@huawei.com>,
         Chen Zhou <dingguo.cz@antgroup.com>,
         "John Donnelly" <John.p.donnelly@oracle.com>,
         Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: [PATCH 5/5] arm64: kdump: Don't defer the reservation of crash high memory
-Date:   Mon, 13 Jun 2022 16:09:32 +0800
-Message-ID: <20220613080932.663-6-thunder.leizhen@huawei.com>
+Subject: [PATCH 1/5] arm64: kdump: Provide default size when crashkernel=Y,low is not specified
+Date:   Mon, 13 Jun 2022 16:09:28 +0800
+Message-ID: <20220613080932.663-2-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.26.0.windows.1
 In-Reply-To: <20220613080932.663-1-thunder.leizhen@huawei.com>
 References: <20220613080932.663-1-thunder.leizhen@huawei.com>
@@ -64,137 +64,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the crashkernel has both high memory above DMA zones and low memory
-in DMA zones, kexec always loads the content such as Image and dtb to the
-high memory instead of the low memory. This means that only high memory
-requires write protection based on page-level mapping. The allocation of
-high memory does not depend on the DMA boundary. So we can reserve the
-high memory first even if the crashkernel reservation is deferred.
-
-This means that the block mapping can still be performed on other kernel
-linear address spaces, the TLB miss rate can be reduced and the system
-performance will be improved.
+To be consistent with the implementation of x86 and improve cross-platform
+user experience. Try to allocate at least 256 MiB low memory automatically
+when crashkernel=Y,low is not specified.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- arch/arm64/mm/init.c | 71 ++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 65 insertions(+), 6 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt |  8 +-------
+ arch/arm64/mm/init.c                            | 12 +++++++++++-
+ 2 files changed, 12 insertions(+), 8 deletions(-)
 
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 8090130b544b070..61b179232b68001 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -843,7 +843,7 @@
+ 			available.
+ 			It will be ignored if crashkernel=X is specified.
+ 	crashkernel=size[KMG],low
+-			[KNL, X86-64] range under 4G. When crashkernel=X,high
++			[KNL, X86-64, ARM64] range under 4G. When crashkernel=X,high
+ 			is passed, kernel could allocate physical memory region
+ 			above 4G, that cause second kernel crash on system
+ 			that require some amount of low memory, e.g. swiotlb
+@@ -857,12 +857,6 @@
+ 			It will be ignored when crashkernel=X,high is not used
+ 			or memory reserved is below 4G.
+ 
+-			[KNL, ARM64] range in low memory.
+-			This one lets the user specify a low range in the
+-			DMA zone for the crash dump kernel.
+-			It will be ignored when crashkernel=X,high is not used
+-			or memory reserved is located in the DMA zones.
+-
+ 	cryptomgr.notests
+ 			[KNL] Disable crypto self-tests
+ 
 diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index fb24efbc46f5ef4..ae0bae2cafe6ab0 100644
+index 339ee84e5a61a0b..5390f361208ccf7 100644
 --- a/arch/arm64/mm/init.c
 +++ b/arch/arm64/mm/init.c
-@@ -141,15 +141,44 @@ static void __init reserve_crashkernel(int dma_state)
- 	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
- 	char *cmdline = boot_command_line;
- 	int dma_enabled = IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32);
--	int ret;
-+	int ret, skip_res = 0, skip_low_res = 0;
- 	bool fixed_base;
+@@ -96,6 +96,14 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
+ #define CRASH_ADDR_LOW_MAX		arm64_dma_phys_limit
+ #define CRASH_ADDR_HIGH_MAX		(PHYS_MASK + 1)
  
- 	if (!IS_ENABLED(CONFIG_KEXEC_CORE))
- 		return;
- 
--	if ((!dma_enabled && (dma_state != DMA_PHYS_LIMIT_UNKNOWN)) ||
--	     (dma_enabled && (dma_state != DMA_PHYS_LIMIT_KNOWN)))
--		return;
-+	/*
-+	 * In the following table:
-+	 * X,high  means crashkernel=X,high
-+	 * unknown means dma_state = DMA_PHYS_LIMIT_UNKNOWN
-+	 * known   means dma_state = DMA_PHYS_LIMIT_KNOWN
-+	 *
-+	 * The first two columns indicate the status, and the last two
-+	 * columns indicate the phase in which crash high or low memory
-+	 * needs to be reserved.
-+	 *  ---------------------------------------------------
-+	 * | DMA enabled | X,high used |  unknown  |   known   |
-+	 *  ---------------------------------------------------
-+	 * |      N            N       |    low    |    NOP    |
-+	 * |      Y            N       |    NOP    |    low    |
-+	 * |      N            Y       |  high/low |    NOP    |
-+	 * |      Y            Y       |    high   |    low    |
-+	 *  ---------------------------------------------------
-+	 *
-+	 * But in this function, the crash high memory allocation of
-+	 * crashkernel=Y,high and the crash low memory allocation of
-+	 * crashkernel=X[@offset] for crashk_res are mixed at one place.
-+	 * So the table above need to be adjusted as below:
-+	 *  ---------------------------------------------------
-+	 * | DMA enabled | X,high used |  unknown  |   known   |
-+	 *  ---------------------------------------------------
-+	 * |      N            N       |    res    |    NOP    |
-+	 * |      Y            N       |    NOP    |    res    |
-+	 * |      N            Y       |res/low_res|    NOP    |
-+	 * |      Y            Y       |    res    |  low_res  |
-+	 *  ---------------------------------------------------
-+	 *
-+	 */
- 
- 	/* crashkernel=X[@offset] */
- 	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
-@@ -169,10 +198,33 @@ static void __init reserve_crashkernel(int dma_state)
- 		else if (ret)
++/*
++ * This is an empirical value in x86_64 and taken here directly. Please
++ * refer to the code comment in reserve_crashkernel_low() of x86_64 for more
++ * details.
++ */
++#define DEFAULT_CRASH_KERNEL_LOW_SIZE	\
++	max(swiotlb_size_or_default() + (8UL << 20), 256UL << 20)
++
+ static int __init reserve_crashkernel_low(unsigned long long low_size)
+ {
+ 	unsigned long long low_base;
+@@ -147,7 +155,9 @@ static void __init reserve_crashkernel(void)
+ 		 * is not allowed.
+ 		 */
+ 		ret = parse_crashkernel_low(cmdline, 0, &crash_low_size, &crash_base);
+-		if (ret && (ret != -ENOENT))
++		if (ret == -ENOENT)
++			crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
++		else if (ret)
  			return;
  
-+		/* See the third row of the second table above, NOP */
-+		if (!dma_enabled && (dma_state == DMA_PHYS_LIMIT_KNOWN))
-+			return;
-+
-+		/* See the fourth row of the second table above */
-+		if (dma_enabled) {
-+			if (dma_state == DMA_PHYS_LIMIT_UNKNOWN)
-+				skip_low_res = 1;
-+			else
-+				skip_res = 1;
-+		}
-+
  		crash_max = CRASH_ADDR_HIGH_MAX;
- 	} else if (ret || !crash_size) {
- 		/* The specified value is invalid */
- 		return;
-+	} else {
-+		/* See the 1-2 rows of the second table above, NOP */
-+		if ((!dma_enabled && (dma_state == DMA_PHYS_LIMIT_KNOWN)) ||
-+		     (dma_enabled && (dma_state == DMA_PHYS_LIMIT_UNKNOWN)))
-+			return;
-+	}
-+
-+	if (skip_res) {
-+		crash_base = crashk_res.start;
-+		crash_size = crashk_res.end - crashk_res.start + 1;
-+		goto check_low;
- 	}
- 
- 	fixed_base = !!crash_base;
-@@ -202,9 +254,18 @@ static void __init reserve_crashkernel(int dma_state)
- 		return;
- 	}
- 
-+	crashk_res.start = crash_base;
-+	crashk_res.end = crash_base + crash_size - 1;
-+
-+check_low:
-+	if (skip_low_res)
-+		return;
-+
- 	if ((crash_base >= CRASH_ADDR_LOW_MAX) &&
- 	     crash_low_size && reserve_crashkernel_low(crash_low_size)) {
- 		memblock_phys_free(crash_base, crash_size);
-+		crashk_res.start = 0;
-+		crashk_res.end = 0;
- 		return;
- 	}
- 
-@@ -219,8 +280,6 @@ static void __init reserve_crashkernel(int dma_state)
- 	if (crashk_low_res.end)
- 		kmemleak_ignore_phys(crashk_low_res.start);
- 
--	crashk_res.start = crash_base;
--	crashk_res.end = crash_base + crash_size - 1;
- 	insert_resource(&iomem_resource, &crashk_res);
- }
- 
 -- 
 2.25.1
 
