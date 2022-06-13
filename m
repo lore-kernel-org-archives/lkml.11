@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA61BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 602E3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:10:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352131AbiFMLKs (ORCPT
+        id S1352149AbiFMLKx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45192 "EHLO
+        Mon, 13 Jun 2022 07:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351881AbiFMLFL (ORCPT
+        with ESMTP id S1350108AbiFMLFQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:05:11 -0400
+        Mon, 13 Jun 2022 07:05:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFF127FED;
-        Mon, 13 Jun 2022 03:34:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E75F286D3;
+        Mon, 13 Jun 2022 03:34:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D21B60FFD;
-        Mon, 13 Jun 2022 10:34:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3AAAC34114;
-        Mon, 13 Jun 2022 10:34:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DBDC60FF9;
+        Mon, 13 Jun 2022 10:34:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D598C34114;
+        Mon, 13 Jun 2022 10:34:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116467;
-        bh=Ce7/FlVG2OBXdAX/jjQ4D4Z17J2tl1rW4UQz8EGNfcM=;
+        s=korg; t=1655116491;
+        bh=AOS42axP5OYCMDW3Jk1g2LLUuQWM2TgCSl0hK4lOMR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZyZKVBj/fj1WMp9LZwIaXM8XLv+ovYKXoA4ack1Yx3UyYwD7wzEc03FPlPCucBMe/
-         kbhE6fkoBqlpDa0ez5U8wt4RttXEStrDw8FjkbJ7K0EFlmwHfnWhTtm4YPuTdWuz0B
-         /OiLbTMMImPBMGsrkvGv++nUdzzIWsyYo8Dbpc98=
+        b=sfXSwVSMH7EeUwxsUZa0mYwAu4fPi8/QKdp2GJiAUNmD/3Ig5xQIHUPEHnJn5KhGH
+         y5mNP71F3kbEaW1w8P63JlfNbEGyGqqGOUMlx3BinRf8U8E6dgMWrBMLi70wOSbmrY
+         oJJRhnaS/gb8Q5mIG1rlQRF/HQ1lp7JKkkasUFd4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 091/411] nl80211: show SSID for P2P_GO interfaces
-Date:   Mon, 13 Jun 2022 12:06:04 +0200
-Message-Id: <20220613094931.411219178@linuxfoundation.org>
+        stable@vger.kernel.org, Donald Buczek <buczek@molgen.mpg.de>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 197/218] md: protect md_unregister_thread from reentrancy
+Date:   Mon, 13 Jun 2022 12:10:55 +0200
+Message-Id: <20220613094926.595648403@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,35 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-[ Upstream commit a75971bc2b8453630e9f85e0beaa4da8db8277a3 ]
+[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
 
-There's no real reason not to send the SSID to userspace
-when it requests information about P2P_GO, it is, in that
-respect, exactly the same as AP interfaces. Fix that.
+Generally, the md_unregister_thread is called with reconfig_mutex, but
+raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
+so md_unregister_thread can be called simulitaneously from two call sites
+in theory.
 
-Fixes: 44905265bc15 ("nl80211: don't expose wdev->ssid for most interfaces")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220318134656.14354ae223f0.Ia25e85a512281b92e1645d4160766a4b1a471597@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Then after previous commit which remove the protection of reconfig_mutex
+for md_unregister_thread completely, the potential issue could be worse
+than before.
+
+Let's take pers_lock at the beginning of function to ensure reentrancy.
+
+Reported-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/md/md.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index d3e2b97d5d05..8459f5b6002e 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -3240,6 +3240,7 @@ static int nl80211_send_iface(struct sk_buff *msg, u32 portid, u32 seq, int flag
- 	wdev_lock(wdev);
- 	switch (wdev->iftype) {
- 	case NL80211_IFTYPE_AP:
-+	case NL80211_IFTYPE_P2P_GO:
- 		if (wdev->ssid_len &&
- 		    nla_put(msg, NL80211_ATTR_SSID, wdev->ssid_len, wdev->ssid))
- 			goto nla_put_failure_locked;
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 9b0270dc37f4..36d4cc1d7429 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -7590,17 +7590,22 @@ EXPORT_SYMBOL(md_register_thread);
+ 
+ void md_unregister_thread(struct md_thread **threadp)
+ {
+-	struct md_thread *thread = *threadp;
+-	if (!thread)
+-		return;
+-	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+-	/* Locking ensures that mddev_unlock does not wake_up a
++	struct md_thread *thread;
++
++	/*
++	 * Locking ensures that mddev_unlock does not wake_up a
+ 	 * non-existent thread
+ 	 */
+ 	spin_lock(&pers_lock);
++	thread = *threadp;
++	if (!thread) {
++		spin_unlock(&pers_lock);
++		return;
++	}
+ 	*threadp = NULL;
+ 	spin_unlock(&pers_lock);
+ 
++	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+ 	kthread_stop(thread->tsk);
+ 	kfree(thread);
+ }
 -- 
 2.35.1
 
