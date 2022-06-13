@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A822CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39064CCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358227AbiFMNEL (ORCPT
+        id S1358403AbiFMNER (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49546 "EHLO
+        Mon, 13 Jun 2022 09:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355430AbiFMM4D (ORCPT
+        with ESMTP id S1355492AbiFMM4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:56:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F4C12A82;
-        Mon, 13 Jun 2022 04:17:01 -0700 (PDT)
+        Mon, 13 Jun 2022 08:56:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E7D12D0D;
+        Mon, 13 Jun 2022 04:17:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2D4460EF1;
-        Mon, 13 Jun 2022 11:17:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BA48C34114;
-        Mon, 13 Jun 2022 11:16:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B79A260B60;
+        Mon, 13 Jun 2022 11:17:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5DADC34114;
+        Mon, 13 Jun 2022 11:17:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119020;
-        bh=isPy1lEIEV/Yb9k1s123x9G4HSbBUjDuaX5eNnHUFno=;
+        s=korg; t=1655119023;
+        bh=EFH/jpz6Y7HbXvroxBQ+an5CCn0BgHUFSg7kxrGjx/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5Q9dJ26GPgHVgIJQymEyTcTIbLr8AqogbsRaQt5iz35pgBbZghTTHIGmG2T0Q5wQ
-         tW/DersjtnzCNRtwM25Oku93QjdUngSjrLX3KRA+wZReRe9iW1GIvpXbSDAN86Mxf7
-         LkumfxCxnTXQGo3HC+NixSYumZMAtvymFHxz3cuw=
+        b=VSZyhebbLLKQ59ZhT0eFMw/ptpAJgdvH2JxmaF72eF3tghJQfhyMsQEtlO560Iw06
+         w5j48UeFqUxA56CUE5YPXAJ9xrn1ACbe9Tl10M1mqU6pWFdHawJONsiusq5Os6eyzr
+         bDJNEbglAt0hZnOqqiPucglUi+J9WWqJrFqyYitM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Guangguan Wang <guangguan.wang@linux.alibaba.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 085/247] net/smc: fixes for converting from "struct smc_cdc_tx_pend **" to "struct smc_wr_tx_pend_priv *"
-Date:   Mon, 13 Jun 2022 12:09:47 +0200
-Message-Id: <20220613094925.533641933@linuxfoundation.org>
+Subject: [PATCH 5.15 076/247] modpost: fix removing numeric suffixes
+Date:   Mon, 13 Jun 2022 12:09:38 +0200
+Message-Id: <20220613094925.262644048@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,34 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit e225c9a5a74b12e9ef8516f30a3db2c7eb866ee1 ]
+[ Upstream commit b5beffa20d83c4e15306c991ffd00de0d8628338 ]
 
-"struct smc_cdc_tx_pend **" can not directly convert
-to "struct smc_wr_tx_pend_priv *".
+With the `-z unique-symbol` linker flag or any similar mechanism,
+it is possible to trigger the following:
 
-Fixes: 2bced6aefa3d ("net/smc: put slot when connection is killed")
-Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
+
+The reason is that for now the condition from remove_dot():
+
+if (m && (s[n + m] == '.' || s[n + m] == 0))
+
+which was designed to test if it's a dot or a '\0' after the suffix
+is never satisfied.
+This is due to that `s[n + m]` always points to the last digit of a
+numeric suffix, not on the symbol next to it (from a custom debug
+print added to modpost):
+
+param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
+
+So it's off-by-one and was like that since 2014.
+
+Fix this for the sake of any potential upcoming features, but don't
+bother stable-backporting, as it's well hidden -- apart from that
+LD flag, it can be triggered only with GCC LTO which never landed
+upstream.
+
+Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/smc_cdc.c | 2 +-
+ scripts/mod/modpost.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
-index 84c8a4374fdd..5d180d24cbf1 100644
---- a/net/smc/smc_cdc.c
-+++ b/net/smc/smc_cdc.c
-@@ -72,7 +72,7 @@ int smc_cdc_get_free_slot(struct smc_connection *conn,
- 		/* abnormal termination */
- 		if (!rc)
- 			smc_wr_tx_put_slot(link,
--					   (struct smc_wr_tx_pend_priv *)pend);
-+					   (struct smc_wr_tx_pend_priv *)(*pend));
- 		rc = -EPIPE;
- 	}
- 	return rc;
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index ca491aa2b376..7a5bddb8913e 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1971,7 +1971,7 @@ static char *remove_dot(char *s)
+ 
+ 	if (n && s[n]) {
+ 		size_t m = strspn(s + n + 1, "0123456789");
+-		if (m && (s[n + m] == '.' || s[n + m] == 0))
++		if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
+ 			s[n] = 0;
+ 
+ 		/* strip trailing .lto */
 -- 
 2.35.1
 
