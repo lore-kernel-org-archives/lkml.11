@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF69CCA47D
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA3DCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346572AbiFMTAy (ORCPT
+        id S1345445AbiFMTA5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49332 "EHLO
+        Mon, 13 Jun 2022 15:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345547AbiFMTAV (ORCPT
+        with ESMTP id S241927AbiFMTAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 15:00:21 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCE399699
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:47 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id y66-20020a62ce45000000b0051bb4d19f5fso2529074pfg.18
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:47 -0700 (PDT)
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408819969E
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:51 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id c10-20020a170903234a00b00168b5f7661bso3305593plh.6
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=sy+hmtF7QKGhId1UgWThmfgFGGqtRHfIUJnJ5VlAWU0=;
-        b=qrtFAHt9rp+72ySJkfHU7Fg5FmipHO1J6AWR5Swn2IiWMy2/NArZiMfakO3QjNb3B0
-         GmjpctXxY4ozxNYdvp2wSgh09QgpjtMaIgjT1WIg90tbaktKV7yTsGpfOd2gaYI5xuQB
-         kGPRBBtzQvy8WGwGe5wa2B0nZj5Gmc40dfzLhCPC8caKQnFlajkHevIoUpRhYJibO5Yl
-         EIYL+U9VCoXKvpNF+1UjtfJlpK2J9aIlGi4gJmeGivVGYEa5j7asTZ0KmZ07pF5+Nhdr
-         UXk7SGoTA0wkvw/PdN+7adsuXp6nExu+mo4SCI5aThjSUedxIF1z2QFwdQB0Hg2Pnasc
-         E7jg==
+        bh=TaFkEEYysed0ZjHcXQwF9Zz5rGBFJVxcbzKnAkD2bLE=;
+        b=BdyUyuAnmo6m8r1koxsfiOlsc5iBNlYySi3Y71QAYuY10veGPQMdUfMGhTfXRAD/jp
+         SaugyRrAgCkYojFlfApB5/etcSDN8V3lOYeZbFaLsfFxquOJpuM7LqW1zpASrDwckUmz
+         j/Z0XFHKi+sAiqu+/S7/+sdCMNhh5cz6On2RgMVy/6TzrZUxACT1WPSaoKueO5gbBNRL
+         VT73mZjb7UOAZvch0+ny+tV5U7YNfmQEetOqihOu6tPpGN7lA/4r99PVFyO1KI8OSaLT
+         8ZVdkz4NMXRaVxReAL6jLw2J0RfErikAiKKvUu4FY26zUvFXv2WHfvkqNJhwloC9P74f
+         QIKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=sy+hmtF7QKGhId1UgWThmfgFGGqtRHfIUJnJ5VlAWU0=;
-        b=LuTT+xI8AuqF/hew1qjqNSLUWs9lafuxC3ns6PeRPSUqSHEJSu3qJW+Ctzx+/bVYGV
-         zWE803/OPr0bltt/jqOgkRvrsvN8ysaspC5rdop0ssddU/C3JF9za6WMTz8ulbZwDwiP
-         XwfWFUBgJjsk7VIDTzbzyrXYp89eqh2seNfOVYvvtx7VnGpnrF8vjDEPOnnv9h4a7VHq
-         yEbUE5NEjp/0ddRqvTpKiHPMnQC3WtJL5mNiDNSD7tDoEbuk8nl80gXEX80rPEYLFrpW
-         DpTvppbrj2sDmoIjORsaVxve8Rm76SAiFTJKE0OSWcM/3BFGezJocw6ff16iW/pyg4i4
-         LQGA==
-X-Gm-Message-State: AJIora8kpIQJndxL1zq4fpH8J3XPg45c44DvGgw8fJKpnybICyCf9YkC
-        CuKoTnFECtBkM/P6YqVo7Lj0ZBrLRnc=
-X-Google-Smtp-Source: AGRyM1vE38OcLZYRVPHib6kgCVJ/M2iTypkcdODR6DxYQT/Af3g0vj733jESj1NcLT/9Rd2w3OiIJl6JOxs=
+        bh=TaFkEEYysed0ZjHcXQwF9Zz5rGBFJVxcbzKnAkD2bLE=;
+        b=12X6gJw7nd6nil3pP0cJWvS5q239WXTtCy2Cit7KSBS9ptTuJlC71SOvtnjFSA0T5W
+         g1OGXuZpC7UlSVr4HPDOimXQ3kOuTZsjMpETQ5O5oPJaPvMtQRhY0zNHKu7wdPSjLN+I
+         Km4MHHCpfC/nVj8Fogjql9xo6LSia5qOO2cd3jylljhF5FUVABQEO9x5GP5bn72HHfMK
+         RClDxTbpoo8Yls220z7oZh9xey2LzUoIZglOCJZ5DWjPdR86lV6OlndqHzvDKLZhbN5W
+         2B+7NbvZwcQQf1nBiAZmmNQLM1WrhCTAS+BPFYjvYfTD9UdGGTqFHRuciCeBoIbE26xu
+         zWEQ==
+X-Gm-Message-State: AJIora+5hV8eKQt60u2UUSMSoCIaBhJORropVKGhk/DV9iznFNMVQB0S
+        yjor14OOipH6Kz+zTNC52tHj2kXzf5I=
+X-Google-Smtp-Source: AGRyM1uSISy6bunfnR8Yit2TWacf4gJnLWhGMnEplJRMVeWD2oqBzx69YnLQTZsKrF295eR0wT9fMyUouO8=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:d50f:b0:166:41a8:abf5 with SMTP id
- b15-20020a170902d50f00b0016641a8abf5mr100470plg.17.1655137186866; Mon, 13 Jun
- 2022 09:19:46 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:ead4:b0:161:c85a:8fff with SMTP id
+ p20-20020a170902ead400b00161c85a8fffmr390270pld.97.1655137190747; Mon, 13 Jun
+ 2022 09:19:50 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Mon, 13 Jun 2022 16:19:39 +0000
+Date:   Mon, 13 Jun 2022 16:19:41 +0000
 In-Reply-To: <20220613161942.1586791-1-seanjc@google.com>
-Message-Id: <20220613161942.1586791-2-seanjc@google.com>
+Message-Id: <20220613161942.1586791-4-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220613161942.1586791-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 1/4] KVM: selftests: Add a missing apostrophe in comment to
- show ownership
+Subject: [PATCH 3/4] KVM: selftests: Drop a duplicate TEST_ASSERT() in vm_nr_pages_required()
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Andrew Jones <drjones@redhat.com>, kvm@vger.kernel.org,
@@ -65,29 +64,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an apostrophe in a comment about it being the caller's, not callers,
-responsibility to free an object.
+Remove a duplicate TEST_ASSERT() on the number of runnable vCPUs in
+vm_nr_pages_required() that snuck in during a rebase gone bad.
 
 Reported-by: Andrew Jones <drjones@redhat.com>
-Fixes: 768e9a61856b ("KVM: selftests: Purge vm+vcpu_id == vcpu silliness")
+Fixes: 6e1d13bf3815 ("KVM: selftests: Move per-VM/per-vCPU nr pages calculation to __vm_create()")
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/lib/kvm_util.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/kvm/lib/kvm_util.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 39f2f5f1338f..0c550fb0dab2 100644
+index 0c550fb0dab2..bceb668f2627 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -1434,7 +1434,7 @@ void vcpu_run_complete_io(struct kvm_vcpu *vcpu)
- /*
-  * Get the list of guest registers which are supported for
-  * KVM_GET_ONE_REG/KVM_SET_ONE_REG ioctls.  Returns a kvm_reg_list pointer,
-- * it is the callers responsibility to free the list.
-+ * it is the caller's responsibility to free the list.
-  */
- struct kvm_reg_list *vcpu_get_reg_list(struct kvm_vcpu *vcpu)
- {
+@@ -284,10 +284,6 @@ static uint64_t vm_nr_pages_required(enum vm_guest_mode mode,
+ 	 */
+ 	nr_pages += (nr_pages + extra_mem_pages) / PTES_PER_MIN_PAGE * 2;
+ 
+-	TEST_ASSERT(nr_runnable_vcpus <= kvm_check_cap(KVM_CAP_MAX_VCPUS),
+-		    "Host doesn't support %d vCPUs, max-vcpus = %d",
+-		    nr_runnable_vcpus, kvm_check_cap(KVM_CAP_MAX_VCPUS));
+-
+ 	return vm_adjust_num_guest_pages(mode, nr_pages);
+ }
+ 
 -- 
 2.36.1.476.g0c4daa206d-goog
 
