@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FFFCCCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7AAACCA48E
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245599AbiFMKaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
+        id S1346551AbiFMKa6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:30:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344320AbiFMK24 (ORCPT
+        with ESMTP id S1344563AbiFMK3C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:28:56 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD26255B6;
+        Mon, 13 Jun 2022 06:29:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA708255B7;
         Mon, 13 Jun 2022 03:20:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8B8FBCE1102;
-        Mon, 13 Jun 2022 10:20:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CB6EC36B07;
-        Mon, 13 Jun 2022 10:20:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33D6360B91;
+        Mon, 13 Jun 2022 10:20:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FDA1C34114;
+        Mon, 13 Jun 2022 10:20:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115621;
-        bh=vdHmBAw1oESu3mBgdYJHfUNiSBmK3oQCUHtDEM6Fx5M=;
+        s=korg; t=1655115624;
+        bh=g7SB3apUoO7P6BCpj7sZDzJFWpEJqgCZHd9WtGuebqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XPaGdE4Adzz07hkawUovR1OUDmsKMDb8afHWJF1pB6N6mHkFQa4Wu8RvbBzwpxVke
-         z1X4wELJRX0IGyQ35TrpZFRH+NgN+kx8UqAdtQXZA3XZnRsQ5NirtaU9+md2jH2hku
-         F8GjkU8xsxQ9+EjOxmx4zZfi8I06Z9BShgfzlOFc=
+        b=sLKdtxfa/+kzBF9eggOVSZzkRs+GU3O2XCALuXYm7OgrMWdszruOZ+yDhs3B4IeHK
+         i5mXmnah57kLmF5ZKKrYZmamX6UkLiSz4iYv+ib0RL2QIy0fgRbIbSmsfApComBQeo
+         Eoy6UPIcJRy/eUtieUQxz0YyfbTwhEQmh+SKxaV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 151/167] serial: msm_serial: disable interrupts in __msm_console_write()
-Date:   Mon, 13 Jun 2022 12:10:25 +0200
-Message-Id: <20220613094916.316552520@linuxfoundation.org>
+        stable@vger.kernel.org, Donald Buczek <buczek@molgen.mpg.de>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 152/167] md: protect md_unregister_thread from reentrancy
+Date:   Mon, 13 Jun 2022 12:10:26 +0200
+Message-Id: <20220613094916.572509483@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -51,57 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
+[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
 
-__msm_console_write() assumes that interrupts are disabled, but
-with threaded console printers it is possible that the write()
-callback of the console is called with interrupts enabled.
+Generally, the md_unregister_thread is called with reconfig_mutex, but
+raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
+so md_unregister_thread can be called simulitaneously from two call sites
+in theory.
 
-Explicitly disable interrupts using local_irq_save() to preserve
-the assumed context.
+Then after previous commit which remove the protection of reconfig_mutex
+for md_unregister_thread completely, the potential issue could be worse
+than before.
 
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Let's take pers_lock at the beginning of function to ensure reentrancy.
+
+Reported-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/msm_serial.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/md/md.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index c284e61ed4fc..33d035f9fded 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -1578,6 +1578,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
- static void __msm_console_write(struct uart_port *port, const char *s,
- 				unsigned int count, bool is_uartdm)
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 0197d18b5407..9e8373e7e287 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -7254,17 +7254,22 @@ EXPORT_SYMBOL(md_register_thread);
+ 
+ void md_unregister_thread(struct md_thread **threadp)
  {
-+	unsigned long flags;
- 	int i;
- 	int num_newlines = 0;
- 	bool replaced = false;
-@@ -1595,6 +1596,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 			num_newlines++;
- 	count += num_newlines;
- 
-+	local_irq_save(flags);
+-	struct md_thread *thread = *threadp;
+-	if (!thread)
+-		return;
+-	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+-	/* Locking ensures that mddev_unlock does not wake_up a
++	struct md_thread *thread;
 +
- 	if (port->sysrq)
- 		locked = 0;
- 	else if (oops_in_progress)
-@@ -1640,6 +1643,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
++	/*
++	 * Locking ensures that mddev_unlock does not wake_up a
+ 	 * non-existent thread
+ 	 */
+ 	spin_lock(&pers_lock);
++	thread = *threadp;
++	if (!thread) {
++		spin_unlock(&pers_lock);
++		return;
++	}
+ 	*threadp = NULL;
+ 	spin_unlock(&pers_lock);
  
- 	if (locked)
- 		spin_unlock(&port->lock);
-+
-+	local_irq_restore(flags);
++	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+ 	kthread_stop(thread->tsk);
+ 	kfree(thread);
  }
- 
- static void msm_console_write(struct console *co, const char *s,
 -- 
 2.35.1
 
