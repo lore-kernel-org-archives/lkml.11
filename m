@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE60C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9458EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380824AbiFMOCH (ORCPT
+        id S1380376AbiFMOCN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35490 "EHLO
+        Mon, 13 Jun 2022 10:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380813AbiFMNzJ (ORCPT
+        with ESMTP id S1380800AbiFMNzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:55:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E618199F;
-        Mon, 13 Jun 2022 04:35:56 -0700 (PDT)
+        Mon, 13 Jun 2022 09:55:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272F281994;
+        Mon, 13 Jun 2022 04:35:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C0DE612A8;
-        Mon, 13 Jun 2022 11:35:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10594C34114;
-        Mon, 13 Jun 2022 11:35:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5A42B80EC7;
+        Mon, 13 Jun 2022 11:35:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47AECC34114;
+        Mon, 13 Jun 2022 11:35:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120155;
-        bh=jE3W0hdEMyYHxjf7LaaIstu20hqOtMFfzW4n4q0p/Ss=;
+        s=korg; t=1655120149;
+        bh=zHMW9ppmNkXJaFgtQFqNOJ8lJrK/3DXGtn+qX81wGKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dtbek+RjiKJmzCI3sibYM2bR4VqOEcwTBnsfLB7WAuh7Auqt16LuNc8mNhWfbp5rB
-         W8R3mF69OdVWD/2ngnu5stgYYqaVO9QkYz5EYCzVOceiVU9OEyoPciKkEroqpUb1kk
-         TIMaNUaSHHi8/eIiHh5dW2l2v6U0CZ+N5yKnFbRA=
+        b=JayABLVMNimR3KBVKMXne5EdkNkZB1al7qGvnaMqnQOfUOEjIX1lECa7e75XF1Biq
+         tV8weJriBDawRBGzF+qPGjzeOrcV8Bet6ttuUvT2qwuX7abOhqvrUUCvh7O3iozPdt
+         RGAnyPIq+T2WvESpctGhP59kD6Y8a0izYl8Z0JLQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jouni Malinen <j@w1.fi>,
-        Johannes Berg <johannes.berg@intel.com>,
-        anton ivanov <anton.ivanov@cambridgegreys.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Evan Green <evgreen@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 270/339] um: line: Use separate IRQs per line
-Date:   Mon, 13 Jun 2022 12:11:35 +0200
-Message-Id: <20220613094934.834040861@linuxfoundation.org>
+Subject: [PATCH 5.18 238/339] USB: hcd-pci: Fully suspend across freeze/thaw cycle
+Date:   Mon, 13 Jun 2022 12:11:03 +0200
+Message-Id: <20220613094933.874721606@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,250 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Evan Green <evgreen@chromium.org>
 
-[ Upstream commit d5a9597d6916a76663085db984cb8fe97f0a5c56 ]
+[ Upstream commit 63acaa8e9c65dc34dc249440216f8e977f5d2748 ]
 
-Today, all possible serial lines (ssl*=) as well as all
-possible consoles (con*=) each share a single interrupt
-(with a fixed number) with others of the same type.
+The documentation for the freeze() method says that it "should quiesce
+the device so that it doesn't generate IRQs or DMA". The unspoken
+consequence of not doing this is that MSIs aimed at non-boot CPUs may
+get fully lost if they're sent during the period where the target CPU is
+offline.
 
-Now, if you have two lines, say ssl0 and ssl1, and one
-of them is connected to an fd you cannot read (e.g. a
-file), but the other gets a read interrupt, then both
-of them get the interrupt since it's shared. Then, the
-read() call will return EOF, since it's a file being
-written and there's nothing to read (at least not at
-the current offset, at the end).
+The current callbacks for USB HCD do not fully quiesce interrupts,
+specifically on XHCI. Change to use the full suspend/resume flow for
+freeze/thaw to ensure interrupts are fully quiesced. This fixes issues
+where USB devices fail to thaw during hibernation because XHCI misses
+its interrupt and cannot recover.
 
-Unfortunately, this is treated as a read error, and we
-close this line, losing all the possible output.
-
-It might be possible to work around this and make the
-IRQ sharing work, however, now that we have dynamically
-allocated IRQs that are easy to use, simply use that to
-achieve separating between the events; then there's no
-interrupt for that line and we never attempt the read
-in the first place, thus not closing the line.
-
-This manifested itself in the wifi hostap/hwsim tests
-where the parallel script communicates via one serial
-console and the kernel messages go to another (a file)
-and sending data on the communication console caused
-the kernel messages to stop flowing into the file.
-
-Reported-by: Jouni Malinen <j@w1.fi>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Acked-By: anton ivanov <anton.ivanov@cambridgegreys.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Evan Green <evgreen@chromium.org>
+Link: https://lore.kernel.org/r/20220421103751.v3.2.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/drivers/chan_kern.c     | 10 +++++-----
- arch/um/drivers/line.c          | 22 +++++++++++++---------
- arch/um/drivers/line.h          |  4 ++--
- arch/um/drivers/ssl.c           |  2 --
- arch/um/drivers/stdio_console.c |  2 --
- arch/um/include/asm/irq.h       | 22 +++++++++-------------
- 6 files changed, 29 insertions(+), 33 deletions(-)
+ drivers/usb/core/hcd-pci.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/um/drivers/chan_kern.c b/arch/um/drivers/chan_kern.c
-index 62997055c454..26a702a06515 100644
---- a/arch/um/drivers/chan_kern.c
-+++ b/arch/um/drivers/chan_kern.c
-@@ -133,7 +133,7 @@ static void line_timer_cb(struct work_struct *work)
- 	struct line *line = container_of(work, struct line, task.work);
- 
- 	if (!line->throttled)
--		chan_interrupt(line, line->driver->read_irq);
-+		chan_interrupt(line, line->read_irq);
- }
- 
- int enable_chan(struct line *line)
-@@ -195,9 +195,9 @@ void free_irqs(void)
- 		chan = list_entry(ele, struct chan, free_list);
- 
- 		if (chan->input && chan->enabled)
--			um_free_irq(chan->line->driver->read_irq, chan);
-+			um_free_irq(chan->line->read_irq, chan);
- 		if (chan->output && chan->enabled)
--			um_free_irq(chan->line->driver->write_irq, chan);
-+			um_free_irq(chan->line->write_irq, chan);
- 		chan->enabled = 0;
- 	}
- }
-@@ -215,9 +215,9 @@ static void close_one_chan(struct chan *chan, int delay_free_irq)
- 		spin_unlock_irqrestore(&irqs_to_free_lock, flags);
- 	} else {
- 		if (chan->input && chan->enabled)
--			um_free_irq(chan->line->driver->read_irq, chan);
-+			um_free_irq(chan->line->read_irq, chan);
- 		if (chan->output && chan->enabled)
--			um_free_irq(chan->line->driver->write_irq, chan);
-+			um_free_irq(chan->line->write_irq, chan);
- 		chan->enabled = 0;
- 	}
- 	if (chan->ops->close != NULL)
-diff --git a/arch/um/drivers/line.c b/arch/um/drivers/line.c
-index 8febf95da96e..02b0befd6763 100644
---- a/arch/um/drivers/line.c
-+++ b/arch/um/drivers/line.c
-@@ -139,7 +139,7 @@ static int flush_buffer(struct line *line)
- 		count = line->buffer + LINE_BUFSIZE - line->head;
- 
- 		n = write_chan(line->chan_out, line->head, count,
--			       line->driver->write_irq);
-+			       line->write_irq);
- 		if (n < 0)
- 			return n;
- 		if (n == count) {
-@@ -156,7 +156,7 @@ static int flush_buffer(struct line *line)
- 
- 	count = line->tail - line->head;
- 	n = write_chan(line->chan_out, line->head, count,
--		       line->driver->write_irq);
-+		       line->write_irq);
- 
- 	if (n < 0)
- 		return n;
-@@ -195,7 +195,7 @@ int line_write(struct tty_struct *tty, const unsigned char *buf, int len)
- 		ret = buffer_data(line, buf, len);
- 	else {
- 		n = write_chan(line->chan_out, buf, len,
--			       line->driver->write_irq);
-+			       line->write_irq);
- 		if (n < 0) {
- 			ret = n;
- 			goto out_up;
-@@ -215,7 +215,7 @@ void line_throttle(struct tty_struct *tty)
- {
- 	struct line *line = tty->driver_data;
- 
--	deactivate_chan(line->chan_in, line->driver->read_irq);
-+	deactivate_chan(line->chan_in, line->read_irq);
- 	line->throttled = 1;
- }
- 
-@@ -224,7 +224,7 @@ void line_unthrottle(struct tty_struct *tty)
- 	struct line *line = tty->driver_data;
- 
- 	line->throttled = 0;
--	chan_interrupt(line, line->driver->read_irq);
-+	chan_interrupt(line, line->read_irq);
- }
- 
- static irqreturn_t line_write_interrupt(int irq, void *data)
-@@ -260,19 +260,23 @@ int line_setup_irq(int fd, int input, int output, struct line *line, void *data)
- 	int err;
- 
- 	if (input) {
--		err = um_request_irq(driver->read_irq, fd, IRQ_READ,
--				     line_interrupt, IRQF_SHARED,
-+		err = um_request_irq(UM_IRQ_ALLOC, fd, IRQ_READ,
-+				     line_interrupt, 0,
- 				     driver->read_irq_name, data);
- 		if (err < 0)
- 			return err;
-+
-+		line->read_irq = err;
- 	}
- 
- 	if (output) {
--		err = um_request_irq(driver->write_irq, fd, IRQ_WRITE,
--				     line_write_interrupt, IRQF_SHARED,
-+		err = um_request_irq(UM_IRQ_ALLOC, fd, IRQ_WRITE,
-+				     line_write_interrupt, 0,
- 				     driver->write_irq_name, data);
- 		if (err < 0)
- 			return err;
-+
-+		line->write_irq = err;
- 	}
- 
- 	return 0;
-diff --git a/arch/um/drivers/line.h b/arch/um/drivers/line.h
-index bdb16b96e76f..f15be75a3bf3 100644
---- a/arch/um/drivers/line.h
-+++ b/arch/um/drivers/line.h
-@@ -23,9 +23,7 @@ struct line_driver {
- 	const short minor_start;
- 	const short type;
- 	const short subtype;
--	const int read_irq;
- 	const char *read_irq_name;
--	const int write_irq;
- 	const char *write_irq_name;
- 	struct mc_device mc;
- 	struct tty_driver *driver;
-@@ -35,6 +33,8 @@ struct line {
- 	struct tty_port port;
- 	int valid;
- 
-+	int read_irq, write_irq;
-+
- 	char *init_str;
- 	struct list_head chan_list;
- 	struct chan *chan_in, *chan_out;
-diff --git a/arch/um/drivers/ssl.c b/arch/um/drivers/ssl.c
-index 41eae2e8fb65..8514966778d5 100644
---- a/arch/um/drivers/ssl.c
-+++ b/arch/um/drivers/ssl.c
-@@ -47,9 +47,7 @@ static struct line_driver driver = {
- 	.minor_start 		= 64,
- 	.type 		 	= TTY_DRIVER_TYPE_SERIAL,
- 	.subtype 	 	= 0,
--	.read_irq 		= SSL_IRQ,
- 	.read_irq_name 		= "ssl",
--	.write_irq 		= SSL_WRITE_IRQ,
- 	.write_irq_name 	= "ssl-write",
- 	.mc  = {
- 		.list		= LIST_HEAD_INIT(driver.mc.list),
-diff --git a/arch/um/drivers/stdio_console.c b/arch/um/drivers/stdio_console.c
-index e8b762f4d8c2..489d5a746ed3 100644
---- a/arch/um/drivers/stdio_console.c
-+++ b/arch/um/drivers/stdio_console.c
-@@ -53,9 +53,7 @@ static struct line_driver driver = {
- 	.minor_start 		= 0,
- 	.type 		 	= TTY_DRIVER_TYPE_CONSOLE,
- 	.subtype 	 	= SYSTEM_TYPE_CONSOLE,
--	.read_irq 		= CONSOLE_IRQ,
- 	.read_irq_name 		= "console",
--	.write_irq 		= CONSOLE_WRITE_IRQ,
- 	.write_irq_name 	= "console-write",
- 	.mc  = {
- 		.list		= LIST_HEAD_INIT(driver.mc.list),
-diff --git a/arch/um/include/asm/irq.h b/arch/um/include/asm/irq.h
-index e187c789369d..749dfe8512e8 100644
---- a/arch/um/include/asm/irq.h
-+++ b/arch/um/include/asm/irq.h
-@@ -4,19 +4,15 @@
- 
- #define TIMER_IRQ		0
- #define UMN_IRQ			1
--#define CONSOLE_IRQ		2
--#define CONSOLE_WRITE_IRQ	3
--#define UBD_IRQ			4
--#define UM_ETH_IRQ		5
--#define SSL_IRQ			6
--#define SSL_WRITE_IRQ		7
--#define ACCEPT_IRQ		8
--#define MCONSOLE_IRQ		9
--#define WINCH_IRQ		10
--#define SIGIO_WRITE_IRQ 	11
--#define TELNETD_IRQ 		12
--#define XTERM_IRQ 		13
--#define RANDOM_IRQ 		14
-+#define UBD_IRQ			2
-+#define UM_ETH_IRQ		3
-+#define ACCEPT_IRQ		4
-+#define MCONSOLE_IRQ		5
-+#define WINCH_IRQ		6
-+#define SIGIO_WRITE_IRQ 	7
-+#define TELNETD_IRQ 		8
-+#define XTERM_IRQ 		9
-+#define RANDOM_IRQ 		10
- 
- #ifdef CONFIG_UML_NET_VECTOR
- 
+diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
+index 8176bc81a635..ae5e6d572376 100644
+--- a/drivers/usb/core/hcd-pci.c
++++ b/drivers/usb/core/hcd-pci.c
+@@ -616,10 +616,10 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
+ 	.suspend_noirq	= hcd_pci_suspend_noirq,
+ 	.resume_noirq	= hcd_pci_resume_noirq,
+ 	.resume		= hcd_pci_resume,
+-	.freeze		= check_root_hub_suspended,
++	.freeze		= hcd_pci_suspend,
+ 	.freeze_noirq	= check_root_hub_suspended,
+ 	.thaw_noirq	= NULL,
+-	.thaw		= NULL,
++	.thaw		= hcd_pci_resume,
+ 	.poweroff	= hcd_pci_suspend,
+ 	.poweroff_noirq	= hcd_pci_suspend_noirq,
+ 	.restore_noirq	= hcd_pci_resume_noirq,
 -- 
 2.35.1
 
