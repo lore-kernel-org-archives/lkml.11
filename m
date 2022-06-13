@@ -2,99 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3876CCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D19DCCCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239525AbiFMIHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56816 "EHLO
+        id S239582AbiFMIHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234954AbiFMIGs (ORCPT
+        with ESMTP id S239507AbiFMIHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:06:48 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD8A193D5
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:06:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655107607; x=1686643607;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gwxLCDMvuI9jTp3aOqw0S9fllcBjdOln7NM/mKbpqHs=;
-  b=VMJO6WoR9OYcEmUu6SEXsFT4uDRdRuwccRGw1lj7wbTKlDJXx6dRbJ67
-   XzC7zmcZo8fJnQiuNfHGqigRJMp3hVVSzFOWgNurNYg+//r4ojFSdSaJh
-   V7ynAJnku4rzcPZ/2yIYehqorrPSykL8ls/Tl7G840F4XMKFa7gpJbWjr
-   K8/sc6qXae+L5rvrRHLks4HSdOdmGZdLrCgc+Gb1g5vLmjvWrxjzBA6Ii
-   1O1R+dbIpz7QCOWLusYzWGUIbjEtCBtei2jnZMe05mOAUrYNTiCEY/KMM
-   kcwScVe8E9u8hm8IFhUsyOlaZLcuZE6kBds2E51cwCXqFMNsszoEDowvt
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="364534105"
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="364534105"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 01:06:47 -0700
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="673147817"
-Received: from xiruzha-mobl1.ccr.corp.intel.com (HELO chenyu5-mobl1) ([10.249.169.88])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 01:06:40 -0700
-Date:   Mon, 13 Jun 2022 16:06:36 +0800
-From:   Chen Yu <yu.c.chen@intel.com>
-To:     Yicong Yang <yangyicong@huawei.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mon, 13 Jun 2022 04:07:10 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9885193D5
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:07:09 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id t2so4465911pld.4
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:07:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NAnCKVAsTEhPSq2ToTCbXC57xyJHYe3j2r1i7OIyalw=;
+        b=V1UdsmWZvkna5Og+wp9V9OhZ74oPWa3gXSouojsCAYSZvlbWaZLc+V3drwHq1d9aS4
+         9ha4nB7o6FF/D6g1xtIDQfME5FR1R/JMy0oPtO5ge1VDZKjOSg0aDoDsTKCVUAHE2XHj
+         YpzBrZSf7wC4TWwYMJrzFu+28onHUpIMJOfjxZnTgyXKIANMTi6tfzBYgw9OGnEmPaa1
+         Qr51eRrM5ywNHh9SZRCn8xW5KOABQoOZ1uXM/zVMKJ4TxzZ/ZTDQ1rXbzbeKPnkDM8EL
+         g2gA3mA7t5wd1ARIhviXJn5+j4Wc/mObKTKJ8WsR/5lWd4skFgxw3s4YL8553cpzcnwR
+         347g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NAnCKVAsTEhPSq2ToTCbXC57xyJHYe3j2r1i7OIyalw=;
+        b=6btV2UAFEBvASCPVChFDt34adTsPSIBLs0pkPt05q+TwO6++LYzcQ55dKu3l3dWKAh
+         em/J75Xt/VrvuEhX+A7E2f7RaSgcv4tG6gllORgk4ZFsUsZrE+klE8IzApJIVRzdwfDS
+         yn55fwlvZC2D3CAcKjJuV7C1T84GNzWro6LqTbpGu+hWt7LgNmCy70+wkZQVG2SM7567
+         wXBTk241eoVkEB+7sZtL9XTQlnUWcXTc+iqLs+ARP00KXJNhkzmS5J9QmNraMSj0m+Fw
+         qBd25K5utfdWOXEQICymbnMU+Q9Z9jiCMGkYPP3yQ/SpNw9mzfqPJYxs2Kbt+E64B2dw
+         nJbw==
+X-Gm-Message-State: AOAM5328X2dS7KITTfCh+9do2+RsCxnK8MbSJ6ORDJ5s6yxaRmcbS8q9
+        PuUyuzTfXTjd6SYQgzUj52JJew==
+X-Google-Smtp-Source: ABdhPJzUrwojqHns8Mqu86SJy95KqHGbbVXITBu6/zRUhIZ0SRPlREnaaGmuSW6OAYScSGh9OkHu5Q==
+X-Received: by 2002:a17:90a:6284:b0:1df:4595:57af with SMTP id d4-20020a17090a628400b001df459557afmr14316872pjj.188.1655107629257;
+        Mon, 13 Jun 2022 01:07:09 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id mi16-20020a17090b4b5000b001e0c1044ceasm4531596pjb.43.2022.06.13.01.07.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 01:07:08 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 13:37:06 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     linux-pm@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>,
-        Mel Gorman <mgorman@suse.de>, yangyicong@hisilicon.com,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Barry Song <21cnbao@gmail.com>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        Len Brown <len.brown@intel.com>,
-        Ben Segall <bsegall@google.com>,
-        Aubrey Li <aubrey.li@intel.com>,
-        Abel Wu <wuyun.abel@bytedance.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Tim Chen <tim.c.chen@intel.com>, linux-kernel@vger.kernel.org,
-        K Prateek Nayak <kprateek.nayak@amd.com>,
-        Mohini Narkhede <mohini.narkhede@intel.com>
-Subject: Re: [PATCH v4] sched/fair: Introduce SIS_UTIL to search idle CPU
- based on sum of util_avg
-Message-ID: <20220613080636.GA32587@chenyu5-mobl1>
-References: <20220612163428.849378-1-yu.c.chen@intel.com>
- <ca59e113-d5df-7dec-6bab-a8d239b50c0b@huawei.com>
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/8] OPP: Allow multiple clocks for a device
+Message-ID: <20220613080706.jqilerx6jc4m2pxh@vireshk-i7>
+References: <cover.1654849214.git.viresh.kumar@linaro.org>
+ <8b29fa207024dc295639f9ba52c28e45782e3baa.1654849214.git.viresh.kumar@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ca59e113-d5df-7dec-6bab-a8d239b50c0b@huawei.com>
+In-Reply-To: <8b29fa207024dc295639f9ba52c28e45782e3baa.1654849214.git.viresh.kumar@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 03:40:52PM +0800, Yicong Yang wrote:
-> On 2022/6/13 0:34, Chen Yu wrote:
-> >  
-[cut...]
-> >  #define NUMA_IMBALANCE_MIN 2
-> > diff --git a/kernel/sched/features.h b/kernel/sched/features.h
-> > index 1cf435bbcd9c..3334a1b93fc6 100644
-> > --- a/kernel/sched/features.h
-> > +++ b/kernel/sched/features.h
-> > @@ -61,6 +61,7 @@ SCHED_FEAT(TTWU_QUEUE, true)
-> >   * When doing wakeups, attempt to limit superfluous scans of the LLC domain.
-> >   */
-> >  SCHED_FEAT(SIS_PROP, true)
-> > +SCHED_FEAT(SIS_UTIL, true)
-> >  
-> 
-> confused here that shouldn't we have SCHED_FEAT(SIS_PROP, false)? With SIS_UTIL enabled, SIS_PROP will have no
-> effect since nr is overridden by SIS_UTIL.
-Yes, no matter what SIS_PROP is set, the result of SIS_UTIL would be used to decide
-the scan depth. We don't change the default value of SIS_PROP here, as this patch
-tends to only touch one feature at one time. And the options could be tuned by user via
-sysfs manually. Besides, the target is to replace SIS_PROP with another search policy,
-Peter mentioned that "And ideally we're remove SIS_PROP after a few releases if this
-works out", so I assume that changing the default value of SIS_PROP does not matter
-in current patch.
+On 10-06-22, 13:50, Viresh Kumar wrote:
+> @@ -1594,24 +1601,28 @@ EXPORT_SYMBOL_GPL(dev_pm_opp_remove_all_dynamic);
+>  struct dev_pm_opp *_opp_allocate(struct opp_table *opp_table)
+>  {
+>  	struct dev_pm_opp *opp;
+> -	int supply_count, supply_size, icc_size;
+> +	int supply_count, supply_size, icc_size, clk_size;
+>  
+>  	/* Allocate space for at least one supply */
+>  	supply_count = opp_table->regulator_count > 0 ?
+>  			opp_table->regulator_count : 1;
+>  	supply_size = sizeof(*opp->supplies) * supply_count;
+> +	clk_size = sizeof(*opp->rates) * opp_table->clk_count;
+>  	icc_size = sizeof(*opp->bandwidth) * opp_table->path_count;
+>  
+>  	/* allocate new OPP node and supplies structures */
+>  	opp = kzalloc(sizeof(*opp) + supply_size + icc_size, GFP_KERNEL);
 
-thanks,
-Chenyu
+The change for this line was lost in rebase I think. I have fixed my branch with
+this Krzysztof, so testing over it should be fine. Thanks.
+
+-- 
+viresh
