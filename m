@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB14BCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:08:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8608ACCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381207AbiFMOIG (ORCPT
+        id S1381256AbiFMOIO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
+        Mon, 13 Jun 2022 10:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380932AbiFMOCn (ORCPT
+        with ESMTP id S1380948AbiFMODH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:02:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111878FD53;
-        Mon, 13 Jun 2022 04:38:18 -0700 (PDT)
+        Mon, 13 Jun 2022 10:03:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20A58DDE3;
+        Mon, 13 Jun 2022 04:38:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BED061306;
-        Mon, 13 Jun 2022 11:38:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BCDAC34114;
-        Mon, 13 Jun 2022 11:38:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C28A7B80EA7;
+        Mon, 13 Jun 2022 11:38:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AF2DC34114;
+        Mon, 13 Jun 2022 11:38:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120297;
-        bh=pbz9DlEqA5TwTXAkZWWpEn6u8/MCy1hJFPIoVEmfs4U=;
+        s=korg; t=1655120300;
+        bh=j+uAT323+KaJj7UMoqr4xyarKUVNsQL7xM52Y8ib5w4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aXvVBaQNaZdqxitqs1N19ZFR+edREYa+BJvLw3R5eUoATn55E0Oi6XhJB+ifIu4Nz
-         L47XRlX+iEFPZN00+c5L7nOIMCU5xM7XusSGhaGAi5I2QVL/VQJtHvw0TCa6SeES8U
-         32ON7EOdcjNhLqKdmNfKv3PB16cHYwz8JuXVd018=
+        b=zq3RLXS+29TORsDQ2ldRTznfIMPzf1kRvrwj42pABC44qp5AKCBO+lGcwhFvTYAgZ
+         jg4/BwAwGUfo3oZKaLlJ2wMbpDWBmo7OL4Tx3w7RCshH7+3adAbDrdxL2UOxZOtzu7
+         DRomr/c8CxC2w6OqQRYd55PHGVQUg1wSFSv7BvVg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.18 322/339] Input: bcm5974 - set missing URB_NO_TRANSFER_DMA_MAP urb flag
-Date:   Mon, 13 Jun 2022 12:12:27 +0200
-Message-Id: <20220613094936.513051621@linuxfoundation.org>
+        stable@vger.kernel.org, Shaoqin Huang <shaoqin.huang@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.18 305/339] KVM: x86/mmu: Check every prev_roots in __kvm_mmu_free_obsolete_roots()
+Date:   Mon, 13 Jun 2022 12:12:10 +0200
+Message-Id: <20220613094936.010226301@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,55 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Shaoqin Huang <shaoqin.huang@intel.com>
 
-commit c42e65664390be7c1ef3838cd84956d3a2739d60 upstream.
+commit cf4a8693d97a51dccf5a1557248d12d6d8be4b9e upstream.
 
-The bcm5974 driver does the allocation and dma mapping of the usb urb
-data buffer, but driver does not set the URB_NO_TRANSFER_DMA_MAP flag
-to let usb core know the buffer is already mapped.
+When freeing obsolete previous roots, check prev_roots as intended, not
+the current root.
 
-usb core tries to map the already mapped buffer, causing a warning:
-"xhci_hcd 0000:00:14.0: rejecting DMA map of vmalloc memory"
-
-Fix this by setting the URB_NO_TRANSFER_DMA_MAP, letting usb core
-know buffer is already mapped by bcm5974 driver
-
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
+Fixes: 527d5cd7eece ("KVM: x86/mmu: Zap only obsolete roots if a root shadow page is zapped")
+Message-Id: <20220607005905.2933378-1-shaoqin.huang@intel.com>
 Cc: stable@vger.kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215890
-Link: https://lore.kernel.org/r/20220606113636.588955-1-mathias.nyman@linux.intel.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/mouse/bcm5974.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/x86/kvm/mmu/mmu.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/input/mouse/bcm5974.c
-+++ b/drivers/input/mouse/bcm5974.c
-@@ -942,17 +942,22 @@ static int bcm5974_probe(struct usb_inte
- 	if (!dev->tp_data)
- 		goto err_free_bt_buffer;
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -5168,7 +5168,7 @@ static void __kvm_mmu_free_obsolete_root
+ 		roots_to_free |= KVM_MMU_ROOT_CURRENT;
  
--	if (dev->bt_urb)
-+	if (dev->bt_urb) {
- 		usb_fill_int_urb(dev->bt_urb, udev,
- 				 usb_rcvintpipe(udev, cfg->bt_ep),
- 				 dev->bt_data, dev->cfg.bt_datalen,
- 				 bcm5974_irq_button, dev, 1);
+ 	for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++) {
+-		if (is_obsolete_root(kvm, mmu->root.hpa))
++		if (is_obsolete_root(kvm, mmu->prev_roots[i].hpa))
+ 			roots_to_free |= KVM_MMU_ROOT_PREVIOUS(i);
+ 	}
  
-+		dev->bt_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-+	}
-+
- 	usb_fill_int_urb(dev->tp_urb, udev,
- 			 usb_rcvintpipe(udev, cfg->tp_ep),
- 			 dev->tp_data, dev->cfg.tp_datalen,
- 			 bcm5974_irq_trackpad, dev, 1);
- 
-+	dev->tp_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-+
- 	/* create bcm5974 device */
- 	usb_make_path(udev, dev->phys, sizeof(dev->phys));
- 	strlcat(dev->phys, "/input0", sizeof(dev->phys));
 
 
