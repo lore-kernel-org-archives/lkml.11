@@ -2,112 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D21C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8787ECCA489
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244863AbiFMSDk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
+        id S244466AbiFMSDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244360AbiFMSC3 (ORCPT
+        with ESMTP id S244032AbiFMSCU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:02:29 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B7F3EF3D
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:45:49 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1o0kNZ-00081i-52; Mon, 13 Jun 2022 15:45:17 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id A615593DBC;
-        Mon, 13 Jun 2022 13:45:12 +0000 (UTC)
-Date:   Mon, 13 Jun 2022 15:45:12 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Conor.Dooley@microchip.com
-Cc:     wg@grandegger.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, palmer@dabbelt.com,
-        paul.walmsley@sifive.com, aou@eecs.berkeley.edu,
-        Daire.McNamara@microchip.com, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH net-next 0/2] Document PolarFire SoC can controller
-Message-ID: <20220613134512.t74de4dytxbdbg7k@pengutronix.de>
-References: <20220607065459.2035746-1-conor.dooley@microchip.com>
- <20220607071519.6m6swnl55na3vgwm@pengutronix.de>
- <51e8e297-0171-0c3f-ba86-e61add04830e@microchip.com>
- <20220607082827.iuonhektfbuqtuqo@pengutronix.de>
- <0f75a804-a0ca-e470-4a57-a5a3ad9dad11@microchip.com>
- <4c5b43bd-a255-cbc1-c7a3-9a79e34d2e91@microchip.com>
+        Mon, 13 Jun 2022 14:02:20 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849D8CE4;
+        Mon, 13 Jun 2022 06:45:12 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id o8so7216222wro.3;
+        Mon, 13 Jun 2022 06:45:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xqt6o5xeA7H2Z1sbf12TbkTBeucsVcaM2qYUUouRmsE=;
+        b=nS9MOmChlPbvpzLEPXlBOJ9l5totUFJHG+Rb7e/yt17MKC539uvdcUKKT+akKIaQMy
+         da9YJJ2RrGTR/FsX3jGTUxHgzV1h/hIb305oQC38lU16BOPknTF51+/tm1MWj62vIowR
+         8H7iUnn6Vsopad+WQDoK7JA8MXva+YVmVWRjXpBlOW1zZ93GdFN3hpWwVCYzYuct1d6+
+         6ZEpssKwvRVe79wXh7ZyZ+bEoh0A9+VlLP3plXij6I7SaqN2wUNXze1eoav/KBrS+UEQ
+         LzIxVzxU8wxwF4LbHN2EdCsCcE52dW5ti69bRxVTTktlzl+gsZU4N28hYqJzHMvqK8ix
+         opEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xqt6o5xeA7H2Z1sbf12TbkTBeucsVcaM2qYUUouRmsE=;
+        b=j5611nlTnygxbaj4QdE728aNWkKZwpiUsVbjws7d/WNTpYQHaqf8M7fLh697iXU9tX
+         uAfJ8AAsUouXC9/8Yh7GyVrxlkauZQ3/VOCtSjYuRppLIsHnvvnIFKLhpSzdiAy/HE25
+         pGAm8Ww+QuPVoUFwpWYPHopzspReMQB9TRyuZ/I0HUp7Tmc5j/fM9OxvQc2K8Xl5Uhpz
+         EGfXVMxNgI6qhZBk3YApiFKp6TXLM/h7bI6Lt1v5jQokWGZLPX0td7o5MfPg7AqOKtVi
+         5yj8D6p+yqcBAPLHYGB9O8xuYUmcuC0AuAIfeVUG+smVMXKGh5o930xYcDmLHhUUghmm
+         lV8A==
+X-Gm-Message-State: AOAM5311u/TppQkg4aqJWcgm7kCTsbwmuD1mniygEmY7eoesaJo6RXp6
+        YLBezIJ5O0s5AMNmALYAQCc=
+X-Google-Smtp-Source: ABdhPJx8Zhg/1/+HyFqPEsxzGt+S2hzJPy+bosUdcRdorVNuXH9/fl9Gvu8Yx9FJrQtB2xcnxBaAQA==
+X-Received: by 2002:a5d:584d:0:b0:216:a2a9:5f2c with SMTP id i13-20020a5d584d000000b00216a2a95f2cmr47600441wrf.184.1655127910879;
+        Mon, 13 Jun 2022 06:45:10 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id i1-20020a5d5221000000b002103aebe8absm8647510wra.93.2022.06.13.06.45.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 06:45:10 -0700 (PDT)
+From:   Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sibi Sankar <sibis@codeaurora.org>,
+        Saravana Kannan <skannan@codeaurora.org>,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH v2 0/5] PM / devfreq: Various Fixes to cpufreq based passive governor
+Date:   Mon, 13 Jun 2022 15:42:08 +0200
+Message-Id: <20220613134213.8904-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ofcrvuhmfdcokgre"
-Content-Disposition: inline
-In-Reply-To: <4c5b43bd-a255-cbc1-c7a3-9a79e34d2e91@microchip.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+While developing a krait cache scaling devfreq driver I encounter tons
+of panics and errors with using the new cpufreq passive governor
+functions. While the krait cache scaling is still WIP and required some
+testing I would like to push all the fixes to make the new
+implementation wroking since currently with a the governor
+PROBE_DEFERRing all sort of things happen from kernel panic from invalid
+address access to freq_table getting corrupted.
 
---ofcrvuhmfdcokgre
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+With the following fixes my WIP driver works correctly without any
+warning/problems. 
 
-On 13.06.2022 12:52:00, Conor.Dooley@microchip.com wrote:
-> >> The register map cannot be downloaded directly anymore. For reference:
-> >>
-> >> http://web.archive.org/web/20220403030214/https://www.microsemi.com/do=
-cument-portal/doc_download/1244581-polarfire-soc-register-map
-> >=20
-> > Oh that sucks. I know we have had some website issues over the weekend
-> > which might be the problem there. I'll try to bring it up and find out.
-> >=20
->=20
-> Hey Marc,
-> Doc is still not available but should be getting fixed.
+v2:
+- Fix wrong list_for_each_entry reported by Dan Carpenter
 
-Thanks.
+Christian 'Ansuel' Marangi (5):
+  PM / devfreq: Fix cpufreq passive unregister erroring on PROBE_DEFER
+  PM / devfreq: Fix kernel warning with cpufreq passive register fail
+  PM / devfreq: Fix kernel panic with cpu based scaling to passive gov
+  PM / devfreq: Rework freq_table to be local to devfreq struct
+  PM / devfreq: Mute warning on governor PROBE_DEFER
 
-> What do I need to do for this binding? Are you happy to accept it without
-> a driver if I add links to the documentation and a working link to the
-> register map?
+ drivers/devfreq/devfreq.c          | 75 ++++++++++++++----------------
+ drivers/devfreq/governor_passive.c | 39 ++++++----------
+ include/linux/devfreq.h            |  4 ++
+ 3 files changed, 53 insertions(+), 65 deletions(-)
 
-I'm taking both patches and change the CAN into capital letters while
-applying, I'll also add a link to the datasheets.
+-- 
+2.36.1
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---ofcrvuhmfdcokgre
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKnP2UACgkQrX5LkNig
-013f+QgAo0TG9o5JrCA9bcXqT6d4u7VdUwbKtD4+5GEV02lyfojpxd78EtjRNf5U
-DeLVrv4ULFwgdO30NjPch+4P6Vc7Ghs8gP4AQRKMzqduRXB76erdzrjeKFT3f+mR
-4kH81wkCZESZQ2DJD+p2nYFFZrCuwg3Ez2fZvIbJ06qn4C4g3LbkPkXzD7wUVqx9
-bTjHcb9y/E/DNCTaBWpneqN87CNsr2v6PunUNNzb+bJExxQOqXUVtfwnB4FXdoEs
-6UJV3deh47FuvPaCvF4mVOV4eaJ4vIlOAzL09TSt2RHE0m2yZ/HNfwZDYu98LKWa
-vYqLFhjC3Ebqg2lmFtHMTP1KS0GbYg==
-=YYeu
------END PGP SIGNATURE-----
-
---ofcrvuhmfdcokgre--
