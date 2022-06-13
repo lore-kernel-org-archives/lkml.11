@@ -2,46 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53389C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF51CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354179AbiFMMwW (ORCPT
+        id S1354665AbiFMMwp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43466 "EHLO
+        Mon, 13 Jun 2022 08:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353061AbiFMMuh (ORCPT
+        with ESMTP id S241337AbiFMMwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:50:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B9716350D;
-        Mon, 13 Jun 2022 04:12:16 -0700 (PDT)
+        Mon, 13 Jun 2022 08:52:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00B86416;
+        Mon, 13 Jun 2022 04:12:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A03A860B6B;
-        Mon, 13 Jun 2022 11:12:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD06DC3411C;
-        Mon, 13 Jun 2022 11:12:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3240B80EAA;
+        Mon, 13 Jun 2022 11:12:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B66BC3411C;
+        Mon, 13 Jun 2022 11:12:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118725;
-        bh=yLGGIpjfaSSs9oeLf7Wm2id6cx9cbdcnV4O2hHcE/yQ=;
+        s=korg; t=1655118730;
+        bh=dt0NDfSA0OeLG6U/SzwHiEhewvTsnGRELX+7q26Ry4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B9uid5G9ULaRtqzww9iIl7dHxtG7fdNAEGPmwheJyYY82Xz2Wts9vCkAg4y8eMVVl
-         727lc1V86Tw42ENWGOepXp8P0zSH+Uy8gRl+legR1vJeqzbPW4kc4G6hHQ3Ba0MkI3
-         QG61fS/Op0eu5HMSxSNzycSuSZpQ4ZeSqA2pRZSU=
+        b=vze3lQSw5u2NLZ9FAgpdM29KaQo5sSkcN9PLgXh6XWxOpDSTJqG1iXLweHJfEOGcP
+         j//xZgbvzx1V+jAOp2PUXUezTW+19eA/HrqK69EW9qoNXSi4D4FjvLan6PrgyeF3Uh
+         flad/VKbMX48CLU+31ipEl2hOtafSL10/7bfNaiI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.10 167/172] powerpc/mm: Switch obsolete dssall to .long
-Date:   Mon, 13 Jun 2022 12:12:07 +0200
-Message-Id: <20220613094923.337831369@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 001/247] pcmcia: db1xxx_ss: restrict to MIPS_DB1XXX boards
+Date:   Mon, 13 Jun 2022 12:08:23 +0200
+Message-Id: <20220613094922.911675304@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
-References: <20220613094850.166931805@linuxfoundation.org>
+In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
+References: <20220613094922.843438024@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,152 +58,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit d51f86cfd8e378d4907958db77da3074f6dce3ba upstream.
+[ Upstream commit 3928cf08334ed895a31458cbebd8d4ec6d84c080 ]
 
-The dssall ("Data Stream Stop All") instruction is obsolete altogether
-with other Data Cache Instructions since ISA 2.03 (year 2006).
+When the MIPS_ALCHEMY board selection is MIPS_XXS1500 instead of
+MIPS_DB1XXX, the PCMCIA driver 'db1xxx_ss' has build errors due
+to missing DB1XXX symbols. The PCMCIA driver should be restricted
+to MIPS_DB1XXX instead of MIPS_ALCHEMY to fix this build error.
 
-LLVM IAS does not support it but PPC970 seems to be using it.
-This switches dssall to .long as there is no much point in fixing LLVM.
+ERROR: modpost: "bcsr_read" [drivers/pcmcia/db1xxx_ss.ko] undefined!
+ERROR: modpost: "bcsr_mod" [drivers/pcmcia/db1xxx_ss.ko] undefined!
 
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211221055904.555763-6-aik@ozlabs.ru
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 42a4f17dc356 ("MIPS: Alchemy: remove SOC_AU1X00 in favor of MIPS_ALCHEMY")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-mips@vger.kernel.org
+Acked-by: Manuel Lauss <manuel.lauss@gmail.com>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/ppc-opcode.h   |    2 ++
- arch/powerpc/kernel/idle.c              |    2 +-
- arch/powerpc/kernel/idle_6xx.S          |    2 +-
- arch/powerpc/kernel/l2cr_6xx.S          |    6 +++---
- arch/powerpc/kernel/swsusp_32.S         |    2 +-
- arch/powerpc/kernel/swsusp_asm64.S      |    2 +-
- arch/powerpc/mm/mmu_context.c           |    2 +-
- arch/powerpc/platforms/powermac/cache.S |    4 ++--
- 8 files changed, 12 insertions(+), 10 deletions(-)
+ drivers/pcmcia/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/powerpc/include/asm/ppc-opcode.h
-+++ b/arch/powerpc/include/asm/ppc-opcode.h
-@@ -212,6 +212,7 @@
- #define PPC_INST_COPY			0x7c20060c
- #define PPC_INST_DCBA			0x7c0005ec
- #define PPC_INST_DCBA_MASK		0xfc0007fe
-+#define PPC_INST_DSSALL			0x7e00066c
- #define PPC_INST_ISEL			0x7c00001e
- #define PPC_INST_ISEL_MASK		0xfc00003e
- #define PPC_INST_LSWI			0x7c0004aa
-@@ -517,6 +518,7 @@
- #define	PPC_DCBZL(a, b)		stringify_in_c(.long PPC_RAW_DCBZL(a, b))
- #define	PPC_DIVDE(t, a, b)	stringify_in_c(.long PPC_RAW_DIVDE(t, a, b))
- #define	PPC_DIVDEU(t, a, b)	stringify_in_c(.long PPC_RAW_DIVDEU(t, a, b))
-+#define PPC_DSSALL		stringify_in_c(.long PPC_INST_DSSALL)
- #define PPC_LQARX(t, a, b, eh)	stringify_in_c(.long PPC_RAW_LQARX(t, a, b, eh))
- #define PPC_LDARX(t, a, b, eh)	stringify_in_c(.long PPC_RAW_LDARX(t, a, b, eh))
- #define PPC_LWARX(t, a, b, eh)	stringify_in_c(.long PPC_RAW_LWARX(t, a, b, eh))
---- a/arch/powerpc/kernel/idle.c
-+++ b/arch/powerpc/kernel/idle.c
-@@ -82,7 +82,7 @@ void power4_idle(void)
- 		return;
+diff --git a/drivers/pcmcia/Kconfig b/drivers/pcmcia/Kconfig
+index d13b8d1a780a..4868ec03e32f 100644
+--- a/drivers/pcmcia/Kconfig
++++ b/drivers/pcmcia/Kconfig
+@@ -151,7 +151,7 @@ config TCIC
  
- 	if (cpu_has_feature(CPU_FTR_ALTIVEC))
--		asm volatile("DSSALL ; sync" ::: "memory");
-+		asm volatile(PPC_DSSALL " ; sync" ::: "memory");
- 
- 	power4_idle_nap();
- 
---- a/arch/powerpc/kernel/idle_6xx.S
-+++ b/arch/powerpc/kernel/idle_6xx.S
-@@ -129,7 +129,7 @@ BEGIN_FTR_SECTION
- END_FTR_SECTION_IFCLR(CPU_FTR_NO_DPM)
- 	mtspr	SPRN_HID0,r4
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- 	sync
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
- 	lwz	r8,TI_LOCAL_FLAGS(r2)	/* set napping bit */
---- a/arch/powerpc/kernel/l2cr_6xx.S
-+++ b/arch/powerpc/kernel/l2cr_6xx.S
-@@ -96,7 +96,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_L2CR)
- 
- 	/* Stop DST streams */
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- 	sync
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
- 
-@@ -292,7 +292,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_L3CR)
- 	isync
- 
- 	/* Stop DST streams */
--	DSSALL
-+	PPC_DSSALL
- 	sync
- 
- 	/* Get the current enable bit of the L3CR into r4 */
-@@ -401,7 +401,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_L3CR)
- _GLOBAL(__flush_disable_L1)
- 	/* Stop pending alitvec streams and memory accesses */
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
-  	sync
- 
---- a/arch/powerpc/kernel/swsusp_32.S
-+++ b/arch/powerpc/kernel/swsusp_32.S
-@@ -181,7 +181,7 @@ _GLOBAL(swsusp_arch_resume)
- #ifdef CONFIG_ALTIVEC
- 	/* Stop pending alitvec streams and memory accesses */
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
- #endif
-  	sync
---- a/arch/powerpc/kernel/swsusp_asm64.S
-+++ b/arch/powerpc/kernel/swsusp_asm64.S
-@@ -142,7 +142,7 @@ END_FW_FTR_SECTION_IFCLR(FW_FEATURE_LPAR
- _GLOBAL(swsusp_arch_resume)
- 	/* Stop pending alitvec streams and memory accesses */
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
- 	sync
- 
---- a/arch/powerpc/mm/mmu_context.c
-+++ b/arch/powerpc/mm/mmu_context.c
-@@ -79,7 +79,7 @@ void switch_mm_irqs_off(struct mm_struct
- 	 * context
- 	 */
- 	if (cpu_has_feature(CPU_FTR_ALTIVEC))
--		asm volatile ("dssall");
-+		asm volatile (PPC_DSSALL);
- 
- 	if (new_on_cpu)
- 		radix_kvm_prefetch_workaround(next);
---- a/arch/powerpc/platforms/powermac/cache.S
-+++ b/arch/powerpc/platforms/powermac/cache.S
-@@ -48,7 +48,7 @@ flush_disable_75x:
- 
- 	/* Stop DST streams */
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- 	sync
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
- 
-@@ -197,7 +197,7 @@ flush_disable_745x:
- 	isync
- 
- 	/* Stop prefetch streams */
--	DSSALL
-+	PPC_DSSALL
- 	sync
- 
- 	/* Disable L2 prefetching */
+ config PCMCIA_ALCHEMY_DEVBOARD
+ 	tristate "Alchemy Db/Pb1xxx PCMCIA socket services"
+-	depends on MIPS_ALCHEMY && PCMCIA
++	depends on MIPS_DB1XXX && PCMCIA
+ 	help
+ 	  Enable this driver of you want PCMCIA support on your Alchemy
+ 	  Db1000, Db/Pb1100, Db/Pb1500, Db/Pb1550, Db/Pb1200, DB1300
+-- 
+2.35.1
+
 
 
