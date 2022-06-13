@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBB0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353470AbiFML1T (ORCPT
+        id S1354043AbiFML1X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46498 "EHLO
+        Mon, 13 Jun 2022 07:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352573AbiFMLSQ (ORCPT
+        with ESMTP id S1352896AbiFMLTB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:18:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785B5393C8;
-        Mon, 13 Jun 2022 03:40:31 -0700 (PDT)
+        Mon, 13 Jun 2022 07:19:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF77C39833;
+        Mon, 13 Jun 2022 03:40:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C35610A0;
-        Mon, 13 Jun 2022 10:40:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F151C34114;
-        Mon, 13 Jun 2022 10:40:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDD98610A0;
+        Mon, 13 Jun 2022 10:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDEBBC34114;
+        Mon, 13 Jun 2022 10:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116830;
-        bh=slrudWxAuh1fLW0htW8NsiYcuiCfkfg8Ra9j9/LrVrs=;
+        s=korg; t=1655116846;
+        bh=YxJ7oQOItiFqndzNT7SS3Vf+Ghx4qKzyaMSvq5xiiC4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lpVYYorXM8fCxPNMY0fuNzc36WXrVmk+9t6luABdlRD4rN3vJMBwhGkW2c9UH8yqI
-         +nr9gKf0vCKcI11IN3S6KrV/ousjcbVZ/ZvE9ZIfb24UNUmjy8/4wPCct+nzMqAiUK
-         MpvVUg4LG9VdJEzoRakDmbsvI4em5/dw+xE7aaC0=
+        b=Xr4Mfh3RoqG1JDIHXoPPi8dUU0WlCDpfkOy6ANfwypQMNb5QOyB5oO4FjWPAieJ6o
+         Mhe5/WSl//3i83cKg7/i1E56/n9bOyR1xvZA3YVGwfqGV6e9sW592R+ZbDQSAhX2Zv
+         RkMIUnsRrUAzRkrvMenaqAGEjDtcQqCiZFkKExrA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 188/411] powerpc/64: Only WARN if __pa()/__va() called with bad addresses
-Date:   Mon, 13 Jun 2022 12:07:41 +0200
-Message-Id: <20220613094934.297852226@linuxfoundation.org>
+        stable@vger.kernel.org, "D. Ziegfeld" <dzigg@posteo.de>,
+        =?UTF-8?q?J=C3=B6rg-Volker=20Peetz?= <jvpeetz@web.de>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 206/411] iommu/amd: Increase timeout waiting for GA log enablement
+Date:   Mon, 13 Jun 2022 12:07:59 +0200
+Message-Id: <20220613094934.834339349@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,54 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Joerg Roedel <jroedel@suse.de>
 
-[ Upstream commit c4bce84d0bd3f396f702d69be2e92bbd8af97583 ]
+[ Upstream commit 42bb5aa043382f09bef2cc33b8431be867c70f8e ]
 
-We added checks to __pa() / __va() to ensure they're only called with
-appropriate addresses. But using BUG_ON() is too strong, it means
-virt_addr_valid() will BUG when DEBUG_VIRTUAL is enabled.
+On some systems it can take a long time for the hardware to enable the
+GA log of the AMD IOMMU. The current wait time is only 0.1ms, but
+testing showed that it can take up to 14ms for the GA log to enter
+running state after it has been enabled.
 
-Instead switch them to warnings, arm64 does the same.
+Sometimes the long delay happens when booting the system, sometimes
+only on resume. Adjust the timeout accordingly to not print a warning
+when hardware takes a longer than usual.
 
-Fixes: 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va and __pa addresses")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220406145802.538416-5-mpe@ellerman.id.au
+There has already been an attempt to fix this with commit
+
+	9b45a7738eec ("iommu/amd: Fix loop timeout issue in iommu_ga_log_enable()")
+
+But that commit was based on some wrong math and did not fix the issue
+in all cases.
+
+Cc: "D. Ziegfeld" <dzigg@posteo.de>
+Cc: Jörg-Volker Peetz <jvpeetz@web.de>
+Fixes: 8bda0cfbdc1a ("iommu/amd: Detect and initialize guest vAPIC log")
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Link: https://lore.kernel.org/r/20220520102214.12563-1-joro@8bytes.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/page.h | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/page.h
-index 0d8f9246ce15..d92353a96f81 100644
---- a/arch/powerpc/include/asm/page.h
-+++ b/arch/powerpc/include/asm/page.h
-@@ -216,6 +216,9 @@ static inline bool pfn_valid(unsigned long pfn)
- #define __pa(x) ((unsigned long)(x) - VIRT_PHYS_OFFSET)
- #else
- #ifdef CONFIG_PPC64
-+
-+#define VIRTUAL_WARN_ON(x)	WARN_ON(IS_ENABLED(CONFIG_DEBUG_VIRTUAL) && (x))
-+
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 7502fa84e253..82d008310418 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -83,7 +83,7 @@
+ #define ACPI_DEVFLAG_LINT1              0x80
+ #define ACPI_DEVFLAG_ATSDIS             0x10000000
+ 
+-#define LOOP_TIMEOUT	100000
++#define LOOP_TIMEOUT	2000000
  /*
-  * gcc miscompiles (unsigned long)(&static_var) - PAGE_OFFSET
-  * with -mcmodel=medium, so we use & and | instead of - and + on 64-bit.
-@@ -223,13 +226,13 @@ static inline bool pfn_valid(unsigned long pfn)
-  */
- #define __va(x)								\
- ({									\
--	VIRTUAL_BUG_ON((unsigned long)(x) >= PAGE_OFFSET);		\
-+	VIRTUAL_WARN_ON((unsigned long)(x) >= PAGE_OFFSET);		\
- 	(void *)(unsigned long)((phys_addr_t)(x) | PAGE_OFFSET);	\
- })
- 
- #define __pa(x)								\
- ({									\
--	VIRTUAL_BUG_ON((unsigned long)(x) < PAGE_OFFSET);		\
-+	VIRTUAL_WARN_ON((unsigned long)(x) < PAGE_OFFSET);		\
- 	(unsigned long)(x) & 0x0fffffffffffffffUL;			\
- })
- 
+  * ACPI table definitions
+  *
 -- 
 2.35.1
 
