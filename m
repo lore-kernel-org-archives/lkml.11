@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 001F0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9240FCCA494
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:00:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357697AbiFMM7W (ORCPT
+        id S1358412AbiFMM7r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
+        Mon, 13 Jun 2022 08:59:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354615AbiFMMxd (ORCPT
+        with ESMTP id S1357953AbiFMMyu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:53:33 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823711EAEC;
-        Mon, 13 Jun 2022 04:12:44 -0700 (PDT)
+        Mon, 13 Jun 2022 08:54:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF38A35841;
+        Mon, 13 Jun 2022 04:13:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A3E2CCE1174;
-        Mon, 13 Jun 2022 11:12:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B8A9C34114;
-        Mon, 13 Jun 2022 11:12:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 646EDB80EA8;
+        Mon, 13 Jun 2022 11:13:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C56B6C34114;
+        Mon, 13 Jun 2022 11:13:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118754;
-        bh=zha2dROxJNfVeY3ac8jBE+pOULrvQBeoRLrNGrfbVns=;
+        s=korg; t=1655118821;
+        bh=tIWI8g7pqVsWjLGyCK18s3HAWZLPh1q3g5NknhSXsEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E0KPcldgfJl8FOx9jSgNgNWH95UXmdxw3qY/8iPHuujaGMdPLVj5PQFSs0LZqJdzE
-         a6VPwcjX5B7HDFcDNTCZSGc3uzZ6UxsmZF8qJQMP4D6hbksGIJqATk3/ywmAQ9rL6p
-         b4lZjezLabp7SMcnmy0uHvQrrqV9uhzsBdxVFZFs=
+        b=T+FNqrOh2MM3C1+dwDUqrly3mGOPpkKZjZ384HKfVrmTt64hMNXczONZI9lFru833
+         dvrqg2GwM5nXvL3eXFiDt1bLgf59dUqTDrdbriIpSP+6OeJ7U2dsZUyWoQT6qeWmmI
+         AGli3xgleyK3mVYWwucd/NIRx7p9JdoYkVFBmjQU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 016/247] staging: fieldbus: Fix the error handling path in anybuss_host_common_probe()
-Date:   Mon, 13 Jun 2022 12:08:38 +0200
-Message-Id: <20220613094923.420381405@linuxfoundation.org>
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 039/247] soundwire: intel: prevent pm_runtime resume prior to system suspend
+Date:   Mon, 13 Jun 2022 12:09:01 +0200
+Message-Id: <20220613094924.131527944@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,36 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit 7079b3483a17be2cfba64cbd4feb1b7ae07f1ea7 ]
+[ Upstream commit 6d9f2dadba698114fed97b224578c5338a36b0d9 ]
 
-If device_register() fails, device_unregister() should not be called
-because it will free some resources that are not allocated.
-put_device() should be used instead.
+commit e38f9ff63e6d ("ACPI: scan: Do not add device IDs from _CID if _HID is not valid")
+exposes a race condition on a TGL RVP device leading to a timeout.
 
-Fixes: 308ee87a2f1e ("staging: fieldbus: anybus-s: support HMS Anybus-S bus")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/5401a519608d6e1a4e7435c20f4f20b0c5c36c23.1650610082.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The detailed analysis shows the RT711 codec driver scheduling a jack
+detection workqueue while attaching during a spurious pm_runtime
+resume, and the work function happens to be scheduled after the
+manager device is suspended.
+
+The direct link between this ACPI patch and a spurious pm_runtime
+resume is not obvious; the most likely explanation is that a change in
+the ACPI device linked list management modifies the order in which the
+pm_runtime device status is checked and exposes a race condition that
+was probably present for a very long time, but was not identified.
+
+We already have a check in the .prepare stage, where we will resume to
+full power from specific clock-stop modes. In all other cases, we
+don't need to resume to full power by default. Adding the
+SMART_SUSPEND flag prevents the spurious resume from happening.
+
+BugLink: https://github.com/thesofproject/linux/issues/3459
+Fixes: 029bfd1cd53cd ("soundwire: intel: conditionally exit clock stop mode on system suspend")
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Link: https://lore.kernel.org/r/20220420023241.14335-2-yung-chuan.liao@linux.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/fieldbus/anybuss/host.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soundwire/intel.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/staging/fieldbus/anybuss/host.c b/drivers/staging/fieldbus/anybuss/host.c
-index 8a75f6642c78..0c41d1e0204f 100644
---- a/drivers/staging/fieldbus/anybuss/host.c
-+++ b/drivers/staging/fieldbus/anybuss/host.c
-@@ -1384,7 +1384,7 @@ anybuss_host_common_probe(struct device *dev,
- 		goto err_device;
- 	return cd;
- err_device:
--	device_unregister(&cd->client->dev);
-+	put_device(&cd->client->dev);
- err_kthread:
- 	kthread_stop(cd->qthread);
- err_reset:
+diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
+index f72d36654ac2..38e7f1a2bb97 100644
+--- a/drivers/soundwire/intel.c
++++ b/drivers/soundwire/intel.c
+@@ -1298,6 +1298,9 @@ static int intel_link_probe(struct auxiliary_device *auxdev,
+ 	/* use generic bandwidth allocation algorithm */
+ 	sdw->cdns.bus.compute_params = sdw_compute_params;
+ 
++	/* avoid resuming from pm_runtime suspend if it's not required */
++	dev_pm_set_driver_flags(dev, DPM_FLAG_SMART_SUSPEND);
++
+ 	ret = sdw_bus_master_add(bus, dev, dev->fwnode);
+ 	if (ret) {
+ 		dev_err(dev, "sdw_bus_master_add fail: %d\n", ret);
 -- 
 2.35.1
 
