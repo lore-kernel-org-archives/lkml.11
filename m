@@ -2,111 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 990CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 05:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E03ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 05:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236291AbiFMFjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 01:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48802 "EHLO
+        id S233480AbiFMFog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 01:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236104AbiFMFid (ORCPT
+        with ESMTP id S239506AbiFMFoV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 01:38:33 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8EB9FC0;
-        Sun, 12 Jun 2022 22:37:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=+wB/nqOESlmBKGsPGGPvPk+1JR7GdqX/FHAB3WXgdkI=; b=GgvoeVQPdRkCIkuIXOuXZNK6Pp
-        jjhDh27mjZPk6mpG4OIjrjTYa5AqdNMcp40vsyWIn6lLM0KiVi6X2sQ1fSH97/7IIip/x7WRQ5MYX
-        sfCfnjRbPOvI/qfNj5p/o3dHUubDG+h234+ilkGjpXaERdO5cid9rc0VhO0zBrW+ut2Ku03JzleXg
-        JK0IXWsEOutO5b5XanEZ+XC8S7cKwEAjxfEi6gAYc4kaO7Jaljg3rmyfGrg2RLWTHiPkEpJqM/txF
-        vTBhmi0u5zTBa1BTxzvHR9kJBye6Xr/sQZj4MktxRXnxVczCdtvA3A81XIxZojmipgY5nhvX1bD5w
-        5aNm4mpA==;
-Received: from [2001:4bb8:180:36f6:f125:c38b:d3d6:ae6c] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o0clS-001V4u-RK; Mon, 13 Jun 2022 05:37:27 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.com>,
-        Dave Kleikamp <shaggy@kernel.org>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Cc:     linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jfs-discussion@lists.sourceforge.net,
-        ntfs3@lists.linux.dev
-Subject: [PATCH 3/6] jfs: stop using the nobh helper
-Date:   Mon, 13 Jun 2022 07:37:12 +0200
-Message-Id: <20220613053715.2394147-4-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220613053715.2394147-1-hch@lst.de>
-References: <20220613053715.2394147-1-hch@lst.de>
+        Mon, 13 Jun 2022 01:44:21 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 930F617AB9;
+        Sun, 12 Jun 2022 22:43:25 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25D5hMvP082356;
+        Mon, 13 Jun 2022 00:43:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1655099002;
+        bh=YYUSBlmhIiziTHTMVOt8zlqp7iWnmBoVw6w98j6PPuQ=;
+        h=From:To:CC:Subject:Date;
+        b=Fr6zneSeJuSkre2FkB5abhlTZoTf+nh0jk/iKVwkD5gYUNVVh2SQi8bRN8sDuMO6/
+         ka/fD8Cm2bDrSfbV1tWX0FyI/JC63AUufdee32uwgm9VICaBlhFAo2l+JKV8ILTmGY
+         sh1crMJvZQqiJDvfza0kSqvDLvscjiXvF6bs0tgo=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25D5hMDO011361
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 13 Jun 2022 00:43:22 -0500
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 13
+ Jun 2022 00:43:22 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 13 Jun 2022 00:43:22 -0500
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25D5hJUq128031;
+        Mon, 13 Jun 2022 00:43:19 -0500
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Devarsh Thakkar <devarsht@ti.com>, Keerthy <j-keerthy@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3] gpio: davinci: Add support for system suspend/resume PM
+Date:   Mon, 13 Jun 2022 11:13:10 +0530
+Message-ID: <20220613054310.21186-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The nobh mode is an obscure feature to save lowlevel for large memory
-32-bit configurations while trading for much slower performance and
-has been long obsolete.  Switch to the regular buffer head based helpers
-instead.
+From: Devarsh Thakkar <devarsht@ti.com>
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Add support for system suspend/resume PM hooks, save the
+register context of all the required gpio registers on suspend
+and restore context on the resume.
+
+Signed-off-by: Devarsh Thakkar <devarsht@ti.com>
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 ---
- fs/jfs/inode.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/fs/jfs/inode.c b/fs/jfs/inode.c
-index 259326556ada6..d1ec920aa030a 100644
---- a/fs/jfs/inode.c
-+++ b/fs/jfs/inode.c
-@@ -301,13 +301,25 @@ static int jfs_write_begin(struct file *file, struct address_space *mapping,
- {
- 	int ret;
+Changes since v2:
+- Fixed grammer in the commit message
+- Used GENMASK instead of using the value
+- Used pm_sleep_ptr and removed __maybe_used for
+  system suspend/resume hooks
+
+Changes since v1:
+- Moved header include to group with other similar headers
+- Removed unnecessary intializations
+
+ drivers/gpio/gpio-davinci.c | 83 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 83 insertions(+)
+
+diff --git a/drivers/gpio/gpio-davinci.c b/drivers/gpio/gpio-davinci.c
+index f960587f86a3..59c4c48d8296 100644
+--- a/drivers/gpio/gpio-davinci.c
++++ b/drivers/gpio/gpio-davinci.c
+@@ -22,6 +22,7 @@
+ #include <linux/platform_data/gpio-davinci.h>
+ #include <linux/irqchip/chained_irq.h>
+ #include <linux/spinlock.h>
++#include <linux/pm_runtime.h>
  
--	ret = nobh_write_begin(mapping, pos, len, pagep, fsdata, jfs_get_block);
-+	ret = block_write_begin(mapping, pos, len, pagep, jfs_get_block);
- 	if (unlikely(ret))
- 		jfs_write_failed(mapping, pos + len);
+ #include <asm-generic/gpio.h>
  
- 	return ret;
+@@ -62,6 +63,8 @@ struct davinci_gpio_controller {
+ 	void __iomem		*regs[MAX_REGS_BANKS];
+ 	int			gpio_unbanked;
+ 	int			irqs[MAX_INT_PER_BANK];
++	struct davinci_gpio_regs context[MAX_REGS_BANKS];
++	u32			binten_context;
+ };
+ 
+ static inline u32 __gpio_mask(unsigned gpio)
+@@ -622,6 +625,85 @@ static int davinci_gpio_irq_setup(struct platform_device *pdev)
+ 	return 0;
  }
  
-+static int jfs_write_end(struct file *file, struct address_space *mapping,
-+		loff_t pos, unsigned len, unsigned copied, struct page *page,
-+		void *fsdata)
++static void davinci_gpio_save_context(struct davinci_gpio_controller *chips,
++				      u32 nbank)
 +{
-+	int ret;
++	struct davinci_gpio_regs __iomem *g;
++	struct davinci_gpio_regs *context;
++	u32 bank;
++	void __iomem *base;
 +
-+	ret = generic_write_end(file, mapping, pos, len, copied, page, fsdata);
-+	if (ret < len)
-+		jfs_write_failed(mapping, pos + len);
-+	return ret;
++	base = chips->regs[0] - offset_array[0];
++	chips->binten_context = readl_relaxed(base + BINTEN);
++
++	for (bank = 0; bank < nbank; bank++) {
++		g = chips->regs[bank];
++		context = &chips->context[bank];
++		context->dir = readl_relaxed(&g->dir);
++		context->set_data = readl_relaxed(&g->set_data);
++		context->set_rising = readl_relaxed(&g->set_rising);
++		context->set_falling = readl_relaxed(&g->set_falling);
++	}
++
++	/* Clear Bank interrupt enable bit */
++	writel_relaxed(0, base + BINTEN);
++
++	/* Clear all interrupt status registers */
++	writel_relaxed(GENMASK(31, 0), &g->intstat);
 +}
 +
- static sector_t jfs_bmap(struct address_space *mapping, sector_t block)
- {
- 	return generic_block_bmap(mapping, block, jfs_get_block);
-@@ -346,7 +358,7 @@ const struct address_space_operations jfs_aops = {
- 	.writepage	= jfs_writepage,
- 	.writepages	= jfs_writepages,
- 	.write_begin	= jfs_write_begin,
--	.write_end	= nobh_write_end,
-+	.write_end	= jfs_write_end,
- 	.bmap		= jfs_bmap,
- 	.direct_IO	= jfs_direct_IO,
++static void davinci_gpio_restore_context(struct davinci_gpio_controller *chips,
++					 u32 nbank)
++{
++	struct davinci_gpio_regs __iomem *g;
++	struct davinci_gpio_regs *context;
++	u32 bank;
++	void __iomem *base;
++
++	base = chips->regs[0] - offset_array[0];
++
++	if (readl_relaxed(base + BINTEN) != chips->binten_context)
++		writel_relaxed(chips->binten_context, base + BINTEN);
++
++	for (bank = 0; bank < nbank; bank++) {
++		g = chips->regs[bank];
++		context = &chips->context[bank];
++		if (readl_relaxed(&g->dir) != context->dir)
++			writel_relaxed(context->dir, &g->dir);
++		if (readl_relaxed(&g->set_data) != context->set_data)
++			writel_relaxed(context->set_data, &g->set_data);
++		if (readl_relaxed(&g->set_rising) != context->set_rising)
++			writel_relaxed(context->set_rising, &g->set_rising);
++		if (readl_relaxed(&g->set_falling) != context->set_falling)
++			writel_relaxed(context->set_falling, &g->set_falling);
++	}
++}
++
++static int davinci_gpio_suspend(struct device *dev)
++{
++	struct davinci_gpio_controller *chips = dev_get_drvdata(dev);
++	struct davinci_gpio_platform_data *pdata = dev_get_platdata(dev);
++	u32 nbank = DIV_ROUND_UP(pdata->ngpio, 32);
++
++	davinci_gpio_save_context(chips, nbank);
++
++	return 0;
++}
++
++static int davinci_gpio_resume(struct device *dev)
++{
++	struct davinci_gpio_controller *chips = dev_get_drvdata(dev);
++	struct davinci_gpio_platform_data *pdata = dev_get_platdata(dev);
++	u32 nbank = DIV_ROUND_UP(pdata->ngpio, 32);
++
++	davinci_gpio_restore_context(chips, nbank);
++
++	return 0;
++}
++
++DEFINE_SIMPLE_DEV_PM_OPS(davinci_gpio_dev_pm_ops, davinci_gpio_suspend,
++			 davinci_gpio_resume);
++
+ static const struct of_device_id davinci_gpio_ids[] = {
+ 	{ .compatible = "ti,keystone-gpio", keystone_gpio_get_irq_chip},
+ 	{ .compatible = "ti,am654-gpio", keystone_gpio_get_irq_chip},
+@@ -634,6 +716,7 @@ static struct platform_driver davinci_gpio_driver = {
+ 	.probe		= davinci_gpio_probe,
+ 	.driver		= {
+ 		.name		= "davinci_gpio",
++		.pm = pm_sleep_ptr(&davinci_gpio_dev_pm_ops),
+ 		.of_match_table	= of_match_ptr(davinci_gpio_ids),
+ 	},
  };
-@@ -399,7 +411,7 @@ void jfs_truncate(struct inode *ip)
- {
- 	jfs_info("jfs_truncate: size = 0x%lx", (ulong) ip->i_size);
- 
--	nobh_truncate_page(ip->i_mapping, ip->i_size, jfs_get_block);
-+	block_truncate_page(ip->i_mapping, ip->i_size, jfs_get_block);
- 
- 	IWRITE_LOCK(ip, RDWRLOCK_NORMAL);
- 	jfs_truncate_nolock(ip, ip->i_size);
 -- 
-2.30.2
+2.17.1
 
