@@ -2,112 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A72FFCCA489
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A691CCA490
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344485AbiFMM5a (ORCPT
+        id S1355515AbiFMM5n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43804 "EHLO
+        Mon, 13 Jun 2022 08:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357754AbiFMMyo (ORCPT
+        with ESMTP id S1357752AbiFMMyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:54:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6665B6621F;
-        Mon, 13 Jun 2022 04:13:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 188BE60EAE;
-        Mon, 13 Jun 2022 11:13:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21DA6C34114;
-        Mon, 13 Jun 2022 11:13:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118796;
-        bh=u3g6ye2lF1PUMaUH3OK098oauGnVr/Y/SqRnFmjCthM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OEXaYEqJT8nzVHRc8Xbq1dWlRkExoFM5pfmEyqLePn3hohjlvF1397e7gyHXmyxzN
-         EHMI6o5vq0xfa2gBTwXmJIYA9BnnRNJRgkqE5SwlV5DQFeNO9Zb1JLLi6dRFPWdQzf
-         sARGngoOd5NezZVXtlXsjzkdSTqTDy8KepWm/dPw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cixi Geng <cixi.geng1@unisoc.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 031/247] iio: adc: sc27xx: Fine tune the scale calibration values
-Date:   Mon, 13 Jun 2022 12:08:53 +0200
-Message-Id: <20220613094923.880979738@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
-References: <20220613094922.843438024@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D01A6668C;
+        Mon, 13 Jun 2022 04:13:16 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id g186so5263190pgc.1;
+        Mon, 13 Jun 2022 04:13:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hf4jIbSC0d5YY8s9rqomM6DgVm8XNv+YrOYwUOgBoNA=;
+        b=LXWqlDW2i8o2CD+D6fikYhundWq6bCB6giHGiPurlzrtGHlwsplK3mx8a1NdxqTICD
+         wQUiqLRKDT8VJLctE8Qyo1+yYsGZFNdBFubmnLWippbPRgB6MF9yVDZQoRuKJIdueXwO
+         FM0jRPYl1fOnL/6rWLdXogGSFa2a5FpcWfZvQwec1lfsdVIoykmgXW9fd6LWHSAckdDP
+         uxwPG0WS7/ESWkyuaAWgiASgRQQTdn9KLVQX1N8MvZI5kykft1vw8fvoOyjrwfEHNHKq
+         p+yMOHkQEeFAkgJboqBBrgVM9NFCYLmM+itqsX9KU3HC5HJKe4SKoCUiaIXnJh74LlB5
+         p/uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hf4jIbSC0d5YY8s9rqomM6DgVm8XNv+YrOYwUOgBoNA=;
+        b=NmwbDYhl3VGN2ebjU71r6d69RRr9cIfeejRJz9ljtFxe0LRcJYyvWpX6ndRG4lZOFQ
+         01vrftUsjYJQz68lfwVGFg1MlfdD8eMK1/KQPuBvUR3hpOvCDaLUtjM4iF5L6VkXEaNh
+         igbzEmI98k/PvwYF/YtRvq9kQISOGoGhjCWWacbB8o1esThgCww2yFY6xlju2zxDmhCP
+         05Tb/tRtuHxRfHkf8Fs6R7gh89jYILAxM1sjhEX9sI8ILkZujq158R4cqB80xw7jQPP0
+         +fxLiPcZATTAK0x7VqfF3+GYtwTw358hP109Oq0nW05wm7lLKd8Rd3zU0gRDoH72/A3K
+         0/vw==
+X-Gm-Message-State: AOAM533zOyYifau3evdfQzm6/0Yafz0v/kAy+f7vfg9dKJV/ok0Cc0Tk
+        /IvC37P5SlFPch0qUICBmZ8=
+X-Google-Smtp-Source: ABdhPJy91L1cAhQPwaeU8vYLmrVlKb6COYEVKqbPaII+8J9gUc3Xz+wkNkvJMcJwWCAFDLtI1fb5tQ==
+X-Received: by 2002:a05:6a00:18a9:b0:51b:f63b:6f7c with SMTP id x41-20020a056a0018a900b0051bf63b6f7cmr47127824pfh.49.1655118796098;
+        Mon, 13 Jun 2022 04:13:16 -0700 (PDT)
+Received: from RD-3580-24288.rt.l (42-72-115-109.emome-ip.hinet.net. [42.72.115.109])
+        by smtp.gmail.com with ESMTPSA id g17-20020a056a000b9100b0051b4e53c487sm5199989pfj.45.2022.06.13.04.13.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 04:13:15 -0700 (PDT)
+From:   ChiaEn Wu <peterwu.pub@gmail.com>
+To:     jic23@kernel.org, lars@metafoo.de, matthias.bgg@gmail.com,
+        lee.jones@linaro.org, daniel.thompson@linaro.org,
+        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com, ChiaEn Wu <chiaen_wu@richtek.com>
+Subject: [PATCH v2 07/15] Documentation: ABI: testing: mt6370: Add ADC sysfs guideline
+Date:   Mon, 13 Jun 2022 19:11:38 +0800
+Message-Id: <20220613111146.25221-8-peterwu.pub@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220613111146.25221-1-peterwu.pub@gmail.com>
+References: <20220613111146.25221-1-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cixi Geng <cixi.geng1@unisoc.com>
+From: ChiaEn Wu <chiaen_wu@richtek.com>
 
-[ Upstream commit 5a7a184b11c6910f47600ff5cbbee34168f701a8 ]
+Add ABI documentation for mt6370 non-standard ADC sysfs interfaces.
 
-Small adjustment the scale calibration value for the sc2731,
-use new name sc2731_[big|small]_scale_graph_calib, and remove
-the origin [big|small]_scale_graph_calib struct for unused.
-
-Fixes: 8ba0dbfd07a35 (iio: adc: sc27xx: Add ADC scale calibration)
-Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-Link: https://lore.kernel.org/r/20220419142458.884933-4-gengcixi@gmail.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
 ---
- drivers/iio/adc/sc27xx_adc.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ .../ABI/testing/sysfs-bus-iio-adc-mt6370      | 36 +++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-mt6370
 
-diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index aee076c8e2b1..cfe003cc4f0b 100644
---- a/drivers/iio/adc/sc27xx_adc.c
-+++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -103,14 +103,14 @@ static struct sc27xx_adc_linear_graph small_scale_graph = {
- 	100, 341,
- };
- 
--static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
--	4200, 856,
--	3600, 733,
-+static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_calib = {
-+	4200, 850,
-+	3600, 728,
- };
- 
--static const struct sc27xx_adc_linear_graph small_scale_graph_calib = {
--	1000, 833,
--	100, 80,
-+static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_calib = {
-+	1000, 838,
-+	100, 84,
- };
- 
- static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
-@@ -130,11 +130,11 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
- 	size_t len;
- 
- 	if (big_scale) {
--		calib_graph = &big_scale_graph_calib;
-+		calib_graph = &sc2731_big_scale_graph_calib;
- 		graph = &big_scale_graph;
- 		cell_name = "big_scale_calib";
- 	} else {
--		calib_graph = &small_scale_graph_calib;
-+		calib_graph = &sc2731_small_scale_graph_calib;
- 		graph = &small_scale_graph;
- 		cell_name = "small_scale_calib";
- 	}
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6370 b/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6370
+new file mode 100644
+index 000000000000..039b3381176a
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6370
+@@ -0,0 +1,36 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltage0_raw
++KernelVersion:	5.18
++Contact:	chiaen_wu@richtek.com
++Description:
++		Indicated MT6370 VBUS ADC with lower accuracy(+-75mA)
++		higher measure range(1~22V)
++		Calculating with scale returns voltage in uV
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltage1_raw
++KernelVersion:	5.18
++Contact:	chiaen_wu@richtek.com
++Description:
++		Indicated MT6370 VBUS ADC with higher accuracy(+-30mA)
++		lower measure range(1~9.76V)
++		Calculating with scale offset returns voltage in uV
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltage4_raw
++KernelVersion:	5.18
++Contact:	chiaen_wu@richtek.com
++Description:
++		Indicated MT6370 TS_BAT ADC
++		Calculating with scale returns voltage in uV
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_voltage7_raw
++KernelVersion:	5.18
++Contact:	chiaen_wu@richtek.com
++Description:
++		Indicated MT6370 CHG_VDDP ADC
++		Calculating with scale returns voltage in mV
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp8_raw
++KernelVersion:	5.18
++Contact:	chiaen_wu@richtek.com
++Description:
++		Indicated MT6370 IC junction temperature
++		Calculating with scale and offset returns temperature in degree
 -- 
-2.35.1
-
-
+2.25.1
 
