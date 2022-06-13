@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77D39C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA8AECCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349868AbiFMK6b (ORCPT
+        id S1351001AbiFMK7G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:58:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
+        Mon, 13 Jun 2022 06:59:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350053AbiFMKyk (ORCPT
+        with ESMTP id S1350155AbiFMKyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2C2DFBB;
-        Mon, 13 Jun 2022 03:28:44 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A12DFED;
+        Mon, 13 Jun 2022 03:29:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65EAC60AEB;
-        Mon, 13 Jun 2022 10:28:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72BC8C34114;
-        Mon, 13 Jun 2022 10:28:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B8D660EF5;
+        Mon, 13 Jun 2022 10:29:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 894DBC34114;
+        Mon, 13 Jun 2022 10:29:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116123;
-        bh=3bAxwqz+PrEB3N97Cb5NFJS0jvNMxicYpIO/3MlF7Zo=;
+        s=korg; t=1655116170;
+        bh=srE8cZV7uZ5jo1lc4JV2ZCVGuEAjbdgMCcMiaUhLJPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EgwPXq2TBaVsZSFmqLLdnymAa3dNYslZfQmSfHI+ELogZGkSFPd7K9bMBll3epcw3
-         txCQvX9Gnt4sd1RdreS+V/OjJ/5C2cHbzlygH4GVMkOHvWBVrsxYlo6IBYtx/bXYOl
-         MqXh8Zb5Jz6L3AZbcEtdqrtF7gkzjGT5hc82Pp5w=
+        b=k2lsznlH2w6x6QuxWFdFU1qK4sP5Dr9YRxG2bXaTpCIQInD30R/VkTU9tBGClkNeE
+         riOmwa2wKNmPHVoba+/G2pwtP34SNuIbAGCphbnBUumXv0YjBrlBjx/847CIzcQu26
+         RlANyD4N3iqszI0n+/RBjyZYuBmWwG8yyXMKYsTA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Du Cheng <ducheng2@gmail.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Claudio Suarez <cssk@net-c.es>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org, jianghaoran <jianghaoran@kylinos.cn>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 018/411] fbcon: Consistently protect deferred_takeover with console_lock()
-Date:   Mon, 13 Jun 2022 12:04:51 +0200
-Message-Id: <20220613094929.046902726@linuxfoundation.org>
+Subject: [PATCH 5.4 036/411] ipv6: Dont send rs packets to the interface of ARPHRD_TUNNEL
+Date:   Mon, 13 Jun 2022 12:05:09 +0200
+Message-Id: <20220613094929.587599195@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -54,52 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+From: jianghaoran <jianghaoran@kylinos.cn>
 
-[ Upstream commit 43553559121ca90965b572cf8a1d6d0fd618b449 ]
+[ Upstream commit b52e1cce31ca721e937d517411179f9196ee6135 ]
 
-This shouldn't be a problem in practice since until we've actually
-taken over the console there's nothing we've registered with the
-console/vt subsystem, so the exit/unbind path that check this can't
-do the wrong thing. But it's confusing, so fix it by moving it a tad
-later.
+ARPHRD_TUNNEL interface can't process rs packets
+and will generate TX errors
 
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Du Cheng <ducheng2@gmail.com>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: Claudio Suarez <cssk@net-c.es>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220405210335.3434130-14-daniel.vetter@ffwll.ch
+ex:
+ip tunnel add ethn mode ipip local 192.168.1.1 remote 192.168.1.2
+ifconfig ethn x.x.x.x
+
+ethn: flags=209<UP,POINTOPOINT,RUNNING,NOARP>  mtu 1480
+	inet x.x.x.x  netmask 255.255.255.255  destination x.x.x.x
+	inet6 fe80::5efe:ac1e:3cdb  prefixlen 64  scopeid 0x20<link>
+	tunnel   txqueuelen 1000  (IPIP Tunnel)
+	RX packets 0  bytes 0 (0.0 B)
+	RX errors 0  dropped 0  overruns 0  frame 0
+	TX packets 0  bytes 0 (0.0 B)
+	TX errors 3  dropped 0 overruns 0  carrier 0  collisions 0
+
+Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
+Link: https://lore.kernel.org/r/20220429053802.246681-1-jianghaoran@kylinos.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbcon.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ipv6/addrconf.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 75b770514067..1decded4845f 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -3286,6 +3286,9 @@ static void fbcon_register_existing_fbs(struct work_struct *work)
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index efea88fb3cd5..e29553e4f4ee 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4202,7 +4202,8 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
+ 	send_rs = send_mld &&
+ 		  ipv6_accept_ra(ifp->idev) &&
+ 		  ifp->idev->cnf.rtr_solicits != 0 &&
+-		  (dev->flags&IFF_LOOPBACK) == 0;
++		  (dev->flags & IFF_LOOPBACK) == 0 &&
++		  (dev->type != ARPHRD_TUNNEL);
+ 	read_unlock_bh(&ifp->idev->lock);
  
- 	console_lock();
- 
-+	deferred_takeover = false;
-+	logo_shown = FBCON_LOGO_DONTSHOW;
-+
- 	for_each_registered_fb(i)
- 		fbcon_fb_registered(registered_fb[i]);
- 
-@@ -3303,8 +3306,6 @@ static int fbcon_output_notifier(struct notifier_block *nb,
- 	pr_info("fbcon: Taking over console\n");
- 
- 	dummycon_unregister_output_notifier(&fbcon_output_nb);
--	deferred_takeover = false;
--	logo_shown = FBCON_LOGO_DONTSHOW;
- 
- 	/* We may get called in atomic context */
- 	schedule_work(&fbcon_deferred_takeover_work);
+ 	/* While dad is in progress mld report's source address is in6_addrany.
 -- 
 2.35.1
 
