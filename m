@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E06BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:01:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2350CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358154AbiFMMB1 (ORCPT
+        id S1358166AbiFMMBj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40432 "EHLO
+        Mon, 13 Jun 2022 08:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357821AbiFML5l (ORCPT
+        with ESMTP id S1358088AbiFML7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:57:41 -0400
+        Mon, 13 Jun 2022 07:59:24 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165124DF60;
-        Mon, 13 Jun 2022 03:56:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9338C4E394;
+        Mon, 13 Jun 2022 03:56:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F801B80D3A;
-        Mon, 13 Jun 2022 10:56:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E89C3C34114;
-        Mon, 13 Jun 2022 10:56:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB7DFB80E5E;
+        Mon, 13 Jun 2022 10:56:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 367E4C34114;
+        Mon, 13 Jun 2022 10:56:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117777;
-        bh=YVVPUSoDaXsYIq+Ui4oa02D/zRSv0Ui66rsUZ8ecm0o=;
+        s=korg; t=1655117785;
+        bh=36Zrg68NAiHkWfHvcxxtjEKPT6SjuU9L+QXdBxVKI2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T854+IHBMdh71DG0EzSFe8Zc3qEwgyr/qSdRHn0eqiAKexv8Ui+vgZy0OumydJM2v
-         lSL2+N/Zjjuviyf++nfLJElFjP+Am4PavfTHlnraZGuhPgpL27sn0W8FYShPr9zQJc
-         qm48vntVyI9jPXhXJLHp2iNr2PwMLc1StboBQHJ8=
+        b=yjpXAjsT9mK/Ki1OCS+dqP/gz40yWvYiLAHL2YyN/+fxXoathzd/Z/F/uT/KnN1DR
+         U6rSK62UaR0X+QxuQ/zhWlBpQmXnRO20cs+gO5eZFnBYwVSsl0pgib8YrQaQm5h0mr
+         I76yp3e4P79u8W8JjI9Pn1g9gXaTfZEKc/asP0k4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
+        stable@vger.kernel.org, Igor Zhbanov <izh1979@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 116/287] mfd: ipaq-micro: Fix error check return value of platform_get_irq()
-Date:   Mon, 13 Jun 2022 12:09:00 +0200
-Message-Id: <20220613094927.395602930@linuxfoundation.org>
+Subject: [PATCH 4.19 123/287] powerpc/idle: Fix return value of __setup() handler
+Date:   Mon, 13 Jun 2022 12:09:07 +0200
+Message-Id: <20220613094927.610396039@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,37 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 3b49ae380ce1a3054e0c505dd9a356b82a5b48e8 ]
+[ Upstream commit b793a01000122d2bd133ba451a76cc135b5e162c ]
 
-platform_get_irq() return negative value on failure, so null check of
-irq is incorrect. Fix it by comparing whether it is less than zero.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
 
-Fixes: dcc21cc09e3c ("mfd: Add driver for Atmel Microcontroller on iPaq h3xxx")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20220412085305.2533030-1-lv.ruyi@zte.com.cn
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings.
+
+Also, error return codes don't mean anything to obsolete_checksetup() --
+only non-zero (usually 1) or zero. So return 1 from powersave_off().
+
+Fixes: 302eca184fb8 ("[POWERPC] cell: use ppc_md->power_save instead of cbe_idle_loop")
+Reported-by: Igor Zhbanov <izh1979@gmail.com>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220502192925.19954-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mfd/ipaq-micro.c | 2 +-
+ arch/powerpc/kernel/idle.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mfd/ipaq-micro.c b/drivers/mfd/ipaq-micro.c
-index cd762d08f116..2ba0e2d575c0 100644
---- a/drivers/mfd/ipaq-micro.c
-+++ b/drivers/mfd/ipaq-micro.c
-@@ -410,7 +410,7 @@ static int __init micro_probe(struct platform_device *pdev)
- 	micro_reset_comm(micro);
+diff --git a/arch/powerpc/kernel/idle.c b/arch/powerpc/kernel/idle.c
+index d7216c9abda1..ca79aacfeda2 100644
+--- a/arch/powerpc/kernel/idle.c
++++ b/arch/powerpc/kernel/idle.c
+@@ -41,7 +41,7 @@ static int __init powersave_off(char *arg)
+ {
+ 	ppc_md.power_save = NULL;
+ 	cpuidle_disable = IDLE_POWERSAVE_OFF;
+-	return 0;
++	return 1;
+ }
+ __setup("powersave=off", powersave_off);
  
- 	irq = platform_get_irq(pdev, 0);
--	if (!irq)
-+	if (irq < 0)
- 		return -EINVAL;
- 	ret = devm_request_irq(&pdev->dev, irq, micro_serial_isr,
- 			       IRQF_SHARED, "ipaq-micro",
 -- 
 2.35.1
 
