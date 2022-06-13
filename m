@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3581CCA485
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1571FCCA487
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352662AbiFMLSs (ORCPT
+        id S1352757AbiFMLSy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:18:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
+        Mon, 13 Jun 2022 07:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352815AbiFMLOa (ORCPT
+        with ESMTP id S1352857AbiFMLOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:14:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D19E0F8;
-        Mon, 13 Jun 2022 03:37:04 -0700 (PDT)
+        Mon, 13 Jun 2022 07:14:39 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D73A36B74;
+        Mon, 13 Jun 2022 03:37:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88A2460FDB;
-        Mon, 13 Jun 2022 10:37:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 950ADC34114;
-        Mon, 13 Jun 2022 10:37:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 58D4DCE0EEB;
+        Mon, 13 Jun 2022 10:37:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EF04C34114;
+        Mon, 13 Jun 2022 10:37:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116624;
-        bh=3zHP3TCuZPZfPGWfwnnSEDLT42aavDbHVWky2CtuQRw=;
+        s=korg; t=1655116626;
+        bh=nxvp2CXjovnxWfQakwLRA+9Hq+2AthV01hAacaeTWYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=buIa5DjcqcukBwvXRUxuWgPZw5SgkGhI2c/hI8uCfFod6tWgxypwnS8aNc58rozGv
-         /iuiIx2trXDgmI9WC7gyV2Hj9yioHgRIYkW4+cIIREDMkvpcrk6F+RkGxl8miq/5py
-         JcNRWODfWBQEDlU5drJP1W8irljSn5m8kQW93O5U=
+        b=rHhyJwIUKxM1s+DoammuEvWdcizO287G4lH8Q0Zv/QMW18F5a+SS+TqxJKmx03imK
+         TCVI+PyRAsz3xgrLuzm2rgMRuGIi79B5LO/QvmlV406+u0ER5r+YUsDQ72pNaast3k
+         XNR2cntpYYJ52Vdp/ipUewGIl2NYd9QoPOjjeXhU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>
-Subject: [PATCH 4.14 218/218] PCI: qcom: Fix unbalanced PHY init on probe errors
-Date:   Mon, 13 Jun 2022 12:11:16 +0200
-Message-Id: <20220613094927.240840505@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 115/411] drm/msm/hdmi: check return value after calling platform_get_resource_byname()
+Date:   Mon, 13 Jun 2022 12:06:28 +0200
+Message-Id: <20220613094932.119275762@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,44 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit 83013631f0f9961416abd812e228c8efbc2f6069 upstream.
+[ Upstream commit a36e506711548df923ceb7ec9f6001375be799a5 ]
 
-Undo the PHY initialisation (e.g. balance runtime PM) if host
-initialisation fails during probe.
+It will cause null-ptr-deref if platform_get_resource_byname() returns NULL,
+we need check the return value.
 
-Link: https://lore.kernel.org/r/20220401133854.10421-3-johan+linaro@kernel.org
-Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: stable@vger.kernel.org      # 4.5
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c6a57a50ad56 ("drm/msm/hdmi: add hdmi hdcp support (V3)")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/482992/
+Link: https://lore.kernel.org/r/20220422032227.2991553-1-yangyingliang@huawei.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/dwc/pcie-qcom.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/hdmi/hdmi.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/pci/dwc/pcie-qcom.c
-+++ b/drivers/pci/dwc/pcie-qcom.c
-@@ -1302,10 +1302,15 @@ static int qcom_pcie_probe(struct platfo
- 	ret = dw_pcie_host_init(pp);
- 	if (ret) {
- 		dev_err(dev, "cannot initialize host\n");
--		return ret;
-+		goto err_phy_exit;
- 	}
+diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
+index 1a7e77373407..a0fd62b6ec99 100644
+--- a/drivers/gpu/drm/msm/hdmi/hdmi.c
++++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
+@@ -142,6 +142,10 @@ static struct hdmi *msm_hdmi_init(struct platform_device *pdev)
+ 	/* HDCP needs physical address of hdmi register */
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+ 		config->mmio_name);
++	if (!res) {
++		ret = -EINVAL;
++		goto fail;
++	}
+ 	hdmi->mmio_phy_addr = res->start;
  
- 	return 0;
-+
-+err_phy_exit:
-+	phy_exit(pcie->phy);
-+
-+	return ret;
- }
- 
- static const struct of_device_id qcom_pcie_match[] = {
+ 	hdmi->qfprom_mmio = msm_ioremap(pdev,
+-- 
+2.35.1
+
 
 
