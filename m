@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 624A8CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:52:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 867B7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379210AbiFMNwR (ORCPT
+        id S1379244AbiFMNwX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
+        Mon, 13 Jun 2022 09:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379168AbiFMNpa (ORCPT
+        with ESMTP id S1379930AbiFMNpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:45:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6417665AF;
-        Mon, 13 Jun 2022 04:32:47 -0700 (PDT)
+        Mon, 13 Jun 2022 09:45:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D84111A3E;
+        Mon, 13 Jun 2022 04:32:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09165B80D3A;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0BBEB80E59;
+        Mon, 13 Jun 2022 11:32:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2821DC34114;
         Mon, 13 Jun 2022 11:32:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F317C34114;
-        Mon, 13 Jun 2022 11:32:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119964;
-        bh=OXazcopcHVsshmAECbqpVbYBNTPkMGL4+VntXQPRxZo=;
+        s=korg; t=1655119967;
+        bh=OwEYFRgpUf80fRMHkCntxKPzyDSeeIknykURCdFO160=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W41VsrqwgVqloPsxRzWhPs/JsjMQ3sbQDDKC2TjHub9UnNEvXmRwZZkRfk0baptLQ
-         xP6hyMLbJVPnFSc7T2xFHJJIWR0kqqlJiD3Np/z531xZKeN/csGY6l+RbtG1KVKGAP
-         zARdhxsZURy5GnzeOckohFFBpRbMnwiN2nhBdJA0=
+        b=Fm1MQDYi3p8lpiaS7p6GSixcZe4cgK14ji+208/RwS4Wc2a1W9zB4OcX4wpDFUKol
+         OLcwl8hgzfySlgbkAwMkZ7/NlCLVKZfwG2zd+eul9dcSk3OVYIwPULHLQ7n7S+tKpK
+         CqFkVcAkkJYfbchJzYr5aW/r3L30lYQtrB5B5Il0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Ungerer <gerg@linux-m68k.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 182/339] netfilter: nf_tables: delete flowtable hooks via transaction list
-Date:   Mon, 13 Jun 2022 12:10:07 +0200
-Message-Id: <20220613094932.198971471@linuxfoundation.org>
+Subject: [PATCH 5.18 173/339] m68knommu: fix undefined reference to `mach_get_rtc_pll
+Date:   Mon, 13 Jun 2022 12:09:58 +0200
+Message-Id: <20220613094931.924956611@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,134 +52,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Greg Ungerer <gerg@linux-m68k.org>
 
-[ Upstream commit b6d9014a3335194590abdd2a2471ef5147a67645 ]
+[ Upstream commit 1300eec9e51f23c34c4487d2b06f58ca22e1ad3d ]
 
-Remove inactive bool field in nft_hook object that was introduced in
-abadb2f865d7 ("netfilter: nf_tables: delete devices from flowtable").
-Move stale flowtable hooks to transaction list instead.
+Configuring for a nommu classic m68k target and enabling the generic rtc
+driver (CONFIG_RTC_DRV_GENERIC) will result in the following compile
+error:
 
-Deleting twice the same device does not result in ENOENT.
+   m68k-linux-ld: arch/m68k/kernel/time.o: in function `rtc_ioctl':
+   time.c:(.text+0x82): undefined reference to `mach_get_rtc_pll'
+   m68k-linux-ld: time.c:(.text+0xbc): undefined reference to `mach_set_rtc_pll'
+   m68k-linux-ld: time.c:(.text+0xf4): undefined reference to `mach_set_rtc_pll'
 
-Fixes: abadb2f865d7 ("netfilter: nf_tables: delete devices from flowtable")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+There are no definitions of "mach_set_rtc_pll" and "mach_get_rtc_pll" in the
+nommu code paths. Move these definitions and the associated "mach_hwclk",
+so that they are around their use case in time.c. This means they will
+always be defined on the builds that require them, and not on those that
+cannot use them - such as ColdFire (both with and without MMU enabled).
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/netfilter/nf_tables.h |  1 -
- net/netfilter/nf_tables_api.c     | 31 ++++++-------------------------
- 2 files changed, 6 insertions(+), 26 deletions(-)
+ arch/m68k/kernel/setup_mm.c | 7 -------
+ arch/m68k/kernel/setup_no.c | 1 -
+ arch/m68k/kernel/time.c     | 9 +++++++++
+ 3 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index 20af9d3557b9..279ae0fff7ad 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -1090,7 +1090,6 @@ struct nft_stats {
+diff --git a/arch/m68k/kernel/setup_mm.c b/arch/m68k/kernel/setup_mm.c
+index 8f94feed969c..07317367ead8 100644
+--- a/arch/m68k/kernel/setup_mm.c
++++ b/arch/m68k/kernel/setup_mm.c
+@@ -87,15 +87,8 @@ void (*mach_sched_init) (void) __initdata = NULL;
+ void (*mach_init_IRQ) (void) __initdata = NULL;
+ void (*mach_get_model) (char *model);
+ void (*mach_get_hardware_list) (struct seq_file *m);
+-/* machine dependent timer functions */
+-int (*mach_hwclk) (int, struct rtc_time*);
+-EXPORT_SYMBOL(mach_hwclk);
+ unsigned int (*mach_get_ss)(void);
+-int (*mach_get_rtc_pll)(struct rtc_pll_info *);
+-int (*mach_set_rtc_pll)(struct rtc_pll_info *);
+ EXPORT_SYMBOL(mach_get_ss);
+-EXPORT_SYMBOL(mach_get_rtc_pll);
+-EXPORT_SYMBOL(mach_set_rtc_pll);
+ void (*mach_reset)( void );
+ void (*mach_halt)( void );
+ void (*mach_power_off)( void );
+diff --git a/arch/m68k/kernel/setup_no.c b/arch/m68k/kernel/setup_no.c
+index 5e4104f07a44..19eea73d3c17 100644
+--- a/arch/m68k/kernel/setup_no.c
++++ b/arch/m68k/kernel/setup_no.c
+@@ -50,7 +50,6 @@ char __initdata command_line[COMMAND_LINE_SIZE];
  
- struct nft_hook {
- 	struct list_head	list;
--	bool			inactive;
- 	struct nf_hook_ops	ops;
- 	struct rcu_head		rcu;
- };
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index a0981e7cb211..f23c40e6caa6 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -1914,7 +1914,6 @@ static struct nft_hook *nft_netdev_hook_alloc(struct net *net,
- 		goto err_hook_dev;
- 	}
- 	hook->ops.dev = dev;
--	hook->inactive = false;
+ /* machine dependent timer functions */
+ void (*mach_sched_init)(void) __initdata = NULL;
+-int (*mach_hwclk) (int, struct rtc_time*);
  
- 	return hook;
+ /* machine dependent reboot functions */
+ void (*mach_reset)(void);
+diff --git a/arch/m68k/kernel/time.c b/arch/m68k/kernel/time.c
+index 340ffeea0a9d..a97600b2af50 100644
+--- a/arch/m68k/kernel/time.c
++++ b/arch/m68k/kernel/time.c
+@@ -63,6 +63,15 @@ void timer_heartbeat(void)
+ #endif /* CONFIG_HEARTBEAT */
  
-@@ -7612,6 +7611,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
+ #ifdef CONFIG_M68KCLASSIC
++/* machine dependent timer functions */
++int (*mach_hwclk) (int, struct rtc_time*);
++EXPORT_SYMBOL(mach_hwclk);
++
++int (*mach_get_rtc_pll)(struct rtc_pll_info *);
++int (*mach_set_rtc_pll)(struct rtc_pll_info *);
++EXPORT_SYMBOL(mach_get_rtc_pll);
++EXPORT_SYMBOL(mach_set_rtc_pll);
++
+ #if !IS_BUILTIN(CONFIG_RTC_DRV_GENERIC)
+ void read_persistent_clock64(struct timespec64 *ts)
  {
- 	const struct nlattr * const *nla = ctx->nla;
- 	struct nft_flowtable_hook flowtable_hook;
-+	LIST_HEAD(flowtable_del_list);
- 	struct nft_hook *this, *hook;
- 	struct nft_trans *trans;
- 	int err;
-@@ -7627,7 +7627,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
- 			err = -ENOENT;
- 			goto err_flowtable_del_hook;
- 		}
--		hook->inactive = true;
-+		list_move(&hook->list, &flowtable_del_list);
- 	}
- 
- 	trans = nft_trans_alloc(ctx, NFT_MSG_DELFLOWTABLE,
-@@ -7640,6 +7640,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
- 	nft_trans_flowtable(trans) = flowtable;
- 	nft_trans_flowtable_update(trans) = true;
- 	INIT_LIST_HEAD(&nft_trans_flowtable_hooks(trans));
-+	list_splice(&flowtable_del_list, &nft_trans_flowtable_hooks(trans));
- 	nft_flowtable_hook_release(&flowtable_hook);
- 
- 	nft_trans_commit_list_add_tail(ctx->net, trans);
-@@ -7647,13 +7648,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
- 	return 0;
- 
- err_flowtable_del_hook:
--	list_for_each_entry(this, &flowtable_hook.list, list) {
--		hook = nft_hook_list_find(&flowtable->hook_list, this);
--		if (!hook)
--			break;
--
--		hook->inactive = false;
--	}
-+	list_splice(&flowtable_del_list, &flowtable->hook_list);
- 	nft_flowtable_hook_release(&flowtable_hook);
- 
- 	return err;
-@@ -8559,17 +8554,6 @@ void nft_chain_del(struct nft_chain *chain)
- 	list_del_rcu(&chain->list);
- }
- 
--static void nft_flowtable_hooks_del(struct nft_flowtable *flowtable,
--				    struct list_head *hook_list)
--{
--	struct nft_hook *hook, *next;
--
--	list_for_each_entry_safe(hook, next, &flowtable->hook_list, list) {
--		if (hook->inactive)
--			list_move(&hook->list, hook_list);
--	}
--}
--
- static void nf_tables_module_autoload_cleanup(struct net *net)
- {
- 	struct nftables_pernet *nft_net = nft_pernet(net);
-@@ -8914,8 +8898,6 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
- 			break;
- 		case NFT_MSG_DELFLOWTABLE:
- 			if (nft_trans_flowtable_update(trans)) {
--				nft_flowtable_hooks_del(nft_trans_flowtable(trans),
--							&nft_trans_flowtable_hooks(trans));
- 				nf_tables_flowtable_notify(&trans->ctx,
- 							   nft_trans_flowtable(trans),
- 							   &nft_trans_flowtable_hooks(trans),
-@@ -8996,7 +8978,6 @@ static int __nf_tables_abort(struct net *net, enum nfnl_abort_action action)
- 	struct nftables_pernet *nft_net = nft_pernet(net);
- 	struct nft_trans *trans, *next;
- 	struct nft_trans_elem *te;
--	struct nft_hook *hook;
- 
- 	if (action == NFNL_ABORT_VALIDATE &&
- 	    nf_tables_validate(net) < 0)
-@@ -9127,8 +9108,8 @@ static int __nf_tables_abort(struct net *net, enum nfnl_abort_action action)
- 			break;
- 		case NFT_MSG_DELFLOWTABLE:
- 			if (nft_trans_flowtable_update(trans)) {
--				list_for_each_entry(hook, &nft_trans_flowtable(trans)->hook_list, list)
--					hook->inactive = false;
-+				list_splice(&nft_trans_flowtable_hooks(trans),
-+					    &nft_trans_flowtable(trans)->hook_list);
- 			} else {
- 				trans->ctx.table->use++;
- 				nft_clear(trans->ctx.net, nft_trans_flowtable(trans));
 -- 
 2.35.1
 
