@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5248C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C7BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354336AbiFMMqQ (ORCPT
+        id S1354484AbiFMMqY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54708 "EHLO
+        Mon, 13 Jun 2022 08:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358477AbiFMMkV (ORCPT
+        with ESMTP id S1358531AbiFMMkV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:40:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B0B5F253;
-        Mon, 13 Jun 2022 04:10:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2966A5F26B;
+        Mon, 13 Jun 2022 04:10:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1D0C60B6B;
-        Mon, 13 Jun 2022 11:10:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0680DC34114;
-        Mon, 13 Jun 2022 11:10:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEB7EB80EB5;
+        Mon, 13 Jun 2022 11:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21D81C34114;
+        Mon, 13 Jun 2022 11:10:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118629;
-        bh=Z8y4Ur00BaodPmkMwPEOuEZOmogimHyCXKlYHZ+liec=;
+        s=korg; t=1655118618;
+        bh=ZxmjvAyRXC2LFYdT7yWmSVT58DifZY7x0GFuK+Fi3t4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PVOuwAdZYvKk4joiomcO0ugb1ScPK//V3dcx87uf8XgxlVwJlAgzS8bCLgeRyQ+Fx
-         pZE3fgXqA3DgQjuajpm6pSXYKGE3MoB37OS1BB87mBtJbjaq1kFgYVN8CZRPmTxHgU
-         ro1AsZxCJy2tTqTz8mDujKsu1Vo2/XVsxOYVGpmk=
+        b=ifnmst9961mOJd8J9D3AfsPqLY4CPuiFKphFN3KeTOkZGjFzw/47y04NfYnhUSKMX
+         FQFBhw1OrFym53Q3gFGzvDMFPsF1R13xQM2wncEyhiDENNUZ81P5V/zZuaS57TU1wO
+         VWJ1nEoKkjC3cmUK2vqBkCzsinNBFlo4ywNwXwvw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, bumwoo lee <bw365.lee@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 128/172] extcon: Modify extcon device to be created after driver data is set
-Date:   Mon, 13 Jun 2022 12:11:28 +0200
-Message-Id: <20220613094920.954779220@linuxfoundation.org>
+Subject: [PATCH 5.10 141/172] x86/cpu: Elide KCSAN for cpu_has() and friends
+Date:   Mon, 13 Jun 2022 12:11:41 +0200
+Message-Id: <20220613094922.046118448@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,98 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: bumwoo lee <bw365.lee@samsung.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 5dcc2afe716d69f5112ce035cb14f007461ff189 ]
+[ Upstream commit a6a5eb269f6f3a2fe392f725a8d9052190c731e2 ]
 
-Currently, someone can invoke the sysfs such as state_show()
-intermittently before dev_set_drvdata() is done.
-And it can be a cause of kernel Oops because of edev is Null at that time.
-So modified the driver registration to after setting drviver data.
+As x86 uses the <asm-generic/bitops/instrumented-*.h> headers, the
+regular forms of all bitops are instrumented with explicit calls to
+KASAN and KCSAN checks. As these are explicit calls, these are not
+suppressed by the noinstr function attribute.
 
-- Oops's backtrace.
+This can result in calls to those check functions in noinstr code, which
+objtool warns about:
 
-Backtrace:
-[<c067865c>] (state_show) from [<c05222e8>] (dev_attr_show)
-[<c05222c0>] (dev_attr_show) from [<c02c66e0>] (sysfs_kf_seq_show)
-[<c02c6648>] (sysfs_kf_seq_show) from [<c02c496c>] (kernfs_seq_show)
-[<c02c4938>] (kernfs_seq_show) from [<c025e2a0>] (seq_read)
-[<c025e11c>] (seq_read) from [<c02c50a0>] (kernfs_fop_read)
-[<c02c5064>] (kernfs_fop_read) from [<c0231cac>] (__vfs_read)
-[<c0231c5c>] (__vfs_read) from [<c0231ee0>] (vfs_read)
-[<c0231e34>] (vfs_read) from [<c0232464>] (ksys_read)
-[<c02323f0>] (ksys_read) from [<c02324fc>] (sys_read)
-[<c02324e4>] (sys_read) from [<c00091d0>] (__sys_trace_return)
+vmlinux.o: warning: objtool: enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_enter_from_user_mode+0x28: call to __kcsan_check_access() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare+0x24: call to __kcsan_check_access() leaves .noinstr.text section
+vmlinux.o: warning: objtool: irqentry_enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
 
-Signed-off-by: bumwoo lee <bw365.lee@samsung.com>
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+Prevent this by using the arch_*() bitops, which are the underlying
+bitops without explciit instrumentation.
+
+[null: Changelog]
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220502111216.290518605@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/extcon/extcon.c | 29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+ arch/x86/include/asm/cpufeature.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
-index e7a9561a826d..356610404bb4 100644
---- a/drivers/extcon/extcon.c
-+++ b/drivers/extcon/extcon.c
-@@ -1230,19 +1230,14 @@ int extcon_dev_register(struct extcon_dev *edev)
- 		edev->dev.type = &edev->extcon_dev_type;
- 	}
+diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
+index 59bf91c57aa8..619c1f80a2ab 100644
+--- a/arch/x86/include/asm/cpufeature.h
++++ b/arch/x86/include/asm/cpufeature.h
+@@ -49,7 +49,7 @@ extern const char * const x86_power_flags[32];
+ extern const char * const x86_bug_flags[NBUGINTS*32];
  
--	ret = device_register(&edev->dev);
--	if (ret) {
--		put_device(&edev->dev);
--		goto err_dev;
--	}
--
- 	spin_lock_init(&edev->lock);
--	edev->nh = devm_kcalloc(&edev->dev, edev->max_supported,
--				sizeof(*edev->nh), GFP_KERNEL);
--	if (!edev->nh) {
--		ret = -ENOMEM;
--		device_unregister(&edev->dev);
--		goto err_dev;
-+	if (edev->max_supported) {
-+		edev->nh = kcalloc(edev->max_supported, sizeof(*edev->nh),
-+				GFP_KERNEL);
-+		if (!edev->nh) {
-+			ret = -ENOMEM;
-+			goto err_alloc_nh;
-+		}
- 	}
+ #define test_cpu_cap(c, bit)						\
+-	 test_bit(bit, (unsigned long *)((c)->x86_capability))
++	 arch_test_bit(bit, (unsigned long *)((c)->x86_capability))
  
- 	for (index = 0; index < edev->max_supported; index++)
-@@ -1253,6 +1248,12 @@ int extcon_dev_register(struct extcon_dev *edev)
- 	dev_set_drvdata(&edev->dev, edev);
- 	edev->state = 0;
- 
-+	ret = device_register(&edev->dev);
-+	if (ret) {
-+		put_device(&edev->dev);
-+		goto err_dev;
-+	}
-+
- 	mutex_lock(&extcon_dev_list_lock);
- 	list_add(&edev->entry, &extcon_dev_list);
- 	mutex_unlock(&extcon_dev_list_lock);
-@@ -1260,6 +1261,9 @@ int extcon_dev_register(struct extcon_dev *edev)
- 	return 0;
- 
- err_dev:
-+	if (edev->max_supported)
-+		kfree(edev->nh);
-+err_alloc_nh:
- 	if (edev->max_supported)
- 		kfree(edev->extcon_dev_type.groups);
- err_alloc_groups:
-@@ -1320,6 +1324,7 @@ void extcon_dev_unregister(struct extcon_dev *edev)
- 	if (edev->max_supported) {
- 		kfree(edev->extcon_dev_type.groups);
- 		kfree(edev->cables);
-+		kfree(edev->nh);
- 	}
- 
- 	put_device(&edev->dev);
+ /*
+  * There are 32 bits/features in each mask word.  The high bits
 -- 
 2.35.1
 
