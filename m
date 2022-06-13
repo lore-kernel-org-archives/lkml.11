@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54831C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF7FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:33:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353464AbiFMMcy (ORCPT
+        id S1353582AbiFMMdE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
+        Mon, 13 Jun 2022 08:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358733AbiFMM3q (ORCPT
+        with ESMTP id S1353230AbiFMM1E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:29:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A035A594;
-        Mon, 13 Jun 2022 04:06:48 -0700 (PDT)
+        Mon, 13 Jun 2022 08:27:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61CCD326FF;
+        Mon, 13 Jun 2022 04:05:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04F69B80EAB;
-        Mon, 13 Jun 2022 11:06:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65E82C34114;
-        Mon, 13 Jun 2022 11:06:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CC83614BF;
+        Mon, 13 Jun 2022 11:05:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9971C34114;
+        Mon, 13 Jun 2022 11:05:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118404;
-        bh=AMLhu3VFIpENflsH0OO2dA3qH0B6xz6Ffq9TvfKxdck=;
+        s=korg; t=1655118345;
+        bh=EUTDtY3A60DHC0r/RLOq13/jsTP5MMXGOG1l/cmd1y8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pl+9KqmLPe+FwRK8GuhPLuJpsno1c+L4UlJ40JOaxdMWmqB0MrKkcv347tJ6n4lLb
-         jGOX2UXmDuepc68bknN3fY7yYrTWcQpkfPtdtEf0FY6F8/SjfjbfIhGM1GZSOrIYTX
-         hmoOWZ7xVxw+spEHpL1WmUu+6zWhB6KcLLt2anQg=
+        b=E8L/A+nVfT6oYRg2CP+sOrMhH0Q0Ym+tQ02C5xu9GVkOV9g+NsE2uf3iHagjcWr1X
+         +M28JfF7OD5u6a/XH4OXG9f3Dlj5f47l6fN12MOSuWKXKP0jPAy9H4/y+QNX577UFO
+         /s2csxjtWQvkklLUEihjKXW+nj22JwShFlRsbvhs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Romain Naour <romain.naour@smile.fr>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 064/172] net/mlx5: Dont use already freed action pointer
-Date:   Mon, 13 Jun 2022 12:10:24 +0200
-Message-Id: <20220613094905.800393306@linuxfoundation.org>
+Subject: [PATCH 5.10 042/172] bus: ti-sysc: Fix warnings for unbind for serial
+Date:   Mon, 13 Jun 2022 12:10:02 +0200
+Message-Id: <20220613094900.470349013@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,48 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Tony Lindgren <tony@atomide.com>
 
-[ Upstream commit 80b2bd737d0e833e6a2b77e482e5a714a79c86a4 ]
+[ Upstream commit c337125b8834f9719dfda0e40b25eaa266f1b8cf ]
 
-The call to mlx5dr_action_destroy() releases "action" memory. That
-pointer is set to miss_action later and generates the following smatch
-error:
+We can get "failed to disable" clock_unprepare warnings on unbind at least
+for the serial console device if the unbind is done before the device has
+been idled.
 
- drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c:53 set_miss_action()
- warn: 'action' was already freed.
+As some devices are using deferred idle, we must check the status for
+pending idle work to idle the device.
 
-Make sure that the pointer is always valid by setting NULL after destroy.
-
-Fixes: 6a48faeeca10 ("net/mlx5: Add direct rule fs_cmd implementation")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 76f0f772e469 ("bus: ti-sysc: Improve handling for no-reset-on-init and no-idle-on-init")
+Cc: Romain Naour <romain.naour@smile.fr>
+Reviewed-by: Romain Naour <romain.naour@smile.fr>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Link: https://lore.kernel.org/r/20220512053021.61650-1-tony@atomide.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/bus/ti-sysc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-index 96c39a17d026..b227fa9ada46 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-@@ -43,11 +43,10 @@ static int set_miss_action(struct mlx5_flow_root_namespace *ns,
- 	err = mlx5dr_table_set_miss_action(ft->fs_dr_table.dr_table, action);
- 	if (err && action) {
- 		err = mlx5dr_action_destroy(action);
--		if (err) {
--			action = NULL;
--			mlx5_core_err(ns->dev, "Failed to destroy action (%d)\n",
--				      err);
--		}
-+		if (err)
-+			mlx5_core_err(ns->dev,
-+				      "Failed to destroy action (%d)\n", err);
-+		action = NULL;
- 	}
- 	ft->fs_dr_table.miss_action = action;
- 	if (old_miss_action) {
+diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
+index ac559c262033..4ee20be76508 100644
+--- a/drivers/bus/ti-sysc.c
++++ b/drivers/bus/ti-sysc.c
+@@ -3291,7 +3291,9 @@ static int sysc_remove(struct platform_device *pdev)
+ 	struct sysc *ddata = platform_get_drvdata(pdev);
+ 	int error;
+ 
+-	cancel_delayed_work_sync(&ddata->idle_work);
++	/* Device can still be enabled, see deferred idle quirk in probe */
++	if (cancel_delayed_work_sync(&ddata->idle_work))
++		ti_sysc_idle(&ddata->idle_work.work);
+ 
+ 	error = pm_runtime_get_sync(ddata->dev);
+ 	if (error < 0) {
 -- 
 2.35.1
 
