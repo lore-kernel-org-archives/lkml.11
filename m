@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DE8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6753C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381076AbiFMOMZ (ORCPT
+        id S1381158AbiFMOMa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52606 "EHLO
+        Mon, 13 Jun 2022 10:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381842AbiFMOEw (ORCPT
+        with ESMTP id S1381872AbiFMOEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:04:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD08D9271D;
-        Mon, 13 Jun 2022 04:40:04 -0700 (PDT)
+        Mon, 13 Jun 2022 10:04:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E868A92732;
+        Mon, 13 Jun 2022 04:40:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E368EB80ECE;
-        Mon, 13 Jun 2022 11:40:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 488E3C3411C;
-        Mon, 13 Jun 2022 11:40:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31B356135E;
+        Mon, 13 Jun 2022 11:40:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1226CC34114;
+        Mon, 13 Jun 2022 11:40:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120401;
-        bh=m9aKvLlwoqBpoRkNHQC6FXm1NXIxoi5txZor1xMVKQQ=;
+        s=korg; t=1655120404;
+        bh=VAShgNxa50urbJ2EtMs8rU3N9PrsLiqZW54fPtquSj4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UbIiXe6D2RHXpv5zYbz4ot8LSp2+/ZgYTbhoBuJPngeCF0rCrYNsaHF5a/P7MZHdW
-         00uXE4NQxX3k4m5GV154E/7mrSluzGWLC90MAPW5MhnYiMp9ucUb0UchpB4EUjrLrG
-         nrcg6AAt2EIVJMYEbhVY5i6Ktdai5ENr6UktT0Vo=
+        b=nNFROi3V7bm52+sudEzBwgNh1vNaCLgGHnRL6SQTalfdr53rISHVqoKWoCN/YjXdK
+         dS7zEzGKV0FgKMneRPKtBiVVfJlT8r3aIOu+NmCdXFKAG1ZL+834p10SsuUvsCrGT3
+         vqudaAeNJYnHpNB+WOh6pTDELnwynCZoiJvRrg0A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Wesley Cheng <quic_wcheng@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 020/298] rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value
-Date:   Mon, 13 Jun 2022 12:08:34 +0200
-Message-Id: <20220613094925.543473455@linuxfoundation.org>
+Subject: [PATCH 5.17 021/298] usb: dwc3: gadget: Replace list_for_each_entry_safe() if using giveback
+Date:   Mon, 13 Jun 2022 12:08:35 +0200
+Message-Id: <20220613094925.573805495@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,34 +49,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Wesley Cheng <quic_wcheng@quicinc.com>
 
-[ Upstream commit 1a358d35066487d228a68303d808bc4721c6b1b9 ]
+[ Upstream commit bf594d1d0c1d7b895954018043536ffd327844f9 ]
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+The list_for_each_entry_safe() macro saves the current item (n) and
+the item after (n+1), so that n can be safely removed without
+corrupting the list.  However, when traversing the list and removing
+items using gadget giveback, the DWC3 lock is briefly released,
+allowing other routines to execute.  There is a situation where, while
+items are being removed from the cancelled_list using
+dwc3_gadget_ep_cleanup_cancelled_requests(), the pullup disable
+routine is running in parallel (due to UDC unbind).  As the cleanup
+routine removes n, and the pullup disable removes n+1, once the
+cleanup retakes the DWC3 lock, it references a request who was already
+removed/handled.  With list debug enabled, this leads to a panic.
+Ensure all instances of the macro are replaced where gadget giveback
+is used.
 
-Fixes: 53e2822e56c7 ("rpmsg: Introduce Qualcomm SMD backend")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220422105326.78713-1-krzysztof.kozlowski@linaro.org
+Example call stack:
+
+Thread#1:
+__dwc3_gadget_ep_set_halt() - CLEAR HALT
+  -> dwc3_gadget_ep_cleanup_cancelled_requests()
+    ->list_for_each_entry_safe()
+    ->dwc3_gadget_giveback(n)
+      ->dwc3_gadget_del_and_unmap_request()- n deleted[cancelled_list]
+      ->spin_unlock
+      ->Thread#2 executes
+      ...
+    ->dwc3_gadget_giveback(n+1)
+      ->Already removed!
+
+Thread#2:
+dwc3_gadget_pullup()
+  ->waiting for dwc3 spin_lock
+  ...
+  ->Thread#1 released lock
+  ->dwc3_stop_active_transfers()
+    ->dwc3_remove_requests()
+      ->fetches n+1 item from cancelled_list (n removed by Thread#1)
+      ->dwc3_gadget_giveback()
+        ->dwc3_gadget_del_and_unmap_request()- n+1 deleted[cancelled_list]
+        ->spin_unlock
+
+Fixes: d4f1afe5e896 ("usb: dwc3: gadget: move requests to cancelled_list")
+Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
+Link: https://lore.kernel.org/r/20220414183521.23451-1-quic_wcheng@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rpmsg/qcom_smd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/dwc3/gadget.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
-index 540e027f08c4..d4b54eebe15d 100644
---- a/drivers/rpmsg/qcom_smd.c
-+++ b/drivers/rpmsg/qcom_smd.c
-@@ -1404,7 +1404,7 @@ static int qcom_smd_parse_edge(struct device *dev,
- 		edge->name = node->name;
+diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+index 78ec6af79c7f..5c1ae0d0ed47 100644
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -1978,10 +1978,10 @@ static void dwc3_gadget_ep_skip_trbs(struct dwc3_ep *dep, struct dwc3_request *r
+ static void dwc3_gadget_ep_cleanup_cancelled_requests(struct dwc3_ep *dep)
+ {
+ 	struct dwc3_request		*req;
+-	struct dwc3_request		*tmp;
+ 	struct dwc3			*dwc = dep->dwc;
  
- 	irq = irq_of_parse_and_map(node, 0);
--	if (irq < 0) {
-+	if (!irq) {
- 		dev_err(dev, "required smd interrupt missing\n");
- 		ret = irq;
- 		goto put_node;
+-	list_for_each_entry_safe(req, tmp, &dep->cancelled_list, list) {
++	while (!list_empty(&dep->cancelled_list)) {
++		req = next_request(&dep->cancelled_list);
+ 		dwc3_gadget_ep_skip_trbs(dep, req);
+ 		switch (req->status) {
+ 		case DWC3_REQUEST_STATUS_DISCONNECTED:
+@@ -1998,6 +1998,12 @@ static void dwc3_gadget_ep_cleanup_cancelled_requests(struct dwc3_ep *dep)
+ 			dwc3_gadget_giveback(dep, req, -ECONNRESET);
+ 			break;
+ 		}
++		/*
++		 * The endpoint is disabled, let the dwc3_remove_requests()
++		 * handle the cleanup.
++		 */
++		if (!dep->endpoint.desc)
++			break;
+ 	}
+ }
+ 
+@@ -3288,15 +3294,21 @@ static void dwc3_gadget_ep_cleanup_completed_requests(struct dwc3_ep *dep,
+ 		const struct dwc3_event_depevt *event, int status)
+ {
+ 	struct dwc3_request	*req;
+-	struct dwc3_request	*tmp;
+ 
+-	list_for_each_entry_safe(req, tmp, &dep->started_list, list) {
++	while (!list_empty(&dep->started_list)) {
+ 		int ret;
+ 
++		req = next_request(&dep->started_list);
+ 		ret = dwc3_gadget_ep_cleanup_completed_request(dep, event,
+ 				req, status);
+ 		if (ret)
+ 			break;
++		/*
++		 * The endpoint is disabled, let the dwc3_remove_requests()
++		 * handle the cleanup.
++		 */
++		if (!dep->endpoint.desc)
++			break;
+ 	}
+ }
+ 
 -- 
 2.35.1
 
