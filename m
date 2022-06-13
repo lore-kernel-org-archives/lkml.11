@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2A6CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD06CCA487
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359270AbiFMMJJ (ORCPT
+        id S1359349AbiFMMJX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59958 "EHLO
+        Mon, 13 Jun 2022 08:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359202AbiFMMF3 (ORCPT
+        with ESMTP id S1358747AbiFMMEk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:05:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F399B25E91;
-        Mon, 13 Jun 2022 03:59:43 -0700 (PDT)
+        Mon, 13 Jun 2022 08:04:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55DF25582;
+        Mon, 13 Jun 2022 03:57:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F3C7B80E5E;
-        Mon, 13 Jun 2022 10:59:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E002BC34114;
-        Mon, 13 Jun 2022 10:59:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E915360F9A;
+        Mon, 13 Jun 2022 10:57:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3086C34114;
+        Mon, 13 Jun 2022 10:57:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117981;
-        bh=96ceQgJASxyzZfSQvr0juwSMRmN1lL3Esf2pvX28VOk=;
+        s=korg; t=1655117868;
+        bh=aDnusLVMvtm2K+SzBSQB0VfsMVmS5nt97BbDibYe+/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XWIAKEkUjdfER+NXpuTi7iudQzwMp6rRtAuWURzqtbXIvGMC3TEpc8qwmeH0I7PKi
-         oDtq/tfX0C2+3/vliOpoLRs54BMe/lrPAjJ7phN+kBeT2WgsftvwlGE/+Sf1LfmOP5
-         PHWaRUyZ2Vhfy2Gw8OPLnALR3WW4ab0cKv95e6JA=
+        b=nvt16sTMXRyKVKFPB1t76XOkUZz+cQ582GT/8RqKe15ZVznpyhbxBaDWpYvNYcwSv
+         GdZpfELeFrAA/h/0MHti1Xqx1a7EHQo37wAeKC7T42Fw5KzKWoh6M9XQSyG5wQq2Go
+         n7bCSADxUdP/6uUFBfGY5WmEc65ykZZdtd0/7Fv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Stephen Zhang <starzhangzsd@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 4.19 187/287] MIPS: IP27: Remove incorrect `cpu_has_fpu override
-Date:   Mon, 13 Jun 2022 12:10:11 +0200
-Message-Id: <20220613094929.537369693@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 4.19 161/287] drm/nouveau/clk: Fix an incorrect NULL check on list iterator
+Date:   Mon, 13 Jun 2022 12:09:45 +0200
+Message-Id: <20220613094928.761537695@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,39 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 424c3781dd1cb401857585331eaaa425a13f2429 upstream.
+commit 1c3b2a27def609473ed13b1cd668cb10deab49b4 upstream.
 
-Remove unsupported forcing of `cpu_has_fpu' to 1, which makes the `nofpu'
-kernel parameter non-functional, and also causes a link error:
+The bug is here:
+	if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
+		return cstate;
 
-ld: arch/mips/kernel/traps.o: in function `trap_init':
-./arch/mips/include/asm/msa.h:(.init.text+0x348): undefined reference to `handle_fpe'
-ld: ./arch/mips/include/asm/msa.h:(.init.text+0x354): undefined reference to `handle_fpe'
-ld: ./arch/mips/include/asm/msa.h:(.init.text+0x360): undefined reference to `handle_fpe'
+The list iterator value 'cstate' will *always* be set and non-NULL
+by list_for_each_entry_from_reverse(), so it is incorrect to assume
+that the iterator value will be unchanged if the list is empty or no
+element is found (In fact, it will be a bogus pointer to an invalid
+structure object containing the HEAD). Also it missed a NULL check
+at callsite and may lead to invalid memory access after that.
 
-where the CONFIG_MIPS_FP_SUPPORT configuration option has been disabled.
+To fix this bug, just return 'encoder' when found, otherwise return
+NULL. And add the NULL check.
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Reported-by: Stephen Zhang <starzhangzsd@gmail.com>
-Fixes: 0ebb2f4159af ("MIPS: IP27: Update/restructure CPU overrides")
-Cc: stable@vger.kernel.org # v4.2+
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: stable@vger.kernel.org
+Fixes: 1f7f3d91ad38a ("drm/nouveau/clk: Respect voltage limits in nvkm_cstate_prog")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220327075824.11806-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
-+++ b/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
-@@ -28,7 +28,6 @@
- #define cpu_has_6k_cache		0
- #define cpu_has_8k_cache		0
- #define cpu_has_tx39_cache		0
--#define cpu_has_fpu			1
- #define cpu_has_nofpuex			0
- #define cpu_has_32fpr			1
- #define cpu_has_counter			1
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
+@@ -134,10 +134,10 @@ nvkm_cstate_find_best(struct nvkm_clk *c
+ 
+ 	list_for_each_entry_from_reverse(cstate, &pstate->list, head) {
+ 		if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
+-			break;
++			return cstate;
+ 	}
+ 
+-	return cstate;
++	return NULL;
+ }
+ 
+ static struct nvkm_cstate *
+@@ -168,6 +168,8 @@ nvkm_cstate_prog(struct nvkm_clk *clk, s
+ 	if (!list_empty(&pstate->list)) {
+ 		cstate = nvkm_cstate_get(clk, pstate, cstatei);
+ 		cstate = nvkm_cstate_find_best(clk, pstate, cstate);
++		if (!cstate)
++			return -EINVAL;
+ 	} else {
+ 		cstate = &pstate->base;
+ 	}
 
 
