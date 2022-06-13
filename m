@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E54BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:21:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18EAEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383297AbiFMOVv (ORCPT
+        id S1383140AbiFMOV4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42112 "EHLO
+        Mon, 13 Jun 2022 10:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383218AbiFMOPb (ORCPT
+        with ESMTP id S1383207AbiFMOPb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:15:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24699CF51;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433C29CF47;
         Mon, 13 Jun 2022 04:42:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A976B80EDD;
-        Mon, 13 Jun 2022 11:42:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C14FBC34114;
-        Mon, 13 Jun 2022 11:42:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9423EB80EB2;
+        Mon, 13 Jun 2022 11:42:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2BC1C34114;
+        Mon, 13 Jun 2022 11:42:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120577;
-        bh=nrF/adwgwx9MgAPpcT7qaXo0qs8+u+oOf8h/HKdJwhM=;
+        s=korg; t=1655120546;
+        bh=0+3cOnk2z3C+1fmNZLPemFHmvE1ZEFxh/Sv4oC37mqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V6c2pywff9FQqjzDNkXyQRQ21+Jbuky3Ot3PUc50cS901Fsff5jOOTgI/fawP2drZ
-         fBnEWAC9L/2cI+zEc5aI4kLMDtk6req4fmmkYkqMt20K37GIiuZ/zbAkjwG+rCC/Vi
-         vXyC/lDAenmQJxHYmzl36QR6VTZVzFomr1uNbvYc=
+        b=iXX7aiJKCXcmh8QY0xU1y1lcNT4D4R83+NFfZHVYBsCvoSUpoULAYlFAhqvwhbP0N
+         OfvHlXUeO3vj5My6gDeu2IXOZXnBuk0juXNot1MhPUQNPoRzf7JyUjnTo5VJGtdRSM
+         zPGemsmumyF45ckSn/ekhJw1lfKn2+j9AhhTv4Sg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 082/298] net: lan966x: check devm_of_phy_get() for -EDEFER_PROBE
-Date:   Mon, 13 Jun 2022 12:09:36 +0200
-Message-Id: <20220613094927.433965236@linuxfoundation.org>
+Subject: [PATCH 5.17 072/298] watchdog: ts4800_wdt: Fix refcount leak in ts4800_wdt_probe
+Date:   Mon, 13 Jun 2022 12:09:26 +0200
+Message-Id: <20220613094927.131225053@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,50 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit b58cdd4388b1d8f5bee9f5a3897a7e780d1eaa48 ]
+[ Upstream commit 5d24df3d690809952528e7a19a43d84bc5b99d44 ]
 
-At the moment, if devm_of_phy_get() returns an error the serdes
-simply isn't set. While it is bad to ignore an error in general, there
-is a particular bug that network isn't working if the serdes driver is
-compiled as a module. In that case, devm_of_phy_get() returns
--EDEFER_PROBE and the error is silently ignored.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add  missing of_node_put() in some error paths.
 
-The serdes is optional, it is not there if the port is using RGMII, in
-which case devm_of_phy_get() returns -ENODEV. Rearrange the error
-handling so that -ENODEV will be handled but other error codes will
-abort the probing.
-
-Fixes: d28d6d2e37d1 ("net: lan966x: add port module support")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Link: https://lore.kernel.org/r/20220525231239.1307298-1-michael@walle.cc
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: bf9006399939 ("watchdog: ts4800: add driver for TS-4800 watchdog")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220511114203.47420-1-linmq006@gmail.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/watchdog/ts4800_wdt.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index fee148bbf13e..b0cb3b65cd5b 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -948,8 +948,13 @@ static int lan966x_probe(struct platform_device *pdev)
- 		lan966x->ports[p]->fwnode = fwnode_handle_get(portnp);
- 
- 		serdes = devm_of_phy_get(lan966x->dev, to_of_node(portnp), NULL);
--		if (!IS_ERR(serdes))
--			lan966x->ports[p]->serdes = serdes;
-+		if (PTR_ERR(serdes) == -ENODEV)
-+			serdes = NULL;
-+		if (IS_ERR(serdes)) {
-+			err = PTR_ERR(serdes);
-+			goto cleanup_ports;
-+		}
-+		lan966x->ports[p]->serdes = serdes;
- 
- 		lan966x_port_init(lan966x->ports[p]);
+diff --git a/drivers/watchdog/ts4800_wdt.c b/drivers/watchdog/ts4800_wdt.c
+index c137ad2bd5c3..0ea554c7cda5 100644
+--- a/drivers/watchdog/ts4800_wdt.c
++++ b/drivers/watchdog/ts4800_wdt.c
+@@ -125,13 +125,16 @@ static int ts4800_wdt_probe(struct platform_device *pdev)
+ 	ret = of_property_read_u32_index(np, "syscon", 1, &reg);
+ 	if (ret < 0) {
+ 		dev_err(dev, "no offset in syscon\n");
++		of_node_put(syscon_np);
+ 		return ret;
  	}
+ 
+ 	/* allocate memory for watchdog struct */
+ 	wdt = devm_kzalloc(dev, sizeof(*wdt), GFP_KERNEL);
+-	if (!wdt)
++	if (!wdt) {
++		of_node_put(syscon_np);
+ 		return -ENOMEM;
++	}
+ 
+ 	/* set regmap and offset to know where to write */
+ 	wdt->feed_offset = reg;
 -- 
 2.35.1
 
