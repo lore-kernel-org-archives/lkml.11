@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E09C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:47:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F40C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344414AbiFMKrY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
+        id S245751AbiFMKra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346818AbiFMKns (ORCPT
+        with ESMTP id S1347036AbiFMKnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:43:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A85CDEF6;
-        Mon, 13 Jun 2022 03:25:02 -0700 (PDT)
+        Mon, 13 Jun 2022 06:43:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66F0DF2F;
+        Mon, 13 Jun 2022 03:25:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F96AB80E93;
-        Mon, 13 Jun 2022 10:25:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73505C34114;
-        Mon, 13 Jun 2022 10:24:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 283D460F07;
+        Mon, 13 Jun 2022 10:25:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 367D4C3411E;
+        Mon, 13 Jun 2022 10:25:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115899;
-        bh=9c7Ltc9W92l0eI8ZSKU0UekWtx57C7sgrsXJyiyANRQ=;
+        s=korg; t=1655115902;
+        bh=X+yRmY49qQ+vJXONkRbFaKbxGptgVbKxURcw4SeclfY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jlTD+kqqHzQrXQfR0/rdWX+XmyQLoiofTAO6qhhgbvjmwO3XXukR+gZDVW94sTASD
-         sKyY+tpy/qTBKDWOCB2w8ptwsyxdXhJN0xtGXVbYNshyJxhNajOaS6PvQfUcf0UB9D
-         duYF6Nsg7sA8UdD1Z7r5x/hxJjYhugmCC54HidOI=
+        b=fPGuwlaqyp5M768vRM16h5RtKr980l41X7J5750AA6vv9V7cOxcN2owfg5l9DXICi
+         Ql8ixXK/XAv66stwItErrUGHM+peqgTOO6VyJ+9I2//+YoBVIxFjm+u7bimEeFQWhh
+         tG152cQTtqLZlw1lbTy6gTKNZ0nfUtxWagb7k3YQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        Hugues Fruchet <hugues.fruchet@foss.st.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 071/218] regulator: pfuze100: Fix refcount leak in pfuze_parse_regulators_dt
-Date:   Mon, 13 Jun 2022 12:08:49 +0200
-Message-Id: <20220613094922.357559971@linuxfoundation.org>
+Subject: [PATCH 4.14 072/218] media: st-delta: Fix PM disable depth imbalance in delta_probe
+Date:   Mon, 13 Jun 2022 12:08:50 +0200
+Message-Id: <20220613094922.435447285@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -52,40 +53,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit afaa7b933ef00a2d3262f4d1252087613fb5c06d ]
+[ Upstream commit 94e3dba710fe0afc772172305444250023fc2d30 ]
 
-of_node_get() returns a node with refcount incremented.
-Calling of_node_put() to drop the reference when not needed anymore.
+The pm_runtime_enable will decrease power disable depth.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
 
-Fixes: 3784b6d64dc5 ("regulator: pfuze100: add pfuze100 regulator driver")
+Fixes: f386509e4959 ("[media] st-delta: STiH4xx multi-format video decoder v4l2 driver")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220511113506.45185-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Acked-by: Hugues Fruchet <hugues.fruchet@foss.st.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/pfuze100-regulator.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/media/platform/sti/delta/delta-v4l2.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
-index 4f205366d8ae..587a6bf9037b 100644
---- a/drivers/regulator/pfuze100-regulator.c
-+++ b/drivers/regulator/pfuze100-regulator.c
-@@ -431,6 +431,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
- 	parent = of_get_child_by_name(np, "regulators");
- 	if (!parent) {
- 		dev_err(dev, "regulators node not found\n");
-+		of_node_put(np);
- 		return -EINVAL;
+diff --git a/drivers/media/platform/sti/delta/delta-v4l2.c b/drivers/media/platform/sti/delta/delta-v4l2.c
+index 7c925f309158..a489d0d17989 100644
+--- a/drivers/media/platform/sti/delta/delta-v4l2.c
++++ b/drivers/media/platform/sti/delta/delta-v4l2.c
+@@ -1880,7 +1880,7 @@ static int delta_probe(struct platform_device *pdev)
+ 	if (ret) {
+ 		dev_err(delta->dev, "%s failed to initialize firmware ipc channel\n",
+ 			DELTA_PREFIX);
+-		goto err;
++		goto err_pm_disable;
  	}
  
-@@ -455,6 +456,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
+ 	/* register all available decoders */
+@@ -1894,7 +1894,7 @@ static int delta_probe(struct platform_device *pdev)
+ 	if (ret) {
+ 		dev_err(delta->dev, "%s failed to register V4L2 device\n",
+ 			DELTA_PREFIX);
+-		goto err;
++		goto err_pm_disable;
  	}
  
- 	of_node_put(parent);
-+	of_node_put(np);
- 	if (ret < 0) {
- 		dev_err(dev, "Error parsing regulator init data: %d\n",
- 			ret);
+ 	delta->work_queue = create_workqueue(DELTA_NAME);
+@@ -1919,6 +1919,8 @@ static int delta_probe(struct platform_device *pdev)
+ 	destroy_workqueue(delta->work_queue);
+ err_v4l2:
+ 	v4l2_device_unregister(&delta->v4l2_dev);
++err_pm_disable:
++	pm_runtime_disable(dev);
+ err:
+ 	return ret;
+ }
 -- 
 2.35.1
 
