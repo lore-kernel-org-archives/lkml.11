@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 817FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353291AbiFMMQe (ORCPT
+        id S1352848AbiFMMQk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47904 "EHLO
+        Mon, 13 Jun 2022 08:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354890AbiFMMNl (ORCPT
+        with ESMTP id S1356169AbiFMMNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:13:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0FD53C40;
-        Mon, 13 Jun 2022 04:01:18 -0700 (PDT)
+        Mon, 13 Jun 2022 08:13:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E76B53E1B;
+        Mon, 13 Jun 2022 04:01:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCA3F613E9;
-        Mon, 13 Jun 2022 11:01:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFFFFC3411E;
-        Mon, 13 Jun 2022 11:01:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5F53B80EA8;
+        Mon, 13 Jun 2022 11:01:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E9AEC341CD;
+        Mon, 13 Jun 2022 11:01:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118077;
-        bh=/gEi9uoEGtw9vFKpk5iTBlPbocY+K5T7zTqsewRdOx8=;
+        s=korg; t=1655118082;
+        bh=3FNu0ScrcGwY4tcF2D+L8uHmvoyLP38FFAp5s8l5wXg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oHSwCJI1ehiwbViH2s20jWthrXw9vmLSgpAjEgkm8yz0jGhBS4ExXikFzfmlMA5dp
-         p5ChUlihtWCbdLmFLUMzg6jWTOV6iSfQtg+y8c8Y3JXnXDipqVoysu6g898BMGd7sj
-         qHo53FwfhpZZ9jhR33bzPAqRO1T2vBovyIDGnOV0=
+        b=1U6Jhwzj7zCeoXEdkyoH2YGzJu6bY9egLsbk9G6WgiDxTEbAbWZ4UezwfIaj8RU5f
+         O7rzcGP742PSYuJIcF4VXh+iaPR5+/NHmmww6As8LZJFn477sUVeQHyozoxLUAg9vF
+         03OTiMPZSmdZ5gWcz/3UIDnUwPX6IYKLnLAh1Wtw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 227/287] mips: cpc: Fix refcount leak in mips_cpc_default_phys_base
-Date:   Mon, 13 Jun 2022 12:10:51 +0200
-Message-Id: <20220613094930.898195079@linuxfoundation.org>
+Subject: [PATCH 4.19 237/287] af_unix: Fix a data-race in unix_dgram_peer_wake_me().
+Date:   Mon, 13 Jun 2022 12:11:01 +0200
+Message-Id: <20220613094931.202554990@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,33 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 4107fa700f314592850e2c64608f6ede4c077476 ]
+[ Upstream commit 662a80946ce13633ae90a55379f1346c10f0c432 ]
 
-Add the missing of_node_put() to release the refcount incremented
-by of_find_compatible_node().
+unix_dgram_poll() calls unix_dgram_peer_wake_me() without `other`'s
+lock held and check if its receive queue is full.  Here we need to
+use unix_recvq_full_lockless() instead of unix_recvq_full(), otherwise
+KCSAN will report a data-race.
 
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
-Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: 7d267278a9ec ("unix: avoid use-after-free in ep_remove_wait_queue")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Link: https://lore.kernel.org/r/20220605232325.11804-1-kuniyu@amazon.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/kernel/mips-cpc.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/unix/af_unix.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/mips/kernel/mips-cpc.c b/arch/mips/kernel/mips-cpc.c
-index fcf9af492d60..cf46502c605e 100644
---- a/arch/mips/kernel/mips-cpc.c
-+++ b/arch/mips/kernel/mips-cpc.c
-@@ -31,6 +31,7 @@ phys_addr_t __weak mips_cpc_default_phys_base(void)
- 	cpc_node = of_find_compatible_node(of_root, NULL, "mti,mips-cpc");
- 	if (cpc_node) {
- 		err = of_address_to_resource(cpc_node, 0, &res);
-+		of_node_put(cpc_node);
- 		if (!err)
- 			return res.start;
- 	}
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 82279dbd2f62..e79c32942796 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -445,7 +445,7 @@ static int unix_dgram_peer_wake_me(struct sock *sk, struct sock *other)
+ 	 * -ECONNREFUSED. Otherwise, if we haven't queued any skbs
+ 	 * to other and its full, we will hang waiting for POLLOUT.
+ 	 */
+-	if (unix_recvq_full(other) && !sock_flag(other, SOCK_DEAD))
++	if (unix_recvq_full_lockless(other) && !sock_flag(other, SOCK_DEAD))
+ 		return 1;
+ 
+ 	if (connected)
 -- 
 2.35.1
 
