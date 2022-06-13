@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8AAFCCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 439DECCA48B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:59:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380259AbiFMN6h (ORCPT
+        id S1380281AbiFMN6m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
+        Mon, 13 Jun 2022 09:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380153AbiFMNxm (ORCPT
+        with ESMTP id S1380164AbiFMNxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:53:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A20D712EA;
-        Mon, 13 Jun 2022 04:33:56 -0700 (PDT)
+        Mon, 13 Jun 2022 09:53:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379497A479;
+        Mon, 13 Jun 2022 04:34:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E93FB80EAB;
-        Mon, 13 Jun 2022 11:33:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B16F8C3411E;
-        Mon, 13 Jun 2022 11:33:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C754C6126A;
+        Mon, 13 Jun 2022 11:34:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D930CC3411C;
+        Mon, 13 Jun 2022 11:34:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120034;
-        bh=Rv2aAz7IGiMWJhkLpbWc7rlXzioTsKnTqNMEJ2Jd4O8=;
+        s=korg; t=1655120042;
+        bh=EbHpsNQsZRgTMF45CSYfLlirVAaStJQ+cyuj+aVwgLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WMFgaVVHLltIJQiNBsXivBjD4FwtwDQasJqJCCyGfODrqzPk9jY0D9r90sR/ADnit
-         7Rh1kfS4GbP4lIBLH/H2p4CAW+tkOgCw9Z0TPUNU7raIwLR7K/oxTtvttd9b/r7DZR
-         G6JGvqi/583YQehPJnAjOmYcEatLRY5dUp0E0ZoU=
+        b=Lm3pwvc4AXdSEWh12B8TeOq+WfOUhxAlhomzuHiGaecJyDWgZCXeSDhyjkZhQrM/K
+         OanZCsCB4cht7W9IhXT6u+K3wrnLsgIQIFGAvD87kcNJxk+rjim93YKT07mzBEEbls
+         YdOnkoh+peYJbbkCj/hpBHu2q/6OZSFOnfvJlWBc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 219/339] drm: imx: fix compiler warning with gcc-12
-Date:   Mon, 13 Jun 2022 12:10:44 +0200
-Message-Id: <20220613094933.301731272@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Zheyu Ma <zheyuma97@gmail.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 230/339] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
+Date:   Mon, 13 Jun 2022 12:10:55 +0200
+Message-Id: <20220613094933.634976444@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,46 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 7aefd8b53815274f3ef398d370a3c9b27dd9f00c ]
+[ Upstream commit 689ca31c542687709ba21ec2195c1fbce34fd029 ]
 
-Gcc-12 correctly warned about this code using a non-NULL pointer as a
-truth value:
+When the driver fails at alloc_hdlcdev(), and then we remove the driver
+module, we will get the following splat:
 
-  drivers/gpu/drm/imx/ipuv3-crtc.c: In function ‘ipu_crtc_disable_planes’:
-  drivers/gpu/drm/imx/ipuv3-crtc.c:72:21: error: the comparison will always evaluate as ‘true’ for the address of ‘plane’ will never be NULL [-Werror=address]
-     72 |                 if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
-        |                     ^
+[   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
+[   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
+[   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
+[   25.077709] Call Trace:
+[   25.077924]  <TASK>
+[   25.078108]  unregister_hdlc_device+0x16/0x30
+[   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
 
-due to the extraneous '&' address-of operator.
+Fix this by checking whether the 'info->netdev' is a null pointer first.
 
-Philipp Zabel points out that The mistake had no adverse effect since
-the following condition doesn't actually dereference the NULL pointer,
-but the intent of the code was obviously to check for it, not to take
-the address of the member.
-
-Fixes: eb8c88808c83 ("drm/imx: add deferred plane disabling")
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220410114814.3920474-1-zheyuma97@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/imx/ipuv3-crtc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/synclink_gt.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/imx/ipuv3-crtc.c b/drivers/gpu/drm/imx/ipuv3-crtc.c
-index 9c8829f945b2..f7863d6dea80 100644
---- a/drivers/gpu/drm/imx/ipuv3-crtc.c
-+++ b/drivers/gpu/drm/imx/ipuv3-crtc.c
-@@ -69,7 +69,7 @@ static void ipu_crtc_disable_planes(struct ipu_crtc *ipu_crtc,
- 	drm_atomic_crtc_state_for_each_plane(plane, old_crtc_state) {
- 		if (plane == &ipu_crtc->plane[0]->base)
- 			disable_full = true;
--		if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
-+		if (ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
- 			disable_partial = true;
- 	}
- 
+diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
+index 25c558e65ece..9bc2a9265277 100644
+--- a/drivers/tty/synclink_gt.c
++++ b/drivers/tty/synclink_gt.c
+@@ -1746,6 +1746,8 @@ static int hdlcdev_init(struct slgt_info *info)
+  */
+ static void hdlcdev_exit(struct slgt_info *info)
+ {
++	if (!info->netdev)
++		return;
+ 	unregister_hdlc_device(info->netdev);
+ 	free_netdev(info->netdev);
+ 	info->netdev = NULL;
 -- 
 2.35.1
 
