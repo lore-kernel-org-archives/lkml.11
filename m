@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9975FCCA47E
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0FCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231824AbiFMGsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 02:48:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59026 "EHLO
+        id S237814AbiFMGs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 02:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231821AbiFMGst (ORCPT
+        with ESMTP id S233976AbiFMGsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 02:48:49 -0400
+        Mon, 13 Jun 2022 02:48:50 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EBB6248;
-        Sun, 12 Jun 2022 23:48:47 -0700 (PDT)
-X-UUID: 145a70e6795c4edb85d5558b8950f276-20220613
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D351209A;
+        Sun, 12 Jun 2022 23:48:49 -0700 (PDT)
+X-UUID: 5489f771649b476e95c7a53268d2d193-20220613
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:1d278dfb-9983-476e-bcba-e1a06fb244b4,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:2a19b09,CLOUDID:56715ac6-12ba-4305-bfdf-9aefbdc32516,C
+X-CID-O-INFO: VERSION:1.1.5,REQID:8698b5ac-da29-43c3-8708-dcff6fa161f5,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:2a19b09,CLOUDID:c5628037-84c0-4f9a-9fbd-acd4a0e9ad0f,C
         OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
         ,QS:0,BEC:nil
-X-UUID: 145a70e6795c4edb85d5558b8950f276-20220613
+X-UUID: 5489f771649b476e95c7a53268d2d193-20220613
 Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1090511867; Mon, 13 Jun 2022 14:48:42 +0800
+        with ESMTP id 1248244147; Mon, 13 Jun 2022 14:48:45 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 13 Jun 2022 14:48:42 +0800
+ 15.2.792.15; Mon, 13 Jun 2022 14:48:43 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 13 Jun 2022 14:48:42 +0800
+ Transport; Mon, 13 Jun 2022 14:48:43 +0800
 From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
 To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
         <daniel@ffwll.ch>, <robh+dt@kernel.org>,
@@ -49,10 +49,12 @@ CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v11 00/12] drm/mediatek: Add MT8195 dp_intf driver
-Date:   Mon, 13 Jun 2022 14:48:29 +0800
-Message-ID: <20220613064841.10481-1-rex-bc.chen@mediatek.com>
+Subject: [PATCH v11 08/12] drm/mediatek: dpi: move the yuv422_en_bit to SoC config
+Date:   Mon, 13 Jun 2022 14:48:37 +0800
+Message-ID: <20220613064841.10481-9-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220613064841.10481-1-rex-bc.chen@mediatek.com>
+References: <20220613064841.10481-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -60,44 +62,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dpi/dpintf driver and the added helper functions are required for
-the DisplayPort driver to work.
+From: Guillaume Ranquet <granquet@baylibre.com>
 
-This series is separated from [1] which is original from Guillaume.
-The display port driver is [2].
+Add flexibility by moving the yuv422 en bit to SoC specific config
 
-Changes for v11:
-1. Rename ck_cg to pll_gate.
-2. Add some commit message to clarify the modification reason.
-3. Fix some driver order and modify for reviewers' comments.
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: CK Hu <ck.hu@mediatek.com>
+---
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-[1]:https://lore.kernel.org/all/20220523104758.29531-1-granquet@baylibre.com/
-[2]:https://lore.kernel.org/all/20220610105522.13449-1-rex-bc.chen@mediatek.com/
-
-Guillaume Ranquet (11):
-  drm/mediatek: dpi: move dpi limits to SoC config
-  drm/mediatek: dpi: implement a CK/DE pol toggle in SoC config
-  drm/mediatek: dpi: implement a swap_input toggle in SoC config
-  drm/mediatek: dpi: move dimension mask to SoC config
-  drm/mediatek: dpi: move hvsize_mask to SoC config
-  drm/mediatek: dpi: move swap_shift to SoC config
-  drm/mediatek: dpi: move the yuv422_en_bit to SoC config
-  drm/mediatek: dpi: move the csc_enable bit to SoC config
-  drm/mediatek: dpi: Add dpintf support
-  drm/mediatek: dpi: Only enable dpi after the bridge is enabled
-  drm/mediatek: dpi: Add matrix_sel helper
-
-Markus Schneider-Pargmann (1):
-  dt-bindings: mediatek,dpi: Add DP_INTF compatible
-
- .../display/mediatek/mediatek,dpi.yaml        |  13 +-
- drivers/gpu/drm/mediatek/mtk_dpi.c            | 262 +++++++++++++++---
- drivers/gpu/drm/mediatek/mtk_dpi_regs.h       |  16 ++
- drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c   |   4 +
- drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h   |   1 +
- drivers/gpu/drm/mediatek/mtk_drm_drv.c        |   3 +
- 6 files changed, 251 insertions(+), 48 deletions(-)
-
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+index 2c0e9670c209..b709b7776848 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+@@ -132,6 +132,7 @@ struct mtk_dpi_conf {
+ 	/* HSIZE and VSIZE mask (no shift) */
+ 	u32 hvsize_mask;
+ 	u32 channel_swap_shift;
++	u32 yuv422_en_bit;
+ 	const struct mtk_dpi_yc_limit *limit;
+ };
+ 
+@@ -357,7 +358,8 @@ static void mtk_dpi_config_channel_swap(struct mtk_dpi *dpi,
+ 
+ static void mtk_dpi_config_yuv422_enable(struct mtk_dpi *dpi, bool enable)
+ {
+-	mtk_dpi_mask(dpi, DPI_CON, enable ? YUV422_EN : 0, YUV422_EN);
++	mtk_dpi_mask(dpi, DPI_CON, enable ? dpi->conf->yuv422_en_bit : 0,
++		     dpi->conf->yuv422_en_bit);
+ }
+ 
+ static void mtk_dpi_config_csc_enable(struct mtk_dpi *dpi, bool enable)
+@@ -825,6 +827,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
++	.yuv422_en_bit = YUV422_EN,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
+@@ -840,6 +843,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
++	.yuv422_en_bit = YUV422_EN,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
+@@ -854,6 +858,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
++	.yuv422_en_bit = YUV422_EN,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
+@@ -868,6 +873,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
++	.yuv422_en_bit = YUV422_EN,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
 -- 
 2.18.0
 
