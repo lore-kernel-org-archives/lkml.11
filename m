@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB31C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:20:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47BA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382380AbiFMOUn (ORCPT
+        id S1382450AbiFMOUr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36994 "EHLO
+        Mon, 13 Jun 2022 10:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382833AbiFMOOu (ORCPT
+        with ESMTP id S1382981AbiFMOPB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:14:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4796C0F9;
-        Mon, 13 Jun 2022 04:42:33 -0700 (PDT)
+        Mon, 13 Jun 2022 10:15:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D109C9B199;
+        Mon, 13 Jun 2022 04:42:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54DDD6146F;
-        Mon, 13 Jun 2022 11:42:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61248C34114;
-        Mon, 13 Jun 2022 11:42:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52E77B80EA7;
+        Mon, 13 Jun 2022 11:42:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D19C341C0;
+        Mon, 13 Jun 2022 11:42:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120551;
-        bh=2L3Li2aghsPQKZQsUcCWtyC+HFxNtTVnLt/yZ8qCiIg=;
+        s=korg; t=1655120557;
+        bh=ckANyrkMqg8JdbVw/F++oS0RepEeTBciE0XRiI5cdxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s92j/CXToKO5wkcPRIU/r0OGXg4y7cKdQui208t07ROjjo977CWzxzipxToCNb1fJ
-         aKhvPj+zOBxtT8m9n/3EFGlljLgNEenoDnQgI3uuF49u3niY+wjSfDB2LjhLEcF/67
-         IhxP2eZ2WE31yF4m9U8l8f0heDzBjMwSih9fhT9k=
+        b=o/mozYCCwsWk0kWL0KcDtA96PojUrQhpfts+aapc6oouHkE14PWZ4nysVEa6nNea+
+         PqtSYLolnRfWIGTdyWp/zs1dULbd588yR5RP7r76AhzX39GRGZy+Gb0KKdHsS06JwV
+         yEjtjrwGOzrx8Yb74ttJEatUFbTod3oNfYBJCCcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 074/298] ASoC: fsl_sai: Fix FSL_SAI_xDR/xFR definition
-Date:   Mon, 13 Jun 2022 12:09:28 +0200
-Message-Id: <20220613094927.192002532@linuxfoundation.org>
+Subject: [PATCH 5.17 076/298] s390/crypto: fix scatterwalk_unmap() callers in AES-GCM
+Date:   Mon, 13 Jun 2022 12:09:30 +0200
+Message-Id: <20220613094927.252073006@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,38 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit e4dd748dc87cf431af7b3954963be0d9f6150217 ]
+[ Upstream commit bd52cd5e23f134019b23f0c389db0f9a436e4576 ]
 
-There are multiple xDR and xFR registers, the index is
-from 0 to 7. FSL_SAI_xDR and FSL_SAI_xFR is abandoned,
-replace them with FSL_SAI_xDR0 and FSL_SAI_xFR0.
+The argument of scatterwalk_unmap() is supposed to be the void* that was
+returned by the previous scatterwalk_map() call.
+The s390 AES-GCM implementation was instead passing the pointer to the
+struct scatter_walk.
 
-Fixes: 4f7a0728b530 ("ASoC: fsl_sai: Add support for SAI new version")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1653284661-18964-1-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This doesn't actually break anything because scatterwalk_unmap() only uses
+its argument under CONFIG_HIGHMEM and ARCH_HAS_FLUSH_ON_KUNMAP.
+
+Fixes: bf7fa038707c ("s390/crypto: add s390 platform specific aes gcm support.")
+Signed-off-by: Jann Horn <jannh@google.com>
+Acked-by: Harald Freudenberger <freude@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220517143047.3054498-1-jannh@google.com
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/fsl_sai.h | 4 ++--
+ arch/s390/crypto/aes_s390.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/fsl/fsl_sai.h b/sound/soc/fsl/fsl_sai.h
-index 9aaf231bc024..93da86009c75 100644
---- a/sound/soc/fsl/fsl_sai.h
-+++ b/sound/soc/fsl/fsl_sai.h
-@@ -80,8 +80,8 @@
- #define FSL_SAI_xCR3(tx, ofs)	(tx ? FSL_SAI_TCR3(ofs) : FSL_SAI_RCR3(ofs))
- #define FSL_SAI_xCR4(tx, ofs)	(tx ? FSL_SAI_TCR4(ofs) : FSL_SAI_RCR4(ofs))
- #define FSL_SAI_xCR5(tx, ofs)	(tx ? FSL_SAI_TCR5(ofs) : FSL_SAI_RCR5(ofs))
--#define FSL_SAI_xDR(tx, ofs)	(tx ? FSL_SAI_TDR(ofs) : FSL_SAI_RDR(ofs))
--#define FSL_SAI_xFR(tx, ofs)	(tx ? FSL_SAI_TFR(ofs) : FSL_SAI_RFR(ofs))
-+#define FSL_SAI_xDR0(tx)	(tx ? FSL_SAI_TDR0 : FSL_SAI_RDR0)
-+#define FSL_SAI_xFR0(tx)	(tx ? FSL_SAI_TFR0 : FSL_SAI_RFR0)
- #define FSL_SAI_xMR(tx)		(tx ? FSL_SAI_TMR : FSL_SAI_RMR)
+diff --git a/arch/s390/crypto/aes_s390.c b/arch/s390/crypto/aes_s390.c
+index 54c7536f2482..1023e9d43d44 100644
+--- a/arch/s390/crypto/aes_s390.c
++++ b/arch/s390/crypto/aes_s390.c
+@@ -701,7 +701,7 @@ static inline void _gcm_sg_unmap_and_advance(struct gcm_sg_walk *gw,
+ 					     unsigned int nbytes)
+ {
+ 	gw->walk_bytes_remain -= nbytes;
+-	scatterwalk_unmap(&gw->walk);
++	scatterwalk_unmap(gw->walk_ptr);
+ 	scatterwalk_advance(&gw->walk, nbytes);
+ 	scatterwalk_done(&gw->walk, 0, gw->walk_bytes_remain);
+ 	gw->walk_ptr = NULL;
+@@ -776,7 +776,7 @@ static int gcm_out_walk_go(struct gcm_sg_walk *gw, unsigned int minbytesneeded)
+ 		goto out;
+ 	}
  
- /* SAI Transmit/Receive Control Register */
+-	scatterwalk_unmap(&gw->walk);
++	scatterwalk_unmap(gw->walk_ptr);
+ 	gw->walk_ptr = NULL;
+ 
+ 	gw->ptr = gw->buf;
 -- 
 2.35.1
 
