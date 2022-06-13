@@ -2,98 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9AE0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:37:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35CEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:37:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384482AbiFMOhP (ORCPT
+        id S1384486AbiFMOhS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        Mon, 13 Jun 2022 10:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384380AbiFMOeB (ORCPT
+        with ESMTP id S1384396AbiFMOeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:34:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0DDABF7F;
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDB4ADBCF;
         Mon, 13 Jun 2022 04:49:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1511961486;
-        Mon, 13 Jun 2022 11:49:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FBFDC34114;
-        Mon, 13 Jun 2022 11:49:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120943;
-        bh=jGr8WXM1jdPMD04g4tRJ+Sq3zW2YgJpdz6hJ9tysoig=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pd2NeiygmpFrlR3oRv7Yuejoe+P3AIGXZQXjcgn4D3h1tn2NvfhDd1GcnpngXvxfK
-         Ie5WKCIgcGie9ofZi8ygc6B5P6EmYlkz6WkOiUuA3PDFHVlkdD/G590YuGFvxqrlul
-         pWAGY4x/J/bMRxbR3+GKK61LK0VI3ku13M/701ng=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 214/298] usb: dwc3: host: Stop setting the ACPI companion
-Date:   Mon, 13 Jun 2022 12:11:48 +0200
-Message-Id: <20220613094931.595671887@linuxfoundation.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655120957; x=1686656957;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Ip7LDyLvG35PweXXiZXDcl0rYNLBHjbyNoPhnAv4A5k=;
+  b=jTEqqbovheovyfWDNgt2SKwbdHEAYvD6WjS84ok6mYYs0hyZ5UmeMipW
+   5bAD2a6QphiyQoYwrn+1GAMYumCt3B0JmMYZG+BxJ++x2Ufhg4Xo6MDSS
+   MMdb2op62uc76nO0p+OMJj9fPXyAn2lcTMtKBoAfrsAzrtcgeNQR4YFYH
+   35PwVG2fxlJ4brs9LdC/yfEqMhggjO9yH4OPKIz6ryb35ZtF9rSEaJI5k
+   QUY9YGWJscfDFN6ehWlRTLzTU+pVGZDOMDiuO6FB9c9CTU5PIgkTPeANU
+   emtis43FWMQPpHOjfoICtOFViDKA7KVgzJ1Y7n/hIQzefpLIguYAv+sBP
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="177684159"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Jun 2022 04:48:29 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 13 Jun 2022 04:48:29 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 13 Jun 2022 04:48:26 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Bin Liu <b-liu@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Daire McNamara <daire.mcnamara@microchip.com>,
+        Valentina Fernandez <valentina.fernandezalanis@microchip.com>,
+        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>,
+        Ben Dooks <ben.dooks@codethink.co.uk>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v2 0/2] Add support for PolarFire SoC's musb controller
+Date:   Mon, 13 Jun 2022 12:46:41 +0100
+Message-ID: <20220613114642.1615292-1-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
-References: <20220613094924.913340374@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Hey Bin, Greg,
+Short series here adding support for USB on Microchip PolarFire SoC FPGAs.
+The kconfig dependency for INVENTRA_DMA has become a bit of a mouthful,
+is there a better way of dealing with that?
+Thanks,
+Conor.
 
-[ Upstream commit 7fd069d65da2e20b1caec3b7bcf9dfbe28c04bb2 ]
+Changes since v1:
+- Drop unneeded resource copying as per Rob's changes to the other drivers
+- Drop the dts patch
 
-It is no longer needed. The sysdev pointer is now used when
-assigning the ACPI companions to the xHCI ports and USB
-devices.
+Conor Dooley (2):
+  usb: musb: Add support for PolarFire SoC's musb controller
+  MAINTAINERS: add musb to PolarFire SoC entry
 
-Assigning the ACPI companion here resulted in the
-fwnode->secondary pointer to be replaced also for the parent
-dwc3 device since the primary fwnode (the ACPI companion)
-was shared. That was unintentional and it created potential
-side effects like resource leaks.
+ MAINTAINERS               |   1 +
+ drivers/usb/musb/Kconfig  |  13 +-
+ drivers/usb/musb/Makefile |   1 +
+ drivers/usb/musb/mpfs.c   | 265 ++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 279 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/usb/musb/mpfs.c
 
-Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Link: https://lore.kernel.org/r/20220428111056.3558-3-heikki.krogerus@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/usb/dwc3/host.c | 2 --
- 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
-index eda871973d6c..f56c30cf151e 100644
---- a/drivers/usb/dwc3/host.c
-+++ b/drivers/usb/dwc3/host.c
-@@ -7,7 +7,6 @@
-  * Authors: Felipe Balbi <balbi@ti.com>,
-  */
- 
--#include <linux/acpi.h>
- #include <linux/irq.h>
- #include <linux/of.h>
- #include <linux/platform_device.h>
-@@ -83,7 +82,6 @@ int dwc3_host_init(struct dwc3 *dwc)
- 	}
- 
- 	xhci->dev.parent	= dwc->dev;
--	ACPI_COMPANION_SET(&xhci->dev, ACPI_COMPANION(dwc->dev));
- 
- 	dwc->xhci = xhci;
- 
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 -- 
-2.35.1
-
-
+2.36.1
 
