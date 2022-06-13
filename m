@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A493CCCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B487DCCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347599AbiFMKtB (ORCPT
+        id S1347750AbiFMKtE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47674 "EHLO
+        Mon, 13 Jun 2022 06:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244283AbiFMKoj (ORCPT
+        with ESMTP id S245310AbiFMKom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:44:39 -0400
+        Mon, 13 Jun 2022 06:44:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E1A2B1A3;
-        Mon, 13 Jun 2022 03:25:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF8023BF8;
+        Mon, 13 Jun 2022 03:25:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BFCD7B80E95;
-        Mon, 13 Jun 2022 10:25:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 163A2C34114;
-        Mon, 13 Jun 2022 10:25:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79BC8B80E93;
+        Mon, 13 Jun 2022 10:25:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2487C34114;
+        Mon, 13 Jun 2022 10:25:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115932;
-        bh=OVUFaOWUmbpkj69+VKs5fiy14EGc8rkaQ0JYQakAbwk=;
+        s=korg; t=1655115935;
+        bh=FoJXuZ9hAOmVvwzqCYSqV8kQiYXRx4JotWWWMESIcrw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B0JowjslV54Y4x22qzHJpWx8QO5HbStcVhs9EBGD2Nfhb1ty/Do28AgZkZc2et3Zp
-         MziOAhkD78Nd2e+fesgO7tYCGBkbRdjD67fE6cuTkVJCvobaUa+flgCIt6uNRBWWbB
-         2LBmR2JQOiSKr7wiIvfh9ca60kLAmpj7tKJ7qytk=
+        b=DM7mn4Am4w7v7vNeu6n2dnyP8cZ2My4pR6ZEMeKjio5+ZEB0FOIbbDce4OakO//zv
+         To+wIws5ngkKP2Th6QCOEmUVyM7SWKFqtldyU6GksQABga159qmSQzm3vOt+0GlK1n
+         k6v1TME3FoIfSVwgBNox6McKY2724JdanpkwTTSI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Stefan Wahren <stefan.wahren@i2se.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 083/218] ARM: dts: bcm2835-rpi-zero-w: Fix GPIO line name for Wifi/BT
-Date:   Mon, 13 Jun 2022 12:09:01 +0200
-Message-Id: <20220613094923.032582436@linuxfoundation.org>
+Subject: [PATCH 4.14 084/218] ARM: dts: bcm2835-rpi-b: Fix GPIO line names
+Date:   Mon, 13 Jun 2022 12:09:02 +0200
+Message-Id: <20220613094923.072857857@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,55 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-[ Upstream commit 2c663e5e5bbf2a5b85e0f76ccb69663f583c3e33 ]
+[ Upstream commit 97bd8659c1c46c23e4daea7e040befca30939950 ]
 
-The GPIOs 30 to 39 are connected to the Cypress CYW43438 (Wifi/BT).
-So fix the GPIO line names accordingly.
+Recently this has been fixed in the vendor tree, so upstream this.
 
-Fixes: 2c7c040c73e9 ("ARM: dts: bcm2835: Add Raspberry Pi Zero W")
+Fixes: 731b26a6ac17 ("ARM: bcm2835: Add names for the Raspberry Pi GPIO lines")
 Signed-off-by: Phil Elwell <phil@raspberrypi.com>
 Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2835-rpi-zero-w.dts | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ arch/arm/boot/dts/bcm2835-rpi-b.dts | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
-index 120776d45441..932e0e6320c5 100644
---- a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
-+++ b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
-@@ -77,16 +77,18 @@
- 			  "GPIO27",
- 			  "SDA0",
- 			  "SCL0",
--			  "NC", /* GPIO30 */
--			  "NC", /* GPIO31 */
--			  "NC", /* GPIO32 */
--			  "NC", /* GPIO33 */
--			  "NC", /* GPIO34 */
--			  "NC", /* GPIO35 */
--			  "NC", /* GPIO36 */
--			  "NC", /* GPIO37 */
--			  "NC", /* GPIO38 */
--			  "NC", /* GPIO39 */
-+			  /* Used by BT module */
-+			  "CTS0",
-+			  "RTS0",
-+			  "TXD0",
-+			  "RXD0",
-+			  /* Used by Wifi */
-+			  "SD1_CLK",
-+			  "SD1_CMD",
-+			  "SD1_DATA0",
-+			  "SD1_DATA1",
-+			  "SD1_DATA2",
-+			  "SD1_DATA3",
- 			  "CAM_GPIO1", /* GPIO40 */
- 			  "WL_ON", /* GPIO41 */
- 			  "NC", /* GPIO42 */
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-b.dts b/arch/arm/boot/dts/bcm2835-rpi-b.dts
+index cca4a75a5651..6f39d5e54cb8 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-b.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-b.dts
+@@ -48,18 +48,17 @@
+ 			  "GPIO18",
+ 			  "NC", /* GPIO19 */
+ 			  "NC", /* GPIO20 */
+-			  "GPIO21",
++			  "CAM_GPIO0",
+ 			  "GPIO22",
+ 			  "GPIO23",
+ 			  "GPIO24",
+ 			  "GPIO25",
+ 			  "NC", /* GPIO26 */
+-			  "CAM_GPIO0",
+-			  /* Binary number representing build/revision */
+-			  "CONFIG0",
+-			  "CONFIG1",
+-			  "CONFIG2",
+-			  "CONFIG3",
++			  "GPIO27",
++			  "GPIO28",
++			  "GPIO29",
++			  "GPIO30",
++			  "GPIO31",
+ 			  "NC", /* GPIO32 */
+ 			  "NC", /* GPIO33 */
+ 			  "NC", /* GPIO34 */
 -- 
 2.35.1
 
