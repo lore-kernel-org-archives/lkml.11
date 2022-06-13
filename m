@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:10:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C505CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351795AbiFMLKH (ORCPT
+        id S1351984AbiFMLKK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:10:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45222 "EHLO
+        Mon, 13 Jun 2022 07:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351887AbiFMLFL (ORCPT
+        with ESMTP id S1351888AbiFMLFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:05:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04406273;
-        Mon, 13 Jun 2022 03:34:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DAB283;
+        Mon, 13 Jun 2022 03:34:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6347B80E93;
-        Mon, 13 Jun 2022 10:34:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18443C3411F;
-        Mon, 13 Jun 2022 10:34:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61CEDB80EAA;
+        Mon, 13 Jun 2022 10:34:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7699C341C6;
+        Mon, 13 Jun 2022 10:34:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116475;
-        bh=JKN2VClrSbBHhfa4/X+zumpfltxk6XQNbEfRlJbR2qo=;
+        s=korg; t=1655116478;
+        bh=mcCq2tAQcRwM1eMmrEbz4JuAXlEEuypW9hkFo3uvlzE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Loi3WogCWneEDqIZ2urRZuj7bmEeT1NgV6dH7wxp/dg38NUSbgxp0JPjcjy3Sfq9m
-         YW+6041OVEXG9Ex3wnmlfFqoyXvOMRD7BB23ww+kBI2InePxw1oZ6eSpumwDhFsxrE
-         oD5d85ixQf+D9gJoSojk57RGnObs0ENzgQc82VeY=
+        b=wreQOycSoUdoqxpfHYzYLjtU8zxMMGgBBLR6RXiv+1mFBhG5edncqMyjDyHFzCu68
+         7KntsUNLezm/T4x5MnKDE/lNdZ6uLBkZ64N2m5bbFf+7Ec61UNktYFACSYplQWqi9+
+         cR7kX9YAmKlV8sHhrcssMUZabEhiB9wGJ8j+IogM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 188/218] drivers: usb: host: Fix deadlock in oxu_bus_suspend()
-Date:   Mon, 13 Jun 2022 12:10:46 +0200
-Message-Id: <20220613094926.318420409@linuxfoundation.org>
+Subject: [PATCH 5.4 084/411] ASoC: mediatek: Fix error handling in mt8173_max98090_dev_probe
+Date:   Mon, 13 Jun 2022 12:05:57 +0200
+Message-Id: <20220613094931.200268598@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,52 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 4d378f2ae58138d4c55684e1d274e7dd94aa6524 ]
+[ Upstream commit 4f4e0454e226de3bf4efd7e7924d1edc571c52d5 ]
 
-There is a deadlock in oxu_bus_suspend(), which is shown below:
+Call of_node_put(platform_node) to avoid refcount leak in
+the error path.
 
-   (Thread 1)              |      (Thread 2)
-                           | timer_action()
-oxu_bus_suspend()          |  mod_timer()
- spin_lock_irq() //(1)     |  (wait a time)
- ...                       | oxu_watchdog()
- del_timer_sync()          |  spin_lock_irq() //(2)
- (wait timer to stop)      |  ...
-
-We hold oxu->lock in position (1) of thread 1, and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need oxu->lock in position (2) of thread 2. As a result,
-oxu_bus_suspend() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irq(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417120305.64577-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 94319ba10eca ("ASoC: mediatek: Use platform_of_node for machine drivers")
+Fixes: 493433785df0 ("ASoC: mediatek: mt8173: fix device_node leak")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220404092903.26725-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/oxu210hp-hcd.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/mediatek/mt8173/mt8173-max98090.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/host/oxu210hp-hcd.c b/drivers/usb/host/oxu210hp-hcd.c
-index 1d3a79c2eba2..c986dcb7a87c 100644
---- a/drivers/usb/host/oxu210hp-hcd.c
-+++ b/drivers/usb/host/oxu210hp-hcd.c
-@@ -3489,8 +3489,10 @@ static int oxu_bus_suspend(struct usb_hcd *hcd)
- 		}
+diff --git a/sound/soc/mediatek/mt8173/mt8173-max98090.c b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+index de1410c2c446..32df18180114 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-max98090.c
++++ b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+@@ -167,7 +167,8 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+ 	if (!codec_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_platform_node;
  	}
+ 	for_each_card_prelinks(card, i, dai_link) {
+ 		if (dai_link->codecs->name)
+@@ -182,6 +183,8 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+ 			__func__, ret);
  
-+	spin_unlock_irq(&oxu->lock);
- 	/* turn off now-idle HC */
- 	del_timer_sync(&oxu->watchdog);
-+	spin_lock_irq(&oxu->lock);
- 	ehci_halt(oxu);
- 	hcd->state = HC_STATE_SUSPENDED;
- 
+ 	of_node_put(codec_node);
++
++put_platform_node:
+ 	of_node_put(platform_node);
+ 	return ret;
+ }
 -- 
 2.35.1
 
