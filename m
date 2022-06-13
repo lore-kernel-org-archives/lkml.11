@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F60CCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 519D9CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385092AbiFMOah (ORCPT
+        id S1385153AbiFMOal (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
+        Mon, 13 Jun 2022 10:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384127AbiFMOYx (ORCPT
+        with ESMTP id S1384174AbiFMOZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:24:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEC54832A;
-        Mon, 13 Jun 2022 04:46:44 -0700 (PDT)
+        Mon, 13 Jun 2022 10:25:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A1548E49;
+        Mon, 13 Jun 2022 04:46:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51826B80EB2;
-        Mon, 13 Jun 2022 11:46:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD8AAC36B0A;
-        Mon, 13 Jun 2022 11:46:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90B65B80EF8;
+        Mon, 13 Jun 2022 11:46:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B6AAC341C4;
+        Mon, 13 Jun 2022 11:46:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120802;
-        bh=bFOZl1c9xmgdlvh+sQk2E6uWOw4KyEixfTX6tBQkcWU=;
+        s=korg; t=1655120807;
+        bh=JrIpi84RpMgxdT948gZwsY66rRyfpspHScAYri4PK+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p0tAjvIeBsG8onGNIii/4KE4cKc8wYPjSvBgTuxstBv6akP5bvB0y/rIo0yHjjUSg
-         INcHC6IEnS9KEZMnQhojVmoJOGI6T5cGRlD5kKPAIfxLhB3MbQjrGsXECEkwL40Nfy
-         VaKnZSc4btK4cAR+GxL5vKFVkenGCDUA/cQEr8v0=
+        b=yL2N2H3BLPmdKNlwN9JwUnq4PVAelETbVKIe1zfrV8AxJ9LFEh8R70rma5MntX4c3
+         fVRBkj43P8AD/eC4MIBQyk5VZpdTJZ60AQaKNeih+iq/m2UWLWnqg4OUqOee8y8Fho
+         lcuMRdRF3GJhQsBRedQvXqStdj863bV8VDQamXYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 162/298] SUNRPC: Trap RDMA segment overflows
-Date:   Mon, 13 Jun 2022 12:10:56 +0200
-Message-Id: <20220613094929.847724426@linuxfoundation.org>
+Subject: [PATCH 5.17 164/298] ata: pata_octeon_cf: Fix refcount leak in octeon_cf_probe
+Date:   Mon, 13 Jun 2022 12:10:58 +0200
+Message-Id: <20220613094929.906607999@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,40 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit f012e95b377c73c0283f009823c633104dedb337 ]
+[ Upstream commit 10d6bdf532902be1d8aa5900b3c03c5671612aa2 ]
 
-Prevent svc_rdma_build_writes() from walking off the end of a Write
-chunk's segment array. Caught with KASAN.
+of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
+Add missing put_device() to avoid refcount leak.
 
-The test that this fix replaces is invalid, and might have been left
-over from an earlier prototype of the PCL work.
-
-Fixes: 7a1cbfa18059 ("svcrdma: Use parsed chunk lists to construct RDMA Writes")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Fixes: 43f01da0f279 ("MIPS/OCTEON/ata: Convert pata_octeon_cf.c to use device tree.")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xprtrdma/svc_rdma_rw.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/ata/pata_octeon_cf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/sunrpc/xprtrdma/svc_rdma_rw.c b/net/sunrpc/xprtrdma/svc_rdma_rw.c
-index 5f0155fdefc7..11cf7c646644 100644
---- a/net/sunrpc/xprtrdma/svc_rdma_rw.c
-+++ b/net/sunrpc/xprtrdma/svc_rdma_rw.c
-@@ -478,10 +478,10 @@ svc_rdma_build_writes(struct svc_rdma_write_info *info,
- 		unsigned int write_len;
- 		u64 offset;
- 
--		seg = &info->wi_chunk->ch_segments[info->wi_seg_no];
--		if (!seg)
-+		if (info->wi_seg_no >= info->wi_chunk->ch_segcount)
- 			goto out_overflow;
- 
-+		seg = &info->wi_chunk->ch_segments[info->wi_seg_no];
- 		write_len = min(remaining, seg->rs_length - info->wi_seg_off);
- 		if (!write_len)
- 			goto out_overflow;
+diff --git a/drivers/ata/pata_octeon_cf.c b/drivers/ata/pata_octeon_cf.c
+index 05c2ab375756..a2abf6c9a085 100644
+--- a/drivers/ata/pata_octeon_cf.c
++++ b/drivers/ata/pata_octeon_cf.c
+@@ -856,12 +856,14 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 				int i;
+ 				res_dma = platform_get_resource(dma_dev, IORESOURCE_MEM, 0);
+ 				if (!res_dma) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+ 				cf_port->dma_base = (u64)devm_ioremap(&pdev->dev, res_dma->start,
+ 									 resource_size(res_dma));
+ 				if (!cf_port->dma_base) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+@@ -871,6 +873,7 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 					irq = i;
+ 					irq_handler = octeon_cf_interrupt;
+ 				}
++				put_device(&dma_dev->dev);
+ 			}
+ 			of_node_put(dma_node);
+ 		}
 -- 
 2.35.1
 
