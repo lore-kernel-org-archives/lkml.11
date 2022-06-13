@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2156ECCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3256DCCA48D
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384601AbiFMO3u (ORCPT
+        id S1384679AbiFMO34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
+        Mon, 13 Jun 2022 10:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383979AbiFMOYZ (ORCPT
+        with ESMTP id S1383983AbiFMOYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:24:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B0B95B2;
-        Mon, 13 Jun 2022 04:46:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B9C102;
+        Mon, 13 Jun 2022 04:46:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5331612AC;
-        Mon, 13 Jun 2022 11:46:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9282C34114;
-        Mon, 13 Jun 2022 11:46:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8DCF612A8;
+        Mon, 13 Jun 2022 11:46:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B671FC34114;
+        Mon, 13 Jun 2022 11:46:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120777;
-        bh=EGleJe67j/wtenNzkr2evwCWXHHiKXNmVSepmgjzxS8=;
+        s=korg; t=1655120780;
+        bh=U5YQJHSj04ogWj8kHnUJp6R+UQwf5EflSvuli1TWa3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HWr7m1hUCGixl2vKFIQizGDSVDuImffPfcpMaZE9Wgkm8OtSx4jKziqAlmq1NgW6z
-         2P5xvMsSYV8sgo40p35rP4Pg4x/dEF07rJ9ez/dJBSrbV01s1s4Tb2Amfckq2tkI5B
-         3Gdj5HWbZUTsoSFYAbGekG0wHqLe8VDgWBjMooKo=
+        b=2uFKqyVMe1gIZgp07OH3TbJvE+1MZZUaXpnqwlH5lg62D+3noNOAOfZYJ6jxUxDTd
+         fTqvN8bXHkeAPFG0KA0m0PEg4daXhpfp7qkjnz1dWN9ngMo/65SI4eufAKTP75DenV
+         3MDLlNRQlj4KXw01fRWJe+NQoV9bLMhFS7xzuCjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
+        stable@vger.kernel.org, Kinglong Mee <kinglongmee@gmail.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 154/298] f2fs: fix to tag gcing flag on page during file defragment
-Date:   Mon, 13 Jun 2022 12:10:48 +0200
-Message-Id: <20220613094929.607849575@linuxfoundation.org>
+Subject: [PATCH 5.17 155/298] xprtrdma: treat all calls not a bcall when bc_serv is NULL
+Date:   Mon, 13 Jun 2022 12:10:49 +0200
+Message-Id: <20220613094929.639401135@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,33 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Kinglong Mee <kinglongmee@gmail.com>
 
-[ Upstream commit 2d1fe8a86bf5e0663866fd0da83c2af1e1b0e362 ]
+[ Upstream commit 11270e7ca268e8d61b5d9e5c3a54bd1550642c9c ]
 
-In order to garantee migrated data be persisted during checkpoint,
-otherwise out-of-order persistency between data and node may cause
-data corruption after SPOR.
+When a rdma server returns a fault format reply, nfs v3 client may
+treats it as a bcall when bc service is not exist.
 
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+The debug message at rpcrdma_bc_receive_call are,
+
+[56579.837169] RPC:       rpcrdma_bc_receive_call: callback XID
+00000001, length=20
+[56579.837174] RPC:       rpcrdma_bc_receive_call: 00 00 00 01 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 04
+
+After that, rpcrdma_bc_receive_call will meets NULL pointer as,
+
+[  226.057890] BUG: unable to handle kernel NULL pointer dereference at
+00000000000000c8
+...
+[  226.058704] RIP: 0010:_raw_spin_lock+0xc/0x20
+...
+[  226.059732] Call Trace:
+[  226.059878]  rpcrdma_bc_receive_call+0x138/0x327 [rpcrdma]
+[  226.060011]  __ib_process_cq+0x89/0x170 [ib_core]
+[  226.060092]  ib_cq_poll_work+0x26/0x80 [ib_core]
+[  226.060257]  process_one_work+0x1a7/0x360
+[  226.060367]  ? create_worker+0x1a0/0x1a0
+[  226.060440]  worker_thread+0x30/0x390
+[  226.060500]  ? create_worker+0x1a0/0x1a0
+[  226.060574]  kthread+0x116/0x130
+[  226.060661]  ? kthread_flush_work_fn+0x10/0x10
+[  226.060724]  ret_from_fork+0x35/0x40
+...
+
+Signed-off-by: Kinglong Mee <kinglongmee@gmail.com>
+Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/file.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/sunrpc/xprtrdma/rpc_rdma.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index 29cd65f7c9eb..a2b7dead68e0 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -2679,6 +2679,7 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
- 			}
+diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma.c
+index 281ddb87ac8d..190a4de239c8 100644
+--- a/net/sunrpc/xprtrdma/rpc_rdma.c
++++ b/net/sunrpc/xprtrdma/rpc_rdma.c
+@@ -1121,6 +1121,7 @@ static bool
+ rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep)
+ #if defined(CONFIG_SUNRPC_BACKCHANNEL)
+ {
++	struct rpc_xprt *xprt = &r_xprt->rx_xprt;
+ 	struct xdr_stream *xdr = &rep->rr_stream;
+ 	__be32 *p;
  
- 			set_page_dirty(page);
-+			set_page_private_gcing(page);
- 			f2fs_put_page(page, 1);
+@@ -1144,6 +1145,10 @@ rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep)
+ 	if (*p != cpu_to_be32(RPC_CALL))
+ 		return false;
  
- 			idx++;
++	/* No bc service. */
++	if (xprt->bc_serv == NULL)
++		return false;
++
+ 	/* Now that we are sure this is a backchannel call,
+ 	 * advance to the RPC header.
+ 	 */
 -- 
 2.35.1
 
