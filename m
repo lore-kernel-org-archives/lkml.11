@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 188EAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A29C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354646AbiFMMQy (ORCPT
+        id S1351810AbiFMMQ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:16:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
+        Mon, 13 Jun 2022 08:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357499AbiFMMOA (ORCPT
+        with ESMTP id S1358394AbiFMMOK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:14:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62B554194;
-        Mon, 13 Jun 2022 04:01:34 -0700 (PDT)
+        Mon, 13 Jun 2022 08:14:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F98541A3;
+        Mon, 13 Jun 2022 04:01:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0994061445;
-        Mon, 13 Jun 2022 11:01:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 136D3C34114;
-        Mon, 13 Jun 2022 11:01:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6257611B3;
+        Mon, 13 Jun 2022 11:01:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C902FC3411E;
+        Mon, 13 Jun 2022 11:01:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118093;
-        bh=wBTgbzAlBHnpwemiBc67jc18++WoUd+7ldSlE8d/NmQ=;
+        s=korg; t=1655118096;
+        bh=WbYBjSc71f8cIlWrPUklZin8m5JpGhUfr03nU2I9gGA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j6l4LxzHbJDqiPUXDj6QAaEoTCQLijK644BEBLtq50UUeBYCBEL30fDrar/vcxHIk
-         6dTCVem3n7sguKBk7fyXBx1EBb4T/HeM7jewQbmSTnqkMS1UWBBlgmZxNdRws66B2j
-         NXenA92eu0UV/vI8qHiwm6OtFllMYaxsWd4b4quk=
+        b=g+4qNhOVZFW+jD/Rvp3sS0mKPQeJ4TtrhdiRRKmgX2wefK3oBJ08CJgWw896mYEJA
+         QcHvrZJQaiu+QdGpUuc7RqyyLK5OXezXpOnitj6f6A8KpRkIhRt1OhPZ4bokTHNDx7
+         h9G51eRGpp9LN3jykCo8pXoeFQ6X4pbFjoZnkJqw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Jun Miao <jun.miao@intel.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 241/287] net: mdio: unexport __init-annotated mdio_bus_init()
-Date:   Mon, 13 Jun 2022 12:11:05 +0200
-Message-Id: <20220613094931.323838550@linuxfoundation.org>
+Subject: [PATCH 4.19 228/287] tracing: Fix sleeping function called from invalid context on RT kernel
+Date:   Mon, 13 Jun 2022 12:10:52 +0200
+Message-Id: <20220613094930.929442442@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -53,52 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Jun Miao <jun.miao@intel.com>
 
-[ Upstream commit 35b42dce619701f1300fb8498dae82c9bb1f0263 ]
+[ Upstream commit 12025abdc8539ed9d5014e2d647a3fd1bd3de5cd ]
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+When setting bootparams="trace_event=initcall:initcall_start tp_printk=1" in the
+cmdline, the output_printk() was called, and the spin_lock_irqsave() was called in the
+atomic and irq disable interrupt context suitation. On the PREEMPT_RT kernel,
+these locks are replaced with sleepable rt-spinlock, so the stack calltrace will
+be triggered.
+Fix it by raw_spin_lock_irqsave when PREEMPT_RT and "trace_event=initcall:initcall_start
+tp_printk=1" enabled.
 
-modpost used to detect it, but it has been broken for a decade.
+ BUG: sleeping function called from invalid context at kernel/locking/spinlock_rt.c:46
+ in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1, name: swapper/0
+ preempt_count: 2, expected: 0
+ RCU nest depth: 0, expected: 0
+ Preemption disabled at:
+ [<ffffffff8992303e>] try_to_wake_up+0x7e/0xba0
+ CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.1-rt17+ #19 34c5812404187a875f32bee7977f7367f9679ea7
+ Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x60/0x8c
+  dump_stack+0x10/0x12
+  __might_resched.cold+0x11d/0x155
+  rt_spin_lock+0x40/0x70
+  trace_event_buffer_commit+0x2fa/0x4c0
+  ? map_vsyscall+0x93/0x93
+  trace_event_raw_event_initcall_start+0xbe/0x110
+  ? perf_trace_initcall_finish+0x210/0x210
+  ? probe_sched_wakeup+0x34/0x40
+  ? ttwu_do_wakeup+0xda/0x310
+  ? trace_hardirqs_on+0x35/0x170
+  ? map_vsyscall+0x93/0x93
+  do_one_initcall+0x217/0x3c0
+  ? trace_event_raw_event_initcall_level+0x170/0x170
+  ? push_cpu_stop+0x400/0x400
+  ? cblist_init_generic+0x241/0x290
+  kernel_init_freeable+0x1ac/0x347
+  ? _raw_spin_unlock_irq+0x65/0x80
+  ? rest_init+0xf0/0xf0
+  kernel_init+0x1e/0x150
+  ret_from_fork+0x22/0x30
+  </TASK>
 
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
+Link: https://lkml.kernel.org/r/20220419013910.894370-1-jun.miao@intel.com
 
-There are two ways to fix it:
-
-  - Remove __init
-  - Remove EXPORT_SYMBOL
-
-I chose the latter for this case because the only in-tree call-site,
-drivers/net/phy/phy_device.c is never compiled as modular.
-(CONFIG_PHYLIB is boolean)
-
-Fixes: 90eff9096c01 ("net: phy: Allow splitting MDIO bus/device support from PHYs")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jun Miao <jun.miao@intel.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/mdio_bus.c | 1 -
- 1 file changed, 1 deletion(-)
+ kernel/trace/trace.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index eaa890a6a5d2..efdac68da7f4 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -746,7 +746,6 @@ int __init mdio_bus_init(void)
- 
- 	return ret;
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 063b434c89d2..017c8dd46b0f 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -2331,7 +2331,7 @@ trace_event_buffer_lock_reserve(struct ring_buffer **current_rb,
  }
--EXPORT_SYMBOL_GPL(mdio_bus_init);
+ EXPORT_SYMBOL_GPL(trace_event_buffer_lock_reserve);
  
- #if IS_ENABLED(CONFIG_PHYLIB)
- void mdio_bus_exit(void)
+-static DEFINE_SPINLOCK(tracepoint_iter_lock);
++static DEFINE_RAW_SPINLOCK(tracepoint_iter_lock);
+ static DEFINE_MUTEX(tracepoint_printk_mutex);
+ 
+ static void output_printk(struct trace_event_buffer *fbuffer)
+@@ -2352,14 +2352,14 @@ static void output_printk(struct trace_event_buffer *fbuffer)
+ 
+ 	event = &fbuffer->trace_file->event_call->event;
+ 
+-	spin_lock_irqsave(&tracepoint_iter_lock, flags);
++	raw_spin_lock_irqsave(&tracepoint_iter_lock, flags);
+ 	trace_seq_init(&iter->seq);
+ 	iter->ent = fbuffer->entry;
+ 	event_call->event.funcs->trace(iter, 0, event);
+ 	trace_seq_putc(&iter->seq, 0);
+ 	printk("%s", iter->seq.buffer);
+ 
+-	spin_unlock_irqrestore(&tracepoint_iter_lock, flags);
++	raw_spin_unlock_irqrestore(&tracepoint_iter_lock, flags);
+ }
+ 
+ int tracepoint_printk_sysctl(struct ctl_table *table, int write,
 -- 
 2.35.1
 
