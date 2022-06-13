@@ -2,155 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96BCDCCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5D8FCCA487
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243280AbiFMRzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57640 "EHLO
+        id S243555AbiFMRz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243312AbiFMRye (ORCPT
+        with ESMTP id S243304AbiFMRyd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:54:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97F993DA61
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:39:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655127598;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=K+AbiDvOnXf/VI9tuRodU8wPU/El8Y5Fo37NPhCtIeA=;
-        b=IP3LFUSQeJpQbD3UKP/uATL41Y8JLar2nQoo6Ji0J4/KFEsk/7d9jxs5GjC7KeGsvNn9+L
-        jzqQHzly2qGTpbm/+fj6IgSN10CVEMmJoZeGg32C+6yeBJxXp8WpvXf+RgK4ihCRt2Q1He
-        jHOrGZKCRTCWkiVFGM26zZDjjtv74KQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-638-GRCPRKoPM7-N-6X_JTp0NA-1; Mon, 13 Jun 2022 09:39:54 -0400
-X-MC-Unique: GRCPRKoPM7-N-6X_JTp0NA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B98C43C1104F;
-        Mon, 13 Jun 2022 13:39:53 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0DA46492CA2;
-        Mon, 13 Jun 2022 13:39:50 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        Yuan Yao <yuan.yao@linux.intel.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 10/39] KVM: x86: hyper-v: Don't use sparse_set_to_vcpu_mask() in kvm_hv_send_ipi()
-Date:   Mon, 13 Jun 2022 15:38:53 +0200
-Message-Id: <20220613133922.2875594-11-vkuznets@redhat.com>
-In-Reply-To: <20220613133922.2875594-1-vkuznets@redhat.com>
-References: <20220613133922.2875594-1-vkuznets@redhat.com>
+        Mon, 13 Jun 2022 13:54:33 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 003201ADA5
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:39:57 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id u8so7156738wrm.13
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:39:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=wQnoBtrfVqerdDXtoRJNXxFJ8ERaywkQKEUxnchF8QU=;
+        b=Tllb95AleXMxXyeBwv7CpMAXehORNHpEs+cthLcVV5jw9/oFcVQli7Afj7fCxQzmNE
+         +C9c4mGSCLY/MylFVNEK2H4DbI4VgFTYB8wPeVZXqnj/g8r9R/HoSWLIu8ZzS1HI2+yA
+         SvcFbCVln4LbAwEhjVIqzyMUx7z20qITI55robQo5dmXd8lHxX+FSdkemEMs0PgCLlNa
+         Rm2f4zaTbnPhuHxoCPzBl2R0QH6JBY1V2m0A8xOO3SI6xJPTelAYvi5Oh6V5pn8hsW34
+         +gjwvopzJESwJDVyC/Va9IerEMajbi7DefzuSNh+GxLUBw4vf7QJsLC/qP1m/bxCnzxU
+         Z0aQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wQnoBtrfVqerdDXtoRJNXxFJ8ERaywkQKEUxnchF8QU=;
+        b=MTVI/pKEh7ARbdcKdSa73J7JB8NMMh0jqGdXLUT8jdNYFqOd9nLgOQOUTXafJ4ESEj
+         50b/LVKTW8UFxVeRwp+j7tLPQgJJw3AylvrBqcPTqSDVR0+zoPc8vElvuyqxE4VaZ5Sp
+         AfML6HgC1V2+zgKVM6NF28Atk/2LMy7uhNuDUoWxUjxq4FpuTMR8ZilQK8cRchjyC+je
+         gqRoAZDxnxoW7dJ4jILOIu5ZVrjkB91lt50+1WW0JI8HBBHot/90bbc3rJuFwCF9f8hq
+         HpyCZe9ncAuAF1PggNepFnN8HVuGD3xcA4UBeNiKKisWwcVhPQv9egzgvBd4GTioMdaD
+         34Aw==
+X-Gm-Message-State: AOAM530/NjRAJDWy73pq7jzjW4HPXJ8kXiSvto8Ae9pKJrQdJMXBb5Tq
+        juSOU0104zg4u1d3fvGzOlw=
+X-Google-Smtp-Source: ABdhPJzaB7syhPpYvqUXtQrW/XfIxiI0fU2XTi7T+9RC2+CQ6lyBLhW79NarIKvbDng0DRfhrmSyPw==
+X-Received: by 2002:a5d:6d8c:0:b0:217:a419:c3f8 with SMTP id l12-20020a5d6d8c000000b00217a419c3f8mr42252830wrs.260.1655127595429;
+        Mon, 13 Jun 2022 06:39:55 -0700 (PDT)
+Received: from [192.168.0.36] ([37.223.143.134])
+        by smtp.gmail.com with ESMTPSA id t7-20020a05600c198700b0039c5fb1f592sm9365680wmq.14.2022.06.13.06.39.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 06:39:54 -0700 (PDT)
+Message-ID: <fed3da9f-2a87-96f7-347b-d1c4f5f133ae@gmail.com>
+Date:   Mon, 13 Jun 2022 15:39:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] mailbox: mtk-cmdq: Remove proprietary cmdq_task_cb
+Content-Language: en-US
+To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220608144055.27562-1-chunkuang.hu@kernel.org>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220608144055.27562-1-chunkuang.hu@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Get rid of on-stack allocation of vcpu_mask and optimize kvm_hv_send_ipi()
-for a smaller number of vCPUs in the request. When Hyper-V TLB flush
-is in  use, HvSendSyntheticClusterIpi{,Ex} calls are not commonly used to
-send IPIs to a large number of vCPUs (and are rarely used in general).
 
-Introduce hv_is_vp_in_sparse_set() to directly check if the specified
-VP_ID is present in sparse vCPU set.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/kvm/hyperv.c | 37 ++++++++++++++++++++++++++-----------
- 1 file changed, 26 insertions(+), 11 deletions(-)
+On 08/06/2022 16:40, Chun-Kuang Hu wrote:
+> rx_callback is a standard mailbox callback mechanism and could cover the
+> function of proprietary cmdq_task_cb, so use the standard one instead of
+> the proprietary one. Client driver has changed to use standard
+> rx_callback, so remove proprietary cmdq_task_cb.
+> 
+> Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index f41153c71beb..269a5fcca31b 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1747,6 +1747,25 @@ static void sparse_set_to_vcpu_mask(struct kvm *kvm, u64 *sparse_banks,
- 	}
- }
- 
-+static bool hv_is_vp_in_sparse_set(u32 vp_id, u64 valid_bank_mask, u64 sparse_banks[])
-+{
-+	int bank, sbank = 0;
-+
-+	if (!test_bit(vp_id / HV_VCPUS_PER_SPARSE_BANK,
-+		      (unsigned long *)&valid_bank_mask))
-+		return false;
-+
-+	for_each_set_bit(bank, (unsigned long *)&valid_bank_mask,
-+			 KVM_HV_MAX_SPARSE_VCPU_SET_BITS) {
-+		if (bank == vp_id / HV_VCPUS_PER_SPARSE_BANK)
-+			break;
-+		sbank++;
-+	}
-+
-+	return test_bit(vp_id % HV_VCPUS_PER_SPARSE_BANK,
-+			(unsigned long *)&sparse_banks[sbank]);
-+}
-+
- struct kvm_hv_hcall {
- 	u64 param;
- 	u64 ingpa;
-@@ -2029,8 +2048,8 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 		((u64)hc->rep_cnt << HV_HYPERCALL_REP_COMP_OFFSET);
- }
- 
--static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
--				 unsigned long *vcpu_bitmap)
-+static void kvm_hv_send_ipi_to_many(struct kvm *kvm, u32 vector,
-+				    u64 *sparse_banks, u64 valid_bank_mask)
- {
- 	struct kvm_lapic_irq irq = {
- 		.delivery_mode = APIC_DM_FIXED,
-@@ -2040,7 +2059,10 @@ static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
- 	unsigned long i;
- 
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
--		if (vcpu_bitmap && !test_bit(i, vcpu_bitmap))
-+		if (sparse_banks &&
-+		    !hv_is_vp_in_sparse_set(kvm_hv_get_vpindex(vcpu),
-+					    valid_bank_mask,
-+					    sparse_banks))
- 			continue;
- 
- 		/* We fail only when APIC is disabled */
-@@ -2053,7 +2075,6 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 	struct kvm *kvm = vcpu->kvm;
- 	struct hv_send_ipi_ex send_ipi_ex;
- 	struct hv_send_ipi send_ipi;
--	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
- 	u64 valid_bank_mask;
- 	u64 sparse_banks[KVM_HV_MAX_SPARSE_VCPU_SET_BITS];
- 	u32 vector;
-@@ -2115,13 +2136,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 	if ((vector < HV_IPI_LOW_VECTOR) || (vector > HV_IPI_HIGH_VECTOR))
- 		return HV_STATUS_INVALID_HYPERCALL_INPUT;
- 
--	if (all_cpus) {
--		kvm_send_ipi_to_many(kvm, vector, NULL);
--	} else {
--		sparse_set_to_vcpu_mask(kvm, sparse_banks, valid_bank_mask, vcpu_mask);
--
--		kvm_send_ipi_to_many(kvm, vector, vcpu_mask);
--	}
-+	kvm_hv_send_ipi_to_many(kvm, vector, all_cpus ? NULL : sparse_banks, valid_bank_mask);
- 
- ret_success:
- 	return HV_STATUS_SUCCESS;
--- 
-2.35.3
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
+> ---
+>   drivers/mailbox/mtk-cmdq-mailbox.c       | 11 -----------
+>   include/linux/mailbox/mtk-cmdq-mailbox.h | 10 ----------
+>   2 files changed, 21 deletions(-)
+> 
+> diff --git a/drivers/mailbox/mtk-cmdq-mailbox.c b/drivers/mailbox/mtk-cmdq-mailbox.c
+> index 2578e5aaa935..9465f9081515 100644
+> --- a/drivers/mailbox/mtk-cmdq-mailbox.c
+> +++ b/drivers/mailbox/mtk-cmdq-mailbox.c
+> @@ -192,15 +192,10 @@ static bool cmdq_thread_is_in_wfe(struct cmdq_thread *thread)
+>   
+>   static void cmdq_task_exec_done(struct cmdq_task *task, int sta)
+>   {
+> -	struct cmdq_task_cb *cb = &task->pkt->async_cb;
+>   	struct cmdq_cb_data data;
+>   
+>   	data.sta = sta;
+> -	data.data = cb->data;
+>   	data.pkt = task->pkt;
+> -	if (cb->cb)
+> -		cb->cb(data);
+> -
+>   	mbox_chan_received_data(task->thread->chan, &data);
+>   
+>   	list_del(&task->list_entry);
+> @@ -448,7 +443,6 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
+>   static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
+>   {
+>   	struct cmdq_thread *thread = (struct cmdq_thread *)chan->con_priv;
+> -	struct cmdq_task_cb *cb;
+>   	struct cmdq_cb_data data;
+>   	struct cmdq *cmdq = dev_get_drvdata(chan->mbox->dev);
+>   	struct cmdq_task *task, *tmp;
+> @@ -465,13 +459,8 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
+>   
+>   	list_for_each_entry_safe(task, tmp, &thread->task_busy_list,
+>   				 list_entry) {
+> -		cb = &task->pkt->async_cb;
+>   		data.sta = -ECONNABORTED;
+> -		data.data = cb->data;
+>   		data.pkt = task->pkt;
+> -		if (cb->cb)
+> -			cb->cb(data);
+> -
+>   		mbox_chan_received_data(task->thread->chan, &data);
+>   		list_del(&task->list_entry);
+>   		kfree(task);
+> diff --git a/include/linux/mailbox/mtk-cmdq-mailbox.h b/include/linux/mailbox/mtk-cmdq-mailbox.h
+> index 44365aab043c..a8f0070c7aa9 100644
+> --- a/include/linux/mailbox/mtk-cmdq-mailbox.h
+> +++ b/include/linux/mailbox/mtk-cmdq-mailbox.h
+> @@ -67,24 +67,14 @@ enum cmdq_code {
+>   
+>   struct cmdq_cb_data {
+>   	int			sta;
+> -	void			*data;
+>   	struct cmdq_pkt		*pkt;
+>   };
+>   
+> -typedef void (*cmdq_async_flush_cb)(struct cmdq_cb_data data);
+> -
+> -struct cmdq_task_cb {
+> -	cmdq_async_flush_cb	cb;
+> -	void			*data;
+> -};
+> -
+>   struct cmdq_pkt {
+>   	void			*va_base;
+>   	dma_addr_t		pa_base;
+>   	size_t			cmd_buf_size; /* command occupied size */
+>   	size_t			buf_size; /* real buffer size */
+> -	struct cmdq_task_cb	cb;
+> -	struct cmdq_task_cb	async_cb;
+>   	void			*cl;
+>   };
+>   
