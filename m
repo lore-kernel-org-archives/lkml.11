@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D419C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:06:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 504A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240133AbiFMNGR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50876 "EHLO
+        id S241064AbiFMNGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355667AbiFMM4E (ORCPT
+        with ESMTP id S1354868AbiFMMzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:56:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BD312D0E;
-        Mon, 13 Jun 2022 04:17:08 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F114F95B5;
+        Mon, 13 Jun 2022 04:15:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15FA8B80E93;
-        Mon, 13 Jun 2022 11:17:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72623C34114;
-        Mon, 13 Jun 2022 11:17:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EA4960B6B;
+        Mon, 13 Jun 2022 11:15:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1856C34114;
+        Mon, 13 Jun 2022 11:15:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119025;
-        bh=Jp2oyBPvNl4DGoK37saGae3C6G41R39ozV//4l1WYbA=;
+        s=korg; t=1655118921;
+        bh=bxtKf2OnoL+jFcjVx1pwcCDhAA6o9jCOcEZG0BBkEQQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rRjlOAgxPPAAc4DeUhTcKS3yILqlQuxnkjHQle1Sbh7sscNvB/HFwB2jPiqQCOIJn
-         EHwNW67oT/T7LJfNh1qlFmBBm86Iu+Z8468hRJv+2mh7o1Z0TP1GYwgkb7F2vVv5KU
-         pGL4bQEc6Pdzy+vGnR3yZxUHRBPPPtSPhn1IGpHw=
+        b=YxAJLwAiQ15mCwRSZrqBVVXx9pGzDVKfnW1yAX2/hdbg0TkaswVwl1V1GpbzRpiEN
+         HxiOthWv95/3JD8WfDgtWAJGrM6BZEtIiRQ5Hj0jb6v+6j6YCQwAu536FyzIEZGbmR
+         5iQCIxiezvw+Wvm0yYFagbT5JzrGv5ntSyF94GpA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 106/247] scsi: sd: Fix potential NULL pointer dereference
-Date:   Mon, 13 Jun 2022 12:10:08 +0200
-Message-Id: <20220613094926.172750343@linuxfoundation.org>
+Subject: [PATCH 5.15 075/247] net: dsa: mv88e6xxx: Fix refcount leak in mv88e6xxx_mdios_register
+Date:   Mon, 13 Jun 2022 12:09:37 +0200
+Message-Id: <20220613094925.233094232@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,45 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 05fbde3a77a4f1d62e4c4428f384288c1f1a0be5 ]
+[ Upstream commit 02ded5a173619b11728b8bf75a3fd995a2c1ff28 ]
 
-If sd_probe() sees an early error before sdkp->device is initialized,
-sd_zbc_release_disk() is called. This causes a NULL pointer dereference
-when sd_is_zoned() is called inside that function. Avoid this by removing
-the call to sd_zbc_release_disk() in sd_probe() error path.
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
 
-This change is safe and does not result in zone information memory leakage
-because the zone information for a zoned disk is allocated only when
-sd_revalidate_disk() is called, at which point sdkp->disk_dev is fully set,
-resulting in sd_disk_release() being called when needed to cleanup a disk
-zone information using sd_zbc_release_disk().
+mv88e6xxx_mdio_register() pass the device node to of_mdiobus_register().
+We don't need the device node after it.
 
-Link: https://lore.kernel.org/r/20220601062544.905141-2-damien.lemoal@opensource.wdc.com
-Fixes: 89d947561077 ("sd: Implement support for ZBC devices")
-Reported-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Add missing of_node_put() to avoid refcount leak.
+
+Fixes: a3c53be55c95 ("net: dsa: mv88e6xxx: Support multiple MDIO busses")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sd.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index a713babaee0f..de6640ad1943 100644
---- a/drivers/scsi/sd.c
-+++ b/drivers/scsi/sd.c
-@@ -3480,7 +3480,6 @@ static int sd_probe(struct device *dev)
-  out_put:
- 	put_disk(gd);
-  out_free:
--	sd_zbc_release_disk(sdkp);
- 	kfree(sdkp);
-  out:
- 	scsi_autopm_put_device(sdp);
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 0830d7bb7a00..f9efd0c8bab8 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3492,6 +3492,7 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
+ 	 */
+ 	child = of_get_child_by_name(np, "mdio");
+ 	err = mv88e6xxx_mdio_register(chip, child, false);
++	of_node_put(child);
+ 	if (err)
+ 		return err;
+ 
 -- 
 2.35.1
 
