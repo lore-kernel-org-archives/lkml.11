@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F4EAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D81A8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:27:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353301AbiFMM1G (ORCPT
+        id S1355046AbiFMM0r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:27:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55652 "EHLO
+        Mon, 13 Jun 2022 08:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355321AbiFMMXz (ORCPT
+        with ESMTP id S1355207AbiFMMXz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:23:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37B627B08;
-        Mon, 13 Jun 2022 04:04:40 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A7F31527;
+        Mon, 13 Jun 2022 04:04:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F1FDB80D3A;
-        Mon, 13 Jun 2022 11:04:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB09C34114;
-        Mon, 13 Jun 2022 11:04:37 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F36D6CE1177;
+        Mon, 13 Jun 2022 11:04:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E941BC34114;
+        Mon, 13 Jun 2022 11:04:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118278;
-        bh=DVuoSLpXFYn0xvPXOjmci7OKoKFd0NEQdP8HpaluuNQ=;
+        s=korg; t=1655118267;
+        bh=IX8PliXKKHYaP0JoT3enw6KZ7tfMGRWPHXWjYG82G7o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C74kxJioJ3cwFlvGWmz4duMssmg+mvYoyAxFwpwrComykj8oRmXzVwIzWoUjRiWnT
-         oAmYhlKUXV0+0ZQal2JUiZ52PzBBQ16ZAfvC/Hl3TycPYRhlgWn+J7qes9ap4wcXLF
-         MIQ0T5FFkuQGb139xUeQeQp6E5DMcS9YxYk7IIcQ=
+        b=KeMorl00odgNIqDmexkEj+MucU1loUB94tM2YdFW8lVDyK5btuIcSCAyF7sva+YSt
+         Y0yMajyt77LrX0q8YzylkZMvrq+vAewViaGTrBJesCr7PznnLGZWrniMCD/xsgraBh
+         bBeeUOLbgojxReIOkDqJnn3mWNQdInvwD3XiWUzo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 018/172] firmware: stratix10-svc: fix a missing check on list iterator
-Date:   Mon, 13 Jun 2022 12:09:38 +0200
-Message-Id: <20220613094854.743678347@linuxfoundation.org>
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Pascal Hambourg <pascal@plouf.fr.eu.org>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH 4.19 285/287] md/raid0: Ignore RAID0 layout if the second zone has only one device
+Date:   Mon, 13 Jun 2022 12:11:49 +0200
+Message-Id: <20220613094932.636667976@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
-References: <20220613094850.166931805@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,60 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Pascal Hambourg <pascal@plouf.fr.eu.org>
 
-[ Upstream commit 5a0793ac66ac0e254d292f129a4d6c526f9f2aff ]
+commit ea23994edc4169bd90d7a9b5908c6ccefd82fa40 upstream.
 
-The bug is here:
-	pmem->vaddr = NULL;
+The RAID0 layout is irrelevant if all members have the same size so the
+array has only one zone. It is *also* irrelevant if the array has two
+zones and the second zone has only one device, for example if the array
+has two members of different sizes.
 
-The list iterator 'pmem' will point to a bogus position containing
-HEAD if the list is empty or no element is found. This case must
-be checked before any use of the iterator, otherwise it will
-lead to a invalid memory access.
+So in that case it makes sense to allow assembly even when the layout is
+undefined, like what is done when the array has only one zone.
 
-To fix this bug, just gen_pool_free/set NULL/list_del() and return
-when found, otherwise list_del HEAD and return;
-
-Fixes: 7ca5ce896524f ("firmware: add Intel Stratix10 service layer driver")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220414035609.2239-1-xiam0nd.tong@gmail.com
+Reviewed-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Pascal Hambourg <pascal@plouf.fr.eu.org>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/stratix10-svc.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/md/raid0.c |   31 ++++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
-index 53c7e3f8cfde..7dd0ac1a0cfc 100644
---- a/drivers/firmware/stratix10-svc.c
-+++ b/drivers/firmware/stratix10-svc.c
-@@ -941,17 +941,17 @@ EXPORT_SYMBOL_GPL(stratix10_svc_allocate_memory);
- void stratix10_svc_free_memory(struct stratix10_svc_chan *chan, void *kaddr)
- {
- 	struct stratix10_svc_data_mem *pmem;
--	size_t size = 0;
+--- a/drivers/md/raid0.c
++++ b/drivers/md/raid0.c
+@@ -150,21 +150,6 @@ static int create_strip_zones(struct mdd
+ 	pr_debug("md/raid0:%s: FINAL %d zones\n",
+ 		 mdname(mddev), conf->nr_strip_zones);
  
- 	list_for_each_entry(pmem, &svc_data_mem, node)
- 		if (pmem->vaddr == kaddr) {
--			size = pmem->size;
--			break;
-+			gen_pool_free(chan->ctrl->genpool,
-+				       (unsigned long)kaddr, pmem->size);
-+			pmem->vaddr = NULL;
-+			list_del(&pmem->node);
-+			return;
- 		}
+-	if (conf->nr_strip_zones == 1) {
+-		conf->layout = RAID0_ORIG_LAYOUT;
+-	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
+-		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
+-		conf->layout = mddev->layout;
+-	} else if (default_layout == RAID0_ORIG_LAYOUT ||
+-		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
+-		conf->layout = default_layout;
+-	} else {
+-		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
+-		       mdname(mddev));
+-		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
+-		err = -ENOTSUPP;
+-		goto abort;
+-	}
+ 	/*
+ 	 * now since we have the hard sector sizes, we can make sure
+ 	 * chunk size is a multiple of that sector size
+@@ -295,6 +280,22 @@ static int create_strip_zones(struct mdd
+ 			 (unsigned long long)smallest->sectors);
+ 	}
  
--	gen_pool_free(chan->ctrl->genpool, (unsigned long)kaddr, size);
--	pmem->vaddr = NULL;
--	list_del(&pmem->node);
-+	list_del(&svc_data_mem);
- }
- EXPORT_SYMBOL_GPL(stratix10_svc_free_memory);
++	if (conf->nr_strip_zones == 1 || conf->strip_zone[1].nb_dev == 1) {
++		conf->layout = RAID0_ORIG_LAYOUT;
++	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
++		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
++		conf->layout = mddev->layout;
++	} else if (default_layout == RAID0_ORIG_LAYOUT ||
++		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
++		conf->layout = default_layout;
++	} else {
++		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
++		       mdname(mddev));
++		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
++		err = -EOPNOTSUPP;
++		goto abort;
++	}
++
+ 	pr_debug("md/raid0:%s: done.\n", mdname(mddev));
+ 	*private_conf = conf;
  
--- 
-2.35.1
-
 
 
