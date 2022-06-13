@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B564CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:39:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B93CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231180AbiFMIj1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33622 "EHLO
+        id S233239AbiFMIja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239358AbiFMI2T (ORCPT
+        with ESMTP id S239350AbiFMI2T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 04:28:19 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933BB18E01
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:28:08 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso5308592pjk.0
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:28:08 -0700 (PDT)
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93AA5B85E
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:28:13 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id h1so4480772plf.11
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:28:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=saBjD3jkEUAS49RaWaPJ2CNN05fMmd8ePuqMGDaRHaE=;
-        b=GWjyteMFDcjNXMDDwlym/BUvNopN71bba50Say1gw3+3U8Ne968cx6QbHNqKAGVv2d
-         VWGuwX8FLIJYeNY6ueLNoLkOx6FKLFptYMyvZDXC0eXfYMRIhAlqMmj9Cmqud0di5sJm
-         1DmX80WUdvuhlTDYsBa/0Ih78fBv4p52f6b9w=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PWjwYzB1HNf+oPRDU2wDyWSO4j3cyp8KqyrOSYFXeuM=;
+        b=R43F9PSPlNS3+j0fw+D4qLkyB2pNxxG+Kf9qvBKMGRcozIpC9qYPH9m/kxTrduFUZt
+         Get7ZtYXGMS0lblH3PECs6OSbjvJQAeSIxK8WwtonC7AjhgAC8AMUSGLtH6Qo3XUmCbu
+         CtNNhK/b0kQt0+tvXslyUKS2nSNroZsDd6aJs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=saBjD3jkEUAS49RaWaPJ2CNN05fMmd8ePuqMGDaRHaE=;
-        b=LtIcWocPK94cqre4ul9xNECDXi2TOwWlEswK5fFD+pFbDtaAFC1nQ8HOvMIA+wl8Ac
-         2I+mXFvOjvxdy3auLhrYqCA94pkCDNN+p4QafY0/12GBRHFIK9jOo7I9lcTrRF4sn7ZA
-         nJ62jOddGHkUFqAGAiAMxTEYMdhtsg93iLTyd+qAwsed6VDNABqFit78UrjiWIMZ2HyU
-         fU7BiAA0cJeG1fSxXrB3Eh3v47L1FZmdpS+G81YDvcZPhZCNqe+Ye3BthjwwIBuobB6p
-         BrWCap0WFM3LYkK/kIxAy0Gu22op6gplYtIhg6oASXinGuMClLDZBQ7LVIlcOgsgF98X
-         W6mA==
-X-Gm-Message-State: AOAM5308mS7bGTTg3q5z6u2GrzBGbOUVwo2t16JzbdBJqs3XcAHw8Twc
-        oFBP4HEjUiPLtfYcdUMznzhS/Q==
-X-Google-Smtp-Source: ABdhPJyawO1X2eUGQdWidB0Npz/qLDSDbCezpShHfaKWeq7WwHzabxErc1ZlXqq4fySaJfYf3Opngw==
-X-Received: by 2002:a17:90b:1808:b0:1e2:a335:ad04 with SMTP id lw8-20020a17090b180800b001e2a335ad04mr14505671pjb.110.1655108887412;
-        Mon, 13 Jun 2022 01:28:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PWjwYzB1HNf+oPRDU2wDyWSO4j3cyp8KqyrOSYFXeuM=;
+        b=Y+XCTcyqlIEA7dI9jDnhONHdpimQiaQzp8gRDrs7Ec5xDI/2fJLA+pO0aGHiO0mG2E
+         JPrYZF5KIbwd1qsGkzM84DmzR9Nfn9N6eaxo3BdnAK5nFnZ5qitTIMsxF8mmfGmVCr4U
+         /qtq922MbwQ4uXxfwFCgjIXsQDb2Vtr87sJRK9NRpk9bfgDqP/KpvQ0DGUdzu3CplP6a
+         Hew1BwADygEvHSh/1fMpPCIjUpf+BIsfW/3Fu4XJ927OTMLJyAsisH9h8QW+rjh77Jb6
+         hm3NLp3gUMBWw7w9afl48Qej0g+7cS+B58Z4kUlXgoBnTvNkL06DQdD69KW2u3/VabcC
+         md9w==
+X-Gm-Message-State: AOAM531m0JIRXPVnd0ZAMxFx8qxtTID7AiGOFNXSQpMuVdSxWQRdal5U
+        RZS2EfZCmg+GG5V1bg/lY1bOAw==
+X-Google-Smtp-Source: ABdhPJxGVyS1PPoBilRK9Z+DXulNdhuOawyV0hnMEGPXO44wPhWnP2DXLm8oOQeYEhn1M78QwqZJFg==
+X-Received: by 2002:a17:902:7e84:b0:166:395c:4b68 with SMTP id z4-20020a1709027e8400b00166395c4b68mr58667443pla.8.1655108892769;
+        Mon, 13 Jun 2022 01:28:12 -0700 (PDT)
 Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:79ca:e1d9:ad5:dc9e])
-        by smtp.gmail.com with ESMTPSA id br8-20020a056a00440800b00518a473265csm4624906pfb.217.2022.06.13.01.28.04
+        by smtp.gmail.com with ESMTPSA id br8-20020a056a00440800b00518a473265csm4624906pfb.217.2022.06.13.01.28.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 01:28:06 -0700 (PDT)
+        Mon, 13 Jun 2022 01:28:12 -0700 (PDT)
 From:   Hsin-Yi Wang <hsinyi@chromium.org>
 To:     Phillip Lougher <phillip@squashfs.org.uk>,
         Matthew Wilcox <willy@infradead.org>,
@@ -58,56 +58,111 @@ Cc:     Xiongwei Song <Xiongwei.Song@windriver.com>,
         "squashfs-devel @ lists . sourceforge . net" 
         <squashfs-devel@lists.sourceforge.net>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v6 0/3] Implement readahead for squashfs
-Date:   Mon, 13 Jun 2022 16:27:59 +0800
-Message-Id: <20220613082802.1301238-1-hsinyi@chromium.org>
+Subject: [PATCH v6 2/3] squashfs: always build "file direct" version of page actor
+Date:   Mon, 13 Jun 2022 16:28:01 +0800
+Message-Id: <20220613082802.1301238-3-hsinyi@chromium.org>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+In-Reply-To: <20220613082802.1301238-1-hsinyi@chromium.org>
+References: <20220613082802.1301238-1-hsinyi@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 9eec1d897139("squashfs: provide backing_dev_info in order to
-disable read-ahead") mitigates the performance drop issue for squashfs
-by closing readahead for it.
+From: Phillip Lougher <phillip@squashfs.org.uk>
 
-This series implements readahead callback for squashfs. The previous
-discussions are in [1] and [2].
+Squashfs_readahead uses the "file direct" version of the page
+actor, and so build it unconditionally.
 
-[1]
-https://lore.kernel.org/all/CAJMQK-g9G6KQmH-V=BRGX0swZji9Wxe_2c7ht-MMAapdFy2pXw@mail.gmail.com/T/
-[2]
-https://lore.kernel.org/linux-mm/Yn5Yij9pRPCzDozt@casper.infradead.org/t/#m4af4473b94f98a4996cb11756b633a07e5e059d1
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Phillip Lougher <phillip@squashfs.org.uk>
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+---
+v5->v6:
+rebase content on top of the dependent series.
+---
+ fs/squashfs/Makefile     |  4 ++--
+ fs/squashfs/page_actor.h | 46 ----------------------------------------
+ 2 files changed, 2 insertions(+), 48 deletions(-)
 
-This version is based on next-20220610 and the following series:
-"Squashfs: handle missing pages decompressing into page cache" [3].
-
-This version is a refresh of ca1505bf4805 ("squashfs: implement
-readahead") and 9d58b94aa73a ("squashfs: always build "file direct"
-version of page actor").
-
-There's no change in 4af2bd190a5b7 (Revert "squashfs: provide
-backing_dev_info in order to disable read-ahead"), but it's carried in
-this version too for consistency.
-
-[3]
-https://patchwork.kernel.org/project/linux-mm/cover/20220611032133.5743-1-phillip@squashfs.org.uk/
-
-Hsin-Yi Wang (2):
-  Revert "squashfs: provide backing_dev_info in order to disable
-    read-ahead"
-  squashfs: implement readahead
-
-Phillip Lougher (1):
-  squashfs: always build "file direct" version of page actor
-
- fs/squashfs/Makefile     |  4 +-
- fs/squashfs/file.c       | 92 +++++++++++++++++++++++++++++++++++++++-
- fs/squashfs/page_actor.h | 46 --------------------
- fs/squashfs/super.c      | 33 --------------
- 4 files changed, 93 insertions(+), 82 deletions(-)
-
+diff --git a/fs/squashfs/Makefile b/fs/squashfs/Makefile
+index 7bd9b8b856d0b..477c89a519ee8 100644
+--- a/fs/squashfs/Makefile
++++ b/fs/squashfs/Makefile
+@@ -5,9 +5,9 @@
+ 
+ obj-$(CONFIG_SQUASHFS) += squashfs.o
+ squashfs-y += block.o cache.o dir.o export.o file.o fragment.o id.o inode.o
+-squashfs-y += namei.o super.o symlink.o decompressor.o
++squashfs-y += namei.o super.o symlink.o decompressor.o page_actor.o
+ squashfs-$(CONFIG_SQUASHFS_FILE_CACHE) += file_cache.o
+-squashfs-$(CONFIG_SQUASHFS_FILE_DIRECT) += file_direct.o page_actor.o
++squashfs-$(CONFIG_SQUASHFS_FILE_DIRECT) += file_direct.o
+ squashfs-$(CONFIG_SQUASHFS_DECOMP_SINGLE) += decompressor_single.o
+ squashfs-$(CONFIG_SQUASHFS_DECOMP_MULTI) += decompressor_multi.o
+ squashfs-$(CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU) += decompressor_multi_percpu.o
+diff --git a/fs/squashfs/page_actor.h b/fs/squashfs/page_actor.h
+index 37523c54256fa..24841d28bc0fb 100644
+--- a/fs/squashfs/page_actor.h
++++ b/fs/squashfs/page_actor.h
+@@ -6,51 +6,6 @@
+  * Phillip Lougher <phillip@squashfs.org.uk>
+  */
+ 
+-#ifndef CONFIG_SQUASHFS_FILE_DIRECT
+-struct squashfs_page_actor {
+-	void	**page;
+-	int	pages;
+-	int	length;
+-	int	next_page;
+-};
+-
+-static inline struct squashfs_page_actor *squashfs_page_actor_init(void **page,
+-	int pages, int length)
+-{
+-	struct squashfs_page_actor *actor = kmalloc(sizeof(*actor), GFP_KERNEL);
+-
+-	if (actor == NULL)
+-		return NULL;
+-
+-	actor->length = length ? : pages * PAGE_SIZE;
+-	actor->page = page;
+-	actor->pages = pages;
+-	actor->next_page = 0;
+-	return actor;
+-}
+-
+-static inline void *squashfs_first_page(struct squashfs_page_actor *actor)
+-{
+-	actor->next_page = 1;
+-	return actor->page[0];
+-}
+-
+-static inline void *squashfs_next_page(struct squashfs_page_actor *actor)
+-{
+-	return actor->next_page == actor->pages ? NULL :
+-		actor->page[actor->next_page++];
+-}
+-
+-static inline void squashfs_finish_page(struct squashfs_page_actor *actor)
+-{
+-	/* empty */
+-}
+-
+-static inline void squashfs_actor_nobuff(struct squashfs_page_actor *actor)
+-{
+-	/* empty */
+-}
+-#else
+ struct squashfs_page_actor {
+ 	union {
+ 		void		**buffer;
+@@ -91,4 +46,3 @@ static inline void squashfs_actor_nobuff(struct squashfs_page_actor *actor)
+ 	actor->alloc_buffer = 0;
+ }
+ #endif
+-#endif
 -- 
 2.36.1.476.g0c4daa206d-goog
 
