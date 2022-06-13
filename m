@@ -2,181 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07522C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E81C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244299AbiFMQMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 12:12:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52232 "EHLO
+        id S244900AbiFMQNM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 12:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243845AbiFMQMD (ORCPT
+        with ESMTP id S244865AbiFMQMU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 12:12:03 -0400
-X-Greylist: delayed 4191 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 13 Jun 2022 07:05:56 PDT
-Received: from mx4.securetransport.de (mx4.securetransport.de [178.254.6.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F4DA2C13E;
-        Mon, 13 Jun 2022 07:05:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-        s=dhelectronicscom; t=1655120385;
-        bh=emWEwI+eGe2K820TXNIuM+O/IKv0JGmuO+FmdiFKUFg=;
-        h=From:To:CC:Subject:Date:From;
-        b=ZUSADyZmWV5k0iJqjMxaWFJEx87zw08wpupsymiY2CUgXgXnDHV5Ys/t1zy1zryjY
-         1imFTut22hZwJIfxn6io4DnttOdK4xnkmzzxASke2Xqyn+m7RWIXl8Ku/v0ft9LHPz
-         IVl3foTe7Uw1Xds6Hn9M5Q5hud9ZDtVrxRBFPZsiQhlYHfT8H0MGjy0je+oOdPLqjC
-         W6+7JuzPX892I4mgx9xlXBeHp1b0Zr2ugM2d6O3Tetmf1iSCTXUK9Im8luq5qXKbbK
-         a8VebdrQZc3h8xVD5mJDU0O5AJ01lC8SUETx/y+TeV4t7+ltGnL3PZFQqpydcIpgDL
-         pNbLIRNnSnlUg==
-X-secureTransport-forwarded: yes
-From:   Dominik Kierner <dkierner@dh-electronics.com>
-Complaints-To: abuse@cubewerk.de
-To:     Javier Martinez Canillas <javierm@redhat.com>
-CC:     "airlied@linux.ie" <airlied@linux.ie>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "daniel.vetter@ffwll.ch" <daniel.vetter@ffwll.ch>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "geert@linux-m68k.org" <geert@linux-m68k.org>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        "maxime@cerno.tech" <maxime@cerno.tech>,
-        "noralf@tronnes.org" <noralf@tronnes.org>,
-        "sam@ravnborg.org" <sam@ravnborg.org>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "tzimmermann@suse.de" <tzimmermann@suse.de>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED displays
-Thread-Topic: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED displays
-Thread-Index: Adh/GjKG/bFLOXDpTTiVpWIDbnNb5w==
-Date:   Mon, 13 Jun 2022 11:39:30 +0000
-Message-ID: <7a78d57342754a5d9bd3ce7c7bf3fa47@dh-electronics.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Mon, 13 Jun 2022 12:12:20 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FFFD2314C;
+        Mon, 13 Jun 2022 07:04:18 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 732A81BF204;
+        Mon, 13 Jun 2022 14:04:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1655129056;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vgP4W2WcGLch0G1Z/a9d2JFCittPWMEM8INjyTTlF+o=;
+        b=RHeR1FQ/oaGkFKglO95swbvRFaOAhB3zVTr+Iu4qezNsX0NWdqd7VE7g+YxKY7iFNIVvpD
+        MRpE2qdYhxKxv4prc6X1uYby+AmIMIrmMKOW5nDMKrbDKLpjCe34ppD9oFa07wgsvyE3DY
+        EohfY0giovrsbV8ylO/1gDQjesMK33L6IoOhYAVGPb6Ei/9+SDN7Gl5sAqQ406fyQ5FcbH
+        TjZcAVfd5btd9c2VyMjB3W2zfTCFIfEiC47EM29IDqY0fopU4MX4Bp+YwiRGWOH3cYXBTi
+        a6JfGmL63vnILBbjFDpLHbGSBRhUAqJf0GRIE95tXyPs5qDjFuE4VPDITSQZhw==
+Date:   Mon, 13 Jun 2022 16:04:11 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tom Rini <trini@konsulko.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        linux-arm-kernel@lists.infradead.org, u-boot@lists.denx.de,
+        devicetree@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH V3 1/2] mtd: allow getting MTD device associated with a
+ specific DT node
+Message-ID: <20220613160411.48b07515@xps-13>
+In-Reply-To: <20220611204651.19947-1-zajec5@gmail.com>
+References: <20220611204651.19947-1-zajec5@gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8gSmF2aWVyLA0KDQpPbiA1LzI1LzIwMjIgMjE6NDYsIEphdmllciBNYXJ0aW5leiBDYW5p
-bGxhcyB3cm90ZToNCj4gPiBOb3cgdGhhdCBZb3VyIGRyaXZlciBpcyBxdWl0ZSBhIGJpdCBtYXR1
-cmVyIHRoYW4gbWluZSwgSSB3aWxsIGhhcHBpbHkNCj4gPiBwcm92aWRlIFlvdSB3aXRoIHRoZSBz
-b3VyY2Ugb2YgbXkgZHJhZnQsIHNvIHRoYXQgYW55IHVzZWZ1bCBiaXRzIGNhbg0KPiA+IGJlIGlu
-Y29ycG9yYXRlZCBpbiBZb3VyIGRyaXZlci4NCj4gPiBJIGtub3cgdGhhdCBsaW5rcyBhcmUgYSBi
-aXQgZnJvd25lZCB1cG9uLCBidXQgSSdkIHJhdGhlciBhdm9pZA0KPiA+IGNsdXR0ZXJpbmcgdGhl
-IHRocmVhZCB3aXRoIG15IGRyYWZ0IGNvZGUsIHdoaWNoIGlzIHVuZmluaXNoZWQgYW5kDQo+ID4g
-aW5jb21wYXRpYmxlIHdpdGggdGhlIGNvZGUgaW4gdGhpcyB0aHJlYWQuDQo+ID4NCj4gPiBodHRw
-czovL2dpdGh1Yi5jb20vZGgtZWxlY3Ryb25pY3MvcGFuZWwtc29sb21vbi1zc2QxMzB4LWRyYWZ0
-DQo+ID4gaHR0cHM6Ly9naXRodWIuY29tL2RoLWVsZWN0cm9uaWNzL3BhbmVsLXNvbG9tb24tc3Nk
-MTMweC1kcmFmdC90cmVlL2RybS1zc2QxMzB4L2RyaXZlcnMvZ3B1L2RybS9wYW5lbA0KPiA+DQo+
-IA0KPiBUaGFua3MsIEkgbG9va2VkIGF0IHRoZSBjb2RlIGJyaWVmbHkgYW5kIHRoaW5rIHRoYXQg
-dGhlcmUgYXJlIHRoaW5ncyB0aGVyZSB0aGF0IHdlDQo+IGNvdWxkIHVzZS4gSS5lIHRoZSAzLXdp
-cmUgU1BJIHN1cHBvcnQgdGhhdCdzIGluIHBhbmVsLXNvbG9tb24tc3NkMTMweC1zcGktM3dpcmUu
-Yy4NCg0KV2hlbiB3cml0aW5nIG15IGRyaXZlciBjb2RlLCBJIHdhc24ndCBldmVuIGNvbnNpZGVy
-aW5nIHVzaW5nIHJlZ21hcHMsDQpsaWtlIFlvdSBkaWQgaW4gWW91ciBJMkMtQ29kZS4gSWYgdGhh
-dCdzIGFwcGxpY2FibGUgZm9yIDMtd2lyZS1TUEksDQppdCB3b3VsZCBsaWtlbHkgYmUgdGhlIGJl
-dHRlciwgbW9yZSBnZW5lcmljIG9wdGlvbi4gWW91ciBTUEktY29kZQ0KcmV1c2VzIHRoZXNlIHBh
-cnRzIHRvIHNvbWUgZXh0ZW50LiBGb3IgdGhhdCBjYXNlLA0Kc3NkMTMweF9zcGlfcmVnbWFwX2Nv
-bmZpZy5yZWdfYml0cyB3b3VsZCBuZWVkIGJlIGNoYW5nZWQgdG8gMSwNCmFzIHRoZSAicmVnaXN0
-ZXIgYWRkcmVzcyIgaGFzIGEgbGVuZ3RoIG9mIDEgYml0IGFuZCB3ZSBhcmUgc2VuZGluZw0KOSBi
-aXRzIG92ZXIgdGhlIGxpbmUgYW5kIG5vdCAxNi4NClNpbmNlIHdlIHN0aWxsIGhhdmUgMiBieXRl
-cyBvZiBob3N0IG1lbW9yeSwNCml0IHNob3VsZCBzdGlsbCBiZSBjb21wYXRpYmxlIHdpdGggdGhl
-IDQtd2lyZSB3cml0ZSwgcmlnaHQ/DQpPciB3b3VsZCAzLXdpcmUgU1BJIHJlcXVpcmUgYSBzZWNv
-bmQgcmVnbWFwPw0KDQoNCj4gPiBTcGxpdHRpbmcgaW4gVkNDL1ZCQVQgYW5kIFZERCBhbmQgZW5m
-b3JjaW5nIHRoZWlyIHByZXNlbmNlIGlzIG9mDQo+ID4gY291cnNlIGNvbXBhdGliaWxpdHkgYnJl
-YWtpbmcuDQo+ID4NCj4gPiBodHRwczovL2dpdGh1Yi5jb20vZGgtZWxlY3Ryb25pY3MvcGFuZWwt
-c29sb21vbi1zc2QxMzB4LWRyYWZ0L2Jsb2IvZHJtDQo+ID4gLXNzZDEzMHgvZHJpdmVycy9ncHUv
-ZHJtL3BhbmVsL3BhbmVsLXNvbG9tb24tc3NkMTMweC5oI0w4NQ0KPiA+IGh0dHBzOi8vZ2l0aHVi
-LmNvbS9kaC1lbGVjdHJvbmljcy9wYW5lbC1zb2xvbW9uLXNzZDEzMHgtZHJhZnQvYmxvYi9kcm0N
-Cj4gPiAtc3NkMTMweC9kcml2ZXJzL2dwdS9kcm0vcGFuZWwvcGFuZWwtc29sb21vbi1zc2QxMzB4
-LmMjTDgwDQo+ID4NCj4gDQo+IEl0IGlzIGEgYnJlYWsgaW4gdGhlIERUIGJpbmRpbmcgaW5kZWVk
-IGJ1dCBvbiB0aGUgb3RoZXIgaGFuZCBpdCBzZWVtcyB0aGF0IHRoZQ0KPiByZWd1bGF0b3Igc3Rv
-cnkgaXMgbGFja2luZyBpbiB0aGUgY3VycmVudCBzb2xvbW9uLHNzZDEzMDdmYi55YW1sIGFueXdh
-eXMuDQo+IA0KPiBUaGF0IGlzLCB0aGUgYmluZGluZyBzY2hlbWEgb25seSBtZW50aW9ucyBhICJ2
-YmF0LXN1cHBseSIgYnV0IHRoZSBEUk0gZHJpdmVyIGlzIG5vdA0KPiBsb29raW5nIGZvciB0aGF0
-IGJ1dCBpbnN0ZWFkIGZvciAidmNjLXN1cHBseSIgKEkgdGhpbmsgdGhhdCB3YXMgY2hhbmdlZCBk
-dWUgc29tZQ0KPiBmZWVkYmFjayBJIGdvdCBvbiBzb21lIHJldmlzaW9ucywgYnV0IGRpZG4ndCB1
-cGRhdGUgdGhlIERUIGJpbmRpbmcpLiBUaGUgZmJkZXYNCj4gZHJpdmVycy92aWRlby9mYmRldi9z
-c2QxMzA3ZmIuYyBkcml2ZXIgZG9lcyBsb29rdXAgInZiYXQtc3VwcGx5IiBidXQgYWxsIHRoZSBE
-VFMgYW5kDQo+IERUUyBvdmVybGF5cyBJIGZpbmQgZG9uJ3Qgc2V0IG9uZS4NCj4gDQo+IEFsc28g
-dGhlICJ2YmF0LXN1cHBseSIgaXMgbm90IGEgcmVxdWlyZWQgcHJvcGVydHkgaW4gdGhlIGN1cnJl
-bnQgYmluZGluZy4gT25lIHRoaW5nIHRvDQo+IG5vdGljZSBpcyB0aGF0IHJlZ3VsYXRvcl9nZXQo
-KSBhbmQgcmVndWxhdG9yX2dldF9vcHRpb25hbCgpIHNlbWFudGljcyBhcmUgY29uZnVzaW5nDQo+
-IChhdCBsZWFzdCBmb3IgbWUpLiBTaW5jZSBkb2Vzbid0IG1lYW4gd2hldGhlciB0aGUgcmVndWxh
-dG9yIG11c3QgYmUgcHJlc2VudCBvciBub3QNCj4gYnV0IHJhdGhlciBpZiBhIGR1bW15IHJlZ3Vs
-YXRvciBtdXN0IGJlIHByb3ZpZGVkIGlmIGEgc3VwcGx5IGlzIG5vdCBmb3VuZC4NCg0KSSBhbHdh
-eXMgdW5kZXJzdG9vZCByZWd1bGF0b3JfZ2V0X29wdGlvbmFsKCkgYXMgYSB3YXkgb2Ygbm90IGhh
-dmluZyB0byByZWx5IG9uIGEgZHVtbXksDQp3aGVuIGEgcmVndWxhdG9yIGlzIG5vdCBwcmVzZW50
-LCBidXQgcGxlYXNlIGNvcnJlY3QgbWUsIGlmIEkgYW0gd3Jvbmcgb24gdGhpcy4NClRoZSBkdW1t
-aWVzIHdvdWxkIG9ubHkgYmUgbmVjZXNzYXJ5IGZvciB0aGUgbWFuZGF0b3J5IHN1cHBsaWVzIFZD
-QyBhbmQgVkRELiANCg0KWW91IG1lYW4gdGhpcyBwYXJ0IG9mIHRoZSBkb2N1bWVudGF0aW9uIG9m
-IHJlZ3VsYXRvcl9nZXRfb3B0aW9uYWwoKSwgY29ycmVjdD86DQoNCj4gKiBUaGlzIGlzIGludGVu
-ZGVkIGZvciB1c2UgYnkgY29uc3VtZXJzIGZvciBkZXZpY2VzIHdoaWNoIGNhbiBoYXZlDQo+ICog
-c29tZSBzdXBwbGllcyB1bmNvbm5lY3RlZCBpbiBub3JtYWwgdXNlLCBzdWNoIGFzIHNvbWUgTU1D
-IGRldmljZXMuDQo+ICogSXQgY2FuIGFsbG93IHRoZSByZWd1bGF0b3IgY29yZSB0byBwcm92aWRl
-IHN0dWIgc3VwcGxpZXMgZm9yIG90aGVyDQo+ICogc3VwcGxpZXMgcmVxdWVzdGVkIHVzaW5nIG5v
-cm1hbCByZWd1bGF0b3JfZ2V0KCkgY2FsbHMgd2l0aG91dA0KPiAqIGRpc3J1cHRpbmcgdGhlIG9w
-ZXJhdGlvbiBvZiBkcml2ZXJzIHRoYXQgY2FuIGhhbmRsZSBhYnNlbnQNCj4gKiBzdXBwbGllcy4N
-Cg0KDQo+IEluIG90aGVyIHdvcmRzLCBJIGRvbid0IHRoaW5rIHRoYXQgYW55IG9mIHRoZXNlIHN1
-cHBsaWVzIHNob3VsZCBiZSBtYWRlIHJlcXVpcmVkIGluDQo+IHRoZSBEVCBiaW5kaW5nIGJ1dCBq
-dXN0IGxlYXZlIHRoZSBjdXJyZW50ICJ2YmF0LXN1cHBseSIgYW5kIGFkZCBwcm9wZXJ0aWVzIGZv
-ciAidmNjLQ0KPiBzdXBwbHkiIGFuZCBleHBsYWluIHRoZSByZWxhdGlvbnNoaXAgYmV0d2VlbiB0
-aGVzZSBhbmQganVzdCBtYWtlIHRoZSBsb2dpYyBpbiB0aGUNCj4gZHJpdmVyIHRvIG92ZXJyaWRl
-IHN0cnVjdCBzc2QxMzB4X2RldmljZWluZm8gLm5lZWRfY2hhcmdlcHVtcCBpZiBhcmUgcHJlc2Vu
-dC4NCg0KTXkgaWRlYSB3YXMgdG8gcmVxdWlyZSB0aGVzZSBzdXBwbGllcywgc28gdGhhdCB0aGUg
-YmluZGluZyBjb3JyZWN0bHkNCnJlZmxlY3RzIHRoZSBtYW51YWxzLiBEcml2aW5nIHN1cHBseSBW
-Q0MgYW5kIGxvZ2ljIHN1cHBseSBWREQsIGFyZQ0KcHJlc2VudCB0aHJvdWdob3V0IHRoZSBTU0Qx
-MzB4IGZhbWlseS4gT25seSB0aGUgVkJBVCBzdXBwbHkgaXMgYW4NCm9wdGlvbmFsIFNTRDEzMDYg
-c3BlY2lmaWMgYW5kIHdvdWxkIHRoZXJlZm9yZSB1c2UgYW4gb3B0aW9uYWwNCnJlZ3VsYXRvci4N
-Cg0KVGhlIG9ubHkgb3RoZXIgZGV2aWNlIHNwZWNpZmljIHN1cHBseSBpcyB0aGUgU1NEMTMwNSdz
-IFZERElPIHN1cHBseSwNCndoaWNoIGlzIG1hbmRhdG9yeSBhbmQgc2VlbXMgdG8gYmUgY29tbW9u
-bHkgY29ubmVjdGVkIHRvIFZERCwNCnNvIGluY2x1ZGluZyB0aGF0IGlzIGxpa2VseSB1bm5lY2Vz
-c2FyeS4NCkkgSnVzdCB3YW50ZWQgdG8gbWVudGlvbiBpdCBmb3IgY29tcGxldGVuZXNzLg0KDQpJ
-ZiB0aGUgZGV2aWNlIGlzbid0IGNvbnRyb2xsYWJsZSBieSBMaW51eCwgYSBkdW1teSB3b3VsZCBi
-ZSBjb25uZWN0ZWQNCmluc3RlYWQsIGp1c3QgbGlrZSB0aGUgZHVtbXkgcmVndWxhdG9yIGRvY3Vt
-ZW50YXRpb24gc3RhdGVzOg0KDQo+ICogVGhpcyBpcyB1c2VmdWwgZm9yIHN5c3RlbXMgd2l0aCBt
-aXhlZCBjb250cm9sbGFibGUgYW5kDQo+ICogbm9uLWNvbnRyb2xsYWJsZSByZWd1bGF0b3JzLCBh
-cyB3ZWxsIGFzIGZvciBhbGxvd2luZyB0ZXN0aW5nIG9uDQo+ICogc3lzdGVtcyB3aXRoIG5vIGNv
-bnRyb2xsYWJsZSByZWd1bGF0b3JzLg0KDQpXaGljaCB3b3VsZCBiZSB0aGUgY2FzZSwgd2l0aCB0
-aGUgU1NEMTMweCBjb250cm9sbGVycy4NClNvbWV0aW1lcyB0aGV5IGFyZSBjb25uZWN0ZWQgdG8g
-ZXh0ZXJuYWwsIG5vbi1jb250cm9sbGFibGUgcmVndWxhdG9ycy4NCg0KSSBmaWd1cmVkIHRoYXQg
-dGhlIGtlcm5lbCBkZXZlbG9wZXJzIG1pZ2h0IGJlIG1vcmUgb3BlbiB0byBhIGNvbXBhdGliaWxp
-dHkNCmJyZWFraW5nIGNoYW5nZSwgdW5kZXIgdGhlIGNpcmN1bXN0YW5jZSwgdGhhdCB0aGlzIGlz
-IG1vcmUgb3IgbGVzcyBhIG5ldw0KZHJpdmVyIGZvciBEUk0sIHRoYXQgaXQgcHJvdmlkZXMgYXRv
-bWljIGNoYXJnZSBwdW1wIGNvbmZpZ3VyYXRpb24gZm9yIHRoZQ0KU1NEMTMwNiBhbmQgdGhhdCBz
-b21lIChlbWJlZGRlZCkgdXNlciBzcGFjZSBzb2Z0d2FyZSBtaWdodCBuZWVkIHRvIGJlDQpyZXdy
-aXR0ZW4gdG8gYWNjb21tb2RhdGUgZm9yIHRoZSB0cmFuc2l0aW9uIGZyb20gZmJkZXYgdG8gRFJN
-IGFueXdheS4NCkJ1dCBJIG1pZ2h0IGJlIHdyb25nIG9uIHRoaXMuDQoNCg0KPiA+ICMgU3RhdGlj
-IG9yIER5bmFtaWMgQ29uZmlndXJhdGlvbiBmb3IgU1BJLU1vZGVzIDMtV2lyZSBhbmQgNC1XaXJl
-DQo+ID4NCj4gPiBGb3IgdGhlIFNQSS1wcm90b2NvbCBkcml2ZXJzIEkgc2VlIHR3byBwb3NzaWJs
-ZSBhcHByb2FjaGVzOg0KPiA+ICogRHluYW1pYyBjb25maWd1cmF0aW9uIGJ5IGRldGVybWluaW5n
-IHRoZSBwcmVzZW5jZS9hYnNlbmNlIG9mIHRoZQ0KPiA+ICAgRC9DLUdQSU8gYW5kIGFzc2lnbmlu
-ZyB0aGUgZnVuY3Rpb25zIGFjY29yZGluZ2x5Lg0KPiA+ICAgVGhpcyB3YXkgYSBzaW5nbGUgZHJp
-dmVyIGZpbGUgZm9yIGJvdGggU1BJIG1vZGVzIGNvdWxkIGJlIHN1ZmZpY2llbnQuDQo+ID4gKiBT
-dGF0aWMgY29uZmlndXJhdGlvbiBieSB1c2luZyB0aGUgZGV2aWNlLXRyZWUgbmFtZXMNCj4gPiAg
-IChzc2QxMzB4LXNwaS0zd2lyZS8tNHdpcmUpIHRvIGRpZmZlcmVudGlhdGUgYmV0d2VlbiB0aGUg
-U1BJIHByb3RvY29sDQo+ID4gICBkcml2ZXJzLg0KPiA+ICAgVGhpcyB3b3VsZCBvYnZpb3VzbHkg
-bmVjZXNzaXRhdGUgdHdvIGRyaXZlcnMgZmlsZXMuDQo+ID4NCj4gPiBXaGljaCBvbmUgZG8geW91
-IHRoaW5rIHdvdWxkIGJlIHRoZSBiZXN0IGFwcHJvYWNoIGZvciB0aGlzPw0KPiA+DQo+IA0KPiBJ
-IHRoaW5rIHRoYXQgcHJlZmVyIHRoZSBmaXJzdCBhcHByb2FjaC4gQXMgbWVudGlvbmVkIHRoZSBz
-dGFnaW5nIGRyaXZlciBoYXMgYQ0KPiAiYnVzd2lkdGgiIHByb3BlcnR5IGJ1dCBhcyB5b3Ugc2Fp
-ZCB3ZSBjb3VsZCBqdXN0IHVzZSB0aGUgImRjLWdwaW9zIiBwcmVzZW5jZSBhcw0KPiBpbmRpY2F0
-aW9uIG9uIHdoZXRoZXIgaXMgYSA0LXdpcmUgb3IgMy13aXJlIFNQSSBtb2RlLg0KDQpZb3UgYXJl
-IGNvcnJlY3QsIEkgZG8gcHJlZmVyIHRoZSBmaXJzdCBhcHByb2FjaC4NCkl0IHdvdWxkIGN1dCB0
-aGUgYWRkaXRpb25hbCBmaWxlIGFuZCBjb2RlIHJlcXVpcmVkIGZvciB0aGUgc2Vjb25kDQphcHBy
-b2FjaCBhbmQgZWxpbWluYXRlIGFuIGFkZGl0aW9uYWwgZGV2aWNlIHRyZWUgbmFtZSwNCnRoYXQg
-d291bGQgaGF2ZSBiZWVuIG5lY2Vzc2FyeSBvdGhlcndpc2UuDQoNCg0KPiA+IFdoYXQgaXMgWW91
-ciBvcGluaW9uIG9uIHVzaW5nIGRybV9wYW5lbCBmb3IgWW91ciBkcml2ZXI/DQo+ID4NCj4gDQo+
-IEkgY2FuJ3QgcmVtZW1iZXIgZXhhY3RseSB3aHkgSSBkZWNpZGVkIHRvIHN0b3AgdXNpbmcgZHJt
-X3BhbmVsLCBidXQgSSB0aGluayB0aGF0DQo+IHdhcyBiZWNhdXNlIHN0cnVjdCBkcm1fcGFuZWwg
-ZG9lc24ndCBoYXZlIGEgRFJNIGRldmljZSBhbmQgc28gY291bGRuJ3QgdXNlIGFueSBvZg0KPiB0
-aGUgaGVscGVyIGZ1bmN0aW9ucyB0aGF0IG5lZWRlZCBvbmU/DQoNCkkgbGlrZWx5IGhpdCB0aGUg
-c2FtZSByb2FkYmxvY2suDQpJIHdvdWxkIHNheSwgdGhpcyBhcHByb2FjaCBzaG91bGQgYmUgcmV2
-aXNpdGVkLCB3aGVuIGFwcHJvcHJpYXRlDQpoZWxwZXJzIGZvciB0aGlzIGFwcHJvYWNoIGV4aXN0
-LCBhcyBpdCB3b3VsZCBmdXJ0aGVyIGNsZWFuIHVwIGFuZA0KZ2VuZXJpZnkgdGhlIHNzZDEzMHgg
-ZGV2aWNlIGNvbmZpZ3VyYXRpb24uDQoNCi0tDQpCZXN0IHJlZ2FyZHMNCg0KRG9taW5payBLaWVy
-bmVyDQpSZXNlYXJjaCAmIERldmVsb3BtZW50DQpESCBlbGVjdHJvbmljcw0KDQo=
+Hi Rafa=C5=82,
+
+zajec5@gmail.com wrote on Sat, 11 Jun 2022 22:46:50 +0200:
+
+> From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+>=20
+> MTD subsystem API allows interacting with MTD devices (e.g. reading,
+> writing, handling bad blocks). So far a random driver could get MTD
+> device only by its name (get_mtd_device_nm()). This change allows
+> getting them also by a DT node.
+>=20
+> This API is required for drivers handling DT defined MTD partitions in a
+> specific way (e.g. U-Boot (sub)partition with environment variables).
+>=20
+> Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+> ---
+> V3: First introduction of of_get_mtd_device_by_node()
+>=20
+> mtd maintainers: please let know how would you like this patch
+> processed. Would that be OK for you to Review/Ack it and let it go
+> through NVMEM tree?
+
+Yes
+
+> ---
+>  drivers/mtd/mtdcore.c   | 28 ++++++++++++++++++++++++++++
+>  include/linux/mtd/mtd.h |  1 +
+>  2 files changed, 29 insertions(+)
+>=20
+> diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
+> index 9eb0680db312..7dc214271c85 100644
+> --- a/drivers/mtd/mtdcore.c
+> +++ b/drivers/mtd/mtdcore.c
+> @@ -1154,6 +1154,34 @@ int __get_mtd_device(struct mtd_info *mtd)
+>  }
+>  EXPORT_SYMBOL_GPL(__get_mtd_device);
+> =20
+> +/**
+> + * of_get_mtd_device_by_node - obtain an MTD device associated with a gi=
+ven node
+> + *
+> + * @np: device tree node
+> + */
+> +struct mtd_info *of_get_mtd_device_by_node(struct device_node *np)
+
+Shall we try to use a more of-agnostic syntax or is it too complex here?
+
+> +{
+> +	struct mtd_info *mtd =3D NULL;
+> +	struct mtd_info *tmp;
+> +	int err;
+> +
+> +	mutex_lock(&mtd_table_mutex);
+> +
+> +	err =3D -ENODEV;
+> +	mtd_for_each_device(tmp) {
+> +		if (mtd_get_of_node(tmp) =3D=3D np) {
+> +			mtd =3D tmp;
+> +			err =3D __get_mtd_device(mtd);
+> +			break;
+> +		}
+> +	}
+> +
+> +	mutex_unlock(&mtd_table_mutex);
+> +
+> +	return err ? ERR_PTR(err) : mtd;
+> +}
+> +EXPORT_SYMBOL_GPL(of_get_mtd_device_by_node);
+> +
+>  /**
+>   *	get_mtd_device_nm - obtain a validated handle for an MTD device by
+>   *	device name
+> diff --git a/include/linux/mtd/mtd.h b/include/linux/mtd/mtd.h
+> index 955aee14b0f7..6fc841ceef31 100644
+> --- a/include/linux/mtd/mtd.h
+> +++ b/include/linux/mtd/mtd.h
+> @@ -677,6 +677,7 @@ extern int mtd_device_unregister(struct mtd_info *mas=
+ter);
+>  extern struct mtd_info *get_mtd_device(struct mtd_info *mtd, int num);
+>  extern int __get_mtd_device(struct mtd_info *mtd);
+>  extern void __put_mtd_device(struct mtd_info *mtd);
+> +extern struct mtd_info *of_get_mtd_device_by_node(struct device_node *np=
+);
+>  extern struct mtd_info *get_mtd_device_nm(const char *name);
+>  extern void put_mtd_device(struct mtd_info *mtd);
+> =20
+
+
+Thanks,
+Miqu=C3=A8l
