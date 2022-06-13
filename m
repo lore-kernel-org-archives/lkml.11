@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C90C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3620C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343808AbiFMKmU (ORCPT
+        id S1344508AbiFMKm3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58582 "EHLO
+        Mon, 13 Jun 2022 06:42:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346204AbiFMKj5 (ORCPT
+        with ESMTP id S1346913AbiFMKkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:39:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E24528E0D;
-        Mon, 13 Jun 2022 03:23:34 -0700 (PDT)
+        Mon, 13 Jun 2022 06:40:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2BD3CE2A;
+        Mon, 13 Jun 2022 03:23:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49C94B80E94;
-        Mon, 13 Jun 2022 10:23:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A36B6C34114;
-        Mon, 13 Jun 2022 10:23:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5586160DC4;
+        Mon, 13 Jun 2022 10:23:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60E74C34114;
+        Mon, 13 Jun 2022 10:23:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115812;
-        bh=PyINb2rJZQ7Qe5pjNIZ7+ywP2k++AnplNV1utZalMI4=;
+        s=korg; t=1655115814;
+        bh=U5N1C8wfrZ9jX7PmtT1J29IPpnEaZTIwmHzQCV9fMjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IVtQdXveThP8TxAx3Oir3BewkCaeUrqEGln1V/VR9khmIQOVKXS2KlV/SADDNQbhK
-         MzKXVu5noQlUCEA0l0s01d6YRTFQ6AYl0emwE6YfP4+VYAU6AzUI9Qnuv7bqnlVG0U
-         6U0FkJKOQp3j/YrKGhkvHDbMneW1275jtBvDXBxM=
+        b=plWkqMCmpO6fCfnnyPu9Ayj/1rQUn0T/ZAEKS+R7WAqQF7ue5rfKO4l0uaPUlwr7s
+         KsD6S1obK3NFm110iWjm/bnrTUfUIWaa9112xsWjhhvyOiFVbcoe1I2BNSS/jtoQdS
+         4nMnRqLzNkZj4SZIW6Tr7Msa+Tz76wXJKj8FoJmA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 050/218] ASoC: mediatek: Fix missing of_node_put in mt2701_wm8960_machine_probe
-Date:   Mon, 13 Jun 2022 12:08:28 +0200
-Message-Id: <20220613094920.227053512@linuxfoundation.org>
+        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 051/218] x86/delay: Fix the wrong asm constraint in delay_loop()
+Date:   Mon, 13 Jun 2022 12:08:29 +0200
+Message-Id: <20220613094920.463626549@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,55 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-[ Upstream commit 05654431a18fe24e5e46a375d98904134628a102 ]
+[ Upstream commit b86eb74098a92afd789da02699b4b0dd3f73b889 ]
 
-This node pointer is returned by of_parse_phandle() with
-refcount incremented in this function.
-Calling of_node_put() to avoid the refcount leak.
+The asm constraint does not reflect the fact that the asm statement can
+modify the value of the local variable loops. Which it does.
 
-Fixes: 8625c1dbd876 ("ASoC: mediatek: Add mt2701-wm8960 machine driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220404093526.30004-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Specifying the wrong constraint may lead to undefined behavior, it may
+clobber random stuff (e.g. local variable, important temporary value in
+regs, etc.). This is especially dangerous when the compiler decides to
+inline the function and since it doesn't know that the value gets
+modified, it might decide to use it from a register directly without
+reloading it.
+
+Change the constraint to "+a" to denote that the first argument is an
+input and an output argument.
+
+  [ bp: Fix typo, massage commit message. ]
+
+Fixes: e01b70ef3eb3 ("x86: fix bug in arch/i386/lib/delay.c file, delay_loop function")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220329104705.65256-2-ammarfaizi2@gnuweeb.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt2701/mt2701-wm8960.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/x86/lib/delay.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/mediatek/mt2701/mt2701-wm8960.c b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-index a08ce2323bdc..3db92506ccea 100644
---- a/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-+++ b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-@@ -126,7 +126,8 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 	if (!codec_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
- 	}
- 	for (i = 0; i < card->num_links; i++) {
- 		if (mt2701_wm8960_dai_links[i].codec_name)
-@@ -137,7 +138,7 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 	ret = snd_soc_of_parse_audio_routing(card, "audio-routing");
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to parse audio-routing: %d\n", ret);
--		return ret;
-+		goto put_codec_node;
- 	}
+diff --git a/arch/x86/lib/delay.c b/arch/x86/lib/delay.c
+index 17a0d0f5a1bf..ea1d00159ea6 100644
+--- a/arch/x86/lib/delay.c
++++ b/arch/x86/lib/delay.c
+@@ -43,8 +43,8 @@ static void delay_loop(unsigned long loops)
+ 		"	jnz 2b		\n"
+ 		"3:	dec %0		\n"
  
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
-@@ -145,6 +146,10 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
- 
-+put_codec_node:
-+	of_node_put(codec_node);
-+put_platform_node:
-+	of_node_put(platform_node);
- 	return ret;
+-		: /* we don't need output */
+-		:"a" (loops)
++		: "+a" (loops)
++		:
+ 	);
  }
  
 -- 
