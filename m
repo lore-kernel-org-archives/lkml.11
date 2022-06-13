@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39064CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B3BECCA485
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358403AbiFMNER (ORCPT
+        id S1358704AbiFMNEg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
+        Mon, 13 Jun 2022 09:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355492AbiFMM4E (ORCPT
+        with ESMTP id S1355262AbiFMM4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:56:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E7D12D0D;
-        Mon, 13 Jun 2022 04:17:04 -0700 (PDT)
+        Mon, 13 Jun 2022 08:56:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497D312754;
+        Mon, 13 Jun 2022 04:16:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B79A260B60;
-        Mon, 13 Jun 2022 11:17:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5DADC34114;
-        Mon, 13 Jun 2022 11:17:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBCC8608C3;
+        Mon, 13 Jun 2022 11:16:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB5F8C3411C;
+        Mon, 13 Jun 2022 11:16:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119023;
-        bh=EFH/jpz6Y7HbXvroxBQ+an5CCn0BgHUFSg7kxrGjx/s=;
+        s=korg; t=1655119009;
+        bh=zUhWQWXJA/gFCH2+w8XY9HWyVwl5ZvqLtCizUywFNqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VSZyhebbLLKQ59ZhT0eFMw/ptpAJgdvH2JxmaF72eF3tghJQfhyMsQEtlO560Iw06
-         w5j48UeFqUxA56CUE5YPXAJ9xrn1ACbe9Tl10M1mqU6pWFdHawJONsiusq5Os6eyzr
-         bDJNEbglAt0hZnOqqiPucglUi+J9WWqJrFqyYitM=
+        b=ca2iDluedkR/bt5s1uf61VrdyHFFcnmfykwqkDpxBWucBNA5458L5npwxvFaAFR+9
+         DYww5cropdBUi0iHspJSpqwVOttrvAS6vO6LMdLts2+MPXgANjfHS0TbAN/iJqeviI
+         GUEvBJVJ+nsb33AcSEIjJuHr/1DQlPun72XDoN/U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
+        stable@vger.kernel.org, Mykola Lysenko <mykolal@fb.com>,
+        Song Liu <song@kernel.org>, David Vernet <void@manifault.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 076/247] modpost: fix removing numeric suffixes
-Date:   Mon, 13 Jun 2022 12:09:38 +0200
-Message-Id: <20220613094925.262644048@linuxfoundation.org>
+Subject: [PATCH 5.15 081/247] selftests/bpf: fix stacktrace_build_id with missing kprobe/urandom_read
+Date:   Mon, 13 Jun 2022 12:09:43 +0200
+Message-Id: <20220613094925.412303533@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,56 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Song Liu <song@kernel.org>
 
-[ Upstream commit b5beffa20d83c4e15306c991ffd00de0d8628338 ]
+[ Upstream commit 59ed76fe2f981bccde37bdddb465f260a96a2404 ]
 
-With the `-z unique-symbol` linker flag or any similar mechanism,
-it is possible to trigger the following:
+Kernel function urandom_read is replaced with urandom_read_iter.
+Therefore, kprobe on urandom_read is not working any more:
 
-ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
+[root@eth50-1 bpf]# ./test_progs -n 161
+test_stacktrace_build_id:PASS:skel_open_and_load 0 nsec
+libbpf: kprobe perf_event_open() failed: No such file or directory
+libbpf: prog 'oncpu': failed to create kprobe 'urandom_read+0x0' \
+        perf event: No such file or directory
+libbpf: prog 'oncpu': failed to auto-attach: -2
+test_stacktrace_build_id:FAIL:attach_tp err -2
+161     stacktrace_build_id:FAIL
 
-The reason is that for now the condition from remove_dot():
+Fix this by replacing urandom_read with urandom_read_iter in the test.
 
-if (m && (s[n + m] == '.' || s[n + m] == 0))
-
-which was designed to test if it's a dot or a '\0' after the suffix
-is never satisfied.
-This is due to that `s[n + m]` always points to the last digit of a
-numeric suffix, not on the symbol next to it (from a custom debug
-print added to modpost):
-
-param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
-
-So it's off-by-one and was like that since 2014.
-
-Fix this for the sake of any potential upcoming features, but don't
-bother stable-backporting, as it's well hidden -- apart from that
-LD flag, it can be triggered only with GCC LTO which never landed
-upstream.
-
-Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Fixes: 1b388e7765f2 ("random: convert to using fops->read_iter()")
+Reported-by: Mykola Lysenko <mykolal@fb.com>
+Signed-off-by: Song Liu <song@kernel.org>
+Acked-by: David Vernet <void@manifault.com>
+Link: https://lore.kernel.org/r/20220526191608.2364049-1-song@kernel.org
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/mod/modpost.c | 2 +-
+ tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index ca491aa2b376..7a5bddb8913e 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1971,7 +1971,7 @@ static char *remove_dot(char *s)
+diff --git a/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c b/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
+index 08aee18d9ded..58fbe22a3bf8 100644
+--- a/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
++++ b/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
+@@ -39,7 +39,7 @@ struct {
+ 	__type(value, stack_trace_t);
+ } stack_amap SEC(".maps");
  
- 	if (n && s[n]) {
- 		size_t m = strspn(s + n + 1, "0123456789");
--		if (m && (s[n + m] == '.' || s[n + m] == 0))
-+		if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
- 			s[n] = 0;
- 
- 		/* strip trailing .lto */
+-SEC("kprobe/urandom_read")
++SEC("kprobe/urandom_read_iter")
+ int oncpu(struct pt_regs *args)
+ {
+ 	__u32 max_len = sizeof(struct bpf_stack_build_id)
 -- 
 2.35.1
 
