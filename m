@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C9ECCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82AF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376314AbiFMNYy (ORCPT
+        id S1376591AbiFMNY5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60460 "EHLO
+        Mon, 13 Jun 2022 09:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377456AbiFMNUf (ORCPT
+        with ESMTP id S1377429AbiFMNUZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:20:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E63B6B01C;
-        Mon, 13 Jun 2022 04:23:36 -0700 (PDT)
+        Mon, 13 Jun 2022 09:20:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EADA26AA73;
+        Mon, 13 Jun 2022 04:23:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F379861121;
-        Mon, 13 Jun 2022 11:23:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E3D9C34114;
-        Mon, 13 Jun 2022 11:23:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3279661127;
+        Mon, 13 Jun 2022 11:23:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45A62C34114;
+        Mon, 13 Jun 2022 11:23:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119413;
-        bh=HE9pJc3MBTefg0BQ/7370zg4d3v6Fos68pQ6N+Ze2nE=;
+        s=korg; t=1655119391;
+        bh=gsknnm1TEWssjyLcGyQFf5l/MRxpU5FvJ25DZvX++9s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WhA+RiQHRAcNu5tz/3o6GUFsThVsonTykseDqRciwJhV7u6yGv1lWhNp6OIEVpasm
-         BSfOj8QKTWIOZ/wCooDspBtoGIxwYmWabq5bA2qmVGx79LRmNIe9ExeolHviuTJzJR
-         Dbu1EN7o/msByfGSSxj3H5a3OxqKNVmmGpr5l4/4=
+        b=D66+P4rgzG3lMkXJGHU1ZdLs0cn26TL8WACXIjSvPLI8zqdAZgBsYY08fnVAAzTU+
+         9qXLqJFNW+mJY4YIXyYeAO2iZ6G0/kdahX07jVT6+XGDr6AyU2+lgz/F2M/4NYM2NC
+         bnRcAqSMexAyjq6EPoKqtcMnNXTtwjBtHKC7rjbc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Olivier Matz <olivier.matz@6wind.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.15 230/247] ixgbe: fix bcast packets Rx on VF after promisc removal
-Date:   Mon, 13 Jun 2022 12:12:12 +0200
-Message-Id: <20220613094929.920752468@linuxfoundation.org>
+        stable@vger.kernel.org, Davide Caratti <dcaratti@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 245/247] net/sched: act_police: more accurate MTU policing
+Date:   Mon, 13 Jun 2022 12:12:27 +0200
+Message-Id: <20220613094930.376357741@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,43 +50,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olivier Matz <olivier.matz@6wind.com>
+From: Davide Caratti <dcaratti@redhat.com>
 
-commit 803e9895ea2b0fe80bc85980ae2d7a7e44037914 upstream.
+commit 4ddc844eb81da59bfb816d8d52089aba4e59e269 upstream.
 
-After a VF requested to remove the promiscuous flag on an interface, the
-broadcast packets are not received anymore. This breaks some protocols
-like ARP.
+in current Linux, MTU policing does not take into account that packets at
+the TC ingress have the L2 header pulled. Thus, the same TC police action
+(with the same value of tcfp_mtu) behaves differently for ingress/egress.
+In addition, the full GSO size is compared to tcfp_mtu: as a consequence,
+the policer drops GSO packets even when individual segments have the L2 +
+L3 + L4 + payload length below the configured valued of tcfp_mtu.
 
-In ixgbe_update_vf_xcast_mode(), we should keep the IXGBE_VMOLR_BAM
-bit (Broadcast Accept) on promiscuous removal.
+Improve the accuracy of MTU policing as follows:
+ - account for mac_len for non-GSO packets at TC ingress.
+ - compare MTU threshold with the segmented size for GSO packets.
+Also, add a kselftest that verifies the correct behavior.
 
-This flag is already set by default in ixgbe_set_vmolr() on VF reset.
-
-Fixes: 8443c1a4b192 ("ixgbe, ixgbevf: Add new mbox API xcast mode")
-Cc: stable@vger.kernel.org
-Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Signed-off-by: Olivier Matz <olivier.matz@6wind.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/sched/act_police.c                              |   16 +++++-
+ tools/testing/selftests/net/forwarding/tc_police.sh |   52 ++++++++++++++++++++
+ 2 files changed, 67 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-@@ -1157,9 +1157,9 @@ static int ixgbe_update_vf_xcast_mode(st
+--- a/net/sched/act_police.c
++++ b/net/sched/act_police.c
+@@ -239,6 +239,20 @@ release_idr:
+ 	return err;
+ }
  
- 	switch (xcast_mode) {
- 	case IXGBEVF_XCAST_MODE_NONE:
--		disable = IXGBE_VMOLR_BAM | IXGBE_VMOLR_ROMPE |
-+		disable = IXGBE_VMOLR_ROMPE |
- 			  IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
--		enable = 0;
-+		enable = IXGBE_VMOLR_BAM;
- 		break;
- 	case IXGBEVF_XCAST_MODE_MULTI:
- 		disable = IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
++static bool tcf_police_mtu_check(struct sk_buff *skb, u32 limit)
++{
++	u32 len;
++
++	if (skb_is_gso(skb))
++		return skb_gso_validate_mac_len(skb, limit);
++
++	len = qdisc_pkt_len(skb);
++	if (skb_at_tc_ingress(skb))
++		len += skb->mac_len;
++
++	return len <= limit;
++}
++
+ static int tcf_police_act(struct sk_buff *skb, const struct tc_action *a,
+ 			  struct tcf_result *res)
+ {
+@@ -261,7 +275,7 @@ static int tcf_police_act(struct sk_buff
+ 			goto inc_overlimits;
+ 	}
+ 
+-	if (qdisc_pkt_len(skb) <= p->tcfp_mtu) {
++	if (tcf_police_mtu_check(skb, p->tcfp_mtu)) {
+ 		if (!p->rate_present && !p->pps_present) {
+ 			ret = p->tcfp_result;
+ 			goto end;
+--- a/tools/testing/selftests/net/forwarding/tc_police.sh
++++ b/tools/testing/selftests/net/forwarding/tc_police.sh
+@@ -37,6 +37,8 @@ ALL_TESTS="
+ 	police_tx_mirror_test
+ 	police_pps_rx_test
+ 	police_pps_tx_test
++	police_mtu_rx_test
++	police_mtu_tx_test
+ "
+ NUM_NETIFS=6
+ source tc_common.sh
+@@ -346,6 +348,56 @@ police_pps_tx_test()
+ 	tc filter del dev $rp2 egress protocol ip pref 1 handle 101 flower
+ }
+ 
++police_mtu_common_test() {
++	RET=0
++
++	local test_name=$1; shift
++	local dev=$1; shift
++	local direction=$1; shift
++
++	tc filter add dev $dev $direction protocol ip pref 1 handle 101 flower \
++		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
++		action police mtu 1042 conform-exceed drop/ok
++
++	# to count "conform" packets
++	tc filter add dev $h2 ingress protocol ip pref 1 handle 101 flower \
++		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
++		action drop
++
++	mausezahn $h1 -a own -b $(mac_get $rp1) -A 192.0.2.1 -B 198.51.100.1 \
++		-t udp sp=12345,dp=54321 -p 1001 -c 10 -q
++
++	mausezahn $h1 -a own -b $(mac_get $rp1) -A 192.0.2.1 -B 198.51.100.1 \
++		-t udp sp=12345,dp=54321 -p 1000 -c 3 -q
++
++	tc_check_packets "dev $dev $direction" 101 13
++	check_err $? "wrong packet counter"
++
++	# "exceed" packets
++	local overlimits_t0=$(tc_rule_stats_get ${dev} 1 ${direction} .overlimits)
++	test ${overlimits_t0} = 10
++	check_err $? "wrong overlimits, expected 10 got ${overlimits_t0}"
++
++	# "conform" packets
++	tc_check_packets "dev $h2 ingress" 101 3
++	check_err $? "forwarding error"
++
++	tc filter del dev $h2 ingress protocol ip pref 1 handle 101 flower
++	tc filter del dev $dev $direction protocol ip pref 1 handle 101 flower
++
++	log_test "$test_name"
++}
++
++police_mtu_rx_test()
++{
++	police_mtu_common_test "police mtu (rx)" $rp1 ingress
++}
++
++police_mtu_tx_test()
++{
++	police_mtu_common_test "police mtu (tx)" $rp2 egress
++}
++
+ setup_prepare()
+ {
+ 	h1=${NETIFS[p1]}
 
 
