@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD51C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 694E6CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358928AbiFMNIh (ORCPT
+        id S1358993AbiFMNIu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:08:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
+        Mon, 13 Jun 2022 09:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357025AbiFMM6S (ORCPT
+        with ESMTP id S1357313AbiFMM6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:58:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF64BFF;
-        Mon, 13 Jun 2022 04:17:26 -0700 (PDT)
+        Mon, 13 Jun 2022 08:58:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43562BC3;
+        Mon, 13 Jun 2022 04:17:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E7D260F19;
-        Mon, 13 Jun 2022 11:17:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF391C34114;
-        Mon, 13 Jun 2022 11:17:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B342360F0D;
+        Mon, 13 Jun 2022 11:17:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B8AC34114;
+        Mon, 13 Jun 2022 11:17:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119045;
-        bh=tbsBjKqvCokBZRsF7bu0vr3QAcJFbcOcF4t0Z/UWIyw=;
+        s=korg; t=1655119062;
+        bh=orI7NLzyYAo4r79BAJZsq8oCnJd/A00pdqYpG0bPBhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G1xja4qd01cG7+umpQ4teSUK31b0SoFvuX03n2SO71BuG/Do4N1s/auLLy/API6ZQ
-         2e6oo0biS4OsLA2Xl9QQ4fsFFyh94pGL+W9SGa7lxToXt8IOboo/H4DEJ5wIL69GxT
-         Zg7rx80nfylYpqNv0mqQEeKWTSaUXvdwlsUJFDSo=
+        b=tLkrBctfky2R9cv4dnvIPfr8qTqSgi/Dx899ummZqwnn3yzolAw3LCAWLrVJqEkZZ
+         JmpWd8XJnioqA9ryqu6M9fDSyg4F/f1cIeBr3pPgLIixHts5uyNR7bBvtjNvFtB83F
+         NTi6HCe3NDWYkQhScd77R8ezfwquxoMFVezdHK0M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
+        stable@vger.kernel.org, Liao Chang <liaochang1@huawei.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 121/247] m68knommu: fix undefined reference to `_init_sp
-Date:   Mon, 13 Jun 2022 12:10:23 +0200
-Message-Id: <20220613094926.633223926@linuxfoundation.org>
+Subject: [PATCH 5.15 126/247] RISC-V: use memcpy for kexec_file mode
+Date:   Mon, 13 Jun 2022 12:10:28 +0200
+Message-Id: <20220613094926.782568314@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,41 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Ungerer <gerg@linux-m68k.org>
+From: Liao Chang <liaochang1@huawei.com>
 
-[ Upstream commit a71b9e66fee47c59b3ec34e652b5c23bc6550794 ]
+[ Upstream commit b7fb4d78a6ade6026d9e5cf438c2a46ab962e032 ]
 
-When configuring a nommu classic m68k system enabling the uboot parameter
-passing support (CONFIG_UBOOT) will produce the following compile error:
+The pointer to buffer loading kernel binaries is in kernel space for
+kexec_fil mode, When copy_from_user copies data from pointer to a block
+of memory, it checkes that the pointer is in the user space range, on
+RISCV-V that is:
 
-   m68k-linux-ld: arch/m68k/kernel/uboot.o: in function `process_uboot_commandline':
-   uboot.c:(.init.text+0x32): undefined reference to `_init_sp'
+static inline bool __access_ok(unsigned long addr, unsigned long size)
+{
+	return size <= TASK_SIZE && addr <= TASK_SIZE - size;
+}
 
-The logic to support this option is only used on ColdFire based platforms
-(in its head.S startup code). So make the selection of this option
-depend on building for a ColdFire based platform.
+and TASK_SIZE is 0x4000000000 for 64-bits, which now causes
+copy_from_user to reject the access of the field 'buf' of struct
+kexec_segment that is in range [CONFIG_PAGE_OFFSET - VMALLOC_SIZE,
+CONFIG_PAGE_OFFSET), is invalid user space pointer.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+This patch fixes this issue by skipping access_ok(), use mempcy() instead.
+
+Signed-off-by: Liao Chang <liaochang1@huawei.com>
+Link: https://lore.kernel.org/r/20220408100914.150110-3-lizhengyu3@huawei.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/Kconfig.machine | 1 +
- 1 file changed, 1 insertion(+)
+ arch/riscv/kernel/machine_kexec.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/m68k/Kconfig.machine b/arch/m68k/Kconfig.machine
-index eeab4f3e6c19..946853a08502 100644
---- a/arch/m68k/Kconfig.machine
-+++ b/arch/m68k/Kconfig.machine
-@@ -335,6 +335,7 @@ comment "Machine Options"
+diff --git a/arch/riscv/kernel/machine_kexec.c b/arch/riscv/kernel/machine_kexec.c
+index cbef0fc73afa..df8e24559035 100644
+--- a/arch/riscv/kernel/machine_kexec.c
++++ b/arch/riscv/kernel/machine_kexec.c
+@@ -65,7 +65,9 @@ machine_kexec_prepare(struct kimage *image)
+ 		if (image->segment[i].memsz <= sizeof(fdt))
+ 			continue;
  
- config UBOOT
- 	bool "Support for U-Boot command line parameters"
-+	depends on COLDFIRE
- 	help
- 	  If you say Y here kernel will try to collect command
- 	  line parameters from the initial u-boot stack.
+-		if (copy_from_user(&fdt, image->segment[i].buf, sizeof(fdt)))
++		if (image->file_mode)
++			memcpy(&fdt, image->segment[i].buf, sizeof(fdt));
++		else if (copy_from_user(&fdt, image->segment[i].buf, sizeof(fdt)))
+ 			continue;
+ 
+ 		if (fdt_check_header(&fdt))
 -- 
 2.35.1
 
