@@ -2,122 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 518CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:00:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF69CCA47D
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244737AbiFMTAb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46440 "EHLO
+        id S1346572AbiFMTAy (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242889AbiFMTAO (ORCPT
+        with ESMTP id S1345547AbiFMTAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:00:14 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A82598AE7C;
-        Mon, 13 Jun 2022 09:17:18 -0700 (PDT)
-Received: from anrayabh-desk.corp.microsoft.com (unknown [167.220.238.193])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 7A83620BA5A7;
-        Mon, 13 Jun 2022 09:17:12 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7A83620BA5A7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1655137038;
-        bh=meFGhXThMYkI6bGmOB3JmL0xkuk9FE1Fwvyp0NbJeSc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UWsF5JAj6tMdsgcX03JWid8sisCep2p0cvz/KbyNaD4oswnfcT99qhcTudmpK3dfW
-         KGK1d3gUrcAT8ymgpf/epPzlq75nSXZr+PkzC/0mVyQp/SEP/P7fym6ceV+WI8GOVR
-         NJNmk+V37HTwyDUJAgnQE/0R/Z+bQq0jRxgwzBJw=
-From:   Anirudh Rayabharam <anrayabh@linux.microsoft.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Ilias Stamatis <ilstam@amazon.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     mail@anirudhrb.com, kumarpraveen@linux.microsoft.com,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        wei.liu@kernel.org, robert.bradford@intel.com, liuwe@microsoft.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] KVM: nVMX: Don't expose TSC scaling to L1 when on Hyper-V
-Date:   Mon, 13 Jun 2022 21:46:10 +0530
-Message-Id: <20220613161611.3567556-1-anrayabh@linux.microsoft.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 13 Jun 2022 15:00:21 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCE399699
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:47 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id y66-20020a62ce45000000b0051bb4d19f5fso2529074pfg.18
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=sy+hmtF7QKGhId1UgWThmfgFGGqtRHfIUJnJ5VlAWU0=;
+        b=qrtFAHt9rp+72ySJkfHU7Fg5FmipHO1J6AWR5Swn2IiWMy2/NArZiMfakO3QjNb3B0
+         GmjpctXxY4ozxNYdvp2wSgh09QgpjtMaIgjT1WIg90tbaktKV7yTsGpfOd2gaYI5xuQB
+         kGPRBBtzQvy8WGwGe5wa2B0nZj5Gmc40dfzLhCPC8caKQnFlajkHevIoUpRhYJibO5Yl
+         EIYL+U9VCoXKvpNF+1UjtfJlpK2J9aIlGi4gJmeGivVGYEa5j7asTZ0KmZ07pF5+Nhdr
+         UXk7SGoTA0wkvw/PdN+7adsuXp6nExu+mo4SCI5aThjSUedxIF1z2QFwdQB0Hg2Pnasc
+         E7jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=sy+hmtF7QKGhId1UgWThmfgFGGqtRHfIUJnJ5VlAWU0=;
+        b=LuTT+xI8AuqF/hew1qjqNSLUWs9lafuxC3ns6PeRPSUqSHEJSu3qJW+Ctzx+/bVYGV
+         zWE803/OPr0bltt/jqOgkRvrsvN8ysaspC5rdop0ssddU/C3JF9za6WMTz8ulbZwDwiP
+         XwfWFUBgJjsk7VIDTzbzyrXYp89eqh2seNfOVYvvtx7VnGpnrF8vjDEPOnnv9h4a7VHq
+         yEbUE5NEjp/0ddRqvTpKiHPMnQC3WtJL5mNiDNSD7tDoEbuk8nl80gXEX80rPEYLFrpW
+         DpTvppbrj2sDmoIjORsaVxve8Rm76SAiFTJKE0OSWcM/3BFGezJocw6ff16iW/pyg4i4
+         LQGA==
+X-Gm-Message-State: AJIora8kpIQJndxL1zq4fpH8J3XPg45c44DvGgw8fJKpnybICyCf9YkC
+        CuKoTnFECtBkM/P6YqVo7Lj0ZBrLRnc=
+X-Google-Smtp-Source: AGRyM1vE38OcLZYRVPHib6kgCVJ/M2iTypkcdODR6DxYQT/Af3g0vj733jESj1NcLT/9Rd2w3OiIJl6JOxs=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:902:d50f:b0:166:41a8:abf5 with SMTP id
+ b15-20020a170902d50f00b0016641a8abf5mr100470plg.17.1655137186866; Mon, 13 Jun
+ 2022 09:19:46 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Mon, 13 Jun 2022 16:19:39 +0000
+In-Reply-To: <20220613161942.1586791-1-seanjc@google.com>
+Message-Id: <20220613161942.1586791-2-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220613161942.1586791-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH 1/4] KVM: selftests: Add a missing apostrophe in comment to
+ show ownership
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Andrew Jones <drjones@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VM entry into an L2 guest on KVM on Hyper-V fails with the following
-splat (stripped for brevity) when running cloud-hypervisor tests.
+Add an apostrophe in a comment about it being the caller's, not callers,
+responsibility to free an object.
 
-[ 1481.600386] WARNING: CPU: 4 PID: 7641 at arch/x86/kvm/vmx/nested.c:4563 nested_vmx_vmexit+0x70d/0x790 [kvm_intel]
-[ 1481.600427] CPU: 4 PID: 7641 Comm: vcpu2 Not tainted 5.15.0-1008-azure #9-Ubuntu
-[ 1481.600429] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.1 07/22/2021
-[ 1481.600430] RIP: 0010:nested_vmx_vmexit+0x70d/0x790 [kvm_intel]
-[ 1481.600447] Call Trace:
-[ 1481.600449]  <TASK>
-[ 1481.600451]  nested_vmx_reflect_vmexit+0x10b/0x440 [kvm_intel]
-[ 1481.600457]  __vmx_handle_exit+0xef/0x670 [kvm_intel]
-[ 1481.600467]  vmx_handle_exit+0x12/0x50 [kvm_intel]
-[ 1481.600472]  vcpu_enter_guest+0x83a/0xfd0 [kvm]
-[ 1481.600524]  vcpu_run+0x5e/0x240 [kvm]
-[ 1481.600560]  kvm_arch_vcpu_ioctl_run+0xd7/0x550 [kvm]
-[ 1481.600597]  kvm_vcpu_ioctl+0x29a/0x6d0 [kvm]
-[ 1481.600634]  __x64_sys_ioctl+0x91/0xc0
-[ 1481.600637]  do_syscall_64+0x5c/0xc0
-[ 1481.600667]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[ 1481.600670] RIP: 0033:0x7f688becdaff
-[ 1481.600686]  </TASK>
-
-As per the comments in arch/x86/kvm/vmx/evmcs.h, TSC multiplier field is
-currently not supported in EVMCS. As a result, there is no TSC scaling
-support when KVM is running on Hyper-V i.e. kvm_has_tsc_control is
-false.
-
-However, in nested_vmx_setup_ctls_msrs(), TSC scaling is exposed to L1.
-When L1 tries to launch an L2 guest, vmcs12 has TSC scaling enabled.
-This propagates to vmcs02. But KVM doesn't set the TSC multiplier value
-because kvm_has_tsc_control is false. Due to this, VM entry for L2 guest
-fails. (VM entry fails if "use TSC scaling" is 1 and TSC multiplier is 0.)
-
-To fix, expose TSC scaling to L1 only if kvm_has_tsc_control.
-
-Fixes: d041b5ea93352 ("KVM: nVMX: Enable nested TSC scaling")
-Signed-off-by: Anirudh Rayabharam <anrayabh@linux.microsoft.com>
+Reported-by: Andrew Jones <drjones@redhat.com>
+Fixes: 768e9a61856b ("KVM: selftests: Purge vm+vcpu_id == vcpu silliness")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/vmx/nested.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ tools/testing/selftests/kvm/lib/kvm_util.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index f5cb18e00e78..d773ddc6422b 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -6656,6 +6656,9 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
- 		      msrs->secondary_ctls_low,
- 		      msrs->secondary_ctls_high);
- 
-+	if (!kvm_has_tsc_control)
-+		msrs->secondary_ctls_high &= ~SECONDARY_EXEC_TSC_SCALING;
-+
- 	msrs->secondary_ctls_low = 0;
- 	msrs->secondary_ctls_high &=
- 		SECONDARY_EXEC_DESC |
-@@ -6667,8 +6670,7 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
- 		SECONDARY_EXEC_RDRAND_EXITING |
- 		SECONDARY_EXEC_ENABLE_INVPCID |
- 		SECONDARY_EXEC_RDSEED_EXITING |
--		SECONDARY_EXEC_XSAVES |
--		SECONDARY_EXEC_TSC_SCALING;
-+		SECONDARY_EXEC_XSAVES;
- 
- 	/*
- 	 * We can emulate "VMCS shadowing," even if the hardware
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index 39f2f5f1338f..0c550fb0dab2 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -1434,7 +1434,7 @@ void vcpu_run_complete_io(struct kvm_vcpu *vcpu)
+ /*
+  * Get the list of guest registers which are supported for
+  * KVM_GET_ONE_REG/KVM_SET_ONE_REG ioctls.  Returns a kvm_reg_list pointer,
+- * it is the callers responsibility to free the list.
++ * it is the caller's responsibility to free the list.
+  */
+ struct kvm_reg_list *vcpu_get_reg_list(struct kvm_vcpu *vcpu)
+ {
 -- 
-2.34.1
+2.36.1.476.g0c4daa206d-goog
 
