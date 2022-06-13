@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07326C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4643CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:51:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240778AbiFMKvg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
+        id S1347140AbiFMKvk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345030AbiFMKsL (ORCPT
+        with ESMTP id S1345814AbiFMKsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:48:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222142C65B;
-        Mon, 13 Jun 2022 03:26:05 -0700 (PDT)
+        Mon, 13 Jun 2022 06:48:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6642C66B;
+        Mon, 13 Jun 2022 03:26:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2586B80E92;
-        Mon, 13 Jun 2022 10:26:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C08C34114;
-        Mon, 13 Jun 2022 10:26:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27C96B80EA4;
+        Mon, 13 Jun 2022 10:26:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86030C34114;
+        Mon, 13 Jun 2022 10:26:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115962;
-        bh=yezBWBIj2lDVCShdvT7sJfdI2ltpm1U6UJxUTLHm4jA=;
+        s=korg; t=1655115967;
+        bh=T0S4q852qc6i0xR7i/pEPgwa5LSAmd1UPlbrDduglXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qQxH7rLwt5VhV/QUQDfjK9FCiWOOIxEo8cBs+ysAhzzy8eqIbPlYYnglshoZZ+fUs
-         lcJCwKOUYMlTdjxpjgETr9lgsQBlBpbSSvghS6YujCFHZjI9MZLjzuJVZLudpBo9tB
-         cfENLsiggMquKcQjosvDxrtkQeEXb/GO5ESAF6r8=
+        b=XM67yK8AXc7zCqI7oWWva4JstJ1h8apNQNFgOa2/pLaIcNVHI2arsOxCXFXRmM1WP
+         VlSAWW+7wj1sAfDy/DyVAntEDaPB7Ca4VqzDJpAxmuQkQoa1QDitJ/idDZF8EceueP
+         Uw9A0wb47wf9k4CBzghpwuKzzFubesTltytRTzEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 095/218] powerpc/fsl_rio: Fix refcount leak in fsl_rio_setup
-Date:   Mon, 13 Jun 2022 12:09:13 +0200
-Message-Id: <20220613094923.429816231@linuxfoundation.org>
+        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 097/218] iommu/mediatek: Add list_del in mtk_iommu_remove
+Date:   Mon, 13 Jun 2022 12:09:15 +0200
+Message-Id: <20220613094923.491109215@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -49,38 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit fcee96924ba1596ca80a6770b2567ca546f9a482 ]
+[ Upstream commit ee55f75e4bcade81d253163641b63bef3e76cac4 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+Lack the list_del in the mtk_iommu_remove, and remove
+bus_set_iommu(*, NULL) since there may be several iommu HWs.
+we can not bus_set_iommu null when one iommu driver unbind.
 
-Fixes: abc3aeae3aaa ("fsl-rio: Add two ports and rapidio message units support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220512123724.62931-1-linmq006@gmail.com
+This could be a fix for mt2712 which support 2 M4U HW and list them.
+
+Fixes: 7c3a2ec02806 ("iommu/mediatek: Merge 2 M4U HWs into one iommu domain")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20220503071427.2285-6-yong.wu@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/fsl_rio.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/mtk_iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/sysdev/fsl_rio.c b/arch/powerpc/sysdev/fsl_rio.c
-index 5011ffea4e4b..c48ebe677962 100644
---- a/arch/powerpc/sysdev/fsl_rio.c
-+++ b/arch/powerpc/sysdev/fsl_rio.c
-@@ -509,8 +509,10 @@ int fsl_rio_setup(struct platform_device *dev)
- 	if (rc) {
- 		dev_err(&dev->dev, "Can't get %pOF property 'reg'\n",
- 				rmu_node);
-+		of_node_put(rmu_node);
- 		goto err_rmu;
- 	}
-+	of_node_put(rmu_node);
- 	rmu_regs_win = ioremap(rmu_regs.start, resource_size(&rmu_regs));
- 	if (!rmu_regs_win) {
- 		dev_err(&dev->dev, "Unable to map rmu register window\n");
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 0f99e95a1a73..7ac868c71577 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -696,8 +696,7 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 	iommu_device_sysfs_remove(&data->iommu);
+ 	iommu_device_unregister(&data->iommu);
+ 
+-	if (iommu_present(&platform_bus_type))
+-		bus_set_iommu(&platform_bus_type, NULL);
++	list_del(&data->list);
+ 
+ 	clk_disable_unprepare(data->bclk);
+ 	devm_free_irq(&pdev->dev, data->irq, data);
 -- 
 2.35.1
 
