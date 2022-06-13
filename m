@@ -2,96 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC5ACCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:05:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48CACCCA47E
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239490AbiFMIFL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:05:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55526 "EHLO
+        id S239504AbiFMIGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239550AbiFMIEy (ORCPT
+        with ESMTP id S234954AbiFMIGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:04:54 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5431E3C4;
-        Mon, 13 Jun 2022 01:04:49 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        Mon, 13 Jun 2022 04:06:13 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3567D1DA66
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:06:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=8ffIOw5XsQfPp5hHz5PV6qY3XyAav+N05RmGhN9z6Ps=; b=SINAdsM/DQ9UeRWwaSUKeDaP6d
+        uupQQcpR1Zntn2XNgifUeiWUXFaS+Tmt9lYuEHWqemLTXYKxTHbZuasn/oaHvhELKH9E+Ec6uK3mM
+        iCE+/35L6vE0RRFzMDMuGJ+kY8WTlnmvmR/JFN/rDwidc7fOR2b8/c5co9aOZwx4Qb9uXp9Ba9AD3
+        66Ncl0QNU2H6ZkVodeohuTkbtGMs8wpnYw7c/wvSH5z77DoyftwHYlUSUltxV3PvOEvcoUH+EFRS3
+        sdsIHbm+St+aAVFx8ATx67w18dsc8qg+3bqIW/40kkeW1YDyYeSVsC1+5010tTyxToHkxQVbeBmTz
+        f3Obi5jg==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o0f50-007VHj-6I; Mon, 13 Jun 2022 08:05:47 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 770591FAC3;
-        Mon, 13 Jun 2022 08:04:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1655107488; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=y60ZvMkZEvWsM3Un0BjgZp3hCBuh4mCFqBODWskoeZE=;
-        b=akD1NQrPb8kShRnk5+EHe9Cr91LqOhi0QO71GuaEYHpEmW49+LoonALIapZr511qIZPLtq
-        5K/x6DMxM+ZVP6WWM+45emQFsHMbb9xPma3VpqdrtcjOfkUSAQDyXTF1Q+r3dsdJ1rkrQb
-        xo2AJdWVATN3YMr+padQdfhNAuXYTJI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1655107488;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=y60ZvMkZEvWsM3Un0BjgZp3hCBuh4mCFqBODWskoeZE=;
-        b=wVCJhQJLX4rfg077cikqvO4E2WMFayaLWJVwyDa69Hq5geO6iYcXP8dsl3raNUwY8GAfMm
-        Se+tuBPW96J9fFCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C19A613443;
-        Mon, 13 Jun 2022 08:04:47 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id WA+SLJ/vpmJeIAAAMHmgww
-        (envelope-from <osalvador@suse.de>); Mon, 13 Jun 2022 08:04:47 +0000
-Date:   Mon, 13 Jun 2022 10:04:46 +0200
-From:   Oscar Salvador <osalvador@suse.de>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     mike.kravetz@oracle.com, david@redhat.com,
-        akpm@linux-foundation.org, corbet@lwn.net, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id E6CDF3005B7;
+        Mon, 13 Jun 2022 10:05:43 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id D1CDE28498CA5; Mon, 13 Jun 2022 10:05:43 +0200 (CEST)
+Date:   Mon, 13 Jun 2022 10:05:43 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
         Will Deacon <will@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: Re: [PATCH 1/6] mm: hugetlb_vmemmap: delete
- hugetlb_optimize_vmemmap_enabled()
-Message-ID: <Yqbvno7vM5knoh6u@localhost.localdomain>
-References: <20220613063512.17540-1-songmuchun@bytedance.com>
- <20220613063512.17540-2-songmuchun@bytedance.com>
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] locking/lockdep: Use sched_clock() for random numbers.
+Message-ID: <Yqbv17P9eLH0YdPG@hirez.programming.kicks-ass.net>
+References: <YoNn3pTkm5+QzE5k@linutronix.de>
+ <YoNwp+9ko89Tf1ep@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220613063512.17540-2-songmuchun@bytedance.com>
+In-Reply-To: <YoNwp+9ko89Tf1ep@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 02:35:07PM +0800, Muchun Song wrote:
-> The name hugetlb_optimize_vmemmap_enabled() a bit confusing as it tests
-> two conditions (enabled and pages in use).  Instead of coming up to
-> an appropriate name, we could just delete it.  There is already a
-> discussion about deleting it in thread [1].
+On Tue, May 17, 2022 at 11:53:43AM +0200, Jason A. Donenfeld wrote:
+> Hi Sebastian,
 > 
-> There is only one user of hugetlb_optimize_vmemmap_enabled() outside of
-> hugetlb_vmemmap, that is flush_dcache_page() in arch/arm64/mm/flush.c.
-> However, it does not need to call hugetlb_optimize_vmemmap_enabled()
-> in flush_dcache_page() since HugeTLB pages are always fully mapped and
-> only head page will be set PG_dcache_clean meaning only head page's flag
-> may need to be cleared (see commit cf5a501d985b).  So it is easy to
-> remove hugetlb_optimize_vmemmap_enabled().
+> Interesting RT consideration. I hope there aren't too many of these
+> special cases that would necessitate a general mechanism. Fingers
+> crossed this is the only one.
 > 
-> Link: https://lore.kernel.org/all/c77c61c8-8a5a-87e8-db89-d04d8aaab4cc@oracle.com/ [1]
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+> On Tue, May 17, 2022 at 11:16:14AM +0200, Sebastian Andrzej Siewior wrote:
+> > -			cookie.val = 1 + (prandom_u32() >> 16);
+> > +			cookie.val = 1 + (sched_clock() & 0xffff);
+> >  			hlock->pin_count += cookie.val;
+>  
+> I have no idea what the requirements here are.
 
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Mostly nothing. It's debug code, and if someone wants to circumvent they
+can, but then their code is ugly and stands out like a sort thumb which
+then serves its goal as it won't pass review etc..
 
+> What would happen if you
+> just did atomic_inc_return(&some_global) instead? That'd be faster
+> anyhow, and it's not like 16 bits gives you much variance anyway...
 
--- 
-Oscar Salvador
-SUSE Labs
+That would in fact be slower, sched_clock() will, on any sane hardware,
+be a rdtsc, mul and shr, which are all local.
