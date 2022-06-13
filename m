@@ -2,41 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CBDC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4196C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:36:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232563AbiFMTe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:34:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39268 "EHLO
+        id S231819AbiFMTg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351242AbiFMTef (ORCPT
+        with ESMTP id S245565AbiFMTgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:34:35 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C773DA73
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:58:26 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id EDC2068AFE; Mon, 13 Jun 2022 19:58:16 +0200 (CEST)
-Date:   Mon, 13 Jun 2022 19:58:16 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     "rasheed.hsueh" <rasheed.hsueh@lcfc.corp-partner.google.com>
-Cc:     kbusch@kernel.org, axboe@fb.com, hch@lst.de, sagi@grimberg.me,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rasheed.Hsueh@lcfuturecenter.com, wuxy23@lenovo.com,
-        gwendal@chromium.org, rasheed.yh@gmail.com
-Subject: Re: [PATCH v1 1/1] nvme-pci: disable write zeros support on UMIC
- and Samsung SSDs
-Message-ID: <20220613175816.GD15847@lst.de>
-References: <20220610062734.9927-1-rasheed.hsueh@lcfc.corp-partner.google.com> <20220610062734.9927-2-rasheed.hsueh@lcfc.corp-partner.google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610062734.9927-2-rasheed.hsueh@lcfc.corp-partner.google.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+        Mon, 13 Jun 2022 15:36:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F46F1117F
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 11:03:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E182361192
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 18:03:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAED1C341C4;
+        Mon, 13 Jun 2022 18:02:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1655143380;
+        bh=0nCqIev+TzjLtB3pTABL/JjV/UBryXSplYSxvst+YE8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rZCKCG4sw4Ei+r/spci/prFohB6UEYP7KI5MWc74R38RiyoM4H4yoBFILn+OqcdQX
+         vcMCsDtXFFbWBMiWAAUy/Xr+wBXLR8hYKYoXMO/CBfATOBhhP7KNZtJP8FzKC6zChb
+         PNQzdTT86h4/Yr767PMYDk0rHr+aAFeogOC/23Dc=
+Date:   Mon, 13 Jun 2022 11:02:59 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     <aarcange@redhat.com>, <willy@infradead.org>, <vbabka@suse.cz>,
+        <dhowells@redhat.com>, <neilb@suse.de>, <apopple@nvidia.com>,
+        <david@redhat.com>, <surenb@google.com>, <peterx@redhat.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/7] mm/khugepaged: remove unneeded shmem_huge_enabled()
+ check
+Message-Id: <20220613110259.80507ec6a6472342a951dad4@linux-foundation.org>
+In-Reply-To: <ac9e17d1-18f8-aa63-6c52-1822c752b63f@huawei.com>
+References: <20220611084731.55155-1-linmiaohe@huawei.com>
+        <20220611084731.55155-2-linmiaohe@huawei.com>
+        <20220611133336.b582edd4c2c2df15f5561d2b@linux-foundation.org>
+        <ac9e17d1-18f8-aa63-6c52-1822c752b63f@huawei.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks,
+On Mon, 13 Jun 2022 09:48:27 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
 
-applied to nvme-5.19.
+> > I updated this to
+> > 
+> > If we reach here, hugepage_vma_check() has already made sure that hugepage
+> > is enabled for shmem, via its call to hugepage_vma_check().  Remove this
+> > duplicated check.
+> 
+> Do you mean "khugepaged_scan_mm_slot() has already made sure that hugepage is
+> enabled for shmem, via its call to hugepage_vma_check()"?
+
+yup, thanks.
