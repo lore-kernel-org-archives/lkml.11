@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6014FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 805F4CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243625AbiFMKZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
+        id S243761AbiFMKZf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:25:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244168AbiFMKXt (ORCPT
+        with ESMTP id S244492AbiFMKX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:23:49 -0400
+        Mon, 13 Jun 2022 06:23:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B61823177;
-        Mon, 13 Jun 2022 03:18:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2253201A1;
+        Mon, 13 Jun 2022 03:18:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 123C260023;
-        Mon, 13 Jun 2022 10:18:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15F26C3411C;
-        Mon, 13 Jun 2022 10:18:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D01CA60765;
+        Mon, 13 Jun 2022 10:18:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E12A1C34114;
+        Mon, 13 Jun 2022 10:18:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115489;
-        bh=bNxTvQwfvlCQhLBV5XP5eB24HHOeNW7RiIDKe2u+9rk=;
+        s=korg; t=1655115492;
+        bh=lpxqYW+fUA9S70RTKT4ltEZOaTyDLcHIQoBxPd03FBs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KnS6IYc5lii/LuR6vlcRA3cFsuCc+Hop77eu0B8PTmeqo18xBerLni27fN8+k3Mye
-         hNj3fR0/ClqNDWSnfDw3ArDbUkqU/WDWmwpa07GNKie0gVsSYtuWN39SuBolqSKVDH
-         aN+bP4vOrMtVQF+zNvGJ921sdoFHK3wEiMZLF5FU=
+        b=C+q7z7pHKNuLxQrkXSbEvlqTjnrPT3vX56638hlGSXoCl38urBWn7ZriwNrgWRref
+         TnmEsh/S//le5erd0i8P7vfq+BL2LeAFVfn3A+CDF8WUZjHloa86CWTirqc0ZeB79U
+         JBO/Nu+afiezBII+KLEs6f25W2+hxj6ryYf1j0DY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 4.9 095/167] um: Fix out-of-bounds read in LDT setup
-Date:   Mon, 13 Jun 2022 12:09:29 +0200
-Message-Id: <20220613094903.205609371@linuxfoundation.org>
+        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 4.9 104/167] dt-bindings: gpio: altera: correct interrupt-cells
+Date:   Mon, 13 Jun 2022 12:09:38 +0200
+Message-Id: <20220613094905.156971203@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,71 +47,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+From: Dinh Nguyen <dinguyen@kernel.org>
 
-commit 2a4a62a14be1947fa945c5c11ebf67326381a568 upstream.
+commit 3a21c3ac93aff7b4522b152399df8f6a041df56d upstream.
 
-syscall_stub_data() expects the data_count parameter to be the number of
-longs, not bytes.
+update documentation to correctly state the interrupt-cells to be 2.
 
- ==================================================================
- BUG: KASAN: stack-out-of-bounds in syscall_stub_data+0x70/0xe0
- Read of size 128 at addr 000000006411f6f0 by task swapper/1
-
- CPU: 0 PID: 1 Comm: swapper Not tainted 5.18.0+ #18
- Call Trace:
-  show_stack.cold+0x166/0x2a7
-  __dump_stack+0x3a/0x43
-  dump_stack_lvl+0x1f/0x27
-  print_report.cold+0xdb/0xf81
-  kasan_report+0x119/0x1f0
-  kasan_check_range+0x3a3/0x440
-  memcpy+0x52/0x140
-  syscall_stub_data+0x70/0xe0
-  write_ldt_entry+0xac/0x190
-  init_new_ldt+0x515/0x960
-  init_new_context+0x2c4/0x4d0
-  mm_init.constprop.0+0x5ed/0x760
-  mm_alloc+0x118/0x170
-  0x60033f48
-  do_one_initcall+0x1d7/0x860
-  0x60003e7b
-  kernel_init+0x6e/0x3d4
-  new_thread_handler+0x1e7/0x2c0
-
- The buggy address belongs to stack of task swapper/1
-  and is located at offset 64 in frame:
-  init_new_ldt+0x0/0x960
-
- This frame has 2 objects:
-  [32, 40) 'addr'
-  [64, 80) 'desc'
- ==================================================================
-
-Fixes: 858259cf7d1c443c83 ("uml: maintain own LDT entries")
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Fixes: 4fd9bbc6e071 ("drivers/gpio: Altera soft IP GPIO driver devicetree binding")
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/um/ldt.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/gpio/gpio-altera.txt |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/arch/x86/um/ldt.c
-+++ b/arch/x86/um/ldt.c
-@@ -23,9 +23,11 @@ static long write_ldt_entry(struct mm_id
- {
- 	long res;
- 	void *stub_addr;
-+
-+	BUILD_BUG_ON(sizeof(*desc) % sizeof(long));
-+
- 	res = syscall_stub_data(mm_idp, (unsigned long *)desc,
--				(sizeof(*desc) + sizeof(long) - 1) &
--				    ~(sizeof(long) - 1),
-+				sizeof(*desc) / sizeof(long),
- 				addr, &stub_addr);
- 	if (!res) {
- 		unsigned long args[] = { func,
+--- a/Documentation/devicetree/bindings/gpio/gpio-altera.txt
++++ b/Documentation/devicetree/bindings/gpio/gpio-altera.txt
+@@ -9,8 +9,9 @@ Required properties:
+   - The second cell is reserved and is currently unused.
+ - gpio-controller : Marks the device node as a GPIO controller.
+ - interrupt-controller: Mark the device node as an interrupt controller
+-- #interrupt-cells : Should be 1. The interrupt type is fixed in the hardware.
++- #interrupt-cells : Should be 2. The interrupt type is fixed in the hardware.
+   - The first cell is the GPIO offset number within the GPIO controller.
++  - The second cell is the interrupt trigger type and level flags.
+ - interrupts: Specify the interrupt.
+ - altr,interrupt-type: Specifies the interrupt trigger type the GPIO
+   hardware is synthesized. This field is required if the Altera GPIO controller
+@@ -38,6 +39,6 @@ gpio_altr: gpio@0xff200000 {
+ 	altr,interrupt-type = <IRQ_TYPE_EDGE_RISING>;
+ 	#gpio-cells = <2>;
+ 	gpio-controller;
+-	#interrupt-cells = <1>;
++	#interrupt-cells = <2>;
+ 	interrupt-controller;
+ };
 
 
