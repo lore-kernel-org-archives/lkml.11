@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A91ACC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90722C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:11:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381331AbiFMOK7 (ORCPT
+        id S1381437AbiFMOLE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45104 "EHLO
+        Mon, 13 Jun 2022 10:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381242AbiFMOEN (ORCPT
+        with ESMTP id S1381329AbiFMOER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:04:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5909157C;
-        Mon, 13 Jun 2022 04:38:59 -0700 (PDT)
+        Mon, 13 Jun 2022 10:04:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC30915A0;
+        Mon, 13 Jun 2022 04:39:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A2E560B6E;
-        Mon, 13 Jun 2022 11:38:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DFA6C34114;
-        Mon, 13 Jun 2022 11:38:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E52A4B80E2C;
+        Mon, 13 Jun 2022 11:39:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C296C34114;
+        Mon, 13 Jun 2022 11:39:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120339;
-        bh=gXTEpPeId4ZlzGs8pHsDB6a7db58EDOdd6nXdpvtzYQ=;
+        s=korg; t=1655120349;
+        bh=E4rQH1VFVcVFFMQSB2xDZNS++oZ3MPwR5If0rkwwWrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X4guPvLNo3eWW5nKSFj1O1ZHVv0X3XXPig+Hlo6kd0VPk+pHU9cuFB7ZJ3B6ntCV6
-         vAtjr+m2Yj3W531/VvPmVCyTCJN7mfAh5fnPg2lXZN3WW34xGYwrfgrikf5k+MY75k
-         U+jPIdlP5ol0Wum8f5Fto5Uk9hZJERxbBdK0M2pY=
+        b=S4ST9fID+mq+wMg9HYV4FTOfzSs6xZnfjTBPQ5mHzifhniXv450AKUSAQaxOZHPTb
+         6hkui1oXqLzAm37Lbwc8Epz1oTqW1wIRDj6FFQ52LTenVYJFrPm2Q1h/e4tHVvr8Y3
+         3QOOJrY1sXRY0obPGbfq5/zjMWLSA23DXdG5aEVQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 337/339] random: account for arch randomness in bits
-Date:   Mon, 13 Jun 2022 12:12:42 +0200
-Message-Id: <20220613094936.953753352@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH 5.18 328/339] drm/bridge: analogix_dp: Support PSR-exit to disable transition
+Date:   Mon, 13 Jun 2022 12:12:33 +0200
+Message-Id: <20220613094936.693527072@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -48,57 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Brian Norris <briannorris@chromium.org>
 
-commit 77fc95f8c0dc9e1f8e620ec14d2fb65028fb7adc upstream.
+commit ca871659ec1606d33b1e76de8d4cf924cf627e34 upstream.
 
-Rather than accounting in bytes and multiplying (shifting), we can just
-account in bits and avoid the shift. The main motivation for this is
-there are other patches in flux that expand this code a bit, and
-avoiding the duplication of "* 8" everywhere makes things a bit clearer.
+Most eDP panel functions only work correctly when the panel is not in
+self-refresh. In particular, analogix_dp_bridge_disable() tends to hit
+AUX channel errors if the panel is in self-refresh.
 
-Cc: stable@vger.kernel.org
-Fixes: 12e45a2a6308 ("random: credit architectural init the exact amount")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Given the above, it appears that so far, this driver assumes that we are
+never in self-refresh when it comes time to fully disable the bridge.
+Prior to commit 846c7dfc1193 ("drm/atomic: Try to preserve the crtc
+enabled state in drm_atomic_remove_fb, v2."), this tended to be true,
+because we would automatically disable the pipe when framebuffers were
+removed, and so we'd typically disable the bridge shortly after the last
+display activity.
+
+However, that is not guaranteed: an idle (self-refresh) display pipe may
+be disabled, e.g., when switching CRTCs. We need to exit PSR first.
+
+Stable notes: this is definitely a bugfix, and the bug has likely
+existed in some form for quite a while. It may predate the "PSR helpers"
+refactor, but the code looked very different before that, and it's
+probably not worth rewriting the fix.
+
+Cc: <stable@vger.kernel.org>
+Fixes: 6c836d965bad ("drm/rockchip: Use the helpers for PSR")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220228122522.v2.1.I161904be17ba14526f78536ccd78b85818449b51@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   42 +++++++++++++++++++--
+ 1 file changed, 38 insertions(+), 4 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -817,7 +817,7 @@ early_param("random.trust_bootloader", p
- int __init random_init(const char *command_line)
- {
- 	ktime_t now = ktime_get_real();
--	unsigned int i, arch_bytes;
-+	unsigned int i, arch_bits;
- 	unsigned long entropy;
- 
- #if defined(LATENT_ENTROPY_PLUGIN)
-@@ -825,12 +825,12 @@ int __init random_init(const char *comma
- 	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
- #endif
- 
--	for (i = 0, arch_bytes = BLAKE2S_BLOCK_SIZE;
-+	for (i = 0, arch_bits = BLAKE2S_BLOCK_SIZE * 8;
- 	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(entropy)) {
- 		if (!arch_get_random_seed_long_early(&entropy) &&
- 		    !arch_get_random_long_early(&entropy)) {
- 			entropy = random_get_entropy();
--			arch_bytes -= sizeof(entropy);
-+			arch_bits -= sizeof(entropy) * 8;
- 		}
- 		_mix_pool_bytes(&entropy, sizeof(entropy));
- 	}
-@@ -842,7 +842,7 @@ int __init random_init(const char *comma
- 	if (crng_ready())
- 		crng_reseed();
- 	else if (trust_cpu)
--		_credit_init_bits(arch_bytes * 8);
-+		_credit_init_bits(arch_bits);
- 
- 	return 0;
+--- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
++++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
+@@ -1269,6 +1269,25 @@ static int analogix_dp_bridge_attach(str
  }
+ 
+ static
++struct drm_crtc *analogix_dp_get_old_crtc(struct analogix_dp_device *dp,
++					  struct drm_atomic_state *state)
++{
++	struct drm_encoder *encoder = dp->encoder;
++	struct drm_connector *connector;
++	struct drm_connector_state *conn_state;
++
++	connector = drm_atomic_get_old_connector_for_encoder(state, encoder);
++	if (!connector)
++		return NULL;
++
++	conn_state = drm_atomic_get_old_connector_state(state, connector);
++	if (!conn_state)
++		return NULL;
++
++	return conn_state->crtc;
++}
++
++static
+ struct drm_crtc *analogix_dp_get_new_crtc(struct analogix_dp_device *dp,
+ 					  struct drm_atomic_state *state)
+ {
+@@ -1448,14 +1467,16 @@ analogix_dp_bridge_atomic_disable(struct
+ {
+ 	struct drm_atomic_state *old_state = old_bridge_state->base.state;
+ 	struct analogix_dp_device *dp = bridge->driver_private;
+-	struct drm_crtc *crtc;
++	struct drm_crtc *old_crtc, *new_crtc;
++	struct drm_crtc_state *old_crtc_state = NULL;
+ 	struct drm_crtc_state *new_crtc_state = NULL;
++	int ret;
+ 
+-	crtc = analogix_dp_get_new_crtc(dp, old_state);
+-	if (!crtc)
++	new_crtc = analogix_dp_get_new_crtc(dp, old_state);
++	if (!new_crtc)
+ 		goto out;
+ 
+-	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, crtc);
++	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, new_crtc);
+ 	if (!new_crtc_state)
+ 		goto out;
+ 
+@@ -1464,6 +1485,19 @@ analogix_dp_bridge_atomic_disable(struct
+ 		return;
+ 
+ out:
++	old_crtc = analogix_dp_get_old_crtc(dp, old_state);
++	if (old_crtc) {
++		old_crtc_state = drm_atomic_get_old_crtc_state(old_state,
++							       old_crtc);
++
++		/* When moving from PSR to fully disabled, exit PSR first. */
++		if (old_crtc_state && old_crtc_state->self_refresh_active) {
++			ret = analogix_dp_disable_psr(dp);
++			if (ret)
++				DRM_ERROR("Failed to disable psr (%d)\n", ret);
++		}
++	}
++
+ 	analogix_dp_bridge_disable(bridge);
+ }
+ 
 
 
