@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92828C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACDEFCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353111AbiFMLTL (ORCPT
+        id S1353244AbiFMLTg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36518 "EHLO
+        Mon, 13 Jun 2022 07:19:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352993AbiFMLOx (ORCPT
+        with ESMTP id S1353136AbiFMLPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:14:53 -0400
+        Mon, 13 Jun 2022 07:15:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598BFF5B0;
-        Mon, 13 Jun 2022 03:37:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266371582D;
+        Mon, 13 Jun 2022 03:37:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD2D6B80EAA;
-        Mon, 13 Jun 2022 10:37:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14845C34114;
-        Mon, 13 Jun 2022 10:37:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7809B80EA8;
+        Mon, 13 Jun 2022 10:37:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D0FBC34114;
+        Mon, 13 Jun 2022 10:37:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116646;
-        bh=GZVRwy7337SVLmv0fEGVPgfQHVoUPUCbvcYZYxp8WFg=;
+        s=korg; t=1655116658;
+        bh=LilBgImtMP00Hj4YC1n6y+P+oD7/pOps6At/IqVXRsU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yPopj2YuMYAryuFkKcFmMc4yktGMnrT+orMh+Px6Xsi3h9UnSg1EoNjHSettIoqJZ
-         ESJXiohNDrUezMPcXQl0d/DP3C0KbwTsPsVIteP8GdiAmFX6PxVyjaSgTbOhOy5Nxd
-         y2KKCYwB//Qomzj+n9fajIVyagceum64ld4K8cEQ=
+        b=uXCFYynnCN3uFit4IU3llGLsVOA7YnbM6c/s45dHk6ZwNPzD8Vn2ZGh0Xe2g5jh8g
+         oNMoyjgEWncR13Sd1mhxLx6OdsqO1LrOcSHeqq9MNmqtlRdgoGhnb4YCXfrT3YGfAB
+         RFqZfyCw89MpUwWGRr9gs9g7SpGgmp66exfvNoj0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vinod Polimera <quic_vpolimer@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 113/411] drm/msm/disp/dpu1: set vbif hw config to NULL to avoid use after memory free during pm runtime resume
-Date:   Mon, 13 Jun 2022 12:06:26 +0200
-Message-Id: <20220613094932.061365971@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
+Subject: [PATCH 5.4 138/411] media: pvrusb2: fix array-index-out-of-bounds in pvr2_i2c_core_init
+Date:   Mon, 13 Jun 2022 12:06:51 +0200
+Message-Id: <20220613094932.807965320@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,53 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinod Polimera <quic_vpolimer@quicinc.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit fa5186b279ecf44b14fb435540d2065be91cb1ed ]
+[ Upstream commit 471bec68457aaf981add77b4f590d65dd7da1059 ]
 
-BUG: Unable to handle kernel paging request at virtual address 006b6b6b6b6b6be3
+Syzbot reported that -1 is used as array index. The problem was in
+missing validation check.
 
-Call trace:
-  dpu_vbif_init_memtypes+0x40/0xb8
-  dpu_runtime_resume+0xcc/0x1c0
-  pm_generic_runtime_resume+0x30/0x44
-  __genpd_runtime_resume+0x68/0x7c
-  genpd_runtime_resume+0x134/0x258
-  __rpm_callback+0x98/0x138
-  rpm_callback+0x30/0x88
-  rpm_resume+0x36c/0x49c
-  __pm_runtime_resume+0x80/0xb0
-  dpu_core_irq_uninstall+0x30/0xb0
-  dpu_irq_uninstall+0x18/0x24
-  msm_drm_uninit+0xd8/0x16c
+hdw->unit_number is initialized with -1 and then if init table walk fails
+this value remains unchanged. Since code blindly uses this member for
+array indexing adding sanity check is the easiest fix for that.
 
-Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483255/
-Link: https://lore.kernel.org/r/1650857213-30075-1-git-send-email-quic_vpolimer@quicinc.com
-[DB: fixed Fixes tag]
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+hdw->workpoll initialization moved upper to prevent warning in
+__flush_work.
+
+Reported-and-tested-by: syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
+
+Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index 72f487692adb..c08c67338d73 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -599,8 +599,10 @@ static void _dpu_kms_hw_destroy(struct dpu_kms *dpu_kms)
- 		for (i = 0; i < dpu_kms->catalog->vbif_count; i++) {
- 			u32 vbif_idx = dpu_kms->catalog->vbif[i].id;
+diff --git a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+index 2f00679f65a0..11e7fcfc3f19 100644
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -2570,6 +2570,11 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
+ 	} while (0);
+ 	mutex_unlock(&pvr2_unit_mtx);
  
--			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx])
-+			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx]) {
- 				dpu_hw_vbif_destroy(dpu_kms->hw_vbif[vbif_idx]);
-+				dpu_kms->hw_vbif[vbif_idx] = NULL;
-+			}
- 		}
- 	}
++	INIT_WORK(&hdw->workpoll, pvr2_hdw_worker_poll);
++
++	if (hdw->unit_number == -1)
++		goto fail;
++
+ 	cnt1 = 0;
+ 	cnt2 = scnprintf(hdw->name+cnt1,sizeof(hdw->name)-cnt1,"pvrusb2");
+ 	cnt1 += cnt2;
+@@ -2581,8 +2586,6 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
+ 	if (cnt1 >= sizeof(hdw->name)) cnt1 = sizeof(hdw->name)-1;
+ 	hdw->name[cnt1] = 0;
+ 
+-	INIT_WORK(&hdw->workpoll,pvr2_hdw_worker_poll);
+-
+ 	pvr2_trace(PVR2_TRACE_INIT,"Driver unit number is %d, name is %s",
+ 		   hdw->unit_number,hdw->name);
  
 -- 
 2.35.1
