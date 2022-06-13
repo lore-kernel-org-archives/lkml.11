@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A429C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D409C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347634AbiFMMLL (ORCPT
+        id S1349501AbiFMMLS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:11:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54112 "EHLO
+        Mon, 13 Jun 2022 08:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359021AbiFMMFI (ORCPT
+        with ESMTP id S1359042AbiFMMFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:05:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C09B255BF;
-        Mon, 13 Jun 2022 03:58:35 -0700 (PDT)
+        Mon, 13 Jun 2022 08:05:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44B525C48;
+        Mon, 13 Jun 2022 03:58:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D3F8613E9;
-        Mon, 13 Jun 2022 10:58:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA9DCC34114;
-        Mon, 13 Jun 2022 10:58:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FE9AB80D3A;
+        Mon, 13 Jun 2022 10:58:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA2A3C34114;
+        Mon, 13 Jun 2022 10:58:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117914;
-        bh=2p8gEQy7N4nmmIhZpnKGXvMKWI0J2oK3wHed5skNLhI=;
+        s=korg; t=1655117920;
+        bh=UyTGTZOw/Ev9o5JpBoq+FIzadi3yCuLzcQ0l8Ah+elw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1V82wrbOeBcZgHCHE3+VBYFxAovyV0Jler7sYGpUQCVSUPqBJzhlZQy0qIVTzuU+N
-         sdObW1GLdrGEuUnSrdnUe6JM4EpoTGvE+IbSHZ2WusxdlBc5T9rdQ1q0JEUKmMNEjY
-         Jj+EFNVP11SSQr/o+54pHocT+ftgjFQ24mS64d3Y=
+        b=mC5M1XozrAGeem8jY2FIlQVNzhcO70bhbMbaSGELLeIvfBsWVbMst3DJJ0Mp3EZ6s
+         7H9byXSq6Wrui3KjFIVSukixoHSZHZK18QzOCkEByNrHZ6YOj2dTx0nyAMqg8tmD18
+         qMaLE7zssI+g4vpJVe8fvthfyk0EZ+gQVkGdsf5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 4.19 168/287] irqchip/armada-370-xp: Do not touch Performance Counter Overflow on A375, A38x, A39x
-Date:   Mon, 13 Jun 2022 12:09:52 +0200
-Message-Id: <20220613094928.970977597@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>
+Subject: [PATCH 4.19 178/287] carl9170: tx: fix an incorrect use of list iterator
+Date:   Mon, 13 Jun 2022 12:10:02 +0200
+Message-Id: <20220613094929.267955726@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,45 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit a3d66a76348daf559873f19afc912a2a7c2ccdaf upstream.
+commit 54a6f29522da3c914da30e50721dedf51046449a upstream.
 
-Register ARMADA_370_XP_INT_FABRIC_MASK_OFFS is Armada 370 and XP specific
-and on new Armada platforms it has different meaning. It does not configure
-Performance Counter Overflow interrupt masking. So do not touch this
-register on non-A370/XP platforms (A375, A38x and A39x).
+If the previous list_for_each_entry_continue_rcu() don't exit early
+(no goto hit inside the loop), the iterator 'cvif' after the loop
+will be a bogus pointer to an invalid structure object containing
+the HEAD (&ar->vif_list). As a result, the use of 'cvif' after that
+will lead to a invalid memory access (i.e., 'cvif->id': the invalid
+pointer dereference when return back to/after the callsite in the
+carl9170_update_beacon()).
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
+The original intention should have been to return the valid 'cvif'
+when found in list, NULL otherwise. So just return NULL when no
+entry found, to fix this bug.
+
 Cc: stable@vger.kernel.org
-Fixes: 28da06dfd9e4 ("irqchip: armada-370-xp: Enable the PMU interrupts")
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220425113706.29310-1-pali@kernel.org
+Fixes: 1f1d9654e183c ("carl9170: refactor carl9170_update_beacon")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Acked-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220328122820.1004-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-armada-370-xp.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/carl9170/tx.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/irqchip/irq-armada-370-xp.c
-+++ b/drivers/irqchip/irq-armada-370-xp.c
-@@ -392,7 +392,16 @@ static void armada_xp_mpic_smp_cpu_init(
- 
- static void armada_xp_mpic_perf_init(void)
- {
--	unsigned long cpuid = cpu_logical_map(smp_processor_id());
-+	unsigned long cpuid;
+--- a/drivers/net/wireless/ath/carl9170/tx.c
++++ b/drivers/net/wireless/ath/carl9170/tx.c
+@@ -1554,6 +1554,9 @@ static struct carl9170_vif_info *carl917
+ 					goto out;
+ 			}
+ 		} while (ar->beacon_enabled && i--);
 +
-+	/*
-+	 * This Performance Counter Overflow interrupt is specific for
-+	 * Armada 370 and XP. It is not available on Armada 375, 38x and 39x.
-+	 */
-+	if (!of_machine_is_compatible("marvell,armada-370-xp"))
-+		return;
-+
-+	cpuid = cpu_logical_map(smp_processor_id());
++		/* no entry found in list */
++		return NULL;
+ 	}
  
- 	/* Enable Performance Counter Overflow interrupts */
- 	writel(ARMADA_370_XP_INT_CAUSE_PERF(cpuid),
+ out:
 
 
