@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F230DCCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3581CCA485
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352639AbiFMLSo (ORCPT
+        id S1352662AbiFMLSs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
+        Mon, 13 Jun 2022 07:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352808AbiFMLOY (ORCPT
+        with ESMTP id S1352815AbiFMLOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:14:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51ECB1C5;
-        Mon, 13 Jun 2022 03:37:03 -0700 (PDT)
+        Mon, 13 Jun 2022 07:14:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D19E0F8;
+        Mon, 13 Jun 2022 03:37:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 567FDB80EAA;
-        Mon, 13 Jun 2022 10:37:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1AEFC34114;
-        Mon, 13 Jun 2022 10:37:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88A2460FDB;
+        Mon, 13 Jun 2022 10:37:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 950ADC34114;
+        Mon, 13 Jun 2022 10:37:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116621;
-        bh=qgNF03BzyydHEE+eN1RbZV5OqonJAYMYPAyXTwdOkG0=;
+        s=korg; t=1655116624;
+        bh=3zHP3TCuZPZfPGWfwnnSEDLT42aavDbHVWky2CtuQRw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jy1L7AwfcZKFKnMu+tJgH/9fKg8+FarZZ5KnxRu3rrEtKbZKyjk1l1nmu5V/zovOq
-         aDYZ4h/WUarR0WgDW9V8Aw+G01TVTrNTcMn84F+DQ1+0iuTqNwoQfcgvNDaooekunH
-         Lkl6TunahfOZnveLOnwfjVoIP6C0LPkx1phen9yY=
+        b=buIa5DjcqcukBwvXRUxuWgPZw5SgkGhI2c/hI8uCfFod6tWgxypwnS8aNc58rozGv
+         /iuiIx2trXDgmI9WC7gyV2Hj9yioHgRIYkW4+cIIREDMkvpcrk6F+RkGxl8miq/5py
+         JcNRWODfWBQEDlU5drJP1W8irljSn5m8kQW93O5U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Jessica Zhang <quic_jesszhan@quicinc.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 125/411] drm/msm/mdp5: Return error code in mdp5_mixer_release when deadlock is detected
-Date:   Mon, 13 Jun 2022 12:06:38 +0200
-Message-Id: <20220613094932.421802287@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>
+Subject: [PATCH 4.14 218/218] PCI: qcom: Fix unbalanced PHY init on probe errors
+Date:   Mon, 13 Jun 2022 12:11:16 +0200
+Message-Id: <20220613094927.240840505@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,107 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jessica Zhang <quic_jesszhan@quicinc.com>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-[ Upstream commit ca75f6f7c6f89365e40f10f641b15981b1f07c31 ]
+commit 83013631f0f9961416abd812e228c8efbc2f6069 upstream.
 
-There is a possibility for mdp5_get_global_state to return
--EDEADLK when acquiring the modeset lock, but currently global_state in
-mdp5_mixer_release doesn't check for if an error is returned.
+Undo the PHY initialisation (e.g. balance runtime PM) if host
+initialisation fails during probe.
 
-To avoid a NULL dereference error, let's have mdp5_mixer_release
-check if an error is returned and propagate that error.
-
-Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
-Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
-Reviewed-by: Rob Clark <robdclark@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/485181/
-Link: https://lore.kernel.org/r/20220505214051.155-2-quic_jesszhan@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220401133854.10421-3-johan+linaro@kernel.org
+Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+Cc: stable@vger.kernel.org      # 4.5
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c  | 10 ++++++++--
- drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c | 15 +++++++++++----
- drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h |  4 ++--
- 3 files changed, 21 insertions(+), 8 deletions(-)
+ drivers/pci/dwc/pcie-qcom.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-index 395146884a22..9afbce3cb87b 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-@@ -534,9 +534,15 @@ int mdp5_crtc_setup_pipeline(struct drm_crtc *crtc,
- 		if (ret)
- 			return ret;
+--- a/drivers/pci/dwc/pcie-qcom.c
++++ b/drivers/pci/dwc/pcie-qcom.c
+@@ -1302,10 +1302,15 @@ static int qcom_pcie_probe(struct platfo
+ 	ret = dw_pcie_host_init(pp);
+ 	if (ret) {
+ 		dev_err(dev, "cannot initialize host\n");
+-		return ret;
++		goto err_phy_exit;
+ 	}
  
--		mdp5_mixer_release(new_crtc_state->state, old_mixer);
-+		ret = mdp5_mixer_release(new_crtc_state->state, old_mixer);
-+		if (ret)
-+			return ret;
-+
- 		if (old_r_mixer) {
--			mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
-+			ret = mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
-+			if (ret)
-+				return ret;
-+
- 			if (!need_right_mixer)
- 				pipeline->r_mixer = NULL;
- 		}
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
-index 954db683ae44..2536def2a000 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
-@@ -116,21 +116,28 @@ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
  	return 0;
++
++err_phy_exit:
++	phy_exit(pcie->phy);
++
++	return ret;
  }
  
--void mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
-+int mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
- {
- 	struct mdp5_global_state *global_state = mdp5_get_global_state(s);
--	struct mdp5_hw_mixer_state *new_state = &global_state->hwmixer;
-+	struct mdp5_hw_mixer_state *new_state;
- 
- 	if (!mixer)
--		return;
-+		return 0;
-+
-+	if (IS_ERR(global_state))
-+		return PTR_ERR(global_state);
-+
-+	new_state = &global_state->hwmixer;
- 
- 	if (WARN_ON(!new_state->hwmixer_to_crtc[mixer->idx]))
--		return;
-+		return -EINVAL;
- 
- 	DBG("%s: release from crtc %s", mixer->name,
- 	    new_state->hwmixer_to_crtc[mixer->idx]->name);
- 
- 	new_state->hwmixer_to_crtc[mixer->idx] = NULL;
-+
-+	return 0;
- }
- 
- void mdp5_mixer_destroy(struct mdp5_hw_mixer *mixer)
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
-index 43c9ba43ce18..545ee223b9d7 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
-@@ -30,7 +30,7 @@ void mdp5_mixer_destroy(struct mdp5_hw_mixer *lm);
- int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
- 		      uint32_t caps, struct mdp5_hw_mixer **mixer,
- 		      struct mdp5_hw_mixer **r_mixer);
--void mdp5_mixer_release(struct drm_atomic_state *s,
--			struct mdp5_hw_mixer *mixer);
-+int mdp5_mixer_release(struct drm_atomic_state *s,
-+		       struct mdp5_hw_mixer *mixer);
- 
- #endif /* __MDP5_LM_H__ */
--- 
-2.35.1
-
+ static const struct of_device_id qcom_pcie_match[] = {
 
 
