@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5142C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F122BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355061AbiFMLiS (ORCPT
+        id S1355310AbiFMLiX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
+        Mon, 13 Jun 2022 07:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353189AbiFML1i (ORCPT
+        with ESMTP id S1354216AbiFML3C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:27:38 -0400
+        Mon, 13 Jun 2022 07:29:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA7E3E0C0;
-        Mon, 13 Jun 2022 03:42:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D4C3E0C1;
+        Mon, 13 Jun 2022 03:42:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F231B80D19;
-        Mon, 13 Jun 2022 10:42:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2418C34114;
-        Mon, 13 Jun 2022 10:42:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7549B80D3A;
+        Mon, 13 Jun 2022 10:42:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30896C34114;
+        Mon, 13 Jun 2022 10:42:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116970;
-        bh=H04nuasDhByeIQ8tzxm8K5QHJn8KANKlDqZR9DBDYMs=;
+        s=korg; t=1655116975;
+        bh=K2yXXrXOJc54nCTB8w/mOYOtui/+CfR7LNG+DaZIC0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HUN8Y1FhWnskAoQcws1zZRydLj032p/n4noOtjJ6a2avyq1R82lx50FMc+rNfWjqG
-         9ud4HEQnxj+UtdQ43Geu+K5M3b2wWD+pQ4ZsKacb5cZQyj3UNr+7uAdjq5A1y3VIY6
-         qdNFrh9K627mVRz45ci8tnqjmHzkPNLkGVf/zIbs=
+        b=Sqa7NT7xL+ngWLk2NCe7CgwRfNShcjrNsE0Tg6EVexiPFeWDVItLPqGvm/hddrNgv
+         +KEiP9o4V8ISLIcRshDMrH/257o2KtmtEmUt+7W0RGGt38kXocz8gAeL5PnhpBRzad
+         aWceQLaSuPjtcfZ23Nryl2vnd9HN+dmlxpBJ5xRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
-Subject: [PATCH 5.4 240/411] drm/etnaviv: check for reaped mapping in etnaviv_iommu_unmap_gem
-Date:   Mon, 13 Jun 2022 12:08:33 +0200
-Message-Id: <20220613094935.977094823@linuxfoundation.org>
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH 5.4 242/411] drm/bridge: analogix_dp: Grab runtime PM reference for DP-AUX
+Date:   Mon, 13 Jun 2022 12:08:35 +0200
+Message-Id: <20220613094936.035742079@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,38 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Brian Norris <briannorris@chromium.org>
 
-commit e168c25526cd0368af098095c2ded4a008007e1b upstream.
+commit 8fb6c44fe8468f92ac7b8bbfcca4404a4e88645f upstream.
 
-When the mapping is already reaped the unmap must be a no-op, as we
-would otherwise try to remove the mapping twice, corrupting the involved
-data structures.
+If the display is not enable()d, then we aren't holding a runtime PM
+reference here. Thus, it's easy to accidentally cause a hang, if user
+space is poking around at /dev/drm_dp_aux0 at the "wrong" time.
 
-Cc: stable@vger.kernel.org # 5.4
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-Tested-by: Guido Günther <agx@sigxcpu.org>
-Acked-by: Guido Günther <agx@sigxcpu.org>
+Let's get a runtime PM reference, and check that we "see" the panel.
+Don't force any panel power-up, etc., because that can be intrusive, and
+that's not what other drivers do (see
+drivers/gpu/drm/bridge/ti-sn65dsi86.c and
+drivers/gpu/drm/bridge/parade-ps8640.c.)
+
+Fixes: 0d97ad03f422 ("drm/bridge: analogix_dp: Remove duplicated code")
+Cc: <stable@vger.kernel.org>
+Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220301181107.v4.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/etnaviv/etnaviv_mmu.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/etnaviv/etnaviv_mmu.c
-+++ b/drivers/gpu/drm/etnaviv/etnaviv_mmu.c
-@@ -289,6 +289,12 @@ void etnaviv_iommu_unmap_gem(struct etna
+--- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
++++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
+@@ -1630,8 +1630,19 @@ static ssize_t analogix_dpaux_transfer(s
+ 				       struct drm_dp_aux_msg *msg)
+ {
+ 	struct analogix_dp_device *dp = to_dp(aux);
++	int ret;
  
- 	mutex_lock(&context->lock);
- 
-+	/* Bail if the mapping has been reaped by another thread */
-+	if (!mapping->context) {
-+		mutex_unlock(&context->lock);
-+		return;
-+	}
+-	return analogix_dp_transfer(dp, msg);
++	pm_runtime_get_sync(dp->dev);
 +
- 	/* If the vram node is on the mm, unmap and remove the node */
- 	if (mapping->vram_node.mm == &context->mm)
- 		etnaviv_iommu_remove_mapping(context, mapping);
++	ret = analogix_dp_detect_hpd(dp);
++	if (ret)
++		goto out;
++
++	ret = analogix_dp_transfer(dp, msg);
++out:
++	pm_runtime_put(dp->dev);
++
++	return ret;
+ }
+ 
+ struct analogix_dp_device *
 
 
