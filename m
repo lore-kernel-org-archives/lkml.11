@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE222C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6414C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357684AbiFMMA0 (ORCPT
+        id S1357739AbiFMMAf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40180 "EHLO
+        Mon, 13 Jun 2022 08:00:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357806AbiFMLz3 (ORCPT
+        with ESMTP id S1357117AbiFMLwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:55:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57D12F3BD;
-        Mon, 13 Jun 2022 03:55:56 -0700 (PDT)
+        Mon, 13 Jun 2022 07:52:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E3924975;
+        Mon, 13 Jun 2022 03:55:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A26A260EFE;
-        Mon, 13 Jun 2022 10:55:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2471C34114;
-        Mon, 13 Jun 2022 10:55:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE0DBB80D3A;
+        Mon, 13 Jun 2022 10:55:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E0F9C34114;
+        Mon, 13 Jun 2022 10:55:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117755;
-        bh=0Y+q/tL+Nn5pG/ZcL1PUe+mncPQntbDCokN4LDNIT14=;
+        s=korg; t=1655117733;
+        bh=90iBCK+Hlbn9eDCk8g+kD/Y1/nbwcRUKZzHxC01j8Uo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=coCDY3V8DoTiYDGgKcwPTkY9nuSeC7ZUZd++GqLv0OS8q0fEjCgeOERs3lHODLV8F
-         LvKJDPV/eijH7pTk/gy4uo3QyQJUZHAwAMP0DFbG5jGzT9GyDawjRtEh7Xn0yux1e4
-         HacLl6eqoj+NxI3gTyvzdjklvQhQ8DVUiHXbACiA=
+        b=u6ljjNp9HFBqbYdbMlQLtvzJpIWQFBzg7bhbKTdkHG7iNM/k1GmjjsQXzjREwvwYO
+         Hka+5AqAsu6tWrIPN9sMkExVLj3cRqOs5r/FezDdiVOGyBRgtd0VUGBFRAD5FoSojF
+         OcF3hnRyaqq5LcYOJiANN478HT7OWD6glHcwy9Nc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Mel Gorman <mel@csn.ul.ie>,
-        Minchan Kim <minchan.kim@gmail.com>,
-        KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>,
-        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org,
+        syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com,
+        Ying Hsu <yinghsu@chromium.org>,
+        Joseph Hwang <josephsih@chromium.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 120/287] drivers/base/node.c: fix compaction sysfs file leak
-Date:   Mon, 13 Jun 2022 12:09:04 +0200
-Message-Id: <20220613094927.518359538@linuxfoundation.org>
+Subject: [PATCH 4.19 100/287] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
+Date:   Mon, 13 Jun 2022 12:08:44 +0200
+Message-Id: <20220613094926.912754774@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -55,42 +53,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Ying Hsu <yinghsu@chromium.org>
 
-[ Upstream commit da63dc84befaa9e6079a0bc363ff0eaa975f9073 ]
+[ Upstream commit 7aa1e7d15f8a5b65f67bacb100d8fc033b21efa2 ]
 
-Compaction sysfs file is created via compaction_register_node in
-register_node.  But we forgot to remove it in unregister_node.  Thus
-compaction sysfs file is leaked.  Using compaction_unregister_node to fix
-this issue.
+Connecting the same socket twice consecutively in sco_sock_connect()
+could lead to a race condition where two sco_conn objects are created
+but only one is associated with the socket. If the socket is closed
+before the SCO connection is established, the timer associated with the
+dangling sco_conn object won't be canceled. As the sock object is being
+freed, the use-after-free problem happens when the timer callback
+function sco_sock_timeout() accesses the socket. Here's the call trace:
 
-Link: https://lkml.kernel.org/r/20220401070905.43679-1-linmiaohe@huawei.com
-Fixes: ed4a6d7f0676 ("mm: compaction: add /sys trigger for per-node memory compaction")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Rafael J. Wysocki <rafael@kernel.org>
-Cc: Mel Gorman <mel@csn.ul.ie>
-Cc: Minchan Kim <minchan.kim@gmail.com>
-Cc: KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>
-Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+dump_stack+0x107/0x163
+? refcount_inc+0x1c/
+print_address_description.constprop.0+0x1c/0x47e
+? refcount_inc+0x1c/0x7b
+kasan_report+0x13a/0x173
+? refcount_inc+0x1c/0x7b
+check_memory_region+0x132/0x139
+refcount_inc+0x1c/0x7b
+sco_sock_timeout+0xb2/0x1ba
+process_one_work+0x739/0xbd1
+? cancel_delayed_work+0x13f/0x13f
+? __raw_spin_lock_init+0xf0/0xf0
+? to_kthread+0x59/0x85
+worker_thread+0x593/0x70e
+kthread+0x346/0x35a
+? drain_workqueue+0x31a/0x31a
+? kthread_bind+0x4b/0x4b
+ret_from_fork+0x1f/0x30
+
+Link: https://syzkaller.appspot.com/bug?extid=2bef95d3ab4daa10155b
+Reported-by: syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com
+Fixes: e1dee2c1de2b ("Bluetooth: fix repeated calls to sco_sock_kill")
+Signed-off-by: Ying Hsu <yinghsu@chromium.org>
+Reviewed-by: Joseph Hwang <josephsih@chromium.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/node.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/bluetooth/sco.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index 503e2f90e58e..60c2e32f9f61 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -339,6 +339,7 @@ static int register_node(struct node *node, int num)
-  */
- void unregister_node(struct node *node)
- {
-+	compaction_unregister_node(node);
- 	hugetlb_unregister_node(node);		/* no-op, if memoryless node */
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 1e0a1c0a56b5..14b5288d1432 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -563,19 +563,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
+ 	    addr->sa_family != AF_BLUETOOTH)
+ 		return -EINVAL;
  
- 	device_unregister(&node->dev);
+-	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
+-		return -EBADFD;
++	lock_sock(sk);
++	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
++		err = -EBADFD;
++		goto done;
++	}
+ 
+-	if (sk->sk_type != SOCK_SEQPACKET)
+-		return -EINVAL;
++	if (sk->sk_type != SOCK_SEQPACKET) {
++		err = -EINVAL;
++		goto done;
++	}
+ 
+ 	hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
+-	if (!hdev)
+-		return -EHOSTUNREACH;
++	if (!hdev) {
++		err = -EHOSTUNREACH;
++		goto done;
++	}
+ 	hci_dev_lock(hdev);
+ 
+-	lock_sock(sk);
+-
+ 	/* Set destination address and psm */
+ 	bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
+ 
 -- 
 2.35.1
 
