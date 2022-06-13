@@ -2,70 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFB7CCA473
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 09:46:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A63D8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235871AbiFLJnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 05:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42984 "EHLO
+        id S1358764AbiFMMIU (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:08:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiFLJnB (ORCPT
+        with ESMTP id S1358744AbiFMMEk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 05:43:01 -0400
-Received: from mx-out1.startmail.com (mx-out1.startmail.com [145.131.90.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA0612D12
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 02:42:58 -0700 (PDT)
-Date:   Sun, 12 Jun 2022 04:42:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=startmail.com;
-        s=2020-07; t=1655026977;
-        bh=IQ9prYlA/J6R6f9MDzLadU8e2oAyTtHh3QWFvqikGiM=;
-        h=Date:From:To:Message-ID:MIME-Version:Content-Type:
-         Content-Disposition:From:Subject:To:Date:Sender:Content-Type:
-         Content-Transfer-Encoding:Content-Disposition:Mime-Version:
-         Reply-To:In-Reply-To:References:Message-Id:Autocrypt;
-        b=CMzxHsX+B6snFcxoNO0n6joRaeBTj2cXH2FcFUdR3KoMFyAOwZL9lD7kz/RJ5V05C
-         uXoBnrR18JUGTikNRw+vCLAhvUYPUcEg+sNvqlnzQFHuTmNuCW6jxPbgGPlyHBDFjX
-         q910ViQzV7B2df3jhBeRp1LaRE+1XJ6vuHLU5Om+HMz2S29nTX9oaZWTWdD7hEwQ5m
-         DQdrbTShRnUp6/x6hyJpRLXAhveaCXsshH1j9LFjNCyykZWZhKooooEC7KvyUaOTGq
-         gza5aljj1yDRWhB0jqR/oLnpgaJejpuRMi70maKCYDdUfUl8bRzPO92rJY3mwJ7Qlp
-         fuFWtryGfBFYg==
-From:   "Marty E. Plummer" <hanetzer@startmail.com>
-To:     linux-rtc@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, a.zummo@towertech.it
-Message-ID: <20220612094253.4rgbp3mcc44nffl6@proprietary-killer>
+        Mon, 13 Jun 2022 08:04:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4A750032;
+        Mon, 13 Jun 2022 03:57:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A49A261346;
+        Mon, 13 Jun 2022 10:57:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1E00C341C5;
+        Mon, 13 Jun 2022 10:57:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655117871;
+        bh=2MiGSPVt5iRNA+MRCvEt8ZV/VW9I8RfZ6xa1RC7f6sg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lqfVkHhdzUDnp33pTMVLRxNbLej5DJ8az3twn3UkEXIy2JZRmxAZ9xQ1xvsRAnEq7
+         KzjDfHlbwvK+63LAWYcoQaczZf42U4AAgzBHqBZdM7sVSimj2Qt3q1SREW0fcZx1M7
+         9wfmHOxh5HGjUB9VLewYFAjA7e3YyeskvQZ7Nopw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH 4.19 162/287] drm/bridge: analogix_dp: Grab runtime PM reference for DP-AUX
+Date:   Mon, 13 Jun 2022 12:09:46 +0200
+Message-Id: <20220613094928.790591935@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-alexandre.belloni@bootlin.com
-Bcc:
-Subject: RTC: utility function: days to year/month/days?
-Reply-To:
+From: Brian Norris <briannorris@chromium.org>
 
-Hello.
+commit 8fb6c44fe8468f92ac7b8bbfcca4404a4e88645f upstream.
 
-I'm currently working on a rtc driver for my soc (HiSilicon Hi3521a, and
-at least one other, potentially more), and it stores time in the
-following registers:
-RTC_10MS_COUNT: 7 bits, 10ms increments
-RTC_S_COUNT, 6 bits, 1s increments
-RTC_M_COUNT, 6 bits, 1m increments
-RTC_H_COUNT, 5 bits, 1h increments
-RTC_D_COUNT_L, 8 bits, 1d increments, low bits
-RTC_D_COUNT_H, 8 bits, 1d increments, high bits
+If the display is not enable()d, then we aren't holding a runtime PM
+reference here. Thus, it's easy to accidentally cause a hang, if user
+space is poking around at /dev/drm_dp_aux0 at the "wrong" time.
 
-No months or years. Is there any utility function one could use to
-convert 0-65535 days into year/month/days already in the kernel, or is
-that something I'll have to roll myself?
+Let's get a runtime PM reference, and check that we "see" the panel.
+Don't force any panel power-up, etc., because that can be intrusive, and
+that's not what other drivers do (see
+drivers/gpu/drm/bridge/ti-sn65dsi86.c and
+drivers/gpu/drm/bridge/parade-ps8640.c.)
 
-Mail receipients taken from ./scripts/get_maintainers.pl -f
-drivers/rtc/rtc-core.h, so if I'm pinging someone I shouldn't, my
-apologies.
+Fixes: 0d97ad03f422 ("drm/bridge: analogix_dp: Remove duplicated code")
+Cc: <stable@vger.kernel.org>
+Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220301181107.v4.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-Regards,
+--- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
++++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
+@@ -1514,8 +1514,19 @@ static ssize_t analogix_dpaux_transfer(s
+ 				       struct drm_dp_aux_msg *msg)
+ {
+ 	struct analogix_dp_device *dp = to_dp(aux);
++	int ret;
+ 
+-	return analogix_dp_transfer(dp, msg);
++	pm_runtime_get_sync(dp->dev);
++
++	ret = analogix_dp_detect_hpd(dp);
++	if (ret)
++		goto out;
++
++	ret = analogix_dp_transfer(dp, msg);
++out:
++	pm_runtime_put(dp->dev);
++
++	return ret;
+ }
+ 
+ struct analogix_dp_device *
 
-Marty Plummer
 
