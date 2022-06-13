@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A96DCCA48A
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:34:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A06ECCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355149AbiFMLem (ORCPT
+        id S1354316AbiFMLfB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:34:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
+        Mon, 13 Jun 2022 07:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354391AbiFML31 (ORCPT
+        with ESMTP id S1354434AbiFML33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23493A45C;
-        Mon, 13 Jun 2022 03:43:59 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D110DEAE;
+        Mon, 13 Jun 2022 03:44:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5DDBB80D3C;
-        Mon, 13 Jun 2022 10:43:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37D1BC34114;
-        Mon, 13 Jun 2022 10:43:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 49882B80D3F;
+        Mon, 13 Jun 2022 10:44:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF4CCC34114;
+        Mon, 13 Jun 2022 10:44:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117036;
-        bh=glbF9PmGv1Sr/Vx8N/WqhAtpH/1Hm99EupNe3o6SYgk=;
+        s=korg; t=1655117075;
+        bh=RWxaM1YLpMpbFkfbSS+YgAmGIuSLrMLBgNnh7aWAorc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WokWdPDpfC7aCLoCmYh8OTQIjQGSrZIbpOpif5Agufbn44tZtCeViZg93lEvMkqHZ
-         IqL6bhXMtCaNx+E5ABGM8aogx2tTGfAEQGJvMBTSzLoY8bSR6t3nxku5evBYaNWSGu
-         P954zKjt8bOTADStIRiuVszSRoyJXRjir9CwL1ZY=
+        b=XfVIfWdXJTssvMtT7UTaIjLq3km3cDP8ZeUV2Yodxw7okmoWUEKx8HG+tQs5jL5lr
+         f2APJ4u7fMKIPb51IwWyIhWDiqFHVvacQiSaac+xD1MsqeqaoeHgw8SDORbuweY8Eh
+         ZbCnLJfuGIF2jVze3N54MdOUpRcWt7NLswB0VBIY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-Subject: [PATCH 5.4 263/411] gma500: fix an incorrect NULL check on list iterator
-Date:   Mon, 13 Jun 2022 12:08:56 +0200
-Message-Id: <20220613094936.648985364@linuxfoundation.org>
+        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.4 278/411] bfq: Make sure bfqg for which we are queueing requests is online
+Date:   Mon, 13 Jun 2022 12:09:11 +0200
+Message-Id: <20220613094937.095170833@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,49 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Jan Kara <jack@suse.cz>
 
-commit bdef417d84536715145f6dc9cc3275c46f26295a upstream.
+commit 075a53b78b815301f8d3dd1ee2cd99554e34f0dd upstream.
 
-The bug is here:
-	return crtc;
+Bios queued into BFQ IO scheduler can be associated with a cgroup that
+was already offlined. This may then cause insertion of this bfq_group
+into a service tree. But this bfq_group will get freed as soon as last
+bio associated with it is completed leading to use after free issues for
+service tree users. Fix the problem by making sure we always operate on
+online bfq_group. If the bfq_group associated with the bio is not
+online, we pick the first online parent.
 
-The list iterator value 'crtc' will *always* be set and non-NULL by
-list_for_each_entry(), so it is incorrect to assume that the iterator
-value will be NULL if the list is empty or no element is found.
-
-To fix the bug, return 'crtc' when found, otherwise return NULL.
-
-Cc: stable@vger.kernel.org
-fixes: 89c78134cc54d ("gma500: Add Poulsbo support")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Signed-off-by: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327052028.2013-1-xiam0nd.tong@gmail.com
+CC: stable@vger.kernel.org
+Fixes: e21b7a0b9887 ("block, bfq: add full hierarchical scheduling and cgroups support")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-9-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/gma500/psb_intel_display.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ block/bfq-cgroup.c |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/gma500/psb_intel_display.c
-+++ b/drivers/gpu/drm/gma500/psb_intel_display.c
-@@ -532,14 +532,15 @@ void psb_intel_crtc_init(struct drm_devi
- 
- struct drm_crtc *psb_intel_get_crtc_from_pipe(struct drm_device *dev, int pipe)
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -591,10 +591,19 @@ static void bfq_link_bfqg(struct bfq_dat
+ struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
  {
--	struct drm_crtc *crtc = NULL;
-+	struct drm_crtc *crtc;
+ 	struct blkcg_gq *blkg = bio->bi_blkg;
++	struct bfq_group *bfqg;
  
- 	list_for_each_entry(crtc, &dev->mode_config.crtc_list, head) {
- 		struct gma_crtc *gma_crtc = to_gma_crtc(crtc);
-+
- 		if (gma_crtc->pipe == pipe)
--			break;
-+			return crtc;
- 	}
--	return crtc;
-+	return NULL;
+-	if (!blkg)
+-		return bfqd->root_group;
+-	return blkg_to_bfqg(blkg);
++	while (blkg) {
++		bfqg = blkg_to_bfqg(blkg);
++		if (bfqg->online) {
++			bio_associate_blkg_from_css(bio, &blkg->blkcg->css);
++			return bfqg;
++		}
++		blkg = blkg->parent;
++	}
++	bio_associate_blkg_from_css(bio,
++				&bfqg_to_blkg(bfqd->root_group)->blkcg->css);
++	return bfqd->root_group;
  }
  
- int gma_connector_clones(struct drm_device *dev, int type_mask)
+ /**
 
 
