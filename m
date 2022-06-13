@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B84EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:56:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D49AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:56:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357120AbiFMLz7 (ORCPT
+        id S1357138AbiFML4C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56994 "EHLO
+        Mon, 13 Jun 2022 07:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356486AbiFMLuf (ORCPT
+        with ESMTP id S1356492AbiFMLug (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:50:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939B1245B4;
-        Mon, 13 Jun 2022 03:54:05 -0700 (PDT)
+        Mon, 13 Jun 2022 07:50:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1DFA2EA05;
+        Mon, 13 Jun 2022 03:54:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 442FAB80D3F;
-        Mon, 13 Jun 2022 10:54:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2801C34114;
-        Mon, 13 Jun 2022 10:54:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4572B80D3F;
+        Mon, 13 Jun 2022 10:54:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1905AC34114;
+        Mon, 13 Jun 2022 10:54:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117643;
-        bh=1sqiWTJifetRqjEHZwqLt561cgaDMu9t5D9GEacKu30=;
+        s=korg; t=1655117648;
+        bh=rzpCF9NGA5bwgOxj0c20j7PjcvxHifuuAdoYtyCVaoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hLrTzqiqmidAdQKFDIPHxkx3YW9syQP+3Fwu76cMK/3nrzJVWocBncu1Qm9zrZLRh
-         tlljs62ii0Qr4YFXZK322VrTWx86y9BRdZQsdcLBzhn48CK/5qFUsMPbH3VpRz3toB
-         9Gxpn3i1mevoTkSb3nqtzEMMUjkT1OxD35R99lag=
+        b=1lDU104Rqwz1GXAFtA0xErM1fRHLHdqpVcUyeUDsFq8GV5SccdNVt5GbeStVUJOyg
+         Jz09HFNEaouwK/uIlbDMf4NQd+YYd/fndmKxaXKs8wXnvS3/jDjpdVvaDOdu7eh0ug
+         yJHoeR5KnABFpGWtHVVSOrTRQugi+33Sj8Q+ECjA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Borislav Petkov <bp@suse.de>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Jan Kiszka <jan.kiszka@siemens.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 079/287] x86/pm: Fix false positive kmemleak report in msr_build_context()
-Date:   Mon, 13 Jun 2022 12:08:23 +0200
-Message-Id: <20220613094926.271397801@linuxfoundation.org>
+Subject: [PATCH 4.19 070/287] efi: Add missing prototype for efi_capsule_setup_info
+Date:   Mon, 13 Jun 2022 12:08:14 +0200
+Message-Id: <20220613094925.993249933@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -53,159 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-[ Upstream commit b0b592cf08367719e1d1ef07c9f136e8c17f7ec3 ]
+[ Upstream commit aa480379d8bdb33920d68acfd90f823c8af32578 ]
 
-Since
+Fixes "no previous declaration for 'efi_capsule_setup_info'" warnings
+under W=1.
 
-  e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
-
-kmemleak reports this issue:
-
-  unreferenced object 0xffff888009cedc00 (size 256):
-    comm "swapper/0", pid 1, jiffies 4294693823 (age 73.764s)
-    hex dump (first 32 bytes):
-      00 00 00 00 00 00 00 00 48 00 00 00 00 00 00 00  ........H.......
-      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    backtrace:
-      msr_build_context (include/linux/slab.h:621)
-      pm_check_save_msr (arch/x86/power/cpu.c:520)
-      do_one_initcall (init/main.c:1298)
-      kernel_init_freeable (init/main.c:1370)
-      kernel_init (init/main.c:1504)
-      ret_from_fork (arch/x86/entry/entry_64.S:304)
-
-Reproducer:
-
-  - boot the VM with a debug kernel config (see
-    https://github.com/multipath-tcp/mptcp_net-next/issues/268)
-  - wait ~1 minute
-  - start a kmemleak scan
-
-The root cause here is alignment within the packed struct saved_context
-(from suspend_64.h). Kmemleak only searches for pointers that are
-aligned (see how pointers are scanned in kmemleak.c), but pahole shows
-that the saved_msrs struct member and all members after it in the
-structure are unaligned:
-
-  struct saved_context {
-    struct pt_regs             regs;                 /*     0   168 */
-    /* --- cacheline 2 boundary (128 bytes) was 40 bytes ago --- */
-    u16                        ds;                   /*   168     2 */
-
-    ...
-
-    u64                        misc_enable;          /*   232     8 */
-    bool                       misc_enable_saved;    /*   240     1 */
-
-   /* Note below odd offset values for the remainder of this struct */
-
-    struct saved_msrs          saved_msrs;           /*   241    16 */
-    /* --- cacheline 4 boundary (256 bytes) was 1 bytes ago --- */
-    long unsigned int          efer;                 /*   257     8 */
-    u16                        gdt_pad;              /*   265     2 */
-    struct desc_ptr            gdt_desc;             /*   267    10 */
-    u16                        idt_pad;              /*   277     2 */
-    struct desc_ptr            idt;                  /*   279    10 */
-    u16                        ldt;                  /*   289     2 */
-    u16                        tss;                  /*   291     2 */
-    long unsigned int          tr;                   /*   293     8 */
-    long unsigned int          safety;               /*   301     8 */
-    long unsigned int          return_address;       /*   309     8 */
-
-    /* size: 317, cachelines: 5, members: 25 */
-    /* last cacheline: 61 bytes */
-  } __attribute__((__packed__));
-
-Move misc_enable_saved to the end of the struct declaration so that
-saved_msrs fits in before the cacheline 4 boundary.
-
-The comment above the saved_context declaration says to fix wakeup_64.S
-file and __save/__restore_processor_state() if the struct is modified:
-it looks like all the accesses in wakeup_64.S are done through offsets
-which are computed at build-time. Update that comment accordingly.
-
-At the end, the false positive kmemleak report is due to a limitation
-from kmemleak but it is always good to avoid unaligned members for
-optimisation purposes.
-
-Please note that it looks like this issue is not new, e.g.
-
-  https://lore.kernel.org/all/9f1bb619-c4ee-21c4-a251-870bd4db04fa@lwfinger.net/
-  https://lore.kernel.org/all/94e48fcd-1dbd-ebd2-4c91-f39941735909@molgen.mpg.de/
-
-  [ bp: Massage + cleanup commit message. ]
-
-Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
-Suggested-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Link: https://lore.kernel.org/r/20220426202138.498310-1-matthieu.baerts@tessares.net
+Fixes: 2959c95d510c ("efi/capsule: Add support for Quark security header")
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Link: https://lore.kernel.org/r/c28d3f86-dd72-27d1-e2c2-40971b8da6bd@siemens.com
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/suspend_32.h |  2 +-
- arch/x86/include/asm/suspend_64.h | 12 ++++++++----
- 2 files changed, 9 insertions(+), 5 deletions(-)
+ include/linux/efi.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/x86/include/asm/suspend_32.h b/arch/x86/include/asm/suspend_32.h
-index 8be6afb58471..32662cbaa27e 100644
---- a/arch/x86/include/asm/suspend_32.h
-+++ b/arch/x86/include/asm/suspend_32.h
-@@ -21,7 +21,6 @@ struct saved_context {
- #endif
- 	unsigned long cr0, cr2, cr3, cr4;
- 	u64 misc_enable;
--	bool misc_enable_saved;
- 	struct saved_msrs saved_msrs;
- 	struct desc_ptr gdt_desc;
- 	struct desc_ptr idt;
-@@ -30,6 +29,7 @@ struct saved_context {
- 	unsigned long tr;
- 	unsigned long safety;
- 	unsigned long return_address;
-+	bool misc_enable_saved;
- } __attribute__((packed));
+diff --git a/include/linux/efi.h b/include/linux/efi.h
+index 9a5d4b499271..ec89e8bcc92f 100644
+--- a/include/linux/efi.h
++++ b/include/linux/efi.h
+@@ -150,6 +150,8 @@ struct capsule_info {
+ 	size_t			page_bytes_remain;
+ };
  
- #endif /* _ASM_X86_SUSPEND_32_H */
-diff --git a/arch/x86/include/asm/suspend_64.h b/arch/x86/include/asm/suspend_64.h
-index a7af9f53c0cb..b2861400c6a2 100644
---- a/arch/x86/include/asm/suspend_64.h
-+++ b/arch/x86/include/asm/suspend_64.h
-@@ -14,9 +14,13 @@
-  * Image of the saved processor state, used by the low level ACPI suspend to
-  * RAM code and by the low level hibernation code.
-  *
-- * If you modify it, fix arch/x86/kernel/acpi/wakeup_64.S and make sure that
-- * __save/__restore_processor_state(), defined in arch/x86/kernel/suspend_64.c,
-- * still work as required.
-+ * If you modify it, check how it is used in arch/x86/kernel/acpi/wakeup_64.S
-+ * and make sure that __save/__restore_processor_state(), defined in
-+ * arch/x86/power/cpu.c, still work as required.
-+ *
-+ * Because the structure is packed, make sure to avoid unaligned members. For
-+ * optimisation purposes but also because tools like kmemleak only search for
-+ * pointers that are aligned.
-  */
- struct saved_context {
- 	struct pt_regs regs;
-@@ -36,7 +40,6 @@ struct saved_context {
++int efi_capsule_setup_info(struct capsule_info *cap_info, void *kbuff,
++                           size_t hdr_bytes);
+ int __efi_capsule_setup_info(struct capsule_info *cap_info);
  
- 	unsigned long cr0, cr2, cr3, cr4, cr8;
- 	u64 misc_enable;
--	bool misc_enable_saved;
- 	struct saved_msrs saved_msrs;
- 	unsigned long efer;
- 	u16 gdt_pad; /* Unused */
-@@ -48,6 +51,7 @@ struct saved_context {
- 	unsigned long tr;
- 	unsigned long safety;
- 	unsigned long return_address;
-+	bool misc_enable_saved;
- } __attribute__((packed));
- 
- #define loaddebug(thread,register) \
+ /*
 -- 
 2.35.1
 
