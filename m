@@ -2,155 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32727CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48410C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237342AbiFMImC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53526 "EHLO
+        id S239801AbiFMInq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbiFMIl5 (ORCPT
+        with ESMTP id S239488AbiFMIn1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:41:57 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6B1193E3;
-        Mon, 13 Jun 2022 01:41:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=TBu1hM1Fbte1hrb329bc3ivTNLPSxYZoE9gYu5eRiHg=; b=KxzripGEv6RXnFm15+8ZNtwXqY
-        Y0JQlZmUiuwVauVjo8mNReXrjzu7dWBx//TAFwSPTKyr6Zo77tWh01rzDl7XPFXl1EJF1ttjF28Oa
-        Y26cGarHrml+WTzUDghfHXbs5buhMtFUXZKnD8izBxoX/odIuIn/MS3zL+yigJd7n7oUAZgV4ByN7
-        p6X3IE5tp4AkqXkq6o5D71vN0FpfLBNWJd/uWUgeZWDMiUNKEwdAFHXa2Yb8/dwobM0HWB5ZW2n2y
-        erfG8/B2Ujcs2fyWLmikq2G1n9ndEAxh8tSaS3kLIgdEhCz5PunbXVo7FDX4cQ6brXM4ITD5NqgrB
-        fH7JUAsQ==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o0fde-007VcR-Ap; Mon, 13 Jun 2022 08:41:35 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 73DD13005B7;
-        Mon, 13 Jun 2022 10:41:27 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 42FA02849859B; Mon, 13 Jun 2022 10:41:27 +0200 (CEST)
-Date:   Mon, 13 Jun 2022 10:41:27 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     Richard Henderson <rth@twiddle.net>, ink@jurassic.park.msu.ru,
-        mattst88@gmail.com, vgupta@kernel.org, linux@armlinux.org.uk,
-        ulli.kroll@googlemail.com, linus.walleij@linaro.org,
-        shawnguo@kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        tony@atomide.com, khilman@kernel.org, catalin.marinas@arm.com,
-        Will Deacon <will@kernel.org>, guoren@kernel.org,
-        bcain@quicinc.com, Huacai Chen <chenhuacai@kernel.org>,
-        kernel@xen0n.name, geert@linux-m68k.org, sammy@sammy.net,
-        monstr@monstr.eu, tsbogend@alpha.franken.de, dinguyen@kernel.org,
-        jonas@southpole.se, stefan.kristiansson@saunalahti.fi,
-        shorne@gmail.com, James.Bottomley@hansenpartnership.com,
-        deller@gmx.de, Michael Ellerman <mpe@ellerman.id.au>,
-        benh@kernel.crashing.org, paulus@samba.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net,
-        Richard Weinberger <richard@nod.at>,
-        anton.ivanov@cambridgegreys.com,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        acme <acme@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        jolsa@kernel.org, Namhyung Kim <namhyung@kernel.org>,
-        Juergen Gross <jgross@suse.com>, srivatsa@csail.mit.edu,
-        amakhalov@vmware.com, VMware Inc <pv-drivers@vmware.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>, chris@zankel.net,
-        jcmvbkbc@gmail.com, rafael@kernel.org, lenb@kernel.org,
-        pavel@ucw.cz, gregkh@linuxfoundation.org, mturquette@baylibre.com,
-        sboyd@kernel.org, daniel.lezcano@linaro.org, lpieralisi@kernel.org,
-        sudeep.holla@arm.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, Anup Patel <anup@brainfault.org>,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        jacob.jun.pan@linux.intel.com, Arnd Bergmann <arnd@arndb.de>,
-        yury.norov@gmail.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux@rasmusvillemoes.dk, rostedt@goodmis.org, pmladek@suse.com,
-        senozhatsky@chromium.org, john.ogness@linutronix.de,
-        paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
-        josh@joshtriplett.org, mathieu.desnoyers@efficios.com,
-        joel@joelfernandes.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
-        vschneid@redhat.com, jpoimboe@kernel.org,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-perf-users@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
-        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-arch@vger.kernel.org,
-        rcu@vger.kernel.org, Isaku Yamahata <isaku.yamahata@gmail.com>,
-        kirill.shutemov@linux.intel.com
-Subject: Re: [PATCH 21/36] x86/tdx: Remove TDX_HCALL_ISSUE_STI
-Message-ID: <Yqb4N3iwh1X7378o@hirez.programming.kicks-ass.net>
-References: <20220608142723.103523089@infradead.org>
- <20220608144517.251109029@infradead.org>
- <CAJhGHyCnu_BsKf5STMMJKMWm0NVZ8qXT8Qh=BhhCjSSgwchL3Q@mail.gmail.com>
+        Mon, 13 Jun 2022 04:43:27 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14FB6C45;
+        Mon, 13 Jun 2022 01:43:27 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 08:43:24 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655109805;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3okKoR/CVCiKXgcwp0iBGz3FvDwOvZJISWblwbYi/vE=;
+        b=AbnN4E7Tmol75xO6g7uUAy+0993Qtb+8vfMMM/Ib0oblNCSthHUZ3ecWt6l24t41BG3jyU
+        Fpfkhs89EfFPEHgZB2HE153FSc1K1Fou9/9phgtCo5rDHhTKFKXphovTEiSZMIefoBin6J
+        62/te4+CV7xIfDcUKdacT9dJDHB2T8gOilA0CcqC7OD2RuQuMOZbD1vdtJ32zJTPoLwifT
+        OCQZoCKm6uyBMU5STyWARRbe24aol7wR4jEuEiNAxXlQU6qm8Yq2VkIlgiiwT4oBpRp8+P
+        tuLGXbhTKK4Fesvt03/MS26ipVyjMIRVsAxKBvFq6VbILDYevae/5UqyGyRZDA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655109805;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3okKoR/CVCiKXgcwp0iBGz3FvDwOvZJISWblwbYi/vE=;
+        b=iu1tSyKl+wwAUQXFCWwJp92/2sU7PZnG1aabrKgxs5criIIm6tAKLhcquYSVK5wqiYBQFK
+        YhlR0N7jAF2fKKBA==
+From:   "tip-bot2 for Josh Don" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/core] sched: Allow newidle balancing to bail out of load_balance
+Cc:     Josh Don <joshdon@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220609025515.2086253-1-joshdon@google.com>
+References: <20220609025515.2086253-1-joshdon@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJhGHyCnu_BsKf5STMMJKMWm0NVZ8qXT8Qh=BhhCjSSgwchL3Q@mail.gmail.com>
+Message-ID: <165510980461.4207.16837948600111903560.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 04:26:01PM +0800, Lai Jiangshan wrote:
-> On Wed, Jun 8, 2022 at 10:48 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> > Now that arch_cpu_idle() is expected to return with IRQs disabled,
-> > avoid the useless STI/CLI dance.
-> >
-> > Per the specs this is supposed to work, but nobody has yet relied up
-> > this behaviour so broken implementations are possible.
-> 
-> I'm totally newbie here.
-> 
-> The point of safe_halt() is that STI must be used and be used
-> directly before HLT to enable IRQ during the halting and stop
-> the halting if there is any IRQ.
+The following commit has been merged into the sched/core branch of tip:
 
-Correct; on real hardware. But this is virt...
+Commit-ID:     792b9f65a568f48c50b3175536db9cde5a1edcc0
+Gitweb:        https://git.kernel.org/tip/792b9f65a568f48c50b3175536db9cde5a1edcc0
+Author:        Josh Don <joshdon@google.com>
+AuthorDate:    Wed, 08 Jun 2022 19:55:15 -07:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Mon, 13 Jun 2022 10:30:01 +02:00
 
-> In TDX case, STI must be used directly before the hypercall.
-> Otherwise, no IRQ can come and the vcpu would be stalled forever.
-> 
-> Although the hypercall has an "irq_disabled" argument.
-> But the hypervisor doesn't (and can't) touch the IRQ flags no matter
-> what the "irq_disabled" argument is.  The IRQ is not enabled during
-> the halting if the IRQ is disabled before the hypercall even if
-> irq_disabled=false.
+sched: Allow newidle balancing to bail out of load_balance
 
-All we need the VMM to do is wake the vCPU, and it can do that,
-irrespective of the guest's IF.
+While doing newidle load balancing, it is possible for new tasks to
+arrive, such as with pending wakeups. newidle_balance() already accounts
+for this by exiting the sched_domain load_balance() iteration if it
+detects these cases. This is very important for minimizing wakeup
+latency.
 
-So the VMM can (and does) know if there's an interrupt pending, and
-that's all that's needed to wake from this hypercall. Once the vCPU is
-back up and running again, we'll eventually set IF again and the pending
-interrupt will get delivered and all's well.
+However, if we are already in load_balance(), we may stay there for a
+while before returning back to newidle_balance(). This is most
+exacerbated if we enter a 'goto redo' loop in the LBF_ALL_PINNED case. A
+very straightforward workaround to this is to adjust should_we_balance()
+to bail out if we're doing a CPU_NEWLY_IDLE balance and new tasks are
+detected.
 
-Think of this like MWAIT with ECX[0] set if you will.
+This was tested with the following reproduction:
+- two threads that take turns sleeping and waking each other up are
+  affined to two cores
+- a large number of threads with 100% utilization are pinned to all
+  other cores
+
+Without this patch, wakeup latency was ~120us for the pair of threads,
+almost entirely spent in load_balance(). With this patch, wakeup latency
+is ~6us.
+
+Signed-off-by: Josh Don <joshdon@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220609025515.2086253-1-joshdon@google.com
+---
+ kernel/sched/fair.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 7d8ef01..8bed757 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -9824,9 +9824,15 @@ static int should_we_balance(struct lb_env *env)
+ 	/*
+ 	 * In the newly idle case, we will allow all the CPUs
+ 	 * to do the newly idle load balance.
++	 *
++	 * However, we bail out if we already have tasks or a wakeup pending,
++	 * to optimize wakeup latency.
+ 	 */
+-	if (env->idle == CPU_NEWLY_IDLE)
++	if (env->idle == CPU_NEWLY_IDLE) {
++		if (env->dst_rq->nr_running > 0 || env->dst_rq->ttwu_pending)
++			return 0;
+ 		return 1;
++	}
+ 
+ 	/* Try to find first idle CPU */
+ 	for_each_cpu_and(cpu, group_balance_mask(sg), env->cpus) {
