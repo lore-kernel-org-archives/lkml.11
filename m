@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D61C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:26:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 106FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244397AbiFMK0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
+        id S244454AbiFMK0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:26:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245333AbiFMKYa (ORCPT
+        with ESMTP id S245361AbiFMKYe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:24:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD52023BDE;
-        Mon, 13 Jun 2022 03:18:51 -0700 (PDT)
+        Mon, 13 Jun 2022 06:24:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38727205FB;
+        Mon, 13 Jun 2022 03:18:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3AF9ECE1102;
-        Mon, 13 Jun 2022 10:18:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F7F3C34114;
-        Mon, 13 Jun 2022 10:18:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CBFAC6066C;
+        Mon, 13 Jun 2022 10:18:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDE67C34114;
+        Mon, 13 Jun 2022 10:18:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115528;
-        bh=O2PA9Ni19gaRMiAurHcO57JsR1PvSUrvIXn87F590/8=;
+        s=korg; t=1655115534;
+        bh=agnz51hOJwQlbz3bP/HVXLEFh+xK1woCpBP81eDI+uE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=siQjUZwyhN4v/g2CgPLxX0uCdORmr3wbR1ny7gDfWMhpFgZfX3XRd4ohpnwdjr3N2
-         NL3/lxpqAgT0e5kydl8osAJDUD1cm6I93QeMFl1ssd+gnUJGezu4erEmZce7glKBrI
-         og3fnz8zEXOPvv2bDu0BpqGtkNSEDf/AX4czRLTQ=
+        b=fDH48Fb6YQzX7aS3ktZJwdzkyfzNW6VVm+MboPC6BvIZUukVgn4dxKkd1LLrHPRl/
+         S6scg5gkMuuAO05IDGMdz/qsXDMFc4Kp9PnJx4K2TkpRJB/yYbPUa6huGLNwq90TNd
+         AkR5Cy/d9kmnDdP8NIAfgH+A2nUOCmFalEbOp3rU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Vaibhav Agarwal <vaibhav.sr@gmail.com>,
-        Mark Greer <mgreer@animalcreek.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
+        Niels Dossche <dossche.niels@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 109/167] staging: greybus: codecs: fix type confusion of list iterator variable
-Date:   Mon, 13 Jun 2022 12:09:43 +0200
-Message-Id: <20220613094906.387164737@linuxfoundation.org>
+Subject: [PATCH 4.9 111/167] usb: usbip: add missing device lock on tweak configuration cmd
+Date:   Mon, 13 Jun 2022 12:09:45 +0200
+Message-Id: <20220613094906.856505720@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -51,41 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 84ef256550196bc06e6849a34224c998b45bd557 ]
+[ Upstream commit d088fabace2ca337b275d1d4b36db4fe7771e44f ]
 
-If the list does not exit early then data == NULL and 'module' does not
-point to a valid list element.
-Using 'module' in such a case is not valid and was therefore removed.
+The function documentation of usb_set_configuration says that its
+callers should hold the device lock. This lock is held for all
+callsites except tweak_set_configuration_cmd. The code path can be
+executed for example when attaching a remote USB device.
+The solution is to surround the call by the device lock.
 
-Fixes: 6dd67645f22c ("greybus: audio: Use single codec driver registration")
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Vaibhav Agarwal <vaibhav.sr@gmail.com>
-Reviewed-by: Mark Greer <mgreer@animalcreek.com>
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Link: https://lore.kernel.org/r/20220321123626.3068639-1-jakobkoschel@gmail.com
+This bug was found using my experimental own-developed static analysis
+tool, which reported the missing lock on v5.17.2. I manually verified
+this bug report by doing code review as well. I runtime checked that
+the required lock is not held. I compiled and runtime tested this on
+x86_64 with a USB mouse. After applying this patch, my analyser no
+longer reports this potential bug.
+
+Fixes: 2c8c98158946 ("staging: usbip: let client choose device configuration")
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Link: https://lore.kernel.org/r/20220412165055.257113-1-dossche.niels@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/greybus/audio_codec.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/usbip/stub_rx.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/staging/greybus/audio_codec.c b/drivers/staging/greybus/audio_codec.c
-index 4c2d6c2d4fb4..90bc23408a9c 100644
---- a/drivers/staging/greybus/audio_codec.c
-+++ b/drivers/staging/greybus/audio_codec.c
-@@ -618,8 +618,8 @@ static int gbcodec_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
- 			break;
- 	}
- 	if (!data) {
--		dev_err(dai->dev, "%s:%s DATA connection missing\n",
--			dai->name, module->name);
-+		dev_err(dai->dev, "%s DATA connection missing\n",
-+			dai->name);
- 		mutex_unlock(&codec->lock);
- 		return -ENODEV;
- 	}
+diff --git a/drivers/usb/usbip/stub_rx.c b/drivers/usb/usbip/stub_rx.c
+index d47176f9c310..dd6228a51d0d 100644
+--- a/drivers/usb/usbip/stub_rx.c
++++ b/drivers/usb/usbip/stub_rx.c
+@@ -151,7 +151,9 @@ static int tweak_set_configuration_cmd(struct urb *urb)
+ 	req = (struct usb_ctrlrequest *) urb->setup_packet;
+ 	config = le16_to_cpu(req->wValue);
+ 
++	usb_lock_device(sdev->udev);
+ 	err = usb_set_configuration(sdev->udev, config);
++	usb_unlock_device(sdev->udev);
+ 	if (err && err != -ENODEV)
+ 		dev_err(&sdev->udev->dev, "can't set config #%d, error %d\n",
+ 			config, err);
 -- 
 2.35.1
 
