@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B51C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:07:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B2AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358627AbiFMMHi (ORCPT
+        id S1358642AbiFMMHn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49878 "EHLO
+        Mon, 13 Jun 2022 08:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358882AbiFMME5 (ORCPT
+        with ESMTP id S1359164AbiFMMFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:04:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE36506F6;
-        Mon, 13 Jun 2022 03:58:13 -0700 (PDT)
+        Mon, 13 Jun 2022 08:05:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CE2186C8;
+        Mon, 13 Jun 2022 03:59:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BD2B60F9A;
-        Mon, 13 Jun 2022 10:58:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 558CFC34114;
-        Mon, 13 Jun 2022 10:58:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69352B80E92;
+        Mon, 13 Jun 2022 10:59:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A8EAC34114;
+        Mon, 13 Jun 2022 10:59:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117892;
-        bh=b0ZlisX7/IqoqsnBaopZqkxVW1lwSjtN4FFL+OLFuF8=;
+        s=korg; t=1655117959;
+        bh=1yjKjTzcT1Zx3cO1HUO1ozBdecc6lgMHL6Fc+Gj3GjA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QdxJO3ny97NTD3iDo/evyKm93lUp31/MGRAG32ze1Ctwdg5Mfdrxn61+6YRkj/bS5
-         SKMRAKqc8iVt9s04Q+iRDkucHx7IVMG7A92XyVe3qM+YE960QIfgTSz5hxE325OvPw
-         G13Hr8QJr3qMQmpDM4M0SKD1GlOmSv53Sn5SQsCY=
+        b=MaxSj39ql2tKv54h2OY1k0oPoZGVsSI6SoplgxyVlx09QsWq5ML8SA1LsAT0T8RUG
+         eFq/2T5nkFarJYsabUbIeKmGB8nMbZYf4ANZ3cBVDXVmMZkvItsBKta37qCIQ4Bheb
+         ezHXn4rwWXN1IWoCXv4JUwfJg9lGE417iqBCQckY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>
-Subject: [PATCH 4.19 156/287] dlm: fix missing lkb refcount handling
-Date:   Mon, 13 Jun 2022 12:09:40 +0200
-Message-Id: <20220613094928.610149634@linuxfoundation.org>
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
+        Hangyu Hua <hbh25y@gmail.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 192/287] usb: usbip: fix a refcount leak in stub_probe()
+Date:   Mon, 13 Jun 2022 12:10:16 +0200
+Message-Id: <20220613094929.688447577@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -49,74 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 1689c169134f4b5a39156122d799b7dca76d8ddb upstream.
+[ Upstream commit 9ec4cbf1cc55d126759051acfe328d489c5d6e60 ]
 
-We always call hold_lkb(lkb) if we increment lkb->lkb_wait_count.
-So, we always need to call unhold_lkb(lkb) if we decrement
-lkb->lkb_wait_count. This patch will add missing unhold_lkb(lkb) if we
-decrement lkb->lkb_wait_count. In case of setting lkb->lkb_wait_count to
-zero we need to countdown until reaching zero and call unhold_lkb(lkb).
-The waiters list unhold_lkb(lkb) can be removed because it's done for
-the last lkb_wait_count decrement iteration as it's done in
-_remove_from_waiters().
+usb_get_dev() is called in stub_device_alloc(). When stub_probe() fails
+after that, usb_put_dev() needs to be called to release the reference.
 
-This issue was discovered by a dlm gfs2 test case which use excessively
-dlm_unlock(LKF_CANCEL) feature. Probably the lkb->lkb_wait_count value
-never reached above 1 if this feature isn't used and so it was not
-discovered before.
+Fix this by moving usb_put_dev() to sdev_free error path handling.
 
-The testcase ended in a rsb on the rsb keep data structure with a
-refcount of 1 but no lkb was associated with it, which is itself
-an invalid behaviour. A side effect of that was a condition in which
-the dlm was sending remove messages in a looping behaviour. With this
-patch that has not been reproduced.
+Find this by code review.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
+Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220412020257.9767-1-hbh25y@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dlm/lock.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/usb/usbip/stub_dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/dlm/lock.c
-+++ b/fs/dlm/lock.c
-@@ -1553,6 +1553,7 @@ static int _remove_from_waiters(struct d
- 		lkb->lkb_wait_type = 0;
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
- 		lkb->lkb_wait_count--;
-+		unhold_lkb(lkb);
- 		goto out_del;
- 	}
+diff --git a/drivers/usb/usbip/stub_dev.c b/drivers/usb/usbip/stub_dev.c
+index 0081c1073b08..c64964c32cc9 100644
+--- a/drivers/usb/usbip/stub_dev.c
++++ b/drivers/usb/usbip/stub_dev.c
+@@ -427,7 +427,6 @@ static int stub_probe(struct usb_device *udev)
+ 			     (struct usb_dev_state *) udev);
+ err_port:
+ 	dev_set_drvdata(&udev->dev, NULL);
+-	usb_put_dev(udev);
  
-@@ -1579,6 +1580,7 @@ static int _remove_from_waiters(struct d
- 		log_error(ls, "remwait error %x reply %d wait_type %d overlap",
- 			  lkb->lkb_id, mstype, lkb->lkb_wait_type);
- 		lkb->lkb_wait_count--;
-+		unhold_lkb(lkb);
- 		lkb->lkb_wait_type = 0;
- 	}
+ 	/* we already have busid_priv, just lock busid_lock */
+ 	spin_lock(&busid_priv->busid_lock);
+@@ -442,6 +441,7 @@ static int stub_probe(struct usb_device *udev)
+ 	put_busid_priv(busid_priv);
  
-@@ -5314,11 +5316,16 @@ int dlm_recover_waiters_post(struct dlm_
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_UNLOCK;
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
- 		lkb->lkb_wait_type = 0;
--		lkb->lkb_wait_count = 0;
-+		/* drop all wait_count references we still
-+		 * hold a reference for this iteration.
-+		 */
-+		while (lkb->lkb_wait_count) {
-+			lkb->lkb_wait_count--;
-+			unhold_lkb(lkb);
-+		}
- 		mutex_lock(&ls->ls_waiters_mutex);
- 		list_del_init(&lkb->lkb_wait_reply);
- 		mutex_unlock(&ls->ls_waiters_mutex);
--		unhold_lkb(lkb); /* for waiters list */
+ sdev_free:
++	usb_put_dev(udev);
+ 	stub_device_free(sdev);
  
- 		if (oc || ou) {
- 			/* do an unlock or cancel instead of resending */
+ 	return rc;
+-- 
+2.35.1
+
 
 
