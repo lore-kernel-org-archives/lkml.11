@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 645A0CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B64C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243094AbiFMR7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33676 "EHLO
+        id S243003AbiFMSAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243945AbiFMR4B (ORCPT
+        with ESMTP id S243059AbiFMR4m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:56:01 -0400
+        Mon, 13 Jun 2022 13:56:42 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C216C22531
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:40:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 32B37D122
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:40:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655127625;
+        s=mimecast20190719; t=1655127636;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4RHtZYmh1/hSKAF7EcOWsrPLAw2WLQLmCnsabCdCID4=;
-        b=MVzilnCu6J3Bocc2iXUnr3w5Cgkbw0ggr51DpX0LsFKD+NnHxWUd/Xg1JKyNOLDTI7BwtC
-        BqfY1xEC0mCft2Jtj37uT8jUq6kSRaSbhQ7363j6UsuO/f1huuHTkTw04SA4ROtHldkB4e
-        8wkfUB4hUFBx4sV7z0Yu0arFHc+UKko=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=LJgelsyKw6CoMiELTC38NpJ1GiNAoTUyJ2Tu5hz77So=;
+        b=Y8fE+ZckOBK9qnFyRgml0UXlglaZkOLvgePJjh6IpNW5jC+CCnHELuos8QoRwzfLeAvmwa
+        mxi+9vsZyTQdHEYxvz6sj4ygkZio4bLQcRr60X/RHqqt64F9xPMr+THdaftF1EeDo9Tb6v
+        GOaF1IKoebUTSE5qxip4MIZ9B6vv3Jg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-179-XfCMtZhxN2ev4gC8DedSmA-1; Mon, 13 Jun 2022 09:40:09 -0400
-X-MC-Unique: XfCMtZhxN2ev4gC8DedSmA-1
+ us-mta-493-Ja3lsur4OhqdSVyRYigA_g-1; Mon, 13 Jun 2022 09:40:33 -0400
+X-MC-Unique: Ja3lsur4OhqdSVyRYigA_g-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BE3C2101E985;
-        Mon, 13 Jun 2022 13:40:08 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6C09C3C11041;
+        Mon, 13 Jun 2022 13:40:32 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C52BF492CA2;
-        Mon, 13 Jun 2022 13:40:05 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EC602492CA2;
+        Mon, 13 Jun 2022 13:40:29 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -48,9 +48,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 15/39] KVM: x86: Introduce .hv_inject_synthetic_vmexit_post_tlb_flush() nested hook
-Date:   Mon, 13 Jun 2022 15:38:58 +0200
-Message-Id: <20220613133922.2875594-16-vkuznets@redhat.com>
+Subject: [PATCH v7 24/39] KVM: selftests: Better XMM read/write helpers
+Date:   Mon, 13 Jun 2022 15:39:07 +0200
+Message-Id: <20220613133922.2875594-25-vkuznets@redhat.com>
 In-Reply-To: <20220613133922.2875594-1-vkuznets@redhat.com>
 References: <20220613133922.2875594-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -61,121 +61,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hyper-V supports injecting synthetic L2->L1 exit after performing
-L2 TLB flush operation but the procedure is vendor specific. Introduce
-.hv_inject_synthetic_vmexit_post_tlb_flush nested hook for it.
+set_xmm()/get_xmm() helpers are fairly useless as they only read 64 bits
+from 128-bit registers. Moreover, these helpers are not used. Borrow
+_kvm_read_sse_reg()/_kvm_write_sse_reg() from KVM limiting them to
+XMM0-XMM8 for now.
 
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h |  1 +
- arch/x86/kvm/Makefile           |  3 ++-
- arch/x86/kvm/svm/hyperv.c       | 11 +++++++++++
- arch/x86/kvm/svm/hyperv.h       |  2 ++
- arch/x86/kvm/svm/nested.c       |  1 +
- arch/x86/kvm/vmx/evmcs.c        |  4 ++++
- arch/x86/kvm/vmx/evmcs.h        |  1 +
- arch/x86/kvm/vmx/nested.c       |  1 +
- 8 files changed, 23 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/kvm/svm/hyperv.c
+ .../selftests/kvm/include/x86_64/processor.h  | 70 ++++++++++---------
+ 1 file changed, 36 insertions(+), 34 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 915078a6c4be..d4a2cf4b4ff5 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1669,6 +1669,7 @@ struct kvm_x86_nested_ops {
- 	int (*enable_evmcs)(struct kvm_vcpu *vcpu,
- 			    uint16_t *vmcs_version);
- 	uint16_t (*get_evmcs_version)(struct kvm_vcpu *vcpu);
-+	void (*hv_inject_synthetic_vmexit_post_tlb_flush)(struct kvm_vcpu *vcpu);
- };
- 
- struct kvm_x86_init_ops {
-diff --git a/arch/x86/kvm/Makefile b/arch/x86/kvm/Makefile
-index 30f244b64523..b6d53b045692 100644
---- a/arch/x86/kvm/Makefile
-+++ b/arch/x86/kvm/Makefile
-@@ -25,7 +25,8 @@ kvm-intel-y		+= vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \
- 			   vmx/evmcs.o vmx/nested.o vmx/posted_intr.o
- kvm-intel-$(CONFIG_X86_SGX_KVM)	+= vmx/sgx.o
- 
--kvm-amd-y		+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o svm/sev.o
-+kvm-amd-y		+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o \
-+			   svm/sev.o svm/hyperv.o
- 
- ifdef CONFIG_HYPERV
- kvm-amd-y		+= svm/svm_onhyperv.o
-diff --git a/arch/x86/kvm/svm/hyperv.c b/arch/x86/kvm/svm/hyperv.c
-new file mode 100644
-index 000000000000..911f51021af1
---- /dev/null
-+++ b/arch/x86/kvm/svm/hyperv.c
-@@ -0,0 +1,11 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * AMD SVM specific code for Hyper-V on KVM.
-+ *
-+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
-+ */
-+#include "hyperv.h"
-+
-+void svm_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu)
-+{
-+}
-diff --git a/arch/x86/kvm/svm/hyperv.h b/arch/x86/kvm/svm/hyperv.h
-index 8cf702fed7e5..dd2e393f84a0 100644
---- a/arch/x86/kvm/svm/hyperv.h
-+++ b/arch/x86/kvm/svm/hyperv.h
-@@ -48,4 +48,6 @@ static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
- 	hv_vcpu->nested.vp_id = hve->hv_vp_id;
+diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
+index 32964d7b2218..8eb6bfa9dfde 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/processor.h
++++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
+@@ -315,71 +315,73 @@ static inline void cpuid(uint32_t *eax, uint32_t *ebx,
+ 	    : "memory");
  }
  
-+void svm_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu);
-+
- #endif /* __ARCH_X86_KVM_SVM_HYPERV_H__ */
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 1c1fa4fdea17..c43ba5b39288 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -1721,4 +1721,5 @@ struct kvm_x86_nested_ops svm_nested_ops = {
- 	.get_nested_state_pages = svm_get_nested_state_pages,
- 	.get_state = svm_get_nested_state,
- 	.set_state = svm_set_nested_state,
-+	.hv_inject_synthetic_vmexit_post_tlb_flush = svm_hv_inject_synthetic_vmexit_post_tlb_flush,
- };
-diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-index 6a61b1ae7942..805afc170b5b 100644
---- a/arch/x86/kvm/vmx/evmcs.c
-+++ b/arch/x86/kvm/vmx/evmcs.c
-@@ -439,3 +439,7 @@ int nested_enable_evmcs(struct kvm_vcpu *vcpu,
+-#define SET_XMM(__var, __xmm) \
+-	asm volatile("movq %0, %%"#__xmm : : "r"(__var) : #__xmm)
++typedef u32		__attribute__((vector_size(16))) sse128_t;
++#define __sse128_u	union { sse128_t vec; u64 as_u64[2]; u32 as_u32[4]; }
++#define sse128_lo(x)	({ __sse128_u t; t.vec = x; t.as_u64[0]; })
++#define sse128_hi(x)	({ __sse128_u t; t.vec = x; t.as_u64[1]; })
  
- 	return 0;
+-static inline void set_xmm(int n, unsigned long val)
++static inline void read_sse_reg(int reg, sse128_t *data)
+ {
+-	switch (n) {
++	switch (reg) {
+ 	case 0:
+-		SET_XMM(val, xmm0);
++		asm("movdqa %%xmm0, %0" : "=m"(*data));
+ 		break;
+ 	case 1:
+-		SET_XMM(val, xmm1);
++		asm("movdqa %%xmm1, %0" : "=m"(*data));
+ 		break;
+ 	case 2:
+-		SET_XMM(val, xmm2);
++		asm("movdqa %%xmm2, %0" : "=m"(*data));
+ 		break;
+ 	case 3:
+-		SET_XMM(val, xmm3);
++		asm("movdqa %%xmm3, %0" : "=m"(*data));
+ 		break;
+ 	case 4:
+-		SET_XMM(val, xmm4);
++		asm("movdqa %%xmm4, %0" : "=m"(*data));
+ 		break;
+ 	case 5:
+-		SET_XMM(val, xmm5);
++		asm("movdqa %%xmm5, %0" : "=m"(*data));
+ 		break;
+ 	case 6:
+-		SET_XMM(val, xmm6);
++		asm("movdqa %%xmm6, %0" : "=m"(*data));
+ 		break;
+ 	case 7:
+-		SET_XMM(val, xmm7);
++		asm("movdqa %%xmm7, %0" : "=m"(*data));
+ 		break;
++	default:
++		BUG();
+ 	}
  }
-+
-+void vmx_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu)
-+{
-+}
-diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
-index f886a8ff0342..584741b85eb6 100644
---- a/arch/x86/kvm/vmx/evmcs.h
-+++ b/arch/x86/kvm/vmx/evmcs.h
-@@ -245,5 +245,6 @@ int nested_enable_evmcs(struct kvm_vcpu *vcpu,
- 			uint16_t *vmcs_version);
- void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata);
- int nested_evmcs_check_controls(struct vmcs12 *vmcs12);
-+void vmx_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu);
  
- #endif /* __KVM_X86_VMX_EVMCS_H */
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 6e264a7f205b..4a827b3d929a 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -6863,4 +6863,5 @@ struct kvm_x86_nested_ops vmx_nested_ops = {
- 	.write_log_dirty = nested_vmx_write_pml_buffer,
- 	.enable_evmcs = nested_enable_evmcs,
- 	.get_evmcs_version = nested_get_evmcs_version,
-+	.hv_inject_synthetic_vmexit_post_tlb_flush = vmx_hv_inject_synthetic_vmexit_post_tlb_flush,
- };
+-#define GET_XMM(__xmm)							\
+-({									\
+-	unsigned long __val;						\
+-	asm volatile("movq %%"#__xmm", %0" : "=r"(__val));		\
+-	__val;								\
+-})
+-
+-static inline unsigned long get_xmm(int n)
++static inline void write_sse_reg(int reg, const sse128_t *data)
+ {
+-	assert(n >= 0 && n <= 7);
+-
+-	switch (n) {
++	switch (reg) {
+ 	case 0:
+-		return GET_XMM(xmm0);
++		asm("movdqa %0, %%xmm0" : : "m"(*data));
++		break;
+ 	case 1:
+-		return GET_XMM(xmm1);
++		asm("movdqa %0, %%xmm1" : : "m"(*data));
++		break;
+ 	case 2:
+-		return GET_XMM(xmm2);
++		asm("movdqa %0, %%xmm2" : : "m"(*data));
++		break;
+ 	case 3:
+-		return GET_XMM(xmm3);
++		asm("movdqa %0, %%xmm3" : : "m"(*data));
++		break;
+ 	case 4:
+-		return GET_XMM(xmm4);
++		asm("movdqa %0, %%xmm4" : : "m"(*data));
++		break;
+ 	case 5:
+-		return GET_XMM(xmm5);
++		asm("movdqa %0, %%xmm5" : : "m"(*data));
++		break;
+ 	case 6:
+-		return GET_XMM(xmm6);
++		asm("movdqa %0, %%xmm6" : : "m"(*data));
++		break;
+ 	case 7:
+-		return GET_XMM(xmm7);
++		asm("movdqa %0, %%xmm7" : : "m"(*data));
++		break;
++	default:
++		BUG();
+ 	}
+-
+-	/* never reached */
+-	return 0;
+ }
+ 
+ static inline void cpu_relax(void)
 -- 
 2.35.3
 
