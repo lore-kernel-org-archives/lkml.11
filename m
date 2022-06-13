@@ -2,149 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0D8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B10C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241850AbiFMRe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40968 "EHLO
+        id S242402AbiFMRfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240749AbiFMReM (ORCPT
+        with ESMTP id S241979AbiFMRev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:34:12 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D0FE032
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:56:05 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o0jbm-00029k-GG; Mon, 13 Jun 2022 14:55:54 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o0jbk-0001fo-7K; Mon, 13 Jun 2022 14:55:52 +0200
-Date:   Mon, 13 Jun 2022 14:55:52 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
-Message-ID: <20220613125552.GA4536@pengutronix.de>
-References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
- <YqS+zYHf6eHMWJlD@lunn.ch>
+        Mon, 13 Jun 2022 13:34:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A2FDEF2E
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:58:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655125125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=r3+xwBi+u2qELbxSp/FN6uIklUfCnibg/SuxCdSI9f8=;
+        b=FVKK0ILGjcLrek7q2OwVOaSDDip4icjnXpKE6OERUlK3YyHPkFTODKR/opDOD/y4bSkFJ2
+        zyCmDbBlW+dnsE8imrF56bqwFacPOv5BQaZYXhhBaa4o1rCdNEvuT44DYlhLd8mIleTYtP
+        M2IkEvgJqIKAcp+4ogXYMwf/I117xHg=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-477-xj3gjJUhNZuuFDk9sCFRhA-1; Mon, 13 Jun 2022 08:58:44 -0400
+X-MC-Unique: xj3gjJUhNZuuFDk9sCFRhA-1
+Received: by mail-qv1-f72.google.com with SMTP id kk8-20020a056214508800b004645738eff6so3819446qvb.8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:58:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=r3+xwBi+u2qELbxSp/FN6uIklUfCnibg/SuxCdSI9f8=;
+        b=dtFTn8fzXsmX52Xq0DdDXSXYytcID4cmfMMRnQ8nCjNSk1naehs7iemecKRwLTsJf0
+         utaXHsBxnHWUpX887ZyzYQ1xd0SVdqrVvTGmIMSuuUaPw915ZgrO4ClB6Eo5uIaHaeDn
+         nEuznWxjuxc9VpOvcb8WjUI41ZwqhKuX47vxr1CsHFicz7GEp9mSWmLgVG0cWj2BBYDv
+         3Xy1TI/B9o1aGM8TOb1mZKSTBlBNrVrMhBaYFXtJ2bA3PJjdk7Z3gOC/a2SPvsXij2Xe
+         ioXc3tVqBEPTcD8Rd99p4s5Ed+lDwaKTWE0WHu5YgxyLSkZHlsOwKiD+WiN27UPXLUs1
+         dUGA==
+X-Gm-Message-State: AJIora8EoQSoeEGV3G3+J1Ly4JQxH21AzDRfKxIRdNGeWue1G3rDy/D/
+        wIYTJc5Ia8bp1MpgucstF9JnAqnrneKZO9vFd85Qdq+tde1KOy4B36K3n/yNVdO3TlI7535iZb6
+        z6Y+0OzEmUM+wq6p+/LYEqlrGV3NwBN3lOmaK9HUQAldhah7BduM3NYcNUwA07b+N41moUgoccU
+        RM
+X-Received: by 2002:a05:6214:5006:b0:46e:4e1f:ea35 with SMTP id jo6-20020a056214500600b0046e4e1fea35mr879425qvb.68.1655125124032;
+        Mon, 13 Jun 2022 05:58:44 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tL9fgKHjbNjyqFoi6DzUlAioH+r6UanL+5qTwTn0I1yFmLx2E7F1WajeO/SQAtWbydoyjEzw==
+X-Received: by 2002:a05:6214:5006:b0:46e:4e1f:ea35 with SMTP id jo6-20020a056214500600b0046e4e1fea35mr879404qvb.68.1655125123731;
+        Mon, 13 Jun 2022 05:58:43 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id ez11-20020a05622a4c8b00b002f905347586sm4919508qtb.14.2022.06.13.05.58.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 05:58:43 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 05/38] KVM: x86: hyper-v: Handle
+ HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls gently
+In-Reply-To: <0a7cada4844181d50b7ca971af5d8a4731171336.camel@redhat.com>
+References: <20220606083655.2014609-1-vkuznets@redhat.com>
+ <20220606083655.2014609-6-vkuznets@redhat.com>
+ <0a7cada4844181d50b7ca971af5d8a4731171336.camel@redhat.com>
+Date:   Mon, 13 Jun 2022 14:58:39 +0200
+Message-ID: <87leu0k9ds.fsf@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YqS+zYHf6eHMWJlD@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 11, 2022 at 06:11:57PM +0200, Andrew Lunn wrote:
-> > diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-> > index c67bf3060173..6c55c7f9b680 100644
-> > --- a/drivers/net/phy/phy-c45.c
-> > +++ b/drivers/net/phy/phy-c45.c
-> > @@ -205,7 +205,7 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
-> >  		break;
-> >  	case MASTER_SLAVE_CFG_UNKNOWN:
-> >  	case MASTER_SLAVE_CFG_UNSUPPORTED:
-> > -		return 0;
-> > +		break;
-> >  	default:
-> >  		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
-> >  		return -EOPNOTSUPP;
-> > @@ -223,11 +223,16 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
-> >  		break;
-> >  	}
-> >  
-> > +	if (phydev->remote_fault_set >= REMOTE_FAULT_CFG_ERROR)
-> > +		adv_l |= MDIO_AN_T1_ADV_L_REMOTE_FAULT;
-> > +
-> >  	adv_l |= linkmode_adv_to_mii_t1_adv_l_t(phydev->advertising);
-> >  
-> >  	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L,
-> > -				     (MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP
-> > -				     | MDIO_AN_T1_ADV_L_PAUSE_ASYM), adv_l);
-> > +				     (MDIO_AN_T1_ADV_L_FORCE_MS |
-> > +				      MDIO_AN_T1_ADV_L_PAUSE_CAP |
-> > +				      MDIO_AN_T1_ADV_L_PAUSE_ASYM |
-> > +				      MDIO_AN_T1_ADV_L_REMOTE_FAULT), adv_l);
-> 
-> Since this is part of config_aneg, i assume you have to trigger an
-> renegotiation, which will put the link down for a while. Is that
-> actually required? Can the fault indicator be set at runtime without a
-> full auto-neg? I suppose for a fault indicator, it probably does not
-> matter, there is a fault... 
-According to IEEE 802.3-2018:
-"28.2.3.5 Remote fault sensing function
+Maxim Levitsky <mlevitsk@redhat.com> writes:
 
-The Remote Fault function may indicate to the Link Partner that a fault
-condition has occurred using the Remote Fault bit and, optionally, the Next
-Page function
 ...
-A Local Device may indicate it has sensed a fault to its Link Partner by
-setting the Remote Fault bit in the Auto-Negotiation advertisement register and
-renegotiating.
 
-If the Local Device sets the Remote Fault bit to logic one, it may also use the
-Next Page function to specify information about the fault that has occurred.
-Remote Fault Message Page Codes have been specified for this purpose.
-..."
+>> =C2=A0
+>> =C2=A0void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
+>> =C2=A0{
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct kvm_vcpu_hv_tlb_f=
+lush_fifo *tlb_flush_fifo;
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct kvm_vcpu_hv *hv_v=
+cpu =3D to_hv_vcpu(vcpu);
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 entries[KVM_HV_TLB_FLUSH_=
+FIFO_SIZE];
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int i, j, count;
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0gva_t gva;
+>> =C2=A0
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0kvm_vcpu_flush_tlb_guest(vcpu=
+);
+>> -
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (!hv_vcpu)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (!tdp_enabled || !hv_vcpu)=
+ {
+> I haven't noticed that in the review I did back then, but
+> any reason why !tdp_enabled?
 
-If I see it correctly, there is no way to notify about remote fault when
-the link is up. The remote fault bit is transferred withing Link Code
-Word as part of FLP burst. At least in this part of specification.
+This follows the logic in kvm_vcpu_flush_tlb_guest():
 
-> But i'm wondering about future extensions which might want to send values
-> when the link is up. I've seen some PHYs indicate their make/model, etc.
-> What sort of API would be needed for that?
+	if (!tdp_enabled) {
+		/*
+		 * A TLB flush on behalf of the guest is equivalent to
+		 * INVPCID(all), toggling CR4.PGE, etc., which requires
+		 * a forced sync of the shadow page tables.  Ensure all the
+		 * roots are synced and the guest TLB in hardware is clean.
+		 */
+		kvm_mmu_sync_roots(vcpu);
+		kvm_mmu_sync_prev_roots(vcpu);
+	}
 
-We understand the spec that the Base Link Code Word and the optional (extended)
-next pages are only send during autoneg. The local PHY capabilities (link
-speed, duplex, remote fault...) are communicated via the Base Link Code Word.
-So from our point of view it seems local to put the next pages next to the
-local PHY capabilities. If the user space wants to set a next page, the
-interface could be similar to remote fault, but we need to transfer more a
-whole page, not just a single bit :) via netlink.
+and as !tdp_enabled should be a rare debug or special case I decided to
+take the shortcut and not drag any of this logic into hyperv emulation
+code.
 
-> It might also be useful if we could send an event to userspace when
-> the receive state changes, so there is no need to poll. I thought
-> something link a linkstate message was broadcast under some
-> conditions? That again my suggest ksetting is maybe not the best place
-> for this?
+--=20
+Vitaly
 
-So receiving remote fault information via linkstate and send remote fault via
-ksetting?
-
-The next logical question is, if a remote fault is RX'ed (potentially with a
-reason) who will react on this. There might be different policies on how to
-react on same reason.
-
-> I see no problem in exposing this information, but i would like to be
-> sure we get the API correct.
-
-ACK!
-
-Regards,
-Oleksij & Marc
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
