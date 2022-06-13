@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E11EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:02:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350980AbiFMLCT (ORCPT
+        id S1350990AbiFMLCX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
+        Mon, 13 Jun 2022 07:02:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350330AbiFMKyt (ORCPT
+        with ESMTP id S1350326AbiFMKyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:54:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0074F1D0EF;
-        Mon, 13 Jun 2022 03:30:59 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15B61D0DC;
+        Mon, 13 Jun 2022 03:30:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FEFB60F9A;
-        Mon, 13 Jun 2022 10:30:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A207AC34114;
-        Mon, 13 Jun 2022 10:30:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EE1B60F09;
+        Mon, 13 Jun 2022 10:30:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E164C34114;
+        Mon, 13 Jun 2022 10:30:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116259;
-        bh=SSvMKfpOhtPYhB2kFBNBRvg8s01RNZhdi0gQOFEMOuo=;
+        s=korg; t=1655116253;
+        bh=3wuBoO78M/jyBi9wiMoupv9Wxz2G3NRlkB+0uX6BVHo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B1qf89VsvjOejtf8qq1jXO5002Q5YL2Y1LX9MhiBwQBbRqk3HkQ3VMtpg04FvSshz
-         k062aMOmQfw1DFLq4KFzV1GIqn81OvMh/Bcj+a6TnKnyLy3kUiQnKjMOEgRyfRSOx6
-         17SHpeK3/RzV6EzMbwUfC+kjcQb7ZGqIwWG/G4Eg=
+        b=NyisNSJblqs/CJmHypiBJ+7J1nSZSF1lhguGxcfDHQQheZd1xoVKdfmg3t8yKNcKM
+         CJL6p5gccmU5ljsXks+t4d3Nc8I+dQE8Lc9FurOocXzXFV/Dn7YeGfhqziv2qjaKu8
+         q3WihvwPIqwHf7QVGKwiQlqzzUuTVKCSJtKdm2PU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kyle Smith <kyles@hpe.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Corey Minyard <cminyard@mvista.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 053/411] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
-Date:   Mon, 13 Jun 2022 12:05:26 +0200
-Message-Id: <20220613094930.102161942@linuxfoundation.org>
+Subject: [PATCH 5.4 048/411] ipmi: Fix pr_fmt to avoid compilation issues
+Date:   Mon, 13 Jun 2022 12:05:21 +0200
+Message-Id: <20220613094929.952095210@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,43 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Smith, Kyle Miller (Nimble Kernel) <kyles@hpe.com>
+From: Corey Minyard <cminyard@mvista.com>
 
-[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
+[ Upstream commit 2ebaf18a0b7fb764bba6c806af99fe868cee93de ]
 
-In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
--ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
-is checked immediately after the call. However, when we return the error
-message up the stack, to nvme_reset_work the error takes us to
-nvme_remove_dead_ctrl()
-  nvme_dev_disable()
-   nvme_suspend_queue(&dev->queues[0]).
+The was it was wouldn't work in some situations, simplify it.  What was
+there was unnecessary complexity.
 
-Here, we only check that the admin_q is non-NULL, rather than not
-an error or NULL, and begin quiescing a queue that never existed, leading
-to bad / NULL pointer dereference.
-
-Signed-off-by: Kyle Smith <kyles@hpe.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/ipmi/ipmi_msghandler.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index af516c35afe6..10fe7a7a2163 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -1674,6 +1674,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
- 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
- 		if (IS_ERR(dev->ctrl.admin_q)) {
- 			blk_mq_free_tag_set(&dev->admin_tagset);
-+			dev->ctrl.admin_q = NULL;
- 			return -ENOMEM;
- 		}
- 		if (!blk_get_queue(dev->ctrl.admin_q)) {
+diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
+index ad2e6d55d4a5..736970312bbc 100644
+--- a/drivers/char/ipmi/ipmi_msghandler.c
++++ b/drivers/char/ipmi/ipmi_msghandler.c
+@@ -11,8 +11,8 @@
+  * Copyright 2002 MontaVista Software Inc.
+  */
+ 
+-#define pr_fmt(fmt) "%s" fmt, "IPMI message handler: "
+-#define dev_fmt pr_fmt
++#define pr_fmt(fmt) "IPMI message handler: " fmt
++#define dev_fmt(fmt) pr_fmt(fmt)
+ 
+ #include <linux/module.h>
+ #include <linux/errno.h>
 -- 
 2.35.1
 
