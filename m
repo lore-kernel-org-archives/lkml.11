@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6856CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6BA5CCA486
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376693AbiFMNTW (ORCPT
+        id S1376738AbiFMNTZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
+        Mon, 13 Jun 2022 09:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359647AbiFMNKU (ORCPT
+        with ESMTP id S1359666AbiFMNKV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:10:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B663B03A;
-        Mon, 13 Jun 2022 04:21:16 -0700 (PDT)
+        Mon, 13 Jun 2022 09:10:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230C63B290;
+        Mon, 13 Jun 2022 04:21:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58608B80E59;
-        Mon, 13 Jun 2022 11:21:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDE8BC34114;
-        Mon, 13 Jun 2022 11:21:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 713EC60FAD;
+        Mon, 13 Jun 2022 11:21:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B557C34114;
+        Mon, 13 Jun 2022 11:21:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119273;
-        bh=I2/Q9j+xDREdk8V1BM4fCkekGaFWomnYTF/1/GKomvc=;
+        s=korg; t=1655119275;
+        bh=KcOo1oA3ujYCM/X6/pxf5zQ0h3TH3jWllfC3FvL+cl8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OsDl4yc6fbGEYdZQaTBof5nT78lRSgulbRKq0QL6Xk6o9RaZ5XIKfEs/tLbeqDtI5
-         XM2mhCe5tc3PUTfqB9DEE4gSqS7FpPr/uH4H2DxuLBeh6pmSLf7fu2aTmIK+i1tkAT
-         OW6KLjoXGSZWCsQGyWqjyq6cENguLPixOR9Eoflk=
+        b=owGaEqLPr8oZuoR4vj1LK1oTn2quvHnSk7yAqODppMZ/caIKhXM7cVRlvk/mxNU9Q
+         6LkxXIphtzyndzjFJ/t8JhCQFQLyDAYXa0yjbU+edIMTXiYETiB1mKA3cArF8yP7QB
+         fmejMi0887rT7ONH/SF4Dw4r4JjEMieHMni3IJ3k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 203/247] x86/cpu: Elide KCSAN for cpu_has() and friends
-Date:   Mon, 13 Jun 2022 12:11:45 +0200
-Message-Id: <20220613094929.102341977@linuxfoundation.org>
+Subject: [PATCH 5.15 204/247] jump_label,noinstr: Avoid instrumentation for JUMP_LABEL=n builds
+Date:   Mon, 13 Jun 2022 12:11:46 +0200
+Message-Id: <20220613094929.131691875@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,46 +52,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit a6a5eb269f6f3a2fe392f725a8d9052190c731e2 ]
+[ Upstream commit 656d054e0a15ec327bd82801ccd58201e59f6896 ]
 
-As x86 uses the <asm-generic/bitops/instrumented-*.h> headers, the
-regular forms of all bitops are instrumented with explicit calls to
-KASAN and KCSAN checks. As these are explicit calls, these are not
-suppressed by the noinstr function attribute.
+When building x86_64 with JUMP_LABEL=n it's possible for
+instrumentation to sneak into noinstr:
 
-This can result in calls to those check functions in noinstr code, which
-objtool warns about:
+vmlinux.o: warning: objtool: exit_to_user_mode+0x14: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x2d: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
 
-vmlinux.o: warning: objtool: enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_enter_from_user_mode+0x28: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare+0x24: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: irqentry_enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
+Switch to arch_ prefixed atomic to avoid the explicit instrumentation.
 
-Prevent this by using the arch_*() bitops, which are the underlying
-bitops without explciit instrumentation.
-
-[null: Changelog]
 Reported-by: kernel test robot <lkp@intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220502111216.290518605@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/cpufeature.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/jump_label.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
-index 16a51e7288d5..b0f206681fde 100644
---- a/arch/x86/include/asm/cpufeature.h
-+++ b/arch/x86/include/asm/cpufeature.h
-@@ -51,7 +51,7 @@ extern const char * const x86_power_flags[32];
- extern const char * const x86_bug_flags[NBUGINTS*32];
+diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
+index 48b9b2a82767..019e55c13248 100644
+--- a/include/linux/jump_label.h
++++ b/include/linux/jump_label.h
+@@ -261,9 +261,9 @@ extern void static_key_disable_cpuslocked(struct static_key *key);
+ #include <linux/atomic.h>
+ #include <linux/bug.h>
  
- #define test_cpu_cap(c, bit)						\
--	 test_bit(bit, (unsigned long *)((c)->x86_capability))
-+	 arch_test_bit(bit, (unsigned long *)((c)->x86_capability))
+-static inline int static_key_count(struct static_key *key)
++static __always_inline int static_key_count(struct static_key *key)
+ {
+-	return atomic_read(&key->enabled);
++	return arch_atomic_read(&key->enabled);
+ }
  
- /*
-  * There are 32 bits/features in each mask word.  The high bits
+ static __always_inline void jump_label_init(void)
 -- 
 2.35.1
 
