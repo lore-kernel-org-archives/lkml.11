@@ -2,93 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59346C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 141A4CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:34:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230430AbiFNMdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
+        id S229720AbiFNMel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239463AbiFNMb5 (ORCPT
+        with ESMTP id S244392AbiFNMe0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:31:57 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 974A94AE21;
-        Tue, 14 Jun 2022 05:30:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655209832; x=1686745832;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=umN/+tNtTu1lyfbNWcYjSL326rns/NU6j6UQjyCfMA8=;
-  b=Zn53Pvo5Bq1HfcT9DzIALAWZDDJ7qEbnVwO021wlpuKUkJgupNqpiUkd
-   RbKVXClWoq4Gwp3r4uBmDkYQrQUoe9OIxRg1VP4BjsPJSZvUpRUyqJrSf
-   qHxswwjaJyhXBQ5PS1otbM6VWoOs9zd5DqWQ41WJgZh8JoUT5wUNmeZps
-   pdQgxS7kOZnbfm11prueT2V8YTtCfcx4CQbatedlZlHWLuLmQB2x69NvC
-   OH+QXb1HPwBj9X7zUztS7oPTFEhCwcPozrrzEVh5AyR141cvgLJ1L7row
-   7A/ertaGLaA9lx4R3n1/nwgubns6BKzLoDxeQF/a7JTC7piIVseOrDWUv
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="278641663"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="278641663"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 05:30:14 -0700
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="588438787"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 05:30:11 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o15gO-000cLO-7K;
-        Tue, 14 Jun 2022 15:30:08 +0300
-Date:   Tue, 14 Jun 2022 15:30:08 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
+        Tue, 14 Jun 2022 08:34:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABD9F4616D
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:31:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655209863;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CINhQ0TufHi3amSiVTGnrn1sbNNueagVao77jHCIJos=;
+        b=W3asntOM2qXCasOtmIcUv/Y46/mRpfgPiBhSfvL+SLHuBh0/OBgERY9gXkElPI2fyvx6VH
+        3lg/bFNHMmjyVcpoErAEHGpsRoRQRadGuLoiXHccvJHtp09Y0S/5Md+GlwTEKURHkZL1Hx
+        2GXUU1ckUco2/r8cvOhkS0ax2sDP6zY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-601-K4OhpCdxNkGGb0KdB6SrDw-1; Tue, 14 Jun 2022 08:30:59 -0400
+X-MC-Unique: K4OhpCdxNkGGb0KdB6SrDw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3F50F811E81;
+        Tue, 14 Jun 2022 12:30:58 +0000 (UTC)
+Received: from fedora (unknown [10.22.9.132])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 0070B2166B26;
+        Tue, 14 Jun 2022 12:30:54 +0000 (UTC)
+Date:   Tue, 14 Jun 2022 09:30:52 -0300
+From:   Wander Lairson Costa <wander@redhat.com>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Ferry Toth <ftoth@exalondelft.nl>
-Subject: Re: [PATCH v1 1/1] x86/PCI: Disable e820 usage for the resource
- allocation
-Message-ID: <Yqh/UJQphSFvxX74@smile.fi.intel.com>
-References: <20220613201641.67640-1-andriy.shevchenko@linux.intel.com>
- <45d458f5-4f4e-9ebd-cb51-1a7b784248ec@redhat.com>
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 5/5] x86/tdx: Add Quote generation support
+Message-ID: <Yqh/fCamrCoujZU5@fedora>
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20220609025220.2615197-6-sathyanarayanan.kuppuswamy@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <45d458f5-4f4e-9ebd-cb51-1a7b784248ec@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220609025220.2615197-6-sathyanarayanan.kuppuswamy@linux.intel.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 10:31:39PM +0200, Hans de Goede wrote:
-> On 6/13/22 22:16, Andy Shevchenko wrote:
-> > The resource management improve for PCI on x86 broke booting of Intel MID
-> > platforms. It seems that the current code removes all available resources
-> > from the list and none of the PCI device may be initialized. Restore the
-> > old behaviour by force disabling the e820 usage for the resource allocation.
-> > 
-> > Fixes: 4c5e242d3e93 ("x86/PCI: Clip only host bridge windows for E820 regions")
-> > Depends-on: fa6dae5d8208 ("x86/PCI: Add kernel cmdline options to use/ignore E820 reserved regions")
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Andy, thank you for the patch. Commit 4c5e242d3e93 has also been causing
-> issues for other platforms, so I've submitted a revert of it here:
-> 
-> https://lore.kernel.org/linux-pci/20220612144325.85366-1-hdegoede@redhat.com/T/#u
-> 
-> can you please give the revert a try, and confirm that that fixes
-> the Intel MID platform issue too ?
+On Wed, Jun 08, 2022 at 07:52:20PM -0700, Kuppuswamy Sathyanarayanan wrote:
 
-Nope, it doesn't fix. The problem is in flags checking as far as I can see.
-My patch is needed either we have yours or not.
+[snip]
 
--- 
-With Best Regards,
-Andy Shevchenko
+> +}
+> +
+> +/* Remove the shared mapping and free the memory */
+> +static void deinit_quote_buf(struct quote_buf *buf)
+> +{
+> +	if (!buf)
+> +		return;
 
+nit: the null check isn't necessary anymore, is it?
+
+[snip]
 
