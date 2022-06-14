@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B53CCA47D
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:33:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356643AbiFNCdv (ORCPT
+        id S1356185AbiFNCd5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:33:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40554 "EHLO
+        Mon, 13 Jun 2022 22:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356443AbiFNCbL (ORCPT
+        with ESMTP id S1356489AbiFNCbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:31:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E6943AFA;
-        Mon, 13 Jun 2022 19:12:05 -0700 (PDT)
+        Mon, 13 Jun 2022 22:31:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A459E43EEC;
+        Mon, 13 Jun 2022 19:12:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08B7260AD8;
-        Tue, 14 Jun 2022 02:11:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66621C3411B;
-        Tue, 14 Jun 2022 02:11:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A964B816A2;
+        Tue, 14 Jun 2022 02:11:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83DB4C3411B;
+        Tue, 14 Jun 2022 02:11:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172685;
-        bh=IBCeAButYsRtNeRmHz0Nr8ebRIHdO/EQ3qn0BXhofwY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M1On4L+fWL7wvaH3ZGjA7W4y8ckiGBSVVdbGwrGbIHO7YihuOgsv2IwLFVSu91aos
-         YqFSp12qZ7tRjbr/DC01dFxVGxcuU1eMbFJdCYzhwuftzdrpi+OKMXEFMAZ79Ohu59
-         o/jil8afMkfmRuqEjsdW+dwMV6qU9ILilOnbjjK80WibSkUF0bSbWbSGMz4yuDlBLL
-         eCw7YNU2NUkR2kNBrMOFmt07PClKazT7auy741m8SPbfpFjJQ6HrcM7+nCszTryQAP
-         cUP9Y/EwDgPiOPw6PFIZVYZIaV6r6LzkMaXe3FB1rcs8mAp2fOW1P8U6MMYwAhzD9i
-         DiZlSEOFYBVOg==
+        s=k20201202; t=1655172718;
+        bh=jRePl6IBUwv4oBT3cJekRpFGZ3m5jS29OBAig9JoJl4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=C/wNFqK9QLYNEWPHOogfjNN6rcJyFcgNZRqNG2iPWx6ri+yBDcBuHR1WyKrVGqsxv
+         h3I1APkfPx/XL5Ym+OAc4Ff8FR942/EGtfrvK0+RwDGJ2G9J1k6rTMcabqQoK4NmF8
+         AljZ33W78BzF6bEBb23/Jb9Uf3oYLzdT0otrbTPrCwjnufBkdsYV7CQKg8l60tU3J+
+         7lWfilz9jUUzW8lbImcMDhayddr9Yr+kI2qZOo7T94F/TINwlrDQTKzGV//jppSVEn
+         YJ2Na3zFKZpd9fg2Mh58/dY+Vy9AKfKyESSU5gXPEPvcrpM+T2At063/C7rlSm5OXA
+         dOMisbI0l90DA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
+Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
         Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        seanjc@google.com, kvm@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.18 3/6] KVM: selftests: Make hyperv_clock selftest more stable
-Date:   Mon, 13 Jun 2022 22:11:12 -0400
-Message-Id: <20220614021116.1101331-3-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.10] KVM: Don't null dereference ops->destroy
+Date:   Mon, 13 Jun 2022 22:11:55 -0400
+Message-Id: <20220614021155.1101549-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614021116.1101331-1-sashal@kernel.org>
-References: <20220614021116.1101331-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,72 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit eae260be3a0111a28fe95923e117a55dddec0384 ]
+[ Upstream commit e8bc2427018826e02add7b0ed0fc625a60390ae5 ]
 
-hyperv_clock doesn't always give a stable test result, especially with
-AMD CPUs. The test compares Hyper-V MSR clocksource (acquired either
-with rdmsr() from within the guest or KVM_GET_MSRS from the host)
-against rdtsc(). To increase the accuracy, increase the measured delay
-(done with nop loop) by two orders of magnitude and take the mean rdtsc()
-value before and after rdmsr()/KVM_GET_MSRS.
+A KVM device cleanup happens in either of two callbacks:
+1) destroy() which is called when the VM is being destroyed;
+2) release() which is called when a device fd is closed.
 
-Reported-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Tested-by: Maxim Levitsky <mlevitsk@redhat.com>
-Message-Id: <20220601144322.1968742-1-vkuznets@redhat.com>
+Most KVM devices use 1) but Book3s's interrupt controller KVM devices
+(XICS, XIVE, XIVE-native) use 2) as they need to close and reopen during
+the machine execution. The error handling in kvm_ioctl_create_device()
+assumes destroy() is always defined which leads to NULL dereference as
+discovered by Syzkaller.
+
+This adds a checks for destroy!=NULL and adds a missing release().
+
+This is not changing kvm_destroy_devices() as devices with defined
+release() should have been removed from the KVM devices list by then.
+
+Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/x86_64/hyperv_clock.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ virt/kvm/kvm_main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
-index e0b2bb1339b1..3330fb183c68 100644
---- a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
-+++ b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
-@@ -44,7 +44,7 @@ static inline void nop_loop(void)
- {
- 	int i;
- 
--	for (i = 0; i < 1000000; i++)
-+	for (i = 0; i < 100000000; i++)
- 		asm volatile("nop");
- }
- 
-@@ -56,12 +56,14 @@ static inline void check_tsc_msr_rdtsc(void)
- 	tsc_freq = rdmsr(HV_X64_MSR_TSC_FREQUENCY);
- 	GUEST_ASSERT(tsc_freq > 0);
- 
--	/* First, check MSR-based clocksource */
-+	/* For increased accuracy, take mean rdtsc() before and afrer rdmsr() */
- 	r1 = rdtsc();
- 	t1 = rdmsr(HV_X64_MSR_TIME_REF_COUNT);
-+	r1 = (r1 + rdtsc()) / 2;
- 	nop_loop();
- 	r2 = rdtsc();
- 	t2 = rdmsr(HV_X64_MSR_TIME_REF_COUNT);
-+	r2 = (r2 + rdtsc()) / 2;
- 
- 	GUEST_ASSERT(r2 > r1 && t2 > t1);
- 
-@@ -181,12 +183,14 @@ static void host_check_tsc_msr_rdtsc(struct kvm_vm *vm)
- 	tsc_freq = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TSC_FREQUENCY);
- 	TEST_ASSERT(tsc_freq > 0, "TSC frequency must be nonzero");
- 
--	/* First, check MSR-based clocksource */
-+	/* For increased accuracy, take mean rdtsc() before and afrer ioctl */
- 	r1 = rdtsc();
- 	t1 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
-+	r1 = (r1 + rdtsc()) / 2;
- 	nop_loop();
- 	r2 = rdtsc();
- 	t2 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
-+	r2 = (r2 + rdtsc()) / 2;
- 
- 	TEST_ASSERT(t2 > t1, "Time reference MSR is not monotonic (%ld <= %ld)", t1, t2);
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 9cd8ca2d8bc1..c5dbac10c372 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -3644,8 +3644,11 @@ static int kvm_ioctl_create_device(struct kvm *kvm,
+ 		kvm_put_kvm_no_destroy(kvm);
+ 		mutex_lock(&kvm->lock);
+ 		list_del(&dev->vm_node);
++		if (ops->release)
++			ops->release(dev);
+ 		mutex_unlock(&kvm->lock);
+-		ops->destroy(dev);
++		if (ops->destroy)
++			ops->destroy(dev);
+ 		return ret;
+ 	}
  
 -- 
 2.35.1
