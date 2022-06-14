@@ -2,88 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 995FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:10:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83483C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242657AbiFNNKl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 09:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56296 "EHLO
+        id S243965AbiFNNNu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 09:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239183AbiFNNKj (ORCPT
+        with ESMTP id S243507AbiFNNN2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 09:10:39 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC3D36698
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 06:10:35 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25E7D18Y023629;
-        Tue, 14 Jun 2022 08:10:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=YcUpMK2AczftXCxzQom7s5cbS6jwX5ZCnN31VDB+YXM=;
- b=OM+u0In+DWSJNpSoAeCGjcBQM2oyBYb1RpCvka5UL+zWpyCSr2bdJLyrt3L5JY+Bbpom
- KDVh06+qEyKceN5O5pQfTnL97gd41swPIys5yjgfadGZLu7IKslMKXE07i0m0VmBAvE1
- Qj7sNOqmQERXv+/Krt61UQ2Fu8KWIDJI/Sp/GTfOptUKHfcAusC2txe/jqMpvM6Zb4rD
- KWueGH6k7p3087TFleh0VkOUNLKtAKkoXQNJiq4s5S3VdiJ4U5jNiyX4DGvtXL2MTKlB
- BaUQULHZK6lAiBsjbeR4/Ys36VOCb8meU5RIXVKHWEIMMkPZJTAyTPt0tZVwOShT5dC3 gw== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3gmqfq357n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 14 Jun 2022 08:10:24 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 14 Jun
- 2022 14:10:22 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Tue, 14 Jun 2022 14:10:22 +0100
-Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id A1A09458;
-        Tue, 14 Jun 2022 13:10:22 +0000 (UTC)
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     <broonie@kernel.org>
-CC:     <james.schulman@cirrus.com>, <david.rhodes@cirrus.com>,
-        <lgirdwood@gmail.com>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] ASoC: cs35l45: Add endianness flag in snd_soc_component_driver
-Date:   Tue, 14 Jun 2022 14:10:22 +0100
-Message-ID: <20220614131022.778057-1-ckeepax@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 14 Jun 2022 09:13:28 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3F93668B
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 06:13:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=BtkNA8bnFXUJxG1GIdprNfyVDGg3vDC4/9ZoY+WLPSM=; b=Z2ye09vqFR1lmMOiossGHXii+D
+        1wF8QAsAmmHJj97pPcgWinAavHDonjKZM6REYxB3Fe2if2x9jCl0cbMyAPGBYqfkQdhOlutpC4EPT
+        WEqg+GhmvFzyu+30/QaPmJaNJtPBFG5EzWD9U4QNP2LnnnsHhWyP0wrX4axmyrpPhMpMcQfUTJXJ+
+        g6SHnuQTwJ/3xY7ux3tdAvN4Do2w/i7fj/me18UCKVYbYwSU4s5uSb2YOwhQOFDzLmYOEgAB7we3G
+        fI9tpreRaRNLkklkScS2+JOmvG1hcfm7nr64LdAbhh7BZLLoncG6LGypsiNLogMp1cj1+2+PCHib4
+        ZiajdU0g==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o16M4-000BS0-J6; Tue, 14 Jun 2022 13:13:12 +0000
+Date:   Tue, 14 Jun 2022 14:13:12 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     Joao Martins <joao.m.martins@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: Re: [PATCH] mm/page_alloc: make calling prep_compound_head more
+ reliable
+Message-ID: <YqiJaOiGnUzzB1+W@casper.infradead.org>
+References: <20220607144157.36411-1-linmiaohe@huawei.com>
+ <20220607113257.84b1bdd993f19be26b8c4944@linux-foundation.org>
+ <65e5da9c-32d1-17d7-d8c6-96cbfac23fec@oracle.com>
+ <4a30f026-789a-9235-2fbd-f553e4d7b45d@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: aitggsH-mFGMuIZWhiIx_LPwba7ZFrJ5
-X-Proofpoint-GUID: aitggsH-mFGMuIZWhiIx_LPwba7ZFrJ5
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4a30f026-789a-9235-2fbd-f553e4d7b45d@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The endianness flag is used on the CODEC side to specify an
-ambivalence to endian, typically because it is lost over the hardware
-link. This device receives audio over an I2S DAI and as such should
-have endianness applied.
+On Wed, Jun 08, 2022 at 08:17:35PM +0800, Miaohe Lin wrote:
+> +++ b/mm/page_alloc.c
+> @@ -6771,13 +6771,18 @@ static void __ref memmap_init_compound(struct page *head,
+>                 set_page_count(page, 0);
+> 
+>                 /*
+> -                * The first tail page stores compound_mapcount_ptr() and
+> -                * compound_order() and the second tail page stores
+> -                * compound_pincount_ptr(). Call prep_compound_head() after
+> -                * the first and second tail pages have been initialized to
+> -                * not have the data overwritten.
+> +                * The first tail page stores compound_mapcount_ptr(),
+> +                * compound_order() and compound_pincount_ptr(). Call
+> +                * prep_compound_head() after the first tail page have
+> +                * been initialized to not have the data overwritten.
+> +                *
+> +                * Note the idea to make this right after we initialize
+> +                * the offending tail pages is trying to take advantage
+> +                * of the likelihood of those tail struct pages being
+> +                * cached given that we will read them right after in
+> +                * prep_compound_head().
 
-Fixes: 0d463d016000 ("ASoC: cs35l45: Add driver for Cirrus Logic CS35L45 Smart Amp")
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
----
- sound/soc/codecs/cs35l45.c | 2 ++
- 1 file changed, 2 insertions(+)
+It's not that we'll read them again, it's that the cacheline will still
+be in cache, and therefore dirty.
 
-diff --git a/sound/soc/codecs/cs35l45.c b/sound/soc/codecs/cs35l45.c
-index c94edfce4b720..d15b3b77c7eb0 100644
---- a/sound/soc/codecs/cs35l45.c
-+++ b/sound/soc/codecs/cs35l45.c
-@@ -500,6 +500,8 @@ static const struct snd_soc_component_driver cs35l45_component = {
- 	.num_controls = ARRAY_SIZE(cs35l45_controls),
- 
- 	.name = "cs35l45",
-+
-+	.endianness = 1,
- };
- 
- static int __maybe_unused cs35l45_runtime_suspend(struct device *dev)
--- 
-2.30.2
+Honestly, I don't think we need this extra explanation in a comment.
+Just change the first paragraph to reflect reality and leave it at that.
 
+>                  */
+> -               if (pfn == head_pfn + 2)
+> +               if (unlikely(pfn == head_pfn + 1))
+
+We definitely don't need the unlikely here.
+
+>                         prep_compound_head(head, order);
+>         }
+>  }
+> 
+> Or am I miss something?
+> 
+> Thanks!
+> 
+> > .
+> > 
+> 
