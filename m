@@ -2,129 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F4CCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF436C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356727AbiFNP2J (ORCPT
+        id S1344910AbiFNP2Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 11:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
+        Tue, 14 Jun 2022 11:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236270AbiFNP1q (ORCPT
+        with ESMTP id S1355647AbiFNP2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 11:27:46 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F9C27B04;
-        Tue, 14 Jun 2022 08:27:43 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id x187so9354259vsb.0;
-        Tue, 14 Jun 2022 08:27:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc:content-transfer-encoding;
-        bh=R6gek+7k8btaKHOjjow80I4o5y14I8XjWpXPB6g1/2Y=;
-        b=B62h3QGdOCNz+CIyxl++5a3MAeWGpBpIqvE1LuIDxAiBT2KOwgQsKXMm+yXioIVHPB
-         jjt0HWzkzU+KazGRGAzDxWR3PT8e2YZfMNNwZRjTISDAHYPOACZJXiWVcdlbj62O1iTH
-         CRwo8tLU+5BPwTR0mx4PSFMKmNeaQFH128VbyZEXS80sLFMqOfLmOOzA8IxoLLnm8R1v
-         HQXqYY7yI1kW48SwVZlyiRMCGRsWx44m6OPWTednk9+irfXrEil3L5JuvbC+KIUjgb7s
-         Sv7mQHB3kSWGK1UJfXJjtiXsZawUtOKESqwxCQqrOQ56ByyQX/Ug9G+RZ1xaZgpJwVSc
-         sYEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc:content-transfer-encoding;
-        bh=R6gek+7k8btaKHOjjow80I4o5y14I8XjWpXPB6g1/2Y=;
-        b=EDhfSB7+NoOj7pKwu+KhQIx41dVAgqRQUZWIspAmJXXlxpVuS51qFrlkUYFWFJ7CHP
-         60RdPHIWtqQn6qf1AnaWu45PM2p4yD6lIK1siZhOQWU8klegAGAOMuz0tjzz5QJtXSHs
-         ufcxtde/eXaorrfU16JkkqKTjM89Fw3wDQQi3tv8B25USD4JRb8dP/iqIqHIk3LwE2+S
-         7qQKPP+XbrA3yb3CRu/SZ6tYjoLqIhcOti5zRsvVXP59sY8cX25+lgo5IQzbWes5IvRD
-         RoLtRVYVJWwmj1hSbLaBOKSmyIEDXt3bK8aeLgxpsQ4jXa25UMTTug5oUjDcXeuH/WxY
-         VgNg==
-X-Gm-Message-State: AJIora8OxFStUU0P+VLaJpjmXpnPILPnFl8fyJMnccVj85gYMMvzXyxm
-        ErVHzKK0N4YgdBYYY3ZQcNBBuYlgSXttrNgL1dw15x0q
-X-Google-Smtp-Source: AGRyM1sNY6Hgb1s6xJAYTUwIny72g5FhpKwdFq/0wKPM/o6VQY94iQFJ/lrdOaOTlJH1unL8KMyBHGsAJprHhcfb+js=
-X-Received: by 2002:a67:eecb:0:b0:34b:f863:ce1b with SMTP id
- o11-20020a67eecb000000b0034bf863ce1bmr2411704vsp.55.1655220463027; Tue, 14
- Jun 2022 08:27:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220613120534.36991-1-andrea.merello@iit.it> <20220613120534.36991-9-andrea.merello@iit.it>
- <CAHp75Vdh8kAH6540xCwzFh5uf=QMVTHC42a8pOgvkpObzjfD+w@mail.gmail.com>
- <164f663acbba481a8ea8f45f185aaf83@iit.it> <CAHp75VeYK=oCbbBVp01_b5LK_FqAo4F_bic9Me4Y6PpfFnDU6g@mail.gmail.com>
- <a41936e4063f4c2c9da7c7e1d915bd62@iit.it> <CAHp75Vd_w1WOp9ntbNqxtuuVXi0kMGbX=OZ7cioNxoh2yUa1ag@mail.gmail.com>
-In-Reply-To: <CAHp75Vd_w1WOp9ntbNqxtuuVXi0kMGbX=OZ7cioNxoh2yUa1ag@mail.gmail.com>
-Reply-To: andrea.merello@gmail.com
-From:   Andrea Merello <andrea.merello@gmail.com>
-Date:   Tue, 14 Jun 2022 17:27:32 +0200
-Message-ID: <CAN8YU5PDoAaFcp83NMBZLcMJ99FWOxDc9DXLJthE9uNkK-izHg@mail.gmail.com>
-Subject: Re: [v6 08/14] iio: imu: add Bosch Sensortec BNO055 core driver
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Andrea Merello <Andrea.Merello@iit.it>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
+        Tue, 14 Jun 2022 11:28:09 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD27D103
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:28:04 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id A32EBC1CA1;
+        Tue, 14 Jun 2022 15:28:02 +0000 (UTC)
+Received: from pdx1-sub0-mail-a312.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 9056FC093E;
+        Tue, 14 Jun 2022 15:28:01 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1655220481; a=rsa-sha256;
+        cv=none;
+        b=b3LPzxiB0VYDThEKxI+Nbz5UxtS7gOEWEe1S4sD0plbL+yjTmg+JYbnKqfKyfJb+lK3cyh
+        7vuw/bS5MJlWXjL7zUxeoWA4GE4BReXP45nE5qJSfgFPC4mLOF48nq5kLs5VpkrFvKpwzD
+        M2+BC76zzlAZE2HDXJ4aL0I7qzNC7Nv3NOBAKAlxjtNM76XjmEzl/qWqElDBsxajc2dyGH
+        b4VvQBaK7PLk5d0zSO7Z7UEIYC6DQxo6m/oMw2r8TA9/TZVPRPXIgzjRrijYHyBTY21BTX
+        xlYRxd0UcgqxbzMK+JI5diaUDW/G+jbGoKvEUz8mZYwABwHzI96EnD7chAmgYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1655220481;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=pLaENAuPBEwvMoIebkqcH+MInFWv6GEjcL6JFJzqg2o=;
+        b=5npjehOE6E2ctpOgD/zTOsfYGCfL2Xyx9eSpPxhEf8esaBIgclGJqYHxA2U5lsUlBYA6cN
+        TvpJLUiJeViP4ZIpFy3P46b/QbUIDWgAs4OSHMOKZB3t12TdQqgmeKqxdOOFF155pBl7ta
+        QEK6I14juAw+fIuCQZBqm1L5/nH9S1WOfYQbclvFIr0747S45ssxmxKPQ7hSf3KkQWgsfj
+        ui8B62BcQa88YGhyD0Lm2Cnzhy8VPfOdT+5HsqbCotIvUBUBAuZM/5ahMAcnNtfDt6M8mi
+        TBMBupVmKmC0vPHe1zOU2N4362SZ+Jhv7iHI5cQwuFaJyYbHXo0FkP7uOerj1w==
+ARC-Authentication-Results: i=1;
+        rspamd-848669fb87-7n5sb;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Occur-Irritate: 548a5fc51c1fcc40_1655220482165_1397644257
+X-MC-Loop-Signature: 1655220482164:958609309
+X-MC-Ingress-Time: 1655220482164
+Received: from pdx1-sub0-mail-a312.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.98.242.216 (trex/6.7.1);
+        Tue, 14 Jun 2022 15:28:02 +0000
+Received: from offworld (unknown [104.36.31.105])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a312.dreamhost.com (Postfix) with ESMTPSA id 4LMsl33B3pzLK;
+        Tue, 14 Jun 2022 08:27:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1655220481;
+        bh=pLaENAuPBEwvMoIebkqcH+MInFWv6GEjcL6JFJzqg2o=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=Znyqx7Rbs+TlzGfKa2qxr/7bu2RxNIQSE7S/eOGTTV4OrJV1S00sjHvq1qpwMG7Fk
+         Xs/PKKRhgD1oueIpU87/1sRwiN3UXu6wCVWQQfYEFLbgMrAZji/yuAigqDWf5CrUYb
+         rt7LwHNUxqfxOXetRVaNhaEBV0NOqC1Rhh6mp/EM0SaqPtcUE1ogzS7Oefv3+Gi+8g
+         mcBn3osxIw6Z+0el0mgiLtCyE/Ru2UWN9ztUt0g+s7LQMsivceYLVojRqUuJK3E6nz
+         uCTMkjV7V2jk5KeMA46rJb9/K6zbW7ov0DuzMjTcyt0CFjuNardAzIhyp717ye/l3R
+         gDOeo+IZVSqOA==
+Date:   Tue, 14 Jun 2022 08:13:52 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Cc:     Ying Huang <ying.huang@intel.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org, Wei Xu <weixugc@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        jmondi <jacopo@jmondi.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>
+Subject: Re: [PATCH v6 01/13] mm/demotion: Add support for explicit memory
+ tiers
+Message-ID: <20220614151352.6ykunpu3q2e7twmv@offworld>
+Mail-Followup-To: "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Ying Huang <ying.huang@intel.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org, Wei Xu <weixugc@google.com>,
+        Greg Thelen <gthelen@google.com>, Yang Shi <shy828301@gmail.com>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>
+References: <20220610135229.182859-1-aneesh.kumar@linux.ibm.com>
+ <20220610135229.182859-2-aneesh.kumar@linux.ibm.com>
+ <7e0b41422dbd0976cb43c2f126e9371d5e311e77.camel@intel.com>
+ <48096ad7-ce6d-79b7-1edd-7e6652ab2a4d@linux.ibm.com>
+ <a88bd25fc77252dee4f895f3a9b2c1f6ebb5169e.camel@intel.com>
+ <87a6afmzaq.fsf@linux.ibm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <87a6afmzaq.fsf@linux.ibm.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il giorno mar 14 giu 2022 alle ore 17:11 Andy Shevchenko
-<andy.shevchenko@gmail.com> ha scritto:
+>> memory_tier_lock isn't held to call register_memory_tier() in this
+>> patch.  That will cause confusion.
 >
-> On Tue, Jun 14, 2022 at 2:15 PM Andrea Merello <Andrea.Merello@iit.it> wr=
-ote:
+>will this help to explain this better
+>modified   mm/memory-tiers.c
+>@@ -151,6 +151,11 @@ static void insert_memory_tier(struct memory_tier *memtier)
+> 	struct list_head *ent;
+> 	struct memory_tier *tmp_memtier;
 >
-> ...
->
-> > >> >> +       devm_add_action_or_reset(priv->dev, bno055_debugfs_remove=
-, priv->debugfs);
-> > >> >
-> > >> >Shouldn't we report the potential error here? It's not directly
-> > >> >related to debugfs, but something which is not directly related.
-> > >>
-> > >> The error eventually comes out from something that has nothing to do=
- with debugs per se (i.e. the devm stuff), but it will only affect debugfs =
-indeed.
-> > >>
-> > >> Assuming that we don't want to make the whole driver fail in case de=
-bugfs stuff fails (see last part of the comment above debugfs_create_file()=
- implementation), and given that the devm_add_action_or_reset(), should ind=
-eed "reset" in case of failure (i.e.  we should be in a clean situation any=
-way), I would say it should be OK not to propagate the error and let things=
- go on.
-> > >
-> > >As I said, it's not directly related to debugfs. Here is the resource
-> > >leak possible or bad things happen if you probe the driver, that fails
-> > >to add this call for removal, remove it, and try to insert again, in
-> > >such case the debugfs will be stale.
-> >
-> > Hum, I would say this shouldn't ever happen: AFAICS devm_add_action_or_=
-reset() is a wrapper around devm_add_action() and it's purpose is exactly t=
-o add a check for failure; devm_add_action_or_reset() immediately invokes t=
-he action handler in case devm_add_action() fails. IOW in case of failure t=
-o add the devm stuff, the debugfs file is removed immediately and it should=
-n't cause any mess with next times probe()s; just the driver will go on wit=
-hout the debugfs file being here.
-> >
-> > I think this is the point of using devm_add_action_or_reset() instead o=
-f dev_add_action()  indeed, or am I missing something?
->
-> Reading that code again and I think you are right, so dev_warn() will
-> be sufficient to show that we fail. OTOH, what is the point of adding
-> a resource for the failed debugfs call?
+>+	if (IS_ENABLED(CONFIG_DEBUG_VM) && !mutex_is_locked(&memory_tier_lock)) {
+>+		WARN_ON_ONCE(1);
+>+		return;
+>+	}
 
-Ah, you are right here: I'll make the call to
-devm_add_action_or_reset() conditional to success of
-debugfs_create_file(). In case any of the two fails we can also warn
-the user.
-
-> --
-> With Best Regards,
-> Andy Shevchenko
+Why not just use lockdep here instead?
