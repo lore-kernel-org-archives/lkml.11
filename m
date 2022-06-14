@@ -2,108 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE1FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:24:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E12D7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354388AbiFNHY2 (ORCPT
+        id S1354369AbiFNH0M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:24:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40470 "EHLO
+        Tue, 14 Jun 2022 03:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353151AbiFNHY0 (ORCPT
+        with ESMTP id S1351788AbiFNH0J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:24:26 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316923C498
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:24:26 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1o10uO-00034J-F5; Tue, 14 Jun 2022 09:24:16 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 3A8EB94613;
-        Tue, 14 Jun 2022 07:24:15 +0000 (UTC)
-Date:   Tue, 14 Jun 2022 09:24:14 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org, michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 05/13] can: netlink: dump bitrate 0 if
- can_priv::bittiming.bitrate is -1U
-Message-ID: <20220614072414.dxdrzrcokusunf3v@pengutronix.de>
-References: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
- <20220612213927.3004444-6-dario.binacchi@amarulasolutions.com>
- <20220613071058.h6bmy6emswh76q5s@pengutronix.de>
- <CABGWkvoNJYfK6bcjYtUi9qKvRfEfHUyrCWDBhOL4EjurW5YJ8Q@mail.gmail.com>
+        Tue, 14 Jun 2022 03:26:09 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4DB3DA77
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:26:07 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4LMg320zS8z9tBr;
+        Tue, 14 Jun 2022 09:26:06 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id tydUD9wXKsef; Tue, 14 Jun 2022 09:26:06 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4LMg32020vz9tBX;
+        Tue, 14 Jun 2022 09:26:06 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E1A868B766;
+        Tue, 14 Jun 2022 09:26:05 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id Co_muVH59YpW; Tue, 14 Jun 2022 09:26:05 +0200 (CEST)
+Received: from [192.168.204.246] (unknown [192.168.204.246])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 735208B763;
+        Tue, 14 Jun 2022 09:26:05 +0200 (CEST)
+Message-ID: <c76598b5-2d60-ea22-d590-4cc6998a8830@csgroup.eu>
+Date:   Tue, 14 Jun 2022 09:26:04 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ziwxdbyycswus75l"
-Content-Disposition: inline
-In-Reply-To: <CABGWkvoNJYfK6bcjYtUi9qKvRfEfHUyrCWDBhOL4EjurW5YJ8Q@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: =?UTF-8?B?UmU6IOWbnuWkjTogW1BBVENIIDIvMl0gdWlvOnBvd2VycGM6bXBjODV4?=
+ =?UTF-8?Q?x=3a_l2-cache-sram_uio_driver_implementation?=
+Content-Language: fr-FR
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Wenhu Wang <wenhu.wang@hotmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Cc:     "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220609102855.272270-1-wenhu.wang@hotmail.com>
+ <SG2PR01MB295139AA7360917B2C4846E19FA79@SG2PR01MB2951.apcprd01.prod.exchangelabs.com>
+ <YqHy1uXwCLlJmftr@kroah.com>
+ <SG2PR01MB2951EA9ED70E5F766DD26A069FAA9@SG2PR01MB2951.apcprd01.prod.exchangelabs.com>
+ <efebcb50-0481-622a-894c-7000999aacc6@csgroup.eu>
+In-Reply-To: <efebcb50-0481-622a-894c-7000999aacc6@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---ziwxdbyycswus75l
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On 13.06.2022 22:44:12, Dario Binacchi wrote:
-> On Mon, Jun 13, 2022 at 9:11 AM Marc Kleine-Budde <mkl@pengutronix.de> wr=
-ote:
-> > This would make the code a lot cleaner. Can you think of a nice macro
-> > name for the -1?
-> >
-> > 0 could be CAN_BITRATE_UNCONFIGURED or _UNSET. For -1 I cannot find a
-> > catchy name, something like CAN_BITRATE_CONFIGURED_UNKOWN or
-> > SET_UNKNOWN.
-> >
->=20
-> Personally I would use CAN_BITRATE_UNSET (0) and CAN_BITRATE_UNKNOWN (-1).
-> Let me know what your ultimate preference is.
+Le 14/06/2022 à 09:18, Christophe Leroy a écrit :
+> 
+> 
+> Le 14/06/2022 à 08:09, Wenhu Wang a écrit :
+>>>> +static const struct vm_operations_struct uio_cache_sram_vm_ops = {
+>>>> +#ifdef CONFIG_HAVE_IOREMAP_PROT
+>>>
+>>> Same here.
+>>>
+>>
+>> I tried to eliminate it in mainline
+>> See: [PATCH v2] mm: eliminate ifdef of HAVE_IOREMAP_PROT in .c files
+>> https://lkml.org/lkml/2022/6/10/695
+>>
+> 
+> I looked at that patch.
+> 
+> I don't think you can just drop the #ifdef in function 
+> __access_remote_vm() in mm/memory.c
+> 
+> You have to replace it with something like:
+> 
+>      if (!IS_ENABLED(CONFIG_HAVE_IOREMAP_PROT))
+>          break;
+> 
 
-Looks good.
 
-Marc
+Another thing in that patch:
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+By making generic_access_phys() a static inline, it means that everytime 
+you refer to the address of that function in a vm_operations_struct 
+struct, the compiler has to provide an outlined instance of the 
+function. It means you'll likely have several instances of a 
+generic_access_phys().
 
---ziwxdbyycswus75l
-Content-Type: application/pgp-signature; name="signature.asc"
+What you could do instead is to add the following at the start of 
+generic_access_phys() in mm/memory.c :
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKoN5wACgkQrX5LkNig
-012SQQf+MCc/KN4pvlFpJLP2EPpCUYG70n+5XaUEvz9ZZ+hDCfpEvX69pVFhGg/8
-58BYsbjIo4lh8XeZ9gzAIkeXjWsoHmBX2XHzcjLPM70sc8RN9VMr+uC32Wgn/VKo
-0e+S3Tvjd4EmSr0D7ulIjssYDatwdxTY+LgJUk47njL+x5PaoDFqub+MScRcNFt1
-cNk+2+B9H0klY6GCMpQiGGSHkNmOB+QVBo5tpBRaSJH9oLTIT3W5KO65U6FPz57H
-xm7kChVAUgHEx9vHRS92v2XyapmpTZwsMU2GJZRvNaoy+blRgsACrR0MbuGPnb6o
-PaGXdriKS8wM/WKuTKky0cuPYR7WLg==
-=OWqG
------END PGP SIGNATURE-----
-
---ziwxdbyycswus75l--
+	if (!IS_ENABLED(CONFIG_HAVE_IOREMAP_PROT))
+		return 0;
