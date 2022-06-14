@@ -2,86 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2EB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:07:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D08E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351010AbiFNUHW (ORCPT
+        id S1351825AbiFNUHb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41610 "EHLO
+        Tue, 14 Jun 2022 16:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231928AbiFNUHR (ORCPT
+        with ESMTP id S1350565AbiFNUHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:07:17 -0400
-Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D774D694;
-        Tue, 14 Jun 2022 13:07:16 -0700 (PDT)
-Received: by mail-io1-f42.google.com with SMTP id a10so10565783ioe.9;
-        Tue, 14 Jun 2022 13:07:16 -0700 (PDT)
+        Tue, 14 Jun 2022 16:07:19 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFFA4D6B0
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:07:17 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id p143-20020a25d895000000b006648c7235a6so7717287ybg.1
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:07:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=gFBrtRlDF3lH8d+M3xs/KaCiXtONEeFHhxQZdekcdbU=;
+        b=RwZiSISLRP5Jmddd28lockJNVdfvQZA4w4rWdZGYLt+asA4X5x0/OSzjaVS9RnPgvf
+         dca+zd0t6wam9yqO0UYy4r6C+8s7Kcf8xwI8cQ1GozrxgKQXOxetyEHs672fkneibNEP
+         f0Iv/g1S6G3lM7op5OIPNu4VJjbG2uhJIq1D2qlvr1aycbaoyDYucSibs8GwI8aw0t7B
+         9xCxpUkiRrZbjk9NHi2uHIl4JYr+F2YsLMo/lpqFuDOIz7dm/3++yARmGD5FGSFgsj87
+         Om2fiUMw+PmCFjQwlXCIBBpaFlPHz1fXQDH08G+kz008LC9rR+TPDrJEuYNEgkMe6GiX
+         MzcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DayktJij2+5kjiAGYQ2iZp1ZSn1xYucSLsZcXjx5rXE=;
-        b=t7QhGpG4fKkINRguUCzyGThR6dSHhQP1aKKJEJPbXWlOqV+cPWI56B66O2tQJr8cCp
-         8g1wIsCdf1FqIFloHD+AZQAifoaBw1MnJZ6XNfIZHaKVFJPKr4d8zK1R38y0TwqPhXLk
-         /0vIE4FyJ1B1iqNI/9rKjdmPS5nBePE0MIGKKlLef5R2BB7UCUOmkJCWPAGMvCJ31TAV
-         v4FpeMKCj1d/sB7AM6Fp3TyY4lVLkBC3C0phlQbNnoQe9gVckbj6fRkKtP91+1UA+39q
-         6otjl3CMXS7Rjx7bTshZzhgfXiZMN2lLuloxHJGsLqTLxrJYxrVnsCUBKNhKORogA1cn
-         YFsg==
-X-Gm-Message-State: AOAM533dypzvANwW8WIDYLuimQKbGTAH36xvxR+GrpTY46Sqq0YtaeR5
-        F76tJJeX0Eh0kiZnKEgnIg==
-X-Google-Smtp-Source: ABdhPJx/r6P3yUtTLVxe2uQT2YXDBHqId0p5ehJT+scfOkZS/eZdB6z/mAVJWOKpuAAjI1lF6Q4x5w==
-X-Received: by 2002:a05:6638:430e:b0:332:586:5182 with SMTP id bt14-20020a056638430e00b0033205865182mr3830617jab.225.1655237235350;
-        Tue, 14 Jun 2022 13:07:15 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id v2-20020a056602014200b0066a0c0beee7sm1803048iot.44.2022.06.14.13.07.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 13:07:14 -0700 (PDT)
-Received: (nullmailer pid 2343178 invoked by uid 1000);
-        Tue, 14 Jun 2022 20:07:12 -0000
-Date:   Tue, 14 Jun 2022 14:07:12 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        devicetree@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-pm@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        linux-renesas-soc@vger.kernel.org,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>
-Subject: Re: [PATCH v3 2/2] dt-bindings: thermal: rcar-gen3-thermal: Add
- r8a779f0 support
-Message-ID: <20220614200712.GA2342886-robh@kernel.org>
-References: <20220610201701.7946-1-wsa+renesas@sang-engineering.com>
- <20220610201701.7946-2-wsa+renesas@sang-engineering.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610201701.7946-2-wsa+renesas@sang-engineering.com>
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=gFBrtRlDF3lH8d+M3xs/KaCiXtONEeFHhxQZdekcdbU=;
+        b=nDkKHUNhiQz3Fy4UPW2RrJmfaj5fimi4Akku5VIUhKjNCNJM7iOTe1Cc9kpSIy1Afj
+         QVuQXTAuP51M2buZuTP3eEAu4STgvYHCjElLtE5nPQ13dluGx0d6H/310HwDeFwFBbni
+         JDRi+rlsTtYuZkLLSE0foCpjsNSeAxEQuqac4ibZslp87Szzdh5bSrIkqo2/VhpNV/8C
+         61Kg5xAWkmmODHW0x5To9jUIZBzrNhS3N1lflCNkMRBNclNFAhXzvNV2KX0omr/LpHaU
+         A1CExO//7QlCyI+wp0k9zBTwxDZjYZUmyw1I4OVZfkkFbYdf4BfMzaMyfXM22NKyc7X0
+         XC6g==
+X-Gm-Message-State: AJIora9dI6bGyboypLB7Mn6aC7d0PAwgbmdA/Q0jjNvaoH5abTv48Uc7
+        YWsoKaoW18TkAsOkjx3l3D2OBA5giJg=
+X-Google-Smtp-Source: AGRyM1vdSturGtI2PTOIo343GwMnfY2JF4QJfIJXDZQQzFSc21V8131+XS87dx52wrjxAWs9EX7RTdjXPig=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a81:11d3:0:b0:314:67c9:1654 with SMTP id
+ 202-20020a8111d3000000b0031467c91654mr4202824ywr.481.1655237236710; Tue, 14
+ Jun 2022 13:07:16 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue, 14 Jun 2022 20:06:27 +0000
+In-Reply-To: <20220614200707.3315957-1-seanjc@google.com>
+Message-Id: <20220614200707.3315957-3-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220614200707.3315957-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH v2 02/42] KVM: sefltests: Use CPUID_XSAVE and CPUID_OSXAVE
+ instead of X86_FEATURE_*
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 10 Jun 2022 22:17:01 +0200, Wolfram Sang wrote:
-> Add support for R-Car S4. The S4 IP differs a bit from its siblings in
-> such way that it has 3 out of 4 TSC nodes for Linux and the interrupts
-> are not routed to the INTC-AP but to the ECM.
-> 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
-> 
-> Change since V2:
-> * make interrupts not required for this SoC
-> 
-> Tested with:
-> make dtbs_check DT_SCHEMA_FILES=thermal/rcar-gen3-thermal.yaml
-> 
->  .../bindings/thermal/rcar-gen3-thermal.yaml   | 19 ++++++++++++++-----
->  1 file changed, 14 insertions(+), 5 deletions(-)
-> 
+Rename X86_FEATURE_* macros to CPUID_* in the AMX and CR4/CPUID sync
+tests to free up the X86_FEATURE_* names for KVM-Unit-Tests style CPUID
+automagic where the function, leaf, register, and bit for the feature is
+embedded in its macro value.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+No functional change intended.
+
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ tools/testing/selftests/kvm/include/x86_64/processor.h   | 4 ++++
+ tools/testing/selftests/kvm/x86_64/amx_test.c            | 9 +++------
+ tools/testing/selftests/kvm/x86_64/cr4_cpuid_sync_test.c | 7 ++-----
+ .../selftests/kvm/x86_64/svm_nested_soft_inject_test.c   | 3 +--
+ 4 files changed, 10 insertions(+), 13 deletions(-)
+
+diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
+index 32964d7b2218..2b13ea74362a 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/processor.h
++++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
+@@ -48,6 +48,7 @@
+ #define CPUID_SMX		(1ul << 6)
+ #define CPUID_PCID		(1ul << 17)
+ #define CPUID_XSAVE		(1ul << 26)
++#define CPUID_OSXSAVE		(1ul << 27)
+ 
+ /* CPUID.7.EBX */
+ #define CPUID_FSGSBASE		(1ul << 0)
+@@ -62,6 +63,9 @@
+ /* CPUID.0x8000_0001.EDX */
+ #define CPUID_GBPAGES		(1ul << 26)
+ 
++/* CPUID.0x8000_000A.EDX */
++#define CPUID_NRIPS		BIT(3)
++
+ /* Page table bitfield declarations */
+ #define PTE_PRESENT_MASK        BIT_ULL(0)
+ #define PTE_WRITABLE_MASK       BIT_ULL(1)
+diff --git a/tools/testing/selftests/kvm/x86_64/amx_test.c b/tools/testing/selftests/kvm/x86_64/amx_test.c
+index 95f59653dbce..7127873bb0cb 100644
+--- a/tools/testing/selftests/kvm/x86_64/amx_test.c
++++ b/tools/testing/selftests/kvm/x86_64/amx_test.c
+@@ -25,9 +25,6 @@
+ # error This test is 64-bit only
+ #endif
+ 
+-#define X86_FEATURE_XSAVE		(1 << 26)
+-#define X86_FEATURE_OSXSAVE		(1 << 27)
+-
+ #define NUM_TILES			8
+ #define TILE_SIZE			1024
+ #define XSAVE_SIZE			((NUM_TILES * TILE_SIZE) + PAGE_SIZE)
+@@ -128,9 +125,9 @@ static inline void check_cpuid_xsave(void)
+ 	eax = 1;
+ 	ecx = 0;
+ 	cpuid(&eax, &ebx, &ecx, &edx);
+-	if (!(ecx & X86_FEATURE_XSAVE))
++	if (!(ecx & CPUID_XSAVE))
+ 		GUEST_ASSERT(!"cpuid: no CPU xsave support!");
+-	if (!(ecx & X86_FEATURE_OSXSAVE))
++	if (!(ecx & CPUID_OSXSAVE))
+ 		GUEST_ASSERT(!"cpuid: no OS xsave support!");
+ }
+ 
+@@ -333,7 +330,7 @@ int main(int argc, char *argv[])
+ 	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
+ 
+ 	entry = kvm_get_supported_cpuid_entry(1);
+-	TEST_REQUIRE(entry->ecx & X86_FEATURE_XSAVE);
++	TEST_REQUIRE(entry->ecx & CPUID_XSAVE);
+ 
+ 	TEST_REQUIRE(kvm_get_cpuid_max_basic() >= 0xd);
+ 
+diff --git a/tools/testing/selftests/kvm/x86_64/cr4_cpuid_sync_test.c b/tools/testing/selftests/kvm/x86_64/cr4_cpuid_sync_test.c
+index a80940ac420f..8b0bb36205d9 100644
+--- a/tools/testing/selftests/kvm/x86_64/cr4_cpuid_sync_test.c
++++ b/tools/testing/selftests/kvm/x86_64/cr4_cpuid_sync_test.c
+@@ -19,9 +19,6 @@
+ #include "kvm_util.h"
+ #include "processor.h"
+ 
+-#define X86_FEATURE_XSAVE	(1<<26)
+-#define X86_FEATURE_OSXSAVE	(1<<27)
+-
+ static inline bool cr4_cpuid_is_sync(void)
+ {
+ 	int func, subfunc;
+@@ -36,7 +33,7 @@ static inline bool cr4_cpuid_is_sync(void)
+ 
+ 	cr4 = get_cr4();
+ 
+-	return (!!(ecx & X86_FEATURE_OSXSAVE)) == (!!(cr4 & X86_CR4_OSXSAVE));
++	return (!!(ecx & CPUID_OSXSAVE)) == (!!(cr4 & X86_CR4_OSXSAVE));
+ }
+ 
+ static void guest_code(void)
+@@ -70,7 +67,7 @@ int main(int argc, char *argv[])
+ 	struct ucall uc;
+ 
+ 	entry = kvm_get_supported_cpuid_entry(1);
+-	TEST_REQUIRE(entry->ecx & X86_FEATURE_XSAVE);
++	TEST_REQUIRE(entry->ecx & CPUID_XSAVE);
+ 
+ 	/* Tell stdout not to buffer its content */
+ 	setbuf(stdout, NULL);
+diff --git a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
+index 1c3f457aa3aa..051f70167074 100644
+--- a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
++++ b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
+@@ -19,7 +19,6 @@
+ #include "test_util.h"
+ 
+ #define INT_NR			0x20
+-#define X86_FEATURE_NRIPS	BIT(3)
+ 
+ static_assert(ATOMIC_INT_LOCK_FREE == 2, "atomic int is not lockless");
+ 
+@@ -204,7 +203,7 @@ int main(int argc, char *argv[])
+ 	nested_svm_check_supported();
+ 
+ 	cpuid = kvm_get_supported_cpuid_entry(0x8000000a);
+-	TEST_ASSERT(cpuid->edx & X86_FEATURE_NRIPS,
++	TEST_ASSERT(cpuid->edx & CPUID_NRIPS,
+ 		    "KVM with nSVM is supposed to unconditionally advertise nRIP Save\n");
+ 
+ 	atomic_init(&nmi_stage, 0);
+-- 
+2.36.1.476.g0c4daa206d-goog
+
