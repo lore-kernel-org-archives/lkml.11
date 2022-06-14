@@ -2,186 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2605FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC13C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353922AbiFNHWv (ORCPT
+        id S1354123AbiFNHW4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36858 "EHLO
+        Tue, 14 Jun 2022 03:22:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352454AbiFNHWr (ORCPT
+        with ESMTP id S1352454AbiFNHWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:22:47 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3A0A828E0E
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:22:44 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ABBC3D6E;
-        Tue, 14 Jun 2022 00:22:43 -0700 (PDT)
-Received: from [192.168.4.21] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E29E43F66F;
-        Tue, 14 Jun 2022 00:22:41 -0700 (PDT)
-Message-ID: <b35a1a9a-9dfc-27f6-8e82-791414454b48@arm.com>
-Date:   Tue, 14 Jun 2022 08:22:28 +0100
+        Tue, 14 Jun 2022 03:22:52 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7EB2A400
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:22:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655191370; x=1686727370;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=CzvGOqm3s1ZUzeSM0+qcKhIjvYujoS+oprriCQFDToU=;
+  b=VciUY2lwZxMFqUwB9MhOSdfbR/oa+vfuiza3Goc+Fn37NxLiPs7wHXE+
+   a+Ww4a5jtnMwJW7TdMgwTWhjZtu9WC7PMHux3Gbi5WWFekyGYCRW+Vewo
+   ux9yGLLdMLkjlRF0HnzmFJSWIEuYiPeiT4lnKvWXNfetbVXe72LfjySpP
+   X8qk4n80W+Rk6XvQZMJzzcVy2Jkwgy8GJok0jSImI/scu/sW92ksAQbEU
+   P3y66BR/8jh69/BjM3NDUXrvR8drMMrQdFMVRtJTURRl7hr2pBdOLjBm1
+   HdIIWR27YQgW7DOnMjChubP8W76h/tS3OwjqG4nPhJitRPxXptM6ye2GS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="279253521"
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="279253521"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:22:50 -0700
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="910837669"
+Received: from gren5-mobl1.ccr.corp.intel.com (HELO [10.255.29.39]) ([10.255.29.39])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:22:47 -0700
+Message-ID: <c1b8cd0b-6f25-993e-5b96-ce90d855ef26@linux.intel.com>
+Date:   Tue, 14 Jun 2022 15:22:46 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH] mte: Initialize tag storage to KASAN_TAG_INVALID
+Cc:     baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 06/12] iommu/vt-d: Acquiring lock in domain ID
+ allocation helpers
 Content-Language: en-US
-To:     Andrey Konovalov <andreyknvl@gmail.com>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-References: <20220607113150.55140-1-vincenzo.frascino@arm.com>
- <CA+fCnZcZcoOz+SVXdVOsrC_pR_PJUoCQnJe3B2u=D_K7=J79+Q@mail.gmail.com>
-From:   Vincenzo Frascino <vincenzo.frascino@arm.com>
-In-Reply-To: <CA+fCnZcZcoOz+SVXdVOsrC_pR_PJUoCQnJe3B2u=D_K7=J79+Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jason Gunthorpe <jgg@nvidia.com>
+References: <20220614025137.1632762-1-baolu.lu@linux.intel.com>
+ <20220614025137.1632762-7-baolu.lu@linux.intel.com>
+ <BN9PR11MB52760A3D7C6BF1AF9C9D34658CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52760A3D7C6BF1AF9C9D34658CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hy Andrey,
-
-On 6/9/22 19:34, Andrey Konovalov wrote:
-> On Tue, Jun 7, 2022 at 1:32 PM Vincenzo Frascino
-> <vincenzo.frascino@arm.com> wrote:
+On 2022/6/14 14:52, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, June 14, 2022 10:52 AM
 >>
->> When the kernel is entered on aarch64, the MTE allocation tags are in an
->> UNKNOWN state.
+>> The iommu->lock is used to protect the per-IOMMU domain ID resource.
+>> Moving the lock into the ID alloc/free helpers makes the code more
+>> compact. At the same time, the device_domain_lock is irrelevant to
+>> the domain ID resource, remove its assertion as well.
 >>
->> With MTE enabled, the tags are initialized:
->>  - When a page is allocated and the user maps it with PROT_MTE.
->>  - On allocation, with in-kernel MTE enabled (KHWASAN).
+>> On the other hand, the iommu->lock is never used in interrupt context,
+>> there's no need to use the irqsave variant of the spinlock calls.
 > 
-> Hi Vincenzo,
-> 
-> I think we should move away from the KHWASAN name - it was used during
-> the early prototyping days for SW_TAGS KASAN. What you mean here is
-> HW_TAGS KASAN.
+> I still prefer to separating reduction of lock ranges from changing irqsave.
+> Locking is tricky. From bisect p.o.v. it will be a lot easier if we just change
+> one logic in one patch.
 > 
 
-You are right, I will fix this in v2. Before re-posting I will wait and see if
-there are more comments.
+Fair enough. I will do this in the next version.
 
-> Thanks!
-> 
-> 
->>
->> If the tag pool is zeroed by the hardware at reset, it makes it
->> difficult to track potential places where the initialization of the
->> tags was missed.
->>
->> This can be observed under QEMU for aarch64, which initializes the MTE
->> allocation tags to zero.
->>
->> Initialize to tag storage to KASAN_TAG_INVALID to catch potential
->> places where the initialization of the tags was missed.
->>
->> This is done introducing a new kernel command line parameter
->> "mte.tags_init" that enables the debug option.
->>
->> Note: The proposed solution should be considered a debug option because
->> it might have performance impact on large machines at boot.
->>
->> Cc: Catalin Marinas <catalin.marinas@arm.com>
->> Cc: Will Deacon <will@kernel.org>
->> Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
->> ---
->>  arch/arm64/kernel/mte.c | 47 +++++++++++++++++++++++++++++++++++++++++
->>  1 file changed, 47 insertions(+)
->>
->> diff --git a/arch/arm64/kernel/mte.c b/arch/arm64/kernel/mte.c
->> index 57b30bcf9f21..259a826363f1 100644
->> --- a/arch/arm64/kernel/mte.c
->> +++ b/arch/arm64/kernel/mte.c
->> @@ -6,6 +6,7 @@
->>  #include <linux/bitops.h>
->>  #include <linux/cpu.h>
->>  #include <linux/kernel.h>
->> +#include <linux/memblock.h>
->>  #include <linux/mm.h>
->>  #include <linux/prctl.h>
->>  #include <linux/sched.h>
->> @@ -35,6 +36,8 @@ DEFINE_STATIC_KEY_FALSE(mte_async_or_asymm_mode);
->>  EXPORT_SYMBOL_GPL(mte_async_or_asymm_mode);
->>  #endif
->>
->> +static bool mte_tags_init __ro_after_init;
->> +
->>  static void mte_sync_page_tags(struct page *page, pte_t old_pte,
->>                                bool check_swap, bool pte_is_tagged)
->>  {
->> @@ -107,6 +110,48 @@ int memcmp_pages(struct page *page1, struct page *page2)
->>         return ret;
->>  }
->>
->> +/* mte.tags_init=off/on */
->> +static int __init early_mte_tags_init(char *arg)
->> +{
->> +       if (!arg)
->> +               return -EINVAL;
->> +
->> +       if (!strcmp(arg, "off"))
->> +               mte_tags_init = false;
->> +       else if (!strcmp(arg, "on"))
->> +               mte_tags_init = true;
->> +       else
->> +               return -EINVAL;
->> +
->> +       return 0;
->> +}
->> +early_param("mte.tags_init", early_mte_tags_init);
->> +
->> +static inline void __mte_tag_storage_init(void)
->> +{
->> +       static bool mte_tags_uninitialized = true;
->> +       phys_addr_t pa_start, pa_end;
->> +       u64 index;
->> +
->> +       if (mte_tags_init && !mte_tags_uninitialized)
->> +               return;
->> +
->> +       for_each_mem_range(index, &pa_start, &pa_end) {
->> +               void *va_start = (void *)__phys_to_virt(pa_start);
->> +               void *va_end = (void *)__phys_to_virt(pa_end);
->> +               size_t va_size = (u64)va_end - (u64)va_start;
->> +
->> +               if (va_start >= va_end)
->> +                       break;
->> +
->> +               mte_set_mem_tag_range(va_start, va_size, KASAN_TAG_INVALID, false);
->> +       }
->> +
->> +       /* Tags are now initialized to KASAN_TAG_INVALID */
->> +       mte_tags_uninitialized = false;
->> +       pr_info("MTE: Tag Storage Initialized\n");
->> +}
->> +
->>  static inline void __mte_enable_kernel(const char *mode, unsigned long tcf)
->>  {
->>         /* Enable MTE Sync Mode for EL1. */
->> @@ -114,6 +159,8 @@ static inline void __mte_enable_kernel(const char *mode, unsigned long tcf)
->>                          SYS_FIELD_PREP(SCTLR_EL1, TCF, tcf));
->>         isb();
->>
->> +       __mte_tag_storage_init();
->> +
->>         pr_info_once("MTE: enabled in %s mode at EL1\n", mode);
->>  }
->>
->> --
->> 2.36.1
->>
->> --
->> You received this message because you are subscribed to the Google Groups "kasan-dev" group.
->> To unsubscribe from this group and stop receiving emails from it, send an email to kasan-dev+unsubscribe@googlegroups.com.
->> To view this discussion on the web visit https://groups.google.com/d/msgid/kasan-dev/20220607113150.55140-1-vincenzo.frascino%40arm.com.
-
--- 
-Regards,
-Vincenzo
+Best regards,
+baolu
