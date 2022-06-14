@@ -2,105 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1199C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74C23C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354172AbiFNHVR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59752 "EHLO
+        id S236494AbiFNHVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 03:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354086AbiFNHVD (ORCPT
+        with ESMTP id S1352191AbiFNHV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:21:03 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F9F31DF9
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:20:52 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso8310903pjk.0
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:20:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=x3VzGr/fSHQypY+i+ztObznAHCuT0co5thLO7MdpFL0=;
-        b=zzQhFHJOXlSKySb9yp1KQ1ub6zLwe6JGFCECrYPIUu1EJieVGCVAnZqJJ8aqUBwTMK
-         WwiuS+k6jzu2XtIPtpM5WDZ/oKx7GWoEAVYHv3emsjnt+5071h4zc5znKs7MFr6wDE2b
-         TYyH+tQcrA3/9VIkrQVhK3WVpdAP4q5tGyPZ0H08doT/RAbCrurW25CDX9dFydpMxB+y
-         SUtNvsDCaf5HBgLl6pZsR+frFFzH8C51yXJo2ogUwpT43PTNU8kMtKDmCoKixBxxdIHO
-         9aWtob3CUmV40bFtrxj2m9m930RV6lTcD2n2Hq9CF4f+WhYukD+LFj2tS8C8rcPqIjCc
-         le0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=x3VzGr/fSHQypY+i+ztObznAHCuT0co5thLO7MdpFL0=;
-        b=anD55c1z77EXKcVkPu9rATr6pSJvRU0uuY0wecI7+0ZoiJQGZJd1GvJMW/aXG0Fcpz
-         NIEkKo3GKyr39Hkn9sDw4NeAtSi9IomZK//kun9Dx9FQKOMK/rq1ABLZsiqr0oiPqvcx
-         r0N8RwcO5l7HtzPEIQlHiulPB8ZM9la5lISkrUy5gA5X0QnAej52VHd1vnCLeZnBvSFH
-         d/2vr1FCsPLA6xafeI0GD+yYsx0PfwK35afYY3meoPXD1/DBGXMN0/FVJJBCTaJErT9j
-         4rrKt2aIZ/IaGmp2GGXTmf9i4gzLif8FFWZO4ErKfCWH7LKgRPG4Ff+Ssvs5tzWnibGG
-         FSuA==
-X-Gm-Message-State: AJIora9UD99R0LQDb7RP52tbT2KjFHx/xotg73ol6N970agR/zMrWdC7
-        ZI+3vc6Hw0P+Y3iy9VINjBTpdTs/49BGOgsc
-X-Google-Smtp-Source: AGRyM1tupFfevnhvE3qrqzeChNwFv1DJYZzyH0DgykcokUf98ZLv9a17HvvfC58GfIOeq4lT/zsgaw==
-X-Received: by 2002:a17:90a:d104:b0:1ea:b84b:a084 with SMTP id l4-20020a17090ad10400b001eab84ba084mr3068817pju.95.1655191251044;
-        Tue, 14 Jun 2022 00:20:51 -0700 (PDT)
-Received: from [10.4.36.16] ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id jj18-20020a170903049200b00163f36005e1sm6383907plb.42.2022.06.14.00.20.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 00:20:50 -0700 (PDT)
-Message-ID: <13002894-edde-3163-f56b-d344147293d7@bytedance.com>
-Date:   Tue, 14 Jun 2022 15:23:12 +0800
+        Tue, 14 Jun 2022 03:21:29 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6007F2C644
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:21:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655191288; x=1686727288;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=aT/jlo7bPBLI1E41rFd9cS9uKHWKQcFzJa6LdgUzabY=;
+  b=SYhDVbbKtNpx+0PSNWFN4PG8s51AKDVMVDTZrdtIgapm8LF6vXlQEvHu
+   R7DDgHtnUhjLrUnk5p9DG3ieOnQH2xxEbtADg5qvfQCU72U7TBfzBSH7+
+   zZNwnBBcK+UpWJrDGBoD3Lp1DDwZggd/sad+J5zvIUV/Y3ZgYiVruQeY/
+   DJ9yztF19hv6ya4FVRsrQTwvdoI6EW6xAO+Hq306hgZTFsIO/ZZMPOLIu
+   o86M10F5VDuMNo5yh3QRHhO4/xq4wacjUuSorMFA8GWZUtDGIr1FbPcuo
+   FPkVeJF4R9ls10q6jQqHCUiVyqiX7YutGnw+ZEJYLbort9gjn663pY7U3
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="278571591"
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="278571591"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:21:28 -0700
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="910836980"
+Received: from gren5-mobl1.ccr.corp.intel.com (HELO [10.255.29.39]) ([10.255.29.39])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:21:25 -0700
+Message-ID: <28161d94-6f2d-700f-853d-53b42f4d00d0@linux.intel.com>
+Date:   Tue, 14 Jun 2022 15:21:23 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [External] Re: [PATCH v4 1/2] mm/memory-failure: introduce
- "hwpoisoned-pages" entry
+Cc:     baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 03/12] iommu/vt-d: Remove clearing translation data in
+ disable_dmar_iommu()
 Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>,
-        =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>
-Cc:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linmiaohe@huawei.com" <linmiaohe@huawei.com>
-References: <20220614043830.99607-1-pizhenwei@bytedance.com>
- <20220614043830.99607-2-pizhenwei@bytedance.com>
- <20220614070934.GA1627546@hori.linux.bs1.fc.nec.co.jp>
- <66c43dac-32ac-5801-c76c-01607d68e38b@redhat.com>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <66c43dac-32ac-5801-c76c-01607d68e38b@redhat.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jason Gunthorpe <jgg@nvidia.com>
+References: <20220614025137.1632762-1-baolu.lu@linux.intel.com>
+ <20220614025137.1632762-4-baolu.lu@linux.intel.com>
+ <BN9PR11MB52762E7602FFF7EE4B52AC888CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52762E7602FFF7EE4B52AC888CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 6/14/22 15:13, David Hildenbrand wrote:
-> 	   &hwpoisoned_pages);
+On 2022/6/14 14:49, Tian, Kevin wrote:
+>> From: Lu Baolu<baolu.lu@linux.intel.com>
+>> Sent: Tuesday, June 14, 2022 10:51 AM
 >>
->> I'm not sure how useful this interface from userspace (controlling test process
->> with this?).  Do we really need to expose this to userspace?
+>> The disable_dmar_iommu() is called when IOMMU initialization fails or
+>> the IOMMU is hot-removed from the system. In both cases, there is no
+>> need to clear the IOMMU translation data structures for devices.
 >>
->>
->> TBH I feel that another approach like below is more desirable:
->>
->>    - define a new flag in "enum mf_flags" (for example named MF_SW_SIMULATED),
->>    - set the flag when calling memory_failure() from the three callers
->>      mentioned above,
->>    - define a global variable (typed bool) in mm/memory_failure.c_to show that
->>      the system has experienced a real hardware memory error events.
->>    - once memory_failure() is called without MF_SW_SIMULATED, the new global
->>      bool variable is set, and afterward unpoison_memory always fails with
->>      -EOPNOTSUPP.
-> 
-> Exactly what I had in mind.
-> 
+>> On the initialization path, the device probing only happens after the
+>> IOMMU is initialized successfully, hence there're no translation data
+>> structures.
+> Out of curiosity. With kexec the IOMMU may contain stale mappings
+> from the old kernel. Then is it meaningful to disable IOMMU after the
+> new kernel fails to initialize it properly?
 
-Sure, I'll send a new version later! Thanks!
+For kexec kernel, if the IOMMU is detected to be pre-enabled, the IOMMU
+driver will try to copy tables from the old kernel. If copying table
+fails, the IOMMU driver will disable IOMMU and do the normal
+initialization.
 
--- 
-zhenwei pi
+Best regards,
+baolu
