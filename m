@@ -2,373 +2,387 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91147CCA47A
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C88A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:30:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358234AbiFNUaD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
+        id S235323AbiFNUaK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 16:30:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358162AbiFNU35 (ORCPT
+        with ESMTP id S1358171AbiFNU37 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:29:57 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC544EDE5
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:29:53 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id h23so15744894lfe.4
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:29:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=i1JbdaTpMJydG2La5gQ81SLd4rzBeviDTlLKc1Eh/88=;
-        b=GeEzs3PaW1MdOrbgFZ/otLfl3Zbs0O9rwiW5jR3wEk7DxOJJMNNaAAd9x3vM+ls+vP
-         SYoWgeoNHoBptIJJOojShXU13QiM5QUde3iyhfQnGylp3dfOJv1fd9e/kqkjVyDsO8Ak
-         VGmpHA6oteHXGscOvQXivDkJlXHLf+JVvDS9MfT9/GEguVMCR0iw3TFO1dHFfJjQdgel
-         dBmPayr75a2wpNqnj2UDwqzxBz7W+DedtpboLm1h6z+y3tXbGBua9JMlFEW2dL7oKJdj
-         GChzCb3cE3z0NztobHO7Cc7W8M+GVhNKCvicnUoH5y9Sz2wExD7QaUw7d1WhJejCLPgo
-         KCAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=i1JbdaTpMJydG2La5gQ81SLd4rzBeviDTlLKc1Eh/88=;
-        b=rQB7bAQzp8NQFnWc5L8tLCtIbU15/Bp3HHVZpPE46zgWeNvxA5n2Z89N6fRvGV5nkk
-         8p0mthGvbK+kqc+DZ/YyFAf4JcooI3I19SwAeu71zDwYfgSMqrSLG2Z2G+wlOZh6jf4J
-         s6k6C7xs+XnxHV4wLwg4KfZlJZgXBfF5S41iOSGefM0xI1eAZ+ZklTIFoxFXmi2HcdmY
-         r3MEoexresRYUm2EpQ92ntpB7yL/9wj2hMNMQNHIqqDMW5Fl+HMW6qr2f0NKhNX9URTR
-         cXNBESYqpws3xI5FxbmbsAtAL8GYMrguGN4YcYU6YgV7DUEFoMrLVuij5Rkvhu4sxpZb
-         ZR/w==
-X-Gm-Message-State: AOAM530B7KZg1CZies7MJkmlJdakl40TqVH9drO91YEvaGo+Y7NkuaV0
-        zdT6vrrdGs5TtLUyt8Anc4u57yhvWOnxO919bjoJ2A==
-X-Google-Smtp-Source: AGRyM1uB8vovM2S7g0G+YvxGib/s21Ys3d7Mu/guzm6mTRKwWFEw+NzAwM1UtOZyS5AKzwwfYb7eQjcwM7Mj92nnSGc=
-X-Received: by 2002:a05:6512:238c:b0:479:8c3:e11b with SMTP id
- c12-20020a056512238c00b0047908c3e11bmr4044322lfv.456.1655238591503; Tue, 14
- Jun 2022 13:29:51 -0700 (PDT)
+        Tue, 14 Jun 2022 16:29:59 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-bgr052101064017.outbound.protection.outlook.com [52.101.64.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FDB29834;
+        Tue, 14 Jun 2022 13:29:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CjU9CCd781LN5H6xEJecVSgXeGLXAnlqau1CxV8QH/AyDGi2gRgSfe8rETE8FFGTO0VuCjRjL4bpx2xfsxa9PeBS/QkIUOfZIfSpdTIus6YumCm061RHn8BFvUFM/lPjLFdA9/WA9QHPIYDXwiXw9N9GmnCNBDQN+p3H2XQEjoHWr5Eu0OTReSPDsCInrhgNTpQJNIgCwgFw/1tEwn3yAGsvbOo5r1zfoOmL9AZ9aAC+pz16Fha79Z0HmyOdrH2piLhbksj1yUrco6QrXSeYHhH4POHy/ir69+QmVCxUDkBMOlxjWflOGcIfRcTm+q4T7LLTt5fhWMgGFCJUY5wTrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BbLQur2lLKngM1gyBsHo22EVD11TSunfeRWn8X4BpbQ=;
+ b=XVhPbbHXpP3abGm1rcGUpEV5cAnNxMLGxiggUbUoTQMITEISx+hknwasObwxbk41nJtp2eJ+Hzoe/lg8pLDaPW7t97ZoXhIqZO98DguFQ86QX0O4hyQH11hJakfeLOMj64ERQViIuugotsAnJqYlcRCbxB0b+6A0pdVwixRpzxthpPcyXL19klxPwI0rWceBGJR01dhagVO/No0z4Y8NoKR/6lI2/ZuyXQjK91vz4g1p8GnCjRHnSpNk5pTil1ESsvJ9Vn1jFCNYL2Ot4IBhK05xwAwfNiBy32kRY4WXrbbwLcCjeNF44w6cd0uKurdMeG80uXALjPK80xv4hNkddA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BbLQur2lLKngM1gyBsHo22EVD11TSunfeRWn8X4BpbQ=;
+ b=b96NdCY3Q9GdlGCcKh/zUGvdAC4X3uIR3LNFwiWDOVZOuCtJcaaVTtJh/H72vuh9RwHAYtRZx0Y5T4j8jFBlik1ey7JP9ytbwrb2n/5Z7gj7wup7CxlYlz8BOCgs1v1blUgoPfmy0LFvsXAnyccxDwtVhfhsIMuRb8z7MvvNM2U=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from BYAPR21MB1223.namprd21.prod.outlook.com (2603:10b6:a03:103::11)
+ by MN0PR21MB3314.namprd21.prod.outlook.com (2603:10b6:208:37f::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.8; Tue, 14 Jun
+ 2022 20:29:56 +0000
+Received: from BYAPR21MB1223.namprd21.prod.outlook.com
+ ([fe80::7ceb:34aa:b695:d8ac]) by BYAPR21MB1223.namprd21.prod.outlook.com
+ ([fe80::7ceb:34aa:b695:d8ac%5]) with mapi id 15.20.5353.001; Tue, 14 Jun 2022
+ 20:29:56 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
+Cc:     haiyangz@microsoft.com, decui@microsoft.com, kys@microsoft.com,
+        sthemmin@microsoft.com, paulros@microsoft.com,
+        shacharr@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com,
+        davem@davemloft.net, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next,v2,2/2] net: mana: Add support of XDP_REDIRECT action
+Date:   Tue, 14 Jun 2022 13:28:55 -0700
+Message-Id: <1655238535-19257-3-git-send-email-haiyangz@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1655238535-19257-1-git-send-email-haiyangz@microsoft.com>
+References: <1655238535-19257-1-git-send-email-haiyangz@microsoft.com>
+Content-Type: text/plain
+X-ClientProxiedBy: MW4PR04CA0313.namprd04.prod.outlook.com
+ (2603:10b6:303:82::18) To BYAPR21MB1223.namprd21.prod.outlook.com
+ (2603:10b6:a03:103::11)
 MIME-Version: 1.0
-References: <20210820155918.7518-1-brijesh.singh@amd.com> <20210820155918.7518-24-brijesh.singh@amd.com>
- <CABpDEukdrEbXjOF_QuZqUMQndYx=zVM4s2o-oN_wb2L_HCrONg@mail.gmail.com>
- <1cadca0d-c3dc-68ed-075f-f88ccb0ccc0a@amd.com> <CABpDEun0rjrNVCGZDXd8SO3tfZi-2ku3mit2XMGLwCsijbF9tg@mail.gmail.com>
- <ee1a829f-9a89-e447-d182-877d4033c96a@amd.com> <CAMkAt6q3otA3n-daFfEBP7kzD+ucMQjP=3bX1PkuAUFrH9epUQ@mail.gmail.com>
- <SN6PR12MB27671CDFDAA1E62AD49EC6C68EAA9@SN6PR12MB2767.namprd12.prod.outlook.com>
- <CAMkAt6r0ZsjS_XtVYnazC8-Z9bHQafLZ7QFq2NqcRQ2gZbUyPg@mail.gmail.com>
- <SN6PR12MB276764F83F8849603A2F23478EAA9@SN6PR12MB2767.namprd12.prod.outlook.com>
- <CABpDEum5cmODpA1HQUqG0doKv32AqZ0L9eA88nfg=F=OTMigxA@mail.gmail.com> <SN6PR12MB2767FC7AD341378116DD147D8EAA9@SN6PR12MB2767.namprd12.prod.outlook.com>
-In-Reply-To: <SN6PR12MB2767FC7AD341378116DD147D8EAA9@SN6PR12MB2767.namprd12.prod.outlook.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Tue, 14 Jun 2022 14:29:39 -0600
-Message-ID: <CAMkAt6pW5MUvJoh1HRJjwjWp7WuJGdrHf59k_QgCxfPhvmM20w@mail.gmail.com>
-Subject: Re: [PATCH Part2 v5 23/45] KVM: SVM: Add KVM_SNP_INIT command
-To:     "Kalra, Ashish" <Ashish.Kalra@amd.com>
-Cc:     Alper Gun <alpergun@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "Roth, Michael" <Michael.Roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>, Marc Orr <marcorr@google.com>,
-        Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Sender: LKML haiyangz <lkmlhyz@microsoft.com>
+X-MS-Exchange-MessageSentRepresentingType: 2
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 434e0bf2-7876-4da2-2b20-08da4e44a4e7
+X-MS-TrafficTypeDiagnostic: MN0PR21MB3314:EE_
+X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+X-Microsoft-Antispam-PRVS: <MN0PR21MB331494EAC8345756034FEBDAACAA9@MN0PR21MB3314.namprd21.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yWl5kZzUQbT2yucVSdc9XhJnXdk5mgNoeYxxFj6U4T++iXp26jMS9gvjAHAsv9jsaWXVBrMcRwKJ0jA89rYxXTMVFZ6t0w96aIdIZ5vv7bOYvLR1MK6l3TTQ6KT4mQGJQAWj/Ma0t/k+rmmW7sMh3BT+lHAjdZOZfDqUCNiFDy9i2hgZciH5PniRi0G72KDUbl1hpHXQbcdYrGKjWUe2EygfFFOIM9rwM3RIbQ8lVJ9rS5DesUd+0Fde26oc1g0jc0n2hOZabBRfSILIAJl7hbyyMUwjeR1QSJ3oEKl5L79u8enq9vMNxG4YJqopfYIjAVsJN1eo7PyoOUPevoOssVIWOM+9qZ8CNA06G2PAQp6rkWoIsaLNFY0v6wcJRZgggSVWOy9BCm7/0NLWV/PYwm4sV9hKwQw9GMaTFlVJJo2VUTf3Bttujbj0IUSw/XjQC12q4tq1adnuamTPf/mlpxjOy7n7YVNloZHM2aDL7RaPrH8Asx25RAX8jPK2+tJVgI6pM6mfKEBuH9rodWVeNXA6FkvPI8GNWMB7zdJ2uf6XfJFxV6hpDlFV4gQto+7V0ElDQ/21VlITMRqDaaiCXrMBBNmJYNPXY5w3Vj7+8Rlv9VMG63WHCvDS4vpxuonkBXmZ9/bWxvzYraR3YiS4ciLxGnS3ceZl8kORK9cOMKcvdBayvKxYeWyA/TnQbkzKZW5KyVTiO2ZJTXJGvYY82B/bMYRyYvhKv2mKEnbWgS9v+4kSyaYDvPfBqfB4nB+6
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1223.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(451199009)(6506007)(186003)(52116002)(2616005)(6512007)(26005)(38100700002)(82960400001)(38350700002)(82950400001)(83380400001)(5660300002)(66946007)(36756003)(8676002)(4326008)(8936002)(6486002)(316002)(2906002)(66556008)(66476007)(10290500003)(7846003)(508600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Q5f8vODSJL1JDYg+uvggaCHIawsWxm9kgK6064jh4Y6Jsnche+07iPzvll31?=
+ =?us-ascii?Q?mveU4QWvkI8RMXnoXWnOOA7Dq7kckWl3VVKUShuyU3tp67Ew9vgyqcywtjM5?=
+ =?us-ascii?Q?UKYC1TvXtMHuh9yvt1Z/0Oz/3aLHgPlmPY4jM4BIIwMaVFD97K35gy63ZhpW?=
+ =?us-ascii?Q?yD//GoApHrgVNcAgPR9C0Yfy8T4ZDLEF4hRJ9FYE0xPpX6459IghWXWkcTxt?=
+ =?us-ascii?Q?17G+wOe0dOCFfXhPesaDaXz7qIX3rFD25zwHQw6nbWkF/RN4rewnAiuIaBCp?=
+ =?us-ascii?Q?U0xOQOrGugA80PyNGZktxJb3NTUv7GINKXkQqBD4YhuMAuXJ1vP9n25NoabL?=
+ =?us-ascii?Q?lM/AQrCS2V0O8tay/AA6IbFFeBKvLIhKYtmB/KZi4igXG4I+0mi2LPFM2Csf?=
+ =?us-ascii?Q?VqYahTKmAr000iPE8NFZ3aBTIgs+mnz6R5xpEOcpyndSzw8QAzRnkzMzzkUV?=
+ =?us-ascii?Q?JuUtc9Kn3R7zAxDTeVWwGWKvHdUGeQ+Jih4KrPeS8ZY+pM6JUimS0Z/wJGDY?=
+ =?us-ascii?Q?nmlbqNp4HcJzoMxyr1yT2bY+07JQWJrZSUtJlgOp+lGrE+xN57x2DwqOXbnE?=
+ =?us-ascii?Q?TeGJ9Y+F4Uuv1c2/811ZJpq2EaWngqSt/6dzN2t66UnK51xCs46ul+eQnX3E?=
+ =?us-ascii?Q?+lVIFjb9SlQ1kgs0tfDeRHij/HCBhrBfkTpYElosZfy0tJZUD2+3DCwGnCKN?=
+ =?us-ascii?Q?dEYYxZIuWliv1kqBR5htsc53zXd8sqbv0zjSR2NPb7AvsH7avTPLLE8yGbe9?=
+ =?us-ascii?Q?lsKqK/WjR53yF8morC0WTpZbX+/TPNWNyTGpi0hiiCBulz8drK8mQu51rj4/?=
+ =?us-ascii?Q?wmYwS2+qo2NOUTzAoe1ppXhn989Ew0KUs1n0q7niEnYe/5Qek1a7mA40ndqc?=
+ =?us-ascii?Q?j/cwh7vu0itw0NknHp11kp9VgqF346RjBeSP/ADxtvxmV+XOgnfBpjF+C1Jo?=
+ =?us-ascii?Q?5AadWSXeT/XWZNZY7pVlCUXUwAtnvr9BqZ+eMqYMmnmLDTQnwh0oSuwPchQ/?=
+ =?us-ascii?Q?jeHXeTPM7VdE91r8V8IJqnoiZ/zLrhB4x3wYx3fCwKdWGbn83iIYCjUjqxj0?=
+ =?us-ascii?Q?9tIaZf4tttUfG2sssmuU7SpFMJphwanh5di+Gb17wjq7GUDk/c5D2KlwVx9D?=
+ =?us-ascii?Q?Zn+uiXhbEXqvOBSdDPXmnkoha400+ccYaGYsIgG9s49qyCeR4mlfaX7ztCAR?=
+ =?us-ascii?Q?LOpxy9KGe3Q4/sdrpxZLmKHoZXKVJcncAOu23dbPrvvEeQ29kAAHy8rkTSWc?=
+ =?us-ascii?Q?aqcSh5g6xysXITppQxApDEmoGNceXKkfbyE0S8KACWykz8k4D058AgTHnQec?=
+ =?us-ascii?Q?C+l4A5wMR8rLMnV3f2dDPaKMiID9ZrfxcTkRuI2XAuaJ5fMs20GoQjHKKHRH?=
+ =?us-ascii?Q?jG/FpOz44rIwMHiOJJlmFAYqFGo2JfuK6y7AzccUbbAWK/HJCOkbeOHUP2cl?=
+ =?us-ascii?Q?FyFBFWzFXHk0Uc+ApYT7IiEPC0lQKqfz5XzWx5bgGIWvBBZDQGTs6ysDqXU8?=
+ =?us-ascii?Q?ebSfEVGC7gY4Am5LjfSPFw4WEbLXNnlir3VHT3/IWJQD0qJcOcqnELFNYJgy?=
+ =?us-ascii?Q?pPjhRlN0dkIfb1wGm1/qIaaAdVgv2wOJkVkmBsfFmJIHPDyuVcRv8/TEfZW6?=
+ =?us-ascii?Q?WyDfxXnlQjwuVoYtxR6OvsYJsoWiP1xOp3D4SB4fbTo25edcZAhU0x59kM3j?=
+ =?us-ascii?Q?86K0oT+G3G9Ucuy+FBta4Ah6VVcTFNtMkVTeKxHaEwgxvdbFrZsOT/Hvz8xp?=
+ =?us-ascii?Q?ldWn6yR90g=3D=3D?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 434e0bf2-7876-4da2-2b20-08da4e44a4e7
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1223.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2022 20:29:55.8963
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EEgbKHgmls6nkf1ptH1DXxztH7C+Wnn3VPU+dr0fIg9qhG9504cVsreZjr5i8w4+jSfgg96ZMdm/Y9cXT4UDBQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR21MB3314
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 2:23 PM Kalra, Ashish <Ashish.Kalra@amd.com> wrote:
->
-> [AMD Official Use Only - General]
->
-> Hello Alper,
->
-> Here is the feedback from the SEV/SNP firmware team:
->
-> The SNP spec has this line in SNP_INIT_EX:
->
-> =E2=80=9CThe firmware marks all encryption capable ASIDs as unusable for =
-encrypted virtualization.=E2=80=9D
->
-> This is a back-handed way of saying that after SNP_INIT, all of the ASIDs=
- are considered =E2=80=9Cdirty=E2=80=9D. None are in use, but the FW can=E2=
-=80=99t know if there=E2=80=99s any data in the caches left over from some =
-prior guest. So after doing an SNP_INIT (or SNP_INIT_EX), a WBINVD (on all =
-threads) and DF_FLUSH sequence is required. It doesn=E2=80=99t matter wheth=
-er it=E2=80=99s an SEV DF_FLUSH or an SNP_DF_FLUSH=E2=80=A6 they both do EX=
-ACTLY the same thing.
->
-> I don=E2=80=99t understand off hand why SNP_LAUNCH_START would require a =
-DF_FLUSH=E2=80=A6 Usually, it=E2=80=99s only an =E2=80=9Cactivate=E2=80=9D =
-command that requires the DF_FLUSH. ACTIVATE/ACTIVATE_EX/SNP_ACTIVATE/SNP_A=
-CTIVATE_EX
->
-> [Ashish] That's why I asked if you are getting the DLFLUSH_REQUIRED error=
- after the SNP activate command ?
->
-> It=E2=80=99s when you attempt to (re-)use >an ASID that=E2=80=99s =E2=80=
-=9Cdirty=E2=80=9D that you should get the DF_FLUSH_REQUIRED error.
->
-> [Ashish] And we do SNP_DF_FLUSH/SEV_DF_FLUSH whenever ASIDs are reused/re=
--cycled.
->
-> If the host only wants to run SNP guests, there=E2=80=99s no need to do a=
-n SEV INIT or any other SEV operations. If the host DOES want to run SEV AN=
-D SNP guests, then the required sequence is to do the SNP_INIT before the S=
-EV INIT. Doing the WBINVD/DF_FLUSH any time between the SNP_INIT and any AC=
-TIVATE command should be sufficient.
+Add a handler of the XDP_REDIRECT return code from a XDP program. The
+packets will be flushed at the end of each RX/CQ NAPI poll cycle.
+ndo_xdp_xmit() is implemented by sharing the code in mana_xdp_tx().
+Ethtool per queue counters are added for XDP redirect and xmit operations.
 
-Thanks for the follow up Ashish! I was assuming there was some issue
-with the ASIDs here but didn't have time to experiment yet. Is there
-any downside to enabling SEV? If not these patches make sense but if
-there is some cost should we make KVM capable of running SNP VMs
-without enabling SEV?
+Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+---
+ drivers/net/ethernet/microsoft/mana/mana.h    |  6 ++
+ .../net/ethernet/microsoft/mana/mana_bpf.c    | 64 +++++++++++++++++++
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 13 +++-
+ .../ethernet/microsoft/mana/mana_ethtool.c    | 12 +++-
+ 4 files changed, 93 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/ethernet/microsoft/mana/mana.h b/drivers/net/ethernet/microsoft/mana/mana.h
+index f198b34c232f..d58be64374c8 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana.h
++++ b/drivers/net/ethernet/microsoft/mana/mana.h
+@@ -53,12 +53,14 @@ struct mana_stats_rx {
+ 	u64 bytes;
+ 	u64 xdp_drop;
+ 	u64 xdp_tx;
++	u64 xdp_redirect;
+ 	struct u64_stats_sync syncp;
+ };
+ 
+ struct mana_stats_tx {
+ 	u64 packets;
+ 	u64 bytes;
++	u64 xdp_xmit;
+ 	struct u64_stats_sync syncp;
+ };
+ 
+@@ -311,6 +313,8 @@ struct mana_rxq {
+ 	struct bpf_prog __rcu *bpf_prog;
+ 	struct xdp_rxq_info xdp_rxq;
+ 	struct page *xdp_save_page;
++	bool xdp_flush;
++	int xdp_rc; /* XDP redirect return code */
+ 
+ 	/* MUST BE THE LAST MEMBER:
+ 	 * Each receive buffer has an associated mana_recv_buf_oob.
+@@ -396,6 +400,8 @@ int mana_probe(struct gdma_dev *gd, bool resuming);
+ void mana_remove(struct gdma_dev *gd, bool suspending);
+ 
+ void mana_xdp_tx(struct sk_buff *skb, struct net_device *ndev);
++int mana_xdp_xmit(struct net_device *ndev, int n, struct xdp_frame **frames,
++		  u32 flags);
+ u32 mana_run_xdp(struct net_device *ndev, struct mana_rxq *rxq,
+ 		 struct xdp_buff *xdp, void *buf_va, uint pkt_len);
+ struct bpf_prog *mana_xdp_get(struct mana_port_context *apc);
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_bpf.c b/drivers/net/ethernet/microsoft/mana/mana_bpf.c
+index 1d2f948b5c00..421fd39ff3a8 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_bpf.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_bpf.c
+@@ -32,9 +32,55 @@ void mana_xdp_tx(struct sk_buff *skb, struct net_device *ndev)
+ 	ndev->stats.tx_dropped++;
+ }
+ 
++static int mana_xdp_xmit_fm(struct net_device *ndev, struct xdp_frame *frame,
++			    u16 q_idx)
++{
++	struct sk_buff *skb;
++
++	skb = xdp_build_skb_from_frame(frame, ndev);
++	if (unlikely(!skb))
++		return -ENOMEM;
++
++	skb_set_queue_mapping(skb, q_idx);
++
++	mana_xdp_tx(skb, ndev);
++
++	return 0;
++}
++
++int mana_xdp_xmit(struct net_device *ndev, int n, struct xdp_frame **frames,
++		  u32 flags)
++{
++	struct mana_port_context *apc = netdev_priv(ndev);
++	struct mana_stats_tx *tx_stats;
++	int i, count = 0;
++	u16 q_idx;
++
++	if (unlikely(!apc->port_is_up))
++		return 0;
++
++	q_idx = smp_processor_id() % ndev->real_num_tx_queues;
++
++	for (i = 0; i < n; i++) {
++		if (mana_xdp_xmit_fm(ndev, frames[i], q_idx))
++			break;
++
++		count++;
++	}
++
++	tx_stats = &apc->tx_qp[q_idx].txq.stats;
++
++	u64_stats_update_begin(&tx_stats->syncp);
++	tx_stats->xdp_xmit += count;
++	u64_stats_update_end(&tx_stats->syncp);
++
++	return count;
++}
++
+ u32 mana_run_xdp(struct net_device *ndev, struct mana_rxq *rxq,
+ 		 struct xdp_buff *xdp, void *buf_va, uint pkt_len)
+ {
++	struct mana_stats_rx *rx_stats;
+ 	struct bpf_prog *prog;
+ 	u32 act = XDP_PASS;
+ 
+@@ -49,12 +95,30 @@ u32 mana_run_xdp(struct net_device *ndev, struct mana_rxq *rxq,
+ 
+ 	act = bpf_prog_run_xdp(prog, xdp);
+ 
++	rx_stats = &rxq->stats;
++
+ 	switch (act) {
+ 	case XDP_PASS:
+ 	case XDP_TX:
+ 	case XDP_DROP:
+ 		break;
+ 
++	case XDP_REDIRECT:
++		rxq->xdp_rc = xdp_do_redirect(ndev, xdp, prog);
++		if (!rxq->xdp_rc) {
++			rxq->xdp_flush = true;
++
++			u64_stats_update_begin(&rx_stats->syncp);
++			rx_stats->packets++;
++			rx_stats->bytes += pkt_len;
++			rx_stats->xdp_redirect++;
++			u64_stats_update_end(&rx_stats->syncp);
++
++			break;
++		}
++
++		fallthrough;
++
+ 	case XDP_ABORTED:
+ 		trace_xdp_exception(ndev, prog, act);
+ 		break;
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
+index 3ef09e0cdbaa..9259a74eca40 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_en.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+@@ -6,6 +6,7 @@
+ #include <linux/inetdevice.h>
+ #include <linux/etherdevice.h>
+ #include <linux/ethtool.h>
++#include <linux/filter.h>
+ #include <linux/mm.h>
+ 
+ #include <net/checksum.h>
+@@ -382,6 +383,7 @@ static const struct net_device_ops mana_devops = {
+ 	.ndo_validate_addr	= eth_validate_addr,
+ 	.ndo_get_stats64	= mana_get_stats64,
+ 	.ndo_bpf		= mana_bpf,
++	.ndo_xdp_xmit		= mana_xdp_xmit,
+ };
+ 
+ static void mana_cleanup_port_context(struct mana_port_context *apc)
+@@ -1120,6 +1122,9 @@ static void mana_rx_skb(void *buf_va, struct mana_rxcomp_oob *cqe,
+ 
+ 	act = mana_run_xdp(ndev, rxq, &xdp, buf_va, pkt_len);
+ 
++	if (act == XDP_REDIRECT && !rxq->xdp_rc)
++		return;
++
+ 	if (act != XDP_PASS && act != XDP_TX)
+ 		goto drop_xdp;
+ 
+@@ -1275,11 +1280,14 @@ static void mana_process_rx_cqe(struct mana_rxq *rxq, struct mana_cq *cq,
+ static void mana_poll_rx_cq(struct mana_cq *cq)
+ {
+ 	struct gdma_comp *comp = cq->gdma_comp_buf;
++	struct mana_rxq *rxq = cq->rxq;
+ 	int comp_read, i;
+ 
+ 	comp_read = mana_gd_poll_cq(cq->gdma_cq, comp, CQE_POLLING_BUFFER);
+ 	WARN_ON_ONCE(comp_read > CQE_POLLING_BUFFER);
+ 
++	rxq->xdp_flush = false;
++
+ 	for (i = 0; i < comp_read; i++) {
+ 		if (WARN_ON_ONCE(comp[i].is_sq))
+ 			return;
+@@ -1288,8 +1296,11 @@ static void mana_poll_rx_cq(struct mana_cq *cq)
+ 		if (WARN_ON_ONCE(comp[i].wq_num != cq->rxq->gdma_id))
+ 			return;
+ 
+-		mana_process_rx_cqe(cq->rxq, cq, &comp[i]);
++		mana_process_rx_cqe(rxq, cq, &comp[i]);
+ 	}
++
++	if (rxq->xdp_flush)
++		xdp_do_flush();
+ }
+ 
+ static void mana_cq_handler(void *context, struct gdma_queue *gdma_queue)
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_ethtool.c b/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
+index e13f2453eabb..c530db76880f 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
+@@ -23,7 +23,7 @@ static int mana_get_sset_count(struct net_device *ndev, int stringset)
+ 	if (stringset != ETH_SS_STATS)
+ 		return -EINVAL;
+ 
+-	return ARRAY_SIZE(mana_eth_stats) + num_queues * 6;
++	return ARRAY_SIZE(mana_eth_stats) + num_queues * 8;
+ }
+ 
+ static void mana_get_strings(struct net_device *ndev, u32 stringset, u8 *data)
+@@ -50,6 +50,8 @@ static void mana_get_strings(struct net_device *ndev, u32 stringset, u8 *data)
+ 		p += ETH_GSTRING_LEN;
+ 		sprintf(p, "rx_%d_xdp_tx", i);
+ 		p += ETH_GSTRING_LEN;
++		sprintf(p, "rx_%d_xdp_redirect", i);
++		p += ETH_GSTRING_LEN;
+ 	}
+ 
+ 	for (i = 0; i < num_queues; i++) {
+@@ -57,6 +59,8 @@ static void mana_get_strings(struct net_device *ndev, u32 stringset, u8 *data)
+ 		p += ETH_GSTRING_LEN;
+ 		sprintf(p, "tx_%d_bytes", i);
+ 		p += ETH_GSTRING_LEN;
++		sprintf(p, "tx_%d_xdp_xmit", i);
++		p += ETH_GSTRING_LEN;
+ 	}
+ }
+ 
+@@ -70,6 +74,8 @@ static void mana_get_ethtool_stats(struct net_device *ndev,
+ 	struct mana_stats_tx *tx_stats;
+ 	unsigned int start;
+ 	u64 packets, bytes;
++	u64 xdp_redirect;
++	u64 xdp_xmit;
+ 	u64 xdp_drop;
+ 	u64 xdp_tx;
+ 	int q, i = 0;
+@@ -89,12 +95,14 @@ static void mana_get_ethtool_stats(struct net_device *ndev,
+ 			bytes = rx_stats->bytes;
+ 			xdp_drop = rx_stats->xdp_drop;
+ 			xdp_tx = rx_stats->xdp_tx;
++			xdp_redirect = rx_stats->xdp_redirect;
+ 		} while (u64_stats_fetch_retry_irq(&rx_stats->syncp, start));
+ 
+ 		data[i++] = packets;
+ 		data[i++] = bytes;
+ 		data[i++] = xdp_drop;
+ 		data[i++] = xdp_tx;
++		data[i++] = xdp_redirect;
+ 	}
+ 
+ 	for (q = 0; q < num_queues; q++) {
+@@ -104,10 +112,12 @@ static void mana_get_ethtool_stats(struct net_device *ndev,
+ 			start = u64_stats_fetch_begin_irq(&tx_stats->syncp);
+ 			packets = tx_stats->packets;
+ 			bytes = tx_stats->bytes;
++			xdp_xmit = tx_stats->xdp_xmit;
+ 		} while (u64_stats_fetch_retry_irq(&tx_stats->syncp, start));
+ 
+ 		data[i++] = packets;
+ 		data[i++] = bytes;
++		data[i++] = xdp_xmit;
+ 	}
+ }
+ 
+-- 
+2.25.1
 
->
-> Thanks,
-> Ashish
->
-> -----Original Message-----
-> From: Alper Gun <alpergun@google.com>
-> Sent: Tuesday, June 14, 2022 1:58 PM
-> To: Kalra, Ashish <Ashish.Kalra@amd.com>
-> Cc: Peter Gonda <pgonda@google.com>; the arch/x86 maintainers <x86@kernel=
-.org>; LKML <linux-kernel@vger.kernel.org>; kvm list <kvm@vger.kernel.org>;=
- linux-coco@lists.linux.dev; linux-mm@kvack.org; Linux Crypto Mailing List =
-<linux-crypto@vger.kernel.org>; Thomas Gleixner <tglx@linutronix.de>; Ingo =
-Molnar <mingo@redhat.com>; Joerg Roedel <jroedel@suse.de>; Lendacky, Thomas=
- <Thomas.Lendacky@amd.com>; H. Peter Anvin <hpa@zytor.com>; Ard Biesheuvel =
-<ardb@kernel.org>; Paolo Bonzini <pbonzini@redhat.com>; Sean Christopherson=
- <seanjc@google.com>; Vitaly Kuznetsov <vkuznets@redhat.com>; Wanpeng Li <w=
-anpengli@tencent.com>; Jim Mattson <jmattson@google.com>; Andy Lutomirski <=
-luto@kernel.org>; Dave Hansen <dave.hansen@linux.intel.com>; Sergio Lopez <=
-slp@redhat.com>; Peter Zijlstra <peterz@infradead.org>; Srinivas Pandruvada=
- <srinivas.pandruvada@linux.intel.com>; David Rientjes <rientjes@google.com=
->; Dov Murik <dovmurik@linux.ibm.com>; Tobin Feldman-Fitzthum <tobin@ibm.co=
-m>; Borislav Petkov <bp@alien8.de>; Roth, Michael <Michael.Roth@amd.com>; V=
-lastimil Babka <vbabka@suse.cz>; Kirill A . Shutemov <kirill@shutemov.name>=
-; Andi Kleen <ak@linux.intel.com>; Tony Luck <tony.luck@intel.com>; Marc Or=
-r <marcorr@google.com>; Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppusw=
-amy@linux.intel.com>
-> Subject: Re: [PATCH Part2 v5 23/45] KVM: SVM: Add KVM_SNP_INIT command
->
-> Let me summarize what I tried.
->
-> 1- when using psp_init_probe false, the SNP VM fails in SNP_LAUNCH_START =
-step with error SEV_RET_DFFLUSH_REQUIRED(15).
-> 2- added SEV_DF_FLUSH just after SNP platform init and it didn't fail in =
-launch start but failed later during SNP_LAUNCH_UPDATE with
-> SEV_RET_INVALID_PARAM(22)
-> 3- added SNP_DF_FLUSH just after SNP platform init and it failed again du=
-ring SNP_LAUNCH_UPDATE with SEV_RET_INVALID_PARAM(22)
-> 4- added sev_platform_init for SNP VMs and it worked.
->
-> For me DF_FLUSH alone didn' help boot a VM. I don't know yet why sev plat=
-form status impacts the SNP VM, but sev_platform_init fixes the problem.
->
->
-> On Tue, Jun 14, 2022 at 10:16 AM Kalra, Ashish <Ashish.Kalra@amd.com> wro=
-te:
-> >
-> > [AMD Official Use Only - General]
-> >
-> > Hello Alper, Peter,
-> >
-> > -----Original Message-----
-> > From: Peter Gonda <pgonda@google.com>
-> > Sent: Tuesday, June 14, 2022 11:30 AM
-> > To: Kalra, Ashish <Ashish.Kalra@amd.com>
-> > Cc: Alper Gun <alpergun@google.com>; Brijesh Singh
-> > <brijesh.singh@amd.com>; the arch/x86 maintainers <x86@kernel.org>;
-> > LKML <linux-kernel@vger.kernel.org>; kvm list <kvm@vger.kernel.org>;
-> > linux-coco@lists.linux.dev; linux-mm@kvack.org; Linux Crypto Mailing
-> > List <linux-crypto@vger.kernel.org>; Thomas Gleixner
-> > <tglx@linutronix.de>; Ingo Molnar <mingo@redhat.com>; Joerg Roedel
-> > <jroedel@suse.de>; Lendacky, Thomas <Thomas.Lendacky@amd.com>; H.
-> > Peter Anvin <hpa@zytor.com>; Ard Biesheuvel <ardb@kernel.org>; Paolo
-> > Bonzini <pbonzini@redhat.com>; Sean Christopherson
-> > <seanjc@google.com>; Vitaly Kuznetsov <vkuznets@redhat.com>; Wanpeng
-> > Li <wanpengli@tencent.com>; Jim Mattson <jmattson@google.com>; Andy
-> > Lutomirski <luto@kernel.org>; Dave Hansen
-> > <dave.hansen@linux.intel.com>; Sergio Lopez <slp@redhat.com>; Peter
-> > Zijlstra <peterz@infradead.org>; Srinivas Pandruvada
-> > <srinivas.pandruvada@linux.intel.com>; David Rientjes
-> > <rientjes@google.com>; Dov Murik <dovmurik@linux.ibm.com>; Tobin
-> > Feldman-Fitzthum <tobin@ibm.com>; Borislav Petkov <bp@alien8.de>;
-> > Roth, Michael <Michael.Roth@amd.com>; Vlastimil Babka
-> > <vbabka@suse.cz>; Kirill A . Shutemov <kirill@shutemov.name>; Andi
-> > Kleen <ak@linux.intel.com>; Tony Luck <tony.luck@intel.com>; Marc Orr
-> > <marcorr@google.com>; Sathyanarayanan Kuppuswamy
-> > <sathyanarayanan.kuppuswamy@linux.intel.com>; Pavan Kumar Paluri
-> > <papaluri@amd.com>
-> > Subject: Re: [PATCH Part2 v5 23/45] KVM: SVM: Add KVM_SNP_INIT command
-> >
-> > On Tue, Jun 14, 2022 at 10:11 AM Kalra, Ashish <Ashish.Kalra@amd.com> w=
-rote:
-> > >
-> > > [AMD Official Use Only - General]
-> > >
-> > >
-> > > -----Original Message-----
-> > > From: Peter Gonda <pgonda@google.com>
-> > > Sent: Tuesday, June 14, 2022 10:38 AM
-> > > To: Kalra, Ashish <Ashish.Kalra@amd.com>
-> > > Cc: Alper Gun <alpergun@google.com>; Brijesh Singh
-> > > <brijesh.singh@amd.com>; Kalra, Ashish <Ashish.Kalra@amd.com>; the
-> > > arch/x86 maintainers <x86@kernel.org>; LKML
-> > > <linux-kernel@vger.kernel.org>; kvm list <kvm@vger.kernel.org>;
-> > > linux-coco@lists.linux.dev; linux-mm@kvack.org; Linux Crypto Mailing
-> > > List <linux-crypto@vger.kernel.org>; Thomas Gleixner
-> > > <tglx@linutronix.de>; Ingo Molnar <mingo@redhat.com>; Joerg Roedel
-> > > <jroedel@suse.de>; Lendacky, Thomas <Thomas.Lendacky@amd.com>; H.
-> > > Peter Anvin <hpa@zytor.com>; Ard Biesheuvel <ardb@kernel.org>; Paolo
-> > > Bonzini <pbonzini@redhat.com>; Sean Christopherson
-> > > <seanjc@google.com>; Vitaly Kuznetsov <vkuznets@redhat.com>; Wanpeng
-> > > Li <wanpengli@tencent.com>; Jim Mattson <jmattson@google.com>; Andy
-> > > Lutomirski <luto@kernel.org>; Dave Hansen
-> > > <dave.hansen@linux.intel.com>; Sergio Lopez <slp@redhat.com>; Peter
-> > > Zijlstra <peterz@infradead.org>; Srinivas Pandruvada
-> > > <srinivas.pandruvada@linux.intel.com>; David Rientjes
-> > > <rientjes@google.com>; Dov Murik <dovmurik@linux.ibm.com>; Tobin
-> > > Feldman-Fitzthum <tobin@ibm.com>; Borislav Petkov <bp@alien8.de>;
-> > > Roth, Michael <Michael.Roth@amd.com>; Vlastimil Babka
-> > > <vbabka@suse.cz>; Kirill A . Shutemov <kirill@shutemov.name>; Andi
-> > > Kleen <ak@linux.intel.com>; Tony Luck <tony.luck@intel.com>; Marc
-> > > Orr <marcorr@google.com>; Sathyanarayanan Kuppuswamy
-> > > <sathyanarayanan.kuppuswamy@linux.intel.com>; Pavan Kumar Paluri
-> > > <papaluri@amd.com>
-> > > Subject: Re: [PATCH Part2 v5 23/45] KVM: SVM: Add KVM_SNP_INIT
-> > > command
-> > >
-> > > On Mon, Jun 13, 2022 at 6:21 PM Ashish Kalra <ashkalra@amd.com> wrote=
-:
-> > > >
-> > > >
-> > > > On 6/13/22 23:33, Alper Gun wrote:
-> > > > > On Mon, Jun 13, 2022 at 4:15 PM Ashish Kalra <ashkalra@amd.com> w=
-rote:
-> > > > >> Hello Alper,
-> > > > >>
-> > > > >> On 6/13/22 20:58, Alper Gun wrote:
-> > > > >>> static int sev_guest_init(struct kvm *kvm, struct kvm_sev_cmd
-> > > > >>> *argp)
-> > > > >>>>    {
-> > > > >>>> +       bool es_active =3D (argp->id =3D=3D KVM_SEV_ES_INIT ||
-> > > > >>>> + argp->id =3D=3D KVM_SEV_SNP_INIT);
-> > > > >>>>           struct kvm_sev_info *sev =3D &to_kvm_svm(kvm)->sev_i=
-nfo;
-> > > > >>>> -       bool es_active =3D argp->id =3D=3D KVM_SEV_ES_INIT;
-> > > > >>>> +       bool snp_active =3D argp->id =3D=3D KVM_SEV_SNP_INIT;
-> > > > >>>>           int asid, ret;
-> > > > >>>>
-> > > > >>>>           if (kvm->created_vcpus) @@ -249,12 +269,22 @@
-> > > > >>>> static int sev_guest_init(struct kvm *kvm, struct kvm_sev_cmd =
-*argp)
-> > > > >>>>                   return ret;
-> > > > >>>>
-> > > > >>>>           sev->es_active =3D es_active;
-> > > > >>>> +       sev->snp_active =3D snp_active;
-> > > > >>>>           asid =3D sev_asid_new(sev);
-> > > > >>>>           if (asid < 0)
-> > > > >>>>                   goto e_no_asid;
-> > > > >>>>           sev->asid =3D asid;
-> > > > >>>>
-> > > > >>>> -       ret =3D sev_platform_init(&argp->error);
-> > > > >>>> +       if (snp_active) {
-> > > > >>>> +               ret =3D verify_snp_init_flags(kvm, argp);
-> > > > >>>> +               if (ret)
-> > > > >>>> +                       goto e_free;
-> > > > >>>> +
-> > > > >>>> +               ret =3D sev_snp_init(&argp->error);
-> > > > >>>> +       } else {
-> > > > >>>> +               ret =3D sev_platform_init(&argp->error);
-> > > > >>> After SEV INIT_EX support patches, SEV may be initialized in th=
-e platform late.
-> > > > >>> In my tests, if SEV has not been initialized in the platform
-> > > > >>> yet, SNP VMs fail with SEV_DF_FLUSH required error. I tried
-> > > > >>> calling SEV_DF_FLUSH right after the SNP platform init but
-> > > > >>> this time it failed later on the SNP launch update command
-> > > > >>> with SEV_RET_INVALID_PARAM error. Looks like there is another
-> > > > >>> dependency on SEV platform initialization.
-> > > > >>>
-> > > > >>> Calling sev_platform_init for SNP VMs fixes the problem in our =
-tests.
-> > > > >> Trying to get some more context for this issue.
-> > > > >>
-> > > > >> When you say after SEV_INIT_EX support patches, SEV may be
-> > > > >> initialized in the platform late, do you mean sev_pci_init()->se=
-v_snp_init() ...
-> > > > >> sev_platform_init() code path has still not executed on the host=
- BSP ?
-> > > > >>
-> > > > > Correct, INIT_EX requires the file system to be ready and there
-> > > > > is a ccp module param to call it only when needed.
-> > > > >
-> > > > > MODULE_PARM_DESC(psp_init_on_probe, " if true, the PSP will be
-> > > > > initialized on module init. Else the PSP will be initialized on
-> > > > > the first command requiring it");
-> > > > >
-> > > > > If this module param is false, it won't initialize SEV on the
-> > > > > platform until the first SEV VM.
-> > > > >
-> > > > Ok, that makes sense.
-> > > >
-> > > > So the fix will be to call sev_platform_init() unconditionally
-> > > > here in sev_guest_init(), and both sev_snp_init() and
-> > > > sev_platform_init() are protected from being called again, so
-> > > > there won't be any issues if these functions are invoked again at
-> > > > SNP/SEV VM launch if they have been invoked earlier during module i=
-nit.
-> > >
-> > > >That's one solution. I don't know if there is a downside to the syst=
-em for enabling SEV if SNP is being enabled but another solution could be t=
-o just directly place a DF_FLUSH command instead of calling sev_platform_in=
-it().
-> > >
-> > > Actually sev_platform_init() is already called on module init if psp_=
-init_on_probe is not false. Only need to ensure that SNP firmware is initia=
-lized first with SNP_INIT command.
-> >
-> > > But if psp_init_on_probe is false, sev_platform_init() isn't called d=
-own this path. Alper has suggested we always call sev_platform_init() but w=
-e could just place an SEV_DF_FLUSH command instead. Or am I still missing s=
-omething?
-> >
-> > >After SEV INIT_EX support patches, SEV may be initialized in the platf=
-orm late.
-> > > In my tests, if SEV has not been initialized in the platform  yet,
-> > >SNP VMs fail with SEV_DF_FLUSH required error. I tried  calling
-> > >SEV_DF_FLUSH right after the SNP platform init.
-> >
-> > Are you getting the DLFLUSH_REQUIRED error after the SNP activate comma=
-nd ?
-> >
-> > Also did you use the SEV_DF_FLUSH command or the SNP_DF_FLUSH command ?
-> >
-> > With SNP you need to use SNP_DF_FLUSH command.
-> >
-> > Thanks,
-> > Ashish
