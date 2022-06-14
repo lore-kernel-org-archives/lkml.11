@@ -2,84 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E46C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:15:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C924CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234986AbiFNRPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 13:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36356 "EHLO
+        id S238881AbiFNRPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 13:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231223AbiFNRPO (ORCPT
+        with ESMTP id S232953AbiFNRPg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 13:15:14 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8926421265
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:15:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DD087CE1B7B
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 17:15:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 662CFC3411B;
-        Tue, 14 Jun 2022 17:15:09 +0000 (UTC)
-Date:   Tue, 14 Jun 2022 18:15:05 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] mm/kmemleak: Prevent soft lockup in first object
- iteration loop of kmemleak_scan()
-Message-ID: <YqjCGWmM2cGG1OOF@arm.com>
-References: <20220612183301.981616-1-longman@redhat.com>
- <20220612183301.981616-4-longman@redhat.com>
+        Tue, 14 Jun 2022 13:15:36 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B5A2408B
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:15:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=1Bzt2bKl4WU2vNDcoULTc+6F61x+SG15/cRuXCESmPo=; b=MX2jPZNmmlcx+uQn/6/l3v/tWG
+        WJ4Is+63PHvrRPcUVmy1ZbZML4HzypfGHTNpeYGuYeBTbR+95L8udd03n1PxhG7wkQHPQA8akiwVI
+        pW4O86PHps+lE8JYA4GqT0tzRSanfiRWiCFd/ubsQXliXN3GIyfoGRvRuFmB5nJc1qoC2Yl3yjPHc
+        XAq4sq654iswYy00Q18sXBK26n0D58oRPQYjGc7pbJyoR2TR85WIlLeYecOwbCvTKDPosrdYqBfIS
+        JoTWIB6D/FOV0wxe5X2/2596IsZrJ28bxFctWX+TKCaQ+TOsd8TdcadSaWBsZCmNn8AIdeu8c8YNk
+        XuN7Py6g==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=casper.infradead.org)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o1A8a-000Lea-0S; Tue, 14 Jun 2022 17:15:33 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Daeho Jeong <daehojeong@google.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: [PATCH] f2fs: fix stubs when F2FS_FS_COMPRESSION is not enabled
+Date:   Tue, 14 Jun 2022 10:15:26 -0700
+Message-Id: <20220614171526.31756-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220612183301.981616-4-longman@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 02:33:01PM -0400, Waiman Long wrote:
-> @@ -1437,10 +1440,25 @@ static void kmemleak_scan(void)
->  #endif
->  		/* reset the reference count (whiten the object) */
->  		object->count = 0;
-> -		if (color_gray(object) && get_object(object))
-> +		if (color_gray(object) && get_object(object)) {
->  			list_add_tail(&object->gray_list, &gray_list);
-> +			gray_list_cnt++;
-> +			object_pinned = true;
-> +		}
->  
->  		raw_spin_unlock_irq(&object->lock);
-> +
-> +		/*
-> +		 * With object pinned by a positive reference count, it
-> +		 * won't go away and we can safely release the RCU read
-> +		 * lock and do a cond_resched() to avoid soft lockup every
-> +		 * 64k objects.
-> +		 */
-> +		if (object_pinned && !(gray_list_cnt & 0xffff)) {
-> +			rcu_read_unlock();
-> +			cond_resched();
-> +			rcu_read_lock();
-> +		}
+Fix build errors when F2FS_FS_COMPRESSION is not set:
 
-I'm not sure this gains much. There should be very few gray objects
-initially (those passed to kmemleak_not_leak() for example). The
-majority should be white objects.
+../fs/f2fs/data.c: In function ‘f2fs_finish_read_bio’:
+../fs/f2fs/data.c:136:5: error: too many arguments to function ‘f2fs_end_read_compressed_page’
+     f2fs_end_read_compressed_page(page, true, 0,
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from ../fs/f2fs/data.c:25:0:
+../fs/f2fs/f2fs.h:4228:20: note: declared here
+ static inline void f2fs_end_read_compressed_page(struct page *page,
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../fs/f2fs/data.c:138:4: error: too many arguments to function ‘f2fs_put_page_dic’
+    f2fs_put_page_dic(page, in_softirq);
+    ^~~~~~~~~~~~~~~~~
+In file included from ../fs/f2fs/data.c:25:0:
+../fs/f2fs/f2fs.h:4233:20: note: declared here
+ static inline void f2fs_put_page_dic(struct page *page)
+                    ^~~~~~~~~~~~~~~~~
+../fs/f2fs/data.c: In function ‘f2fs_handle_step_decompress’:
+../fs/f2fs/data.c:241:4: error: too many arguments to function ‘f2fs_end_read_compressed_page’
+    f2fs_end_read_compressed_page(page, PageError(page),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from ../fs/f2fs/data.c:25:0:
+../fs/f2fs/f2fs.h:4228:20: note: declared here
+ static inline void f2fs_end_read_compressed_page(struct page *page,
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If we drop the fine-grained object->lock, we could instead take
-kmemleak_lock outside the loop with a cond_resched_lock(&kmemleak_lock)
-within the loop. I think we can get away with not having an
-rcu_read_lock() at all for list traversal with the big lock outside the
-loop.
+../fs/f2fs/data.c: In function ‘f2fs_finish_read_bio’:
+../fs/f2fs/data.c:138:4: error: too many arguments to function ‘f2fs_put_page_dic’
+    f2fs_put_page_dic(page, in_softirq);
+    ^~~~~~~~~~~~~~~~~
+In file included from ../fs/f2fs/data.c:25:0:
+../fs/f2fs/f2fs.h:4234:20: note: declared here
+ static inline void f2fs_put_page_dic(struct page *page)
+                    ^~~~~~~~~~~~~~~~~
 
-The reason I added it in the first kmemleak incarnation was to defer
-kmemleak_object freeing as it was causing a re-entrant call into the
-slab allocator. I later went for fine-grained locking and RCU list
-traversal but I may have overdone it ;).
+Fixes: 1b565702dffe ("f2fs: handle decompress only post processing in softirq")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Daeho Jeong <daehojeong@google.com>
+Cc: Jaegeuk Kim <jaegeuk@kernel.org>
+Cc: Chao Yu <chao@kernel.org>
+Cc: linux-f2fs-devel@lists.sourceforge.net
+---
+ fs/f2fs/f2fs.h |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
--- 
-Catalin
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -4226,11 +4226,12 @@ static inline int f2fs_init_compress_mem
+ static inline void f2fs_destroy_compress_mempool(void) { }
+ static inline void f2fs_decompress_cluster(struct decompress_io_ctx *dic) { }
+ static inline void f2fs_end_read_compressed_page(struct page *page,
+-						bool failed, block_t blkaddr)
++						bool failed, block_t blkaddr,
++						bool in_softirq)
+ {
+ 	WARN_ON_ONCE(1);
+ }
+-static inline void f2fs_put_page_dic(struct page *page)
++static inline void f2fs_put_page_dic(struct page *page, bool in_softirq)
+ {
+ 	WARN_ON_ONCE(1);
+ }
