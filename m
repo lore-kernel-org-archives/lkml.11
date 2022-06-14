@@ -2,86 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B97C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B56FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:09:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244291AbiFNNIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 09:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54438 "EHLO
+        id S244384AbiFNNJR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 09:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343534AbiFNNIj (ORCPT
+        with ESMTP id S234149AbiFNNJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 09:08:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C8E62F6
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 06:08:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8AD361677
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:08:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2081EC3411B;
-        Tue, 14 Jun 2022 13:08:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655212117;
-        bh=EZWyEzJis+wg+PHTrtf74/eJzbtQm0oSGOp6nBki/Rk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=AHrZD7735QNaoCMuug4m4qn9KDEQV0TbICVBpz+nqBEOQCVpQ60kgseLGx6wx4DyY
-         A/CS2P/thli6EBiDkEiUayVVmhgyskPzplaDm2HqJeYNnEsxvwoMRRHT7cco34hTvi
-         ca4wyxORjxPgD44fL2mBeCA+aOSR2lPKCXDade6oMAyCZSyhDnw19SDWPGttx5R1R9
-         pr3Srk7PmSU9/NFBH3BypFwJL0zPQWXY1N3+Vq5MezkjHRpUyE4iq5F5WJ0GQKrvLW
-         kJl7EWKB2wL18RUY22AXcOYO1hYsQWoa8stdoUgeVt/lS8ibbeKs3mo4BcaUJrHXqr
-         6YIuDW6u3H10Q==
-Message-ID: <bdcb78c1-eeda-d9e2-90fc-527bda8dd28c@kernel.org>
-Date:   Tue, 14 Jun 2022 15:08:34 +0200
+        Tue, 14 Jun 2022 09:09:16 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AC321E11;
+        Tue, 14 Jun 2022 06:09:14 -0700 (PDT)
+Received: from fraeml736-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LMpd70JCTz6F90V;
+        Tue, 14 Jun 2022 21:07:39 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml736-chm.china.huawei.com (10.206.15.217) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 15:09:12 +0200
+Received: from [10.195.33.253] (10.195.33.253) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 14:09:10 +0100
+Message-ID: <4a3ab043-f609-22cb-895f-e67c8dd8f6ab@huawei.com>
+Date:   Tue, 14 Jun 2022 14:12:18 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 3/3] mm/mempool: use might_alloc()
-Content-Language: en-US
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
-References: <20220605152539.3196045-1-daniel.vetter@ffwll.ch>
- <20220605152539.3196045-3-daniel.vetter@ffwll.ch>
-From:   "Vlastimil Babka (SUSE)" <vbabka@kernel.org>
-In-Reply-To: <20220605152539.3196045-3-daniel.vetter@ffwll.ch>
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3 2/4] dma-iommu: Add iommu_dma_opt_mapping_size()
+To:     <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>,
+        <will@kernel.org>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <hch@lst.de>,
+        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
+CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
+        <linux-scsi@vger.kernel.org>, <liyihang6@hisilicon.com>,
+        <chenxiang66@hisilicon.com>, <thunder.leizhen@huawei.com>
+References: <1654507822-168026-1-git-send-email-john.garry@huawei.com>
+ <1654507822-168026-3-git-send-email-john.garry@huawei.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <1654507822-168026-3-git-send-email-john.garry@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.195.33.253]
+X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/5/22 17:25, Daniel Vetter wrote:
-> mempool are generally used for GFP_NOIO, so this wont benefit all that
-> much because might_alloc currently only checks GFP_NOFS. But it does
-> validate against mmu notifier pte zapping, some might catch some
-> drivers doing really silly things, plus it's a bit more meaningful in
-> what we're checking for here.
+On 06/06/2022 10:30, John Garry wrote:
+> Add the IOMMU callback for DMA mapping API dma_opt_mapping_size(), which
+> allows the drivers to know the optimal mapping limit and thus limit the
+> requested IOVA lengths.
 > 
-> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: linux-mm@kvack.org
+> This value is based on the IOVA rcache range limit, as IOVAs allocated
+> above this limit must always be newly allocated, which may be quite slow.
+> 
 
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+Can I please get some sort of ack from the IOMMU people on this one?
 
+Thanks,
+John
+
+EOM
+
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 > ---
->  mm/mempool.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>   drivers/iommu/dma-iommu.c | 6 ++++++
+>   drivers/iommu/iova.c      | 5 +++++
+>   include/linux/iova.h      | 2 ++
+>   3 files changed, 13 insertions(+)
 > 
-> diff --git a/mm/mempool.c b/mm/mempool.c
-> index b933d0fc21b8..96488b13a1ef 100644
-> --- a/mm/mempool.c
-> +++ b/mm/mempool.c
-> @@ -379,7 +379,7 @@ void *mempool_alloc(mempool_t *pool, gfp_t gfp_mask)
->  	gfp_t gfp_temp;
->  
->  	VM_WARN_ON_ONCE(gfp_mask & __GFP_ZERO);
-> -	might_sleep_if(gfp_mask & __GFP_DIRECT_RECLAIM);
-> +	might_alloc(gfp_mask);
->  
->  	gfp_mask |= __GFP_NOMEMALLOC;	/* don't allocate emergency reserves */
->  	gfp_mask |= __GFP_NORETRY;	/* don't loop in __alloc_pages */
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index f90251572a5d..9e1586447ee8 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1459,6 +1459,11 @@ static unsigned long iommu_dma_get_merge_boundary(struct device *dev)
+>   	return (1UL << __ffs(domain->pgsize_bitmap)) - 1;
+>   }
+>   
+> +static size_t iommu_dma_opt_mapping_size(void)
+> +{
+> +	return iova_rcache_range();
+> +}
+> +
+>   static const struct dma_map_ops iommu_dma_ops = {
+>   	.alloc			= iommu_dma_alloc,
+>   	.free			= iommu_dma_free,
+> @@ -1479,6 +1484,7 @@ static const struct dma_map_ops iommu_dma_ops = {
+>   	.map_resource		= iommu_dma_map_resource,
+>   	.unmap_resource		= iommu_dma_unmap_resource,
+>   	.get_merge_boundary	= iommu_dma_get_merge_boundary,
+> +	.opt_mapping_size	= iommu_dma_opt_mapping_size,
+>   };
+>   
+>   /*
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index db77aa675145..9f00b58d546e 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -26,6 +26,11 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
+>   static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
+>   static void free_iova_rcaches(struct iova_domain *iovad);
+>   
+> +unsigned long iova_rcache_range(void)
+> +{
+> +	return PAGE_SIZE << (IOVA_RANGE_CACHE_MAX_SIZE - 1);
+> +}
+> +
+>   static int iova_cpuhp_dead(unsigned int cpu, struct hlist_node *node)
+>   {
+>   	struct iova_domain *iovad;
+> diff --git a/include/linux/iova.h b/include/linux/iova.h
+> index 320a70e40233..c6ba6d95d79c 100644
+> --- a/include/linux/iova.h
+> +++ b/include/linux/iova.h
+> @@ -79,6 +79,8 @@ static inline unsigned long iova_pfn(struct iova_domain *iovad, dma_addr_t iova)
+>   int iova_cache_get(void);
+>   void iova_cache_put(void);
+>   
+> +unsigned long iova_rcache_range(void);
+> +
+>   void free_iova(struct iova_domain *iovad, unsigned long pfn);
+>   void __free_iova(struct iova_domain *iovad, struct iova *iova);
+>   struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
 
