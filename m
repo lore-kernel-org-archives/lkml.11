@@ -2,119 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E592C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05079C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244821AbiFNN7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 09:59:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
+        id S244108AbiFNN7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 09:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343676AbiFNN6o (ORCPT
+        with ESMTP id S245328AbiFNN7N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 09:58:44 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35AFD2E696;
-        Tue, 14 Jun 2022 06:58:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655215124; x=1686751124;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=we4ojTybIP4ZBv9pT35w2MXKtjIBA6VKpIHuWVylsjA=;
-  b=n3cwPn0RJpKGb3fXJn3vdr1jyNBwsNJbXbjVFwTwTDI+Pd6701aP75o+
-   dFNFvwqdw+Xmut8CS/H6dQfDqI+EFDBUjBfHXHETWHjq8R7vNgcEBjSP+
-   mT8I92O/nKT+OaB72OrdiHJuxqHLjDMbyrz2SnzEWeK8LQNkRrwIy9IS5
-   SegpxldRxwNNY+UFtwtRXPyzy244J8OInOscjfEAIuBTWeOvKNmUzDbgQ
-   5K8OutPcSrzEkUdgneAk2JcSUrCnxkkAQ4PG2KYHipXlh1ohx7IS+LfQZ
-   B2WKh1Ch8eXnsCkMvr7St9KpKx40zJheZ+4KN35IIsxS2ETBon+xK2e73
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="277407957"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="277407957"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 06:58:44 -0700
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="673907783"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 06:58:39 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o173z-000cQq-VG;
-        Tue, 14 Jun 2022 16:58:35 +0300
-Date:   Tue, 14 Jun 2022 16:58:35 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Benoit =?iso-8859-1?Q?Gr=E9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Guilherme G . Piccoli" <gpiccoli@igalia.com>
-Subject: Re: [PATCH] x86/PCI: Revert: "Clip only host bridge windows for E820
- regions"
-Message-ID: <YqiUC+zvSxxvb0jw@smile.fi.intel.com>
-References: <20220612144325.85366-1-hdegoede@redhat.com>
- <Yqh+9Ei5BLhKB/da@smile.fi.intel.com>
+        Tue, 14 Jun 2022 09:59:13 -0400
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD683334C;
+        Tue, 14 Jun 2022 06:59:12 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-30ce6492a60so30351447b3.8;
+        Tue, 14 Jun 2022 06:59:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DiRdL8duDyIHD6Nrt/s9DO6S9xYvs+pewZXGWKr83oU=;
+        b=F7+lDjB1LY8+C+uCiKKFDC/cJqlxZAcGXl7nB/Q5PoIFZOgo9quo68RClHJmF2F5/O
+         vtifMor1FWSdVJNUQ1m3+8O3M3TKDk9+VqDosQYUFqsDykdMwwB3ZmNEJjBpdQAS533w
+         0esdkmVWCl0t0JlUP6gNxnCpJOKlRFWbNVCwgZ4owuhOxmlp+3EtSgi7pjJ/cvDCU7qD
+         3Hr8ziTpXLn7d10RjU7YJr5lvVIQatu1y2N+1NN+a66EuXd8wjxDYv/2pPw74ONBLEE0
+         DrtPJ+v93x7zkg3gYkAsyCQhnC3ayWy8zyBqmThlkh5iazDVnQsAmfWFBJb1MGtWv8h9
+         /7wQ==
+X-Gm-Message-State: AJIora/qv8vYmiV6nkCsDJK51EfEpDBlBUKnkuh+77c1YYOOGKI0XnqN
+        /umtXsQNjRq0ywMeK+co39EqBdTNqtZKpTYSKAygV8q0/0w=
+X-Google-Smtp-Source: AGRyM1sFQuBs2xBokqAiNhHO7MCfL0HvIR4LcShp/DTuYO2FaLXtI5Mr+Cz8F2WU2HiJkgoLukiKankCmyFZUXoLeYA=
+X-Received: by 2002:a81:260a:0:b0:2f4:ca82:a42f with SMTP id
+ m10-20020a81260a000000b002f4ca82a42fmr5931264ywm.149.1655215151897; Tue, 14
+ Jun 2022 06:59:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yqh+9Ei5BLhKB/da@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <8c3d50faf8811e86136fb3f9c459e43fc3c50bc0.1653565641.git.viresh.kumar@linaro.org>
+ <426bf6edc80b2e944d459fa7b8dffbe8b73bb3d9.1653623526.git.viresh.kumar@linaro.org>
+In-Reply-To: <426bf6edc80b2e944d459fa7b8dffbe8b73bb3d9.1653623526.git.viresh.kumar@linaro.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 14 Jun 2022 15:59:01 +0200
+Message-ID: <CAJZ5v0gswDEdK9-gC1dPr9BFPv3G9rs+JYe-7=1JZ11OMoBb-g@mail.gmail.com>
+Subject: Re: [PATCH V2 2/3] cpufreq: Panic if policy is active in cpufreq_policy_free()
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 03:28:36PM +0300, Andy Shevchenko wrote:
-> On Sun, Jun 12, 2022 at 04:43:25PM +0200, Hans de Goede wrote:
-> > Clipping the bridge windows directly from pci_acpi_root_prepare_resources()
-> > instead of clipping from arch_remove_reservations(), has a number of
-> > unforseen consequences.
-> > 
-> > If there is an e820 reservation in the middle of a bridge window, then
-> > the smallest of the 2 remaining parts of the window will be also clipped
-> > off. Where as the previous code would clip regions requested by devices,
-> > rather then the entire window, leaving regions which were either entirely
-> > above or below a reservation in the middle of the window alone.
-> > 
-> > E.g. on the Steam Deck this leads to this log message:
-> > 
-> > acpi PNP0A08:00: clipped [mem 0x80000000-0xf7ffffff window] to [mem 0xa0100000-0xf7ffffff window]
-> > 
-> > which then gets followed by these log messages:
-> > 
-> > pci 0000:00:01.2: can't claim BAR 14 [mem 0x80600000-0x806fffff]: no compatible bridge window
-> > pci 0000:00:01.3: can't claim BAR 14 [mem 0x80500000-0x805fffff]: no compatible bridge window
-> > 
-> > and many more of these. Ultimately this leads to the Steam Deck
-> > no longer booting properly, so revert the change.
-> > 
-> > Note this is not a clean revert, this revert keeps the later change
-> > to make the clipping dependent on a new pci_use_e820 bool, moving
-> > the checking of this bool to arch_remove_reservations().
-> 
-> It does _not_ fix the Intel MID case. It requires to have my patch applied as well.
-> So the difference as I see is the flags checking. I believe that you still need to
-> have it in case pci_use_e820 == true. But it might be that I missed an importan
-> detail.
+On Fri, May 27, 2022 at 5:53 AM Viresh Kumar <viresh.kumar@linaro.org> wrote:
+>
+> With the new design in place, to avoid potential races show() and
+> store() callbacks check if the policy is active or not before proceeding
+> any further. And in order to guarantee that cpufreq_policy_free() must
+> be called after clearing the policy->cpus mask, i.e. by marking it
+> inactive.
+>
+> Lets make sure we don't get a bug around this later and catch this early
+> by putting a BUG_ON() within cpufreq_policy_free().
+>
+> Also update cpufreq_online() a bit to make sure we clear the cpus mask
+> for each error case before calling cpufreq_policy_free().
+>
+> Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+> ---
+> V2: Update cpufreq_online() and changelog.
+>
+>  drivers/cpufreq/cpufreq.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+> index e24aa5d4bca5..0f8245731783 100644
+> --- a/drivers/cpufreq/cpufreq.c
+> +++ b/drivers/cpufreq/cpufreq.c
+> @@ -1284,6 +1284,12 @@ static void cpufreq_policy_free(struct cpufreq_policy *policy)
+>         unsigned long flags;
+>         int cpu;
+>
+> +       /*
+> +        * The callers must ensure the policy is inactive by now, to avoid any
+> +        * races with show()/store() callbacks.
+> +        */
+> +       BUG_ON(!policy_is_inactive(policy));
 
-Yeah, I missed that I have compiled a tested something else, and not what I was
-focused on.
+I'm not a super-big fan of this change.
 
-That said, I double checked with your patch and nothing else and v5.19-rc2
-based tree works nicely.
+First off, crashing the kernel outright here because of possible races
+appears a bit excessive to me.
 
-Tested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Second, it looks like we are worrying about the code running before
+the wait_for_completion() call in cpufreq_policy_put_kobj(), because
+after that call no one can be running show() or store().  So why don't
+we reorder the wait_for_completion() call with respect to the code in
+question instead?
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> +
+>         /* Remove policy from list */
+>         write_lock_irqsave(&cpufreq_driver_lock, flags);
+>         list_del(&policy->policy_list);
+> @@ -1538,8 +1544,6 @@ static int cpufreq_online(unsigned int cpu)
+>         for_each_cpu(j, policy->real_cpus)
+>                 remove_cpu_dev_symlink(policy, j, get_cpu_device(j));
+>
+> -       cpumask_clear(policy->cpus);
+> -
+>  out_offline_policy:
+>         if (cpufreq_driver->offline)
+>                 cpufreq_driver->offline(policy);
+> @@ -1549,6 +1553,7 @@ static int cpufreq_online(unsigned int cpu)
+>                 cpufreq_driver->exit(policy);
+>
+>  out_free_policy:
+> +       cpumask_clear(policy->cpus);
+>         up_write(&policy->rwsem);
+>
+>         cpufreq_policy_free(policy);
+> --
+> 2.31.1.272.g89b43f80a514
+>
