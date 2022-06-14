@@ -2,79 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4338C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 06:30:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 06:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352056AbiFNGaZ (ORCPT
+        id S1351933AbiFNGat (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 02:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
+        Tue, 14 Jun 2022 02:30:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351345AbiFNGaR (ORCPT
+        with ESMTP id S1352125AbiFNGaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 02:30:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE6A1A83C;
-        Mon, 13 Jun 2022 23:30:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D6ECB817AB;
-        Tue, 14 Jun 2022 06:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B119DC385A2;
-        Tue, 14 Jun 2022 06:30:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655188213;
-        bh=AYPq/VQJE5vgPEluHYU3gzWiUXIPxC1klZ+49PaNbgI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hmw3Oo7Z4E9aVzQoy+BmbanNGkLFS9ids1j15rZr2vXdGSGyFDaJcgwzMlTUwaC+u
-         t8SjyEq23qsN4it/j9kWkaRdx023Qfl57rM1yVyan8BpIoiNPfEWRLbGvXKo6e+OHn
-         75hizgBV0IlTR4Ae9iqOzS+iAdD9jvRHh7ZzPFddSLRwm1p+VLON0ECPXgL4mwn/3B
-         CCK2GNNyYG0lR/EYWUs7B/vT4R5ZWtT4+oLmjxMbgGcnWVRYhv31UJKKCGQ/sAXCq3
-         zEWlLF4TttrHSURyo9qFl/zOvxq4spS3i5x4BDCkeUD444Z9AfN5f0vEWTw/VzzRWS
-         3zIdnlAfeDtEg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 937A7E6D466;
-        Tue, 14 Jun 2022 06:30:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 14 Jun 2022 02:30:39 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EAB37A25
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 23:30:37 -0700 (PDT)
+Received: from kwepemi500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LMdmj5W6tz1K9tw;
+        Tue, 14 Jun 2022 14:28:37 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by kwepemi500023.china.huawei.com
+ (7.221.188.76) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 14 Jun
+ 2022 14:30:33 +0800
+From:   Peng Wu <wupeng58@huawei.com>
+To:     <airlied@linux.ie>, <daniel@ffwll.ch>
+CC:     <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <liwei391@huawei.com>, <wupeng58@huawei.com>
+Subject: [PATCH] drm: logicvc: Add missing of_node_put() in logicvc_drm_config_parse()
+Date:   Tue, 14 Jun 2022 06:24:56 +0000
+Message-ID: <20220614062456.56189-1-wupeng58@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ethtool: Fix and simplify
- ethtool_convert_link_mode_to_legacy_u32()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165518821360.28798.10787116939755170787.git-patchwork-notify@kernel.org>
-Date:   Tue, 14 Jun 2022 06:30:13 +0000
-References: <20220609134900.11201-1-marco@mebeim.net>
-In-Reply-To: <20220609134900.11201-1-marco@mebeim.net>
-To:     Marco Bonelli <marco@mebeim.net>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemi500023.china.huawei.com (7.221.188.76)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+---
+ drivers/gpu/drm/logicvc/logicvc_drm.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-On Thu,  9 Jun 2022 15:49:01 +0200 you wrote:
-> Fix the implementation of ethtool_convert_link_mode_to_legacy_u32(), which
-> is supposed to return false if src has bits higher than 31 set. The current
-> implementation uses the complement of bitmap_fill(ext, 32) to test high
-> bits of src, which is wrong as bitmap_fill() fills _with long granularity_,
-> and sizeof(long) can be > 4. No users of this function currently check the
-> return value, so the bug was dormant.
-> 
-> [...]
-
-Here is the summary with links:
-  - ethtool: Fix and simplify ethtool_convert_link_mode_to_legacy_u32()
-    https://git.kernel.org/netdev/net-next/c/19d62f5eeaa0
-
-You are awesome, thank you!
+diff --git a/drivers/gpu/drm/logicvc/logicvc_drm.c b/drivers/gpu/drm/logicvc/logicvc_drm.c
+index df1805cf0f95..73d51a8b693e 100644
+--- a/drivers/gpu/drm/logicvc/logicvc_drm.c
++++ b/drivers/gpu/drm/logicvc/logicvc_drm.c
+@@ -136,8 +136,10 @@ static int logicvc_drm_config_parse(struct logicvc_drm *logicvc)
+ 	if (!config->layers_count) {
+ 		drm_err(drm_dev,
+ 			"Missing a non-optional layers children node\n");
++		of_node_put(layers_node);
+ 		return -EINVAL;
+ 	}
++	of_node_put(layers_node);
+ 
+ 	return 0;
+ }
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.17.1
 
