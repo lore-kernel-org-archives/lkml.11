@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F64CCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A19FCCA481
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:19:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354260AbiFNCS6 (ORCPT
+        id S1354230AbiFNCSw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:18:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
+        Mon, 13 Jun 2022 22:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354430AbiFNCOo (ORCPT
+        with ESMTP id S1354374AbiFNCOm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD573BF93;
-        Mon, 13 Jun 2022 19:08:45 -0700 (PDT)
+        Mon, 13 Jun 2022 22:14:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684AD3BBD6;
+        Mon, 13 Jun 2022 19:08:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEA4360B65;
-        Tue, 14 Jun 2022 02:08:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45AAFC36AFE;
-        Tue, 14 Jun 2022 02:08:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8CCC60C15;
+        Tue, 14 Jun 2022 02:08:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 847ACC341C5;
+        Tue, 14 Jun 2022 02:08:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172525;
-        bh=STcHVfGlkdlIUxt4dFjTPdJR8pkhbJtec94GCXE1ClE=;
+        s=k20201202; t=1655172481;
+        bh=suCPL6dcluZTjvTZvMxdMWiAaxLWueSgtm4nQ+15xg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dDx9/lJGamTHxBfAqWwg5QnYP+4pp9BRS963cGegypIf8r+ACsCsDBxU9IOKVQvlx
-         4CHssKFDqk66Gzt3GyLiYaam7Z4wcDPCb6nXos+qUuwZ8HmDT9YKZrXTtpjgIBA7mg
-         mYPVKH5+HeB+m952aD0nk8idD/Fqwm7yO14Go3e4XyUmk23igPce3pQzx/Jrw/eHgm
-         fd114XBTuSGvq2krKl+3ZGw3DUbMlcFJ0wS4mggNYYxXWXy2k2MoYSWNR5yRO4zs0i
-         A1NEKygPhKzJpJ37Bcw1t08y5x1M/atAkuootWQIZT2skEurSN8YOwTMDrU+dKyjtB
-         ElKGaaUYxI6OA==
+        b=qrMAx5ktujE2rMqR/xfnmQhcTC5OSveh4d8aGz7Jdiseq0eRgec63trjmsKEfvLKq
+         SA345lxChijc2DNMuJxMsUf+SQ6wU8pmfJ5v52ltX38a7BmlTcyO++0eyydknMkRw8
+         WcfxJ3TZXb77/bqyxTlRSXcFva2aGP+1mZttW3JvnO3fo4I+1CiSxwFW+8F+gg5s8z
+         tYL4my2mg+bdfgylXjploIhIZIvRwT0BaiAyShfGcQJKQnWqEZ547r711+BkQpMmb1
+         3PKjc5/9y4+LnMFS0uTMnL2ihrrF2A8dh1uhs4lE59cyPDHZB9xBfFX8+jn1dlXPWP
+         TLZdSu/oSu+uw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chengguang Xu <cgxu519@mykernel.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Brian King <brking@linux.vnet.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 19/29] scsi: ipr: Fix missing/incorrect resource cleanup in error case
-Date:   Mon, 13 Jun 2022 22:08:05 -0400
-Message-Id: <20220614020815.1099999-19-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, mmarek@suse.com,
+        linux-kbuild@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 32/41] gcc-12: disable '-Wdangling-pointer' warning for now
+Date:   Mon, 13 Jun 2022 22:06:57 -0400
+Message-Id: <20220614020707.1099487-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
-References: <20220614020815.1099999-1-sashal@kernel.org>
+In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
+References: <20220614020707.1099487-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,47 +53,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit d64c491911322af1dcada98e5b9ee0d87e8c8fee ]
+[ Upstream commit 49beadbd47c270a00754c107a837b4f29df4c822 ]
 
-Fix missing resource cleanup (when '(--i) == 0') for error case in
-ipr_alloc_mem() and skip incorrect resource cleanup (when '(--i) == 0') for
-error case in ipr_request_other_msi_irqs() because variable i started from
-1.
+While the concept of checking for dangling pointers to local variables
+at function exit is really interesting, the gcc-12 implementation is not
+compatible with reality, and results in false positives.
 
-Link: https://lore.kernel.org/r/20220529153456.4183738-4-cgxu519@mykernel.net
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Brian King <brking@linux.vnet.ibm.com>
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+For example, gcc sees us putting things on a local list head allocated
+on the stack, which involves exactly those kinds of pointers to the
+local stack entry:
+
+  In function ‘__list_add’,
+      inlined from ‘list_add_tail’ at include/linux/list.h:102:2,
+      inlined from ‘rebuild_snap_realms’ at fs/ceph/snap.c:434:2:
+  include/linux/list.h:74:19: warning: storing the address of local variable ‘realm_queue’ in ‘*&realm_27(D)->rebuild_item.prev’ [-Wdangling-pointer=]
+     74 |         new->prev = prev;
+        |         ~~~~~~~~~~^~~~~~
+
+But then gcc - understandably - doesn't really understand the big
+picture how the doubly linked list works, so doesn't see how we then end
+up emptying said list head in a loop and the pointer we added has been
+removed.
+
+Gcc also complains about us (intentionally) using this as a way to store
+a kind of fake stack trace, eg
+
+  drivers/acpi/acpica/utdebug.c:40:38: warning: storing the address of local variable ‘current_sp’ in ‘acpi_gbl_entry_stack_pointer’ [-Wdangling-pointer=]
+     40 |         acpi_gbl_entry_stack_pointer = &current_sp;
+        |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+
+which is entirely reasonable from a compiler standpoint, and we may want
+to change those kinds of patterns, but not not.
+
+So this is one of those "it would be lovely if the compiler were to
+complain about us leaving dangling pointers to the stack", but not this
+way.
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ipr.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/scsi/ipr.c b/drivers/scsi/ipr.c
-index b0aa58d117cc..90e8a538b078 100644
---- a/drivers/scsi/ipr.c
-+++ b/drivers/scsi/ipr.c
-@@ -9792,7 +9792,7 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
- 					GFP_KERNEL);
+diff --git a/Makefile b/Makefile
+index ce943bc3eda4..aee9309bb3e1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -811,6 +811,9 @@ endif
+ KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
+ KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
  
- 		if (!ioa_cfg->hrrq[i].host_rrq)  {
--			while (--i > 0)
-+			while (--i >= 0)
- 				dma_free_coherent(&pdev->dev,
- 					sizeof(u32) * ioa_cfg->hrrq[i].size,
- 					ioa_cfg->hrrq[i].host_rrq,
-@@ -10065,7 +10065,7 @@ static int ipr_request_other_msi_irqs(struct ipr_ioa_cfg *ioa_cfg,
- 			ioa_cfg->vectors_info[i].desc,
- 			&ioa_cfg->hrrq[i]);
- 		if (rc) {
--			while (--i >= 0)
-+			while (--i > 0)
- 				free_irq(pci_irq_vector(pdev, i),
- 					&ioa_cfg->hrrq[i]);
- 			return rc;
++# These result in bogus false positives
++KBUILD_CFLAGS += $(call cc-disable-warning, dangling-pointer)
++
+ ifdef CONFIG_FRAME_POINTER
+ KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
+ else
 -- 
 2.35.1
 
