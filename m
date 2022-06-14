@@ -2,151 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5115BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:27:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DED4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:29:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354493AbiFNH1w (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44210 "EHLO
+        id S238733AbiFNH3w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 03:29:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353996AbiFNH1s (ORCPT
+        with ESMTP id S229849AbiFNH3v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:27:48 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2117.outbound.protection.outlook.com [40.107.215.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1452F652;
-        Tue, 14 Jun 2022 00:27:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Uej4dym1jBlGyOrJuBUA9zne8aEHm1Dc+aJiYPxZBpHeRIeZR+XH+FlBqyQFhX1e2eXVroQYVtIpoQtcP3GVBwXaBQhR+mepRSnOkwCTYP/b0ClwMOrk1toK3H284wzTAKdwGGHsvCzbUg+B3ZdYZwCaCLea5ZDZrlaPn2A4PRn+WqGwVMGW574L1JAdDY2HrMoZUSn6LOeHar+JLF0wqPwqvFCRLe2OEkC20XPzthFJLwvNBvvh+iDeyk2ZVe8Md92ndxBsmx57njQkeWfplqoM0yG5CUdAmDZrX8fFpJcOaw/J3g6D2dgZlqj8y8Rq8ZgjXBkB9iGsvOqu4kZ0dg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rVn0I8IuRnjhtP5iqKJJ+F9WM77T22RA/nRLrh7B40w=;
- b=Et/rhwvg+Kn00yvfcXhYWZoEQs5yafr2PImxZPZhAiT7oe0fxNyYIMuxor208nRRyM8MkTbFWmuUus9teOo0EudgIxJCtaANZ4VKhC+8lcWaeQiXMLzPy/ekFisQ8DGicA4doymLFeqF+0YBPMNRRAdgjI13PooLrZcO1CvzcSisAKLkahaQVAKMfXK0d8pX343tzYcEcIi/jh8OppAHceZqbCN88tAfoUxWMuH+0Pb63sWm5YK10dw1oh5a1XccORkYzHUvGi3C2yp8po1eIHW7N+5WqB77IUF6l7S8R9Zs9ziqKCxwaFnAE4YYXMJx8Y8VFMhP0KTh4JfycaROBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rVn0I8IuRnjhtP5iqKJJ+F9WM77T22RA/nRLrh7B40w=;
- b=GCRZlHxqZkeu70omtJ+SK8tP0KY2ju7SrRfRU6h9bJxlB9Y6IO38t5dYEG1lhbMPcxn+wB2X4Ix1/EaOgac7lOHiXnSrrqc+7zZWXwCAlxAeiTA9gWigQZXhndGP9tOYqfEC2luCOOSA16nYOh6wqcEWXP4larmgp+dwRm6Tjko=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from PS2PR06MB3493.apcprd06.prod.outlook.com (2603:1096:300:63::20)
- by TY2PR06MB2685.apcprd06.prod.outlook.com (2603:1096:404:34::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Tue, 14 Jun
- 2022 07:27:44 +0000
-Received: from PS2PR06MB3493.apcprd06.prod.outlook.com
- ([fe80::9890:b96e:6c97:ccdf]) by PS2PR06MB3493.apcprd06.prod.outlook.com
- ([fe80::9890:b96e:6c97:ccdf%5]) with mapi id 15.20.5332.022; Tue, 14 Jun 2022
- 07:27:44 +0000
-From:   Guo Zhengkui <guozhengkui@vivo.com>
-To:     Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        Haowen Bai <baihaowen@meizu.com>,
-        George Sun <george.sun@mediatek.com>,
-        Guo Zhengkui <guozhengkui@vivo.com>,
-        linux-media@vger.kernel.org (open list:MEDIA INPUT INFRASTRUCTURE
-        (V4L/DVB)), linux-kernel@vger.kernel.org (open list),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support),
-        linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support)
-Cc:     zhengkui_guo@outlook.com
-Subject: [PATCH] media: mediatek: vcodec: fix minmax.cocci warning
-Date:   Tue, 14 Jun 2022 15:25:59 +0800
-Message-Id: <20220614072618.26925-1-guozhengkui@vivo.com>
-X-Mailer: git-send-email 2.20.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR03CA0127.apcprd03.prod.outlook.com
- (2603:1096:4:91::31) To PS2PR06MB3493.apcprd06.prod.outlook.com
- (2603:1096:300:63::20)
+        Tue, 14 Jun 2022 03:29:51 -0400
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD3823DDF4;
+        Tue, 14 Jun 2022 00:29:46 -0700 (PDT)
+Received: by mail-qk1-f180.google.com with SMTP id a184so5784631qkg.5;
+        Tue, 14 Jun 2022 00:29:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MvW5zYgeysNwbbiYui7u/VFeyen3fLSMqOoOSFvD7qE=;
+        b=p/NmW/KUxEn/9IyPlauN4nJ74m8YgE7F55HNN0YdeQjyqFG1jCWySyBukZPVgjFA02
+         lIXbCvW7igDGW6c/ODagf3jRxcDENNztJzK+FgSlm3+N76+AfbGGa4Vv4jp/IoEg9dzo
+         IoeetpL7eI90mIX3irENQj7PfzAtMAOjztSyRw5elpkwhY9WksVK8gmkDZPLfvNfp9QX
+         MeUuH7OM4lT9tJhEvyPZYzVTo2Gx8u0N/xz49IHGlIKtPwh7lCt+8zq61Z3gQKhEHBYJ
+         pD7ul8Bb4S3UzY8moEiXj5zQeRgLadX2xX5ZjTXDsB204YspzNYh0S3K+4xwqOmKKvs3
+         g9Gw==
+X-Gm-Message-State: AOAM533syv9ET2RYrtKM1rlReWZESO9vJN83vcoj15UPJxeAJzp8tr8Y
+        L0Af9q5nW+naxRLDPZGwVAK0fNpaWhHrqQ==
+X-Google-Smtp-Source: ABdhPJwRn7o3U2yNsa5XhXzCXRo4NcYzcye0arUTc2gDDtiq4izGD20gUcJgtMQnRnfLX9yDGXO5pA==
+X-Received: by 2002:a05:620a:2621:b0:6a7:1dc:175b with SMTP id z33-20020a05620a262100b006a701dc175bmr2807004qko.683.1655191785519;
+        Tue, 14 Jun 2022 00:29:45 -0700 (PDT)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id i1-20020a05620a27c100b006a691904891sm8083144qkp.16.2022.06.14.00.29.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 00:29:45 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id l204so13707751ybf.10;
+        Tue, 14 Jun 2022 00:29:45 -0700 (PDT)
+X-Received: by 2002:a25:cc53:0:b0:65c:b19c:fac1 with SMTP id
+ l80-20020a25cc53000000b0065cb19cfac1mr3399500ybf.89.1655191784829; Tue, 14
+ Jun 2022 00:29:44 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9899e996-c90e-4096-9dcc-08da4dd75f33
-X-MS-TrafficTypeDiagnostic: TY2PR06MB2685:EE_
-X-Microsoft-Antispam-PRVS: <TY2PR06MB26855E7207946E918E4A084EC7AA9@TY2PR06MB2685.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mPi3okusCecG8WHgql43t3HSSuWeKX2b42Nhwf0HFEDisl7SHxuZY2xLGH5r0Yy5Gr1iEiXxdF1PAOF2BTd2t9U9KpazsXhOHAGYIHYPXt8xGbjNZw/6kGzlUsdvVUy2Btitgp/jzlJJnBN+bpRAZh4k7qRA8eOS3Bu0gjL4Cr6qB39aEIjijaFad7i/JjXa7YfeLq96SeO/ll63AHy4kZ0KsZo0n3ursa1noJ8tkYVeQ/Rjl1yn6fpcSkjTb3obLZR/g+4icEeTrHZk4A8UBVmhi6xIE3i/VSH1W9O7kcPHzNgE5SRK7B1Vhodk+AHIhCsa6M7Oj0lcJiB14PF4DdDNMX9MgAAKzqJDY4Lw3JoFWs1OkA1OsarjXiDIutPOGZJ5IfoM8Xqa/Kq4I5TgId/wjgT/gz8s5cofJ+1b/9hfu9j7+XIpQmx8dlYRiyxYtnx6DmNoe5F3sSorBfDnbHINNNWsGG/yUGKAuVIUmurkA+t1QQLCSupsUtrITLhIg/PTbmW7N3oCRMuEvAxb/D25XlE2m4D6ucpipnvgl6iRJJ3wXaJ9VoPsvrZYZTtZPVyuH0puRl60rfsQjuHSIvbwB/GMCTQcp9VhES39Ge2N/AmMunFA/c6UK4EHp8+oStFeH5QEF7QCRKfZCLgYdlyHKjJ+5Wj/1CsL3mFR9DmIBAqeyqUa7hMemAcGoaOr6fsVsFVO/Xvt8yRjlwMmNDuOnBUo6o+bJ9xFC13CEqX0y6W0qLmfHM1uwkWEWVSJLOiUeUvPqC8XRUwpX7o+yQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PS2PR06MB3493.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(86362001)(110136005)(6512007)(921005)(6506007)(66946007)(52116002)(66556008)(66476007)(2906002)(6486002)(36756003)(508600001)(8936002)(38350700002)(6666004)(316002)(2616005)(83380400001)(8676002)(1076003)(4326008)(4744005)(7416002)(26005)(186003)(5660300002)(38100700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LoqKnO/eTXjr2/SiH99ZGZ/Q0lsPSBja7z1+JFTCafVaJ6wQc8VwjgcK+aCy?=
- =?us-ascii?Q?+iSCZspqa55d7jbvF0UTzlaJbMQn43u4wjJCU+t3lhQZk6B34l8eg3GkNPLk?=
- =?us-ascii?Q?23Gl+BVQj9H8hll1FxRgPFURIM2+lVUVqUqUUDdf2ltca1jBosfooKJABIL9?=
- =?us-ascii?Q?oGQdeqvODQT9voGVT6qZArmhQLXIydOjhVq2o620RbjaJ3KbMiTkvK8Ewaah?=
- =?us-ascii?Q?9lRF0fYJY11m9+EXAIynvLZkBOyyW0+SwG5lFzv5biJBqhg+6KXq8q+C73kR?=
- =?us-ascii?Q?vBMm3OJgNuESUi8FpLdN4apqZNgFEpdtZw6MrUKhPDBcug1fVDV/YliNPeyq?=
- =?us-ascii?Q?1P5hTOkpZulJm+KjGc2U0fFgX+qvx9rqLAbmDs1vbpnMWTL0jOOmZMFpgjbi?=
- =?us-ascii?Q?ehImFTTp9D3LN9huTOVuECyXC8XeYim36tYGDhTs+XbPehNz/ISve9GZ3o0m?=
- =?us-ascii?Q?vOonbZpTaYgDy/4/7Zn7Xva98+B2kOhlNcUdaoycYJriGmXazzkA5/RcFnOa?=
- =?us-ascii?Q?Y1B8+lleoQ6H3ldrSQy+xNQO1hq4hyhf30fbuqJIO50+Yu7USRCeTM1JSZSV?=
- =?us-ascii?Q?qSepHD5Qdjpr4DnkJF0CsQ5ofnAnqLXLwGjCFiPaRtjoYjVA1Yq3BWatqe8q?=
- =?us-ascii?Q?jX2c/ugkSuRbrwjxCtvQVsnOOpAPHWtQ/mbLnNKtwe8964BD7E7/GDgdCPg3?=
- =?us-ascii?Q?mfv8Wgd358r+KngV2IUV4B0apIOGkc0khd8HnvG8y61+1XBzA3UKr2AgRTcT?=
- =?us-ascii?Q?NCqyt4X4I5QNyQEJiD8P3hcf8PA20Ypd/qNhJoNxVjN5YE3iHysPNnkUKwGB?=
- =?us-ascii?Q?sBbRit9CpHG0iToCwEW0GdBiTbhkTGeUvWP2R03GWm6jqN0vCokwn3+jIljn?=
- =?us-ascii?Q?aLPv6k/q6K7QBUDJ5yZnywVL65bAdfsaorJ2oDW2dfc10kSqdm2fZtjd/yjN?=
- =?us-ascii?Q?La2X8eH4YqYTs6Z5JfOS6U8EojPXXQ7xkQKngUiW7LIAYF2MuVILtME06Clf?=
- =?us-ascii?Q?X0zAty6sR24fiyKH0A1pPJkHRN00vQ9SNMmsDC8jM1e/R3uV1Ugcg3rPWjej?=
- =?us-ascii?Q?cGz5EVOc4YO7w2LT7QDENb7sCkPNZDP+BoQEveYkHr41HLGj6HxBZA98os85?=
- =?us-ascii?Q?2L+0W3V4uhQWd2NjsoLh2Uv+BasqjFuJvt03k/7QGFomRPgQ24yBGx2emY6h?=
- =?us-ascii?Q?hWg85SZyzzGmR4jfu84XhVXyBZupAIuhIy1UaLBN1U0BKqEeqNg+5mC3Y3Dc?=
- =?us-ascii?Q?wyk9VHhL2yHwVgEiirwda8MV28LnQZuwAoAvGJwTQmyzMhXKtpGEUz2ucyA1?=
- =?us-ascii?Q?py87uRvmPAc4+oPMyLaFB9dheEaRvvo2RU2vER1UgA3VdRJSC+bnBseBkmXK?=
- =?us-ascii?Q?k+3Xct+o3UASSddQYuAHpbWlw48BBvE2KwnTj7M6WfXQhBLMfJujLCY6W9n8?=
- =?us-ascii?Q?1xrFjbFfxli4fsSSwVW/hjx/bqJTuqc+zqKNMVJNnczJtJK6aAq00menwEeh?=
- =?us-ascii?Q?kRLW08xoKodh+CUfJjCI0bB2YgPJWIWtlc0YpzeE/BJBYQXKEe7GyZ9aRQvf?=
- =?us-ascii?Q?WmHOQR8lJhfIQTgw4wPSJDxkGpsQSBvaU2YVUJvRcDV6mJwlVaU13IHNREuw?=
- =?us-ascii?Q?M5qjPe8KM9GFMqQE9PFmvMpF7B3vJakykL8ngwQvOECItq19Ag30ohSh6Mvs?=
- =?us-ascii?Q?Q6Qr4+cA7S7gXZSzEq/UcNYUXDJyadDM6ZHokLJCKgghgOq6/tk3Cm4kL0n5?=
- =?us-ascii?Q?mZ0veZLLXA=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9899e996-c90e-4096-9dcc-08da4dd75f33
-X-MS-Exchange-CrossTenant-AuthSource: PS2PR06MB3493.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2022 07:27:43.9996
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SIU3Pm0XV1FhZSDEPpPhRHXn+kRG0NKQW2kA1fi4nacQdnNESFk2ubTKdDvVY85pnD/mtRjuh4ENgSje+Lvcxw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR06MB2685
+References: <20220609150851.23084-1-max.oss.09@gmail.com> <20220609150851.23084-6-max.oss.09@gmail.com>
+In-Reply-To: <20220609150851.23084-6-max.oss.09@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 14 Jun 2022 09:29:33 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUf=VnqePKB=0eJC4GxZipQLD8BKMiv5PBW8Fz+zUv6-Q@mail.gmail.com>
+Message-ID: <CAMuHMdUf=VnqePKB=0eJC4GxZipQLD8BKMiv5PBW8Fz+zUv6-Q@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 5/5] ARM64: verdin-imx8mm: use regulator power
+ domain to model sleep-moci
+To:     Max Krummenacher <max.oss.09@gmail.com>
+Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Andrejs Cainikovs <andrejs.cainikovs@toradex.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following coccicheck warning:
+Hi Max,
 
-drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:
-694:15-16: WARNING opportunity for min().
+On Thu, Jun 9, 2022 at 5:16 PM Max Krummenacher <max.oss.09@gmail.com> wrote:
+> From: Max Krummenacher <max.krummenacher@toradex.com>
+>
+> The Verdin CTRL_SLEEP_MOCI# pin signals the carrier board that the module
+> is in sleep and it may switch off unneeded power.
+>
+> Control this pin with a regulator power domain controller which uses a
+> fixed regulator with a gpio enable.
+>
+> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 
-Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
----
- .../media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c   | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for your patch!
 
-diff --git a/drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c b/drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c
-index f464af190d8c..81de876d5126 100644
---- a/drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c
-+++ b/drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c
-@@ -691,7 +691,7 @@ static int vdec_vp9_slice_tile_offset(int idx, int mi_num, int tile_log2)
- 	int sbs = (mi_num + 7) >> 3;
- 	int offset = ((idx * sbs) >> tile_log2) << 3;
- 
--	return offset < mi_num ? offset : mi_num;
-+	return min(offset, mi_num);
- }
- 
- static
--- 
-2.20.1
+> --- a/arch/arm64/boot/dts/freescale/imx8mm-verdin-dahlia.dtsi
+> +++ b/arch/arm64/boot/dts/freescale/imx8mm-verdin-dahlia.dtsi
+> @@ -92,6 +92,7 @@
+>
+>  /* Verdin PCIE_1 */
+>  &pcie0 {
+> +       power-domains = <&pd_sleep_moci>;
 
+This overrides "power-domains = <&pgc_pcie>;" from imx8mm.dtsi...
+
+>         status = "okay";
+>  };
+
+> --- a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
+> +++ b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
+> @@ -53,6 +53,14 @@
+>                 };
+>         };
+>
+> +       pd_sleep_moci: power-domain-sleep-moci {
+> +               compatible = "regulator-pm-pd";
+> +               label = "pd_sleep_moci";
+> +               power-domains = <&pgc_pcie>;
+
+... and here you work around that by re-binding <&pgc_pcie>.
+
+I think you:
+  1. must not override the power-domains property for pcie0, as
+     conceptually, the PCIe bus is still in the on-SoC power
+     domain. What if some lanes are connected to devices in
+     pd_sleep_moci, but other lanes are not?
+  2. should only use pd_sleep_moci for the off-chip devices that
+      are actually controlled by the corresponding regulator.
+
+> +               power-supply = <&reg_sleep_moci>;
+> +               #power-domain-cells = <0>;
+> +       };
+> +
+>         /* Carrier Board Supplies */
+>         reg_1p8v: regulator-1p8v {
+>                 compatible = "regulator-fixed";
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
