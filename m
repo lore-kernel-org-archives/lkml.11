@@ -2,93 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4960C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11981CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:41:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344339AbiFNSkM (ORCPT
+        id S1345211AbiFNSlH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57130 "EHLO
+        Tue, 14 Jun 2022 14:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244526AbiFNSkJ (ORCPT
+        with ESMTP id S244526AbiFNSlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:40:09 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7647546152
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:40:08 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id h1so8434893plf.11
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:40:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VMRLILcAuZfWHWL4+u5qy2fvXJUzHg7ML+JvyBdPww8=;
-        b=LPePoEAd2RE5ad+qpang/x6MBZQqe8c+MY+oskJDKl0FP/nK6/UyH3T057+2dwVI3y
-         jrBBsALPsRmcs+oI38K2y3wHudZ5VZg5K5mP9B0b57TJQ02kbio5YVm4Av5UWlW8Y569
-         oddEFhMmMWOSO/CMHBNLXqr7HG+5V4wktBFzbDZ13TxmMOeDSyfrtOMoZitQzBUHTozt
-         M1KNFkFERB9TFGK47pGCCxTGN+WS2E85nbhjZ7hSt/pll+OsxuZTX3Vx/MxH5uAlNVL6
-         8wgZY8rIEydCd4lRTcMWHE6o8kiIt0sT76aCWth48oJzRMsFiVP9pUbCHQY6FwOLV9A8
-         n/aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VMRLILcAuZfWHWL4+u5qy2fvXJUzHg7ML+JvyBdPww8=;
-        b=2j6+qSNJwSR9/InqQCATVe9XEPsiDoBJsLtpTsgiekKZCuKtN8dMjByPyhXVqbzcwu
-         DSPAm+fyy4hMK0G4RVsCDbk6iCKxdalBPQe09W9wqlBCA20sLghQv+bf9anzCwZbsknW
-         3gi1iqWUfuGeWNblXYleoQqWaHakYA8SEAEj5BqVLX/+O8sI/+hcnxaZOwOAPCQaWmgf
-         udunFlSJe2xVv3YzhXj+RCHJvtijYIQk+e8GzuKcUyoAMddBdq6cmqkkcvYH2DhSQFNo
-         2c2Mu86T5idf6sI4cTc1hkhJysKHRLnciH5DZ6lu69k5BgPgygOp6wKM1rn1GphiGT1o
-         /rxQ==
-X-Gm-Message-State: AJIora+5dxZsCuVonC6MZRq3Pq/vFMFDfBPDfDqu1EU8JaPDMipQK8yk
-        9jUXIWZx9OAYDu7FVlMTVGbMsw==
-X-Google-Smtp-Source: AGRyM1vbSe14m+2wgDQc5pjjUBxKw2CUwxdD7eoFuL4AQSdHu3ZD+H5HuZM3i7A/ctCS9wllK48y/w==
-X-Received: by 2002:a17:903:32c4:b0:163:e765:5071 with SMTP id i4-20020a17090332c400b00163e7655071mr5579647plr.153.1655232007923;
-        Tue, 14 Jun 2022 11:40:07 -0700 (PDT)
-Received: from [192.168.2.1] (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.googlemail.com with ESMTPSA id y9-20020a170902864900b00168c1668a49sm7584558plt.85.2022.06.14.11.40.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 11:40:06 -0700 (PDT)
-Message-ID: <d427ed94-facf-e0ed-50b4-f4471fd0adfb@linaro.org>
-Date:   Tue, 14 Jun 2022 20:40:00 +0200
+        Tue, 14 Jun 2022 14:41:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5728046642;
+        Tue, 14 Jun 2022 11:40:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8973617C1;
+        Tue, 14 Jun 2022 18:40:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3451C3411B;
+        Tue, 14 Jun 2022 18:40:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655232058;
+        bh=bb/sXA+gpmNBH9++5CgXsQEqoAl/c1agmOP+PpCOcpU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=K6yCSF/OaRqV0tlMnU9L87hikboDNGUKi24fkU4ciFn5YH+SVSV55FcHYd8ybV3cr
+         NufCxAjzqIt6FUHmVR+xVjKgHGp0DGqHEiCKJI6eFi7H4wBoXbMuSw6drn8+/4wMOn
+         E3fMzZsuWJZbWSRDCPSbY3IWczhgwIZZLwSNldpI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.9 00/20] 4.9.319-rc1 review
+Date:   Tue, 14 Jun 2022 20:39:43 +0200
+Message-Id: <20220614183722.061550591@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] MAINTAINERS: add include/dt-bindings/thermal to THERMAL
-Content-Language: en-US
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, linux-pm@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220613124309.28790-1-lukas.bulwahn@gmail.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20220613124309.28790-1-lukas.bulwahn@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.319-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.9.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.9.319-rc1
+X-KernelTest-Deadline: 2022-06-16T18:37+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/06/2022 14:43, Lukas Bulwahn wrote:
-> Maintainers of the directory Documentation/devicetree/bindings/thermal
-> are also the maintainers of the corresponding directory
-> include/dt-bindings/thermal.
-> 
-> Add the file entry for include/dt-bindings/thermal to the appropriate
-> section in MAINTAINERS.
-> 
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> ---
-> Rafael, Daniel, please pick this MAINTAINERS addition to your section.
+This is the start of the stable review cycle for the 4.9.319 release.
+There are 20 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-Applied, thanks
+Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+Anything received after that time might be too late.
+
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.319-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+and the diffstat can be found below.
+
+thanks,
+
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.9.319-rc1
+
+Josh Poimboeuf <jpoimboe@kernel.org>
+    x86/speculation/mmio: Print SMT warning
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    KVM: x86/speculation: Disable Fill buffer clear within guests
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Reuse SRBDS mitigation for SBDS
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/srbds: Update SRBDS mitigation selection
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Add sysfs reporting for Processor MMIO Stale Data
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Enable CPU Fill buffer clearing on idle
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/bugs: Group MDS, TAA & Processor MMIO Stale Data mitigations
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Add mitigation for Processor MMIO Stale Data
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation: Add a common function for MD_CLEAR mitigation update
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Enumerate Processor MMIO Stale Data bug
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    Documentation: Add documentation for Processor MMIO Stale Data
+
+Gayatri Kammela <gayatri.kammela@intel.com>
+    x86/cpu: Add another Alder Lake CPU to the Intel family
+
+Tony Luck <tony.luck@intel.com>
+    x86/cpu: Add Lakefield, Alder Lake and Rocket Lake models to the to Intel CPU family
+
+Kan Liang <kan.liang@linux.intel.com>
+    x86/cpu: Add Comet Lake to the Intel CPU models header
+
+Kan Liang <kan.liang@linux.intel.com>
+    x86/CPU: Add more Icelake model numbers
+
+Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>
+    x86/CPU: Add Icelake model number
+
+Rajneesh Bhardwaj <rajneesh.bhardwaj@intel.com>
+    x86/cpu: Add Cannonlake to Intel family
+
+Zhang Rui <rui.zhang@intel.com>
+    x86/cpu: Add Jasper Lake to Intel family
+
+Guenter Roeck <linux@roeck-us.net>
+    cpu/speculation: Add prototype for cpu_show_srbds()
+
+Gayatri Kammela <gayatri.kammela@intel.com>
+    x86/cpu: Add Elkhart Lake to Intel family
 
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+-------------
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Diffstat:
+
+ Documentation/ABI/testing/sysfs-devices-system-cpu |   1 +
+ Documentation/hw-vuln/index.rst                    |   1 +
+ .../hw-vuln/processor_mmio_stale_data.rst          | 246 +++++++++++++++++++++
+ Documentation/kernel-parameters.txt                |  36 +++
+ Makefile                                           |   4 +-
+ arch/x86/include/asm/cpufeatures.h                 |   1 +
+ arch/x86/include/asm/intel-family.h                |  25 +++
+ arch/x86/include/asm/msr-index.h                   |  25 +++
+ arch/x86/include/asm/nospec-branch.h               |   2 +
+ arch/x86/kernel/cpu/bugs.c                         | 235 +++++++++++++++++---
+ arch/x86/kernel/cpu/common.c                       |  52 ++++-
+ arch/x86/kvm/vmx.c                                 |  77 ++++++-
+ arch/x86/kvm/x86.c                                 |   4 +
+ drivers/base/cpu.c                                 |   8 +
+ include/linux/cpu.h                                |   4 +
+ 15 files changed, 679 insertions(+), 42 deletions(-)
+
+
