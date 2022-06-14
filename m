@@ -2,151 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C99C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:42:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:44:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355948AbiFNKmc (ORCPT
+        id S1356230AbiFNKn6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59854 "EHLO
+        Tue, 14 Jun 2022 06:43:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355855AbiFNKm2 (ORCPT
+        with ESMTP id S243262AbiFNKnY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:42:28 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B861EAE;
-        Tue, 14 Jun 2022 03:42:20 -0700 (PDT)
-Received: from mail-yb1-f179.google.com ([209.85.219.179]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MuDoR-1niiMo0ijt-00uXdY; Tue, 14 Jun 2022 12:42:19 +0200
-Received: by mail-yb1-f179.google.com with SMTP id x38so14421240ybd.9;
-        Tue, 14 Jun 2022 03:42:18 -0700 (PDT)
-X-Gm-Message-State: AJIora8re/FrlikpDt370Goy4QV8Z7b2DkAY74vkH8CxaNMHl7zapDA0
-        bd7b+l85xDG8FV7Rje/+vOidX3enChRydW9Im28=
-X-Google-Smtp-Source: AGRyM1u6BlNZePQaiEYdbfT4gFiK0Xn992NOenYqFrbDIeUHsQsd0C4/8zDUMmJUO2awoVTP7FmYkvrgx8xfclApE7Q=
-X-Received: by 2002:a25:69c4:0:b0:65c:ed2b:9106 with SMTP id
- e187-20020a2569c4000000b0065ced2b9106mr4223896ybc.394.1655203337779; Tue, 14
- Jun 2022 03:42:17 -0700 (PDT)
+        Tue, 14 Jun 2022 06:43:24 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D402E369CE
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:43:20 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id a15so10693203wrh.2
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:43:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=58My0mpinLHyTuDa/H86KpBx1dzYAXeM2EITtFo9zMM=;
+        b=fuh/hwSnlr8FXhNJBcZOrijMZ4RxGYyviL1vzq0OQsIj0fQEFhr1HuoCiFf8CRrkB0
+         c2WArCkmltPMIk7sGPPuCBYigdhXeGLHpNF9e5GZW5VsbVmddxv1+4te4BXNeBAek+cX
+         tJu6pO1FORL5CH3W9/yjL2IUSIILz/iFyQuoaC5gt1VvIeE1K2ycg94mFFVU0LjHKGCL
+         j2cCWUN/XUliblsn8GnQ1jhMeLHN8db5Dx/Kqn11TK2Q8X5bTj86uFRPCl/X3KfwDDAv
+         qp22BUckyAu4MDeOHWb/h0Eh+JkkGEiXqLaiJYDV9gqrc9Vo6OA7WMCIfEWziwZmsraX
+         +9ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=58My0mpinLHyTuDa/H86KpBx1dzYAXeM2EITtFo9zMM=;
+        b=yf8r16ErV4RRBKAubE9HN5D1oBgtSpYR0mOywplj6mlO2iFgIr1FDujhh1hzYyRAtt
+         oAHT3mJpvUZiW9YxWkBfgkOh/3+LejipfD1Rnnp4r3UKtQKGRkkfreHJx+EDtK9ZMUrw
+         x/VhsHhFWT9wv2QKeqLnBKJx1vpK11RPHU3sdIQPEwNvWtN6+P2rd8/RFvSsTSxluAYK
+         czbg2EGLT7kanScZt51HePb9f80dor9mQlVgCIYoLBEV0ZRZGiPOtGqGUQuu3YP+xfcq
+         19Rh4z55xjJhfzpOgK45Eb4JfF1k5FdG/2h69AQnUhyeCPFTpFgCnmKOJBxuR1dRJUSz
+         dvYQ==
+X-Gm-Message-State: AJIora+0TG3OUjF4UpXy12JQ6FCVqpI5a4j6Uw1oO/IZYSdxmcXovAy0
+        G0wLxQRumKUwPwDzmr9pg5SFzwuBPSo=
+X-Google-Smtp-Source: AGRyM1vifZNk7UNCd0fbSo6GfAzc1DWqTpviOn5j20ZquC99csaXOxr92vBy0F9G1mnLmVJ4Bm8G/g==
+X-Received: by 2002:a5d:4c49:0:b0:210:353c:1c91 with SMTP id n9-20020a5d4c49000000b00210353c1c91mr4418062wrt.159.1655203399325;
+        Tue, 14 Jun 2022 03:43:19 -0700 (PDT)
+Received: from opensuse.localnet (host-87-16-96-199.retail.telecomitalia.it. [87.16.96.199])
+        by smtp.gmail.com with ESMTPSA id f2-20020adfb602000000b002185c6dc5b1sm12959912wre.108.2022.06.14.03.43.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 03:43:17 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Eugeniu Rosca <erosca@de.adit-jv.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Mark Brown <broonie@kernel.org>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com,
+        naveenkumar.sunkari@in.bosch.com,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+Subject: Re: [PATCH] ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
+Date:   Tue, 14 Jun 2022 12:43:16 +0200
+Message-ID: <2245197.ElGaqSPkdT@opensuse>
+In-Reply-To: <20220614095851.GA4199@lxhi-065>
+References: <20220409012655.9399-1-fmdefrancesco@gmail.com> <20220614095851.GA4199@lxhi-065>
 MIME-Version: 1.0
-References: <cover.1655194858.git.qinjian@cqplus1.com> <0574ed0ad1e9ec4c12645fe2d2dde8f701d285e5.1655194858.git.qinjian@cqplus1.com>
-In-Reply-To: <0574ed0ad1e9ec4c12645fe2d2dde8f701d285e5.1655194858.git.qinjian@cqplus1.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 14 Jun 2022 12:42:01 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0XgDS-iJEfOrTjTRGODosxj0gc748PAH_hc534DkyswQ@mail.gmail.com>
-Message-ID: <CAK8P3a0XgDS-iJEfOrTjTRGODosxj0gc748PAH_hc534DkyswQ@mail.gmail.com>
-Subject: Re: [PATCH v18 10/10] ARM: dts: Add Sunplus SP7021-Demo-V3 board
- device tree
-To:     Qin Jian <qinjian@cqplus1.com>
-Cc:     Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        SoC Team <soc@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:xPtpOpauGmwccM9RruS3e6Fd9pdl+xGLPXirghaSnNcDK5RwwvY
- ag8Xry7Id2nfnu8O6+AzsIlXHfWwe38hdO2eq2l7LTJL1RNQhUfBhIdomYdQqmK3Ppm6vAp
- LtYNeVMCjCnZqTbOmRWIb2+8QR5rfTfihjSfU2Gw8kvWmg1ucK6pi3a6pQpRBhROzKD5Pw0
- zbsvhlPQ6CcfYKlrpneYQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:BVGO3whnGok=:4JXmS7J51MsbvjTA1x/DDX
- wGJ15qMV9EwBZXNsU/ejxe+u27G4x5exYdoSQ/roZ8AiaNXmoy98XNj2TqTEb6+IKN2wLm2ZT
- SsD4eIQUa26cQomzNq5B44IELRsD0fYmWX8/XViqhreE1UIgWkvlxYPa9YcIAwc6ttQMSYgOm
- GzEkiuRsCdca+hfNwhZ4S7tM2a670ZyDseOEoHeWJSqG/9RpHVvqzMx4tYIrgiLrByaUVq+n6
- kGN7DczCLkbDuB/ZbEK2NLFqvITkIg2DcdxDOAhaCYP8PDJa+V145/gDNqnBJ9laOL9/DRXU/
- dl8It1oxxEXAaBxfc71CDlZKdZuTNNmIWR5lKvdZZmeKBHhXPPCoJzIIzGDSmZJZrP2qclOIb
- 2cKY2ah9r9yQKK3FO3Yk0kCogMWUqw56JqtaxvErB8YDLsOOOgMc662abg6wVzZutcUA1mGDL
- LwN45qz/O36DVktIEq2ToOYNijED0Rer5P746N9Mna0kJdzQbXMVfydzOxpxNQB23caBCM64N
- eHst7yaMRT7t4/S9kentb5HP7KRHvqfRmjgUbIJBt90jDiZYhCQsQtIUv4k3YuD7xbQCTxhnN
- Wae4RbY1sJB98XhBYoUz1DrdY73eNFdXZvzGWaXMbPLEKm+Km8FrxQsAJ1sBR4jHKfeISDR+5
- a0qWnEUAaadjziCQsdrpdKFV/4cMG+pxxERlA+8+9zSIc6xG3wH21UtER1gWaNpT02QeH0YXy
- h+Lx0ynQ0J3gGG5nGeiqMp0Ye7vsDa+dbU1CQ7Rms8aVseCFtTbaGjB8zW/hqpTRGkU1RLZX9
- toACVMLXst10FTK6uN8H17U2yyo6Gc4UM1YMbyLzWa4HXf04QI++Z/pCt5LT5uxgHvXIr7fRv
- U0jv7+q6CmrPu4ZRD2lQ==
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- beOn Tue, Jun 14, 2022 at 10:31 AM Qin Jian <qinjian@cqplus1.com> wrote:
->
-> Add the basic support for Sunplus SP7021-Demo-V3 board.
->
-> Signed-off-by: Qin Jian <qinjian@cqplus1.com>
-> ---
-> Fix the comments from Krzysztof.
+On marted=C3=AC 14 giugno 2022 11:58:51 CEST Eugeniu Rosca wrote:
+> Hello Fabio, hello All,
+>=20
+> On Sa, Apr 09, 2022 at 03:26:55 +0200, Fabio M. De Francesco wrote:
+> > Syzbot reports "KASAN: null-ptr-deref Write in
+> > snd_pcm_format_set_silence".[1]
+> >=20
+> > It is due to missing validation of the "silence" field of struct
+> > "pcm_format_data" in "pcm_formats" array.
+> >=20
+> > Add a test for valid "pat" and, if it is not so, return -EINVAL.
+> >=20
+> > [1] https://lore.kernel.org/lkml/
+000000000000d188ef05dc2c7279@google.com/
+> >=20
+> > Reported-and-tested-by:=20
+syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
+> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > ---
+> >=20
+> > I wasn't able to figure out the commit for the "Fixes:" tag. If this=20
+patch
+> > is good, can someone please help with providing this missing=20
+information?
+> >=20
+> >  sound/core/pcm_misc.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >=20
+> > diff --git a/sound/core/pcm_misc.c b/sound/core/pcm_misc.c
+> > index 4866aed97aac..5588b6a1ee8b 100644
+> > --- a/sound/core/pcm_misc.c
+> > +++ b/sound/core/pcm_misc.c
+> > @@ -433,7 +433,7 @@ int snd_pcm_format_set_silence(snd_pcm_format_t=20
+format, void *data, unsigned int
+> >  		return 0;
+> >  	width =3D pcm_formats[(INT)format].phys; /* physical width */
+> >  	pat =3D pcm_formats[(INT)format].silence;
+> > -	if (! width)
+> > +	if (!width || !pat)
+> >  		return -EINVAL;
+> >  	/* signed or 1 byte data */
+> >  	if (pcm_formats[(INT)format].signd =3D=3D 1 || width <=3D 8) {
+>=20
+> JFYI, PVS-Studio 7.19 reports:
+>=20
+> sound/core/pcm_misc.c	409	warn	V560 A part of=20
+conditional expression is always false: !pat.
 
-I'll wait for a final Ack from Krzysztof before applying this.
+Sorry, I assumed (wrongly!) that when we have
+
+static const struct pcm_format_data=20
+pcm_formats[(INT)SNDRV_PCM_FORMAT_LAST+1] =3D {
+	[SNDRV_PCM_FORMAT_S8] =3D {
+		.width =3D 8, .phys =3D 8, .le =3D -1, .signd =3D 1,
+		.silence =3D {},
+	},
+	[snip]
+	/* FIXME: the following two formats are not defined properly yet=20
+*/
+	[SNDRV_PCM_FORMAT_MPEG] =3D {
+		.le =3D -1, .signd =3D -1,
+	},
+	[SNDRV_PCM_FORMAT_GSM] =3D {
+		.le =3D -1, .signd =3D -1,
+	},
+
+pointer "silence", and then "pat", must be NULL.
+
+I'd better read again how fields of global struct variables are initialized=
+=20
+:-(
+
+Thanks for this finding,
+
+=46abio
+
+>=20
+> I haven't fully validated the finding, but it appears to be legit,
+> since the pointer variable (as opposed to the contents behind the
+> pointer) is always non-null, hence !pat always evaluating to false.
+>=20
+> If the above is true, then the patch likely hasn't introduced any
+> regression, but also likely hasn't fixed the original KASAN problem.
+>=20
+> Or are there alternative views?
+>=20
+> BR, Eugeniu.
+>=20
 
 
-A few more details I noticed:
 
-
-> +/ {
-> +       compatible = "sunplus,sp7021";
-> +       model = "Sunplus SP7021";
-> +
-> +       aliases {
-> +               serial0 = &uart0;
-> +               serial1 = &uart1;
-> +               serial2 = &uart2;
-> +               serial3 = &uart3;
-> +               serial4 = &uart4;
-> +       };
-
-Some of these are disabled, presumably because they are not
-actually connected on all boards. Better move the aliases to the .dts file
-and only list the ports that are in fact used, using the numbering that
-matches the labels on the board, not the numbers inside of the SoC
-
-> +
-> +       soc {
-> +               compatible = "simple-bus";
-> +               #address-cells = <1>;
-> +               #size-cells = <1>;
-> +               ranges;
-> +               interrupt-parent = <&intc>;
-> +
-> +               intc: interrupt-controller@9c000780 {
-> +                       compatible = "sunplus,sp7021-intc";
-> +                       reg = <0x9c000780 0x80>, <0x9c000a80 0x80>;
-> +                       interrupt-controller;
-> +                       #interrupt-cells = <2>;
-> +               };
-
-All child nodes below /soc have registers in the 0x9c000000 range. I would
-suggest you use a matching 'ranges' property to translate these into a
-zero-based
-address like
-
-/soc {
-       ranges = <0 0x9c000000 0x10000>;
-
-      interrupt-controller@780 {
-             reg = <0x780 0x80>, <0xa80 0x80>;
-             ...
-      };
-};
-
-> +               clkc: clock-controller@9c000004 {
-> +                       compatible = "sunplus,sp7021-clkc";
-> +                       reg = <0x9c000004 0x28>,
-> +                             <0x9c000200 0x44>,
-> +                             <0x9c000268 0x04>;
-> +                       clocks = <&extclk>;
-> +                       #clock-cells = <1>;
-> +               };
-> +
-> +               rstc: reset@9c000054 {
-> +                       compatible = "sunplus,sp7021-reset";
-> +                       reg = <0x9c000054 0x28>;
-> +                       #reset-cells = <1>;
-> +               };
-
-
-Maybe sort the nodes by address, or possibly by name.
-
-       Arnd
