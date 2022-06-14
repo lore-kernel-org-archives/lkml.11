@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B82C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72741CCA47D
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353003AbiFNCL7 (ORCPT
+        id S1350765AbiFNCMC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
+        Mon, 13 Jun 2022 22:12:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352745AbiFNCLU (ORCPT
+        with ESMTP id S1351516AbiFNCLK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:11:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC22C340D6;
-        Mon, 13 Jun 2022 19:07:05 -0700 (PDT)
+        Mon, 13 Jun 2022 22:11:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EF7377E6;
+        Mon, 13 Jun 2022 19:07:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2920560C15;
-        Tue, 14 Jun 2022 02:06:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97A9BC36AFF;
-        Tue, 14 Jun 2022 02:06:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7830AB80AC1;
+        Tue, 14 Jun 2022 02:07:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58FFDC3411E;
+        Tue, 14 Jun 2022 02:06:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172411;
-        bh=wlx8IVpnV3uzgVLiWFw1A/YnWrKtwDyrE7/A0OAGLxY=;
+        s=k20201202; t=1655172419;
+        bh=Gc6fuGZ+6DADRITiZxkitRn492CZ5PoYNJGVIcbu6d8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L6FxctM/LtYmB3TimmVDv+xTGHBU34pUzm9Ao1p70Z1ygjVy7uVoyL1mmnhRstIDj
-         rguoOG4VtEzh5DEXGRA5ix3oDl+SNqINGrI9ToNd2EPIxV3Dppcmg/t50vufug6YKY
-         KO9kLmgVYaBDgYX08rSeJcO40qvgLKcdVeGbm2dUeS0G+svdZEvvRz9s9ylt5IukuQ
-         IlVafT0HfsDmw4DXoBewxcdKYNkByHsLM26Gx5ecO37sANtJBbVdnOJnpQ74KPSGM1
-         cJtEltwWhJ7NfBewwjdJ5XvTQlPGsvtdKuOR8jsy58+rXZt/9MLfzuyownYmMxRalt
-         gZsT+iXpI6YXQ==
+        b=VJjARFk4FHjHCCwO8LWOB1e3uQOANnZATTb4HypWjuPmAfU1FIBYd8yUyxrm6d2hz
+         1ZN7vO9f4xBKEBB1FpbxWQ7LGAnajHUuaugLKiz0gMxZOvdhQDTEx0011cTv4/ecT1
+         BnXlYCaqrRXXfZqu8dgsiTvddlVdo2tvH/aS+P5l732FN4P3eAPObGIMdyoITegDIu
+         udz/3gARqaPHA/Ehl1dq3UZ9dt5yn09yljiljC+sIesaIf54SI4LT3TgQJsFJO+cIE
+         levd++XzBMMU/6Vcp+CE11EheD3Hy4OGS6N7xyX3t51gyw4Y/bN0ZUWC6IWIUpgh0u
+         eVEzLrjCHAp8g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, saeedm@mellanox.com,
-        matanb@mellanox.com, leonro@mellanox.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 33/43] mellanox: mlx5: avoid uninitialized variable warning with gcc-12
-Date:   Mon, 13 Jun 2022 22:05:52 -0400
-Message-Id: <20220614020602.1098943-33-sashal@kernel.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
+        gnurou@gmail.com, linux-gpio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 38/43] gpio: dwapb: Don't print error on -EPROBE_DEFER
+Date:   Mon, 13 Jun 2022 22:05:57 -0400
+Message-Id: <20220614020602.1098943-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
 References: <20220614020602.1098943-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,47 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-[ Upstream commit 842c3b3ddc5f4d17275edbaa09e23d712bf8b915 ]
+[ Upstream commit 77006f6edc0e0f58617eb25e53731f78641e820d ]
 
-gcc-12 started warning about 'tracker' being used uninitialized:
+Currently if the APB or Debounce clocks aren't yet ready to be requested
+the DW GPIO driver will correctly handle that by deferring the probe
+procedure, but the error is still printed to the system log. It needlessly
+pollutes the log since there was no real error but a request to postpone
+the clock request procedure since the clocks subsystem hasn't been fully
+initialized yet. Let's fix that by using the dev_err_probe method to print
+the APB/clock request error status. It will correctly handle the deferred
+probe situation and print the error if it actually happens.
 
-  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c: In function ‘mlx5_do_bond’:
-  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c:786:28: warning: ‘tracker’ is used uninitialized [-Wuninitialized]
-    786 |         struct lag_tracker tracker;
-        |                            ^~~~~~~
-
-which seems to be because it doesn't track how the use (and
-initialization) is bound by the 'do_bond' flag.
-
-But admittedly that 'do_bond' usage is fairly complicated, and involves
-passing it around as an argument to helper functions, so it's somewhat
-understandable that gcc doesn't see how that all works.
-
-This function could be rewritten to make the use of that tracker
-variable more obviously safe, but for now I'm just adding the forced
-initialization of it.
-
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpio/gpio-dwapb.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-index 4ddf6b330a44..f61b846d43f1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-@@ -485,7 +485,7 @@ static void mlx5_do_bond(struct mlx5_lag *ldev)
- {
- 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
- 	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
--	struct lag_tracker tracker;
-+	struct lag_tracker tracker = { };
- 	bool do_bond, roce_lag;
- 	int err;
+diff --git a/drivers/gpio/gpio-dwapb.c b/drivers/gpio/gpio-dwapb.c
+index b0f3aca61974..9467d695a33e 100644
+--- a/drivers/gpio/gpio-dwapb.c
++++ b/drivers/gpio/gpio-dwapb.c
+@@ -652,10 +652,9 @@ static int dwapb_get_clks(struct dwapb_gpio *gpio)
+ 	gpio->clks[1].id = "db";
+ 	err = devm_clk_bulk_get_optional(gpio->dev, DWAPB_NR_CLOCKS,
+ 					 gpio->clks);
+-	if (err) {
+-		dev_err(gpio->dev, "Cannot get APB/Debounce clocks\n");
+-		return err;
+-	}
++	if (err)
++		return dev_err_probe(gpio->dev, err,
++				     "Cannot get APB/Debounce clocks\n");
  
+ 	err = clk_bulk_prepare_enable(DWAPB_NR_CLOCKS, gpio->clks);
+ 	if (err) {
 -- 
 2.35.1
 
