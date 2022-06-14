@@ -2,132 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C8BCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:54:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F74C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355564AbiFNHyY (ORCPT
+        id S1355003AbiFNHzV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:54:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39964 "EHLO
+        Tue, 14 Jun 2022 03:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356003AbiFNHxr (ORCPT
+        with ESMTP id S1355567AbiFNHxW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:53:47 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA202BD7;
-        Tue, 14 Jun 2022 00:53:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655193224; x=1686729224;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=wANyQz1SPCw25Wuqev/1fBXire9ICHZa91oCiUyQF5A=;
-  b=TrPjapOHMkAQNZ7xiM+9D4q+Rnve0sex+SOvKWJrdlyNTLZ4Spflyun2
-   siB+dS6pxIF3yPVBCgqzKBpkjOabg63XroZGsXvkIIYfdUZHjTpDnXbGq
-   do4tfUdj6YsdOlFS/4R6pnrh+2nsUQYkErOyyUSfwo8BjsfzjoKNuAMVa
-   rIN3RT6AhqYvtw96t4S8srC5xFXCW5qBOOPzDaFJ7Hi12ejIgvJbwHYU9
-   EGYTSh/4dm64+zcmDi+YZbz9jIMf3B5bs0+uUrggt27Mfimmg1f4DY4e2
-   jSDyPLOs1glCIXfljyiYo4RYrr0kAc0qAmTMBhWMehtcCKCvoeOxgogAe
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="279260583"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="279260583"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:53:43 -0700
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="588305944"
-Received: from jlaghzal-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.32.175])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:53:41 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        =?UTF-8?q?Nuno=20Gon=C3=A7alves?= <nunojpg@gmail.com>
-Subject: [PATCH] serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle
-Date:   Tue, 14 Jun 2022 10:53:33 +0300
-Message-Id: <20220614075333.8382-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 14 Jun 2022 03:53:22 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84E63A7
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:52:21 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id r3so13832342ybr.6
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:52:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=oullFNTbBD6Sv8yzTExdhaIVhpqJeaJx6Shc3dyLza8=;
+        b=lazpJZG73XQAfR4LK+blnlE4Pn3QszQvIN5NRNTe/5lwNM0uvlzuhy3s1a6afAy4cw
+         fPGqZmusiyhNYYL+mP1upNX5rngeFCMQ/e9QwuMR+ow8f45emTRo4hr+TmXcm7/dJAJh
+         JiKPrTYsCKP0e+q1ACrfxTooAiT+Y/ybGoJVsdoK/S0LI+K4/0QK/aANbyrLf8BX1lwF
+         6AFEc55N1wEO5f2+GV2YB93rf8mUo92K71D9k4fdFPZh+tq2T3RBdTAWjTafseq6uqoF
+         8wNYsN1TK5ZY8EVPSwx7/1Nb1FqAwMCF3IRx1H1vohpV1xKxyInOZa0vBIQWP5ehSqs2
+         YDRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=oullFNTbBD6Sv8yzTExdhaIVhpqJeaJx6Shc3dyLza8=;
+        b=KF4yVZS7Kdoi+knjb8FeXa9OX3OAU6/kIWnlwelO1LcGwAW4NsMXCzhXXmDx4e/2QJ
+         DA0YwGgSisCr3fjY6wmSId9faldX46AVawNqvQHVLuNj8tLp5FpETFjNLS8DWaiv8EPV
+         dGKldkH0am1BE/+rqzA2mIBCN2nBkfu4uUthCr37XKk6YIgdqdi0pVliJWskzZRgJV+1
+         XvYtGsdw/sSNrVPTqOH/jtuT/IfeEc5JMfkPHLjq+yNA1K26h/YFHsQfVa7rJeyifPdb
+         L2EFi3Fy7DnZpP+UHqffrAMcXIWStzdA27cBq13+HOC3YPGPfG5Eq2N5naIICXBa5s+b
+         99NQ==
+X-Gm-Message-State: AJIora/k9Ny8Ap8D25afmaOCmafD52aCGUcESOkgwVHnbFe7UqQMiaDb
+        GH0SSZWxIymsBp9hywzYViMt0saY60zXhzmjydEopw==
+X-Google-Smtp-Source: AGRyM1tTeGRFgC+mWsIqDuzVjW0nKTutKIH1HGH0xgoLaSNYazUTdH85vTQ3VTGlUEuZXcGs0gKPPgf8/hyuS2c0kU0=
+X-Received: by 2002:a25:a286:0:b0:664:862a:f693 with SMTP id
+ c6-20020a25a286000000b00664862af693mr3422774ybi.389.1655193140745; Tue, 14
+ Jun 2022 00:52:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220613094840.720778945@linuxfoundation.org>
+In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 14 Jun 2022 13:22:09 +0530
+Message-ID: <CA+G9fYua7K0REdj80LRuqbVkmRGsWQKKQ-s7csDR_ftoRrNzBw@mail.gmail.com>
+Subject: Re: [PATCH 4.9 000/167] 4.9.318-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver must provide throttle and unthrottle in uart_ops when it
-sets UPSTAT_AUTORTS. Add them using existing stop_rx &
-enable_interrupts functions.
+On Mon, 13 Jun 2022 at 15:44, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.9.318 release.
+> There are 167 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 15 Jun 2022 09:47:08 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.9.318-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.9.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Reported-by: Nuno Gonçalves <nunojpg@gmail.com>
-Tested-by: Nuno Gonçalves <nunojpg@gmail.com>
-Fixes: 2a76fa283098 (serial: pl011: Adopt generic flag to store auto RTS status)
-Cc: Lukas Wunner <lukas@wunner.de>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
----
- drivers/tty/serial/amba-pl011.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index 97ef41cb2721..16a21422ddce 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -1367,6 +1367,15 @@ static void pl011_stop_rx(struct uart_port *port)
- 	pl011_dma_rx_stop(uap);
- }
- 
-+static void pl011_throttle_rx(struct uart_port *port)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	pl011_stop_rx(port);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+}
-+
- static void pl011_enable_ms(struct uart_port *port)
- {
- 	struct uart_amba_port *uap =
-@@ -1788,9 +1797,10 @@ static int pl011_allocate_irq(struct uart_amba_port *uap)
-  */
- static void pl011_enable_interrupts(struct uart_amba_port *uap)
- {
-+	unsigned long flags;
- 	unsigned int i;
- 
--	spin_lock_irq(&uap->port.lock);
-+	spin_lock_irqsave(&uap->port.lock, flags);
- 
- 	/* Clear out any spuriously appearing RX interrupts */
- 	pl011_write(UART011_RTIS | UART011_RXIS, uap, REG_ICR);
-@@ -1812,7 +1822,14 @@ static void pl011_enable_interrupts(struct uart_amba_port *uap)
- 	if (!pl011_dma_rx_running(uap))
- 		uap->im |= UART011_RXIM;
- 	pl011_write(uap->im, uap, REG_IMSC);
--	spin_unlock_irq(&uap->port.lock);
-+	spin_unlock_irqrestore(&uap->port.lock, flags);
-+}
-+
-+static void pl011_unthrottle_rx(struct uart_port *port)
-+{
-+	struct uart_amba_port *uap = container_of(port, struct uart_amba_port, port);
-+
-+	pl011_enable_interrupts(uap);
- }
- 
- static int pl011_startup(struct uart_port *port)
-@@ -2225,6 +2242,8 @@ static const struct uart_ops amba_pl011_pops = {
- 	.stop_tx	= pl011_stop_tx,
- 	.start_tx	= pl011_start_tx,
- 	.stop_rx	= pl011_stop_rx,
-+	.throttle	= pl011_throttle_rx,
-+	.unthrottle	= pl011_unthrottle_rx,
- 	.enable_ms	= pl011_enable_ms,
- 	.break_ctl	= pl011_break_ctl,
- 	.startup	= pl011_startup,
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
--- 
-tg: (f2906aa86338..) pl011/add-throttle (depends on: tty-next)
+## Build
+* kernel: 4.9.318-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-4.9.y
+* git commit: bb08155cd0997415c865f2def1e3c09686546cee
+* git describe: v4.9.317-168-gbb08155cd099
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.9.y/build/v4.9.3=
+17-168-gbb08155cd099
+
+## Test Regressions (compared to v4.9.317-109-g3f34965b10c5)
+No test regressions found.
+
+## Metric Regressions (compared to v4.9.317-109-g3f34965b10c5)
+No metric regressions found.
+
+## Test Fixes (compared to v4.9.317-109-g3f34965b10c5)
+No test fixes found.
+
+## Metric Fixes (compared to v4.9.317-109-g3f34965b10c5)
+No metric fixes found.
+
+## Test result summary
+total: 95213, pass: 83457, fail: 193, skip: 10418, xfail: 1145
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 261 total, 255 passed, 6 failed
+* arm64: 50 total, 39 passed, 11 failed
+* i386: 27 total, 23 passed, 4 failed
+* mips: 22 total, 22 passed, 0 failed
+* parisc: 12 total, 0 passed, 12 failed
+* powerpc: 36 total, 16 passed, 20 failed
+* s390: 12 total, 9 passed, 3 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 46 total, 44 passed, 2 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-cap_bounds-tests
+* ltp-commands
+* ltp-commands-tests
+* ltp-containers
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps
+* ltp-filecaps-tests
+* ltp-fs
+* ltp-fs-tests
+* ltp-fs_bind
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple
+* ltp-fs_perms_simple-tests
+* ltp-fsx
+* ltp-fsx-tests
+* ltp-hugetlb
+* ltp-hugetlb-tests
+* ltp-io
+* ltp-io-tests
+* ltp-ipc
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-pty-tests
+* ltp-sched
+* ltp-sched-tests
+* ltp-securebits
+* ltp-securebits-tests
+* ltp-smoke
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
