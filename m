@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A530BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16955C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:09:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351672AbiFNCJJ (ORCPT
+        id S1352368AbiFNCJZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42828 "EHLO
+        Mon, 13 Jun 2022 22:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352420AbiFNCIB (ORCPT
+        with ESMTP id S1352256AbiFNCIW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:08:01 -0400
+        Mon, 13 Jun 2022 22:08:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C810C35DD1;
-        Mon, 13 Jun 2022 19:06:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A544235DF2;
+        Mon, 13 Jun 2022 19:06:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A37D60B78;
-        Tue, 14 Jun 2022 02:06:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDC72C3411B;
-        Tue, 14 Jun 2022 02:06:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 036F860AF2;
+        Tue, 14 Jun 2022 02:06:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58FE7C3411B;
+        Tue, 14 Jun 2022 02:06:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172371;
-        bh=/MVMVifA0yL1pxv5yJnNl8Fq3u5w5hZsm4kWk3zvpio=;
+        s=k20201202; t=1655172374;
+        bh=sQibBj59stp4hCGLyB0NmNThh+E78SK0QzT/7J/IQME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Khw2TLfyjrgCZX59GbJw6t5w5NqpLzoEG0dOoehtCEEB7fONvzjTTuOfeQoVtGWPQ
-         ClaLdlrBFQPc7ljQlA5RXrnmpI/h1etW5IAC5B8HiF2I6PZfnw0pF0OYjmILDFexTZ
-         Ri0RubEcipVTv7FF8y40PiYMt1TM+Kv0GDsCl4bA6tBdTjA48zvwCoQbSdoUjnHR8a
-         83Svn8h0Kw0kRzSsG1JbueRJ7f+LU3NYOKpZxnvH3DzGMtBJnqX27n8K3c9aTLzTNV
-         /nCIzONRaJDxdiGW5BjThmnAZX/OQfBXUsBQIQ+YOTWkTppm/IKVRoJs/5CnZ02+lU
-         2wPmrKIHhEkmA==
+        b=fkuSh7GNlDljjemr0TfXxf++rOfuvmZd4EusRfkcAWOIYg4jHOg5R0hMc36uGXyX9
+         aI+bP7hy50VeVlo2uaLgOPkZE5Bxk1WEUcluMHoEKLuF/WWRfto/3XWxNm0gKg4i3R
+         PqtB1LRVEYwVUR3zA6RRHaFw0pTsFI3qURN9G/QGCPjtXgmvFDqTB0FgTLfLYejEJv
+         /GPSkclrqUX0iAYWVxY1VPXAhXA+MQhQRv03sEmvWwP966j8iUIe1+nftUYgOaC77p
+         7dsC58eVRWvpvkIDiYZu0xGZLwnap5J3KrPU8pGrGpRztEShTPzchl7H+ZdojpEGEU
+         np2FZF43uzM3w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Philip Yang <Philip.Yang@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, oded.gabbay@gmail.com,
-        christian.koenig@amd.com, airlied@linux.ie,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 05/43] drm/amdkfd: Use mmget_not_zero in MMU notifier
-Date:   Mon, 13 Jun 2022 22:05:24 -0400
-Message-Id: <20220614020602.1098943-5-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
+        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 07/43] ASoC: cs42l52: Fix TLV scales for mixer controls
+Date:   Mon, 13 Jun 2022 22:05:26 -0400
+Message-Id: <20220614020602.1098943-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
 References: <20220614020602.1098943-1-sashal@kernel.org>
@@ -55,43 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philip Yang <Philip.Yang@amd.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit fa582c6f3684ac0098a9d02ddf0ed52a02b37127 ]
+[ Upstream commit 8bf5aabf524eec61013e506f764a0b2652dc5665 ]
 
-MMU notifier callback may pass in mm with mm->mm_users==0 when process
-is exiting, use mmget_no_zero to avoid accessing invalid mm in deferred
-list work after mm is gone.
+The datasheet specifies the range of the mixer volumes as between
+-51.5dB and 12dB with a 0.5dB step. Update the TLVs for this.
 
-Signed-off-by: Philip Yang <Philip.Yang@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-2-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_svm.c | 3 +++
- 1 file changed, 3 insertions(+)
+ sound/soc/codecs/cs42l52.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-index ffec25e642e2..ace8f84918b3 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
-@@ -2281,6 +2281,8 @@ svm_range_cpu_invalidate_pagetables(struct mmu_interval_notifier *mni,
+diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
+index 80161151b3f2..785caba3f653 100644
+--- a/sound/soc/codecs/cs42l52.c
++++ b/sound/soc/codecs/cs42l52.c
+@@ -137,7 +137,7 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
  
- 	if (range->event == MMU_NOTIFY_RELEASE)
- 		return true;
-+	if (!mmget_not_zero(mni->mm))
-+		return true;
+ static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
  
- 	start = mni->interval_tree.start;
- 	last = mni->interval_tree.last;
-@@ -2307,6 +2309,7 @@ svm_range_cpu_invalidate_pagetables(struct mmu_interval_notifier *mni,
- 	}
+-static DECLARE_TLV_DB_SCALE(mix_tlv, -50, 50, 0);
++static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
  
- 	svm_range_unlock(prange);
-+	mmput(mni->mm);
+ static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
  
- 	return true;
- }
+@@ -364,7 +364,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
+ 			      CS42L52_ADCB_VOL, 0, 0xA0, 0x78, ipd_tlv),
+ 	SOC_DOUBLE_R_SX_TLV("ADC Mixer Volume",
+ 			     CS42L52_ADCA_MIXER_VOL, CS42L52_ADCB_MIXER_VOL,
+-				0, 0x19, 0x7F, ipd_tlv),
++				0, 0x19, 0x7F, mix_tlv),
+ 
+ 	SOC_DOUBLE("ADC Switch", CS42L52_ADC_MISC_CTL, 0, 1, 1, 0),
+ 
 -- 
 2.35.1
 
