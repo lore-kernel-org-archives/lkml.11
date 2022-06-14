@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F840C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C108CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357474AbiFNSrz (ORCPT
+        id S1357767AbiFNSr5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59178 "EHLO
+        Tue, 14 Jun 2022 14:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357742AbiFNSpW (ORCPT
+        with ESMTP id S1357752AbiFNSpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:45:22 -0400
+        Tue, 14 Jun 2022 14:45:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8664F28E32;
-        Tue, 14 Jun 2022 11:44:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01E549C9C;
+        Tue, 14 Jun 2022 11:44:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01D76617B3;
-        Tue, 14 Jun 2022 18:44:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0850BC3411B;
-        Tue, 14 Jun 2022 18:44:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63E56617B3;
+        Tue, 14 Jun 2022 18:44:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74240C3411B;
+        Tue, 14 Jun 2022 18:44:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232241;
-        bh=stE68uuJ8/LMaPjCR/795Fml1qkvQS3J17IZarbMJpo=;
+        s=korg; t=1655232246;
+        bh=ZOWH4Cq7utJaGyHVfX+Fx3dCUUXh6FUAdUQ89uBLOSc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xGkzzBAQ7goDT/GUfge4RS0HbyA30/CPWAI6CXwoprhrbi6vumKy7s0twXUTCJFx4
-         T1/l0c5iNlYBcAI8h5jPsU1FDB24dct/t4MqKjy/LY/UFxiSuKemwqMZA4nMXe0XJW
-         hc/rDB+atu/kF3MeRorgUSJp2QmtPixw99QbPrGI=
+        b=YaSJoY4xkbBW8iql8Os+hSn84hYxFf5uCsiG7UITEygFjg5Raaz9PvnjLAdmMwx7Z
+         9FSyUGCZTbVkFCrA/+CZUytw6wP7OZWwhfbd+lVKpOnaOXoo67Z+Su9aSS26pz9QWw
+         tdU4R2cJCOsg8cDiBb3fFSAoGnFZ7JfSq/qzGAU0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
         Borislav Petkov <bp@suse.de>,
         Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.4 05/15] Documentation: Add documentation for Processor MMIO Stale Data
-Date:   Tue, 14 Jun 2022 20:40:14 +0200
-Message-Id: <20220614183722.998448771@linuxfoundation.org>
+Subject: [PATCH 5.4 07/15] x86/speculation: Add a common function for MD_CLEAR mitigation update
+Date:   Tue, 14 Jun 2022 20:40:16 +0200
+Message-Id: <20220614183723.491313492@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220614183721.656018793@linuxfoundation.org>
 References: <20220614183721.656018793@linuxfoundation.org>
@@ -53,275 +53,133 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit 4419470191386456e0b8ed4eb06a70b0021798a6 upstream
+commit f52ea6c26953fed339aa4eae717ee5c2133c7ff2 upstream
 
-Add the admin guide for Processor MMIO stale data vulnerabilities.
+Processor MMIO Stale Data mitigation uses similar mitigation as MDS and
+TAA. In preparation for adding its mitigation, add a common function to
+update all mitigations that depend on MD_CLEAR.
+
+  [ bp: Add a newline in md_clear_update_mitigation() to separate
+    statements better. ]
 
 Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/hw-vuln/index.rst                     |    1 
- Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst |  246 ++++++++++
- 2 files changed, 247 insertions(+)
- create mode 100644 Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
+ arch/x86/kernel/cpu/bugs.c |   59 +++++++++++++++++++++++++--------------------
+ 1 file changed, 33 insertions(+), 26 deletions(-)
 
---- a/Documentation/admin-guide/hw-vuln/index.rst
-+++ b/Documentation/admin-guide/hw-vuln/index.rst
-@@ -15,3 +15,4 @@ are configurable at compile, boot or run
-    tsx_async_abort
-    multihit.rst
-    special-register-buffer-data-sampling.rst
-+   processor_mmio_stale_data.rst
---- /dev/null
-+++ b/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
-@@ -0,0 +1,246 @@
-+=========================================
-+Processor MMIO Stale Data Vulnerabilities
-+=========================================
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -40,7 +40,7 @@ static void __init spectre_v2_select_mit
+ static void __init ssb_select_mitigation(void);
+ static void __init l1tf_select_mitigation(void);
+ static void __init mds_select_mitigation(void);
+-static void __init mds_print_mitigation(void);
++static void __init md_clear_update_mitigation(void);
+ static void __init taa_select_mitigation(void);
+ static void __init srbds_select_mitigation(void);
+ 
+@@ -113,10 +113,10 @@ void __init check_bugs(void)
+ 	srbds_select_mitigation();
+ 
+ 	/*
+-	 * As MDS and TAA mitigations are inter-related, print MDS
+-	 * mitigation until after TAA mitigation selection is done.
++	 * As MDS and TAA mitigations are inter-related, update and print their
++	 * mitigation after TAA mitigation selection is done.
+ 	 */
+-	mds_print_mitigation();
++	md_clear_update_mitigation();
+ 
+ 	arch_smt_update();
+ 
+@@ -257,14 +257,6 @@ static void __init mds_select_mitigation
+ 	}
+ }
+ 
+-static void __init mds_print_mitigation(void)
+-{
+-	if (!boot_cpu_has_bug(X86_BUG_MDS) || cpu_mitigations_off())
+-		return;
+-
+-	pr_info("%s\n", mds_strings[mds_mitigation]);
+-}
+-
+ static int __init mds_cmdline(char *str)
+ {
+ 	if (!boot_cpu_has_bug(X86_BUG_MDS))
+@@ -312,7 +304,7 @@ static void __init taa_select_mitigation
+ 	/* TSX previously disabled by tsx=off */
+ 	if (!boot_cpu_has(X86_FEATURE_RTM)) {
+ 		taa_mitigation = TAA_MITIGATION_TSX_DISABLED;
+-		goto out;
++		return;
+ 	}
+ 
+ 	if (cpu_mitigations_off()) {
+@@ -326,7 +318,7 @@ static void __init taa_select_mitigation
+ 	 */
+ 	if (taa_mitigation == TAA_MITIGATION_OFF &&
+ 	    mds_mitigation == MDS_MITIGATION_OFF)
+-		goto out;
++		return;
+ 
+ 	if (boot_cpu_has(X86_FEATURE_MD_CLEAR))
+ 		taa_mitigation = TAA_MITIGATION_VERW;
+@@ -358,18 +350,6 @@ static void __init taa_select_mitigation
+ 
+ 	if (taa_nosmt || cpu_mitigations_auto_nosmt())
+ 		cpu_smt_disable(false);
+-
+-	/*
+-	 * Update MDS mitigation, if necessary, as the mds_user_clear is
+-	 * now enabled for TAA mitigation.
+-	 */
+-	if (mds_mitigation == MDS_MITIGATION_OFF &&
+-	    boot_cpu_has_bug(X86_BUG_MDS)) {
+-		mds_mitigation = MDS_MITIGATION_FULL;
+-		mds_select_mitigation();
+-	}
+-out:
+-	pr_info("%s\n", taa_strings[taa_mitigation]);
+ }
+ 
+ static int __init tsx_async_abort_parse_cmdline(char *str)
+@@ -394,6 +374,33 @@ static int __init tsx_async_abort_parse_
+ early_param("tsx_async_abort", tsx_async_abort_parse_cmdline);
+ 
+ #undef pr_fmt
++#define pr_fmt(fmt)     "" fmt
 +
-+Processor MMIO Stale Data Vulnerabilities are a class of memory-mapped I/O
-+(MMIO) vulnerabilities that can expose data. The sequences of operations for
-+exposing data range from simple to very complex. Because most of the
-+vulnerabilities require the attacker to have access to MMIO, many environments
-+are not affected. System environments using virtualization where MMIO access is
-+provided to untrusted guests may need mitigation. These vulnerabilities are
-+not transient execution attacks. However, these vulnerabilities may propagate
-+stale data into core fill buffers where the data can subsequently be inferred
-+by an unmitigated transient execution attack. Mitigation for these
-+vulnerabilities includes a combination of microcode update and software
-+changes, depending on the platform and usage model. Some of these mitigations
-+are similar to those used to mitigate Microarchitectural Data Sampling (MDS) or
-+those used to mitigate Special Register Buffer Data Sampling (SRBDS).
++static void __init md_clear_update_mitigation(void)
++{
++	if (cpu_mitigations_off())
++		return;
 +
-+Data Propagators
-+================
-+Propagators are operations that result in stale data being copied or moved from
-+one microarchitectural buffer or register to another. Processor MMIO Stale Data
-+Vulnerabilities are operations that may result in stale data being directly
-+read into an architectural, software-visible state or sampled from a buffer or
-+register.
++	if (!static_key_enabled(&mds_user_clear))
++		goto out;
 +
-+Fill Buffer Stale Data Propagator (FBSDP)
-+-----------------------------------------
-+Stale data may propagate from fill buffers (FB) into the non-coherent portion
-+of the uncore on some non-coherent writes. Fill buffer propagation by itself
-+does not make stale data architecturally visible. Stale data must be propagated
-+to a location where it is subject to reading or sampling.
++	/*
++	 * mds_user_clear is now enabled. Update MDS mitigation, if
++	 * necessary.
++	 */
++	if (mds_mitigation == MDS_MITIGATION_OFF &&
++	    boot_cpu_has_bug(X86_BUG_MDS)) {
++		mds_mitigation = MDS_MITIGATION_FULL;
++		mds_select_mitigation();
++	}
++out:
++	if (boot_cpu_has_bug(X86_BUG_MDS))
++		pr_info("MDS: %s\n", mds_strings[mds_mitigation]);
++	if (boot_cpu_has_bug(X86_BUG_TAA))
++		pr_info("TAA: %s\n", taa_strings[taa_mitigation]);
++}
 +
-+Sideband Stale Data Propagator (SSDP)
-+-------------------------------------
-+The sideband stale data propagator (SSDP) is limited to the client (including
-+Intel Xeon server E3) uncore implementation. The sideband response buffer is
-+shared by all client cores. For non-coherent reads that go to sideband
-+destinations, the uncore logic returns 64 bytes of data to the core, including
-+both requested data and unrequested stale data, from a transaction buffer and
-+the sideband response buffer. As a result, stale data from the sideband
-+response and transaction buffers may now reside in a core fill buffer.
-+
-+Primary Stale Data Propagator (PSDP)
-+------------------------------------
-+The primary stale data propagator (PSDP) is limited to the client (including
-+Intel Xeon server E3) uncore implementation. Similar to the sideband response
-+buffer, the primary response buffer is shared by all client cores. For some
-+processors, MMIO primary reads will return 64 bytes of data to the core fill
-+buffer including both requested data and unrequested stale data. This is
-+similar to the sideband stale data propagator.
-+
-+Vulnerabilities
-+===============
-+Device Register Partial Write (DRPW) (CVE-2022-21166)
-+-----------------------------------------------------
-+Some endpoint MMIO registers incorrectly handle writes that are smaller than
-+the register size. Instead of aborting the write or only copying the correct
-+subset of bytes (for example, 2 bytes for a 2-byte write), more bytes than
-+specified by the write transaction may be written to the register. On
-+processors affected by FBSDP, this may expose stale data from the fill buffers
-+of the core that created the write transaction.
-+
-+Shared Buffers Data Sampling (SBDS) (CVE-2022-21125)
-+----------------------------------------------------
-+After propagators may have moved data around the uncore and copied stale data
-+into client core fill buffers, processors affected by MFBDS can leak data from
-+the fill buffer. It is limited to the client (including Intel Xeon server E3)
-+uncore implementation.
-+
-+Shared Buffers Data Read (SBDR) (CVE-2022-21123)
-+------------------------------------------------
-+It is similar to Shared Buffer Data Sampling (SBDS) except that the data is
-+directly read into the architectural software-visible state. It is limited to
-+the client (including Intel Xeon server E3) uncore implementation.
-+
-+Affected Processors
-+===================
-+Not all the CPUs are affected by all the variants. For instance, most
-+processors for the server market (excluding Intel Xeon E3 processors) are
-+impacted by only Device Register Partial Write (DRPW).
-+
-+Below is the list of affected Intel processors [#f1]_:
-+
-+   ===================  ============  =========
-+   Common name          Family_Model  Steppings
-+   ===================  ============  =========
-+   HASWELL_X            06_3FH        2,4
-+   SKYLAKE_L            06_4EH        3
-+   BROADWELL_X          06_4FH        All
-+   SKYLAKE_X            06_55H        3,4,6,7,11
-+   BROADWELL_D          06_56H        3,4,5
-+   SKYLAKE              06_5EH        3
-+   ICELAKE_X            06_6AH        4,5,6
-+   ICELAKE_D            06_6CH        1
-+   ICELAKE_L            06_7EH        5
-+   ATOM_TREMONT_D       06_86H        All
-+   LAKEFIELD            06_8AH        1
-+   KABYLAKE_L           06_8EH        9 to 12
-+   ATOM_TREMONT         06_96H        1
-+   ATOM_TREMONT_L       06_9CH        0
-+   KABYLAKE             06_9EH        9 to 13
-+   COMETLAKE            06_A5H        2,3,5
-+   COMETLAKE_L          06_A6H        0,1
-+   ROCKETLAKE           06_A7H        1
-+   ===================  ============  =========
-+
-+If a CPU is in the affected processor list, but not affected by a variant, it
-+is indicated by new bits in MSR IA32_ARCH_CAPABILITIES. As described in a later
-+section, mitigation largely remains the same for all the variants, i.e. to
-+clear the CPU fill buffers via VERW instruction.
-+
-+New bits in MSRs
-+================
-+Newer processors and microcode update on existing affected processors added new
-+bits to IA32_ARCH_CAPABILITIES MSR. These bits can be used to enumerate
-+specific variants of Processor MMIO Stale Data vulnerabilities and mitigation
-+capability.
-+
-+MSR IA32_ARCH_CAPABILITIES
-+--------------------------
-+Bit 13 - SBDR_SSDP_NO - When set, processor is not affected by either the
-+	 Shared Buffers Data Read (SBDR) vulnerability or the sideband stale
-+	 data propagator (SSDP).
-+Bit 14 - FBSDP_NO - When set, processor is not affected by the Fill Buffer
-+	 Stale Data Propagator (FBSDP).
-+Bit 15 - PSDP_NO - When set, processor is not affected by Primary Stale Data
-+	 Propagator (PSDP).
-+Bit 17 - FB_CLEAR - When set, VERW instruction will overwrite CPU fill buffer
-+	 values as part of MD_CLEAR operations. Processors that do not
-+	 enumerate MDS_NO (meaning they are affected by MDS) but that do
-+	 enumerate support for both L1D_FLUSH and MD_CLEAR implicitly enumerate
-+	 FB_CLEAR as part of their MD_CLEAR support.
-+Bit 18 - FB_CLEAR_CTRL - Processor supports read and write to MSR
-+	 IA32_MCU_OPT_CTRL[FB_CLEAR_DIS]. On such processors, the FB_CLEAR_DIS
-+	 bit can be set to cause the VERW instruction to not perform the
-+	 FB_CLEAR action. Not all processors that support FB_CLEAR will support
-+	 FB_CLEAR_CTRL.
-+
-+MSR IA32_MCU_OPT_CTRL
-+---------------------
-+Bit 3 - FB_CLEAR_DIS - When set, VERW instruction does not perform the FB_CLEAR
-+action. This may be useful to reduce the performance impact of FB_CLEAR in
-+cases where system software deems it warranted (for example, when performance
-+is more critical, or the untrusted software has no MMIO access). Note that
-+FB_CLEAR_DIS has no impact on enumeration (for example, it does not change
-+FB_CLEAR or MD_CLEAR enumeration) and it may not be supported on all processors
-+that enumerate FB_CLEAR.
-+
-+Mitigation
-+==========
-+Like MDS, all variants of Processor MMIO Stale Data vulnerabilities  have the
-+same mitigation strategy to force the CPU to clear the affected buffers before
-+an attacker can extract the secrets.
-+
-+This is achieved by using the otherwise unused and obsolete VERW instruction in
-+combination with a microcode update. The microcode clears the affected CPU
-+buffers when the VERW instruction is executed.
-+
-+Kernel reuses the MDS function to invoke the buffer clearing:
-+
-+	mds_clear_cpu_buffers()
-+
-+On MDS affected CPUs, the kernel already invokes CPU buffer clear on
-+kernel/userspace, hypervisor/guest and C-state (idle) transitions. No
-+additional mitigation is needed on such CPUs.
-+
-+For CPUs not affected by MDS or TAA, mitigation is needed only for the attacker
-+with MMIO capability. Therefore, VERW is not required for kernel/userspace. For
-+virtualization case, VERW is only needed at VMENTER for a guest with MMIO
-+capability.
-+
-+Mitigation points
-+-----------------
-+Return to user space
-+^^^^^^^^^^^^^^^^^^^^
-+Same mitigation as MDS when affected by MDS/TAA, otherwise no mitigation
-+needed.
-+
-+C-State transition
-+^^^^^^^^^^^^^^^^^^
-+Control register writes by CPU during C-state transition can propagate data
-+from fill buffer to uncore buffers. Execute VERW before C-state transition to
-+clear CPU fill buffers.
-+
-+Guest entry point
-+^^^^^^^^^^^^^^^^^
-+Same mitigation as MDS when processor is also affected by MDS/TAA, otherwise
-+execute VERW at VMENTER only for MMIO capable guests. On CPUs not affected by
-+MDS/TAA, guest without MMIO access cannot extract secrets using Processor MMIO
-+Stale Data vulnerabilities, so there is no need to execute VERW for such guests.
-+
-+Mitigation control on the kernel command line
-+---------------------------------------------
-+The kernel command line allows to control the Processor MMIO Stale Data
-+mitigations at boot time with the option "mmio_stale_data=". The valid
-+arguments for this option are:
-+
-+  ==========  =================================================================
-+  full        If the CPU is vulnerable, enable mitigation; CPU buffer clearing
-+              on exit to userspace and when entering a VM. Idle transitions are
-+              protected as well. It does not automatically disable SMT.
-+  full,nosmt  Same as full, with SMT disabled on vulnerable CPUs. This is the
-+              complete mitigation.
-+  off         Disables mitigation completely.
-+  ==========  =================================================================
-+
-+If the CPU is affected and mmio_stale_data=off is not supplied on the kernel
-+command line, then the kernel selects the appropriate mitigation.
-+
-+Mitigation status information
-+-----------------------------
-+The Linux kernel provides a sysfs interface to enumerate the current
-+vulnerability status of the system: whether the system is vulnerable, and
-+which mitigations are active. The relevant sysfs file is:
-+
-+	/sys/devices/system/cpu/vulnerabilities/mmio_stale_data
-+
-+The possible values in this file are:
-+
-+  .. list-table::
-+
-+     * - 'Not affected'
-+       - The processor is not vulnerable
-+     * - 'Vulnerable'
-+       - The processor is vulnerable, but no mitigation enabled
-+     * - 'Vulnerable: Clear CPU buffers attempted, no microcode'
-+       - The processor is vulnerable, but microcode is not updated. The
-+         mitigation is enabled on a best effort basis.
-+     * - 'Mitigation: Clear CPU buffers'
-+       - The processor is vulnerable and the CPU buffer clearing mitigation is
-+         enabled.
-+
-+If the processor is vulnerable then the following information is appended to
-+the above information:
-+
-+  ========================  ===========================================
-+  'SMT vulnerable'          SMT is enabled
-+  'SMT disabled'            SMT is disabled
-+  'SMT Host state unknown'  Kernel runs in a VM, Host SMT state unknown
-+  ========================  ===========================================
-+
-+References
-+----------
-+.. [#f1] Affected Processors
-+   https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html
++#undef pr_fmt
+ #define pr_fmt(fmt)	"SRBDS: " fmt
+ 
+ enum srbds_mitigations {
 
 
