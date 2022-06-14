@@ -2,215 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12BF1CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:47:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F38C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355868AbiFNIpw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45488 "EHLO
+        id S241624AbiFNIr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 04:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354934AbiFNIoU (ORCPT
+        with ESMTP id S242359AbiFNIq0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:44:20 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9EFC2B75
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:44:10 -0700 (PDT)
-X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
-        LIVER,40,3)
-Received: from 172.28.114.216
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(29251:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Tue, 14 Jun 2022 16:31:19 +0800 (CST)
-From:   Qin Jian <qinjian@cqplus1.com>
-To:     sboyd@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        mturquette@baylibre.com, linux@armlinux.org.uk, arnd@arndb.de,
-        olof@lixom.net, soc@kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        Qin Jian <qinjian@cqplus1.com>
-Subject: [PATCH v18 00/10] Add Sunplus SP7021 SoC Support
-Date:   Tue, 14 Jun 2022 16:30:59 +0800
-Message-Id: <cover.1655194858.git.qinjian@cqplus1.com>
-X-Mailer: git-send-email 2.33.1
+        Tue, 14 Jun 2022 04:46:26 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC96B42A01
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:46:21 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id m25so8906153lji.11
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:46:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=VUSdGLwnJ0Y/lNfZiFkctM/6S+/lIr4cXT4yYV5L0eg=;
+        b=ds3Ls87l3/RTps8cjzbiCoEtfAT/UNTYNbmZ3vxsR0hnyRIM4JISzsT8HkoR+6+4eP
+         3Cqfb+JGxyWAcNqNoxVve8rYObAC8MnNPQ+zdDSbT547/eFDUrPgC4XCC1yhvfm7wVDs
+         gBoQe8fxIVPWmwyvCxK0peaqzLKc2z/XRjO1Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VUSdGLwnJ0Y/lNfZiFkctM/6S+/lIr4cXT4yYV5L0eg=;
+        b=OaCI+tYv+UqNuL+k/tqEOJ8mqFawVXH9mpKTvSfv2skHb5EgngwREPs+/bMWTP9DxV
+         SYE2kxxWj6BBbaZ087gX5RZwlgU+4bOFtmUOVun5AGRgToi2/M+xbTo00JyH8t58zKXW
+         zu/BX+Acvjz1oiR0wKtNJWf6ZzV8O4WIQdp3ct5zjCRdXJtwGY+bUSzxq89uhc3eCoQQ
+         5YTcB9S3AGoT5UawDmV2rvwjEMYnwf5OHHGopr4z4c9At/FGmNw8+lgQWxehO/ESJuhn
+         yJtnwvf0bLvGnAKdy9lT7w22h7aQFSQmlV1zxfYlrXENxEZDri4mGvPrBjVKni9WU/bw
+         x6Iw==
+X-Gm-Message-State: AJIora8ndcdPf89gZw3LNgiTgNbxjd+HF3RmtSToRhOhfEl1O9CR0kh8
+        RT7A+SkYg2RFcAuaZsOYTlPp2g==
+X-Google-Smtp-Source: AGRyM1uPQusPCcTNkLDd/2DQXmi8U8XilZO13Hy3ENCammmq5MEL9OxcbgTxh2SVU/vHcJkV+z5GGA==
+X-Received: by 2002:a2e:3a17:0:b0:255:772a:e9e2 with SMTP id h23-20020a2e3a17000000b00255772ae9e2mr1859147lja.440.1655196380110;
+        Tue, 14 Jun 2022 01:46:20 -0700 (PDT)
+Received: from prevas-ravi.prevas.se ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id g1-20020ac24d81000000b0047255d2118fsm1306116lfe.190.2022.06.14.01.46.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 01:46:19 -0700 (PDT)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Praneeth Bajjuri <praneeth@ti.com>,
+        linux-kernel@vger.kernel.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: [PATCH net-next v2 3/3] net: phy: dp83867: implement support for io_impedance_ctrl nvmem cell
+Date:   Tue, 14 Jun 2022 10:46:12 +0200
+Message-Id: <20220614084612.325229-4-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220614084612.325229-1-linux@rasmusvillemoes.dk>
+References: <20220606202220.1670714-1-linux@rasmusvillemoes.dk>
+ <20220614084612.325229-1-linux@rasmusvillemoes.dk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series add Sunplus SP7021 SoC support.
+We have a board where measurements indicate that the current three
+options - leaving IO_IMPEDANCE_CTRL at the (factory calibrated) reset
+value or using one of the two boolean properties to set it to the
+min/max value - are too coarse.
 
-Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates many
-peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and etc.) into a
-single chip. It is designed for industrial control.
+Implement support for the newly added binding allowing device tree to
+specify an nvmem cell containing an appropriate value for this
+specific board.
 
-SP7021 consists of two chips (dies) in a package. One is called C-chip
-(computing chip). It is a 4-core ARM Cortex A7 CPU. It adopts high-level
-process (22 nm) for high performance computing. The other is called P-
-chip (peripheral chip). It has many peripherals and an ARM A926 added
-especially for real-time control. P-chip is made for customers. It adopts
-low-level process (ex: 0.11 um) to reduce cost.
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
+ drivers/net/phy/dp83867.c | 55 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 49 insertions(+), 6 deletions(-)
 
-Refer to (for documentations):
-https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
-
-Refer to (applications):
-https://tibbo.com/store/plus1.html
-
-Refer to (applications):
-http://www.sinovoip.com.cn/ecp_view.asp?id=586
-
-Changes in v18:
-- Fixed the tags
-- board dts: Fix the comments from Krzysztof
-
-Changes in v17:
-- Based on 5.18.1 & resend
-
-Changes in v16:
-- clk-sp7021.c: Fix the comments from Stephen Boyd
-- board dts: Fix the comments from Krzysztof
-
-Changes in v15:
-- Add Sunplus SP7021-demo-v3 board dts
-- Refine yaml title
-- Rename dt-binding header filename to match compatible string
-
-Changes in v14:
-- clock/sp-sp7021.h: Fix the comments from Krzysztof
-- sunplus,sp7021-clkc.yaml: Fix the comments from Rob
-
-Changes in v13:
-- reset/sp-sp7021.h: Move HW mapping from dt-binding header to driver
-- reset-sunplus.c: Move HW mapping from dt-binding header to driver
-- clock/sp-sp7021.h: Move HW mapping from dt-binding header to driver
-- clk-sp7021.c: Fix the comments from Arnd
-- irq-sp7021-intc.c: Remove empty set_affinity callback function
-- sp7021_defconfig: Fix the comments from Arnd
-
-Changes in v12:
-- sunplus,sp7021-clkc.yaml: Move 'reg' after 'compatible'
-- sunplus,sp7021-intc.yaml: Move 'reg' after 'compatible'
-- sunplus,reset.yaml: Move 'reg' after 'compatible'
-- Remove wrong reviewed-tags
-
-Changes in v11:
-- clk-sp7021.c: Remove the dead code
-
-Changes in v10:
-- arm/sunplus,sp7021.yaml: Add SoC compatible: "sunplus,sp7021"
-- clock/sunplus,sp7021-clkc.yaml: Remove the internal clock parent from DTS
-- clk-sp7021.c: Refine the macro DBG_CLK
-- clk-sp7021.c: Refine the clock_parent_data
-
-Changes in v9:
-- clk/Kconfig: fix the comments form Stephen Boyd
-- clk-sp7021.c: fix the comments form Stephen Boyd
-
-Changes in v8:
-- clk-sp7021.c: fix the comments form Stephen Boyd
-
-Changes in v7:
-- sunplus,sp7021-clkc.yaml: Add clocks & clock-names
-- clk-sp7021.c: fix the comments form Stephen Boyd
-- irq-sp7021-intc.c: fix the comments from Marc
-
-Changes in v6:
-- reset-sunplus.c: fix the comments from Philipp
-- irq-sp7021-intc.c: fix the comments from Marc
-- mach-sunplus: fix the comments from Arnd
-
-Changes in v5:
-- reset-sunplus.c: fix strict checks
-- clk/Kconfig: fix spell
-- clk-sp7021.c: using bitfield ops, fix strict checks
-- irqchip/Kconfig: fix spell
-- irq-sp7021-intc.c: cleanup error path in probe, fix strict checks
-- arm/Kconfig: fix spell & typo, remove CONFIG_SERIAL_SUNPLUS
-- mach-sunplus/Kconfig: fix typo
-- sp7021_defconfig: add CONFIG_SERIAL_SUNPLUS
-
-Changes in v4:
-- mach-sunplus: add initial support for SP7021
-- sp7021_defconfig: add generic SP7021 defconfig
-- reset-sunplus: remove Q645 support
-- reset-sunplus.c: refine code based on Philipp's review
-- clk-sp7021: clock defines add prefix, more clean up
-
-Changes in v3:
-- sp7021-intc: remove primary controller mode due to P-chip running Linux
-  not supported any more.
-- sp7021-intc.h: removed, not set ext through the DT but sp_intc_set_ext()
-- sunplus,sp7021-intc.yaml: update descriptions for above changes
-- irq-sp7021-intc.c: more cleanup based on Marc's review
-- all driver's Kconfig removed default, it's selected by platform config
-
-Changes in v2:
-- sunplus,sp7021-intc.yaml: add descrption for "#interrupt-cells", interrupts
-- sunplus,sp7021-intc.yaml: drop "ext0-mask"/"ext1-mask" from DT
-- sunplus,sp7021-intc.yaml: fix example.dt too long error
-- irq-sp7021-intc.c: major rewrite
-- all files with dual license
-
-Qin Jian (10):
-  dt-bindings: arm: sunplus: Add bindings for Sunplus SP7021 SoC boards
-  dt-bindings: reset: Add bindings for SP7021 reset driver
-  reset: Add Sunplus SP7021 reset driver
-  dt-bindings: clock: Add bindings for SP7021 clock driver
-  clk: Add Sunplus SP7021 clock driver
-  dt-bindings: interrupt-controller: Add bindings for SP7021 interrupt
-    controller
-  irqchip: Add Sunplus SP7021 interrupt controller driver
-  ARM: sunplus: Add initial support for Sunplus SP7021 SoC
-  ARM: sp7021_defconfig: Add Sunplus SP7021 defconfig
-  ARM: dts: Add Sunplus SP7021-Demo-V3 board device tree
-
- .../bindings/arm/sunplus,sp7021.yaml          |  29 +
- .../bindings/clock/sunplus,sp7021-clkc.yaml   |  52 ++
- .../sunplus,sp7021-intc.yaml                  |  62 ++
- .../bindings/reset/sunplus,reset.yaml         |  38 +
- MAINTAINERS                                   |  18 +
- arch/arm/Kconfig                              |   2 +
- arch/arm/Makefile                             |   1 +
- arch/arm/boot/dts/Makefile                    |   2 +
- arch/arm/boot/dts/sunplus-sp7021-achip.dtsi   |  84 ++
- arch/arm/boot/dts/sunplus-sp7021-demo-v3.dts  |  26 +
- arch/arm/boot/dts/sunplus-sp7021.dtsi         | 318 ++++++++
- arch/arm/configs/multi_v7_defconfig           |   1 +
- arch/arm/configs/sp7021_defconfig             |  59 ++
- arch/arm/mach-sunplus/Kconfig                 |  27 +
- arch/arm/mach-sunplus/Makefile                |   8 +
- arch/arm/mach-sunplus/sp7021.c                |  16 +
- drivers/clk/Kconfig                           |  10 +
- drivers/clk/Makefile                          |   1 +
- drivers/clk/clk-sp7021.c                      | 725 ++++++++++++++++++
- drivers/irqchip/Kconfig                       |   9 +
- drivers/irqchip/Makefile                      |   1 +
- drivers/irqchip/irq-sp7021-intc.c             | 278 +++++++
- drivers/reset/Kconfig                         |   9 +
- drivers/reset/Makefile                        |   1 +
- drivers/reset/reset-sunplus.c                 | 212 +++++
- .../dt-bindings/clock/sunplus,sp7021-clkc.h   |  88 +++
- .../dt-bindings/reset/sunplus,sp7021-reset.h  |  87 +++
- 27 files changed, 2164 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
- create mode 100644 Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
- create mode 100644 Documentation/devicetree/bindings/reset/sunplus,reset.yaml
- create mode 100644 arch/arm/boot/dts/sunplus-sp7021-achip.dtsi
- create mode 100644 arch/arm/boot/dts/sunplus-sp7021-demo-v3.dts
- create mode 100644 arch/arm/boot/dts/sunplus-sp7021.dtsi
- create mode 100644 arch/arm/configs/sp7021_defconfig
- create mode 100644 arch/arm/mach-sunplus/Kconfig
- create mode 100644 arch/arm/mach-sunplus/Makefile
- create mode 100644 arch/arm/mach-sunplus/sp7021.c
- create mode 100644 drivers/clk/clk-sp7021.c
- create mode 100644 drivers/irqchip/irq-sp7021-intc.c
- create mode 100644 drivers/reset/reset-sunplus.c
- create mode 100644 include/dt-bindings/clock/sunplus,sp7021-clkc.h
- create mode 100644 include/dt-bindings/reset/sunplus,sp7021-reset.h
-
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index 8561f2d4443b..45d8a9298251 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -14,6 +14,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+ #include <linux/bitfield.h>
++#include <linux/nvmem-consumer.h>
+ 
+ #include <dt-bindings/net/ti-dp83867.h>
+ 
+@@ -521,6 +522,51 @@ static int dp83867_verify_rgmii_cfg(struct phy_device *phydev)
+ }
+ 
+ #if IS_ENABLED(CONFIG_OF_MDIO)
++static int dp83867_of_init_io_impedance(struct phy_device *phydev)
++{
++	struct dp83867_private *dp83867 = phydev->priv;
++	struct device *dev = &phydev->mdio.dev;
++	struct device_node *of_node = dev->of_node;
++	struct nvmem_cell *cell;
++	u8 *buf, val;
++	int ret;
++
++	cell = of_nvmem_cell_get(of_node, "io_impedance_ctrl");
++	if (IS_ERR(cell)) {
++		ret = PTR_ERR(cell);
++		if (ret != -ENOENT)
++			return phydev_err_probe(phydev, ret,
++						"failed to get nvmem cell io_impedance_ctrl\n");
++
++		/* If no nvmem cell, check for the boolean properties. */
++		if (of_property_read_bool(of_node, "ti,max-output-impedance"))
++			dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MAX;
++		else if (of_property_read_bool(of_node, "ti,min-output-impedance"))
++			dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MIN;
++		else
++			dp83867->io_impedance = -1; /* leave at default */
++
++		return 0;
++	}
++
++	buf = nvmem_cell_read(cell, NULL);
++	nvmem_cell_put(cell);
++
++	if (IS_ERR(buf))
++		return PTR_ERR(buf);
++
++	val = *buf;
++	kfree(buf);
++
++	if ((val & DP83867_IO_MUX_CFG_IO_IMPEDANCE_MASK) != val) {
++		phydev_err(phydev, "nvmem cell 'io_impedance_ctrl' contents out of range\n");
++		return -ERANGE;
++	}
++	dp83867->io_impedance = val;
++
++	return 0;
++}
++
+ static int dp83867_of_init(struct phy_device *phydev)
+ {
+ 	struct dp83867_private *dp83867 = phydev->priv;
+@@ -548,12 +594,9 @@ static int dp83867_of_init(struct phy_device *phydev)
+ 		}
+ 	}
+ 
+-	if (of_property_read_bool(of_node, "ti,max-output-impedance"))
+-		dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MAX;
+-	else if (of_property_read_bool(of_node, "ti,min-output-impedance"))
+-		dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MIN;
+-	else
+-		dp83867->io_impedance = -1; /* leave at default */
++	ret = dp83867_of_init_io_impedance(phydev);
++	if (ret)
++		return ret;
+ 
+ 	dp83867->rxctrl_strap_quirk = of_property_read_bool(of_node,
+ 							    "ti,dp83867-rxctrl-strap-quirk");
 -- 
-2.33.1
+2.31.1
 
