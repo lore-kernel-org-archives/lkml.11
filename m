@@ -2,104 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD4ECCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78914CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:48:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351635AbiFNQrn (ORCPT
+        id S1344261AbiFNQsH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:47:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34622 "EHLO
+        Tue, 14 Jun 2022 12:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344352AbiFNQrT (ORCPT
+        with ESMTP id S1344578AbiFNQrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:47:19 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF21E29341
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:47:02 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id l204so16085550ybf.10
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:47:02 -0700 (PDT)
+        Tue, 14 Jun 2022 12:47:32 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E838328E2E
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:47:27 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id o33-20020a17090a0a2400b001ea806e48c6so9598203pjo.1
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:47:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XDk/gviZ4PTB0F4aeM/SYkP/gckoTZKcQotKkjmgkbU=;
-        b=UVo7z7mq83OdvUMfv2zalYzpjivYTuojc8nrC14VtzHQxfO8kkrbOasAwYDGrmh0Kr
-         TPWc0pt/+WTr1mK679VBnfsxfJSlmVDdvJ3irqhAxmkoAx4FZyftOa92c55uGWg46fGk
-         TdeH+DwIPD6MdYHH/1Jk2bwZMF8Li/tN3dYF48d71K87UHk4aSTUsKGoVJ/WFX7QGdRI
-         WUP6m+iWKKgwgI4iEZMZPYuix0X3vA0PE9jMY5DudkbQGiz+Y33Dbzk6rPJIk+Wro6vk
-         D8eKjKUczvkIQmPIhuCy3K231YVzvYQ5+wSL6oRpyTUF/8ZI14KP36My6ida7g7SkjWH
-         t5iQ==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rja/xqJpInMBVEwkvWVoS3z/NTqM46xGTOY1nGLtTP4=;
+        b=c0/2Jg0T7L+z1nbcSGzT2UA5kcQKZYD2/jDTCOgaTbGoDRZMSWTqXG7Y47maGOIgtP
+         XdFtiQPBaFYhT283cnF6YU7i96s6njpSgxspC2dx/iVPibsnr7C0lo2ctutphs4gj0Fa
+         Yu6LY5uPpV5+YYLsU7G1+f3c914iaoKuH/dFNCtB/wwteR5X8t48ye3/8/CD17OSnmrR
+         2BQUKkVvIBhRtE0nKZy7+wx+fxG0nCaynZ4CToyJybcAodbjl8qxbxnjv4EyIg8Nf4zs
+         NEEsyq5WtCrfGZJKud45ptKXboR9Ula1dAXPhD17ObIp6AZcUIhEPu03VngXJ7faP/U6
+         AFbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XDk/gviZ4PTB0F4aeM/SYkP/gckoTZKcQotKkjmgkbU=;
-        b=7BdfRMisppXJb2/AL2KplEzV+cKzToeHC+Z6a/eYlyDJd0TvEfwQtpgPrVFctCCght
-         yTXb0lrmC/8jDBPAsnaUJyCEaVGFohl7xSrSNNGaEiWHPxR0DAwlljJxCHqEdYtSESx5
-         QM30HCOnbwAwNyXXjwmz/WYOpdovLM3+LfsviY2cR5LUR5hcFbkAPwUgaJd/4bWp3ZRS
-         1k+pbNOpG1yfBJWhmkNmA++nP0IBm41DYckD6389H1iqMp/EfvDy4J5tz5Zn/SKuh3hB
-         PbjE7M0P+FvdJSqwlEURuU7wIvl7XD27B/rcXq/x1JgYGNLk8RIv1TofHbFsrC6HMeVC
-         UvoA==
-X-Gm-Message-State: AJIora9jArbTmpu9hkB66cv7qVjFspw5G3ghFlKmXHVrPs0FxB4o+rwT
-        PmZLj2yjNwiXCRmYloTCDsp9NRS+pL9YkZHCx0s=
-X-Google-Smtp-Source: AGRyM1v5cuCGYw9RPYwQDmZWRztbN8i22S3AMOZQ1Zdps8kxiWn7B6Dux4ERGYj+6pPK+GABe7xiCvTpqdRn6UHJIaE=
-X-Received: by 2002:a25:4688:0:b0:664:68b5:e283 with SMTP id
- t130-20020a254688000000b0066468b5e283mr6098349yba.546.1655225221744; Tue, 14
- Jun 2022 09:47:01 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rja/xqJpInMBVEwkvWVoS3z/NTqM46xGTOY1nGLtTP4=;
+        b=iF7pB5q7sVuSybibtByXyaGO002cULwLqjmL+gKAcDwKm8/65x+mIUW2zOd5K4ceSz
+         xwVpt+qTW1iTebD2x7FV/j41J6R2mV6CyhWkrM9nq3qhXDJcC/ccwyeJRAbMovpunBJl
+         Ruav5qs9V1KcDJmRuozWjpXVUySLwUlA8DP0u0H96Sm/NmBJ1SlYq8DfXNrQbu06OXLv
+         Kb+peQXQ86icpGwRxZ+46V9x6vE7YTSYL//bvpSTcWi+0sx2eNETrwvucdYiGTZoe4+5
+         5/sn6KfwIhof3ET0TfsI0ZG/4JKNc0gyLeHK+nl379b0hxoF7RNt7NGA0P9wagEO0G2c
+         hgEQ==
+X-Gm-Message-State: AJIora+eg2/E+nJyTwJozjYwrcogSVreIh8w5ZiS+piosezc7jA/Z3SF
+        xR56JKrpbozpZDgP+yNpDixzNg==
+X-Google-Smtp-Source: AGRyM1txgGrdwH6AfNhk8sm7ibTTgS/8GprMFi/Je9F9NsO9TFEvhYmngMyYULKpZjYKm19/D098cw==
+X-Received: by 2002:a17:902:e80b:b0:168:b645:849e with SMTP id u11-20020a170902e80b00b00168b645849emr5195520plg.26.1655225247407;
+        Tue, 14 Jun 2022 09:47:27 -0700 (PDT)
+Received: from n131-251-240.byted.org ([121.30.179.156])
+        by smtp.gmail.com with ESMTPSA id g23-20020aa78197000000b0051bd9981ccbsm7761557pfi.39.2022.06.14.09.47.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 09:47:27 -0700 (PDT)
+From:   Zhi Song <zhi.song@bytedance.com>
+To:     gregkh@linuxfoundation.org, rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org, Zhi Song <zhi.song@bytedance.com>
+Subject: [PATCH v2] node: put_device after failing to device_register
+Date:   Wed, 15 Jun 2022 00:47:22 +0800
+Message-Id: <20220614164722.1744799-1-zhi.song@bytedance.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220613155612.402297-1-daeho43@gmail.com> <Yqge0XS7jbSnNWvq@sol.localdomain>
- <YqhRBZMYPp/kyxoe@B-P7TQMD6M-0146.local>
-In-Reply-To: <YqhRBZMYPp/kyxoe@B-P7TQMD6M-0146.local>
-From:   Daeho Jeong <daeho43@gmail.com>
-Date:   Tue, 14 Jun 2022 09:46:50 -0700
-Message-ID: <CACOAw_wjCyTmwusY6S4+NgMuLOZm9fwGfrvCT272GJ01-RP6PQ@mail.gmail.com>
-Subject: Re: [f2fs-dev] [PATCH] f2fs: handle decompress only post processing
- in softirq
-To:     Gao Xiang <hsiangkao@linux.alibaba.com>
-Cc:     Eric Biggers <ebiggers@kernel.org>,
-        Daeho Jeong <daehojeong@google.com>,
-        Nathan Huckleberry <nhuck@google.com>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->
-> Some my own previous thoughts about this strategy:
->
->  - If we allocate all memory and map these before I/Os, all inflight I/Os
->    will keep such temporary pages all the time until decompression is
->    finished. In contrast, if we allocate or reuse such pages just before
->    decompression, it would minimize the memory footprints.
->
->    I think it will impact the memory numbers at least on the very
->    low-ended devices with bslow storage. (I've seen f2fs has some big
->    mempool already)
->
->  - Many compression algorithms are not suitable in the softirq contexts,
->    also I vaguely remembered if softirq context lasts for > 2ms, it will
->    push into ksoftirqd instead so it's actually another process context.
->    And it may delay other important interrupt handling.
->
->  - Go back to the non-deterministic scheduling of workqueues. I guess it
->    may be just due to scheduling punishment due to a lot of CPU consuming
->    due to decompression before so the priority becomes low, but that is
->    just a pure guess. May be we need to use RT scheduling policy instead.
->
->    At least with WQ_HIGHPRI for dm-verity at least, but I don't find
->    WQ_HIGHPRI mark for dm-verity.
->
-> Thanks,
-> Gao Xiang
+device_register() is used to register a device with the system.
+We need to call put_device() to give up the reference initialized
+in device_register() when it returns an error and this will clean
+up correctly.
 
-I totally understand what you are worried about. However, in the real
-world, non-determinism from workqueues is more harsh than we expected.
-As you know, reading I/Os in the system are critical paths most of the
-time and now I/O variations with workqueue are too bad.
+Signed-off-by: Zhi Song <zhi.song@bytedance.com>
+---
+Fix the changelog text correct.
+---
+ drivers/base/node.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-I also think it's better that we have RT scheduling like things here.
-We could think about it more.
+diff --git a/drivers/base/node.c b/drivers/base/node.c
+index 0ac6376ef7a1..88a3337c546e 100644
+--- a/drivers/base/node.c
++++ b/drivers/base/node.c
+@@ -154,6 +154,7 @@ static struct node_access_nodes *node_init_node_access(struct node *node,
+ 	list_add_tail(&access_node->list_node, &node->access_list);
+ 	return access_node;
+ free_name:
++	put_device(dev);
+ 	kfree_const(dev->kobj.name);
+ free:
+ 	kfree(access_node);
+-- 
+2.30.2
 
-Thanks,
