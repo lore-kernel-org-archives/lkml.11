@@ -2,215 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 010F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A197C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245346AbiFNNAN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 09:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43362 "EHLO
+        id S244319AbiFNNBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 09:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231790AbiFNNAJ (ORCPT
+        with ESMTP id S235202AbiFNNBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 09:00:09 -0400
-X-Greylist: delayed 435 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 14 Jun 2022 06:00:07 PDT
-Received: from smtpout1.mo3004.mail-out.ovh.net (smtpout1.mo3004.mail-out.ovh.net [79.137.123.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A7633A1E;
-        Tue, 14 Jun 2022 06:00:07 -0700 (PDT)
-Received: from pro2.mail.ovh.net (unknown [10.109.143.122])
-        by mo3004.mail-out.ovh.net (Postfix) with ESMTPS id A5AC7245624;
-        Tue, 14 Jun 2022 12:52:50 +0000 (UTC)
-Received: from [192.168.1.41] (88.161.25.233) by DAG1EX2.emp2.local
- (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Tue, 14 Jun
- 2022 14:52:50 +0200
-Message-ID: <c96c5554-d2ae-33a4-ba1b-8c76998e0367@traphandler.com>
-Date:   Tue, 14 Jun 2022 14:52:49 +0200
+        Tue, 14 Jun 2022 09:01:41 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D4233EA7
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 06:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655211701; x=1686747701;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zRFuyf2koCxcTUK6tBYygRK9GVKRlUR6Qa4BeN0XSs4=;
+  b=e+EOtpLBnPc37Edinii7SgFrt6w72u9f3dfArh/oCeTqaEH4iEqQotAl
+   ijBIz5RP9hfp7CuQe8MdWjICLY6uGbgZxH3LkK9YaYcFl9fTbmoXRjBfI
+   6QkeFXqF+IvCGyTW29DcK27ZMovKg0jnUqmOBKj34PBB5Wl/KBXwAi/qR
+   eazC217lvEM+0Zp8/QI1K6mvv8OjiIWMfrul8stj+bcvAnuHJlbGGu8NK
+   KNQmHU5HdbTV7ANBieqGPYqm5bnEXEQaQoKlnAWvKntkpwb61ds8uwY5O
+   Vg8yTWytvICui95fEnvDrYBrywFPRqHJDkVWleADrrIW4/k4BQ3nQ67vF
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="261638286"
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="261638286"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 06:01:27 -0700
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="652024736"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 06:01:24 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o16Ab-000cND-S6;
+        Tue, 14 Jun 2022 16:01:21 +0300
+Date:   Tue, 14 Jun 2022 16:01:21 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Vinod Koul <vkoul@kernel.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Ferry Toth <ftoth@exalondelft.nl>
+Subject: Re: [PATCH v1 1/1] phy: ti: tusb1210: Don't check for write errors
+ when powering on
+Message-ID: <YqiGocQ+vr9KjUHK@smile.fi.intel.com>
+References: <20220613160848.82746-1-andriy.shevchenko@linux.intel.com>
+ <bd21d5c6-ed5f-dd8c-f0bf-73f54ca8ee58@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3 2/3] leds: Add driver for the TLC5925 LED controller
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     Pavel Machek <pavel@ucw.cz>, <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220609162734.1462625-1-jjhiblot@traphandler.com>
- <20220609162734.1462625-3-jjhiblot@traphandler.com>
- <CAHp75Veurvhxi0Pg1Sjxav+3XpDTVOdan8WFFmZmdhJbZJiCaQ@mail.gmail.com>
-From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-In-Reply-To: <CAHp75Veurvhxi0Pg1Sjxav+3XpDTVOdan8WFFmZmdhJbZJiCaQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [88.161.25.233]
-X-ClientProxiedBy: DAG8EX1.emp2.local (172.16.2.81) To DAG1EX2.emp2.local
- (172.16.2.2)
-X-Ovh-Tracer-Id: 9557201359817357787
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudduledgheeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvvehfhfgjtgfgihesthejredttdefjeenucfhrhhomheplfgvrghnqdflrggtqhhuvghsucfjihgslhhothcuoehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomheqnecuggftrfgrthhtvghrnhepieejfedukeevudfghfetudevhffhhfekjeeiudegtdehueevgfdvgeeivdeifedvnecukfhppedtrddtrddtrddtpdekkedrudeiuddrvdehrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehprhhovddrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhofedttdeg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bd21d5c6-ed5f-dd8c-f0bf-73f54ca8ee58@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 14, 2022 at 01:23:21PM +0200, Hans de Goede wrote:
+> On 6/13/22 18:08, Andy Shevchenko wrote:
+> > On some platforms, like Intel Merrifield, the writing values during power on
+> > may timeout:
+> > 
+> >    tusb1210 dwc3.0.auto.ulpi: error -110 writing val 0x41 to reg 0x80
+> >    phy phy-dwc3.0.auto.ulpi.0: phy poweron failed --> -110
+> >    dwc3 dwc3.0.auto: error -ETIMEDOUT: failed to initialize core
+> >    dwc3: probe of dwc3.0.auto failed with error -110
+> > 
+> > which effectively fails the probe of the USB controller.
+> > Drop the check as it was before the culprit commit (see Fixes tag).
+> > 
+> > Fixes: 09a3512681b3 ("phy: ti: tusb1210: Improve ulpi_read()/_write() error checking")
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+> Copy and pasting my reply about this in another thread to keep everyone up2date:
 
-On 09/06/2022 18:57, Andy Shevchenko wrote:
-> On Thu, Jun 9, 2022 at 6:30 PM Jean-Jacques Hiblot
-> <jjhiblot@traphandler.com> wrote:
->> The TLC5925 is a 16-channels constant-current LED sink driver.
->> It is controlled via SPI but doesn't offer a register-based interface.
->> Instead it contains a shift register and latches that convert the
->> serial input into a parallel output.
-> Can you add Datasheet: tag here with the corresponding URL? Rationale
-> is to get a link to the datasheet by just browsing Git log without
-> browsing the source code, which will benefit via Web UIs.
->> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-> ...
->
->> +#include <linux/module.h>
->> +#include <linux/slab.h>
->> +#include <linux/leds.h>
->> +#include <linux/err.h>
->> +#include <linux/spi/spi.h>
->> +#include <linux/property.h>
->> +#include <linux/workqueue.h>
-> Keep it sorted?
->
-> ...
->
->> +struct single_led_priv {
->> +       int idx;
->> +       struct led_classdev cdev;
-> For pointer arithmetics it's better to swap these two members.
->
->> +};
->> +
->> +struct tlc5925_leds_priv {
->> +       int max_num_leds;
->> +       u8 *state;
-> unsigned long? DECLARE_BITMAP() ?
->
->> +       spinlock_t lock;
->> +       struct single_led_priv leds[];
->> +};
-> ...
->
->> +       if (brightness)
->> +               priv->state[index / 8] |= (1 << (index % 8));
->> +       else
->> +               priv->state[index / 8] &= ~(1 << (index % 8));
-> assign_bit()
->
-> ...
->
->> +       return spi_write(spi, priv->state, priv->max_num_leds / 8);
-> BITS_TO_BYTES() ?
->
-> ...
->
->> +       count = device_get_child_node_count(dev);
->> +       if (!count) {
->> +               dev_err(dev, "no led defined.\n");
->> +               return -ENODEV;
->    return dev_err_probe(...);
->
-> here and everywhere in ->probe() and Co.
->
->> +       }
-> ...
->
->> +       ret = device_property_read_u32_array(dev, "ti,shift-register-length",
->> +                                            &max_num_leds, 1);
-> Always an array of 1 element? call device_property_read_u32().
->
-> ...
->
->> +       if (max_num_leds % 8) {
->> +               dev_err(dev, "'ti,shift-register-length' must be a multiple of 8\n");
->> +               return -EINVAL;
->> +       }
-> Is this really fatal? I would rather issue a warning and go on if it
-> has at least 8 there. So the idea is to use a minimum that holds
-> multiple of 8.
-It is more than likely that it will always be a multiple of 8 here.
+Thanks! My replies below.
 
-We could in theory use a non-multiple of 8 (some LEDs of the first or 
-last chips of the chain are not populated).
+> """
+> In my experience with using the phy for charger-type detection on some
+> x86 android tablets which don't have any other way to do charger detection,
+> these errors indicate a real communication issue for reading/writing
+> phy registers. At the same time this usually does not seem to be a big
+> problem since the phy seems to work fine with its power-on defaults.
+> 
+> In case of Bay Trail these errors were related to 2 things:
+> 
+> 1. Autosuspend of the phy-interface block in the dwc3, fixed by:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d7c93a903f33ff35aa0e6b5a8032eb9755b00826
+> 
+> But dwc3_pci_mrfld_properties[] already sets "snps,dis_u2_susphy_quirk",
+> so I guess it is not this.
+> 
+> 2. There being no delay in tusb1210_power_on() between toggling the
+> reset IO and then trying to communicate with the phy, fixed in:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=df37c99815d9e0775e67276d70c93cbc25f31c70
+> 
+> Maybe the:
+> 
+> #define TUSB1210_RESET_TIME_MS				30
 
-I didn't think it would add a significant benefit in memory usage. In 
-terms of SPI usage it wouldn't change anything.
+Actually it's 50.
+
+> Added by that commit needs to be a bit bigger for the possibly
+> older phy revision used on the merifield boards?
+> 
+> (note it is fine to just increase it a bit everywhere).
+> """
+> 
+> IMHO it would be good to try and increase TUSB1210_RESET_TIME_MS (start with say 100
+> and then see if e.g. 50 also works). If increasing that does not work
+
+No help
+
+[   35.126397] tusb1210 dwc3.0.auto.ulpi: GPIO lookup for consumer reset
+[   35.126418] tusb1210 dwc3.0.auto.ulpi: using ACPI for GPIO lookup
+[   35.126455] tusb1210 dwc3.0.auto.ulpi: using lookup tables for GPIO lookup
+[   35.126465] tusb1210 dwc3.0.auto.ulpi: No GPIO consumer reset found
+[   35.126476] tusb1210 dwc3.0.auto.ulpi: GPIO lookup for consumer cs
+[   35.126485] tusb1210 dwc3.0.auto.ulpi: using ACPI for GPIO lookup
+[   35.126538] tusb1210 dwc3.0.auto.ulpi: using lookup tables for GPIO lookup
+[   35.126548] tusb1210 dwc3.0.auto.ulpi: No GPIO consumer cs found
+[   40.534107] tusb1210 dwc3.0.auto.ulpi: error -110 writing val 0x41 to reg 0x80
+
+(I put 5000 ms there to be sure)
+
+> I'm fine with going with this workaround patch to fix things.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Thanks for your feedback.
-
-> ...
->
->> +       /* Assert all the OE/ lines */
->> +       gpios = devm_gpiod_get_array(dev, "output-enable-b", GPIOD_OUT_LOW);
->> +       if (IS_ERR(gpios)) {
->> +               dev_err(dev, "Unable to get the 'output-enable-b' gpios\n");
->> +               return PTR_ERR(gpios);
->> +       }
-> You have to use dev_err_probe() here, otherwise it will spam logs a
-> lot in case of deferred probe.
->
-> ...
->
->> +       priv->state = devm_kzalloc(dev, DIV_ROUND_UP(max_num_leds, 8), GFP_KERNEL);
-> devm_bitmap_zalloc()
->
-> ...
->
->> +       device_for_each_child_node(dev, child) {
->> +               struct led_init_data init_data = {.fwnode = child};
-> Missed spaces.
->
->> +               struct led_classdev *cdev;
->> +               u32 idx;
->> +
->> +               ret = fwnode_property_read_u32_array(child, "reg", &idx, 1);
-> fwnode_property_read_u32()
->
->> +               if (ret || idx >= max_num_leds) {
->> +                       dev_err(dev, "%s: invalid reg value. Ignoring.\n",
->> +                               fwnode_get_name(child));
->> +                       fwnode_handle_put(child);
->> +                       continue;
-> Either dev_warn + continue, or dev_err + return dev_err_probe().
->
->> +               }
->> +
->> +               count--;
->> +               priv->leds[count].idx = idx;
->> +               cdev = &(priv->leds[count].cdev);
->> +               cdev->brightness = LED_OFF;
->> +               cdev->max_brightness = 1;
->> +               cdev->brightness_set_blocking = tlc5925_brightness_set_blocking;
->> +
->> +               ret = devm_led_classdev_register_ext(dev, cdev, &init_data);
->> +               if (ret) {
-> Ditto.
->
->> +                       dev_err(dev, "%s: cannot create LED device.\n",
->> +                               fwnode_get_name(child));
->> +                       fwnode_handle_put(child);
->> +                       continue;
->> +               }
->> +       }
-> ...
->
->> +static const struct of_device_id tlc5925_dt_ids[] = {
->> +       { .compatible = "ti,tlc5925", },
->> +       {},
-> No comma for terminator entry.
->
->> +};
-> Where is the MODULE_DEVICE_TABLE() for this one?
->
-> ...
->
->> +
-> No  need for this blank line.
->
->> +module_spi_driver(tlc5925_driver);
