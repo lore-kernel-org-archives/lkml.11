@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4E0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:05:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB234CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351468AbiFNCF5 (ORCPT
+        id S1351609AbiFNCGI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
+        Mon, 13 Jun 2022 22:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351010AbiFNCFW (ORCPT
+        with ESMTP id S1346107AbiFNCFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:05:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AAFC340FD;
-        Mon, 13 Jun 2022 19:05:14 -0700 (PDT)
+        Mon, 13 Jun 2022 22:05:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B160344C5;
+        Mon, 13 Jun 2022 19:05:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32D9EB81699;
-        Tue, 14 Jun 2022 02:05:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CA87C341C0;
-        Tue, 14 Jun 2022 02:05:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5A3B60AEC;
+        Tue, 14 Jun 2022 02:05:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53769C3411E;
+        Tue, 14 Jun 2022 02:05:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172311;
-        bh=GNVhN8oxEYeMg60d7RL3ZFYRy4UDTM6B8Kb1KDFy4so=;
+        s=k20201202; t=1655172315;
+        bh=tzW7zB6n+0Qkd9R+/zK1+fs/LETpXudDWxsaCRdi3+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n0Pkfhvrab4dSqeltSceWI10HA6212VbwxeyJ7FFqOliiiP8+6W02dLizQuH8c+ok
-         u3pBgpUt46Bc7Sh5OwrPxkyVv9aRzIVj5q3CPe7oNUL5rWZddCj7oEmh10M5RhsRs0
-         p4eu0g4Lsm6wi8FCJd6GlZQsPwiq0571y896Zwlc9Fcql7/Er5Y432KRiGCqz5rznK
-         j9bFVdQIyUzspLgfLu63qNKWpjhsawF7ArmHNTRjlb959Ny6HiKeejD6urTc7WmVL6
-         6ve9/ZzqgNNzqIDWvTNYZ7AtKFBDk/0gj52rM1Z5tQDrIro8gX2ixFKwS8M65Ht8tl
-         yjcXKRrXSFPlA==
+        b=ValVdvR5n819wgVN8RsPMz7pU1pUR6qpjGHKjwSyKORtjTPN6yVr1Q2qF7AlkXqs/
+         Vv8GOihUHbCDbmJiuk+C/K9Madqyz3s4ghLzlq2u8McAx5uu4hbJsermStXKDKs8pp
+         l+WHB3afhUjxvbNRgZfWNAD7KF4sZAn5KKrl21ymiEG1nWD82JLyGk6n/coOia9gRE
+         Jca2Nohxj1xPhWXuoSDqxnbNZhEmU8P7hWao4m+UgI4bg5ux0LjSZh6VLdrHAhJe8x
+         MgIYRgaDLH7rq/1/WK7FQubztc0C/geU7Wty3IZ41WEl9HdWAY6tyDfGRYlLT4TqiD
+         /9vNBWm+0zg9w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>,
-        jack@suse.com
-Subject: [PATCH AUTOSEL 5.18 17/47] quota: Prevent memory allocation recursion while holding dq_lock
-Date:   Mon, 13 Jun 2022 22:04:10 -0400
-Message-Id: <20220614020441.1098348-17-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 19/47] ASoC: es8328: Fix event generation for deemphasis control
+Date:   Mon, 13 Jun 2022 22:04:12 -0400
+Message-Id: <20220614020441.1098348-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020441.1098348-1-sashal@kernel.org>
 References: <20220614020441.1098348-1-sashal@kernel.org>
@@ -52,95 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 537e11cdc7a6b3ce94fa25ed41306193df9677b7 ]
+[ Upstream commit 8259610c2ec01c5cbfb61882ae176aabacac9c19 ]
 
-As described in commit 02117b8ae9c0 ("f2fs: Set GF_NOFS in
-read_cache_page_gfp while doing f2fs_quota_read"), we must not enter
-filesystem reclaim while holding the dq_lock.  Prevent this more generally
-by using memalloc_nofs_save() while holding the lock.
+Currently the put() method for the deemphasis control returns 0 when a new
+value is written to the control even if the value changed, meaning events
+are not generated. Fix this, skip the work of updating the value when it is
+unchanged and then return 1 after having done so.
 
-Link: https://lore.kernel.org/r/20220605143815.2330891-2-willy@infradead.org
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220603123937.4013603-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/quota/dquot.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ sound/soc/codecs/es8328.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
-index a74aef99bd3d..09d1307959d0 100644
---- a/fs/quota/dquot.c
-+++ b/fs/quota/dquot.c
-@@ -79,6 +79,7 @@
- #include <linux/capability.h>
- #include <linux/quotaops.h>
- #include <linux/blkdev.h>
-+#include <linux/sched/mm.h>
- #include "../internal.h" /* ugh */
+diff --git a/sound/soc/codecs/es8328.c b/sound/soc/codecs/es8328.c
+index 3f00ead97006..dd53dfd87b04 100644
+--- a/sound/soc/codecs/es8328.c
++++ b/sound/soc/codecs/es8328.c
+@@ -161,13 +161,16 @@ static int es8328_put_deemph(struct snd_kcontrol *kcontrol,
+ 	if (deemph > 1)
+ 		return -EINVAL;
  
- #include <linux/uaccess.h>
-@@ -425,9 +426,11 @@ EXPORT_SYMBOL(mark_info_dirty);
- int dquot_acquire(struct dquot *dquot)
- {
- 	int ret = 0, ret2 = 0;
-+	unsigned int memalloc;
- 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
++	if (es8328->deemph == deemph)
++		return 0;
++
+ 	ret = es8328_set_deemph(component);
+ 	if (ret < 0)
+ 		return ret;
  
- 	mutex_lock(&dquot->dq_lock);
-+	memalloc = memalloc_nofs_save();
- 	if (!test_bit(DQ_READ_B, &dquot->dq_flags)) {
- 		ret = dqopt->ops[dquot->dq_id.type]->read_dqblk(dquot);
- 		if (ret < 0)
-@@ -458,6 +461,7 @@ int dquot_acquire(struct dquot *dquot)
- 	smp_mb__before_atomic();
- 	set_bit(DQ_ACTIVE_B, &dquot->dq_flags);
- out_iolock:
-+	memalloc_nofs_restore(memalloc);
- 	mutex_unlock(&dquot->dq_lock);
- 	return ret;
+ 	es8328->deemph = deemph;
+ 
+-	return 0;
++	return 1;
  }
-@@ -469,9 +473,11 @@ EXPORT_SYMBOL(dquot_acquire);
- int dquot_commit(struct dquot *dquot)
- {
- 	int ret = 0;
-+	unsigned int memalloc;
- 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
  
- 	mutex_lock(&dquot->dq_lock);
-+	memalloc = memalloc_nofs_save();
- 	if (!clear_dquot_dirty(dquot))
- 		goto out_lock;
- 	/* Inactive dquot can be only if there was error during read/init
-@@ -481,6 +487,7 @@ int dquot_commit(struct dquot *dquot)
- 	else
- 		ret = -EIO;
- out_lock:
-+	memalloc_nofs_restore(memalloc);
- 	mutex_unlock(&dquot->dq_lock);
- 	return ret;
- }
-@@ -492,9 +499,11 @@ EXPORT_SYMBOL(dquot_commit);
- int dquot_release(struct dquot *dquot)
- {
- 	int ret = 0, ret2 = 0;
-+	unsigned int memalloc;
- 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
  
- 	mutex_lock(&dquot->dq_lock);
-+	memalloc = memalloc_nofs_save();
- 	/* Check whether we are not racing with some other dqget() */
- 	if (dquot_is_busy(dquot))
- 		goto out_dqlock;
-@@ -510,6 +519,7 @@ int dquot_release(struct dquot *dquot)
- 	}
- 	clear_bit(DQ_ACTIVE_B, &dquot->dq_flags);
- out_dqlock:
-+	memalloc_nofs_restore(memalloc);
- 	mutex_unlock(&dquot->dq_lock);
- 	return ret;
- }
 -- 
 2.35.1
 
