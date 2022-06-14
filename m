@@ -2,118 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E194C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44A33C43334
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbiFNMPn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44258 "EHLO
+        id S1356738AbiFNMPy (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357344AbiFNMOD (ORCPT
+        with ESMTP id S1357234AbiFNMNh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:14:03 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4BD6645D;
-        Tue, 14 Jun 2022 05:13:59 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id c4so13558812lfj.12;
-        Tue, 14 Jun 2022 05:13:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nKnYN08Rvu+sGq1kjp6kIVR2Yb7qukUUQYO6d9aq840=;
-        b=UVwRVot3MFBq+hv/KyFkRHUAclCqFG7m8zNbldLx5L74fAdbiRBja5B/SqzL2U2Fj1
-         TXkily+0cEdsd3X/rxouV7qXh5kkamBenh5nvRcBm2Tkz7hrlKxD927RkHXO8G2fb8ie
-         sgWp0d5GDJZSiQHzACFlTp2qxS9StkCGfiofMKFAeL++TVdgK5tLGgwVpxTYWGMLmdqu
-         9ZHkRtd8NKpByTZjhI6APV0WCPZ6P7XmVOLhbJPY/N9uIUwQhU2+h5H6YyY+ZoSCwv8L
-         1cHgs8ScimkDbQMaxVCQYdS6iLyfAPz7LZr9ApPbD3bp+DJFOjYZ03r2DVP1FmYIhEtt
-         9jqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nKnYN08Rvu+sGq1kjp6kIVR2Yb7qukUUQYO6d9aq840=;
-        b=H/Om1rIkDsBHAB5eCCp5MeyUu0S97ZituVBoPaCoQQ/SQMurqkXb/WwDpWPx50cPqq
-         0LHVMe0hQ57CPw8NWtMqYp8l8ogalLLShlQG5yJPYtuY7eE/w85tqWqB4L19cEdZqZVX
-         tYWturRL9867rhVKYnl/Vpo53Ty0xpBl/JcvGAIgyhKGjdpN0K//zhivr2M/S6mto0aQ
-         mWiLN3mBRHS+KAYFlO2qte8y7RHhQjXIZi1YQNkrtZ1VMraozMzeB/lkaDzXcLfHEmg3
-         tjntP9RhX5Y5YodddtOSvVkA8Y2YjsvT6tsHX5vySSdmeaONNO2BJVUdWb6eZDQFyZQ7
-         MFeQ==
-X-Gm-Message-State: AOAM530qByMdDCOZuskdy57PQMdA6vLxOMcoXvNNtypzfYo/GDL8AKVx
-        IWcqhENm0Thlxfyvw9aULYFGp7hE1mFj5Q==
-X-Google-Smtp-Source: ABdhPJzvhoikkeI4AYAF87Ur8EBNChUytYJ6RX2xRy9QqGSs2limrTNWZEcuAkHDrJY286cDy6ABkA==
-X-Received: by 2002:a19:8c11:0:b0:478:f5e1:e799 with SMTP id o17-20020a198c11000000b00478f5e1e799mr2869688lfd.548.1655208837738;
-        Tue, 14 Jun 2022 05:13:57 -0700 (PDT)
-Received: from fedora.. ([93.100.99.176])
-        by smtp.gmail.com with ESMTPSA id d2-20020a056512368200b004790c425b35sm1373727lfs.291.2022.06.14.05.13.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 05:13:57 -0700 (PDT)
-From:   Dmitry Klochkov <kdmitry556@gmail.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Dmitry Klochkov <kdmitry556@gmail.com>
-Subject: [PATCH RESEND] tools/kvm_stat: fix display of error when multiple processes are found
-Date:   Tue, 14 Jun 2022 15:11:41 +0300
-Message-Id: <20220614121141.160689-1-kdmitry556@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Tue, 14 Jun 2022 08:13:37 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E454B26D1
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:13:35 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o15Q9-0004yC-MR; Tue, 14 Jun 2022 14:13:21 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o15Q0-000U8f-Kk; Tue, 14 Jun 2022 14:13:14 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o15Q1-00GFDm-5P; Tue, 14 Jun 2022 14:13:13 +0200
+Date:   Tue, 14 Jun 2022 14:13:12 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Conor.Dooley@microchip.com
+Cc:     lkp@intel.com, thierry.reding@gmail.com, lee.jones@linaro.org,
+        kbuild-all@lists.01.org, Daire.McNamara@microchip.com,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v2 1/2] pwm: add microchip soft ip corePWM driver
+Message-ID: <20220614121312.hfotzvx76i4fda6e@pengutronix.de>
+References: <20220613111759.1550578-2-conor.dooley@microchip.com>
+ <202206141813.qgogbMAN-lkp@intel.com>
+ <63334bed-17ba-fed5-9463-9fd52fd57351@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="2cqte3h4y34ec6lw"
+Content-Disposition: inline
+In-Reply-To: <63334bed-17ba-fed5-9463-9fd52fd57351@microchip.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of printing an error message, kvm_stat script fails when we
-restrict statistics to a guest by its name and there are multiple guests
-with such name:
 
-  # kvm_stat -g my_vm
-  Traceback (most recent call last):
-    File "/usr/bin/kvm_stat", line 1819, in <module>
-      main()
-    File "/usr/bin/kvm_stat", line 1779, in main
-      options = get_options()
-    File "/usr/bin/kvm_stat", line 1718, in get_options
-      options = argparser.parse_args()
-    File "/usr/lib64/python3.10/argparse.py", line 1825, in parse_args
-      args, argv = self.parse_known_args(args, namespace)
-    File "/usr/lib64/python3.10/argparse.py", line 1858, in parse_known_args
-      namespace, args = self._parse_known_args(args, namespace)
-    File "/usr/lib64/python3.10/argparse.py", line 2067, in _parse_known_args
-      start_index = consume_optional(start_index)
-    File "/usr/lib64/python3.10/argparse.py", line 2007, in consume_optional
-      take_action(action, args, option_string)
-    File "/usr/lib64/python3.10/argparse.py", line 1935, in take_action
-      action(self, namespace, argument_values, option_string)
-    File "/usr/bin/kvm_stat", line 1649, in __call__
-      ' to specify the desired pid'.format(" ".join(pids)))
-  TypeError: sequence item 0: expected str instance, int found
+--2cqte3h4y34ec6lw
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-To avoid this, it's needed to convert pids int values to strings before
-pass them to join().
+On Tue, Jun 14, 2022 at 10:34:00AM +0000, Conor.Dooley@microchip.com wrote:
+> >     xtensa-linux-ld: drivers/pwm/pwm-microchip-core.o: in function `mch=
+p_core_pwm_enable.isra.0':
+> >>> pwm-microchip-core.c:(.text+0x380): undefined reference to `__udivdi3'
+> >     xtensa-linux-ld: drivers/pwm/pwm-microchip-core.o: in function `mch=
+p_core_pwm_apply':
+> >     pwm-microchip-core.c:(.text+0x586): undefined reference to `__udivd=
+i3'
+>=20
+> I assume this is me using functions that are only defined for 64 bit...
 
-Signed-off-by: Dmitry Klochkov <kdmitry556@gmail.com>
----
- tools/kvm/kvm_stat/kvm_stat | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+This is usually a division with variables > int.
 
-diff --git a/tools/kvm/kvm_stat/kvm_stat b/tools/kvm/kvm_stat/kvm_stat
-index 5a5bd74f55bd..9c366b3a676d 100755
---- a/tools/kvm/kvm_stat/kvm_stat
-+++ b/tools/kvm/kvm_stat/kvm_stat
-@@ -1646,7 +1646,8 @@ Press any other key to refresh statistics immediately.
-                          .format(values))
-             if len(pids) > 1:
-                 sys.exit('Error: Multiple processes found (pids: {}). Use "-p"'
--                         ' to specify the desired pid'.format(" ".join(pids)))
-+                         ' to specify the desired pid'
-+                         .format(" ".join(map(str, pids))))
-             namespace.pid = pids[0]
- 
-     argparser = argparse.ArgumentParser(description=description_text,
+Best regards
+Uwe
 
-base-commit: 6cd88243c7e03845a450795e134b488fc2afb736
--- 
-2.35.3
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
+--2cqte3h4y34ec6lw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKoe1YACgkQwfwUeK3K
+7Amj+Qf+Lx8YJijRTh3pxwVyz/2Fng8mmXJyOtwyQc5Ms8eZ4StZTQkQ7uWPbhOi
+XLF3+gCNa1zhsNVHcGZN8ZHMXJrQDSY4OIgAnWqeCivbOKBTphBATvTmWeV4JRz0
+9Yl6PkbHIWE3Vj7p29Ic3z/7CZ5tsa7Qa63GyFGEee/XnALZO93emZY6ffKq23is
+ifZtH2YBki7cO8mZoORQdFuQyaduLLaU5Rp2qlPk0G6ubfxwZAdh7xV8TvT4wlX+
+K4sSaLk68hA2w9mHJVJcGkXOxl+g5tn7SsLk56Wds8fr/GWb0GEc8Oz68+MwQ6Uz
+ODW+LRCs1U5tThiYfdVNsJe7HN6tuA==
+=VeKf
+-----END PGP SIGNATURE-----
+
+--2cqte3h4y34ec6lw--
