@@ -2,53 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7706C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:20:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF14C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353718AbiFNCUl (ORCPT
+        id S1353770AbiFNCUt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
+        Mon, 13 Jun 2022 22:20:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353989AbiFNCOM (ORCPT
+        with ESMTP id S1354170AbiFNCO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8C453587D;
-        Mon, 13 Jun 2022 19:08:22 -0700 (PDT)
+        Mon, 13 Jun 2022 22:14:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F3A3B3FE;
+        Mon, 13 Jun 2022 19:08:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE45960EED;
-        Tue, 14 Jun 2022 02:07:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C21C34114;
-        Tue, 14 Jun 2022 02:07:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 861F3B80AC1;
+        Tue, 14 Jun 2022 02:08:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24F3AC341C0;
+        Tue, 14 Jun 2022 02:08:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172451;
-        bh=SG0d8nWr1NNbbxqYsCX7Km3fIjZdag3mvPeMHmSGtAs=;
+        s=k20201202; t=1655172508;
+        bh=qnm/YDjo2s4fsdCnB7Jke8TXknhEE2RqTeqz5jj5/QY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K+PEyNFE7IIGJxLQHUVFWyZnNy/vXzhjCBXO4KlbRdH+k2GB4mhFouulnLT12109S
-         8aNOT8+E1jME7ygmWnzYaf4HWtKSD92J7J7NZ+guCca1UjZe2mf2WINTWn+QTfohwS
-         VsnfCk19SE+5+GQduJE4EIYlQjmfmLJyaryfTO9OHjHfp6r9+C/Sqw2KZeVH7jhEuM
-         ZxZkla4vuJTlnuYqnHY9xkW3bxNls+0f4q6me+btIxC5vu+myinPHnM8/dK7Fv2QSR
-         iFXFwyV/z/HV3cu7DPD8u141zToVdw81ggTKMedp9lZlLtH/cfI0fzocAFwd8PkVy4
-         UlXAQ2qp9X36w==
+        b=C2TJXQ9NY8NalhiVAW9vTZ1CzJkPofPUOG0Rr8P+4tZexFtoGP78jKyTU1EFlgKzH
+         HUMatjXOzSEMNfDQL0RnFDMNkFLkntfOmgTHe+6OMPGp5G+cophw7YzgzncvMfwRgh
+         gEmo+8BU4iZVAHGa30C51XFxVQuujdlQ7qAHz+UjqI21p1P9zdzEeFtWewDpuK0L0i
+         L17HKyr9kiYy1JGrIBIV9w6OQhMlaE93moWt0Js5uZ6e0s4yjLEoHopZZJ8lL5lDTV
+         2HVaBcZnduFGIRK0urBeJ5teznVfDkLb+2EOU46iUA3RWSbVI+3D65bkBqmfDuRWQq
+         wjpdMdGcmIYrQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lang Yu <Lang.Yu@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 13/41] drm/amdkfd: add pinned BOs to kfd_bo_list
-Date:   Mon, 13 Jun 2022 22:06:38 -0400
-Message-Id: <20220614020707.1099487-13-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
+        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.10 07/29] ASoC: cs42l52: Correct TLV for Bypass Volume
+Date:   Mon, 13 Jun 2022 22:07:53 -0400
+Message-Id: <20220614020815.1099999-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
-References: <20220614020707.1099487-1-sashal@kernel.org>
+In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
+References: <20220614020815.1099999-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,72 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lang Yu <Lang.Yu@amd.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 4fac4fcf4500bce515b0f32195e7bb86aa0246c6 ]
+[ Upstream commit 91e90c712fade0b69cdff7cc6512f6099bd18ae5 ]
 
-The kfd_bo_list is used to restore process BOs after
-evictions. As page tables could be destroyed during
-evictions, we should also update pinned BOs' page tables
-during restoring to make sure they are valid.
+The Bypass Volume is accidentally using a -6dB minimum TLV rather than
+the correct -60dB minimum. Add a new TLV to correct this.
 
-So for pinned BOs,
-1, Validate them and update their page tables.
-2, Don't add eviction fence for them.
-
-v2:
- - Don't handle pinned ones specially in BO validation.(Felix)
-
-Signed-off-by: Lang Yu <Lang.Yu@amd.com>
-Acked-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-5-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ sound/soc/codecs/cs42l52.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-index ab36cce59d2e..21c02f817a84 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-@@ -1828,9 +1828,6 @@ int amdgpu_amdkfd_gpuvm_map_gtt_bo_to_kernel(struct kgd_dev *kgd,
- 		return -EINVAL;
- 	}
+diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
+index 750e6c923512..38223641bdf6 100644
+--- a/sound/soc/codecs/cs42l52.c
++++ b/sound/soc/codecs/cs42l52.c
+@@ -137,6 +137,8 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
  
--	/* delete kgd_mem from kfd_bo_list to avoid re-validating
--	 * this BO in BO's restoring after eviction.
--	 */
- 	mutex_lock(&mem->process_info->lock);
+ static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
  
- 	ret = amdgpu_bo_reserve(bo, true);
-@@ -1853,7 +1850,6 @@ int amdgpu_amdkfd_gpuvm_map_gtt_bo_to_kernel(struct kgd_dev *kgd,
- 
- 	amdgpu_amdkfd_remove_eviction_fence(
- 		bo, mem->process_info->eviction_fence);
--	list_del_init(&mem->validate_list.head);
- 
- 	if (size)
- 		*size = amdgpu_bo_size(bo);
-@@ -2399,12 +2395,15 @@ int amdgpu_amdkfd_gpuvm_restore_process_bos(void *info, struct dma_fence **ef)
- 	process_info->eviction_fence = new_fence;
- 	*ef = dma_fence_get(&new_fence->base);
- 
--	/* Attach new eviction fence to all BOs */
-+	/* Attach new eviction fence to all BOs except pinned ones */
- 	list_for_each_entry(mem, &process_info->kfd_bo_list,
--		validate_list.head)
-+		validate_list.head) {
-+		if (mem->bo->tbo.pin_count)
-+			continue;
++static DECLARE_TLV_DB_SCALE(pass_tlv, -6000, 50, 0);
 +
- 		amdgpu_bo_fence(mem->bo,
- 			&process_info->eviction_fence->base, true);
--
-+	}
- 	/* Attach eviction fence to PD / PT BOs */
- 	list_for_each_entry(peer_vm, &process_info->vm_list_head,
- 			    vm_list_node) {
+ static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
+ 
+ static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
+@@ -351,7 +353,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
+ 			      CS42L52_SPKB_VOL, 0, 0x40, 0xC0, hl_tlv),
+ 
+ 	SOC_DOUBLE_R_SX_TLV("Bypass Volume", CS42L52_PASSTHRUA_VOL,
+-			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pga_tlv),
++			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pass_tlv),
+ 
+ 	SOC_DOUBLE("Bypass Mute", CS42L52_MISC_CTL, 4, 5, 1, 0),
+ 
 -- 
 2.35.1
 
