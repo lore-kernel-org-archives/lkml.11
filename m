@@ -2,102 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1333EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F34C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:50:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355949AbiFNIuV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48012 "EHLO
+        id S231566AbiFNIuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 04:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241517AbiFNItq (ORCPT
+        with ESMTP id S1355486AbiFNIuE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:49:46 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2851170;
-        Tue, 14 Jun 2022 01:49:45 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id k12-20020a17090a404c00b001eaabc1fe5dso5284129pjg.1;
-        Tue, 14 Jun 2022 01:49:45 -0700 (PDT)
+        Tue, 14 Jun 2022 04:50:04 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD3643EFB;
+        Tue, 14 Jun 2022 01:50:00 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso8489139pjk.0;
+        Tue, 14 Jun 2022 01:50:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2WMPTKYwy1gkVaJtAN7tuJhmsjYJoOG0Gap8PZZ0H6M=;
-        b=jNBIVyp7QnC2U8iaVKn1OPEbtlW1q6ARIbd1W8M7pD8NQL4zW1XKF/oc7jObTs2Jj7
-         3goM6UBKGMX04CK/Y57oyWb2d2XJtLANHXS5D/PTEpNnBCeLeJaoXDOmTgbfxHrdzhnI
-         XpYLi6HxYKXxJcFawQWqI4TQSgqQ8ArkAt12SVZff6S6+TrIBpNjWGHb5p4FekduONXo
-         GGf5Au+JR9pfoPkg2iJ+elw29Rr8I4CezT5XyMJjwCcLp1mBBQtsnVfq1+66ZX574Re6
-         HIqy8hb31/HWnvDf6DgB0/jp3IkYtBG67mzc0fLUQV7a/k8ZN7xpQNzDdHazepUDDvSZ
-         KWNw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8Ddvsni7SZUlV7IwHtn1fL03u3KMw5Zi9EmHvYFfjdo=;
+        b=dZzPMmBVxZPixpOfUVjpJSD2S0j74d0VGTJ1I3QkGLHkWaarrHVNY/YhDFiJVb7x9v
+         OaiCZKpx/mCxUQceQhnYpF1KDZud+Y+KMxi3/TgDpl+YxYq91jWwUorzMpUJc5LfwfxL
+         G6ykl5xhD3iMs31e9GghGZt0IpSSyuK5tZ3SakPkOlC3i1VJQWr+OLa4w7Q7l9Zf8lx7
+         cAimDLwgolLaUJzeYrWFacuGGWWRjpOZPlNooRcUygOVLFMjsgPFLwJNOTQ82Z3yHJep
+         k1NrIT2TfbQbSThhSBTlBGRTR5bsYr2TqXxTSmjvAE4cjGQl/aePFcu7aCxDYQgG9WVj
+         2Bsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=2WMPTKYwy1gkVaJtAN7tuJhmsjYJoOG0Gap8PZZ0H6M=;
-        b=6T+nLnobcp4x3h5d7Ztj6GlodJmLoZ/vbuMf2XiEbmunmITk6LKwOlVKd63jMf7ikM
-         bV5xUY26TZF73YOnW+34BR3Qa13UKkomQu10z9EvU/xA1i9kQjnW9MXwZLKu8ywESxzl
-         6NLC/lE4lKUH4+JFYTT/SnEUP/U1X107c5vimUQZA8DmrcBylkFjJFFvuxAGmSl0CBoB
-         kQbshc5HQXpONNqWdxtPfWSh99kWFX1OjZE7nZW+MS2AY/g/lXl/c2Nb2w9uGT/8yIJQ
-         K3obm71ySTdPzKEXgg36QpBKxmnq7JksWIwAzI/3+SLrD7Fx+DFBygcS6hq3+NhxOvJf
-         NeNQ==
-X-Gm-Message-State: AJIora/qYushzPeKd80M7yThznF4IL6BfRf34zyqqKCJJZDmF03NAq8q
-        8Q37fXkZtIm/vCPehhrcfwjPSbRDNRI=
-X-Google-Smtp-Source: AGRyM1vmZAyTzqJUMsOqo3vDve2ja6Tmv/2D3CgrXzX0v9g+vjYT5qvLppZAwUzBJzcz6xPInaeIYw==
-X-Received: by 2002:a17:90b:60e:b0:1e8:9bd0:5417 with SMTP id gb14-20020a17090b060e00b001e89bd05417mr3416056pjb.208.1655196585146;
-        Tue, 14 Jun 2022 01:49:45 -0700 (PDT)
-Received: from [192.168.43.80] (subs32-116-206-28-37.three.co.id. [116.206.28.37])
-        by smtp.gmail.com with ESMTPSA id d20-20020a170902e15400b00168c523032fsm6551870pla.269.2022.06.14.01.49.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 01:49:44 -0700 (PDT)
-Message-ID: <22e6a8ff-ee1c-69c9-dbcf-2865142e05c1@gmail.com>
-Date:   Tue, 14 Jun 2022 15:49:40 +0700
+        bh=8Ddvsni7SZUlV7IwHtn1fL03u3KMw5Zi9EmHvYFfjdo=;
+        b=FzeOAH2Lpnpru9t07iNLgR0Hgkyp6Q7RgEBY00uo1+BzyK9gV7FVOBzBqX5ZarCU1I
+         ptB2xUF2qLgope7PlJWRvL+nfHGdkm9dh1O3edxNL8Ill7uuSk0MnsDBxUK1eMjE6g4L
+         9OYSips6tyI1VNFIP48wqMjbMS4b9+aa51Eb34+KtaXxmU5DKmRDqzauqR+c65qsY9bS
+         s0/7ap+9qpB2fkFAdcpp8WPiZnD2I6cyWCU9LYMWbN58Xao1847cigqMkj0l8lWfKGaF
+         DmnAbEQTCxOsy8aTW6odIjOpMq9Xf6uy1s5j/VCu7SO5saygzwA76UsKFQ+aRm5Dpt/W
+         Snkw==
+X-Gm-Message-State: AOAM530EsqEJG4tVeR3+GiNWrLOfT84+cdmn04uvRpBjbeStEEcUbJKL
+        vAIrAv5xAblYDR6/StEMmbqCKEvwBnfS6g==
+X-Google-Smtp-Source: AGRyM1vw+SPWJ82YEoJ0AFk0NArNWxwueMYF2jKq/fwa6elGx0eEnoarMHhQGf1E42D4OPwtRBM0IA==
+X-Received: by 2002:a17:903:28c:b0:167:6127:ed99 with SMTP id j12-20020a170903028c00b001676127ed99mr3361504plr.94.1655196599581;
+        Tue, 14 Jun 2022 01:49:59 -0700 (PDT)
+Received: from localhost.localdomain ([47.242.114.172])
+        by smtp.gmail.com with ESMTPSA id q2-20020a170902f78200b001617541c94fsm6659913pln.60.2022.06.14.01.49.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 01:49:58 -0700 (PDT)
+From:   Chuang W <nashuiliang@gmail.com>
+Cc:     Chuang W <nashuiliang@gmail.com>,
+        Jingren Zhou <zhoujingren@didiglobal.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] libbpf: Remove kprobe_event on failed kprobe_open_legacy
+Date:   Tue, 14 Jun 2022 16:49:30 +0800
+Message-Id: <20220614084930.43276-1-nashuiliang@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] Documentation: samsung-s3c24xx: Add blank line after SPDX
- directive
-Content-Language: en-US
-To:     linux-doc@vger.kernel.org
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Allison Randal <allison@lohutok.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-References: <20220614164506.6afd65a6@canb.auug.org.au>
- <20220614084658.509389-1-bagasdotme@gmail.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220614084658.509389-1-bagasdotme@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/14/22 15:46, Bagas Sanjaya wrote:
-> After merging spdx tree for linux-next testing, Stephen Rothwell reported
-> htmldocs warning:
-> 
-> Documentation/arm/samsung-s3c24xx/cpufreq.rst:2: WARNING: Explicit markup ends without a blank line; unexpected unindent.
-> 
-> It is due to missing blank line separator between SPDX directive and
-> page title.
-> 
-> Add the blank line to fix the warning.
-> 
-> Link: https://lore.kernel.org/linux-next/20220614164506.6afd65a6@canb.auug.org.au/
-> Fixes: b7bc1c9e5b04da ("treewide: Replace GPLv2 boilerplate/reference with SPDX - gpl-2.0_147.RULE")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Allison Randal <allison@lohutok.net>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> ---
+In a scenario where livepatch and aggrprobe coexist, the creating
+kprobe_event using tracefs API will succeed, a trace event (e.g.
+/debugfs/tracing/events/kprobe/XX) will exist, but perf_event_open()
+will return an error.
 
-Oops, I forgot to mention that this patch is based on next-20220614.
+Signed-off-by: Chuang W <nashuiliang@gmail.com>
+Signed-off-by: Jingren Zhou <zhoujingren@didiglobal.com>
+---
+ tools/lib/bpf/libbpf.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 0781fae58a06..d0a36350e22a 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -10809,10 +10809,11 @@ static int perf_event_kprobe_open_legacy(const char *probe_name, bool retprobe,
+ 	}
+ 	type = determine_kprobe_perf_type_legacy(probe_name, retprobe);
+ 	if (type < 0) {
++		err = type;
+ 		pr_warn("failed to determine legacy kprobe event id for '%s+0x%zx': %s\n",
+ 			kfunc_name, offset,
+-			libbpf_strerror_r(type, errmsg, sizeof(errmsg)));
+-		return type;
++			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
++		goto clear_kprobe_event;
+ 	}
+ 	attr.size = sizeof(attr);
+ 	attr.config = type;
+@@ -10826,9 +10827,14 @@ static int perf_event_kprobe_open_legacy(const char *probe_name, bool retprobe,
+ 		err = -errno;
+ 		pr_warn("legacy kprobe perf_event_open() failed: %s\n",
+ 			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+-		return err;
++		goto clear_kprobe_event;
+ 	}
+ 	return pfd;
++
++clear_kprobe_event:
++	/* Clear the newly added kprobe_event */
++	remove_kprobe_event_legacy(probe_name, retprobe);
++	return err;
+ }
+ 
+ struct bpf_link *
 -- 
-An old man doll... just what I always wanted! - Clara
+2.34.1
+
