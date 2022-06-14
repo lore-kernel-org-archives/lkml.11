@@ -2,106 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73758C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8430DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354954AbiFNKZv (ORCPT
+        id S1355083AbiFNK0R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40866 "EHLO
+        Tue, 14 Jun 2022 06:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236694AbiFNKZu (ORCPT
+        with ESMTP id S237318AbiFNK0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:25:50 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC5E47AC2;
-        Tue, 14 Jun 2022 03:25:49 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id u12so16216428eja.8;
-        Tue, 14 Jun 2022 03:25:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rZvwfIylD70bucePkFCRGBDvl+eZWioeOXtzXjlTB90=;
-        b=b6kjw2kDvSiTcMhC11SE70LwvKykOdDMuhlbq8hHxrE7qjR3/PX1BCM4ctb06wWKO8
-         AKpWoRCXMQs3zoM1peOvCEltokTWB69GvfEwyA+p81B0yhZGJFwBQn1CiOqvzuR9VyAX
-         6bl03aF6UUhHSQOqwJnI+tYSIYyQO91XzCK/KXCr1flJa8g2z3OrI14UXINLl4TMyKfC
-         lzxxWDN73fsUg0qJij7AlLIpvukC8BxVi4mcGxZxoDEYwdhzbYKnE5/Y+BRLe8uI8dkN
-         2h7TX6K9ZlvSXI600NbxBdyvUUaE+QyskPvRiB2/Vr9vcIcGF7pLhytujWM23oZds1Is
-         auvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rZvwfIylD70bucePkFCRGBDvl+eZWioeOXtzXjlTB90=;
-        b=MhqQ++5QMxFtYR40uQJuyka0MCS3iEV9c5gjyHc+NC0ZneYRwEoNS+4LXLowBaJ4V8
-         H04M9beAejL7dmGIUgxNB56OYgCDzVdhPsJnNESkMmJwUArzNdLpyMbY5jVQC27ttlXZ
-         M8zD2yc/Ksk9nVIw1wCca/aPJVuR+tJMVcQuHs3SqEW9X1DsceDxtjIEiIkopwaGdkG3
-         BEbRgOfbUYGDzeQGTs22Xl1PFhONuShzi6Uz1qNN3DJU8ULVLRvb0C5YJgbNTC770Z6V
-         TRAnHGj85sxVR124CESqj69meMVYOA24GWq45EjRg9jwp2SQTVELv6mITEzKXk86qdzh
-         dZPA==
-X-Gm-Message-State: AOAM53311+9muCIysrHoyQotp6GqTEt/hFDBfqvPBzbvk88TL9FQorof
-        k1aEbv0LakKzsDFvo3DmEoYceXw/ULc=
-X-Google-Smtp-Source: AGRyM1tWLQMjD6MKytQoKP7Q9q1l3bSQGGvz9MkMAmjJ1NoCuLIcBQQazwgWyN+ZvFCYCdQ6v7OS+w==
-X-Received: by 2002:a17:907:6d24:b0:70c:81d9:d5b9 with SMTP id sa36-20020a1709076d2400b0070c81d9d5b9mr3460698ejc.597.1655202347711;
-        Tue, 14 Jun 2022 03:25:47 -0700 (PDT)
-Received: from debian (host-78-150-47-22.as13285.net. [78.150.47.22])
-        by smtp.gmail.com with ESMTPSA id z14-20020a05640240ce00b0042dc8dd59c7sm6967999edb.51.2022.06.14.03.25.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 03:25:47 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 11:25:45 +0100
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, slade@sladewatkins.com
-Subject: Re: [PATCH 5.4 000/411] 5.4.198-rc1 review
-Message-ID: <YqhiKTSONZPHwXES@debian>
-References: <20220613094928.482772422@linuxfoundation.org>
+        Tue, 14 Jun 2022 06:26:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5844B47AD9;
+        Tue, 14 Jun 2022 03:26:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B4F4B817BF;
+        Tue, 14 Jun 2022 10:26:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5356C3411E;
+        Tue, 14 Jun 2022 10:26:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655202370;
+        bh=d9pj+TFmwR5Vnt8hJs52y0k4GjIE3TN13/qiSXbl1XE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mnQZsX59shkhsiP9hmtj9/OkA6vwcL2NKvGKYuoLyXAqU1aGBym3q+VRSqyqrYgPA
+         570ohQcib4C0xitUZXhps8BjBpIrutd728BKLHgOPPjb6IvBMdQLyDbK9N3J2Sv/Ub
+         d9B83/m7xs14F+GPUPxIObu+HHyGEVDZ2hf1hbeQvYBCFzYuRmqVwW7SAEMFVS6GfU
+         D6wdSwvAt6ktMohBxo7FcO3TAt/Os0huX0JwhOOxkxfGeEkIypjyJmY5rgEWqQh6FR
+         gBRKQIKcArfCbWI41himbegRecw34GqveeMbxBcMU5DL2UNPs6EHZAj1iFXyDr2TCk
+         vZDhT4YU8Hd/w==
+Date:   Tue, 14 Jun 2022 11:35:22 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Joe Simmons-Talbott <joetalbott@gmail.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Joe Perches <joe@perches.com>
+Subject: Re: [PATCH v3] iio: Use octal permissions and DEVICE_ATTR_{RO,RW}.
+Message-ID: <20220614113522.432ebca8@jic23-huawei>
+In-Reply-To: <CAHp75Vd79=x93KgqcR3coYHUbHiHwyYTagOuKki54omEPx64jA@mail.gmail.com>
+References: <20220601185414.251571-1-joetalbott@gmail.com>
+        <CAHp75Vd79=x93KgqcR3coYHUbHiHwyYTagOuKki54omEPx64jA@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+On Wed, 1 Jun 2022 21:02:52 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-On Mon, Jun 13, 2022 at 12:04:33PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.198 release.
-> There are 411 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+> On Wed, Jun 1, 2022 at 8:54 PM Joe Simmons-Talbott <joetalbott@gmail.com> wrote:
+> >
+> > As reported by checkpatch.pl.  Where possible use DEVICE_ATTR_RO(),
+> > DEVICE_ATTR_RW(), and __ATTR_RO().  Change function names to be
+> > <var>_show() for read and <var>_store() for write.  
 > 
-> Responses should be made by Wed, 15 Jun 2022 09:47:08 +0000.
-> Anything received after that time might be too late.
+> Thank you for an update!
+> I have a few nit-picks, but no need to resend, I believe Jonathan may
+> (or may not :) modify when applying.
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> 
+> > Suggested-by: Joe Perches <joe@perches.com>
+> > Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > Signed-off-by: Joe Simmons-Talbott <joetalbott@gmail.com>
+> > +static ssize_t watermark_store(struct device *dev,
+> > +                              struct device_attribute *attr,  
+> 
+> Ditto.
 
-Build test (gcc version 11.3.1 20220612):
-mips: 65 configs -> no failure
-arm: 106 configs -> no failure
-arm64: 2 configs -> no failure
-x86_64: 4 configs -> no failure
-alpha allmodconfig -> no failure
-s390 allmodconfig -> no failure
-xtensa allmodconfig -> no failure
+Nope. 81 chars ;)
 
-powerpc allmodconfig and riscv allmodconfig failed to build.
-backported patches sent separately.
+> 
+> > +                              const char *buf,
+> > +                              size_t len)  
+> 
+> Ditto.
+> 
+> >  {
+> >         struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> >         struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
+> > @@ -1366,9 +1366,9 @@ static ssize_t iio_buffer_store_watermark(struct device *dev,
+> >         return ret ? ret : len;
+> >  }
+> >
+> > -static ssize_t iio_dma_show_data_available(struct device *dev,
+> > -                                               struct device_attribute *attr,
+> > -                                               char *buf)
+> > +static ssize_t data_available_show(struct device *dev,
+> > +                                  struct device_attribute *attr,  
+> 
+> Ditto.
+Nope, well over 80, but pulling char *buf up to previous line fits nicely.
+
+> 
+> > +                                  char *buf)
+
+...
+
+> > diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> > index f504ed351b3e..21f113c0ee96 100644
+> > --- a/drivers/iio/industrialio-trigger.c
+> > +++ b/drivers/iio/industrialio-trigger.c
+> > @@ -37,7 +37,7 @@ static LIST_HEAD(iio_trigger_list);
+
+> >  static struct attribute *iio_trig_dev_attrs[] = {
+> >         &dev_attr_name.attr,
+> > @@ -395,7 +395,7 @@ void iio_dealloc_pollfunc(struct iio_poll_func *pf)
+> >  EXPORT_SYMBOL_GPL(iio_dealloc_pollfunc);
+> >
+> >  /**
+> > - * iio_trigger_read_current() - trigger consumer sysfs query current trigger
+> > + * current_trigger_show() - trigger consumer sysfs query current trigger
+> >   * @dev:       device associated with an industrial I/O device
+> >   * @attr:      pointer to the device_attribute structure that
+> >   *             is being processed
+> > @@ -407,9 +407,9 @@ EXPORT_SYMBOL_GPL(iio_dealloc_pollfunc);
+> >   * Return: a negative number on failure, the number of characters written
+> >   *        on success or 0 if no trigger is available
+> >   */
+> > -static ssize_t iio_trigger_read_current(struct device *dev,
+> > -                                       struct device_attribute *attr,
+> > -                                       char *buf)
+> > +static ssize_t current_trigger_show(struct device *dev,
+> > +                                   struct device_attribute *attr,  
+> 
+> Ditto.
+
+Nope, but dragging char *buf up to previous line is good.
+
+> 
+> > +                                   char *buf)
+> >  {
+> >         struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> >
+> > @@ -419,7 +419,7 @@ static ssize_t iio_trigger_read_current(struct device *dev,
+> >  }
+> >
+> >  /**
+> > - * iio_trigger_write_current() - trigger consumer sysfs set current trigger
+> > + * current_trigger_store() - trigger consumer sysfs set current trigger
+> >   * @dev:       device associated with an industrial I/O device
+> >   * @attr:      device attribute that is being processed
+> >   * @buf:       string buffer that holds the name of the trigger
+> > @@ -432,10 +432,10 @@ static ssize_t iio_trigger_read_current(struct device *dev,
+> >   * Return: negative error code on failure or length of the buffer
+> >   *        on success
+> >   */
+> > -static ssize_t iio_trigger_write_current(struct device *dev,
+> > -                                        struct device_attribute *attr,
+> > -                                        const char *buf,
+> > -                                        size_t len)
+> > +static ssize_t current_trigger_store(struct device *dev,
+> > +                                    struct device_attribute *attr,  
+> 
+> Ditto.
+> 
+No
 
 
-Boot test:
-x86_64: Booted on my test laptop. No regression.
-x86_64: Booted on qemu. No regression. [1]
+All others tweaked as suggested.
 
-[1]. https://openqa.qa.codethink.co.uk/tests/1316
+Patch applied to the togreg branch of iio.git and if the train wifi
+remains stable (far too many tunnels), shortly pushed out as testing
+for 0-day to see if we missed anything (or I messed up the tweaks).
 
+Thanks,
 
-Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-
---
-Regards
-Sudip
+Jonathan
 
