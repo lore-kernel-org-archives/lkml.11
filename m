@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:49:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32819C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241617AbiFNJtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:49:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
+        id S241153AbiFNJtf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 05:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232924AbiFNJt1 (ORCPT
+        with ESMTP id S236716AbiFNJt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 05:49:27 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDF542EEB;
-        Tue, 14 Jun 2022 02:49:26 -0700 (PDT)
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D7E42EFC;
+        Tue, 14 Jun 2022 02:49:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655200166; x=1686736166;
+  t=1655200167; x=1686736167;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=AaWThxxcTSk/wcEQ64f1B+rJW5u8w08pHo0h42DxnrE=;
-  b=T5yXAPcvcMNazk8trhoWzAk5JadKksSykc9i5ynDYcqPAvi17rRpxCUJ
-   baMd0pvGXzkZYSGjGpwKX0lNYSUVOy5E/rhwsxsFZO61EHaIHSk/zMdHp
-   GLe32bO1eB8Mh8AcZOAJZOgl7eE8BuxCV40n7QO10vi9xklsj7VfQBSX1
-   I=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Jun 2022 02:49:26 -0700
+  bh=XZ8/9+cQEX308pQGpU44/0IIhbv/Q9SjME2A7Ke5S3A=;
+  b=Ml5FzbZM2pV+ZCGUhmcaHU0lZX4Ploppr0P36WMjX93NA1QayqRrgNQC
+   FSv/V4SGlgCZkQWN27ZuR7yjjcC8+l8yioaGdO41tcqd0q0n3IJQMjcfu
+   qvxhXE7ivWNHmZM5xfRP8Uh2MhDqSL5SN0payPfGYemUv+RjJ7tQSo9Xy
+   w=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 14 Jun 2022 02:49:26 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 02:49:26 -0700
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 02:49:25 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 02:49:25 -0700
+ 15.2.986.22; Tue, 14 Jun 2022 02:49:16 -0700
 Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 02:49:21 -0700
+ 15.2.986.22; Tue, 14 Jun 2022 02:49:12 -0700
 From:   Satya Priya <quic_c_skakit@quicinc.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>
@@ -49,9 +49,9 @@ CC:     Lee Jones <lee.jones@linaro.org>,
         <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
         <quic_jprakash@quicinc.com>,
         Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V15 4/9] mfd: pm8008: Add reset-gpios
-Date:   Tue, 14 Jun 2022 15:18:26 +0530
-Message-ID: <1655200111-18357-5-git-send-email-quic_c_skakit@quicinc.com>
+Subject: [PATCH V15 2/9] dt-bindings: mfd: pm8008: Change the address cells
+Date:   Tue, 14 Jun 2022 15:18:24 +0530
+Message-ID: <1655200111-18357-3-git-send-email-quic_c_skakit@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1655200111-18357-1-git-send-email-quic_c_skakit@quicinc.com>
 References: <1655200111-18357-1-git-send-email-quic_c_skakit@quicinc.com>
@@ -64,12 +64,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the reset-gpio toggling in the pm8008_probe() to bring
-pm8008 chip out of reset instead of doing it in DT node using
-"output-high" property.
+Change the address cells as '2' so that the first cell
+describes the i2c address offset of the clients.
+This helps us to define the child nodes of all
+clients under the same parent mfd node, instead of
+adding separate mfd DT nodes.
+
+Change the gpios reg value accordingly.
 
 Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
 Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
 Changes in V15:
  - None.
@@ -78,42 +83,63 @@ Changes in V14:
  - None.
 
 Changes in V13:
- - None.
+ - Fixed nit.
 
- drivers/mfd/qcom-pm8008.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
-index c472d7f..5a670b0 100644
---- a/drivers/mfd/qcom-pm8008.c
-+++ b/drivers/mfd/qcom-pm8008.c
-@@ -4,6 +4,7 @@
-  */
+diff --git a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
+index a89649c..a54d1ce0 100644
+--- a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
++++ b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
+@@ -39,7 +39,7 @@ properties:
+   interrupt-controller: true
  
- #include <linux/bitops.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
- #include <linux/irq.h>
-@@ -221,6 +222,7 @@ static int pm8008_probe(struct i2c_client *client)
- {
- 	int rc;
- 	struct pm8008_data *chip;
-+	struct gpio_desc *reset_gpio;
+   "#address-cells":
+-    const: 1
++    const: 2
  
- 	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
- 	if (!chip)
-@@ -233,6 +235,10 @@ static int pm8008_probe(struct i2c_client *client)
+   "#size-cells":
+     const: 0
+@@ -48,7 +48,7 @@ properties:
+     maxItems: 1
  
- 	i2c_set_clientdata(client, chip);
+ patternProperties:
+-  "^gpio@[0-9a-f]+$":
++  "^gpio@0,[0-9a-f]+$":
+     type: object
  
-+	reset_gpio = devm_gpiod_get(chip->dev, "reset", GPIOD_OUT_LOW);
-+	if (IS_ERR(reset_gpio))
-+		return PTR_ERR(reset_gpio);
-+
- 	if (of_property_read_bool(chip->dev->of_node, "interrupt-controller")) {
- 		rc = pm8008_probe_irq_peripherals(chip, client->irq);
- 		if (rc)
+     description: |
+@@ -61,7 +61,7 @@ patternProperties:
+           - const: qcom,spmi-gpio
+ 
+       reg:
+-        description: Peripheral address of one of the two GPIO peripherals.
++        description: Peripheral offset and address of one of the two GPIO peripherals.
+         maxItems: 1
+ 
+       gpio-controller: true
+@@ -110,7 +110,7 @@ examples:
+       pm8008i@8 {
+         compatible = "qcom,pm8008";
+         reg = <0x8>;
+-        #address-cells = <1>;
++        #address-cells = <2>;
+         #size-cells = <0>;
+         interrupt-controller;
+         #interrupt-cells = <2>;
+@@ -120,9 +120,9 @@ examples:
+ 
+         reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_LOW>;
+ 
+-        pm8008_gpios: gpio@c000 {
++        pm8008_gpios: gpio@0,c000 {
+           compatible = "qcom,pm8008-gpio", "qcom,spmi-gpio";
+-          reg = <0xc000>;
++          reg = <0x0 0xc000>;
+           gpio-controller;
+           gpio-ranges = <&pm8008_gpios 0 0 2>;
+           #gpio-cells = <2>;
 -- 
 2.7.4
 
