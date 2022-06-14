@@ -2,93 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 718F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 21:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF2FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 21:50:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358176AbiFNVtS (ORCPT
+        id S1358102AbiFNVuK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 17:49:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
+        Tue, 14 Jun 2022 17:50:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358083AbiFNVtO (ORCPT
+        with ESMTP id S244618AbiFNVuI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 17:49:14 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 67D74515BA;
-        Tue, 14 Jun 2022 14:49:13 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 25ELeePu014655;
-        Tue, 14 Jun 2022 16:40:40 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 25ELeePL014654;
-        Tue, 14 Jun 2022 16:40:40 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Tue, 14 Jun 2022 16:40:39 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Buka <vitalybuka@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
-Message-ID: <20220614214039.GA25951@gate.crashing.org>
-References: <20220614144853.3693273-1-glider@google.com> <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com> <CAG_fn=WEed5NJ8hdrrP_N8aQ_1Ad11VoJgdVxQheo3VfT_xyXQ@mail.gmail.com> <CAHk-=whjz3wO8zD+itoerphWem+JZz4uS3myf6u1Wd6epGRgmQ@mail.gmail.com> <CAG_fn=UPoM3bafwu6inGPMjg1bPw3HSFM_KrE_hen_MN3fu2vA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAG_fn=UPoM3bafwu6inGPMjg1bPw3HSFM_KrE_hen_MN3fu2vA@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+        Tue, 14 Jun 2022 17:50:08 -0400
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE4951E5F;
+        Tue, 14 Jun 2022 14:50:07 -0700 (PDT)
+Received: by mail-oi1-f171.google.com with SMTP id bf7so12066683oib.11;
+        Tue, 14 Jun 2022 14:50:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Rbu9ANmj3+6noGx1Ee66PQJHzOisWTkSaUC9Zq6x7sc=;
+        b=WWkHt2SDcg0/4zopUZq5FBVGn/a3r5A+5nJh9ydvIr6BJ6kByIO6csymZYsVldBWkx
+         uGqxvDCd5ManAfGVkIjpabcGkGFG2sxJmr28VE1Qtked3vTEi9yzzyj2vOwZq9KscLiz
+         64JZ3aFPj8iBBhI3hAEXmDWHQG+xAiLIVWMVmzr66mJO6DOXsOylkmXLloKafu1ByNlc
+         P20fmDLo+qZ2S3pUgJ4qj0yXpZ2HGRlvjH/TInQSNdD+OOfYDuzkxrewcO9FR2Bilwf8
+         vNQlKXoe+oTleqJtOzu5m1K87XbRm4rxUwMpTFdtrT/f2OYsXZaCqvXb05mxpCzR2G11
+         ObiA==
+X-Gm-Message-State: AJIora84RVDMtUtabJthQt2Xgc57Jfa5vQlpEaphWMeIyV/k36tmgqTz
+        8YKPK3qJTB2RNx+XexRgOU41JtNofdOASQpAhQc=
+X-Google-Smtp-Source: AGRyM1tcQ5sWOhCbS1b3zn/LfRbw1eOdGQo4WTgzcxcRQsjhqRFSFOemEmPY43ZJECTBLuD0bhxq/QxRckIyEq4GZqA=
+X-Received: by 2002:a05:6808:1385:b0:32f:729e:4869 with SMTP id
+ c5-20020a056808138500b0032f729e4869mr604425oiw.5.1655243407243; Tue, 14 Jun
+ 2022 14:50:07 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220613094605.208401-1-yangjihong1@huawei.com> <20220613094605.208401-7-yangjihong1@huawei.com>
+In-Reply-To: <20220613094605.208401-7-yangjihong1@huawei.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Tue, 14 Jun 2022 14:49:56 -0700
+Message-ID: <CAM9d7ci9R4=LuyDJAHSqtxc3nOZG+N8e7_WKJUKtL5j3xXqqtA@mail.gmail.com>
+Subject: Re: [RFC 06/13] perf kwork: Implement perf kwork report
+To:     Yang Jihong <yangjihong1@huawei.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+On Mon, Jun 13, 2022 at 2:48 AM Yang Jihong <yangjihong1@huawei.com> wrote:
+>
+> Implements framework of perf kwork report, which is used to report time
+> properties such as run time and frequency:
+>
+> test case:
+>
+>   Kwork Name                | Cpu  | Avg delay     | Frequency | Max delay     | Max delay start     | Max delay end       |
+>  ---------------------------------------------------------------------------------------------------------------------------
+>  ---------------------------------------------------------------------------------------------------------------------------
+>
+> Since there are no report supported events, the output is empty.
+>
+> Briefly describe the data structure:
+> 1. "class" indicates event type. For example, irq and softiq correspond
+> to different types.
+> 2. "cluster" refers to a specific event corresponding to a type. For
+> example, RCU and TIMER in softirq correspond to different clusters,
+> which contains three types of events: raise, entry, and exit.
 
-On Tue, Jun 14, 2022 at 10:19:53PM +0200, Alexander Potapenko wrote:
-> ================
-> char *kmalloc(int size);
-> 
-> char *kmalloc_or_not(int flag, int size, char *p) {
->   if (flag)
->     return kmalloc(size);
->   else
->     return p;
-> }
-> 
-> char global[16];
-> 
-> char *p(int flag) {
->   char *c;
->   int size;
->   if (flag)
->     return kmalloc_or_not(1, 4, c);
->   else
->     return kmalloc_or_not(0, size, global);
-> }
-> ================
+I'm not good at naming but how about calling it "work" instead?
+It's all about kernel works anyway..
 
-Since C11, lvalue conversion of an automatic variable that does not have
-its address taken is explicitly undefined behaviour (6.3.2.1/2).  So in
-function "p", both where "c" and where "size" are passed causes UB (so
-that executing "p" always causes UB btw).
-
-> In this example `size` is passed into kmalloc_or_not() initialized,
-> however it is never used, so the code probably has defined behavior.
-
-No such luck: the passing itself already causes UB.
-
-GCC does not warn, it has already optimised the code to what you expect
-by the time this warning is done.  If you use -fno-inline it does warn
-for both "c" and "size" (via -Wmaybe-uninitialized).
-
-But it is still UB!  All bets are off, no compiler can do any correct
-translation of your program, since there *is none*.
+Thanks,
+Namhyung
 
 
-Segher
+> 3. "atom" includes time of each sample and sample of the previous phase.
+> (For example, exit corresponds to entry, which is used for timehist.)
+>
+> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
