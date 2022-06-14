@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6364C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:06:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CFA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351405AbiFNCGP (ORCPT
+        id S1351737AbiFNCGT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
+        Mon, 13 Jun 2022 22:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351202AbiFNCF0 (ORCPT
+        with ESMTP id S241152AbiFNCFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:05:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E15F344C6;
-        Mon, 13 Jun 2022 19:05:16 -0700 (PDT)
+        Mon, 13 Jun 2022 22:05:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1912433E38;
+        Mon, 13 Jun 2022 19:05:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B470B8169D;
-        Tue, 14 Jun 2022 02:05:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DCC9C34114;
-        Tue, 14 Jun 2022 02:05:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA16660B62;
+        Tue, 14 Jun 2022 02:05:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2944C36AFE;
+        Tue, 14 Jun 2022 02:05:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172313;
-        bh=Pbt0fZV4EK9xrklXK2Rl75OGY0kyIJHvwKpZ+/cLZ+E=;
+        s=k20201202; t=1655172319;
+        bh=BNWdDw+2tibaH1KJgoWfPTrT73BOAUZaxMUa+1BI214=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WbY7py8LxibtZC0fUR1UMAgQ/YQ1LGa1+F0z7s7JD9iBLZsH4FgCRueAxhHrEKb86
-         WtxxobP3htZTll4etSpDevUlyoJRd/8iamXF7vp7AwDVlXzw7+eCSi7Ij/c+LWrQnL
-         AfmgNpUzETgcXUVJ3LWlwOnVClUjagoeaa313wBQuzG17Gkd4Sp53gKOexIpuI30n+
-         sOM3MHvMgD3laqVOjs45m2rVv8BCAOZhwf5aq9mOh1eX5nPMDUpSZXavX49fMXypRa
-         U14cr5AVDcVRBjHjaXpjLMtduHP07C7XNHvYBEO74Bh4tH0sn2RlMw4wagIMabOqNe
-         n8bctqp6NzSGQ==
+        b=MVxCKmdl1jvpI9Jjo7+htIDZD/sGDATscoCNlr0WBZW+AIw5e4Sqs/gKHX/YrnIbb
+         CI+9s5JfIiEh1fZeP8umgzNYct5wp7j+YnjZ+BI88hHMj1h/+YibQG/YZxui9gF/15
+         EzVp7jsUulniHpxAQXJEHKXvgSJlFnoxuWkAmeL37UdTgZc6HClqhC1RY+ZoIOxp31
+         f6u+hzx3y5gkIC2tvHSayjPdIf/t8CTTaKPxhQNAXNBK8jjUehqVQo/KQUYxXRv9ge
+         CZg4agq0O8OEW370Gw0J90tRLpdgj6wWcvup1zzQ7JPkSkw+ezgIHYW6OgKs6Las5O
+         94JbPXD4ztlyA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Adam Ford <aford173@gmail.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com,
-        patches@opensource.wolfsonmicro.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 18/47] ASoC: wm8962: Fix suspend while playing music
-Date:   Mon, 13 Jun 2022 22:04:11 -0400
-Message-Id: <20220614020441.1098348-18-sashal@kernel.org>
+Cc:     Yong Zhi <yong.zhi@intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, gregkh@linuxfoundation.org,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 21/47] ALSA: hda: MTL: add HD Audio PCI ID and HDMI codec vendor ID
+Date:   Mon, 13 Jun 2022 22:04:14 -0400
+Message-Id: <20220614020441.1098348-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020441.1098348-1-sashal@kernel.org>
 References: <20220614020441.1098348-1-sashal@kernel.org>
@@ -55,40 +55,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Yong Zhi <yong.zhi@intel.com>
 
-[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
+[ Upstream commit 2e45f2185283a2d927ef2cdbdc246cd65740c8df ]
 
-If the audio CODEC is playing sound when the system is suspended,
-it can be left in a state which throws the following error:
+Add HD Audio PCI ID for Intel Meteorlake platform.
 
-wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
+[ corrected the hex number to lower letters by tiwai ]
 
-Once this error has occurred, the audio will not work again until rebooted.
-
-Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
-
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Signed-off-by: Yong Zhi <yong.zhi@intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220606204232.144296-1-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8962.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/pci/hda/hda_intel.c  | 3 +++
+ sound/pci/hda/patch_hdmi.c | 1 +
+ 2 files changed, 4 insertions(+)
 
-diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
-index 2c41d31956aa..f622a6bbd2fb 100644
---- a/sound/soc/codecs/wm8962.c
-+++ b/sound/soc/codecs/wm8962.c
-@@ -3871,6 +3871,7 @@ static int wm8962_runtime_suspend(struct device *dev)
- #endif
- 
- static const struct dev_pm_ops wm8962_pm = {
-+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
- 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
- };
- 
+diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
+index 0a83eb6b88b1..a77165bd92a9 100644
+--- a/sound/pci/hda/hda_intel.c
++++ b/sound/pci/hda/hda_intel.c
+@@ -2525,6 +2525,9 @@ static const struct pci_device_id azx_ids[] = {
+ 	  .driver_data = AZX_DRIVER_SKL | AZX_DCAPS_INTEL_SKYLAKE},
+ 	{ PCI_DEVICE(0x8086, 0x51cf),
+ 	  .driver_data = AZX_DRIVER_SKL | AZX_DCAPS_INTEL_SKYLAKE},
++	/* Meteorlake-P */
++	{ PCI_DEVICE(0x8086, 0x7e28),
++	  .driver_data = AZX_DRIVER_SKL | AZX_DCAPS_INTEL_SKYLAKE},
+ 	/* Broxton-P(Apollolake) */
+ 	{ PCI_DEVICE(0x8086, 0x5a98),
+ 	  .driver_data = AZX_DRIVER_SKL | AZX_DCAPS_INTEL_BROXTON },
+diff --git a/sound/pci/hda/patch_hdmi.c b/sound/pci/hda/patch_hdmi.c
+index 31fe41795571..6c209cd26c0c 100644
+--- a/sound/pci/hda/patch_hdmi.c
++++ b/sound/pci/hda/patch_hdmi.c
+@@ -4554,6 +4554,7 @@ HDA_CODEC_ENTRY(0x8086281a, "Jasperlake HDMI",	patch_i915_icl_hdmi),
+ HDA_CODEC_ENTRY(0x8086281b, "Elkhartlake HDMI",	patch_i915_icl_hdmi),
+ HDA_CODEC_ENTRY(0x8086281c, "Alderlake-P HDMI", patch_i915_adlp_hdmi),
+ HDA_CODEC_ENTRY(0x8086281f, "Raptorlake-P HDMI",	patch_i915_adlp_hdmi),
++HDA_CODEC_ENTRY(0x8086281d, "Meteorlake HDMI",	patch_i915_adlp_hdmi),
+ HDA_CODEC_ENTRY(0x80862880, "CedarTrail HDMI",	patch_generic_hdmi),
+ HDA_CODEC_ENTRY(0x80862882, "Valleyview2 HDMI",	patch_i915_byt_hdmi),
+ HDA_CODEC_ENTRY(0x80862883, "Braswell HDMI",	patch_i915_byt_hdmi),
 -- 
 2.35.1
 
