@@ -2,163 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC2A4CCA47A
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C66C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243612AbiFNLxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
+        id S243776AbiFNLxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 07:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241585AbiFNLxm (ORCPT
+        with ESMTP id S241585AbiFNLxu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 07:53:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E88F366BA;
-        Tue, 14 Jun 2022 04:53:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 14 Jun 2022 07:53:50 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35E3B366BA;
+        Tue, 14 Jun 2022 04:53:49 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED45C6132D;
-        Tue, 14 Jun 2022 11:53:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F399C3411B;
-        Tue, 14 Jun 2022 11:53:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655207620;
-        bh=eEz9C3W3sm9wx9gzJgQmUp0IPoTdYsESOAuzf4ofhV8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JFLVXF5aq/bM8aDTLAKh6CruDhUXa5m/VL9QBtecheJnhFBgFzE0PJeO4vwRAIoS3
-         Kmg61dAuGQt4VrVpn3mq1JFh17zz9uDUcFN7whvPrwHKtc48a6Uv+uPbNCdODRPnj5
-         VnAA1wHMOPJ5MRo1xrbRNg1C9n50hOwotJgw0io0ssT9YXBeO6UoZDWOXozXrU5Em4
-         M2fFIMnyICMp0RHxgb3GzMjczSkbnJ8Zot0X8aYWRw9Wwvfhtu5Lr/w2gW0lwSkWnU
-         N06iHshmvnSnCkCw5LBetxbmjljGSFDDlrmUEHPjWVopwcTBUy4ZiAagRS2bGr/pHO
-         aqZJ39+TWBG+g==
-Date:   Tue, 14 Jun 2022 13:02:49 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     <Claudiu.Beznea@microchip.com>
-Cc:     <Eugen.Hristev@microchip.com>, <lars@metafoo.de>,
-        <Nicolas.Ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <ludovic.desroches@atmel.com>, <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 11/16] iio: adc: at91-sama5d2_adc: add locking parameter
- to at91_adc_read_info_raw()
-Message-ID: <20220614130249.005ad51a@jic23-huawei>
-In-Reply-To: <2989a8a5-b350-aac1-dcfb-249ac5bb23aa@microchip.com>
-References: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
-        <20220609083213.1795019-12-claudiu.beznea@microchip.com>
-        <20220611185851.4d266d5e@jic23-huawei>
-        <2989a8a5-b350-aac1-dcfb-249ac5bb23aa@microchip.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D43451F953;
+        Tue, 14 Jun 2022 11:53:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1655207627; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=enED3+mwpyEj3HYd1xYYpNVTbgUm7frMywot5/XVq7k=;
+        b=MKNAdTBQZJDywcGSMhM7eKVDS9hIFTqkt9SPhb/KumTuThcjnWgew5g35qS1WfIN35FvMH
+        +jmoTfwK7Sml47xjNTXbVEOEhtfUIjQJ3l2yz4rYR/B37fK1VH4zw9FonngffORHliRegZ
+        t1BTLwB3rgE1pXUmN+ycYXWzqtGXp5U=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 53F0D139EC;
+        Tue, 14 Jun 2022 11:53:47 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id OdGjE8t2qGJdfAAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Tue, 14 Jun 2022 11:53:47 +0000
+Date:   Tue, 14 Jun 2022 13:53:45 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Waiman Long <longman@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <shuah@kernel.org>, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Subject: Re: [PATCH v11 7/8] cgroup/cpuset: Update description of
+ cpuset.cpus.partition in cgroup-v2.rst
+Message-ID: <20220614115345.GA6771@blackbody.suse.cz>
+References: <20220510153413.400020-1-longman@redhat.com>
+ <20220510153413.400020-8-longman@redhat.com>
+ <YqYnQ4U4t6j/3UaL@slm.duckdns.org>
+ <404171dc-0da3-21f2-5003-9718f875e967@redhat.com>
+ <YqarMyNo9oHxhZFh@slm.duckdns.org>
+ <20220613142452.GB6910@blackbody.suse.cz>
+ <YqdzuSQuAeiPXQvy@slm.duckdns.org>
+ <20220613175548.GB21665@blackbody.suse.cz>
+ <Yqd7WMFj6AEyV3Cy@slm.duckdns.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="3V7upXqbjpZ4EhLz"
+Content-Disposition: inline
+In-Reply-To: <Yqd7WMFj6AEyV3Cy@slm.duckdns.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 14 Jun 2022 08:50:14 +0000
-<Claudiu.Beznea@microchip.com> wrote:
 
-> On 11.06.2022 20:58, Jonathan Cameron wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > On Thu, 9 Jun 2022 11:32:08 +0300
-> > Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
-> >   
-> >> Add a parameter to at91_adc_read_info_raw() to specify if st->lock mutex
-> >> need to be acquired. This prepares for the addition of temperature sensor
-> >> code which will re-use at91_adc_read_info_raw() function to read 2 voltages
-> >> for determining the real temperature.  
-> > 
-> > This looks like a potential lock dependency issue.
-> > iio_device_claim_direct_mode() takes an internal iio lock, and
-> > you then take st->lock.
-> > 
-> > If you are going to invert that locking order in another path
-> > you have a deadlock.
-> > 
-> > So rethink this. If you want to reuse the code you'll need to factor
-> > it out to a separate function that takes none of the locks then
-> > take all locks needed in each call path (in the same order).  
-> 
-> OK, I'll check it.
+--3V7upXqbjpZ4EhLz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hi Claudia,
+On Mon, Jun 13, 2022 at 08:00:56AM -1000, Tejun Heo <tj@kernel.org> wrote:
+> Yeah, I don't know why this part is different from any other errors that the
+> parent can make.
 
-Minor kernel mailing list etiquette thing is that there is no need
-to reply to say you'll check something or that you agree with review
-feedback.  Just generates more emails to read.  Reviewers assume
-anything you don't comment on their feedback will be addressed in
-next version of the code!
+It's different because a write to parent's cpuset.cpus is independent of
+whether cpuset.cpus of its children are exclusive or not.
+In an extreme case the children may be non-exclusive
+
+    parent	cpuset.cpus=0-3 //   valid partition
+    `- child_1	cpuset.cpus=0-1	// invalid partition
+    `- child_2	cpuset.cpus=1-2 // invalid partition
+
+but the parent can still be a valid partition (thanks to cpu no. 3 in
+the example above).
+
+Do I miss anything?
 
 Thanks,
+Michal
 
-Jonathan
+--3V7upXqbjpZ4EhLz
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-> 
-> > 
-> > Jonathan
-> > 
-> >   
-> >>
-> >> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> >> ---
-> >>  drivers/iio/adc/at91-sama5d2_adc.c | 15 ++++++++++-----
-> >>  1 file changed, 10 insertions(+), 5 deletions(-)
-> >>
-> >> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-> >> index 1283bcf4e682..8f8fef42de84 100644
-> >> --- a/drivers/iio/adc/at91-sama5d2_adc.c
-> >> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-> >> @@ -1583,7 +1583,8 @@ static irqreturn_t at91_adc_interrupt(int irq, void *private)
-> >>  }
-> >>
-> >>  static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
-> >> -                               struct iio_chan_spec const *chan, int *val)
-> >> +                               struct iio_chan_spec const *chan, int *val,
-> >> +                               bool lock)
-> >>  {
-> >>       struct at91_adc_state *st = iio_priv(indio_dev);
-> >>       int (*fn)(struct at91_adc_state *, int, u16 *) = NULL;
-> >> @@ -1602,13 +1603,15 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
-> >>       ret = iio_device_claim_direct_mode(indio_dev);
-> >>       if (ret)
-> >>               return ret;
-> >> -     mutex_lock(&st->lock);
-> >> +     if (lock)
-> >> +             mutex_lock(&st->lock);
-> >>
-> >>       if (fn) {
-> >>               ret = fn(st, chan->channel, &tmp_val);
-> >>               *val = tmp_val;
-> >>               ret = at91_adc_adjust_val_osr(st, val);
-> >> -             mutex_unlock(&st->lock);
-> >> +             if (lock)
-> >> +                     mutex_unlock(&st->lock);
-> >>               iio_device_release_direct_mode(indio_dev);
-> >>
-> >>               return ret;
-> >> @@ -1644,7 +1647,8 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
-> >>       /* Needed to ACK the DRDY interruption */
-> >>       at91_adc_readl(st, LCDR);
-> >>
-> >> -     mutex_unlock(&st->lock);
-> >> +     if (lock)
-> >> +             mutex_unlock(&st->lock);
-> >>
-> >>       iio_device_release_direct_mode(indio_dev);
-> >>       return ret;
-> >> @@ -1658,7 +1662,8 @@ static int at91_adc_read_raw(struct iio_dev *indio_dev,
-> >>
-> >>       switch (mask) {
-> >>       case IIO_CHAN_INFO_RAW:
-> >> -             return at91_adc_read_info_raw(indio_dev, chan, val);
-> >> +             return at91_adc_read_info_raw(indio_dev, chan, val, true);
-> >> +
-> >>       case IIO_CHAN_INFO_SCALE:
-> >>               *val = st->vref_uv / 1000;
-> >>               if (chan->differential)  
-> >   
-> 
+-----BEGIN PGP SIGNATURE-----
 
+iHUEARYIAB0WIQTrXXag4J0QvXXBmkMkDQmsBEOquQUCYqh2xwAKCRAkDQmsBEOq
+uYpOAQCf85csUj8650NOSj8/SYGx1Rke2TaokzgsJH1Dl9CDigD9GRFyEDBK4gUH
+O3ICbyDSHByTv2ncDcIRjpX6QGMWSAM=
+=mVZv
+-----END PGP SIGNATURE-----
+
+--3V7upXqbjpZ4EhLz--
