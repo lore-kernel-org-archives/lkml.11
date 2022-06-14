@@ -2,148 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C33C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:15:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A21C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356519AbiFNPPL (ORCPT
+        id S1356366AbiFNPNY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 11:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
+        Tue, 14 Jun 2022 11:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356355AbiFNPPD (ORCPT
+        with ESMTP id S1347938AbiFNPNV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 11:15:03 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4533C702;
-        Tue, 14 Jun 2022 08:15:02 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id k19so11708681wrd.8;
-        Tue, 14 Jun 2022 08:15:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=IXuDe0y1N7g0HQ+gRNGCz3TLBK6SHrrUtGI9qXS70nI=;
-        b=pNE5vPgqmLRxJYRUwLn2HygBM6ytJdDox1fo8PavsqAlLYbvUXKHMA7QW/EKefImgn
-         vCsmD6HVBAt1GjEMoJvYBgbfgyAcZBE9j+BAjgaRHWxosTq/rTgYCpc81ougivQSnSdo
-         MQrnA/hMkYQ0J3u4SGpJxbsKjp0OZpX3yjrZ0xGxhZPOG3Ltop5iqtB9VcRT1Wy3GfK9
-         IEQarUkCk6Or41YYY1+vKUsT2qQLqaMG2LJXsL0baMqYWDGHgxxz1wjVelA8DEq+YcTf
-         0iNIa9bByS4Ue98OyUC31rOtmb+CHhqr3S9W3EGxGkxx/V85oRMN2Mrdp9DUCwhFAhYe
-         MP0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=IXuDe0y1N7g0HQ+gRNGCz3TLBK6SHrrUtGI9qXS70nI=;
-        b=BCRmNnMuvJDOjifWn8Euw3WDVm421XUQJQ+kjFw5TF3CqCFK1vkLn8UiLUIqRH0c77
-         DUCiIYgjiP0Orp6S7cWK6XaIKsy8OUoBXHreI1/B6PE3LgRGeKhKjlYYDGKg2Wjv7SeO
-         KbFMGrobDPgycOGPLY68NxQSa7gujDWUPIpFUmUUL29UwQDGRHxrKVEzZLn5d69qW46H
-         Q1IGCo4I3bVDfEKXUlF3ZDwrWtFfhSaaANgBqnqycQloKdOdTd8PTlTPf/yIkuDD+9Kr
-         373CMzHaT79hnACZuoZCiYcNEe0Cq2v+7OCOaxBkyUKqML+4+vhW1HuLM1smuSM87XoO
-         UOOA==
-X-Gm-Message-State: AJIora+mFAMa00c0SjP4ogHEJYn6cL7WJOcz8FCLMhX0joc9wCBkeur3
-        tGSNTBsG0L8vkzYilvEd/iA=
-X-Google-Smtp-Source: AGRyM1vbq7YuSWWy21Fn37KJrbY6DIxBAJG8TbMUpC1uDPhvtrmHbIIb6r7vg7XBmdrSGnOv4jXjCw==
-X-Received: by 2002:a5d:40c7:0:b0:210:3135:e662 with SMTP id b7-20020a5d40c7000000b002103135e662mr5240739wrq.280.1655219700487;
-        Tue, 14 Jun 2022 08:15:00 -0700 (PDT)
-Received: from [192.168.0.36] ([37.223.143.134])
-        by smtp.gmail.com with ESMTPSA id h206-20020a1c21d7000000b0039746638d6esm13745526wmh.33.2022.06.14.08.14.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 08:14:59 -0700 (PDT)
-Message-ID: <da05a10b-dd4d-6d93-0cd3-e4695d9b767e@gmail.com>
-Date:   Tue, 14 Jun 2022 17:14:58 +0200
+        Tue, 14 Jun 2022 11:13:21 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A0CB36694;
+        Tue, 14 Jun 2022 08:13:20 -0700 (PDT)
+Received: from anrayabh-desk (unknown [167.220.238.193])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 7A4F320C317B;
+        Tue, 14 Jun 2022 08:13:14 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7A4F320C317B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1655219599;
+        bh=FkQMQGX0LVO9I/XM4yvyBKhBtSij68FznSIyshwEEEU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=J7txp6N9pbLDFHwrrSMl9uqBj9P36cwVuqE3pVCV57bdHryoRJ14mUHSaUMQInKkq
+         7hmIjgSnPkrVNpk/S0yF7HhOodfrjuv7kFWHMbGwkp+KvZKh0+I27xwc2iKvBat8/C
+         3Znfzfj/22YfjpXiOMHD8zT1jLCO/9bU472AJJoQ=
+Date:   Tue, 14 Jun 2022 20:43:08 +0530
+From:   Anirudh Rayabharam <anrayabh@linux.microsoft.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Ilias Stamatis <ilstam@amazon.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>, mail@anirudhrb.com,
+        kumarpraveen@linux.microsoft.com, wei.liu@kernel.org,
+        robert.bradford@intel.com, liuwe@microsoft.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] KVM: nVMX: Don't expose TSC scaling to L1 when on Hyper-V
+Message-ID: <YqilhAnxLMoQu1Ou@anrayabh-desk>
+References: <20220613161611.3567556-1-anrayabh@linux.microsoft.com>
+ <592ab920-51f3-4794-331f-8737e1f5b20a@redhat.com>
+ <YqgU2KfFCqawbTkW@anrayabh-desk>
+ <75bdc7ee-bac5-ae05-dffb-cb749c9005e1@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v3 2/6] iommu: mtk_iommu: Lookup phandle to retrieve
- syscon to infracfg
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, yong.wu@mediatek.com
-Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        krzysztof.kozlowski@linaro.org
-References: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
- <20220609100802.54513-3-angelogioacchino.delregno@collabora.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220609100802.54513-3-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <75bdc7ee-bac5-ae05-dffb-cb749c9005e1@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 09/06/2022 12:07, AngeloGioacchino Del Regno wrote:
-> This driver will get support for more SoCs and the list of infracfg
-> compatibles is expected to grow: in order to prevent getting this
-> situation out of control and see a long list of compatible strings,
-> add support to retrieve a handle to infracfg's regmap through a
-> new "mediatek,infracfg" phandle.
+On Tue, Jun 14, 2022 at 02:16:00PM +0200, Paolo Bonzini wrote:
+> On 6/14/22 06:55, Anirudh Rayabharam wrote:
+> > > That said, I think a better implementation of this patch is to just add
+> > > a version of evmcs_sanitize_exec_ctrls that takes a struct
+> > > nested_vmx_msrs *, and call it at the end of nested_vmx_setup_ctl_msrs like
+> > > 
+> > > 	evmcs_sanitize_nested_vmx_vsrs(msrs);
+> > Sanitize at the end might not work because I see some cases in
+> > nested_vmx_setup_ctls_msrs() where we want to expose some things to L1
+> > even though the hardware doesn't support it.
+> > 
 > 
-> In order to keep retrocompatibility with older devicetrees, the old
-> way is kept in place.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> Yes, but these will never include eVMCS-unsupported features.
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+How are you so sure?
 
-> ---
->   drivers/iommu/mtk_iommu.c | 38 ++++++++++++++++++++++++--------------
->   1 file changed, 24 insertions(+), 14 deletions(-)
+For example, SECONDARY_EXEC_SHADOW_VMCS is unsupported in eVMCS but in
+nested_vmx_setup_ctls_msrs() we do:
+
+6675         /*
+6676          * We can emulate "VMCS shadowing," even if the hardware
+6677          * doesn't support it.
+6678          */
+6679         msrs->secondary_ctls_high |=
+6680                 SECONDARY_EXEC_SHADOW_VMCS;
+
+If we sanitize this out it might cause some regression right?
+
+Thanks!
+
+	Anirudh.
 > 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index bb9dd92c9898..90685946fcbe 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -1140,22 +1140,32 @@ static int mtk_iommu_probe(struct platform_device *pdev)
->   	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
->   
->   	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE)) {
-> -		switch (data->plat_data->m4u_plat) {
-> -		case M4U_MT2712:
-> -			p = "mediatek,mt2712-infracfg";
-> -			break;
-> -		case M4U_MT8173:
-> -			p = "mediatek,mt8173-infracfg";
-> -			break;
-> -		default:
-> -			p = NULL;
-> +		infracfg = syscon_regmap_lookup_by_phandle(dev->of_node, "mediatek,infracfg");
-> +		if (IS_ERR(infracfg)) {
-> +			/*
-> +			 * Legacy devicetrees will not specify a phandle to
-> +			 * mediatek,infracfg: in that case, we use the older
-> +			 * way to retrieve a syscon to infra.
-> +			 *
-> +			 * This is for retrocompatibility purposes only, hence
-> +			 * no more compatibles shall be added to this.
-> +			 */
-> +			switch (data->plat_data->m4u_plat) {
-> +			case M4U_MT2712:
-> +				p = "mediatek,mt2712-infracfg";
-> +				break;
-> +			case M4U_MT8173:
-> +				p = "mediatek,mt8173-infracfg";
-> +				break;
-> +			default:
-> +				p = NULL;
-> +			}
-> +
-> +			infracfg = syscon_regmap_lookup_by_compatible(p);
-> +			if (IS_ERR(infracfg))
-> +				return PTR_ERR(infracfg);
->   		}
->   
-> -		infracfg = syscon_regmap_lookup_by_compatible(p);
-> -
-> -		if (IS_ERR(infracfg))
-> -			return PTR_ERR(infracfg);
-> -
->   		ret = regmap_read(infracfg, REG_INFRA_MISC, &val);
->   		if (ret)
->   			return ret;
+> Paolo
