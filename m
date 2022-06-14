@@ -2,131 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41778C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 06:59:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 516D7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237671AbiFNG7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 02:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32780 "EHLO
+        id S238899AbiFNHAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 03:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiFNG7B (ORCPT
+        with ESMTP id S230329AbiFNHAP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 02:59:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A52843AA79
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 23:59:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655189939;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=165bFaZlwfKqEUi4HtU3Zw6CrU4RiJY/1bnRkwVsKqg=;
-        b=cPFcvqv53LD4OaiHOZ7VjRqlyDs5vjAxc1Iu/5PUQKKJfWHEAY8R7oY2ARJUryIWUgAX3S
-        p8C6mB/l3pFglTQEtWkPA0wJC3zwAdPCYRdOguM6D2Fwivb3xgJpDStLu35HLxo/x8RP7Y
-        7IQLkSZd1Ny280ILtNAN+MrRaMJM7/o=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-348-ox3dwkx9PQe3fFExGo3z_g-1; Tue, 14 Jun 2022 02:58:58 -0400
-X-MC-Unique: ox3dwkx9PQe3fFExGo3z_g-1
-Received: by mail-wm1-f69.google.com with SMTP id v184-20020a1cacc1000000b0039c7efa3e95so3470042wme.3
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 23:58:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=165bFaZlwfKqEUi4HtU3Zw6CrU4RiJY/1bnRkwVsKqg=;
-        b=v8XRh558k3/zOg5KFted6gss+p/7CbdF2s/mtxyCysLLIf9edCHrU8/3AsE9Kh9Y33
-         zZIWDGUh/jy7b9nn873ksuwqch6HN18K2RlZFbqIK9TIqsEb7UktiCwszYcoN/rVm0pQ
-         T3yFdZu/ZbUey9GvUFJ9OJNda2K7k1Ukj9deCdBh/E4UZHeC9Y2cg3Z67YzJ46O/75by
-         CwGwmLZElMCbZDo23XKuiEEExzVjj+lGHESaBu+KUGs+4eq4VLq6dp6KjX2+gfDFpyMt
-         og7GEUAi0W62/TvJ0egCS/Ct9V2GIXb0qbZuOKuRALk23tHWX/ubYYW7fdSWNpg0X3/e
-         lIXg==
-X-Gm-Message-State: AJIora8n1PBfrsSefLVRwzNk6ucZcxG4k+bS0fu//0Qvgl0eOvWQXrwL
-        fIuwL+fCIdL/gePZgr1YRRR0Cdx0A4SCMu/8NEmyhA6VlIl9tzQsZ3lphOV35EZyjSMiO2ZY+SK
-        fMP8aFannFDYvZMXutIbInr2TJhCA19U4lPDTQqjgKaE/5kDtN/f9vvpvaIRqwM5miZEWPKTe
-X-Received: by 2002:a05:6000:18a9:b0:218:7791:a9ad with SMTP id b9-20020a05600018a900b002187791a9admr3355803wri.116.1655189937376;
-        Mon, 13 Jun 2022 23:58:57 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1ssHMKYH4k8kw7gv+GTlRPt8sCrt8JRY/ON2cjIiR3mrj3iL38gK+9L6AhGJt18kf80tVLISg==
-X-Received: by 2002:a05:6000:18a9:b0:218:7791:a9ad with SMTP id b9-20020a05600018a900b002187791a9admr3355771wri.116.1655189937051;
-        Mon, 13 Jun 2022 23:58:57 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c70b:cf00:aace:de16:d459:d411? (p200300cbc70bcf00aacede16d459d411.dip0.t-ipconnect.de. [2003:cb:c70b:cf00:aace:de16:d459:d411])
-        by smtp.gmail.com with ESMTPSA id m10-20020a5d56ca000000b0020c5253d8f7sm10737307wrw.67.2022.06.13.23.58.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 23:58:56 -0700 (PDT)
-Message-ID: <72194595-a177-088d-28a9-0a24d4192777@redhat.com>
-Date:   Tue, 14 Jun 2022 08:58:55 +0200
+        Tue, 14 Jun 2022 03:00:15 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04C63B00F;
+        Tue, 14 Jun 2022 00:00:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655190013; x=1686726013;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=T4nzZezDWWWUTOy8OMeuQhCOxOSUCA20xYUUYSUJEJ4=;
+  b=xtGnTo4nJB5KINBX3erdkGK3vH9x+W3apBUbeoRsGzce1uvlNToY6ohF
+   MPIa5qdprHE48Izp8LoF8CBi6+KxC2AHYChxRer8eXCl6n8YPP1YqKfwj
+   KPTiTfn5Z3Y71SrljSHoa7jFtThP1RYI6vFyS+nWpPG+B7J/xblkZeQX/
+   J9f4y1+EZqxmK9xsC7QdAzyysis7dnVpp3IV6YRIsT8h8GpH0hmIYV9N3
+   BhipSxorQNpL6a3KSJu7uEhyN3z7tb+p7ex1naFxby3N3A0F9QVgP57UK
+   SfTCt76CvMlLDwnSwxMfrwGuzL9ytfKVJXfwdf1fG6rr1+y2moVOhPw5/
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="99902883"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jun 2022 00:00:12 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 14 Jun 2022 00:00:12 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 14 Jun 2022 00:00:10 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     Daire McNamara <daire.mcnamara@microchip.com>,
+        Lewis Hanly <lewis.hanly@microchip.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        <linux-riscv@lists.infradead.org>, <linux-spi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Yang Li <yang.lee@linux.alibaba.com>
+Subject: [PATCH] spi: microchip-core: fix potentially incorrect return from probe
+Date:   Tue, 14 Jun 2022 07:58:10 +0100
+Message-ID: <20220614065809.1969177-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Content-Language: en-US
-To:     linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Oscar Salvador <osalvador@suse.de>
-References: <20220610101258.75738-1-david@redhat.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v1] MAINTAINERS: add MEMORY HOT(UN)PLUG section and add
- myself as reviewer
-In-Reply-To: <20220610101258.75738-1-david@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10.06.22 12:12, David Hildenbrand wrote:
-> There are certainly a lot more files that partially fall into the memory
-> hot(un)plug category, including parts of mm/sparse.c, mm/page_isolation.c
-> and mm/page_alloc.c. Let's only add what's almost completely memory
-> hot(un)plug related.
-> 
-> Add myself as reviewer so it's easier for contributors to figure out
-> whom to CC.
-> 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
-> ---
->  MAINTAINERS | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a6d3bd9d2a8d..77aebce76288 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -12848,6 +12848,18 @@ F:	include/linux/vmalloc.h
->  F:	mm/
->  F:	tools/testing/selftests/vm/
->  
-> +MEMORY HOT(UN)PLUG
-> +M:	Andrew Morton <akpm@linux-foundation.org>
-> +R:	David Hildenbrand <david@redhat.com>
-> +L:	linux-mm@kvack.org
-> +S:	Maintained
-> +F:	Documentation/admin-guide/mm/memory-hotplug.rst
-> +F:	Documentation/core-api/memory-hotplug.rst
-> +F:	drivers/base/memory.c
-> +F:	include/linux/memory_hotplug.h
-> +F:	mm/memory_hotplug.c
-> +F:	tools/testing/selftests/memory-hotplug/
+If platform_get_irqi() returns 0, the error case will be triggered but
+probe() will return 0 rather than an error. Ape the other drivers using
+this pattern and return -ENXIO.
 
-(thanks for the kind words from reviewers :) )
+Reported-by: Yang Li <yang.lee@linux.alibaba.com>
+Link: https://lore.kernel.org/linux-spi/20220609055533.95866-2-yang.lee@linux.alibaba.com/
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ drivers/spi/spi-microchip-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thinking about it (and remembering having a discussion about
-submaintainers for MM in general at LSF/MM):
-
-@Andrew, do we want "official" submaintainers for that section? If so,
-we could turn my R into an M. Further, Oscar did a lot of work in the
-memory hot(un)plug world as well -- so if we want submaintainers, Oscar
-might be a very good fit as well.
-
-... I guess, that would mostly reflect reality :)
-
+diff --git a/drivers/spi/spi-microchip-core.c b/drivers/spi/spi-microchip-core.c
+index 5b22a1395554..856a68fd8e9f 100644
+--- a/drivers/spi/spi-microchip-core.c
++++ b/drivers/spi/spi-microchip-core.c
+@@ -541,7 +541,7 @@ static int mchp_corespi_probe(struct platform_device *pdev)
+ 	spi->irq = platform_get_irq(pdev, 0);
+ 	if (spi->irq <= 0) {
+ 		dev_err(&pdev->dev, "invalid IRQ %d for SPI controller\n", spi->irq);
+-		ret = spi->irq;
++		ret = -ENXIO;
+ 		goto error_release_master;
+ 	}
+ 
 -- 
-Thanks,
-
-David / dhildenb
+2.36.1
 
