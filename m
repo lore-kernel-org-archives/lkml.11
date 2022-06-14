@@ -2,108 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8214EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 19:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A73B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 19:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344263AbiFNTBq (ORCPT
+        id S1358052AbiFNTCO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 15:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34622 "EHLO
+        Tue, 14 Jun 2022 15:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357706AbiFNTBO (ORCPT
+        with ESMTP id S1358000AbiFNTBa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 15:01:14 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE2521B1
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:59:55 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id h23so10798439ljl.3
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:59:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8CLjdm0fv8JCDmSYjgnWu5fkb8HC9HIzs0HHNU0IgVE=;
-        b=DK8cpE1V6UMumzHAkRyd1w9x4mo+MEOSq6zru7t9LG18M5czUGkCsUs2EH9j1u4iHL
-         LezrPxUpihEdcOokbl+dCMk30RmUolnINcwzTq0O+zn+E9nm/zz14C9bl90HItDPjOKl
-         ERLItC0N42ryT5EVISS92P/0yKv70hgcnsJJNWXZ+9Etj4J/2tpwTPWContHA2JZvT1o
-         5n3mgto6vkYIYGXkau8ei41v6T735IsjgvOQ1gln4RE9vX/3EmjuCzMtGP7516gzpQo1
-         yO8OIyQv3p11rhwu5RSVdrVRMRguDlSCuDEChIy0QkxPKNzkWECvLC2W6FVXUUXrTL3k
-         g16A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8CLjdm0fv8JCDmSYjgnWu5fkb8HC9HIzs0HHNU0IgVE=;
-        b=CULIblZfVTdHImoHHgxNLK/FrvULWL6L9152ehclYJrZCS/YJcLE9TGMHYVhk8elzF
-         TzWl+JXa9npKDg6m1lzHu+PNiMaVsyxnBF8kEibCdSvfW6VuCo1XsKdyjSDN0p4h/sXC
-         ANegypKByqU9fAZaiE77STw17e5VagIOCLkgJWfnt4bj243P34zy1Vi2A0XZabfVDHNh
-         sdoDs+Ki0gcX0IngKTxwd/imtC88z/RLnFwJpbF0He0glfcOu7D2yf0jaRqATcXWyuJb
-         FEmqlDXVKXlng6aHvw5DovasKCMYpiomERVhWs50IZXyHQQeCFM2wB0IKdDh6Fcq3K/C
-         m1BQ==
-X-Gm-Message-State: AJIora8IddB1MmwUJ29qArzF/xD4mg0Gyv+94j3fwcnYQlKDxJzk+Wn3
-        UtaAggRfHd+fUGk59oAfBrvUvo9nxPrwypPfoOirGg==
-X-Google-Smtp-Source: AGRyM1vEBCTUhPhDtXrKLEbsOE+r55A+HtUc7YmYWYz5meaQwiyvwOHmtqy2QzAWoa8+f58p9jQwavLDWb803hojJiU=
-X-Received: by 2002:a05:651c:50b:b0:259:957:f2c6 with SMTP id
- o11-20020a05651c050b00b002590957f2c6mr3275924ljp.26.1655233193050; Tue, 14
- Jun 2022 11:59:53 -0700 (PDT)
+        Tue, 14 Jun 2022 15:01:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916AB5F7A;
+        Tue, 14 Jun 2022 12:00:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D5DC6178C;
+        Tue, 14 Jun 2022 19:00:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 620DCC3411D;
+        Tue, 14 Jun 2022 19:00:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655233245;
+        bh=TVpir3wYwVDEOeeGCSkukFbIAbJBc7c16wYyw99VVb4=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=rdhFTLt/oOtIZ4bKThaeg42+QJ/WdtA1T/5QZ1YTiwPh74tz2Tr9k8vUSDjjGqe9e
+         dfYJFXJZAkj0XfA6aUJHMKuH66yMRa+Vk30lUnxA1v2NuofoK9KvMMGiZs0+R8uJOU
+         IyXi6cQa1viPiwYTtnW9IivTYnbR2cAW2gLHgO6H1eLt8e8I7+xKYGTytlKssJ8Pfg
+         kSdzdijE2HIaU9PpU72/kmEjg/Aw1B4pnpRstT1c389dOo0V4AGJvqY6PsWFLbq5e2
+         rebZG/6I2tb5M3k1j5W1bDq2mRqrOmO/wSbgOsCBdER3PqqxYCy9CbhgzFIJvER50G
+         IAzj+fTJQnOAw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id F27FD5C0BCC; Tue, 14 Jun 2022 12:00:44 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 12:00:44 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Uladzislau Rezki (Sony)" <urezki@gmail.com>
+Subject: Re: [PATCH-rcu] rcu-tasks: Use delayed_work to delay
+ rcu_tasks_verify_self_tests()
+Message-ID: <20220614190044.GW1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220614120620.1202389-1-longman@redhat.com>
 MIME-Version: 1.0
-References: <20220614055149.1900535-1-masahiroy@kernel.org>
-In-Reply-To: <20220614055149.1900535-1-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 14 Jun 2022 11:59:41 -0700
-Message-ID: <CAKwvOdmcLCV6J+PYXCugH=0Pt_=yARZ-Y3SEmYy8F+oBpb1UYw@mail.gmail.com>
-Subject: Re: [PATCH v2] kbuild: remove sed command from cmd_ar_builtin
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614120620.1202389-1-longman@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 10:53 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Replace a pipeline of echo and sed with printf to decrease process forks.
+On Tue, Jun 14, 2022 at 08:06:20AM -0400, Waiman Long wrote:
+> Commit 2585014188d5 ("rcu-tasks: Be more patient for RCU Tasks
+> boot-time testing") fixes false positive rcu_tasks verification check
+> failure by repeating the test once every second until timeout using
+> schedule_timeout_uninterruptible().
+> 
+> Since rcu_tasks_verify_selft_tests() is called from do_initcalls()
+> as a late_initcall, this has the undesirable side effect of perhaps
+> delaying other late_initcall's queued after it by a second or more.
+> Fix this by using delayed_work to repeat the verification check instead.
+> 
+> Fixes: 2585014188d5 ("rcu-tasks: Be more patient for RCU Tasks boot-time testing")
+> Signed-off-by: Waiman Long <longman@redhat.com>
 
-If you're trying to minimize process forks, is it possible to remove
-the use of xargs as well and just invoke $(AR) with the parameters
-splatted out? I don't know myself, but maybe you're creative enough?
+Applied, thank you!
 
-Otherwise,
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+							Thanx, Paul
 
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 > ---
->
-> Changes in v2:
->   - Avoid the pipeline if there is no object to put in the archive
->
->  scripts/Makefile.build | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index cac070aee791..784f46d41959 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -358,9 +358,8 @@ $(subdir-modorder): $(obj)/%/modules.order: $(obj)/% ;
->
->  quiet_cmd_ar_builtin = AR      $@
->        cmd_ar_builtin = rm -f $@; \
-> -               echo $(patsubst $(obj)/%,%,$(real-prereqs)) | \
-> -               sed -E 's:([^ ]+):$(obj)/\1:g' | \
-> -               xargs $(AR) cDPrST $@
-> +       $(if $(real-prereqs), printf "$(obj)/%s " $(patsubst $(obj)/%,%,$(real-prereqs)) | xargs) \
-> +       $(AR) cDPrST $@
->
->  $(obj)/built-in.a: $(real-obj-y) FORCE
->         $(call if_changed,ar_builtin)
-> --
-> 2.32.0
->
-
-
--- 
-Thanks,
-~Nick Desaulniers
+>  kernel/rcu/tasks.h | 35 ++++++++++++++++++++++++++++++++---
+>  1 file changed, 32 insertions(+), 3 deletions(-)
+> 
+> diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+> index fcbd0ec33c86..e151cd5ae2bc 100644
+> --- a/kernel/rcu/tasks.h
+> +++ b/kernel/rcu/tasks.h
+> @@ -1832,6 +1832,11 @@ static void rcu_tasks_initiate_self_tests(void)
+>  #endif
+>  }
+>  
+> +/*
+> + * Return:  0 - test passed
+> + *	    1 - test failed, but have not timed out yet
+> + *	   -1 - test failed and timed out
+> + */
+>  static int rcu_tasks_verify_self_tests(void)
+>  {
+>  	int ret = 0;
+> @@ -1847,16 +1852,40 @@ static int rcu_tasks_verify_self_tests(void)
+>  				ret = -1;
+>  				break;
+>  			}
+> -			schedule_timeout_uninterruptible(1);
+> +			ret = 1;
+> +			break;
+>  		}
+>  	}
+>  
+> -	if (ret)
+> +	if (ret < 0)
+>  		WARN_ON(1);
+>  
+>  	return ret;
+>  }
+> -late_initcall(rcu_tasks_verify_self_tests);
+> +
+> +/*
+> + * Repeat the rcu_tasks_verify_self_tests() call once every second until the
+> + * test passes or has timed out.
+> + */
+> +static struct delayed_work rcu_tasks_verify_work;
+> +static void rcu_tasks_verify_work_fn(struct work_struct *work __maybe_unused)
+> +{
+> +	int ret = rcu_tasks_verify_self_tests();
+> +
+> +	if (ret <= 0)
+> +		return;
+> +
+> +	/* Test fails but not timed out yet, reschedule another check */
+> +	schedule_delayed_work(&rcu_tasks_verify_work, HZ);
+> +}
+> +
+> +static int rcu_tasks_verify_schedule_work(void)
+> +{
+> +	INIT_DELAYED_WORK(&rcu_tasks_verify_work, rcu_tasks_verify_work_fn);
+> +	rcu_tasks_verify_work_fn(NULL);
+> +	return 0;
+> +}
+> +late_initcall(rcu_tasks_verify_schedule_work);
+>  #else /* #ifdef CONFIG_PROVE_RCU */
+>  static void rcu_tasks_initiate_self_tests(void) { }
+>  #endif /* #else #ifdef CONFIG_PROVE_RCU */
+> -- 
+> 2.31.1
+> 
