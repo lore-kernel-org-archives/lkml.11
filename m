@@ -2,63 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E597CCA47D
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 701B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353145AbiFNCPz (ORCPT
+        id S1353193AbiFNCQC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56442 "EHLO
+        Mon, 13 Jun 2022 22:16:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353444AbiFNCNq (ORCPT
+        with ESMTP id S1353488AbiFNCNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:13:46 -0400
-Received: from challenge-bot.com (challenge-bot.com [IPv6:2602:fffa:fff:108a:0:16:3e15:92b8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B343526C
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:07:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=challenge-bot.com; s=20180430; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=VGcRSjLbV9ZwhBfGleDibb3DqhkmCY5REWvPttnsKmE=; b=hCDYokHHkYRXevfvOlQR/aKGnF
-        iktpm/cCXqT7ibOI3bCAz2IslF5oS7ilcHx2wkTl5q6IuC5CnDlvmFWjiZEET50oNOGy7HiySvM7Q
-        VColeqOY4csXLccXUvusNODUkjuI94DcT79HaBur/BWY6bjAiPBAEHYv26fBVK2zajLk=;
-Received: from ozzloy by challenge-bot.com with local (Exim 4.92)
-        (envelope-from <ozzloy@challenge-bot.com>)
-        id 1o0vy8-00087N-0a; Mon, 13 Jun 2022 19:07:48 -0700
-From:   daniel watson <ozzloy@challenge-bot.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     Daniel Watson <ozzloy@challenge-bot.com>
-Subject: [PATCH 0/4] remove wrappers on _rtw_IOL_append_*_cmd
-Date:   Mon, 13 Jun 2022 19:07:29 -0700
-Message-Id: <cover.1655171591.git.ozzloy@challenge-bot.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 13 Jun 2022 22:13:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECCF393F4;
+        Mon, 13 Jun 2022 19:07:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEA98B8169E;
+        Tue, 14 Jun 2022 02:07:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FCC6C36B00;
+        Tue, 14 Jun 2022 02:07:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655172470;
+        bh=EwoD3EBUTWMcZKTaDFWmwe7rbaU+vmxyU8ePWDHD1CU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JmWS23oEc0Wu+Dp/XrMAxRBUsclxecsVeW0sdmYFpCVIcBoKPajb9JWG5Tmr0UGhs
+         mXed2qZBjDccvlmAuHteiJWunVTg3sQoM6m2/iRxHqTLOWe2KXU4NTi2hJ4lOP/7dO
+         XOu+SqGTqCrn1OnaRV/ujQlbDKxO8KVTY/LIjPpRUDp46uCLXYNXMrHRAOaiosSvdg
+         kMvmrlHNNFa+WrkKm1/El5GzbI3Vlcu9KDw8FKoXke18exEO0iD3G0MZDQMwfpO+Kz
+         +WDNpT2SeFKHX+K+QzRqkqT2GyZE47JkbAV+hYJdiz+MVXbrzkrlpUct51kITX1Aiy
+         UMhWm5BiKwSKw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Chengguang Xu <cgxu519@mykernel.net>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Brian King <brking@linux.vnet.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.vnet.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 25/41] scsi: ipr: Fix missing/incorrect resource cleanup in error case
+Date:   Mon, 13 Jun 2022 22:06:50 -0400
+Message-Id: <20220614020707.1099487-25-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
+References: <20220614020707.1099487-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Watson <ozzloy@challenge-bot.com>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-This patchset removes the #define wrappers around the
-rtl_IOL_append_*_cmd group of functions.  They are not needed.
+[ Upstream commit d64c491911322af1dcada98e5b9ee0d87e8c8fee ]
 
-Daniel Watson (4):
-  staging: r8188eu: remove leading '_' on _rtw_IOL_append_WB_cmd
-  staging: r8188eu: remove leading '_' on _rtw_IOL_append_WW_cmd
-  staging: r8188eu: remove leading '_' on _rtw_IOL_append_WD_cmd
-  staging: r8188eu: remove leading '_' on _rtw_IOL_append_WRF_cmd
+Fix missing resource cleanup (when '(--i) == 0') for error case in
+ipr_alloc_mem() and skip incorrect resource cleanup (when '(--i) == 0') for
+error case in ipr_request_other_msi_irqs() because variable i started from
+1.
 
- drivers/staging/r8188eu/core/rtw_iol.c    |  8 ++++----
- drivers/staging/r8188eu/include/rtw_iol.h | 24 ++++++++---------------
- 2 files changed, 12 insertions(+), 20 deletions(-)
+Link: https://lore.kernel.org/r/20220529153456.4183738-4-cgxu519@mykernel.net
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Brian King <brking@linux.vnet.ibm.com>
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/ipr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/scsi/ipr.c b/drivers/scsi/ipr.c
+index 5d78f7e939a3..56b8a2d6ffe4 100644
+--- a/drivers/scsi/ipr.c
++++ b/drivers/scsi/ipr.c
+@@ -9791,7 +9791,7 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
+ 					GFP_KERNEL);
+ 
+ 		if (!ioa_cfg->hrrq[i].host_rrq)  {
+-			while (--i > 0)
++			while (--i >= 0)
+ 				dma_free_coherent(&pdev->dev,
+ 					sizeof(u32) * ioa_cfg->hrrq[i].size,
+ 					ioa_cfg->hrrq[i].host_rrq,
+@@ -10064,7 +10064,7 @@ static int ipr_request_other_msi_irqs(struct ipr_ioa_cfg *ioa_cfg,
+ 			ioa_cfg->vectors_info[i].desc,
+ 			&ioa_cfg->hrrq[i]);
+ 		if (rc) {
+-			while (--i >= 0)
++			while (--i > 0)
+ 				free_irq(pci_irq_vector(pdev, i),
+ 					&ioa_cfg->hrrq[i]);
+ 			return rc;
 -- 
-2.34.1
+2.35.1
 
