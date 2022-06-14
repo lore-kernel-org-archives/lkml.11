@@ -2,162 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33864C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:27:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58868C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:29:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355457AbiFNK1q (ORCPT
+        id S1355631AbiFNK2T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43178 "EHLO
+        Tue, 14 Jun 2022 06:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbiFNK1l (ORCPT
+        with ESMTP id S1355474AbiFNK15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:27:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25DA2C657;
-        Tue, 14 Jun 2022 03:27:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DB8F60DF3;
-        Tue, 14 Jun 2022 10:27:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD7C2C3411B;
-        Tue, 14 Jun 2022 10:27:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655202458;
-        bh=pLY/c1iB3KXXw2JkAgjQjqCgz0rlmIBHN5Fh/dw9rf0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=azg81Ege00O8E7x7v7HQ9vUx4hboeEJbaHMhUrs8SErWepT7gFN6ogKeEtTJU3Az9
-         UHGseD8HacKj7iGzHlCjJZK7V8KZJ2iDSHVKrm0ousyhFHQxvYsnVonc1kqxFqNiCW
-         v5YlOdTT5m7xwGLfBGUVQ2MaNqnHbt1KXXDopo6tdEJZt1uMmrJqxy36OlhBrz+Dx/
-         WouzetWQ9PPjJ3ICesIELajnDuWTrG/kPhfz/e8qMkrN4IIPARPjJF9e/bOSjnFBqR
-         o9vFN5QyLUCl1psgzV+xxgVxbYvlO1c36pdF7UEveyDN8Jl8uT8itXQopI7806SJXy
-         oGgdcxxgZ3F5A==
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-fe539f9afbso11903702fac.5;
-        Tue, 14 Jun 2022 03:27:38 -0700 (PDT)
-X-Gm-Message-State: AJIora8J7Zq1vOPvKOp71sWP1XQKuZg5VghY6TyO8wld6C8uDNl8Lqca
-        cXeFEioOdRj2PqPRE0HMG6vKMg8d5pi1PWstXcA=
-X-Google-Smtp-Source: ABdhPJwqvTBoi/hdOV5yBa6AZkvlop+ZjXzRzSSCX4iDQR2/4mlYcKmmyvZh/nsuqJlyiGM+W/g1OGM3mBXbHXv9T6k=
-X-Received: by 2002:aca:aad5:0:b0:32f:3b9b:e0f with SMTP id
- t204-20020acaaad5000000b0032f3b9b0e0fmr1738156oie.228.1655202447146; Tue, 14
- Jun 2022 03:27:27 -0700 (PDT)
+        Tue, 14 Jun 2022 06:27:57 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231E63B00A;
+        Tue, 14 Jun 2022 03:27:50 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id y19so16252149ejq.6;
+        Tue, 14 Jun 2022 03:27:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jrru+W9CiP61r8FdhVjseVVEnqKypBX79NDxW5VF9lA=;
+        b=Br0hoxLR5VWo+VJliWSt18OQApImS7qwCJxg5aonyCX5Xi1xnx7+8jtY4Rj32HfcIs
+         e/ZiOwGTfOcb1DXBhTDUpqQ4+4F4u0LIV5hoFqEWz1WNqVUpbNCDhzrO4NnE3MKxOn+m
+         x3ImM5WcsWzY/sRfSmTCY6kKvCuE7gZNYVNAePncdTlwPDG3qB7iY7/Imk+oKsOdRBqP
+         BSYkTJ9Of9ALO+L3c3omIOJL0retvZfy43wsGLdOU+WsJ0nyeviPB4dF7yGT7GYFAmbD
+         qEw2TEK07w3aWk7RZ+ktUmRaVvFbFW2zkx3DSALOMjTKXnOA0biPAQfEt7ybIpONP/gf
+         kzIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jrru+W9CiP61r8FdhVjseVVEnqKypBX79NDxW5VF9lA=;
+        b=YilOn6FCj8TO4K8XJ2xTCFCp7KclKZ0YxBnClXl0QcdbWRob8UYkv6D/POuDLtaE9s
+         gKnwQ41W65sER0p0bFMh+5myI6pUYKAfdwRlZfDui5WttiNBhRhNt5KNuKfMfYC+JHla
+         CxLD24vbL8OaX8kQnvhUBGw3VFn91utaqRYB21sfcashHlWFOB+3W5oPfuN3zMe4kP0V
+         XG0eKdtA6FAb1WhVmD/RNjJ+O3087A0PkaSot72vr973ZvMejo+FOQIS191OQY3gbqrO
+         xYqsxfQYKYEW5bclL8HXai2CkgUWY1jBt820lEekbH+FGjbY9VvK2gEinbVbDcGpl6tT
+         +2yQ==
+X-Gm-Message-State: AOAM531ncrU6pnGPlYktfrCdO1lSgEfPQ01VEr4z+Sk2/Lx9gEiiI1Uf
+        zKYoCbHeZXxHDqHwlSOZjOM=
+X-Google-Smtp-Source: ABdhPJzotjsoyauGPAVbh3VRIk3REEEQi4AXDo+imvPsIwdONIFUgP6XY6AunlqB/4RqTW9CmNdpMA==
+X-Received: by 2002:a17:907:94c8:b0:711:d864:fd84 with SMTP id dn8-20020a17090794c800b00711d864fd84mr3568421ejc.18.1655202468494;
+        Tue, 14 Jun 2022 03:27:48 -0700 (PDT)
+Received: from debian (host-78-150-47-22.as13285.net. [78.150.47.22])
+        by smtp.gmail.com with ESMTPSA id c11-20020a05640227cb00b0042bb229e81esm6815867ede.15.2022.06.14.03.27.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 03:27:48 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 11:27:46 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 000/287] 4.19.247-rc1 review
+Message-ID: <YqhioqKm5I/peKcv@debian>
+References: <20220613094923.832156175@linuxfoundation.org>
 MIME-Version: 1.0
-References: <20220614092156.1972846-1-mawupeng1@huawei.com>
- <20220614092156.1972846-6-mawupeng1@huawei.com> <Yqhg6abZDGZSpJ7+@MiWiFi-R3L-srv>
-In-Reply-To: <Yqhg6abZDGZSpJ7+@MiWiFi-R3L-srv>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 14 Jun 2022 12:27:15 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGXvjrnY=Hzd4c3CYZsNT6OiqTcMmKT0tdnk=jFOiVpWA@mail.gmail.com>
-Message-ID: <CAMj1kXGXvjrnY=Hzd4c3CYZsNT6OiqTcMmKT0tdnk=jFOiVpWA@mail.gmail.com>
-Subject: Re: [PATCH v5 5/5] memblock: Disable mirror feature if kernelcore is
- not specified
-To:     Baoquan He <bhe@redhat.com>
-Cc:     Wupeng Ma <mawupeng1@huawei.com>, Jonathan Corbet <corbet@lwn.net>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Kees Cook <keescook@chromium.org>, songmuchun@bytedance.com,
-        Randy Dunlap <rdunlap@infradead.org>,
-        damien.lemoal@opensource.wdc.com,
-        Stephen Boyd <swboyd@chromium.org>,
-        Wei Liu <wei.liu@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>, gpiccoli@igalia.com,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        vijayb@linux.microsoft.com,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 14 Jun 2022 at 12:20, Baoquan He <bhe@redhat.com> wrote:
->
-> On 06/14/22 at 05:21pm, Wupeng Ma wrote:
-> > From: Ma Wupeng <mawupeng1@huawei.com>
-> >
-> > If system have some mirrored memory and mirrored feature is not specified
-> > in boot parameter, the basic mirrored feature will be enabled and this will
-> > lead to the following situations:
-> >
-> > - memblock memory allocation prefers mirrored region. This may have some
-> >   unexpected influence on numa affinity.
-> >
-> > - contiguous memory will be split into several parts if parts of them
-> >   is mirrored memory via memblock_mark_mirror().
-> >
-> > To fix this, variable mirrored_kernelcore will be checked in
-> > memblock_mark_mirror(). Mark mirrored memory with flag MEMBLOCK_MIRROR iff
-> > kernelcore=mirror is added in the kernel parameters.
-> >
-> > Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
-> > Acked-by: Ard Biesheuvel <ardb@kernel.org>
-> > ---
-> >  mm/internal.h   | 2 ++
-> >  mm/memblock.c   | 3 +++
-> >  mm/page_alloc.c | 2 +-
-> >  3 files changed, 6 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/mm/internal.h b/mm/internal.h
-> > index c0f8fbe0445b..ddd2d6a46f1b 100644
-> > --- a/mm/internal.h
-> > +++ b/mm/internal.h
-> > @@ -861,4 +861,6 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags);
-> >
-> >  DECLARE_PER_CPU(struct per_cpu_nodestat, boot_nodestats);
-> >
-> > +extern bool mirrored_kernelcore;
-> > +
-> >  #endif       /* __MM_INTERNAL_H */
-> > diff --git a/mm/memblock.c b/mm/memblock.c
-> > index b1d2a0009733..a9f18b988b7f 100644
-> > --- a/mm/memblock.c
-> > +++ b/mm/memblock.c
-> > @@ -924,6 +924,9 @@ int __init_memblock memblock_clear_hotplug(phys_addr_t base, phys_addr_t size)
-> >   */
-> >  int __init_memblock memblock_mark_mirror(phys_addr_t base, phys_addr_t size)
-> >  {
-> > +     if (!mirrored_kernelcore)
-> > +             return 0;
->
-> memblock_mark_mirror() is just a wrapper, maybe we should check this in
-> efi_find_mirror(). Otherwise, how do we explain the message printed out
-> at below in boot log if we don't mark mirror memory at all?
->
-> void __init efi_find_mirror(void)
-> {
-> ......
->         if (mirror_size)
->                 pr_info("Memory: %lldM/%lldM mirrored memory\n",
->                         mirror_size>>20, total_size>>20);
-> }
->
+Hi Greg,
 
-EFI does not care about *how* mirrored memory is being used or not, it
-just reports what the firmware provided. So EFI is not the appropriate
-level to take kernelcore=mirror into account.
+On Mon, Jun 13, 2022 at 12:07:04PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.19.247 release.
+> There are 287 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 15 Jun 2022 09:47:08 +0000.
+> Anything received after that time might be too late.
 
-I already mentioned that memblock_mark_mirror() is also the wrong
-place IMO, but Kefeng explained that doing it elsewhere is
-problematic.
+Build test (gcc version 11.3.1 20220612):
+mips: 63 configs -> no  failure
+arm: 115 configs -> no failure
+arm64: 2 configs -> no failure
+x86_64: 4 configs -> no failure
+alpha allmodconfig -> no failure
+s390 allmodconfig -> no failure
+xtensa allmodconfig -> no failure
+
+powerpc allmodconfig and riscv allmodconfig failed to build.
+backported patches sent separately.
+
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+
+[1]. https://openqa.qa.codethink.co.uk/tests/1315
+
+
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
