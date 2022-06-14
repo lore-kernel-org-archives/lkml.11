@@ -2,192 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A9CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D30CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344334AbiFNWCu (ORCPT
+        id S1354852AbiFNWEX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 18:02:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57492 "EHLO
+        Tue, 14 Jun 2022 18:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345189AbiFNWCr (ORCPT
+        with ESMTP id S230024AbiFNWER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 18:02:47 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A2613EBA
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 15:02:44 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id j23-20020a17090a061700b001e89529d397so88463pjj.6
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 15:02:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=lrVW1I5SIqxygGfdn7dE995IrEtCJUN/f9GmeMKUvnc=;
-        b=NKDq6eNl+qXNZHPcakcd4kpblY2meICIUdTI0MJLOZncy/rxmdReGAyUBbpxcEBUTG
-         dxg7nBIv9qlOyrRR1oMtBteaj3Y/JzmRk3V0GJLnRR0E8+B0wXsT6XJG6tWg96u/lhmB
-         etNuH64FsBtyPVgNCTjlZQMgqnSZ7DdXWkzpeO+5Qbnc0z6w2OyaYJAwoxpjMndAXv8b
-         19adCp3BJ90tbexnMFn2o2fBYR3A5kELHROTiIGqGQgJE2VrtwEM05AFvCb44qpg0UWT
-         N2S5ht1TnFZ899se2qxFspcOTQPW70Ej6810+POhqd1O1zLCghA0Jlj1RvW5ARpxJECR
-         BdIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=lrVW1I5SIqxygGfdn7dE995IrEtCJUN/f9GmeMKUvnc=;
-        b=SSWmlnwL8XfOnLZ8AvzNDY8BfW4taodZrUjqEyPm4qJqbboeFrz+acuFn0Igw5depW
-         Y3TnyyZWq/HpDixFsFVjOIncQnXQnQbe3znaYGh6ywDOBnMWQvUx/sVrLI2ZMletT8+b
-         yrRfHvmHbMAp1yECqiNLJ9OX5Dmxji4ScHIYs9YsoP2WpWFsWBP3f1OD4MYP8iY92BfC
-         Ue4VxKIui3eq8RsZM8SdzZc+fvaoYcfcIl7oUgb41DiIdqfMHVoMc6l3re3VwCOmLCPL
-         1PniNOmgNg76Pz6ala1on23y0fDt2QCy6X1h+doMGVyi7C6dwvcbS72aAjlgq9bKLBIG
-         1KzQ==
-X-Gm-Message-State: AOAM530vuLPdqEgUPs7ghIyRzhQrzWDAbL15NCEypceK0d4MwRrxD2S0
-        yLJFwXXQIYT1d55AUenmiMrL3jBt26HWgJIpge0=
-X-Google-Smtp-Source: ABdhPJzZDqjgOXqNXzNoMxUfjk248v8FEODamZOOBL1QF2Uxm5LjN7pq2lAB0cwZFHuXEYikbeeNHqc8FUldkXGBmuY=
-X-Received: from ndesaulniers1.mtv.corp.google.com ([2620:15c:211:202:478c:4e88:59e6:a1c2])
- (user=ndesaulniers job=sendgmr) by 2002:a63:c5:0:b0:3fe:26a0:7abe with SMTP
- id 188-20020a6300c5000000b003fe26a07abemr6428939pga.152.1655244164322; Tue,
- 14 Jun 2022 15:02:44 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 15:02:29 -0700
-Message-Id: <20220614220229.1640085-1-ndesaulniers@google.com>
-Mime-Version: 1.0
-X-Developer-Key: i=ndesaulniers@google.com; a=ed25519; pk=lvO/pmg+aaCb6dPhyGC1GyOCvPueDrrc8Zeso5CaGKE=
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1655244149; l=5539;
- s=20211004; h=from:subject; bh=f3ZK8/kP38ZW74vacM54ZIsXbSpGEvA5AJcusva2pVE=;
- b=vaVg/LweBouwrspD+ylGz+5uWCM44wcdFddmcU1TQii3fKuc1B5pjqR3k9rPRf0aXvXIaSV/Cecj
- J7wiFRtLC1tc5VEkQTu460J1J5lw7ehMFGL75R0shTPRrrGxwl2f
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH v4] coresight: etm4x: avoid build failure with unrolled loops
-From:   Nick Desaulniers <ndesaulniers@google.com>
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 14 Jun 2022 18:04:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA8C72FE6F
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 15:04:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655244255;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=v9dxoAUFdvaKxjatlIHTfIiF/lhvDFU0vdCFYvfgo9U=;
+        b=JbKT3w2NfDupaJito6m7UIsXrjnWTW8x9BqkqDcA5qDzbAc89sBLL/osl71Cjvs3bqQCG1
+        zs9wQxvZ45LMhNLgq7hzFRHyBmgfjaeN+6gUeVadfdtUx6ivj0N9iQEdf6ktrOF7VHPLtT
+        v6cg2Bx6AC2FlRrcSJIfdOvFl4uoBro=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-314-g4PcdfaWOASxu_lcFaIdqw-1; Tue, 14 Jun 2022 18:04:14 -0400
+X-MC-Unique: g4PcdfaWOASxu_lcFaIdqw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 09BFF381079B;
+        Tue, 14 Jun 2022 22:04:14 +0000 (UTC)
+Received: from llong.com (unknown [10.22.33.116])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F0CC5492CA2;
+        Tue, 14 Jun 2022 22:04:12 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Muchun Song <songmuchun@bytedance.com>,
+        Waiman Long <longman@redhat.com>
+Subject: [PATCH v2 0/3] mm/kmemleak: Avoid soft lockup in kmemleak_scan()
+Date:   Tue, 14 Jun 2022 18:03:56 -0400
+Message-Id: <20220614220359.59282-1-longman@redhat.com>
+MIME-Version: 1.0
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the following configs are enabled:
-* CORESIGHT
-* CORESIGHT_SOURCE_ETM4X
-* UBSAN
-* UBSAN_TRAP
+ v2:
+  - Update patch 3 to count the objects checked instead of being
+    gray for determining when to do cond_resched(). This is more
+    reliable.
 
-Clang fails assemble the kernel with the error:
-<instantiation>:1:7: error: expected constant expression in '.inst' directive
-.inst (0xd5200000|((((2) << 19) | ((1) << 16) | (((((((((((0x160 + (i * 4))))) >> 2))) >> 7) & 0x7)) << 12) | ((((((((((0x160 + (i * 4))))) >> 2))) & 0xf)) << 8) | (((((((((((0x160 + (i * 4))))) >> 2))) >> 4) & 0x7)) << 5)))|(.L__reg_num_x8))
-      ^
-drivers/hwtracing/coresight/coresight-etm4x-core.c:702:4: note: while in macro instantiation
-                        etm4x_relaxed_read32(csa, TRCCNTVRn(i));
-                        ^
-drivers/hwtracing/coresight/coresight-etm4x.h:403:4: note: expanded from macro 'etm4x_relaxed_read32'
-                 read_etm4x_sysreg_offset((offset), false)))
-                 ^
-drivers/hwtracing/coresight/coresight-etm4x.h:383:12: note: expanded from macro 'read_etm4x_sysreg_offset'
-                        __val = read_etm4x_sysreg_const_offset((offset));       \
-                                ^
-drivers/hwtracing/coresight/coresight-etm4x.h:149:2: note: expanded from macro 'read_etm4x_sysreg_const_offset'
-        READ_ETM4x_REG(ETM4x_OFFSET_TO_REG(offset))
-        ^
-drivers/hwtracing/coresight/coresight-etm4x.h:144:2: note: expanded from macro 'READ_ETM4x_REG'
-        read_sysreg_s(ETM4x_REG_NUM_TO_SYSREG((reg)))
-        ^
-arch/arm64/include/asm/sysreg.h:1108:15: note: expanded from macro 'read_sysreg_s'
-        asm volatile(__mrs_s("%0", r) : "=r" (__val));                  \
-                     ^
-arch/arm64/include/asm/sysreg.h:1074:2: note: expanded from macro '__mrs_s'
-"       mrs_s " v ", " __stringify(r) "\n"                      \
- ^
+There are 3 RCU-based object iteration loops in kmemleak_scan(). Because
+of the need to take RCU read lock, we can't insert cond_resched() into
+the loop like other parts of the function. As there can be millions of
+objects to be scanned, it takes a while to iterate all of them. The
+kmemleak functionality is usually enabled in a debug kernel which is
+much slower than a non-debug kernel. With sufficient number of kmemleak
+objects, the time to iterate them all may exceed 22s causing soft lockup.
 
-Consider the definitions of TRCSSCSRn and TRCCNTVRn:
-drivers/hwtracing/coresight/coresight-etm4x.h:56
- #define TRCCNTVRn(n)      (0x160 + (n * 4))
-drivers/hwtracing/coresight/coresight-etm4x.h:81
- #define TRCSSCSRn(n)      (0x2A0 + (n * 4))
+  watchdog: BUG: soft lockup - CPU#3 stuck for 22s! [kmemleak:625]
 
-Where the macro parameter is expanded to i; a loop induction variable
-from etm4_disable_hw.
+This patch series make changes to the 3 object iteration loops in
+kmemleak_scan() to prevent them from causing soft lockup.
 
-When any compiler can determine that loops may be unrolled, then the
-__builtin_constant_p check in read_etm4x_sysreg_offset() defined in
-drivers/hwtracing/coresight/coresight-etm4x.h may evaluate to true. This
-can lead to the expression `(0x160 + (i * 4))` being passed to
-read_etm4x_sysreg_const_offset. Via the trace above, this is passed
-through READ_ETM4x_REG, read_sysreg_s, and finally to __mrs_s where it
-is string-ified and used directly in inline asm.
+Waiman Long (3):
+  mm/kmemleak: Use _irq lock/unlock variants in kmemleak_scan/_clear()
+  mm/kmemleak: Skip unlikely objects in kmemleak_scan() without taking
+    lock
+  mm/kmemleak: Prevent soft lockup in first object iteration loop of
+    kmemleak_scan()
 
-Regardless of compiler or compiler options determine whether a loop can
-or can't be unrolled, which determines whether __builtin_constant_p
-evaluates to true when passed an expression using a loop induction
-variable, it is NEVER safe to allow the preprocessor to construction
-inline asm like:
-  asm volatile (".inst (0x160 + (i * 4))" : "=r"(__val));
-                                 ^ expected constant expression
+ mm/kmemleak.c | 60 +++++++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 49 insertions(+), 11 deletions(-)
 
-Replace unsafe uses of calls to etm4x_relaxed_read32 with
-csdev_access_read32 when the parameter is an expression that would be
-invalid inline asm so that it does not depend on the ability of the
-compiler to optimize __builtin_constant_p of the expression to true.
-Only when the second parameter of etm4x_relaxed_read32 expands to an
-expression dependent on a loop induction variable do we need to fix
-this.
-
-This is not a bug in clang; it's a potentially unsafe use of the macro
-arguments in read_etm4x_sysreg_offset dependent on __builtin_constant_p.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1310
-Suggested-by: Arnd Bergmann <arnd@kernel.org>
-Suggested-by: Tao Zhang <quic_taozha@quicinc.com>
-Suggested-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
----
-V1 (Arnd):
-https://lore.kernel.org/lkml/20210225094324.3542511-1-arnd@kernel.org/
-
-V2 (Arnd):
-https://lore.kernel.org/lkml/20210429145752.3218324-1-arnd@kernel.org/
-
-V3 (Tao):
-https://lore.kernel.org/lkml/1632652550-26048-1-git-send-email-quic_taozha@quicinc.com/
-
- drivers/hwtracing/coresight/coresight-etm4x-core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 87299e99dabb..7c6bd85e36d4 100644
---- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
-+++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-@@ -836,13 +836,13 @@ static void etm4_disable_hw(void *info)
- 	/* read the status of the single shot comparators */
- 	for (i = 0; i < drvdata->nr_ss_cmp; i++) {
- 		config->ss_status[i] =
--			etm4x_relaxed_read32(csa, TRCSSCSRn(i));
-+			csdev_access_read32(csa, TRCSSCSRn(i));
- 	}
- 
- 	/* read back the current counter values */
- 	for (i = 0; i < drvdata->nr_cntr; i++) {
- 		config->cntr_val[i] =
--			etm4x_relaxed_read32(csa, TRCCNTVRn(i));
-+			csdev_access_read32(csa, TRCCNTVRn(i));
- 	}
- 
- 	coresight_disclaim_device_unlocked(csdev);
-@@ -1177,7 +1177,7 @@ static void etm4_init_arch_data(void *info)
- 	drvdata->nr_ss_cmp = FIELD_GET(TRCIDR4_NUMSSCC_MASK, etmidr4);
- 	for (i = 0; i < drvdata->nr_ss_cmp; i++) {
- 		drvdata->config.ss_status[i] =
--			etm4x_relaxed_read32(csa, TRCSSCSRn(i));
-+			csdev_access_read32(csa, TRCSSCSRn(i));
- 	}
- 	/* NUMCIDC, bits[27:24] number of Context ID comparators for tracing */
- 	drvdata->numcidc = FIELD_GET(TRCIDR4_NUMCIDC_MASK, etmidr4);
 -- 
-2.36.1.476.g0c4daa206d-goog
+2.31.1
 
