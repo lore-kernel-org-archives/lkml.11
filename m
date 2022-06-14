@@ -2,150 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1600FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3302FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242973AbiFNQb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:31:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
+        id S1344289AbiFNQbq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 12:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239104AbiFNQbW (ORCPT
+        with ESMTP id S243064AbiFNQbg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:31:22 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9970443EC;
-        Tue, 14 Jun 2022 09:31:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655224282; x=1686760282;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=D96JT6uaVa91vNLNM5PVooqVfZFmJK1syxu6+/l0gIk=;
-  b=hDr4BwL6oPgobYshX7gOYfKZBeI+gSpjic+gKkh0X23Tz6bgzPA7wKNi
-   gzvnVdR3YLY+5vQurBC98U3dBS7xmxjDh64nvfXPVBXr5T+jMuIJJqmY0
-   nvyYQmfhYck9HTlHbQUhKtXaQczuhGEVPhqvGi+rXSO13OEtKQDG1mMPe
-   U=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 14 Jun 2022 09:31:21 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 09:31:20 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 09:31:20 -0700
-Received: from [10.111.164.34] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 14 Jun
- 2022 09:31:17 -0700
-Message-ID: <c258b072-82cf-71a8-fdfb-79df52c5d480@quicinc.com>
-Date:   Tue, 14 Jun 2022 09:31:15 -0700
+        Tue, 14 Jun 2022 12:31:36 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D82443C9;
+        Tue, 14 Jun 2022 09:31:35 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:56828)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o19S2-00AmWn-9i; Tue, 14 Jun 2022 10:31:34 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:40454 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o19S0-009rSu-TN; Tue, 14 Jun 2022 10:31:33 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Frederick Lawler <fred@cloudflare.com>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, selinux@vger.kernel.org,
+        serge@hallyn.com, amir73il@gmail.com, kernel-team@cloudflare.com,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Paul Moore <paul@paul-moore.com>
+References: <20220608150942.776446-1-fred@cloudflare.com>
+        <87tu8oze94.fsf@email.froward.int.ebiederm.org>
+        <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com>
+        <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
+        <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com>
+Date:   Tue, 14 Jun 2022 11:30:54 -0500
+In-Reply-To: <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com> (Frederick
+        Lawler's message of "Tue, 14 Jun 2022 11:06:24 -0500")
+Message-ID: <87o7yvxl4x.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] drm/msm/mdp4: Fix refcount leak in mdp4_modeset_init_intf
-Content-Language: en-US
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Stephen Boyd <swboyd@chromium.org>,
-        David Heidelberg <david@ixit.cz>,
-        Guo Zhengkui <guozhengkui@vivo.com>,
-        Xu Wang <vulab@iscas.ac.cn>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Rob Herring <robh@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
-References: <20220607110841.53889-1-linmq006@gmail.com>
- <059e0a81-3c0a-1c8f-90f0-a836da1204f5@quicinc.com>
- <0bdb3a64-e795-4aa0-86c9-efd7fc3d5a19@gmail.com>
- <10ac04f9-6374-0f85-166c-223a220a8c0d@linaro.org>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <10ac04f9-6374-0f85-166c-223a220a8c0d@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain
+X-XM-SPF: eid=1o19S0-009rSu-TN;;;mid=<87o7yvxl4x.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX19OwrPXsW8XkXxckntCYt4oo3aNKl7qziA=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Frederick Lawler <fred@cloudflare.com> writes:
 
-
-On 6/14/2022 3:09 AM, Dmitry Baryshkov wrote:
-> On 14/06/2022 13:07, Miaoqian Lin wrote:
->> Hi, Abhinav
->>
->> On 2022/6/11 7:20, Abhinav Kumar wrote:
+> On 6/13/22 11:44 PM, Eric W. Biederman wrote:
+>> Frederick Lawler <fred@cloudflare.com> writes:
+>> 
+>>> Hi Eric,
 >>>
->>>
->>> On 6/7/2022 4:08 AM, Miaoqian Lin wrote:
->>>> of_graph_get_remote_node() returns remote device node pointer with
->>>> refcount incremented, we should use of_node_put() on it
->>>> when not need anymore.
->>>> Add missing of_node_put() to avoid refcount leak.
+>>> On 6/13/22 12:04 PM, Eric W. Biederman wrote:
+>>>> Frederick Lawler <fred@cloudflare.com> writes:
 >>>>
->>>> Fixes: 86418f90a4c1 ("drm: convert drivers to use 
->>>> of_graph_get_remote_node")
->>>> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
->>>> ---
->>>>    drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c | 2 ++
->>>>    1 file changed, 2 insertions(+)
+>>>>> While experimenting with the security_prepare_creds() LSM hook, we
+>>>>> noticed that our EPERM error code was not propagated up the callstack.
+>>>>> Instead ENOMEM is always returned.  As a result, some tools may send a
+>>>>> confusing error message to the user:
+>>>>>
+>>>>> $ unshare -rU
+>>>>> unshare: unshare failed: Cannot allocate memory
+>>>>>
+>>>>> A user would think that the system didn't have enough memory, when
+>>>>> instead the action was denied.
+>>>>>
+>>>>> This problem occurs because prepare_creds() and prepare_kernel_cred()
+>>>>> return NULL when security_prepare_creds() returns an error code. Later,
+>>>>> functions calling prepare_creds() and prepare_kernel_cred() return
+>>>>> ENOMEM because they assume that a NULL meant there was no memory
+>>>>> allocated.
+>>>>>
+>>>>> Fix this by propagating an error code from security_prepare_creds() up
+>>>>> the callstack.
+>>>> Why would it make sense for security_prepare_creds to return an error
+>>>> code other than ENOMEM?
+>>>>   > That seems a bit of a violation of what that function is supposed to do
 >>>>
 >>>
->>> This patch itself looks fine and will cover the cases when there was 
->>> an error and we did not release the refcount.
->>>
->>> But, even in the normal cases I am not finding where we are releasing 
->>> the refcount for the panel_node.
->>>
->>> I dont see a of_node_put() on mdp4_lcdc_encoder->panel_node.
->>>
->> Thanks for your review.
+>>> The API allows LSM authors to decide what error code is returned from the
+>>> cred_prepare hook. security_task_alloc() is a similar hook, and has its return
+>>> code propagated.
+>> It is not an api.  It is an implementation detail of the linux kernel.
+>> It is a set of convenient functions that do a job.
+>> The general rule is we don't support cases without an in-tree user.  I
+>> don't see an in-tree user.
+>> 
+>>> I'm proposing we follow security_task_allocs() pattern, and add visibility for
+>>> failure cases in prepare_creds().
+>> I am asking why we would want to.  Especially as it is not an API, and I
+>> don't see any good reason for anything but an -ENOMEM failure to be
+>> supported.
 >>
->> I don't see it either. It's a bit messy because the reference assigned 
->> to mdp4_lcdc_encoder->panel_node and mdp4_lvds_connector->panel_node 
->> both.
-> 
-> I have a plan to rework mdp4 lcdc support once I get my ifc6410 lvds 
-> cable. Thus I think we can land this patch now and fix the mdp4 
-> lcdc/lvds code leaking the reference in the due time.
-> 
+> We're writing a LSM BPF policy, and not a new LSM. Our policy aims to solve
+> unprivileged unshare, similar to Debian's patch [1]. We're in a position such
+> that we can't use that patch because we can't block _all_ of our applications
+> from performing an unshare. We prefer a granular approach. LSM BPF seems like a
+> good choice.
 
-Alright, with that assurance,
+I am quite puzzled why doesn't /proc/sys/user/max_user_namespaces work
+for you?
 
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+> Because LSM BPF exposes these hooks, we should probably treat them as an
+> API. From that perspective, userspace expects unshare to return a EPERM 
+> when the call is denied permissions.
 
-Will pick it up for -fixes.
->>
->>> Am i missing something?
+The BPF code gets to be treated as a out of tree kernel module.
+
+>> Without an in-tree user that cares it is probably better to go the
+>> opposite direction and remove the possibility of return anything but
+>> memory allocation failure.  That will make it clearer to implementors
+>> that a general error code is not supported and this is not a location
+>> to implement policy, this is only a hook to allocate state for the LSM.
+>> 
+>
+> That's a good point, and it's possible we're using the wrong hook for the
+> policy. Do you know of other hooks we can look into?
+
+Not off the top of my head.
+
+>>>> I have probably missed a very interesting discussion where that was
+>>>> mentioned but I don't see link to the discussion or anything explaining
+>>>> why we want to do that in this change.
+>>>>
 >>>
->>>> diff --git a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c 
->>>> b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
->>>> index fb48c8c19ec3..17cb1fc78379 100644
->>>> --- a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
->>>> +++ b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
->>>> @@ -216,6 +216,7 @@ static int mdp4_modeset_init_intf(struct 
->>>> mdp4_kms *mdp4_kms,
->>>>            encoder = mdp4_lcdc_encoder_init(dev, panel_node);
->>>>            if (IS_ERR(encoder)) {
->>>>                DRM_DEV_ERROR(dev->dev, "failed to construct LCDC 
->>>> encoder\n");
->>>> +            of_node_put(panel_node);
->>>>                return PTR_ERR(encoder);
->>>>            }
->>>>    @@ -225,6 +226,7 @@ static int mdp4_modeset_init_intf(struct 
->>>> mdp4_kms *mdp4_kms,
->>>>            connector = mdp4_lvds_connector_init(dev, panel_node, 
->>>> encoder);
->>>>            if (IS_ERR(connector)) {
->>>>                DRM_DEV_ERROR(dev->dev, "failed to initialize LVDS 
->>>> connector\n");
->>>> +            of_node_put(panel_node);
->>>>                return PTR_ERR(connector);
->>>>            }
-> 
-> 
+>>> AFAIK, this is the start of the discussion.
+>> You were on v3 and had an out of tree piece of code so I assumed someone
+>> had at least thought about why you want to implement policy in a piece
+>> of code whose only purpose is to allocate memory to store state.
+>> 
+>
+> No worries.
+>
+>> Eric
+>> 
+>> 
+>
+> Links:
+> 1:
+> https://sources.debian.org/patches/linux/3.16.56-1+deb8u1/debian/add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch/
+
+Eric
