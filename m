@@ -2,126 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D9FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ADD0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344438AbiFNQcH (ORCPT
+        id S1344380AbiFNQeA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46830 "EHLO
+        Tue, 14 Jun 2022 12:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245157AbiFNQbx (ORCPT
+        with ESMTP id S239599AbiFNQd6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:31:53 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C494477A
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:31:52 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id s10so10324817ljh.12
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:31:51 -0700 (PDT)
+        Tue, 14 Jun 2022 12:33:58 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8088D27CD3
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:33:57 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-30ec2aa3b6cso35210397b3.11
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:33:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=n2fZye6UdimpBGkNb+1XWvu1Hsvf3MmLKdDgNGiZcbY=;
-        b=MKAutI88yTh1uEp9FHB/z8i4rfULiSmiDbjPxv80KvCvVInAbz+dGPX4QFiWDzChOM
-         N6MDGNBPodnWa+NaXV6vmjDgqx8c6dD0VzqUWiqikQf5mpme/wGMpoE9QVbtjfu3okfw
-         klu0yAQwuPT6gFYMfejmiYxiQU5bhrCHdFuKAzO5e9MmGKsUA5eTht8qR672q3N8t/bQ
-         eqAMdht0Ri+B4I9LgO8VsnrjGFKODiJwdvk5tDAnFJ9ul07Q3E2h/MIF8OIjC7rmtFi/
-         TQX8AwwPIXm2byRjC0ZctS4bsYmwG2VB/ZNjeDrDaagaJSdyF6vYsJjrRmEXDwfNhCsV
-         Go9w==
+        bh=M/kEUFAftetAf2N7yHDHF4JNTzfknxIkkNoqCJfpWV0=;
+        b=bQFtbs9YcHpIat+VNMaXN8GfVHbAWCDLkV7fg62QD0yIWV+0uP3jDb6bxCYuRrqEKT
+         khJU61Bk1hb9Uq80iBtZyGFkblrK2wmswiU0/MbDSWcgffqTKuIHptrGMxqOTMIqbcC5
+         sHDPSHsiLF/+5qg30zLjsDKcgknLfGgW1u29wprNjV5IKExT0DSPvuMIv9W8cvVBEDsm
+         5HJuDD1ugXa43hE611TnQppED/4xi7YH9Yfla859aTKuPPndKZGqDFWWurUyMgqK4jRr
+         xL31Z0Afw/Y6Rb16m9Il0Mtp3STHc2r+MPEzB3OgRTSAFGzSzZ3IIs/HR0OlrSmV8qTK
+         UyLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=n2fZye6UdimpBGkNb+1XWvu1Hsvf3MmLKdDgNGiZcbY=;
-        b=ULp70aCInuYfk4o6c2Aw0AHnmmcxQAGd4XOHyIN4vSK7maDUOn4XobQaxlc+N4Esr2
-         JSRWti2tGkApzo+Do89S1RUrASIX9jihmn8jDxEod8TEqAFJqUViF7GWkdygc185Q5wx
-         VEfTim58Ha9yVUQUne0AwklGwzKeoppmy/EEmMduwqewfxBNMZEVaPJzAukkeWNK6zHk
-         LWtQC0Z/Sm9/Zw5+LtPZygb0GRYnIgzbK1ToRkH/z6iSfvoYoPDCb/TJI7nOF2rDwFTv
-         T6nMcvB0w5Ldbl0wzgX3DSYb4MFpCWlzHvdeSjBB6wWP/Ju6sWItIDmHLuJeza+scsQm
-         2XtQ==
-X-Gm-Message-State: AJIora9tVffjRBGKgiwCygmSc8HEqgs+Py7RXLwtt34ebbLUbtYSisr+
-        zMjEcF5XeAbpeenwmfd6FLm9/XzwBMa7yTt5huBdOg==
-X-Google-Smtp-Source: AGRyM1s4iRYkG2siPCjYVba9R+Y1+hhqAPDrDABhkovtuwAIMqrcG4dvYvBUXWiUUS4XoTC74KcetA/5uIWFMg6VOk0=
-X-Received: by 2002:a2e:9195:0:b0:258:e918:2610 with SMTP id
- f21-20020a2e9195000000b00258e9182610mr2961188ljg.361.1655224310168; Tue, 14
- Jun 2022 09:31:50 -0700 (PDT)
+        bh=M/kEUFAftetAf2N7yHDHF4JNTzfknxIkkNoqCJfpWV0=;
+        b=T8mUwYP6NstXsW7hiFPbX2hPrJTdcydDU1+kyxa79qPP6NvqzXf++RPJclTiqavBRb
+         RdSxBq5hYoheDf4YMvVBTyeZQO1EFQURHX2fAIK5rlSMgE44MRUVJOOHmn3rhBy80Y6W
+         eXAB2a+Uu1Eljh9hn8yuPW+OeH192iuUlViTQWwa5fC4MJ0WGXc5/eHxtHVuuImC8on4
+         Ga10vT4D9H9Z6L9BbP0I432D6jeSwMDwY47gVttVh8oyMdKqWdovjWcpW3EUPL/TMxox
+         uEf3zv29VO5IdxL3tqb70NTWFaf7CKFZxw8g47ISB1TcGoJ6zHOI7Lo/sOhFmNJBsTqJ
+         zZJQ==
+X-Gm-Message-State: AJIora/1lFcwXuIucoOR0hkDRzV7Phme6hF34DDjQJleKAUfS9d+t4AY
+        TMuJjDGPa1G/chNdSEHmiTadCna7L4rQv1hJybfON40CPnx3TQ==
+X-Google-Smtp-Source: AGRyM1stOhRVUmqx6x88uP8qyvJLoxv+aOJ0qkV9zyqBCmiYqcqZF7JCtPygwqiVsQXO2FQ8S8R0hej7Hl8B6obkwRk=
+X-Received: by 2002:a81:78d:0:b0:2e5:d440:d921 with SMTP id
+ 135-20020a81078d000000b002e5d440d921mr6236243ywh.251.1655224436611; Tue, 14
+ Jun 2022 09:33:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220614093222.25387-1-liubo03@inspur.com> <YqiigqccucuU2AQg@google.com>
-In-Reply-To: <YqiigqccucuU2AQg@google.com>
-From:   David Matlack <dmatlack@google.com>
-Date:   Tue, 14 Jun 2022 09:31:23 -0700
-Message-ID: <CALzav=deWrsJjNigiAOGkG-LjWuW91-NKfAx0ZkVj1CEZEZLZg@mail.gmail.com>
-Subject: Re: [PATCH] KVM: Use consistent type for return value of kvm_mmu_memory_cache_nr_free_objects()
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Bo Liu <liubo03@inspur.com>, Paolo Bonzini <pbonzini@redhat.com>,
-        kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20220613155612.402297-1-daeho43@gmail.com> <Yqge0XS7jbSnNWvq@sol.localdomain>
+In-Reply-To: <Yqge0XS7jbSnNWvq@sol.localdomain>
+From:   Daeho Jeong <daeho43@gmail.com>
+Date:   Tue, 14 Jun 2022 09:33:45 -0700
+Message-ID: <CACOAw_xZvvJFC8OwDQibtXqyYS7bMRe8CVkkktT_Nd1_EtFw+g@mail.gmail.com>
+Subject: Re: [PATCH] f2fs: handle decompress only post processing in softirq
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, kernel-team@android.com,
+        Daeho Jeong <daehojeong@google.com>,
+        Nathan Huckleberry <nhuck@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 8:01 AM Sean Christopherson <seanjc@google.com> wrote:
+> One question: is this (the bio endio callback) actually guaranteed to be
+> executed from a softirq?  If you look at dm-crypt's support for workqueue-less
+> decryption, for example, it explicitly checks 'in_hardirq() || irqs_disabled()'
+> and schedules a tasklet if either of those is the case.
 >
-> On Tue, Jun 14, 2022, Bo Liu wrote:
-> > The return value type of the function rmap_can_add() is "bool", and it will
-> > returns the result of the function kvm_mmu_memory_cache_nr_free_objects().
-> > So we should change the return value type of
-> > kvm_mmu_memory_cache_nr_free_objects() to "bool".
-> >
-> > Signed-off-by: Bo Liu <liubo03@inspur.com>
-> > ---
-> >  include/linux/kvm_host.h | 2 +-
-> >  virt/kvm/kvm_main.c      | 4 ++--
-> >  2 files changed, 3 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> > index c20f2d55840c..a399a7485795 100644
-> > --- a/include/linux/kvm_host.h
-> > +++ b/include/linux/kvm_host.h
-> > @@ -1358,7 +1358,7 @@ void kvm_flush_remote_tlbs(struct kvm *kvm);
-> >
-> >  #ifdef KVM_ARCH_NR_OBJS_PER_MEMORY_CACHE
-> >  int kvm_mmu_topup_memory_cache(struct kvm_mmu_memory_cache *mc, int min);
-> > -int kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc);
-> > +bool kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc);
-> >  void kvm_mmu_free_memory_cache(struct kvm_mmu_memory_cache *mc);
-> >  void *kvm_mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
-> >  #endif
-> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> > index a67e996cbf7f..2872569e3580 100644
-> > --- a/virt/kvm/kvm_main.c
-> > +++ b/virt/kvm/kvm_main.c
-> > @@ -394,9 +394,9 @@ int kvm_mmu_topup_memory_cache(struct kvm_mmu_memory_cache *mc, int min)
-> >       return 0;
-> >  }
-> >
-> > -int kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc)
-> > +bool kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc)
->
-> Absolutely not, the name of the function is "nr_free_objects".  Renaming it to
-> "has_free_objects" is not a net positive IMO.
+> - Eric
 
-Also nested eager page splitting [1] uses
-kvm_mmu_memory_cache_nr_free_objects() and needs to know the number of
-free objects.
+Oh, you're right. Even though it's safe to defer all the release
+process as a work in end_io function, it's better to check the
+condition and process the release process right away if possible.
 
-[1] https://lore.kernel.org/all/20220516232138.1783324-23-dmatlack@google.com/
-
-> If we really care about returning
-> a bool then we can tweak rmap_can_add().
->
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 17252f39bd7c..047855d134da 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -1018,7 +1018,7 @@ static bool rmap_can_add(struct kvm_vcpu *vcpu)
->         struct kvm_mmu_memory_cache *mc;
->
->         mc = &vcpu->arch.mmu_pte_list_desc_cache;
-> -       return kvm_mmu_memory_cache_nr_free_objects(mc);
-> +       return !!kvm_mmu_memory_cache_nr_free_objects(mc);
->  }
->
->  static void rmap_remove(struct kvm *kvm, u64 *spte)
+Thanks,
