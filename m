@@ -2,166 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F0FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 649B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233206AbiFNBod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 21:44:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52278 "EHLO
+        id S235742AbiFNBqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 21:46:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232466AbiFNBob (ORCPT
+        with ESMTP id S232466AbiFNBqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 21:44:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9DC6028733
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 18:44:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655171068;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=R8tMWrimMGfLwBpAuu2lBsQ7zXDAkGHB6K2YkN+rto8=;
-        b=O0+TXiaLeKwhnmfxSR5ab/10WgCUNmvk4c2qkC0o0JrJC+yH63EAfR4lqnYeUbFZkA+x09
-        Uxwh9VPZfP/0HjBeNEpH4eIeREO4+Qw6TUhDISRVw43bp10RzukjLyUq+ECrQfEn3nfCU+
-        2GADfYsX6N1r2DJ96Ne17qAsFDJ0eUs=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-641-iX3BZVL7PdGfC7coEHCSTg-1; Mon, 13 Jun 2022 21:44:27 -0400
-X-MC-Unique: iX3BZVL7PdGfC7coEHCSTg-1
-Received: by mail-io1-f69.google.com with SMTP id r76-20020a6b2b4f000000b00669b75529e5so3573580ior.16
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 18:44:27 -0700 (PDT)
+        Mon, 13 Jun 2022 21:46:10 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CF528733;
+        Mon, 13 Jun 2022 18:46:08 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id s135so7165341pgs.10;
+        Mon, 13 Jun 2022 18:46:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EBGL9E7OB4V1zTXBIQFEfKIFlS17lj/9UnG0R5XFTgA=;
+        b=q6umwX76xn6HGaNN598lYDpD2rotyodQQoXamqAbIMDR0Nk7xjiBUc57LYUSH/4R2o
+         YhkfdsdF80Vtt2X4WILafYjbplVLv2YXIACHIEw8cCqluwkWVFhM1v5wWcIWOZNpWz6V
+         CFXiwwap3cY0oKcKUPzap4juEfoauBfMQu1D+aZEaWutSJ7drxDG4syF0YJofdmGdbM3
+         JBp6zUOAbcWp3H5j01YKn8ajEstkKabzJktcbxwpuN+ZawSE9ZKVnDG8j5zVl6lHUIcO
+         9HJlQaP435A3YcPhhTrYsZZvUxdC/R/uWtgtiSIZNkhLeaEHIsX4/hlbwXaRl3cV4jsI
+         mWlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R8tMWrimMGfLwBpAuu2lBsQ7zXDAkGHB6K2YkN+rto8=;
-        b=vVIhkq2Z5fyZC1LZRUImVuiooQYHxHNOY+jK05ylm5EyYyGQ+XB8sc+Xw49Mg8EVwW
-         pcrFMEwgF+niYRtVVAszKGwoI+Af61uyxfKnKCsQMBMOp4SQaCZviolYxRZuefO8TorN
-         g4iCUlsHbAHyVpmFoBwsFk6uYmC+nywl94x9jpdMDYOi6MJAVs7TtDU3VirifP9cVFZf
-         S157uy6AZ/4o/YuVpHCHOPiGy4yTqRaK8oW6e3bTG+cb6Hjfq2P/tY0LqCHdG24DxtA1
-         GHzE6PlwDz3FEHVEOYNXMQC5bY9oX4m6NyfzCo+8NxHa2vvEARPq9q5l1SewluTSVk7e
-         qSxQ==
-X-Gm-Message-State: AJIora+HqeZypKyOEIGPHnvGphtDla3Jr2P+Gxa2j27/ylrqTyy4aopn
-        da6p3CxAcyF0Txb6Ys3N31L/lPstBCsOxfVzTh4BLjNQbFCiTaxEc1nrj/XMZBpcOJhF5BcOJQ+
-        Fex+H5K+KyFUP7HaR47WZXQnCY0m3zviJ7o46+PWc
-X-Received: by 2002:a92:cd8e:0:b0:2d3:e757:8df0 with SMTP id r14-20020a92cd8e000000b002d3e7578df0mr1532722ilb.190.1655171066694;
-        Mon, 13 Jun 2022 18:44:26 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vtaqA/8b56sYGyTFEUt5xb3zJsIm6CNge5IWbpRTP/JBVTQtlBIseF/tRabKJOi7RdPJ50E8K5f9G5Up9+FLQ=
-X-Received: by 2002:a92:cd8e:0:b0:2d3:e757:8df0 with SMTP id
- r14-20020a92cd8e000000b002d3e7578df0mr1532710ilb.190.1655171066465; Mon, 13
- Jun 2022 18:44:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EBGL9E7OB4V1zTXBIQFEfKIFlS17lj/9UnG0R5XFTgA=;
+        b=7VZUqBTxIgC2ikF9P4piM7guNyumGHnQkER242kYfEuyp6FoGnx9RcB5Odi2deX+GI
+         NTInyNxmwg+5+yehfwYnFpADDMiczmAmLuFxoCl9QwbSY3K3scgvEH66inK9LXxDtd8V
+         DfTANMrZ4nYgvLm0tDZoVEZm+6i/b1KU8HPR0wXQsPE+xjkjPNQkawkmaGDukGVgQqWO
+         cuemBmqopdfreqgRSq9MdK0M+ZpxxKMQCjUUzD0q6npr3OSTDQ1JOfIGh+EYEQNvuxAO
+         y/j76qyNS+CEuVJB1TfAGAGVt938joVB5POVTPhUOB8HZv7+TM4CCxTomJii59W4G3eh
+         XrkQ==
+X-Gm-Message-State: AOAM532djeT6PocJdairCK2Mh+WMiTqp7uX6O7G0mAteLjiUCmcQYSOL
+        qqbSrJKJqpruhx1OVgha6iw=
+X-Google-Smtp-Source: ABdhPJyFN4D018rKHi7xTrBq/m8qKfEzwuOFn6fhHV+/87C7zc8nblte4mFf2i/wMFqpqbPOL0irOQ==
+X-Received: by 2002:a65:6cc8:0:b0:3fe:2b89:cc00 with SMTP id g8-20020a656cc8000000b003fe2b89cc00mr2211916pgw.599.1655171168123;
+        Mon, 13 Jun 2022 18:46:08 -0700 (PDT)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:37:7f38:359f:eb4a:3919])
+        by smtp.gmail.com with ESMTPSA id fs23-20020a17090af29700b001df2f8f0a45sm6021473pjb.1.2022.06.13.18.46.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 18:46:07 -0700 (PDT)
+From:   Tianyu Lan <ltykernel@gmail.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, michael.h.kelley@microsoft.com
+Cc:     Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        vkuznets@redhat.com, parri.andrea@gmail.com,
+        thomas.lendacky@amd.com
+Subject: [PATCH V3] x86/Hyper-V: Add SEV negotiate protocol support in Isolation VM
+Date:   Mon, 13 Jun 2022 21:45:53 -0400
+Message-Id: <20220614014553.1915929-1-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220505194658.246121-1-steve.wahl@hpe.com> <20220512151309.330068-1-steve.wahl@hpe.com>
- <20220613205734.3x7i46bnsofzerr4@cantor> <673eb011-94f4-46b0-f1b4-24a02a269f4e@linux.intel.com>
-In-Reply-To: <673eb011-94f4-46b0-f1b4-24a02a269f4e@linux.intel.com>
-From:   Jerry Snitselaar <jsnitsel@redhat.com>
-Date:   Mon, 13 Jun 2022 18:44:00 -0700
-Message-ID: <CALzcddsXciFgKOLSkXxx4Rv_rwh21qe8hkyiEET280D8orP6Vw@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
-To:     Baolu Lu <baolu.lu@linux.intel.com>
-Cc:     Steve Wahl <steve.wahl@hpe.com>, Joerg Roedel <jroedel@suse.de>,
-        Kyung Min Park <kyung.min.park@intel.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <sivanich@hpe.com>,
-        Russ Anderson <russ.anderson@hpe.com>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 6:36 PM Baolu Lu <baolu.lu@linux.intel.com> wrote:
->
-> On 2022/6/14 04:57, Jerry Snitselaar wrote:
-> > On Thu, May 12, 2022 at 10:13:09AM -0500, Steve Wahl wrote:
-> >> To support up to 64 sockets with 10 DMAR units each (640), make the
-> >> value of DMAR_UNITS_SUPPORTED adjustable by a config variable,
-> >> CONFIG_DMAR_UNITS_SUPPORTED, and make it's default 1024 when MAXSMP is
-> >> set.
-> >>
-> >> If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
-> >> to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
-> >> allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
-> >> remapping doesn't support X2APIC mode x2apic disabled"; and the system
-> >> fails to boot properly.
-> >>
-> >> Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
-> >> ---
-> >>
-> >> Note that we could not find a reason for connecting
-> >> DMAR_UNITS_SUPPORTED to MAX_IO_APICS as was done previously.  Perhaps
-> >> it seemed like the two would continue to match on earlier processors.
-> >> There doesn't appear to be kernel code that assumes that the value of
-> >> one is related to the other.
-> >>
-> >> v2: Make this value a config option, rather than a fixed constant.  The default
-> >> values should match previous configuration except in the MAXSMP case.  Keeping the
-> >> value at a power of two was requested by Kevin Tian.
-> >>
-> >>   drivers/iommu/intel/Kconfig | 6 ++++++
-> >>   include/linux/dmar.h        | 6 +-----
-> >>   2 files changed, 7 insertions(+), 5 deletions(-)
-> >>
-> >> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-> >> index 247d0f2d5fdf..fdbda77ac21e 100644
-> >> --- a/drivers/iommu/intel/Kconfig
-> >> +++ b/drivers/iommu/intel/Kconfig
-> >> @@ -9,6 +9,12 @@ config DMAR_PERF
-> >>   config DMAR_DEBUG
-> >>      bool
-> >>
-> >> +config DMAR_UNITS_SUPPORTED
-> >> +    int "Number of DMA Remapping Units supported"
-> >
-> > Also, should there be a "depends on (X86 || IA64)" here?
->
-> Do you have any compilation errors or warnings?
->
-> Best regards,
-> baolu
->
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-I think it is probably harmless since it doesn't get used elsewhere,
-but our tooling was complaining to me because DMAR_UNITS_SUPPORTED was
-being autogenerated into the configs for the non-x86 architectures we
-build (aarch64, s390x, ppcle64).
-We have files corresponding to the config options that it looks at,
-and I had one for x86 and not the others so it noticed the
-discrepancy.
+Hyper-V Isolation VM current code uses sev_es_ghcb_hv_call()
+to read/write MSR via GHCB page and depends on the sev code.
+This may cause regression when sev code changes interface
+design.
 
+The latest SEV-ES code requires to negotiate GHCB version before
+reading/writing MSR via GHCB page and sev_es_ghcb_hv_call() doesn't
+work for Hyper-V Isolation VM. Add Hyper-V ghcb related implementation
+to decouple SEV and Hyper-V code. Negotiate GHCB version in the
+hyperv_init() and use the version to communicate with Hyper-V
+in the ghcb hv call function.
 
-> >
-> >> +    default 1024 if MAXSMP
-> >> +    default 128  if X86_64
-> >> +    default 64
-> >> +
-> >>   config INTEL_IOMMU
-> >>      bool "Support for Intel IOMMU using DMA Remapping Devices"
-> >>      depends on PCI_MSI && ACPI && (X86 || IA64)
-> >> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-> >> index 45e903d84733..0c03c1845c23 100644
-> >> --- a/include/linux/dmar.h
-> >> +++ b/include/linux/dmar.h
-> >> @@ -18,11 +18,7 @@
-> >>
-> >>   struct acpi_dmar_header;
-> >>
-> >> -#ifdef      CONFIG_X86
-> >> -# define    DMAR_UNITS_SUPPORTED    MAX_IO_APICS
-> >> -#else
-> >> -# define    DMAR_UNITS_SUPPORTED    64
-> >> -#endif
-> >> +#define     DMAR_UNITS_SUPPORTED    CONFIG_DMAR_UNITS_SUPPORTED
-> >>
-> >>   /* DMAR Flags */
-> >>   #define DMAR_INTR_REMAP            0x1
-> >> --
-> >> 2.26.2
-> >>
-> >
->
+Fixes: 2ea29c5abbc2 ("x86/sev: Save the negotiated GHCB version")
+Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+---
+Change since v1:
+       - Negotiate ghcb version in Hyper-V init.
+       - use native_wrmsrl() instead of native_wrmsr() in the
+       	 wr_ghcb_msr().
+---
+ arch/x86/hyperv/hv_init.c       |  6 +++
+ arch/x86/hyperv/ivm.c           | 84 ++++++++++++++++++++++++++++++---
+ arch/x86/include/asm/mshyperv.h |  4 ++
+ 3 files changed, 88 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+index 8b392b6b7b93..3de6d8b53367 100644
+--- a/arch/x86/hyperv/hv_init.c
++++ b/arch/x86/hyperv/hv_init.c
+@@ -13,6 +13,7 @@
+ #include <linux/io.h>
+ #include <asm/apic.h>
+ #include <asm/desc.h>
++#include <asm/sev.h>
+ #include <asm/hypervisor.h>
+ #include <asm/hyperv-tlfs.h>
+ #include <asm/mshyperv.h>
+@@ -405,6 +406,11 @@ void __init hyperv_init(void)
+ 	}
+ 
+ 	if (hv_isolation_type_snp()) {
++		/* Negotiate GHCB Version. */
++		if (!hv_ghcb_negotiate_protocol())
++			hv_ghcb_terminate(SEV_TERM_SET_GEN,
++					  GHCB_SEV_ES_PROT_UNSUPPORTED);
++
+ 		hv_ghcb_pg = alloc_percpu(union hv_ghcb *);
+ 		if (!hv_ghcb_pg)
+ 			goto free_vp_assist_page;
+diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+index 2b994117581e..1dbcbd9da74d 100644
+--- a/arch/x86/hyperv/ivm.c
++++ b/arch/x86/hyperv/ivm.c
+@@ -53,6 +53,8 @@ union hv_ghcb {
+ 	} hypercall;
+ } __packed __aligned(HV_HYP_PAGE_SIZE);
+ 
++static u16 hv_ghcb_version __ro_after_init;
++
+ u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size)
+ {
+ 	union hv_ghcb *hv_ghcb;
+@@ -96,12 +98,85 @@ u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size)
+ 	return status;
+ }
+ 
++static inline u64 rd_ghcb_msr(void)
++{
++	return __rdmsr(MSR_AMD64_SEV_ES_GHCB);
++}
++
++static inline void wr_ghcb_msr(u64 val)
++{
++	native_wrmsrl(MSR_AMD64_SEV_ES_GHCB, val);
++}
++
++static enum es_result hv_ghcb_hv_call(struct ghcb *ghcb, u64 exit_code,
++				   u64 exit_info_1, u64 exit_info_2)
++{
++	/* Fill in protocol and format specifiers */
++	ghcb->protocol_version = hv_ghcb_version;
++	ghcb->ghcb_usage       = GHCB_DEFAULT_USAGE;
++
++	ghcb_set_sw_exit_code(ghcb, exit_code);
++	ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
++	ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
++
++	VMGEXIT();
++
++	if (ghcb->save.sw_exit_info_1 & GENMASK_ULL(31, 0))
++		return ES_VMM_ERROR;
++	else
++		return ES_OK;
++}
++
++void hv_ghcb_terminate(unsigned int set, unsigned int reason)
++{
++	u64 val = GHCB_MSR_TERM_REQ;
++
++	/* Tell the hypervisor what went wrong. */
++	val |= GHCB_SEV_TERM_REASON(set, reason);
++
++	/* Request Guest Termination from Hypvervisor */
++	wr_ghcb_msr(val);
++	VMGEXIT();
++
++	while (true)
++		asm volatile("hlt\n" : : : "memory");
++}
++
++bool hv_ghcb_negotiate_protocol(void)
++{
++	u64 ghcb_gpa;
++	u64 val;
++
++	/* Save ghcb page gpa. */
++	ghcb_gpa = rd_ghcb_msr();
++
++	/* Do the GHCB protocol version negotiation */
++	wr_ghcb_msr(GHCB_MSR_SEV_INFO_REQ);
++	VMGEXIT();
++	val = rd_ghcb_msr();
++
++	if (GHCB_MSR_INFO(val) != GHCB_MSR_SEV_INFO_RESP)
++		return false;
++
++	if (GHCB_MSR_PROTO_MAX(val) < GHCB_PROTOCOL_MIN ||
++	    GHCB_MSR_PROTO_MIN(val) > GHCB_PROTOCOL_MAX)
++		return false;
++
++	hv_ghcb_version = min_t(size_t, GHCB_MSR_PROTO_MAX(val),
++			     GHCB_PROTOCOL_MAX);
++
++	/* Write ghcb page back after negotiating protocol. */
++	wr_ghcb_msr(ghcb_gpa);
++	VMGEXIT();
++
++	return true;
++}
++
+ void hv_ghcb_msr_write(u64 msr, u64 value)
+ {
+ 	union hv_ghcb *hv_ghcb;
+ 	void **ghcb_base;
+ 	unsigned long flags;
+-	struct es_em_ctxt ctxt;
+ 
+ 	if (!hv_ghcb_pg)
+ 		return;
+@@ -120,8 +195,7 @@ void hv_ghcb_msr_write(u64 msr, u64 value)
+ 	ghcb_set_rax(&hv_ghcb->ghcb, lower_32_bits(value));
+ 	ghcb_set_rdx(&hv_ghcb->ghcb, upper_32_bits(value));
+ 
+-	if (sev_es_ghcb_hv_call(&hv_ghcb->ghcb, false, &ctxt,
+-				SVM_EXIT_MSR, 1, 0))
++	if (hv_ghcb_hv_call(&hv_ghcb->ghcb, SVM_EXIT_MSR, 1, 0))
+ 		pr_warn("Fail to write msr via ghcb %llx.\n", msr);
+ 
+ 	local_irq_restore(flags);
+@@ -133,7 +207,6 @@ void hv_ghcb_msr_read(u64 msr, u64 *value)
+ 	union hv_ghcb *hv_ghcb;
+ 	void **ghcb_base;
+ 	unsigned long flags;
+-	struct es_em_ctxt ctxt;
+ 
+ 	/* Check size of union hv_ghcb here. */
+ 	BUILD_BUG_ON(sizeof(union hv_ghcb) != HV_HYP_PAGE_SIZE);
+@@ -152,8 +225,7 @@ void hv_ghcb_msr_read(u64 msr, u64 *value)
+ 	}
+ 
+ 	ghcb_set_rcx(&hv_ghcb->ghcb, msr);
+-	if (sev_es_ghcb_hv_call(&hv_ghcb->ghcb, false, &ctxt,
+-				SVM_EXIT_MSR, 0, 0))
++	if (hv_ghcb_hv_call(&hv_ghcb->ghcb, SVM_EXIT_MSR, 0, 0))
+ 		pr_warn("Fail to read msr via ghcb %llx.\n", msr);
+ 	else
+ 		*value = (u64)lower_32_bits(hv_ghcb->ghcb.save.rax)
+diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+index a82f603d4312..61f0c206bff0 100644
+--- a/arch/x86/include/asm/mshyperv.h
++++ b/arch/x86/include/asm/mshyperv.h
+@@ -179,9 +179,13 @@ int hv_set_mem_host_visibility(unsigned long addr, int numpages, bool visible);
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+ void hv_ghcb_msr_write(u64 msr, u64 value);
+ void hv_ghcb_msr_read(u64 msr, u64 *value);
++bool hv_ghcb_negotiate_protocol(void);
++void hv_ghcb_terminate(unsigned int set, unsigned int reason);
+ #else
+ static inline void hv_ghcb_msr_write(u64 msr, u64 value) {}
+ static inline void hv_ghcb_msr_read(u64 msr, u64 *value) {}
++static inline bool hv_ghcb_negotiate_protocol(void) { return false; }
++static inline void hv_ghcb_terminate(unsigned int set, unsigned int reason) {}
+ #endif
+ 
+ extern bool hv_isolation_type_snp(void);
+-- 
+2.25.1
 
