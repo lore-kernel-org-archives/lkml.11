@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAFB9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 223FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:25:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354952AbiFNCZj (ORCPT
+        id S1354980AbiFNCZp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:25:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56108 "EHLO
+        Mon, 13 Jun 2022 22:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354284AbiFNCW2 (ORCPT
+        with ESMTP id S1353982AbiFNCXB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:22:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99849403E1;
-        Mon, 13 Jun 2022 19:10:27 -0700 (PDT)
+        Mon, 13 Jun 2022 22:23:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBA5369D0;
+        Mon, 13 Jun 2022 19:10:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5096B60EFB;
-        Tue, 14 Jun 2022 02:10:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9A5BC34114;
-        Tue, 14 Jun 2022 02:10:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5AA76B816A3;
+        Tue, 14 Jun 2022 02:10:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 384EFC341C5;
+        Tue, 14 Jun 2022 02:10:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172626;
-        bh=cNZNsd8E2/itYUBVSI9x5Pte5cl0YP2kIwJ9nI7tP9U=;
+        s=k20201202; t=1655172605;
+        bh=Fw48xkHyH8/DLVrsed+YMJXLK35lFF9hd1liV4MKg1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H2WUTflsq1PZuBnuJXEatJXjvh9kS0nCGiPtLdvlRm3I6wL+ppXlNcuOK5qxlACm3
-         gPoNRLOmiIj0F3KUrzGhT+0FAmPU8P9wuSOfBYJuAc7A8zGmevYq4GINvMvHFNF3Y+
-         aFoqzmcxmmh2Pd3k75udknbCWwxkyDjYTL33mrjKF8kX6Z/pXY+O8rcCtb35XFVHLr
-         y0wMOiaTT+/YNwLvzxmNIFWZ3f2/g0uCY49M4xafyr3wJ7wZpt5i7+4G3wrfEGXsog
-         Dehe4uhIcIb6yGMJaxWFNO4mGDqvGJpXPaU3Fud8Z4nxJc1U1Fe2QNb3o2PKqGb6UE
-         6fj1cbRH0pQqQ==
+        b=QxHGMRs6PAj7VTen6LIE8QXlQoxjQRRaMbKVw8KkBA1XT8z3pBeuJPbFkg9PfX08r
+         AtQ5uqOUevR/AxQr3Bx68HjJM1T4BDKDwIuoXWa4Z+S8i5kbPbSZYnAKl1XJPPPbMu
+         XzWut3AtT8so0S/rUPzP8Eq4HFwtx+TsbEHOcEk/GSMd2O7uOSOSPyUKOLm8+azH2+
+         njRG8xBXQzdqMUVqq0/Bb+jA0P3xaEeGa8lFUSQMmUp61Q82NjfrqD8jsk6sreOARz
+         m4PQcmlhDjQFZpOz+YqwiS6rQlbEoxKCNnHH1QpiikmQuM30MUTtTXLsmm3PBjKb6V
+         3td3oOfwHpZbA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
-        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.14 04/14] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
-Date:   Mon, 13 Jun 2022 22:10:09 -0400
-Message-Id: <20220614021019.1100929-4-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.19 08/18] ASoC: es8328: Fix event generation for deemphasis control
+Date:   Mon, 13 Jun 2022 22:09:31 -0400
+Message-Id: <20220614020941.1100702-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614021019.1100929-1-sashal@kernel.org>
-References: <20220614021019.1100929-1-sashal@kernel.org>
+In-Reply-To: <20220614020941.1100702-1-sashal@kernel.org>
+References: <20220614020941.1100702-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,39 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
+[ Upstream commit 8259610c2ec01c5cbfb61882ae176aabacac9c19 ]
 
-A couple of the SX volume controls specify 0x84 as the lowest volume
-value, however the correct value from the datasheet is 0x44. The
-datasheet don't include spaces in the value it displays as binary so
-this was almost certainly just a typo reading 1000100.
+Currently the put() method for the deemphasis control returns 0 when a new
+value is written to the control even if the value changed, meaning events
+are not generated. Fix this, skip the work of updating the value when it is
+unchanged and then return 1 after having done so.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220603123937.4013603-1-broonie@kernel.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l56.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/es8328.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
-index 52858b6c95a6..9274b52edc44 100644
---- a/sound/soc/codecs/cs42l56.c
-+++ b/sound/soc/codecs/cs42l56.c
-@@ -403,9 +403,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
- 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
+diff --git a/sound/soc/codecs/es8328.c b/sound/soc/codecs/es8328.c
+index 3afa163f7652..dcb01889e177 100644
+--- a/sound/soc/codecs/es8328.c
++++ b/sound/soc/codecs/es8328.c
+@@ -165,13 +165,16 @@ static int es8328_put_deemph(struct snd_kcontrol *kcontrol,
+ 	if (deemph > 1)
+ 		return -EINVAL;
  
- 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
--			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
- 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
--			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
++	if (es8328->deemph == deemph)
++		return 0;
++
+ 	ret = es8328_set_deemph(component);
+ 	if (ret < 0)
+ 		return ret;
  
- 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
- 			0, 0x00, 1, tone_tlv),
+ 	es8328->deemph = deemph;
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ 
 -- 
 2.35.1
 
