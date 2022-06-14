@@ -2,163 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE1AEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9680C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355765AbiFNLXo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
+        id S239038AbiFNLaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 07:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356301AbiFNLX1 (ORCPT
+        with ESMTP id S234316AbiFNLaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 07:23:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B154825596
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:23:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655205805;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DeSyU/TE5RCJvUem9lvGVeASpqzw6FLVpfJvGFrZeZA=;
-        b=RKuP4JRAAaLUlTTz8/JXtzaoCXUSV32e3OwcNJmNAsONar/71gsh9a+7ZaZPQRhwju3VAL
-        QmgywiXnPdngAdN6a+bis0O+o3XG5vONe9guIQ3XV5vwFnEyFkS9i0DOmRdGFv9yC0WvmE
-        JoGhQrpW0ef701J63YR74GC9XtmXN9Y=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-602-jRr0AnV9MzypSXSlXQV3NA-1; Tue, 14 Jun 2022 07:23:24 -0400
-X-MC-Unique: jRr0AnV9MzypSXSlXQV3NA-1
-Received: by mail-ed1-f71.google.com with SMTP id m5-20020a056402430500b004319d8ba8afso6002127edc.5
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:23:24 -0700 (PDT)
+        Tue, 14 Jun 2022 07:30:18 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820A33ED34
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:30:17 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id w17so3351853wrg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:30:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6fDkQC8ZKVocu1dwyc/psG+b89yWGBNWOILFDwfgnUw=;
+        b=MtIL12FTuJLbgfojZkdiHK2wuuXZukt1C8rtMBGRtkseg9nG3Dl2xlSUSmBKiGHiHW
+         KrDSL0uDk0ugVeO/B/S3mFMfpN3TQqMrq+ZxAmF8h9OpeoVU06DBJ8C0IAdo3mm1uhP2
+         HMJgbIsqRADUfnNYNC6p1e+v2kR/Jd/E3b9Kbt2ked5zeQaYXcquj5bEZdCDBYXmlFwz
+         IQvPcqIXnDQwYyvoShiDS5RQbXpmfAvMIX5HZiqo3MfYq3n42B2aw4Oqy4ED03baNz+J
+         geycRa52J5H6Rf4W5rmzI+NEOP7TEqP1rwYXTfPwZpu9FJ+QjbJ+17H6/HhAHLuM7K3m
+         wZCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DeSyU/TE5RCJvUem9lvGVeASpqzw6FLVpfJvGFrZeZA=;
-        b=cKVpJpDBM0om4sOTnm0Oz7HReWoJ2c+JqGKA1H7lcMvU+0rNogGkBbFMqafvWYajpX
-         j05bjykn+RA/VKuGYEiMKisWTD35KTZhGXJ2xAWAcMlqa/cs4Oo1uODQg85rCPgRzdvr
-         FoygbBi034h5ilWCiGWl758OUpNiX52V6op0vIsifoSAluNVHYPBV91MjBiErmINLB6Z
-         TWoEax4KeP1zRM54chmjWztlzjVZupxxlKlkIIRRz2yClDuUgOATsEiXXRHBsHAv+Ott
-         JE6IOutCWdQeer3N5cN7jk8vWyL2Ra0FQ9V9+gj9bVJY6dAgy6J2M9uv/xozv3l8/A9r
-         EZTA==
-X-Gm-Message-State: AOAM5320jh5MEHzAHC3VV4KPxqWfpeF+/KkzQEf8KP0x2DW6Vb/e3hGb
-        PD36ovC+VvLU2b8pES9lPXXbk/skkbyzxLNVb7xNoe0SVl+IZjeCDKdR12o0xxnlP7Xb7srAj+3
-        LkcL6y7MlakHPEV5e/pnARJrO
-X-Received: by 2002:a17:907:3f97:b0:711:d61d:df9 with SMTP id hr23-20020a1709073f9700b00711d61d0df9mr3913085ejc.644.1655205803107;
-        Tue, 14 Jun 2022 04:23:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzQHMluBcpPYWc2yp7uCcemI90Mdk5ZmtpRcGvCZkTZAWWy/1vIWBvgwwPdeOTQ0uucLYHirA==
-X-Received: by 2002:a17:907:3f97:b0:711:d61d:df9 with SMTP id hr23-20020a1709073f9700b00711d61d0df9mr3913061ejc.644.1655205802817;
-        Tue, 14 Jun 2022 04:23:22 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id fs36-20020a170907602400b00705f6dab05bsm4902373ejc.183.2022.06.14.04.23.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 04:23:21 -0700 (PDT)
-Message-ID: <bd21d5c6-ed5f-dd8c-f0bf-73f54ca8ee58@redhat.com>
-Date:   Tue, 14 Jun 2022 13:23:21 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6fDkQC8ZKVocu1dwyc/psG+b89yWGBNWOILFDwfgnUw=;
+        b=CPF0amsAxWUHYyDeJkJNXf1G0U+KG+r8GfiWQbCs2dEFK2KpjQP98QMxw6ABv7e59o
+         lO1GdaADTctGgJKtL9mGXTujpwvRqk/t15CAi40XHpc5qT+4GMJ83haIEIdSNPxcS3rS
+         X7psjfbOaWp+vtlH3kDfNuuObvZkubnvcRqfYaDSr+gltB8gJGKQYrebxvZH98kC3zs4
+         9+T568q4uXvJXll2K8Zd58JWr//bHrHxQfjsTkdZyBzbBYDwXxDbMletWUaQSQ/BpLqP
+         iP5jn+TwgoBrhNl1F51iupvygtHFGs22zGDk0yvJmCOIiEVCDQl2Mmjn4mxwTveHKPZH
+         1N9A==
+X-Gm-Message-State: AJIora/d83cSiEA+qhFy34gatkN7u4tQxgGyjN/jlxnUfl8aREzu6++5
+        ENS74EF7nXxdcPX1A1SZGoY=
+X-Google-Smtp-Source: AGRyM1tIevNzKqQswlssBhpM+Qg3bjIy5LYWxiEf8JjfuqQgiwc3BcJ8GkK4jB1BXhhGtLPilyTKBA==
+X-Received: by 2002:a05:6000:a10:b0:21a:14e2:794 with SMTP id co16-20020a0560000a1000b0021a14e20794mr4573888wrb.428.1655206216031;
+        Tue, 14 Jun 2022 04:30:16 -0700 (PDT)
+Received: from opensuse.localnet (host-87-16-96-199.retail.telecomitalia.it. [87.16.96.199])
+        by smtp.gmail.com with ESMTPSA id i8-20020adffc08000000b0020c5253d8d0sm11365134wrr.28.2022.06.14.04.30.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 04:30:14 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com,
+        naveenkumar.sunkari@in.bosch.com,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+Subject: Re: [PATCH] ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
+Date:   Tue, 14 Jun 2022 13:30:13 +0200
+Message-ID: <8079585.T7Z3S40VBb@opensuse>
+In-Reply-To: <87y1xzplj1.wl-tiwai@suse.de>
+References: <20220409012655.9399-1-fmdefrancesco@gmail.com> <2245197.ElGaqSPkdT@opensuse> <87y1xzplj1.wl-tiwai@suse.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v1 1/1] phy: ti: tusb1210: Don't check for write errors
- when powering on
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Ferry Toth <ftoth@exalondelft.nl>
-References: <20220613160848.82746-1-andriy.shevchenko@linux.intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220613160848.82746-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On marted=C3=AC 14 giugno 2022 12:49:38 CEST Takashi Iwai wrote:
+> On Tue, 14 Jun 2022 12:43:16 +0200,
+> Fabio M. De Francesco wrote:
+> >=20
+> > On marted=C3=AC 14 giugno 2022 11:58:51 CEST Eugeniu Rosca wrote:
+> > > Hello Fabio, hello All,
+> > >=20
+> > > On Sa, Apr 09, 2022 at 03:26:55 +0200, Fabio M. De Francesco wrote:
+> > > > Syzbot reports "KASAN: null-ptr-deref Write in
+> > > > snd_pcm_format_set_silence".[1]
+> > > >=20
+> > > > It is due to missing validation of the "silence" field of struct
+> > > > "pcm_format_data" in "pcm_formats" array.
+> > > >=20
+> > > > Add a test for valid "pat" and, if it is not so, return -EINVAL.
+> > > >=20
+> > > > [1] https://lore.kernel.org/lkml/
+> > 000000000000d188ef05dc2c7279@google.com/
+> > > >=20
+> > > > Reported-and-tested-by:=20
+> > syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
+> > > > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > > > ---
+> > > >=20
+> > > > I wasn't able to figure out the commit for the "Fixes:" tag. If=20
+this=20
+> > patch
+> > > > is good, can someone please help with providing this missing=20
+> > information?
+> > > >=20
+> > > >  sound/core/pcm_misc.c | 2 +-
+> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > >=20
+> > > > diff --git a/sound/core/pcm_misc.c b/sound/core/pcm_misc.c
+> > > > index 4866aed97aac..5588b6a1ee8b 100644
+> > > > --- a/sound/core/pcm_misc.c
+> > > > +++ b/sound/core/pcm_misc.c
+> > > > @@ -433,7 +433,7 @@ int snd_pcm_format_set_silence(snd_pcm_format_t=
+=20
+> > format, void *data, unsigned int
+> > > >  		return 0;
+> > > >  	width =3D pcm_formats[(INT)format].phys; /* physical width */
+> > > >  	pat =3D pcm_formats[(INT)format].silence;
+> > > > -	if (! width)
+> > > > +	if (!width || !pat)
+> > > >  		return -EINVAL;
+> > > >  	/* signed or 1 byte data */
+> > > >  	if (pcm_formats[(INT)format].signd =3D=3D 1 || width <=3D 8) {
+> > >=20
+> > > JFYI, PVS-Studio 7.19 reports:
+> > >=20
+> > > sound/core/pcm_misc.c	409	warn	V560 A part of=20
+> > conditional expression is always false: !pat.
+> >=20
+> > Sorry, I assumed (wrongly!) that when we have
+> >=20
+> > static const struct pcm_format_data=20
+> > pcm_formats[(INT)SNDRV_PCM_FORMAT_LAST+1] =3D {
+> > 	[SNDRV_PCM_FORMAT_S8] =3D {
+> > 		.width =3D 8, .phys =3D 8, .le =3D -1, .signd =3D 1,
+> > 		.silence =3D {},
+> > 	},
+> > 	[snip]
+> > 	/* FIXME: the following two formats are not defined properly yet=20
+> > */
+> > 	[SNDRV_PCM_FORMAT_MPEG] =3D {
+> > 		.le =3D -1, .signd =3D -1,
+> > 	},
+> > 	[SNDRV_PCM_FORMAT_GSM] =3D {
+> > 		.le =3D -1, .signd =3D -1,
+> > 	},
+> >=20
+> > pointer "silence", and then "pat", must be NULL.
+>=20
+> Oh right, those are missing ones.  I haven't realized that those
+> formats are allowed by PCM OSS layer.
+>=20
+> Practically seen, those formats have never been used in reality, and
+> we may consider dropping them completely to plug such holes...
+>=20
+Does it imply that my argument is correct or my "fix" can't yet catch those=
+=20
+missing ones?
 
-On 6/13/22 18:08, Andy Shevchenko wrote:
-> On some platforms, like Intel Merrifield, the writing values during power on
-> may timeout:
-> 
->    tusb1210 dwc3.0.auto.ulpi: error -110 writing val 0x41 to reg 0x80
->    phy phy-dwc3.0.auto.ulpi.0: phy poweron failed --> -110
->    dwc3 dwc3.0.auto: error -ETIMEDOUT: failed to initialize core
->    dwc3: probe of dwc3.0.auto failed with error -110
-> 
-> which effectively fails the probe of the USB controller.
-> Drop the check as it was before the culprit commit (see Fixes tag).
-> 
-> Fixes: 09a3512681b3 ("phy: ti: tusb1210: Improve ulpi_read()/_write() error checking")
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Besides the question above, I want to notice that we have one more /* FIXME=
+=20
+*/ entry...
 
-Copy and pasting my reply about this in another thread to keep everyone up2date:
+/* FIXME: the following format is not defined properly yet */
+	[SNDRV_PCM_FORMAT_SPECIAL] =3D {
+		.le =3D -1, .signd =3D -1,
+	},
 
-"""
-In my experience with using the phy for charger-type detection on some
-x86 android tablets which don't have any other way to do charger detection,
-these errors indicate a real communication issue for reading/writing
-phy registers. At the same time this usually does not seem to be a big
-problem since the phy seems to work fine with its power-on defaults.
+If you want I can get rid of those three entries if you confirm they can=20
+safely be deleted. In a second patch I can also remove that unnecessary=20
+check for valid "pat".
 
-In case of Bay Trail these errors were related to 2 things:
+Please let me know.
 
-1. Autosuspend of the phy-interface block in the dwc3, fixed by:
+Thanks,
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d7c93a903f33ff35aa0e6b5a8032eb9755b00826
-
-But dwc3_pci_mrfld_properties[] already sets "snps,dis_u2_susphy_quirk",
-so I guess it is not this.
-
-2. There being no delay in tusb1210_power_on() between toggling the
-reset IO and then trying to communicate with the phy, fixed in:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=df37c99815d9e0775e67276d70c93cbc25f31c70
-
-Maybe the:
-
-#define TUSB1210_RESET_TIME_MS				30
-
-Added by that commit needs to be a bit bigger for the possibly
-older phy revision used on the merifield boards?
-
-(note it is fine to just increase it a bit everywhere).
-"""
-
-IMHO it would be good to try and increase TUSB1210_RESET_TIME_MS (start with say 100
-and then see if e.g. 50 also works). If increasing that does not work
-
-I'm fine with going with this workaround patch to fix things.
-
-Regards,
-
-Hans
+=46abio
 
 
-
-> ---
->  drivers/phy/ti/phy-tusb1210.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/phy/ti/phy-tusb1210.c b/drivers/phy/ti/phy-tusb1210.c
-> index c3ab4b69ea68..669c13d6e402 100644
-> --- a/drivers/phy/ti/phy-tusb1210.c
-> +++ b/drivers/phy/ti/phy-tusb1210.c
-> @@ -105,8 +105,9 @@ static int tusb1210_power_on(struct phy *phy)
->  	msleep(TUSB1210_RESET_TIME_MS);
->  
->  	/* Restore the optional eye diagram optimization value */
-> -	return tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2,
-> -				   tusb->vendor_specific2);
-> +	tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2, tusb->vendor_specific2);
-> +
-> +	return 0;
->  }
->  
->  static int tusb1210_power_off(struct phy *phy)
 
