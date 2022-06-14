@@ -2,71 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0971FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A1AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245108AbiFNOxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50676 "EHLO
+        id S1345043AbiFNOxz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:53:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343876AbiFNOx2 (ORCPT
+        with ESMTP id S1344821AbiFNOxg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:53:28 -0400
-Received: from giacobini.uberspace.de (giacobini.uberspace.de [185.26.156.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35CB33205C
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:53:26 -0700 (PDT)
-Received: (qmail 16120 invoked by uid 990); 14 Jun 2022 14:53:24 -0000
-Authentication-Results: giacobini.uberspace.de;
-        auth=pass (plain)
-From:   Soenke Huster <soenke.huster@eknoes.de>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Soenke Huster <soenke.huster@eknoes.de>,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] Bluetooth: virtio_bt: Use skb_put to set length
-Date:   Tue, 14 Jun 2022 16:52:54 +0200
-Message-Id: <20220614145253.132230-1-soenke.huster@eknoes.de>
-X-Mailer: git-send-email 2.36.1
+        Tue, 14 Jun 2022 10:53:36 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0D822124B;
+        Tue, 14 Jun 2022 07:53:34 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 94CA71650;
+        Tue, 14 Jun 2022 07:53:34 -0700 (PDT)
+Received: from monolith.localdoman (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2D4D43F66F;
+        Tue, 14 Jun 2022 07:53:31 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 15:53:53 +0100
+From:   Alexandru Elisei <alexandru.elisei@arm.com>
+To:     sunjunchao2870@gmail.com, jack@suse.cz, viro@zeniv.linux.org.uk,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pmladek@suse.com, senozhatsky@chromium.org, rostedt@goodmis.org,
+        john.ogness@linutronix.de, keescook@chromium.org, anton@enomsg.org,
+        ccross@android.com, tony.luck@intel.com, heiko@sntech.de,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, maco@android.com, hch@lst.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        suzuki.poulose@arm.com
+Subject: Re: [BUG] rockpro64 board hangs in console_init() after commit
+ 10e14073107d
+Message-ID: <Yqigw6vu6RYBIqHK@monolith.localdoman>
+References: <Yqdry+IghSWnJ6pe@monolith.localdoman>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: /
-X-Rspamd-Report: BAYES_HAM(-2.923086) R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
-X-Rspamd-Score: -0.023086
-Received: from unknown (HELO unkown) (::1)
-        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Tue, 14 Jun 2022 16:53:24 +0200
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yqdry+IghSWnJ6pe@monolith.localdoman>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-By using skb_put we ensure that skb->tail is set
-correctly. Currently, skb->tail is always zero, which
-leads to errors, such as the following page fault in
-rfcomm_recv_frame:
+(+Suzuki)
 
-    BUG: unable to handle page fault for address: ffffed1021de29ff
-    #PF: supervisor read access in kernel mode
-    #PF: error_code(0x0000) - not-present page
-    RIP: 0010:rfcomm_run+0x831/0x4040 (net/bluetooth/rfcomm/core.c:1751)
+Hi,
 
-Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
----
- drivers/bluetooth/virtio_bt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I was able to boot the board after applying this patch from Suzuki [1].
 
-diff --git a/drivers/bluetooth/virtio_bt.c b/drivers/bluetooth/virtio_bt.c
-index 67c21263f9e0..fd281d439505 100644
---- a/drivers/bluetooth/virtio_bt.c
-+++ b/drivers/bluetooth/virtio_bt.c
-@@ -219,7 +219,7 @@ static void virtbt_rx_work(struct work_struct *work)
- 	if (!skb)
- 		return;
- 
--	skb->len = len;
-+	skb_put(skb, len);
- 	virtbt_rx_handle(vbt, skb);
- 
- 	if (virtbt_add_inbuf(vbt) < 0)
--- 
-2.36.1
+[1] https://lore.kernel.org/all/20220614124618.2830569-1-suzuki.poulose@arm.com/
 
+Thanks,
+Alex
+
+On Mon, Jun 13, 2022 at 05:54:35PM +0100, Alexandru Elisei wrote:
+> Hi,
+> 
+> (Apologies for the long To: list, I've added everyone that
+> scripts/get_maintainer.pl listed for fs/{fs-writeback,inode}.c, for the
+> rockchip boards, for printk.c and for the tty layer)
+> 
+> When booting a kernel built from tag v5.19-rc2, my rockpro64-v2 hangs at
+> boot with this log:
+> 
+> [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd034]
+> [    0.000000] Linux version 5.19.0-rc2 (alex@redacted) (aarch64-linux-gnu-gcc (GCC) 12.1.0, GNU ld (GNU Binutils) 2.38) #90 SMP PREEMPT Mon Jun 13 17:13:12 BST 2022
+> [    0.000000] Machine model: Pine64 RockPro64 v2.0
+> [    0.000000] efi: UEFI not found.
+> [    0.000000] earlycon: uart0 at MMIO32 0x00000000ff1a0000 (options '1500000n8')
+> [    0.000000] printk: bootconsole [uart0] enabled
+> [    0.000000] NUMA: No NUMA configuration found
+> [    0.000000] NUMA: Faking a node at [mem 0x0000000000200000-0x00000000f7ffffff]
+> [    0.000000] NUMA: NODE_DATA [mem 0xf77dc140-0xf77ddfff]
+> [    0.000000] Zone ranges:
+> [    0.000000]   DMA      [mem 0x0000000000200000-0x00000000f7ffffff]
+> [    0.000000]   DMA32    empty
+> [    0.000000]   Normal   empty
+> [    0.000000] Movable zone start for each node
+> [    0.000000] Early memory node ranges
+> [    0.000000]   node   0: [mem 0x0000000000200000-0x00000000f7ffffff]
+> [    0.000000] Initmem setup node 0 [mem 0x0000000000200000-0x00000000f7ffffff]
+> [    0.000000] On node 0, zone DMA: 512 pages in unavailable ranges
+> [    0.000000] cma: Reserved 32 MiB at 0x00000000f0000000
+> [    0.000000] psci: probing for conduit method from DT.
+> [    0.000000] psci: PSCIv1.1 detected in firmware.
+> [    0.000000] psci: Using standard PSCI v0.2 function IDs
+> [    0.000000] psci: MIGRATE_INFO_TYPE not supported.
+> [    0.000000] psci: SMC Calling Convention v1.2
+> [    0.000000] percpu: Embedded 20 pages/cpu s41768 r8192 d31960 u81920
+> [    0.000000] Detected VIPT I-cache on CPU0
+> [    0.000000] CPU features: detected: GIC system register CPU interface
+> [    0.000000] CPU features: detected: ARM erratum 845719
+> [    0.000000] Fallback order for Node 0: 0
+> [    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 999432
+> [    0.000000] Policy zone: DMA
+> [    0.000000] Kernel command line: root=PARTUUID=7f4aab92-69d8-47f3-be10-624da40a71f9 rw earlycon rootwait
+> [    0.000000] Dentry cache hash table entries: 524288 (order: 10, 4194304 bytes, linear)
+> [    0.000000] Inode-cache hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+> [    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+> [    0.000000] Memory: 3915796K/4061184K available (15552K kernel code, 2758K rwdata, 8668K rodata, 6336K init, 564K bss, 112620K reserved, 32768K cma-reserved)
+> [    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=6, Nodes=1
+> [    0.000000] rcu: Preemptible hierarchical RCU implementation.
+> [    0.000000] rcu: 	RCU event tracing is enabled.
+> [    0.000000] rcu: 	RCU restricting CPUs from NR_CPUS=256 to nr_cpu_ids=6.
+> [    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+> [    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=6
+> [    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+> [    0.000000] GICv3: GIC: Using split EOI/Deactivate mode
+> [    0.000000] GICv3: 256 SPIs implemented
+> [    0.000000] GICv3: 0 Extended SPIs implemented
+> [    0.000000] Root IRQ handler: gic_handle_irq
+> [    0.000000] GICv3: GICv3 features: 16 PPIs
+> [    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x00000000fef00000
+> [    0.000000] ITS [mem 0xfee20000-0xfee3ffff]
+> [    0.000000] ITS@0x00000000fee20000: allocated 65536 Devices @480000 (flat, esz 8, psz 64K, shr 0)
+> [    0.000000] ITS: using cache flushing for cmd queue
+> [    0.000000] GICv3: using LPI property table @0x0000000000440000
+> [    0.000000] GIC: using cache flushing for LPI property table
+> [    0.000000] GICv3: CPU0: using allocated LPI pending table @0x0000000000450000
+> [    0.000000] GICv3: GIC: PPI partition interrupt-partition-0[0] { /cpus/cpu@0[0] /cpus/cpu@1[1] /cpus/cpu@2[2] /cpus/cpu@3[3] }
+> [    0.000000] GICv3: GIC: PPI partition interrupt-partition-1[1] { /cpus/cpu@100[4] /cpus/cpu@101[5] }
+> [    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+> [    0.000000] arch_timer: cp15 timer(s) running at 24.00MHz (phys).
+> [    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
+> [    0.000001] sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
+> [    0.005107] Console: colour dummy device 80x25
+> [    0.005549] printk: console [tty0] enabled
+> [    0.005956] printk: bootconsole [uart0] disabled
+> 
+> Config can be found at [1] (expires after 6 months). I've also built the
+> kernel with gcc 10.3.1 [2] (aarch64-none-linux-gnu), same issue.
+> 
+> I've bisected the build failure to commit 10e14073107d ("writeback: Fix
+> inode->i_io_list not be protected by inode->i_lock error"); I've confirmed
+> that that commit is responsible by successfully booting the board with a
+> kernel built from v5.19-rc2 + the above commit reverted.
+> 
+> I tried to do some investigating, it seems that the kernel is stuck at
+> printk.c::console_init() -> drivers/tty/vt/vt.c::con_init() ->
+> printk.c::register_console() -> unregister_console() -> console_lock().
+> This has been determined by adding pr_info statements.
+> 
+> I've booted a kernel compiled with CONFIG_PROVE_LOCKING=y, as the offending
+> commit fiddles with locks, but no splat was produced that would explain the
+> hang. I've also tried to boot a v5,19-rc2 kernel on my odroid-c4, the board
+> is booting just fine, so I'm guessing it only affects of subset of arm64
+> boards.
+> 
+> [1] https://pastebin.com/MfDrKyKd
+> [2] https://developer.arm.com/downloads/-/gnu-a
+> 
+> Thanks,
+> Alex
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
