@@ -2,78 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED61C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:35:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C561C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356151AbiFNCfo (ORCPT
+        id S1356121AbiFNCga (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:35:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58270 "EHLO
+        Mon, 13 Jun 2022 22:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355344AbiFNCfK (ORCPT
+        with ESMTP id S1355966AbiFNCgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:35:10 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C25738BDB;
-        Mon, 13 Jun 2022 19:13:28 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id z9so3878128wmf.3;
-        Mon, 13 Jun 2022 19:13:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qx1x66X9cxQ2Do1EWzHRpluo9ytwIzS6EQlleJWoehY=;
-        b=fFWt4iizlpVuwbqmb/m8i1/dvxNDmKsIyRbCjZdRm21fChV8QpPP50TmJbkR0aUw4T
-         whze9ldyTpOeVy0dNlAs2t6gV0/cogGNdu+uKbWzrUGPCwN2WISJ3b6Sa1F7LlTzHO4g
-         iUUn78rEiGDdleKX2k0OJZHvgiFOl7swWPVBeIQsJDGlDhSR4tgaHSsLEwmrHGI8TAal
-         BVxefl1+gEOgHXo0BKa13hmmbqKSDnPHqyXMnezfuiX19BPp9z4Ycd4De6m3cmeoi4Lu
-         zgdC9oBfcizi9O2ZfoEAJOzluaxR9QbTtLCA+tSdUUUPAvsrbxuLkhn0OCiM8sTMKntD
-         0eJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qx1x66X9cxQ2Do1EWzHRpluo9ytwIzS6EQlleJWoehY=;
-        b=QoW4ruPvF29zFVaby59Xb+72BLJLC25xxp/Ag91glRevLTEH37B0Uh20Y9+TzjM27Q
-         tM2P1x2cOtu8g3Um6BnnMByPPYdxti66GxVBV71i0J7F6c2Qe8BFDA/r/hO75QO0paHs
-         tpJTGT/ep+udfBi026yDPcF0pieExlWgp6/zSVQNF/LkHetEWotlmp3GNDqJKpGCye6p
-         eNkL4pVmv+7NI6pxYkVCaINAmp0lX3tPKo+bwnhkaiXmjyXE46F1Fc0N1JjTfPv5C6rE
-         gmOLzZe1WDV2hs7R3o+YA467lrFE5ooddh22KHk5qz5tnvLMCYYI6WMknLZRWoHnjrfW
-         Mtgg==
-X-Gm-Message-State: AOAM530hpBlkBxtGKbp8BbYF9S4kRSyNZEvGa6si+nq1ZoOuYazIrqw+
-        YHanv3+udQqL2ak6yBt6htbZTc+n4KFAAqvB4yo=
-X-Google-Smtp-Source: ABdhPJwoEYy9BBV9NZpta2nTXCP5Zq6MIoI/3/DMRpBP8zIM1i4VyoWJH5O8IzMLWNWoe6HQ1whA1Vcf9JKdtDo3Zj8=
-X-Received: by 2002:a05:600c:d0:b0:39c:5927:3fa7 with SMTP id
- u16-20020a05600c00d000b0039c59273fa7mr1629426wmm.36.1655172805503; Mon, 13
- Jun 2022 19:13:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220613225723.2734132-1-seanjc@google.com> <20220613225723.2734132-2-seanjc@google.com>
-In-Reply-To: <20220613225723.2734132-2-seanjc@google.com>
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-Date:   Tue, 14 Jun 2022 10:13:14 +0800
-Message-ID: <CAJhGHyDjFCJdRjdV-W5+reg-3jiwJAqeCQ7A-vdUqt+dToJBdA@mail.gmail.com>
-Subject: Re: [PATCH 1/8] KVM: x86/mmu: Drop unused CMPXCHG macro from paging_tmpl.h
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "open list:KERNEL VIRTUAL MACHINE FOR MIPS (KVM/mips)" 
-        <kvm@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+        Mon, 13 Jun 2022 22:36:08 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3E1340C0;
+        Mon, 13 Jun 2022 19:15:12 -0700 (PDT)
+X-UUID: 0b33db81944c4a7e930f51d58ecd3e44-20220614
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:f02b50cf-029f-4c0f-bdec-3799a2d958c6,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:0
+X-CID-META: VersionHash:b14ad71,CLOUDID:93287a07-b57a-4a25-a071-bc7b4972bc68,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 0b33db81944c4a7e930f51d58ecd3e44-20220614
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <jianjun.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2083284706; Tue, 14 Jun 2022 10:15:06 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Tue, 14 Jun 2022 10:15:04 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 14 Jun 2022 10:15:04 +0800
+Message-ID: <758e23499dd440f480d90c4417625a538521917a.camel@mediatek.com>
+Subject: Re: [PATCH v2] PCI: mediatek-gen3: Print LTSSM state when PCIe link
+ down
+From:   Jianjun Wang <jianjun.wang@mediatek.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+CC:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?UTF-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-pci@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <jieyy.yang@mediatek.com>,
+        <chuanjia.liu@mediatek.com>, <qizhong.cheng@mediatek.com>,
+        <jian.yang@mediatek.com>
+Date:   Tue, 14 Jun 2022 10:15:03 +0800
+In-Reply-To: <f95d10d69758014c9b1631718afa7dc72a68aa79.camel@mediatek.com>
+References: <20220329030715.7975-1-jianjun.wang@mediatek.com>
+         <32f5308e629cef3692c57c4c55442b0f2f25634f.camel@mediatek.com>
+         <7a10b1d7fc294093f26555a8b5a8748a3c0e1c9f.camel@mediatek.com>
+         <f95d10d69758014c9b1631718afa7dc72a68aa79.camel@mediatek.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 6:59 AM Sean Christopherson <seanjc@google.com> wrote:
->
-> Drop the CMPXCHG macro from paging_tmpl.h, it's no longer used now that
-> KVM uses a common uaccess helper to do 8-byte CMPXCHG.
->
-> Fixes: f122dfe44768 ("KVM: x86: Use __try_cmpxchg_user() to update guest PTE A/D bits")
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
+Hi Maintainers,
 
+Just gentle ping for this patch, is there anything I can to do to get
+this patch merged?
 
-In https://lore.kernel.org/lkml/20220605063417.308311-2-jiangshanlai@gmail.com/
-two other unused macros are also removed.
+Thanks.
+
+On Wed, 2022-06-01 at 10:24 +0800, Jianjun Wang wrote:
+> Hello Maintainers,
+> 
+> Is there anything I can do to get this patch merged?
+> 
+> Thanks.
+> 
+> On Wed, 2022-05-18 at 09:55 +0800, Jianjun Wang wrote:
+> > Hi Maintainers,
+> > 
+> > Gentle ping for this patch, if there is anything I can do to get
+> > this
+> > patch merged, please let me know.
+> > 
+> > Thanks.
+> > 
+> > On Fri, 2022-04-22 at 14:33 +0800, Jianjun Wang wrote:
+> > > Hi Maintainers,
+> > > 
+> > > Just gentle ping for this patch, if there is anything I can do to
+> > > get
+> > > this patch merged, please let me know.
+> > > 
+> > > Thanks.
+> > > 
+> > > On Tue, 2022-03-29 at 11:07 +0800, Jianjun Wang wrote:
+> > > > Print current LTSSM state when PCIe link down instead of the
+> > > > register
+> > > > value, make it easier to get the link status.
+> > > > 
+> > > > Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+> > > > Reviewed-by: AngeloGioacchino Del Regno <
+> > > > angelogioacchino.delregno@collabora.com>
+> > > > ---
+> > > > Changes in v2:
+> > > > Print both of the register value and the LTSSM state.
+> > > > ---
+> > > >  drivers/pci/controller/pcie-mediatek-gen3.c | 41
+> > > > ++++++++++++++++++++-
+> > > >  1 file changed, 40 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c
+> > > > b/drivers/pci/controller/pcie-mediatek-gen3.c
+> > > > index 6745076a02b9..c24e03c198b7 100644
+> > > > --- a/drivers/pci/controller/pcie-mediatek-gen3.c
+> > > > +++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+> > > > @@ -153,6 +153,37 @@ struct mtk_gen3_pcie {
+> > > >  	DECLARE_BITMAP(msi_irq_in_use, PCIE_MSI_IRQS_NUM);
+> > > >  };
+> > > >  
+> > > > +/* LTSSM state in PCIE_LTSSM_STATUS_REG bit[28:24] */
+> > > > +static const char *const ltssm_str[] = {
+> > > > +	"detect.quiet",			/* 0x00 */
+> > > > +	"detect.active",		/* 0x01 */
+> > > > +	"polling.active",		/* 0x02 */
+> > > > +	"polling.compliance",		/* 0x03 */
+> > > > +	"polling.configuration",	/* 0x04 */
+> > > > +	"config.linkwidthstart",	/* 0x05 */
+> > > > +	"config.linkwidthaccept",	/* 0x06 */
+> > > > +	"config.lanenumwait",		/* 0x07 */
+> > > > +	"config.lanenumaccept",		/* 0x08 */
+> > > > +	"config.complete",		/* 0x09 */
+> > > > +	"config.idle",			/* 0x0A */
+> > > > +	"recovery.receiverlock",	/* 0x0B */
+> > > > +	"recovery.equalization",	/* 0x0C */
+> > > > +	"recovery.speed",		/* 0x0D */
+> > > > +	"recovery.receiverconfig",	/* 0x0E */
+> > > > +	"recovery.idle",		/* 0x0F */
+> > > > +	"L0",				/* 0x10 */
+> > > > +	"L0s",				/* 0x11 */
+> > > > +	"L1.entry",			/* 0x12 */
+> > > > +	"L1.idle",			/* 0x13 */
+> > > > +	"L2.idle",			/* 0x14 */
+> > > > +	"L2.transmitwake",		/* 0x15 */
+> > > > +	"disable",			/* 0x16 */
+> > > > +	"loopback.entry",		/* 0x17 */
+> > > > +	"loopback.active",		/* 0x18 */
+> > > > +	"loopback.exit",		/* 0x19 */
+> > > > +	"hotreset",			/* 0x1A */
+> > > > +};
+> > > > +
+> > > >  /**
+> > > >   * mtk_pcie_config_tlp_header() - Configure a configuration
+> > > > TLP
+> > > > header
+> > > >   * @bus: PCI bus to query
+> > > > @@ -327,8 +358,16 @@ static int mtk_pcie_startup_port(struct
+> > > > mtk_gen3_pcie *pcie)
+> > > >  				 !!(val & PCIE_PORT_LINKUP),
+> > > > 20,
+> > > >  				 PCI_PM_D3COLD_WAIT *
+> > > > USEC_PER_MSEC);
+> > > >  	if (err) {
+> > > > +		const char *ltssm_state;
+> > > > +		int ltssm_index;
+> > > > +
+> > > >  		val = readl_relaxed(pcie->base +
+> > > > PCIE_LTSSM_STATUS_REG);
+> > > > -		dev_err(pcie->dev, "PCIe link down, ltssm reg
+> > > > val:
+> > > > %#x\n", val);
+> > > > +		ltssm_index = PCIE_LTSSM_STATE(val);
+> > > > +		ltssm_state = ltssm_index >=
+> > > > ARRAY_SIZE(ltssm_str) ?
+> > > > +			      "Unknown state" :
+> > > > ltssm_str[ltssm_index];
+> > > > +		dev_err(pcie->dev,
+> > > > +			"PCIe link down, current ltssm state:
+> > > > %s
+> > > > (%#x)\n",
+> > > > +			ltssm_state, val);
+> > > >  		return err;
+> > > >  	}
+> > > >  
+> > > 
+> > > 
+> > 
+> > 
+> 
+> 
+
