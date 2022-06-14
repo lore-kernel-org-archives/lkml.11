@@ -2,167 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E792C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:29:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84AA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243479AbiFNO31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48038 "EHLO
+        id S245650AbiFNO3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:29:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349328AbiFNO2Y (ORCPT
+        with ESMTP id S244280AbiFNO3b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:28:24 -0400
-Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3AF34BBE;
-        Tue, 14 Jun 2022 07:28:22 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 99921C009; Tue, 14 Jun 2022 16:28:20 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1655216900; bh=yAoaM3WVMZZxJ+LV3cWyu5SL2IaFaK4FrSuNs/YyNhQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Fe26ntZMxrht4o7gA1fYpW51vtB2R+rnoapoPPwL38kNO4flg2zegOLVRaZCPncjp
-         R+1hKVow633DVXnW2rqqRk5wKLslIrGjXpPDWCNB2VwwyZrwxzrhpXHUnS/rV7r44O
-         tHUDUX+oVCSGSkEPbcRTXS/hKhGJLbNkSHuTym1UUXXwiwdaYk7DVrcAcOFuUhzqbl
-         B+h9PPWJ+RljxRRXmTvhX3f6sxwgrIEPQD/b/rnzi4Gjm2Ly6zuvw9YaE+ZjVW31i0
-         TGJx0NTeswofPTruqC6D9+kvhN33QzRIYdmi2riPikVigkQ7Ae/qliOYJ7952R7GYz
-         I5KF96AdkBKCQ==
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 50271C009;
-        Tue, 14 Jun 2022 16:28:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1655216899; bh=yAoaM3WVMZZxJ+LV3cWyu5SL2IaFaK4FrSuNs/YyNhQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=4DP1tVmKf3k7VrOCUmSKlygxvN8WdSF+OPArFv5SIbtqUq8qT8OS/78jU+cc1PKLo
-         4p7cmLbE+0Ewwb2jmiLTA98Mh+4EeIMdvhrp2e+kKwcBTTSS8Ndi6ayIspJV/sRHVc
-         hI4LE+jPn9hYngfnkmohMMNku0G9LfpeMe0y62bAiaFZcHg54LUPV1v7alG8wZe60p
-         r5wcJKnrUi+V8QMdX6RTn9mggIbTIIjwDydMsJoHPdNIJIbBleobXuSXh67OO9ULC8
-         cQK49TUYg5vcmELBWRK3GzvVzmdYjpkpsvvqKyGabd97GLYviNOhMXCFz3TahHt8me
-         METx1cr+9RrmQ==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 76306788;
-        Tue, 14 Jun 2022 14:28:12 +0000 (UTC)
-Date:   Tue, 14 Jun 2022 23:27:57 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Christian Schoenebeck <linux_oss@crudebyte.com>
-Cc:     Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 04/06] 9p fid refcount: add p9_fid_get/put wrappers
-Message-ID: <Yqia7Xr9WAgtZ6zr@codewreck.org>
-References: <20220612085330.1451496-5-asmadeus@codewreck.org>
- <20220612234557.1559736-1-asmadeus@codewreck.org>
- <7044959.MN0D2SvuAq@silver>
+        Tue, 14 Jun 2022 10:29:31 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062D335DC2;
+        Tue, 14 Jun 2022 07:29:27 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25EDBleG007050;
+        Tue, 14 Jun 2022 14:29:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : to : cc : references : from : subject : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=MPDs1tDwI/bhZ/jxH5CxJw/uj6DNiMlaJ1nN858Rm10=;
+ b=LHfeN4ZxoRRNJ2ouIdbb63VsOXpjr3p+yZoDZu4Ob8rhVS8XG114Et0d0GLcG50+VXQg
+ oqZmK0pLXIuCmRV6i4EWq3bg11IaKLTiInYQuvAw4TsfbTtUMdvjmp9eI+/PR6wExqcC
+ CHhKiCZIzKnIrhekLtdGPm3mupRXcExfj8r9m/1w7W4RpW8Vm6+TP2klSzf7a4t3WCdY
+ qTj4jQvsM8Djf+Q3vjiUypUa4oeKN21clZGMBB2fnrOdYR2f61xZ7krOtKITSpUIc8Wk
+ vexwdi7UshwZQNFdoSLTCEGGfdOl0cGfSKHndZ56T/GBFvVlYiIJxVV8z8SWWdIzfhiY lg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gppbr3jhu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Jun 2022 14:29:26 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25EDEf7T013656;
+        Tue, 14 Jun 2022 14:29:26 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gppbr3jh5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Jun 2022 14:29:26 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25EEKZ6A003299;
+        Tue, 14 Jun 2022 14:29:24 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gmjp9cgdg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Jun 2022 14:29:24 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25EETLg320644344
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 14 Jun 2022 14:29:21 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 59AD5A404D;
+        Tue, 14 Jun 2022 14:29:21 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DEA0DA4040;
+        Tue, 14 Jun 2022 14:29:20 +0000 (GMT)
+Received: from [9.145.182.137] (unknown [9.145.182.137])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 14 Jun 2022 14:29:20 +0000 (GMT)
+Message-ID: <80d26ca8-6617-c86b-f92c-5df720966ebf@linux.ibm.com>
+Date:   Tue, 14 Jun 2022 16:29:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <7044959.MN0D2SvuAq@silver>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Content-Language: en-US
+To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
+        david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
+        mimu@linux.ibm.com, nrb@linux.ibm.com
+References: <20220603065645.10019-1-imbrenda@linux.ibm.com>
+From:   Janosch Frank <frankja@linux.ibm.com>
+Subject: Re: [PATCH v11 00/19] KVM: s390: pv: implement lazy destroy for
+ reboot
+In-Reply-To: <20220603065645.10019-1-imbrenda@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: nwcCTi7XUGJYEZ6cBH4Yse1cuNw65_d2
+X-Proofpoint-ORIG-GUID: CZS39u7CxiW7QMi-0pcubsD_djkoeZkq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-14_04,2022-06-13_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=912
+ priorityscore=1501 suspectscore=0 impostorscore=0 adultscore=0
+ phishscore=0 bulkscore=0 mlxscore=0 malwarescore=0 clxscore=1015
+ lowpriorityscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2204290000 definitions=main-2206140054
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-Thanks for the reviews :)
-
-Christian Schoenebeck wrote on Tue, Jun 14, 2022 at 03:55:39PM +0200:
-> On Montag, 13. Juni 2022 01:45:54 CEST Dominique Martinet wrote:
-> > I was recently reminded that it is not clear that p9_client_clunk()
-> > was actually just decrementing refcount and clunking only when that
-> > reaches zero: make it clear through a set of helpers.
-> > 
-> > This will also allow instrumenting refcounting better for debugging
-> > next patch, which is the reason these are not defined as static inline:
-> > we won't be able to add trace events there...
+On 6/3/22 08:56, Claudio Imbrenda wrote:
+> Previously, when a protected VM was rebooted or when it was shut down,
+> its memory was made unprotected, and then the protected VM itself was
+> destroyed. Looping over the whole address space can take some time,
+> considering the overhead of the various Ultravisor Calls (UVCs). This
+> means that a reboot or a shutdown would take a potentially long amount
+> of time, depending on the amount of used memory.
 > 
-> Looks like you forgot to adjust the commit log sentence here, ...
+> This patchseries implements a deferred destroy mechanism for protected
+> guests. When a protected guest is destroyed, its memory can be cleared
+> in background, allowing the guest to restart or terminate significantly
+> faster than before.
 > 
-> > Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
-> > ---
-> > v1 -> v2: p9_fid_get/put are now static inline in .h
+> There are 2 possibilities when a protected VM is torn down:
+> * it still has an address space associated (reboot case)
+> * it does not have an address space anymore (shutdown case)
 > 
-> ... as the two functions are in fact static inlined in this v2 now.
 
-Good point, will fix!
-
-
-> > diff --git a/include/net/9p/client.h b/include/net/9p/client.h
-> > index ec1d1706f43c..9fd38d674057 100644
-> > --- a/include/net/9p/client.h
-> > +++ b/include/net/9p/client.h
-> > @@ -237,6 +237,24 @@ static inline int p9_req_try_get(struct p9_req_t *r)
-> > 
-> >  int p9_req_put(struct p9_req_t *r);
-> > 
-> > +static inline struct p9_fid *p9_fid_get(struct p9_fid *fid)
-> > +{
-> 
-> Isn't this missing a check here?
-> 
->     if (!fid)
->         return NULL;
-
-It doesn't really make sense to get a null or error fid: whatever wants
-to take a ref will error out first, so this didn't get a check unlike
-put, which is nice to use without `if (fid && !IS_ERR(fid)) put(fid)`
-all the time.
-
-
-> 
-> > +	refcount_inc(&fid->count);
-> > +
-> > +	return fid;
-> > +}
-> > +
-> > +static inline int p9_fid_put(struct p9_fid *fid)
-> > +{
-> > +	if (!fid || IS_ERR(fid))
-> > +		return 0;
-> > +
-> > +	if (!refcount_dec_and_test(&fid->count))
-> > +		return 0;
-> > +
-> > +	return p9_client_clunk(fid);
-> > +}
-> > +
-> 
-> I don't know the common symbol name patterns in the Linux kernel for acquiring
-> and releasing counted references are (if there is a common one at all), but I
-> think those two functions deserve a short API comment to make it clear they
-> belong together, i.e. that a p9_fid_get() call should be paired with
-> subsequent p9_fid_put(). It's maybe just nitpicking, as the code is quite
-> short and probably already speaks for itself.
-
-I guess "but none of the other 50 functions do!" isn't a good reason not
-to start, but it sure was enough to make me think it'd be silly to
-document p9_fid_get/put right next to p9_req_get/put that don't have
-their comment...
-Better late than never though, I'll add something in v3.
-
-As for common names you can see get/put in various places (kref_get/put,
-of_node_get/put, pm_runime*_get/put) so I guess it's common enough.
-
-> On the long-term I could imagine using automated, destructor based
-> p9_fid_put() calls when leaving a block/function scope. That would simplify
-> code a load and avoid leaks in future.
-
-__attribute__(__cleanup__()) is nice but I've not seen any in linux
-(looking again kcsan and locking selftests seem to be using it, I didn't
-think it was allowed)...
-Just making it clear goes a long way though, my last patch is a good
-first step (inconditionally put'ing all fids at the end of functions and
-NULLing fid pointers when stashing it in inode is pretty much what we'd
-be doing if there were destructors), but I feel it's still not clear
-which functions give a new ref or not cf. walk that can reuse the same
-fid depending on its parameters.
-
-I think making that clear would be a good next step for cleanup next
-time there are problems and/or someone has time for it...
-(But there are plenty of interesting things to check first, like the
-performance regression with recent fscache perhaps...)
-
--- 
-Dominique
+Please add patches 1-13 to devel for some CI coverage.
+I'll try reviewing the remaining patches this week.
