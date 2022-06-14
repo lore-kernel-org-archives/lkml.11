@@ -2,180 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C392C3F2D4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A84D8CCA480
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:29:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245161AbiFNM25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58064 "EHLO
+        id S234634AbiFNM3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237837AbiFNM2S (ORCPT
+        with ESMTP id S243267AbiFNM2h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:28:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE23377EA;
-        Tue, 14 Jun 2022 05:28:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA60EB81874;
-        Tue, 14 Jun 2022 12:28:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D73C3411B;
-        Tue, 14 Jun 2022 12:28:03 +0000 (UTC)
-Message-ID: <366fca22-e22d-9963-423b-252274fa9d9e@xs4all.nl>
-Date:   Tue, 14 Jun 2022 14:28:01 +0200
+        Tue, 14 Jun 2022 08:28:37 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF0322B1A
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:29 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id gl15so16860837ejb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=bs1pDxoqSwxHo6PhPuLte63s3qeUlbVxYb0CgUg+DU4=;
+        b=c010hK3+ahAHRLBDp/YkH7ue/xhQVFHLKxwyUX7pT4nvITXGSPVRQWGtNe4e8BJlHw
+         ShM/jdfA3dXz598QFtXn7PbLhrOdrk2wdQNOIpY9KXOhlDj4q93DryPdDogflmTdjgcy
+         m2S75F2hujDTdCnjubcb0QdWgXbpIRBVFb6Cc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=bs1pDxoqSwxHo6PhPuLte63s3qeUlbVxYb0CgUg+DU4=;
+        b=WE9PiHF7NNCzRJpxGfK1C4f7ER5QIKFvY/zpTKvWyolEj0qFHYHyX1LMqPM/EhoUHD
+         dPicA68JPtnNZHtrBIFoiYQjlMrISx7Angf3AqGSulWYqUgOkA7x2tO4tjDTAATEHphE
+         o88R2X7gr7KUOK0X3ELrXtd+uqZAydc2aPKTa07r6sojT8VglfO/xK1124NDeSMoP+lo
+         o62QagXusxv44GXPenD7bwBvZ1bHmgamzkX27c0g4YRNumShgpTF5S3h0WI+YUulPZ+9
+         EU3y8A0zURMcXjJTCi5sobGeiZDukV0A2iAHbcLG6+5hrJ+Oq7kG+0H+T71t9OtsphPQ
+         HJfw==
+X-Gm-Message-State: AOAM530BbxfsWRYyV9ymv4+/sOKQ0g+hOMSdSWU1xfvsNQq79f3fSwO2
+        TAWUpgs799FFapBcuPWjtRHFTPCKIuSUtA==
+X-Google-Smtp-Source: ABdhPJyxoOzRWB1wnGAo214wBBP18qanXSZdV8l0hMrYApMdvZlin/orDEjVUZjgRmC43b03fTLNHg==
+X-Received: by 2002:a17:907:1c07:b0:711:c966:f02e with SMTP id nc7-20020a1709071c0700b00711c966f02emr4194683ejc.221.1655209707627;
+        Tue, 14 Jun 2022 05:28:27 -0700 (PDT)
+Received: from dario-ThinkPad-T14s-Gen-2i.amarulasolutions.com (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
+        by smtp.gmail.com with ESMTPSA id z22-20020a17090655d600b006f3ef214e2csm5087043ejp.146.2022.06.14.05.28.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 05:28:27 -0700 (PDT)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        michael@amarulasolutions.com,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v4 01/12] can: slcan: use the BIT() helper
+Date:   Tue, 14 Jun 2022 14:28:10 +0200
+Message-Id: <20220614122821.3646071-2-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
+References: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v8 04/17] media: uapi: HEVC: Add missing fields in HEVC
- controls
-Content-Language: en-US
-To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        nicolas.dufresne@collabora.com, andrzej.p@collabora.com
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com
-References: <20220614083614.240641-1-benjamin.gaignard@collabora.com>
- <20220614083614.240641-5-benjamin.gaignard@collabora.com>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <20220614083614.240641-5-benjamin.gaignard@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/14/22 10:36, Benjamin Gaignard wrote:
-> Complete the HEVC controls with missing fields from H.265 specifications.
-> Even if these fields aren't used by the current mainlined drivers
-> they will be required for (at least) the rkvdec driver.
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> ---
-> version 6:
-> - Add short_term_ref_pic_set_size and long_term_ref_pic_set_size
->   in v4l2_ctrl_hevc_decode_params structure.
-> 
->  .../media/v4l/ext-ctrls-codec.rst             | 32 +++++++++++++++++++
->  include/media/hevc-ctrls.h                    |  8 ++++-
->  2 files changed, 39 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> index 6183f43f4d73..aa7556e200c9 100644
-> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> @@ -2683,6 +2683,16 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->      :stub-columns: 0
->      :widths:       1 1 2
->  
-> +    * - __u8
-> +      - ``video_parameter_set_id``
-> +      - Specifies the value of the vps_video_parameter_set_id of the active VPS
-> +        as descibed in section "7.4.3.2.1 General sequence parameter set RBSP semantics"
+Use the BIT() helper instead of an explicit shift.
 
-descibed -> described
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+---
 
-This same typo occurs several times in this patch and in patch 17/17.
+(no changes since v1)
 
-Regards,
+ drivers/net/can/slcan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-	Hans
-
-> +        of H.265 specifications.
-> +    * - __u8
-> +      - ``seq_parameter_set_id``
-> +      - Provides an identifier for the SPS for reference by other syntax elements
-> +        as descibed in section "7.4.3.2.1 General sequence parameter set RBSP semantics"
-> +        of H.265 specifications.
->      * - __u16
->        - ``pic_width_in_luma_samples``
->        -
-> @@ -2822,6 +2832,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->      :stub-columns: 0
->      :widths:       1 1 2
->  
-> +    * - __u8
-> +      - ``pic_parameter_set_id``
-> +      - Identifies the PPS for reference by other syntax elements.
->      * - __u8
->        - ``num_extra_slice_header_bits``
->        -
-> @@ -3048,6 +3061,15 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->      * - __u8
->        - ``ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
->        - The list of L1 reference elements as indices in the DPB.
-> +    * - __u16
-> +      - ``short_term_ref_pic_set_size``
-> +      - Specifies the size, in bits, of the short-term reference picture set, described as st_ref_pic_set()
-> +        in the specification, included in the slice header or SPS (section 7.3.6.1).
-> +    * - __u16
-> +      - ``long_term_ref_pic_set_size``
-> +      - Specifies the size, in bits, of the long-term reference picture set include in the slice header
-> +        or SPS. It is the number of bits in the conditional block if(long_term_ref_pics_present_flag)
-> +        in section 7.3.6.1 of the specification.
->      * - __u8
->        - ``padding``
->        - Applications and drivers must set this to zero.
-> @@ -3385,6 +3407,16 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->        - ``pic_order_cnt_val``
->        - PicOrderCntVal as described in section 8.3.1 "Decoding process
->          for picture order count" of the specification.
-> +    * - __u16
-> +      - ``short_term_ref_pic_set_size``
-> +      - Specifies the size, in bits, of the short-term reference picture set, of the first slice
-> +        described as st_ref_pic_set() in the specification, included in the slice header
-> +        or SPS (section 7.3.6.1).
-> +    * - __u16
-> +      - ``long_term_ref_pic_set_size``
-> +      - Specifies the size, in bits, of the long-term reference picture set, of the first slice
-> +        included in the slice header or SPS. It is the number of bits in the conditional block
-> +        if(long_term_ref_pics_present_flag) in section 7.3.6.1 of the specification.
->      * - __u8
->        - ``num_active_dpb_entries``
->        - The number of entries in ``dpb``.
-> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-> index 01ccda48d8c5..752a8d10782c 100644
-> --- a/include/media/hevc-ctrls.h
-> +++ b/include/media/hevc-ctrls.h
-> @@ -58,6 +58,8 @@ enum v4l2_mpeg_video_hevc_start_code {
->  /* The controls are not stable at the moment and will likely be reworked. */
->  struct v4l2_ctrl_hevc_sps {
->  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Sequence parameter set */
-> +	__u8	video_parameter_set_id;
-> +	__u8	seq_parameter_set_id;
->  	__u16	pic_width_in_luma_samples;
->  	__u16	pic_height_in_luma_samples;
->  	__u8	bit_depth_luma_minus8;
-> @@ -108,6 +110,7 @@ struct v4l2_ctrl_hevc_sps {
->  
->  struct v4l2_ctrl_hevc_pps {
->  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Picture parameter set */
-> +	__u8	pic_parameter_set_id;
->  	__u8	num_extra_slice_header_bits;
->  	__u8	num_ref_idx_l0_default_active_minus1;
->  	__u8	num_ref_idx_l1_default_active_minus1;
-> @@ -199,7 +202,8 @@ struct v4l2_ctrl_hevc_slice_params {
->  	__u32	slice_segment_addr;
->  	__u8	ref_idx_l0[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
->  	__u8	ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
-> -
-> +	__u16	short_term_ref_pic_set_size;
-> +	__u16	long_term_ref_pic_set_size;
->  	__u8	padding;
->  
->  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Weighted prediction parameter */
-> @@ -214,6 +218,8 @@ struct v4l2_ctrl_hevc_slice_params {
->  
->  struct v4l2_ctrl_hevc_decode_params {
->  	__s32	pic_order_cnt_val;
-> +	__u16	short_term_ref_pic_set_size;
-> +	__u16	long_term_ref_pic_set_size;
->  	__u8	num_active_dpb_entries;
->  	struct	v4l2_hevc_dpb_entry dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
->  	__u8	num_poc_st_curr_before;
+diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
+index 64a3aee8a7da..b37d35c2a23a 100644
+--- a/drivers/net/can/slcan.c
++++ b/drivers/net/can/slcan.c
+@@ -413,7 +413,7 @@ static int slc_open(struct net_device *dev)
+ 	if (sl->tty == NULL)
+ 		return -ENODEV;
+ 
+-	sl->flags &= (1 << SLF_INUSE);
++	sl->flags &= BIT(SLF_INUSE);
+ 	netif_start_queue(dev);
+ 	return 0;
+ }
+-- 
+2.32.0
 
