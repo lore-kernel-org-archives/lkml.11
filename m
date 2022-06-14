@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADF1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCAC2CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357157AbiFNSmP (ORCPT
+        id S1357091AbiFNSmR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:42:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59282 "EHLO
+        Tue, 14 Jun 2022 14:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357039AbiFNSls (ORCPT
+        with ESMTP id S1347374AbiFNSls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 14:41:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1F24A90D;
-        Tue, 14 Jun 2022 11:41:32 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D1594A918;
+        Tue, 14 Jun 2022 11:41:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC6B9B8186A;
-        Tue, 14 Jun 2022 18:41:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE315C3411B;
-        Tue, 14 Jun 2022 18:41:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFC5C617C1;
+        Tue, 14 Jun 2022 18:41:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE2E2C3411B;
+        Tue, 14 Jun 2022 18:41:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232089;
-        bh=xwd8s0NcWWmmlf0T2SyWUX1VuDno50o8PJA1UhCikjg=;
+        s=korg; t=1655232092;
+        bh=Ji1Sndb5sEdNz4okiXUxRbPTXMSEoXeX0mSgQzcisgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AzM1SqU4RQvNFLL2ebRzg6mdy2eEcLIDP+3RDcfUVkSxn84U7/ILcruNqtvLX7dtp
-         EGvJdkMKjQrrE7NhSRs7WBcaDJKbsEFrVgeJQuYB18fc6F3ZaW2Cnrtj6rhKf9H0Ke
-         bxVuL68vTyRbbMwwR2epRyCDJqKXB3vHD5Vj2+l8=
+        b=DmbrkLo6w0Fea3Urt10aRt3tVS2qsf0iRoTuLfA2HmnqgK3fPWGI1lbKHMN1JF/5f
+         FXbiuzmwPTiGPMxycYs+M9jfXn1p3c/hMnU0WU2CqKxepaWo3OyXh0UnnY8KVuq3E9
+         tB5F+qzs6UBoq2LNUrvzXz87NohSeeumLXc+Cnns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 4.9 20/20] x86/speculation/mmio: Print SMT warning
-Date:   Tue, 14 Jun 2022 20:40:03 +0200
-Message-Id: <20220614183726.901907101@linuxfoundation.org>
+Subject: [PATCH 4.9 03/20] x86/cpu: Add Jasper Lake to Intel family
+Date:   Tue, 14 Jun 2022 20:39:46 +0200
+Message-Id: <20220614183722.905713879@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220614183722.061550591@linuxfoundation.org>
 References: <20220614183722.061550591@linuxfoundation.org>
@@ -50,47 +52,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Zhang Rui <rui.zhang@intel.com>
 
-commit 1dc6ff02c8bf77d71b9b5d11cbc9df77cfb28626 upstream
+commit b2d32af0bff402b4c1fce28311759dd1f6af058a upstream.
 
-Similar to MDS and TAA, print a warning if SMT is enabled for the MMIO
-Stale Data vulnerability.
+Japser Lake is an Atom family processor.
+It uses Tremont cores and is targeted at mobile platforms.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Zhang Rui <rui.zhang@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/x86/include/asm/intel-family.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -1214,6 +1214,7 @@ static void update_mds_branch_idle(void)
+--- a/arch/x86/include/asm/intel-family.h
++++ b/arch/x86/include/asm/intel-family.h
+@@ -70,6 +70,7 @@
  
- #define MDS_MSG_SMT "MDS CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html for more details.\n"
- #define TAA_MSG_SMT "TAA CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/tsx_async_abort.html for more details.\n"
-+#define MMIO_MSG_SMT "MMIO Stale Data CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/processor_mmio_stale_data.html for more details.\n"
+ #define INTEL_FAM6_ATOM_TREMONT_X	0x86 /* Jacobsville */
+ #define INTEL_FAM6_ATOM_TREMONT		0x96 /* Elkhart Lake */
++#define INTEL_FAM6_ATOM_TREMONT_L	0x9C /* Jasper Lake */
  
- void arch_smt_update(void)
- {
-@@ -1258,6 +1259,16 @@ void arch_smt_update(void)
- 		break;
- 	}
- 
-+	switch (mmio_mitigation) {
-+	case MMIO_MITIGATION_VERW:
-+	case MMIO_MITIGATION_UCODE_NEEDED:
-+		if (sched_smt_active())
-+			pr_warn_once(MMIO_MSG_SMT);
-+		break;
-+	case MMIO_MITIGATION_OFF:
-+		break;
-+	}
-+
- 	mutex_unlock(&spec_ctrl_mutex);
- }
+ /* Xeon Phi */
  
 
 
