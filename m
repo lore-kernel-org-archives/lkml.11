@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA178C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD2ACCA47D
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354771AbiFNCXp (ORCPT
+        id S1354807AbiFNCXs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40666 "EHLO
+        Mon, 13 Jun 2022 22:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354823AbiFNCTc (ORCPT
+        with ESMTP id S1354930AbiFNCTf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:19:32 -0400
+        Mon, 13 Jun 2022 22:19:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1712D3F308;
-        Mon, 13 Jun 2022 19:10:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F0C13F327;
+        Mon, 13 Jun 2022 19:10:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C753B816A1;
-        Tue, 14 Jun 2022 02:09:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63AC4C3411E;
-        Tue, 14 Jun 2022 02:09:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1F1BB8168A;
+        Tue, 14 Jun 2022 02:10:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C61BC3411B;
+        Tue, 14 Jun 2022 02:10:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172578;
-        bh=9DxZ9Z8KuJ6bNlC9KwxdXezx5ONbebC6I+hrSLivx6s=;
+        s=k20201202; t=1655172603;
+        bh=j0DqSOb4wtciB8qs+NUib1IbtaMB3GxRIMriNsXMyFo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A/GehDfoKMDWfju28iEjhOUuxS0FAL9oOmak15V4j6oipLXLcaiVescTLxGNS0/g7
-         eU396yJsYrL05BSZ65KxbP436id+obtGtHRpa8iLIV4ZiY90hC2JYI10HyvrzRiAJS
-         UuJDrAVUeVpzfcfpfTFOJLwjHU4Lc47WaQlwV7z/h3e1Hj0rca6QDRB1knnzBcGTep
-         +7XpEEBHKLBZBO4Wp7a/iDBo/mVlYwcXYaAi5N/G7yxhW9jDLaBX2RM3cUsVeKqOZb
-         bTP3nBFiuSeX1C2j4gsGaIGlC127EXks3PCFvNRn3bOp3HwYs9QKWO0MbEWcz9wvTd
-         RJpM6nqBw3ANQ==
+        b=adcoRwoiflmxJL3MOqNBJIb4xxLrh91mUFzDTGm7geQbHqVdj3+VsfkfWy6WzevSG
+         q2eqTDZ7asposZys2VhV7e6gOZhbl9VFXRJ61Fk2/bHe+814jRDvg+6MX7qosVx8dQ
+         snIUdpIhgMPm4+OCyYdFZbvnXFzZ5zAq8fSJAQjdX+j+rZDqM5hDwAeeqQWRvannGJ
+         I28RRJiKE70UrNOKFQ5cu5emJCNSv3JAd23Fl+p0MYbl736WtQ9oWBZEVglZ0yhSZ9
+         EszOibYGzr45JcH+HpQ+ploPZc8NLsnb8xRgHCr9hhdHu2aOssGS5HIUChfMQ0IxUH
+         aCBQt8hru9UGw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chen Lin <chen45464546@163.com>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, nbd@openwrt.org,
-        blogic@openwrt.org, matthias.bgg@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 22/23] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
-Date:   Mon, 13 Jun 2022 22:08:58 -0400
-Message-Id: <20220614020900.1100401-22-sashal@kernel.org>
+Cc:     Adam Ford <aford173@gmail.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com,
+        patches@opensource.wolfsonmicro.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.19 07/18] ASoC: wm8962: Fix suspend while playing music
+Date:   Mon, 13 Jun 2022 22:09:30 -0400
+Message-Id: <20220614020941.1100702-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020900.1100401-1-sashal@kernel.org>
-References: <20220614020900.1100401-1-sashal@kernel.org>
+In-Reply-To: <20220614020941.1100702-1-sashal@kernel.org>
+References: <20220614020941.1100702-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,71 +55,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Lin <chen45464546@163.com>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit 2f2c0d2919a14002760f89f4e02960c735a316d2 ]
+[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
 
-When rx_flag == MTK_RX_FLAGS_HWLRO,
-rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
-netdev_alloc_frag is for alloction of page fragment only.
-Reference to other drivers and Documentation/vm/page_frags.rst
+If the audio CODEC is playing sound when the system is suspended,
+it can be left in a state which throws the following error:
 
-Branch to use __get_free_pages when ring->frag_size > PAGE_SIZE.
+wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
 
-Signed-off-by: Chen Lin <chen45464546@163.com>
-Link: https://lore.kernel.org/r/1654692413-2598-1-git-send-email-chen45464546@163.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Once this error has occurred, the audio will not work again until rebooted.
+
+Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
+
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ sound/soc/codecs/wm8962.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 3351d4f9363a..c9041508d284 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -802,6 +802,17 @@ static inline void mtk_rx_get_desc(struct mtk_rx_dma *rxd,
- 	rxd->rxd4 = READ_ONCE(dma_rxd->rxd4);
- }
+diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
+index dde015fd70a4..3f75cb3209ff 100644
+--- a/sound/soc/codecs/wm8962.c
++++ b/sound/soc/codecs/wm8962.c
+@@ -3861,6 +3861,7 @@ static int wm8962_runtime_suspend(struct device *dev)
+ #endif
  
-+static void *mtk_max_lro_buf_alloc(gfp_t gfp_mask)
-+{
-+	unsigned int size = mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH);
-+	unsigned long data;
-+
-+	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
-+				get_order(size));
-+
-+	return (void *)data;
-+}
-+
- /* the qdma core needs scratch memory to be setup */
- static int mtk_init_fq_dma(struct mtk_eth *eth)
- {
-@@ -1299,7 +1310,10 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			goto release_desc;
+ static const struct dev_pm_ops wm8962_pm = {
++	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
+ 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
+ };
  
- 		/* alloc new buffer */
--		new_data = napi_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			new_data = napi_alloc_frag(ring->frag_size);
-+		else
-+			new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
- 		if (unlikely(!new_data)) {
- 			netdev->stats.rx_dropped++;
- 			goto release_desc;
-@@ -1696,7 +1710,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
- 		return -ENOMEM;
- 
- 	for (i = 0; i < rx_dma_size; i++) {
--		ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		else
-+			ring->data[i] = mtk_max_lro_buf_alloc(GFP_KERNEL);
- 		if (!ring->data[i])
- 			return -ENOMEM;
- 	}
 -- 
 2.35.1
 
