@@ -2,197 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 868CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9108EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:12:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245371AbiFNWLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 18:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36328 "EHLO
+        id S1356087AbiFNWMS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 18:12:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233456AbiFNWLr (ORCPT
+        with ESMTP id S233456AbiFNWMQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 18:11:47 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF8A74EDF4;
-        Tue, 14 Jun 2022 15:11:46 -0700 (PDT)
+        Tue, 14 Jun 2022 18:12:16 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBBB4EDF4;
+        Tue, 14 Jun 2022 15:12:16 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id mh16-20020a17090b4ad000b001e8313301f1so2072970pjb.1;
+        Tue, 14 Jun 2022 15:12:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655244706; x=1686780706;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=QyBtVrN988JTZi57APICOccjvVk0rIujIlei0eNvXBg=;
-  b=Z7IREYwIkKka0NJDJHuzjO8Lt5Vbofc3JfKK6hrN2jCQuedUuilT7UDF
-   jroWSq4X5fdOgO5Tlmn6DDEAx6W1grBtyOples6F8wg9RSf1jnB8AzkSN
-   6R9+kHgpfgxL473NkD1c50A50KvGZqy2Exr6aTTaJrALmYsGho4oQC+5g
-   M=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Jun 2022 15:11:46 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 15:11:46 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 15:11:45 -0700
-Received: from [10.110.74.141] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 14 Jun
- 2022 15:11:44 -0700
-Message-ID: <3481878b-95c5-d803-8b7b-c7e8c83bbcc5@quicinc.com>
-Date:   Tue, 14 Jun 2022 15:11:43 -0700
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=h7bXHj/PM2CUZ3XoNksJ4Hdtwz7ORUrDKBYGQb+dhAg=;
+        b=TUMcMrO7JiWxZtESdzYr4V6hGGrwwu+0ck/dqjV+nd+m0zHTIaSCvw+oBC8VLN5SDU
+         t/rQPzlrLShN6UYMV/dClB+hkwsrUNrfWckcbzLMckosArtIDAd0nvvaGa3BfaDDbhn6
+         ltosBigSMAnpbYvSzDAk86LMA8ivKSxufXEjdqw5FDSDDbpkuoKsji6a6mFGysTUTIeK
+         Z3mfxtxk/O33bSyFdvoEr8D3IfpDRly7QFS8K8ByXJ3SPDbGddj9nC5be45I2ADjHAuU
+         zjEgH1J/RadfNca6BJs7NQFckRfVA2D+ZIWQU71s+zQbIxKx5sxVIy5BoWp6edPfFxZR
+         aPNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=h7bXHj/PM2CUZ3XoNksJ4Hdtwz7ORUrDKBYGQb+dhAg=;
+        b=euKEEJ/2QqhRUnb8coiA2CXAu9xVTpTxOIwZ4+7YeQhvLr5UDwx6ZU6DHZawaZ3n6I
+         73ewO9LEC5nhG/o2MX2AkBpAwQ3DzUMx6XtfPFHK65sMQlAEyZTK2+xl5AJ2voYYMbsi
+         lwYmn3ry/Pz+rvY+30G5ijOvGJ5IBfcnjAhwls9SlxN/6JklFGIhcnX0nL8GFOcpGrVv
+         qCxpLnbu+qCHqoyLtNJvH3zv3cZA7GyjaiHvqQktHAmupUaYcX84YoN2b2BDNistdGyt
+         sP41mF8b9RK745clE5IvkOxER4X85AVJfZNHTcp+0b73cDyhZ4OMrhn5ZSOb4krhQbZp
+         03VQ==
+X-Gm-Message-State: AJIora9Kbamk+jz1iZom1IfGImve9GgTM3ZmgZan1B7mTynSmfAWnKn9
+        /mvOA+1tv+z2chLNYj27LWY=
+X-Google-Smtp-Source: AGRyM1vse/tpkg/4SA5FfXWHkvZFzQZTsLLeE5mEigVhCrDsP05/9rds3ZYlkxkaNgvns4VWSUbuWg==
+X-Received: by 2002:a17:903:1210:b0:168:dc70:e9d8 with SMTP id l16-20020a170903121000b00168dc70e9d8mr6561184plh.92.1655244735619;
+        Tue, 14 Jun 2022 15:12:15 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id u5-20020a17090add4500b001df264610c4sm4473585pjv.0.2022.06.14.15.12.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 15:12:15 -0700 (PDT)
+Message-ID: <a3c74f50-8e51-1652-ea70-36daaaa5aa9a@gmail.com>
+Date:   Tue, 14 Jun 2022 15:12:13 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v6] drm/msm/dp: force link training for display resolution
- change
+Subject: Re: [PATCH 5.15 00/11] 5.15.48-rc1 review
 Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
-        <daniel@ffwll.ch>, <dianders@chromium.org>,
-        <dmitry.baryshkov@linaro.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <vkoul@kernel.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1655240702-12230-1-git-send-email-quic_khsieh@quicinc.com>
- <CAE-0n52EAyTcQd6CiwXT1T658C-b+2r14BK_3-tf-ZiJdzqaAw@mail.gmail.com>
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-In-Reply-To: <CAE-0n52EAyTcQd6CiwXT1T658C-b+2r14BK_3-tf-ZiJdzqaAw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220614183720.512073672@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220614183720.512073672@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 6/14/22 11:40, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.48 release.
+> There are 11 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.48-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-On 6/14/2022 2:59 PM, Stephen Boyd wrote:
-> Quoting Kuogee Hsieh (2022-06-14 14:05:02)
->> Display resolution change is implemented through drm modeset. Older
->> modeset (resolution) has to be disabled first before newer modeset
->> (resolution) can be enabled. Display disable will turn off both
->> pixel clock and main link clock so that main link have to be
->> re-trained during display enable to have new video stream flow
->> again. At current implementation, display enable function manually
->> kicks up irq_hpd_handle which will read panel link status and start
->> link training if link status is not in sync state.
->>
->> However, there is rare case that a particular panel links status keep
->> staying in sync for some period of time after main link had been shut
->> down previously at display disabled. In this case, main link retraining
->> will not be executed by irq_hdp_handle(). Hence video stream of newer
->> display resolution will fail to be transmitted to panel due to main
->> link is not in sync between host and panel.
->>
->> This patch will bypass irq_hpd_hanle() in favor of directly call
-> s/hanle/handle/
->
->> dp_ctrl_on_stream() to always perform link training in regardless of
->> main link status. So that no unexpected exception resolution change
->> failure cases will happen. Also this implementation are more efficient
->> than manual kicking off irq_hpd_handle function.
->>
->> Changes in v2:
->> -- set force_link_train flag on DP only (is_edp == false)
->>
->> Changes in v3:
->> -- revise commit  text
->> -- add Fixes tag
->>
->> Changes in v4:
->> -- revise commit  text
->>
->> Changes in v5:
->> -- fix spelling at commit text
->>
->> Changes in v6:
->> -- split dp_ctrl_on_stream() for phy test case
->> -- revise commit text for modeset
->>
->> Fixes: 62671d2ef24b ("drm/msm/dp: fixes wrong connection state caused by failure of link train")
->> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
->> ---
->>   drivers/gpu/drm/msm/dp/dp_ctrl.c    | 31 +++++++++++++++++++++++--------
->>   drivers/gpu/drm/msm/dp/dp_ctrl.h    |  3 ++-
->>   drivers/gpu/drm/msm/dp/dp_display.c | 13 ++++++-------
->>   3 files changed, 31 insertions(+), 16 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> index af7a80c..cb9c7af 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> @@ -1807,7 +1807,27 @@ static int dp_ctrl_link_retrain(struct dp_ctrl_private *ctrl)
->>          return dp_ctrl_setup_main_link(ctrl, &training_step);
->>   }
->>
->> -int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
->> +int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl)
->> +{
->> +       int ret = 0;
-> Drop assignment please.
->
->> +       struct dp_ctrl_private *ctrl;
->> +
->> +       ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
->> +
->> +       ctrl->dp_ctrl.pixel_rate = ctrl->panel->dp_mode.drm_mode.clock;
->> +
->> +       ret = dp_ctrl_enable_stream_clocks(ctrl);
->> +       if (ret) {
->> +               DRM_ERROR("Failed to start pixel clocks. ret=%d\n", ret);
->> +               return ret;
->> +       }
->> +
->> +       dp_ctrl_send_phy_test_pattern(ctrl);
-> None of this code needs to be run in the normal display on case?
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-+       ctrl->dp_ctrl.pixel_rate = ctrl->panel->dp_mode.drm_mode.clock;
-+
-+       ret = dp_ctrl_enable_stream_clocks(ctrl);
-
-These two lines are also used at normal display on case (dp_ctrl_on_stream()).
-I have to copy them to here to form a stand alone dp_ctrl_on_stream_phy_test_report().
-
->> +
->> +       return 0;
->> +}
->> +
->> +int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train)
->>   {
->>          int ret = 0;
->>          bool mainlink_ready = false;
->> @@ -1843,12 +1863,7 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
->>                  goto end;
->>          }
->>
->> -       if (ctrl->link->sink_request & DP_TEST_LINK_PHY_TEST_PATTERN) {
->> -               dp_ctrl_send_phy_test_pattern(ctrl);
->> -               return 0;
->> -       }
->> -
->> -       if (!dp_ctrl_channel_eq_ok(ctrl))
->> +       if (force_link_train || !dp_ctrl_channel_eq_ok(ctrl))
->>                  dp_ctrl_link_retrain(ctrl);
->>
->>          /* stop txing train pattern to end link training */
->> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
->> index c388323..b6d25ab 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_display.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
->> @@ -1688,10 +1689,12 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
->>
->>          state =  dp_display->hpd_state;
->>
->> -       if (state == ST_DISPLAY_OFF)
->> +       if (state == ST_DISPLAY_OFF) {
->>                  dp_display_host_phy_init(dp_display);
->> +               force_link_train = true;
->> +       }
->>
->> -       dp_display_enable(dp_display, 0);
->> +       dp_display_enable(dp_display, force_link_train);
-> Do we need to pass it from here? Why can't dp_display_enable() simply
-> check for 'state == ST_DISPLAY_OFF' and then force retrain the link?
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
