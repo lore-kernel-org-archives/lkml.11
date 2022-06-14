@@ -2,411 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A703C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F257C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:52:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358567AbiFNUt6 (ORCPT
+        id S1358568AbiFNUwY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38928 "EHLO
+        Tue, 14 Jun 2022 16:52:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345104AbiFNUtD (ORCPT
+        with ESMTP id S1356850AbiFNUwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:49:03 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B204403E4
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:48:23 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id nn9-20020a17090b38c900b001e82e1ec1deso1208277pjb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:48:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=HVrWphNJm9ODVqQWlSo7gw++y6zZnMkQugM6MxdMyIo=;
-        b=n+7P2v7NKs8n+8JRX3W3Dia0TK84riQ5E+jJ86CNtA9ZWSqsX6l3sZutvDJU81hfJG
-         u2YkkGwRnHfiv0A1eA4ml+hbKNLd7SYCvi0p/fC6ZgmLtjVxUEuSL3836u/L1FpsXdFo
-         mfEDoxczyqb90IMDDVZemD+6vPPfNHZOKaKHEAaIiNn+7duG4xjwPCQf/8kd8ybL7Cbz
-         F1LHvcTEOuu0zFpg7jnAdWzsLaiEH/YILmZq28//pxBukUlAaZJAinEA6PHrt6lX1BrS
-         Mr+wb3Ejn2OEzk6k5N4zrMw+UYi8NiRZKZgDoXcMgGQ5Asi6kURSCMlv42ZhXZe6Ab09
-         qyew==
+        Tue, 14 Jun 2022 16:52:10 -0400
+Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2CD5000C;
+        Tue, 14 Jun 2022 13:51:06 -0700 (PDT)
+Received: by mail-io1-f54.google.com with SMTP id n11so10691151iod.4;
+        Tue, 14 Jun 2022 13:51:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=HVrWphNJm9ODVqQWlSo7gw++y6zZnMkQugM6MxdMyIo=;
-        b=3oGDED9IdAiqhoVD1UWxdCu9Feh+fzRLHy4d/nlnIQ6MZn7Q3LQ0P3tECBO0ap7K7w
-         G//jLdPqfUZ62O/d5WR4S1LmOFPak5jhJokoCVLGvbngUeo2Ac4uEfLJlO2J8M2w/DxX
-         i4ZkDXJ46+mIS57KR4jCqM8XuugAV+RrxWHnmYXcSz7m4j6nP+j2k1MoZfyFp/qoUrwp
-         P3YWHGAwd4P3PLkRXoWw26XWcUy1WOX5G2/NsDta3TI26Ax1O3vGuLrtYUf7uAy0p97U
-         Se+mDjQTCttu1ng8GpmvbQKQfaafMTOzxUuE7YLWqynO5/guXj2/d5HMjxcOGEUYvqfn
-         CE6w==
-X-Gm-Message-State: AOAM531PtDmfgcERb8v/JgdLPKun4CEe/j0EVdF3cTScSKZl8SAADYmh
-        y4SNnugC4MfCE9+mDXFQ5tT49FAU+7I=
-X-Google-Smtp-Source: ABdhPJwBTG5GtOAoenn7/v08HElHG5WIh1QOed6kt0p9lJiIuSouSOtPxmc9DBzfZPhOIldBUvPnV12qGh4=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a63:3183:0:b0:3fd:6797:70a8 with SMTP id
- x125-20020a633183000000b003fd679770a8mr6010940pgx.206.1655239695826; Tue, 14
- Jun 2022 13:48:15 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 14 Jun 2022 20:47:30 +0000
-In-Reply-To: <20220614204730.3359543-1-seanjc@google.com>
-Message-Id: <20220614204730.3359543-22-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220614204730.3359543-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH v2 21/21] KVM: selftests: Add an x86-only test to verify
- nested exception queueing
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=35SehlekaFMujAJb5y7haSRllb1c8CzqMTDElwkUekU=;
+        b=zfTLYAMo1uIo3yw8NSSVQNuAHeFWEa6V9dK0CtkQz3QvS445BuzvXbU2UXJS+I2FCu
+         xbAalLxIPkYRETLsn7XV/CPV7xLxAM4A8IfEseHCoWknAqMo0KyhXSn9e7GqryuzBbop
+         GSwqSh5b/ukAx51pc86FkIlu65TptcBacxS5Suw5IHfsDw5lWAqb93aFXtI6v8PnsPWA
+         nfvzdfU3wJsS4I9d/H5dzBCPgQAeavZ/xJJzCT0Medg76pJnfy1gEtVeo2khZR4/OM+G
+         c37XaCYoPqBdzsrgiZPEQhPhvt8bZQUs4B0DgnH/pQS6NfpD2zoNDFNhfo6qzhw5GRJs
+         tjrA==
+X-Gm-Message-State: AOAM531HTPhFJ/xrnFbG4z+Vse6QpiAhqypTh0SoYW+RKh1TfkrMKXq9
+        PGFqTuasMw1oyUEQSvYd4A==
+X-Google-Smtp-Source: ABdhPJwQk3+Na6eiyW27LMs4rmj6x3r5jGBNW89VVR1Mx7rCYkFFcTtfL4NnAHqR6nhY326D1Gl9xA==
+X-Received: by 2002:a05:6638:430e:b0:332:586:5182 with SMTP id bt14-20020a056638430e00b0033205865182mr3913906jab.225.1655239853581;
+        Tue, 14 Jun 2022 13:50:53 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id w10-20020a6bf00a000000b0066a3140e986sm322597ioc.6.2022.06.14.13.50.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 13:50:53 -0700 (PDT)
+Received: (nullmailer pid 2521413 invoked by uid 1000);
+        Tue, 14 Jun 2022 20:50:51 -0000
+Date:   Tue, 14 Jun 2022 14:50:51 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Konstantin Porotchkin <kostap@marvell.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Robert Marko <robert.marko@sartura.hr>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v9 1/3] dt-bindings: marvell: Document the AC5/AC5X
+ compatibles
+Message-ID: <20220614205051.GA2499840-robh@kernel.org>
+References: <20220613225338.393-1-vadym.kochan@plvision.eu>
+ <20220613225338.393-2-vadym.kochan@plvision.eu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613225338.393-2-vadym.kochan@plvision.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a test to verify that KVM_{G,S}ET_EVENTS play nice with pending vs.
-injected exceptions when an exception is being queued for L2, and that
-KVM correctly handles L1's exception intercept wants.
+On Tue, Jun 14, 2022 at 01:53:22AM +0300, Vadym Kochan wrote:
+> From: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> 
+> Describe the compatible properties for the Marvell Alleycat5/5X switches
+> with integrated CPUs.
+> 
+> Alleycat5:
+> * 98DX2538: 24x1G + 2x10G + 2x10G Stack
+> * 98DX2535: 24x1G + 4x1G Stack
+> * 98DX2532: 8x1G + 2x10G + 2x1G Stack
+> * 98DX2531: 8x1G + 4x1G Stack
+> * 98DX2528: 24x1G + 2x10G + 2x10G Stack
+> * 98DX2525: 24x1G + 4x1G Stack
+> * 98DX2522: 8x1G + 2x10G + 2x1G Stack
+> * 98DX2521: 8x1G + 4x1G Stack
+> * 98DX2518: 24x1G + 2x10G + 2x10G Stack
+> * 98DX2515: 24x1G + 4x1G Stack
+> * 98DX2512: 8x1G + 2x10G + 2x1G Stack
+> * 98DX2511: 8x1G + 4x1G Stack
+> 
+> Alleycat5X:
+> * 98DX3500: 24x1G + 6x25G
+> * 98DX3501: 16x1G + 6x10G
+> * 98DX3510: 48x1G + 6x25G
+> * 98DX3520: 24x2.5G + 6x25G
+> * 98DX3530: 48x2.5G + 6x25G
+> * 98DX3540: 12x5G/6x10G + 6x25G
+> * 98DX3550: 24x5G/12x10G + 6x25G
+> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
+> ---
+> 
+> Notes:
+>     Changes in v9:
+>     - Renamed $id with "ac5" prefix
+>     Changes in v8:
+>     - Add review from Krzysztof
+>     Changes in v7:
+>     - Add rd-ac5 and rd-ac5x boards to binding.
+>     - Rename to armada-98dx25xx.yaml
+>     Changes in v6:
+>     - New
+> 
+>  .../bindings/arm/marvell/ac5-98dx25xx.yaml    | 32 +++++++++++++++++++
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- tools/testing/selftests/kvm/.gitignore        |   1 +
- tools/testing/selftests/kvm/Makefile          |   1 +
- .../kvm/x86_64/nested_exceptions_test.c       | 295 ++++++++++++++++++
- 3 files changed, 297 insertions(+)
- create mode 100644 tools/testing/selftests/kvm/x86_64/nested_exceptions_test.c
+Use compatible string for filename:
 
-diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
-index 0ab0e255d292..7c8adb8cff83 100644
---- a/tools/testing/selftests/kvm/.gitignore
-+++ b/tools/testing/selftests/kvm/.gitignore
-@@ -27,6 +27,7 @@
- /x86_64/hyperv_svm_test
- /x86_64/max_vcpuid_cap_test
- /x86_64/mmio_warning_test
-+/x86_64/nested_exceptions_test
- /x86_64/platform_info_test
- /x86_64/pmu_event_filter_test
- /x86_64/set_boot_cpu_id
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index 2ca5400220b9..6db2dd5eca96 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -83,6 +83,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_svm_test
- TEST_GEN_PROGS_x86_64 += x86_64/kvm_clock_test
- TEST_GEN_PROGS_x86_64 += x86_64/kvm_pv_test
- TEST_GEN_PROGS_x86_64 += x86_64/mmio_warning_test
-+TEST_GEN_PROGS_x86_64 += x86_64/nested_exceptions_test
- TEST_GEN_PROGS_x86_64 += x86_64/platform_info_test
- TEST_GEN_PROGS_x86_64 += x86_64/pmu_event_filter_test
- TEST_GEN_PROGS_x86_64 += x86_64/set_boot_cpu_id
-diff --git a/tools/testing/selftests/kvm/x86_64/nested_exceptions_test.c b/tools/testing/selftests/kvm/x86_64/nested_exceptions_test.c
-new file mode 100644
-index 000000000000..ac33835f78f4
---- /dev/null
-+++ b/tools/testing/selftests/kvm/x86_64/nested_exceptions_test.c
-@@ -0,0 +1,295 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#define _GNU_SOURCE /* for program_invocation_short_name */
-+
-+#include "test_util.h"
-+#include "kvm_util.h"
-+#include "processor.h"
-+#include "vmx.h"
-+#include "svm_util.h"
-+
-+#define L2_GUEST_STACK_SIZE 256
-+
-+/*
-+ * Arbitrary, never shoved into KVM/hardware, just need to avoid conflict with
-+ * the "real" exceptions used, #SS/#GP/#DF (12/13/8).
-+ */
-+#define FAKE_TRIPLE_FAULT_VECTOR	0xaa
-+
-+/* Arbitrary 32-bit error code injected by this test. */
-+#define SS_ERROR_CODE 0xdeadbeef
-+
-+/*
-+ * Bit '0' is set on Intel if the exception occurs while delivering a previous
-+ * event/exception.  AMD's wording is ambiguous, but presumably the bit is set
-+ * if the exception occurs while delivering an external event, e.g. NMI or INTR,
-+ * but not for exceptions that occur when delivering other exceptions or
-+ * software interrupts.
-+ *
-+ * Note, Intel's name for it, "External event", is misleading and much more
-+ * aligned with AMD's behavior, but the SDM is quite clear on its behavior.
-+ */
-+#define ERROR_CODE_EXT_FLAG	BIT(0)
-+
-+/*
-+ * Bit '1' is set if the fault occurred when looking up a descriptor in the
-+ * IDT, which is the case here as the IDT is empty/NULL.
-+ */
-+#define ERROR_CODE_IDT_FLAG	BIT(1)
-+
-+/*
-+ * The #GP that occurs when vectoring #SS should show the index into the IDT
-+ * for #SS, plus have the "IDT flag" set.
-+ */
-+#define GP_ERROR_CODE_AMD ((SS_VECTOR * 8) | ERROR_CODE_IDT_FLAG)
-+#define GP_ERROR_CODE_INTEL ((SS_VECTOR * 8) | ERROR_CODE_IDT_FLAG | ERROR_CODE_EXT_FLAG)
-+
-+/*
-+ * Intel and AMD both shove '0' into the error code on #DF, regardless of what
-+ * led to the double fault.
-+ */
-+#define DF_ERROR_CODE 0
-+
-+#define INTERCEPT_SS		(BIT_ULL(SS_VECTOR))
-+#define INTERCEPT_SS_DF		(INTERCEPT_SS | BIT_ULL(DF_VECTOR))
-+#define INTERCEPT_SS_GP_DF	(INTERCEPT_SS_DF | BIT_ULL(GP_VECTOR))
-+
-+static void l2_ss_pending_test(void)
-+{
-+	GUEST_SYNC(SS_VECTOR);
-+}
-+
-+static void l2_ss_injected_gp_test(void)
-+{
-+	GUEST_SYNC(GP_VECTOR);
-+}
-+
-+static void l2_ss_injected_df_test(void)
-+{
-+	GUEST_SYNC(DF_VECTOR);
-+}
-+
-+static void l2_ss_injected_tf_test(void)
-+{
-+	GUEST_SYNC(FAKE_TRIPLE_FAULT_VECTOR);
-+}
-+
-+static void svm_run_l2(struct svm_test_data *svm, void *l2_code, int vector,
-+		       uint32_t error_code)
-+{
-+	struct vmcb *vmcb = svm->vmcb;
-+	struct vmcb_control_area *ctrl = &vmcb->control;
-+
-+	vmcb->save.rip = (u64)l2_code;
-+	run_guest(vmcb, svm->vmcb_gpa);
-+
-+	if (vector == FAKE_TRIPLE_FAULT_VECTOR)
-+		return;
-+
-+	GUEST_ASSERT_EQ(ctrl->exit_code, (SVM_EXIT_EXCP_BASE + vector));
-+	GUEST_ASSERT_EQ(ctrl->exit_info_1, error_code);
-+}
-+
-+static void l1_svm_code(struct svm_test_data *svm)
-+{
-+	struct vmcb_control_area *ctrl = &svm->vmcb->control;
-+	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
-+
-+	generic_svm_setup(svm, NULL, &l2_guest_stack[L2_GUEST_STACK_SIZE]);
-+	svm->vmcb->save.idtr.limit = 0;
-+	ctrl->intercept |= BIT_ULL(INTERCEPT_SHUTDOWN);
-+
-+	ctrl->intercept_exceptions = INTERCEPT_SS_GP_DF;
-+	svm_run_l2(svm, l2_ss_pending_test, SS_VECTOR, SS_ERROR_CODE);
-+	svm_run_l2(svm, l2_ss_injected_gp_test, GP_VECTOR, GP_ERROR_CODE_AMD);
-+
-+	ctrl->intercept_exceptions = INTERCEPT_SS_DF;
-+	svm_run_l2(svm, l2_ss_injected_df_test, DF_VECTOR, DF_ERROR_CODE);
-+
-+	ctrl->intercept_exceptions = INTERCEPT_SS;
-+	svm_run_l2(svm, l2_ss_injected_tf_test, FAKE_TRIPLE_FAULT_VECTOR, 0);
-+	GUEST_ASSERT_EQ(ctrl->exit_code, SVM_EXIT_SHUTDOWN);
-+
-+	GUEST_DONE();
-+}
-+
-+static void vmx_run_l2(void *l2_code, int vector, uint32_t error_code)
-+{
-+	GUEST_ASSERT(!vmwrite(GUEST_RIP, (u64)l2_code));
-+
-+	GUEST_ASSERT_EQ(vector == SS_VECTOR ? vmlaunch() : vmresume(), 0);
-+
-+	if (vector == FAKE_TRIPLE_FAULT_VECTOR)
-+		return;
-+
-+	GUEST_ASSERT_EQ(vmreadz(VM_EXIT_REASON), EXIT_REASON_EXCEPTION_NMI);
-+	GUEST_ASSERT_EQ((vmreadz(VM_EXIT_INTR_INFO) & 0xff), vector);
-+	GUEST_ASSERT_EQ(vmreadz(VM_EXIT_INTR_ERROR_CODE), error_code);
-+}
-+
-+static void l1_vmx_code(struct vmx_pages *vmx)
-+{
-+	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
-+
-+	GUEST_ASSERT_EQ(prepare_for_vmx_operation(vmx), true);
-+
-+	GUEST_ASSERT_EQ(load_vmcs(vmx), true);
-+
-+	prepare_vmcs(vmx, NULL, &l2_guest_stack[L2_GUEST_STACK_SIZE]);
-+	GUEST_ASSERT_EQ(vmwrite(GUEST_IDTR_LIMIT, 0), 0);
-+
-+	/*
-+	 * VMX disallows injecting an exception with error_code[31:16] != 0,
-+	 * and hardware will never generate a VM-Exit with bits 31:16 set.
-+	 * KVM should likewise truncate the "bad" userspace value.
-+	 */
-+	GUEST_ASSERT_EQ(vmwrite(EXCEPTION_BITMAP, INTERCEPT_SS_GP_DF), 0);
-+	vmx_run_l2(l2_ss_pending_test, SS_VECTOR, (u16)SS_ERROR_CODE);
-+	vmx_run_l2(l2_ss_injected_gp_test, GP_VECTOR, GP_ERROR_CODE_INTEL);
-+
-+	GUEST_ASSERT_EQ(vmwrite(EXCEPTION_BITMAP, INTERCEPT_SS_DF), 0);
-+	vmx_run_l2(l2_ss_injected_df_test, DF_VECTOR, DF_ERROR_CODE);
-+
-+	GUEST_ASSERT_EQ(vmwrite(EXCEPTION_BITMAP, INTERCEPT_SS), 0);
-+	vmx_run_l2(l2_ss_injected_tf_test, FAKE_TRIPLE_FAULT_VECTOR, 0);
-+	GUEST_ASSERT_EQ(vmreadz(VM_EXIT_REASON), EXIT_REASON_TRIPLE_FAULT);
-+
-+	GUEST_DONE();
-+}
-+
-+static void __attribute__((__flatten__)) l1_guest_code(void *test_data)
-+{
-+	if (this_cpu_has(X86_FEATURE_SVM))
-+		l1_svm_code(test_data);
-+	else
-+		l1_vmx_code(test_data);
-+}
-+
-+static void assert_ucall_vector(struct kvm_vcpu *vcpu, int vector)
-+{
-+	struct kvm_run *run = vcpu->run;
-+	struct ucall uc;
-+
-+	TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
-+		    "Unexpected exit reason: %u (%s),\n",
-+		    run->exit_reason, exit_reason_str(run->exit_reason));
-+
-+	switch (get_ucall(vcpu, &uc)) {
-+	case UCALL_SYNC:
-+		TEST_ASSERT(vector == uc.args[1],
-+			    "Expected L2 to ask for %d, got %ld", vector, uc.args[1]);
-+		break;
-+	case UCALL_DONE:
-+		TEST_ASSERT(vector == -1,
-+			    "Expected L2 to ask for %d, L2 says it's done", vector);
-+		break;
-+	case UCALL_ABORT:
-+		TEST_FAIL("%s at %s:%ld (0x%lx != 0x%lx)",
-+			  (const char *)uc.args[0], __FILE__, uc.args[1],
-+			  uc.args[2], uc.args[3]);
-+		break;
-+	default:
-+		TEST_FAIL("Expected L2 to ask for %d, got unexpected ucall %lu", vector, uc.cmd);
-+	}
-+}
-+
-+static void queue_ss_exception(struct kvm_vcpu *vcpu, bool inject)
-+{
-+	struct kvm_vcpu_events events;
-+
-+	vcpu_events_get(vcpu, &events);
-+
-+	TEST_ASSERT(!events.exception.pending,
-+		    "Vector %d unexpectedlt pending", events.exception.nr);
-+	TEST_ASSERT(!events.exception.injected,
-+		    "Vector %d unexpectedly injected", events.exception.nr);
-+
-+	events.flags = KVM_VCPUEVENT_VALID_PAYLOAD;
-+	events.exception.pending = !inject;
-+	events.exception.injected = inject;
-+	events.exception.nr = SS_VECTOR;
-+	events.exception.has_error_code = true;
-+	events.exception.error_code = SS_ERROR_CODE;
-+	vcpu_events_set(vcpu, &events);
-+}
-+
-+/*
-+ * Verify KVM_{G,S}ET_EVENTS play nice with pending vs. injected exceptions
-+ * when an exception is being queued for L2.  Specifically, verify that KVM
-+ * honors L1 exception intercept controls when a #SS is pending/injected,
-+ * triggers a #GP on vectoring the #SS, morphs to #DF if #GP isn't intercepted
-+ * by L1, and finally causes (nested) SHUTDOWN if #DF isn't intercepted by L1.
-+ */
-+int main(int argc, char *argv[])
-+{
-+	vm_vaddr_t nested_test_data_gva;
-+	struct kvm_vcpu_events events;
-+	struct kvm_vcpu *vcpu;
-+	struct kvm_vm *vm;
-+
-+	TEST_REQUIRE(kvm_has_cap(KVM_CAP_EXCEPTION_PAYLOAD));
-+	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_SVM) || kvm_cpu_has(X86_FEATURE_VMX));
-+
-+	vm = vm_create_with_one_vcpu(&vcpu, l1_guest_code);
-+	vm_enable_cap(vm, KVM_CAP_EXCEPTION_PAYLOAD, -2ul);
-+
-+	if (kvm_cpu_has(X86_FEATURE_SVM))
-+		vcpu_alloc_svm(vm, &nested_test_data_gva);
-+	else
-+		vcpu_alloc_vmx(vm, &nested_test_data_gva);
-+
-+	vcpu_args_set(vcpu, 1, nested_test_data_gva);
-+
-+	/* Run L1 => L2.  L2 should sync and request #SS. */
-+	vcpu_run(vcpu);
-+	assert_ucall_vector(vcpu, SS_VECTOR);
-+
-+	/* Pend #SS and request immediate exit.  #SS should still be pending. */
-+	queue_ss_exception(vcpu, false);
-+	vcpu->run->immediate_exit = true;
-+	vcpu_run_complete_io(vcpu);
-+
-+	/* Verify the pending events comes back out the same as it went in. */
-+	vcpu_events_get(vcpu, &events);
-+	ASSERT_EQ(events.flags & KVM_VCPUEVENT_VALID_PAYLOAD,
-+		  KVM_VCPUEVENT_VALID_PAYLOAD);
-+	ASSERT_EQ(events.exception.pending, true);
-+	ASSERT_EQ(events.exception.nr, SS_VECTOR);
-+	ASSERT_EQ(events.exception.has_error_code, true);
-+	ASSERT_EQ(events.exception.error_code, SS_ERROR_CODE);
-+
-+	/*
-+	 * Run for real with the pending #SS, L1 should get a VM-Exit due to
-+	 * #SS interception and re-enter L2 to request #GP (via injected #SS).
-+	 */
-+	vcpu->run->immediate_exit = false;
-+	vcpu_run(vcpu);
-+	assert_ucall_vector(vcpu, GP_VECTOR);
-+
-+	/*
-+	 * Inject #SS, the #SS should bypass interception and cause #GP, which
-+	 * L1 should intercept before KVM morphs it to #DF.  L1 should then
-+	 * disable #GP interception and run L2 to request #DF (via #SS => #GP).
-+	 */
-+	queue_ss_exception(vcpu, true);
-+	vcpu_run(vcpu);
-+	assert_ucall_vector(vcpu, DF_VECTOR);
-+
-+	/*
-+	 * Inject #SS, the #SS should bypass interception and cause #GP, which
-+	 * L1 is no longer interception, and so should see a #DF VM-Exit.  L1
-+	 * should then signal that is done.
-+	 */
-+	queue_ss_exception(vcpu, true);
-+	vcpu_run(vcpu);
-+	assert_ucall_vector(vcpu, FAKE_TRIPLE_FAULT_VECTOR);
-+
-+	/*
-+	 * Inject #SS yet again.  L1 is not intercepting #GP or #DF, and so
-+	 * should see nested TRIPLE_FAULT / SHUTDOWN.
-+	 */
-+	queue_ss_exception(vcpu, true);
-+	vcpu_run(vcpu);
-+	assert_ucall_vector(vcpu, -1);
-+
-+	kvm_vm_free(vm);
-+}
--- 
-2.36.1.476.g0c4daa206d-goog
+marvell,ac5.yaml
 
+>  1 file changed, 32 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/marvell/ac5-98dx25xx.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/marvell/ac5-98dx25xx.yaml b/Documentation/devicetree/bindings/arm/marvell/ac5-98dx25xx.yaml
+> new file mode 100644
+> index 000000000000..1d8dd7c00c1a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/marvell/ac5-98dx25xx.yaml
+> @@ -0,0 +1,32 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/arm/marvell/ac5-98dx25xx.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Marvell Alleycat5/5X Platforms
+> +
+> +maintainers:
+> +  - Chris Packham <chris.packham@alliedtelesis.co.nz>
+> +
+> +properties:
+> +  $nodename:
+> +    const: '/'
+> +  compatible:
+> +    oneOf:
+> +      - description: Alleycat5 (98DX25xx) Reference Design
+> +        items:
+> +          - enum:
+> +              - marvell,rd-ac5
+> +          - const: marvell,ac5
+> +
+> +      - description: Alleycat5X (98DX35xx) Reference Design
+> +        items:
+> +          - enum:
+> +              - marvell,rd-ac5x
+> +          - const: marvell,ac5x
+> +          - const: marvell,ac5
+> +
+> +additionalProperties: true
+> +
+> +...
+> -- 
+> 2.17.1
+> 
+> 
