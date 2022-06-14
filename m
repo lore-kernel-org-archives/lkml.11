@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D475C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 148EECCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354564AbiFNC1w (ORCPT
+        id S1355447AbiFNC2h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53610 "EHLO
+        Mon, 13 Jun 2022 22:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355138AbiFNCYG (ORCPT
+        with ESMTP id S1355170AbiFNCYH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:24:06 -0400
+        Mon, 13 Jun 2022 22:24:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E69A40A1E;
-        Mon, 13 Jun 2022 19:10:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE3640A04;
+        Mon, 13 Jun 2022 19:10:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8CC2FB816A9;
-        Tue, 14 Jun 2022 02:10:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 079B3C385A2;
-        Tue, 14 Jun 2022 02:10:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8733DB80AC1;
+        Tue, 14 Jun 2022 02:10:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B78BC385A2;
+        Tue, 14 Jun 2022 02:10:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172647;
-        bh=qIYgr84JW2wfwskmNEvNzTtO/Z+QttXhLdhRIbSR53E=;
+        s=k20201202; t=1655172650;
+        bh=u1D/hLqCjUAb9AG1DeAYgoHN8PQ3oSyKG26DNohWGvI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rTkHwt/fBnidoBGg2eSx5uuOvSMKdbHFHAnRLWmhrfTxNhTfeUIoTQNq5hgWIpCxf
-         u8nhBqJjKi7ayff5n6l9oVq4Y1P5TYugd6Ml12csbsCmF0c9nUexQIFtV+mChgLbMQ
-         XeJ1Pttt6S5ByCqfacSCK+hH5hWvS6lOnwit6mx4XrW3x3WiLzTiw4g0ahT/dwAgC3
-         OZ2YgDQBd+dL3kLEDwPSa94GCpYS8f9GvqPY9RqQh/xc42hv839txBXMupurRy/7B7
-         oJmBFn2sY+J+XU4jQcgbFP99Mv4cpLmylh7sxm7pZYfYadVNFMXpQKlHfLd0L4+aFP
-         11pKSuRc6zAtg==
+        b=PJxbwDN9GIAPmA/aL1kSPcM0Ccne6GZigf/SRdwXBXflytKWB0Q2t0s5aM3bFt35f
+         IQ9UogPbOoRwcpgdyIdVeknB7JLF3F+nFakxeKyOcdWQJzrICqLvQeJ5trMCkFZPoD
+         m0aQMtLOG2LK3DBDUzBknJ0rtkKbJ41LmmPr1xPaqvM4H3bzBu4g2Zk+8SPeSeTm2E
+         LvqYzxVR3aiS88krGgO6fYfFgdrGYMv69nkEd1GUMYNSBiThc1Qchtp+mpyESI/g7M
+         zvBKv2v8pL0SCRkpNgJnqFUtwpWIUbVHfqYHd7JDWBQYrcoAeNrxyWzVKEbpsNAi9R
+         fZHUIlhLpaO4w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
-        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.9 03/12] ASoC: cs42l52: Correct TLV for Bypass Volume
-Date:   Mon, 13 Jun 2022 22:10:31 -0400
-Message-Id: <20220614021040.1101131-3-sashal@kernel.org>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>, tj@kernel.org,
+        linux-ide@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 05/12] ata: libata-core: fix NULL pointer deref in ata_host_alloc_pinfo()
+Date:   Mon, 13 Jun 2022 22:10:33 -0400
+Message-Id: <20220614021040.1101131-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614021040.1101131-1-sashal@kernel.org>
 References: <20220614021040.1101131-1-sashal@kernel.org>
@@ -54,43 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-[ Upstream commit 91e90c712fade0b69cdff7cc6512f6099bd18ae5 ]
+[ Upstream commit bf476fe22aa1851bab4728e0c49025a6a0bea307 ]
 
-The Bypass Volume is accidentally using a -6dB minimum TLV rather than
-the correct -60dB minimum. Add a new TLV to correct this.
+In an unlikely (and probably wrong?) case that the 'ppi' parameter of
+ata_host_alloc_pinfo() points to an array starting with a NULL pointer,
+there's going to be a kernel oops as the 'pi' local variable won't get
+reassigned from the initial value of NULL. Initialize 'pi' instead to
+'&ata_dummy_port_info' to fix the possible kernel oops for good...
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-5-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Found by Linux Verification Center (linuxtesting.org) with the SVACE static
+analysis tool.
+
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l52.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/ata/libata-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
-index f733f6b42b53..47f2439fd7b0 100644
---- a/sound/soc/codecs/cs42l52.c
-+++ b/sound/soc/codecs/cs42l52.c
-@@ -141,6 +141,8 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 35db918a1de5..42f0a592b5ab 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -6051,7 +6051,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 				      const struct ata_port_info * const * ppi,
+ 				      int n_ports)
+ {
+-	const struct ata_port_info *pi;
++	const struct ata_port_info *pi = &ata_dummy_port_info;
+ 	struct ata_host *host;
+ 	int i, j;
  
- static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
+@@ -6059,7 +6059,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 	if (!host)
+ 		return NULL;
  
-+static DECLARE_TLV_DB_SCALE(pass_tlv, -6000, 50, 0);
-+
- static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
+-	for (i = 0, j = 0, pi = NULL; i < host->n_ports; i++) {
++	for (i = 0, j = 0; i < host->n_ports; i++) {
+ 		struct ata_port *ap = host->ports[i];
  
- static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
-@@ -355,7 +357,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
- 			      CS42L52_SPKB_VOL, 0, 0x40, 0xC0, hl_tlv),
- 
- 	SOC_DOUBLE_R_SX_TLV("Bypass Volume", CS42L52_PASSTHRUA_VOL,
--			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pga_tlv),
-+			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pass_tlv),
- 
- 	SOC_DOUBLE("Bypass Mute", CS42L52_MISC_CTL, 4, 5, 1, 0),
- 
+ 		if (ppi[j])
 -- 
 2.35.1
 
