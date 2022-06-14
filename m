@@ -2,160 +2,346 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2FBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D5ECCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244834AbiFNMjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41310 "EHLO
+        id S234983AbiFNMkz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234794AbiFNMiQ (ORCPT
+        with ESMTP id S1357806AbiFNMjZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:38:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D6E49F96;
-        Tue, 14 Jun 2022 05:35:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E15BB8186C;
-        Tue, 14 Jun 2022 12:34:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29C6FC3411E;
-        Tue, 14 Jun 2022 12:34:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655210086;
-        bh=RxBJ6JD8Wf8ojeDpP8PuOnhZqWUwzlveE7eOehiepUk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tccE29lgTynPfIHS7yqWNwxaJZYOzV0VVqp/4uXMujX03Ple5ePWeqyTHOJ5ZhAYj
-         XMwyzSmBg7Uv+qO+GNLZXusyJPAnxyTaj4FtGrMt5xKAiPeMNutq+Fm368HCJM177K
-         p3TqHFeMnXWnxHyCSaVqHfoZitET90MUOQLzYppk=
-Date:   Tue, 14 Jun 2022 14:34:43 +0200
-From:   'Greg KH' <gregkh@linuxfoundation.org>
-To:     "tarumizu.kohei@fujitsu.com" <tarumizu.kohei@fujitsu.com>
-Cc:     "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "lenb@kernel.org" <lenb@kernel.org>,
-        "mchehab+huawei@kernel.org" <mchehab+huawei@kernel.org>,
-        "eugenis@google.com" <eugenis@google.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "pcc@google.com" <pcc@google.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "marcos@orca.pet" <marcos@orca.pet>,
-        "marcan@marcan.st" <marcan@marcan.st>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "conor.dooley@microchip.com" <conor.dooley@microchip.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "ast@kernel.org" <ast@kernel.org>,
-        "peter.chen@kernel.org" <peter.chen@kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
-Subject: Re: [PATCH v5 0/6] Add hardware prefetch control driver for A64FX
- and x86
-Message-ID: <YqiAY689pOJbHKUd@kroah.com>
-References: <20220607120530.2447112-1-tarumizu.kohei@fujitsu.com>
- <YqNCDrqcp9t8HlUJ@kroah.com>
- <OSBPR01MB203749DA00C7BEE5741AFEB980AA9@OSBPR01MB2037.jpnprd01.prod.outlook.com>
+        Tue, 14 Jun 2022 08:39:25 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DFCD4ECFF;
+        Tue, 14 Jun 2022 05:37:08 -0700 (PDT)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LMnvS1y0lzjY3n;
+        Tue, 14 Jun 2022 20:35:00 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 20:36:04 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 14 Jun
+ 2022 20:36:04 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>,
+        <linux-accelerators@lists.ozlabs.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <zhangfei.gao@linaro.org>, <wangzhou1@hisilicon.com>,
+        <yekai13@huawei.com>
+Subject: [PATCH 3/3] crypto: hisilicon/qm - defining the device isolation strategy
+Date:   Tue, 14 Jun 2022 20:29:43 +0800
+Message-ID: <20220614122943.1406-7-yekai13@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220614122943.1406-1-yekai13@huawei.com>
+References: <20220614122943.1406-1-yekai13@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <OSBPR01MB203749DA00C7BEE5741AFEB980AA9@OSBPR01MB2037.jpnprd01.prod.outlook.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 11:55:39AM +0000, tarumizu.kohei@fujitsu.com wrote:
-> Thanks for the comment.
-> 
-> > Why does userspace want to even do this?
-> 
-> This is because the optimal settings may differ from application to
-> application.
+Define the device isolation strategy by the device driver. if the
+AER error frequency exceeds the value of setting for a certain
+period of time, The device will not be available in user space. The VF
+device use the PF device isolation strategy. All the hardware errors
+are processed by PF driver.
 
-That's not ok.  Linux is a "general purpose" operating system and needs
-to work well for all applications.  Doing application-specific-tuning
-based on the specific hardware like this is a nightmare for users, and
-will be for you as you will now have to support this specific model to
-work correctly on all future kernel releases for the next 20+ years.
-Are you willing to do that?
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+---
+ drivers/crypto/hisilicon/qm.c | 155 +++++++++++++++++++++++++++++++---
+ include/linux/hisi_acc_qm.h   |   9 ++
+ 2 files changed, 152 insertions(+), 12 deletions(-)
 
-> Examples of performance improvements for applications with simple
-> memory access characteristics are described in [merit] section.
-> However, some applications have complex characteristics, so it is
-> difficult to predict if an application will improve without actually
-> trying it out.
+diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
+index b4ca2eb034d7..391d83929ad2 100644
+--- a/drivers/crypto/hisilicon/qm.c
++++ b/drivers/crypto/hisilicon/qm.c
+@@ -12,7 +12,6 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/seq_file.h>
+ #include <linux/slab.h>
+-#include <linux/uacce.h>
+ #include <linux/uaccess.h>
+ #include <uapi/misc/uacce/hisi_qm.h>
+ #include <linux/hisi_acc_qm.h>
+@@ -417,6 +416,16 @@ struct hisi_qm_resource {
+ 	struct list_head list;
+ };
+ 
++/**
++ * struct qm_hw_err - structure of describes the device err
++ * @list: hardware error list
++ * @tick_stamp: timestamp when the error occurred
++ */
++struct qm_hw_err {
++	struct list_head list;
++	unsigned long long tick_stamp;
++};
++
+ struct hisi_qm_hw_ops {
+ 	int (*get_vft)(struct hisi_qm *qm, u32 *base, u32 *number);
+ 	void (*qm_db)(struct hisi_qm *qm, u16 qn,
+@@ -3265,6 +3274,7 @@ static int hisi_qm_uacce_get_queue(struct uacce_device *uacce,
+ 	qp->event_cb = qm_qp_event_notifier;
+ 	qp->pasid = arg;
+ 	qp->is_in_kernel = false;
++	atomic_inc(&qm->uacce_ref);
+ 
+ 	return 0;
+ }
+@@ -3272,7 +3282,9 @@ static int hisi_qm_uacce_get_queue(struct uacce_device *uacce,
+ static void hisi_qm_uacce_put_queue(struct uacce_queue *q)
+ {
+ 	struct hisi_qp *qp = q->priv;
++	struct hisi_qm *qm = qp->qm;
+ 
++	atomic_dec(&qm->uacce_ref);
+ 	hisi_qm_cache_wb(qp->qm);
+ 	hisi_qm_release_qp(qp);
+ }
+@@ -3397,6 +3409,102 @@ static long hisi_qm_uacce_ioctl(struct uacce_queue *q, unsigned int cmd,
+ 	return 0;
+ }
+ 
++/**
++ * qm_hw_err_isolate() - Try to isolate the uacce device with its VFs
++ * @qm: The qm which we want to configure.
++ *
++ * according to user's configuration of isolation strategy. Warning: this
++ * API should be called while there is no user on the device, or the users
++ * on this device are suspended by slot resetting preparation of PCI AER.
++ */
++static int qm_hw_err_isolate(struct hisi_qm *qm)
++{
++	struct qm_hw_err *err, *tmp, *hw_err;
++	struct qm_err_isolate *isolate;
++	u32 count = 0;
++
++	isolate = &qm->isolate_data;
++
++#define SECONDS_PER_HOUR	3600
++
++	/* All the hw errs are processed by PF driver */
++	if (qm->uacce->is_vf || atomic_read(&isolate->is_isolate) ||
++		!isolate->hw_err_isolate_hz)
++		return 0;
++
++	hw_err = kzalloc(sizeof(*hw_err), GFP_ATOMIC);
++	if (!hw_err)
++		return -ENOMEM;
++	hw_err->tick_stamp = jiffies;
++	list_for_each_entry_safe(err, tmp, &qm->uacce_hw_errs, list) {
++		if ((hw_err->tick_stamp - err->tick_stamp) / HZ >
++		    SECONDS_PER_HOUR) {
++			list_del(&err->list);
++			kfree(err);
++		} else {
++			count++;
++		}
++	}
++	list_add(&hw_err->list, &qm->uacce_hw_errs);
++
++	if (count >= isolate->hw_err_isolate_hz)
++		atomic_set(&isolate->is_isolate, 1);
++
++	return 0;
++}
++
++static void qm_hw_err_destroy(struct hisi_qm *qm)
++{
++	struct qm_hw_err *err, *tmp;
++
++	list_for_each_entry_safe(err, tmp, &qm->uacce_hw_errs, list) {
++		list_del(&err->list);
++		kfree(err);
++	}
++}
++
++static enum uacce_dev_state hisi_qm_get_isolate_state(struct uacce_device *uacce)
++{
++	struct hisi_qm *qm = uacce->priv;
++	struct hisi_qm *pf_qm;
++
++	if (uacce->is_vf) {
++		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
++		qm->isolate_data.is_isolate = pf_qm->isolate_data.is_isolate;
++	}
++
++	return atomic_read(&qm->isolate_data.is_isolate) ?
++			UACCE_DEV_ISOLATE : UACCE_DEV_NORMAL;
++}
++
++static int hisi_qm_isolate_strategy_write(struct uacce_device *uacce,
++						const char *buf)
++{
++	struct hisi_qm *qm = uacce->priv;
++	unsigned long val = 0;
++
++#define MAX_ISOLATE_STRATEGY	65535
++
++	if (atomic_read(&qm->uacce_ref))
++		return -EBUSY;
++
++	/* must be set by PF */
++	if (atomic_read(&qm->isolate_data.is_isolate) || uacce->is_vf)
++		return -EINVAL;
++
++	if (kstrtoul(buf, 0, &val) < 0)
++		return -EINVAL;
++
++	if (val > MAX_ISOLATE_STRATEGY)
++		return -EINVAL;
++
++	qm->isolate_data.hw_err_isolate_hz = val;
++	dev_info(&qm->pdev->dev,
++		"the value of isolate_strategy is set to %lu.\n", val);
++
++	return 0;
++}
++
+ static const struct uacce_ops uacce_qm_ops = {
+ 	.get_available_instances = hisi_qm_get_available_instances,
+ 	.get_queue = hisi_qm_uacce_get_queue,
+@@ -3405,9 +3513,22 @@ static const struct uacce_ops uacce_qm_ops = {
+ 	.stop_queue = hisi_qm_uacce_stop_queue,
+ 	.mmap = hisi_qm_uacce_mmap,
+ 	.ioctl = hisi_qm_uacce_ioctl,
++	.get_isolate_state = hisi_qm_get_isolate_state,
+ 	.is_q_updated = hisi_qm_is_q_updated,
++	.isolate_strategy_write = hisi_qm_isolate_strategy_write,
+ };
+ 
++static void qm_remove_uacce(struct hisi_qm *qm)
++{
++	struct uacce_device *uacce = qm->uacce;
++
++	if (qm->use_sva) {
++		qm_hw_err_destroy(qm);
++		uacce_remove(uacce);
++		qm->uacce = NULL;
++	}
++}
++
+ static int qm_alloc_uacce(struct hisi_qm *qm)
+ {
+ 	struct pci_dev *pdev = qm->pdev;
+@@ -3420,6 +3541,7 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
+ 	};
+ 	int ret;
+ 
++	INIT_LIST_HEAD(&qm->uacce_hw_errs);
+ 	ret = strscpy(interface.name, dev_driver_string(&pdev->dev),
+ 		      sizeof(interface.name));
+ 	if (ret < 0)
+@@ -3433,8 +3555,7 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
+ 		qm->use_sva = true;
+ 	} else {
+ 		/* only consider sva case */
+-		uacce_remove(uacce);
+-		qm->uacce = NULL;
++		qm_remove_uacce(qm);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -5074,6 +5195,12 @@ static int qm_controller_reset_prepare(struct hisi_qm *qm)
+ 		return ret;
+ 	}
+ 
++	if (qm->use_sva) {
++		ret = qm_hw_err_isolate(qm);
++		if (ret)
++			pci_err(pdev, "failed to isolate hw err!\n");
++	}
++
+ 	ret = qm_wait_vf_prepare_finish(qm);
+ 	if (ret)
+ 		pci_err(pdev, "failed to stop by vfs in soft reset!\n");
+@@ -5401,19 +5528,24 @@ static int qm_controller_reset(struct hisi_qm *qm)
+ 	ret = qm_soft_reset(qm);
+ 	if (ret) {
+ 		pci_err(pdev, "Controller reset failed (%d)\n", ret);
+-		qm_reset_bit_clear(qm);
+-		return ret;
++		goto err_reset;
+ 	}
+ 
+ 	ret = qm_controller_reset_done(qm);
+-	if (ret) {
+-		qm_reset_bit_clear(qm);
+-		return ret;
+-	}
++	if (ret)
++		goto err_reset;
+ 
+ 	pci_info(pdev, "Controller reset complete\n");
+-
+ 	return 0;
++
++err_reset:
++	pci_err(pdev, "Controller reset failed (%d)\n", ret);
++	qm_reset_bit_clear(qm);
++
++	/* if resetting fails, isolate the device */
++	if (qm->use_sva && !qm->uacce->is_vf)
++		atomic_set(&qm->isolate_data.is_isolate, 1);
++	return ret;
+ }
+ 
+ /**
+@@ -6186,8 +6318,7 @@ int hisi_qm_init(struct hisi_qm *qm)
+ 
+ err_alloc_uacce:
+ 	if (qm->use_sva) {
+-		uacce_remove(qm->uacce);
+-		qm->uacce = NULL;
++		qm_remove_uacce(qm);
+ 	}
+ err_irq_register:
+ 	qm_irq_unregister(qm);
+diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
+index 6cabafffd0dd..c090aaaf9974 100644
+--- a/include/linux/hisi_acc_qm.h
++++ b/include/linux/hisi_acc_qm.h
+@@ -8,6 +8,7 @@
+ #include <linux/iopoll.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
++#include <linux/uacce.h>
+ 
+ #define QM_QNUM_V1			4096
+ #define QM_QNUM_V2			1024
+@@ -265,6 +266,11 @@ struct hisi_qm_list {
+ 	void (*unregister_from_crypto)(struct hisi_qm *qm);
+ };
+ 
++struct qm_err_isolate {
++	u32 hw_err_isolate_hz;	/* user cfg freq which triggers isolation */
++	atomic_t is_isolate;
++};
++
+ struct hisi_qm {
+ 	enum qm_hw_ver ver;
+ 	enum qm_fun_type fun_type;
+@@ -329,6 +335,9 @@ struct hisi_qm {
+ 	struct qm_shaper_factor *factor;
+ 	u32 mb_qos;
+ 	u32 type_rate;
++	struct list_head uacce_hw_errs;
++	atomic_t uacce_ref; /* reference of the uacce */
++	struct qm_err_isolate isolate_data;
+ };
+ 
+ struct hisi_qp_status {
+-- 
+2.33.0
 
-Then perhaps it isn't anything that they should try out :)
-
-Shouldn't the kernel know how the application works (based on the
-resources it asks for) and tune itself based on that automatically?
-
-If not, how is a user supposed to know how to do this?
-
-> This is not necessary for all applications. However, I want to provide
-> as a minimal interface that can be used by those who want to improve
-> their application even a little.
-> 
-> > How will they do this?
-> 
-> I assume to be used to tune a specific core and execute an application
-> on that core. The execution example is as follows.
-> 
-> 1) The user tunes the parameters of a specific core before executing
->    the program.
-> 
-> ```
-> # echo 1024 > /sys/devices/system/cpu/cpu12/cache/index0/prefetch_control/stream_detect_prefetcher_dist
-> # echo 1024 > /sys/devices/system/cpu/cpu12/cache/index2/prefetch_control/stream_detect_prefetcher_dist
-> # echo 1024 > /sys/devices/system/cpu/cpu13/cache/index0/prefetch_control/stream_detect_prefetcher_dist
-> # echo 1024 > /sys/devices/system/cpu/cpu13/cache/index2/prefetch_control/stream_detect_prefetcher_dist
-> ```
-
-What is "1024" here?  Where is any of this documented?  And why these
-specific sysfs files and not others?
-
-> 2) Execute the program bound to the target core.
-> 
-> ```
-> # taskset -c 12-13 a.out
-> ```
-> 
-> If the interface is exposed, the user can develop a library to execute
-> 1) and 2) operation instead.
-
-If you have no such user today, nor a library, how do you know any of
-this works well?  And again, how will you support this going forward?
-Or is this specific api only going to be for one specific piece of
-hardware and never any future ones?
-
-> > What programs will do this?
-> 
-> It is assumed to be used by programs that execute many continuous
-> memory access. It may be useful for other applications, but I can't
-> explain them in detail right away.
-
-So you haven't tested this on any real applications?  We need real users
-before being able to add new apis.  Otherwise we can just remove the
-apis :)
-
-> > And why isn't just automatic and why does this hardware require manual
-> > intervention to work properly?
-> 
-> It is difficult for the hardware to determine the optimal parameters
-> in advance. Therefore, I think that the register is provided to change
-> the behavior of the hardware.
-
-Kernel programming for a general purpose operating system is hard, but
-it is possible :)
-
-good luck!
-
-greg k-h
