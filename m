@@ -2,100 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4966FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7250AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:59:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239465AbiFNC6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52336 "EHLO
+        id S1350370AbiFNC7Z (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 22:59:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348867AbiFNC5q (ORCPT
+        with ESMTP id S1355539AbiFNC6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:57:46 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E7E36E2A;
-        Mon, 13 Jun 2022 19:49:47 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id t3-20020a17090a510300b001ea87ef9a3dso7799640pjh.4;
-        Mon, 13 Jun 2022 19:49:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LaVJJVoW1ZPNs1w8IwxxzimUXb+MOrA0NjgrLCWagYc=;
-        b=LrD1D7q7s9Bn9qtPByR7VUT0RmFu7eHKmvp0ikfKmyvM7vZ5y441etLy7xjuhlwsoi
-         LLw7H+bXbgfXrGdevyLMp65fgB14CPP/Q+0CQBfGDJcuaq9g6x2IQRVXlfvADn1bINX+
-         QCOGVUDzwfqZVD0Fice34E+asX0xM0YgQ9b8NtOBO2am93KsYr94c6TfjUX97cm1v2Pb
-         tQptYXnuYqQHXdKgZrD6f+6NGPobQUkJ3eKKxvX7/6DbQbXVHiZTAcxVjaPc+kH6seDm
-         xD3TlBaou+fCOX0XrMxLRpIJikT7XklIeD+ey25DHutvQLwxp3ssxF7xx/2pYNvH4xqn
-         pYgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LaVJJVoW1ZPNs1w8IwxxzimUXb+MOrA0NjgrLCWagYc=;
-        b=D1f1ryekYwOKzx+6o3NV5AAPfUX88izDQwiuCs5rRns1og4l5yOzC0pOaNuldytFQl
-         GQmlCD8KqmRsRKFSRYfTA9aFRBgOnk4XlSKc0SAnLVuxpbaM+povcJa7oDn2ofGDG+he
-         6yDa6g06BEf6E9JKCgtwg7hwr87/m+fKkkkzM4qVWbp8Cch9BKNjAAZSxNcUcNjnpFLt
-         baTWYTVrUaLUqTNpiYmzIgIenaODeWcP+m9j6HGgIDbQhW7LtG6eJsiwc1lAx/dYtH8N
-         hZzZxdRWlrDkE+cQO4aD4JmyzrpPvjJ398pk5/C+DQlGSY53Txdrs5UGftOw84gO54GR
-         o8NA==
-X-Gm-Message-State: AJIora8fCoCUawnf8QbV2mw+LdiEasWxvUyc5ljNVVDI7H8puHFlXJGi
-        OII1BRpwCdqkTbc54+T2bFtArJyIYFWfE58MEnU=
-X-Google-Smtp-Source: AGRyM1v/elZzkeRRgw6Rn0c31Ol5uWIHtPYsuOt7qNjxcWS9NHecfbB8Ze/UCez8IDdjcyw4g3/HLA==
-X-Received: by 2002:a17:902:ecc9:b0:163:f779:f97a with SMTP id a9-20020a170902ecc900b00163f779f97amr2069128plh.167.1655174987197;
-        Mon, 13 Jun 2022 19:49:47 -0700 (PDT)
-Received: from liuchao-VM ([156.236.96.165])
-        by smtp.gmail.com with ESMTPSA id z28-20020a62d11c000000b0051bc44f26d9sm6177916pfg.23.2022.06.13.19.49.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 19:49:45 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 10:49:40 +0800
-From:   Chao Liu <chaoliu719@gmail.com>
-To:     Jonathan Corbet <corbet@lwn.net>, Chao Yu <chao@kernel.org>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        linux-f2fs-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yue Hu <huyue2@coolpad.com>,
-        Wayne Zhang <zhangwen@coolpad.com>,
-        Chao Liu <liuchao@coolpad.com>
-Subject: Re: [PATCH v2] docs: filesystems: f2fs: fix description about
- compress ioctl
-Message-ID: <Yqf3RDuu4+rqmzSA@liuchao-VM>
-References: <20220613020800.3379482-1-chaoliu719@gmail.com>
- <Yqaw3VTD46PAMN8O@casper.infradead.org>
- <Yqbu+BArbUNGvft9@liuchao-VM>
- <87czfc1nr8.fsf@meer.lwn.net>
+        Mon, 13 Jun 2022 22:58:53 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 504E32725
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:55:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655175344; x=1686711344;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=JgUJCM9giMMlxrrl4/MFeIqwQoPEmE59CZySUaxICSM=;
+  b=TBisvL0qAE8ibKUgiigKFVdB0S29oOjaGyUF9NeJo2yWrfyLmPB6KKfT
+   CiBBFFdvpx7WFAvUPUCuRgyusNgI8H9WGGe8T6BYalH7UyT9W4e4ty0bN
+   2ugwWxQHHXsq8hOaTAE1bPdMVKVX/9cCC1RIZ4QJOOHL8l8guxiLrTwhG
+   YI9By6aQm8US5eTlbtvuWSInzUNPp/biJqW2KPr+LtwFbJ5Nq3sHM3uWv
+   /bHgOAiVvS+JOtfOGtV89tKKLp21vEXRZKnugKDLF/b/FUtFcWIetrb9b
+   hKYtIrK/Gldwd8oRBHV8BOiwMTd/TWIYy5z9aV05q3K9U6EF3BV/NI6ak
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258930299"
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="258930299"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 19:55:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="588166453"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by fmsmga007.fm.intel.com with ESMTP; 13 Jun 2022 19:55:41 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 03/12] iommu/vt-d: Remove clearing translation data in disable_dmar_iommu()
+Date:   Tue, 14 Jun 2022 10:51:28 +0800
+Message-Id: <20220614025137.1632762-4-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220614025137.1632762-1-baolu.lu@linux.intel.com>
+References: <20220614025137.1632762-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87czfc1nr8.fsf@meer.lwn.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 11:23:07AM -0600, Jonathan Corbet wrote:
-> Chao Liu <chaoliu719@gmail.com> writes:
->
-> > On Mon, Jun 13, 2022 at 04:37:01AM +0100, Matthew Wilcox wrote:
-> >> On Mon, Jun 13, 2022 at 10:08:00AM +0800, Chao Liu wrote:
-> >> > v2:
-> >> > - s/file size/filesize/
-> >>
-> >> Why would you change it to be wrong?
-> >>
-> >
-> > This is a suggestion from Chao Yu. Maybe he has some other considerations.
->
-> Sorry, I should have replied to that.  I disagree with that suggestion.
-> "Filesize" is not an English word, and there doesn't seem to be any
-> reason to use it in our docs.
->
-> <checks>
->
-> We have to occurrences now - one already in the f2fs docs.  I think we
-> shouldn't add more.  So my plan is to apply the first version of this
-> patch.  Chao Liu: is there a reason why you didn't add the Reviewed-by
-> from Chao Yu in the second version?
+The disable_dmar_iommu() is called when IOMMU initialization fails or
+the IOMMU is hot-removed from the system. In both cases, there is no
+need to clear the IOMMU translation data structures for devices.
 
-Sorry for my carelessness. I should have added it.
+On the initialization path, the device probing only happens after the
+IOMMU is initialized successfully, hence there're no translation data
+structures.
 
-Thanks,
+On the hot-remove path, there is no real use case where the IOMMU is
+hot-removed, but the devices that it manages are still alive in the
+system. The translation data structures were torn down during device
+release, hence there's no need to repeat it in IOMMU hot-remove path
+either. This removes the unnecessary code and only leaves a check.
+
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/pasid.h |  1 +
+ drivers/iommu/intel/iommu.c | 21 +++++++--------------
+ 2 files changed, 8 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
+index 583ea67fc783..2afbb2afe8cc 100644
+--- a/drivers/iommu/intel/pasid.h
++++ b/drivers/iommu/intel/pasid.h
+@@ -39,6 +39,7 @@
+  * only and pass-through transfer modes.
+  */
+ #define FLPT_DEFAULT_DID		1
++#define NUM_RESERVED_DID		2
+ 
+ /*
+  * The SUPERVISOR_MODE flag indicates a first level translation which
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index ff6018f746e0..695aed474e5d 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1715,23 +1715,16 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+ 
+ static void disable_dmar_iommu(struct intel_iommu *iommu)
+ {
+-	struct device_domain_info *info, *tmp;
+-	unsigned long flags;
+-
+ 	if (!iommu->domain_ids)
+ 		return;
+ 
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	list_for_each_entry_safe(info, tmp, &device_domain_list, global) {
+-		if (info->iommu != iommu)
+-			continue;
+-
+-		if (!info->dev || !info->domain)
+-			continue;
+-
+-		__dmar_remove_one_dev_info(info);
+-	}
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	/*
++	 * All iommu domains must have been detached from the devices,
++	 * hence there should be no domain IDs in use.
++	 */
++	if (WARN_ON(bitmap_weight(iommu->domain_ids, cap_ndoms(iommu->cap))
++		    != NUM_RESERVED_DID))
++		return;
+ 
+ 	if (iommu->gcmd & DMA_GCMD_TE)
+ 		iommu_disable_translation(iommu);
+-- 
+2.25.1
+
