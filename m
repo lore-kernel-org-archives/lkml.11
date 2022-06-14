@@ -2,192 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAB6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 19:42:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D98AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 19:43:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344588AbiFNTmn (ORCPT
+        id S1344622AbiFNTnP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 15:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
+        Tue, 14 Jun 2022 15:43:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344398AbiFNTmj (ORCPT
+        with ESMTP id S1344454AbiFNTnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 15:42:39 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2666B20F51
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 12:42:39 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id t3-20020a17090a510300b001ea87ef9a3dso10006992pjh.4
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 12:42:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9ZJFZpaUYvLKyNF9q+LY72zbgzs/nGyR/EwoxYaYQ1M=;
-        b=NmuP2Skdd5n3bGLCNoER1Bcoij3SJxX/7ftaF2q12rYMoal3MZgBSsHGVLdGjuEQAk
-         /TXsLNHVehRshc+JIy8NXlnK8wctd8uYo7/eup1XrczVTQbbRb6QVPbYOX1Gp+TIZrp7
-         U5GlS7NtpdzLWTESA9UQ/RiHnsYC9gCeJiXis=
+        Tue, 14 Jun 2022 15:43:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E563B2A433
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 12:43:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655235790;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vaTfScKXlrbTkiP4vfe3NQO4/VTa9RTXFc7gSdqVKa8=;
+        b=IPOaed6bVCv7yyNToEtqYuBy3+/rYNUwgcjkBtb6gKZLPKcAHKAz3aaH3dPZ5XQ/I4GlFy
+        T1v2ZGq1SYkwiiGSd2DGKbHXjZZOKPgC5bPJOvOI1kq2YPhzbV1uDG66iMulzkNakwDH/x
+        2/1HaRlM0w2tn8Fx0vAMR/tEwcnc35Y=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-451-Chdo-vNeMMa4mIS6XRzETQ-1; Tue, 14 Jun 2022 15:43:08 -0400
+X-MC-Unique: Chdo-vNeMMa4mIS6XRzETQ-1
+Received: by mail-il1-f199.google.com with SMTP id q15-20020a056e0220ef00b002d15dcd2750so7198794ilv.1
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 12:43:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9ZJFZpaUYvLKyNF9q+LY72zbgzs/nGyR/EwoxYaYQ1M=;
-        b=T1qkZ7lchgF2FTTK6BcEdcKCI7DueQjzVvDSKYaVkJ771Vq7PlsdyrDM3ZHQtb59pI
-         1NFh5qqxIFgaZ5G2Pv2zwBHw1ZbcVDuGOCkkZ7dU7EFrpcJX6gweH6tEgLcueTCd2wqD
-         6zUQPzyxwNC0c2hB9e+mQvQx4rJ1ZOEd3EhMdYFuf8X/0iA2udJhdSSa4I0d59dULWDW
-         /WnarAOVGnnxKJmEyheWsyeBbnKkPr2JkNdjSivz5LDOIUZUe2VtsUW8I+noFtGSlt7T
-         9hdr8anbn/AtfCw7ck2zlQ1Jrk8tBFz8zMrxG3baEzbhqNkKc2Lkl2sAq3fjH2LC0+Au
-         qcAw==
-X-Gm-Message-State: AJIora9cXWBvGGL6rJQkQoHQaYTvuy/vJ5rvaYXv+zDyDihisDEhzCBV
-        L5sXSVJQ7fHFn6/J8N5TqX7Xnvbb+is6lQ==
-X-Google-Smtp-Source: AGRyM1t/o/wb2VbxM3MoZhym1+ZRjJ5p6nx1fVnXuS2wmx6yNAHsevoLdCilrD9eNpTSPGjijydqVA==
-X-Received: by 2002:a17:90b:4a92:b0:1e8:2ba1:64bf with SMTP id lp18-20020a17090b4a9200b001e82ba164bfmr6118811pjb.41.1655235758368;
-        Tue, 14 Jun 2022 12:42:38 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id l21-20020a17090a409500b001df3a251cc2sm10014426pjg.4.2022.06.14.12.42.37
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vaTfScKXlrbTkiP4vfe3NQO4/VTa9RTXFc7gSdqVKa8=;
+        b=RqDmPhGStl0eeXBMmZrd9NX9fE8Vm4UpjoKGWAenZSvzAsw6ZGnfA49FRJ2kk1bYSS
+         9ngvTj6rdYTqGjj/UHoDxwafJGTgpYln+qARoCM+86xIdTrFcy+jhnL90zvoKD9On46/
+         zA+H3ane0cD2yP/bLMJ3YF0WD5Rhwyr8KoD3gqRIkhb8cVEKeZmUmONex+UJZEkFps4E
+         WovWAwtxj2QVLIFNQKcI2MgGa58iwIhCVwT/qadamIW9G4RGu/mM+Ov2zWsGesDPreqW
+         T4F1tdTiLtMhl4xbmc3NULx4pYFwmxuj41yrZfxwT9+VQjyeO5L+m5drbunbllupKpDL
+         CEKg==
+X-Gm-Message-State: AOAM531yUiSc7QPU90vro7r/pDqkPivRwSs/xYGj1qMQYPjgbekw6Lcq
+        1x/yPTQ3uO700aLx1rCSYs14XW399LT8QtFckZgIPU2E/fxXD+e5Fe9Qn41P70cJ0imV1BUKqEm
+        ffVx6Z+VqU2kvjT6U9ltu2nyP
+X-Received: by 2002:a05:6638:1117:b0:331:4bc8:3856 with SMTP id n23-20020a056638111700b003314bc83856mr3502717jal.128.1655235788315;
+        Tue, 14 Jun 2022 12:43:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzS4BXo6S8IqsfxYTIzMi93s0rW45hsfYOZO/scnT22HT25Sk1w2c81oGFG69c9SFrDXgIoxA==
+X-Received: by 2002:a05:6638:1117:b0:331:4bc8:3856 with SMTP id n23-20020a056638111700b003314bc83856mr3502694jal.128.1655235788033;
+        Tue, 14 Jun 2022 12:43:08 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id g18-20020a02c552000000b00332122c106dsm5261847jaj.152.2022.06.14.12.43.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 12:42:37 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
-        <nfraprado@collabora.com>, Andrzej Hajda <andrzej.hajda@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH v3 4/7] dt-bindings: drm/bridge: anx7625: Add mode-switch support
-Date:   Tue, 14 Jun 2022 19:34:38 +0000
-Message-Id: <20220614193558.1163205-5-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220614193558.1163205-1-pmalani@chromium.org>
-References: <20220614193558.1163205-1-pmalani@chromium.org>
+        Tue, 14 Jun 2022 12:43:07 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 15:43:04 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Axel Rasmussen <axelrasmussen@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Charan Teja Reddy <charante@codeaurora.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        zhangyi <yi.zhang@huawei.com>, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v3 5/6] userfaultfd: selftests: make /dev/userfaultfd
+ testing configurable
+Message-ID: <YqjkyFIgPSuXK+dz@xz-m1.local>
+References: <20220601210951.3916598-1-axelrasmussen@google.com>
+ <20220601210951.3916598-6-axelrasmussen@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220601210951.3916598-6-axelrasmussen@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Analogix 7625 can be used in systems to switch USB Type-C DisplayPort
-alternate mode lane traffic between 2 Type-C ports.
+On Wed, Jun 01, 2022 at 02:09:50PM -0700, Axel Rasmussen wrote:
+> Instead of always testing both userfaultfd(2) and /dev/userfaultfd,
+> let the user choose which to test.
+> 
+> As with other test features, change the behavior based on a new
+> command line flag. Introduce the idea of "test mods", which are
+> generic (not specific to a test type) modifications to the behavior of
+> the test. This is sort of borrowed from this RFC patch series [1], but
+> simplified a bit.
+> 
+> The benefit is, in "typical" configurations this test is somewhat slow
+> (say, 30sec or something). Testing both clearly doubles it, so it may
+> not always be desirable, as users are likely to use one or the other,
+> but never both, in the "real world".
 
-Update the binding to accommodate this usage by introducing a switch
-property.
+Yes, when I was reading your other patch I was wishing no timeout of any of
+QE testbeds could trigger.
 
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+If you plan to remove it anyway, mind to squash these?
 
-Changes since v2:
-- Added Reviewed-by and Tested-by tags.
+> 
+> [1]: https://patchwork.kernel.org/project/linux-mm/patch/20201129004548.1619714-14-namit@vmware.com/
+> 
+> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+> ---
+>  tools/testing/selftests/vm/userfaultfd.c | 41 +++++++++++++++++-------
+>  1 file changed, 30 insertions(+), 11 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
+> index 1badb5d31bf9..aeee6f1ad8ef 100644
+> --- a/tools/testing/selftests/vm/userfaultfd.c
+> +++ b/tools/testing/selftests/vm/userfaultfd.c
+> @@ -128,6 +128,8 @@ struct uffd_stats {
+>  const char *examples =
+>      "# Run anonymous memory test on 100MiB region with 99999 bounces:\n"
+>      "./userfaultfd anon 100 99999\n\n"
+> +    "# Run the same anonymous memory test, but using /dev/userfaultfd:\n"
+> +    "./userfaultfd anon:dev 100 99999\n\n"
+>      "# Run share memory test on 1GiB region with 99 bounces:\n"
+>      "./userfaultfd shmem 1000 99\n\n"
+>      "# Run hugetlb memory test on 256MiB region with 50 bounces:\n"
+> @@ -144,6 +146,13 @@ static void usage(void)
+>  		"[hugetlbfs_file]\n\n");
+>  	fprintf(stderr, "Supported <test type>: anon, hugetlb, "
+>  		"hugetlb_shared, shmem\n\n");
+> +	fprintf(stderr, "'Test mods' can be joined to the test type string with a ':'. "
+> +		"Supported mods:\n");
+> +	fprintf(stderr, "\tdev - Use /dev/userfaultfd instead of userfaultfd(2)\n");
 
-Changes since v1:
-- Introduced patternProperties for "switch" children (suggested by Krzysztof Kozlowski).
-- Added unevaluatedProperties descriptor (suggested by Krzysztof Kozlowski).
-- Added "address-cells" and "size-cells" properties to "switches".
+That looks better than running everything by default twice. Though let's
+also provide "syscall" if we're at it, anyway?
 
- .../display/bridge/analogix,anx7625.yaml      | 63 +++++++++++++++++++
- 1 file changed, 63 insertions(+)
+Thanks,
 
-diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-index 35a48515836e..cb4a23391244 100644
---- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-+++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-@@ -105,6 +105,33 @@ properties:
-       - port@0
-       - port@1
- 
-+  switches:
-+    type: object
-+    description: Set of switches controlling DisplayPort traffic on
-+      outgoing RX/TX lanes to Type C ports.
-+    unevaluatedProperties: false
-+
-+    properties:
-+      "#address-cells":
-+        const: 1
-+
-+      "#size-cells":
-+        const: 0
-+
-+    patternProperties:
-+      'switch@[01]':
-+        $ref: /schemas/usb/typec-switch.yaml#
-+
-+        properties:
-+          reg:
-+            maxItems: 1
-+
-+        required:
-+          - reg
-+
-+    required:
-+      - switch@0
-+
- required:
-   - compatible
-   - reg
-@@ -167,5 +194,41 @@ examples:
-                     };
-                 };
-             };
-+            switches {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+                switch@0 {
-+                    compatible = "typec-switch";
-+                    reg = <0>;
-+                    mode-switch;
-+
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+                        port@0 {
-+                            reg = <0>;
-+                            anx_typec0: endpoint {
-+                                remote-endpoint = <&typec_port0>;
-+                            };
-+                        };
-+                    };
-+                };
-+                switch@1 {
-+                    compatible = "typec-switch";
-+                    reg = <1>;
-+                    mode-switch;
-+
-+                    ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+                        port@0 {
-+                            reg = <0>;
-+                            anx_typec1: endpoint {
-+                                remote-endpoint = <&typec_port1>;
-+                            };
-+                        };
-+                    };
-+                };
-+            };
-         };
-     };
+> +	fprintf(stderr, "\nExample test mod usage:\n");
+> +	fprintf(stderr, "# Run anonymous memory test with /dev/userfaultfd:\n");
+> +	fprintf(stderr, "./userfaultfd anon:dev 100 99999\n\n");
+> +
+>  	fprintf(stderr, "Examples:\n\n");
+>  	fprintf(stderr, "%s", examples);
+>  	exit(1);
+> @@ -1607,8 +1616,6 @@ unsigned long default_huge_page_size(void)
+>  
+>  static void set_test_type(const char *type)
+>  {
+> -	uint64_t features = UFFD_API_FEATURES;
+> -
+>  	if (!strcmp(type, "anon")) {
+>  		test_type = TEST_ANON;
+>  		uffd_test_ops = &anon_uffd_test_ops;
+> @@ -1626,10 +1633,28 @@ static void set_test_type(const char *type)
+>  		test_type = TEST_SHMEM;
+>  		uffd_test_ops = &shmem_uffd_test_ops;
+>  		test_uffdio_minor = true;
+> -	} else {
+> -		err("Unknown test type: %s", type);
+> +	}
+> +}
+> +
+> +static void parse_test_type_arg(const char *raw_type)
+> +{
+> +	char *buf = strdup(raw_type);
+> +	uint64_t features = UFFD_API_FEATURES;
+> +
+> +	while (buf) {
+> +		const char *token = strsep(&buf, ":");
+> +
+> +		if (!test_type)
+> +			set_test_type(token);
+> +		else if (!strcmp(token, "dev"))
+> +			test_dev_userfaultfd = true;
+> +		else
+> +			err("unrecognized test mod '%s'", token);
+>  	}
+>  
+> +	if (!test_type)
+> +		err("failed to parse test type argument: '%s'", raw_type);
+> +
+>  	if (test_type == TEST_HUGETLB)
+>  		page_size = default_huge_page_size();
+>  	else
+> @@ -1676,7 +1701,7 @@ int main(int argc, char **argv)
+>  		err("failed to arm SIGALRM");
+>  	alarm(ALARM_INTERVAL_SECS);
+>  
+> -	set_test_type(argv[1]);
+> +	parse_test_type_arg(argv[1]);
+>  
+>  	nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
+>  	nr_pages_per_cpu = atol(argv[2]) * 1024*1024 / page_size /
+> @@ -1714,12 +1739,6 @@ int main(int argc, char **argv)
+>  	}
+>  	printf("nr_pages: %lu, nr_pages_per_cpu: %lu\n",
+>  	       nr_pages, nr_pages_per_cpu);
+> -
+> -	test_dev_userfaultfd = false;
+> -	if (userfaultfd_stress())
+> -		return 1;
+> -
+> -	test_dev_userfaultfd = true;
+>  	return userfaultfd_stress();
+>  }
+>  
+> -- 
+> 2.36.1.255.ge46751e96f-goog
+> 
+
 -- 
-2.36.1.476.g0c4daa206d-goog
+Peter Xu
 
