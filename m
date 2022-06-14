@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B34C8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 268C2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358027AbiFNUK0 (ORCPT
+        id S1358074AbiFNUKi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
+        Tue, 14 Jun 2022 16:10:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357694AbiFNUJP (ORCPT
+        with ESMTP id S1357334AbiFNUJ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:09:15 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087274F471
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:08:18 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id p123-20020a625b81000000b0051c31cc75dfso4237606pfb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:08:18 -0700 (PDT)
+        Tue, 14 Jun 2022 16:09:26 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6CF4F9D8
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:08:21 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id 15-20020a63020f000000b003fca9ebc5cbso5442475pgc.22
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:08:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=o3z+boBvvuABIlKxvViYzVtbgDDM2QmQlL0qvBp6XMI=;
-        b=IzAQAcpsNM1EVPwh75OuwuNE/EuroO7nOIrXJjywOj+SCFXcrreHAx5p2O+bIpTR80
-         cLB5h07YA92d8XsSI63WQMa3fMaUjrPwcz6h8AGS589ZG/ZVusDCDkpHUgFmv3DOsVXU
-         ArEeQDWBXSNufx8+04mkDV0Uf2Z1szeuhWUGnmJsm8TY02BY0A/aUXfMmiksIFnB13uZ
-         y/VvHvNTR4tby1DhQRQQ25HTuezE0zLe8IogrR3V93XM6nLh4IuCU59Rec5pzMjhkuza
-         QRou5yQzqxFuL0lecIDavFmQ6mFujZLcyR9hIKuDtjsgPOvYDY5xnd2Rl5krMCXbQsSy
-         dgJA==
+        bh=VAWi7Bdww9IG9P9iwSIPXN8TXA1x0JQZXp9kmqWl1Y4=;
+        b=L6HRWDOfXbPW+DDR3STq/bmXiXYmh0xgwyIlyEUU9EPaQg6uVNUUlXOfqp2XRgOUKi
+         g4ZxjUFuxYkw36mZXH/nwbe+BiCZecowWl83RhmTvocYTPSFH+xFXGeW7daq8LBbI6hK
+         j/GYyhXNAboO1pn3/7/DoRSrqs95VhLSmVL6JaWbuvZeq7Hjp3kHb3EZ1JMnH1zskAw0
+         Z2RTjO2UsXinXae3KqXFrtsSBMlFH6F1LIAZy0/IN6FsKMJ0O0pGnPBOY39iFnrF4eo0
+         6YoTqOC4SdlkdY85+fBbuEeXD/rfz8SwOOJ/OobIwxQRwqoqN+4RTgxdpmUTZ/E4EiP3
+         +5Rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=o3z+boBvvuABIlKxvViYzVtbgDDM2QmQlL0qvBp6XMI=;
-        b=BI3eCnm/9cELUnOIflFf/eA+8S2/pGFqtli2lvaLrXoMBosK46A1IjaNZnPi2RACU7
-         CDVqxjyDyxEvDUCYIhKsfQltZeuZLugiATM7x9TLsoFYpN0Ji7ztarO7fr4avsI9KP4y
-         s++JxEx7EigqH9brWdYYR2LE+/uMrgkRhrgt4fsJUBsRNNzNQNoJiUThSJFlrJV4EmMT
-         swmQvbbrPSRthJ0G1XKnKJTNhnNeRRta2MHFtePZbEdH/4fvQPhsVYZPl+ae2yIj9dIq
-         zpLe4FcYFSdiwVcxofPzBxtG06qwgDZcceRuVxx9PlVqfJKxRnKPSZGGzZ/dLYyIg7Nn
-         z9aw==
-X-Gm-Message-State: AOAM530cG0IM395+dFaRXB4dE4l9Z91NTA8w3zYyMVUkQF0HL6zLJhOZ
-        Z2yEE6DdlOlSWqE1O1GIpboj+ArWIy8=
-X-Google-Smtp-Source: ABdhPJyOHezLBoiZzom/lI2EvhUINKbJYNeT+S59G7Bjs/W8A1gXffmixvdqvPkhIBTuTJWpZxVe6PI2LVQ=
+        bh=VAWi7Bdww9IG9P9iwSIPXN8TXA1x0JQZXp9kmqWl1Y4=;
+        b=FwYom43iQ+5cBuJG4XnFMEXvRJBAMvM5HC9P9Uc1PoG9lNGWMSGMGurECJyoqjNGP0
+         V/FoFg/seku8fUG+tnKo9fkee3AsvLau1DNP18rNGTK91EdLGqEQ9+zh5VsNHsX+7Fpb
+         SpLTjbNjrapk6mR2L89Qu8FCs4e+EGjsIhOsfrPMS4eTyjMNjVqcuR66P0wyl17fTmOX
+         5GPxSBfHdI825Y389I18ES1ul/iOLrVE7MYI/48NZrPFu4SbwNIvW8GlAIJv+KkPBSPh
+         e/fAVQxTzTHusS9QmhZC9hFzf8DPgNn0frkMsysk4LilxRW9pcv42CKkWxar1MfhZBjH
+         349A==
+X-Gm-Message-State: AJIora9zM/rAQoSlYk46Jp05MyFj76ME4+fPOAqn3U8sJa9MwfwAFxL9
+        UusUSgscxSiHuxAaM8JbhvPL7ebAcN0=
+X-Google-Smtp-Source: AGRyM1s4nEeW+5kwThDu7KkeacO/t1l1CoHigrin+2yNEeHYbfc2GanaMhB00e8aRt8zt11kSjJ5CIi7Efo=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a63:6b02:0:b0:3fb:da5e:42a1 with SMTP id
- g2-20020a636b02000000b003fbda5e42a1mr5911425pgc.273.1655237298696; Tue, 14
- Jun 2022 13:08:18 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:3b86:b0:1e8:6b89:2bb2 with SMTP id
+ pc6-20020a17090b3b8600b001e86b892bb2mr6335631pjb.15.1655237293659; Tue, 14
+ Jun 2022 13:08:13 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 14 Jun 2022 20:07:02 +0000
+Date:   Tue, 14 Jun 2022 20:06:59 +0000
 In-Reply-To: <20220614200707.3315957-1-seanjc@google.com>
-Message-Id: <20220614200707.3315957-38-seanjc@google.com>
+Message-Id: <20220614200707.3315957-35-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220614200707.3315957-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH v2 37/42] KVM: selftests: Inline "get max CPUID leaf" helpers
+Subject: [PATCH v2 34/42] KVM: selftests: Use this_cpu_has() to detect SVM
+ support in L1
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -65,59 +66,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make the "get max CPUID leaf" helpers static inline, there's no reason to
-bury the one liners in processor.c.
+Replace an evil open coded instance of querying CPUID from L1 with
+this_cpu_has(X86_FEATURE_SVM).
+
+No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../testing/selftests/kvm/include/x86_64/processor.h  | 11 +++++++++--
- tools/testing/selftests/kvm/lib/x86_64/processor.c    | 10 ----------
- 2 files changed, 9 insertions(+), 12 deletions(-)
+ .../testing/selftests/kvm/include/x86_64/svm_util.h | 13 -------------
+ tools/testing/selftests/kvm/x86_64/smm_test.c       |  4 ++--
+ tools/testing/selftests/kvm/x86_64/state_test.c     |  2 +-
+ 3 files changed, 3 insertions(+), 16 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 311ddc899322..fd0da7eb2058 100644
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -719,9 +719,16 @@ static inline void vcpu_set_msr(struct kvm_vcpu *vcpu, uint64_t msr_index,
- 	TEST_ASSERT(r == 1, KVM_IOCTL_ERROR(KVM_SET_MSRS, r));
- }
+diff --git a/tools/testing/selftests/kvm/include/x86_64/svm_util.h b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
+index f48806d26989..a339b537a575 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/svm_util.h
++++ b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
+@@ -13,9 +13,6 @@
+ #include "svm.h"
+ #include "processor.h"
  
-+static inline uint32_t kvm_get_cpuid_max_basic(void)
-+{
-+	return kvm_get_supported_cpuid_entry(0)->eax;
-+}
-+
-+static inline uint32_t kvm_get_cpuid_max_extended(void)
-+{
-+	return kvm_get_supported_cpuid_entry(0x80000000)->eax;
-+}
+-#define CPUID_SVM_BIT		2
+-#define CPUID_SVM		BIT_ULL(CPUID_SVM_BIT)
+-
+ #define SVM_EXIT_EXCP_BASE	0x040
+ #define SVM_EXIT_HLT		0x078
+ #define SVM_EXIT_MSR		0x07c
+@@ -52,16 +49,6 @@ struct svm_test_data *vcpu_alloc_svm(struct kvm_vm *vm, vm_vaddr_t *p_svm_gva);
+ void generic_svm_setup(struct svm_test_data *svm, void *guest_rip, void *guest_rsp);
+ void run_guest(struct vmcb *vmcb, uint64_t vmcb_gpa);
  
--uint32_t kvm_get_cpuid_max_basic(void);
--uint32_t kvm_get_cpuid_max_extended(void);
- void kvm_get_cpu_address_width(unsigned int *pa_bits, unsigned int *va_bits);
- bool vm_is_unrestricted_guest(struct kvm_vm *vm);
- 
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 7bce93760cad..522972e0d42c 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -1056,16 +1056,6 @@ bool is_amd_cpu(void)
- 	return cpu_vendor_string_is("AuthenticAMD");
- }
- 
--uint32_t kvm_get_cpuid_max_basic(void)
+-static inline bool cpu_has_svm(void)
 -{
--	return kvm_get_supported_cpuid_entry(0)->eax;
+-	u32 eax = 0x80000001, ecx;
+-
+-	asm("cpuid" :
+-	    "=a" (eax), "=c" (ecx) : "0" (eax) : "ebx", "edx");
+-
+-	return ecx & CPUID_SVM;
 -}
 -
--uint32_t kvm_get_cpuid_max_extended(void)
--{
--	return kvm_get_supported_cpuid_entry(0x80000000)->eax;
--}
--
- void kvm_get_cpu_address_width(unsigned int *pa_bits, unsigned int *va_bits)
- {
- 	const struct kvm_cpuid_entry2 *entry;
+ int open_sev_dev_path_or_exit(void);
+ 
+ #endif /* SELFTEST_KVM_SVM_UTILS_H */
+diff --git a/tools/testing/selftests/kvm/x86_64/smm_test.c b/tools/testing/selftests/kvm/x86_64/smm_test.c
+index 40581704f129..7937db5b1037 100644
+--- a/tools/testing/selftests/kvm/x86_64/smm_test.c
++++ b/tools/testing/selftests/kvm/x86_64/smm_test.c
+@@ -83,7 +83,7 @@ static void guest_code(void *arg)
+ 	sync_with_host(4);
+ 
+ 	if (arg) {
+-		if (cpu_has_svm()) {
++		if (this_cpu_has(X86_FEATURE_SVM)) {
+ 			generic_svm_setup(svm, l2_guest_code,
+ 					  &l2_guest_stack[L2_GUEST_STACK_SIZE]);
+ 		} else {
+@@ -99,7 +99,7 @@ static void guest_code(void *arg)
+ 
+ 		sync_with_host(7);
+ 
+-		if (cpu_has_svm()) {
++		if (this_cpu_has(X86_FEATURE_SVM)) {
+ 			run_guest(svm->vmcb, svm->vmcb_gpa);
+ 			run_guest(svm->vmcb, svm->vmcb_gpa);
+ 		} else {
+diff --git a/tools/testing/selftests/kvm/x86_64/state_test.c b/tools/testing/selftests/kvm/x86_64/state_test.c
+index 35e96d7a6ba1..d37e25229fe5 100644
+--- a/tools/testing/selftests/kvm/x86_64/state_test.c
++++ b/tools/testing/selftests/kvm/x86_64/state_test.c
+@@ -142,7 +142,7 @@ static void __attribute__((__flatten__)) guest_code(void *arg)
+ 	GUEST_SYNC(2);
+ 
+ 	if (arg) {
+-		if (cpu_has_svm())
++		if (this_cpu_has(X86_FEATURE_SVM))
+ 			svm_l1_guest_code(arg);
+ 		else
+ 			vmx_l1_guest_code(arg);
 -- 
 2.36.1.476.g0c4daa206d-goog
 
