@@ -2,248 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD13C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 836A3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241398AbiFNSSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:18:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40380 "EHLO
+        id S1345264AbiFNSUN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 14:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243673AbiFNSSt (ORCPT
+        with ESMTP id S238046AbiFNSUL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:18:49 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A3D17040
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:18:48 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id w2so16532899ybi.7
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:18:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=VTa+7HBzN4I1yS5HfDjgnfKrtisrri6WEDVPxDbVFxQ=;
-        b=ZBVB0MZ5W3DJmT3meCnsFiVEZoQLJxwMreZ3ccSi1caXIOs3Km5DJ16BtqxzT7cDXS
-         xq3nnPOfgxhFAaIV7Rr/U6jVy3ldOOjmdrF7mFRpuV6PNu6RMN1ZyOVT4RyGiZJDYDb2
-         AvtqfTtfjQQE5EWZ2NGQ4nWz2vlgzkwHKX9YZk5RHAaDm8UC5kJJazUVnwiOhHvx1mFh
-         y6PKj2j1CVwb6evRuKrlZx94AbvQduUkt4DwjdsxOJjAFXtjEBAD7bUrfJC4xqrLNtev
-         AZe7my9mEJ7XsjViSiF8VvtC76QCLLp3rs4UOgPhKPprS/0zBbrJ9NnrwFRjTBbdA8nm
-         XPSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VTa+7HBzN4I1yS5HfDjgnfKrtisrri6WEDVPxDbVFxQ=;
-        b=K5fdqc9eLOljG76EVd7bNZA496utXqB9AtFLG40fuwQE+R2/eQCXbY+6EmVdQig52b
-         V/Q6waHkswsh8jylRAmnvsH3S1WJLRmMxfzHM6XmdR/2XxVC4YCmFUWr9pWPlFPuXMqe
-         uK+n2mOyj4Kc649bbHDcySLpW0W0wbfYG4mpbmDhnWT1UXfaa3sJuqxSG1BGsvZL+GCC
-         ekWofW4sXEkb25dOjT0Jji/eCvPIM2T/CAyke3+fdY4OTw+WYAj5F20vklHkL400eqxD
-         h+kiGHsMaJxM2M2Px3tNWmjx1EF//PQ1KXf2eCVJhAEdC+MZpa6DWNxFO+pBjJ7IJSLB
-         kkZA==
-X-Gm-Message-State: AJIora8OGs9D5eOy5UCzPMlBhfYPW6/CBssh623iklhjGGaaUWijShcP
-        nykOF9cbM4DfV0lFb9kK0VjxgflvImpgg6Z+cIlUjQ==
-X-Google-Smtp-Source: AGRyM1uGD77koW0RRJfnMM6EDfinAQ/fahDa0nnfUQ3/CQ84ZaurP9aWMq1mLoIaZ+43uQY+Gr1UHw2X6uSkEkp+QUo=
-X-Received: by 2002:a25:3b52:0:b0:665:f89b:708b with SMTP id
- i79-20020a253b52000000b00665f89b708bmr2008486yba.483.1655230727620; Tue, 14
- Jun 2022 11:18:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220613181233.078148768@linuxfoundation.org>
-In-Reply-To: <20220613181233.078148768@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 14 Jun 2022 23:48:36 +0530
-Message-ID: <CA+G9fYuOvZS1vLU7dk5Y_HEXLKOy4CTHkLGbu8wHhMsy3AjpZQ@mail.gmail.com>
-Subject: Re: [PATCH 5.18 000/343] 5.18.4-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Tue, 14 Jun 2022 14:20:11 -0400
+Received: from mail-4317.proton.ch (mail-4317.proton.ch [185.70.43.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA66B45796;
+        Tue, 14 Jun 2022 11:20:10 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 17:47:38 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tmb.nu;
+        s=protonmail; t=1655230805; x=1655490005;
+        bh=nX8icfvtNzRNgQ+GqhWZfTZkY8gRANApzpXRITUNgEc=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:Feedback-ID:From:To:
+         Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID;
+        b=Hw9UGbiz/ZBVnfMPtBB++DCRLeCoESuRMmSCyWEP+0PUSLU+GKAQIDGTENMmz5F2D
+         zR+mCbPMd/wQtGwM2CBBzHpP3ivPff04SIBdczMOrZqXiXJMSii0iSOvtmamL88qMr
+         X/8pu5FDbG9PLoUhJGOh/IkW6PJPczgNZS73UYLY=
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <linux@roeck-us.net>
+From:   Thomas Backlund <tmb@tmb.nu>
 Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
         torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        shuah@kernel.org, patches@kernelci.org,
         lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
         f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
         slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+Reply-To: Thomas Backlund <tmb@tmb.nu>
+Subject: Re: [PATCH 5.15 000/251] 5.15.47-rc2 review
+Message-ID: <bd80cd0d-a364-4ebd-2a89-933f79eaf4c7@tmb.nu>
+Feedback-ID: 19711308:user:proton
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 13 Jun 2022 at 23:48, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+Den 2022-06-14 kl. 20:12, skrev Greg Kroah-Hartman:
+> On Tue, Jun 14, 2022 at 10:08:27AM -0700, Guenter Roeck wrote:
+>> On Tue, Jun 14, 2022 at 08:36:08AM -0700, Guenter Roeck wrote:
+>>> On Mon, Jun 13, 2022 at 08:19:49PM +0200, Greg Kroah-Hartman wrote:
+>>>> This is the start of the stable review cycle for the 5.15.47 release.
+>>>> There are 251 patches in this series, all will be posted as a response
+>>>> to this one.  If anyone has any issues with these being applied, pleas=
+e
+>>>> let me know.
+>>>>
+>>>> Responses should be made by Wed, 15 Jun 2022 18:18:03 +0000.
+>>>> Anything received after that time might be too late.
+>>>>
+>>>
+>>> Build results:
+>>> =09total: 159 pass: 159 fail: 0
+>>> Qemu test results:
+>>> =09total: 488 pass: 488 fail: 0
+>>>
+>>
+>> I spoke a bit too early. I see the following backtrace in some qemu arm
+>> boot tests.
+>>
+>> BUG: spinlock bad magic on CPU#0, kdevtmpfs/15
+>>   lock: noop_backing_dev_info+0x6c/0x3b0, .magic: 00000000, .owner: <non=
+e>/-1, .owner_cpu: 0
+>> CPU: 0 PID: 15 Comm: kdevtmpfs Not tainted 5.15.47-rc2-00252-g677f0128d0=
+ed #1
+>> Hardware name: ARM RealView Machine (Device Tree Support)
+>> [<c01101d0>] (unwind_backtrace) from [<c010bc0c>] (show_stack+0x10/0x14)
+>> [<c010bc0c>] (show_stack) from [<c0a10ae4>] (dump_stack_lvl+0x68/0x90)
+>> [<c0a10ae4>] (dump_stack_lvl) from [<c0191250>] (do_raw_spin_lock+0xbc/0=
+x124)
+>> [<c0191250>] (do_raw_spin_lock) from [<c02eb578>] (__mark_inode_dirty+0x=
+1cc/0x704)
+>> [<c02eb578>] (__mark_inode_dirty) from [<c02e6a74>] (simple_setattr+0x44=
+/0x5c)
+>> [<c02e6a74>] (simple_setattr) from [<c02d7a18>] (notify_change+0x400/0x4=
+5c)
+>> [<c02d7a18>] (notify_change) from [<c0a19ef8>] (devtmpfsd+0x1f8/0x2b8)
+>> [<c0a19ef8>] (devtmpfsd) from [<c014cf3c>] (kthread+0x150/0x17c)
+>> [<c014cf3c>] (kthread) from [<c0100120>] (ret_from_fork+0x14/0x34)
+>> Exception stack(0xd00dbfb0 to 0xd00dbff8)
+>> bfa0:                                     00000000 00000000 00000000 000=
+00000
+>> bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 000=
+00000
+>> bfe0: 00000000 00000000 00000000 00000000 00000013 00000000
+>>
+>> This bisects to commit bc5d960d4e58 ("writeback: Fix inode->i_io_list no=
+t
+>> be protected by inode->i_lock error"). The problem is also seen in the
+>> mainline kernel. v5.15.y.queue and later are affected. Reverting the pat=
+ch
+>> here and in mainline fixes the problem.
 >
-> This is the start of the stable review cycle for the 5.18.4 release.
-> There are 343 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+> Thanks for letting me know.  Hopefully it gets fixed in upstream...
 >
-> Responses should be made by Wed, 15 Jun 2022 18:11:39 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.18.4-rc2.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.18.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
 
+I "think" this is the suggested fix:
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
-
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-## Build
-* kernel: 5.18.4-rc2
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.18.y
-* git commit: af2e7a038285744a8a78048530b20adb9c867089
-* git describe: v5.18.2-1224-gaf2e7a038285
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.18.y/build/v5.18=
-.2-1224-gaf2e7a038285
-
-## Test Regressions (compared to v5.18.2-880-g09bf95a7c28a)
-No test regressions found.
-
-## Metric Regressions (compared to v5.18.2-880-g09bf95a7c28a)
-No metric regressions found.
-
-## Test Fixes (compared to v5.18.2-880-g09bf95a7c28a)
-No test fixes found.
-
-## Metric Fixes (compared to v5.18.2-880-g09bf95a7c28a)
-No metric fixes found.
-
-## Test result summary
-total: 123179, pass: 111271, fail: 500, skip: 10729, xfail: 679
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 319 total, 316 passed, 3 failed
-* arm64: 64 total, 62 passed, 2 failed
-* i386: 57 total, 50 passed, 7 failed
-* mips: 41 total, 38 passed, 3 failed
-* parisc: 14 total, 14 passed, 0 failed
-* powerpc: 65 total, 56 passed, 9 failed
-* riscv: 32 total, 27 passed, 5 failed
-* s390: 23 total, 20 passed, 3 failed
-* sh: 26 total, 24 passed, 2 failed
-* sparc: 14 total, 14 passed, 0 failed
-* x86_64: 62 total, 58 passed, 4 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers-dma-buf
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-filesystems-binderfs
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-gpio
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-lib
-* kselftest-membarrier
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-zram
-* kunit
-* kunit/15
-* kunit/261
-* kunit/3
-* kunit/427
-* kunit/90
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-cap_bounds-tests
-* ltp-commands
-* ltp-commands-tests
-* ltp-containers
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps
-* ltp-filecaps-tests
-* ltp-fs
-* ltp-fs-tests
-* ltp-fs_bind
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple
-* ltp-fs_perms_simple-tests
-* ltp-fsx
-* ltp-fsx-tests
-* ltp-hugetlb
-* ltp-hugetlb-tests
-* ltp-io
-* ltp-io-tests
-* ltp-ipc
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-pty-tests
-* ltp-sched
-* ltp-sched-tests
-* ltp-securebits
-* ltp-securebits-tests
-* ltp-smoke
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
+https://git.kernel.org/pub/scm/linux/kernel/git/jack/linux-fs.git/commit/?h=
+=3Dfor_next&id=3D46b6418e26c7c26f98ff9c2c2310bce5ae2aa4dd
 
 --
-Linaro LKFT
-https://lkft.linaro.org
+Thomas
+
+
