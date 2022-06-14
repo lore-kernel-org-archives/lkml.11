@@ -2,91 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4B9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC19C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:31:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343840AbiFNOaZ (ORCPT
+        id S1344637AbiFNObe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50994 "EHLO
+        Tue, 14 Jun 2022 10:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344821AbiFNOaP (ORCPT
+        with ESMTP id S1343827AbiFNObc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:30:15 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A763A1A6
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:30:14 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id c196so8735869pfb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:30:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uZyUFN1h39Go2K2KWm9NafLAQsTySckD7lRqVWd34t4=;
-        b=IuVpxFjuwYst9xd5GO1emNka+Naj7tYrYGXam7aX9erF0js2DtCHt0KZuE87dodjD7
-         MgiiCjskMo0TYL33wSYmZ2BZGDhAaepj/1eSmqNcmRkEWU9oNj4hNPor4RpibhItz+1F
-         lrGklHWy4dTywMCA3RYjny8+wZUV0syw6tGrjhYYO4HMjIn6p/mQP2+N4Xe+wC0RVjz2
-         lHbfDjRkG8l9vna7t78enRoYtY026tiUeFZZA8zPiUIzUJP0Ld8pH3FD/0yEKybCRjY8
-         fRvUxNhLXvYVmjBVobHbg10rMyfVwOaZZBChw+2KgLwGlZAUGM+yYoxkA8C5FMLuyyK8
-         YCiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uZyUFN1h39Go2K2KWm9NafLAQsTySckD7lRqVWd34t4=;
-        b=2ZhP+0wc8m1dOgNckbB7r89Qe5C6RvNU2IZ40qItccwiPVgXatj+ipgCSfNNiZWvEa
-         LllpJXzgx6AGJyOh+kgiULo+6GP62BP9WvqN1Rrl32eAyOvlx9ViPm2Rcun03XVceZ7k
-         Gl9y+A0bdY2Og/wcHdX/skO3fTX8s+2pcxML9rqLlVSNLKPudtMz8tNdDYMyBeyhhOPh
-         SbjulS9BT3L/8tOMRmylGsWA9uWy5aI6swtEty+T/ImjxMKU/ypuBsTuNDsrp/sMdv5g
-         p3FQInQ3D6rQIsTa9ubT+YxAzrNbuEJr8MGuVp7q1+2bQajRZdKIg8rLLitYaE/8Dv3I
-         nOCg==
-X-Gm-Message-State: AOAM530U63rEBvUT+dhWaKzCf+SxGNLpSEbJ50WXXAr1MeTBglN/1Zjw
-        KlCb1AnWaBBRjQd8Y9l9LICAQg==
-X-Google-Smtp-Source: ABdhPJxr5hWWJGmhm8c7NVKnpLep0oS6xYZXOb6syMhCLLkPDj5P7501jtFUCR6bZZQZ005Qjt79yQ==
-X-Received: by 2002:a63:5b04:0:b0:3fc:61a1:da0d with SMTP id p4-20020a635b04000000b003fc61a1da0dmr4775709pgb.177.1655217014472;
-        Tue, 14 Jun 2022 07:30:14 -0700 (PDT)
-Received: from n131-251-240.byted.org ([121.30.179.88])
-        by smtp.gmail.com with ESMTPSA id m14-20020a17090a7f8e00b001e2ff3a1221sm7393256pjl.33.2022.06.14.07.30.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 07:30:13 -0700 (PDT)
-From:   Zhi Song <zhi.song@bytedance.com>
-To:     gregkh@linuxfoundation.org, rafael@kernel.org
-Cc:     linux-kernel@vger.kernel.org, Zhi Song <zhi.song@bytedance.com>
-Subject: [PATCH] node: put_device after failing to device_register
-Date:   Tue, 14 Jun 2022 22:30:07 +0800
-Message-Id: <20220614143007.1730171-1-zhi.song@bytedance.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 14 Jun 2022 10:31:32 -0400
+X-Greylist: delayed 877 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 14 Jun 2022 07:31:28 PDT
+Received: from mx3.securetransport.de (mx3.securetransport.de [IPv6:2a01:4f8:c0c:92be::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04693151C;
+        Tue, 14 Jun 2022 07:31:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
+        s=dhelectronicscom; t=1655215552;
+        bh=kZWe6Zc/bv5y1c1ZqXyxmMpzmoXjoTrNmG4TQBrLGXc=;
+        h=From:To:CC:Subject:Date:From;
+        b=Bn6KL59vtQ2XwQWrgwfpvmx+vrRJxkE38aajl1hPEdhFiqEfkWlhgnmx452oispNt
+         7CCHu+dCo5jfaDDgoRAZ0A8s2m92ta8ZXGXf8aMp6cYOBpyaz6+zX9/mCjz6Y2G/NQ
+         CThsZmMojAiGBWDGYT5rmU9utEsTfI8j3AfbomUfsCq4ESfRChN7ZvtBl8qlqx/5gb
+         bW6B3Met3wMCKUItB4UPLIRlm1+UKoWBygcfAHlZloKg6Ho1QEHMTh8Nut7xqrerL3
+         EOqKzJnjXG8FatzxDWfJLtOv6r+7VfDSgt0BGgOpECnBsnuEw0NFXsXzFT272JDMT8
+         5cfDLXHZ+IS1A==
+X-secureTransport-forwarded: yes
+From:   Dominik Kierner <dkierner@dh-electronics.com>
+Complaints-To: abuse@cubewerk.de
+To:     Javier Martinez Canillas <javierm@redhat.com>
+CC:     "airlied@linux.ie" <airlied@linux.ie>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "daniel.vetter@ffwll.ch" <daniel.vetter@ffwll.ch>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>,
+        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+        "maxime@cerno.tech" <maxime@cerno.tech>,
+        "noralf@tronnes.org" <noralf@tronnes.org>,
+        "sam@ravnborg.org" <sam@ravnborg.org>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "tzimmermann@suse.de" <tzimmermann@suse.de>,
+        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED displays
+Thread-Topic: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED displays
+Thread-Index: Adh/98yd/bFLOXDpTTiVpWIDbnNb5w==
+Date:   Tue, 14 Jun 2022 14:05:36 +0000
+Message-ID: <4dfc32123d1d4e38ae1afdd3f33109a9@dh-electronics.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-device_register() is used to register a device with the system.
+Hello Javier
 
-We cannot directly free dev after calling this function,
-even if it returns an error.
+On 6/14/22 13:39, Javier Martinez Canillas wrote:
 
-We should use put_device() to give up the reference
-initialized in this function instead.
+> > I always understood regulator_get_optional() as a way of not having to =
+rely on a dummy,
+> > when a regulator is not present, but please correct me, if I am wrong o=
+n this.
+> > The dummies would only be necessary for the mandatory supplies VCC and =
+VDD.
+> >
+>=20
+> Yes, that's what I tried to say. That's regulator_get() and not _optional=
+()
+> the function that will provide a dummy regulator if isn't physically pres=
+ent:
+>=20
+> https://elixir.bootlin.com/linux/latest/source/drivers/regulator/core.c#L=
+2067
+>=20
+> > You mean this part of the documentation of regulator_get_optional(), co=
+rrect?:
+> >
+> >> * This is intended for use by consumers for devices which can have
+> >> * some supplies unconnected in normal use, such as some MMC devices.
+> >> * It can allow the regulator core to provide stub supplies for other
+> >> * supplies requested using normal regulator_get() calls without
+> >> * disrupting the operation of drivers that can handle absent
+> >> * supplies.
+> >
+> >
+> So for example when you just use a voltage rail in let's say a board pin =
+header
+> then you will need to define supply nodes with compatible =3D "regulator-
+> fixed" ?
 
-Signed-off-by: Zhi Song <zhi.song@bytedance.com>
----
- drivers/base/node.c | 1 +
- 1 file changed, 1 insertion(+)
+Exactly.
 
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index 0ac6376ef7a1..88a3337c546e 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -154,6 +154,7 @@ static struct node_access_nodes *node_init_node_access(struct node *node,
- 	list_add_tail(&access_node->list_node, &node->access_list);
- 	return access_node;
- free_name:
-+	put_device(dev);
- 	kfree_const(dev->kobj.name);
- free:
- 	kfree(access_node);
--- 
-2.30.2
+> That is indeed more accurate from a hardware description point of view bu=
+t I'm
+> not convinced that this is something worth to break DT backward compatibi=
+lity.
+
+> You also mentioned (IIUC) that the regulators could be made optional and =
+their
+> presence be used as an indication that an atomic charge pump configuratio=
+n can
+> be made instead of using the current ssd130x->display_settings.use_charge=
+_pump.
+>=20
+> I think that would prefer that the latter option, but will let others to =
+chime
+> in since maybe I'm not correct on the preferred approach.
+
+Yes, here the reference for the former approach:
+Chapter 2 "Charge Pump Regulator" on Page 62 of the SSD1306 datasheet:
+https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
+
+Just a TL;DR of the former approach for easier discussion:
+The logic supply VDD would always be mandatory.
+The low voltage supply VBAT would be optional and probed first.
+If found, it would supersede the "high" voltage driving supply VCC and
+the charge pump would be enabled. If VBAT is not found, then VCC is
+mandatory and the charge pump will not be enabled.
+
+
+--
+Best regards
+
+Dominik Kierner
+Research & Development
+DH electronics
 
