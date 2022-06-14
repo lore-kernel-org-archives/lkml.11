@@ -2,226 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A00DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC59ACCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358033AbiFNUR2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58268 "EHLO
+        id S240806AbiFNUTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 16:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358490AbiFNUPN (ORCPT
+        with ESMTP id S1353436AbiFNUST (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:15:13 -0400
-Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21F0DF25;
-        Tue, 14 Jun 2022 13:12:31 -0700 (PDT)
-Received: by mail-io1-f48.google.com with SMTP id y12so10575700ior.7;
-        Tue, 14 Jun 2022 13:12:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9/XBqejShhBsGHynRMK/NnFFuohdRCp1F64DE0/PIZM=;
-        b=g0wjeEYFgrdg4ah2PwnDSjzM/P+rChDShrAzrFqUP9elFjOqK1vtPSU2zYTC9gYh9s
-         DwFGCcOGdH1giFfQ5UibRDAg6N4miu1rAaKh/17bJa74gXY4CXzEC1FFqyxElPm2RCwz
-         4zP/VI5GVPDBmRXjOB0DwhbwbvyqjMgiu8NtIt+UeVoJ6mWjasIdWJR5cWm5uz1uCzUp
-         LpKs6UEsal5TUiu4wpHimMfMGgLQ+Scta6aD6o2Wlz6XAOM00PFwNfOlVnQkyrt/mCDr
-         4nDFSmVzczOa3xoEKg+o7YjybwjwKTiHrzOoP/PuQLkYv6Mc74ThNId1RpiKdPsBxlON
-         Mecg==
-X-Gm-Message-State: AOAM53154dDEVHfR7KMsgEo22nlT1hWwLAR8LUj8Xgk3wT4oYbPi1J+N
-        CeGnQuDgy+vj3kU8OgdYuA==
-X-Google-Smtp-Source: ABdhPJxWEsmo+mG/x3kXLODUtDKPZ8ETebE3K2+pKnnHvBgtT4SiuVSTIClpZz5EwzbOKjOIAfOuqA==
-X-Received: by 2002:a6b:6a07:0:b0:66a:2e5f:2058 with SMTP id x7-20020a6b6a07000000b0066a2e5f2058mr929393iog.72.1655237509097;
-        Tue, 14 Jun 2022 13:11:49 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id t6-20020a025406000000b00331c8618d2esm5249796jaa.143.2022.06.14.13.11.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 13:11:48 -0700 (PDT)
-Received: (nullmailer pid 2359572 invoked by uid 1000);
-        Tue, 14 Jun 2022 20:11:46 -0000
-Date:   Tue, 14 Jun 2022 14:11:46 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Liu Ying <victor.liu@nxp.com>
-Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, andrzej.hajda@intel.com,
-        narmstrong@baylibre.com, robert.foss@linaro.org,
-        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
-        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, lee.jones@linaro.org, mchehab@kernel.org,
-        marcel.ziswiler@toradex.com
-Subject: Re: [PATCH v9 05/14] dt-bindings: display: bridge: Add i.MX8qm/qxp
- display pixel link binding
-Message-ID: <20220614201146.GA2344044-robh@kernel.org>
-References: <20220611141421.718743-1-victor.liu@nxp.com>
- <20220611141421.718743-6-victor.liu@nxp.com>
+        Tue, 14 Jun 2022 16:18:19 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E616563
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:18:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=Kr/UeB9oM281vcck974XwJ6BZeKE
+        XSbV2DPYhGfC0DM=; b=old13mZqsudOfh92apttnUaWMOqDo2YNpVaSuIEkDDTH
+        26ZV4zId3oQ74jOEeYu8FKj1heZB8bn258l6tHgQELGF1oblrptMY63jMmm5q7zC
+        MqOYkC9NPIunSOFvvnEro78caWdUiXRRAG+Dal3iMhfHs30a1ViLGK2ugEuo7fs=
+Received: (qmail 1848877 invoked from network); 14 Jun 2022 22:18:13 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 14 Jun 2022 22:18:13 +0200
+X-UD-Smtp-Session: l3s3148p1@yLqhGm7h9psgAwDtxwyXAGMY7IbT6g6m
+Date:   Tue, 14 Jun 2022 22:18:13 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 2/2] dt-bindings: thermal: rcar-gen3-thermal: Add
+ r8a779f0 support
+Message-ID: <YqjtBQdzexzCRrmq@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220610201701.7946-1-wsa+renesas@sang-engineering.com>
+ <20220610201701.7946-2-wsa+renesas@sang-engineering.com>
+ <CAMuHMdW3uxQHk6SBX5MqnZsYqwY8p+0wmD6gHwS3ESUrkmpWkQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="uOF+LnROtUk/ylo3"
 Content-Disposition: inline
-In-Reply-To: <20220611141421.718743-6-victor.liu@nxp.com>
+In-Reply-To: <CAMuHMdW3uxQHk6SBX5MqnZsYqwY8p+0wmD6gHwS3ESUrkmpWkQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 11, 2022 at 10:14:12PM +0800, Liu Ying wrote:
-> This patch adds bindings for i.MX8qm/qxp display pixel link.
-> 
-> Signed-off-by: Liu Ying <victor.liu@nxp.com>
-> ---
-> v8->v9:
-> * Add 'fsl,dc-id' and 'fsl,dc-stream-id' properties. (Laurent)
 
-Why? Isn't the graph sufficient for determining the connections? That's 
-what it is for.
+--uOF+LnROtUk/ylo3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> * Drop Rob's R-b tag.
-> 
-> v7->v8:
-> * No change.
-> 
-> v6->v7:
-> * No change.
-> 
-> v5->v6:
-> * No change.
-> 
-> v4->v5:
-> * No change.
-> 
-> v3->v4:
-> * No change.
-> 
-> v2->v3:
-> * Add Rob's R-b tag.
-> 
-> v1->v2:
-> * Use graph schema. (Laurent)
-> * Require all four pixel link output ports. (Laurent)
-> * Mention pixel link is accessed via SCU firmware. (Rob)
-> 
->  .../bridge/fsl,imx8qxp-pixel-link.yaml        | 144 ++++++++++++++++++
->  1 file changed, 144 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/bridge/fsl,imx8qxp-pixel-link.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/display/bridge/fsl,imx8qxp-pixel-link.yaml b/Documentation/devicetree/bindings/display/bridge/fsl,imx8qxp-pixel-link.yaml
-> new file mode 100644
-> index 000000000000..38ecc7926fad
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/bridge/fsl,imx8qxp-pixel-link.yaml
-> @@ -0,0 +1,144 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/display/bridge/fsl,imx8qxp-pixel-link.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Freescale i.MX8qm/qxp Display Pixel Link
-> +
-> +maintainers:
-> +  - Liu Ying <victor.liu@nxp.com>
-> +
-> +description: |
-> +  The Freescale i.MX8qm/qxp Display Pixel Link(DPL) forms a standard
-> +  asynchronous linkage between pixel sources(display controller or
-> +  camera module) and pixel consumers(imaging or displays).
-> +  It consists of two distinct functions, a pixel transfer function and a
-> +  control interface.  Multiple pixel channels can exist per one control channel.
-> +  This binding documentation is only for pixel links whose pixel sources are
-> +  display controllers.
-> +
-> +  The i.MX8qm/qxp Display Pixel Link is accessed via System Controller Unit(SCU)
-> +  firmware.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - fsl,imx8qm-dc-pixel-link
-> +      - fsl,imx8qxp-dc-pixel-link
-> +
-> +  fsl,dc-id:
-> +    $ref: /schemas/types.yaml#/definitions/uint8
-> +    description: |
-> +      u8 value representing the display controller index that the pixel link
-> +      connects to.
-> +
-> +  fsl,dc-stream-id:
-> +    $ref: /schemas/types.yaml#/definitions/uint8
-> +    description: |
-> +      u8 value representing the display controller stream index that the pixel
-> +      link connects to.
-> +    enum: [0, 1]
-> +
-> +  ports:
-> +    $ref: /schemas/graph.yaml#/properties/ports
-> +
-> +    properties:
-> +      port@0:
-> +        $ref: /schemas/graph.yaml#/properties/port
-> +        description: The pixel link input port node from upstream video source.
-> +
-> +    patternProperties:
-> +      "^port@[1-4]$":
-> +        $ref: /schemas/graph.yaml#/properties/port
-> +        description: The pixel link output port node to downstream bridge.
-> +
-> +    required:
-> +      - port@0
-> +      - port@1
-> +      - port@2
-> +      - port@3
-> +      - port@4
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: fsl,imx8qxp-dc-pixel-link
-> +    then:
-> +      properties:
-> +        fsl,dc-id:
-> +          const: 0
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: fsl,imx8qm-dc-pixel-link
-> +    then:
-> +      properties:
-> +        fsl,dc-id:
-> +          enum: [0, 1]
-> +
-> +required:
-> +  - compatible
-> +  - fsl,dc-id
-> +  - fsl,dc-stream-id
-> +  - ports
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    dc0-pixel-link0 {
-> +        compatible = "fsl,imx8qxp-dc-pixel-link";
-> +        fsl,dc-id = /bits/ 8 <0>;
-> +        fsl,dc-stream-id = /bits/ 8 <0>;
-> +
-> +        ports {
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +
-> +            /* from dc0 pixel combiner channel0 */
-> +            port@0 {
-> +                reg = <0>;
-> +
-> +                dc0_pixel_link0_dc0_pixel_combiner_ch0: endpoint {
-> +                    remote-endpoint = <&dc0_pixel_combiner_ch0_dc0_pixel_link0>;
 
-Isn't dc0 and link0 here the same information (if you get the port 
-number from the remote end).
+> What about splitting this in two separate checks at the top level:
+>   - one for regs (R-Car V3U vs. the world), and
+>   - a second for interrupts (R-Car V3U+S4-8 vs. the world)?
 
-Rob
+This task seems too much for my YAML-foo :( I couldn't get it to work.
+Can we leave it as-is for now?
+
+
+--uOF+LnROtUk/ylo3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKo7QAACgkQFA3kzBSg
+Kbao4Q//WYdbnQJ+s0sI1UFm7IC6XM44Mtao3slqtfqPV0sWpqWXsoHT4QO/rkee
+OQrCTYGWJW5SR91kRoQVyaOdsDVx69m5QOW3OJn/m3MP8QptfirX+AYPAp+1EN4l
+ylHwOca+mQwVUspzttGM/nswNa0SIfTfz8kKWuvi8qFSoalMR4Ec6m0kR1pucof2
+Er3Kc7/Prg+lMVMZr4I9Ddw01Bku71RLBjOnkWYMnFLAvnUmwc/FPIKVdz78SVOQ
+p97K6c0xqwWF/NefGRQ2tIASErbSXYTWbpz5Plr+aiHWDmGQUd+ZjDVamC2y4oWE
+HOjHeNMUGVWH1otstnAUiSUtpgaY21mpUbyw2nHeHdm+FSlpSymAt9PLTLDc6G8G
+nFweTobJ5nou73nAEnN/pqxbCfY4zJxcw27C3HFBiALbEDODCQzmenIKbqBHq1I1
+jUCAFd86eMwjsBNojdRCELeXMEcDkrIQnljC/GJXO8bACWlS/rEgy1mmZ3WdbDmM
+MTAci4u/q29eZUJ1TBdQWFnJavzdGgGiRQ/bXO1cZkh8ytAWcug77eamdXpZ6hyG
+lfo2oBDyLb5wlPsLLs9Ol9/nvCwabA/oJ5Iz0Qnk/13WsK4/R79+w8u69KT0s/FL
+ZbUjxH3ydmYu9JvB4HnCf6uH7uhjyTbJf7QhFlb77r+6yx5WYxY=
+=HtGH
+-----END PGP SIGNATURE-----
+
+--uOF+LnROtUk/ylo3--
