@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3102CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:49:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:49:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241218AbiFNJt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35028 "EHLO
+        id S241617AbiFNJtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 05:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230312AbiFNJt1 (ORCPT
+        with ESMTP id S232924AbiFNJt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 05:49:27 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B2F41F84;
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDF542EEB;
         Tue, 14 Jun 2022 02:49:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
   t=1655200166; x=1686736166;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=WU2SxIa3e8crrchJ4+uMW6gTSuHsBFIrNtuhSA4zOHA=;
-  b=jk1ZFKQ3Wn+FkHTNxUEejTnLzc99roxF0wZ5Ido5dv/Cx41sDG0Nb9f2
-   Ln2t91i8xJBFwdcEGcgBoFpzZgjkMfYHxxvGok+30SA3owFX+0d3lLBYT
-   IL4bJRtI6mzs+tFbFPdTI4m5i98C1OVgma2XgNNbc8N7xIvSt/d2rr53R
-   8=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 14 Jun 2022 02:49:26 -0700
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=AaWThxxcTSk/wcEQ64f1B+rJW5u8w08pHo0h42DxnrE=;
+  b=T5yXAPcvcMNazk8trhoWzAk5JadKksSykc9i5ynDYcqPAvi17rRpxCUJ
+   baMd0pvGXzkZYSGjGpwKX0lNYSUVOy5E/rhwsxsFZO61EHaIHSk/zMdHp
+   GLe32bO1eB8Mh8AcZOAJZOgl7eE8BuxCV40n7QO10vi9xklsj7VfQBSX1
+   I=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Jun 2022 02:49:26 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 02:49:25 -0700
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 02:49:26 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 02:49:08 -0700
+ 15.2.986.22; Tue, 14 Jun 2022 02:49:25 -0700
 Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 02:49:03 -0700
+ 15.2.986.22; Tue, 14 Jun 2022 02:49:21 -0700
 From:   Satya Priya <quic_c_skakit@quicinc.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>
@@ -48,10 +49,12 @@ CC:     Lee Jones <lee.jones@linaro.org>,
         <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
         <quic_jprakash@quicinc.com>,
         Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V15 0/9] Add Qualcomm Technologies, Inc. PM8008 regulator driver
-Date:   Tue, 14 Jun 2022 15:18:22 +0530
-Message-ID: <1655200111-18357-1-git-send-email-quic_c_skakit@quicinc.com>
+Subject: [PATCH V15 4/9] mfd: pm8008: Add reset-gpios
+Date:   Tue, 14 Jun 2022 15:18:26 +0530
+Message-ID: <1655200111-18357-5-git-send-email-quic_c_skakit@quicinc.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1655200111-18357-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1655200111-18357-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
@@ -61,30 +64,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Satya Priya (9):
-  dt-bindings: mfd: pm8008: Add reset-gpios
-  dt-bindings: mfd: pm8008: Change the address cells
-  dt-bindings: mfd: pm8008: Add regulators for pm8008
-  mfd: pm8008: Add reset-gpios
-  mfd: pm8008: Remove the regmap member from pm8008_data struct
-  mfd: pm8008: Use i2c_new_dummy_device() API
-  regulator: Add a regulator driver for the PM8008 PMIC
-  arm64: dts: qcom: pm8008: Add base dts file
-  arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
+Add the reset-gpio toggling in the pm8008_probe() to bring
+pm8008 chip out of reset instead of doing it in DT node using
+"output-high" property.
 
- .../devicetree/bindings/mfd/qcom,pm8008.yaml       |  69 +++++-
- arch/arm64/boot/dts/qcom/pm8008.dtsi               |  54 +++++
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi           |  66 ++++++
- drivers/mfd/qcom-pm8008.c                          |  60 ++++-
- drivers/regulator/Kconfig                          |   9 +
- drivers/regulator/Makefile                         |   1 +
- drivers/regulator/qcom-pm8008-regulator.c          | 242 +++++++++++++++++++++
- include/linux/mfd/qcom_pm8008.h                    |   9 +
- 8 files changed, 492 insertions(+), 18 deletions(-)
- create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
- create mode 100644 drivers/regulator/qcom-pm8008-regulator.c
- create mode 100644 include/linux/mfd/qcom_pm8008.h
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
+Changes in V15:
+ - None.
 
+Changes in V14:
+ - None.
+
+Changes in V13:
+ - None.
+
+ drivers/mfd/qcom-pm8008.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
+index c472d7f..5a670b0 100644
+--- a/drivers/mfd/qcom-pm8008.c
++++ b/drivers/mfd/qcom-pm8008.c
+@@ -4,6 +4,7 @@
+  */
+ 
+ #include <linux/bitops.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+@@ -221,6 +222,7 @@ static int pm8008_probe(struct i2c_client *client)
+ {
+ 	int rc;
+ 	struct pm8008_data *chip;
++	struct gpio_desc *reset_gpio;
+ 
+ 	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
+ 	if (!chip)
+@@ -233,6 +235,10 @@ static int pm8008_probe(struct i2c_client *client)
+ 
+ 	i2c_set_clientdata(client, chip);
+ 
++	reset_gpio = devm_gpiod_get(chip->dev, "reset", GPIOD_OUT_LOW);
++	if (IS_ERR(reset_gpio))
++		return PTR_ERR(reset_gpio);
++
+ 	if (of_property_read_bool(chip->dev->of_node, "interrupt-controller")) {
+ 		rc = pm8008_probe_irq_peripherals(chip, client->irq);
+ 		if (rc)
 -- 
 2.7.4
 
