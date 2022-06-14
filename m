@@ -2,66 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70877C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B313EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231887AbiFNLVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43828 "EHLO
+        id S1355189AbiFNLWs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 07:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234452AbiFNLVV (ORCPT
+        with ESMTP id S233268AbiFNLWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 07:21:21 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAAC248C1
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:21:19 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id d14so11113463eda.12
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:21:19 -0700 (PDT)
+        Tue, 14 Jun 2022 07:22:46 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D4422528;
+        Tue, 14 Jun 2022 04:22:45 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id x17so10829165wrg.6;
+        Tue, 14 Jun 2022 04:22:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
+        d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=3NQwnkhAN7Cg4g5w7mvM4Ci1RXtQxsQy+sdI93SNNjs=;
-        b=dc45YxVoR4oQKmCwTltJ9m7qQc8SNNDv5pKGkg18kxUQC7Y6x5HXcqboO3DhENrnwE
-         4OTDcMyJGarBed20ejt+cv+WSbxUU4vTmILALlN+uIMInmj/BAZC8222OHqJ9rSbJesb
-         EFVc6+929kc9EIV0mdM1fWjHRI17F686RN27aysfLF9eyI7cPbfuiXikcTfvk4r2vcLx
-         tVTLfLvTiDkccueG/zm8RAJ4s34lNFYhnU3qTvEuMmDGDdvX02NLxjCMGKZg1UcgZulS
-         /TrATixDwemhXtNgohlR01/zb8XSIvDeNzBYcpf7UtdHYHZ2StAYu0x93SFDZkrXGhIz
-         2eJg==
+        bh=MmMak1g0Or5/SPEB3988q7jPgBcZiEs6ACLIGroSnsk=;
+        b=HmfCPZ9AFEQf5tcfiCiiHJ5QwOuxrLWSa95gvikD18rgqitixPy9VCc3STZznWpbN3
+         hYwJpQDAG9TuN2+QvEGQOmvioizyGS4YbjmgveDvc75Auv1rthbf0v4kPoNVi7w2XSI7
+         XJIt8eVMHWUN4OFnS0U5VAyzTOryvD9iE9l18D9vvARRNas1HlB6gplqo//Muhk9m1tg
+         5IzvoyNFBR6P6En894V0FIymlFpivrSY5Vv+iGtzCUQVwXMAzLi6kPalBkcqXcmjyERI
+         VD17oOkq4FPeecC/ZhDaVUtj0n2HpOqcQpODLo4Lo2hidkhaDvujCabLnidoY3Anvidj
+         JGkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=3NQwnkhAN7Cg4g5w7mvM4Ci1RXtQxsQy+sdI93SNNjs=;
-        b=ZqmYxvyI7h3sK4n1j7sCtHbOrKrSbiZ7EvhA9pHwI7qPriTl2TqDXq9t7PmxHRIU4B
-         vnVCU4THvjHgElIz3mDYkieB1XixFoXcUYCIb6NTFgbDViXsqYuUxE+hLu30FC1nNZ8+
-         pnLN5Um7c918E0whkwJE+hzSit4uoZg489HjacDIq084t74N7E+E29GTt20olm5XUys5
-         s6TytH1FwWiGKNu95wSOd3SykKyxoftOR+6YQbbjs0lKt2YY1jPMG3ivDkZAd7+7EEK3
-         CHng59AjOByUmi4fEZf+QjbY+XuVTyLs02HCdPgtj9mZR45RZk+cZ/VqaAWGIPGgHShD
-         BZwA==
-X-Gm-Message-State: AJIora87jgGODIZGmJ6LhnzeTTDTPvIL53e9bOH6Tc2UNETc/62KvyxS
-        ZkIj09onKPtdPZXcJGoF9Lz3otDUnkk+4w==
-X-Google-Smtp-Source: ABdhPJy336wbk+SBxaM4ycmxvmA6fFTw+x7ClCI7aTudJZOQKX8wuVPQpr4idZt2tMg3Lk00BAS6Ww==
-X-Received: by 2002:a05:6402:f14:b0:42d:f989:4a21 with SMTP id i20-20020a0564020f1400b0042df9894a21mr5447518eda.168.1655205677875;
-        Tue, 14 Jun 2022 04:21:17 -0700 (PDT)
-Received: from otso.. (144-178-202-138.static.ef-service.nl. [144.178.202.138])
-        by smtp.gmail.com with ESMTPSA id vp5-20020a17090712c500b006f3ef214ddesm4919424ejb.68.2022.06.14.04.21.16
+        bh=MmMak1g0Or5/SPEB3988q7jPgBcZiEs6ACLIGroSnsk=;
+        b=UOf9hP25G/BuDKnAdplfHxCLg14Gp9cDvRa1vHaWzfjln1s70oP5vuRA0h9b4aUEhn
+         tuV0pvMc8iL+NeqKM6OgWyYHgqQvFj+k9vb+/6D1ZkkBvvz0c5nwx2QFaMJYFyK1YIkV
+         Fz5tNhxcIc0qVhk4OcJxhcOYsOAlFNVuBc+xa9uA6ConH5wXHwF2MhoVDRsqAliGKERf
+         nU6f3Da2wwknaczsSDudXsBBvH4pway5X7EqfIxvEnTqi21wlvAmqrN+t5Vuyc19UMRa
+         7kad8nlP/lysyLLkSNxt4/Y+FJ4VqJlxXJC8VCRzCImGySrsSZqWzUt+04m0+LsuTFn9
+         wMeQ==
+X-Gm-Message-State: AJIora9eH6LedC5Ono1AHez3ZKWvDo98X29tJxbBCPSpKzY6jwq0w6Dn
+        PPGi4WiopYTu4B6+x6QmKcc=
+X-Google-Smtp-Source: AGRyM1uRvYAccgLzUm8sQyP0VQB9W6rxEVEwx7oSgwRnFpdc58/r8x0mpUhfhFyo2PIGZAX32wFT2Q==
+X-Received: by 2002:a5d:64c4:0:b0:219:b73f:48a7 with SMTP id f4-20020a5d64c4000000b00219b73f48a7mr4387320wri.180.1655205764030;
+        Tue, 14 Jun 2022 04:22:44 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id o19-20020a1c4d13000000b0039c60e33702sm12497390wmh.16.2022.06.14.04.22.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 04:21:17 -0700 (PDT)
-From:   Luca Weiss <luca.weiss@fairphone.com>
-To:     linux-iio@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca.weiss@fairphone.com>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Markuss Broks <markuss.broks@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] proximity: vl53l0x: Make VDD regulator actually optional
-Date:   Tue, 14 Jun 2022 13:20:50 +0200
-Message-Id: <20220614112049.302278-1-luca.weiss@fairphone.com>
+        Tue, 14 Jun 2022 04:22:43 -0700 (PDT)
+From:   Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 1/2] net: ethernet: stmmac: add missing sgmii configure for ipq806x
+Date:   Tue, 14 Jun 2022 13:22:27 +0200
+Message-Id: <20220614112228.1998-1-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -69,35 +70,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Contrary to what the naming might suggest, devm_regulator_get_optional
-returns -ENODEV in case the regulator is not found which will trigger
-probe error in this driver.
+The different gmacid require different configuration based on the soc
+and on the gmac id. Add these missing configuration taken from the
+original driver.
 
-Use devm_regulator_get instead which will return a dummy regulator that
-we can just use as if it was a proper regulator.
-
-Fixes: d3d6dba56dab ("proximity: vl53l0x: Handle the VDD regulator")
-Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
 ---
-@Jonathan: As discussed in the other email, maybe you want to
-adjust/remove the "Fixes:" tag. Your call.
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |  1 +
+ .../ethernet/stmicro/stmmac/dwmac-ipq806x.c   | 93 +++++++++++++++----
+ 2 files changed, 78 insertions(+), 16 deletions(-)
 
- drivers/iio/proximity/vl53l0x-i2c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-index 3b7a33ff601d..c7c4d33d340f 100644
---- a/drivers/iio/proximity/vl53l0x-i2c.c
-+++ b/drivers/iio/proximity/vl53l0x-i2c.c
-@@ -237,7 +237,7 @@ static int vl53l0x_probe(struct i2c_client *client)
- 				     I2C_FUNC_SMBUS_BYTE_DATA))
- 		return -EOPNOTSUPP;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+index 929cfc22cd0c..c4bca16dae57 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
++++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+@@ -83,6 +83,7 @@ config DWMAC_IPQ806X
+ 	default ARCH_QCOM
+ 	depends on OF && (ARCH_QCOM || COMPILE_TEST)
+ 	select MFD_SYSCON
++	select QCOM_SOCINFO
+ 	help
+ 	  Support for QCA IPQ806X DWMAC Ethernet.
  
--	data->vdd_supply = devm_regulator_get_optional(&client->dev, "vdd");
-+	data->vdd_supply = devm_regulator_get(&client->dev, "vdd");
- 	if (IS_ERR(data->vdd_supply))
- 		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
- 				     "Unable to get VDD regulator\n");
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+index f7dc8458cde8..832f442254d8 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
+@@ -27,6 +27,8 @@
+ #include <linux/stmmac.h>
+ #include <linux/of_mdio.h>
+ #include <linux/module.h>
++#include <linux/sys_soc.h>
++#include <linux/bitfield.h>
+ 
+ #include "stmmac_platform.h"
+ 
+@@ -75,11 +77,20 @@
+ #define QSGMII_PHY_RX_SIGNAL_DETECT_EN		BIT(2)
+ #define QSGMII_PHY_TX_DRIVER_EN			BIT(3)
+ #define QSGMII_PHY_QSGMII_EN			BIT(7)
+-#define QSGMII_PHY_PHASE_LOOP_GAIN_OFFSET	12
+-#define QSGMII_PHY_RX_DC_BIAS_OFFSET		18
+-#define QSGMII_PHY_RX_INPUT_EQU_OFFSET		20
+-#define QSGMII_PHY_CDR_PI_SLEW_OFFSET		22
+-#define QSGMII_PHY_TX_DRV_AMP_OFFSET		28
++#define QSGMII_PHY_DEEMPHASIS_LVL_MASK		GENMASK(11, 10)
++#define QSGMII_PHY_DEEMPHASIS_LVL(x)		FIELD_PREP(QSGMII_PHY_DEEMPHASIS_LVL_MASK, (x))
++#define QSGMII_PHY_PHASE_LOOP_GAIN_MASK		GENMASK(14, 12)
++#define QSGMII_PHY_PHASE_LOOP_GAIN(x)		FIELD_PREP(QSGMII_PHY_PHASE_LOOP_GAIN_MASK, (x))
++#define QSGMII_PHY_RX_DC_BIAS_MASK		GENMASK(19, 18)
++#define QSGMII_PHY_RX_DC_BIAS(x)		FIELD_PREP(QSGMII_PHY_RX_DC_BIAS_MASK, (x))
++#define QSGMII_PHY_RX_INPUT_EQU_MASK		GENMASK(21, 20)
++#define QSGMII_PHY_RX_INPUT_EQU(x)		FIELD_PREP(QSGMII_PHY_RX_INPUT_EQU_MASK, (x))
++#define QSGMII_PHY_CDR_PI_SLEW_MASK		GENMASK(23, 22)
++#define QSGMII_PHY_CDR_PI_SLEW(x)		FIELD_PREP(QSGMII_PHY_CDR_PI_SLEW_MASK, (x))
++#define QSGMII_PHY_TX_SLEW_MASK			GENMASK(27, 26)
++#define QSGMII_PHY_TX_SLEW(x)			FIELD_PREP(QSGMII_PHY_TX_SLEW_MASK, (x))
++#define QSGMII_PHY_TX_DRV_AMP_MASK		GENMASK(31, 28)
++#define QSGMII_PHY_TX_DRV_AMP(x)		FIELD_PREP(QSGMII_PHY_TX_DRV_AMP_MASK, (x))
+ 
+ struct ipq806x_gmac {
+ 	struct platform_device *pdev;
+@@ -242,6 +253,64 @@ static void ipq806x_gmac_fix_mac_speed(void *priv, unsigned int speed)
+ 	ipq806x_gmac_set_speed(gmac, speed);
+ }
+ 
++static const struct soc_device_attribute ipq806x_gmac_soc_v1[] = {
++	{
++		.revision = "1.*",
++	},
++	{
++		/* sentinel */
++	}
++};
++
++static int
++ipq806x_gmac_configure_qsgmii_params(struct ipq806x_gmac *gmac)
++{
++	struct platform_device *pdev = gmac->pdev;
++	const struct soc_device_attribute *soc;
++	struct device *dev = &pdev->dev;
++	u32 qsgmii_param;
++
++	switch (gmac->id) {
++	case 1:
++		soc = soc_device_match(ipq806x_gmac_soc_v1);
++
++		if (soc)
++			qsgmii_param = QSGMII_PHY_TX_DRV_AMP(0xc) |
++				       QSGMII_PHY_TX_SLEW(0x2) |
++				       QSGMII_PHY_DEEMPHASIS_LVL(0x2);
++		else
++			qsgmii_param = QSGMII_PHY_TX_DRV_AMP(0xd) |
++				       QSGMII_PHY_TX_SLEW(0x0) |
++				       QSGMII_PHY_DEEMPHASIS_LVL(0x0);
++
++		qsgmii_param |= QSGMII_PHY_RX_DC_BIAS(0x2);
++		break;
++	case 2:
++	case 3:
++		qsgmii_param = QSGMII_PHY_RX_DC_BIAS(0x3) |
++			       QSGMII_PHY_TX_DRV_AMP(0xc);
++		break;
++	default: /* gmac 0 can't be set in SGMII mode */
++		dev_err(dev, "gmac id %d can't be in SGMII mode", gmac->id);
++		return -EINVAL;
++	}
++
++	/* Common params across all gmac id */
++	qsgmii_param |= QSGMII_PHY_CDR_EN |
++			QSGMII_PHY_RX_FRONT_EN |
++			QSGMII_PHY_RX_SIGNAL_DETECT_EN |
++			QSGMII_PHY_TX_DRIVER_EN |
++			QSGMII_PHY_QSGMII_EN |
++			QSGMII_PHY_PHASE_LOOP_GAIN(0x4) |
++			QSGMII_PHY_RX_INPUT_EQU(0x1) |
++			QSGMII_PHY_CDR_PI_SLEW(0x2);
++
++	regmap_write(gmac->qsgmii_csr, QSGMII_PHY_SGMII_CTL(gmac->id),
++		     qsgmii_param);
++
++	return 0;
++}
++
+ static int ipq806x_gmac_probe(struct platform_device *pdev)
+ {
+ 	struct plat_stmmacenet_data *plat_dat;
+@@ -328,17 +397,9 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
+ 	regmap_write(gmac->nss_common, NSS_COMMON_CLK_GATE, val);
+ 
+ 	if (gmac->phy_mode == PHY_INTERFACE_MODE_SGMII) {
+-		regmap_write(gmac->qsgmii_csr, QSGMII_PHY_SGMII_CTL(gmac->id),
+-			     QSGMII_PHY_CDR_EN |
+-			     QSGMII_PHY_RX_FRONT_EN |
+-			     QSGMII_PHY_RX_SIGNAL_DETECT_EN |
+-			     QSGMII_PHY_TX_DRIVER_EN |
+-			     QSGMII_PHY_QSGMII_EN |
+-			     0x4ul << QSGMII_PHY_PHASE_LOOP_GAIN_OFFSET |
+-			     0x3ul << QSGMII_PHY_RX_DC_BIAS_OFFSET |
+-			     0x1ul << QSGMII_PHY_RX_INPUT_EQU_OFFSET |
+-			     0x2ul << QSGMII_PHY_CDR_PI_SLEW_OFFSET |
+-			     0xCul << QSGMII_PHY_TX_DRV_AMP_OFFSET);
++		err = ipq806x_gmac_configure_qsgmii_params(gmac);
++		if (err)
++			goto err_remove_config_dt;
+ 	}
+ 
+ 	plat_dat->has_gmac = true;
 -- 
 2.36.1
 
