@@ -2,101 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A43C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6BF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353366AbiFNCUH (ORCPT
+        id S1353341AbiFNCUK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:20:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
+        Mon, 13 Jun 2022 22:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353469AbiFNCNt (ORCPT
+        with ESMTP id S1353740AbiFNCOD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:13:49 -0400
-Received: from challenge-bot.com (challenge-bot.com [IPv6:2602:fffa:fff:108a:0:16:3e15:92b8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF913584E
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:07:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=challenge-bot.com; s=20180430; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=wxg1Qx31xYRL1VBGbLQizcl3JBI7G3epjuGqGFMFwbA=; b=AvPQTmEdyYSBWkDTKSMckZXRSp
-        XzZV9fon/3AhhksNJjs/EjBnaOWaQ3uAaZYLbGNzoRJQFXGgHTmgkmniTvUuGGHINA3Rgote84FI7
-        2gI5zmrgRix/KGmF+JHC0sXP9wDwrm+8ha/fDVPWyIJUq7nAZsvucyfFXOPWkvLcBMwI=;
-Received: from ozzloy by challenge-bot.com with local (Exim 4.92)
-        (envelope-from <ozzloy@challenge-bot.com>)
-        id 1o0vyA-00088E-CQ; Mon, 13 Jun 2022 19:07:50 -0700
-From:   daniel watson <ozzloy@challenge-bot.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     Daniel Watson <ozzloy@challenge-bot.com>
-Subject: [PATCH 1/4] staging: r8188eu: remove leading '_' on _rtw_IOL_append_WB_cmd
-Date:   Mon, 13 Jun 2022 19:07:30 -0700
-Message-Id: <a1596a62d8e63afbe6a645919a349a8402277c5f.1655171591.git.ozzloy@challenge-bot.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1655171591.git.ozzloy@challenge-bot.com>
-References: <cover.1655171591.git.ozzloy@challenge-bot.com>
+        Mon, 13 Jun 2022 22:14:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E6C344C5;
+        Mon, 13 Jun 2022 19:08:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58B26B816A4;
+        Tue, 14 Jun 2022 02:07:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCE74C3411B;
+        Tue, 14 Jun 2022 02:07:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655172438;
+        bh=0G8hn+LDRdvLcmIuBLbKikNM+6KmtRGefFtgmQdTpPE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PhC/+/kJ/23UsEteE2On2ABpjwLxEdOZsHcu6xArZoDHBVnnGHQnx4gVmGXw3u5E7
+         4SS+qy/ePF5Hh5QGzILZhJibHPpIrcWqniZmHdM3W9dBt7Xu/WTBridCNa/TXk7eMI
+         d8cK4dZroCt91Ug6q/KdVb7uJrihN6JqhkjbiTahVdwVWjKpSvtO52ki8G3ta79jzf
+         vaYVovmmpxoRtHwNOOb15ZbK8NeotVjj6sZW/cWNCpODZ2VqtdWT6ooQBnQW5L0Bs6
+         hZx7wmmYxVYeyWsZldvdYrPsgZ55mhTzK8wk5ePwn/7Z+rZAoObyeULAOEi1+eGimR
+         CN8mSRObv8NmQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Philip Yang <Philip.Yang@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, oded.gabbay@gmail.com,
+        christian.koenig@amd.com, airlied@linux.ie,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 05/41] drm/amdkfd: Use mmget_not_zero in MMU notifier
+Date:   Mon, 13 Jun 2022 22:06:30 -0400
+Message-Id: <20220614020707.1099487-5-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
+References: <20220614020707.1099487-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Watson <ozzloy@challenge-bot.com>
+From: Philip Yang <Philip.Yang@amd.com>
 
-name the function rtw_IOL_append_WB_cmd and call it directly,
-instead of using wrapper macro
+[ Upstream commit fa582c6f3684ac0098a9d02ddf0ed52a02b37127 ]
 
-delete wrapper macro, which is not needed
+MMU notifier callback may pass in mm with mm->mm_users==0 when process
+is exiting, use mmget_no_zero to avoid accessing invalid mm in deferred
+list work after mm is gone.
 
-NOTE: code compiles, not tested on hardware
-
-Signed-off-by: Daniel Watson <ozzloy@challenge-bot.com>
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/r8188eu/core/rtw_iol.c    | 2 +-
- drivers/staging/r8188eu/include/rtw_iol.h | 6 ++----
- 2 files changed, 3 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_svm.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_iol.c b/drivers/staging/r8188eu/core/rtw_iol.c
-index af8e84a41b851..8c990b1af5a70 100644
---- a/drivers/staging/r8188eu/core/rtw_iol.c
-+++ b/drivers/staging/r8188eu/core/rtw_iol.c
-@@ -67,7 +67,7 @@ bool rtw_IOL_applied(struct adapter  *adapter)
- 	return false;
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+index 830809b694dd..74e6f613be02 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+@@ -2181,6 +2181,8 @@ svm_range_cpu_invalidate_pagetables(struct mmu_interval_notifier *mni,
+ 
+ 	if (range->event == MMU_NOTIFY_RELEASE)
+ 		return true;
++	if (!mmget_not_zero(mni->mm))
++		return true;
+ 
+ 	start = mni->interval_tree.start;
+ 	last = mni->interval_tree.last;
+@@ -2207,6 +2209,7 @@ svm_range_cpu_invalidate_pagetables(struct mmu_interval_notifier *mni,
+ 	}
+ 
+ 	svm_range_unlock(prange);
++	mmput(mni->mm);
+ 
+ 	return true;
  }
- 
--int _rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr, u8 value, u8 mask)
-+int rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr, u8 value, u8 mask)
- {
- 	struct ioreg_cfg cmd = {8, IOREG_CMD_WB_REG, 0x0, 0x0, 0x0};
- 
-diff --git a/drivers/staging/r8188eu/include/rtw_iol.h b/drivers/staging/r8188eu/include/rtw_iol.h
-index fb88ebc1dabb1..a648f9ba50a62 100644
---- a/drivers/staging/r8188eu/include/rtw_iol.h
-+++ b/drivers/staging/r8188eu/include/rtw_iol.h
-@@ -41,16 +41,14 @@ int rtw_IOL_append_END_cmd(struct xmit_frame *xmit_frame);
- void read_efuse_from_txpktbuf(struct adapter *adapter, int bcnhead,
- 			      u8 *content, u16 *size);
- 
--int _rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr,
--			   u8 value, u8 mask);
-+int rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr,
-+			  u8 value, u8 mask);
- int _rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr,
- 			   u16 value, u16 mask);
- int _rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr,
- 			   u32 value, u32 mask);
- int _rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path,
- 			    u16 addr, u32 value, u32 mask);
--#define rtw_IOL_append_WB_cmd(xmit_frame, addr, value, mask)		\
--	_rtw_IOL_append_WB_cmd((xmit_frame), (addr), (value) ,(mask))
- #define rtw_IOL_append_WW_cmd(xmit_frame, addr, value, mask)		\
- 	_rtw_IOL_append_WW_cmd((xmit_frame), (addr), (value),(mask))
- #define rtw_IOL_append_WD_cmd(xmit_frame, addr, value, mask)		\
 -- 
-2.34.1
+2.35.1
 
