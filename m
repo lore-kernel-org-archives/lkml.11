@@ -2,145 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3E67C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:45:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5917CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355623AbiFNIpt (ORCPT
+        id S1355890AbiFNIqc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:45:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45492 "EHLO
+        Tue, 14 Jun 2022 04:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355067AbiFNIoU (ORCPT
+        with ESMTP id S1354798AbiFNIqU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:44:20 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F1A5B97
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:44:10 -0700 (PDT)
-X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
-        LIVER,40,3)
-Received: from 172.28.114.216
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(29251:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Tue, 14 Jun 2022 16:31:21 +0800 (CST)
-From:   Qin Jian <qinjian@cqplus1.com>
-To:     sboyd@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        mturquette@baylibre.com, linux@armlinux.org.uk, arnd@arndb.de,
-        olof@lixom.net, soc@kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        Qin Jian <qinjian@cqplus1.com>
-Subject: [PATCH v18 09/10] ARM: sp7021_defconfig: Add Sunplus SP7021 defconfig
-Date:   Tue, 14 Jun 2022 16:31:08 +0800
-Message-Id: <b94cd867be87e73a7c859b968ca82cccfda423fc.1655194858.git.qinjian@cqplus1.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <cover.1655194858.git.qinjian@cqplus1.com>
-References: <cover.1655194858.git.qinjian@cqplus1.com>
+        Tue, 14 Jun 2022 04:46:20 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530FE43386
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:46:18 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id i29so12822692lfp.3
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:46:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=oAM/zOlGk69QAKmLEbCK7uqIsInmgsnJK9Xbeld2dog=;
+        b=SoN3jyIQNNsSO7JvxajFVqlgulTcTmb7za0HscZds7fr0jY/8RJqMME/cDfPiHpE0q
+         w8G5t1YfM1/2KXP0sB3ABVU4CZFYeXBrkROawX7KXInxPIWra5F4CGzFo4MvJlOKqWjk
+         tqYkN3xMfvrKixnJ4i3u3S43w5Tq0cvHaIdLE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=oAM/zOlGk69QAKmLEbCK7uqIsInmgsnJK9Xbeld2dog=;
+        b=SoLmRg87MMSx2ioDOMPS/fjd86olQWtlMCM5tpMLWWcSl4bSY4uknSAaKboCrDzDU6
+         bPYMN13uBtBMmZoORw3bnbociP9LhDCUk9qy2NPQKqis9g3ti/zq8uGf+T5p9UWbw0XH
+         3GomY21pJ99hARROghBHFRDM5yQwfl0haZrXKh/ZnzY9xkK5EhvdXRaU9axzT1QyzyFR
+         57m4j0b9C/Pk+KUK8s0c+dsst0ChTjNjfoSnjVf/NToQzXQwiO9wFQDTlxwEJRBrCC8U
+         nB1DT5vrdZMcpF6VrK4FKptaFR1yJcsIrdgfmgfcy06rSrSWi0gjNac6R08fYNpvhD4N
+         Hslw==
+X-Gm-Message-State: AJIora945NX53DLIfgTw4BNZpEJhP3QIu1DcnApmcTg0dDIQJJTeJQr+
+        KYvkmho4yJpHWfR8IJvZoocyVzqOR+MQd6SZ
+X-Google-Smtp-Source: AGRyM1tzG0TopbkaXDtd7WfOts0IhCRlPW54nF5yv2F+oFI5wCP+/gDXlo7C19R81acSp7hNGVYawg==
+X-Received: by 2002:a05:6512:3d8c:b0:479:51be:727f with SMTP id k12-20020a0565123d8c00b0047951be727fmr2491926lfv.289.1655196376583;
+        Tue, 14 Jun 2022 01:46:16 -0700 (PDT)
+Received: from prevas-ravi.prevas.se ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id g1-20020ac24d81000000b0047255d2118fsm1306116lfe.190.2022.06.14.01.46.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 01:46:16 -0700 (PDT)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Praneeth Bajjuri <praneeth@ti.com>,
+        linux-kernel@vger.kernel.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: [PATCH net-next v2 0/3] dt-bindings: dp83867: add binding for io_impedance_ctrl nvmem cell
+Date:   Tue, 14 Jun 2022 10:46:09 +0200
+Message-Id: <20220614084612.325229-1-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220606202220.1670714-1-linux@rasmusvillemoes.dk>
+References: <20220606202220.1670714-1-linux@rasmusvillemoes.dk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add generic Sunplus SP7021 based board defconfig
+We have a board where measurements indicate that the current three
+options - leaving IO_IMPEDANCE_CTRL at the reset value (which is
+factory calibrated to a value corresponding to approximately 50 ohms)
+or using one of the two boolean properties to set it to the min/max
+value - are too coarse.
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Qin Jian <qinjian@cqplus1.com>
----
- MAINTAINERS                         |  1 +
- arch/arm/configs/multi_v7_defconfig |  1 +
- arch/arm/configs/sp7021_defconfig   | 59 +++++++++++++++++++++++++++++
- 3 files changed, 61 insertions(+)
- create mode 100644 arch/arm/configs/sp7021_defconfig
+This series adds a device tree binding for an nvmem cell which can be
+populated during production with a suitable value calibrated for each
+board, and corresponding support in the driver. The second patch adds
+a trivial phy wrapper for dev_err_probe(), used in the third.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 9d4cf62eb..4435ec6ca 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2814,6 +2814,7 @@ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
- F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
- F:	Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
- F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
-+F:	arch/arm/configs/sp7021_*defconfig
- F:	arch/arm/mach-sunplus/
- F:	drivers/clk/clk-sp7021.c
- F:	drivers/irqchip/irq-sp7021-intc.c
-diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
-index d6a6811f0..6d3f6503c 100644
---- a/arch/arm/configs/multi_v7_defconfig
-+++ b/arch/arm/configs/multi_v7_defconfig
-@@ -90,6 +90,7 @@ CONFIG_MACH_SPEAR1310=y
- CONFIG_MACH_SPEAR1340=y
- CONFIG_ARCH_STI=y
- CONFIG_ARCH_STM32=y
-+CONFIG_ARCH_SUNPLUS=y
- CONFIG_ARCH_SUNXI=y
- CONFIG_ARCH_TEGRA=y
- CONFIG_ARCH_UNIPHIER=y
-diff --git a/arch/arm/configs/sp7021_defconfig b/arch/arm/configs/sp7021_defconfig
-new file mode 100644
-index 000000000..703b9aaa4
---- /dev/null
-+++ b/arch/arm/configs/sp7021_defconfig
-@@ -0,0 +1,59 @@
-+CONFIG_SYSVIPC=y
-+CONFIG_NO_HZ_IDLE=y
-+CONFIG_HIGH_RES_TIMERS=y
-+CONFIG_PREEMPT=y
-+CONFIG_IKCONFIG=y
-+CONFIG_IKCONFIG_PROC=y
-+CONFIG_LOG_BUF_SHIFT=14
-+# CONFIG_RD_GZIP is not set
-+# CONFIG_RD_BZIP2 is not set
-+# CONFIG_RD_LZMA is not set
-+# CONFIG_RD_XZ is not set
-+# CONFIG_RD_LZO is not set
-+# CONFIG_RD_LZ4 is not set
-+CONFIG_CC_OPTIMIZE_FOR_SIZE=y
-+CONFIG_PERF_EVENTS=y
-+CONFIG_SLAB=y
-+CONFIG_ARCH_SUNPLUS=y
-+# CONFIG_VDSO is not set
-+CONFIG_SMP=y
-+CONFIG_THUMB2_KERNEL=y
-+CONFIG_FORCE_MAX_ZONEORDER=12
-+CONFIG_VFP=y
-+CONFIG_NEON=y
-+CONFIG_MODULES=y
-+CONFIG_MODULE_UNLOAD=y
-+CONFIG_MODVERSIONS=y
-+# CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
-+CONFIG_UEVENT_HELPER=y
-+CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
-+CONFIG_DEVTMPFS=y
-+CONFIG_DEVTMPFS_MOUNT=y
-+CONFIG_BLK_DEV_LOOP=y
-+CONFIG_INPUT_SPARSEKMAP=y
-+CONFIG_INPUT_EVDEV=y
-+# CONFIG_INPUT_KEYBOARD is not set
-+# CONFIG_INPUT_MOUSE is not set
-+# CONFIG_LEGACY_PTYS is not set
-+# CONFIG_HW_RANDOM is not set
-+# CONFIG_HWMON is not set
-+# CONFIG_IOMMU_SUPPORT is not set
-+CONFIG_RESET_CONTROLLER=y
-+CONFIG_EXT4_FS=y
-+# CONFIG_DNOTIFY is not set
-+CONFIG_FANOTIFY=y
-+CONFIG_VFAT_FS=y
-+CONFIG_FAT_DEFAULT_IOCHARSET="utf8"
-+CONFIG_EXFAT_FS=y
-+CONFIG_TMPFS=y
-+CONFIG_TMPFS_POSIX_ACL=y
-+# CONFIG_MISC_FILESYSTEMS is not set
-+CONFIG_NLS_CODEPAGE_437=y
-+CONFIG_NLS_ASCII=y
-+CONFIG_NLS_ISO8859_1=y
-+CONFIG_NLS_UTF8=y
-+CONFIG_PRINTK_TIME=y
-+CONFIG_DYNAMIC_DEBUG=y
-+CONFIG_MAGIC_SYSRQ=y
-+CONFIG_DEBUG_FS=y
-+CONFIG_DEBUG_USER=y
+v2: Improve commit message for patch 1; add Rob's R-b to patch 1. No
+changes in the patches themselves.
+
+Since Dan Murphy's email address bounces, cc'ing two other @ti.com
+addresses that have touched the driver in recent years.
+
+Rasmus Villemoes (3):
+  dt-bindings: dp83867: add binding for io_impedance_ctrl nvmem cell
+  linux/phy.h: add phydev_err_probe() wrapper for dev_err_probe()
+  net: phy: dp83867: implement support for io_impedance_ctrl nvmem cell
+
+ .../devicetree/bindings/net/ti,dp83867.yaml   | 18 +++++-
+ drivers/net/phy/dp83867.c                     | 55 +++++++++++++++++--
+ include/linux/phy.h                           |  3 +
+ 3 files changed, 67 insertions(+), 9 deletions(-)
+
 -- 
-2.33.1
+2.31.1
 
