@@ -2,237 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43643C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 06:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF56C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 06:30:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351196AbiFNGaP (ORCPT
+        id S1351778AbiFNGaT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 02:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34298 "EHLO
+        Tue, 14 Jun 2022 02:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234405AbiFNGaM (ORCPT
+        with ESMTP id S1350935AbiFNGaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 02:30:12 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71101A053
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 23:30:10 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id e4so8609832ljl.1
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 23:30:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p/NRQuFI8tEQXP2R7fZneo4JlnHTbiMdQlJzFDy5/J8=;
-        b=lrFPz/wx6XrLQGNEu8CKre9K0jQFp+dy8jJWh3TUwhh2UVTs3Vp7U+HSRra96066F5
-         7sp86ZpCsDXLu3zdEVYRFErGjFwESqminOPfQAd7rgdXOEDkwQv+E+gY7/cJQzrvb2/G
-         YMiDBQUrTt6RzIyR5nGUQqa2mxdTBz85+Zgvo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p/NRQuFI8tEQXP2R7fZneo4JlnHTbiMdQlJzFDy5/J8=;
-        b=5ymEWd345+PxuNw06SNlsw0G1OXZ7DNsj82gFDpXVj8kn0v0nGdB2glYDuaAi4bwma
-         j6AtnPomlRmdxHT3vWv21Emx6V54/a2eG5zrFwrJlFbX02zUqouwnxKVXqQ8Rp/8KYfv
-         Ex9zYHChS7cJ9c/73g0IHp4VY6pO8YhrvgNFv/KKwikMdrNJhV7iBh2xvKCBCT/MiYPv
-         05wQeo/X5LIVQNORv0zslrxMu7cfJzcjNrvbXkYN0ocONGW0Q8vNRd3leAh0IyP+cxFJ
-         coGd7uLvZ1Ce4qT1tSj1dGKcw5MkPXPMwmN4pWiPxid/aLuVBlhAfps/X8y6S9CIftxM
-         Mc9w==
-X-Gm-Message-State: AJIora/AQtstKYJCJswS4R/oVP9lj+4RmfImVfXn1u/R6eTkNnmz36j9
-        f3zMSmtUUPmKTTSNk/pPFi+NTIiQk4tDfu1JIMMX0Q==
-X-Google-Smtp-Source: AGRyM1vki/GDT4R9HSfcOufQmMmcVvrY9hZXpMmPyqajie+XQicj+VJMw0EtntKoXRxEIjIFi4beAZancDZ6mpEZ3BI=
-X-Received: by 2002:a2e:9609:0:b0:255:8364:9fd8 with SMTP id
- v9-20020a2e9609000000b0025583649fd8mr1611482ljh.132.1655188208918; Mon, 13
- Jun 2022 23:30:08 -0700 (PDT)
+        Tue, 14 Jun 2022 02:30:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1A8119FB3;
+        Mon, 13 Jun 2022 23:30:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 568DD60BD4;
+        Tue, 14 Jun 2022 06:30:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AA2BBC3411C;
+        Tue, 14 Jun 2022 06:30:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655188213;
+        bh=HA2CQg+BitG9bOayuL2B8arkzc3hd7J7CQXjmEDy+iw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KdwzHfWZ3ngZ+jbEeNNtKYnKVB/pPKihkewunLwciZ53EF78EnjwbP+P0gzKXb2HP
+         70gsMkHrQQgm6jiXTfbSWgvKClNTEflDpO4fm/s5bgjmGzqnwimk/R6v4pX0OMMGuc
+         qYKR6HOVi7OHiyriAzdsjEBwcilp8Drq1B724VxwyuxPxiOYb8XoIcRRiwfN6rsjWq
+         o5kuZnFG+hqiq6m7knTs/XWwN1nRwDwIKajqJL21iIZ/D5cTHjl5EnTISzaj1N5Nkj
+         V/RYc/3Ln+7YYX1wYlWxPqllntxq9pOKhAUwD8k2IRvjOiAcBl4EHJS6CDl0GihoLc
+         sW6fkiOq2FIDA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8A342E6D482;
+        Tue, 14 Jun 2022 06:30:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
- <20220612213927.3004444-14-dario.binacchi@amarulasolutions.com> <20220613073706.rk3bve57zi2p3nnz@pengutronix.de>
-In-Reply-To: <20220613073706.rk3bve57zi2p3nnz@pengutronix.de>
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date:   Tue, 14 Jun 2022 08:29:57 +0200
-Message-ID: <CABGWkvqb3VHEMUaRsxcdL0+85hOSwJAtYWq+JskQ3KG+Hnca5g@mail.gmail.com>
-Subject: Re: [PATCH v3 13/13] can: slcan: extend the protocol with CAN state info
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-kernel@vger.kernel.org, michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: phy: fixed_phy: set phy_mask before calling
+ mdiobus_register()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165518821356.28798.7031862060852260110.git-patchwork-notify@kernel.org>
+Date:   Tue, 14 Jun 2022 06:30:13 +0000
+References: <20220606200208.1665417-1-linux@rasmusvillemoes.dk>
+In-Reply-To: <20220606200208.1665417-1-linux@rasmusvillemoes.dk>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 9:37 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> On 12.06.2022 23:39:27, Dario Binacchi wrote:
-> > It extends the protocol to receive the adapter CAN state changes
-> > (warning, busoff, etc.) and forward them to the netdev upper levels.
-> >
-> > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-> >
-> > ---
-> >
-> > Changes in v3:
-> > - Drop the patch "can: slcan: simplify the device de-allocation".
-> > - Add the patch "can: netlink: dump bitrate 0 if can_priv::bittiming.bitrate is -1U".
-> >
-> > Changes in v2:
-> > - Continue error handling even if no skb can be allocated.
-> >
-> >  drivers/net/can/slcan/slcan-core.c | 66 ++++++++++++++++++++++++++++++
-> >  1 file changed, 66 insertions(+)
-> >
-> > diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-> > index 48077edb9497..5ba1c141f942 100644
-> > --- a/drivers/net/can/slcan/slcan-core.c
-> > +++ b/drivers/net/can/slcan/slcan-core.c
-> > @@ -78,6 +78,9 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan interfaces");
-> >  #define SLC_CMD_LEN 1
-> >  #define SLC_SFF_ID_LEN 3
-> >  #define SLC_EFF_ID_LEN 8
-> > +#define SLC_STATE_LEN 1
-> > +#define SLC_STATE_BE_RXCNT_LEN 3
-> > +#define SLC_STATE_BE_TXCNT_LEN 3
-> >
-> >  struct slcan {
-> >       struct can_priv         can;
-> > @@ -175,6 +178,67 @@ int slcan_enable_err_rst_on_open(struct net_device *ndev, bool on)
-> >    *                  STANDARD SLCAN DECAPSULATION                     *
-> >    ************************************************************************/
-> >
-> > +static void slc_bump_state(struct slcan *sl)
-> > +{
-> > +     struct net_device *dev = sl->dev;
-> > +     struct sk_buff *skb;
-> > +     struct can_frame *cf;
-> > +     char *cmd = sl->rbuff;
-> > +     u32 rxerr, txerr;
-> > +     enum can_state state, rx_state, tx_state;
-> > +
-> > +     if (*cmd != 's')
-> > +             return;
->
-> Checked by the caller?
->
-> > +
-> > +     cmd += SLC_CMD_LEN;
-> > +     switch (*cmd) {
-> > +     case 'a':
-> > +             state = CAN_STATE_ERROR_ACTIVE;
-> > +             break;
-> > +     case 'w':
-> > +             state = CAN_STATE_ERROR_WARNING;
-> > +             break;
-> > +     case 'p':
-> > +             state = CAN_STATE_ERROR_PASSIVE;
-> > +             break;
-> > +     case 'f':
-> > +             state = CAN_STATE_BUS_OFF;
-> > +             break;
-> > +     default:
-> > +             return;
-> > +     }
-> > +
-> > +     if (state == sl->can.state)
-> > +             return;
-> > +
-> > +     cmd += SLC_STATE_BE_RXCNT_LEN + 1;
->
-> Have you checked that you have received that much data?
->
-> > +     cmd[SLC_STATE_BE_TXCNT_LEN] = 0;
-> > +     if (kstrtou32(cmd, 10, &txerr))
-> > +             return;
-> > +
-> > +     *cmd = 0;
-> > +     cmd -= SLC_STATE_BE_RXCNT_LEN;
-> > +     if (kstrtou32(cmd, 10, &rxerr))
-> > +             return;
->
-> Why do you parse TX first and then RX?
+Hello:
 
-Since adding the end-of-string character to the counter to be decoded
-invalidates the next one.
-If I had started from the rx counter, I would have found the
-transmission counter always at 0.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Thanks and regards,
-Dario
+On Mon,  6 Jun 2022 22:02:08 +0200 you wrote:
+> There's no point probing for phys on this artificial bus, so we can
+> save a little bit of boot time by telling mdiobus_register() not to do
+> that.
+> 
+> This doesn't have any functional change, since, at this point,
+> fixed_mdio_read() returns 0xffff for all addresses/registers, so
+> 
+> [...]
 
->
-> > +
-> > +     skb = alloc_can_err_skb(dev, &cf);
-> > +
-> > +     if (skb) {
-> > +             cf->data[6] = txerr;
-> > +             cf->data[7] = rxerr;
-> > +     }
-> > +
-> > +     tx_state = txerr >= rxerr ? state : 0;
-> > +     rx_state = txerr <= rxerr ? state : 0;
-> > +     can_change_state(dev, skb ? cf : NULL, tx_state, rx_state);
->
-> alloc_can_err_skb() set cf to NULL if no skb can be allocated.
->
-> > +
-> > +     if (state == CAN_STATE_BUS_OFF)
-> > +             can_bus_off(dev);
-> > +
-> > +     if (skb)
-> > +             netif_rx(skb);
-> > +}
-> > +
-> >  static void slc_bump_err(struct slcan *sl)
-> >  {
-> >       struct net_device *dev = sl->dev;
-> > @@ -378,6 +442,8 @@ static void slc_bump(struct slcan *sl)
-> >               return slc_bump_frame(sl);
-> >       case 'e':
-> >               return slc_bump_err(sl);
-> > +     case 's':
-> > +             return slc_bump_state(sl);
-> >       default:
-> >               return;
-> >       }
-> > --
-> > 2.32.0
-> >
-> >
->
-> Marc
->
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Here is the summary with links:
+  - [net-next] net: phy: fixed_phy: set phy_mask before calling mdiobus_register()
+    https://git.kernel.org/netdev/net-next/c/bfa54812f0bc
 
-
-
+You are awesome, thank you!
 -- 
-
-Dario Binacchi
-
-Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
