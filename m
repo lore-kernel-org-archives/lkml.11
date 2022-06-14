@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A64C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99517C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:22:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354180AbiFNCWC (ORCPT
+        id S1354205AbiFNCWG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
+        Mon, 13 Jun 2022 22:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354871AbiFNCPK (ORCPT
+        with ESMTP id S1354864AbiFNCPK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 22:15:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF87935DE0;
-        Mon, 13 Jun 2022 19:09:06 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEA53CFEC;
+        Mon, 13 Jun 2022 19:09:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA7B3B81699;
-        Tue, 14 Jun 2022 02:09:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E49EC34114;
-        Tue, 14 Jun 2022 02:09:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61CDD60AD8;
+        Tue, 14 Jun 2022 02:09:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31A7BC34114;
+        Tue, 14 Jun 2022 02:09:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172543;
-        bh=PnwFDSr0QbHhkvmwmnkK4Kuu2ybmHtpHvkQaBoGakRs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=XnddG+eqPhyZ6nZ0oU1zK4gzhwC0xvkVtbRvu6iwTVfe9795wbD4pCljtWFr90LrP
-         /5AUSJL5piglDvtnCcjyBt0r9Bbol4jTYaMS0stjD4S/n0DikfOC5WrCb6THmW3DI7
-         RlS903sEX0WiiY5CfJiV0VAxTorRrykJinBgHPCqsk6gDwflbeZ5T7itUtzC2KwGTw
-         +yFMZEwBos3n4Cq+bra5sVUMVrNgx2FZsHeN1iPThKo5FZiCwAamp8+H7oA1Xj7VLr
-         BcBbqlDqbhRE7ZubvCY3RggKpsW0jmdP44MLoIEbEPSdS2BZlQkIgp/d5eO1i8BJ1o
-         ep7GH+zASUg/w==
+        s=k20201202; t=1655172546;
+        bh=Dp+X6o7JGXE3l8yXNOOVGEEyGNzj/eM27todlgKYe/A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=J1xz12UZtO2vVC3awubzS0Fgmo/+fs2+M6VLouAfSa2tGHKxpmxF69S7ATEI17Xkl
+         CmyPUhYfdYarDdtq3oaj5Ov1aXN4dJ77+zAaJ+8gBQCriTP5Hm65TG4jMGaZn3Hgri
+         n3pJUqEVnktEdtnhT46cwHTk0ALOMXGQQc6dmG4RPXJerRk0k8fFf8KwS64vkBdSP6
+         BZV5+aYaj17s2UR+BV45qVo0IgBOZCZ/0D31Kv9WI0e6qzw8VixrhYcxuJ3sDhTmbg
+         /xC/rrCUhejpVOmxkaIb99MMztIXB2ejBOO4ZitIQOJWPf2F1A368lIsshnrG+/8Vt
+         IdZyW5Ao0mFfQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     He Ying <heying24@huawei.com>, Wanming Hu <huwanming@huaweil.com>,
-        Chen Jingwen <chenjingwen6@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, benh@kernel.crashing.org,
-        paulus@samba.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.4 01/23] powerpc/kasan: Silence KASAN warnings in __get_wchan()
-Date:   Mon, 13 Jun 2022 22:08:37 -0400
-Message-Id: <20220614020900.1100401-1-sashal@kernel.org>
+Cc:     Rob Clark <robdclark@chromium.org>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 03/23] dma-debug: make things less spammy under memory pressure
+Date:   Mon, 13 Jun 2022 22:08:39 -0400
+Message-Id: <20220614020900.1100401-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220614020900.1100401-1-sashal@kernel.org>
+References: <20220614020900.1100401-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,89 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: He Ying <heying24@huawei.com>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit a1b29ba2f2c171b9bea73be993bfdf0a62d37d15 ]
+[ Upstream commit e19f8fa6ce1ca9b8b934ba7d2e8f34c95abc6e60 ]
 
-The following KASAN warning was reported in our kernel.
+Limit the error msg to avoid flooding the console.  If you have a lot of
+threads hitting this at once, they could have already gotten passed the
+dma_debug_disabled() check before they get to the point of allocation
+failure, resulting in quite a lot of this error message spamming the
+log.  Use pr_err_once() to limit that.
 
-  BUG: KASAN: stack-out-of-bounds in get_wchan+0x188/0x250
-  Read of size 4 at addr d216f958 by task ps/14437
-
-  CPU: 3 PID: 14437 Comm: ps Tainted: G           O      5.10.0 #1
-  Call Trace:
-  [daa63858] [c0654348] dump_stack+0x9c/0xe4 (unreliable)
-  [daa63888] [c035cf0c] print_address_description.constprop.3+0x8c/0x570
-  [daa63908] [c035d6bc] kasan_report+0x1ac/0x218
-  [daa63948] [c00496e8] get_wchan+0x188/0x250
-  [daa63978] [c0461ec8] do_task_stat+0xce8/0xe60
-  [daa63b98] [c0455ac8] proc_single_show+0x98/0x170
-  [daa63bc8] [c03cab8c] seq_read_iter+0x1ec/0x900
-  [daa63c38] [c03cb47c] seq_read+0x1dc/0x290
-  [daa63d68] [c037fc94] vfs_read+0x164/0x510
-  [daa63ea8] [c03808e4] ksys_read+0x144/0x1d0
-  [daa63f38] [c005b1dc] ret_from_syscall+0x0/0x38
-  --- interrupt: c00 at 0x8fa8f4
-      LR = 0x8fa8cc
-
-  The buggy address belongs to the page:
-  page:98ebcdd2 refcount:0 mapcount:0 mapping:00000000 index:0x2 pfn:0x1216f
-  flags: 0x0()
-  raw: 00000000 00000000 01010122 00000000 00000002 00000000 ffffffff 00000000
-  raw: 00000000
-  page dumped because: kasan: bad access detected
-
-  Memory state around the buggy address:
-   d216f800: 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00 00 00 00
-   d216f880: f2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  >d216f900: 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00
-                                            ^
-   d216f980: f2 f2 f2 f2 f2 f2 f2 00 00 00 00 00 00 00 00 00
-   d216fa00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-
-After looking into this issue, I find the buggy address belongs
-to the task stack region. It seems KASAN has something wrong.
-I look into the code of __get_wchan in x86 architecture and
-find the same issue has been resolved by the commit
-f7d27c35ddff ("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
-The solution could be applied to powerpc architecture too.
-
-As Andrey Ryabinin said, get_wchan() is racy by design, it may
-access volatile stack of running task, thus it may access
-redzone in a stack frame and cause KASAN to warn about this.
-
-Use READ_ONCE_NOCHECK() to silence these warnings.
-
-Reported-by: Wanming Hu <huwanming@huaweil.com>
-Signed-off-by: He Ying <heying24@huawei.com>
-Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220121014418.155675-1-heying24@huawei.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/process.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/dma/debug.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
-index c94bba9142e7..832663f21422 100644
---- a/arch/powerpc/kernel/process.c
-+++ b/arch/powerpc/kernel/process.c
-@@ -2001,12 +2001,12 @@ static unsigned long __get_wchan(struct task_struct *p)
- 		return 0;
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 4dc3bbfd3e3f..e1a7d55ee33a 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -616,7 +616,7 @@ static void add_dma_entry(struct dma_debug_entry *entry)
  
- 	do {
--		sp = *(unsigned long *)sp;
-+		sp = READ_ONCE_NOCHECK(*(unsigned long *)sp);
- 		if (!validate_sp(sp, p, STACK_FRAME_OVERHEAD) ||
- 		    p->state == TASK_RUNNING)
- 			return 0;
- 		if (count > 0) {
--			ip = ((unsigned long *)sp)[STACK_FRAME_LR_SAVE];
-+			ip = READ_ONCE_NOCHECK(((unsigned long *)sp)[STACK_FRAME_LR_SAVE]);
- 			if (!in_sched_functions(ip))
- 				return ip;
- 		}
+ 	rc = active_cacheline_insert(entry);
+ 	if (rc == -ENOMEM) {
+-		pr_err("cacheline tracking ENOMEM, dma-debug disabled\n");
++		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
+ 		global_disable = true;
+ 	}
+ 
 -- 
 2.35.1
 
