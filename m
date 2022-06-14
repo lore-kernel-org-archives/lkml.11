@@ -2,95 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EE75C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C95F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357410AbiFNSqN (ORCPT
+        id S1357347AbiFNSqS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58356 "EHLO
+        Tue, 14 Jun 2022 14:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244490AbiFNSoE (ORCPT
+        with ESMTP id S1357253AbiFNSoK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:44:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E2A4CD62;
-        Tue, 14 Jun 2022 11:42:51 -0700 (PDT)
+        Tue, 14 Jun 2022 14:44:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F1D44D261;
+        Tue, 14 Jun 2022 11:42:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3BEECB81AEC;
-        Tue, 14 Jun 2022 18:42:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9216FC3411B;
-        Tue, 14 Jun 2022 18:42:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4219B81AF1;
+        Tue, 14 Jun 2022 18:42:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5481C3411D;
+        Tue, 14 Jun 2022 18:42:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232169;
-        bh=m56DBbxWScVkv0/5LRf924ppTrCkrkWGMKYCCdNZXO4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S0oeGWnstcesC2CAKW2XKGf+rhhvJ7KzuYDY02vAsAlo4Ks0cWXUI4dRXmqhjafWZ
-         ck941ZjzSJ2yg7bYKjKUUul9IyoICFqeM7FKZcBGro9bw8NK+X517Y83n0Rydeb+Op
-         WKeMm3yuRsNtWy0ILErnywZn62aQdq0PMV47En9U=
+        s=korg; t=1655232174;
+        bh=zQzBRU4KNLh+Ue+WmDy0cihfJOxzSAY9yZ3SInmnV9c=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cZecKPp3RrajnTNavhE8+oSaT5bkd7baNn5U2PsRu0enfnzeVtMkESEf99oGYhH9q
+         OnyWH9pua0HqR3vjIK9g4OAnYH+N73PwrfP3negGxzvO3gdbp/mGFpuQSNjzDoqbvi
+         +mFuw8bOTpZTetYuGR//x7Bx5F7i2EUFOJxtpOiU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 4.14 20/20] x86/speculation/mmio: Print SMT warning
-Date:   Tue, 14 Jun 2022 20:40:11 +0200
-Message-Id: <20220614183728.241711512@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.19 00/16] 4.19.248-rc1 review
+Date:   Tue, 14 Jun 2022 20:40:01 +0200
+Message-Id: <20220614183720.928818645@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220614183723.328825625@linuxfoundation.org>
-References: <20220614183723.328825625@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.248-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.19.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.19.248-rc1
+X-KernelTest-Deadline: 2022-06-16T18:37+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+This is the start of the stable review cycle for the 4.19.248 release.
+There are 16 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 1dc6ff02c8bf77d71b9b5d11cbc9df77cfb28626 upstream
+Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+Anything received after that time might be too late.
 
-Similar to MDS and TAA, print a warning if SMT is enabled for the MMIO
-Stale Data vulnerability.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.248-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+and the diffstat can be found below.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/kernel/cpu/bugs.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+thanks,
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -1215,6 +1215,7 @@ static void update_mds_branch_idle(void)
- 
- #define MDS_MSG_SMT "MDS CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html for more details.\n"
- #define TAA_MSG_SMT "TAA CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/tsx_async_abort.html for more details.\n"
-+#define MMIO_MSG_SMT "MMIO Stale Data CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/processor_mmio_stale_data.html for more details.\n"
- 
- void arch_smt_update(void)
- {
-@@ -1259,6 +1260,16 @@ void arch_smt_update(void)
- 		break;
- 	}
- 
-+	switch (mmio_mitigation) {
-+	case MMIO_MITIGATION_VERW:
-+	case MMIO_MITIGATION_UCODE_NEEDED:
-+		if (sched_smt_active())
-+			pr_warn_once(MMIO_MSG_SMT);
-+		break;
-+	case MMIO_MITIGATION_OFF:
-+		break;
-+	}
-+
- 	mutex_unlock(&spec_ctrl_mutex);
- }
- 
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.19.248-rc1
+
+Josh Poimboeuf <jpoimboe@kernel.org>
+    x86/speculation/mmio: Print SMT warning
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    KVM: x86/speculation: Disable Fill buffer clear within guests
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Reuse SRBDS mitigation for SBDS
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/srbds: Update SRBDS mitigation selection
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Add sysfs reporting for Processor MMIO Stale Data
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Enable CPU Fill buffer clearing on idle
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/bugs: Group MDS, TAA & Processor MMIO Stale Data mitigations
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Add mitigation for Processor MMIO Stale Data
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation: Add a common function for MD_CLEAR mitigation update
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Enumerate Processor MMIO Stale Data bug
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    Documentation: Add documentation for Processor MMIO Stale Data
+
+Gayatri Kammela <gayatri.kammela@intel.com>
+    x86/cpu: Add another Alder Lake CPU to the Intel family
+
+Tony Luck <tony.luck@intel.com>
+    x86/cpu: Add Lakefield, Alder Lake and Rocket Lake models to the to Intel CPU family
+
+Zhang Rui <rui.zhang@intel.com>
+    x86/cpu: Add Jasper Lake to Intel family
+
+Guenter Roeck <linux@roeck-us.net>
+    cpu/speculation: Add prototype for cpu_show_srbds()
+
+Gayatri Kammela <gayatri.kammela@intel.com>
+    x86/cpu: Add Elkhart Lake to Intel family
+
+
+-------------
+
+Diffstat:
+
+ Documentation/ABI/testing/sysfs-devices-system-cpu |   1 +
+ Documentation/admin-guide/hw-vuln/index.rst        |   1 +
+ .../hw-vuln/processor_mmio_stale_data.rst          | 246 +++++++++++++++++++++
+ Documentation/admin-guide/kernel-parameters.txt    |  36 +++
+ Makefile                                           |   4 +-
+ arch/x86/include/asm/cpufeatures.h                 |   1 +
+ arch/x86/include/asm/intel-family.h                |  11 +
+ arch/x86/include/asm/msr-index.h                   |  25 +++
+ arch/x86/include/asm/nospec-branch.h               |   2 +
+ arch/x86/kernel/cpu/bugs.c                         | 235 +++++++++++++++++---
+ arch/x86/kernel/cpu/common.c                       |  52 ++++-
+ arch/x86/kvm/vmx.c                                 |  77 ++++++-
+ arch/x86/kvm/x86.c                                 |   4 +
+ drivers/base/cpu.c                                 |   8 +
+ include/linux/cpu.h                                |   4 +
+ 15 files changed, 665 insertions(+), 42 deletions(-)
 
 
