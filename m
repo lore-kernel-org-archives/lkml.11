@@ -2,88 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D37D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A03DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355323AbiFNHwZ (ORCPT
+        id S1353410AbiFNHwi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:52:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41398 "EHLO
+        Tue, 14 Jun 2022 03:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355309AbiFNHvy (ORCPT
+        with ESMTP id S231756AbiFNHv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:51:54 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D0541325;
-        Tue, 14 Jun 2022 00:51:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655193071; x=1686729071;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=W3BLPE/LIaAK46lhfKOSyddpUsD8feI1Cn6S8ocKVYw=;
-  b=D6glJPUHx47Ncxc1EjEVUvf0Lr9hy6EX7I2AN+ycnCkXlOyyZWiKsqq2
-   HJC5StY4wqKKDdDHNfH/NTvnukKzBXPbsSp/RG7Ww+3KimS+8/bTyc6Oa
-   7Aj49UXm6sEDToGCVwGQHsBEbs4boQ5OYHJyY71MJ7nsGHQ5TpbvMwPoG
-   zav0hA7zPwsO/hSk8cKQr4mfciPXgVRgmV1vffOWA3kzNr+sIrGKbH4C1
-   eT1bN7WRqjYYUUVxedOuF50EP0u4Re/lIjp2NZWrP1KQnt4iGxpIwtIG7
-   CwDjJqgcqyjaMWXPAF+OM+sxA0MeYo30/hNfjOr+1h33TEPWpIE1JKfuf
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="303948734"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="303948734"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:51:10 -0700
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="640202481"
-Received: from jlaghzal-mobl1.ger.corp.intel.com ([10.252.32.175])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:51:08 -0700
-Date:   Tue, 14 Jun 2022 10:50:54 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>
-cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH] tty: Add closing marker into comment in tty_ldisc.h
-Message-ID: <9bc6d45d-48c8-519-1646-78ba22505b1f@linux.intel.com>
+        Tue, 14 Jun 2022 03:51:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B55440A29
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:51:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655193072;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uPRneHusWliPXCUnYK+9EGAAe+6/D9lx6nqXCclDon0=;
+        b=YtvBKDnoym0MKUUfrrqjEdCMU/0vISMzR5YGM5orPBHltcq0U1wbUiG9ad+jGA3/mJRgWx
+        f0LmmnQAM7IsGSQ7lhgkM4sj9XTDFHAJAZQ6DWT2M0FgfDtuP390wYpmk4YKmil74ucQxa
+        gT8AGoD21wM3iWM+6ZK+EUFTCDos8RE=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-593-FL1vMY2WNwmniicMXLZRVA-1; Tue, 14 Jun 2022 03:51:10 -0400
+X-MC-Unique: FL1vMY2WNwmniicMXLZRVA-1
+Received: by mail-ej1-f71.google.com with SMTP id fp4-20020a1709069e0400b00711911cecf9so2519936ejc.3
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:51:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uPRneHusWliPXCUnYK+9EGAAe+6/D9lx6nqXCclDon0=;
+        b=ASrNLNZa4XUMiYhYYMwJfePtS5APlRxzT3G6E4xvj1e/vH52d5i3wcd39WtQIMG3ep
+         Ra2igYJ4Qr2+I2xP6T8ol4QKQXLIuwnqDy9IlG6einoY98ipazCylDZBIRUZYlgtBIQQ
+         LwB52MXso6hNXd1fFVVgi8ti2NjlTDdwdAccTRSlHjn/VHj/WrI9HTsrNsMZCl17haJa
+         oODUR8H7rCUQkIfjYvUOGnbCYfq8gVFON9rnJKh2SwaAMB+G8IQBEBEIflU72OSZ8i0Z
+         KMPildslg322wHVI28Q6azlc16Bci962kpKf6pkWHhrlKzHDX0eb4MVSTBk5UsbLHSpQ
+         HDQA==
+X-Gm-Message-State: AOAM530CKqPjamFPGRz9Ii08eUmvCoNW0FF0nq6CAIxiDmoRloT5zeXX
+        6Lbs5J/GJ1lA4v+Nee651m7WF/BBUH74UeTf8RO87LXogiVy2bY054Y8wSStYA77+93l5KQ/quS
+        Bj3lIn2gCDz20vnTPZhsiCyiD
+X-Received: by 2002:a17:906:dff9:b0:6ff:2f22:7d0 with SMTP id lc25-20020a170906dff900b006ff2f2207d0mr3047023ejc.198.1655193069523;
+        Tue, 14 Jun 2022 00:51:09 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxYEBUBc3BcXt1o4i05+IBpQ9wsv7cQh/xs3361eCZbAaltmofH+eb4wYomMNNzbwzZC/8iMg==
+X-Received: by 2002:a17:906:dff9:b0:6ff:2f22:7d0 with SMTP id lc25-20020a170906dff900b006ff2f2207d0mr3047008ejc.198.1655193069312;
+        Tue, 14 Jun 2022 00:51:09 -0700 (PDT)
+Received: from gator (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
+        by smtp.gmail.com with ESMTPSA id m26-20020a056402051a00b0042dd2f2bec7sm6539259edv.56.2022.06.14.00.51.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 00:51:08 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 09:51:06 +0200
+From:   Andrew Jones <drjones@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/4] KVM: selftests: Fixups for overhaul
+Message-ID: <20220614075106.463oqkerlaximxfl@gator>
+References: <20220613161942.1586791-1-seanjc@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1457515282-1655193070=:1605"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613161942.1586791-1-seanjc@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Mon, Jun 13, 2022 at 04:19:38PM +0000, Sean Christopherson wrote:
+> Fixups for the overhaul, all of which come from Drew's code review.  The
+> first three should all squash cleanly, but the kvm_check_cap() patch will
+> not due to crossing the TEST_REQUIRE() boundary.
+> 
+> Sean Christopherson (4):
+>   KVM: selftests: Add a missing apostrophe in comment to show ownership
+>   KVM: selftests: Call a dummy helper in VM/vCPU ioctls() to enforce
+>     type
+>   KVM: selftests: Drop a duplicate TEST_ASSERT() in
+>     vm_nr_pages_required()
+>   KVM: selftests: Use kvm_has_cap(), not kvm_check_cap(), where possible
+> 
+>  .../testing/selftests/kvm/aarch64/psci_test.c |  2 +-
+>  .../selftests/kvm/include/kvm_util_base.h     | 57 ++++++++++---------
+>  tools/testing/selftests/kvm/lib/kvm_util.c    |  6 +-
+>  .../selftests/kvm/lib/x86_64/processor.c      |  4 +-
+>  .../selftests/kvm/s390x/sync_regs_test.c      |  2 +-
+>  .../kvm/x86_64/pmu_event_filter_test.c        |  2 +-
+>  .../selftests/kvm/x86_64/sev_migrate_tests.c  |  6 +-
+>  tools/testing/selftests/kvm/x86_64/smm_test.c |  2 +-
+>  .../testing/selftests/kvm/x86_64/state_test.c |  2 +-
+>  9 files changed, 42 insertions(+), 41 deletions(-)
+> 
+> 
+> base-commit: 8baacf67c76c560fed954ac972b63e6e59a6fba0
+> -- 
+> 2.36.1.476.g0c4daa206d-goog
+>
 
---8323329-1457515282-1655193070=:1605
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+All these patches look good to me. For the series
 
-The closing `` is missing. Add it.
+Reviewed-by: Andrew Jones <drjones@redhat.com>
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Fixes: 6bb6fa6908eb ("tty: Implement lookahead to process XON/XOFF timely")
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+There's still one more comment I made on the overhaul though, which
+is that the expressions using i and j in kvm_binary_stats_test.c
+for the vcpus and vcpu_stat_test indices have i and j swapped.
 
----
- include/linux/tty_ldisc.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks,
+drew
 
-diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
-index 33678e1936f6..ede6f2157f32 100644
---- a/include/linux/tty_ldisc.h
-+++ b/include/linux/tty_ldisc.h
-@@ -187,7 +187,7 @@ int ldsem_down_write_nested(struct ld_semaphore *sem, int subclass,
-  *	function for automatic flow control.
-  *
-  * @lookahead_buf: [DRV] ``void ()(struct tty_struct *tty,
-- *			const unsigned char *cp, const char *fp, int count)
-+ *			const unsigned char *cp, const char *fp, int count)``
-  *
-  *	This function is called by the low-level tty driver for characters
-  *	not eaten by ->receive_buf() or ->receive_buf2(). It is useful for
-
--- 
-tg: (65534736d9a5..) ldisc/comment-fix (depends on: tty-next)
---8323329-1457515282-1655193070=:1605--
