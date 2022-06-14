@@ -2,158 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32510C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 05:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B17FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 05:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237279AbiFNFMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 01:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
+        id S237636AbiFNFPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 01:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232090AbiFNFMc (ORCPT
+        with ESMTP id S230137AbiFNFPx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 01:12:32 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C8D6565
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 22:12:30 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o0yqh-0003ck-Kn; Tue, 14 Jun 2022 07:12:19 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o0yqf-0001gw-Gs; Tue, 14 Jun 2022 07:12:17 +0200
-Date:   Tue, 14 Jun 2022 07:12:17 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
-Message-ID: <20220614051217.GC4536@pengutronix.de>
-References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
- <YqS+zYHf6eHMWJlD@lunn.ch>
- <20220613125552.GA4536@pengutronix.de>
- <YqdQJepq3Klvr5n5@lunn.ch>
+        Tue, 14 Jun 2022 01:15:53 -0400
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 699F818383;
+        Mon, 13 Jun 2022 22:15:52 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id n185so4001272wmn.4;
+        Mon, 13 Jun 2022 22:15:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=BKPCEej7XNpKZCmWUzCvozlUOdtWySqWwvAYCO0M4ug=;
+        b=GfCawZYyLSZcNEaa6FkhKokBg4n6tSFGhDXfVAuFYecVaM4Q1fYLt9Rkp6pJQBBSt6
+         T+rzaX1zKeupHqjmLA2DVR4pCmvYlvSWT3d/5tAyDaXVDnbyUBVTjmEk7l5ZdrIzTtV5
+         XUIaRn43WP46OtZxDygBJ9t8uRktz9cN7ehYFTf07B3BTPSKUL7ra7zld3hkWCIYd4A8
+         XbUodL+FVKKvwhOZ2iZiWZvFabOyeAqIseGLtZt6LPFpGwu2gSoiXssxHIkJIlskmRQX
+         kM64KiKzMJytz5fD28WuXXC1RXB+x2MEN0zcZ3kbmFUSfBFZzJHpKtsWqdoGoZk3q0ej
+         NUjQ==
+X-Gm-Message-State: AOAM533H/bvL59A/fzhevNt4JaZvXR059Mq+nbZDXnKllhTzYD9kvB/H
+        oQGSke3mKu3jlfUjnRcx8e1BDdADKEhCdA==
+X-Google-Smtp-Source: ABdhPJwUBl/sB3fsDVIR+RwP9lapXhzMNi9BnuL0kim5pq2+MZneitk7qs+SsvWOlrYy9e99M78qvQ==
+X-Received: by 2002:a05:600c:3510:b0:39c:7fe7:cbd3 with SMTP id h16-20020a05600c351000b0039c7fe7cbd3mr2143641wmq.191.1655183750835;
+        Mon, 13 Jun 2022 22:15:50 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id ay4-20020a5d6f04000000b00219b391c2d2sm12741996wrb.36.2022.06.13.22.15.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 22:15:49 -0700 (PDT)
+Message-ID: <297b268a-85de-bc8c-88eb-b8d050ac1ec3@kernel.org>
+Date:   Tue, 14 Jun 2022 07:15:48 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YqdQJepq3Klvr5n5@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [BUG] rockpro64 board hangs in console_init() after commit
+ 10e14073107d
+Content-Language: en-US
+To:     Alexandru Elisei <alexandru.elisei@arm.com>,
+        sunjunchao2870@gmail.com, jack@suse.cz, viro@zeniv.linux.org.uk,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pmladek@suse.com, senozhatsky@chromium.org, rostedt@goodmis.org,
+        john.ogness@linutronix.de, keescook@chromium.org, anton@enomsg.org,
+        ccross@android.com, tony.luck@intel.com, heiko@sntech.de,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, maco@android.com, hch@lst.de,
+        gregkh@linuxfoundation.org
+References: <Yqdry+IghSWnJ6pe@monolith.localdoman>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <Yqdry+IghSWnJ6pe@monolith.localdoman>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 04:56:37PM +0200, Andrew Lunn wrote:
-> > If I see it correctly, there is no way to notify about remote fault when
-> > the link is up. The remote fault bit is transferred withing Link Code
-> > Word as part of FLP burst. At least in this part of specification.
-> 
-> Thanks for looking at the specification. So ksetting does seem like
-> the right API.
-> 
-> Sorry, i won't have time to look at the specification until tomorrow.
-> The next question is, is it a separate value, or as more link mode
-> bits? Or a mixture of both? 
+On 13. 06. 22, 18:54, Alexandru Elisei wrote:
+> I've booted a kernel compiled with CONFIG_PROVE_LOCKING=y, as the offending
+> commit fiddles with locks, but no splat was produced that would explain the
+> hang.
 
-It is the bit D13 within Base Link Codeword as described in "28.2.1.2
-Link codeword encoding". Every PHY will send or receive it, but may be
-not every PHY will allow to set this bit.
+It's too early for lockdep. Could you try to move lockdep_init() before 
+console_init() in start_kernel()?
 
-The actual error value can be optionally transmitted separately withing the
-"Next Page".
+You'd need to use early console (which you already do).
 
-> Is there a capability bit somewhere to indicate this PHY can advertise a
-> remote fault?
-
-No, it is not part of the "Technology Ability Filed". It is more like a state
-bit.
-
-Potentially some PHY may set it witout some PHY may do it without
-software:
-28.2.2 Receive function requirements
-...
-If any other technology-dependent PMA indicates link_status=READY when
-the autoneg_wait_timer expires, Auto-Negotiation will not allow any data
-service to be enabled and may signal this as a remote fault to the Link
-Partner using the Base Page and will flag this in the Local Device by
-setting the Parallel Detection Fault bit (6.4) in the Auto-Negotiation
-expansion register.
-
-> That would suggest we  want a ETHTOOL_LINK_MODE_REMOTE_FAULT_BIT, which we
-> can set in supported and maybe see in lpa?
-
-No. We can see if it is supported only if it is already in fault state.
-
-> Set it in advertising when indicating  a fault. The actual fault value could
-> then be in a separate value which gets written to the extended page?
-
-correct.
-
-> Does 802.3 allow a remote fault to be indicated but without the reason?
-
-yes.
-
-> > So receiving remote fault information via linkstate and send remote fault via
-> > ksetting?
-> 
-> We could also just broadcast the results of a ksetting get to
-> userspace?
-
-by using ethnl_multicast()? I it something what should be implemented?
-
-> I don't have easy access to a machine at the moment. What does
-> 
-> ip monitor all
-> 
-> show when a link is configured up, but autoneg fails? And when autoneg
-> is successful but indicates a remote fault? Are there any existing
-> messages sent to userspace?
-
-Hm, currently i get only link state changes:
-
-[LINK]4: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default 
-    link/ether 18:74:e2:a0:00:a3 brd ff:ff:ff:ff:ff:ff
-[NEIGH]Deleted ff02::16 dev eth1 lladdr 33:33:00:00:00:16 NOARP
-[NEIGH]Deleted ff02::1:3 dev eth1 lladdr 33:33:00:01:00:03 NOARP
-[LINK]4: eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc fq_codel state DOWN group default 
-    link/ether 18:74:e2:a0:00:a3 brd ff:ff:ff:ff:ff:ff
-[LINK]4: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default 
-    link/ether 18:74:e2:a0:00:a3 brd ff:ff:ff:ff:ff:ff
-[LINK]5: eth2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default 
-    link/ether 18:74:e2:a0:00:a8 brd ff:ff:ff:ff:ff:ff
-
-> > The next logical question is, if a remote fault is RX'ed (potentially with a
-> > reason) who will react on this. There might be different policies on how to
-> > react on same reason.
-> 
-> Policy goes in userspace, is the general rule.
-
-ack
-
-> The only exception might be, if we decide to make use of one of these
-> to silence the link to allow cabling testing. We probably want the
-> kernel to try to do that.
-
-ack :)
-
-Regards
-Oleksij
+thanks,
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+js
+suse labs
