@@ -2,69 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00ABECCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356955AbiFNPiu (ORCPT
+        id S1356891AbiFNPk2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 11:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
+        Tue, 14 Jun 2022 11:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242882AbiFNPiY (ORCPT
+        with ESMTP id S235793AbiFNPk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 11:38:24 -0400
-Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0399613D3C;
-        Tue, 14 Jun 2022 08:38:20 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1655221096; bh=RmavVAoVYeGxudvyKfhDPXiP4081rt8/4kJVo2A95ck=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To;
-        b=CJuud0WPMFwl+lsLOeGuCnvxRKYRyja73F9uU9itkZOXdV46hNuVD+kNR92io3RhB
-         H6pU7s/V9DJGaGPisvuSVtyviH1WiZkFQiStfyFUPkpJ3n5V9PdeF7AED/GP9Q4L6t
-         U+sipF4LUfVPAmJ+dPNHuCKPfGicu/kszNyZhnMw=
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH] dt-bindings: dma: apple,admac: Fix example interrupt
- parsing
-From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>
-In-Reply-To: <20220614152503.1410755-1-robh@kernel.org>
-Date:   Tue, 14 Jun 2022 17:38:15 +0200
-Cc:     Vinod Koul <vkoul@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <6F273631-05A0-4766-BB5D-BD056D1BFEDB@cutebit.org>
-References: <20220614152503.1410755-1-robh@kernel.org>
-To:     Rob Herring <robh@kernel.org>
+        Tue, 14 Jun 2022 11:40:26 -0400
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D9931363;
+        Tue, 14 Jun 2022 08:40:25 -0700 (PDT)
+Received: by mail-qk1-f170.google.com with SMTP id 15so6645453qki.6;
+        Tue, 14 Jun 2022 08:40:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tt+Cu2SuK6f2NZEo5x0BH6Qhmkr9WhlYq2XBsQ2WpNs=;
+        b=g2u4rmOj2s3/hbbbSvjP4CvAcAQm+g0pqpSUCGG6MV/qeJiNGjlgNNsC+Ul9FAVLky
+         dMuzHFg36RWh1J3r/hlUXG0rpxdgjL/q+A/Rkbw95xOI6qtWuIA5S9ew+fPO3t8+voxQ
+         lKBImXDeeLmp08bgPPfxgqmniCqKsmjGo7/uZi5lA15iP0jqnzO4gPOVBP1ukeLPK2uU
+         feCOjfUAkBE7pMZ3Nwia/4cVKdLyZRqvRU9IKQsk5f0x8kuIifaa/tp3Q9pR2QIc2QdS
+         XVA2b2I8chp1pDVt5aaQWDvc4d+nSNEz4GKlXZRL7SbJuSZ4/grdG1fs5SnoBYBEVWNF
+         pmDg==
+X-Gm-Message-State: AOAM530oswoMWj3oLdkmvYY7HLYOU5BMrm6Qnv3tboWPQGDsxKwQFO20
+        49aC8HOoHC9ufuaBLWmPgTXATYOCfdzimg==
+X-Google-Smtp-Source: ABdhPJxwbQzRJUfd3gguGGFd+FT03oYX6suLbM8cygcvkgohlwAsH+tJVgCDlYbxyyU0bBHzKqnoEw==
+X-Received: by 2002:a05:620a:46a4:b0:6a6:f528:e2e0 with SMTP id bq36-20020a05620a46a400b006a6f528e2e0mr4533932qkb.208.1655221224459;
+        Tue, 14 Jun 2022 08:40:24 -0700 (PDT)
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
+        by smtp.gmail.com with ESMTPSA id v18-20020a05622a015200b0030509559d1fsm7510634qtw.30.2022.06.14.08.40.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 08:40:24 -0700 (PDT)
+Received: by mail-yb1-f175.google.com with SMTP id w2so15806002ybi.7;
+        Tue, 14 Jun 2022 08:40:24 -0700 (PDT)
+X-Received: by 2002:a05:6902:a:b0:65c:b38e:6d9f with SMTP id
+ l10-20020a056902000a00b0065cb38e6d9fmr5886189ybh.36.1655221223744; Tue, 14
+ Jun 2022 08:40:23 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220614094937.8104-1-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20220614094937.8104-1-wsa+renesas@sang-engineering.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 14 Jun 2022 17:40:12 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXNhy5LfmM73gR0LzoJndqE8RmTZY4QvMZF9oH1tBn_3g@mail.gmail.com>
+Message-ID: <CAMuHMdXNhy5LfmM73gR0LzoJndqE8RmTZY4QvMZF9oH1tBn_3g@mail.gmail.com>
+Subject: Re: [PATCH v2] clk: renesas: r8a779f0: Add HSCIF clocks
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 14, 2022 at 11:49 AM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>
+> Change since v1: include all HSCIF
 
-> On 14. 6. 2022, at 17:25, Rob Herring <robh@kernel.org> wrote:
->=20
-> Commit 873971f8fb08 ("dt-bindings: dma: Add Apple ADMAC") has a =
-warning
-> in its example:
->=20
-> Documentation/devicetree/bindings/dma/apple,admac.example.dtb: =
-dma-controller@238200000: interrupts-extended: [[0], [4294967295, 0, =
-626, 4, 0, 0]] is too short
-> 	=46rom schema: =
-/builds/robherring/linux-dt/Documentation/devicetree/bindings/dma/apple,ad=
-mac.yaml
->=20
-> The problem is the number of interrupt cells can't be guessed when
-> there are empty '0' entries. So the example must have a valid =
-interrupt
-> controller defining the number of interrupt cells.
->=20
-> Fixes: 873971f8fb08 ("dt-bindings: dma: Add Apple ADMAC")
-> Signed-off-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-clk-for-v5.20.
 
-Thanks,
+Gr{oetje,eeting}s,
 
-Acked-by: Martin Povi=C5=A1er <povik+lin@cutebit.org>
+                        Geert
 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
