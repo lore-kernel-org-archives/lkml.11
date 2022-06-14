@@ -2,204 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E61C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEE1DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344576AbiFNRjs (ORCPT
+        id S1344782AbiFNRj6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 13:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59468 "EHLO
+        Tue, 14 Jun 2022 13:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbiFNRjq (ORCPT
+        with ESMTP id S1344635AbiFNRjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 13:39:46 -0400
-Received: from m12-16.163.com (m12-16.163.com [220.181.12.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ACFF82F392;
-        Tue, 14 Jun 2022 10:39:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=tBft+
-        6OhZ/b2Qz4O56w3YCLVWjSYnEQHApx3Jpz4vhU=; b=Vz61HdMQaHcEqQ6XxA7hU
-        KGVO5JjmimJkjUQzAoEeMG55PFziYeMDxRPl7ouSAO0NqXtLGrvWRJKnKJYJXa4G
-        2JSoeSUOuP4CLSKpfkwF7zUFTHzYcNpeFiYedIyTVEep7QdEaaX38qoviDIesFiA
-        0g3hGNhWi50WyBfNVP7E6E=
-Received: from localhost.localdomain (unknown [113.200.174.72])
-        by smtp12 (Coremail) with SMTP id EMCowABn5EKqx6hi7X07AQ--.28292S4;
-        Wed, 15 Jun 2022 01:39:14 +0800 (CST)
-From:   Wentao_Liang <Wentao_Liang_g@163.com>
-To:     jdmason@kudzu.us, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wentao_Liang <Wentao_Liang_g@163.com>
-Subject: [PATCH] [PATCH net v2]vexy: Fix a use-after-free bug in vxge-main.c
-Date:   Wed, 15 Jun 2022 09:38:16 +0800
-Message-Id: <20220615013816.6593-1-Wentao_Liang_g@163.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 14 Jun 2022 13:39:55 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE3CF2F64E
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:39:53 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1o1AVr-0005KQ-66; Tue, 14 Jun 2022 19:39:35 +0200
+Message-ID: <c2034c030333f89e0ac7d86c906dd222cc151d52.camel@pengutronix.de>
+Subject: Re: [PATCH 0/8] interconnect: support i.MX8MP
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Peng Fan <peng.fan@nxp.com>,
+        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
+        "djakov@kernel.org" <djakov@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>, Abel Vesa <abel.vesa@nxp.com>,
+        "abailon@baylibre.com" <abailon@baylibre.com>,
+        "laurent.pinchart@ideasonboard.com" 
+        <laurent.pinchart@ideasonboard.com>,
+        "marex@denx.de" <marex@denx.de>,
+        "paul.elder@ideasonboard.com" <paul.elder@ideasonboard.com>,
+        "Markus.Niebel@ew.tq-group.com" <Markus.Niebel@ew.tq-group.com>,
+        "aford173@gmail.com" <aford173@gmail.com>
+Cc:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Date:   Tue, 14 Jun 2022 19:39:33 +0200
+In-Reply-To: <DU0PR04MB941799547BD863444C6F268D88AB9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+References: <20220601094156.3388454-1-peng.fan@oss.nxp.com>
+         <DU0PR04MB941799547BD863444C6F268D88AB9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EMCowABn5EKqx6hi7X07AQ--.28292S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW3Gry3ZF4kWF1xXrykGF1rJFb_yoWxArW7pr
-        yktFyxW3y8tryUJr18Arn8ZFs8tryDua1DJrn7Gr15JF15Cw1Utr1UJryDXr98CrWjyF43
-        Jrn5Xw4Fvr1UJaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UUDGOUUUUU=
-X-Originating-IP: [113.200.174.72]
-X-CM-SenderInfo: xzhq3t5rboxtpqjbwqqrwthudrp/xtbBOQIgL1-PN8LWQwAAsE
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pointer vdev points to a memory region adjacent to a net_device
-structure ndev, which is a field of hldev. At line 4740, the invocation
-to vxge_device_unregister unregisters device hldev, and it also releases
-the memory region pointed by vdev->bar0. At line 4743, the freed memory
-region is referenced (i.e., iounmap(vdev->bar0)), resulting in a
-use-after-free vulnerability. We can fix the bug by calling iounmap
-before vxge_device_unregister.
+Hi Peng,
 
-4721.      static void vxge_remove(struct pci_dev *pdev)
-4722.      {
-4723.             struct __vxge_hw_device *hldev;
-4724.             struct vxgedev *vdev;
-…
-4731.             vdev = netdev_priv(hldev->ndev);
-…
-4740.             vxge_device_unregister(hldev);
-4741.             /* Do not call pci_disable_sriov here, as it
-						will break child devices */
-4742.             vxge_hw_device_terminate(hldev);
-4743.             iounmap(vdev->bar0);
-…
-4749              vxge_debug_init(vdev->level_trace, "%s:%d
-								Device unregistered",
-4750                            __func__, __LINE__);
-4751              vxge_debug_entryexit(vdev->level_trace, "%s:%d
-								Exiting...", __func__,
-4752                          __LINE__);
-4753.      }
+Am Montag, dem 13.06.2022 um 01:23 +0000 schrieb Peng Fan:
+> All,
+> 
+> > Subject: [PATCH 0/8] interconnect: support i.MX8MP
+> 
+> I am going to send out V2 this week to address the comments until now.
+> But before that I would like to see if any one has any comments on the
+> design here.
+> 
+> Georgi, do you have comments on Patch 2 " interconnect: add device
+> managed bulk API"
+> 
+> Lucas, since you had comments when I first use syscon to configure NoC,
+> are you ok with the design to use interconnect in this patchset?
+> 
+I'm still not 100% convinced that the blk-ctrl is the right consumer
+for the interconnect, since it doesn't do any busmastering. However,
+the design looks much better than the syscon based one.
 
-This is the screenshot when the vulnerability is triggered by using
-KASAN. We can see that there is a use-after-free reported by KASAN.
+I mostly worry about being able to extend this to do more than the
+current static configuration if/when NXP decides to release more
+information about the NoC configuration options or someone reverse
+engineers this part of the SoC. I still hope that we could optimize NoC
+usage by setting real bandwidth and latency limits for the devices
+connected to the NoC. As the blk-ctrl doesn't have any clue about this
+right now, we can't really set any more specific requests than the
+current INT_MAX ones.
+I guess we could extend things in this way by making the blk-ctrl not
+only be a simple consumer of the interconnect, but aggregate requests
+from the devices in the blk-ctrl domain and forward them to the NOC
+provider, right?
 
-/***************************start**************************/
+Regards,
+Lucas
 
-root@kernel:~# echo 1 > /sys/bus/pci/devices/0000:00:03.0/remove
-[  178.296316] vxge_remove
-[  182.057081]
- ==================================================================
-[  182.057548] BUG: KASAN: use-after-free in vxge_remove+0xe0/0x15c
-[  182.057760] Read of size 8 at addr ffff888006c76598 by task bash/119
-[  182.057983]
-[  182.058747] CPU: 0 PID: 119 Comm: bash Not tainted 5.18.0 #5
-[  182.058919] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-[  182.059463] Call Trace:
-[  182.059726]  <TASK>
-[  182.060017]  dump_stack_lvl+0x34/0x44
-[  182.060316]  print_report.cold+0xb2/0x6b7
-[  182.060401]  ? kfree+0x89/0x290
-[  182.060478]  ? vxge_remove+0xe0/0x15c
-[  182.060545]  kasan_report+0xa9/0x120
-[  182.060629]  ? vxge_remove+0xe0/0x15c
-[  182.060706]  vxge_remove+0xe0/0x15c
-[  182.060793]  pci_device_remove+0x5d/0xe0
-[  182.060968]  device_release_driver_internal+0xf1/0x180
-[  182.061063]  pci_stop_bus_device+0xae/0xe0
-[  182.061150]  pci_stop_and_remove_bus_device_locked+0x11/0x20
-[  182.061236]  remove_store+0xc6/0xe0
-[  182.061297]  ? subordinate_bus_number_show+0xc0/0xc0
-[  182.061359]  ? __mutex_lock_slowpath+0x10/0x10
-[  182.061438]  ? sysfs_kf_write+0x6d/0xa0
-[  182.061525]  kernfs_fop_write_iter+0x1b0/0x260
-[  182.061610]  ? sysfs_kf_bin_read+0xf0/0xf0
-[  182.061695]  new_sync_write+0x209/0x310
-[  182.061789]  ? new_sync_read+0x310/0x310
-[  182.061865]  ? cgroup_rstat_updated+0x5c/0x170
-[  182.061937]  ? preempt_count_sub+0xf/0xb0
-[  182.061995]  ? pick_next_entity+0x13a/0x220
-[  182.062063]  ? __inode_security_revalidate+0x44/0x80
-[  182.062155]  ? security_file_permission+0x46/0x2a0
-[  182.062230]  vfs_write+0x33f/0x3e0
-[  182.062303]  ksys_write+0xb4/0x150
-[  182.062369]  ? __ia32_sys_read+0x40/0x40
-[  182.062451]  do_syscall_64+0x3b/0x90
-[  182.062531]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[  182.062894] RIP: 0033:0x7f3f37d17274
-[  182.063558] Code: 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b3 0f 1f
-80 00 00 00 00 48 8d 05 89 54 0d 00 8b 00 85 c0 75 13 b8 01 00 00 00 0f
-05 <48> 3d 00 f0 ff ff 77 54 c3 0f 1f 00 41 54 49 89 d4 55 48 89 f5 53
-[  182.063797] RSP: 002b:00007ffd5ba9e178 EFLAGS: 00000246
-ORIG_RAX: 0000000000000001
-[  182.064117] RAX: ffffffffffffffda RBX: 0000000000000002
-RCX: 00007f3f37d17274
-[  182.064219] RDX: 0000000000000002 RSI: 000055bbec327180
-RDI: 0000000000000001
-[  182.064315] RBP: 000055bbec327180 R08: 000000000000000a
-R09: 00007f3f37de7cf0
-[  182.064414] R10: 000000000000000a R11: 0000000000000246
-R12: 00007f3f37de8760
-[  182.064513] R13: 0000000000000002 R14: 00007f3f37de3760
-R15: 0000000000000002
-[  182.064691]  </TASK>
-[  182.064916]
-[  182.065224] The buggy address belongs to the physical page:
-[  182.065804] page:00000000ef31e4f4 refcount:0 mapcount:0
-mapping:0000000000000000 index:0x0 pfn:0x6c76
-[  182.067419] flags: 0x100000000000000(node=0|zone=1)
-[  182.068997] raw: 0100000000000000 0000000000000000
-ffffea00001b1d88 0000000000000000
-[  182.069118] raw: 0000000000000000 0000000000000000
-00000000ffffffff 0000000000000000
-[  182.069294] page dumped because: kasan: bad access detected
-[  182.069331]
-[  182.069360] Memory state around the buggy address:
-[  182.070006]  ffff888006c76480: ff ff ff ff ff ff ff ff ff ff ff
- ff ff ff ff ff
-[  182.070136]  ffff888006c76500: ff ff ff ff ff ff ff ff ff ff ff
- ff ff ff ff ff
-[  182.070230] >ffff888006c76580: ff ff ff ff ff ff ff ff ff ff ff
- ff ff ff ff ff
-[  182.070305]                             ^
-[  182.070456]  ffff888006c76600: ff ff ff ff ff ff ff ff ff ff ff
- ff ff ff ff ff
-[  182.070505]  ffff888006c76680: ff ff ff ff ff ff ff ff ff ff ff
- ff ff ff ff ff
-[  182.070606]
-==================================================================
-[  182.071374] Disabling lock debugging due to kernel taint
+> Thanks,
+> Peng.
+> 
+> > 
+> > From: Peng Fan <peng.fan@nxp.com>
+> > 
+> > This patchset is to support i.MX8MP NoC settings, i.MX8MP NoC initial value
+> > after power up is invalid, need set a valid value after related power domain up.
+> > 
+> > This patchset also includes two patch[1,2] during my development to enable the
+> > ICC feature for i.MX8MP.
+> > 
+> > I not include ddrc DVFS in this patchset, ths patchset is only to support NoC
+> > value mode/priority/ext_control being set to a valid value that suggested by
+> > i.MX Chip Design Team. The value is same as NXP downstream one inside Arm
+> > Trusted Firmware:
+> > https://source.codeaurora.org/external/imx/imx-atf/tree/plat/imx/imx8m/imx
+> > 8mp/gpc.c?h=lf_v2.4#n97
+> > 
+> > A repo created here:
+> > https://github.com/MrVan/linux/tree/imx8mp-interconnect
+> > 
+> > Peng Fan (8):
+> >   dt-bindings: interconnect: imx8m: Add bindings for imx8mp noc
+> >   interconnect: add device managed bulk API
+> >   interconnect: imx: fix max_node_id
+> >   interconnect: imx: set src node
+> >   interconnect: imx: introduce imx_icc_provider
+> >   interconnect: imx: set of_node for interconnect provider
+> >   interconnect: imx: configure NoC mode/prioriry/ext_control
+> >   interconnect: imx: Add platform driver for imx8mp
+> > 
+> >  .../bindings/interconnect/fsl,imx8m-noc.yaml  |   6 +
+> >  drivers/interconnect/bulk.c                   |  34 +++
+> >  drivers/interconnect/imx/Kconfig              |   4 +
+> >  drivers/interconnect/imx/Makefile             |   2 +
+> >  drivers/interconnect/imx/imx.c                |  68 +++--
+> >  drivers/interconnect/imx/imx.h                |  25 +-
+> >  drivers/interconnect/imx/imx8mm.c             |   2 +-
+> >  drivers/interconnect/imx/imx8mn.c             |   2 +-
+> >  drivers/interconnect/imx/imx8mp.c             | 232
+> > ++++++++++++++++++
+> >  drivers/interconnect/imx/imx8mq.c             |   2 +-
+> >  include/dt-bindings/interconnect/fsl,imx8mp.h |  59 +++++
+> >  include/linux/interconnect.h                  |   6 +
+> >  12 files changed, 424 insertions(+), 18 deletions(-)  create mode 100644
+> > drivers/interconnect/imx/imx8mp.c  create mode 100644
+> > include/dt-bindings/interconnect/fsl,imx8mp.h
+> > 
+> > --
+> > 2.25.1
+> 
 
-/*****************************end*****************************/
-
-After fixing the bug as done in the patch, we can find KASAN do not report
- the bug and the device(00:03.0) has been successfully removed.
-
-/*****************************start***************************/
-
-root@kernel:~# echo 1 > /sys/bus/pci/devices/0000:00:03.0/remove
-root@kernel:~#
-
-/******************************end****************************/
-
-Signed-off-by: Wentao_Liang <Wentao_Liang_g@163.com>
----
- drivers/net/ethernet/neterion/vxge/vxge-main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-index fa5d4ddf429b..092fd0ae5831 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-@@ -4736,10 +4736,10 @@ static void vxge_remove(struct pci_dev *pdev)
- 	for (i = 0; i < vdev->no_of_vpath; i++)
- 		vxge_free_mac_add_list(&vdev->vpaths[i]);
- 
-+	iounmap(vdev->bar0);
- 	vxge_device_unregister(hldev);
- 	/* Do not call pci_disable_sriov here, as it will break child devices */
- 	vxge_hw_device_terminate(hldev);
--	iounmap(vdev->bar0);
- 	pci_release_region(pdev, 0);
- 	pci_disable_device(pdev);
- 	driver_config->config_dev_cnt--;
--- 
-2.25.1
 
