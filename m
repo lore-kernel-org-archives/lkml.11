@@ -2,264 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1EEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D367C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:52:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242191AbiFNIwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56624 "EHLO
+        id S1355582AbiFNIw3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 04:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355885AbiFNIwH (ORCPT
+        with ESMTP id S242394AbiFNIw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:52:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8117411150;
-        Tue, 14 Jun 2022 01:52:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FE2D615C2;
-        Tue, 14 Jun 2022 08:52:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09CE4C3411B;
-        Tue, 14 Jun 2022 08:52:02 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=fail reason="signature verification failed" (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LfnjhtmL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1655196721;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=B2xDEdNqmbwK9AdKE/CfOp4wsg/JUUOfGXnBtaOy46Y=;
-        b=LfnjhtmLNTArxab1ojHQSImIE1hqgFRXT0Y2dn53z1viqnLOQwRtnUvP8ldc56JN0TTmzf
-        ppX8hLgS2R0ZrjHA08wauqpdge7dtGL3zAIrdLd44QQPva7pJtk2NLkwD0XpYZEA8wEZVH
-        tfW98MO5wsASWwGL157mclN7l8i4I98=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4489608a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 14 Jun 2022 08:52:00 +0000 (UTC)
-Date:   Tue, 14 Jun 2022 10:51:57 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.17 37/43] random: credit cpu and bootloader
- seeds by default
-Message-ID: <YqhMLdFUi9ioVuam@zx2c4.com>
-References: <20220614020602.1098943-1-sashal@kernel.org>
- <20220614020602.1098943-37-sashal@kernel.org>
+        Tue, 14 Jun 2022 04:52:27 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962591054B
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:52:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655196744; x=1686732744;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=CK8MCnDGnqao3wbtn/IeDD8MXCitwD0hYvxOBcSBQ7A=;
+  b=mKlNKv5J7V1wscHArv38v9lEJgnwl/Jjb4pSRMhxMfF38XSLPgsMyohg
+   B+tIbVDmD6rMheYgCewpzt4yoVpkWDeQJFAsLBxUV/A2KpHyzFVBBCsW2
+   A1VDTYDaKfPC4nh4+Lx4vCOejQGFtWGmUlU6be3rSwiAGPgXzOCy8tXfY
+   Lh4v3Hi+or5fCE5iE5557dJa3IvijvEdj0K3qQcKSm6PHIreY+z9CRH+2
+   HQJWazjZMtiKOmJZKz7qsdgxwQVnwxHY+9i9VMq639vX0L6/0OjmjDjp6
+   YmIy1atrX5cqQUC/ShE2qHQ4stLkMjaGPdh9e72Yy4Sk/Lwh+6nd5ZGeN
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="279273635"
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="279273635"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:52:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="686553902"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 14 Jun 2022 01:52:22 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o12Hd-000LgZ-MI;
+        Tue, 14 Jun 2022 08:52:21 +0000
+Date:   Tue, 14 Jun 2022 16:51:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     =?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: arch/powerpc/kvm/book3s_pr.c:660:22: sparse: sparse: cast to
+ restricted __be32
+Message-ID: <202206141636.NE1lb4tT-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220614020602.1098943-37-sashal@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sasha,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
+commit: cb53a93e33e108bfec00a13cd12696e1c0ccc8b6 KVM: PPC: Book3S PR: Declare kvmppc_handle_exit_pr()
+date:   10 months ago
+config: powerpc64-randconfig-s032-20220613 (https://download.01.org/0day-ci/archive/20220614/202206141636.NE1lb4tT-lkp@intel.com/config)
+compiler: powerpc64le-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-30-g92122700-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=cb53a93e33e108bfec00a13cd12696e1c0ccc8b6
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout cb53a93e33e108bfec00a13cd12696e1c0ccc8b6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/kvm/ arch/powerpc/platforms/powernv/ kernel/sched/
 
-On Mon, Jun 13, 2022 at 10:05:56PM -0400, Sasha Levin wrote:
-> From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-> 
-> [ Upstream commit 846bb97e131d7938847963cca00657c995b1fce1 ]
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Two things regarding this commit:
 
-1) If you're going to AUTOSEL this for 5.18, 5.17, and 5.15, then you
-   also need to do the same for 5.10 also.
+sparse warnings: (new ones prefixed by >>)
+>> arch/powerpc/kvm/book3s_pr.c:660:22: sparse: sparse: cast to restricted __be32
+>> arch/powerpc/kvm/book3s_pr.c:661:33: sparse: sparse: invalid assignment: &=
+>> arch/powerpc/kvm/book3s_pr.c:661:33: sparse:    left side has type unsigned int
+>> arch/powerpc/kvm/book3s_pr.c:661:33: sparse:    right side has type restricted __be32
+   arch/powerpc/kvm/book3s_pr.c: note: in included file:
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:962:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] srr0 @@     got restricted __be64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:962:1: sparse:     expected unsigned long long [usertype] srr0
+   arch/powerpc/include/asm/kvm_ppc.h:962:1: sparse:     got restricted __be64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:962:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] srr0 @@     got restricted __le64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:962:1: sparse:     expected unsigned long long [usertype] srr0
+   arch/powerpc/include/asm/kvm_ppc.h:962:1: sparse:     got restricted __le64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:963:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] srr1 @@     got restricted __be64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:963:1: sparse:     expected unsigned long long [usertype] srr1
+   arch/powerpc/include/asm/kvm_ppc.h:963:1: sparse:     got restricted __be64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:963:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] srr1 @@     got restricted __le64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:963:1: sparse:     expected unsigned long long [usertype] srr1
+   arch/powerpc/include/asm/kvm_ppc.h:963:1: sparse:     got restricted __le64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:970:39: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] msr @@     got restricted __be64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:970:39: sparse:     expected unsigned long long [usertype] msr
+   arch/powerpc/include/asm/kvm_ppc.h:970:39: sparse:     got restricted __be64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:972:39: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] msr @@     got restricted __le64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:972:39: sparse:     expected unsigned long long [usertype] msr
+   arch/powerpc/include/asm/kvm_ppc.h:972:39: sparse:     got restricted __le64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:970:39: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] msr @@     got restricted __be64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:970:39: sparse:     expected unsigned long long [usertype] msr
+   arch/powerpc/include/asm/kvm_ppc.h:970:39: sparse:     got restricted __be64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:972:39: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] msr @@     got restricted __le64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:972:39: sparse:     expected unsigned long long [usertype] msr
+   arch/powerpc/include/asm/kvm_ppc.h:972:39: sparse:     got restricted __le64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] dar @@     got restricted __be64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse:     expected unsigned long long [usertype] dar
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse:     got restricted __be64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] dar @@     got restricted __le64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse:     expected unsigned long long [usertype] dar
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse:     got restricted __le64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] dar @@     got restricted __be64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse:     expected unsigned long long [usertype] dar
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse:     got restricted __be64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] dar @@     got restricted __le64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse:     expected unsigned long long [usertype] dar
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse:     got restricted __le64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:974:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] dsisr @@     got restricted __be32 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:974:1: sparse:     expected unsigned int [usertype] dsisr
+   arch/powerpc/include/asm/kvm_ppc.h:974:1: sparse:     got restricted __be32 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:974:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] dsisr @@     got restricted __le32 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:974:1: sparse:     expected unsigned int [usertype] dsisr
+   arch/powerpc/include/asm/kvm_ppc.h:974:1: sparse:     got restricted __le32 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] dar @@     got restricted __be64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse:     expected unsigned long long [usertype] dar
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse:     got restricted __be64 [usertype]
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [usertype] dar @@     got restricted __le64 [usertype] @@
+   arch/powerpc/include/asm/kvm_ppc.h:964:1: sparse:     expected unsigned long long [usertype] dar
 
-2) If you're going to pick this commit, please also pick its follow-up,
-   e052a478a7daeca67664f7addd308ff51dd40654, which likewise should apply
-   to all four versions.
+vim +660 arch/powerpc/kvm/book3s_pr.c
 
-Thanks,
-Jason
+f05ed4d56e9cff Paul Mackerras 2011-06-29  630  
+f05ed4d56e9cff Paul Mackerras 2011-06-29  631  /* Book3s_32 CPUs always have 32 bytes cache line size, which Linux assumes. To
+f05ed4d56e9cff Paul Mackerras 2011-06-29  632   * make Book3s_32 Linux work on Book3s_64, we have to make sure we trap dcbz to
+f05ed4d56e9cff Paul Mackerras 2011-06-29  633   * emulate 32 bytes dcbz length.
+f05ed4d56e9cff Paul Mackerras 2011-06-29  634   *
+f05ed4d56e9cff Paul Mackerras 2011-06-29  635   * The Book3s_64 inventors also realized this case and implemented a special bit
+f05ed4d56e9cff Paul Mackerras 2011-06-29  636   * in the HID5 register, which is a hypervisor ressource. Thus we can't use it.
+f05ed4d56e9cff Paul Mackerras 2011-06-29  637   *
+f05ed4d56e9cff Paul Mackerras 2011-06-29  638   * My approach here is to patch the dcbz instruction on executing pages.
+f05ed4d56e9cff Paul Mackerras 2011-06-29  639   */
+f05ed4d56e9cff Paul Mackerras 2011-06-29  640  static void kvmppc_patch_dcbz(struct kvm_vcpu *vcpu, struct kvmppc_pte *pte)
+f05ed4d56e9cff Paul Mackerras 2011-06-29  641  {
+f05ed4d56e9cff Paul Mackerras 2011-06-29  642  	struct page *hpage;
+f05ed4d56e9cff Paul Mackerras 2011-06-29  643  	u64 hpage_offset;
+f05ed4d56e9cff Paul Mackerras 2011-06-29  644  	u32 *page;
+f05ed4d56e9cff Paul Mackerras 2011-06-29  645  	int i;
+f05ed4d56e9cff Paul Mackerras 2011-06-29  646  
+f05ed4d56e9cff Paul Mackerras 2011-06-29  647  	hpage = gfn_to_page(vcpu->kvm, pte->raddr >> PAGE_SHIFT);
+32cad84f44d186 Xiao Guangrong 2012-08-03  648  	if (is_error_page(hpage))
+f05ed4d56e9cff Paul Mackerras 2011-06-29  649  		return;
+f05ed4d56e9cff Paul Mackerras 2011-06-29  650  
+f05ed4d56e9cff Paul Mackerras 2011-06-29  651  	hpage_offset = pte->raddr & ~PAGE_MASK;
+f05ed4d56e9cff Paul Mackerras 2011-06-29  652  	hpage_offset &= ~0xFFFULL;
+f05ed4d56e9cff Paul Mackerras 2011-06-29  653  	hpage_offset /= 4;
+f05ed4d56e9cff Paul Mackerras 2011-06-29  654  
+f05ed4d56e9cff Paul Mackerras 2011-06-29  655  	get_page(hpage);
+2480b2089210de Cong Wang      2011-11-25  656  	page = kmap_atomic(hpage);
+f05ed4d56e9cff Paul Mackerras 2011-06-29  657  
+f05ed4d56e9cff Paul Mackerras 2011-06-29  658  	/* patch dcbz into reserved instruction, so we trap */
+f05ed4d56e9cff Paul Mackerras 2011-06-29  659  	for (i=hpage_offset; i < hpage_offset + (HW_PAGE_SIZE / 4); i++)
+cd087eefe637d5 Alexander Graf 2014-04-24 @660  		if ((be32_to_cpu(page[i]) & 0xff0007ff) == INS_DCBZ)
+cd087eefe637d5 Alexander Graf 2014-04-24 @661  			page[i] &= cpu_to_be32(0xfffffff7);
+f05ed4d56e9cff Paul Mackerras 2011-06-29  662  
+2480b2089210de Cong Wang      2011-11-25  663  	kunmap_atomic(page);
+f05ed4d56e9cff Paul Mackerras 2011-06-29  664  	put_page(hpage);
+f05ed4d56e9cff Paul Mackerras 2011-06-29  665  }
+f05ed4d56e9cff Paul Mackerras 2011-06-29  666  
 
-> 
-> This commit changes the default Kconfig values of RANDOM_TRUST_CPU and
-> RANDOM_TRUST_BOOTLOADER to be Y by default. It does not change any
-> existing configs or change any kernel behavior. The reason for this is
-> several fold.
-> 
-> As background, I recently had an email thread with the kernel
-> maintainers of Fedora/RHEL, Debian, Ubuntu, Gentoo, Arch, NixOS, Alpine,
-> SUSE, and Void as recipients. I noted that some distros trust RDRAND,
-> some trust EFI, and some trust both, and I asked why or why not. There
-> wasn't really much of a "debate" but rather an interesting discussion of
-> what the historical reasons have been for this, and it came up that some
-> distros just missed the introduction of the bootloader Kconfig knob,
-> while another didn't want to enable it until there was a boot time
-> switch to turn it off for more concerned users (which has since been
-> added). The result of the rather uneventful discussion is that every
-> major Linux distro enables these two options by default.
-> 
-> While I didn't have really too strong of an opinion going into this
-> thread -- and I mostly wanted to learn what the distros' thinking was
-> one way or another -- ultimately I think their choice was a decent
-> enough one for a default option (which can be disabled at boot time).
-> I'll try to summarize the pros and cons:
-> 
-> Pros:
-> 
-> - The RNG machinery gets initialized super quickly, and there's no
->   messing around with subsequent blocking behavior.
-> 
-> - The bootloader mechanism is used by kexec in order for the prior
->   kernel to initialize the RNG of the next kernel, which increases
->   the entropy available to early boot daemons of the next kernel.
-> 
-> - Previous objections related to backdoors centered around
->   Dual_EC_DRBG-like kleptographic systems, in which observing some
->   amount of the output stream enables an adversary holding the right key
->   to determine the entire output stream.
-> 
->   This used to be a partially justified concern, because RDRAND output
->   was mixed into the output stream in varying ways, some of which may
->   have lacked pre-image resistance (e.g. XOR or an LFSR).
-> 
->   But this is no longer the case. Now, all usage of RDRAND and
->   bootloader seeds go through a cryptographic hash function. This means
->   that the CPU would have to compute a hash pre-image, which is not
->   considered to be feasible (otherwise the hash function would be
->   terribly broken).
-> 
-> - More generally, if the CPU is backdoored, the RNG is probably not the
->   realistic vector of choice for an attacker.
-> 
-> - These CPU or bootloader seeds are far from being the only source of
->   entropy. Rather, there is generally a pretty huge amount of entropy,
->   not all of which is credited, especially on CPUs that support
->   instructions like RDRAND. In other words, assuming RDRAND outputs all
->   zeros, an attacker would *still* have to accurately model every single
->   other entropy source also in use.
-> 
-> - The RNG now reseeds itself quite rapidly during boot, starting at 2
->   seconds, then 4, then 8, then 16, and so forth, so that other sources
->   of entropy get used without much delay.
-> 
-> - Paranoid users can set random.trust_{cpu,bootloader}=no in the kernel
->   command line, and paranoid system builders can set the Kconfig options
->   to N, so there's no reduction or restriction of optionality.
-> 
-> - It's a practical default.
-> 
-> - All the distros have it set this way. Microsoft and Apple trust it
->   too. Bandwagon.
-> 
-> Cons:
-> 
-> - RDRAND *could* still be backdoored with something like a fixed key or
->   limited space serial number seed or another indexable scheme like
->   that. (However, it's hard to imagine threat models where the CPU is
->   backdoored like this, yet people are still okay making *any*
->   computations with it or connecting it to networks, etc.)
-> 
-> - RDRAND *could* be defective, rather than backdoored, and produce
->   garbage that is in one way or another insufficient for crypto.
-> 
-> - Suggesting a *reduction* in paranoia, as this commit effectively does,
->   may cause some to question my personal integrity as a "security
->   person".
-> 
-> - Bootloader seeds and RDRAND are generally very difficult if not all
->   together impossible to audit.
-> 
-> Keep in mind that this doesn't actually change any behavior. This
-> is just a change in the default Kconfig value. The distros already are
-> shipping kernels that set things this way.
-> 
-> Ard made an additional argument in [1]:
-> 
->     We're at the mercy of firmware and micro-architecture anyway, given
->     that we are also relying on it to ensure that every instruction in
->     the kernel's executable image has been faithfully copied to memory,
->     and that the CPU implements those instructions as documented. So I
->     don't think firmware or ISA bugs related to RNGs deserve special
->     treatment - if they are broken, we should quirk around them like we
->     usually do. So enabling these by default is a step in the right
->     direction IMHO.
-> 
-> In [2], Phil pointed out that having this disabled masked a bug that CI
-> otherwise would have caught:
-> 
->     A clean 5.15.45 boots cleanly, whereas a downstream kernel shows the
->     static key warning (but it does go on to boot). The significant
->     difference is that our defconfigs set CONFIG_RANDOM_TRUST_BOOTLOADER=y
->     defining that on top of multi_v7_defconfig demonstrates the issue on
->     a clean 5.15.45. Conversely, not setting that option in a
->     downstream kernel build avoids the warning
-> 
-> [1] https://lore.kernel.org/lkml/CAMj1kXGi+ieviFjXv9zQBSaGyyzeGW_VpMpTLJK8PJb2QHEQ-w@mail.gmail.com/
-> [2] https://lore.kernel.org/lkml/c47c42e3-1d56-5859-a6ad-976a1a3381c6@raspberrypi.com/
-> 
-> Cc: Theodore Ts'o <tytso@mit.edu>
-> Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  drivers/char/Kconfig | 50 +++++++++++++++++++++++++++-----------------
->  1 file changed, 31 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-> index 55f48375e3fe..d454428f4981 100644
-> --- a/drivers/char/Kconfig
-> +++ b/drivers/char/Kconfig
-> @@ -428,28 +428,40 @@ config ADI
->  	  driver include crash and makedumpfile.
->  
->  config RANDOM_TRUST_CPU
-> -	bool "Trust the CPU manufacturer to initialize Linux's CRNG"
-> +	bool "Initialize RNG using CPU RNG instructions"
-> +	default y
->  	depends on ARCH_RANDOM
-> -	default n
->  	help
-> -	Assume that CPU manufacturer (e.g., Intel or AMD for RDSEED or
-> -	RDRAND, IBM for the S390 and Power PC architectures) is trustworthy
-> -	for the purposes of initializing Linux's CRNG.  Since this is not
-> -	something that can be independently audited, this amounts to trusting
-> -	that CPU manufacturer (perhaps with the insistence or mandate
-> -	of a Nation State's intelligence or law enforcement agencies)
-> -	has not installed a hidden back door to compromise the CPU's
-> -	random number generation facilities. This can also be configured
-> -	at boot with "random.trust_cpu=on/off".
-> +	  Initialize the RNG using random numbers supplied by the CPU's
-> +	  RNG instructions (e.g. RDRAND), if supported and available. These
-> +	  random numbers are never used directly, but are rather hashed into
-> +	  the main input pool, and this happens regardless of whether or not
-> +	  this option is enabled. Instead, this option controls whether the
-> +	  they are credited and hence can initialize the RNG. Additionally,
-> +	  other sources of randomness are always used, regardless of this
-> +	  setting.  Enabling this implies trusting that the CPU can supply high
-> +	  quality and non-backdoored random numbers.
-> +
-> +	  Say Y here unless you have reason to mistrust your CPU or believe
-> +	  its RNG facilities may be faulty. This may also be configured at
-> +	  boot time with "random.trust_cpu=on/off".
->  
->  config RANDOM_TRUST_BOOTLOADER
-> -	bool "Trust the bootloader to initialize Linux's CRNG"
-> -	help
-> -	Some bootloaders can provide entropy to increase the kernel's initial
-> -	device randomness. Say Y here to assume the entropy provided by the
-> -	booloader is trustworthy so it will be added to the kernel's entropy
-> -	pool. Otherwise, say N here so it will be regarded as device input that
-> -	only mixes the entropy pool. This can also be configured at boot with
-> -	"random.trust_bootloader=on/off".
-> +	bool "Initialize RNG using bootloader-supplied seed"
-> +	default y
-> +	help
-> +	  Initialize the RNG using a seed supplied by the bootloader or boot
-> +	  environment (e.g. EFI or a bootloader-generated device tree). This
-> +	  seed is not used directly, but is rather hashed into the main input
-> +	  pool, and this happens regardless of whether or not this option is
-> +	  enabled. Instead, this option controls whether the seed is credited
-> +	  and hence can initialize the RNG. Additionally, other sources of
-> +	  randomness are always used, regardless of this setting. Enabling
-> +	  this implies trusting that the bootloader can supply high quality and
-> +	  non-backdoored seeds.
-> +
-> +	  Say Y here unless you have reason to mistrust your bootloader or
-> +	  believe its RNG facilities may be faulty. This may also be configured
-> +	  at boot time with "random.trust_bootloader=on/off".
->  
->  endmenu
-> -- 
-> 2.35.1
-> 
+:::::: The code at line 660 was first introduced by commit
+:::::: cd087eefe637d545345ea5f888d4ea4fe52e312c KVM: PPC: Book3S PR: Do dcbz32 patching with big endian instructions
+
+:::::: TO: Alexander Graf <agraf@suse.de>
+:::::: CC: Alexander Graf <agraf@suse.de>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
