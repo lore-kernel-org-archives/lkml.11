@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E5EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C66C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357530AbiFNUJI (ORCPT
+        id S1357630AbiFNUJO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41816 "EHLO
+        Tue, 14 Jun 2022 16:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356821AbiFNUIB (ORCPT
+        with ESMTP id S234934AbiFNUIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 16:08:01 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ACE275E5
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:07:45 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id l5-20020a170902f68500b00167654aeba1so5354636plg.2
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:07:45 -0700 (PDT)
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CDA286FB
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:07:48 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id t1-20020a62ea01000000b0051be221a3ebso4225990pfh.17
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:07:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=hHYs1CgMxsK1k9Vi8KGsv4zPtK7ZFwYVZyJnd/Yk1Cg=;
-        b=bU+bgH83cUlJY1z4QcN203bnumc5dy54FGYc/+DggICznvnhV6ETc2yhry4U9Pnt4x
-         1xUi3R1JKWYjiwYY/9UaR1GQCHXFsNYK00kFoom/OI3xO2u1EJ/kQAiOZSS2N9S4rQRh
-         /xUzCP1F5iU1PGV7LksybFeL+3UCKaga4tTqrLUvzHaD4/GK8yISDR1FhHfEQ78+OBeY
-         8ur+WTTf8cB03jc3vNEDjnbN0bGyt+y0JHtTKpp64KpxoJPRa/NWf+hj7r1vnfx16fMg
-         5RcqwH2Zgi1Y8jqRFUNinwUtIjk6a6J247pmyX2nxL4Fe0iY4ovbegdZgN7RtPtvDUj/
-         doew==
+        bh=Ykj31SxfOFF88awQ7WBVcXppu/G/Rsb7kgEzRmofc6c=;
+        b=iXs8SlZ/Gv1hD19mtuf0EyxToq1qFW6rDVGnC4cUhGkyCbx3MwuX2GytRoV4b16zO0
+         vmc2zJSkPpYFCENu5hvk85RZRyOJKIq5s/2l/6MyqVVZlOJ2x+++uCpEZQjm2mX6UiBk
+         hyeAJrXaM8klB3Ig7dE1Feu6Gv8XCAf/LwR0N4tZFJ4ROA3U2RVSX8UDAYdA5wkJi+W1
+         7jtb7gjuLLZESMVYheuDH2lZdTTPLjfKvLkHQTBJAk7N2CKk14ERskPC491jcAGdgKzD
+         ARhhJSGULNPJ5ztxt8PNUVNCSAAfT0l5EHN+eqU02gKOheSBKAXcwC92QtyMcLXgJlCV
+         zyHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=hHYs1CgMxsK1k9Vi8KGsv4zPtK7ZFwYVZyJnd/Yk1Cg=;
-        b=YqAzWRriVwt1cTEPKJEqUd2dxtzEoEHWDUFEidE2ORCLzbVejhd+7Lq4nXd1kjTmSV
-         dkx8k63/6cXhsbowC6Nat1ybTLusHmbhH9ma6PxumJGXYGesSGFZHED35kIgQhWO5aqh
-         /SN9X9En1uEnkUmauYBOeqPdoi/y/BVqUDuCHmzD90cvdB6AicKhU2zPIk0PHH95QXPc
-         7w6RzpxVrrfE7XbyRU7Jdd55GsANWRn4NslAjeVHWMCUmAQgldrSRzrHx4xJ9+kUPuJP
-         vqqBqgduZ5tGabDFmVN9LpHcH0zGgq9/YZeZatu1a1O9xvN2Zb1kxA8Nk/Nica0nIvuR
-         eZZQ==
-X-Gm-Message-State: AJIora+E1QPxnXlQmYeaSfDa9DEfIF4AO+6ltVyHK5oLYpthoBAf5OZd
-        n9UYDIgEW1/Zo1LGoMGD2wv549+1i3c=
-X-Google-Smtp-Source: AGRyM1uexK/G9eM66+Bh90bg2qJEgX6hlOeW++qr81Wyz/Vh85kDzcrQsKIsv3T5iZDK+iqR0hIIcp+LQeI=
+        bh=Ykj31SxfOFF88awQ7WBVcXppu/G/Rsb7kgEzRmofc6c=;
+        b=zYr9jpDD2wCrL3Pxk3lt2xqH5bMbhho/irN8I+3V/FFwxvEeY+Yn9D3dqnI58o1O14
+         QaScYNrVkjHuT1PUZgpBPJLZn7EBawGcDxcs0+v6nvT35pD5JQ8X2Dl//InySK4knD3d
+         Po4gp/c4Ub28F/dJhkQTmCwGLCukViXt7MZ7kNmMtdbh4wmB1iy8r/31yHTv62p0ioWg
+         lf/f/Y08J6zr3K3mhZ8e8YFBERkfshk8f/DP10CDY0f1pe4Y/F0DRxxY0CYnBjYq55Qd
+         G86SZiV6+N1+P/fowOh9A9ANigsfCR+Fa0MKTFtsKPUQKCE4r8W8QE5Q8FqD0aP+jQZ6
+         WW+Q==
+X-Gm-Message-State: AJIora/BEi3yht+Za6TMZBHH1If34nmm1l5tMtzJ3JqGhZqVLYx8J0My
+        ILZA5euaHV2FDWoe6PFnK8RiLcfzeys=
+X-Google-Smtp-Source: AGRyM1tGeQ4gZu3n6/g13Y00M7lq3cR5HCq7NIfhUmFJxA2dKTega8bfcNYdMrUrZ781r4DhI/qY32rKyfc=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:178f:b0:1e3:3ba:c185 with SMTP id
- q15-20020a17090a178f00b001e303bac185mr192376pja.1.1655237264941; Tue, 14 Jun
- 2022 13:07:44 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:db06:b0:166:42b5:c827 with SMTP id
+ m6-20020a170902db0600b0016642b5c827mr6063116plx.145.1655237268267; Tue, 14
+ Jun 2022 13:07:48 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 14 Jun 2022 20:06:43 +0000
+Date:   Tue, 14 Jun 2022 20:06:45 +0000
 In-Reply-To: <20220614200707.3315957-1-seanjc@google.com>
-Message-Id: <20220614200707.3315957-19-seanjc@google.com>
+Message-Id: <20220614200707.3315957-21-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220614200707.3315957-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH v2 18/42] KVM: selftests: Cache CPUID in struct kvm_vcpu
+Subject: [PATCH v2 20/42] KVM: selftests: Rename and tweak get_cpuid() to get_cpuid_entry()
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -65,382 +65,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Cache a vCPU's CPUID information in "struct kvm_vcpu" to allow fixing the
-mess where tests, often unknowingly, modify the global/static "cpuid"
-allocated by kvm_get_supported_cpuid().
+Rename get_cpuid() to get_cpuid_entry() to better reflect its behavior.
+Leave set_cpuid() as is to avoid unnecessary churn, that helper will soon
+be removed entirely.
 
-Add vcpu_init_cpuid() to handle stuffing an entirely different CPUID
-model, e.g. during vCPU creation or when switching to the Hyper-V enabled
-CPUID model.  Automatically refresh the cache on vcpu_set_cpuid() so that
-any adjustments made by KVM are always reflected in the cache.  Drop
-vcpu_get_cpuid() entirely to force tests to use the cache, and to allow
-adding e.g. vcpu_get_cpuid_entry() in the future without creating a
-conflicting set of APIs where vcpu_get_cpuid() does KVM_GET_CPUID2, but
-vcpu_get_cpuid_entry() does not.
+Oppurtunistically tweak the implementation to avoid using a temporary
+variable in anticipation of taggin the input @cpuid with "const".
 
-Opportunistically convert the VMX nested state test and KVM PV test to
-manipulating the vCPU's CPUID (because it's easy), but use
-vcpu_init_cpuid() for the Hyper-V features test and "emulator error" test
-to effectively retain their current behavior as they're less trivial to
-convert.
+No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     |  5 +++
- .../selftests/kvm/include/x86_64/processor.h  | 25 +++++++----
- tools/testing/selftests/kvm/lib/kvm_util.c    |  7 ++++
- .../selftests/kvm/lib/x86_64/processor.c      | 42 +++++++++----------
- .../testing/selftests/kvm/x86_64/cpuid_test.c | 18 ++++----
- .../kvm/x86_64/emulator_error_test.c          |  2 +-
- .../selftests/kvm/x86_64/hyperv_features.c    |  2 +-
- .../selftests/kvm/x86_64/kvm_pv_test.c        |  6 +--
- .../kvm/x86_64/vmx_set_nested_state_test.c    |  6 +--
- .../selftests/kvm/x86_64/xapic_state_test.c   |  4 +-
- 10 files changed, 68 insertions(+), 49 deletions(-)
+ .../testing/selftests/kvm/include/x86_64/processor.h  |  4 ++--
+ tools/testing/selftests/kvm/lib/x86_64/processor.c    | 11 +++++------
+ tools/testing/selftests/kvm/x86_64/cpuid_test.c       |  4 ++--
+ 3 files changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 1b9e8719c624..a344ec2afe03 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -50,6 +50,9 @@ struct kvm_vcpu {
- 	int fd;
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
-+#ifdef __x86_64__
-+	struct kvm_cpuid2 *cpuid;
-+#endif
- 	struct kvm_dirty_gfn *dirty_gfns;
- 	uint32_t fetch_index;
- 	uint32_t dirty_gfns_count;
-@@ -690,6 +693,8 @@ static inline struct kvm_vcpu *vm_vcpu_recreate(struct kvm_vm *vm,
- 	return vm_arch_vcpu_recreate(vm, vcpu_id);
- }
- 
-+void vcpu_arch_free(struct kvm_vcpu *vcpu);
-+
- void virt_arch_pgd_alloc(struct kvm_vm *vm);
- 
- static inline void virt_pgd_alloc(struct kvm_vm *vm)
 diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 002ed02cc2ef..7c14e5ffd515 100644
+index 7c14e5ffd515..36c75acd4509 100644
 --- a/tools/testing/selftests/kvm/include/x86_64/processor.h
 +++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -616,18 +616,29 @@ static inline struct kvm_cpuid2 *allocate_kvm_cpuid2(int nr_entries)
- 	return cpuid;
- }
- 
--struct kvm_cpuid2 *vcpu_get_cpuid(struct kvm_vcpu *vcpu);
-+void vcpu_init_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid);
- 
--static inline int __vcpu_set_cpuid(struct kvm_vcpu *vcpu,
--				   struct kvm_cpuid2 *cpuid)
-+static inline int __vcpu_set_cpuid(struct kvm_vcpu *vcpu)
- {
--	return __vcpu_ioctl(vcpu, KVM_SET_CPUID2, cpuid);
-+	int r;
-+
-+	TEST_ASSERT(vcpu->cpuid, "Must do vcpu_init_cpuid() first");
-+	r = __vcpu_ioctl(vcpu, KVM_SET_CPUID2, vcpu->cpuid);
-+	if (r)
-+		return r;
-+
-+	/* On success, refresh the cache to pick up adjustments made by KVM. */
-+	vcpu_ioctl(vcpu, KVM_GET_CPUID2, vcpu->cpuid);
-+	return 0;
- }
- 
--static inline void vcpu_set_cpuid(struct kvm_vcpu *vcpu,
--				  struct kvm_cpuid2 *cpuid)
-+static inline void vcpu_set_cpuid(struct kvm_vcpu *vcpu)
- {
--	vcpu_ioctl(vcpu, KVM_SET_CPUID2, cpuid);
-+	TEST_ASSERT(vcpu->cpuid, "Must do vcpu_init_cpuid() first");
-+	vcpu_ioctl(vcpu, KVM_SET_CPUID2, vcpu->cpuid);
-+
-+	/* Refresh the cache to pick up adjustments made by KVM. */
-+	vcpu_ioctl(vcpu, KVM_GET_CPUID2, vcpu->cpuid);
- }
- 
- struct kvm_cpuid_entry2 *
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 38c6083c9ce1..4da0f7b7985d 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -476,6 +476,11 @@ kvm_userspace_memory_region_find(struct kvm_vm *vm, uint64_t start,
- 	return &region->region;
- }
- 
-+__weak void vcpu_arch_free(struct kvm_vcpu *vcpu)
-+{
-+
-+}
-+
+@@ -692,8 +692,8 @@ void vm_set_page_table_entry(struct kvm_vm *vm, struct kvm_vcpu *vcpu,
  /*
-  * VM VCPU Remove
-  *
-@@ -505,6 +510,8 @@ static void vm_vcpu_rm(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
- 	TEST_ASSERT(!ret,  __KVM_SYSCALL_ERROR("close()", ret));
- 
- 	list_del(&vcpu->list);
-+
-+	vcpu_arch_free(vcpu);
- 	free(vcpu);
- }
- 
+  * get_cpuid() - find matching CPUID entry and return pointer to it.
+  */
+-struct kvm_cpuid_entry2 *get_cpuid(struct kvm_cpuid2 *cpuid, uint32_t function,
+-				   uint32_t index);
++struct kvm_cpuid_entry2 *get_cpuid_entry(struct kvm_cpuid2 *cpuid,
++					 uint32_t function, uint32_t index);
+ /*
+  * set_cpuid() - overwrites a matching cpuid entry with the provided value.
+  *		 matches based on ent->function && ent->index. returns true
 diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index e9a2c606c6c3..55838c603102 100644
+index 7c0363759864..d4ea5628746c 100644
 --- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
 +++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -648,7 +648,7 @@ struct kvm_vcpu *vm_arch_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id,
- 				     DEFAULT_GUEST_STACK_VADDR_MIN);
- 
- 	vcpu = __vm_vcpu_add(vm, vcpu_id);
--	vcpu_set_cpuid(vcpu, kvm_get_supported_cpuid());
-+	vcpu_init_cpuid(vcpu, kvm_get_supported_cpuid());
- 	vcpu_setup(vm, vcpu);
- 
- 	/* Setup guest general purpose registers */
-@@ -669,11 +669,17 @@ struct kvm_vcpu *vm_arch_vcpu_recreate(struct kvm_vm *vm, uint32_t vcpu_id)
- {
- 	struct kvm_vcpu *vcpu = __vm_vcpu_add(vm, vcpu_id);
- 
--	vcpu_set_cpuid(vcpu, kvm_get_supported_cpuid());
-+	vcpu_init_cpuid(vcpu, kvm_get_supported_cpuid());
- 
- 	return vcpu;
+@@ -1190,16 +1190,15 @@ void assert_on_unhandled_exception(struct kvm_vcpu *vcpu)
+ 	}
  }
  
-+void vcpu_arch_free(struct kvm_vcpu *vcpu)
-+{
-+	if (vcpu->cpuid)
-+		free(vcpu->cpuid);
-+}
-+
- /*
-  * KVM Supported CPUID Get
-  *
-@@ -743,31 +749,23 @@ uint64_t kvm_get_feature_msr(uint64_t msr_index)
- 	return buffer.entry.data;
- }
- 
--struct kvm_cpuid2 *vcpu_get_cpuid(struct kvm_vcpu *vcpu)
-+void vcpu_init_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid)
+-struct kvm_cpuid_entry2 *get_cpuid(struct kvm_cpuid2 *cpuid, uint32_t function,
+-				   uint32_t index)
++struct kvm_cpuid_entry2 *get_cpuid_entry(struct kvm_cpuid2 *cpuid,
++					 uint32_t function, uint32_t index)
  {
--	struct kvm_cpuid2 *cpuid;
--	int max_ent;
--	int rc = -1;
-+	TEST_ASSERT(cpuid != vcpu->cpuid, "@cpuid can't be the vCPU's CPUID");
+ 	int i;
  
--	cpuid = allocate_kvm_cpuid2(MAX_NR_CPUID_ENTRIES);
--	max_ent = cpuid->nent;
+ 	for (i = 0; i < cpuid->nent; i++) {
+-		struct kvm_cpuid_entry2 *cur = &cpuid->entries[i];
 -
--	for (cpuid->nent = 1; cpuid->nent <= max_ent; cpuid->nent++) {
--		rc = __vcpu_ioctl(vcpu, KVM_GET_CPUID2, cpuid);
--		if (!rc)
--			break;
--
--		TEST_ASSERT(rc == -1 && errno == E2BIG,
--			    "KVM_GET_CPUID2 should either succeed or give E2BIG: %d %d",
--			    rc, errno);
-+	/* Allow overriding the default CPUID. */
-+	if (vcpu->cpuid && vcpu->cpuid->nent < cpuid->nent) {
-+		free(vcpu->cpuid);
-+		vcpu->cpuid = NULL;
+-		if (cur->function == function && cur->index == index)
+-			return cur;
++		if (cpuid->entries[i].function == function &&
++		    cpuid->entries[i].index == index)
++			return &cpuid->entries[i];
  	}
  
--	TEST_ASSERT(!rc, KVM_IOCTL_ERROR(KVM_GET_CPUID2, rc));
--	return cpuid;
-+	if (!vcpu->cpuid)
-+		vcpu->cpuid = allocate_kvm_cpuid2(cpuid->nent);
-+
-+	memcpy(vcpu->cpuid, cpuid, kvm_cpuid2_size(cpuid->nent));
-+	vcpu_set_cpuid(vcpu);
- }
- 
--
--
- /*
-  * Locate a cpuid entry.
-  *
-@@ -1285,7 +1283,7 @@ void vcpu_set_hv_cpuid(struct kvm_vcpu *vcpu)
- 		cpuid_full->nent = nent + cpuid_hv->nent;
- 	}
- 
--	vcpu_set_cpuid(vcpu, cpuid_full);
-+	vcpu_init_cpuid(vcpu, cpuid_full);
- }
- 
- struct kvm_cpuid2 *vcpu_get_supported_hv_cpuid(struct kvm_vcpu *vcpu)
+ 	TEST_FAIL("CPUID function 0x%x index 0x%x not found ", function, index);
 diff --git a/tools/testing/selftests/kvm/x86_64/cpuid_test.c b/tools/testing/selftests/kvm/x86_64/cpuid_test.c
-index dac5b1ebb512..ca36557646b0 100644
+index ca36557646b0..8723d73dcdbd 100644
 --- a/tools/testing/selftests/kvm/x86_64/cpuid_test.c
 +++ b/tools/testing/selftests/kvm/x86_64/cpuid_test.c
-@@ -145,21 +145,22 @@ struct kvm_cpuid2 *vcpu_alloc_cpuid(struct kvm_vm *vm, vm_vaddr_t *p_gva, struct
- 	return guest_cpuids;
- }
- 
--static void set_cpuid_after_run(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid)
-+static void set_cpuid_after_run(struct kvm_vcpu *vcpu)
- {
-+	struct kvm_cpuid2 *cpuid = vcpu->cpuid;
- 	struct kvm_cpuid_entry2 *ent;
- 	int rc;
- 	u32 eax, ebx, x;
- 
- 	/* Setting unmodified CPUID is allowed */
--	rc = __vcpu_set_cpuid(vcpu, cpuid);
-+	rc = __vcpu_set_cpuid(vcpu);
+@@ -157,7 +157,7 @@ static void set_cpuid_after_run(struct kvm_vcpu *vcpu)
  	TEST_ASSERT(!rc, "Setting unmodified CPUID after KVM_RUN failed: %d", rc);
  
  	/* Changing CPU features is forbidden */
- 	ent = get_cpuid(cpuid, 0x7, 0);
+-	ent = get_cpuid(cpuid, 0x7, 0);
++	ent = get_cpuid_entry(cpuid, 0x7, 0);
  	ebx = ent->ebx;
  	ent->ebx--;
--	rc = __vcpu_set_cpuid(vcpu, cpuid);
-+	rc = __vcpu_set_cpuid(vcpu);
- 	TEST_ASSERT(rc, "Changing CPU features should fail");
+ 	rc = __vcpu_set_cpuid(vcpu);
+@@ -165,7 +165,7 @@ static void set_cpuid_after_run(struct kvm_vcpu *vcpu)
  	ent->ebx = ebx;
  
-@@ -168,14 +169,14 @@ static void set_cpuid_after_run(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid)
+ 	/* Changing MAXPHYADDR is forbidden */
+-	ent = get_cpuid(cpuid, 0x80000008, 0);
++	ent = get_cpuid_entry(cpuid, 0x80000008, 0);
  	eax = ent->eax;
  	x = eax & 0xff;
  	ent->eax = (eax & ~0xffu) | (x - 1);
--	rc = __vcpu_set_cpuid(vcpu, cpuid);
-+	rc = __vcpu_set_cpuid(vcpu);
- 	TEST_ASSERT(rc, "Changing MAXPHYADDR should fail");
- 	ent->eax = eax;
- }
- 
- int main(void)
- {
--	struct kvm_cpuid2 *supp_cpuid, *cpuid2;
-+	struct kvm_cpuid2 *supp_cpuid;
- 	struct kvm_vcpu *vcpu;
- 	vm_vaddr_t cpuid_gva;
- 	struct kvm_vm *vm;
-@@ -184,18 +185,17 @@ int main(void)
- 	vm = vm_create_with_one_vcpu(&vcpu, guest_main);
- 
- 	supp_cpuid = kvm_get_supported_cpuid();
--	cpuid2 = vcpu_get_cpuid(vcpu);
- 
--	compare_cpuids(supp_cpuid, cpuid2);
-+	compare_cpuids(supp_cpuid, vcpu->cpuid);
- 
--	vcpu_alloc_cpuid(vm, &cpuid_gva, cpuid2);
-+	vcpu_alloc_cpuid(vm, &cpuid_gva, vcpu->cpuid);
- 
- 	vcpu_args_set(vcpu, 1, cpuid_gva);
- 
- 	for (stage = 0; stage < 3; stage++)
- 		run_vcpu(vcpu, stage);
- 
--	set_cpuid_after_run(vcpu, cpuid2);
-+	set_cpuid_after_run(vcpu);
- 
- 	kvm_vm_free(vm);
- }
-diff --git a/tools/testing/selftests/kvm/x86_64/emulator_error_test.c b/tools/testing/selftests/kvm/x86_64/emulator_error_test.c
-index bfff2d271c48..bb410c359599 100644
---- a/tools/testing/selftests/kvm/x86_64/emulator_error_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/emulator_error_test.c
-@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
- 	entry->eax = (entry->eax & 0xffffff00) | MAXPHYADDR;
- 	set_cpuid(cpuid, entry);
- 
--	vcpu_set_cpuid(vcpu, cpuid);
-+	vcpu_init_cpuid(vcpu, cpuid);
- 
- 	rc = kvm_check_cap(KVM_CAP_EXIT_ON_EMULATION_FAILURE);
- 	TEST_ASSERT(rc, "KVM_CAP_EXIT_ON_EMULATION_FAILURE is unavailable");
-diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_features.c b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-index d5f37495ade8..f08f51bad68b 100644
---- a/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-+++ b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
-@@ -161,7 +161,7 @@ static void hv_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
- 		    "failed to set HYPERV_CPUID_ENLIGHTMENT_INFO leaf");
- 	TEST_ASSERT(set_cpuid(cpuid, dbg),
- 		    "failed to set HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES leaf");
--	vcpu_set_cpuid(vcpu, cpuid);
-+	vcpu_init_cpuid(vcpu, cpuid);
- }
- 
- static void guest_test_msrs_access(void)
-diff --git a/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c b/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c
-index 5901ccec7079..e3bb9b803944 100644
---- a/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/kvm_pv_test.c
-@@ -200,7 +200,6 @@ static void enter_guest(struct kvm_vcpu *vcpu)
- 
- int main(void)
- {
--	struct kvm_cpuid2 *best;
- 	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
- 
-@@ -210,9 +209,8 @@ int main(void)
- 
- 	vcpu_enable_cap(vcpu, KVM_CAP_ENFORCE_PV_FEATURE_CPUID, 1);
- 
--	best = kvm_get_supported_cpuid();
--	clear_kvm_cpuid_features(best);
--	vcpu_set_cpuid(vcpu, best);
-+	clear_kvm_cpuid_features(vcpu->cpuid);
-+	vcpu_set_cpuid(vcpu);
- 
- 	vm_init_descriptor_tables(vm);
- 	vcpu_init_descriptor_tables(vcpu);
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
-index 66cb2d0054e6..1cf78ec007f2 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
-@@ -121,7 +121,7 @@ void test_vmx_nested_state(struct kvm_vcpu *vcpu)
- 	test_nested_state(vcpu, state);
- 
- 	/* Enable VMX in the guest CPUID. */
--	vcpu_set_cpuid(vcpu, kvm_get_supported_cpuid());
-+	vcpu_set_cpuid(vcpu);
- 
- 	/*
- 	 * Setting vmxon_pa == -1ull and vmcs_pa == -1ull exits early without
-@@ -245,7 +245,7 @@ void test_vmx_nested_state(struct kvm_vcpu *vcpu)
- 
- void disable_vmx(struct kvm_vcpu *vcpu)
- {
--	struct kvm_cpuid2 *cpuid = kvm_get_supported_cpuid();
-+	struct kvm_cpuid2 *cpuid = vcpu->cpuid;
- 	int i;
- 
- 	for (i = 0; i < cpuid->nent; ++i)
-@@ -255,7 +255,7 @@ void disable_vmx(struct kvm_vcpu *vcpu)
- 	TEST_ASSERT(i != cpuid->nent, "CPUID function 1 not found");
- 
- 	cpuid->entries[i].ecx &= ~CPUID_VMX;
--	vcpu_set_cpuid(vcpu, cpuid);
-+	vcpu_set_cpuid(vcpu);
- 	cpuid->entries[i].ecx |= CPUID_VMX;
- }
- 
-diff --git a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
-index 5c5dc7bbb4e2..7728730c2dda 100644
---- a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
-@@ -138,13 +138,13 @@ int main(int argc, char *argv[])
- 	vm = vm_create_with_one_vcpu(&x.vcpu, xapic_guest_code);
- 	x.is_x2apic = false;
- 
--	cpuid = vcpu_get_cpuid(x.vcpu);
-+	cpuid = x.vcpu->cpuid;
- 	for (i = 0; i < cpuid->nent; i++) {
- 		if (cpuid->entries[i].function == 1)
- 			break;
- 	}
- 	cpuid->entries[i].ecx &= ~BIT(21);
--	vcpu_set_cpuid(x.vcpu, cpuid);
-+	vcpu_set_cpuid(x.vcpu);
- 
- 	virt_pg_map(vm, APIC_DEFAULT_GPA, APIC_DEFAULT_GPA);
- 	test_icr(&x);
 -- 
 2.36.1.476.g0c4daa206d-goog
 
