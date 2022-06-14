@@ -2,196 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B76C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A9BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347866AbiFNBRg (ORCPT
+        id S1347465AbiFNBSA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 21:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53136 "EHLO
+        Mon, 13 Jun 2022 21:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343543AbiFNBQ6 (ORCPT
+        with ESMTP id S1347989AbiFNBRj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 21:16:58 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846642D1CC;
-        Mon, 13 Jun 2022 18:16:53 -0700 (PDT)
-X-UUID: 9ba52f8d4b5a425f9fe6655086fd5055-20220614
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:d8fbfaa5-6b9f-407c-a6b2-6aa06f3e7e8f,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:b14ad71,CLOUDID:1f619b37-84c0-4f9a-9fbd-acd4a0e9ad0f,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 9ba52f8d4b5a425f9fe6655086fd5055-20220614
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <stanley.chu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1678278686; Tue, 14 Jun 2022 09:16:46 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Tue, 14 Jun 2022 09:16:42 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Tue, 14 Jun 2022 09:16:42 +0800
-From:   Stanley Chu <stanley.chu@mediatek.com>
-To:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <martin.petersen@oracle.com>, <avri.altman@wdc.com>,
-        <alim.akhtar@samsung.com>, <jejb@linux.ibm.com>,
-        <bvanassche@acm.org>
-CC:     <peter.wang@mediatek.com>, <chun-hung.wu@mediatek.com>,
-        <alice.chao@mediatek.com>, <powen.kao@mediatek.com>,
-        <mason.zhang@mediatek.com>, <qilin.tan@mediatek.com>,
-        <lin.gui@mediatek.com>, <eddie.huang@mediatek.com>,
-        <tun-yu.yu@mediatek.com>, <cc.chou@mediatek.com>,
-        <chaotian.jing@mediatek.com>, <jiajie.hao@mediatek.com>,
-        <stanley.chu@mediatek.com>
-Subject: [PATCH v2 8/8] scsi: ufs-mediatek: Support low-power mode for parents of VCCQx
-Date:   Tue, 14 Jun 2022 09:16:39 +0800
-Message-ID: <20220614011639.2825-9-stanley.chu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220614011639.2825-1-stanley.chu@mediatek.com>
-References: <20220614011639.2825-1-stanley.chu@mediatek.com>
+        Mon, 13 Jun 2022 21:17:39 -0400
+X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 13 Jun 2022 18:17:14 PDT
+Received: from qq.com (smtpbg480.qq.com [59.36.132.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C7633365;
+        Mon, 13 Jun 2022 18:17:14 -0700 (PDT)
+X-QQ-mid: bizesmtp90t1655169347tmx1hhqk
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 14 Jun 2022 09:15:44 +0800 (CST)
+X-QQ-SSF: 01400000000000G0Q000000A0000000
+X-QQ-FEAT: xoS364mEyr2ZQyZa9egGpWkiXbaENEOHC3w6ZHbbovTwW4KRqizNrvRiUb/mB
+        69Yd9l9taMDvEMrVM5AgAC/i5zaipdqpScM8ywGwZ2hhW8E3xghQVFEQINXfzopsxWONLdg
+        WIOO9qp6FSUReuFEnVB4rbmZEROYLoN9NmnA8FVyQavgUuwcWdMHrXpPAfCenYwLH2IgqzA
+        OQ4rSdMZZqQce+d2BsGuoT5JqKDAHwx5zpDyQqCFpDWJsz7eFTKKSYxUhS2jdqI5mdWa8N0
+        h08leJFyDr9lYRsouGEB4D887k+LNhkS/AJY8XdWCMS4M/i2ZGVJZz7s0me5Tw+MSD/8VUl
+        t0aBzFKJKLfjL7UdEkTV0peLti+meuYttoH/QROAB/gtfSWDnE=
+X-QQ-GoodBg: 1
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Meng Tang <tangmeng@uniontech.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.10 2/2] commit 1b5d73fb8624 ("igc: Enable PCIe PTM")
+Date:   Tue, 14 Jun 2022 09:15:28 +0800
+Message-Id: <20220614011528.32118-2-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220614011528.32118-1-tangmeng@uniontech.com>
+References: <20220614011528.32118-1-tangmeng@uniontech.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign4
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Provide the facility to configure parents of VCCQx power rails
-as low-power or full-power mode in MediaTek UFS platforms.
+In the 5.10 kernel version, even to the latest confirmed version,
+the following error will still be reported when I225-V network card
+is used.
 
-Signed-off-by: Alice Chao <alice.chao@mediatek.com>
-Signed-off-by: Stanley Chu <stanley.chu@mediatek.com>
+kernel: [    1.031581] igc: probe of 0000:01:00.0 failed with error -2
+kernel: [    1.066574] igc: probe of 0000:02:00.0 failed with error -2
+kernel: [    1.096152] igc: probe of 0000:03:00.0 failed with error -2
+kernel: [    1.127251] igc: probe of 0000:04:00.0 failed with error -2
+
+Even though I confirmed that 7c496de538eebd8212dc2a3c9a468386b2640d4
+and 47bca7de6a4fb8dcb564c7ca4d885c91ed19e03 have been merged into the
+kernel 5.10, but bug still occurred, and this patch can fixes it.
+
+Enables PCIe PTM (Precision Time Measurement) support in the igc
+driver. Notifies the PCI devices that PCIe PTM should be enabled.
+
+PCIe PTM is similar protocol to PTP (Precision Time Protocol) running
+in the PCIe fabric, it allows devices to report time measurements from
+their internal clocks and the correlation with the PCIe root clock.
+
+The i225 NIC exposes some registers that expose those time
+measurements, those registers will be used, in later patches, to
+implement the PTP_SYS_OFFSET_PRECISE ioctl().
+
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 ---
- drivers/ufs/host/ufs-mediatek.c | 45 +++++++++++++++++++++++----------
- drivers/ufs/host/ufs-mediatek.h |  4 +++
- 2 files changed, 36 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/ufs/host/ufs-mediatek.c b/drivers/ufs/host/ufs-mediatek.c
-index 9337ce27329b..2c1e55f8d7c6 100755
---- a/drivers/ufs/host/ufs-mediatek.c
-+++ b/drivers/ufs/host/ufs-mediatek.c
-@@ -1013,10 +1013,29 @@ static int ufs_mtk_link_set_lpm(struct ufs_hba *hba)
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index fd9257c7059a..298e968629db 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -10,6 +10,7 @@
+ #include <linux/ip.h>
+ #include <linux/pm_runtime.h>
+ #include <net/pkt_sched.h>
++#include <linux/pci.h>
  
--static void ufs_mtk_vreg_set_lpm(struct ufs_hba *hba, bool lpm)
-+static void ufs_mtk_vccqx_set_lpm(struct ufs_hba *hba, bool lpm)
- {
- 	struct ufs_vreg *vccqx = NULL;
+ #include <net/ipv6.h>
  
-+	if (hba->vreg_info.vccq)
-+		vccqx = hba->vreg_info.vccq;
-+	else
-+		vccqx = hba->vreg_info.vccq2;
+@@ -5041,6 +5042,10 @@ static int igc_probe(struct pci_dev *pdev,
+ 
+ 	pci_enable_pcie_error_reporting(pdev);
+ 
++	err = pci_enable_ptm(pdev, NULL);
++	if (err < 0)
++		dev_info(&pdev->dev, "PCIe PTM not supported by PCIe bus/controller\n");
 +
-+	regulator_set_mode(vccqx->reg,
-+		lpm ? REGULATOR_MODE_IDLE : REGULATOR_MODE_NORMAL);
-+}
-+
-+static void ufs_mtk_vsx_set_lpm(struct ufs_hba *hba, bool lpm)
-+{
-+	struct arm_smccc_res res;
-+
-+	ufs_mtk_device_pwr_ctrl(!lpm,
-+		(unsigned long)hba->dev_info.wspecversion, res);
-+}
-+
-+static void ufs_mtk_dev_vreg_set_lpm(struct ufs_hba *hba, bool lpm)
-+{
- 	if (!hba->vreg_info.vccq && !hba->vreg_info.vccq2)
- 		return;
+ 	pci_set_master(pdev);
  
-@@ -1032,13 +1051,13 @@ static void ufs_mtk_vreg_set_lpm(struct ufs_hba *hba, bool lpm)
- 	if (lpm && hba->vreg_info.vcc->enabled)
- 		return;
- 
--	if (hba->vreg_info.vccq)
--		vccqx = hba->vreg_info.vccq;
--	else
--		vccqx = hba->vreg_info.vccq2;
--
--	regulator_set_mode(vccqx->reg,
--		lpm ? REGULATOR_MODE_IDLE : REGULATOR_MODE_NORMAL);
-+	if (lpm) {
-+		ufs_mtk_vccqx_set_lpm(hba, lpm);
-+		ufs_mtk_vsx_set_lpm(hba, lpm);
-+	} else {
-+		ufs_mtk_vsx_set_lpm(hba, lpm);
-+		ufs_mtk_vccqx_set_lpm(hba, lpm);
-+	}
- }
- 
- static void ufs_mtk_auto_hibern8_disable(struct ufs_hba *hba)
-@@ -1105,7 +1124,7 @@ static int ufs_mtk_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
- 	int err;
- 
- 	if (hba->ufshcd_state != UFSHCD_STATE_OPERATIONAL)
--		ufs_mtk_vreg_set_lpm(hba, false);
-+		ufs_mtk_dev_vreg_set_lpm(hba, false);
- 
- 	err = ufs_mtk_mphy_power_on(hba, true);
- 	if (err)
-@@ -1283,7 +1302,7 @@ int ufs_mtk_system_suspend(struct device *dev)
- 	ret = ufshcd_system_suspend(dev);
- 
- 	if (!ret)
--		ufs_mtk_vreg_set_lpm(hba, true);
-+		ufs_mtk_dev_vreg_set_lpm(hba, true);
- 
- 	return ret;
- }
-@@ -1293,7 +1312,7 @@ int ufs_mtk_system_resume(struct device *dev)
- 	int ret = 0;
- 	struct ufs_hba *hba = dev_get_drvdata(dev);
- 
--	ufs_mtk_vreg_set_lpm(hba, false);
-+	ufs_mtk_dev_vreg_set_lpm(hba, false);
- 
- 	ret = ufshcd_system_resume(dev);
- 
-@@ -1308,7 +1327,7 @@ int ufs_mtk_runtime_suspend(struct device *dev)
- 	ret = ufshcd_runtime_suspend(dev);
- 
- 	if (!ret)
--		ufs_mtk_vreg_set_lpm(hba, true);
-+		ufs_mtk_dev_vreg_set_lpm(hba, true);
- 
- 	return ret;
- }
-@@ -1318,7 +1337,7 @@ int ufs_mtk_runtime_resume(struct device *dev)
- 	struct ufs_hba *hba = dev_get_drvdata(dev);
- 	int ret = 0;
- 
--	ufs_mtk_vreg_set_lpm(hba, false);
-+	ufs_mtk_dev_vreg_set_lpm(hba, false);
- 
- 	ret = ufshcd_runtime_resume(dev);
- 
-diff --git a/drivers/ufs/host/ufs-mediatek.h b/drivers/ufs/host/ufs-mediatek.h
-index 9117427ca6c4..eb26306a719f 100755
---- a/drivers/ufs/host/ufs-mediatek.h
-+++ b/drivers/ufs/host/ufs-mediatek.h
-@@ -83,6 +83,7 @@ enum {
- #define UFS_MTK_SIP_DEVICE_RESET          BIT(1)
- #define UFS_MTK_SIP_CRYPTO_CTRL           BIT(2)
- #define UFS_MTK_SIP_REF_CLK_NOTIFICATION  BIT(3)
-+#define UFS_MTK_SIP_DEVICE_PWR_CTRL       BIT(7)
- 
- /*
-  * VS_DEBUGCLOCKENABLE
-@@ -199,4 +200,7 @@ struct ufs_mtk_host {
- #define ufs_mtk_device_reset_ctrl(high, res) \
- 	ufs_mtk_smc(UFS_MTK_SIP_DEVICE_RESET, res, high)
- 
-+#define ufs_mtk_device_pwr_ctrl(on, ufs_ver, res) \
-+	ufs_mtk_smc(UFS_MTK_SIP_DEVICE_PWR_CTRL, res, on, ufs_ver)
-+
- #endif /* !_UFS_MEDIATEK_H */
+ 	err = -ENOMEM;
 -- 
-2.18.0
+2.20.1
 
+
+e=10Ù
