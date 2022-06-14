@@ -2,127 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1E6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:58:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFDC6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:59:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355836AbiFNH6O (ORCPT
+        id S1355427AbiFNH6T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51660 "EHLO
+        Tue, 14 Jun 2022 03:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355547AbiFNH6I (ORCPT
+        with ESMTP id S1355700AbiFNH6J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:58:08 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD743FBDD
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:57:39 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id w21so7962963pfc.0
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:57:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=im11BmF4AkSvI7LJUG+0S/RpqxIynxFnf8uu1Qq4PqM=;
-        b=GJ8dYa+L62FlKJzQknArn9TueEREN6ETCdbHZQ9MPWYSnjRDuAGF6amAEBpjMkLsiL
-         SsX1neP70H5zQSNi5Q5KayZ4BmEa8GWvbm7a0EvJWWO4NdXQQsN7JY1CFC+jkV/8zgpB
-         k2chA8jmFIjuhwVCj9KhshwL+swUA5ZAWYWVU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=im11BmF4AkSvI7LJUG+0S/RpqxIynxFnf8uu1Qq4PqM=;
-        b=vsY5O8UWZfqNKtHx7zE1QIOGtb09dzZJtMKU+1I082IRlFHQfOeZioCnkq15Q2CmQW
-         zwA9LaIu6jCxelUSsP3nywOy84DqcN4UsxGGcKUJe6+KllYqJdVKuxiS1Wi8NthKH9Fh
-         Ec3i+cvyc4UC/+0eWtPRpAYwKLuDobHlOUv2uIHRED6dLw8elEppMP7UBpL60Gs/SjMt
-         Yl6HijIgl975J68EHhOACeASo2z/gophedsSdY6SQ9RhQNdq97E9H5cHckXjGJsm7G2e
-         kioMR4ZyioeyNREPwR72XFhlM7VAO3d5hwOEcMlF9+DjnlH+JSHFaeVgdYeRYGx09Kdg
-         M83w==
-X-Gm-Message-State: AOAM5305+722KBQyZ0um4NCKSK1gXYKgiMLk+79xywFjRVyM2WLQShzX
-        0iWPMAoY18GaYpzg8s7Jn2kaZaNyFDbKkA==
-X-Google-Smtp-Source: ABdhPJx4qyRJRg61YqX8d1DAvEWFptjZwj/AzMDAj3ZLksoBXcfc7inBeQBia7yv748SSeIjyJXg2Q==
-X-Received: by 2002:a63:e946:0:b0:401:b982:38a7 with SMTP id q6-20020a63e946000000b00401b98238a7mr3405759pgj.327.1655193447932;
-        Tue, 14 Jun 2022 00:57:27 -0700 (PDT)
-Received: from smtp.gmail.com ([2620:15c:202:201:82ae:1136:b202:95da])
-        by smtp.gmail.com with ESMTPSA id v11-20020a1709028d8b00b00165105518f6sm6469759plo.287.2022.06.14.00.57.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 00:57:27 -0700 (PDT)
-From:   Stephen Boyd <swboyd@chromium.org>
-To:     Benson Leung <bleung@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        Guenter Roeck <groeck@chromium.org>,
-        chrome-platform@lists.linux.dev, Rajat Jain <rajatja@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Evan Green <evgreen@chromium.org>
-Subject: [PATCH v3] platform/chrome: cros_ec: Always expose last resume result
-Date:   Tue, 14 Jun 2022 00:57:26 -0700
-Message-Id: <20220614075726.2729987-1-swboyd@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+        Tue, 14 Jun 2022 03:58:09 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14193FBEA;
+        Tue, 14 Jun 2022 00:57:39 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 422CA1F929;
+        Tue, 14 Jun 2022 07:57:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655193435; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eT7LmTn7OJ2NKmXWsimUkp6REt30L893JqiHOWuDEj4=;
+        b=aAIgh2T1rKe5Pd5QHYwQFTEaW3EHpBZXm2HkNJRIkzNalFJvrLL5/Uhtqkk20P9TOUq1Ju
+        LBaiulmsungNbgc6tES/gk1Znor1lG/7dnpTGjUCbEYaCDZtoa9EA7x90m7IQehZYzGhR4
+        pSJ01P+Bcng/mx/1U+skq6/FqhFA7E8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655193435;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eT7LmTn7OJ2NKmXWsimUkp6REt30L893JqiHOWuDEj4=;
+        b=0hzZA8+8ZaQF1lKdwzTlsfdVngCJJDlQF/xxTRawIJj0+WhD0e3RTfjSfFDheZ9FRgwezc
+        npGessqlsngJ/SDQ==
+Received: from localhost.localdomain (unknown [10.100.201.122])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 1ACDE2C142;
+        Tue, 14 Jun 2022 07:57:15 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 3/7] tty/vt: consolemap: saner variable names in set_inverse_trans_unicode()
+Date:   Tue, 14 Jun 2022 09:57:09 +0200
+Message-Id: <20220614075713.32767-3-jslaby@suse.cz>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220614075713.32767-1-jslaby@suse.cz>
+References: <20220614075713.32767-1-jslaby@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The last resume result exposing logic in cros_ec_sleep_event()
-incorrectly requires S0ix support, which doesn't work on ARM based
-systems where S0ix doesn't exist. That's because cros_ec_sleep_event()
-only reports the last resume result when the EC indicates the last sleep
-event was an S0ix resume. On ARM systems, the last sleep event is always
-S3 resume, but the EC can still detect sleep hang events in case some
-other part of the AP is blocking sleep.
+The function still uses too vague parameter name after commit
+50c92a1b2d50 (tty/vt: consolemap: saner variable names in
+set_inverse_trans_unicode()).
 
-Always expose the last resume result if the EC supports it so that this
-works on all devices regardless of S0ix support. This fixes sleep hang
-detection on ARM based chromebooks like Trogdor.
+So use "dict" instead of "p" for that parameter too.
 
-Cc: Rajat Jain <rajatja@chromium.org>
-Cc: Matthias Kaehlcke <mka@chromium.org>
-Cc: Hsin-Yi Wang <hsinyi@chromium.org>
-Cc: Tzung-Bi Shih <tzungbi@kernel.org>
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-Reviewed-by: Evan Green <evgreen@chromium.org>
-Fixes: 7235560ac77a ("platform/chrome: Add support for v1 of host sleep event")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
+ drivers/tty/vt/consolemap.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Changes from v2 (https://lore.kernel.org/r/20220611061825.4119270-1-swboyd@chromium.org):
- * Change slp_s0 to sleep in warning message
-
-Changes from v1 (https://lore.kernel.org/r/20220610223703.3387691-1-swboyd@chromium.org):
- * Fixed typo
-
- drivers/platform/chrome/cros_ec.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
-index b3e94cdf7d1a..00381490dd3e 100644
---- a/drivers/platform/chrome/cros_ec.c
-+++ b/drivers/platform/chrome/cros_ec.c
-@@ -135,16 +135,16 @@ static int cros_ec_sleep_event(struct cros_ec_device *ec_dev, u8 sleep_event)
- 	buf.msg.command = EC_CMD_HOST_SLEEP_EVENT;
- 
- 	ret = cros_ec_cmd_xfer_status(ec_dev, &buf.msg);
--
--	/* For now, report failure to transition to S0ix with a warning. */
-+	/* Report failure to transition to system wide suspend with a warning. */
- 	if (ret >= 0 && ec_dev->host_sleep_v1 &&
--	    (sleep_event == HOST_SLEEP_EVENT_S0IX_RESUME)) {
-+	    (sleep_event == HOST_SLEEP_EVENT_S0IX_RESUME ||
-+	     sleep_event == HOST_SLEEP_EVENT_S3_RESUME)) {
- 		ec_dev->last_resume_result =
- 			buf.u.resp1.resume_response.sleep_transitions;
- 
- 		WARN_ONCE(buf.u.resp1.resume_response.sleep_transitions &
- 			  EC_HOST_RESUME_SLEEP_TIMEOUT,
--			  "EC detected sleep transition timeout. Total slp_s0 transitions: %d",
-+			  "EC detected sleep transition timeout. Total sleep transitions: %d",
- 			  buf.u.resp1.resume_response.sleep_transitions &
- 			  EC_HOST_RESUME_SLEEP_TRANSITIONS_MASK);
+diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+index a7507c5c3154..a69dfda8e3d0 100644
+--- a/drivers/tty/vt/consolemap.c
++++ b/drivers/tty/vt/consolemap.c
+@@ -241,17 +241,17 @@ static void set_inverse_transl(struct vc_data *conp, struct uni_pagedict *p,
  	}
-
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+ }
+ 
+-static void set_inverse_trans_unicode(struct uni_pagedict *p)
++static void set_inverse_trans_unicode(struct uni_pagedict *dict)
+ {
+ 	unsigned int d, r, g;
+ 	u16 *inv;
+ 
+-	if (!p)
++	if (!dict)
+ 		return;
+ 
+-	inv = p->inverse_trans_unicode;
++	inv = dict->inverse_trans_unicode;
+ 	if (!inv) {
+-		inv = p->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
++		inv = dict->inverse_trans_unicode = kmalloc_array(MAX_GLYPH,
+ 				sizeof(*inv), GFP_KERNEL);
+ 		if (!inv)
+ 			return;
+@@ -259,7 +259,7 @@ static void set_inverse_trans_unicode(struct uni_pagedict *p)
+ 	memset(inv, 0, MAX_GLYPH * sizeof(*inv));
+ 
+ 	for (d = 0; d < UNI_DIRS; d++) {
+-		u16 **dir = p->uni_pgdir[d];
++		u16 **dir = dict->uni_pgdir[d];
+ 		if (!dir)
+ 			continue;
+ 		for (r = 0; r < UNI_DIR_ROWS; r++) {
 -- 
-https://chromeos.dev
+2.36.1
 
