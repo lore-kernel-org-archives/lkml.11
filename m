@@ -2,88 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 927E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF603CCA486
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356693AbiFNMKr (ORCPT
+        id S1356767AbiFNMLL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
+        Tue, 14 Jun 2022 08:11:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356483AbiFNMK0 (ORCPT
+        with ESMTP id S1356695AbiFNMKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:10:26 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93F748E7B;
-        Tue, 14 Jun 2022 05:10:24 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id s37so5708824pfg.11;
-        Tue, 14 Jun 2022 05:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Mw0EQvrU7rnu0xsHd/85d5zmXokM1828mn5qv/9/7pY=;
-        b=IdHqyEQ5ZxrIpPpcXsfUe9kU0utW++E7PzruvcWj2bH+qq5j1rOoA/Zs4KRgJVDPJB
-         FwZEQH8gRuSUbEkeKH2O+CdzNYuYbC+yWsBpHAF3CuF5mTw231bjPkiuSq8dPiGJ8cRw
-         9C9qIkH6p3LbKyEVfCuH1mg6kttUOxvHFG1IBoCip6r/l6GK0U4YY65FjfOsnfvWY2qt
-         cVdRNmNhAH6OAxTV4+xu4PWGbKHX/qMoVIwVf3CC79ULH5BhY14zUz3Ory00Dc8wGq+v
-         v+OBeshLEcU0L5wQeEXDBuLURFZEhz4LFh4jkntnUVKau4UJaYHuzJJT2I67n4eL3qYm
-         yXtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Mw0EQvrU7rnu0xsHd/85d5zmXokM1828mn5qv/9/7pY=;
-        b=6Qyp9tJ9D22Np8w1GIGhJbfZ9tnTskJwEDUqnhVCMXA9/VMcztepSyAYtY4jMP97Go
-         O4vpA59MKwpmN+/oq16+jHT8BBazRNykT/YGC558iTGyDFwqrn02QN5A8ovdqQjPlyAq
-         5nHJaha9O+jwdXikfbtT8tyia4AO377ZKO4ovGuqVhh0b0WdBjiD/XgLEctNjcQaienA
-         9AdAnJNajIj34OPLi9RyB2Y26++sEL9W2LUYlJHhzesFHGhPyWPJ8bFGqjTIdPNn/1RM
-         nq2/H2pOHHLBImW/NMVhKH1mUHPogT02yhwq3NvqkXOCRojatQLg4QODTk11Vpd+4NBQ
-         WDSQ==
-X-Gm-Message-State: AOAM533Ubjkg6VqXN+dNOJG2Efyzwfr5y/PBceac9ESwVEL3w6CtjDbp
-        JQ/pN8CewUZuRCsMY1EY6Kw=
-X-Google-Smtp-Source: ABdhPJw4eED7I9ElEerUgaqmPKpAQIi60hKd1blZwLF8Y8+rUFNbj0QxxKpNqFpkHgkfj5dWcsQQZA==
-X-Received: by 2002:a05:6a00:9a7:b0:51c:3e28:1501 with SMTP id u39-20020a056a0009a700b0051c3e281501mr4414402pfg.86.1655208624312;
-        Tue, 14 Jun 2022 05:10:24 -0700 (PDT)
-Received: from localhost (subs02-180-214-232-21.three.co.id. [180.214.232.21])
-        by smtp.gmail.com with ESMTPSA id f125-20020a62db83000000b0051be7a8c008sm7435411pfg.30.2022.06.14.05.10.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 05:10:23 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 19:10:20 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] tty: Add closing marker into comment in tty_ldisc.h
-Message-ID: <Yqh6rL7nNvR3B5Ix@debian.me>
-References: <9bc6d45d-48c8-519-1646-78ba22505b1f@linux.intel.com>
+        Tue, 14 Jun 2022 08:10:55 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE0A49C88;
+        Tue, 14 Jun 2022 05:10:35 -0700 (PDT)
+X-UUID: 3183a92f91434bbaaa380592c480608c-20220614
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:8ad328a5-76cb-4b96-b77f-79c48aee01b2,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:b14ad71,CLOUDID:33079207-b57a-4a25-a071-bc7b4972bc68,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 3183a92f91434bbaaa380592c480608c-20220614
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <irui.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1337346588; Tue, 14 Jun 2022 20:10:28 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 14 Jun 2022 20:10:27 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 14 Jun 2022 20:10:26 +0800
+From:   Irui Wang <irui.wang@mediatek.com>
+To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <nicolas.dufresne@collabora.com>, <wenst@chromium.org>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Tomasz Figa <tfiga@chromium.org>, <xia.jiang@mediatek.com>,
+        <maoguang.meng@mediatek.com>, kyrie wu <kyrie.wu@mediatek.com>,
+        <srv_heupstream@mediatek.com>
+Subject: [RESEND V9,0/7] Enable two hardware jpeg encoder for MT8195
+Date:   Tue, 14 Jun 2022 20:10:17 +0800
+Message-ID: <20220614121024.31667-1-irui.wang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9bc6d45d-48c8-519-1646-78ba22505b1f@linux.intel.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 10:50:54AM +0300, Ilpo Järvinen wrote:
-> The closing `` is missing. Add it.
-> 
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Fixes: 6bb6fa6908eb ("tty: Implement lookahead to process XON/XOFF timely")
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> 
+From: kyrie wu <kyrie.wu@mediatek.com>
 
-Hi Ilpo,
+This series adds support for multi hardware jpeg encoding, by first
+adding use of_platform_populate to manage each hardware information:
+interrupt, clock, register bases and power. Secondly add encoding
+work queue to deal with the encoding requestsof multi-hardware
+at the same time. Lastly, add output picture reorder function
+interface to eliminate the out of order images.
 
-I have already posted the same fix at [1]. Thanks anyway.
+This series has been tested with MT8195 Gstreamer.
+Encoding worked for this chip.
 
-[1]: https://lore.kernel.org/linux-doc/20220614091214.511791-1-bagasdotme@gmail.com/
+Patches 1 Adds jpeg encoder dt-bindings for mt8195
+
+Patches 2 jpeg encoder builds two module for using Multi-HW,
+export some functions to make them visible by other modules.
+
+Patches 3 use devm_of_platform_populate to manage multi-hardware.
+
+Patch 4 add jpeg encoding timeout function to judge hardware timeout.
+
+Patch 5 add encoding work queue to deal with multi-hardware encoding
+at the same time.
+
+Patch 6 add output picture reorder function to order images.
+
+Patch 7 add stop cmd function to deal with EOS operation.
+---
+This series patches dependent on:
+media_stage tree:
+[1]
+https://git.linuxtv.org/media_stage.git/commit/?id=b3627647f9ea7473d10fb08a95fd7c4133a17ca4
+
+patch1 new jpegenc dt-bindings included files
+[2] MM IOMMU binding:
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220217113453.13658-2-yong.wu@mediatek.com/
+
+[3] MT8195 power domain:
+https://patchwork.kernel.org/project/linux-mediatek/list/?series=580579
+
+Changes compared with v8:
+- some modifications for patch v8's review comments.
+- add stop cmd function.
+
+Changes compared with v7:
+- some modifications for patch v6's review comments.
+
+Changes compared with v6:
+- new yaml file for mt8195 jpeg encoder.
+- some modifications for patch v5's review comments.
+
+Changes compared with v5:
+- use of_platform_populate to replace component framework to
+  manage multi-hardware in patch 2.
+
+Changes compared with v4:
+- No change compaered with v4
+
+Changes compared with v3:
+- Structure patches for consistency, non-backward
+  compatible and do not break any existing functionality
+
+Changes compared with v2:
+- Split the last two patches into several patches
+  to enhance readability
+- Correct some syntax errors
+- Explain why the component framework is used
+
+Changes compared with v1:
+- Add jpeg encoder dt-bindings for MT8195
+- Use component framework to manage jpegenc HW
+- Add jpegenc output pic reorder function interface
+
+kyrie wu (7):
+  dt-bindings: mediatek: Add mediatek, mt8195-jpgenc compatible
+  mtk-jpegenc: export jpeg encoder functions
+  mtk-jpegenc: manage jpegenc multi-hardware
+  mtk-jpegenc: add jpegenc timeout func interface
+  mtk-jpegenc: add jpeg encode worker interface
+  mtk-jpegenc: add output pic reorder interface
+  mtk-jpegenc: add stop cmd interface for jpgenc
+
+ .../media/mediatek,mt8195-jpegenc.yaml        | 153 +++++++++
+ drivers/media/platform/mediatek/jpeg/Makefile |  11 +-
+ .../platform/mediatek/jpeg/mtk_jpeg_core.c    | 299 +++++++++++++++---
+ .../platform/mediatek/jpeg/mtk_jpeg_core.h    |  82 ++++-
+ .../platform/mediatek/jpeg/mtk_jpeg_dec_hw.c  |   1 +
+ .../platform/mediatek/jpeg/mtk_jpeg_dec_hw.h  |   3 +-
+ .../platform/mediatek/jpeg/mtk_jpeg_enc_hw.c  | 254 +++++++++++++++
+ 7 files changed, 751 insertions(+), 52 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml
 
 -- 
-An old man doll... just what I always wanted! - Clara
+2.18.0
+
