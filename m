@@ -2,115 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A35CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C9FDCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353567AbiFNHM4 (ORCPT
+        id S1353634AbiFNHNL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48780 "EHLO
+        Tue, 14 Jun 2022 03:13:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353444AbiFNHMh (ORCPT
+        with ESMTP id S1353448AbiFNHM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:12:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412C05FE7
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:12:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2184B81649
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:12:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9637C3411B;
-        Tue, 14 Jun 2022 07:12:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655190749;
-        bh=bTzyUDG/xn3eoLovQdEvpgAJqPPl044VpECLbq6qQGY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Xxx6ZhvMaC6FlWB038KmujLKhzXwKGKHraIaNbOkIvInGjh9Ae8qjPomYrw7wmXD2
-         ywL5ALOR1jRvr+PFes7ixbz22d9zfUatGQ/lqOwqZg3Cum0SgM0SCyDnD5ks0+hrkt
-         vKF3L07TmL8RhM6FOuNjjHAUIvPoS6G0dt9AFEw0=
-Date:   Tue, 14 Jun 2022 09:12:21 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Bard Liao <yung-chuan.liao@linux.intel.com>
-Cc:     alsa-devel@alsa-project.org, vkoul@kernel.org,
-        vinod.koul@linaro.org, linux-kernel@vger.kernel.org, tiwai@suse.de,
-        broonie@kernel.org, srinivas.kandagatla@linaro.org,
-        pierre-louis.bossart@linux.intel.com, sanyog.r.kale@intel.com,
-        bard.liao@intel.com
-Subject: Re: [PATCH 2/2] ASoC: SOF: Intel: add trigger callback into
- sdw_callback
-Message-ID: <Yqg01aSixhBq9d4+@kroah.com>
-References: <20220614070817.2508-1-yung-chuan.liao@linux.intel.com>
- <20220614070817.2508-3-yung-chuan.liao@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614070817.2508-3-yung-chuan.liao@linux.intel.com>
+        Tue, 14 Jun 2022 03:12:58 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BEC1A822;
+        Tue, 14 Jun 2022 00:12:55 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 97BA51A278E;
+        Tue, 14 Jun 2022 09:12:54 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 609731A2782;
+        Tue, 14 Jun 2022 09:12:54 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id C264E180222A;
+        Tue, 14 Jun 2022 15:12:52 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
+        broonie@kernel.org, lorenzo.pieralisi@arm.com, festevam@gmail.com,
+        francesco.dolcini@toradex.com
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v11 3/8] PCI: imx6: Move imx6_pcie_clk_disable() earlier
+Date:   Tue, 14 Jun 2022 14:58:57 +0800
+Message-Id: <1655189942-12678-4-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1655189942-12678-1-git-send-email-hongxing.zhu@nxp.com>
+References: <1655189942-12678-1-git-send-email-hongxing.zhu@nxp.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 03:08:17PM +0800, Bard Liao wrote:
-> For IPC4, we need to set pipeline state in BE DAI trigger.
-> 
-> Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-> Reviewed-by: Rander Wang <rander.wang@intel.com>
-> Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-> Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-> ---
->  sound/soc/sof/intel/hda-dai.c | 15 ++++++++++++---
->  sound/soc/sof/intel/hda.c     |  2 +-
->  sound/soc/sof/intel/hda.h     |  1 +
->  3 files changed, 14 insertions(+), 4 deletions(-)
-> 
-> diff --git a/sound/soc/sof/intel/hda-dai.c b/sound/soc/sof/intel/hda-dai.c
-> index 228079a52c3d..6ed99fdc5793 100644
-> --- a/sound/soc/sof/intel/hda-dai.c
-> +++ b/sound/soc/sof/intel/hda-dai.c
-> @@ -713,8 +713,7 @@ static const struct snd_soc_dai_ops ipc3_ssp_dai_ops = {
->  	.shutdown = ssp_dai_shutdown,
->  };
->  
-> -static int ipc4_be_dai_trigger(struct snd_pcm_substream *substream,
-> -			       int cmd, struct snd_soc_dai *dai)
-> +static int ipc4_be_dai_common_trigger(struct snd_soc_dai *dai, int cmd, int stream)
->  {
->  	struct snd_sof_widget *pipe_widget;
->  	struct sof_ipc4_pipeline *pipeline;
-> @@ -723,7 +722,7 @@ static int ipc4_be_dai_trigger(struct snd_pcm_substream *substream,
->  	struct snd_sof_dev *sdev;
->  	int ret;
->  
-> -	w = snd_soc_dai_get_widget(dai, substream->stream);
-> +	w = snd_soc_dai_get_widget(dai, stream);
->  	swidget = w->dobj.private;
->  	pipe_widget = swidget->pipe_widget;
->  	pipeline = pipe_widget->private;
-> @@ -758,6 +757,12 @@ static int ipc4_be_dai_trigger(struct snd_pcm_substream *substream,
->  	return 0;
->  }
->  
-> +static int ipc4_be_dai_trigger(struct snd_pcm_substream *substream,
-> +			       int cmd, struct snd_soc_dai *dai)
-> +{
-> +	return ipc4_be_dai_common_trigger(dai, cmd, substream->stream);
-> +}
-> +
->  static const struct snd_soc_dai_ops ipc4_dmic_dai_ops = {
->  	.trigger = ipc4_be_dai_trigger,
->  };
-> @@ -809,6 +814,10 @@ void hda_set_dai_drv_ops(struct snd_sof_dev *sdev, struct snd_sof_dsp_ops *ops)
->  		if (!hda_use_tplg_nhlt)
->  			ipc4_data->nhlt = intel_nhlt_init(sdev->dev);
->  
-> +#if IS_ENABLED(CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE)
-> +		sdw_callback.trigger = ipc4_be_dai_common_trigger;
-> +#endif
+Just move the imx6_pcie_clk_disable() to an earlier place without function
+changes, since it wouldn't be only used in imx6_pcie_suspend_noirq() later.
 
-#if should not be in .c files if at all possible.  Surely there's a
-better way here...
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+---
+ drivers/pci/controller/dwc/pci-imx6.c | 48 +++++++++++++--------------
+ 1 file changed, 24 insertions(+), 24 deletions(-)
 
-thanks,
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index 93ce9af1d934..511aedec2cfb 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -534,6 +534,30 @@ static int imx6_pcie_clk_enable(struct imx6_pcie *imx6_pcie)
+ 	return ret;
+ }
+ 
++static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
++{
++	clk_disable_unprepare(imx6_pcie->pcie);
++	clk_disable_unprepare(imx6_pcie->pcie_phy);
++	clk_disable_unprepare(imx6_pcie->pcie_bus);
++
++	switch (imx6_pcie->drvdata->variant) {
++	case IMX6SX:
++		clk_disable_unprepare(imx6_pcie->pcie_inbound_axi);
++		break;
++	case IMX7D:
++		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
++				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL,
++				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL);
++		break;
++	case IMX8MQ:
++	case IMX8MM:
++		clk_disable_unprepare(imx6_pcie->pcie_aux);
++		break;
++	default:
++		break;
++	}
++}
++
+ static void imx7d_pcie_wait_for_phy_pll_lock(struct imx6_pcie *imx6_pcie)
+ {
+ 	u32 val;
+@@ -966,30 +990,6 @@ static void imx6_pcie_pm_turnoff(struct imx6_pcie *imx6_pcie)
+ 	usleep_range(1000, 10000);
+ }
+ 
+-static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
+-{
+-	clk_disable_unprepare(imx6_pcie->pcie);
+-	clk_disable_unprepare(imx6_pcie->pcie_phy);
+-	clk_disable_unprepare(imx6_pcie->pcie_bus);
+-
+-	switch (imx6_pcie->drvdata->variant) {
+-	case IMX6SX:
+-		clk_disable_unprepare(imx6_pcie->pcie_inbound_axi);
+-		break;
+-	case IMX7D:
+-		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
+-				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL,
+-				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL);
+-		break;
+-	case IMX8MQ:
+-	case IMX8MM:
+-		clk_disable_unprepare(imx6_pcie->pcie_aux);
+-		break;
+-	default:
+-		break;
+-	}
+-}
+-
+ static int imx6_pcie_suspend_noirq(struct device *dev)
+ {
+ 	struct imx6_pcie *imx6_pcie = dev_get_drvdata(dev);
+-- 
+2.25.1
 
-greg k-h
