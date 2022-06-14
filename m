@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E192C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 040F4CCA47D
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355534AbiFNC3F (ORCPT
+        id S1355705AbiFNC3Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
+        Mon, 13 Jun 2022 22:29:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355304AbiFNCYP (ORCPT
+        with ESMTP id S1355379AbiFNCYT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:24:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A933A41982;
-        Mon, 13 Jun 2022 19:10:59 -0700 (PDT)
+        Mon, 13 Jun 2022 22:24:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32ED36B72;
+        Mon, 13 Jun 2022 19:11:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A570B816C0;
-        Tue, 14 Jun 2022 02:10:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C02DDC34114;
-        Tue, 14 Jun 2022 02:10:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 550FE60EE1;
+        Tue, 14 Jun 2022 02:10:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6510DC3411E;
+        Tue, 14 Jun 2022 02:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172658;
-        bh=r8lvdLrTRpr0JO0BJ5yTk+PV/xkIpP+MsXfGHsZLz0I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jk57c/5BkWOS67zOF672XbutnIJSHoCYf8LTwBQ9Rj5KjpD6gRXLeJI9+fPYL6ght
-         wrNhc1hAvKrlprsqiQg25MD3FNUhti+FXxHpmHbtjlLrwt572RwdVgAh1hwvyBsNLR
-         5r1s3Uqkb17/QBSd8aa9UlqMrGvaFwYPcJGAsw31ZdHxM238Uquq9DwDcQSnvHgLXV
-         HwHqEmI4GM3RmUJWlFvLoRa1T3GY1k/R3aPn6jkLDWmsSbbmnBEmjXn1IIczmsEjvK
-         AAVXYbZpCcy/DkJI2N+1NJAtvv8rSo4iENPT9+uyDvmA5IaQG7oAn5yaHnRNKvuyi4
-         Pfi5Qa8+v1wJg==
+        s=k20201202; t=1655172643;
+        bh=WQMR5DGa47oOkx5CuOK54+4aPVYFBjBoAkNKHqKp0QU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=c5L48gcm22zKsbcbL3hnEyLYzFL8ES/DV4qrKExLWJ/d4bLLqPIswr7mahvaaLZRF
+         oG1toygNRooXe+xDpUlSVrGKoBkh1FoATXuOLNmSEdVsQEtCxAKx2fQTQiFB16jlLD
+         4nZfq/VA3g3pZJddedVnOFbPvfGNHZLZzbQEHpFgrH+Te1vVb7I3VIEbt88kKEvUcU
+         jlM34zyxkrkS4fZiC9xyrsSLJpk2mxsNMBTBpwSNJmKWwCaLUJ88HjOKyNbmAxVmBb
+         t405wjXNWe8URRy+sO1fbArFr59XVln8Kwxs+doCEtIOwHQ5HMWUTDi6L6gfVLm7YF
+         rQiP6gnwA7eoA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lauro.venancio@openbossa.org,
-        aloisio.almeida@openbossa.org, sameo@linux.intel.com,
-        linux-wireless@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 10/12] nfc: nfcmrvl: Fix memory leak in nfcmrvl_play_deferred
-Date:   Mon, 13 Jun 2022 22:10:38 -0400
-Message-Id: <20220614021040.1101131-10-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
+        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.9 01/12] ASoC: cs42l52: Fix TLV scales for mixer controls
+Date:   Mon, 13 Jun 2022 22:10:29 -0400
+Message-Id: <20220614021040.1101131-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614021040.1101131-1-sashal@kernel.org>
-References: <20220614021040.1101131-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,64 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 8a4d480702b71184fabcf379b80bf7539716752e ]
+[ Upstream commit 8bf5aabf524eec61013e506f764a0b2652dc5665 ]
 
-Similar to the handling of play_deferred in commit 19cfe912c37b
-("Bluetooth: btusb: Fix memory leak in play_deferred"), we thought
-a patch might be needed here as well.
+The datasheet specifies the range of the mixer volumes as between
+-51.5dB and 12dB with a 0.5dB step. Update the TLVs for this.
 
-Currently usb_submit_urb is called directly to submit deferred tx
-urbs after unanchor them.
-
-So the usb_giveback_urb_bh would failed to unref it in usb_unanchor_urb
-and cause memory leak.
-
-Put those urbs in tx_anchor to avoid the leak, and also fix the error
-handling.
-
-Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220607083230.6182-1-xiaohuizhang@ruc.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-2-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/nfcmrvl/usb.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ sound/soc/codecs/cs42l52.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
-index 585a0f20835b..3263e2a2bdfd 100644
---- a/drivers/nfc/nfcmrvl/usb.c
-+++ b/drivers/nfc/nfcmrvl/usb.c
-@@ -401,13 +401,25 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
- 	int err;
+diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
+index 0d9c4a57301b..f733f6b42b53 100644
+--- a/sound/soc/codecs/cs42l52.c
++++ b/sound/soc/codecs/cs42l52.c
+@@ -141,7 +141,7 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
  
- 	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
-+		usb_anchor_urb(urb, &drv_data->tx_anchor);
-+
- 		err = usb_submit_urb(urb, GFP_ATOMIC);
--		if (err)
-+		if (err) {
-+			kfree(urb->setup_packet);
-+			usb_unanchor_urb(urb);
-+			usb_free_urb(urb);
- 			break;
-+		}
+ static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
  
- 		drv_data->tx_in_flight++;
-+		usb_free_urb(urb);
-+	}
-+
-+	/* Cleanup the rest deferred urbs. */
-+	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
-+		kfree(urb->setup_packet);
-+		usb_free_urb(urb);
- 	}
--	usb_scuttle_anchored_urbs(&drv_data->deferred);
- }
+-static DECLARE_TLV_DB_SCALE(mix_tlv, -50, 50, 0);
++static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
  
- static int nfcmrvl_resume(struct usb_interface *intf)
+ static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
+ 
+@@ -368,7 +368,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
+ 			      CS42L52_ADCB_VOL, 0, 0xA0, 0x78, ipd_tlv),
+ 	SOC_DOUBLE_R_SX_TLV("ADC Mixer Volume",
+ 			     CS42L52_ADCA_MIXER_VOL, CS42L52_ADCB_MIXER_VOL,
+-				0, 0x19, 0x7F, ipd_tlv),
++				0, 0x19, 0x7F, mix_tlv),
+ 
+ 	SOC_DOUBLE("ADC Switch", CS42L52_ADC_MISC_CTL, 0, 1, 1, 0),
+ 
 -- 
 2.35.1
 
