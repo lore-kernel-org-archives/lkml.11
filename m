@@ -2,102 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E5AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:11:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE228C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357009AbiFNQLv (ORCPT
+        id S1356999AbiFNQMT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52894 "EHLO
+        Tue, 14 Jun 2022 12:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234800AbiFNQLo (ORCPT
+        with ESMTP id S234800AbiFNQMS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:11:44 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD81427D6;
-        Tue, 14 Jun 2022 09:11:42 -0700 (PDT)
+        Tue, 14 Jun 2022 12:12:18 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E3D43ECD;
+        Tue, 14 Jun 2022 09:12:17 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id u2so8988738pfc.2;
+        Tue, 14 Jun 2022 09:12:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655223102; x=1686759102;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=AkQmBF76CtIkQi/TFwXemb2uXkG2WcKUZ9CQRohu4Tw=;
-  b=YK3cEKt32WRvQ9DoxSAHYrBK/gfkngrnFfsju8bQB04wHk+ibk8JSYzd
-   Flo/89DJYYekrdYMTveGvkH+C2x32mSBT0GKv9bG9lxb4FFBWd6sC9Kk+
-   K2wjJLmxVt0aZeJh79xw9CVcrP/tr5gCqVXskC83eQgrL3PK3YBNoK8h+
-   8=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Jun 2022 09:11:42 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 09:11:42 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 09:11:42 -0700
-Received: from hu-tdas-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 09:11:38 -0700
-From:   Taniya Das <quic_tdas@quicinc.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Taniya Das <quic_tdas@quicinc.com>
-Subject: [PATCH v1] arm64: dts: qcom: sc7280: Update lpassaudio clock controller for resets
-Date:   Tue, 14 Jun 2022 21:41:18 +0530
-Message-ID: <20220614161118.12458-1-quic_tdas@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=/SLmhszGSTZ0vVz5kkFX0OqQLkqAokJHIF8TSGcN0f8=;
+        b=ofTQs7qoE5gXNwEp0zVQ9p1G1ZiVQpVTZKqnErTjYV5EXYo7mYnne0By54Lcj6pxe4
+         48M+pKBCFr4dKnDvDks1WRfVUKiBCU24ggjKZuCtA7EADw2FkdAMGnEmmpLWO92RnNwR
+         YMvilX9JoXkRjRJecjxVnUOY+rJBMZObXIYt9uQYETWWl2M7gWqP4OAZiEG/s5c5JZWZ
+         GgoMOjJig9mbMjoaoAVgDBo7OAkdyiiA9ptdZFCuVEN/JYPbzj7zt29UcaSzGvrXLqlI
+         VYlYV46lMf0dWGdhsMeiyZDOlgWV488HqlPKKH0fVt1aOICaxTlcE5W+Nf4UTLpcSJdZ
+         hW4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/SLmhszGSTZ0vVz5kkFX0OqQLkqAokJHIF8TSGcN0f8=;
+        b=t9fQDeqbYPWjvwYcGTugdTy+6DQPw9zWEZMduYS8AEyR+Cfgt12So60Yz3H++N4bG1
+         i9DZ4caJYAwB4Ke35dtGiBpydTJKcNeaSDh+LjrJYUpecr0/OiVYQpvOpInNc3pgySJ6
+         DRqUbyr7Pm/2je/TbGGxCWoW+UZlR+dfEfCUOGrRf4imKrBZhs5n1FhgQSkYIDR5Al93
+         7e/Vw3V1/vMW5AtyuJnChREVO8iTBVrxPBxfI6ubNQ2QV3qhL9xmrLnuM/SDl+vbXIEO
+         nQ0pJN6GiH7ZH0chuA6KIoAlg8bU6yX0pv80dLsgI0eXPYJpV2mcq2vaItLbZD7tfWsP
+         +mtw==
+X-Gm-Message-State: AJIora8tL/AaEWdQGiEjE5X6KEnH49pnJ184+VANtGVo5tczqYQheg8u
+        piVzbdyfOwpQq9wur5UkNe8=
+X-Google-Smtp-Source: AGRyM1vzBuNrJwkITjgedbtiLDEw9WkboTP/IN8pfrVNstzsOL9V0OC4QeLf2z2zvKewcBwFphKVDQ==
+X-Received: by 2002:a65:41ca:0:b0:408:aa25:5026 with SMTP id b10-20020a6541ca000000b00408aa255026mr2735075pgq.96.1655223136880;
+        Tue, 14 Jun 2022 09:12:16 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id ep11-20020a17090ae64b00b001eab4d6de9esm3151058pjb.3.2022.06.14.09.12.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 09:12:16 -0700 (PDT)
+Message-ID: <fd6fa416-ba17-e0fe-c89c-0abcc6c3fd44@gmail.com>
+Date:   Tue, 14 Jun 2022 09:12:14 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] bcm63xx_enet: reuse skbuff_head
+Content-Language: en-US
+To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>, davem@davemloft.com,
+        edumazet@google.com, kuba@kernel.org, f.fainelli@gmail.com,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220614021009.696-1-liew.s.piaw@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220614021009.696-1-liew.s.piaw@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The lpass audio supports TX/RX/WSA block resets. The LPASS PIL clock
-driver is not supported and mark it disabled. Also to keep consistency
-update lpasscore to lpass_core.
+On 6/13/22 19:10, Sieng Piaw Liew wrote:
+> napi_build_skb() reuses NAPI skbuff_head cache in order to save some
+> cycles on freeing/allocating skbuff_heads on every new Rx or completed
+> Tx.
+> Use napi_consume_skb() to feed the cache with skbuff_heads of completed
+> Tx so it's never empty.
+> 
+> Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
 
-Fixes: 9499240d15f2 ("arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio clock controllers")
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index e66fc67de206..180cfd2765b9 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -2174,6 +2174,7 @@
- 			clocks = <&gcc GCC_CFG_NOC_LPASS_CLK>;
- 			clock-names = "iface";
- 			#clock-cells = <1>;
-+			status = "disabled";
- 		};
-
- 		lpass_audiocc: clock-controller@3300000 {
-@@ -2185,6 +2186,7 @@
- 			power-domains = <&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
- 			#clock-cells = <1>;
- 			#power-domain-cells = <1>;
-+			#reset-cells = <1>;
- 		};
-
- 		lpass_aon: clock-controller@3380000 {
-@@ -2198,7 +2200,7 @@
- 			#power-domain-cells = <1>;
- 		};
-
--		lpasscore: clock-controller@3900000 {
-+		lpass_core: clock-controller@3900000 {
- 			compatible = "qcom,sc7280-lpasscorecc";
- 			reg = <0 0x03900000 0 0x50000>;
- 			clocks =  <&rpmhcc RPMH_CXO_CLK>;
---
-2.17.1
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
