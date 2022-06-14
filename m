@@ -2,108 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB89C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 06:39:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4E2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 06:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239790AbiFNGj2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 02:39:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44358 "EHLO
+        id S1346571AbiFNGmK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 02:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231724AbiFNGj0 (ORCPT
+        with ESMTP id S231724AbiFNGmG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 02:39:26 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E9DB37BCF
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 23:39:25 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id AF7045C006E;
-        Tue, 14 Jun 2022 02:39:22 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 14 Jun 2022 02:39:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1655188762; x=
-        1655275162; bh=YLErNvqZx1IawB0vUHwDOxvcYy8H5o0KiKQdt10QrzY=; b=U
-        +UE/qlH2+74a1pdC++OqXtWIXXd/Vn6hgnkHOon4r+GApTLm1chn1Eni8QBPivqK
-        1DmND3dY5Lf5l0GtWXgt7QPm0AjuZhExJ0tyQKw6z8CMimhdS0+wNoYmgHvQTQdK
-        6BPZqxIr6RPnP/k6ILVSmKysxP9HS+LmzJiev4FiOjlzuKXI4lHk0X+5AY4Kc/ek
-        j04+YuxYNLOr/nbKaAhNS2J4AP2gM+iBn9DZLrnO/OsbkpiFu9ll11FUiYaKBtWb
-        HivOcOKV/KMN48CZcaWT1iu9FxgbHPBE42z7s/0JR1XrGveuacyt7Vr8ubL/7DUu
-        cgIttNkhTCs0Kk0zW1TVg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1655188762; x=
-        1655275162; bh=YLErNvqZx1IawB0vUHwDOxvcYy8H5o0KiKQdt10QrzY=; b=T
-        F8hdFjasH8OZY7roQVqWv0Qu+ZYPa18MW26BlKNU9wKY5xC5zqLPIFKkzVO/ar8m
-        dYHKe1jQY8qemfN7llew7vSEclxPNrk+rofePAwvISrHImsYBukiOzcxZV78H95Q
-        78GK5cMHid6DhEdQ1xIwewusmUU04cZCaNEOoln1OA/8Ql5/yVKm8r2ribVYxfyN
-        cS3FEH/4+MyDQsrq9hNfbW86pJg1ZlHa1bvrYkjvAL68tcaXqV32DrxGnm0c0K5t
-        WEhthjanMBkjvE7IqTS1W5VezJ/o6VB0pcJdrE3r/8+w1s3qags4uZdJfgy1XB0b
-        xyrJBkfVXl5/d0IpAi7ZA==
-X-ME-Sender: <xms:Gi2oYnHgdP4g0INELdKQolrmQ7gncQUll3xIh5DO1oB1NVD7CPKCTQ>
-    <xme:Gi2oYkUyi4d8wQArFGKLBpWpTW6DO6KfJegGUOLHQ-g2II_AwJlTbZG46fKCQ5S4X
-    Ib0Yz8GiCAuYN10pw>
-X-ME-Received: <xmr:Gi2oYpK9auqTk03rBrrS6TiPEsI7xv4_NogLK9VN90yHk_nevMwj9zaotIEuqN418N3IyoQqZIWLfq-muciFKWKEgtqBAukgqe7ojW0seZUGF8hMyashPMTyRA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddukedguddtkecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefuvfevfhfhkffffgggjggtgfesthejredttdefjeenucfhrhhomhepufgr
-    mhhuvghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqne
-    cuggftrfgrthhtvghrnhepffdtveekvdegkeeuueetgfetffeileevudekuefhheelvdfh
-    iedtheduhfduhefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilh
-    hfrhhomhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:Gi2oYlFPP1lcV22QarSqf1uxSt0P4_OvAWNOBD4Y6BXqxT-9OAONlg>
-    <xmx:Gi2oYtVPJ3pzCjVz7dUV-rNHoTbDRRgUCFdiTWXsLHroVPDi8BCpWA>
-    <xmx:Gi2oYgP4uCMNpZO6zr3l9N94LkmiSqhnDmEmEoNTHJ8E3xhbOFRrpw>
-    <xmx:Gi2oYlTmepW70fHSh9e8Uub9_Ckgpu5sZHiq_24x5-SXojU1XJuFFw>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 14 Jun 2022 02:39:21 -0400 (EDT)
-Subject: Re: [PATCH 1/2] ASoC: sun8i-codec: Partial revert to fix clock
- specifiers
-To:     Charles Keepax <ckeepax@opensource.cirrus.com>, broonie@kernel.org
-Cc:     matthias.bgg@gmail.com, wens@csie.org, jernej.skrabec@gmail.com,
-        linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        lgirdwood@gmail.com, alsa-devel@alsa-project.org,
-        patches@opensource.cirrus.com, linux-kernel@vger.kernel.org
-References: <20220613161552.481337-1-ckeepax@opensource.cirrus.com>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <9e105410-94d5-1801-8919-af8c0cef4de1@sholland.org>
-Date:   Tue, 14 Jun 2022 01:39:20 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Tue, 14 Jun 2022 02:42:06 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B445338BC5;
+        Mon, 13 Jun 2022 23:42:04 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id d19so8599473lji.10;
+        Mon, 13 Jun 2022 23:42:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=N2nQITAXHPyr9/sd4X843kKOq+7gC+Dakac3yk/gowA=;
+        b=by8DQFBrBvIRqwUjmznJZPVWMazwlZoWA0kIolZ3oIes+d7Ms4S3q4V8gJDUkQcyqo
+         7vGJK0tQtDdU3eXalM0H+e6zajpiRKAfXQGEh7ODdBp469yHKoAmZWOUmfsVw9UBbkpi
+         aCFunK24lhNl1otwnuuITvurVfQB/Q1kl1rIzNWr8mZ+ACjU12Z3ir9QCFGLxjemOi4v
+         HuXrPod6nfTs0Hc9MxJhtqQ+h/BxMmk0By3JBjgKwwENy9RBkrcsheGwNi1KDrexcGmP
+         43TjKkF1wQeczJTB3RkXvJDr8E4aZx5JTCtDLArcR1pcFne1IKZ8J3fKrv77BOO+Ptz4
+         CWjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=N2nQITAXHPyr9/sd4X843kKOq+7gC+Dakac3yk/gowA=;
+        b=mXMKSENyWC6i0gq9vYqww7u8D4wFPAbgKgdvXBh8KOAbonjX8L+c0Y3lm3d6Cga6gl
+         S9hJSdDdxcW5+TtvCXtc5/WbSIgH1VSr5j1Rur1N/FExJST4cytZYv+5oHTYMJfLo06P
+         h/cM3y4gAjTYJ9g481SOL4OwZubwCipunEFhEfy99c7zralS2a4EYE1xZcTu+FlBQ0W0
+         Hg/NEPCEdD5LsLucYVx9EOdwFGpuiblhYhaeHKhORtsJoctlEFcZMDKmQNlNAiMyi3Dl
+         5mr+dQLNK5cZOeIrgAh2xdXxmhW3iIx6ETVhiwnRa0LDdsTiUfLfb/TRXDtwdCml7H0U
+         Wrdg==
+X-Gm-Message-State: AJIora+sMd2C81ZXLsHycH2VweI/rtb7P/7PhmTlDIls9TuWhY2Y9Imx
+        pAb6fngGqnyeiot2PeWZ+40=
+X-Google-Smtp-Source: AGRyM1sxPXRGyUnfV1+qFTHjuNEsz+I0cdsrtA3XnshWscNQWdQ/kG+MYF+If5shILHaIO/+7RXi4A==
+X-Received: by 2002:a2e:9191:0:b0:255:7517:e73c with SMTP id f17-20020a2e9191000000b002557517e73cmr1558422ljg.393.1655188922795;
+        Mon, 13 Jun 2022 23:42:02 -0700 (PDT)
+Received: from pc638.lan ([155.137.26.201])
+        by smtp.gmail.com with ESMTPSA id b23-20020a196717000000b0047255d21142sm1272029lfc.113.2022.06.13.23.42.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 23:42:02 -0700 (PDT)
+From:   Uladzislau Rezki <urezki@gmail.com>
+X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
+Date:   Tue, 14 Jun 2022 08:42:00 +0200
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Joel Fernandes <joel@joelfernandes.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
+        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
+Subject: Re: [PATCH 2/2] rcu/kvfree: Introduce KFREE_DRAIN_JIFFIES_[MAX/MIN]
+ interval
+Message-ID: <YqgtuBXW5pW4ivD/@pc638.lan>
+References: <20220602080644.432156-1-urezki@gmail.com>
+ <20220602080644.432156-2-urezki@gmail.com>
+ <20220604155108.GU1790663@paulmck-ThinkPad-P17-Gen-1>
+ <YpxzB3/HRN/EEHa8@pc638.lan>
+ <20220607034710.GE1790663@paulmck-ThinkPad-P17-Gen-1>
+ <CA+KHdyXU1apQQbVVZ_zX7o86Qp-AQnif2u8aJFULqHNtfCGcSA@mail.gmail.com>
+ <YqN1QqRmPpchDm/k@google.com>
+ <YqcHrIMefthWe0t4@pc638.lan>
 MIME-Version: 1.0
-In-Reply-To: <20220613161552.481337-1-ckeepax@opensource.cirrus.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqcHrIMefthWe0t4@pc638.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Charles,
-
-On 6/13/22 11:15 AM, Charles Keepax wrote:
-> Recent updates accidentally updated the clock producer/consumer
-> specifiers on this device as part of refactoring the CPU side of the DAI
-> links. However, this device sits on the CODEC side and shouldn't have
-> been updated. Partially revert the changes keeping the switch to the new
-> clock terminology but going back to the CODEC defines.
+> Hello, Joel, Paul.
 > 
-> Fixes: 7cc3965fde74 ("ASoC: sunxi: Update to use set_fmt_new callback")
-> Reported-by: Samuel Holland <samuel@sholland.org>
-> Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+> > Hi Vlad, Paul,
+> > 
+> > On Thu, Jun 09, 2022 at 03:10:57PM +0200, Uladzislau Rezki wrote:
+> > > On Tue, Jun 7, 2022 at 5:47 AM Paul E. McKenney <paulmck@kernel.org> wrote:
+> > > >
+> > > > On Sun, Jun 05, 2022 at 11:10:31AM +0200, Uladzislau Rezki wrote:
+> > > > > > On Thu, Jun 02, 2022 at 10:06:44AM +0200, Uladzislau Rezki (Sony) wrote:
+> > > > > > > Currently the monitor work is scheduled with a fixed interval that
+> > > > > > > is HZ/20 or each 50 milliseconds. The drawback of such approach is
+> > > > > > > a low utilization of page slot in some scenarios. The page can store
+> > > > > > > up to 512 records. For example on Android system it can look like:
+> > > > > > >
+> > > > > > > <snip>
+> > > > > > >   kworker/3:0-13872   [003] .... 11286.007048: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=1
+> > > > > > >   kworker/3:0-13872   [003] .... 11286.015638: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=2
+> > > > > > >   kworker/1:2-20434   [001] .... 11286.051230: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=1
+> > > > > > >   kworker/1:2-20434   [001] .... 11286.059322: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=2
+> > > > > > >   kworker/0:1-20052   [000] .... 11286.095295: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=2
+> > > > > > >   kworker/0:1-20052   [000] .... 11286.103418: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=1
+> > > > > > >   kworker/2:3-14372   [002] .... 11286.135155: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=2
+> > > > > > >   kworker/2:3-14372   [002] .... 11286.135198: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=1
+> > > > > > >   kworker/1:2-20434   [001] .... 11286.155377: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=5
+> > > > > > >   kworker/2:3-14372   [002] .... 11286.167181: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=5
+> > > > > > >   kworker/1:2-20434   [001] .... 11286.179202: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x000000008ef95e14 nr_records=1
+> > > > > > >   kworker/2:3-14372   [002] .... 11286.187398: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000c597d297 nr_records=6
+> > > > > > >   kworker/3:0-13872   [003] .... 11286.187445: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000050bf92e2 nr_records=3
+> > > > > > >   kworker/1:2-20434   [001] .... 11286.198975: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=4
+> > > > > > >   kworker/1:2-20434   [001] .... 11286.207203: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=4
+> > > > > > > <snip>
+> > > > > > >
+> > > > > > > where a page only carries few records to reclaim a memory. In order to
+> > > > > > > improve batching and make utilization more efficient the patch introduces
+> > > > > > > a drain interval that can be set either to KFREE_DRAIN_JIFFIES_MAX or
+> > > > > > > KFREE_DRAIN_JIFFIES_MIN. It is adjusted if a flood is detected, in this
+> > > > > > > case a memory reclaim occurs more often whereas in mostly idle cases the
+> > > > > > > interval is set to its maximum timeout that improves the utilization of
+> > > > > > > page slots.
+> > > > > > >
+> > > > > > > Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+> > > > > >
+> > > > > > That does look like a problem well worth solving!
+> > > > > >
+> > > > > Agree, better ideas make better final solution :)
+> > > > >
+> > > > > >
+> > > > > > But I am missing one thing. If we are having a callback flood, why do we
+> > > > > > need a shorter timeout?
+> > > > > >
+> > > > > To offload faster, because otherwise we run into classical issue, it is a low
+> > > > > memory condition state resulting in OOM.
+> > > >
+> > > > But doesn't each callback queued during the flood give us an opportunity
+> > > > to react to the flood?  That will be way more fine-grained than any
+> > > > reasonable timer, right?  Or am I missing something?
+> > > >
+> > > We can set the timer to zero or to current "jiffies" to initiate the
+> > > offloading if the
+> > > page is full. In that sense probably it make sense to propagate those two attr.
+> > > to user space, so the user can configure min/max drain interval.
+> > > 
+> > > Or we can only deal with fixed interval exposed via sysfs to control it by user.
+> > > In that case we can get rid of MIN one and just trigger a timer if the page is
+> > > full. I think this approach is better.
+> > 
+> > Yes I also think triggering timer with zero-timeout is better. Can you (Vlad)
+> > accomplish that by just calling the timer callback inline, instead of queuing
+> > a timer? I imagine you would just do queue_work() instead of
+> > queue_delayed_work() in this scenario.
+> > 
+> > > > I do agree that the action would often need to be indirect to avoid the
+> > > > memory-allocation-state hassles, but we already can do that, either via
+> > > > an extremely short-term hrtimer or something like irq-work.
+> > > >
+> > > > > > Wouldn't a check on the number of blocks queued be simpler, more direct,
+> > > > > > and provide faster response to the start of a callback flood?
+> > > > > >
+> > > > > I rely on krcp->count because not always we can store the pointer in the page
+> > > > > slots. We can not allocate a page in the caller context thus we use page-cache
+> > > > > worker that fills the cache in normal context. While it populates the cache,
+> > > > > pointers temporary are queued to the linked-list.
+> > > > >
+> > > > > Any thoughts?
+> > > >
+> > > > There are a great many ways to approach this.  One of them is to maintain
+> > > > a per-CPU free-running counter of kvfree_rcu() calls, and to reset this
+> > > > counter each jiffy.
+> > > >
+> > > > Or am I missing a trick here?
+> > > >
+> > > Do you mean to have a per-cpu timer that checks the per-cpu-freed counter
+> > > and schedule the work when if it is needed? Or i have missed your point?
+> > 
+> > I think he (Paul) is describing the way 'flood detection' can work similar to how the
+> > bypass list code is implemented. There he maintains a count which only if
+> > exceeds a limit, will queue on to the bypass list.
+> > 
+> OK, i see that. We also do similar thing. We say it is a flood - when a
+> page becomes full, so it is kind of threshold that we pass.
+> 
+> > This code:
+> > 
+> >         // If we have advanced to a new jiffy, reset counts to allow
+> >         // moving back from ->nocb_bypass to ->cblist.
+> >         if (j == rdp->nocb_nobypass_last) {
+> >                 c = rdp->nocb_nobypass_count + 1;
+> >         } else {
+> >                 WRITE_ONCE(rdp->nocb_nobypass_last, j);
+> >                 c = rdp->nocb_nobypass_count - nocb_nobypass_lim_per_jiffy;
+> >                 if (ULONG_CMP_LT(rdp->nocb_nobypass_count,
+> >                                  nocb_nobypass_lim_per_jiffy))
+> >                         c = 0;
+> >                 else if (c > nocb_nobypass_lim_per_jiffy)
+> >                         c = nocb_nobypass_lim_per_jiffy;
+> >         }
+> >         WRITE_ONCE(rdp->nocb_nobypass_count, c);
+> > 
+> > 
+> > Your (Vlad's) approach OTOH is also fine to me, you check if page is full and
+> > make that as a 'flood is happening' detector.
+> > 
+> OK, thank you Joel. I also think, that way we improve batching and utilization
+> of the page what is actually an intention of the patch in question.
+> 
+Paul, will you pick this patch?
 
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Tested-by: Samuel Holland <samuel@sholland.org>
+Thanks!
 
-Thanks for the quick follow-up, and sorry for the confusion my earlier comment
-caused. I verified that sound is broken (loud static) on a Pine A64-LTS board
-with for-next, and is fixed by this patch.
-
-Regards,
-Samuel
+--
+Uladzislau Rezki
