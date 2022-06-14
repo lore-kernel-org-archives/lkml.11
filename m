@@ -2,118 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4156CC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C392C3F2D4
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:29:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240427AbiFNM2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57906 "EHLO
+        id S245161AbiFNM25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233724AbiFNM16 (ORCPT
+        with ESMTP id S237837AbiFNM2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:27:58 -0400
-Received: from es400ra02.iit.it (mx.iit.it [90.147.26.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D13721276;
-        Tue, 14 Jun 2022 05:27:50 -0700 (PDT)
-Received: from es400ra02.iit.it (127.0.0.1) id hl1vc40171s9; Mon, 13 Jun 2022 14:05:50 +0200 (envelope-from <prvs=1163b4114e=Andrea.Merello@iit.it>)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iit.it;
-        s=mx; i=@iit.it; h=Received:Received:From:To:CC:Subject:Date:
-        Message-ID:In-Reply-To:References:MIME-Version:
-        Content-Transfer-Encoding:Content-Type; bh=anA0YOHI8qF5NwUnMjW2q
-        RDCiZFeRKt619DofEzciiQ=; b=cY/3hz02vhB5VudXV09GP6uUnEiduz78L4yxD
-        k1Vq80MTbPOBfg5IzYxH7zyRxWiCU96mGzw1mmXp26Y6sLshDpMY2yYyW7h8Bf0u
-        TrchXFLnrGG6bv/dfYpxKnms4yM2qZFQK6O/wgBzf2yU7oIciJpYGcc1nbqdNM/f
-        lIm95c=
-Received: from mail.iit.it ([10.255.8.186])
-        by es400ra02.iit.it ([172.31.0.242]) (SonicWall 10.0.16.7295)
-        with ESMTPS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256)
-        id o202206131205500231018-8; Mon, 13 Jun 2022 14:05:50 +0200
-Received: from poker.lan (90.147.26.235) by iitmxwge020.iit.local
- (10.255.8.186) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.17; Mon, 13 Jun
- 2022 14:05:49 +0200
-From:   <andrea.merello@iit.it>
-To:     <jic23@kernel.org>, <mchehab+huawei@kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <lars@metafoo.de>, <robh+dt@kernel.org>,
-        <andy.shevchenko@gmail.com>, <matt.ranostay@konsulko.com>,
-        <ardeleanalex@gmail.com>, <jacopo@jmondi.org>,
-        Andrea Merello <andrea.merello@iit.it>
-Subject: [v6 01/14] iio: add modifiers for linear acceleration
-Date:   Mon, 13 Jun 2022 14:05:21 +0200
-Message-ID: <20220613120534.36991-2-andrea.merello@iit.it>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220613120534.36991-1-andrea.merello@iit.it>
-References: <20220613120534.36991-1-andrea.merello@iit.it>
+        Tue, 14 Jun 2022 08:28:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE23377EA;
+        Tue, 14 Jun 2022 05:28:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA60EB81874;
+        Tue, 14 Jun 2022 12:28:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D73C3411B;
+        Tue, 14 Jun 2022 12:28:03 +0000 (UTC)
+Message-ID: <366fca22-e22d-9963-423b-252274fa9d9e@xs4all.nl>
+Date:   Tue, 14 Jun 2022 14:28:01 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [90.147.26.235]
-X-ClientProxiedBy: IITMXWGE021.iit.local (10.255.8.187) To
- iitmxwge020.iit.local (10.255.8.186)
-X-Mlf-DSE-Version: 6873
-X-Mlf-Rules-Version: s20220519150137; ds20200715013501;
-        di20220610180234; ri20160318003319; fs20220610211824
-X-Mlf-Smartnet-Version: 20210917223710
-X-Mlf-Envelope-From: Andrea.Merello@iit.it
-X-Mlf-Version: 10.0.16.7295
-X-Mlf-License: BSV_C_AP_T_R
-X-Mlf-UniqueId: o202206131205500231018
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v8 04/17] media: uapi: HEVC: Add missing fields in HEVC
+ controls
+Content-Language: en-US
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        nicolas.dufresne@collabora.com, andrzej.p@collabora.com
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com
+References: <20220614083614.240641-1-benjamin.gaignard@collabora.com>
+ <20220614083614.240641-5-benjamin.gaignard@collabora.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220614083614.240641-5-benjamin.gaignard@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrea Merello <andrea.merello@iit.it>
+On 6/14/22 10:36, Benjamin Gaignard wrote:
+> Complete the HEVC controls with missing fields from H.265 specifications.
+> Even if these fields aren't used by the current mainlined drivers
+> they will be required for (at least) the rkvdec driver.
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> ---
+> version 6:
+> - Add short_term_ref_pic_set_size and long_term_ref_pic_set_size
+>   in v4l2_ctrl_hevc_decode_params structure.
+> 
+>  .../media/v4l/ext-ctrls-codec.rst             | 32 +++++++++++++++++++
+>  include/media/hevc-ctrls.h                    |  8 ++++-
+>  2 files changed, 39 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> index 6183f43f4d73..aa7556e200c9 100644
+> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> @@ -2683,6 +2683,16 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>      :stub-columns: 0
+>      :widths:       1 1 2
+>  
+> +    * - __u8
+> +      - ``video_parameter_set_id``
+> +      - Specifies the value of the vps_video_parameter_set_id of the active VPS
+> +        as descibed in section "7.4.3.2.1 General sequence parameter set RBSP semantics"
 
-Add IIO_MOD_LINEAR_X, IIO_MOD_LINEAR_Y and IIO_MOD_LINEAR_Z modifiers to te
-IIO core, which is preparatory for adding the Bosch BNO055 IMU driver.
+descibed -> described
 
-Bosch BNO055 IMU can report raw accelerations (among x, y and z axis) as
-well as the so called "linear accelerations" (again, among x, y and z axis)
-which is basically the acceleration after subtracting gravity and for which
-those new modifiers are for.
+This same typo occurs several times in this patch and in patch 17/17.
 
-Signed-off-by: Andrea Merello <andrea.merello@iit.it>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- drivers/iio/industrialio-core.c | 3 +++
- include/uapi/linux/iio/types.h  | 4 +++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+Regards,
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index adf054c7a75e..9c0ee7755884 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -134,6 +134,9 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_ETHANOL] = "ethanol",
- 	[IIO_MOD_H2] = "h2",
- 	[IIO_MOD_O2] = "o2",
-+	[IIO_MOD_LINEAR_X] = "linear_x",
-+	[IIO_MOD_LINEAR_Y] = "linear_y",
-+	[IIO_MOD_LINEAR_Z] = "linear_z",
- };
- 
- /* relies on pairs of these shared then separate */
-diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index 472cead10d8d..0993f6b697fc 100644
---- a/include/uapi/linux/iio/types.h
-+++ b/include/uapi/linux/iio/types.h
-@@ -95,6 +95,9 @@ enum iio_modifier {
- 	IIO_MOD_ETHANOL,
- 	IIO_MOD_H2,
- 	IIO_MOD_O2,
-+	IIO_MOD_LINEAR_X,
-+	IIO_MOD_LINEAR_Y,
-+	IIO_MOD_LINEAR_Z,
- };
- 
- enum iio_event_type {
-@@ -115,4 +118,3 @@ enum iio_event_direction {
- };
- 
- #endif /* _UAPI_IIO_TYPES_H_ */
--
--- 
-2.17.1
+	Hans
+
+> +        of H.265 specifications.
+> +    * - __u8
+> +      - ``seq_parameter_set_id``
+> +      - Provides an identifier for the SPS for reference by other syntax elements
+> +        as descibed in section "7.4.3.2.1 General sequence parameter set RBSP semantics"
+> +        of H.265 specifications.
+>      * - __u16
+>        - ``pic_width_in_luma_samples``
+>        -
+> @@ -2822,6 +2832,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>      :stub-columns: 0
+>      :widths:       1 1 2
+>  
+> +    * - __u8
+> +      - ``pic_parameter_set_id``
+> +      - Identifies the PPS for reference by other syntax elements.
+>      * - __u8
+>        - ``num_extra_slice_header_bits``
+>        -
+> @@ -3048,6 +3061,15 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>      * - __u8
+>        - ``ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+>        - The list of L1 reference elements as indices in the DPB.
+> +    * - __u16
+> +      - ``short_term_ref_pic_set_size``
+> +      - Specifies the size, in bits, of the short-term reference picture set, described as st_ref_pic_set()
+> +        in the specification, included in the slice header or SPS (section 7.3.6.1).
+> +    * - __u16
+> +      - ``long_term_ref_pic_set_size``
+> +      - Specifies the size, in bits, of the long-term reference picture set include in the slice header
+> +        or SPS. It is the number of bits in the conditional block if(long_term_ref_pics_present_flag)
+> +        in section 7.3.6.1 of the specification.
+>      * - __u8
+>        - ``padding``
+>        - Applications and drivers must set this to zero.
+> @@ -3385,6 +3407,16 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+>        - ``pic_order_cnt_val``
+>        - PicOrderCntVal as described in section 8.3.1 "Decoding process
+>          for picture order count" of the specification.
+> +    * - __u16
+> +      - ``short_term_ref_pic_set_size``
+> +      - Specifies the size, in bits, of the short-term reference picture set, of the first slice
+> +        described as st_ref_pic_set() in the specification, included in the slice header
+> +        or SPS (section 7.3.6.1).
+> +    * - __u16
+> +      - ``long_term_ref_pic_set_size``
+> +      - Specifies the size, in bits, of the long-term reference picture set, of the first slice
+> +        included in the slice header or SPS. It is the number of bits in the conditional block
+> +        if(long_term_ref_pics_present_flag) in section 7.3.6.1 of the specification.
+>      * - __u8
+>        - ``num_active_dpb_entries``
+>        - The number of entries in ``dpb``.
+> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
+> index 01ccda48d8c5..752a8d10782c 100644
+> --- a/include/media/hevc-ctrls.h
+> +++ b/include/media/hevc-ctrls.h
+> @@ -58,6 +58,8 @@ enum v4l2_mpeg_video_hevc_start_code {
+>  /* The controls are not stable at the moment and will likely be reworked. */
+>  struct v4l2_ctrl_hevc_sps {
+>  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Sequence parameter set */
+> +	__u8	video_parameter_set_id;
+> +	__u8	seq_parameter_set_id;
+>  	__u16	pic_width_in_luma_samples;
+>  	__u16	pic_height_in_luma_samples;
+>  	__u8	bit_depth_luma_minus8;
+> @@ -108,6 +110,7 @@ struct v4l2_ctrl_hevc_sps {
+>  
+>  struct v4l2_ctrl_hevc_pps {
+>  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Picture parameter set */
+> +	__u8	pic_parameter_set_id;
+>  	__u8	num_extra_slice_header_bits;
+>  	__u8	num_ref_idx_l0_default_active_minus1;
+>  	__u8	num_ref_idx_l1_default_active_minus1;
+> @@ -199,7 +202,8 @@ struct v4l2_ctrl_hevc_slice_params {
+>  	__u32	slice_segment_addr;
+>  	__u8	ref_idx_l0[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>  	__u8	ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+> -
+> +	__u16	short_term_ref_pic_set_size;
+> +	__u16	long_term_ref_pic_set_size;
+>  	__u8	padding;
+>  
+>  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Weighted prediction parameter */
+> @@ -214,6 +218,8 @@ struct v4l2_ctrl_hevc_slice_params {
+>  
+>  struct v4l2_ctrl_hevc_decode_params {
+>  	__s32	pic_order_cnt_val;
+> +	__u16	short_term_ref_pic_set_size;
+> +	__u16	long_term_ref_pic_set_size;
+>  	__u8	num_active_dpb_entries;
+>  	struct	v4l2_hevc_dpb_entry dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+>  	__u8	num_poc_st_curr_before;
 
