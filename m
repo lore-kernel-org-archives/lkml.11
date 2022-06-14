@@ -2,166 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6654AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238564AbiFNQ1G convert rfc822-to-8bit (ORCPT
+        id S1344373AbiFNQ2r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:27:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40898 "EHLO
+        Tue, 14 Jun 2022 12:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343818AbiFNQ1C (ORCPT
+        with ESMTP id S1344012AbiFNQ22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:27:02 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2391C2EA1E
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:26:59 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1o19NU-0000yX-7r; Tue, 14 Jun 2022 18:26:52 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Cc:     Dao Lu <daolu@rivosinc.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Atish Patra <atishp@atishpatra.org>,
-        Anup Patel <anup@brainfault.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Rob Herring <robh@kernel.org>,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Qinglin Pan <panqinglin2020@iscas.ac.cn>,
-        Tsukasa OI <research_trasio@irq.a4lg.com>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
-        Dao Lu <daolu@rivosinc.com>
-Subject: Re: [PATCH v2] arch/riscv: add Zihintpause support
-Date:   Tue, 14 Jun 2022 18:26:51 +0200
-Message-ID: <3113192.5fSG56mABF@diego>
-In-Reply-To: <20220524211954.1936117-1-daolu@rivosinc.com>
-References: <20220524211954.1936117-1-daolu@rivosinc.com>
+        Tue, 14 Jun 2022 12:28:28 -0400
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6CC2DD7C;
+        Tue, 14 Jun 2022 09:28:27 -0700 (PDT)
+Received: by mail-pl1-f182.google.com with SMTP id d13so8144427plh.13;
+        Tue, 14 Jun 2022 09:28:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KxyuTywMpO/66pvcVmFIHSuich2DF5impDBsu9BDdd8=;
+        b=61ZNMv/rTLVnHsqHWowA+mTZG+cdmsbg/QDxR4TLlWeWJyn7tVGVqZihmxh3zZpE6T
+         l4rMSsgkdlOhoD9agPiQ0PhKF5ZHYQ2a4NQvOYjAr+lcAH0f7F4L191FRsVaMMKh2+r/
+         8fYgCR9cBqzraA2R9JhvcF03NfNNkGoKag0m+pz8+klA+qEW0xZUJ1CNMq4qtxm16Sy3
+         dEMjMBNR6o53CccKUzUqi3FzLGH9lwnfE61w0aEut/pphp8StnXHVedrhDjY2UB3x5uV
+         p3Okz9Fn4/5M5ATxuXULem7WWni7eBv3VbHS4nJ39CMyvd+C15bhBa/b4Sn6PR6jjU9R
+         9eCg==
+X-Gm-Message-State: AJIora/CKT34GGcDS35gsS6q4tjFpl8ZdwH2WKAFr2JBCb3vTnQOBtDc
+        x872Sd3S7Xlp67qAdY0rXAk=
+X-Google-Smtp-Source: AGRyM1vZ/RlHyRQlMZNO4wF7HIR29wi2QDifMTtA0HlUhfEQhfxU82vH528GxkNdc59d9YZ60aPLZA==
+X-Received: by 2002:a17:903:40ce:b0:164:248:1464 with SMTP id t14-20020a17090340ce00b0016402481464mr5131883pld.16.1655224106461;
+        Tue, 14 Jun 2022 09:28:26 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:ab60:e1ea:e2eb:c1b6? ([2620:15c:211:201:ab60:e1ea:e2eb:c1b6])
+        by smtp.gmail.com with ESMTPSA id r33-20020a17090a43a400b001e305f5cd22sm7521541pjg.47.2022.06.14.09.28.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 09:28:25 -0700 (PDT)
+Message-ID: <fe6ba3bd-81f4-215d-5f1b-0fa05e68a0c5@acm.org>
+Date:   Tue, 14 Jun 2022 09:28:23 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 07/10] scsi: ufs-mediatek: Support flexible parameters
+ for smc calls
+Content-Language: en-US
+To:     Stanley Chu <stanley.chu@mediatek.com>, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, martin.petersen@oracle.com,
+        avri.altman@wdc.com, alim.akhtar@samsung.com, jejb@linux.ibm.com
+Cc:     peter.wang@mediatek.com, chun-hung.wu@mediatek.com,
+        alice.chao@mediatek.com, powen.kao@mediatek.com,
+        mason.zhang@mediatek.com, qilin.tan@mediatek.com,
+        lin.gui@mediatek.com, eddie.huang@mediatek.com,
+        tun-yu.yu@mediatek.com, cc.chou@mediatek.com,
+        chaotian.jing@mediatek.com, jiajie.hao@mediatek.com
+References: <20220614141655.14409-1-stanley.chu@mediatek.com>
+ <20220614141655.14409-8-stanley.chu@mediatek.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220614141655.14409-8-stanley.chu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Dienstag, 24. Mai 2022, 23:19:50 CEST schrieb Dao Lu:
-> Implement support for the ZiHintPause extension.
+On 6/14/22 07:16, Stanley Chu wrote:
+> From: Alice Chao <alice.chao@mediatek.com>
 > 
-> The PAUSE instruction is a HINT that indicates the current hart’s rate of
-> instruction retirement should be temporarily reduced or paused.
-> 
-> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-> Tested-by: Heiko Stuebner <heiko@sntech.de>
-> Signed-off-by: Dao Lu <daolu@rivosinc.com>
-> ---
-> 
-> v1 -> v2:
->  Remove the usage of static branch, use PAUSE if toolchain supports it
-> 
->  arch/riscv/Makefile                     | 4 ++++
->  arch/riscv/include/asm/hwcap.h          | 1 +
->  arch/riscv/include/asm/vdso/processor.h | 8 +++++++-
->  arch/riscv/kernel/cpu.c                 | 1 +
->  arch/riscv/kernel/cpufeature.c          | 2 ++
->  5 files changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
-> index 7d81102cffd4..900a8fda1a2d 100644
-> --- a/arch/riscv/Makefile
-> +++ b/arch/riscv/Makefile
-> @@ -56,6 +56,10 @@ riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
->  toolchain-need-zicsr-zifencei := $(call cc-option-yn, -march=$(riscv-march-y)_zicsr_zifencei)
->  riscv-march-$(toolchain-need-zicsr-zifencei) := $(riscv-march-y)_zicsr_zifencei
->  
-> +# Check if the toolchain supports Zihintpause extension
-> +toolchain-supports-zihintpause := $(call cc-option-yn, -march=$(riscv-march-y)_zihintpause)
-> +riscv-march-$(toolchain-supports-zihintpause) := $(riscv-march-y)_zihintpause
+> Provide flexible number of parameters for UFS SMC calls to be
+> easily used for future SMC usages.
+
+How far in the future? Please only introduce what is needed for this 
+patch series.
+
+> +/*
+> + * SMC call wapper function
+                ^^^^^^
+typo
+
+> + */
+> +#define _ufs_mtk_smc(cmd, res, v1, v2, v3, v4, v5, v6) \
+> +		arm_smccc_smc(MTK_SIP_UFS_CONTROL, \
+> +				  cmd, v1, v2, v3, v4, v5, v6, &(res))
 > +
->  KBUILD_CFLAGS += -march=$(subst fd,,$(riscv-march-y))
->  KBUILD_AFLAGS += -march=$(riscv-march-y)
->  
-> diff --git a/arch/riscv/include/asm/hwcap.h b/arch/riscv/include/asm/hwcap.h
-> index 0734e42f74f2..caa9ee5459b4 100644
-> --- a/arch/riscv/include/asm/hwcap.h
-> +++ b/arch/riscv/include/asm/hwcap.h
-> @@ -52,6 +52,7 @@ extern unsigned long elf_hwcap;
->   */
->  enum riscv_isa_ext_id {
->  	RISCV_ISA_EXT_SSCOFPMF = RISCV_ISA_EXT_BASE,
-
-svpbmt got merged meanwhile, so this patch needs a rebase
-onto 5.19-rc.
-
-One more nit below
-
-> +	RISCV_ISA_EXT_ZIHINTPAUSE,
->  	RISCV_ISA_EXT_ID_MAX = RISCV_ISA_EXT_MAX,
->  };
->  
-> diff --git a/arch/riscv/include/asm/vdso/processor.h b/arch/riscv/include/asm/vdso/processor.h
-> index 134388cbaaa1..4de911a25051 100644
-> --- a/arch/riscv/include/asm/vdso/processor.h
-> +++ b/arch/riscv/include/asm/vdso/processor.h
-> @@ -8,7 +8,13 @@
->  
->  static inline void cpu_relax(void)
->  {
-> -#ifdef __riscv_muldiv
-> +#ifdef __riscv_zihintpause
-> +	/*
-> +	 * Reduce instruction retirement.
-> +	 * This assumes the PC changes.
-> +	 */
-> +	__asm__ __volatile__ ("pause");
-> +#elif __riscv_muldiv
->  	int dummy;
->  	/* In lieu of a halt instruction, induce a long-latency stall. */
->  	__asm__ __volatile__ ("div %0, %0, zero" : "=r" (dummy));
-> diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
-> index ccb617791e56..89e563e9c4cc 100644
-> --- a/arch/riscv/kernel/cpu.c
-> +++ b/arch/riscv/kernel/cpu.c
-> @@ -88,6 +88,7 @@ int riscv_of_parent_hartid(struct device_node *node)
->   */
->  static struct riscv_isa_ext_data isa_ext_arr[] = {
->  	__RISCV_ISA_EXT_DATA(sscofpmf, RISCV_ISA_EXT_SSCOFPMF),
-> +	__RISCV_ISA_EXT_DATA(zihintpause, RISCV_ISA_EXT_ZIHINTPAUSE),
->  	__RISCV_ISA_EXT_DATA("", RISCV_ISA_EXT_MAX),
->  };
->  
-> diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-> index 1b2d42d7f589..37ff06682ae6 100644
-> --- a/arch/riscv/kernel/cpufeature.c
-> +++ b/arch/riscv/kernel/cpufeature.c
-> @@ -25,6 +25,7 @@ static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX) __read_mostly;
->  __ro_after_init DEFINE_STATIC_KEY_FALSE(cpu_hwcap_fpu);
->  #endif
->  
+> +#define _ufs_mtk_smc_0(cmd, res) \
+> +	_ufs_mtk_smc(cmd, res, 0, 0, 0, 0, 0, 0)
 > +
+> +#define _ufs_mtk_smc_1(cmd, res, v1) \
+> +	_ufs_mtk_smc(cmd, res, v1, 0, 0, 0, 0, 0)
+> +
+> +#define _ufs_mtk_smc_2(cmd, res, v1, v2) \
+> +	_ufs_mtk_smc(cmd, res, v1, v2, 0, 0, 0, 0)
+> +
+> +#define _ufs_mtk_smc_3(cmd, res, v1, v2, v3) \
+> +	_ufs_mtk_smc(cmd, res, v1, v2, v3, 0, 0, 0)
+> +
+> +#define _ufs_mtk_smc_4(cmd, res, v1, v2, v3, v4) \
+> +	_ufs_mtk_smc(cmd, res, v1, v2, v3, v4, 0, 0)
+> +
+> +#define _ufs_mtk_smc_5(cmd, res, v1, v2, v3, v4, v5) \
+> +	_ufs_mtk_smc(cmd, res, v1, v2, v3, v4, v5, 0)
+> +
+> +#define _ufs_mtk_smc_6(cmd, res, v1, v2, v3, v4, v5, v6) \
+> +	_ufs_mtk_smc(cmd, res, v1, v2, v3, v4, v5, v6)
+> +
+> +#define _ufs_mtk_smc_selector(cmd, res, v1, v2, v3, v4, v5, v6, FUNC, ...) FUNC
+> +
+> +#define ufs_mtk_smc(...) \
+> +	_ufs_mtk_smc_selector(__VA_ARGS__, \
+> +	_ufs_mtk_smc_6(__VA_ARGS__), \
+> +	_ufs_mtk_smc_5(__VA_ARGS__), \
+> +	_ufs_mtk_smc_4(__VA_ARGS__), \
+> +	_ufs_mtk_smc_3(__VA_ARGS__), \
+> +	_ufs_mtk_smc_2(__VA_ARGS__), \
+> +	_ufs_mtk_smc_1(__VA_ARGS__), \
+> +	_ufs_mtk_smc_0(__VA_ARGS__) \
+> +	)
 
-this is an unrelated change and also is adding an unneeded extra empty line.
+If _ufs_mtk_smc() would be modified to accept an struct _ufs_mtk_args as 
+its only argument, would that allow to simplify the above into the 
+following?
 
+#define ufs_mtk_smc(...) \
+   _ufs_mtk_smc((struct _ufs_mtk_args){__VA_ARGS__})
 
-Heiko
+> +/*
+> + * Sip kernel interface
+> + */
 
->  /**
->   * riscv_isa_extension_base() - Get base extension word
->   *
-> @@ -192,6 +193,7 @@ void __init riscv_fill_hwcap(void)
->  				set_bit(*ext - 'a', this_isa);
->  			} else {
->  				SET_ISA_EXT_MAP("sscofpmf", RISCV_ISA_EXT_SSCOFPMF);
-> +				SET_ISA_EXT_MAP("zihintpause", RISCV_ISA_EXT_ZIHINTPAUSE);
->  			}
->  #undef SET_ISA_EXT_MAP
->  		}
-> 
+What is "Sip"? Should it perhaps be spelled as "SIP"?
 
+Thanks,
 
-
-
+Bart.
