@@ -2,112 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84AA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 360F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:30:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245650AbiFNO3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49878 "EHLO
+        id S243902AbiFNO37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:29:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244280AbiFNO3b (ORCPT
+        with ESMTP id S244639AbiFNO35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:29:31 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062D335DC2;
-        Tue, 14 Jun 2022 07:29:27 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25EDBleG007050;
-        Tue, 14 Jun 2022 14:29:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : to : cc : references : from : subject : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=MPDs1tDwI/bhZ/jxH5CxJw/uj6DNiMlaJ1nN858Rm10=;
- b=LHfeN4ZxoRRNJ2ouIdbb63VsOXpjr3p+yZoDZu4Ob8rhVS8XG114Et0d0GLcG50+VXQg
- oqZmK0pLXIuCmRV6i4EWq3bg11IaKLTiInYQuvAw4TsfbTtUMdvjmp9eI+/PR6wExqcC
- CHhKiCZIzKnIrhekLtdGPm3mupRXcExfj8r9m/1w7W4RpW8Vm6+TP2klSzf7a4t3WCdY
- qTj4jQvsM8Djf+Q3vjiUypUa4oeKN21clZGMBB2fnrOdYR2f61xZ7krOtKITSpUIc8Wk
- vexwdi7UshwZQNFdoSLTCEGGfdOl0cGfSKHndZ56T/GBFvVlYiIJxVV8z8SWWdIzfhiY lg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gppbr3jhu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jun 2022 14:29:26 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25EDEf7T013656;
-        Tue, 14 Jun 2022 14:29:26 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gppbr3jh5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jun 2022 14:29:26 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25EEKZ6A003299;
-        Tue, 14 Jun 2022 14:29:24 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma03ams.nl.ibm.com with ESMTP id 3gmjp9cgdg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jun 2022 14:29:24 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25EETLg320644344
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Jun 2022 14:29:21 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 59AD5A404D;
-        Tue, 14 Jun 2022 14:29:21 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DEA0DA4040;
-        Tue, 14 Jun 2022 14:29:20 +0000 (GMT)
-Received: from [9.145.182.137] (unknown [9.145.182.137])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 14 Jun 2022 14:29:20 +0000 (GMT)
-Message-ID: <80d26ca8-6617-c86b-f92c-5df720966ebf@linux.ibm.com>
-Date:   Tue, 14 Jun 2022 16:29:20 +0200
+        Tue, 14 Jun 2022 10:29:57 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5523615E;
+        Tue, 14 Jun 2022 07:29:56 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id BEC371F930;
+        Tue, 14 Jun 2022 14:29:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655216994;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9sUM5JezTgOeH5YJB4qMver/nDgsiIG+jHJ6CxJ8KWo=;
+        b=AHIc1T+T63d/dp4JPI0aPXI1J/Ffvkhgx7JM2UYhD8elN+0r+3Ifs6Zwg+7ULyghHhiiUh
+        YibkkXoirEqLwGb6CsleFLJh0ahhdn+M8hJP8upt3BMf2Gf3HpuUDfgxsASJFHkjVJTCAV
+        kz3izirGp2dwYelsC7ghMHp4B0Fr1VI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655216994;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9sUM5JezTgOeH5YJB4qMver/nDgsiIG+jHJ6CxJ8KWo=;
+        b=lX0I1sytpWX/NIHU0zaVY6xhxK9HYG/KBdugW8wblolTfSY7A1Tzt4qT/olWouWPCNuvr+
+        EHSGJU2RJ+IvSmCg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 69A61139EC;
+        Tue, 14 Jun 2022 14:29:54 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id HbrBGGKbqGJDRQAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Tue, 14 Jun 2022 14:29:54 +0000
+Date:   Tue, 14 Jun 2022 16:25:21 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     dsterba@suse.cz, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Filipe Manana <fdmanana@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH] btrfs: Replace kmap() with kmap_local_page() in zstd.c
+Message-ID: <20220614142521.GN20633@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Filipe Manana <fdmanana@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220611135203.27992-1-fmdefrancesco@gmail.com>
+ <20220613183913.GD20633@twin.jikos.cz>
+ <1936552.usQuhbGJ8B@opensuse>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Content-Language: en-US
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
-        david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
-        mimu@linux.ibm.com, nrb@linux.ibm.com
-References: <20220603065645.10019-1-imbrenda@linux.ibm.com>
-From:   Janosch Frank <frankja@linux.ibm.com>
-Subject: Re: [PATCH v11 00/19] KVM: s390: pv: implement lazy destroy for
- reboot
-In-Reply-To: <20220603065645.10019-1-imbrenda@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: nwcCTi7XUGJYEZ6cBH4Yse1cuNw65_d2
-X-Proofpoint-ORIG-GUID: CZS39u7CxiW7QMi-0pcubsD_djkoeZkq
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-14_04,2022-06-13_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=912
- priorityscore=1501 suspectscore=0 impostorscore=0 adultscore=0
- phishscore=0 bulkscore=0 mlxscore=0 malwarescore=0 clxscore=1015
- lowpriorityscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2206140054
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1936552.usQuhbGJ8B@opensuse>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/3/22 08:56, Claudio Imbrenda wrote:
-> Previously, when a protected VM was rebooted or when it was shut down,
-> its memory was made unprotected, and then the protected VM itself was
-> destroyed. Looping over the whole address space can take some time,
-> considering the overhead of the various Ultravisor Calls (UVCs). This
-> means that a reboot or a shutdown would take a potentially long amount
-> of time, depending on the amount of used memory.
+On Tue, Jun 14, 2022 at 01:22:50AM +0200, Fabio M. De Francesco wrote:
+> On lunedì 13 giugno 2022 20:39:13 CEST David Sterba wrote:
+> > On Sat, Jun 11, 2022 at 03:52:03PM +0200, Fabio M. De Francesco wrote:
+> > > The use of kmap() is being deprecated in favor of kmap_local_page(). 
+> With
+> > > kmap_local_page(), the mapping is per thread, CPU local and not 
+> globally
+> > > visible.
+> > > 
+> > > Therefore, use kmap_local_page() / kunmap_local() in zstd.c because in
+> > > this file the mappings are per thread and are not visible in other
+> > > contexts; meanwhile refactor zstd_compress_pages() to comply with 
+> nested
+> > > local mapping / unmapping ordering rules.
+> > > 
+> > > Tested with xfstests on a QEMU + KVM 32 bits VM with 4GB of RAM and
+> > > HIGHMEM64G enabled.
+> > > 
+> > > Cc: Filipe Manana <fdmanana@kernel.org>
+> > > Suggested-by: Ira Weiny <ira.weiny@intel.com>
+> > > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > > ---
+> > > 
+> > > @@ -477,15 +479,16 @@ int zstd_compress_pages(struct list_head *ws, 
+> struct address_space *mapping,
+> > >  		/* Check if we need more input */
+> > >  		if (workspace->in_buf.pos == workspace->in_buf.size) {
+> > >  			tot_in += PAGE_SIZE;
+> > > -			kunmap(in_page);
+> > > +			kunmap_local(workspace->out_buf.dst);
+> > > +			kunmap_local((void *)workspace->in_buf.src);
+> > 
+> > Why is the cast needed?
 > 
-> This patchseries implements a deferred destroy mechanism for protected
-> guests. When a protected guest is destroyed, its memory can be cleared
-> in background, allowing the guest to restart or terminate significantly
-> faster than before.
+> As I wrote in an email I sent some days ago ("[RFC PATCH] btrfs: Replace 
+> kmap() with kmap_local_page() in zstd.c")[1] I get a series of errors like 
+> the following:
 > 
-> There are 2 possibilities when a protected VM is torn down:
-> * it still has an address space associated (reboot case)
-> * it does not have an address space anymore (shutdown case)
+> /usr/src/git/kernels/linux/fs/btrfs/zstd.c:547:33: warning: passing 
+> argument 1 of '__kunmap_local' discards 'const' qualifier from pointer 
+> target type [-Wdiscarded-qualifiers]
+>   547 |   kunmap_local(workspace->in_buf.src);
+>       |                ~~~~~~~~~~~~~~~~~^~~~
+> /usr/src/git/kernels/linux/include/linux/highmem-internal.h:284:17: note: 
+> in definition of macro 'kunmap_local'
+>   284 |  __kunmap_local(__addr);     \
+>       |                 ^~~~~~
+> /usr/src/git/kernels/linux/include/linux/highmem-internal.h:92:41: note: 
+> expected 'void *' but argument is of type 'const void *'
+>    92 | static inline void __kunmap_local(void *vaddr)
+>       |                                   ~~~~~~^~~~~
 > 
+> Therefore, this is a (bad?) hack to make these changes compile.
 
-Please add patches 1-13 to devel for some CI coverage.
-I'll try reviewing the remaining patches this week.
+I think it's a bad practice and that API that does not modify parameters
+should declare the pointers const. Type casts should be used in
+justified cases and not to paper over fixable issues.
+
+> A better solution is changing the prototype of __kunmap_local(); I
+> suppose that Andrew won't object, but who knows?
+> 
+> (+Cc Andrew Morton).
+> 
+> I was waiting for your comments. At now I've done about 15 conversions 
+> across the kernel but it's the first time I had to pass a pointer to const 
+> void to kunmap_local(). Therefore, I was not sure if changing the API were 
+> better suited (however I have already discussed this with Ira).
+
+IMHO it should be fixed in the API.
