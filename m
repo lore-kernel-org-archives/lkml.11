@@ -2,120 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17202C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA1DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355917AbiFNPL1 (ORCPT
+        id S1356178AbiFNPLu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 11:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41846 "EHLO
+        Tue, 14 Jun 2022 11:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241398AbiFNPLX (ORCPT
+        with ESMTP id S229460AbiFNPLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 11:11:23 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CCF2FE57;
-        Tue, 14 Jun 2022 08:11:22 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id g7so12098739eda.3;
-        Tue, 14 Jun 2022 08:11:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=z3hgroj28Zs89uEskySDVuV/EGAjFVx+1yzPc51SYbg=;
-        b=IKXA/fv6Qo7hmQrY4ZMw0Jya/LfD9U/Rml8A+2Rg5Xl9Oebdh8vv3VQlqdirE6wR4q
-         5iHXN2Kh468W4DUmRuCvoAzvVA/SVmj7LAjxt//ZE3hz6BSYCfXtG9mAk9GPjtC0MijI
-         rER9KxJH2eEi4dFVZpKeaiS+/Jk8DCCHsw2pueu7CeGDefUZWv2GIakBY4klpQ+PN+u2
-         J+DZt+vVsPb8TMcMAhh2wBLtzn5yay7tmJJE8sppo4P6eUYlnIjGXAEa4xC1soXHHoFW
-         MLD9q6KDCpohqfml8YtGzQZzLf4lvL0F+TISEBISSqvGTEgqCPEa8BZo2K42OsKw6wV/
-         GG5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=z3hgroj28Zs89uEskySDVuV/EGAjFVx+1yzPc51SYbg=;
-        b=d6ioIP3mBF+CXDh0A1XlVDn1QvHjHyQ29kqBnWeeS9gq6diUCUGKouJ46XFZjfufNY
-         eSTkkTaI06z6YkQs2LNX4EKzpu2cjwU4nVckZ/Diz2b6lgYAGEGViAgJ3gdZ5MX6mHyM
-         xh7xjbDUoyibv3Ib0U35SHyAbKC0tbo9lCcVGXpKVAhDx3v4FPJgoyVBFD5DSnBzRuHq
-         RxhtdjMphYo3JEleETc+ygCwbnxiGDLecmGqPBk6jpZ2cM0gtSEOU6KEkrQfG8+Empu9
-         SqcZiuraDCLxLCPQ6kFMnyU72YGpeQYZTYK55/HGaBlsBtjItfM6/E427EC6wtgUHJaw
-         6skQ==
-X-Gm-Message-State: AOAM531e32xbCeC3555kYdE9K8PNr9DqjAkOSpB9M8NVqXER1SjKaoVE
-        IhKDBvV5AwsjlVmpsHg8VJr9iKsXWc/PyC29JD3SZtfNMnsx2Q==
-X-Google-Smtp-Source: AGRyM1sb9mKj5CCuJtLS5MIoTIZSWkJQSZvyEbXLvbtJrNfsKT2UeAuAEQpxurmfRMnuHdHBE7HW2BYeu6OJwZ/qOkc=
-X-Received: by 2002:a05:6402:4390:b0:42e:b7e:e9ac with SMTP id
- o16-20020a056402439000b0042e0b7ee9acmr6643257edc.97.1655219481180; Tue, 14
- Jun 2022 08:11:21 -0700 (PDT)
+        Tue, 14 Jun 2022 11:11:49 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFC72FE57;
+        Tue, 14 Jun 2022 08:11:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655219508; x=1686755508;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ThbrdSl7ac2Xg3NVTJbJs4XQZ17kBipcdz3o+Cig7TI=;
+  b=IL9AhoEytErn/UBeyvLXy50qWAXoIE09n2/fjUtQcufZS+nwLb+wz2pq
+   sfdZqFu8RTEDlztUdFnpAVegvdwkECF1UsV/lxEDTrLOZV24q3VHTvQfP
+   abPtTMWbpdQ1pGZNX1rE3PueifaVI0HpvjA02/KMnZJWPJuSaNgM4rJ1P
+   7XUTdc7DkozAUUzulqVYhG2WE4wRXgvLwtJAGhn98uIHzUa83lcH2i4gB
+   jR05G7rNjSQ7ZfFVT5c5m47kdCKg6XUgRqLwVTuaHNirs5Dml5Luch5xi
+   Th8/OayAyEwhRQUR7wnFQg5p5OeD2J17i6xkNzLZx4zt5rOcD0CRFo3ND
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="261673574"
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="261673574"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 08:11:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="673941747"
+Received: from xpf.sh.intel.com ([10.239.182.112])
+  by FMSMGA003.fm.intel.com with ESMTP; 14 Jun 2022 08:11:44 -0700
+From:   Pengfei Xu <pengfei.xu@intel.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kselftest <linux-kselftest@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Cc:     Pengfei Xu <pengfei.xu@intel.com>, Heng Su <heng.su@intel.com>,
+        Hansen Dave <dave.hansen@intel.com>,
+        Luck Tony <tony.luck@intel.com>,
+        Mehta Sohil <sohil.mehta@intel.com>,
+        Chen Yu C <yu.c.chen@intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bae Chang Seok <chang.seok.bae@intel.com>
+Subject: [PATCH v9 0/2] Introduce XSAVE feature self-test
+Date:   Tue, 14 Jun 2022 23:11:04 +0800
+Message-Id: <cover.1655218544.git.pengfei.xu@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220613120534.36991-1-andrea.merello@iit.it> <20220613120534.36991-9-andrea.merello@iit.it>
- <CAHp75Vdh8kAH6540xCwzFh5uf=QMVTHC42a8pOgvkpObzjfD+w@mail.gmail.com>
- <164f663acbba481a8ea8f45f185aaf83@iit.it> <CAHp75VeYK=oCbbBVp01_b5LK_FqAo4F_bic9Me4Y6PpfFnDU6g@mail.gmail.com>
- <a41936e4063f4c2c9da7c7e1d915bd62@iit.it>
-In-Reply-To: <a41936e4063f4c2c9da7c7e1d915bd62@iit.it>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 14 Jun 2022 17:10:43 +0200
-Message-ID: <CAHp75Vd_w1WOp9ntbNqxtuuVXi0kMGbX=OZ7cioNxoh2yUa1ag@mail.gmail.com>
-Subject: Re: [v6 08/14] iio: imu: add Bosch Sensortec BNO055 core driver
-To:     Andrea Merello <Andrea.Merello@iit.it>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        jmondi <jacopo@jmondi.org>,
-        "andrea.merello@gmail.com" <andrea.merello@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 2:15 PM Andrea Merello <Andrea.Merello@iit.it> wrot=
-e:
+The XSAVE feature set supports the saving and restoring of xstate components.
+XSAVE feature has been used for process context switching. XSAVE components
+include x87 state for FP execution environment, SSE state, AVX state and so on.
 
-...
+In order to ensure that XSAVE works correctly, add XSAVE most basic test for
+XSAVE architecture functionality.
 
-> >> >> +       devm_add_action_or_reset(priv->dev, bno055_debugfs_remove, =
-priv->debugfs);
-> >> >
-> >> >Shouldn't we report the potential error here? It's not directly
-> >> >related to debugfs, but something which is not directly related.
-> >>
-> >> The error eventually comes out from something that has nothing to do w=
-ith debugs per se (i.e. the devm stuff), but it will only affect debugfs in=
-deed.
-> >>
-> >> Assuming that we don't want to make the whole driver fail in case debu=
-gfs stuff fails (see last part of the comment above debugfs_create_file() i=
-mplementation), and given that the devm_add_action_or_reset(), should indee=
-d "reset" in case of failure (i.e.  we should be in a clean situation anywa=
-y), I would say it should be OK not to propagate the error and let things g=
-o on.
-> >
-> >As I said, it's not directly related to debugfs. Here is the resource
-> >leak possible or bad things happen if you probe the driver, that fails
-> >to add this call for removal, remove it, and try to insert again, in
-> >such case the debugfs will be stale.
->
-> Hum, I would say this shouldn't ever happen: AFAICS devm_add_action_or_re=
-set() is a wrapper around devm_add_action() and it's purpose is exactly to =
-add a check for failure; devm_add_action_or_reset() immediately invokes the=
- action handler in case devm_add_action() fails. IOW in case of failure to =
-add the devm stuff, the debugfs file is removed immediately and it shouldn'=
-t cause any mess with next times probe()s; just the driver will go on witho=
-ut the debugfs file being here.
->
-> I think this is the point of using devm_add_action_or_reset() instead of =
-dev_add_action()  indeed, or am I missing something?
+This patch tests "FP, SSE(XMM), AVX2(YMM), AVX512_OPMASK/AVX512_ZMM_Hi256/
+AVX512_Hi16_ZMM and PKRU parts" xstates with following cases:
+1. The contents of these xstates in the process should not change after the
+   signal handling.
+2. The contents of these xstates in the child process should be the same as
+   the contents of the xstate in the parent process after the fork syscall.
+3. The contents of xstates in the parent process should not change after
+   the context switch.
 
-Reading that code again and I think you are right, so dev_warn() will
-be sufficient to show that we fail. OTOH, what is the point of adding
-a resource for the failed debugfs call?
+Because xstate like XMM will not be preserved across function calls, fork() and
+raise() are implemented and inlined.
+To prevent GCC from generating any FP/SSE(XMM)/AVX/PKRU code, add
+"-mno-sse -mno-mmx -mno-sse2 -mno-avx -mno-pku" compiler arguments. stdlib.h
+can not be used because of the "-mno-sse" option.
+Thanks Dave, Hansen for the above suggestion!
+Thanks Chen Yu; Shuah Khan; Chatre Reinette and Tony Luck's comments!
+Thanks to Bae, Chang Seok for a bunch of comments!
 
---=20
-With Best Regards,
-Andy Shevchenko
+========
+- Change from v8 to v9
+  - Use function pointers to make it more structured. (Hansen, Dave)
+  - Improve the function name: xstate_tested -> xstate_in_test. (Chang S. Bae)
+  - Break this test up into two pieces: keep the xstate key test steps with
+    "-mno-sse" and no stdlib.h, keep others in xstate.c file. (Hansen, Dave)
+  - Use kselftest infrastructure for xstate.c file. (Hansen, Dave)
+  - Use instruction back to populate fp xstate buffer. (Hansen, Dave)
+  - Will skip the test if cpu could not support xsave. (Chang S. Bae)
+  - Use __cpuid_count() helper in kselftest.h. (Reinette, Chatre)
+
+- Change from v7 to v8
+  Many thanks to Bae, Chang Seok for a bunch of comments as follow:
+  - Use the filling buffer way to prepare the xstate buffer, and use xrstor
+    instruction way to load the tested xstates.
+  - Remove useless dump_buffer, compare_buffer functions.
+  - Improve the struct of xstate_info.
+  - Added AVX512_ZMM_Hi256 and AVX512_Hi16_ZMM components in xstate test.
+  - Remove redundant xstate_info.xstate_mask, xstate_flag[], and
+    xfeature_test_mask, use xstate_info.mask instead.
+  - Check if xfeature is supported outside of fill_xstate_buf() , this change
+    is easier to read and understand.
+  - Remove useless wrpkru, only use filling all tested xstate buffer in
+    fill_xstates_buf().
+  - Improve a bunch of function names and variable names.
+  - Improve test steps flow for readability.
+
+- Change from v6 to v7:
+  - Added the error number and error description of the reason for the
+    failure, thanks Shuah Khan's suggestion.
+  - Added a description of what these tests are doing in the head comments.
+  - Added changes update in the head comments.
+  - Added description of the purpose of the function. thanks Shuah Khan.
+
+- Change from v5 to v6:
+  - In order to prevent GCC from generating any FP code by mistake,
+    "-mno-sse -mno-mmx -mno-sse2 -mno-avx -mno-pku" compiler parameter was
+    added, it's referred to the parameters for compiling the x86 kernel. Thanks
+    Dave Hansen's suggestion.
+  - Removed the use of "kselftest.h", because kselftest.h included <stdlib.h>,
+    and "stdlib.h" would use sse instructions in it's libc, and this *XSAVE*
+    test needed to be compiled without libc sse instructions(-mno-sse).
+  - Improved the description in commit header, thanks Chen Yu's suggestion.
+  - Becasue test code could not use buildin xsave64 in libc without sse, added
+    xsave function by instruction way.
+  - Every key test action would not use libc(like printf) except syscall until
+    it's failed or done. If it's failed, then it would print the failed reason.
+  - Used __cpuid_count() instead of native_cpuid(), becasue __cpuid_count()
+    was a macro definition function with one instruction in libc and did not
+    change xstate. Thanks Chatre Reinette, Shuah Khan.
+    https://lore.kernel.org/linux-sgx/8b7c98f4-f050-bc1c-5699-fa598ecc66a2@linuxfoundation.org/
+
+- Change from v4 to v5:
+  - Moved code files into tools/testing/selftests/x86.
+  - Delete xsave instruction test, becaue it's not related to kernel.
+  - Improved case description.
+  - Added AVX512 opmask change and related XSAVE content verification.
+  - Added PKRU part xstate test into instruction and signal handling test.
+  - Added XSAVE process swich test for FPU, AVX2, AVX512 opmask and PKRU part.
+
+- Change from v3 to v4:
+  - Improve the comment in patch 1.
+
+- Change from v2 to v3:
+  - Improve the description of patch 2 git log.
+
+- Change from v1 to v2:
+  - Improve the cover-letter. Thanks Dave Hansen's suggestion.
+
+Pengfei Xu (2):
+  selftests/x86/xstate: Add xstate signal handling test for XSAVE
+    feature
+  selftests/x86/xstate: Add xstate fork test for XSAVE feature
+
+ tools/testing/selftests/x86/.gitignore       |   1 +
+ tools/testing/selftests/x86/Makefile         |  11 +-
+ tools/testing/selftests/x86/xstate.c         | 235 ++++++++++++++++
+ tools/testing/selftests/x86/xstate.h         | 267 +++++++++++++++++++
+ tools/testing/selftests/x86/xstate_helpers.c | 211 +++++++++++++++
+ tools/testing/selftests/x86/xstate_helpers.h |  10 +
+ 6 files changed, 733 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/x86/xstate.c
+ create mode 100644 tools/testing/selftests/x86/xstate.h
+ create mode 100644 tools/testing/selftests/x86/xstate_helpers.c
+ create mode 100644 tools/testing/selftests/x86/xstate_helpers.h
+
+-- 
+2.31.1
+
