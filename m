@@ -2,175 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 934BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1333EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355891AbiFNIuN (ORCPT
+        id S1355949AbiFNIuV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48234 "EHLO
+        Tue, 14 Jun 2022 04:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355895AbiFNItj (ORCPT
+        with ESMTP id S241517AbiFNItq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:49:39 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294DF13CF1;
-        Tue, 14 Jun 2022 01:49:34 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25E8mpFE060385;
-        Tue, 14 Jun 2022 03:48:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1655196531;
-        bh=CDf43wcE6wSh3PzlVgmbjR8Np/ai78l/H7vjoYFhOkU=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=lH+zrL9aZF6hMI1zQYVIj2+YAy4Re0EqZyoS7NsF2LqIU9ht70kczMRbjJSE8pthm
-         DhgCLWbwKjpURMKaDAoU/ylwKjfHqil5RSj+wwKMHzI7dMxQN8gz3PX79kePwTFMBC
-         HT7btcyrJ8HyjPgyLWxPQP8N9AS2B8O5Hew3Q7kw=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25E8mpXD097757
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 14 Jun 2022 03:48:51 -0500
-Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 14
- Jun 2022 03:48:50 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 14 Jun 2022 03:48:50 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25E8mnC0016187;
-        Tue, 14 Jun 2022 03:48:50 -0500
-Date:   Tue, 14 Jun 2022 14:18:49 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Brad Larson <brad@pensando.io>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
-        <adrian.hunter@intel.com>, <alcooperx@gmail.com>,
-        <andy.shevchenko@gmail.com>, <arnd@arndb.de>, <blarson@amd.com>,
-        <brijeshkumar.singh@amd.com>, <catalin.marinas@arm.com>,
-        <gsomlo@gmail.com>, <gerg@linux-m68k.org>, <krzk@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <lee.jones@linaro.org>,
-        <broonie@kernel.org>, <yamada.masahiro@socionext.com>,
-        <p.zabel@pengutronix.de>, <piotrs@cadence.com>,
-        <rdunlap@infradead.org>, <robh+dt@kernel.org>,
-        <samuel@sholland.org>, <fancer.lancer@gmail.com>,
-        <suravee.suthikulpanit@amd.com>, <thomas.lendacky@amd.com>,
-        <ulf.hansson@linaro.org>, <will@kernel.org>,
-        <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v5 11/15] spi: cadence-quadspi: Add compatible for AMD
- Pensando Elba SoC
-Message-ID: <20220614084849.oodxh6cthysga5iq@ti.com>
-References: <20220613195658.5607-1-brad@pensando.io>
- <20220613195658.5607-12-brad@pensando.io>
+        Tue, 14 Jun 2022 04:49:46 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2851170;
+        Tue, 14 Jun 2022 01:49:45 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id k12-20020a17090a404c00b001eaabc1fe5dso5284129pjg.1;
+        Tue, 14 Jun 2022 01:49:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2WMPTKYwy1gkVaJtAN7tuJhmsjYJoOG0Gap8PZZ0H6M=;
+        b=jNBIVyp7QnC2U8iaVKn1OPEbtlW1q6ARIbd1W8M7pD8NQL4zW1XKF/oc7jObTs2Jj7
+         3goM6UBKGMX04CK/Y57oyWb2d2XJtLANHXS5D/PTEpNnBCeLeJaoXDOmTgbfxHrdzhnI
+         XpYLi6HxYKXxJcFawQWqI4TQSgqQ8ArkAt12SVZff6S6+TrIBpNjWGHb5p4FekduONXo
+         GGf5Au+JR9pfoPkg2iJ+elw29Rr8I4CezT5XyMJjwCcLp1mBBQtsnVfq1+66ZX574Re6
+         HIqy8hb31/HWnvDf6DgB0/jp3IkYtBG67mzc0fLUQV7a/k8ZN7xpQNzDdHazepUDDvSZ
+         KWNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2WMPTKYwy1gkVaJtAN7tuJhmsjYJoOG0Gap8PZZ0H6M=;
+        b=6T+nLnobcp4x3h5d7Ztj6GlodJmLoZ/vbuMf2XiEbmunmITk6LKwOlVKd63jMf7ikM
+         bV5xUY26TZF73YOnW+34BR3Qa13UKkomQu10z9EvU/xA1i9kQjnW9MXwZLKu8ywESxzl
+         6NLC/lE4lKUH4+JFYTT/SnEUP/U1X107c5vimUQZA8DmrcBylkFjJFFvuxAGmSl0CBoB
+         kQbshc5HQXpONNqWdxtPfWSh99kWFX1OjZE7nZW+MS2AY/g/lXl/c2Nb2w9uGT/8yIJQ
+         K3obm71ySTdPzKEXgg36QpBKxmnq7JksWIwAzI/3+SLrD7Fx+DFBygcS6hq3+NhxOvJf
+         NeNQ==
+X-Gm-Message-State: AJIora/qYushzPeKd80M7yThznF4IL6BfRf34zyqqKCJJZDmF03NAq8q
+        8Q37fXkZtIm/vCPehhrcfwjPSbRDNRI=
+X-Google-Smtp-Source: AGRyM1vmZAyTzqJUMsOqo3vDve2ja6Tmv/2D3CgrXzX0v9g+vjYT5qvLppZAwUzBJzcz6xPInaeIYw==
+X-Received: by 2002:a17:90b:60e:b0:1e8:9bd0:5417 with SMTP id gb14-20020a17090b060e00b001e89bd05417mr3416056pjb.208.1655196585146;
+        Tue, 14 Jun 2022 01:49:45 -0700 (PDT)
+Received: from [192.168.43.80] (subs32-116-206-28-37.three.co.id. [116.206.28.37])
+        by smtp.gmail.com with ESMTPSA id d20-20020a170902e15400b00168c523032fsm6551870pla.269.2022.06.14.01.49.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 01:49:44 -0700 (PDT)
+Message-ID: <22e6a8ff-ee1c-69c9-dbcf-2865142e05c1@gmail.com>
+Date:   Tue, 14 Jun 2022 15:49:40 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220613195658.5607-12-brad@pensando.io>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] Documentation: samsung-s3c24xx: Add blank line after SPDX
+ directive
+Content-Language: en-US
+To:     linux-doc@vger.kernel.org
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Allison Randal <allison@lohutok.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org
+References: <20220614164506.6afd65a6@canb.auug.org.au>
+ <20220614084658.509389-1-bagasdotme@gmail.com>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <20220614084658.509389-1-bagasdotme@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Brad,
-
-On 13/06/22 12:56PM, Brad Larson wrote:
-> From: Brad Larson <blarson@amd.com>
+On 6/14/22 15:46, Bagas Sanjaya wrote:
+> After merging spdx tree for linux-next testing, Stephen Rothwell reported
+> htmldocs warning:
 > 
-> The AMD Pensando Elba SoC has the Cadence QSPI controller integrated.
+> Documentation/arm/samsung-s3c24xx/cpufreq.rst:2: WARNING: Explicit markup ends without a blank line; unexpected unindent.
 > 
-> The quirk CQSPI_NEEDS_APB_AHB_HAZARD_WAR is added and if enabled
-> a dummy readback from the controller is performed to ensure
-> synchronization.
+> It is due to missing blank line separator between SPDX directive and
+> page title.
 > 
-> Signed-off-by: Brad Larson <blarson@amd.com>
+> Add the blank line to fix the warning.
+> 
+> Link: https://lore.kernel.org/linux-next/20220614164506.6afd65a6@canb.auug.org.au/
+> Fixes: b7bc1c9e5b04da ("treewide: Replace GPLv2 boilerplate/reference with SPDX - gpl-2.0_147.RULE")
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Allison Randal <allison@lohutok.net>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 > ---
->  drivers/spi/spi-cadence-quadspi.c | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
-> 
-> diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-> index 72b1a5a2298c..ebb77ea8e6ba 100644
-> --- a/drivers/spi/spi-cadence-quadspi.c
-> +++ b/drivers/spi/spi-cadence-quadspi.c
-> @@ -39,6 +39,7 @@
->  #define CQSPI_DISABLE_DAC_MODE		BIT(1)
->  #define CQSPI_SUPPORT_EXTERNAL_DMA	BIT(2)
->  #define CQSPI_NO_SUPPORT_WR_COMPLETION	BIT(3)
-> +#define CQSPI_NEEDS_APB_AHB_HAZARD_WAR	BIT(4)
->  
->  /* Capabilities */
->  #define CQSPI_SUPPORTS_OCTAL		BIT(0)
-> @@ -87,6 +88,7 @@ struct cqspi_st {
->  	bool			use_dma_read;
->  	u32			pd_dev_id;
->  	bool			wr_completion;
-> +	bool			apb_ahb_hazard;
->  };
->  
->  struct cqspi_driver_platdata {
-> @@ -952,6 +954,13 @@ static int cqspi_indirect_write_execute(struct cqspi_flash_pdata *f_pdata,
->  	if (cqspi->wr_delay)
->  		ndelay(cqspi->wr_delay);
->  
-> +	/*
-> +	 * If a hazard exists between the APB and AHB interfaces, perform a
-> +	 * dummy readback from the controller to ensure synchronization.
-> +	 */
 
-This is needed for TI's SoCs as well. APB and AHB accesses are 
-independent of each other on the interconnect and can be racy. I wrote a 
-couple patches [0][1] to fix this on TI's fork. I never got around to 
-sending them upstream. It would be great if you can pick those up. They 
-fix the race in all paths, not just indirect write.
-
-I would also prefer if we do this unconditionally. I don't think it has 
-much downside even on platforms that do not strictly need this.
-
-[0] https://git.ti.com/cgit/ti-linux-kernel/ti-linux-kernel/commit/drivers/spi/spi-cadence-quadspi.c?h=ti-linux-5.10.y&id=027f03a8512086e5ef05dc4e4ff53b2628848f95
-[1] https://git.ti.com/cgit/ti-linux-kernel/ti-linux-kernel/commit/drivers/spi/spi-cadence-quadspi.c?h=ti-linux-5.10.y&id=4c367e58bab7d3f9c470c3778441f73546f20398
-
-> +	if (cqspi->apb_ahb_hazard)
-> +		(void)readl(reg_base + CQSPI_REG_INDIRECTWR);
-> +
->  	while (remaining > 0) {
->  		size_t write_words, mod_bytes;
->  
-> @@ -1667,6 +1676,8 @@ static int cqspi_probe(struct platform_device *pdev)
->  			cqspi->use_dma_read = true;
->  		if (ddata->quirks & CQSPI_NO_SUPPORT_WR_COMPLETION)
->  			cqspi->wr_completion = false;
-> +		if (ddata->quirks & CQSPI_NEEDS_APB_AHB_HAZARD_WAR)
-> +			cqspi->apb_ahb_hazard = true;
->  
->  		if (of_device_is_compatible(pdev->dev.of_node,
->  					    "xlnx,versal-ospi-1.0"))
-> @@ -1789,6 +1800,10 @@ static const struct cqspi_driver_platdata versal_ospi = {
->  	.get_dma_status = cqspi_get_versal_dma_status,
->  };
->  
-> +static const struct cqspi_driver_platdata pen_cdns_qspi = {
-> +	.quirks = CQSPI_NEEDS_APB_AHB_HAZARD_WAR | CQSPI_DISABLE_DAC_MODE,
-> +};
-> +
->  static const struct of_device_id cqspi_dt_ids[] = {
->  	{
->  		.compatible = "cdns,qspi-nor",
-> @@ -1814,6 +1829,10 @@ static const struct of_device_id cqspi_dt_ids[] = {
->  		.compatible = "intel,socfpga-qspi",
->  		.data = &socfpga_qspi,
->  	},
-> +	{
-> +		.compatible = "amd,pensando-elba-qspi",
-> +		.data = &pen_cdns_qspi,
-> +	},
->  	{ /* end of table */ }
->  };
->  
-> -- 
-> 2.17.1
-> 
+Oops, I forgot to mention that this patch is based on next-20220614.
 
 -- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+An old man doll... just what I always wanted! - Clara
