@@ -2,155 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59588C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A30BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:53:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236658AbiFNOwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49440 "EHLO
+        id S241269AbiFNOxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:53:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244279AbiFNOwg (ORCPT
+        with ESMTP id S238361AbiFNOxQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:52:36 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B34920F6F;
-        Tue, 14 Jun 2022 07:52:32 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id n28so12003072edb.9;
-        Tue, 14 Jun 2022 07:52:31 -0700 (PDT)
+        Tue, 14 Jun 2022 10:53:16 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8073421E2A
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:53:15 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id j5-20020a05600c1c0500b0039c5dbbfa48so6356311wms.5
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:53:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=NmnLHQKIq/Qwpw3bROli63abqMMrdwZuMr4hqttXvi8=;
-        b=VaLkfDeTNu6KkT5rS6rZ4nkj8x7jr5Tbjxla6ZXrToXpigafc0fk2AEEqPXR3nyHt3
-         ecKU50Si8+kMyq7s2CILNxQUI8KXD0m5ekQKxe1mDzheGgHVLLYuNKeExATL7FEb+uqT
-         NqRwo2uU3W0xF01h/1ejx3SNwUkln0iU1u1vUBmFfIPCP76w8zKmGF3IarOf17QetP7m
-         JgQeuvP+rq2QwkF4tzeU2/HADL4i5/iFd8+jcvV3TbzH/odMjB3lxBvEx/Q/cBDtIGNl
-         CzoGOPQnK2hGHjJs6p9rKRPNifL6LvkYMu8auKgLx+sAkVqBBdAcS1qdaR8sJhDcvV79
-         vl6A==
+        bh=Beybp5XJ8a3dHy7RTQ7s0JAdwjglxG9m7qsg7aTj7KU=;
+        b=gqJqn6qGZ/TOsOaGxprWFd08BSsoSzW9yScic5r1RcJYQwXWr7It7UYmHtWnpGGEsb
+         4+I9bQUv7NRJqAfGoFk+BxPBMGSiyRLmPE0Nv6yKJlTPhd+HzHDXAK5c4hI9fKnn61Qc
+         bcbCUz+1Q21/oQguxzwwTFvww+VnHK6kwwW52Pu5c41tzBG8RTrMKHUjefM+qoQYT0YQ
+         b/0lYYN/d/OAPLf9V/AdPheRlwK63EUpWHmeoEyvrRAw2xQOGsmhOb90Mnc/BJAY8aMa
+         pgZu2HF+7nWTaM+EfE5hBKE8DuAcwFXkw6HNs00ojvk1tn821LZOl4UGAg64u5F3Uu1X
+         o/qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=NmnLHQKIq/Qwpw3bROli63abqMMrdwZuMr4hqttXvi8=;
-        b=NXhaeCKnea5oPycNepu0IskEBdjOqCsnM0n71GNRJMGkgz942U4c+tWbpogosWdZBp
-         vI/vpSi8KOS/MKKlBmztlxKfNwlfHMunAYgUNrwEkRMJEokK6GQPuqYV+I3DR53APb+v
-         Hn91NLq0CODEXsfiu82uddIaHqGr5S2B6B19kqwF2iVNauWbWF4myiOGTBCr2z5rUuz3
-         94n0k821gC0cpVWIhmb3eIvPLDytcleiS0t+9gJeJEaWpKDKpWQa+vLAWq5OBwxBN5hk
-         Cnqgl6fs6pSWYx9w4TJ4jsgRAlGQV0QtcrV9ZysIPIG5KqRSCWwpT3ETO6dISIPzBvOL
-         4DFA==
-X-Gm-Message-State: AJIora/vwM3Elao82obJWH3yqhr7qyTD+aemOaFXR0xbUPy+zpbomKXD
-        mMn6kqhmLO/cK9n+vem51ktrQMj50GEcNLLA/+o=
-X-Google-Smtp-Source: ABdhPJwavfre5IkSew79d1lWafxiOtQ5nWlFLC7RO+RWMsDFfncyk6FoEkhpqtyBp2eDMdjA8iEDdBnOI3E8hYEs5/w=
-X-Received: by 2002:aa7:c396:0:b0:42d:8b86:a8dc with SMTP id
- k22-20020aa7c396000000b0042d8b86a8dcmr6466658edq.54.1655218350390; Tue, 14
- Jun 2022 07:52:30 -0700 (PDT)
+        bh=Beybp5XJ8a3dHy7RTQ7s0JAdwjglxG9m7qsg7aTj7KU=;
+        b=sXyKLmSg9WhEBa9UjSY9kTQhLKyBT5a2kPIbA8cGi5TvGtXeW2iLgJlOPaEpSVBO4a
+         KwFnpv0Z+oBEzxj9BNZvwzGWaYaYP+xBNNMx48jAJB86fX4oBlIhFXg8btrmUDFBcSLG
+         +tpYufsxqIhhkNDggBz625fs6oUzbcotAM2o2Ejs2HKE+22rZFbEPVDsdyCSzoKTlFj0
+         Qh+dZs7ci8W9vC+SGOvP0WcAZWXt75kVEWmkKwiQ7SmbF2honURC5e6JDIYNwhXYvgK5
+         Iq/0f0vC1t/WS9Q8xbzVD0pI23+DXswR+g7daVyAIcf+OBzXkERhzpHQ+qk2dpkt3mD9
+         7a1A==
+X-Gm-Message-State: AOAM531bTyLv9VHMaG4sl8zLEbjWNGyULRCvZUoiFvwny0viyqSM0s4F
+        k4lblKP+cdZwWKgWKgHFbMwisQQ6Q5kvZfaRLtfpag==
+X-Google-Smtp-Source: ABdhPJywS2htEDLwBMWXZrrCy9+TllwAinrXt7Rfo/66rSD9A4VOt5bjRN7nbwUdEtwrycbTPh03CIlRqT7H7SMGJyQ=
+X-Received: by 2002:a7b:c7da:0:b0:39c:5b34:3019 with SMTP id
+ z26-20020a7bc7da000000b0039c5b343019mr4579162wmk.115.1655218393856; Tue, 14
+ Jun 2022 07:53:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220614142704.155496-1-jjhiblot@traphandler.com> <20220614142704.155496-4-jjhiblot@traphandler.com>
-In-Reply-To: <20220614142704.155496-4-jjhiblot@traphandler.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 14 Jun 2022 16:51:53 +0200
-Message-ID: <CAHp75VdwiptUUHwDT8bZmY4r7beiiT9NFD9o_-=+KiqMcqGhcg@mail.gmail.com>
-Subject: Re: [PATCH v4 3/3] leds: tlc5925: Add support for non blocking operations
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Cc:     Pavel Machek <pavel@ucw.cz>, krzk+dt@kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220610113316.6682-1-adrian.hunter@intel.com> <20220610113316.6682-4-adrian.hunter@intel.com>
+In-Reply-To: <20220610113316.6682-4-adrian.hunter@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 14 Jun 2022 07:53:01 -0700
+Message-ID: <CAP-5=fVWOeqZ+BePoe3Te1fCaru_O5u+E0Lah8pGvSOfLDQaWQ@mail.gmail.com>
+Subject: Re: [PATCH 3/5] perf record: Add new option to sample identifier
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 4:27 PM Jean-Jacques Hiblot
-<jjhiblot@traphandler.com> wrote:
+On Fri, Jun 10, 2022 at 4:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
 >
-> Settings multiple LEDs in a row can be a slow operation because of the
-> time required to acquire the bus and prepare the transfer.
-> And, in most cases, it is not required that the operation is synchronous.
+> In preparation for recording sideband events in a virtual machine guest so
+> that they can be injected into a host perf.data file.
 >
-> Implementing the non-blocking brightness_set() for such cases.
-> A work queue is used to perform the actual SPI transfer.
+> Add an option to always include sample type PERF_SAMPLE_IDENTIFIER.
 >
-> The blocking method is still available in case someone needs to perform
-> this operation synchronously (ie by calling led_set_brightness_sync()).
->
-> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 > ---
->  drivers/leds/leds-tlc5925.c | 39 +++++++++++++++++++++++++++++++++++--
->  1 file changed, 37 insertions(+), 2 deletions(-)
+>  tools/perf/Documentation/perf-record.txt | 3 +++
+>  tools/perf/builtin-record.c              | 2 ++
+>  tools/perf/util/record.c                 | 2 +-
+>  tools/perf/util/record.h                 | 1 +
+>  4 files changed, 7 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/leds/leds-tlc5925.c b/drivers/leds/leds-tlc5925.c
-> index eeab1138ba2c..2c083b04d7f6 100644
-> --- a/drivers/leds/leds-tlc5925.c
-> +++ b/drivers/leds/leds-tlc5925.c
-> @@ -14,6 +14,7 @@
->  #include <linux/leds.h>
->  #include <linux/module.h>
->  #include <linux/property.h>
-> +#include <linux/workqueue.h>
->  #include <linux/spi/spi.h>
+> diff --git a/tools/perf/Documentation/perf-record.txt b/tools/perf/Documentation/perf-record.txt
+> index cf8ad50f3de1..8fcea74fe3c2 100644
+> --- a/tools/perf/Documentation/perf-record.txt
+> +++ b/tools/perf/Documentation/perf-record.txt
+> @@ -313,6 +313,9 @@ OPTIONS
+>  --sample-cpu::
+>         Record the sample cpu.
 >
->  struct single_led_priv {
-> @@ -24,10 +25,24 @@ struct single_led_priv {
->  struct tlc5925_leds_priv {
->         int max_num_leds;
->         unsigned long *state;
-> +       struct spi_device *spi;
-> +       struct work_struct xmit_work;
->         struct single_led_priv leds[];
->  };
->
-> -static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
-> +static int xmit(struct tlc5925_leds_priv *priv)
-> +{
-> +       return spi_write(priv->spi, priv->state, BITS_TO_BYTES(priv->max_num_leds));
-> +}
+> +--sample-identifier::
+> +       Record the sample identifier.
+
+I can see this is following the pattern of --sample-cpu above, but I'm
+not sure a "sample identifier" is going to be clear to a novice user.
+The comment adds little beyond the option name. Perhaps expand with an
+example?
+
+Thanks,
+Ian
+
 > +
-> +static void xmit_work(struct work_struct *ws)
-> +{
-> +       struct tlc5925_leds_priv *priv =
-> +               container_of(ws, struct tlc5925_leds_priv, xmit_work);
-
-+ Blank line.
-
-> +       xmit(priv);
-> +};
-> +
-> +static void tlc5925_brightness_set(struct led_classdev *cdev,
->                                             enum led_brightness brightness)
->  {
->         struct spi_device *spi = to_spi_device(cdev->dev->parent);
-> @@ -40,9 +55,25 @@ static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
->         // assign_bit() is atomic, no need for lock
->         assign_bit(index, priv->state, !!brightness);
+>  -n::
+>  --no-samples::
+>         Don't sample.
+> diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
+> index 00c2a6cdf1be..40dca1fba4e3 100644
+> --- a/tools/perf/builtin-record.c
+> +++ b/tools/perf/builtin-record.c
+> @@ -3191,6 +3191,8 @@ static struct option __record_options[] = {
+>         OPT_BOOLEAN(0, "code-page-size", &record.opts.sample_code_page_size,
+>                     "Record the sampled code address (ip) page size"),
+>         OPT_BOOLEAN(0, "sample-cpu", &record.opts.sample_cpu, "Record the sample cpu"),
+> +       OPT_BOOLEAN(0, "sample-identifier", &record.opts.sample_identifier,
+> +                   "Record the sample identifier"),
+>         OPT_BOOLEAN_SET('T', "timestamp", &record.opts.sample_time,
+>                         &record.opts.sample_time_set,
+>                         "Record the sample timestamps"),
+> diff --git a/tools/perf/util/record.c b/tools/perf/util/record.c
+> index 5b09ecbb05dc..b529636ab3ea 100644
+> --- a/tools/perf/util/record.c
+> +++ b/tools/perf/util/record.c
+> @@ -121,7 +121,7 @@ void evlist__config(struct evlist *evlist, struct record_opts *opts, struct call
+>         evlist__for_each_entry(evlist, evsel)
+>                 evsel__config_leader_sampling(evsel, evlist);
 >
-> -       return spi_write(spi, priv->state, BITS_TO_BYTES(priv->max_num_leds));
-> +       schedule_work(&priv->xmit_work);
->  }
+> -       if (opts->full_auxtrace) {
+> +       if (opts->full_auxtrace || opts->sample_identifier) {
+>                 /*
+>                  * Need to be able to synthesize and parse selected events with
+>                  * arbitrary sample types, which requires always being able to
+> diff --git a/tools/perf/util/record.h b/tools/perf/util/record.h
+> index be9a957501f4..4269e916f450 100644
+> --- a/tools/perf/util/record.h
+> +++ b/tools/perf/util/record.h
+> @@ -28,6 +28,7 @@ struct record_opts {
+>         bool          sample_time;
+>         bool          sample_time_set;
+>         bool          sample_cpu;
+> +       bool          sample_identifier;
+>         bool          period;
+>         bool          period_set;
+>         bool          running_time;
+> --
+> 2.25.1
 >
-> +static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
-> +                                           enum led_brightness brightness)
-> +{
-> +       struct spi_device *spi = to_spi_device(cdev->dev->parent);
-> +       struct tlc5925_leds_priv *priv = spi_get_drvdata(spi);
-
-> +       struct single_led_priv *led = container_of(cdev,
-> +                                                  struct single_led_priv,
-> +                                                  cdev);
-
-Better:
-
-       struct single_led_priv *led =
-                        container_of(cdev, struct single_led_priv, cdev);
-
-...
-
-> +       // assign_bit() is atomic, no need for lock
-
-The useless comment.
-
--- 
-With Best Regards,
-Andy Shevchenko
