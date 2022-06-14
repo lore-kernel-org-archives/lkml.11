@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A834C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:09:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA03C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:09:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352556AbiFNCJk (ORCPT
+        id S1352636AbiFNCJl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:09:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43398 "EHLO
+        Mon, 13 Jun 2022 22:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352317AbiFNCI4 (ORCPT
+        with ESMTP id S1352362AbiFNCI5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:08:56 -0400
+        Mon, 13 Jun 2022 22:08:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D0436161;
-        Mon, 13 Jun 2022 19:06:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E27236309;
+        Mon, 13 Jun 2022 19:06:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CFF4B80AC1;
-        Tue, 14 Jun 2022 02:06:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCCBFC385A9;
-        Tue, 14 Jun 2022 02:06:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE66BB81699;
+        Tue, 14 Jun 2022 02:06:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 666FEC3411B;
+        Tue, 14 Jun 2022 02:06:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172375;
-        bh=4seMafuumCFqNw+bDTbGN5XERJrkspwfxmcEylUX7QY=;
+        s=k20201202; t=1655172380;
+        bh=Hk15Ko+XriFcMJvHOag9fZWU72/YW9YpHBaQUG75oCY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TZUbvV0VNqt7+5ubMlW8fsmjXjSLOJoWmBuh+NwgcdiAqqjT+a2l/FmvcsCbODfqu
-         a+EO203dN2KmHPyGstOdvg+Fo9Cxo2Qs25cJS/21yQDmDQ2uP0QmXbmgOwy5rRInrM
-         YdSxsSbuhszyHgLgiJe4UKwPhSsHiEusbzdYhYfebukRcKjcv20XioOB3/4LK3fpVt
-         /nRqawMaEPqN/SwN8e4zqiU/TnIWKXJY9amFE2OPS2TEj+40fjw6tVzbunzJAecj+x
-         yY39qg5HOKobnVoQpJq/BC0fugFOCceIVtuqDXri8LOR2qq3EbTe16LtWyfEGCgByl
-         iSxBjnvNBWtfQ==
+        b=hEXiYSRsHvCsCLJE/a7OJPaX/SkB4OWA29p9XUcrDYfEGaaN9ggsPpeXacEBWX/Ja
+         GbAbuDyjRJ9ppWyrBxCcNhhTXKfU3n42kKgI5X0JQERQCs43QYQRiF2vLe99rSpq7P
+         v16sx2TVihfUV85LYNJBwUMPJFN0j4COJPq//xoc64i5huMa9tlODmcUKjEIPeR/yW
+         gxae8jFL78mNOaLhewX7nhCzLwdi0w0T0lZ9AG/WfIhPRqu/G52jwY+raxo4+uwlFL
+         qbYwoVt6IVE31YDWZWiIWDWTCUT8cb0m8gZKqNSJ8vL7j9eB0Sgw2R/VI24ry5g+1L
+         4pfUUAuDMl72g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
@@ -40,9 +40,9 @@ Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
         Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
         Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
         tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 08/43] ASoC: cs35l36: Update digital volume TLV
-Date:   Mon, 13 Jun 2022 22:05:27 -0400
-Message-Id: <20220614020602.1098943-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 11/43] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
+Date:   Mon, 13 Jun 2022 22:05:30 -0400
+Message-Id: <20220614020602.1098943-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
 References: <20220614020602.1098943-1-sashal@kernel.org>
@@ -56,33 +56,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 5005a2345825eb8346546d99bfe669f73111b5c5 ]
+[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
 
-The digital volume TLV specifies the step as 0.25dB but the actual step
-of the control is 0.125dB. Update the TLV to correct this.
+A couple of the SX volume controls specify 0x84 as the lowest volume
+value, however the correct value from the datasheet is 0x44. The
+datasheet don't include spaces in the value it displays as binary so
+this was almost certainly just a typo reading 1000100.
 
 Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-3-ckeepax@opensource.cirrus.com
+Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs35l36.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/codecs/cs42l56.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/cs35l36.c b/sound/soc/codecs/cs35l36.c
-index d83c1b318c1c..0accdb45ed72 100644
---- a/sound/soc/codecs/cs35l36.c
-+++ b/sound/soc/codecs/cs35l36.c
-@@ -444,7 +444,8 @@ static bool cs35l36_volatile_reg(struct device *dev, unsigned int reg)
- 	}
- }
+diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
+index 3cf8a0b4478c..b39c25409c23 100644
+--- a/sound/soc/codecs/cs42l56.c
++++ b/sound/soc/codecs/cs42l56.c
+@@ -391,9 +391,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
+ 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
  
--static DECLARE_TLV_DB_SCALE(dig_vol_tlv, -10200, 25, 0);
-+static const DECLARE_TLV_DB_RANGE(dig_vol_tlv, 0, 912,
-+				  TLV_DB_MINMAX_ITEM(-10200, 1200));
- static DECLARE_TLV_DB_SCALE(amp_gain_tlv, 0, 1, 1);
+ 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
+-			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
+ 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
+-			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
  
- static const char * const cs35l36_pcm_sftramp_text[] =  {
+ 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
+ 			0, 0x00, 1, tone_tlv),
 -- 
 2.35.1
 
