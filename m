@@ -2,165 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFAE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354333AbiFNHYD (ORCPT
+        id S1354556AbiFNHYR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:24:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        Tue, 14 Jun 2022 03:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354275AbiFNHYA (ORCPT
+        with ESMTP id S1354497AbiFNHYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:24:00 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12E53BF93
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:23:58 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id y16so5941468ili.13
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:23:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=WgsPByWFwvmxTN6GW/uMi6kC/eCqUxKkzQvH+8GjA0Q=;
-        b=NpIAuWM0RbO9xoxmZjSOjTmrkmHw9aJ0t4AZ/Wbpsg6xH7ArIvcbtmqUcBM5cUbKHH
-         5xqRXIZ27/l9KZtdtnpcqsycUrnqML4JuLEVmW6jeC73ec1QkNGGkqtwAt07d27DVnpX
-         0MvW5YY5H66m65onie1kxC12c+WNiv9Y7+mZUBkFFCgg2cqzs5dKfw4Kjs43vqnFJpI3
-         pWOAgAG0h61eBIpprpOLGscaRiEgzhbIeiTYzm/S+llD55TjkYAiJGOzt1OmwCNPzoCJ
-         bpnCWmI05A8hdqBzIhwhLALelmCucxBQt4yDdO3Z1DjHHolziDMEzep2UbwmCO7kzO5D
-         ToxA==
+        Tue, 14 Jun 2022 03:24:09 -0400
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0E23CFF8;
+        Tue, 14 Jun 2022 00:24:03 -0700 (PDT)
+Received: by mail-qt1-f178.google.com with SMTP id k18so5516945qtm.9;
+        Tue, 14 Jun 2022 00:24:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WgsPByWFwvmxTN6GW/uMi6kC/eCqUxKkzQvH+8GjA0Q=;
-        b=l9dMJXU2SMzgdHYbBOkYKZ9VmmxeE64veZuHbgWHzZrvF8ARy2ZHbQYA/XBT9Z9JqJ
-         ksYin7c/HE7JiPk+jLt8iIBZSwVRNFXXov/ExPu8N3WdnX9YwKMqHVImk/jiRrayMf1D
-         XAy18aiXsJo+KgiKeHonZ5G+JDkwQzUno8Ex/sdXJF/GUvZYYSWsooQqoAJhjDQSrP8K
-         mZqA31FutYZmBPaj/1hGzbGBYqy4ODIyjJw9xtiraFteTVWwGIyTAJANQFbxL6WXq/jF
-         wh1YJc3OSRnAMyvQ1MmeXhPzsbhAn3y2ZGNEUYyvE94txLEM5Hb1ZglBIkjklc0mtLTw
-         FJ/g==
-X-Gm-Message-State: AJIora9Yg47ZPdTakSh7U9levk+ayxxtuayJpXZ38zVZ9X09cq7qlTDX
-        RV26v/VrkNwio/JWCVzMGaGw3A==
-X-Google-Smtp-Source: AGRyM1tTdAgY4KPZSG2TLNgC428eedn0ZcqHWQI+CM35U4PQPM8vuUi36BqDkOW7JRkwKXukuMZr/g==
-X-Received: by 2002:a92:504:0:b0:2d6:5aff:82ad with SMTP id q4-20020a920504000000b002d65aff82admr2153215ile.3.1655191437980;
-        Tue, 14 Jun 2022 00:23:57 -0700 (PDT)
-Received: from google.com ([2620:15c:183:200:eaa7:1f3f:e74a:2a26])
-        by smtp.gmail.com with ESMTPSA id f8-20020a02cac8000000b00331d411da60sm4544641jap.75.2022.06.14.00.23.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 00:23:57 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 01:23:52 -0600
-From:   Yu Zhao <yuzhao@google.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org, x86@kernel.org,
-        page-reclaim@google.com, Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
-        <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Subject: Re: [PATCH v12 08/14] mm: multi-gen LRU: support page table walks
-Message-ID: <Yqg3iLBGPyHOEfA2@google.com>
-References: <20220614071650.206064-1-yuzhao@google.com>
- <20220614071650.206064-9-yuzhao@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aiAvQvUwNZC8349lDrXjWRNqtecYyT5lBSmoXU6X950=;
+        b=W+nw622mbQ+PV9ugfcczqXjFEO19ZF0XPDHLa2tusPuSCzZRhImFAwQiwH5sjsuidK
+         hT7EyfSAYE8gtihwwAqpZJp2drJs1GcFXrRXj+xitEuqPUMeZvQM8WTO83aTiqlZmwlD
+         1dl8+25j2SqHapv7ZVzdKNzpHL2JAtEmnX8W2GP1Rq/pxML3T+Hnlme7B6ptaK2Q1PMo
+         Pou7KUxXeRzRO1FeRoYISppdeA5tjKzRgPuiDcTIEihLA7P+tKIVtpROlpeMt8tccWYJ
+         7EX3mOWTic4h9QolmIiXsLmZmNECTjQ6eeBeF+A6EAMAQibRhT0FSwLBm90QxgrORh17
+         nL7g==
+X-Gm-Message-State: AOAM530m7NL+fuANYG8u0zApUZgDwulCp2j5ahJL0WDvcmnDPcjXpyjS
+        7vCMcQ69ptUjJ0dYhoKT4e3U96CMnIPC+w==
+X-Google-Smtp-Source: ABdhPJzpx3QkJ7zKQfbk0OAzcjnvqNauK0gsSzML3rnackjnVpf702Ju3X4RaZ0YAqWa2YrSd+L8Ow==
+X-Received: by 2002:a05:622a:44c:b0:304:e4a2:3db7 with SMTP id o12-20020a05622a044c00b00304e4a23db7mr2992925qtx.162.1655191442195;
+        Tue, 14 Jun 2022 00:24:02 -0700 (PDT)
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
+        by smtp.gmail.com with ESMTPSA id m4-20020a05620a24c400b006a098381abcsm8705486qkn.114.2022.06.14.00.24.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 00:24:01 -0700 (PDT)
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-3137eb64b67so20291157b3.12;
+        Tue, 14 Jun 2022 00:24:01 -0700 (PDT)
+X-Received: by 2002:a81:4811:0:b0:30c:8021:4690 with SMTP id
+ v17-20020a814811000000b0030c80214690mr4090852ywa.47.1655191441536; Tue, 14
+ Jun 2022 00:24:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614071650.206064-9-yuzhao@google.com>
+References: <20220609150851.23084-1-max.oss.09@gmail.com> <20220609150851.23084-2-max.oss.09@gmail.com>
+In-Reply-To: <20220609150851.23084-2-max.oss.09@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 14 Jun 2022 09:23:50 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWm5WV7L=HJnysw76ObG_QPWicSH1kGg4k-GL8nNHd_SQ@mail.gmail.com>
+Message-ID: <CAMuHMdWm5WV7L=HJnysw76ObG_QPWicSH1kGg4k-GL8nNHd_SQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/5] dt-bindings: power: Add bindings for a power
+ domain controlled by a regulator
+To:     Max Krummenacher <max.oss.09@gmail.com>
+Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 01:16:45AM -0600, Yu Zhao wrote:
-> +static bool get_next_vma(unsigned long mask, unsigned long size, struct mm_walk *args,
-> +			 unsigned long *vm_start, unsigned long *vm_end)
-> +{
-> +	unsigned long start = round_up(*vm_end, size);
-> +	unsigned long end = (start | ~mask) + 1;
-> +
-> +	VM_WARN_ON_ONCE(mask & size);
-> +	VM_WARN_ON_ONCE((start & mask) != (*vm_start & mask));
-> +
-> +	while (args->vma) {
-> +		if (start >= args->vma->vm_end) {
-> +			args->vma = args->vma->vm_next;
-> +			continue;
-> +		}
-> +
-> +		if (end && end <= args->vma->vm_start)
-> +			return false;
-> +
-> +		if (should_skip_vma(args->vma->vm_start, args->vma->vm_end, args)) {
-> +			args->vma = args->vma->vm_next;
-> +			continue;
-> +		}
-> +
-> +		*vm_start = max(start, args->vma->vm_start);
-> +		*vm_end = min(end - 1, args->vma->vm_end - 1) + 1;
-> +
-> +		return true;
-> +	}
-> +
-> +	return false;
-> +}
+Hi Max,
 
-Andrew,
+On Thu, Jun 9, 2022 at 5:16 PM Max Krummenacher <max.oss.09@gmail.com> wrote:
+> From: Max Krummenacher <max.krummenacher@toradex.com>
+>
+> Adds binding for a power domain provider which uses a regulator to control
+> the power domain.
+>
+> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 
-The above function has a conflict with Maple Tree. Please use the
-following fix-up if you apply MGLRU on top of Maple Tree. Thanks.
+Thanks for your patch!
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 69a52aae1e03..05e62948e365 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -3749,23 +3749,14 @@ static bool get_next_vma(unsigned long mask, unsigned long size, struct mm_walk
- {
- 	unsigned long start = round_up(*vm_end, size);
- 	unsigned long end = (start | ~mask) + 1;
-+	VMA_ITERATOR(vmi, args->mm, start);
- 
- 	VM_WARN_ON_ONCE(mask & size);
- 	VM_WARN_ON_ONCE((start & mask) != (*vm_start & mask));
- 
--	while (args->vma) {
--		if (start >= args->vma->vm_end) {
--			args->vma = args->vma->vm_next;
-+	for_each_vma_range(vmi, args->vma, end) {
-+		if (should_skip_vma(args->vma->vm_start, args->vma->vm_end, args))
- 			continue;
--		}
--
--		if (end && end <= args->vma->vm_start)
--			return false;
--
--		if (should_skip_vma(args->vma->vm_start, args->vma->vm_end, args)) {
--			args->vma = args->vma->vm_next;
--			continue;
--		}
- 
- 		*vm_start = max(start, args->vma->vm_start);
- 		*vm_end = min(end - 1, args->vma->vm_end - 1) + 1;
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/power/regulator-power-domain.yaml
+> @@ -0,0 +1,58 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/power/regulator-power-domain.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Power domain controlled by a regulator
+> +
+> +maintainers:
+> +  - Max Krummenacher <max.krummenacher@toradex.com>
+> +
+> +description: |+
+> +  Power domain provider which uses a regulator to control
+> +  the power domain.
+> +
+> +allOf:
+> +  - $ref: "power-domain.yaml#"
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - regulator-pm-pd
+> +
+> +  power-supply:
+> +    description: The regulator used to control the power domain.
+
+I guess there can be more than one?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
