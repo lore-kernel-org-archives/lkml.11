@@ -2,166 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:12:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37447C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344012AbiFNRMq (ORCPT
+        id S1344298AbiFNRND (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 13:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33910 "EHLO
+        Tue, 14 Jun 2022 13:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244672AbiFNRMi (ORCPT
+        with ESMTP id S1344232AbiFNRM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 13:12:38 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5938A11160;
-        Tue, 14 Jun 2022 10:12:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=UnkcKB4NsDJ0e+mJiYWNx+eCTEwD4IDtNjFvnXDcokg=; b=JXA09RScBAaWksG9w8f1eTRDx4
-        jPYffuxU/Oy99uzq/dqd//WYwokS38bI/QGvYknm8zFgS3vrQtkcoOX6qIO7tKKQRLFroHKgAkjSb
-        /tvxwZw2q5CrF7NG3K0+O5rp7pIMysDT64NN6/ccTPvjXzCgRYF4ZXZWRGSgm/GTaAwh3ankYtsj2
-        i1oLpSEKv0CjPVVjmPZkIIBFcgaJA+8/C78nDnACERWnKrtVFsFAjbuPdTHnA3fHbQqUY3QahA2TN
-        IYY426fKPxYxFAz+mA4FdDG8SpuVxjKd2wLkgh7y/iu+e9O/fTibDiIVfWIcDfvjF3seVpliF0mH6
-        h7djO54g==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1o1A5W-000L3R-Dg;
-        Tue, 14 Jun 2022 17:12:22 +0000
-Date:   Tue, 14 Jun 2022 18:12:22 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        nvdimm@lists.linux.dev, David Howells <dhowells@redhat.com>
-Subject: Re: [RFC][PATCH] fix short copy handling in copy_mc_pipe_to_iter()
-Message-ID: <YqjBdtzXSKgwUi8f@ZenIV>
-References: <YqaAcKsd6uGfIQzM@zeniv-ca.linux.org.uk>
- <CAHk-=wjmCzdNDCt6L8-N33WSRaYjnj0=yTc_JG8A_Pd7ZEtEJw@mail.gmail.com>
- <Yqe6EjGTpkvJUU28@ZenIV>
- <YqfcHiBldIqgbu7e@ZenIV>
+        Tue, 14 Jun 2022 13:12:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 058DC1FA6A
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:12:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655226771;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BfrhtGAtLvOb91U5Caoxz7ToRMTUo4BX498hJvwylV4=;
+        b=Wpdb598WVOBu+1TrrRVISryupR1ZzrUGnlOKcmh8bXvLR0du9uXq/Yi+FOiKEpuaL3mXqK
+        b4cCsDhKJdLYuQsxn4oX22kVYZHLcG2EFzDUPa3LZ4s+itYd9XRSp7QCtDYXRYC9zGjrW9
+        0+VHx+nxy59BD18WcrNaeDHeMw6So4s=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-235-fRGIY-fGNX-rI-fXCIL86w-1; Tue, 14 Jun 2022 13:12:50 -0400
+X-MC-Unique: fRGIY-fGNX-rI-fXCIL86w-1
+Received: by mail-wm1-f71.google.com with SMTP id k16-20020a7bc310000000b0038e6cf00439so5100608wmj.0
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:12:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=BfrhtGAtLvOb91U5Caoxz7ToRMTUo4BX498hJvwylV4=;
+        b=EGZtFyGEOQDi2QpI0C4Essg23umxBjdTc0OCaodz46tKezmTtEgCw/+uJDHK/0v8a+
+         +6bqK5JU6/oCP0C59Qqfjj1b1/vKmeQoa3hhvaomIdHU7it9ciHLXkH0h6Tuo68X9ZpO
+         8GnQojQIDl583qpHqRKnrKBFIPz7pp+2ruj+R/PHqtpZEq4kHxpO06nvka4f84CQbU2a
+         966Cu87xVmKePRuwE75VDlSgN0LFkQoRnGxQdwObXFdfSE/2i1x+peBfJ0Mxar/3MAYE
+         nMvgIRTykNTHCAIoPbrl+PKp2ZzoiFE8aulXB4c5DTgzmAcCrQgoZ/Mnw0hJVaNIOcor
+         Ng+A==
+X-Gm-Message-State: AOAM531Wez72vT3YQjoH9ttJHFvEmX/kxHLw0fM/6142H9dkIlybWRqY
+        8nZcr67/sCywpIuk/xZEaq9cfgeCWw5axn6B0wJeH1Trf9GTz+5l/u9jgemj51LpsbJE9N5Wm4C
+        YiUj4FsCgvzT6iMGkWMRPMoFk
+X-Received: by 2002:a05:600c:3d99:b0:39c:55ba:ecc3 with SMTP id bi25-20020a05600c3d9900b0039c55baecc3mr5382962wmb.42.1655226768597;
+        Tue, 14 Jun 2022 10:12:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzxzHRj9jPybDShmEzjDSQmNckyNLR7TmjRU0BvivRa22+pBhTAlu7GJThPLg9tZdNRpxpyEQ==
+X-Received: by 2002:a05:600c:3d99:b0:39c:55ba:ecc3 with SMTP id bi25-20020a05600c3d9900b0039c55baecc3mr5382934wmb.42.1655226768288;
+        Tue, 14 Jun 2022 10:12:48 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id g15-20020a05600c4ecf00b0039c4945c753sm19088159wmq.39.2022.06.14.10.12.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 10:12:47 -0700 (PDT)
+Message-ID: <25293823-222b-274a-c2b5-63a5558b02d8@redhat.com>
+Date:   Tue, 14 Jun 2022 19:12:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqfcHiBldIqgbu7e@ZenIV>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/8] KVM: x86/mmu: Drop unused CMPXCHG macro from
+ paging_tmpl.h
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "open list:KERNEL VIRTUAL MACHINE FOR MIPS (KVM/mips)" 
+        <kvm@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+References: <20220613225723.2734132-1-seanjc@google.com>
+ <20220613225723.2734132-2-seanjc@google.com>
+ <CAJhGHyDjFCJdRjdV-W5+reg-3jiwJAqeCQ7A-vdUqt+dToJBdA@mail.gmail.com>
+ <YqibwNj8ihL3vbel@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YqibwNj8ihL3vbel@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 01:53:50AM +0100, Al Viro wrote:
+On 6/14/22 16:31, Sean Christopherson wrote:
+> I'd prefer to keep them around as it allows using them to generate the other masks
+> that are used.
 
-> FWIW, I've got quite a bit of cleanups in the local tree; reordering and
-> cleaning that queue up at the moment, will post tonight or tomorrow.
-> 
-> I've looked into doing allocations page-by-page (instead of single
-> push_pipe(), followed by copying into those).  Doable, but it ends
-> up being much messier.
+Ok, I see what you're doing in patch 6.  Yeah, I'll wait for v2.
 
-Hmm...  Maybe not - a possible interface would be
-	append_pipe(iter, size, &off)
+Paolo
 
-that would either do kmap_local_page() on the last buffer (if it's
-anonymous and has space in it) or allocated and mapped a page and
-added a new buffer.  Returning the mapped address and offset from it.
-Then these loops would looks like this:
-
-	while (left) {
-		p = append_pipe(iter, left, &off);
-		if (!p)
-			break;
-		chunk = min(left, PAGE_SIZE - off);
-		rem = copy(p + off, whatever, chunk);
-		chunk -= rem;
-		kunmap_local(p);
-
-		copied += chunk;
-		left -= chunk;
-
-		if (unlikely(rem)) {
-			pipe_revert(i, rem);
-			break;
-		}
-	}
-	return copied;
-
-with no push_pipe() used at all.  For operations that can't fail,
-the things are simplified in an obvious way (rem is always 0).
-
-Or we could have append_pipe() return a struct page * and leave
-kmap_local_page() to the caller...
-
-struct page *append_pipe(struct iov_iter *i, size_t size, unsigned *off)
-{
-	struct pipe_inode_info *pipe = i->pipe;
-	unsigned offset = i->iov_offset;
-	struct page_buffer *buf;
-	struct page *page;
-
-	if (offset && offset < PAGE_SIZE) {
-		// some space in the last buffer; can we add to it?
-		buf = pipe_buf(pipe, pipe->head - 1);
-		if (allocated(buf)) {
-			size = min(size, PAGE_SIZE - offset);
-			buf->len += size;
-			i->iov_offset += size;
-			i->count -= size;
-			*off = offset;
-			return buf->page;	// or kmap_local_page(...)
-		}
-	}
-	// OK, we need a new buffer
-	size = min(size, PAGE_SIZE);
-	if (pipe_full(.....))
-		return NULL;
-	page = alloc_page(GFP_USER);
-	if (!page)
-		return NULL;
-	// got it...
-	buf = pipe_buf(pipe, pipe->head++);
-	*buf = (struct pipe_buffer){.ops = &default_pipe_buf_ops,
-				    .page = page, .len = size };
-	i->head = pipe->head - 1;
-	i->iov_offset = size;
-	i->count -= size;
-	*off = 0;
-	return page;	 // or kmap_local_page(...)
-}
-
-(matter of fact, the last part could use another helper in my tree - there
-the tail would be
-	// OK, we need a new buffer
-	size = min(size, PAGE_SIZE);
-	page = push_anon(pipe, size);
-	if (!page)
-		return NULL;
-	i->head = pipe->head - 1;
-	i->iov_offset = size;
-	i->count -= size;
-	*off = 0;
-	return page;
-)
-
-Would that be readable enough from your POV?  That way push_pipe()
-loses almost all callers and after the "make iov_iter_get_pages()
-advancing" part of the series it simply goes away...
-
-It's obviously too intrusive for backports, though - there I'd very much
-prefer the variant I posted.
-
-Comments?
-
-PS: re local helpers:
-
-static inline struct pipe_buffer *pipe_buf(const struct pipe_inode_info *pipe,
-                                           unsigned int slot)
-{
-	return &pipe->bufs[slot & (pipe->ring_size - 1)];
-}
-
-pretty much all places where we cache pipe->ring_size - 1 had been
-absolutely pointless; there are several exceptions, but back in 2019
-"pipe: Use head and tail pointers for the ring, not cursor and length"
-went overboard with microoptimizations...
