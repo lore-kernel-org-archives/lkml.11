@@ -2,98 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 597ACC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 03:06:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 093F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 03:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354939AbiFNDGQ (ORCPT
+        id S1354320AbiFNDG1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 23:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38262 "EHLO
+        Mon, 13 Jun 2022 23:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348171AbiFNDFe (ORCPT
+        with ESMTP id S1353420AbiFNDFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 23:05:34 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93CF2B1A9
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:05:29 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id bl34so10122658oib.1
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:05:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=o/0wR2vM2bbKC03bV5NcozOvV47IHR4820iRSTaVlh4=;
-        b=e+0h4INmlWjUzqgyYGlLl5pHQRQfFRqbaLvk81RWnWt52IDXTl/qCIDnyNOA5U84qr
-         aDnPG/Dov5pSXX9XItKhd/o6S4yV5nD0acShAOBhEgY5hDUdDEzgtyEvlxj1MW3RqvKq
-         WiM18H3DOAfKMeU3ijFcmRt+VoAGuwZQEzrYg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=o/0wR2vM2bbKC03bV5NcozOvV47IHR4820iRSTaVlh4=;
-        b=iEG7l/edJbyWUi8rRnPYyCQhMhM9TaAsiPmdp/9q9vrjUYV3lAA05tqePtJEhuD9h0
-         qutc6QPkF/M0hHouaysQWT5Blcb8koGBhBIxI1Ezo+TvpRq0fEFSImehbxbrFXeMVYQQ
-         W/HMeEGN1sO5b5VeuygB3SMbyb7uP1Ub5AWYxGPRL4141xlO4zhphBjuMEd4rIMOVQim
-         SMAZkW3Iu+HvJ95t6jtFMTYfGRLlbMYbJx3u7ZdCfhBnXTIJTpyEfDyGR4PdJGVUKyNe
-         QtLkhvIOfoS37dYQC57pByO+98+YuQK/Ri7HgYVk/5L6EFeVyP/ggknLSQhuhsMM2UZU
-         l1Fg==
-X-Gm-Message-State: AOAM532jJcRO44DeqR0A382IWmnGUS1MuypWhIYusOQ3kVZNPQ/v46EH
-        jT26ldc3f9+az6a99/WWlvuS7EfD2YJ3Og==
-X-Google-Smtp-Source: ABdhPJxv+AFfo3HjApsL1IeqWrSraKXBEtOC4kWYG2qBcW/UbLaaYyaqXQrI6419Byznj6wcwlYNIA==
-X-Received: by 2002:a05:6808:1710:b0:32e:37f6:cbe1 with SMTP id bc16-20020a056808171000b0032e37f6cbe1mr1032751oib.114.1655175929281;
+        Mon, 13 Jun 2022 23:05:32 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC23E2B1A0;
         Mon, 13 Jun 2022 20:05:29 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id f5-20020a056870548500b000f1b1ff7b8bsm4809912oan.51.2022.06.13.20.05.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 20:05:28 -0700 (PDT)
-Subject: Re: [PATCH 5.17 000/303] 5.17.15-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220613181529.324450680@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <3192c16b-05af-5d1f-2b44-449aa336d38f@linuxfoundation.org>
-Date:   Mon, 13 Jun 2022 21:05:27 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655175929; x=1686711929;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Tk/dObL96dn44VuoBZwZZKZdR9ldP5FCMS13exwOSO0=;
+  b=f08eWHJOYqHoY8jLzvovIAfMSfnDUvUVNo4O6DfC8iLNmAN2hvju53u2
+   VzslNgMm+s7BSJI77kKhu+Gc7nN5Aiz4+iPFKbEG9TVOdyN/hOV2aBaOe
+   UfUFBNCJRD7nlf/thbt9/eYDOCqLjwCa/lgZjU+rvkKm6Rd7194dYhr3Y
+   QESm6TjMiy7brDEO79NDL9SH8R2+dG29CQqfGUNX214Zq5B0J+9rvXk+H
+   tewUoUjRHxHjscSsQwfTmfOxAYxx5sbtgnzGB1pAXl1FDl7thxqd3F9rB
+   2a5chBfdFPwxAXu6yObZoEgTx6Cisn/aKW0FV97dkVwSKDefaNbhaba5p
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="278518785"
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="278518785"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 20:05:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="761787736"
+Received: from p12hl98bong5.png.intel.com ([10.158.65.178])
+  by orsmga005.jf.intel.com with ESMTP; 13 Jun 2022 20:05:21 -0700
+From:   Ong Boon Leong <boon.leong.ong@intel.com>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Emilio Riva <emilio.riva@ericsson.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Subject: [PATCH net-next v4 4/5] stmmac: intel: add phy-mode and fixed-link ACPI _DSD setting support
+Date:   Tue, 14 Jun 2022 11:00:29 +0800
+Message-Id: <20220614030030.1249850-5-boon.leong.ong@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220614030030.1249850-1-boon.leong.ong@intel.com>
+References: <20220614030030.1249850-1-boon.leong.ong@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220613181529.324450680@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/13/22 12:18 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.17.15 release.
-> There are 303 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 15 Jun 2022 18:14:43 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.15-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Currently, phy_interface for TSN controller instance is set based on its
+PCI Device ID. For SGMII PHY interface, phy_interface default to
+PHY_INTERFACE_MODE_SGMII. As C37 AN supports both SGMII and 1000BASE-X
+mode, we add support for 'phy-mode' ACPI _DSD for port-specific
+and customer platform specific customization.
 
-Compiled and booted on my test system. No dmesg regressions.
+v2:
+For platform that sets 'fixed-link' using ACPI _DSD, we will unset
+xpcs_an_inband within stmmac. Thanks to Russell King for his comment in
+https://patchwork.kernel.org/comment/24890222/
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+v1:
+Thanks to Andrew Lunn's guidance in
+https://patchwork.kernel.org/comment/24827101/
 
-thanks,
--- Shuah
+Tested-by: Emilio Riva <emilio.riva@ericsson.com>
+Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+---
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 26 +++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 675dfb89b76..97b357dd468 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -442,6 +442,7 @@ static void common_default_data(struct plat_stmmacenet_data *plat)
+ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 				  struct plat_stmmacenet_data *plat)
+ {
++	struct fwnode_handle *fwnode;
+ 	char clk_name[20];
+ 	int ret;
+ 	int i;
+@@ -560,6 +561,20 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 	/* Use the last Rx queue */
+ 	plat->vlan_fail_q = plat->rx_queues_to_use - 1;
+ 
++	/* For fixed-link setup, we allow phy-mode setting */
++	fwnode = dev_fwnode(&pdev->dev);
++	if (fwnode) {
++		const char *phy_mode;
++
++		if (!fwnode_property_read_string(fwnode, "phy-mode",
++						 &phy_mode)) {
++			if (!strcmp(phy_mode, "sgmii"))
++				plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
++			if (!strcmp(phy_mode, "1000base-x"))
++				plat->phy_interface = PHY_INTERFACE_MODE_1000BASEX;
++		}
++	}
++
+ 	/* Intel mgbe SGMII interface uses pcs-xcps */
+ 	if (plat->phy_interface == PHY_INTERFACE_MODE_SGMII ||
+ 	    plat->phy_interface == PHY_INTERFACE_MODE_1000BASEX) {
+@@ -567,6 +582,17 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 		plat->mdio_bus_data->xpcs_an_inband = true;
+ 	}
+ 
++	/* For fixed-link setup, we clear xpcs_an_inband */
++	if (fwnode) {
++		struct fwnode_handle *fixed_node;
++
++		fixed_node = fwnode_get_named_child_node(fwnode, "fixed-link");
++		if (fixed_node)
++			plat->mdio_bus_data->xpcs_an_inband = false;
++
++		fwnode_handle_put(fixed_node);
++	}
++
+ 	/* Ensure mdio bus scan skips intel serdes and pcs-xpcs */
+ 	plat->mdio_bus_data->phy_mask = 1 << INTEL_MGBE_ADHOC_ADDR;
+ 	plat->mdio_bus_data->phy_mask |= 1 << INTEL_MGBE_XPCS_ADDR;
+-- 
+2.25.1
+
