@@ -2,98 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB7BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 448DCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:27:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355302AbiFNK0r (ORCPT
+        id S1355261AbiFNK1e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
+        Tue, 14 Jun 2022 06:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355305AbiFNK0m (ORCPT
+        with ESMTP id S229853AbiFNK1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:26:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B425D48311
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:26:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 14 Jun 2022 06:27:33 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820C91838D
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:27:32 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E3D6B8184D
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:26:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F47C3411B;
-        Tue, 14 Jun 2022 10:26:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655202395;
-        bh=l1sxLLZQWeVhqxlzjKTw7wCllLPbQt5ni97m0lqGV5g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ludy/N4TC8k0iBsuPVkePMLBpq8hg5NTx2TQ3qnX9p2VfYRBiF5LL+MX49lnBVn5x
-         Zk0jpCuPqBBs8ZufKuVYeONEDo/YJjBs8VHFmMkJU0uKo4rIoGXpQLCTq+DTFxicbK
-         ZqAv9SwcrEFYXhDycTqj5xE7ucRfRuRR0YAT5gJ4=
-Date:   Tue, 14 Jun 2022 12:26:32 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v1] MAINTAINERS: add MEMORY HOT(UN)PLUG section and add
- myself as reviewer
-Message-ID: <YqhiWMyuTEeyiLAf@kroah.com>
-References: <20220610101258.75738-1-david@redhat.com>
- <YqhV7W68zR4yorQL@kroah.com>
- <2eb3f679-9779-2d7e-0863-5c808cf99ed6@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2eb3f679-9779-2d7e-0863-5c808cf99ed6@redhat.com>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 3CB611F88B;
+        Tue, 14 Jun 2022 10:27:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655202451; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=V1c4KqI75Xq0osGRVechadykZB657HEVNEGp9LJkIc4=;
+        b=cNx53KGmbn6nMHd5CEj3v2EWhCikpzJh3VqMQc1hTO5UFMHGm5B4Ths0iOlGqMtufajtGr
+        5wuKcCynC/P55u1CLdVTVZvwMw2pw3tgu5311t6wdH/LJbdM0+X+5K1FyJHAtO8ouOhMgv
+        T7BEy1YZ6KoVS99Cq68AkcKmQplCpYs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655202451;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=V1c4KqI75Xq0osGRVechadykZB657HEVNEGp9LJkIc4=;
+        b=slERjjyzNG8rnCyJlLq0795WKEpFYxJ9s1V3m5t6d/WuTASmBhlz1COoBbBipKsaK9IMrC
+        prDe3PCPS34p+aDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 256AA1361C;
+        Tue, 14 Jun 2022 10:27:31 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Ao3NCJNiqGK4VQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Tue, 14 Jun 2022 10:27:31 +0000
+Date:   Tue, 14 Jun 2022 12:27:30 +0200
+Message-ID: <8735g7r14d.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Eugeniu Rosca <erosca@de.adit-jv.com>
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com>,
+        <naveenkumar.sunkari@in.bosch.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+Subject: Re: [PATCH] ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
+In-Reply-To: <20220614095851.GA4199@lxhi-065>
+References: <20220409012655.9399-1-fmdefrancesco@gmail.com>
+        <20220614095851.GA4199@lxhi-065>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 11:35:28AM +0200, David Hildenbrand wrote:
-> On 14.06.22 11:33, Greg Kroah-Hartman wrote:
-> > On Fri, Jun 10, 2022 at 12:12:58PM +0200, David Hildenbrand wrote:
-> >> There are certainly a lot more files that partially fall into the memory
-> >> hot(un)plug category, including parts of mm/sparse.c, mm/page_isolation.c
-> >> and mm/page_alloc.c. Let's only add what's almost completely memory
-> >> hot(un)plug related.
-> >>
-> >> Add myself as reviewer so it's easier for contributors to figure out
-> >> whom to CC.
-> >>
-> >> Signed-off-by: David Hildenbrand <david@redhat.com>
-> >> ---
-> >>  MAINTAINERS | 12 ++++++++++++
-> >>  1 file changed, 12 insertions(+)
-> >>
-> >> diff --git a/MAINTAINERS b/MAINTAINERS
-> >> index a6d3bd9d2a8d..77aebce76288 100644
-> >> --- a/MAINTAINERS
-> >> +++ b/MAINTAINERS
-> >> @@ -12848,6 +12848,18 @@ F:	include/linux/vmalloc.h
-> >>  F:	mm/
-> >>  F:	tools/testing/selftests/vm/
-> >>  
-> >> +MEMORY HOT(UN)PLUG
-> >> +M:	Andrew Morton <akpm@linux-foundation.org>
-> >> +R:	David Hildenbrand <david@redhat.com>
-> >> +L:	linux-mm@kvack.org
-> >> +S:	Maintained
-> >> +F:	Documentation/admin-guide/mm/memory-hotplug.rst
-> >> +F:	Documentation/core-api/memory-hotplug.rst
-> >> +F:	drivers/base/memory.c
-> >> +F:	include/linux/memory_hotplug.h
-> >> +F:	mm/memory_hotplug.c
-> >> +F:	tools/testing/selftests/memory-hotplug/
-> > 
-> > Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > 
-> > One question, will patches from you go through my driver core tree, or
-> > the -mm tree?  Either is fine for me, just curious.
+On Tue, 14 Jun 2022 11:58:51 +0200,
+Eugeniu Rosca wrote:
 > 
-> In the past, most stuff regarding drivers/base/memory.c went through
-> -mm, so I'd say we keep it like that, unless it's really generic changes
-> to the driver model etc.
+> Hello Fabio, hello All,
+> 
+> On Sa, Apr 09, 2022 at 03:26:55 +0200, Fabio M. De Francesco wrote:
+> > Syzbot reports "KASAN: null-ptr-deref Write in
+> > snd_pcm_format_set_silence".[1]
+> > 
+> > It is due to missing validation of the "silence" field of struct
+> > "pcm_format_data" in "pcm_formats" array.
+> > 
+> > Add a test for valid "pat" and, if it is not so, return -EINVAL.
+> > 
+> > [1] https://lore.kernel.org/lkml/000000000000d188ef05dc2c7279@google.com/
+> > 
+> > Reported-and-tested-by: syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
+> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > ---
+> > 
+> > I wasn't able to figure out the commit for the "Fixes:" tag. If this patch
+> > is good, can someone please help with providing this missing information?
+> > 
+> >  sound/core/pcm_misc.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/sound/core/pcm_misc.c b/sound/core/pcm_misc.c
+> > index 4866aed97aac..5588b6a1ee8b 100644
+> > --- a/sound/core/pcm_misc.c
+> > +++ b/sound/core/pcm_misc.c
+> > @@ -433,7 +433,7 @@ int snd_pcm_format_set_silence(snd_pcm_format_t format, void *data, unsigned int
+> >  		return 0;
+> >  	width = pcm_formats[(INT)format].phys; /* physical width */
+> >  	pat = pcm_formats[(INT)format].silence;
+> > -	if (! width)
+> > +	if (!width || !pat)
+> >  		return -EINVAL;
+> >  	/* signed or 1 byte data */
+> >  	if (pcm_formats[(INT)format].signd == 1 || width <= 8) {
+> 
+> JFYI, PVS-Studio 7.19 reports:
+> 
+> sound/core/pcm_misc.c	409	warn	V560 A part of conditional expression is always false: !pat.
+> 
+> I haven't fully validated the finding, but it appears to be legit,
+> since the pointer variable (as opposed to the contents behind the
+> pointer) is always non-null, hence !pat always evaluating to false.
+> 
+> If the above is true, then the patch likely hasn't introduced any
+> regression, but also likely hasn't fixed the original KASAN problem.
+> 
+> Or are there alternative views?
 
-Sounds great to me, thanks for taking this on, much appreciated!
+Indeed the fix looks bogus, and maybe better to revert.
 
-greg k-h
+Looking at the original syzkaller report again, it points rather to
+the *write* at the address 1, and it means not the source (silence[])
+but the target pointer (data) is invalid; i.e. it's a problem in the
+caller side, likely some race between the OSS temporary buffer removal
+and other operation.
+
+Thanks for checking this.
+
+
+Takashi
