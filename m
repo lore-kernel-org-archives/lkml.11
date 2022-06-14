@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF161C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 403DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:21:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353813AbiFNCU5 (ORCPT
+        id S1353858AbiFNCVD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55240 "EHLO
+        Mon, 13 Jun 2022 22:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354190AbiFNCO1 (ORCPT
+        with ESMTP id S1354381AbiFNCOm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:27 -0400
+        Mon, 13 Jun 2022 22:14:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4EB3B541;
-        Mon, 13 Jun 2022 19:08:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69273BBDA;
+        Mon, 13 Jun 2022 19:08:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4664560B65;
-        Tue, 14 Jun 2022 02:08:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7304FC3411E;
-        Tue, 14 Jun 2022 02:08:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C44A60EE2;
+        Tue, 14 Jun 2022 02:08:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B99D6C36B00;
+        Tue, 14 Jun 2022 02:08:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172506;
-        bh=h3/CVxVIjCVxAAoWrgd+Z2TY8aIOGi1RT8g+0/Nmjpw=;
+        s=k20201202; t=1655172519;
+        bh=YnT0A5pYx7LECS7ve6dpcfSYlTvAMThZz2MiAayKHIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FSdzDzNDs8GxZoo7/3GIoeahA3Qwrp74YxZtK2aJ//t/IINc5JawzoOQHx3kmUpEz
-         bnNXS6EmzUAErB2MsWfmoHYEp8fEzXGoWxRwWPacOnb2yFZZirp1WDdPlVh5lpxGrF
-         nbmU3tRg36cN+K5NZHLcavyq2I6HzxCl9hSAIIG19ETWc4bHsyKQi5b6Wv7N/YQYww
-         YAeUMaFe0Y2zOIG75IX78wU+JkQJPn62cY4G4cx4HYWvRib/Us9dk7wEpfxotriXSo
-         FQoHA8d5d7zEkh1lVi3N106+I5TOuRWW+3rcivXXxK0zvvOKs3rciZEEsoFdsfDLn5
-         q9/locwdw4mrg==
+        b=ZDIrAbwl4U12zxl1Zbdj9JOCDD0B8XJkFiV2GdHPnxwwC2OkvaI5T0QvwKSiiXDPe
+         FBGapd7bEyU/+Wf2TCRRDn1mXGhtRQ8VpHxHRtO5wUejvz92M7pGRY6P3SKP0+Z4T6
+         LfV9f2yc8yYjqK2LzRTyS4W7aiwIl65rWCLb3Qe4TASDaE7Pirb3TAZ2HZESskzegg
+         1La3IxNPQEjQ9Wd/WUSg+AiQ+dYnToy41v1bAsx8PNopFDRzLrW+/LfinnhSrrH76N
+         OxmseVUzyIEmG9UuQfqKaqlV6AQkPDi/9JIqTz8F/LZoxGjq+QgdO84ZqGJJThtygj
+         mRQSRTfSS2fYQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
-        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.10 06/29] ASoC: cs53l30: Correct number of volume levels on SX controls
-Date:   Mon, 13 Jun 2022 22:07:52 -0400
-Message-Id: <20220614020815.1099999-6-sashal@kernel.org>
+Cc:     Marius Hoch <mail@mariushoch.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 15/29] Input: soc_button_array - also add Lenovo Yoga Tablet2 1051F to dmi_use_low_level_irq
+Date:   Mon, 13 Jun 2022 22:08:01 -0400
+Message-Id: <20220614020815.1099999-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
 References: <20220614020815.1099999-1-sashal@kernel.org>
@@ -55,57 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Marius Hoch <mail@mariushoch.de>
 
-[ Upstream commit 7fbd6dd68127927e844912a16741016d432a0737 ]
+[ Upstream commit 6ab2e51898cd4343bbdf8587af8ce8fbabddbcb5 ]
 
-This driver specified the maximum value rather than the number of volume
-levels on the SX controls, this is incorrect, so correct them.
+Commit 223f61b8c5ad ("Input: soc_button_array - add Lenovo Yoga Tablet2
+1051L to the dmi_use_low_level_irq list") added the 1051L to this list
+already, but the same problem applies to the 1051F. As there are no
+further 1051 variants (just the F/L), we can just DMI match 1051.
 
-Reported-by: David Rhodes <david.rhodes@cirrus.com>
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-4-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Tested on a Lenovo Yoga Tablet2 1051F: Without this patch the
+home-button stops working after a wakeup from suspend.
+
+Signed-off-by: Marius Hoch <mail@mariushoch.de>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220603120246.3065-1-mail@mariushoch.de
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs53l30.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/input/misc/soc_button_array.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/cs53l30.c b/sound/soc/codecs/cs53l30.c
-index ed22361b35c1..a5a383b92305 100644
---- a/sound/soc/codecs/cs53l30.c
-+++ b/sound/soc/codecs/cs53l30.c
-@@ -347,22 +347,22 @@ static const struct snd_kcontrol_new cs53l30_snd_controls[] = {
- 	SOC_ENUM("ADC2 NG Delay", adc2_ng_delay_enum),
- 
- 	SOC_SINGLE_SX_TLV("ADC1A PGA Volume",
--		    CS53L30_ADC1A_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
-+		    CS53L30_ADC1A_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
- 	SOC_SINGLE_SX_TLV("ADC1B PGA Volume",
--		    CS53L30_ADC1B_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
-+		    CS53L30_ADC1B_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
- 	SOC_SINGLE_SX_TLV("ADC2A PGA Volume",
--		    CS53L30_ADC2A_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
-+		    CS53L30_ADC2A_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
- 	SOC_SINGLE_SX_TLV("ADC2B PGA Volume",
--		    CS53L30_ADC2B_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
-+		    CS53L30_ADC2B_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
- 
- 	SOC_SINGLE_SX_TLV("ADC1A Digital Volume",
--		    CS53L30_ADC1A_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
-+		    CS53L30_ADC1A_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
- 	SOC_SINGLE_SX_TLV("ADC1B Digital Volume",
--		    CS53L30_ADC1B_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
-+		    CS53L30_ADC1B_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
- 	SOC_SINGLE_SX_TLV("ADC2A Digital Volume",
--		    CS53L30_ADC2A_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
-+		    CS53L30_ADC2A_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
- 	SOC_SINGLE_SX_TLV("ADC2B Digital Volume",
--		    CS53L30_ADC2B_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
-+		    CS53L30_ADC2B_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
- };
- 
- static const struct snd_soc_dapm_widget cs53l30_dapm_widgets[] = {
+diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
+index cb6ec59a045d..efffcf0ebd3b 100644
+--- a/drivers/input/misc/soc_button_array.c
++++ b/drivers/input/misc/soc_button_array.c
+@@ -85,13 +85,13 @@ static const struct dmi_system_id dmi_use_low_level_irq[] = {
+ 	},
+ 	{
+ 		/*
+-		 * Lenovo Yoga Tab2 1051L, something messes with the home-button
++		 * Lenovo Yoga Tab2 1051F/1051L, something messes with the home-button
+ 		 * IRQ settings, leading to a non working home-button.
+ 		 */
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "60073"),
+-			DMI_MATCH(DMI_PRODUCT_VERSION, "1051L"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "1051"),
+ 		},
+ 	},
+ 	{} /* Terminating entry */
 -- 
 2.35.1
 
