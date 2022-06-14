@@ -2,68 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F03C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07DF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356181AbiFNLJR (ORCPT
+        id S1356110AbiFNLK4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:09:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34186 "EHLO
+        Tue, 14 Jun 2022 07:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242215AbiFNLJP (ORCPT
+        with ESMTP id S236382AbiFNLKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 07:09:15 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB396477
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:09:14 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id g8-20020a92cda8000000b002d15f63967eso6330706ild.21
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:09:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=TBHkuaKBYnos9tQCfAk/b3JzDTJF6ct74HVIaUNxla4=;
-        b=2PzN4w0jP75ptrLUj6bp7Snfx/xAN3361tgGS1eMAZpYvF/oZDVYN8Ro7CL5mk5eyI
-         O0X+Aj0dWEuWUMhoyjTaXSJuxyxIkJsMyrTcladxTL4IYr2lGjhG6xIp3vqBxf9BtKEA
-         szGDN3CJUFsSICKvVMsFTspwZB2ett6QpiW2PB8bwI4XKE5oeEKp9abGaU/333c4X6OL
-         tA1ZxNmEryPhMolqDD6IyXkbai4VO+IR89GeuKCu2MPPgAFiMhCNkSS6vYTg7D7Wst7K
-         gN8EE5F/AG0LNDHnFT7lypDH4Y4qegFDhTUYOBNr9kebHzkTmVtpiOyvQCQf7li2VArv
-         L8Mw==
-X-Gm-Message-State: AOAM5334I6Bg+Ovyn3RjrQgq/lmOCXVT/fbcHJKYKNINceJwUzGPXPm4
-        VU20q2qGqbaJLnYipWOkvposDJGHB0DgWuZWOIi8g+HgRhMB
-X-Google-Smtp-Source: ABdhPJxV827ndBOAbT2AnKtw11TOeQZ+nVDVcvel0gp2zsyH1vIGHzR0u266q3wPZaZpQGy0UKuyp8x7Kmx28St6GhKfkbSLchek
+        Tue, 14 Jun 2022 07:10:54 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9FE16548
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:10:52 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMm0d3sTdzjXcw;
+        Tue, 14 Jun 2022 19:09:21 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 19:10:50 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 14 Jun
+ 2022 19:10:50 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>
+CC:     <paul.kocialkowski@bootlin.com>, <airlied@linux.ie>,
+        <daniel@ffwll.ch>, <mripard@kernel.org>
+Subject: [PATCH -next] drm/logicvc: add missing of_node_put() in logicvc_layers_init()
+Date:   Tue, 14 Jun 2022 19:21:12 +0800
+Message-ID: <20220614112112.1537319-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:1313:b0:331:f465:3a with SMTP id
- r19-20020a056638131300b00331f465003amr2370367jad.59.1655204953556; Tue, 14
- Jun 2022 04:09:13 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 04:09:13 -0700
-In-Reply-To: <20220614105010.1897-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000498dfb05e1666f2f@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in __vma_adjust
-From:   syzbot <syzbot+68771c0e74f7bb7804e5@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The of_node_put() need be called in error path in logicvc_layers_init().
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+Fixes: efeeaefe9be5 ("drm: Add support for the LogiCVC display controller")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/gpu/drm/logicvc/logicvc_layer.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Reported-and-tested-by: syzbot+68771c0e74f7bb7804e5@syzkaller.appspotmail.com
+diff --git a/drivers/gpu/drm/logicvc/logicvc_layer.c b/drivers/gpu/drm/logicvc/logicvc_layer.c
+index bae1c7f99569..00a37563a6dc 100644
+--- a/drivers/gpu/drm/logicvc/logicvc_layer.c
++++ b/drivers/gpu/drm/logicvc/logicvc_layer.c
+@@ -610,8 +610,11 @@ int logicvc_layers_init(struct logicvc_drm *logicvc)
+ 		}
+ 
+ 		ret = logicvc_layer_init(logicvc, layer_node, index);
+-		if (ret)
++		if (ret) {
++			of_node_put(layer_node);
++			of_node_put(layers_node);
+ 			goto error;
++		}
+ 
+ 		of_node_put(layer_node);
+ 	}
+-- 
+2.25.1
 
-Tested on:
-
-commit:         6d0c8068 Add linux-next specific files for 20220610
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=113754dff00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a30d6e3e814e5931
-dashboard link: https://syzkaller.appspot.com/bug?extid=68771c0e74f7bb7804e5
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=11e906dff00000
-
-Note: testing is done by a robot and is best-effort only.
