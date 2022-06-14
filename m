@@ -2,79 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB51FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A34C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345093AbiFNW1i (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 18:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
+        id S244266AbiFNW32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 18:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235582AbiFNW1f (ORCPT
+        with ESMTP id S233355AbiFNW31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 18:27:35 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B2815712;
-        Tue, 14 Jun 2022 15:27:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=HJr/fmSdEUSj6RNS8UsQWtv/38YJNaYwQGOi8xjnmhk=; b=csmfMYpeqiFH61nyMnTC1wjmny
-        4PoLkBeX5DASAjEJOMgudvSheddDCYi/tRmIXsLGe2pqXWBea9nc91IauraULMBMz58B2WzN+otQu
-        YV6GGJit+9Td+Zf96TVE8ermReBzP/tn5wQvjP+hY4UQwhJSO+AUNzehkeoLredjE0U6+pWVnfKxt
-        M8+j9dGLmObynPegX+ZbCRRPKuLWFn+ekkkwyRavaOicWmAkbX4797DzrSQx5QbdVab08LmnUfNFZ
-        MCNim1faGLMm66QvBjvc9H3+X6al2k8bbD+3a65OlDsfjqsO2S93tDn8NkuZ7stvndGFhNAm4fjjD
-        lvK+A2Zw==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1F0K-007xuf-1X; Tue, 14 Jun 2022 22:27:21 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 160E030008D;
-        Wed, 15 Jun 2022 00:27:18 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 01CFC26642EEC; Wed, 15 Jun 2022 00:27:17 +0200 (CEST)
-Date:   Wed, 15 Jun 2022 00:27:17 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexander Potapenko <glider@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Buka <vitalybuka@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
-Message-ID: <YqkLRSBaeb6U1ngW@hirez.programming.kicks-ass.net>
-References: <20220614144853.3693273-1-glider@google.com>
- <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com>
- <CAKwvOd=SotrVcZshzGzsMprkORkVXFwYc-3mREkJSDCQ1nvbFw@mail.gmail.com>
- <CAHk-=wgmezfDP_b93_Hw090vUd-TKb-odZNPhB9L_2vL5pn6kQ@mail.gmail.com>
- <CAKwvOd=C1GC09zobqLK0higE3xPpghWBbB4xujyC8-QDyd_DTQ@mail.gmail.com>
+        Tue, 14 Jun 2022 18:29:27 -0400
+Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D57152526;
+        Tue, 14 Jun 2022 15:29:27 -0700 (PDT)
+Received: by mail-io1-f49.google.com with SMTP id a10so10914223ioe.9;
+        Tue, 14 Jun 2022 15:29:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KVNT5k9lK3JZOLMdKr+92ySUvyRWc09gbCMbomgGeO8=;
+        b=i4FyaBYp8yMh+5qYBXYpoYve1xWZ+vKlp7a0a689A4nWJKgLdDwILjmxtuOUHPV/HR
+         KSi9Y6vqySqAskMRpnZHNHHzLEFIu3Dw9duX2/1SM8cIgjeFN+y8JpzYoXFi3KKF001U
+         XIXN/1SViefUEZKX80dQDEovVO5uX5Wl0YWP1CuWXXA+dKaan23op7UNzYYHT+OaYccQ
+         glgI66ucqTnmSCXIkl4MvN3lM/gJKQlUKdYk/Ye6MMYPSty1KPTKnR3zq8t5eBA3iW0Z
+         T02f85daUd/tjo/P3UTHm14JGr9SFYFq09lJ6WaqYLuxxatrRCxqdsAps5LrDJshsz5H
+         vN2Q==
+X-Gm-Message-State: AOAM532aBvOmBsR4JoknUehvphg7//JqI2uKZsbgcSkZ9SbpUcl7zA10
+        03BttS/IyYFPmJrVYIsBgA==
+X-Google-Smtp-Source: ABdhPJy3/aqx6hfnAejCcasQPMrU4qQ/Cac6eIcL2dvPc7z+Wry3V9OJREKa02Ao9S04Kq0+1Wtmpg==
+X-Received: by 2002:a5e:8404:0:b0:66a:13cc:f2bc with SMTP id h4-20020a5e8404000000b0066a13ccf2bcmr2907984ioj.95.1655245766261;
+        Tue, 14 Jun 2022 15:29:26 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id n42-20020a02716a000000b0033197f42be0sm5329535jaf.157.2022.06.14.15.29.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 15:29:25 -0700 (PDT)
+Received: (nullmailer pid 2843906 invoked by uid 1000);
+        Tue, 14 Jun 2022 22:29:22 -0000
+Date:   Tue, 14 Jun 2022 16:29:22 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 20/23] dt-bindings: ata: ahci: Add Baikal-T1 AHCI SATA
+ controller DT schema
+Message-ID: <20220614222922.GB2830345-robh@kernel.org>
+References: <20220610081801.11854-1-Sergey.Semin@baikalelectronics.ru>
+ <20220610081801.11854-21-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKwvOd=C1GC09zobqLK0higE3xPpghWBbB4xujyC8-QDyd_DTQ@mail.gmail.com>
+In-Reply-To: <20220610081801.11854-21-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 11:08:33AM -0700, Nick Desaulniers wrote:
+On Fri, Jun 10, 2022 at 11:17:58AM +0300, Serge Semin wrote:
+> Baikal-T1 AHCI controller is based on the DWC AHCI SATA IP-core v4.10a
+> with the next specific settings: two SATA ports, cascaded CSR access based
+> on two clock domains (APB and AXI), selectable source of the reference
+> clock (though stable work is currently available from the external source
+> only), two reset lanes for the application and SATA ports domains. Other
+> than that the device is fully compatible with the generic DWC AHCI SATA
+> bindings.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> Reviewed-by: Hannes Reinecke <hare@suse.de>
+> 
+> ---
+> 
+> Changelog v2:
+> - Rename 'syscon' property to 'baikal,bt1-syscon'.
+> - Drop macro usage from the example node.
+> 
+> Changelog v4:
+> - Use the DWC AHCI port properties definition from the DWC AHCI SATA
+>   common schema. (@Rob)
+> - Drop Baikal-T1 syscon reference and implement the clock signal
+>   source in the framework of the clock controller. (@Rob)
+> ---
+>  .../bindings/ata/baikal,bt1-ahci.yaml         | 116 ++++++++++++++++++
+>  1 file changed, 116 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml b/Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
+> new file mode 100644
+> index 000000000000..d5fbd7d561d8
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
+> @@ -0,0 +1,116 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/ata/baikal,bt1-ahci.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Baikal-T1 SoC AHCI SATA controller
+> +
+> +maintainers:
+> +  - Serge Semin <fancer.lancer@gmail.com>
+> +
+> +description: |
+> +  AHCI SATA controller embedded into the Baikal-T1 SoC is based on the
+> +  DWC AHCI SATA v4.10a IP-core.
+> +
+> +allOf:
+> +  - $ref: snps,dwc-ahci.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    contains:
+> +      const: baikal,bt1-ahci
+> +
+> +  clocks:
+> +    items:
+> +      - description: Peripheral APB bus clock source
+> +      - description: Application AXI BIU clock
+> +      - description: SATA Ports reference clock
+> +
+> +  clock-names:
+> +    items:
+> +      - const: pclk
+> +      - const: aclk
+> +      - const: ref
+> +
+> +  resets:
+> +    items:
+> +      - description: Application AXI BIU domain reset
+> +      - description: SATA Ports clock domain reset
+> +
+> +  reset-names:
+> +    items:
+> +      - const: arst
+> +      - const: ref
+> +
+> +  ports-implemented:
+> +    maximum: 0x3
+> +
+> +patternProperties:
+> +  "^sata-port@[0-9a-e]$":
+> +    $ref: /schemas/ata/snps,dwc-ahci.yaml#/$defs/dwc-ahci-port
+> +
+> +    properties:
+> +      reg:
+> +        minimum: 0
+> +        maximum: 1
+> +
+> +      snps,tx-ts-max:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description:
+> +          Due to having AXI3 bus interface utilized the maximum Tx DMA
+> +          transaction size can't exceed 16 beats (AxLEN[3:0]).
+> +        enum: [ 1, 2, 4, 8, 16 ]
+> +
+> +      snps,rx-ts-max:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description:
+> +          Due to having AXI3 bus interface utilized the maximum Rx DMA
+> +          transaction size can't exceed 16 beats (AxLEN[3:0]).
+> +        enum: [ 1, 2, 4, 8, 16 ]
+> +
+> +    unevaluatedProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - clock-names
+> +  - resets
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    sata@1f050000 {
+> +      compatible = "baikal,bt1-ahci", "snps,dwc-ahci";
 
-> One thing I'm curious about; if you have an aggregate in C (struct or
-> array) and don't fully initialize the whole object, just
-> members/sub-objects, but only use those I assume that's not UB? (Which
-> is what my maybe_init example does).  I think that's fine.
+Just drop 'snps,dwc-ahci'. The generic IP block fallbacks have proven to 
+be useless.
 
-Perf does something like that. We only explicitly initialize the first
-cacheline of a structure because that's *always* used. Any other field
-will only be initialized on request.
-
-At the time (and i've not benchmarked this in a good few years) that was
-a significant performance win.
+> +      reg = <0x1f050000 0x2000>;
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      interrupts = <0 64 4>;
+> +
+> +      clocks = <&ccu_sys 1>, <&ccu_axi 2>, <&sata_ref_clk>;
+> +      clock-names = "pclk", "aclk", "ref";
+> +
+> +      resets = <&ccu_axi 2>, <&ccu_sys 0>;
+> +      reset-names = "arst", "ref";
+> +
+> +      ports-implemented = <0x3>;
+> +
+> +      sata-port@0 {
+> +        reg = <0>;
+> +
+> +        snps,tx-ts-max = <4>;
+> +        snps,rx-ts-max = <4>;
+> +      };
+> +
+> +      sata-port@1 {
+> +        reg = <1>;
+> +
+> +        snps,tx-ts-max = <4>;
+> +        snps,rx-ts-max = <4>;
+> +      };
+> +    };
+> +...
+> -- 
+> 2.35.1
+> 
+> 
