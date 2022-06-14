@@ -2,95 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C03B4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33346C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:16:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245016AbiFMTQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38998 "EHLO
+        id S245367AbiFMTQV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:16:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244090AbiFMTPR (ORCPT
+        with ESMTP id S244651AbiFMTPS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:15:17 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C973856769
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:30:35 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso6664066pjk.0
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:30:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wKqpDyJggm7b0f9UQvkgztMJ+TPUivgjBn1axRErEvQ=;
-        b=Qo1PAJdWEUTItUEqm09BhFPEhRGkluSKUjuSCMR8Oh/YdeKgdkNSJFPdNgcZcSYdct
-         YgsNaprlJ0qtSX/OnLKZfU923a8Daly/cmvERPvrQ78MjasSbw3FKBYl7hiFlmp8sdqf
-         qpLeaDQ9V7ZLqWgZPVbSJhxfaVtpebdqLTGNSfXpEcBwcGQAl57IuVX2/57HYlBKzJcW
-         F5jaUrwxHBpehJXWjJWqzqewd9ht+nBf5mJteCtAxWo0vAJzGkggV2K8klQEwt7JvUeT
-         jP+gXghpKDbbePakRiXK1e8V5BUdOjyuDasvHi841XNIFjiNjZY+cTTyrFNQnu/WAIAs
-         hkPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=wKqpDyJggm7b0f9UQvkgztMJ+TPUivgjBn1axRErEvQ=;
-        b=AtShw++JXP+aQvIatHtFnRqmZPQ6j/Ar+DiYG6zQs4WMRGO0rh5dEVp03MTmNbqX9H
-         CfdqybjIQxh2U9z+xPal2jGaH9XCtEIX7qZX0zJAbPuoAx1P/CVgHZ9cZBsNq6j6qeA1
-         zB+xj0XlGZlaM9gTFV+CInA80StTWrgILPymgFgUuHkfga/lf184lC3HLbfvLMzVcq3F
-         85eiwSZzmMw1O7emcVYHtr8IxONbMhTva3r35cGLlU4L3ucqFX5+BXy1wt/wyGXqslEH
-         OJUYqC0D+wAscD37bvQ5EL+0u5iVI3INo35Zl8e4QY3EqXFgMokWrtpqQj+FRqeF/9Yx
-         1hvw==
-X-Gm-Message-State: AJIora+OGCENNS+AMmaz3CSMOu+S86RF/mF650gQwXRP5R8EhqKC5fsO
-        rBKQoCerZGrjmZBls8LfImI=
-X-Google-Smtp-Source: AGRyM1s8yGZUU+XxoyDpuDsvvN3kmuzm3vvwQE4B03t8rzFiPLfQ52FnP2QC3qWu6V/HIhy9UmSjlA==
-X-Received: by 2002:a17:902:7792:b0:168:d1fd:3013 with SMTP id o18-20020a170902779200b00168d1fd3013mr111116pll.29.1655141434698;
+        Mon, 13 Jun 2022 15:15:18 -0400
+Received: from m12-14.163.com (m12-14.163.com [220.181.12.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C963656767;
         Mon, 13 Jun 2022 10:30:34 -0700 (PDT)
-Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id e3-20020a17090301c300b0016196bd15f4sm5397253plh.15.2022.06.13.10.30.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:30:34 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 13 Jun 2022 07:30:32 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v4 1/4] kernfs: make ->attr.open RCU protected.
-Message-ID: <Yqd0OJupifpplENB@slm.duckdns.org>
-References: <20220602063907.136569-1-imran.f.khan@oracle.com>
- <20220602063907.136569-2-imran.f.khan@oracle.com>
- <YqYpTShTDLvAp4vx@slm.duckdns.org>
- <6d1c5a49-fc16-5fc7-e527-8cb91ec0d25c@oracle.com>
- <YqalHuEB6OjjUosV@slm.duckdns.org>
- <c8a8a616-da4c-f2ce-0bb2-e0cba69db24d@oracle.com>
- <Yqaqbas1JaWz25jB@slm.duckdns.org>
- <61868aa1-6c88-ecd2-beb2-67b87673b805@oracle.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=2BFH8
+        xHI7ebD5lwTJTG4kC1CqPWyQ4gZ47rEICObrZE=; b=c6/geMZUjBmKXnXEdNLsb
+        KRu/emB4CbScTTY73LlAQOAxXVT7NPuzkINQ2GtJ/9Y1jKemlgdMsxI3x8O5HJwH
+        KIOwycUJztR8x3N6nsNC0rSjS7/TrmnH0iuFjnZ8ypXl4JNpL4BwMm+irxQAwsN4
+        qGjXTsXdK6VonJJxfapULY=
+Received: from localhost.localdomain (unknown [113.200.174.72])
+        by smtp10 (Coremail) with SMTP id DsCowADH2z3jc6diHIt+Hg--.56491S4;
+        Tue, 14 Jun 2022 01:29:38 +0800 (CST)
+From:   Wentao_Liang <Wentao_Liang_g@163.com>
+To:     jdmason@kudzu.us, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wentao_Liang <Wentao_Liang_g@163.com>
+Subject: [PATCH] Fix a use-after-free bug
+Date:   Tue, 14 Jun 2022 09:28:53 +0800
+Message-Id: <20220614012853.10560-1-Wentao_Liang_g@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <61868aa1-6c88-ecd2-beb2-67b87673b805@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DsCowADH2z3jc6diHIt+Hg--.56491S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWxJF13ZFy5Gw43JF1xKFy5XFb_yoWrJr1Up3
+        s5AFyfGryUtryDXw18Jr1DZF98J3yUG345CrykGr1rKF13A34Utr1UJryqqry5CrWjyF45
+        tr15J3WrZr1UJw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zKsjbhUUUUU=
+X-Originating-IP: [113.200.174.72]
+X-CM-SenderInfo: xzhq3t5rboxtpqjbwqqrwthudrp/xtbB0QIfL1zIBWPGVgAAsB
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 01:56:43PM +1000, Imran Khan wrote:
-> Agree. I did over think this and went for the safest interface that I could
-> think of in each of the use cases. I will remove
-> kernfs_check_open_node_protected and use kernfs_deref_open_node_protected in its
-> place as well. This will cover all accesses under kernfs_open_file_mutex.
-> 
-> But we will still need kernfs_deref_open_node for cases where
-> !list_empty(&of->list) ensures safe access of ->attr.open and where we can't
-> ensure holding of kernfs_open_file_mutex. So we will need 2 deref accessors.
-> Right? Just asking this because you mentioned above to come up with one deref
-> accessor that can be used in all three use cases
-> 
-> Please let me if this sounds okay. I can send updated patch-set with these
-> changes in place.
+The pointer vdev points to a memory region adjacent to a net_device
+structure ndev, which is a field of hldev. At line 4740, the invocation
+to vxge_device_unregister unregisters device hldev, and it also releases
+the memory region pointed by vdev->bar0. At line 4743, the freed memory
+region is referenced (i.e., iounmap(vdev->bar0)), resulting in a
+use-after-free vulnerability. We can fix the bug by calling iounmap
+before vxge_device_unregister.
 
-Just merge all three into one accessor. You can list both the !list_empty
-condition and lock held conditions on the same rcu_dereference_check() call.
+4721.      static void vxge_remove(struct pci_dev *pdev)
+4722.      {
+4723.             struct __vxge_hw_device *hldev;
+4724.             struct vxgedev *vdev;
+…
+4731.             vdev = netdev_priv(hldev->ndev);
+…
+4740.             vxge_device_unregister(hldev);
+4741.             /* Do not call pci_disable_sriov here, as it
+						will break child devices */
+4742.             vxge_hw_device_terminate(hldev);
+4743.             iounmap(vdev->bar0);
+…
+4749              vxge_debug_init(vdev->level_trace, "%s:%d
+								Device unregistered",
+4750                            __func__, __LINE__);
+4751              vxge_debug_entryexit(vdev->level_trace, "%s:%d
+								Exiting...", __func__,
+4752                          __LINE__);
+4753.      }
 
-Thanks.
+This is the screenshot when the vulnerability is triggered by using
+KASAN. We can see that there is a use-after-free reported by KASAN.
 
+/***********************report begin***************************/
+
+root@kernel:~# echo 1 > /sys/bus/pci/devices/0000:00:03.0/remove
+[  178.296316] vxge_remove
+[  182.057081]
+ ==================================================================
+[  182.057548] BUG: KASAN: use-after-free in vxge_remove+0xe0/0x15c
+[  182.057760] Read of size 8 at addr ffff888006c76598 by task bash/119
+[  182.057983]
+[  182.058747] CPU: 0 PID: 119 Comm: bash Not tainted 5.18.0 #5
+[  182.058919] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
+BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+[  182.059463] Call Trace:
+[  182.059726]  <TASK>
+[  182.060017]  dump_stack_lvl+0x34/0x44
+[  182.060316]  print_report.cold+0xb2/0x6b7
+[  182.060401]  ? kfree+0x89/0x290
+[  182.060478]  ? vxge_remove+0xe0/0x15c
+[  182.060545]  kasan_report+0xa9/0x120
+...
+[  182.070606]
+ ==================================================================
+[  182.071374] Disabling lock debugging due to kernel taint
+
+/************************report end***************************/
+
+After fixing the bug as done in the patch, we can find KASAN do not report
+ the bug and the device(00:03.0) has been successfully removed.
+
+/************************report begin*************************/
+
+root@kernel:~# echo 1 > /sys/bus/pci/devices/0000:00:03.0/remove
+root@kernel:~#
+
+/************************report end***************************/
+
+Signed-off-by: Wentao_Liang <Wentao_Liang_g@163.com>
+---
+ drivers/net/ethernet/neterion/vxge/vxge-main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+index fa5d4ddf429b..092fd0ae5831 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
++++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+@@ -4736,10 +4736,10 @@ static void vxge_remove(struct pci_dev *pdev)
+ 	for (i = 0; i < vdev->no_of_vpath; i++)
+ 		vxge_free_mac_add_list(&vdev->vpaths[i]);
+ 
++	iounmap(vdev->bar0);
+ 	vxge_device_unregister(hldev);
+ 	/* Do not call pci_disable_sriov here, as it will break child devices */
+ 	vxge_hw_device_terminate(hldev);
+-	iounmap(vdev->bar0);
+ 	pci_release_region(pdev, 0);
+ 	pci_disable_device(pdev);
+ 	driver_config->config_dev_cnt--;
 -- 
-tejun
+2.25.1
+
