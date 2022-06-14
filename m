@@ -2,107 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6264AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 23:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE2CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 23:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344618AbiFNXXA (ORCPT
+        id S1345828AbiFNXZT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 19:23:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45310 "EHLO
+        Tue, 14 Jun 2022 19:25:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230131AbiFNXW5 (ORCPT
+        with ESMTP id S230131AbiFNXZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 19:22:57 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B492CE27
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 16:22:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655248976; x=1686784976;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=N2rzx4u2KZLS0NYCVwK0dGeszokEfiC/OTlbKJIVTH0=;
-  b=Mo4VDFiQNAww4s5SdSnNHCFA2a6VmAf4qhmV/Uxu6Yy6ViWC+UHTFklW
-   zpBP/tiEsmdVWbKGjGrLoA+n0mwZqVmTBT5w6MfOsNMgWGjwCTIojukNF
-   NiTY4zIARJKjnByiqTmaR82dgMl3nOdwpNlL4IsCITc05Vdu230ya1R9+
-   odkhFqqm96fjDVGQTv9b89jMJ7XMBAugyvpR64aRzChYzZrS4HL2KO71x
-   rbcg+HQYwTlDRdYOvlMSCmH1YdKMcrgSR9IvebHSGn3ocBmdrwmnj2J0V
-   WQFwiu9og223qSWLsiv8RmQ05mk7+kntmAnRHPG6UJLOu7/Ra27HbgEuT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="261798381"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="261798381"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 16:22:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="652321963"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 14 Jun 2022 16:22:54 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1Fs5-000MO3-Td;
-        Tue, 14 Jun 2022 23:22:53 +0000
-Date:   Wed, 15 Jun 2022 07:22:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: drivers/net/dsa/ocelot/seville_vsc9953.c:1107:34: warning:
- 'seville_of_match' defined but not used
-Message-ID: <202206150743.1cNDGvnK-lkp@intel.com>
+        Tue, 14 Jun 2022 19:25:18 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D9D43391
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 16:25:17 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id t3-20020a17090a510300b001ea87ef9a3dso427355pjh.4
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 16:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=MnYR7D2vdovc6+NVQYg3gjYLjJ9NoRgOMxo6l8h+HL0=;
+        b=IWLX3pfxNbdU83TkMCUCyRx1Ik9Cz/jqvY+RVqZ0MaCS4Um2NWkjpZeBXF+VBE8ALW
+         qsHYyV8cL+vgetZb/XxGvgQSzkNwlfT1zrh9olzKbkz0woA2iBlNAVrPegGhIxL+OSlk
+         fVfNd5SNg13zbgEZXOgZcaUK50Hqvx4WjNuPdIpZz8ZeOQAel1rwwLNs1VhRUjFlSEHK
+         F9sIIX+3Umm5VoE8AvDq6lgAP5agggaDsgtEebbNhnXFQGaI+IVWBCFiDmCLYGy/Ej06
+         v2oPOGEreTYpYdc1I0pbRG6JGm8kZjfVb7FRqq+FgvSwozOpgLdzV3lXeh2fv1RqRMVk
+         9l+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=MnYR7D2vdovc6+NVQYg3gjYLjJ9NoRgOMxo6l8h+HL0=;
+        b=B/EvLgk2tVWpXe6SsujptfNdoGCGLn89j0ZS+SkhoaBhc2UWTQG/iCwCTer/sHe7yr
+         4RP+hIOTR69Xy9DavNrSsl1/H3mDINbFaVyCr1A89ieXaeLbT+DTmBAVtEk4nI7j/9kg
+         RwVplnb2Hun3/PKPNwgCSMUPlsXjAJULPg5JUDJR5zMwxT80BxEvNyJDgEN3WJ7X4Nbj
+         TlWaEJ3srxYk3jrPUaV1yEHcRvenvoJrprsED0NMjVU8g6iuKyxqneltSMBTFOmAahZT
+         Lp+2ZmGxow+qx3esQ/9gFdnF0HaVtFBnjV6gTvM13ywFo64P/aHSdX4F7xzdnbYjy4E0
+         9e8A==
+X-Gm-Message-State: AJIora+u6p0xmhCfL9pqbl1AonXqG2MPgG+7Nf4ESsHeJsxrTZ3KNXKt
+        KX5ZBUrfg4QAMCbJwpotVsyyNg==
+X-Google-Smtp-Source: AGRyM1tw1m3IOauEJxCAVfmvuOelTn2/boEYepm2/G9bAdEnTYyraKXuIAUW9yVyjUanxxxKyR2F3Q==
+X-Received: by 2002:a17:902:e791:b0:166:3985:2f78 with SMTP id cp17-20020a170902e79100b0016639852f78mr6300133plb.158.1655249117001;
+        Tue, 14 Jun 2022 16:25:17 -0700 (PDT)
+Received: from [172.22.33.138] ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id w124-20020a628282000000b0051c394eea03sm8179164pfd.212.2022.06.14.16.25.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 16:25:16 -0700 (PDT)
+Message-ID: <5eec5292-ea45-fe44-75ce-968742c2ee96@linaro.org>
+Date:   Tue, 14 Jun 2022 16:25:16 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] dt-bindings: altera: document Stratix 10 SWVP compatibles
+Content-Language: en-US
+To:     wen.ping.teh@intel.com, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220609025647.400998-1-wen.ping.teh@intel.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220609025647.400998-1-wen.ping.teh@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vladimir,
+On 08/06/2022 19:56, wen.ping.teh@intel.com wrote:
+> From: Teh Wen Ping <wen.ping.teh@intel.com>
+> 
+> Add compatible strings for Stratix 10 Software Virtual Platform
+> 
+> Signed-off-by: Teh Wen Ping <wen.ping.teh@intel.com>
 
-First bad commit (maybe != root cause):
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   018ab4fabddd94f1c96f3b59e180691b9e88d5d8
-commit: d60bc62de4ae068ed4b215c24cdfdd5035aa986e net: dsa: seville: build as separate module
-date:   1 year, 9 months ago
-config: i386-randconfig-s032-20220613 (https://download.01.org/0day-ci/archive/20220615/202206150743.1cNDGvnK-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-30-g92122700-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d60bc62de4ae068ed4b215c24cdfdd5035aa986e
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout d60bc62de4ae068ed4b215c24cdfdd5035aa986e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/dsa/ocelot/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/dsa/ocelot/seville_vsc9953.c:1107:34: warning: 'seville_of_match' defined but not used [-Wunused-const-variable=]
-    1107 | static const struct of_device_id seville_of_match[] = {
-         |                                  ^~~~~~~~~~~~~~~~
+This must come together with the patch adding DTS.
 
 
-vim +/seville_of_match +1107 drivers/net/dsa/ocelot/seville_vsc9953.c
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-84705fc165526e Maxim Kochetkov 2020-07-13  1106  
-84705fc165526e Maxim Kochetkov 2020-07-13 @1107  static const struct of_device_id seville_of_match[] = {
-84705fc165526e Maxim Kochetkov 2020-07-13  1108  	{ .compatible = "mscc,vsc9953-switch" },
-84705fc165526e Maxim Kochetkov 2020-07-13  1109  	{ },
-84705fc165526e Maxim Kochetkov 2020-07-13  1110  };
-84705fc165526e Maxim Kochetkov 2020-07-13  1111  MODULE_DEVICE_TABLE(of, seville_of_match);
-84705fc165526e Maxim Kochetkov 2020-07-13  1112  
 
-:::::: The code at line 1107 was first introduced by commit
-:::::: 84705fc165526e8e55d208b2b10a48cc720a106a net: dsa: felix: introduce support for Seville VSC9953 switch
-
-:::::: TO: Maxim Kochetkov <fido_max@inbox.ru>
-:::::: CC: David S. Miller <davem@davemloft.net>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
