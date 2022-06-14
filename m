@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C96D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D84A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351853AbiFNCGd (ORCPT
+        id S1351012AbiFNCGg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41906 "EHLO
+        Mon, 13 Jun 2022 22:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351362AbiFNCFx (ORCPT
+        with ESMTP id S1351431AbiFNCFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:05:53 -0400
+        Mon, 13 Jun 2022 22:05:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B092533EB5;
-        Mon, 13 Jun 2022 19:05:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F787344E2;
+        Mon, 13 Jun 2022 19:05:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58352B80AC1;
-        Tue, 14 Jun 2022 02:05:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8228C385A9;
-        Tue, 14 Jun 2022 02:05:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1260AB80D19;
+        Tue, 14 Jun 2022 02:05:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7413C341C5;
+        Tue, 14 Jun 2022 02:05:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172317;
-        bh=QyA7bmOpgTHe++ypbwOYleAT8DYMiXUQDDhCe7vK3cc=;
+        s=k20201202; t=1655172323;
+        bh=wH1jD07RcbhORAYwFh0vGkqjoepRYwCcbcsNy0Z1jkA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PtLFDX+7HPbbntLl7n7Nolgzj8J78AggbWT3EyOccgFeen7/CgJpJ+hrw8xeltb/g
-         b+iIChgVEryGbtPjMxPsz0ochFdgs2M9GscFq2xXi/izabq9iVRSLn8gUmDC97R6Xb
-         piRQywPuvvx4ZpN7fRw8srPOtHrnE+s3/ahoEcTw2+9ye9RoNtycwirRH99IFw5+Q4
-         M0NHEz7qAgRlgOqaTKIYFHA5bf6O0WRb+o71nDnn0gTPmtkglLU9YN/hVHc7JMvh25
-         Zy4Zo7xH0cjDrwpBCm3z6JEdA60gAMXXC8RpApL0HWAwmBGougq3f3ZfCy+KNp/oYU
-         F35Pup5JmyqCA==
+        b=ThqsJO2R0m+VnHwmICXUv972G1QiyDKMdsvAWE10x1r2UC85H2GhBBLIoVFJ5gtRG
+         /TRVXyX+rEN4L46nk4plqEiqzeyvysxlc7QXWYZY+9whtG2xaEwVcYodtWUOQU+qOK
+         DVdhUO1zSCJdQ+Q/hF4JOe9w4pV/efOmZyNu/45Pgfex85wnATcEAFJs+heTFUtwRw
+         IWCZaLeWFVsQC3apP2b1di7yfS/goMIYsZOP5nx9/lhR68ey/K4AkENTm3y45+hmNM
+         7s71kARY7yocfiJHZ87iaY/e7Zmz1qwd8n8b62GGVQHr1YpCcdeRfZe4GRkiU8D90n
+         t5RNPWexuxaVw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com,
-        patches@opensource.wolfsonmicro.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 20/47] ASoC: wm_adsp: Fix event generation for wm_adsp_fw_put()
-Date:   Mon, 13 Jun 2022 22:04:13 -0400
-Message-Id: <20220614020441.1098348-20-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@avagotech.com,
+        dick.kennedy@avagotech.com, jejb@linux.vnet.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 24/47] scsi: lpfc: Resolve NULL ptr dereference after an ELS LOGO is aborted
+Date:   Mon, 13 Jun 2022 22:04:17 -0400
+Message-Id: <20220614020441.1098348-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020441.1098348-1-sashal@kernel.org>
 References: <20220614020441.1098348-1-sashal@kernel.org>
@@ -54,37 +55,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 2abdf9f80019e8244d3806ed0e1c9f725e50b452 ]
+[ Upstream commit b1b3440f437b75fb2a9b0cfe58df461e40eca474 ]
 
-Currently wm_adsp_fw_put() returns 0 rather than 1 when updating the value
-of the control, meaning that no event is generated to userspace. Fix this
-by setting the default return value to 1, the code already exits early with
-a return value of 0 if the value is unchanged.
+A use-after-free crash can occur after an ELS LOGO is aborted.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Richard Fitzgerald <rf@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220603115003.3865834-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Specifically, a nodelist structure is freed and then
+ndlp->vport->cfg_log_verbose is dereferenced in lpfc_nlp_get() when the
+discovery state machine is mistakenly called a second time with
+NLP_EVT_DEVICE_RM argument.
+
+Rework lpfc_cmpl_els_logo() to prevent the duplicate calls to release a
+nodelist structure.
+
+Link: https://lore.kernel.org/r/20220603174329.63777-6-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm_adsp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/lpfc/lpfc_els.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
-index e32c8ded181d..9cfd4f18493f 100644
---- a/sound/soc/codecs/wm_adsp.c
-+++ b/sound/soc/codecs/wm_adsp.c
-@@ -333,7 +333,7 @@ int wm_adsp_fw_put(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	struct wm_adsp *dsp = snd_soc_component_get_drvdata(component);
--	int ret = 0;
-+	int ret = 1;
+diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
+index 892b3da1ba45..9e3899580039 100644
+--- a/drivers/scsi/lpfc/lpfc_els.c
++++ b/drivers/scsi/lpfc/lpfc_els.c
+@@ -3035,18 +3035,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 		spin_unlock_irq(&ndlp->lock);
+ 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
+ 					NLP_EVT_DEVICE_RM);
+-		lpfc_els_free_iocb(phba, cmdiocb);
+-		lpfc_nlp_put(ndlp);
+-
+-		/* Presume the node was released. */
+-		return;
++		goto out_rsrc_free;
+ 	}
  
- 	if (ucontrol->value.enumerated.item[0] == dsp[e->shift_l].fw)
- 		return 0;
+ out:
+-	/* Driver is done with the IO.  */
+-	lpfc_els_free_iocb(phba, cmdiocb);
+-	lpfc_nlp_put(ndlp);
+-
+ 	/* At this point, the LOGO processing is complete. NOTE: For a
+ 	 * pt2pt topology, we are assuming the NPortID will only change
+ 	 * on link up processing. For a LOGO / PLOGI initiated by the
+@@ -3073,6 +3065,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 				 ndlp->nlp_DID, ulp_status,
+ 				 ulp_word4, tmo,
+ 				 vport->num_disc_nodes);
++
++		lpfc_els_free_iocb(phba, cmdiocb);
++		lpfc_nlp_put(ndlp);
++
+ 		lpfc_disc_start(vport);
+ 		return;
+ 	}
+@@ -3089,6 +3085,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
+ 					NLP_EVT_DEVICE_RM);
+ 	}
++out_rsrc_free:
++	/* Driver is done with the I/O. */
++	lpfc_els_free_iocb(phba, cmdiocb);
++	lpfc_nlp_put(ndlp);
+ }
+ 
+ /**
 -- 
 2.35.1
 
