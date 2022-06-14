@@ -2,121 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42393C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC59CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356843AbiFNQKe (ORCPT
+        id S1356951AbiFNQKg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
+        Tue, 14 Jun 2022 12:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240735AbiFNQKa (ORCPT
+        with ESMTP id S238047AbiFNQK3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:10:30 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB5C2B1B8;
-        Tue, 14 Jun 2022 09:10:29 -0700 (PDT)
-Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LMtfD5PNxz688jJ;
-        Wed, 15 Jun 2022 00:08:52 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Tue, 14 Jun 2022 18:10:26 +0200
-Received: from [10.195.33.253] (10.195.33.253) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 17:10:24 +0100
-Message-ID: <350b905c-1ac1-3577-6b56-c13f2aeab712@huawei.com>
-Date:   Tue, 14 Jun 2022 17:13:32 +0100
+        Tue, 14 Jun 2022 12:10:29 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C723A3981C
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:10:28 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id r1so8115165plo.10
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:10:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=mMFB6OVQbCnexTHZBSH2n20Xku7dT+S/35cKvzCOFv4=;
+        b=nB+zb5dfqMDdXPwaH28U5oTKxSMzWhqag2MBRwoBosd1LxiIEL4XcVAH8kQ4F1SWWH
+         AWYAu5vA7xAXklOOoXoPVzBZImlReX3YGnuqSmGgjXC8zPqA3qNKUAbQqp4EBb8SXPk5
+         fJ2lls8M+8KrUnoGv+2akZ71DyzmDMWcjgxbwxqCh9kyfVD05MzDkhrF7EMi4FgaH92b
+         sADrKmv2V61mjo4wiSWcKapWrSXSZOzPzSfhwWPbFsWGLn3ErMIdZdkCRTma4ne0me1A
+         BChz5JBNAooSoT8H82QBBra7RMOPTHLbcrRWO2KZjhDf6gusLCMdpXEBw//IxajSBCZh
+         IF9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=mMFB6OVQbCnexTHZBSH2n20Xku7dT+S/35cKvzCOFv4=;
+        b=c5WlMbgKTpXg6cmdNb8biaX0T7ldZytNrZdTNXzL4J4NaOQBKl7MhkklqyZleBFAol
+         Dbm35hnLFK84UT5gJCsEDaLuLoDtrwusw/Omy1HFEodO3y5lQ+SdNL+KVwSI8040ZN0F
+         TbfskBcsJIgC7wSTkFo9LLV3PMrIxkwEp3eaTulaCuRJINI440pybwEwTX+2asljg0x5
+         Le8lKMyL6V18gWNjISjyyEg7BrrRoOrpxzWo6BoqsLTpM/hKPg5MJpHZY0lmqcmovrT2
+         CZwAxPITtqBMgucyLTfGbcjB+P1/vuDqrhXN8tdjcjMtQPBdKF24FBIW9Rh0bbcBz6rq
+         jzhA==
+X-Gm-Message-State: AJIora90kSj8CR+B8WzzCvGKM9sp7KHvjStu978oXPDbwWvd439ey3G7
+        Q323cLY4TtHU63ybyj46O/kqMRPWEN4=
+X-Google-Smtp-Source: AGRyM1u8o3lGxIAkcc5tHIuSMAVi5iXe+4OewkCWZ6gFhHNN6UJ2mFFEG3t8JLcEEI83KDMaCX46ZA==
+X-Received: by 2002:a17:902:e0d1:b0:168:bedf:7146 with SMTP id e17-20020a170902e0d100b00168bedf7146mr5047391pla.107.1655223028190;
+        Tue, 14 Jun 2022 09:10:28 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id h129-20020a636c87000000b004052d642b6dsm6697784pgc.9.2022.06.14.09.10.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 09:10:27 -0700 (PDT)
+Message-ID: <29fb688b-58a3-be66-3bab-3f8186396c6f@gmail.com>
+Date:   Tue, 14 Jun 2022 09:10:26 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v3 0/3] Rewrite jevents program in python
-To:     Ian Rogers <irogers@google.com>
-CC:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        "Felix Fietkau" <nbd@nbd.name>, Qi Liu <liuqi115@huawei.com>,
-        Like Xu <likexu@tencent.com>, <linux-kernel@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        Nick Forrington <nick.forrington@arm.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        Andrew Kilroy <andrew.kilroy@arm.com>,
-        "Paul A . Clarke" <pc@us.ibm.com>, Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        <ananth.narayan@amd.com>, <ravi.bangoria@amd.com>,
-        <santosh.shukla@amd.com>, <sandipan.das@amd.com>,
-        Caleb Biggers <caleb.biggers@intel.com>,
-        Perry Taylor <perry.taylor@intel.com>,
-        Kshipra Bopardikar <kshipra.bopardikar@intel.com>,
-        Stephane Eranian <eranian@google.com>
-References: <20220527185426.240235-1-irogers@google.com>
- <d9056bc2-f640-f676-2599-c283479376a4@huawei.com>
- <CAP-5=fU8Wn8wV0whYOraU+5tGf+kKUk73gSwOg+LHp19vzua3A@mail.gmail.com>
- <f94710b3-4ca8-47c5-939c-1ad01d712d5f@huawei.com>
- <CAP-5=fWO8wd2xqi2acJ0FGyLgE3dQDw2m9=AUCC_veseyuybJw@mail.gmail.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <CAP-5=fWO8wd2xqi2acJ0FGyLgE3dQDw2m9=AUCC_veseyuybJw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [broadcom-stblinux:devicetree/next 15/23] make[2]: *** No rule to
+ make target 'arch/arm/boot/dts/bcm96855.dtb', needed by '__build'.
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>,
+        William Zhang <william.zhang@broadcom.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+References: <202206141752.IB5xCdXS-lkp@intel.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <202206141752.IB5xCdXS-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.195.33.253]
-X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/06/2022 17:03, Ian Rogers wrote:
->> diff -u tools/perf/trace/beauty/include/linux/socket.h
->> include/linux/socket.h
->> Makefile.config:259: *** which python-config not found. Stop.
->> Makefile.perf:239: recipe for target 'sub-make' failed
->> make[1]: *** [sub-make] Error 2
->> Makefile:69: recipe for target 'all' failed
->> make: *** [all] Error 2
->> john@debian:~/linux/tools/perf$
->>
->> JFYI, this is my alternatives:
->>
->> sudo update-alternatives --config python
->> There are 3 choices for the alternative python (providing
->> /usr/bin/python).
->>
->>     Selection    Path                     Priority  Status
->> ------------------------------------------------------------
->>     0            /usr/local/bin/python3.6   50        auto mode
->>     1            /usr/bin/python2.7         1         manual mode
->>     2            /usr/bin/python3.5         2         manual mode
->> * 3            /usr/local/bin/python3.6   50        manual mode
->>
->> Press <enter> to keep the current choice[*], or type selection number:
-> Thanks Gary,
+On 6/14/22 02:32, kernel test robot wrote:
+> tree:   https://github.com/Broadcom/stblinux devicetree/next
+> head:   edb052f67bb9f245f9717b3c11b21022a02fae87
+> commit: d2d847e696389916239c5521ca533261d0c0026f [15/23] ARM: dts: Add DTS files for bcmbca SoC BCM6855
+> config: arm-randconfig-r035-20220613 (https://download.01.org/0day-ci/archive/20220614/202206141752.IB5xCdXS-lkp@intel.com/config)
+> compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+> reproduce (this is a W=1 build):
+>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>          chmod +x ~/bin/make.cross
+>          # https://github.com/Broadcom/stblinux/commit/d2d847e696389916239c5521ca533261d0c0026f
+>          git remote add broadcom-stblinux https://github.com/Broadcom/stblinux
+>          git fetch --no-tags broadcom-stblinux devicetree/next
+>          git checkout d2d847e696389916239c5521ca533261d0c0026f
+>          # save the config file
+>          mkdir build_dir && cp config build_dir/.config
+>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 > 
-> Perhaps it relates to dev packages. Perhaps, apt-get install
-> python-dev-is-python3 which should resolve the symlinks. I wonder that
-> you have python dev for python2 but python3 installed without the dev.
-> We should be able to make a Makefile test for this.
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>>> make[2]: *** No rule to make target 'arch/arm/boot/dts/bcm96855.dtb', needed by '__build'.
+>     make[2]: Target '__build' not remade because of errors.
 
-So I was trying another system here as a sanity test (as my main dev box 
-is not working either). And this other system is debian and only 
-supports python up to 3.5, so that is why I have 
-/usr/local/bin/python3.6 as an alt, i.e. I downloaded and built myself.
-
-Anyway, I do have python3-dev:
-
-john@debian:~/linux/tools/perf$ sudo apt-get install python3-dev
-Reading package lists... Done
-Building dependency tree
-Reading state information... Done
-python3-dev is already the newest version (3.5.3-1).
-
+Now fixed in place.
+-- 
+Florian
