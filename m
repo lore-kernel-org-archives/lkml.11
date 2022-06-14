@@ -2,61 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC95C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 435C0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:50:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343540AbiFNOtl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45364 "EHLO
+        id S245037AbiFNOt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244009AbiFNOt1 (ORCPT
+        with ESMTP id S235039AbiFNOt5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:49:27 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A29D1D0FF
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:49:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=+6etGlUiNvgn9hstecvBA3b8FX4JZnQNviSpWGSLA8U=; b=f9NsQX1z7j7m14FV2KxH9c0FDr
-        qDMbpC879o4gHZs8o85N03DpHO7o39bGi+KBIoYXQue5h063UNfsHRqFo/gywomm/whKKLxyNWQ/6
-        iuPkGmlz+bq/faRanpP/dxLDe8Op/CkOeWZsyBj1gl9oifNuaGU/kKVz0EqsGQ0UOki9vzoGYV7BD
-        +dw7gTLjvV3qKROgz75qixYHs5Epd/YwOXan9PGnFC9rsl/6Mp1vJb2cW9qGM+x2wEjp9mUtZsNjt
-        hMBCzCwVW2yP4XrUZJpTjmZn3vbuMFxR3Dr/OS2buw3KUAv+c8L1IauSvAC/81gPbaOQsS1Cw0alQ
-        GbxQ7AXg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o17r1-00A1me-IG; Tue, 14 Jun 2022 14:49:15 +0000
-Date:   Tue, 14 Jun 2022 07:49:15 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Wang Wenhu <wenhu.wang@hotmail.com>, gregkh@linuxfoundation.org,
-        christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] powerpc:mm: export symbol ioremap_coherent
-Message-ID: <Yqif65sCt9hUEjUf@infradead.org>
-References: <20220609102855.272270-1-wenhu.wang@hotmail.com>
- <SG2PR01MB2951EBFD4C4EB2A2519FF4199FA79@SG2PR01MB2951.apcprd01.prod.exchangelabs.com>
- <8735g7cym2.fsf@mpe.ellerman.id.au>
+        Tue, 14 Jun 2022 10:49:57 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BEF91EEDB;
+        Tue, 14 Jun 2022 07:49:56 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id u12so17637492eja.8;
+        Tue, 14 Jun 2022 07:49:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9qHhTGxxY9/waiBpfU6mqYtlay9MtThobDAeZOTJkHQ=;
+        b=fiNUu/SiNf33k6dJaZ95un7DWP2Yv+shAdb6ZksmWhtZDwHnC1BMu7T0xWkn4OuqOQ
+         X8vMKc7WNB9H83uqjV2aYPfLzniZmqsHRgljLiyxXBgOVblJUN9EOlIZJLes941Jh1+I
+         7qdhMuxy4eRi1VAj2ttGP3MatHBgada6EUAhrycVnCJSxHu/wIV/iUdvQlglzhLIoVpX
+         N02iJ4d85ICFofTyXu3SKW0M/jixATZbrzpdwh/QcdrN2OoXD97YAamPIE2pT+ANVCib
+         RzZdCGdvoCQb1NLCuU0ftoW8xMaMaDmf+/0+4MW6k0ImoMOgBg/wp8CGFGnyXZ+PI9JS
+         EHTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9qHhTGxxY9/waiBpfU6mqYtlay9MtThobDAeZOTJkHQ=;
+        b=Dt4ybsnn2cfzbGqFcrmvATMWx824DSpR4LJvG+nNehsMoXx94CHKnhLJaj7RSXfUL5
+         CN9FHd6iNOvEjlVBxQ9xSjSRTSZCyyuQBwy+M1ZDqWXHEPb5vaJd0id7vdSGiweAPlbo
+         inEHnJxnliBRTDw0agI22S1Kjn3WNFqEFVyNqrDolxirRt9VeQsRWQdZ7Z8/vbUhmWhx
+         JFDp0bU+GhqyxivYCJ3WrAOk+CBw+sYEB60CQaijtb9tdSeFXpcipfPKp2MOdGXi3Jg5
+         hEuW7+RVx3i8OlenCGhDNlBeClWUulWGb6LiM5RVhKznyv1Tczn1mgkYfsNghljGkyV+
+         J7pw==
+X-Gm-Message-State: AOAM533DBUHfsKswlUH1AX98sD+YVGirrs/DeBB4kSlj80+IMz3ilw02
+        c1RJqOGIMz7A7fbEYYPHQdAlwq6PTEcq95bmgMTcg00XtH3phA==
+X-Google-Smtp-Source: ABdhPJykAc4fFrO2Ai+35/pU6BtImZMf+AWI71ybB0/OdOr3BkqeJxAkOP/SXOpcaHNU5Q0y3C5hAET/hbdgSlfXFsQ=
+X-Received: by 2002:a17:906:c7c1:b0:711:d2e9:99d0 with SMTP id
+ dc1-20020a170906c7c100b00711d2e999d0mr4636129ejb.639.1655218195050; Tue, 14
+ Jun 2022 07:49:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8735g7cym2.fsf@mpe.ellerman.id.au>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+References: <20220614142704.155496-1-jjhiblot@traphandler.com> <20220614142704.155496-3-jjhiblot@traphandler.com>
+In-Reply-To: <20220614142704.155496-3-jjhiblot@traphandler.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 14 Jun 2022 16:49:13 +0200
+Message-ID: <CAHp75Vc1=hNzrVeA9J_TbVEWFO4b-8+VjdsyJVMRTRkX5yhNhQ@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] leds: Add driver for the TLC5925 LED controller
+To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, krzk+dt@kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 08:45:25PM +1000, Michael Ellerman wrote:
-> Wang Wenhu <wenhu.wang@hotmail.com> writes:
-> > The function ioremap_coherent may be called by modules such as
-> > fsl_85xx_cache_sram. So export it for access in other modules.
-> 
-> ioremap_coherent() is powerpc specific, and only has one other caller,
-> I'd like to remove it.
-> 
-> Does ioremap_cache() work for you?
+On Tue, Jun 14, 2022 at 4:27 PM Jean-Jacques Hiblot
+<jjhiblot@traphandler.com> wrote:
+>
+> The TLC5925 is a 16-channels constant-current LED sink driver.
+> It is controlled via SPI but doesn't offer a register-based interface.
+> Instead it contains a shift register and latches that convert the
+> serial input into a parallel output.
+>
+> Datasheet: https://www.ti.com/lit/ds/symlink/tlc5925.pdf
 
-Chances are that both are the wrong thing and this really wants
-memremap, as SRAM tends to have memory and not MMIO semantics.
+>
+
+No blank lines are allowed in the tag block.
+
+> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+
+...
+
+> +#include <linux/err.h>
+> +#include <linux/leds.h>
+> +#include <linux/module.h>
+> +#include <linux/property.h>
+> +#include <linux/spi/spi.h>
+
+This misses a few headers that this code is direct user of:
+container_of.h
+gpio/consumer.h
+types.h
+
+...
+
+> +       // assign_bit() is atomic, no need for lock
+
+Comment is useless, since it's a pattern that is used in the kernel:
+__op is non-atomic, op is atomic.
+
+...
+
+> +
+> +
+
+One blank line is enough
+
+...
+
+> +
+> +
+
+Ditto.
+
+...
+
+> +       gpios = devm_gpiod_get_array(dev, "output-enable-b", GPIOD_OUT_LOW);
+> +       if (IS_ERR(gpios)) {
+> +               return dev_err_probe(dev, PTR_ERR(gpios),
+> +                             "Unable to get the 'output-enable-b' gpios\n");
+> +       }
+
+{} are not needed, and you may put the return on one line.
+
+...
+
+> +       count = device_get_child_node_count(dev);
+> +       if (!count) {
+> +               dev_err(dev, "no led defined.\n");
+> +               return -ENODEV;
+> +       }
+
+It's fine to use return dev_err_probe() in such cases like above, it's
+written in the documentation.
+
+...
+
+> +               ret = fwnode_property_read_u32(child, "reg", &idx);
+> +               if (ret || idx >= max_num_leds) {
+> +                       dev_warn(dev, "%s: invalid reg value. Ignoring.\n",
+> +                               fwnode_get_name(child));
+
+%pfw / %pfwP ?
+
+> +                       fwnode_handle_put(child);
+> +                       continue;
+> +               }
+
+...
+
+> +               ret = devm_led_classdev_register_ext(dev, cdev, &init_data);
+> +               if (ret) {
+> +                       dev_warn(dev, "%s: cannot create LED device.\n",
+> +                               fwnode_get_name(child));
+
+Ditto.
+
+> +                       fwnode_handle_put(child);
+> +                       continue;
+> +               }
+
+-- 
+With Best Regards,
+Andy Shevchenko
