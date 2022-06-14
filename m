@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:32:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81129C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355576AbiFNCcE (ORCPT
+        id S1354961AbiFNCcH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53534 "EHLO
+        Mon, 13 Jun 2022 22:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354616AbiFNCZa (ORCPT
+        with ESMTP id S1354882AbiFNCZX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:25:30 -0400
+        Mon, 13 Jun 2022 22:25:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEC736E35;
-        Mon, 13 Jun 2022 19:11:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46A536E34;
+        Mon, 13 Jun 2022 19:11:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF59960EE1;
-        Tue, 14 Jun 2022 02:11:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 219F2C341C0;
-        Tue, 14 Jun 2022 02:11:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74A9E60B76;
+        Tue, 14 Jun 2022 02:10:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AACCAC341C4;
+        Tue, 14 Jun 2022 02:10:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172679;
-        bh=cx8dXSfJMM65Dx7oEQhGNE/xAv1BxP8sP+76SbXcyk4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=k7KyrYxoRwXI+CoQq3EYfe7dRskOcE9t97WvY5GWt1TjuQ75TV01iBvcVfEdIOYnD
-         wFGLVDUcfVvjrjBEWPNXeQ7rCebqKfeEDRvkQAff3eY3Cr1dnpEWhMSTe0cq4Plots
-         yt6YoV9LHTTHInsK3JMs4CWg1JlP0pmWUxx/i9J3VpFxJBfHhE1/s69s2TbowYsMuZ
-         UkX+CAShw4wK/GLqGnOeMimE0iTjruAWcpcd2Uw/LeJvpSbZHx3Qnw6B7JiNIp+kiS
-         r7CJdr0FE7AtunwauN900lawq95moOvoZOy2+BNOlkrg1pKHD+NEvfX+pyGk3LRxTw
-         pppwNjTJlaqnw==
+        s=k20201202; t=1655172648;
+        bh=E7cEh5bK6lTWhyfkc4/D18C7BicyDM/aUr421bJZuwI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Y/z0uwkkir+rUxkHxSRHLIC7FAfEXv+OyB2WtWBhXqkrITJAOk5uycVDD4PulYdnI
+         MBXN14AhAJ4XK4XiYnYtlVcELSZKgJ7H58mF6/zE5U+gQW53MiOUDz8BeY3CreuOhQ
+         vwlO4nMO8Um8n4vkTlEBmJu0yTLcM4rI98lGssdIyZLz25FXCddPm8LHkydFeXZ/e9
+         qBgq1ohOyG9y+d+n1jYqs/vqpqa1xlCMxVeiFC2my9FhFU/tICwZVfHqUY20GhuZjQ
+         TTLS/yUvwayh4Czuj+z2mij4drrpXs2QgG1xoLTEgCVxh4dnnaYEqLw4jdcX0ONVVb
+         PgVtAwq/baweg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, Jann Horn <jannh@google.com>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.18 1/6] KVM: x86: do not report a vCPU as preempted outside instruction boundaries
-Date:   Mon, 13 Jun 2022 22:11:10 -0400
-Message-Id: <20220614021116.1101331-1-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
+        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.9 04/12] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
+Date:   Mon, 13 Jun 2022 22:10:32 -0400
+Message-Id: <20220614021040.1101131-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220614021040.1101131-1-sashal@kernel.org>
+References: <20220614021040.1101131-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,133 +54,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 6cd88243c7e03845a450795e134b488fc2afb736 ]
+[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
 
-If a vCPU is outside guest mode and is scheduled out, it might be in the
-process of making a memory access.  A problem occurs if another vCPU uses
-the PV TLB flush feature during the period when the vCPU is scheduled
-out, and a virtual address has already been translated but has not yet
-been accessed, because this is equivalent to using a stale TLB entry.
+A couple of the SX volume controls specify 0x84 as the lowest volume
+value, however the correct value from the datasheet is 0x44. The
+datasheet don't include spaces in the value it displays as binary so
+this was almost certainly just a typo reading 1000100.
 
-To avoid this, only report a vCPU as preempted if sure that the guest
-is at an instruction boundary.  A rescheduling request will be delivered
-to the host physical CPU as an external interrupt, so for simplicity
-consider any vmexit *not* instruction boundary except for external
-interrupts.
-
-It would in principle be okay to report the vCPU as preempted also
-if it is sleeping in kvm_vcpu_block(): a TLB flush IPI will incur the
-vmentry/vmexit overhead unnecessarily, and optimistic spinning is
-also unlikely to succeed.  However, leave it for later because right
-now kvm_vcpu_check_block() is doing memory accesses.  Even
-though the TLB flush issue only applies to virtual memory address,
-it's very much preferrable to be conservative.
-
-Reported-by: Jann Horn <jannh@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/kvm_host.h |  3 +++
- arch/x86/kvm/svm/svm.c          |  2 ++
- arch/x86/kvm/vmx/vmx.c          |  1 +
- arch/x86/kvm/x86.c              | 22 ++++++++++++++++++++++
- 4 files changed, 28 insertions(+)
+ sound/soc/codecs/cs42l56.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 4ff36610af6a..9fdaa847d4b6 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -651,6 +651,7 @@ struct kvm_vcpu_arch {
- 	u64 ia32_misc_enable_msr;
- 	u64 smbase;
- 	u64 smi_count;
-+	bool at_instruction_boundary;
- 	bool tpr_access_reporting;
- 	bool xsaves_enabled;
- 	bool xfd_no_write_intercept;
-@@ -1289,6 +1290,8 @@ struct kvm_vcpu_stat {
- 	u64 nested_run;
- 	u64 directed_yield_attempted;
- 	u64 directed_yield_successful;
-+	u64 preemption_reported;
-+	u64 preemption_other;
- 	u64 guest_mode;
- };
+diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
+index a2535a7eb4bb..f9f8a9112ff8 100644
+--- a/sound/soc/codecs/cs42l56.c
++++ b/sound/soc/codecs/cs42l56.c
+@@ -405,9 +405,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
+ 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
  
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 7e45d03cd018..5842abf1eac4 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4165,6 +4165,8 @@ static int svm_check_intercept(struct kvm_vcpu *vcpu,
+ 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
+-			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
+ 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
+-			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
  
- static void svm_handle_exit_irqoff(struct kvm_vcpu *vcpu)
- {
-+	if (to_svm(vcpu)->vmcb->control.exit_code == SVM_EXIT_INTR)
-+		vcpu->arch.at_instruction_boundary = true;
- }
- 
- static void svm_sched_in(struct kvm_vcpu *vcpu, int cpu)
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 982df9c000d3..c44f8e1d30c8 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -6549,6 +6549,7 @@ static void handle_external_interrupt_irqoff(struct kvm_vcpu *vcpu)
- 		return;
- 
- 	handle_interrupt_nmi_irqoff(vcpu, gate_offset(desc));
-+	vcpu->arch.at_instruction_boundary = true;
- }
- 
- static void vmx_handle_exit_irqoff(struct kvm_vcpu *vcpu)
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 39c571224ac2..36453517e847 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -291,6 +291,8 @@ const struct _kvm_stats_desc kvm_vcpu_stats_desc[] = {
- 	STATS_DESC_COUNTER(VCPU, nested_run),
- 	STATS_DESC_COUNTER(VCPU, directed_yield_attempted),
- 	STATS_DESC_COUNTER(VCPU, directed_yield_successful),
-+	STATS_DESC_COUNTER(VCPU, preemption_reported),
-+	STATS_DESC_COUNTER(VCPU, preemption_other),
- 	STATS_DESC_ICOUNTER(VCPU, guest_mode)
- };
- 
-@@ -4604,6 +4606,19 @@ static void kvm_steal_time_set_preempted(struct kvm_vcpu *vcpu)
- 	struct kvm_memslots *slots;
- 	static const u8 preempted = KVM_VCPU_PREEMPTED;
- 
-+	/*
-+	 * The vCPU can be marked preempted if and only if the VM-Exit was on
-+	 * an instruction boundary and will not trigger guest emulation of any
-+	 * kind (see vcpu_run).  Vendor specific code controls (conservatively)
-+	 * when this is true, for example allowing the vCPU to be marked
-+	 * preempted if and only if the VM-Exit was due to a host interrupt.
-+	 */
-+	if (!vcpu->arch.at_instruction_boundary) {
-+		vcpu->stat.preemption_other++;
-+		return;
-+	}
-+
-+	vcpu->stat.preemption_reported++;
- 	if (!(vcpu->arch.st.msr_val & KVM_MSR_ENABLED))
- 		return;
- 
-@@ -10358,6 +10373,13 @@ static int vcpu_run(struct kvm_vcpu *vcpu)
- 	vcpu->arch.l1tf_flush_l1d = true;
- 
- 	for (;;) {
-+		/*
-+		 * If another guest vCPU requests a PV TLB flush in the middle
-+		 * of instruction emulation, the rest of the emulation could
-+		 * use a stale page translation. Assume that any code after
-+		 * this point can start executing an instruction.
-+		 */
-+		vcpu->arch.at_instruction_boundary = false;
- 		if (kvm_vcpu_running(vcpu)) {
- 			r = vcpu_enter_guest(vcpu);
- 		} else {
+ 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
+ 			0, 0x00, 1, tone_tlv),
 -- 
 2.35.1
 
