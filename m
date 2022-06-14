@@ -2,90 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4834C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF3A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352545AbiFNU3Q (ORCPT
+        id S1357867AbiFNU3U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48890 "EHLO
+        Tue, 14 Jun 2022 16:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231262AbiFNU3M (ORCPT
+        with ESMTP id S1352859AbiFNU3Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:29:12 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B912A733;
-        Tue, 14 Jun 2022 13:29:12 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id d14so13211236eda.12;
-        Tue, 14 Jun 2022 13:29:12 -0700 (PDT)
+        Tue, 14 Jun 2022 16:29:16 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB2129828
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:29:15 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id d19so11014901lji.10
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:29:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aRjb3jd1aQaLkq/z5sj77GhYqe2JvAPzVwwOMMfP38E=;
-        b=K2N4aGCv4zNeMOd2yGAV7ZteJENWlMQgdsiYFaolNK+bkH7DEmbuYt/AslWT/HocXR
-         mjkp9xGKv7oGtT+u2defmr8V9/RJSsYBuPdA+LTb9VMZ9oSVHcUSHgX/LZ4H1tHMPsA7
-         0FSvpeIvmwqUYrrzc4IBXExEwWdEjH/RCWvjXmgWBiJX8fri2mtQ/fj1cFcBqs5WnBnz
-         +HjCzkVYGrA+b6clPD9Uwi0qGmHWjoXgnbDNEvQOvovTeZVkTiA2e39bKmSeLatM1x6c
-         ONzaCqcyXiLjYOdrqRQ0ruIfl1eGvxCbooXQaKR6/FSl0Cqh9hVx4S+9GFIeyImTXP3W
-         gy9Q==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JelMl5DE/hcbFl5tXcWcJ+M0I+5jYzJldxTFoClo8B8=;
+        b=Xo+FI0P1jCUF7cy7Lv1fCtt7r5lBUn6zSriIjnvp0F1pfVRH+Vuuxu8H9IcHCzIxY4
+         mc4GecxJHZ/9YFJkOHxQseHs7FM94FItM+1n7gX95nIBxc3IShK5NzppIwxn9rBOQV0Y
+         R5CRzw+Ed2uWpwpBK4/iyuvp+BjWFGfA0FLvKR2FVY32qxgJU6l458tSkSvTQWDBSq5H
+         XQdDoEZF2flZtIENnDFp4aPDR5WMXQqiO12CFaS3NAHEI8tRw5bMd2Ot4IDRjOHsY/bS
+         fl1XlW/x8iUSN4uKcWBketxI+QmhJOYT8YgWCvDmEmTQoFPr1ObugpnpaYTQTzptS+qD
+         z5Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aRjb3jd1aQaLkq/z5sj77GhYqe2JvAPzVwwOMMfP38E=;
-        b=drgu4BlyOPy7fkEYFGC5WBF3ru8SrokHI/JR+jXArUmId1XnZzxf10dIAj+GJ52p/+
-         fVK84Bh2n6fHDlP6DLibJVwVGvZyd5sTZ7OWy2tyj9apd+Hhmecz2ymm6DCKeLEbmz7F
-         JQ8qeC/s9vlSRG2W4EVP4AUinovDqVWXTEMNfJm2AV7h9ToisnzBczxcPU7VANQQ2FJr
-         9PYZMOBoAQsH26Mw/fNAyiZOw8U7mP4dSfVCH60oi+ZFkgQj1BL7ahtTBkZFEmWxRDeL
-         +KpQZ7xqKCAv46eKagKAazdCRGbzfeVsolvJVFw07okwn56aZ3AI/+nEK7s5RWT0HOOh
-         Ktyw==
-X-Gm-Message-State: AOAM531z4MHAOPn6eXf+N0vLS/1wfemRXkc9AwAkwkNvh5ifvbqozy4I
-        f6MKmExqc4SEBEGTDFQBPNI=
-X-Google-Smtp-Source: ABdhPJwkmm9/r74/oo/mg4CEbzb7CSnzzm/yuMLEXu/YYGuNTmplbjVAPd146zBa1fc16wAv5FKfUw==
-X-Received: by 2002:a05:6402:1914:b0:430:b941:2c44 with SMTP id e20-20020a056402191400b00430b9412c44mr8400109edz.77.1655238550743;
-        Tue, 14 Jun 2022 13:29:10 -0700 (PDT)
-Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id oq13-20020a170906cc8d00b006feb047502bsm5394863ejb.151.2022.06.14.13.29.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 13:29:10 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: Re: [PATCH v2 05/48] arm64: dts: allwinner: align gpio-key node names with dtschema
-Date:   Tue, 14 Jun 2022 22:29:09 +0200
-Message-ID: <21497739.EfDdHjke4D@kista>
-In-Reply-To: <5574044.DvuYhMxLoT@kista>
-References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org> <20220609113911.380368-4-krzysztof.kozlowski@linaro.org> <5574044.DvuYhMxLoT@kista>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JelMl5DE/hcbFl5tXcWcJ+M0I+5jYzJldxTFoClo8B8=;
+        b=bajH5WAWR12gyISdODHR+q5P0cHfPnEZvGkkmMlB4eurvVWuna0keLdujMGlA5SHTc
+         CQcD3/VLjs8v/DS+NoVXHMnVJLJB5fGLoHnIa64DJ8UYC9PMW4s6JxQw0CrFewcaoBOJ
+         BhRYM3MhAsRBQDhjaJDbqtguWYOFWT6AbPLg6D0Ba/xa31omwTGDg4k0Z2EtaMDTkZoK
+         ZFG4YRtHujAvvfaBwAvlxSQ43KKZ4pTmfNBWbHNBF4rm4PZyraYqYXboYGAqnnu9pbec
+         uarxaI0C+/Utxr/HYN+Cx3IDVdrRXr8wWxsx9h9Dt51z2A0G24p6vZ6hiUSWCjhV2rnH
+         auiQ==
+X-Gm-Message-State: AJIora9eBCC/d020EvDP6OPQiwmkL+bYEAUoInZQVd29cqxOpfvzlS+z
+        e6EgKohZxPHzwBozdeqYk+E5VfLNHXckdIT5wTDuPQ==
+X-Google-Smtp-Source: AGRyM1uqTOBp6a2xrVdhdGv7VkBK65jaqX8HjIXLaJChc8NThMPOjHL62L7SARvKS0b0k54p0tLUcBB00SsNkoe4hbs=
+X-Received: by 2002:a2e:6e06:0:b0:255:753d:f119 with SMTP id
+ j6-20020a2e6e06000000b00255753df119mr3576613ljc.93.1655238552862; Tue, 14 Jun
+ 2022 13:29:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+References: <CAMZm_C=o-rc4a+u_8-pFJtmL_2drwczASMRTqszamrks5Zm_OA@mail.gmail.com>
+In-Reply-To: <CAMZm_C=o-rc4a+u_8-pFJtmL_2drwczASMRTqszamrks5Zm_OA@mail.gmail.com>
+From:   Jann Horn <jannh@google.com>
+Date:   Tue, 14 Jun 2022 22:28:36 +0200
+Message-ID: <CAG48ez2PVMs-CeLoZtvPq2EeQqOg05mm3AuvEE_pr9Sog0O5og@mail.gmail.com>
+Subject: Re: pgprot_encrypted macro is broken
+To:     Federico Di Pierro <nierro92@gmail.com>
+Cc:     linux-api@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Lendacky <thomas.lendacky@amd.com>, x86@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne ponedeljek, 13. junij 2022 ob 23:00:02 CEST je Jernej =C5=A0krabec napi=
-sal(a):
-> Dne =C4=8Detrtek, 09. junij 2022 ob 13:39:07 CEST je Krzysztof Kozlowski=
-=20
-> napisal(a):
-> > The node names should be generic and DT schema expects certain pattern
-> > (e.g. with key/button/switch).
-> >=20
-> > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->=20
-> Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+On Tue, Jun 14, 2022 at 3:15 PM Federico Di Pierro <nierro92@gmail.com> wrote:
+> In our kmod we use the `pgprot_encrypted` macro.
+> It seems like the macro cannot be used on 5.18+ kernels because commit
+> b577f542f93cbba57f8d6185ef1fb13a41ddf162 broke it.
+>
+> Basically, the macro definition was:
+> `__pgprot(__sme_set(pgprot_val(prot)))`
+>
+> but after the commit, it was changed to:
+> `__pgprot(cc_mkenc(pgprot_val(prot)))`.
+>
+> But `cc_mkenc` symbol is not exported!
+>
+> This leads to build issues:
+> > ERROR: modpost: "cc_mkenc" undefined!
+>
+> Is this a bug?
+> Is there any workaround?
 
-Applied, thanks!
-=20
-Best regards,
-Jernej
-
-
+Why does your driver need to use that macro? pgprot_encrypted() is
+mostly only directly used by core kernel code, not by drivers... and
+if memory encryption is enabled, almost all memory mappings created by
+the kernel should be marked as encrypted automatically.
