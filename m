@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6967C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353460AbiFNCT5 (ORCPT
+        id S1353481AbiFNCUB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57754 "EHLO
+        Mon, 13 Jun 2022 22:20:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353429AbiFNCNp (ORCPT
+        with ESMTP id S1353426AbiFNCNp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 22:13:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57C435840;
-        Mon, 13 Jun 2022 19:07:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7A5340FF;
+        Mon, 13 Jun 2022 19:07:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4280C60F2A;
-        Tue, 14 Jun 2022 02:07:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAA53C36B00;
-        Tue, 14 Jun 2022 02:07:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8851C60B76;
+        Tue, 14 Jun 2022 02:07:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C13DCC3411B;
+        Tue, 14 Jun 2022 02:07:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172473;
-        bh=I7MlXs4Z2jm5RrcjZ1PA1hNM8YYscWJB/2mbPJXkTIU=;
+        s=k20201202; t=1655172464;
+        bh=JicjRnQMDRin8zmcJ7QBb5GWds4gk7oiwtluZKwMO9s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JS+9qTbNM0gDEOfxlvMU2nSsKBoX8sCXgTZbpZ7cxIOktaAu08LgUmwM4TeV2fwHv
-         +K5Y/1KCZjvvDnT52D+hd3/cmlrFgJi1134gkj6j98gKChS47NnN4Q1I0N1A4+hJ2r
-         xWaC+Dr46nuqcLsM6nlaudFTX8npaczz6YcNFlEnJ1s5EOJ6F3rUUjq7oHwdT0mZHD
-         UdGqWOb8PirxBXOFg/NkOsEhUh5CMyTI6ndNFJfWIqGgFfJXh+NOSOv0prTREt7afW
-         LX9Rjo2EXFkhwsnmtk8WAjyaA4U0H4AHgLHGeVo7Fp9psWFk/DO5eyUtJE4zZocjhv
-         lFuiTtapLAigA==
+        b=ds9CITjjaOkA9K2BTy98cTZtuDZEPj5TToac1Ff2x19peDQEOJClCv8PtCo/HRgIn
+         agWTkQhIx8pWbl5Pb+i2xhfmg7FUSUF+g43CNxo2w9cEDCaND1LQuO/wwFxNDnqcii
+         70xbTqrPKPo0pzoJV4ffzYJIjybgXutA9HggFfKEdN62e0uTgy6e5CoHERuQgbTtKq
+         6NOaMZrADy5UCHZzEpaOpHqhhmMtdG7N6RFe+VGpzykQOQYSdhrldklI57mNQy02Es
+         hFDyG8vBnpmnK2f+SDm2uWPzO2bqNYbdgtbnpsumbJGiCBlm4zZdPLVv6TjFPfPbiO
+         nFBCaiXFS72BQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     huangwenhui <huangwenhuia@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 27/41] ALSA: hda/realtek - Add HW8326 support
-Date:   Mon, 13 Jun 2022 22:06:52 -0400
-Message-Id: <20220614020707.1099487-27-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@avagotech.com,
+        dick.kennedy@avagotech.com, jejb@linux.vnet.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 21/41] scsi: lpfc: Resolve NULL ptr dereference after an ELS LOGO is aborted
+Date:   Mon, 13 Jun 2022 22:06:46 -0400
+Message-Id: <20220614020707.1099487-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
 References: <20220614020707.1099487-1-sashal@kernel.org>
@@ -52,150 +55,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huangwenhui <huangwenhuia@uniontech.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 527f4643e03c298c1e3321cfa27866b1374a55e1 ]
+[ Upstream commit b1b3440f437b75fb2a9b0cfe58df461e40eca474 ]
 
-Added the support of new Huawei codec HW8326. The HW8326 is developed
-by Huawei with Realtek's IP Core, and it's compatible with ALC256.
+A use-after-free crash can occur after an ELS LOGO is aborted.
 
-Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
-Link: https://lore.kernel.org/r/20220608082357.26898-1-huangwenhuia@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Specifically, a nodelist structure is freed and then
+ndlp->vport->cfg_log_verbose is dereferenced in lpfc_nlp_get() when the
+discovery state machine is mistakenly called a second time with
+NLP_EVT_DEVICE_RM argument.
+
+Rework lpfc_cmpl_els_logo() to prevent the duplicate calls to release a
+nodelist structure.
+
+Link: https://lore.kernel.org/r/20220603174329.63777-6-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/hda/hdac_device.c       |  1 +
- sound/pci/hda/patch_realtek.c | 14 ++++++++++++++
- 2 files changed, 15 insertions(+)
+ drivers/scsi/lpfc/lpfc_els.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/sound/hda/hdac_device.c b/sound/hda/hdac_device.c
-index 3e9e9ac804f6..b7e5032b61c9 100644
---- a/sound/hda/hdac_device.c
-+++ b/sound/hda/hdac_device.c
-@@ -660,6 +660,7 @@ static const struct hda_vendor_id hda_vendor_ids[] = {
- 	{ 0x14f1, "Conexant" },
- 	{ 0x17e8, "Chrontel" },
- 	{ 0x1854, "LG" },
-+	{ 0x19e5, "Huawei" },
- 	{ 0x1aec, "Wolfson Microelectronics" },
- 	{ 0x1af4, "QEMU" },
- 	{ 0x434d, "C-Media" },
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 2b5a610744f6..a2dd23b3a6a3 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -438,6 +438,7 @@ static void alc_fill_eapd_coef(struct hda_codec *codec)
- 	case 0x10ec0245:
- 	case 0x10ec0255:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 	case 0x10ec0257:
- 	case 0x10ec0282:
- 	case 0x10ec0283:
-@@ -575,6 +576,7 @@ static void alc_shutup_pins(struct hda_codec *codec)
- 	switch (codec->core.vendor_id) {
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 	case 0x10ec0283:
- 	case 0x10ec0286:
- 	case 0x10ec0288:
-@@ -3242,6 +3244,7 @@ static void alc_disable_headset_jack_key(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x48, 0x0);
- 		alc_update_coef_idx(codec, 0x49, 0x0045, 0x0);
- 		break;
-@@ -3270,6 +3273,7 @@ static void alc_enable_headset_jack_key(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x48, 0xd011);
- 		alc_update_coef_idx(codec, 0x49, 0x007f, 0x0045);
- 		break;
-@@ -4905,6 +4909,7 @@ static void alc_headset_mode_unplugged(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5020,6 +5025,7 @@ static void alc_headset_mode_mic_in(struct hda_codec *codec, hda_nid_t hp_pin,
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x45, 0xc489);
- 		snd_hda_set_pin_ctl_cache(codec, hp_pin, 0);
- 		alc_process_coef_fw(codec, coef0256);
-@@ -5170,6 +5176,7 @@ static void alc_headset_mode_default(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
- 		alc_write_coef_idx(codec, 0x45, 0xc089);
- 		msleep(50);
-@@ -5269,6 +5276,7 @@ static void alc_headset_mode_ctia(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5383,6 +5391,7 @@ static void alc_headset_mode_omtp(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5484,6 +5493,7 @@ static void alc_determine_headset_type(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
- 		alc_write_coef_idx(codec, 0x06, 0x6104);
- 		alc_write_coefex_idx(codec, 0x57, 0x3, 0x09a3);
-@@ -5778,6 +5788,7 @@ static void alc255_set_default_jack_type(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, alc256fw);
- 		break;
+diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
+index ce28c4a30460..5f44a0763f37 100644
+--- a/drivers/scsi/lpfc/lpfc_els.c
++++ b/drivers/scsi/lpfc/lpfc_els.c
+@@ -2955,18 +2955,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 		spin_unlock_irq(&ndlp->lock);
+ 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
+ 					NLP_EVT_DEVICE_RM);
+-		lpfc_els_free_iocb(phba, cmdiocb);
+-		lpfc_nlp_put(ndlp);
+-
+-		/* Presume the node was released. */
+-		return;
++		goto out_rsrc_free;
  	}
-@@ -6380,6 +6391,7 @@ static void alc_combo_jack_hp_jd_restart(struct hda_codec *codec)
- 	case 0x10ec0236:
- 	case 0x10ec0255:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_update_coef_idx(codec, 0x1b, 0x8000, 1 << 15); /* Reset HP JD */
- 		alc_update_coef_idx(codec, 0x1b, 0x8000, 0 << 15);
- 		break;
-@@ -9878,6 +9890,7 @@ static int patch_alc269(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		spec->codec_variant = ALC269_TYPE_ALC256;
- 		spec->shutup = alc256_shutup;
- 		spec->init_hook = alc256_init;
-@@ -11328,6 +11341,7 @@ static const struct hda_device_id snd_hda_id_realtek[] = {
- 	HDA_CODEC_ENTRY(0x10ec0b00, "ALCS1200A", patch_alc882),
- 	HDA_CODEC_ENTRY(0x10ec1168, "ALC1220", patch_alc882),
- 	HDA_CODEC_ENTRY(0x10ec1220, "ALC1220", patch_alc882),
-+	HDA_CODEC_ENTRY(0x19e58326, "HW8326", patch_alc269),
- 	{} /* terminator */
- };
- MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_realtek);
+ 
+ out:
+-	/* Driver is done with the IO.  */
+-	lpfc_els_free_iocb(phba, cmdiocb);
+-	lpfc_nlp_put(ndlp);
+-
+ 	/* At this point, the LOGO processing is complete. NOTE: For a
+ 	 * pt2pt topology, we are assuming the NPortID will only change
+ 	 * on link up processing. For a LOGO / PLOGI initiated by the
+@@ -2993,6 +2985,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 				 ndlp->nlp_DID, irsp->ulpStatus,
+ 				 irsp->un.ulpWord[4], irsp->ulpTimeout,
+ 				 vport->num_disc_nodes);
++
++		lpfc_els_free_iocb(phba, cmdiocb);
++		lpfc_nlp_put(ndlp);
++
+ 		lpfc_disc_start(vport);
+ 		return;
+ 	}
+@@ -3009,6 +3005,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
+ 					NLP_EVT_DEVICE_RM);
+ 	}
++out_rsrc_free:
++	/* Driver is done with the I/O. */
++	lpfc_els_free_iocb(phba, cmdiocb);
++	lpfc_nlp_put(ndlp);
+ }
+ 
+ /**
 -- 
 2.35.1
 
