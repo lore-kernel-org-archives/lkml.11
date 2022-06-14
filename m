@@ -2,98 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB05C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA305C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:59:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353439AbiFNC7m (ORCPT
+        id S1354084AbiFNC7p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56460 "EHLO
+        Mon, 13 Jun 2022 22:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354604AbiFNC6O (ORCPT
+        with ESMTP id S1353824AbiFNC7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:58:14 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B593B1A
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:51:27 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id 123so7293361pgb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:51:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9f3QGTquyPNqt5Y0ehbeYkFH6SxKJFf9weR2+dr9JWE=;
-        b=P1BYcRUky4pTlBCXgymwrbeyuxVeejqaqw+JSs0ELqecgtAA8S1wQVXLUSyIUEfVnh
-         QvMMpYuen89Ix6WBpHx6Kn6lpOsQnahN1rKirs2nmFI1OBmwttSk7YBJoDBo69aI4mVu
-         Fia2AXw9sK523hRAkVZ0hak767LdTjO9ysOgk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9f3QGTquyPNqt5Y0ehbeYkFH6SxKJFf9weR2+dr9JWE=;
-        b=FuvtjC7UpSFa6HOA22uuWMM5BJed6QN9ch6Bghd9LpaKfW6Ppy+ppW/aMNnZUFccfn
-         Cc1TqXA0TG7v77rB10k7B1ict+J0F8nms+dKiGgOzyLoABWoXX/z2qpgC3VmVTgDNOUe
-         16p3XV0CbUqSGLZtCXoMtk4uz8M/3JmzEJwU6g2X9nbJm9mgEKZoEgp6luN+e/pvzyT6
-         pfjZoa6L6tA3hiMQ/hExga/tLryZA2gTznLdre2lJKGOobSdiyLQw1BZ2daeO9bA8x25
-         O9xiEFP4GdtsAd/wQrEoC/cWo/R9V3YutQb6eBzuaVJqC0FBOLlSIPkfIG4D6GEi7y/k
-         Xorg==
-X-Gm-Message-State: AOAM531x0Gs8c13ZEIdF7WGFrwlKxF/iEIwQpgk1kNxgDM3s/WNTxWLa
-        d1zzqelXVnxEiC+a12uZZMEM17Vz4l7stg==
-X-Google-Smtp-Source: ABdhPJylGhOEry1IwuOWykOk7USTnbbJcg+B07vWOeXChI+8gMoxe5N2wMpODJvV4Ll+IIRjj6BF5w==
-X-Received: by 2002:a63:89c1:0:b0:3fc:6001:e871 with SMTP id v184-20020a6389c1000000b003fc6001e871mr2528817pgd.14.1655175086959;
-        Mon, 13 Jun 2022 19:51:26 -0700 (PDT)
-Received: from google.com ([2401:fa00:8f:203:580a:28cf:a82b:5610])
-        by smtp.gmail.com with ESMTPSA id a10-20020a62d40a000000b0051b416c065esm6147718pfh.8.2022.06.13.19.51.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 19:51:26 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 11:51:19 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     Alexandru Elisei <alexandru.elisei@arm.com>
-Cc:     sunjunchao2870@gmail.com, jack@suse.cz, viro@zeniv.linux.org.uk,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        pmladek@suse.com, senozhatsky@chromium.org, rostedt@goodmis.org,
-        john.ogness@linutronix.de, keescook@chromium.org, anton@enomsg.org,
-        ccross@android.com, tony.luck@intel.com, heiko@sntech.de,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, maco@android.com, hch@lst.de,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Subject: Re: [BUG] rockpro64 board hangs in console_init() after commit
- 10e14073107d
-Message-ID: <Yqf3pxG16lQcacUA@google.com>
-References: <Yqdry+IghSWnJ6pe@monolith.localdoman>
+        Mon, 13 Jun 2022 22:59:11 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39EC1C925
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:56:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655175371; x=1686711371;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=6v/TvD3cHFaKqMIzUzQPUP7REA0SWO/3xA9jf2Ll40w=;
+  b=PwGh8jGahLnIX1EyLzC0z2Y2wodGG1BDFAZfRotHnhDXSdC/C7n10JT6
+   qn4MVM+81sCpToZMUiKI+7jbuB8XBYQdIHWG0jiJLc5tuAJsuuuqw03jG
+   jEHE0PMggwsojc4rvDdutYyCe3IgYxykXK5gIUeB8zTMQfYVBDwuO30K1
+   r10ZVRRrwQYKqvJuPE3/38Di4IKpcfHZBk9WxoAVN3fwWaYAjxVcfkQZu
+   PELCpc9f8RLLHKpMq1qBzjEu0Vm4oYAPQl/ZKbZL0pPF4Z7WFU/WCWQwS
+   7NEW+ymYfgL7RcPAnDFWuWhUrd9SWCDfNPMG9rJjae//x9EKYYmFRnF7r
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258930463"
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="258930463"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 19:56:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="588166779"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by fmsmga007.fm.intel.com with ESMTP; 13 Jun 2022 19:56:08 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 12/12] iommu/vt-d: Convert global spinlock into per domain ones
+Date:   Tue, 14 Jun 2022 10:51:37 +0800
+Message-Id: <20220614025137.1632762-13-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220614025137.1632762-1-baolu.lu@linux.intel.com>
+References: <20220614025137.1632762-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yqdry+IghSWnJ6pe@monolith.localdoman>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On (22/06/13 17:54), Alexandru Elisei wrote:
-[..]
-> [    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
-> [    0.000001] sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
-> [    0.005107] Console: colour dummy device 80x25
-> [    0.005549] printk: console [tty0] enabled
-> [    0.005956] printk: bootconsole [uart0] disabled
-> 
-> Config can be found at [1] (expires after 6 months). I've also built the
-> kernel with gcc 10.3.1 [2] (aarch64-none-linux-gnu), same issue.
-> 
-> I've bisected the build failure to commit 10e14073107d ("writeback: Fix
-> inode->i_io_list not be protected by inode->i_lock error"); I've confirmed
-> that that commit is responsible by successfully booting the board with a
-> kernel built from v5.19-rc2 + the above commit reverted.
+Using a global device_domain_lock spinlock to protect per-domain device
+tracking lists is an inefficient way, especially considering this lock
+is also needed in the hot paths. This optimizes the locking mechanism
+by converting the global lock to per domain lock.
 
-Hmm, interesting and puzzling.
+On the other hand, as the device tracking lists are never accessed in
+any interrupt context, there is no need to disable interrupts while
+spinning. Replace irqsave variant with spinlock calls.
 
-If you disable console kthreads (__printk_fallback_preferred_direct) and
-keep 10e14073107d, are you able to successfully boot the board or does it
-boot to a panic?
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.h |  1 +
+ drivers/iommu/intel/iommu.c | 45 +++++++++++++++----------------------
+ 2 files changed, 19 insertions(+), 27 deletions(-)
 
-> I tried to do some investigating, it seems that the kernel is stuck at
-> printk.c::console_init() -> drivers/tty/vt/vt.c::con_init() ->
-> printk.c::register_console() -> unregister_console() -> console_lock().
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 6724703d573b..cc304ff09a7b 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -541,6 +541,7 @@ struct dmar_domain {
+ 	u8 force_snooping : 1;		/* Create IOPTEs with snoop control */
+ 	u8 set_pte_snp:1;
+ 
++	spinlock_t lock;		/* Protect device tracking lists */
+ 	struct list_head devices;	/* all devices' list */
+ 
+ 	struct dma_pte	*pgd;		/* virtual address */
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index aa3dea1c9f13..60e70682a190 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -310,7 +310,6 @@ static int iommu_skip_te_disable;
+ #define IDENTMAP_GFX		2
+ #define IDENTMAP_AZALIA		4
+ 
+-static DEFINE_SPINLOCK(device_domain_lock);
+ const struct iommu_ops intel_iommu_ops;
+ 
+ static bool translation_pre_enabled(struct intel_iommu *iommu)
+@@ -534,9 +533,8 @@ static int domain_update_device_node(struct dmar_domain *domain)
+ {
+ 	struct device_domain_info *info;
+ 	int nid = NUMA_NO_NODE;
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&device_domain_lock, flags);
++	spin_lock(&domain->lock);
+ 	list_for_each_entry(info, &domain->devices, link) {
+ 		/*
+ 		 * There could possibly be multiple device numa nodes as devices
+@@ -548,7 +546,7 @@ static int domain_update_device_node(struct dmar_domain *domain)
+ 		if (nid != NUMA_NO_NODE)
+ 			break;
+ 	}
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	spin_unlock(&domain->lock);
+ 
+ 	return nid;
+ }
+@@ -1375,12 +1373,11 @@ iommu_support_dev_iotlb(struct dmar_domain *domain, struct intel_iommu *iommu,
+ 			u8 bus, u8 devfn)
+ {
+ 	struct device_domain_info *info = NULL, *tmp;
+-	unsigned long flags;
+ 
+ 	if (!iommu->qi)
+ 		return NULL;
+ 
+-	spin_lock_irqsave(&device_domain_lock, flags);
++	spin_lock(&domain->lock);
+ 	list_for_each_entry(tmp, &domain->devices, link) {
+ 		if (tmp->iommu == iommu && tmp->bus == bus &&
+ 		    tmp->devfn == devfn) {
+@@ -1389,7 +1386,7 @@ iommu_support_dev_iotlb(struct dmar_domain *domain, struct intel_iommu *iommu,
+ 			break;
+ 		}
+ 	}
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	spin_unlock(&domain->lock);
+ 
+ 	return info;
+ }
+@@ -1398,9 +1395,8 @@ static void domain_update_iotlb(struct dmar_domain *domain)
+ {
+ 	struct device_domain_info *info;
+ 	bool has_iotlb_device = false;
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&device_domain_lock, flags);
++	spin_lock(&domain->lock);
+ 	list_for_each_entry(info, &domain->devices, link) {
+ 		if (info->ats_enabled) {
+ 			has_iotlb_device = true;
+@@ -1408,7 +1404,7 @@ static void domain_update_iotlb(struct dmar_domain *domain)
+ 		}
+ 	}
+ 	domain->has_iotlb_device = has_iotlb_device;
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	spin_unlock(&domain->lock);
+ }
+ 
+ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+@@ -1499,17 +1495,15 @@ static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
+ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+ 				  u64 addr, unsigned mask)
+ {
+-	unsigned long flags;
+ 	struct device_domain_info *info;
+ 
+ 	if (!domain->has_iotlb_device)
+ 		return;
+ 
+-	spin_lock_irqsave(&device_domain_lock, flags);
++	spin_lock(&domain->lock);
+ 	list_for_each_entry(info, &domain->devices, link)
+ 		__iommu_flush_dev_iotlb(info, addr, mask);
+-
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	spin_unlock(&domain->lock);
+ }
+ 
+ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+@@ -1769,6 +1763,7 @@ static struct dmar_domain *alloc_domain(unsigned int type)
+ 		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
+ 	domain->has_iotlb_device = false;
+ 	INIT_LIST_HEAD(&domain->devices);
++	spin_lock_init(&domain->lock);
+ 
+ 	return domain;
+ }
+@@ -2442,7 +2437,6 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu;
+-	unsigned long flags;
+ 	u8 bus, devfn;
+ 	int ret;
+ 
+@@ -2454,9 +2448,9 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	spin_lock_irqsave(&device_domain_lock, flags);
++	spin_lock(&domain->lock);
+ 	list_add(&info->link, &domain->devices);
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	spin_unlock(&domain->lock);
+ 	info->domain = domain;
+ 
+ 	/* PASID table is mandatory for a PCI device in scalable mode. */
+@@ -4134,7 +4128,6 @@ static void dmar_remove_one_dev_info(struct device *dev)
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct dmar_domain *domain = info->domain;
+ 	struct intel_iommu *iommu = info->iommu;
+-	unsigned long flags;
+ 
+ 	if (!dev_is_real_dma_subdevice(info->dev)) {
+ 		if (dev_is_pci(info->dev) && sm_supported(iommu))
+@@ -4146,9 +4139,9 @@ static void dmar_remove_one_dev_info(struct device *dev)
+ 		intel_pasid_free_table(info->dev);
+ 	}
+ 
+-	spin_lock_irqsave(&device_domain_lock, flags);
++	spin_lock(&domain->lock);
+ 	list_del(&info->link);
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	spin_unlock(&domain->lock);
+ 
+ 	domain_detach_iommu(domain, iommu);
+ }
+@@ -4432,7 +4425,7 @@ static bool domain_support_force_snooping(struct dmar_domain *domain)
+ 	struct device_domain_info *info;
+ 	bool support = true;
+ 
+-	assert_spin_locked(&device_domain_lock);
++	assert_spin_locked(&domain->lock);
+ 	list_for_each_entry(info, &domain->devices, link) {
+ 		if (!ecap_sc_support(info->iommu->ecap)) {
+ 			support = false;
+@@ -4447,8 +4440,7 @@ static void domain_set_force_snooping(struct dmar_domain *domain)
+ {
+ 	struct device_domain_info *info;
+ 
+-	assert_spin_locked(&device_domain_lock);
+-
++	assert_spin_locked(&domain->lock);
+ 	/*
+ 	 * Second level page table supports per-PTE snoop control. The
+ 	 * iommu_map() interface will handle this by setting SNP bit.
+@@ -4466,20 +4458,19 @@ static void domain_set_force_snooping(struct dmar_domain *domain)
+ static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
+ {
+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+-	unsigned long flags;
+ 
+ 	if (dmar_domain->force_snooping)
+ 		return true;
+ 
+-	spin_lock_irqsave(&device_domain_lock, flags);
++	spin_lock(&dmar_domain->lock);
+ 	if (!domain_support_force_snooping(dmar_domain)) {
+-		spin_unlock_irqrestore(&device_domain_lock, flags);
++		spin_unlock(&dmar_domain->lock);
+ 		return false;
+ 	}
+ 
+ 	domain_set_force_snooping(dmar_domain);
+ 	dmar_domain->force_snooping = true;
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	spin_unlock(&dmar_domain->lock);
+ 
+ 	return true;
+ }
+-- 
+2.25.1
 
-Is it console lock (console_kthreads_block() -> mutex_lock(&con->lock))
-that we cannot grab or is it console semaphore?
