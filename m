@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E5CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E058C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353837AbiFNC1F (ORCPT
+        id S1353982AbiFNC1O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
+        Mon, 13 Jun 2022 22:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354716AbiFNCXm (ORCPT
+        with ESMTP id S1354891AbiFNCX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:23:42 -0400
+        Mon, 13 Jun 2022 22:23:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BF540933;
-        Mon, 13 Jun 2022 19:10:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37F840E4F;
+        Mon, 13 Jun 2022 19:10:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4148B80AC1;
-        Tue, 14 Jun 2022 02:10:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE113C3411E;
-        Tue, 14 Jun 2022 02:10:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88844B816AF;
+        Tue, 14 Jun 2022 02:10:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33B80C3411B;
+        Tue, 14 Jun 2022 02:10:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172634;
-        bh=WXzatfo1Gdzn71E2kMuzfXun5GozS4HNJ2f2i7o2MU8=;
+        s=k20201202; t=1655172637;
+        bh=CBsmEoevrbvehp+FCviar910TmrSH9S8enOtDceM5Xw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KGeQYonL61Phkqid0Y0rXyqxM3psHCsN370t7NwcwnVkWaIlx+SwPzxz1zsQoMdJC
-         v0ZwzLjcKL3yLlc3LmKj6+3rHrXnKoadjVPbroBWcbI3nIe7zwJJxgBKqNAZvRUlT0
-         Pc1K+m85b6rVsxPUd7qTbrG6oP3w/wndh6eEaswd9EefdZJTDq+OINosy/qV2Ql9wD
-         laJMx7jL4xeLQNsM1+j7RcSzYSdjaAm3mooKrL2iKebAmV/STdFQEgBz4jBDf2f5RV
-         6ohjHFQ9rHTnUaX/uVsyiVmvbjQDIdm2WJAN/fThNZKtnnQe14XP731d/A8YdJNhxy
-         EaClvJDA5PKLA==
+        b=gAvBi8BEsFXUjDo6ItwDdSJVa+gb1Ak5E7nl5o2iXvcmF0Lmnw/VmLRvSv6mfS2fw
+         senMl8DRB9qynXZMgaUeHGLWIzJUL1pPAPVtr/VS9Ep80XrjahAIPExqUB6arVoJeX
+         LY7/rTKTsvxw+c0VIDDt5G7nh/HOC45jjwR8oRJO4OaPjk6gtFeUx6A1T+mmzUXtHC
+         wOHUX5Jy2WlMsC6rmKjrXCUBgnYu007z2zY+XVsFKr1d0c+JRWmGomjtQ5bcl1XeUs
+         Y7SYrwUesAgmeTaUBO3T8xsdctBTG/cXnQvZmFwY4rcxh0XstQHJ6L4Dz6hl+IYThv
+         rZgREjAIgqupA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chengguang Xu <cgxu519@mykernel.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 10/14] scsi: pmcraid: Fix missing resource cleanup in error case
-Date:   Mon, 13 Jun 2022 22:10:15 -0400
-Message-Id: <20220614021019.1100929-10-sashal@kernel.org>
+Cc:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lauro.venancio@openbossa.org,
+        aloisio.almeida@openbossa.org, sameo@linux.intel.com,
+        linux-wireless@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 12/14] nfc: nfcmrvl: Fix memory leak in nfcmrvl_play_deferred
+Date:   Mon, 13 Jun 2022 22:10:17 -0400
+Message-Id: <20220614021019.1100929-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614021019.1100929-1-sashal@kernel.org>
 References: <20220614021019.1100929-1-sashal@kernel.org>
@@ -54,35 +55,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
 
-[ Upstream commit ec1e8adcbdf661c57c395bca342945f4f815add7 ]
+[ Upstream commit 8a4d480702b71184fabcf379b80bf7539716752e ]
 
-Fix missing resource cleanup (when '(--i) == 0') for error case in
-pmcraid_register_interrupt_handler().
+Similar to the handling of play_deferred in commit 19cfe912c37b
+("Bluetooth: btusb: Fix memory leak in play_deferred"), we thought
+a patch might be needed here as well.
 
-Link: https://lore.kernel.org/r/20220529153456.4183738-6-cgxu519@mykernel.net
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Currently usb_submit_urb is called directly to submit deferred tx
+urbs after unanchor them.
+
+So the usb_giveback_urb_bh would failed to unref it in usb_unanchor_urb
+and cause memory leak.
+
+Put those urbs in tx_anchor to avoid the leak, and also fix the error
+handling.
+
+Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220607083230.6182-1-xiaohuizhang@ruc.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pmcraid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nfc/nfcmrvl/usb.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
-index b4d6cd8cd1ad..d27ae937ff68 100644
---- a/drivers/scsi/pmcraid.c
-+++ b/drivers/scsi/pmcraid.c
-@@ -4601,7 +4601,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
- 	return 0;
+diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
+index deb953290f8f..e88147c47c17 100644
+--- a/drivers/nfc/nfcmrvl/usb.c
++++ b/drivers/nfc/nfcmrvl/usb.c
+@@ -400,13 +400,25 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
+ 	int err;
  
- out_unwind:
--	while (--i > 0)
-+	while (--i >= 0)
- 		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
- 	pci_free_irq_vectors(pdev);
- 	return rc;
+ 	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
++		usb_anchor_urb(urb, &drv_data->tx_anchor);
++
+ 		err = usb_submit_urb(urb, GFP_ATOMIC);
+-		if (err)
++		if (err) {
++			kfree(urb->setup_packet);
++			usb_unanchor_urb(urb);
++			usb_free_urb(urb);
+ 			break;
++		}
+ 
+ 		drv_data->tx_in_flight++;
++		usb_free_urb(urb);
++	}
++
++	/* Cleanup the rest deferred urbs. */
++	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
++		kfree(urb->setup_packet);
++		usb_free_urb(urb);
+ 	}
+-	usb_scuttle_anchored_urbs(&drv_data->deferred);
+ }
+ 
+ static int nfcmrvl_resume(struct usb_interface *intf)
 -- 
 2.35.1
 
