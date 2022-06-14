@@ -2,27 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD446CCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 220DFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:31:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356730AbiFNMa2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60038 "EHLO
+        id S244599AbiFNMai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356837AbiFNM3h (ORCPT
+        with ESMTP id S1356831AbiFNM3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 08:29:37 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DAE0237DB;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A582A700;
         Tue, 14 Jun 2022 05:29:35 -0700 (PDT)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LMnkw1yWczgYqs;
-        Tue, 14 Jun 2022 20:27:36 +0800 (CST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LMnly0ByJzjY3k;
+        Tue, 14 Jun 2022 20:28:30 +0800 (CST)
 Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 20:29:33 +0800
+ 15.1.2375.24; Tue, 14 Jun 2022 20:29:34 +0800
 Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
  (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 14 Jun
@@ -34,13 +33,15 @@ CC:     <linux-crypto@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
         <zhangfei.gao@linaro.org>, <wangzhou1@hisilicon.com>,
         <yekai13@huawei.com>
-Subject: [PATCH v2 0/3] crypto: hisilicon - supports device isolation feature
-Date:   Tue, 14 Jun 2022 20:23:05 +0800
-Message-ID: <20220614122311.824-1-yekai13@huawei.com>
+Subject: [PATCH 2/3] Documentation: add a isolation strategy vfs node for uacce
+Date:   Tue, 14 Jun 2022 20:23:10 +0800
+Message-ID: <20220614122311.824-6-yekai13@huawei.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220614122311.824-1-yekai13@huawei.com>
+References: <20220614122311.824-1-yekai13@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.67.165.24]
 X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
  dggpeml100012.china.huawei.com (7.185.36.121)
@@ -49,32 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the hardware error isolation feature for ACC. Defines a driver debugfs
-node that used to configures the hardware error frequency. When the error
-frequency is exceeded, the device will be isolated. The isolation strategy 
-can be defined in each driver module. e.g. Defining the isolation strategy
-for ACC, if the AER error frequency exceeds the value of setting for a 
-certain period of time, The device will not be available in user space. The
-VF device use the PF device isolation strategy. as well as the isolation 
-strategy should not be set during device use.
+Update documentation describing DebugFS that could help to
+configure hard error frequency for users in th user space.
 
-changes v1->v2:
-	1、deleted dev_to_uacce api.
-	2、add vfs node doc. 
-	3、move uacce->ref to driver.
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+---
+ Documentation/ABI/testing/sysfs-driver-uacce | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-Kai Ye (3):
-  uacce: supports device isolation feature
-  Documentation: add a isolation strategy vfs node for uacce
-  crypto: hisilicon/qm - defining the device isolation strategy
-
- Documentation/ABI/testing/sysfs-driver-uacce |  17 ++
- drivers/crypto/hisilicon/qm.c                | 157 +++++++++++++++++--
- drivers/misc/uacce/uacce.c                   |  37 +++++
- include/linux/hisi_acc_qm.h                  |   9 ++
- include/linux/uacce.h                        |  16 +-
- 5 files changed, 219 insertions(+), 17 deletions(-)
-
+diff --git a/Documentation/ABI/testing/sysfs-driver-uacce b/Documentation/ABI/testing/sysfs-driver-uacce
+index 08f2591138af..0c4226364182 100644
+--- a/Documentation/ABI/testing/sysfs-driver-uacce
++++ b/Documentation/ABI/testing/sysfs-driver-uacce
+@@ -19,6 +19,23 @@ Contact:        linux-accelerators@lists.ozlabs.org
+ Description:    Available instances left of the device
+                 Return -ENODEV if uacce_ops get_available_instances is not provided
+ 
++What:           /sys/class/uacce/<dev_name>/isolate_strategy
++Date:           Jun 2022
++KernelVersion:  5.19
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    A vfs node that used to configures the hardware
++                error frequency. This frequency is abstract. Like once an hour
++                or once a day. The specific isolation strategy can be defined in
++                each driver module.
++
++What:           /sys/class/uacce/<dev_name>/isolate
++Date:           Jun 2022
++KernelVersion:  5.19
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    A vfs node that show the device isolated state. The value 0
++                means that the device is working. The value 1 means that the
++                device has been isolated.
++
+ What:           /sys/class/uacce/<dev_name>/algorithms
+ Date:           Feb 2020
+ KernelVersion:  5.7
 -- 
 2.33.0
 
