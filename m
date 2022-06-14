@@ -2,127 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B45FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:47:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C14CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242588AbiFNLrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34094 "EHLO
+        id S242714AbiFNLr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 07:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239698AbiFNLrL (ORCPT
+        with ESMTP id S242755AbiFNLr0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 07:47:11 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A844738B;
-        Tue, 14 Jun 2022 04:47:10 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id v1so16563497ejg.13;
-        Tue, 14 Jun 2022 04:47:10 -0700 (PDT)
+        Tue, 14 Jun 2022 07:47:26 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 699B425D7
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:47:25 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id w21so8404633pfc.0
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:47:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4T7FatHUEWyE0/J2q0UksKjdBVt/etQpJFBpvcjCzb4=;
-        b=QT0iuhQDlvN3YyjmWFrFiMQmniIBmhz74YIlNADPWNY8MHBAuCO25eBMOU99FifoU2
-         KaFzd71X7/iAGw3Fv99oyWSjDTapjGl/mJ43ITiGvFNm2HXFj6HhVIY244dU7IL4vZxi
-         xwiYdk2kRWWjOc71NUe/IwKQWFxFbfNRpjU1vwHCS+ZDW1Wguco2iYPXQ1VZp9NIG8iz
-         qDbhDtNliMvlwtIEilwU48VzH04NtffUPwXCj/REb1DAGsmzPV2MsPVbJvbQ7Od0uBpd
-         X54CaI/+F9wMs7K1XTWxxHxPw+numHyls8gHf/6VAplZoBHmnCNXsaZHyoqFu/1gC9nN
-         PXZA==
+        d=heitbaum.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9yjCf6oY3gJS5YNfh+t2xkU3PyOSCOkeJrjT3Jr85cM=;
+        b=CsOKP9DatAjY5ULn1fGBTaFBmXY9q1bDyoUJkLdt8pcLNG+jg8zcWSdECEqagQgv9f
+         9NUv02jJYfl30AI+RjDo+TVdnSTbeN6eyjchgdnP2U4r+epXoaE049dEaQBjBMNEaT9k
+         VSWjg0OznvQcuuCo6Uk/o/3VT9XnbQjHbmVEg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4T7FatHUEWyE0/J2q0UksKjdBVt/etQpJFBpvcjCzb4=;
-        b=ODrFb7ItEg0c64XloxJ1v6k5Ok0oMjSpCDV2sr5QYsd0t4GTF1S1nSAZpnxLtlmxzg
-         Fndqpdxw4LJXRpuU+tHSFvtWjAwa1FkEotH4oUWIXUhIi5ofzcAvLi8LUElKcxun361h
-         RArWEMNp+MKKObCon5fk67//slIRC5W/mdm7xhxpi+ectSS2JLPagzG4LsEq39cOlTT4
-         14DPnKRmoKQNm5lgSy3YYTre/T31t7D8+w178EjFfPUp2Wk50N6JtfrfdBkCkwhW531W
-         NB/hb/pOGr2lBPtadd25QlkNb+jRVQpJs8HAnMgoT0zQMu93nUv0Iz1vxMoT3kwmQSTG
-         dHKw==
-X-Gm-Message-State: AOAM533B5H7SRzbBQWHtagR9938J0k+2lve4ny0ZLfhJ+0Cu4soN+HC7
-        xUa/kiE1AWlI35hbavTbdkv/VXKwqAftnmrvruc=
-X-Google-Smtp-Source: ABdhPJxdZq2dsz6vvs1wjp4sOAnVfA7wrRHT0ZPd7X7dMxTLo9BCnoRL6nQ1lL2RjN3jeD3LouiP8vDAmOGoPeBGnB0=
-X-Received: by 2002:a17:906:149:b0:711:fca6:bc2f with SMTP id
- 9-20020a170906014900b00711fca6bc2fmr3973476ejh.497.1655207229182; Tue, 14 Jun
- 2022 04:47:09 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9yjCf6oY3gJS5YNfh+t2xkU3PyOSCOkeJrjT3Jr85cM=;
+        b=heqDYmxcr9dWU7jEvhv8x03F18ybm+1pAxo/7XSWuzjghjKl/auv92Mt0lIxRiAUyV
+         ASr6rl/4KdV1DQJlcdTy+g2bzP/9MNE5L8V3UhxSzIsPfoXOqGK1Q63VrMnAOFDfwEus
+         SPF0JJrEbl+WMKQvUTpyDCYpzHGxHiJmJyxipusfh6GlNs/EFfBgzaz8RKCoa4L4hcvW
+         3Hdht5mAEVw71Li2AyT3fwVGL1v4X5qkRli+XzHBpI1ir5m+X+HpK0Bx2aQvvWFGH5ZD
+         uckSppeVUteDOH7Pbc4IfsxeQYVzS9v14kCfihLornz1Cv3vYLloNX9fTAIk10ljACua
+         mRpQ==
+X-Gm-Message-State: AOAM532nQlUZQdezOepDSmYgVEtq8idOuZGfvPPzFp7OP393D1YgFQke
+        YvXLCF02qbhHDuzDzLdpkxulcQ==
+X-Google-Smtp-Source: ABdhPJyS2jpnvZtL2c84oCGG7GjdOJvENERd3a1AmtOYUUk7rt0xRQr3M6SYy0NcwUttJzfbYRg4RQ==
+X-Received: by 2002:a63:864a:0:b0:3fd:97a1:79f with SMTP id x71-20020a63864a000000b003fd97a1079fmr4237636pgd.51.1655207244652;
+        Tue, 14 Jun 2022 04:47:24 -0700 (PDT)
+Received: from 4207e2866154 (194-193-162-175.tpgi.com.au. [194.193.162.175])
+        by smtp.gmail.com with ESMTPSA id m5-20020a170902bb8500b0015e8d4eb2d8sm6992433pls.290.2022.06.14.04.47.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 04:47:24 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 11:47:15 +0000
+From:   Rudi Heitbaum <rudi@heitbaum.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 000/343] 5.18.4-rc2 review
+Message-ID: <20220614114715.GA31790@4207e2866154>
+References: <20220613181233.078148768@linuxfoundation.org>
 MIME-Version: 1.0
-References: <20220613195658.5607-1-brad@pensando.io> <20220613195658.5607-16-brad@pensando.io>
-In-Reply-To: <20220613195658.5607-16-brad@pensando.io>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 14 Jun 2022 13:46:32 +0200
-Message-ID: <CAHp75Vfrgw4sf7itQ-RVjNTNOrO95YeU9ugZc9sbBUYrpda5eg@mail.gmail.com>
-Subject: Re: [PATCH v5 15/15] reset: elbasr: Add AMD Pensando Elba SR Reset Controller
-To:     Brad Larson <brad@pensando.io>
-Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Al Cooper <alcooperx@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
-        blarson@amd.com, brijeshkumar.singh@amd.com,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Gabriel Somlo <gsomlo@gmail.com>, gerg@linux-m68k.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>, piotrs@cadence.com,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Rob Herring <robh+dt@kernel.org>, samuel@sholland.org,
-        Serge Semin <fancer.lancer@gmail.com>,
-        suravee.suthikulpanit@amd.com,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Will Deacon <will@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613181233.078148768@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 9:57 PM Brad Larson <brad@pensando.io> wrote:
->
-> From: Brad Larson <blarson@amd.com>
->
-> This patch adds the reset controller functionality for the
-> AMD Pensando Elba System Resource Chip.
+On Mon, Jun 13, 2022 at 08:18:34PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.4 release.
+> There are 343 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 15 Jun 2022 18:11:39 +0000.
+> Anything received after that time might be too late.
 
-...
+Hi Greg,
 
-> +#include <linux/mfd/pensando-elbasr.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/reset-controller.h>
-> +#include <linux/regmap.h>
-> +#include <linux/err.h>
+5.18.4-rc2 tested.
 
-> +#include <linux/of.h>
+Run tested on:
+- Allwinner H6 (Tanix TX6)
+- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
 
-There is no user of this header. But there are missed ones, such as
-mod_devicetable.h.
+In addition - build tested for:
+- Allwinner A64
+- Allwinner H3
+- Allwinner H5
+- NXP iMX6
+- NXP iMX8
+- Qualcomm Dragonboard
+- Rockchip RK3288
+- Rockchip RK3328
+- Rockchip RK3399pro
+- Samsung Exynos
 
-Keep them ordered to easily find such issues.
-
-...
-
-> +       ret = devm_reset_controller_register(&pdev->dev, &elbar->rcdev);
-> +
-> +       return ret;
-
-It is simply `return devm_...(...);`. Looking through your patches I
-can tell that you may easily drop LoCs by 10%. Please do so in the
-next version.
-
-...
-
-> +static const struct of_device_id elba_reset_dt_match[] = {
-> +       { .compatible = "amd,pensando-elbasr-reset", },
-> +       { /* sentinel */ },
-
-No comma.
-
-> +};
-
--- 
-With Best Regards,
-Andy Shevchenko
+Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
+--
+Rudi
