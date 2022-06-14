@@ -2,403 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F15C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352699AbiFNOm0 (ORCPT
+        id S1350175AbiFNOjh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37878 "EHLO
+        Tue, 14 Jun 2022 10:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245165AbiFNOmY (ORCPT
+        with ESMTP id S1345652AbiFNOjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:42:24 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E852DD44;
-        Tue, 14 Jun 2022 07:42:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655217739; x=1686753739;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=K6oM96E6SfR/lD7GDXpDLEdUjIue0J60OpH991R6D4U=;
-  b=mh1hDRiJDtNc8PZYA3HHxzcczsudNehcqmkWKpwoVGV9jiVx8dO0vqzi
-   tlPdzW388XMG88/ergPEgabFdT5rkhcfv3CDqCVUkqabUK2xEDyQrEFFu
-   m/EvR24Xus3DEwjrjm9S35EfgRQTFTgtsBwUUaKR/x24k3MIlrP1G4jCI
-   M=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 14 Jun 2022 07:42:19 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 07:42:18 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 07:42:17 -0700
-Received: from [10.216.20.153] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 14 Jun
- 2022 07:42:10 -0700
-Message-ID: <0a4de64d-aed7-f1cf-584a-bd8616a69ca3@quicinc.com>
-Date:   Tue, 14 Jun 2022 20:12:05 +0530
+        Tue, 14 Jun 2022 10:39:31 -0400
+Received: from sonic316-26.consmr.mail.ne1.yahoo.com (sonic316-26.consmr.mail.ne1.yahoo.com [66.163.187.152])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D71D31522
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:39:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1655217569; bh=Gk+oETTOXCvl6hKJwiKfVQx247tk4GOZsL6eS8rtiko=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=fRFIaqLcfobn1LNVl0zrObgmf1hRdINcfRrUmpLcvSg3N0XuqRqgsWlZn5KxMH8l49l0D/abHlPhyAMUUO2GGCDJesuNH8Kpmaa3YgqX0v4VvY06jPrF5HScxPs366YY2ONTePIsLO6+bsIrz/oFE0ETMPJwiL5Fc7l9A5O52eqlUVEn2u6Hv446oiu3mS7Em6viRQw0Eerb2KZ/WLQFgjnvwinwyVZgUZqVxvTHUHjPZlUOcpmI7z+3pcZ+UkItKYPlyw2PX6J4h25WWNn2cNwE4TCrQ8Jlmq2H+Rgpn+lDH1kZESTNcLpJSjPABDc+86KBFATzQZC91mBFay1TDw==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1655217569; bh=lRUBSB76OG5uRwjsyAtEUmfLb2iPR7sDD1HFxFWV66b=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=Qf8RR/99yPxdxlUs+k9WbY66HCWw5zL3eg/AG/d8PaF2ZW7sRQsWq6gmO9A/l7NZTWI7UdRqKM5bDHbs6wupQkeVNnPnRU2E5aJ02Zk+dMR4zD7/s5cNknCyMX/GityW/LiHFvSd/XM7aartsEujYu09UY1GhHeq1D712AxFIJsY8aK/OlILZVF6egzn6sq8A7407LfIYkuACSJL8g1M/mmbhUgbiOsQ+CYK1mUY0RpwWvYX8gqa2sPB3WEOxqty1MukDjP2FW6rxr1jRuQBeQgVCqktKQ2g163zpXEobbQtJYRhHhj9nK4BnkDO+kDP4JBwDWeJ+g1U93EjktSC1Q==
+X-YMail-OSG: l34EP_4VM1mCZNS.V_eCLpRm9dh5I1CsXixH4kuccuVcaljnubvC2j4A6MMQ129
+ Y2Pi1pBZKWkGXaXj27i38I8ExPjiKP1Xgpcl4tm9xqnMiwV4KKbA3RIP0pHjrVRzdj7MRxTx9iBG
+ YkdEQiInROMc3joMrXGCf9wmezHz6P8mJ.fFwD3SDeBlElgidwY8jLECc4hnW5TJm2DZ.k.jf483
+ xuskZUVuBZ_.7nYZM3Q6oMDqD16BRAXdGDrt0RJ_foeLdgA5bonrmkWFCR3gASY_oflWZvXQixlq
+ UF1m.qP9YXbSsWZFj812VhzLVpyQ.9F32n9h1HmEh69jx_hRtAaRIdgwaAfngbVWVJSKavMjVMfQ
+ XSXz0eYuXsWCwdfhD196BTPVVtMbrJkHzY6Xk9iE5UHCsUBamqZuh8ubo3QILsuwtLsCNFKyzrlY
+ vF4UN_H53gUTXszFFk2yLOyY55uNmgcqWwzFBPIfnM150R3f0Jfb8fh5Mzo_Cg0qaQvSchBKjCXj
+ nTjHJJOq.fI2fCTCBN3A870QDzGDAkOKrM.MsNpsLweC7IaQy.BbmtdwUXg3AQDgxaX8sTWqySH_
+ YK5rjqHBdeevCU9nZl2LemqBf.vLuvTdVi3q0_6s36rQkUJeC8EDY4s_ity57vDuikZT8YgGAV2k
+ GQo4ZHWmnm4lDk7xTd50gp0t_DJ.Hafgjqy64gvtibxS1SHL0D9MqZg76zZNAcQl5zu0Exhv4OcW
+ mDH5_kPytoYBvgcpDzUXj5OtiUT.rs03EresI6Qrd1muzCGUw99JUhwVKK40RSvSZXMM815o3TH6
+ fIwQnXzwajujE9szKg5ZCG.oh8QawNsxRxn.qck.uP4fzRlaBP9DE545T2hkZSFslMoNmyD9YjDu
+ DPyG49HGFuxQy6RMUV5D6tgRq2Jopfx_d.mJpEqNoUiuIWnKil4PEXFovbbhpvuyUhOL3VE2GmDX
+ VDBVqCAZbiZhRu7UKrQLPpAf4FtH9tiEdWyHvyrkqbXg__AQJ_N3sxY4nnv6lAtDCk3xv8g4zA7q
+ br.dMb13NA4a2TtcCtBHvVIzzWlvGv4U9JfN73FVEuv77CejNVNcPQ8XO0e3i2_eBbyDtuzTowpF
+ r7tocTWs53b.gwK4kDv_pTqO0hkqXLBV9X.I0Z6r8V3u504t5eb2cOQisOd4Mhos8dnXyaAN9cvu
+ 7acgLpOpZcWqyW9UMNNm1ShkpPPdBQprBadtvMrLPJFHbWwRyzdUL1sXWTpogylt3tdIon.0FUKm
+ rYQHTIZKXN0FbJz4FKuZgtnj76nzxXdow3yqiqKvKnjZ5MSJnwK0MtpYhCeyLNxltgJfN4K5iM2N
+ 7_UXaTuwcmiKL82RDIrVJ_m4tLhQSD0TMdB.C2.RuC3DLR6EZjR8icmJ5Pcyp1FBSAS.nzoMlvyG
+ wQetEXAUX6UnRnxz4Y.joRItG62ICV6zPRT7DkNFqhLrhD49oEyY7OTpUAHfUzW96T3TjU.z.xtX
+ BRJ59.VxAXDse4eqIhZpOo67ruAxITzCz2bwWgj9_3BVGoKrKa2hdF1EbK_wrXYCphFhgdP591BM
+ 8Dx4nw.OvDUtcFSmwaX38z91xvkNg2gGzURgEg.1aIahIoxGy.8HwC2Lo.9sDMjQ0LoYEOVKAezC
+ pGYewkGVTBsGHmpazBNDJ2yGdk1YnZ2RsxVQ6cVhAQ9oSC.UcB_QDBHfOgxJ0tQNNGx1hsc2BMQ7
+ fEPpEXJ8GKjioBsLIWpvl67R9boFpyk8B0YFa.DQk0VZ10896guGPPSX8tQw0bHPw998u2wOlfFK
+ r4iYVN6y2wwWwSC6Fp.DmjY5e6rtZVgjns0R9CrneHrhI2xoZjTxHqHrwpBEtqFrzK3GFPPTQtAK
+ 8hT6WRqTR8iJ_lz5fcEMBfDgXpLb2mzq7IppLiwFTDPN0ML7c0cKS8RDnYr0QMe9gdGZvRZcaZ81
+ oYqSjE5Ttah8mMWG6l3Obhj.YZXwg55XNndIG65ct.wK5BmQd6aYUN9KcjQYh._prdA3e2KLlb8V
+ tqRYdouhudJUpS29Eru77mKyHJcKeNct9WUI81o1XVVm1AGD8KRjrhBrE7_R.Nf_EiTNWlcVA8hx
+ BP.uDsYOJpVvf8mbQloJ5acD1I.TpGP2NfRbjr1FwYfk8z6l8gQUDe39HzYrWKeDUt_IRlNJ7_gD
+ KwvB64DCfDs5Yr2pbiRmfb0WwIP2scfxv4AA1X3gcjY0nFjSemkRJmqKpJEA2xu5VIOqoZ9kt3Fy
+ lGpmYgJNyn592qSxpIAHi28oenfQQFZhXz4JO5sR.3hWwhS2Z
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic316.consmr.mail.ne1.yahoo.com with HTTP; Tue, 14 Jun 2022 14:39:29 +0000
+Received: by hermes--canary-production-bf1-856dbf94db-nwd6f (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 047d13c43786ba81a547ff9186866ac4;
+          Tue, 14 Jun 2022 14:39:27 +0000 (UTC)
+Message-ID: <b9d27b14-3b45-470d-9c7b-c6f7fb0ca8a5@schaufler-ca.com>
+Date:   Tue, 14 Jun 2022 07:39:24 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH v3] drm/msm: Avoid unclocked GMU register access in 6xx
- gpu_busy
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
 Content-Language: en-US
-To:     Douglas Anderson <dianders@chromium.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Jordan Crouse <jordan@cosmicpenguin.net>
-CC:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        "Eric Anholt" <eric@anholt.net>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Sean Paul <sean@poorly.run>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <freedreno@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220609170859.v3.1.Ie846c5352bc307ee4248d7cab998ab3016b85d06@changeid>
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-In-Reply-To: <20220609170859.v3.1.Ie846c5352bc307ee4248d7cab998ab3016b85d06@changeid>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Frederick Lawler <fred@cloudflare.com>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, selinux@vger.kernel.org,
+        serge@hallyn.com, amir73il@gmail.com, kernel-team@cloudflare.com,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Casey Schaufler <casey@schaufler-ca.com>
+References: <20220608150942.776446-1-fred@cloudflare.com>
+ <87tu8oze94.fsf@email.froward.int.ebiederm.org>
+ <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com>
+ <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+In-Reply-To: <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Mailer: WebService/1.1.20280 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/10/2022 5:39 AM, Douglas Anderson wrote:
-> >From testing on sc7180-trogdor devices, reading the GMU registers
-> needs the GMU clocks to be enabled. Those clocks get turned on in
-> a6xx_gmu_resume(). Confusingly enough, that function is called as a
-> result of the runtime_pm of the GPU "struct device", not the GMU
-> "struct device". Unfortunately the current a6xx_gpu_busy() grabs a
-> reference to the GMU's "struct device".
+On 6/13/2022 9:44 PM, Eric W. Biederman wrote:
+> Frederick Lawler <fred@cloudflare.com> writes:
 >
-> The fact that we were grabbing the wrong reference was easily seen to
-> cause crashes that happen if we change the GPU's pm_runtime usage to
-> not use autosuspend. It's also believed to cause some long tail GPU
-> crashes even with autosuspend.
->
-> We could look at changing it so that we do pm_runtime_get_if_in_use()
-> on the GPU's "struct device", but then we run into a different
-> problem. pm_runtime_get_if_in_use() will return 0 for the GPU's
-> "struct device" the whole time when we're in the "autosuspend
-> delay". That is, when we drop the last reference to the GPU but we're
-> waiting a period before actually suspending then we'll think the GPU
-> is off. One reason that's bad is that if the GPU didn't actually turn
-> off then the cycle counter doesn't lose state and that throws off all
-> of our calculations.
->
-> Let's change the code to keep track of the suspend state of
-> devfreq. msm_devfreq_suspend() is always called before we actually
-> suspend the GPU and msm_devfreq_resume() after we resume it. This
-> means we can use the suspended state to know if we're powered or not.
->
-> NOTE: one might wonder when exactly our status function is called when
-> devfreq is supposed to be disabled. The stack crawl I captured was:
->    msm_devfreq_get_dev_status
->    devfreq_simple_ondemand_func
->    devfreq_update_target
->    qos_notifier_call
->    qos_max_notifier_call
->    blocking_notifier_call_chain
->    pm_qos_update_target
->    freq_qos_apply
->    apply_constraint
->    __dev_pm_qos_update_request
->    dev_pm_qos_update_request
->    msm_devfreq_idle_work
->
-> Fixes: eadf79286a4b ("drm/msm: Check for powered down HW in the devfreq callbacks")
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
->
-> Changes in v3:
-> - Totally rewrote to not use the pm_runtime functions.
-> - Moved the code to be common for all adreno GPUs.
->
-> Changes in v2:
-> - Move the set_freq runtime pm grab to the GPU file.
-> - Use <= for the pm_runtime test, not ==.
->
->   drivers/gpu/drm/msm/adreno/a5xx_gpu.c |  8 ------
->   drivers/gpu/drm/msm/adreno/a6xx_gmu.c | 13 ++++-----
->   drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 12 +++------
->   drivers/gpu/drm/msm/adreno/a6xx_gpu.h |  3 ++-
->   drivers/gpu/drm/msm/msm_gpu.h         |  9 ++++++-
->   drivers/gpu/drm/msm/msm_gpu_devfreq.c | 39 +++++++++++++++++++++------
->   6 files changed, 51 insertions(+), 33 deletions(-)
->
-> diff --git a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-> index c424e9a37669..3dcec7acb384 100644
-> --- a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-> @@ -1666,18 +1666,10 @@ static u64 a5xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate)
->   {
->   	u64 busy_cycles;
->   
-> -	/* Only read the gpu busy if the hardware is already active */
-> -	if (pm_runtime_get_if_in_use(&gpu->pdev->dev) == 0) {
-> -		*out_sample_rate = 1;
-> -		return 0;
-> -	}
-> -
->   	busy_cycles = gpu_read64(gpu, REG_A5XX_RBBM_PERFCTR_RBBM_0_LO,
->   			REG_A5XX_RBBM_PERFCTR_RBBM_0_HI);
->   	*out_sample_rate = clk_get_rate(gpu->core_clk);
->   
-> -	pm_runtime_put(&gpu->pdev->dev);
-> -
->   	return busy_cycles;
->   }
->   
-> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-> index 9f76f5b15759..dc715d88ff21 100644
-> --- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-> @@ -102,7 +102,8 @@ bool a6xx_gmu_gx_is_on(struct a6xx_gmu *gmu)
->   		A6XX_GMU_SPTPRAC_PWR_CLK_STATUS_GX_HM_CLK_OFF));
->   }
->   
-> -void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
-> +void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp,
-> +		       bool suspended)
->   {
->   	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
->   	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
-> @@ -127,15 +128,16 @@ void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
->   
->   	/*
->   	 * This can get called from devfreq while the hardware is idle. Don't
-> -	 * bring up the power if it isn't already active
-> +	 * bring up the power if it isn't already active. All we're doing here
-> +	 * is updating the frequency so that when we come back online we're at
-> +	 * the right rate.
->   	 */
-> -	if (pm_runtime_get_if_in_use(gmu->dev) == 0)
-> +	if (suspended)
->   		return;
->   
->   	if (!gmu->legacy) {
->   		a6xx_hfi_set_freq(gmu, perf_index);
->   		dev_pm_opp_set_opp(&gpu->pdev->dev, opp);
-> -		pm_runtime_put(gmu->dev);
->   		return;
->   	}
->   
-> @@ -159,7 +161,6 @@ void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
->   		dev_err(gmu->dev, "GMU set GPU frequency error: %d\n", ret);
->   
->   	dev_pm_opp_set_opp(&gpu->pdev->dev, opp);
-> -	pm_runtime_put(gmu->dev);
->   }
->   
->   unsigned long a6xx_gmu_get_freq(struct msm_gpu *gpu)
-> @@ -895,7 +896,7 @@ static void a6xx_gmu_set_initial_freq(struct msm_gpu *gpu, struct a6xx_gmu *gmu)
->   		return;
->   
->   	gmu->freq = 0; /* so a6xx_gmu_set_freq() doesn't exit early */
-> -	a6xx_gmu_set_freq(gpu, gpu_opp);
-> +	a6xx_gmu_set_freq(gpu, gpu_opp, false);
->   	dev_pm_opp_put(gpu_opp);
->   }
->   
-> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> index 42ed9a3c4905..8c02a67f29f2 100644
-> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> @@ -1658,27 +1658,21 @@ static u64 a6xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate)
->   	/* 19.2MHz */
->   	*out_sample_rate = 19200000;
->   
-> -	/* Only read the gpu busy if the hardware is already active */
-> -	if (pm_runtime_get_if_in_use(a6xx_gpu->gmu.dev) == 0)
-> -		return 0;
-> -
->   	busy_cycles = gmu_read64(&a6xx_gpu->gmu,
->   			REG_A6XX_GMU_CX_GMU_POWER_COUNTER_XOCLK_0_L,
->   			REG_A6XX_GMU_CX_GMU_POWER_COUNTER_XOCLK_0_H);
->   
-> -
-> -	pm_runtime_put(a6xx_gpu->gmu.dev);
-> -
->   	return busy_cycles;
->   }
->   
-> -static void a6xx_gpu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
-> +static void a6xx_gpu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp,
-> +			      bool suspended)
->   {
->   	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
->   	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
->   
->   	mutex_lock(&a6xx_gpu->gmu.lock);
-> -	a6xx_gmu_set_freq(gpu, opp);
-> +	a6xx_gmu_set_freq(gpu, opp, suspended);
->   	mutex_unlock(&a6xx_gpu->gmu.lock);
->   }
->   
-> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-> index 86e0a7c3fe6d..ab853f61db63 100644
-> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-> @@ -77,7 +77,8 @@ void a6xx_gmu_clear_oob(struct a6xx_gmu *gmu, enum a6xx_gmu_oob_state state);
->   int a6xx_gmu_init(struct a6xx_gpu *a6xx_gpu, struct device_node *node);
->   void a6xx_gmu_remove(struct a6xx_gpu *a6xx_gpu);
->   
-> -void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp);
-> +void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp,
-> +		       bool suspended);
->   unsigned long a6xx_gmu_get_freq(struct msm_gpu *gpu);
->   
->   void a6xx_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
-> diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-> index 6def00883046..7ced1a30d4e8 100644
-> --- a/drivers/gpu/drm/msm/msm_gpu.h
-> +++ b/drivers/gpu/drm/msm/msm_gpu.h
-> @@ -68,7 +68,8 @@ struct msm_gpu_funcs {
->   	struct msm_gpu_state *(*gpu_state_get)(struct msm_gpu *gpu);
->   	int (*gpu_state_put)(struct msm_gpu_state *state);
->   	unsigned long (*gpu_get_freq)(struct msm_gpu *gpu);
-> -	void (*gpu_set_freq)(struct msm_gpu *gpu, struct dev_pm_opp *opp);
-> +	void (*gpu_set_freq)(struct msm_gpu *gpu, struct dev_pm_opp *opp,
-> +			     bool suspended);
->   	struct msm_gem_address_space *(*create_address_space)
->   		(struct msm_gpu *gpu, struct platform_device *pdev);
->   	struct msm_gem_address_space *(*create_private_address_space)
-> @@ -92,6 +93,9 @@ struct msm_gpu_devfreq {
->   	/** devfreq: devfreq instance */
->   	struct devfreq *devfreq;
->   
-> +	/** lock: lock for "suspended", "busy_cycles", and "time" */
-> +	struct mutex lock;
-> +
->   	/**
->   	 * idle_constraint:
->   	 *
-> @@ -135,6 +139,9 @@ struct msm_gpu_devfreq {
->   	 * elapsed
->   	 */
->   	struct msm_hrtimer_work boost_work;
-> +
-> +	/** suspended: tracks if we're suspended */
-> +	bool suspended;
->   };
->   
->   struct msm_gpu {
-> diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> index d2539ca78c29..ea94bc18e72e 100644
-> --- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> +++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> @@ -20,6 +20,7 @@ static int msm_devfreq_target(struct device *dev, unsigned long *freq,
->   		u32 flags)
->   {
->   	struct msm_gpu *gpu = dev_to_gpu(dev);
-> +	struct msm_gpu_devfreq *df = &gpu->devfreq;
->   	struct dev_pm_opp *opp;
->   
->   	/*
-> @@ -32,10 +33,13 @@ static int msm_devfreq_target(struct device *dev, unsigned long *freq,
->   
->   	trace_msm_gpu_freq_change(dev_pm_opp_get_freq(opp));
->   
-> -	if (gpu->funcs->gpu_set_freq)
-> -		gpu->funcs->gpu_set_freq(gpu, opp);
-> -	else
-> +	if (gpu->funcs->gpu_set_freq) {
-> +		mutex_lock(&df->lock);
-> +		gpu->funcs->gpu_set_freq(gpu, opp, df->suspended);
-> +		mutex_unlock(&df->lock);
-> +	} else {
->   		clk_set_rate(gpu->core_clk, *freq);
-> +	}
->   
->   	dev_pm_opp_put(opp);
->   
-> @@ -58,15 +62,24 @@ static void get_raw_dev_status(struct msm_gpu *gpu,
->   	unsigned long sample_rate;
->   	ktime_t time;
->   
-> +	mutex_lock(&df->lock);
-> +
->   	status->current_frequency = get_freq(gpu);
-> -	busy_cycles = gpu->funcs->gpu_busy(gpu, &sample_rate);
->   	time = ktime_get();
-> -
-> -	busy_time = busy_cycles - df->busy_cycles;
->   	status->total_time = ktime_us_delta(time, df->time);
-> +	df->time = time;
->   
-> +	if (df->suspended) {
-> +		mutex_unlock(&df->lock);
-> +		status->busy_time = 0;
-> +		return;
-> +	}
-> +
-> +	busy_cycles = gpu->funcs->gpu_busy(gpu, &sample_rate);
-> +	busy_time = busy_cycles - df->busy_cycles;
->   	df->busy_cycles = busy_cycles;
-> -	df->time = time;
-> +
-> +	mutex_unlock(&df->lock);
->   
->   	busy_time *= USEC_PER_SEC;
->   	do_div(busy_time, sample_rate);
-> @@ -175,6 +188,8 @@ void msm_devfreq_init(struct msm_gpu *gpu)
->   	if (!gpu->funcs->gpu_busy)
->   		return;
->   
-> +	mutex_init(&df->lock);
-> +
->   	dev_pm_qos_add_request(&gpu->pdev->dev, &df->idle_freq,
->   			       DEV_PM_QOS_MAX_FREQUENCY,
->   			       PM_QOS_MAX_FREQUENCY_DEFAULT_VALUE);
-> @@ -244,12 +259,16 @@ void msm_devfreq_cleanup(struct msm_gpu *gpu)
->   void msm_devfreq_resume(struct msm_gpu *gpu)
->   {
->   	struct msm_gpu_devfreq *df = &gpu->devfreq;
-> +	unsigned long sample_rate;
->   
->   	if (!has_devfreq(gpu))
->   		return;
->   
-> -	df->busy_cycles = 0;
-> +	mutex_lock(&df->lock);
-> +	df->busy_cycles = gpu->funcs->gpu_busy(gpu, &sample_rate);
->   	df->time = ktime_get();
-> +	df->suspended = false;
-> +	mutex_unlock(&df->lock);
->   
->   	devfreq_resume_device(df->devfreq);
->   }
-> @@ -261,6 +280,10 @@ void msm_devfreq_suspend(struct msm_gpu *gpu)
->   	if (!has_devfreq(gpu))
->   		return;
->   
-> +	mutex_lock(&df->lock);
-> +	df->suspended = true;
-> +	mutex_unlock(&df->lock);
-> +
->   	devfreq_suspend_device(df->devfreq);
->   
->   	cancel_idle_work(df);
+>> Hi Eric,
+>>
+>> On 6/13/22 12:04 PM, Eric W. Biederman wrote:
+>>> Frederick Lawler <fred@cloudflare.com> writes:
+>>>
+>>>> While experimenting with the security_prepare_creds() LSM hook, we
+>>>> noticed that our EPERM error code was not propagated up the callstack.
+>>>> Instead ENOMEM is always returned.  As a result, some tools may send a
+>>>> confusing error message to the user:
+>>>>
+>>>> $ unshare -rU
+>>>> unshare: unshare failed: Cannot allocate memory
+>>>>
+>>>> A user would think that the system didn't have enough memory, when
+>>>> instead the action was denied.
+>>>>
+>>>> This problem occurs because prepare_creds() and prepare_kernel_cred()
+>>>> return NULL when security_prepare_creds() returns an error code. Later,
+>>>> functions calling prepare_creds() and prepare_kernel_cred() return
+>>>> ENOMEM because they assume that a NULL meant there was no memory
+>>>> allocated.
+>>>>
+>>>> Fix this by propagating an error code from security_prepare_creds() up
+>>>> the callstack.
+>>> Why would it make sense for security_prepare_creds to return an error
+>>> code other than ENOMEM?
+>>>   > That seems a bit of a violation of what that function is supposed to do
+>>>
+>> The API allows LSM authors to decide what error code is returned from the
+>> cred_prepare hook. security_task_alloc() is a similar hook, and has its return
+>> code propagated.
+> It is not an api.  It is an implementation detail of the linux kernel.
+> It is a set of convenient functions that do a job.
 
-nit: in the commit subject: 6xx -> a6xx
+Yeah, sort of. We still don't want to change it willy-nilly as it
+has multiple users from both ends.
 
-Reviewed-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+>
+> The general rule is we don't support cases without an in-tree user.  I
+> don't see an in-tree user.
+
+Unfortunately, the BPF security module allows arbitrary out-of-tree programs
+in any hook. While returns other than -ENOMEM may be nonsensical, they are
+possible. This is driving the LSM infrastructure in the direction of being
+an API, in that users of BPF need to know what they are allowed to do in
+their hook programs.
+
+> I'm proposing we follow security_task_allocs() pattern, and add visibility for
+> failure cases in prepare_creds().
+> I am asking why we would want to.  Especially as it is not an API, and I
+> don't see any good reason for anything but an -ENOMEM failure to be
+> supported.
+>
+> Without an in-tree user that cares it is probably better to go the
+> opposite direction and remove the possibility of return anything but
+> memory allocation failure.  That will make it clearer to implementors
+> that a general error code is not supported and this is not a location
+> to implement policy, this is only a hook to allocate state for the LSM.
+
+The more clearly we define how a function is to be used the more it looks
+like an API. The LSM security_ interfaces are not well designed. They have
+appeared, changed and disappeared organically. This was fine when there was
+one user and tolerable when there were a few, but is getting to be painful
+as the number of security modules increases and their assumptions and
+behavior diverges from subject/object mandatory access control.
 
 
--Akhil.
+>>> I have probably missed a very interesting discussion where that was
+>>> mentioned but I don't see link to the discussion or anything explaining
+>>> why we want to do that in this change.
+>>>
+>> AFAIK, this is the start of the discussion.
+> You were on v3 and had an out of tree piece of code so I assumed someone
+> had at least thought about why you want to implement policy in a piece
+> of code whose only purpose is to allocate memory to store state.
 
+I agree with both sides to some extent. The caller shouldn't assume that
+the only possible error is -ENOMEM, but the LSM hook should never do anything
+else, either. If there is a legitimate case where an different error may
+be returned and a reasonable, different action the caller(s) would take in
+that case, the change makes sense. Otherwise, no.
+
+> Eric
+>
