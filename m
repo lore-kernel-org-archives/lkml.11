@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5767C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D3EAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354143AbiFNCVy (ORCPT
+        id S1353522AbiFNCV7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57476 "EHLO
+        Mon, 13 Jun 2022 22:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354927AbiFNCPM (ORCPT
+        with ESMTP id S1353279AbiFNCPX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:15:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B7D3CFF9;
-        Mon, 13 Jun 2022 19:09:08 -0700 (PDT)
+        Mon, 13 Jun 2022 22:15:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC7D3616B;
+        Mon, 13 Jun 2022 19:09:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5710FB8169A;
-        Tue, 14 Jun 2022 02:08:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 329C6C385A9;
-        Tue, 14 Jun 2022 02:08:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBBF860AD8;
+        Tue, 14 Jun 2022 02:09:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 617BDC385A5;
+        Tue, 14 Jun 2022 02:09:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172535;
-        bh=3URXF5M3vcnkfz10ois3e+5aTzkVfZWqV/ln18/fkC4=;
+        s=k20201202; t=1655172557;
+        bh=2WoKEsaIE0PMxojq0DMA1gG9fjx/03eR9RGT34/BisA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fVKP8KWb5isZLQeRo2B9wruO4Ny6pacFVXVmMJLzxHq+hKxIQViJgpmYRxlCXcaIG
-         mmNbBwMzLzRCiimJldE6X9vuFr9k6W7lsIz/sxahFzPgCjGHSWIcwgDGOWQ6T0ecbx
-         MEdR7eUKIh/dstbSoM7o423q4+CSIeZ/h//yteEKewaYJgAzo7p6orz9mVUZgyy0F4
-         cUWA+GD7+QVHRc7TxR5HIOKRHg/G5CnqdHYPevjxLsAo2q0OBSi+oqaXQsdHFgB9rU
-         N3qpGudWRYpP90sLoMYiqWrGDqnsITwx6KaKk6CVJSlLmxPH9V5nYbsChlsCggAqXh
-         XzyoCHOmX1X1Q==
+        b=K8LSDO4dp4B5FJBLdDx4Qec4QrEttwnBlCWtJ4LfqaQK0fDGSsPCsaW8CasgtdSxx
+         tzay+JwJEpzpYYgSAfEZZomW3njKOxKCU4a6HQXua36GfwFhyhLdNl/3nxLyHACpjn
+         cW7xY2+hRpm22rGOVIsli529f6oRrYgnmeYg7qWWKk9wtDXw+K8IUtyiu5YTXweNjA
+         CJdh9Xkyi8LUdGoumCOiv1otMxxkwKo0FLYUjjF7ey/Zog9ndADwiljma/yAyB8tO4
+         swuW6LkOGDqn3NYPB/8S3hBmPFoAbc8gGMJpHsq+/0RD5El0PWBpJqDkllvrRARwuh
+         997J+zHlKz/kg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, saeedm@mellanox.com,
-        matanb@mellanox.com, leonro@mellanox.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 26/29] mellanox: mlx5: avoid uninitialized variable warning with gcc-12
-Date:   Mon, 13 Jun 2022 22:08:12 -0400
-Message-Id: <20220614020815.1099999-26-sashal@kernel.org>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>, tj@kernel.org,
+        linux-ide@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 09/23] ata: libata-core: fix NULL pointer deref in ata_host_alloc_pinfo()
+Date:   Mon, 13 Jun 2022 22:08:45 -0400
+Message-Id: <20220614020900.1100401-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
-References: <20220614020815.1099999-1-sashal@kernel.org>
+In-Reply-To: <20220614020900.1100401-1-sashal@kernel.org>
+References: <20220614020900.1100401-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,47 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-[ Upstream commit 842c3b3ddc5f4d17275edbaa09e23d712bf8b915 ]
+[ Upstream commit bf476fe22aa1851bab4728e0c49025a6a0bea307 ]
 
-gcc-12 started warning about 'tracker' being used uninitialized:
+In an unlikely (and probably wrong?) case that the 'ppi' parameter of
+ata_host_alloc_pinfo() points to an array starting with a NULL pointer,
+there's going to be a kernel oops as the 'pi' local variable won't get
+reassigned from the initial value of NULL. Initialize 'pi' instead to
+'&ata_dummy_port_info' to fix the possible kernel oops for good...
 
-  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c: In function ‘mlx5_do_bond’:
-  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c:786:28: warning: ‘tracker’ is used uninitialized [-Wuninitialized]
-    786 |         struct lag_tracker tracker;
-        |                            ^~~~~~~
+Found by Linux Verification Center (linuxtesting.org) with the SVACE static
+analysis tool.
 
-which seems to be because it doesn't track how the use (and
-initialization) is bound by the 'do_bond' flag.
-
-But admittedly that 'do_bond' usage is fairly complicated, and involves
-passing it around as an argument to helper functions, so it's somewhat
-understandable that gcc doesn't see how that all works.
-
-This function could be rewritten to make the use of that tracker
-variable more obviously safe, but for now I'm just adding the forced
-initialization of it.
-
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ata/libata-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-index 11cc3ea5010a..9fb3e5ec1da6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-@@ -274,7 +274,7 @@ static void mlx5_do_bond(struct mlx5_lag *ldev)
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index af8a1bac9345..fc37e075f3e1 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -6235,7 +6235,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 				      const struct ata_port_info * const * ppi,
+ 				      int n_ports)
  {
- 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
- 	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
--	struct lag_tracker tracker;
-+	struct lag_tracker tracker = { };
- 	bool do_bond, roce_lag;
- 	int err;
+-	const struct ata_port_info *pi;
++	const struct ata_port_info *pi = &ata_dummy_port_info;
+ 	struct ata_host *host;
+ 	int i, j;
  
+@@ -6243,7 +6243,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 	if (!host)
+ 		return NULL;
+ 
+-	for (i = 0, j = 0, pi = NULL; i < host->n_ports; i++) {
++	for (i = 0, j = 0; i < host->n_ports; i++) {
+ 		struct ata_port *ap = host->ports[i];
+ 
+ 		if (ppi[j])
 -- 
 2.35.1
 
