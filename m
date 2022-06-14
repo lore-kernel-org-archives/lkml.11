@@ -2,113 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A03DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:52:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF32C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353410AbiFNHwi (ORCPT
+        id S1355433AbiFNHw4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
+        Tue, 14 Jun 2022 03:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231756AbiFNHv6 (ORCPT
+        with ESMTP id S1355458AbiFNHwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:51:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B55440A29
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:51:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655193072;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uPRneHusWliPXCUnYK+9EGAAe+6/D9lx6nqXCclDon0=;
-        b=YtvBKDnoym0MKUUfrrqjEdCMU/0vISMzR5YGM5orPBHltcq0U1wbUiG9ad+jGA3/mJRgWx
-        f0LmmnQAM7IsGSQ7lhgkM4sj9XTDFHAJAZQ6DWT2M0FgfDtuP390wYpmk4YKmil74ucQxa
-        gT8AGoD21wM3iWM+6ZK+EUFTCDos8RE=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-FL1vMY2WNwmniicMXLZRVA-1; Tue, 14 Jun 2022 03:51:10 -0400
-X-MC-Unique: FL1vMY2WNwmniicMXLZRVA-1
-Received: by mail-ej1-f71.google.com with SMTP id fp4-20020a1709069e0400b00711911cecf9so2519936ejc.3
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:51:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uPRneHusWliPXCUnYK+9EGAAe+6/D9lx6nqXCclDon0=;
-        b=ASrNLNZa4XUMiYhYYMwJfePtS5APlRxzT3G6E4xvj1e/vH52d5i3wcd39WtQIMG3ep
-         Ra2igYJ4Qr2+I2xP6T8ol4QKQXLIuwnqDy9IlG6einoY98ipazCylDZBIRUZYlgtBIQQ
-         LwB52MXso6hNXd1fFVVgi8ti2NjlTDdwdAccTRSlHjn/VHj/WrI9HTsrNsMZCl17haJa
-         oODUR8H7rCUQkIfjYvUOGnbCYfq8gVFON9rnJKh2SwaAMB+G8IQBEBEIflU72OSZ8i0Z
-         KMPildslg322wHVI28Q6azlc16Bci962kpKf6pkWHhrlKzHDX0eb4MVSTBk5UsbLHSpQ
-         HDQA==
-X-Gm-Message-State: AOAM530CKqPjamFPGRz9Ii08eUmvCoNW0FF0nq6CAIxiDmoRloT5zeXX
-        6Lbs5J/GJ1lA4v+Nee651m7WF/BBUH74UeTf8RO87LXogiVy2bY054Y8wSStYA77+93l5KQ/quS
-        Bj3lIn2gCDz20vnTPZhsiCyiD
-X-Received: by 2002:a17:906:dff9:b0:6ff:2f22:7d0 with SMTP id lc25-20020a170906dff900b006ff2f2207d0mr3047023ejc.198.1655193069523;
-        Tue, 14 Jun 2022 00:51:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxYEBUBc3BcXt1o4i05+IBpQ9wsv7cQh/xs3361eCZbAaltmofH+eb4wYomMNNzbwzZC/8iMg==
-X-Received: by 2002:a17:906:dff9:b0:6ff:2f22:7d0 with SMTP id lc25-20020a170906dff900b006ff2f2207d0mr3047008ejc.198.1655193069312;
-        Tue, 14 Jun 2022 00:51:09 -0700 (PDT)
-Received: from gator (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
-        by smtp.gmail.com with ESMTPSA id m26-20020a056402051a00b0042dd2f2bec7sm6539259edv.56.2022.06.14.00.51.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 00:51:08 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 09:51:06 +0200
-From:   Andrew Jones <drjones@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/4] KVM: selftests: Fixups for overhaul
-Message-ID: <20220614075106.463oqkerlaximxfl@gator>
-References: <20220613161942.1586791-1-seanjc@google.com>
+        Tue, 14 Jun 2022 03:52:34 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3915419AB
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:51:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655193086; x=1686729086;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=JuRGlnFAMaRI/86OvaXlr4MZXzY9T+9mHzNKqZPIxnU=;
+  b=kksPXzAMU/X63RJANWxMz8QfP/rtdmIvGy47t5EeRnmT6xHm6mC2lXIt
+   PoOWNqlYHjpemC0Cly6L8ga5D99XfO3zaIFfGDtsJGjI3G2uyMgXzcn1c
+   eyW22DEyz78dLyQENIkXb7Ez7aoNvsLpqKOKW3KmZi5Q4s0m3rdtb8meH
+   xWAlnfvVbQGVVzGx8oNqyEQmo+yeFZx3tGbBa9sx2f7s8BKoPbC7nvFnK
+   nn/Ma2+nPPF4e5xW3s/lO2C7dy2GgBhpy2IZvriFI0A/3OvIDSpC1bgSJ
+   r6boHDzCZs0L2jWzP1OO5T90MqBrniEph9W0c3PaQR+/ikaZBVBWvr3YG
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="340208439"
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="340208439"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:51:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="617880161"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 14 Jun 2022 00:51:20 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o11KZ-000LdH-Oe;
+        Tue, 14 Jun 2022 07:51:19 +0000
+Date:   Tue, 14 Jun 2022 15:50:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:irq/urgent] BUILD SUCCESS
+ 6872fcac7158c3b3728a2ec1ea771ade0e61ddd5
+Message-ID: <62a83ddc.slVL+t+3yhe5wsze%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613161942.1586791-1-seanjc@google.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 04:19:38PM +0000, Sean Christopherson wrote:
-> Fixups for the overhaul, all of which come from Drew's code review.  The
-> first three should all squash cleanly, but the kvm_check_cap() patch will
-> not due to crossing the TEST_REQUIRE() boundary.
-> 
-> Sean Christopherson (4):
->   KVM: selftests: Add a missing apostrophe in comment to show ownership
->   KVM: selftests: Call a dummy helper in VM/vCPU ioctls() to enforce
->     type
->   KVM: selftests: Drop a duplicate TEST_ASSERT() in
->     vm_nr_pages_required()
->   KVM: selftests: Use kvm_has_cap(), not kvm_check_cap(), where possible
-> 
->  .../testing/selftests/kvm/aarch64/psci_test.c |  2 +-
->  .../selftests/kvm/include/kvm_util_base.h     | 57 ++++++++++---------
->  tools/testing/selftests/kvm/lib/kvm_util.c    |  6 +-
->  .../selftests/kvm/lib/x86_64/processor.c      |  4 +-
->  .../selftests/kvm/s390x/sync_regs_test.c      |  2 +-
->  .../kvm/x86_64/pmu_event_filter_test.c        |  2 +-
->  .../selftests/kvm/x86_64/sev_migrate_tests.c  |  6 +-
->  tools/testing/selftests/kvm/x86_64/smm_test.c |  2 +-
->  .../testing/selftests/kvm/x86_64/state_test.c |  2 +-
->  9 files changed, 42 insertions(+), 41 deletions(-)
-> 
-> 
-> base-commit: 8baacf67c76c560fed954ac972b63e6e59a6fba0
-> -- 
-> 2.36.1.476.g0c4daa206d-goog
->
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/urgent
+branch HEAD: 6872fcac7158c3b3728a2ec1ea771ade0e61ddd5  Merge tag 'irqchip-fixes-5.19-1' of git://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms into irq/urgent
 
-All these patches look good to me. For the series
+elapsed time: 1472m
 
-Reviewed-by: Andrew Jones <drjones@redhat.com>
+configs tested: 84
+configs skipped: 3
 
-There's still one more comment I made on the overhaul though, which
-is that the expressions using i and j in kvm_binary_stats_test.c
-for the vcpus and vcpu_stat_test indices have i and j swapped.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Thanks,
-drew
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                                 defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+ia64                                defconfig
+m68k                             allyesconfig
+m68k                                defconfig
+m68k                             allmodconfig
+nios2                               defconfig
+arc                              allyesconfig
+alpha                               defconfig
+csky                                defconfig
+alpha                            allyesconfig
+nios2                            allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+xtensa                           allyesconfig
+parisc64                            defconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+powerpc                          allyesconfig
+x86_64               randconfig-a012-20220613
+x86_64               randconfig-a011-20220613
+x86_64               randconfig-a013-20220613
+x86_64               randconfig-a014-20220613
+x86_64               randconfig-a015-20220613
+x86_64               randconfig-a016-20220613
+i386                 randconfig-a012-20220613
+i386                 randconfig-a011-20220613
+i386                 randconfig-a013-20220613
+i386                 randconfig-a014-20220613
+i386                 randconfig-a016-20220613
+i386                 randconfig-a015-20220613
+riscv                randconfig-r042-20220613
+arc                  randconfig-r043-20220613
+s390                 randconfig-r044-20220613
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                    nommu_k210_defconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                    rhel-8.3-kselftests
+x86_64                         rhel-8.3-kunit
+x86_64                           allyesconfig
 
+clang tested configs:
+x86_64               randconfig-a003-20220613
+x86_64               randconfig-a006-20220613
+x86_64               randconfig-a001-20220613
+x86_64               randconfig-a005-20220613
+x86_64               randconfig-a002-20220613
+x86_64               randconfig-a004-20220613
+i386                 randconfig-a001-20220613
+i386                 randconfig-a004-20220613
+i386                 randconfig-a002-20220613
+i386                 randconfig-a003-20220613
+i386                 randconfig-a006-20220613
+i386                 randconfig-a005-20220613
+hexagon              randconfig-r041-20220613
+hexagon              randconfig-r045-20220613
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
