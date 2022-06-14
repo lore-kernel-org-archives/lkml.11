@@ -2,135 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F233DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37041CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:17:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355711AbiFNPRX (ORCPT
+        id S1343645AbiFNPRs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 11:17:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48088 "EHLO
+        Tue, 14 Jun 2022 11:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356696AbiFNPRR (ORCPT
+        with ESMTP id S1356528AbiFNPRq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 11:17:17 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7BA55419A2;
-        Tue, 14 Jun 2022 08:17:16 -0700 (PDT)
-Received: from anrayabh-desk (unknown [167.220.238.193])
-        by linux.microsoft.com (Postfix) with ESMTPSA id B00BF20C317B;
-        Tue, 14 Jun 2022 08:17:10 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B00BF20C317B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1655219836;
-        bh=Qh14grxeKYerXFZ6SXH2tW7e96Dn6YlUHZJv+OP8fXA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cofucmTrirayR3BAchof8DY2g+eFoKLrV2GFTmuTY4XOMDYSxCoLomlKibI8ve/tc
-         Rvu5k//xuojwDiH4Z68RLTrjvwiJbnWrrnuJnG+Jn0R+hb6YM5Daj/tXmJn0wcKNIF
-         tvCZkx+jYGQv0rFO24QLY945ImhgCjFJPJT5tZec=
-Date:   Tue, 14 Jun 2022 20:47:05 +0530
-From:   Anirudh Rayabharam <anrayabh@linux.microsoft.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Ilias Stamatis <ilstam@amazon.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>, mail@anirudhrb.com,
-        kumarpraveen@linux.microsoft.com, wei.liu@kernel.org,
-        robert.bradford@intel.com, liuwe@microsoft.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: nVMX: Don't expose TSC scaling to L1 when on Hyper-V
-Message-ID: <YqimcQTl9ia+ov/I@anrayabh-desk>
-References: <20220613161611.3567556-1-anrayabh@linux.microsoft.com>
- <592ab920-51f3-4794-331f-8737e1f5b20a@redhat.com>
- <YqgU2KfFCqawbTkW@anrayabh-desk>
+        Tue, 14 Jun 2022 11:17:46 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B23AAB48C
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:17:44 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-30ec2aa3b6cso32834177b3.11
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:17:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=7DyoEzjGV1GYmzGysGFZNBfKhzd5r8NUEg0vY6kJrI0=;
+        b=c5vsjZWcrvQMdJMihCATHQ26NxYx3zk7FgpMXe2lt8ToOICDMZEX2yNNAPzCh4+/ft
+         R57jTDXcFivzHj7eYcWa+c8/qNo83v0HrTyBUvLY5xV5zDeiOIp2F7n/ncwCJx0T1FDF
+         oVCm0X0LzTv5p9CL8/7bKn4ZHLjrzN7mMVPwX3wisjBGo2Gf5CUURPS993A5PEuyFUlp
+         YnueA3nvSsk8viR+FaT5FHdA/ast5WQltjHD/ttPtIPiw613JZsvS9byorZgvwRLeX6p
+         qlpL+ojlblTlZvCz6imfTD+o631xtSXEfZeRSJDjlEixAQ1g8fBH4p59rxZJkIIorCUa
+         oQ8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7DyoEzjGV1GYmzGysGFZNBfKhzd5r8NUEg0vY6kJrI0=;
+        b=C2rXZiMfhQCOz0u9S25oPPsJ1BL/uxIoXryG6RVSBYcG8W+JYSFYataZ1VyktRwuXx
+         2BTjYgk9cItVvfkDQevddWD1mxKfavI9kDsbuH0ZlTDXfR3GC6aN32Gw6MS6Ya8Zj06J
+         w40aHBU+rNW99WeKid4wpL1pMxPfnCrNbnlUWpyhcXbsCqmPDvNemj+Td6K+wWKvEiVu
+         Y7UFC9fbpP2qCdfjcSMMOgXpkuI8MxodXc7+jAP6UpZfZRgdteNPe6hjO9RImApxmkVx
+         glbYOpPWFTjUdcPxyxcD9R4++J0mK4N9oHomvjjO3RK1oi5/XH5sQs5U94x3BtBsjREp
+         hJ4Q==
+X-Gm-Message-State: AJIora+TdpPthI26kJ03O9OH3gLpfu1fP5DXH75HyzOH6goYYNv0A2bM
+        Q60ffoBV0QpsO0+K86noqCrAlG9YDvttAnn9MkoARg==
+X-Google-Smtp-Source: AGRyM1va1fPs9lpvQ8NxlplELbvn5d4WYQXs4FC20dWLWFtAzDyQWKVsUDMncwhK6GjYdh1QzAaeF7kxbaMSAZVp4MI=
+X-Received: by 2002:a81:3a50:0:b0:313:7539:3420 with SMTP id
+ h77-20020a813a50000000b0031375393420mr6417968ywa.366.1655219863652; Tue, 14
+ Jun 2022 08:17:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqgU2KfFCqawbTkW@anrayabh-desk>
+References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 14 Jun 2022 20:47:32 +0530
+Message-ID: <CA+G9fYsGRjjfyj6Qw+VtpJ363N46hZLba5X3PHz_yX3QxcQVSg@mail.gmail.com>
+Subject: Re: [PATCH 5.4 000/411] 5.4.198-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 10:25:52AM +0530, Anirudh Rayabharam wrote:
-> On Mon, Jun 13, 2022 at 06:49:17PM +0200, Paolo Bonzini wrote:
-> > On 6/13/22 18:16, Anirudh Rayabharam wrote:
-> > > +	if (!kvm_has_tsc_control)
-> > > +		msrs->secondary_ctls_high &= ~SECONDARY_EXEC_TSC_SCALING;
-> > > +
-> > >   	msrs->secondary_ctls_low = 0;
-> > >   	msrs->secondary_ctls_high &=
-> > >   		SECONDARY_EXEC_DESC |
-> > > @@ -6667,8 +6670,7 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
-> > >   		SECONDARY_EXEC_RDRAND_EXITING |
-> > >   		SECONDARY_EXEC_ENABLE_INVPCID |
-> > >   		SECONDARY_EXEC_RDSEED_EXITING |
-> > > -		SECONDARY_EXEC_XSAVES |
-> > > -		SECONDARY_EXEC_TSC_SCALING;
-> > > +		SECONDARY_EXEC_XSAVES;
-> > >   	/*
-> > 
-> > This is wrong because it _always_ disables SECONDARY_EXEC_TSC_SCALING,
-> > even if kvm_has_tsc_control == true.
-> 
-> The MSR actually allows 1-setting of the "use TSC scaling" control. So this
-> line is redundant anyway.
-> 
-> > 
-> > That said, I think a better implementation of this patch is to just add
-> > a version of evmcs_sanitize_exec_ctrls that takes a struct
-> > nested_vmx_msrs *, and call it at the end of nested_vmx_setup_ctl_msrs like
-> > 
-> > 	evmcs_sanitize_nested_vmx_vsrs(msrs);
-> 
-> Sanitize at the end might not work because I see some cases in
-> nested_vmx_setup_ctls_msrs() where we want to expose some things to L1
-> even though the hardware doesn't support it.
-> 
-> > 
-> > Even better (but I cannot "mentally test it" offhand) would be just
-> > 
-> > diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> > index e802f71a9e8d..b3425ce835c5 100644
-> > --- a/arch/x86/kvm/vmx/vmx.c
-> > +++ b/arch/x86/kvm/vmx/vmx.c
-> > @@ -1862,7 +1862,7 @@ int vmx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
-> >  		 * sanity checking and refuse to boot. Filter all unsupported
-> >  		 * features out.
-> >  		 */
-> > -		if (!msr_info->host_initiated &&
-> > +		if (static_branch_unlikely(&enable_evmcs) ||
-> >  		    vmx->nested.enlightened_vmcs_enabled)
-> >  			nested_evmcs_filter_control_msr(msr_info->index,
-> >  							&msr_info->data);
-> 
-> I will try this.
+On Mon, 13 Jun 2022 at 15:57, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.4.198 release.
+> There are 411 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 15 Jun 2022 09:47:08 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.4.198-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.4.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-This patch fixed the issue for me. But again, this might filter out
-things that we wan't to expose to L1 even if not available in hardware.
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Thanks,
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-	Anirudh.
+## Build
+* kernel: 5.4.198-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.4.y
+* git commit: deacfea5b2321cbcf23622a0f37317ddabfdf76b
+* git describe: v5.4.197-412-gdeacfea5b232
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.4.y/build/v5.4.1=
+97-412-gdeacfea5b232
 
-> 
-> Thanks,
-> 
-> 	Anirudh.
-> 
-> > 
-> > I cannot quite understand the host_initiated check, so I'll defer to
-> > Vitaly on why it is needed.  Most likely, removing it would cause some
-> > warnings in QEMU with e.g. "-cpu Haswell,+vmx"; but I think it's a
-> > userspace bug and we should remove that part of the condition.  You
-> > don't need to worry about that part, we'll cross that bridge if the
-> > above patch works for your case.
-> > 
-> > Thanks,
-> > 
-> > Paolo
+## Test Regressions (compared to v5.4.196-11-g04a2bb5e4a0b)
+No test regressions found.
+
+## Metric Regressions (compared to v5.4.196-11-g04a2bb5e4a0b)
+No metric regressions found.
+
+## Test Fixes (compared to v5.4.196-11-g04a2bb5e4a0b)
+No test fixes found.
+
+## Metric Fixes (compared to v5.4.196-11-g04a2bb5e4a0b)
+No metric fixes found.
+
+## Test result summary
+total: 119666, pass: 106701, fail: 219, skip: 11909, xfail: 837
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 313 total, 313 passed, 0 failed
+* arm64: 57 total, 53 passed, 4 failed
+* i386: 28 total, 25 passed, 3 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 54 total, 54 passed, 0 failed
+* riscv: 27 total, 27 passed, 0 failed
+* s390: 12 total, 12 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 55 total, 54 passed, 1 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-cap_bounds-tests
+* ltp-commands
+* ltp-commands-tests
+* ltp-containers
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps
+* ltp-filecaps-tests
+* ltp-fs
+* ltp-fs-tests
+* ltp-fs_bind
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple
+* ltp-fs_perms_simple-tests
+* ltp-fsx
+* ltp-fsx-tests
+* ltp-hugetlb
+* ltp-hugetlb-tests
+* ltp-io
+* ltp-io-tests
+* ltp-ipc
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-pty-tests
+* ltp-sched
+* ltp-sched-tests
+* ltp-securebits
+* ltp-securebits-tests
+* ltp-smoke
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
