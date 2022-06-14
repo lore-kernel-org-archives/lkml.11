@@ -2,84 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D4AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:32:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8BA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:33:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238904AbiFNJc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45426 "EHLO
+        id S240252AbiFNJdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 05:33:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230333AbiFNJc0 (ORCPT
+        with ESMTP id S230333AbiFNJdi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 05:32:26 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B594965A6
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 02:32:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655199145; x=1686735145;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=U6mkYQXYPpI8IEu2W57zWGbzpdSdA7n5h8qOkdFmXtc=;
-  b=VJHAeiWpF3UeKffN2xMKRn/804O/ho9X5FYmdDJLRvwykjQEH49x5MsJ
-   pvYm3QTO45F+2/QLTDeBfHdq1dYz6FKoCn//8v1SnTeTcycy1QBTXyTu4
-   lAUk7tbFzqvwmekbJFUZeFABPEeguLamy02Ngovdr6Iyty+GPYGvlhX/q
-   e4NBEzu0ZC7GalqrPZ94nq5R71HOh4zv2fizFRAEGIKHcGb0AqF/xeUlk
-   05ZoMIp6mhdp2tYWUwR4PLDwuaLiqlN+gc279Qc/isw+5DVos7mOSfc9l
-   +is3p+9nVJ42OjOOXa9Dc41EpBSUqTanutOFL8Bj3Rt6R6nZn9m481b0m
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="267251262"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="267251262"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 02:32:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="588350359"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 14 Jun 2022 02:32:24 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o12uN-000LjN-Bi;
-        Tue, 14 Jun 2022 09:32:23 +0000
-Date:   Tue, 14 Jun 2022 17:32:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     William Zhang <william.zhang@broadcom.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [broadcom-stblinux:devicetree/next 15/23] make[2]: *** No rule to
- make target 'arch/arm/boot/dts/bcm96855.dtb', needed by '__build'.
-Message-ID: <202206141752.IB5xCdXS-lkp@intel.com>
+        Tue, 14 Jun 2022 05:33:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592A6369D1
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 02:33:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4316616C2
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:33:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB631C3411B;
+        Tue, 14 Jun 2022 09:33:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655199216;
+        bh=eAD2Nm40ZGfqfqGV8vZO6LXK5PtcsG7DGBs49wgdhL4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SxqNsJgpOTvs7OHthIb+Vqs8wl4JCTWD5BAyOG14tchTnun3YyBLFnOf2JUdcYnNQ
+         M7LQUlV7iQ4XygYlKLRLV1H/bO75ilPJD++Al87DkpAn4gqRJdCoBkFTa9hvihC1+i
+         yv2CPn6vqlDQ0G9OzMUUnQcwErYrDQgkG+s8drKE=
+Date:   Tue, 14 Jun 2022 11:33:33 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v1] MAINTAINERS: add MEMORY HOT(UN)PLUG section and add
+ myself as reviewer
+Message-ID: <YqhV7W68zR4yorQL@kroah.com>
+References: <20220610101258.75738-1-david@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220610101258.75738-1-david@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/Broadcom/stblinux devicetree/next
-head:   edb052f67bb9f245f9717b3c11b21022a02fae87
-commit: d2d847e696389916239c5521ca533261d0c0026f [15/23] ARM: dts: Add DTS files for bcmbca SoC BCM6855
-config: arm-randconfig-r035-20220613 (https://download.01.org/0day-ci/archive/20220614/202206141752.IB5xCdXS-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/Broadcom/stblinux/commit/d2d847e696389916239c5521ca533261d0c0026f
-        git remote add broadcom-stblinux https://github.com/Broadcom/stblinux
-        git fetch --no-tags broadcom-stblinux devicetree/next
-        git checkout d2d847e696389916239c5521ca533261d0c0026f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+On Fri, Jun 10, 2022 at 12:12:58PM +0200, David Hildenbrand wrote:
+> There are certainly a lot more files that partially fall into the memory
+> hot(un)plug category, including parts of mm/sparse.c, mm/page_isolation.c
+> and mm/page_alloc.c. Let's only add what's almost completely memory
+> hot(un)plug related.
+> 
+> Add myself as reviewer so it's easier for contributors to figure out
+> whom to CC.
+> 
+> Signed-off-by: David Hildenbrand <david@redhat.com>
+> ---
+>  MAINTAINERS | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index a6d3bd9d2a8d..77aebce76288 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -12848,6 +12848,18 @@ F:	include/linux/vmalloc.h
+>  F:	mm/
+>  F:	tools/testing/selftests/vm/
+>  
+> +MEMORY HOT(UN)PLUG
+> +M:	Andrew Morton <akpm@linux-foundation.org>
+> +R:	David Hildenbrand <david@redhat.com>
+> +L:	linux-mm@kvack.org
+> +S:	Maintained
+> +F:	Documentation/admin-guide/mm/memory-hotplug.rst
+> +F:	Documentation/core-api/memory-hotplug.rst
+> +F:	drivers/base/memory.c
+> +F:	include/linux/memory_hotplug.h
+> +F:	mm/memory_hotplug.c
+> +F:	tools/testing/selftests/memory-hotplug/
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-All errors (new ones prefixed by >>):
+One question, will patches from you go through my driver core tree, or
+the -mm tree?  Either is fine for me, just curious.
 
->> make[2]: *** No rule to make target 'arch/arm/boot/dts/bcm96855.dtb', needed by '__build'.
-   make[2]: Target '__build' not remade because of errors.
+thanks,
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+greg k-h
