@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E08C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A00BEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244932AbiFNORk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
+        id S245554AbiFNORm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:17:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243290AbiFNORO (ORCPT
+        with ESMTP id S231754AbiFNORO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 10:17:14 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7D82F3BE;
-        Tue, 14 Jun 2022 07:17:06 -0700 (PDT)
-X-UUID: 11ddc7d4789642d7a3bb81cf04fc21bc-20220614
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5487433891;
+        Tue, 14 Jun 2022 07:17:05 -0700 (PDT)
+X-UUID: d438f5b8042240ccb573bb30aed87803-20220614
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:b821cd78-0b8e-4faa-b204-eea377ee563a,OB:0,LO
+X-CID-O-INFO: VERSION:1.1.6,REQID:4bc4e30c-fed4-45e4-9fed-f899ee615b1e,OB:0,LO
         B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
         ION:release,TS:-5
-X-CID-META: VersionHash:b14ad71,CLOUDID:1f8d9407-b57a-4a25-a071-bc7b4972bc68,C
+X-CID-META: VersionHash:b14ad71,CLOUDID:2d766cc5-c67b-4a73-9b18-726dd8f2eb58,C
         OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
         ,QS:nil,BEC:nil,COL:0
-X-UUID: 11ddc7d4789642d7a3bb81cf04fc21bc-20220614
+X-UUID: d438f5b8042240ccb573bb30aed87803-20220614
 Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
         (envelope-from <stanley.chu@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 646176408; Tue, 14 Jun 2022 22:16:58 +0800
+        with ESMTP id 1770361377; Tue, 14 Jun 2022 22:16:58 +0800
 Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
@@ -47,9 +47,9 @@ CC:     <peter.wang@mediatek.com>, <chun-hung.wu@mediatek.com>,
         <tun-yu.yu@mediatek.com>, <cc.chou@mediatek.com>,
         <chaotian.jing@mediatek.com>, <jiajie.hao@mediatek.com>,
         <stanley.chu@mediatek.com>
-Subject: [PATCH v3 09/10] scsi: ufs: Export regulator functions
-Date:   Tue, 14 Jun 2022 22:16:54 +0800
-Message-ID: <20220614141655.14409-10-stanley.chu@mediatek.com>
+Subject: [PATCH v3 07/10] scsi: ufs-mediatek: Support flexible parameters for smc calls
+Date:   Tue, 14 Jun 2022 22:16:52 +0800
+Message-ID: <20220614141655.14409-8-stanley.chu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220614141655.14409-1-stanley.chu@mediatek.com>
 References: <20220614141655.14409-1-stanley.chu@mediatek.com>
@@ -60,88 +60,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Export below regulator functions to allow vendors to
-customize regulator configuration in their own platforms.
+From: Alice Chao <alice.chao@mediatek.com>
 
-int ufshcd_populate_vreg(struct device *dev, const char *name,
-                         struct ufs_vreg **out_vreg);
-int ufshcd_get_vreg(struct device *dev, struct ufs_vreg *vreg);
+Provide flexible number of parameters for UFS SMC calls to be
+easily used for future SMC usages.
 
+This is a preparation patch for the next patch.
+
+Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
+Signed-off-by: Alice Chao <alice.chao@mediatek.com>
 Signed-off-by: Stanley Chu <stanley.chu@mediatek.com>
 ---
- drivers/ufs/core/ufshcd.c        | 3 ++-
- drivers/ufs/host/ufshcd-pltfrm.c | 3 ++-
- drivers/ufs/host/ufshcd-pltfrm.h | 2 ++
- include/ufs/ufshcd.h             | 2 ++
- 4 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/ufs/host/ufs-mediatek.c | 16 ----------
+ drivers/ufs/host/ufs-mediatek.h | 56 +++++++++++++++++++++++++++++++++
+ 2 files changed, 56 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
-index 0d16739c67bb..8131a75e41e5 100755
---- a/drivers/ufs/core/ufshcd.c
-+++ b/drivers/ufs/core/ufshcd.c
-@@ -8408,7 +8408,7 @@ static int ufshcd_setup_hba_vreg(struct ufs_hba *hba, bool on)
- 	return ufshcd_toggle_vreg(hba->dev, info->vdd_hba, on);
- }
+diff --git a/drivers/ufs/host/ufs-mediatek.c b/drivers/ufs/host/ufs-mediatek.c
+index 178043ab837c..9337ce27329b 100755
+--- a/drivers/ufs/host/ufs-mediatek.c
++++ b/drivers/ufs/host/ufs-mediatek.c
+@@ -30,22 +30,6 @@
+ #define CREATE_TRACE_POINTS
+ #include "ufs-mediatek-trace.h"
  
--static int ufshcd_get_vreg(struct device *dev, struct ufs_vreg *vreg)
-+int ufshcd_get_vreg(struct device *dev, struct ufs_vreg *vreg)
- {
- 	int ret = 0;
+-#define ufs_mtk_smc(cmd, val, res) \
+-	arm_smccc_smc(MTK_SIP_UFS_CONTROL, \
+-		      cmd, val, 0, 0, 0, 0, 0, &(res))
+-
+-#define ufs_mtk_va09_pwr_ctrl(res, on) \
+-	ufs_mtk_smc(UFS_MTK_SIP_VA09_PWR_CTRL, on, res)
+-
+-#define ufs_mtk_crypto_ctrl(res, enable) \
+-	ufs_mtk_smc(UFS_MTK_SIP_CRYPTO_CTRL, enable, res)
+-
+-#define ufs_mtk_ref_clk_notify(on, res) \
+-	ufs_mtk_smc(UFS_MTK_SIP_REF_CLK_NOTIFICATION, on, res)
+-
+-#define ufs_mtk_device_reset_ctrl(high, res) \
+-	ufs_mtk_smc(UFS_MTK_SIP_DEVICE_RESET, high, res)
+-
+ static const struct ufs_dev_quirk ufs_mtk_dev_fixups[] = {
+ 	{ .wmanufacturerid = UFS_VENDOR_MICRON,
+ 	  .model = UFS_ANY_MODEL,
+diff --git a/drivers/ufs/host/ufs-mediatek.h b/drivers/ufs/host/ufs-mediatek.h
+index 7e1913769671..9117427ca6c4 100755
+--- a/drivers/ufs/host/ufs-mediatek.h
++++ b/drivers/ufs/host/ufs-mediatek.h
+@@ -143,4 +143,60 @@ struct ufs_mtk_host {
+ 	u32 ip_ver;
+ };
  
-@@ -8424,6 +8424,7 @@ static int ufshcd_get_vreg(struct device *dev, struct ufs_vreg *vreg)
- out:
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(ufshcd_get_vreg);
- 
- static int ufshcd_init_vreg(struct ufs_hba *hba)
- {
-diff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c
-index e7332cc65b1f..332f66828d80 100755
---- a/drivers/ufs/host/ufshcd-pltfrm.c
-+++ b/drivers/ufs/host/ufshcd-pltfrm.c
-@@ -109,7 +109,7 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
- }
- 
- #define MAX_PROP_SIZE 32
--static int ufshcd_populate_vreg(struct device *dev, const char *name,
-+int ufshcd_populate_vreg(struct device *dev, const char *name,
- 		struct ufs_vreg **out_vreg)
- {
- 	char prop_name[MAX_PROP_SIZE];
-@@ -145,6 +145,7 @@ static int ufshcd_populate_vreg(struct device *dev, const char *name,
- 	*out_vreg = vreg;
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(ufshcd_populate_vreg);
- 
- /**
-  * ufshcd_parse_regulator_info - get regulator info from device tree
-diff --git a/drivers/ufs/host/ufshcd-pltfrm.h b/drivers/ufs/host/ufshcd-pltfrm.h
-index 43c2e412bd99..5130c9471dc2 100755
---- a/drivers/ufs/host/ufshcd-pltfrm.h
-+++ b/drivers/ufs/host/ufshcd-pltfrm.h
-@@ -32,5 +32,7 @@ void ufshcd_init_pwr_dev_param(struct ufs_dev_params *dev_param);
- int ufshcd_pltfrm_init(struct platform_device *pdev,
- 		       const struct ufs_hba_variant_ops *vops);
- void ufshcd_pltfrm_shutdown(struct platform_device *pdev);
-+int ufshcd_populate_vreg(struct device *dev, const char *name,
-+			 struct ufs_vreg **out_vreg);
- 
- #endif /* UFSHCD_PLTFRM_H_ */
-diff --git a/include/ufs/ufshcd.h b/include/ufs/ufshcd.h
-index aa778418703f..18eb253cfd91 100755
---- a/include/ufs/ufshcd.h
-+++ b/include/ufs/ufshcd.h
-@@ -1187,6 +1187,8 @@ void ufshcd_map_desc_id_to_length(struct ufs_hba *hba, enum desc_idn desc_id,
- 
- u32 ufshcd_get_local_unipro_ver(struct ufs_hba *hba);
- 
-+int ufshcd_get_vreg(struct device *dev, struct ufs_vreg *vreg);
++/*
++ * SMC call wapper function
++ */
++#define _ufs_mtk_smc(cmd, res, v1, v2, v3, v4, v5, v6) \
++		arm_smccc_smc(MTK_SIP_UFS_CONTROL, \
++				  cmd, v1, v2, v3, v4, v5, v6, &(res))
 +
- int ufshcd_send_uic_cmd(struct ufs_hba *hba, struct uic_command *uic_cmd);
- 
- int ufshcd_exec_raw_upiu_cmd(struct ufs_hba *hba,
++#define _ufs_mtk_smc_0(cmd, res) \
++	_ufs_mtk_smc(cmd, res, 0, 0, 0, 0, 0, 0)
++
++#define _ufs_mtk_smc_1(cmd, res, v1) \
++	_ufs_mtk_smc(cmd, res, v1, 0, 0, 0, 0, 0)
++
++#define _ufs_mtk_smc_2(cmd, res, v1, v2) \
++	_ufs_mtk_smc(cmd, res, v1, v2, 0, 0, 0, 0)
++
++#define _ufs_mtk_smc_3(cmd, res, v1, v2, v3) \
++	_ufs_mtk_smc(cmd, res, v1, v2, v3, 0, 0, 0)
++
++#define _ufs_mtk_smc_4(cmd, res, v1, v2, v3, v4) \
++	_ufs_mtk_smc(cmd, res, v1, v2, v3, v4, 0, 0)
++
++#define _ufs_mtk_smc_5(cmd, res, v1, v2, v3, v4, v5) \
++	_ufs_mtk_smc(cmd, res, v1, v2, v3, v4, v5, 0)
++
++#define _ufs_mtk_smc_6(cmd, res, v1, v2, v3, v4, v5, v6) \
++	_ufs_mtk_smc(cmd, res, v1, v2, v3, v4, v5, v6)
++
++#define _ufs_mtk_smc_selector(cmd, res, v1, v2, v3, v4, v5, v6, FUNC, ...) FUNC
++
++#define ufs_mtk_smc(...) \
++	_ufs_mtk_smc_selector(__VA_ARGS__, \
++	_ufs_mtk_smc_6(__VA_ARGS__), \
++	_ufs_mtk_smc_5(__VA_ARGS__), \
++	_ufs_mtk_smc_4(__VA_ARGS__), \
++	_ufs_mtk_smc_3(__VA_ARGS__), \
++	_ufs_mtk_smc_2(__VA_ARGS__), \
++	_ufs_mtk_smc_1(__VA_ARGS__), \
++	_ufs_mtk_smc_0(__VA_ARGS__) \
++	)
++
++/*
++ * Sip kernel interface
++ */
++#define ufs_mtk_va09_pwr_ctrl(res, on) \
++	ufs_mtk_smc(UFS_MTK_SIP_VA09_PWR_CTRL, res, on)
++
++#define ufs_mtk_crypto_ctrl(res, enable) \
++	ufs_mtk_smc(UFS_MTK_SIP_CRYPTO_CTRL, res, enable)
++
++#define ufs_mtk_ref_clk_notify(on, res) \
++	ufs_mtk_smc(UFS_MTK_SIP_REF_CLK_NOTIFICATION, res, on)
++
++#define ufs_mtk_device_reset_ctrl(high, res) \
++	ufs_mtk_smc(UFS_MTK_SIP_DEVICE_RESET, res, high)
++
+ #endif /* !_UFS_MEDIATEK_H */
 -- 
 2.18.0
 
