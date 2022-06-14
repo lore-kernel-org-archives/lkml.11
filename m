@@ -2,96 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB90CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:48:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE2ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:48:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353147AbiFNUsP (ORCPT
+        id S1358388AbiFNUsZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37468 "EHLO
+        Tue, 14 Jun 2022 16:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344299AbiFNUr4 (ORCPT
+        with ESMTP id S1344430AbiFNUr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 16:47:56 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7593020F50
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:47:49 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id l2-20020a17090a72c200b001e325e14e3eso4109925pjk.7
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:47:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=445Dxm/hWO1uMPB0/Sj36VMrqtqiEZcdCSofMfSvzg0=;
-        b=QIeMVjypij7Jbov+vsynuCjBPOeV2JgUxvXQ+Q6BM/JpYzzCaELEmT8KYTEjCeF9C4
-         1ciFMdR1wsxiDFtQDGQriGsed+I/bgBs5Si4mhyepQUTwBBfNe3ZpMA9CyEifZ1urvK3
-         ssJDLnoulidAAVYeMXU9fEwGa0KUd7+GWsro8qafeo2y8g2H5C9Ystb/Jpw/Ha6oBiDH
-         j4Yf6heS7003xruz58J9xmnXClYXjLCBdKiY+Exj2om5Klgy7vQYzoAghDlRrItKTMgw
-         +uyOb08PjDALTJerL8/81X8a16K5wTJcxTmmXyMvrFw6M8zzlQvPmUuB7kODDJ41b/VG
-         nyZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=445Dxm/hWO1uMPB0/Sj36VMrqtqiEZcdCSofMfSvzg0=;
-        b=i5F++3ZY/Lt+u3ThjwzkebPtL7lbhdFSPf1S2umy+E38At5cVDdfg3dDRR8GNG0gBc
-         5EtBMJGXQCQbmiKfyfcugDFRegEEh7i7nKt8QmcW9uR+N+3A71geXCBno+x9I581Xikj
-         F5Pdw2j7QhDhLpLm3NgZmOnnbcnMd3QtoUDMhCAR/E0nbEZCg+XrOh4niRjQHV9JBm13
-         Wjma63ktAMOOfl4MmGEkO+wVBVVeRU9z+/Fa3OpE2AiZrGBm4ySBEI1KbKx3YCGUleMf
-         HfawRCx8g131Hb8TVRqh4eIn7Wwy86FrcQtE8PzkafGeMhDlzFRRZL4Kdq78szoBTvwu
-         COcg==
-X-Gm-Message-State: AJIora9hOGpyM45e2OdAeQRz6GXScggZ7iWz5kcom3XnafCt/LA3dMF8
-        27F5yEC6S8mGarvPPSscqlRt9o7W3nI=
-X-Google-Smtp-Source: AGRyM1sQpwauLumNzBDFhO1lN0ASWBmfeO9ruXIiKyQ8/AfhJ7QVRCvYsl7ijU+PfLdl0YVa7J/XI1FPT0Y=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:178f:b0:1e3:3ba:c185 with SMTP id
- q15-20020a17090a178f00b001e303bac185mr194296pja.1.1655239668728; Tue, 14 Jun
- 2022 13:47:48 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 14 Jun 2022 20:47:16 +0000
-In-Reply-To: <20220614204730.3359543-1-seanjc@google.com>
-Message-Id: <20220614204730.3359543-8-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220614204730.3359543-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH v2 07/21] KVM: x86: Use DR7_GD macro instead of open coding
- check in emulator
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6D423BC7
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:47:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655239672; x=1686775672;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=DQrjeq8ZA4p+GkmHtWKVOu0kb3id5BLlfgX5VBVUSxo=;
+  b=g3WX0BxN6L3Dvduoq4jrFf9imJwRIYTCLnmBBhY8tV5XIvxMyV+hn7vo
+   4/tu1ywZu3cgWZRZKe8s6svn8RMhHbq9KEyOnTWNq/grk6Hzhbi/iUgjG
+   JWu1Z3nmFRVTlJWEM/Gox+B4A4jJAj4abRfTbeE+kC9vTHQNWmYZQx+CM
+   WA45c4WkzskjCWHEsXWxT6621QUZoVPPT7wsC7ngVh1qxHskDFQw+Bib/
+   Kgh1O3t92dYvJ3C6+Vfjp6Wd6rzGsAugh5leXz7X9jgmzijZzl3sC7bmJ
+   I6CoM+hXfkc5lErf1O0Yag7HwxQ7dB8To2T9/mdkYXgBFSy0RYWSEI8eR
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="278784491"
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="278784491"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 13:47:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="652254208"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 14 Jun 2022 13:47:50 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o1DS2-000MIF-8S;
+        Tue, 14 Jun 2022 20:47:50 +0000
+Date:   Wed, 15 Jun 2022 04:46:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:rcu/next] BUILD SUCCESS
+ d97c2338871bee6c4255c5a38f95849c063f8f1f
+Message-ID: <62a8f3bd.1LLIgqtkwRZzabQ7%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use DR7_GD in the emulator instead of open coding the check, and drop a
-comically wrong comment.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/next
+branch HEAD: d97c2338871bee6c4255c5a38f95849c063f8f1f  rcu-tasks: Be more patient for RCU Tasks boot-time testing
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/emulate.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+elapsed time: 1152m
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 39ea9138224c..bf499716d9d3 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -4182,8 +4182,7 @@ static int check_dr7_gd(struct x86_emulate_ctxt *ctxt)
- 
- 	ctxt->ops->get_dr(ctxt, 7, &dr7);
- 
--	/* Check if DR7.Global_Enable is set */
--	return dr7 & (1 << 13);
-+	return dr7 & DR7_GD;
- }
- 
- static int check_dr_read(struct x86_emulate_ctxt *ctxt)
+configs tested: 107
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                              allmodconfig
+arm                              allyesconfig
+arm                                 defconfig
+arm64                               defconfig
+arm64                            allyesconfig
+i386                 randconfig-c001-20220613
+sh                         apsh4a3a_defconfig
+arm                           h3600_defconfig
+powerpc                     mpc83xx_defconfig
+mips                          rb532_defconfig
+sh                          r7780mp_defconfig
+arm                             ezx_defconfig
+powerpc                   motionpro_defconfig
+csky                             alldefconfig
+arm                         axm55xx_defconfig
+sh                         microdev_defconfig
+arm                      jornada720_defconfig
+powerpc                      chrp32_defconfig
+arm                          exynos_defconfig
+alpha                            alldefconfig
+powerpc                    klondike_defconfig
+ia64                                defconfig
+x86_64               randconfig-k001-20220613
+m68k                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+sh                               allmodconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                            allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+i386                             allyesconfig
+sparc                               defconfig
+i386                                defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64               randconfig-a015-20220613
+x86_64               randconfig-a014-20220613
+x86_64               randconfig-a011-20220613
+x86_64               randconfig-a016-20220613
+x86_64               randconfig-a012-20220613
+x86_64               randconfig-a013-20220613
+i386                 randconfig-a012-20220613
+i386                 randconfig-a011-20220613
+i386                 randconfig-a013-20220613
+i386                 randconfig-a014-20220613
+i386                 randconfig-a016-20220613
+i386                 randconfig-a015-20220613
+riscv                randconfig-r042-20220613
+arc                  randconfig-r043-20220613
+s390                 randconfig-r044-20220613
+riscv                             allnoconfig
+riscv                    nommu_k210_defconfig
+riscv                    nommu_virt_defconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                                  kexec
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                         rhel-8.3-kunit
+
+clang tested configs:
+mips                      malta_kvm_defconfig
+mips                           mtx1_defconfig
+x86_64               randconfig-a003-20220613
+x86_64               randconfig-a006-20220613
+x86_64               randconfig-a001-20220613
+x86_64               randconfig-a005-20220613
+x86_64               randconfig-a002-20220613
+x86_64               randconfig-a004-20220613
+i386                 randconfig-a002-20220613
+i386                 randconfig-a003-20220613
+i386                 randconfig-a004-20220613
+i386                 randconfig-a005-20220613
+i386                 randconfig-a006-20220613
+i386                 randconfig-a001-20220613
+i386                          randconfig-a002
+i386                          randconfig-a004
+i386                          randconfig-a006
+hexagon              randconfig-r041-20220613
+hexagon              randconfig-r045-20220613
+
 -- 
-2.36.1.476.g0c4daa206d-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
