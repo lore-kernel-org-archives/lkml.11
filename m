@@ -2,156 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7EBFCCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC0A2CCA480
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:51:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344744AbiFNQvY (ORCPT
+        id S1344801AbiFNQv1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
+        Tue, 14 Jun 2022 12:51:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344778AbiFNQuw (ORCPT
+        with ESMTP id S1351742AbiFNQu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:50:52 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6BF44764;
-        Tue, 14 Jun 2022 09:50:18 -0700 (PDT)
+        Tue, 14 Jun 2022 12:50:57 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0398446C96
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:50:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655225418; x=1686761418;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=9PMxZIsT0cwZQ/H2eT8C0EMoqkPBO0Qg03oGDWCPYos=;
-  b=Xuk9j4zrBxbbFqauqK1mBqpckaLJ78mhO2FI4hzcHC9xdqe9lYXkfqYo
-   CO4dSzxtFjFEoVm4jPkggSbmw+uFjpkkBEcxWOctccEKmi6g+44Wxg7x7
-   v0JuUNr5QL1tFyueDhOu1Gm3MNCV7Av8aEcOKNMwXCMQnU5tBtbcB1Ma9
-   Lo/mDaxN2RBbLH8ulxIZnlZ3n/oL4m1ueVLuvkFUR2mBuXlhHsVjUhTx8
-   L4xPFlyb/iJAlV51qJnKAQmxzHoL0dU4rxtbUHdthd2dgjYdCSzK46D7P
-   VEDBLlmR47ZeEkDDg75nXHeVW6fVCHvOuUywGY4FxdcwAdX3S3s3qqolf
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="279391617"
+  t=1655225441; x=1686761441;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=diBqcvD7f9wLYA2SL3XAvPR/G55mENPCpsDt0PlTF+M=;
+  b=AdBFiVwI9Y6wQ6QzFhQI4t6HlL5ZIAh5akhNH6TmS8G3Z5mtcl/A/RCF
+   RNaMun+F/d1rWfyyfOB8XiA79+tcoZDYbRWMPwIA82xqy4veBN5PuwJ5i
+   EW3KbBkOtCiAVL5PtMlZ1b5OiioeUg6TY5KHbNJLar7cU50uRVU2xdxif
+   VNh4PN8qalVmxGJbpAdKtn5pqICGoENGd09rZ33RN5SLgKJ4WIqiM8+NJ
+   mQbVFoeth5ol6LFOFXtq7PJeLRZWRdXgTN2aXrhsC0AcrSTSXa5rwVx/S
+   d3KD1Ht78IHNLU2wxJEW7Rt/REv7PjvE7rBGycB+MLSvgYuolQHbCrF5j
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="258515617"
 X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="279391617"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 09:50:18 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="258515617"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 09:50:38 -0700
 X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="830509198"
-Received: from chang-linux-3.sc.intel.com ([172.25.66.173])
-  by fmsmga006.fm.intel.com with ESMTP; 14 Jun 2022 09:50:18 -0700
-From:   "Chang S. Bae" <chang.seok.bae@intel.com>
-To:     peterz@infradead.org, linux-kernel@vger.kernel.org,
-        dave.hansen@linux.intel.com
-Cc:     linux-tip-commits@vger.kernel.org, rui.zhang@intel.com,
-        rafael.j.wysocki@intel.com, x86@kernel.org,
-        "Chang S. Bae" <chang.seok.bae@intel.com>
-Subject: [PATCH][Rebased] intel_idle: Add a new flag to initialize the AMX state
-Date:   Tue, 14 Jun 2022 09:41:16 -0700
-Message-Id: <20220614164116.5196-1-chang.seok.bae@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <YqHKKa/yamRS06tC@worktop.programming.kicks-ass.net>
-References: <YqHKKa/yamRS06tC@worktop.programming.kicks-ass.net>
+   d="scan'208";a="712543320"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 09:50:32 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o19kL-000cbD-73;
+        Tue, 14 Jun 2022 19:50:29 +0300
+Date:   Tue, 14 Jun 2022 19:50:28 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     wang.yi59@zte.com.cn, Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>, linux@rasmusvillemoes.dk,
+        linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
+        wang.liang82@zte.com.cn, Liu.Jianjun3@zte.com.cn
+Subject: Re: [PATCH] bitmap: fix a unproper remap when mpol_rebind_nodemask()
+Message-ID: <Yqi8VH39+1L72hw1@smile.fi.intel.com>
+References: <CAAH8bW8wD_hsOqtWa-g_1SNWNi7GHzsu9RvL8feY069JPKFWBA@mail.gmail.com>
+ <202206141145339651323@zte.com.cn>
+ <CAAH8bW_GCviYSadmf5CUxgJixkXbq+SfL63ZJt7Lsm9OAmPjVQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAH8bW_GCviYSadmf5CUxgJixkXbq+SfL63ZJt7Lsm9OAmPjVQ@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The non-initialized AMX state can be the cause of C-state demotion from C6
-to C1E. This low-power idle state may improve power savings and thus result
-in a higher available turbo frequency budget.
+On Tue, Jun 14, 2022 at 09:40:08AM -0700, Yury Norov wrote:
+> On Mon, Jun 13, 2022 at 8:45 PM <wang.yi59@zte.com.cn> wrote:
+> > > On Mon, Jun 13, 2022 at 4:31 AM Yi Wang <wang.yi59@zte.com.cn> wrote:
 
-This behavior is implementation-specific. Initialize the state for the C6
-entrance of Sapphire Rapids as needed.
+...
 
-Tested-by: Zhang Rui <rui.zhang@intel.com>
-Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Link: https://lkml.kernel.org/r/20220608164748.11864-3-chang.seok.bae@intel.com
-[changb: Rebase to the upstream with peterz's help]
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
----
-The patch merged in the tip's x86/fpu branch [1] has conflict with the
-upstream -- commit 32d4fd5751ea ("cpuidle,intel_idle: Fix
-CPUIDLE_FLAG_IRQ_ENABLE") as of v5.19-rc2.
+> > > Anyways, as per name, bitmap_remap() is intended to change bit
+> > > positions, and it doesn't look wrong if it does so.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/log/?h=x86/fpu
----
- drivers/idle/intel_idle.c | 25 +++++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
+Haven't read the discussion in full, but saw the function here and my 2 cents
+are the following:
+ 1) if we don't have tests for bitmap_remap() / bitmap_bitremap(), we should;
+ 2) these functions are used at least in one GPIO driver, so it would be nice
+    to not touch them if they are not broken (see 1 above).
 
-diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
-index 424ef470223d..8a19ba1c2c1b 100644
---- a/drivers/idle/intel_idle.c
-+++ b/drivers/idle/intel_idle.c
-@@ -54,6 +54,7 @@
- #include <asm/intel-family.h>
- #include <asm/mwait.h>
- #include <asm/msr.h>
-+#include <asm/fpu/api.h>
- 
- #define INTEL_IDLE_VERSION "0.5.1"
- 
-@@ -105,6 +106,11 @@ static unsigned int mwait_substates __initdata;
-  */
- #define CPUIDLE_FLAG_ALWAYS_ENABLE	BIT(15)
- 
-+/*
-+ * Initialize large xstate for the C6-state entrance.
-+ */
-+#define CPUIDLE_FLAG_INIT_XSTATE	BIT(16)
-+
- /*
-  * MWAIT takes an 8-bit "hint" in EAX "suggesting"
-  * the C-state (top nibble) and sub-state (bottom nibble)
-@@ -159,6 +165,13 @@ static __cpuidle int intel_idle_irq(struct cpuidle_device *dev,
- 	return ret;
- }
- 
-+static __cpuidle int intel_idle_xstate(struct cpuidle_device *dev,
-+				       struct cpuidle_driver *drv, int index)
-+{
-+	fpu_idle_fpregs();
-+	return __intel_idle(dev, drv, index);
-+}
-+
- /**
-  * intel_idle_s2idle - Ask the processor to enter the given idle state.
-  * @dev: cpuidle device of the target CPU.
-@@ -174,8 +187,12 @@ static __cpuidle int intel_idle_irq(struct cpuidle_device *dev,
- static __cpuidle int intel_idle_s2idle(struct cpuidle_device *dev,
- 				       struct cpuidle_driver *drv, int index)
- {
--	unsigned long eax = flg2MWAIT(drv->states[index].flags);
- 	unsigned long ecx = 1; /* break on interrupt flag */
-+	struct cpuidle_state *state = &drv->states[index];
-+	unsigned long eax = flg2MWAIT(state->flags);
-+
-+	if (state->flags & CPUIDLE_FLAG_INIT_XSTATE)
-+		fpu_idle_fpregs();
- 
- 	mwait_idle_with_hints(eax, ecx);
- 
-@@ -910,7 +927,8 @@ static struct cpuidle_state spr_cstates[] __initdata = {
- 	{
- 		.name = "C6",
- 		.desc = "MWAIT 0x20",
--		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
-+		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED |
-+					   CPUIDLE_FLAG_INIT_XSTATE,
- 		.exit_latency = 290,
- 		.target_residency = 800,
- 		.enter = &intel_idle,
-@@ -1819,6 +1837,9 @@ static void __init intel_idle_init_cstates_icpu(struct cpuidle_driver *drv)
- 		if (cpuidle_state_table[cstate].flags & CPUIDLE_FLAG_IRQ_ENABLE)
- 			drv->states[drv->state_count].enter = intel_idle_irq;
- 
-+		if (cpuidle_state_table[cstate].flags & CPUIDLE_FLAG_INIT_XSTATE)
-+			drv->states[drv->state_count].enter = intel_idle_xstate;
-+
- 		if ((disabled_states_mask & BIT(drv->state_count)) ||
- 		    ((icpu->use_acpi || force_use_acpi) &&
- 		     intel_idle_off_by_default(mwait_hint) &&
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
