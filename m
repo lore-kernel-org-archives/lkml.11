@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A19FCCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2974ECCA483
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:19:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354230AbiFNCSw (ORCPT
+        id S1354315AbiFNCTD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57482 "EHLO
+        Mon, 13 Jun 2022 22:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354374AbiFNCOm (ORCPT
+        with ESMTP id S1354471AbiFNCOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684AD3BBD6;
-        Mon, 13 Jun 2022 19:08:40 -0700 (PDT)
+        Mon, 13 Jun 2022 22:14:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5427A3BFBB;
+        Mon, 13 Jun 2022 19:08:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8CCC60C15;
-        Tue, 14 Jun 2022 02:08:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 847ACC341C5;
-        Tue, 14 Jun 2022 02:08:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF8F3B80AC1;
+        Tue, 14 Jun 2022 02:08:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7AF4C341C0;
+        Tue, 14 Jun 2022 02:08:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172481;
-        bh=suCPL6dcluZTjvTZvMxdMWiAaxLWueSgtm4nQ+15xg0=;
+        s=k20201202; t=1655172526;
+        bh=YIs9ShMGN2GvWoBBYcpdcEv1M9la4CQJGFzqf7sJSWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qrMAx5ktujE2rMqR/xfnmQhcTC5OSveh4d8aGz7Jdiseq0eRgec63trjmsKEfvLKq
-         SA345lxChijc2DNMuJxMsUf+SQ6wU8pmfJ5v52ltX38a7BmlTcyO++0eyydknMkRw8
-         WcfxJ3TZXb77/bqyxTlRSXcFva2aGP+1mZttW3JvnO3fo4I+1CiSxwFW+8F+gg5s8z
-         tYL4my2mg+bdfgylXjploIhIZIvRwT0BaiAyShfGcQJKQnWqEZ547r711+BkQpMmb1
-         3PKjc5/9y4+LnMFS0uTMnL2ihrrF2A8dh1uhs4lE59cyPDHZB9xBfFX8+jn1dlXPWP
-         TLZdSu/oSu+uw==
+        b=QHzLZ0b3bYW9k25hWbjC46AEzU6F3x983mQK7KHMzTG2tkh7hGkpoJGbwZic2lu/L
+         0EOVS4l3I/Gc5JB1SGmbgbQM5S1nwdRgvUbxGO0CkMFOFo3/7+ZiP9+GodfGMz5T/i
+         bfI0S0n/9fDK/90ULYd0KS3oKZvRVts6tBeN1j0ZI0ipuABj1BrokPL3bfQMb1iGbR
+         cw3vdRJ4Q9CAOItXd7EJL8KXm/kDhQ2HfvDrC9RTJ0YBatUDTRmRQ5uThcbZk5tW+6
+         DBHJwXbzEyotJ+c9XY+uQoSnrLY4+1YFIAtju08F++MNez/Lr34gp7mkYuAI+p6f/A
+         2CHoeN/HGuQ8g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, mmarek@suse.com,
-        linux-kbuild@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 32/41] gcc-12: disable '-Wdangling-pointer' warning for now
-Date:   Mon, 13 Jun 2022 22:06:57 -0400
-Message-Id: <20220614020707.1099487-32-sashal@kernel.org>
+Cc:     Chengguang Xu <cgxu519@mykernel.net>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.vnet.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 20/29] scsi: pmcraid: Fix missing resource cleanup in error case
+Date:   Mon, 13 Jun 2022 22:08:06 -0400
+Message-Id: <20220614020815.1099999-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
-References: <20220614020707.1099487-1-sashal@kernel.org>
+In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
+References: <20220614020815.1099999-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,64 +54,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-[ Upstream commit 49beadbd47c270a00754c107a837b4f29df4c822 ]
+[ Upstream commit ec1e8adcbdf661c57c395bca342945f4f815add7 ]
 
-While the concept of checking for dangling pointers to local variables
-at function exit is really interesting, the gcc-12 implementation is not
-compatible with reality, and results in false positives.
+Fix missing resource cleanup (when '(--i) == 0') for error case in
+pmcraid_register_interrupt_handler().
 
-For example, gcc sees us putting things on a local list head allocated
-on the stack, which involves exactly those kinds of pointers to the
-local stack entry:
-
-  In function ‘__list_add’,
-      inlined from ‘list_add_tail’ at include/linux/list.h:102:2,
-      inlined from ‘rebuild_snap_realms’ at fs/ceph/snap.c:434:2:
-  include/linux/list.h:74:19: warning: storing the address of local variable ‘realm_queue’ in ‘*&realm_27(D)->rebuild_item.prev’ [-Wdangling-pointer=]
-     74 |         new->prev = prev;
-        |         ~~~~~~~~~~^~~~~~
-
-But then gcc - understandably - doesn't really understand the big
-picture how the doubly linked list works, so doesn't see how we then end
-up emptying said list head in a loop and the pointer we added has been
-removed.
-
-Gcc also complains about us (intentionally) using this as a way to store
-a kind of fake stack trace, eg
-
-  drivers/acpi/acpica/utdebug.c:40:38: warning: storing the address of local variable ‘current_sp’ in ‘acpi_gbl_entry_stack_pointer’ [-Wdangling-pointer=]
-     40 |         acpi_gbl_entry_stack_pointer = &current_sp;
-        |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
-
-which is entirely reasonable from a compiler standpoint, and we may want
-to change those kinds of patterns, but not not.
-
-So this is one of those "it would be lovely if the compiler were to
-complain about us leaving dangling pointers to the stack", but not this
-way.
-
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://lore.kernel.org/r/20220529153456.4183738-6-cgxu519@mykernel.net
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Makefile | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/scsi/pmcraid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Makefile b/Makefile
-index ce943bc3eda4..aee9309bb3e1 100644
---- a/Makefile
-+++ b/Makefile
-@@ -811,6 +811,9 @@ endif
- KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
- KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
+diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
+index cbe5fab793eb..ce10d680c56c 100644
+--- a/drivers/scsi/pmcraid.c
++++ b/drivers/scsi/pmcraid.c
+@@ -4528,7 +4528,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
+ 	return 0;
  
-+# These result in bogus false positives
-+KBUILD_CFLAGS += $(call cc-disable-warning, dangling-pointer)
-+
- ifdef CONFIG_FRAME_POINTER
- KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
- else
+ out_unwind:
+-	while (--i > 0)
++	while (--i >= 0)
+ 		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
+ 	pci_free_irq_vectors(pdev);
+ 	return rc;
 -- 
 2.35.1
 
