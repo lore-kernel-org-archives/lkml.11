@@ -2,150 +2,373 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1208EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:27:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D39C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343960AbiFNO1p (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46154 "EHLO
+        id S234091AbiFNO3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343755AbiFNO1d (ORCPT
+        with ESMTP id S1345742AbiFNO2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:27:33 -0400
-Received: from smtpout1.mo3004.mail-out.ovh.net (smtpout1.mo3004.mail-out.ovh.net [79.137.123.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7548327FC7;
-        Tue, 14 Jun 2022 07:27:23 -0700 (PDT)
-Received: from pro2.mail.ovh.net (unknown [10.108.20.7])
-        by mo3004.mail-out.ovh.net (Postfix) with ESMTPS id 8076E245708;
-        Tue, 14 Jun 2022 14:27:22 +0000 (UTC)
-Received: from localhost.localdomain (88.161.25.233) by DAG1EX2.emp2.local
- (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Tue, 14 Jun
- 2022 16:27:21 +0200
-From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-To:     <pavel@ucw.cz>, <krzk+dt@kernel.org>, <andy.shevchenko@gmail.com>
-CC:     <robh+dt@kernel.org>, <linux-leds@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Subject: [PATCH v4 3/3] leds: tlc5925: Add support for non blocking operations
-Date:   Tue, 14 Jun 2022 16:27:04 +0200
-Message-ID: <20220614142704.155496-4-jjhiblot@traphandler.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220614142704.155496-1-jjhiblot@traphandler.com>
-References: <20220614142704.155496-1-jjhiblot@traphandler.com>
+        Tue, 14 Jun 2022 10:28:17 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4413151C
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:28:06 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 22:28:31 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1655216884;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TMb6nkY3yjwu25aLmwIH6+XKpJmd3JZLJrJoW5so7og=;
+        b=jLf6Cu1BgAKvRxXQ3ut3CuGxXXBFWrbTQwnyKEvFiOjDSI1H62oYsKX5R1oFYLA7VHqyOh
+        Jc9zE9W4sZw13rT6b1RXcZucBULehHucm0Yt05TpIqxABfq4WU/grzJokLpEB+9lApoDo0
+        IF0UobHZ+6s/Rr8x04a4jHEASKPn5ZA=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Tao Zhou <tao.zhou@linux.dev>
+To:     Vincent Donnefort <vdonnefort@google.com>
+Cc:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org,
+        linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        morten.rasmussen@arm.com, chris.redpath@arm.com,
+        qperret@google.com, kernel-team@android.com,
+        Tao Zhou <tao.zhou@linux.dev>
+Subject: Re: [PATCH v10 1/7] sched/fair: Provide u64 read for 32-bits arch
+ helper
+Message-ID: <YqibDwOz7/sb6sSz@geo.homenetwork>
+References: <20220607123254.565579-1-vdonnefort@google.com>
+ <20220607123254.565579-2-vdonnefort@google.com>
+ <YqIQW14RLk6DBmmt@geo.homenetwork>
+ <Yqh07r/lOq2Y7LPk@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [88.161.25.233]
-X-ClientProxiedBy: CAS2.emp2.local (172.16.1.2) To DAG1EX2.emp2.local
- (172.16.2.2)
-X-Ovh-Tracer-Id: 11153727430547618267
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: 0
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudduledgjeehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucenucfjughrpefhvfevufffkffojghfggfgtghisehtkeertdertddtnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpeduteevleevvefggfdvueffffejhfehheeuiedtgedtjeeghfehueduudegfeefueenucfkpheptddrtddrtddrtddpkeekrdduiedurddvhedrvdeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmoheftddtge
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yqh07r/lOq2Y7LPk@google.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Settings multiple LEDs in a row can be a slow operation because of the
-time required to acquire the bus and prepare the transfer.
-And, in most cases, it is not required that the operation is synchronous.
+On Tue, Jun 14, 2022 at 12:45:50PM +0100, Vincent Donnefort wrote:
 
-Implementing the non-blocking brightness_set() for such cases.
-A work queue is used to perform the actual SPI transfer.
+> On Thu, Jun 09, 2022 at 11:23:07PM +0800, Tao Zhou wrote:
+> > On Tue, Jun 07, 2022 at 01:32:48PM +0100, Vincent Donnefort wrote:
+> > 
+> > > From: Vincent Donnefort <vincent.donnefort@arm.com>
+> > > 
+> > > Introducing macro helpers u64_u32_{store,load}() to factorize lockless
+> > > accesses to u64 variables for 32-bits architectures.
+> > > 
+> > > Users are for now cfs_rq.min_vruntime and sched_avg.last_update_time. To
+> > > accommodate the later where the copy lies outside of the structure
+> > > (cfs_rq.last_udpate_time_copy instead of sched_avg.last_update_time_copy),
+> > > use the _copy() version of those helpers.
+> > > 
+> > > Those new helpers encapsulate smp_rmb() and smp_wmb() synchronization and
+> > > therefore, have a small penalty for 32-bits machines in set_task_rq_fair()
+> > > and init_cfs_rq().
+> > > 
+> > > Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+> > > Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
+> > > Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+> > > 
+> > > diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> > > index 77b2048a9326..05614d9b919c 100644
+> > > --- a/kernel/sched/fair.c
+> > > +++ b/kernel/sched/fair.c
+> > > @@ -612,11 +612,8 @@ static void update_min_vruntime(struct cfs_rq *cfs_rq)
+> > >  	}
+> > >  
+> > >  	/* ensure we never gain time by being placed backwards. */
+> > > -	cfs_rq->min_vruntime = max_vruntime(cfs_rq->min_vruntime, vruntime);
+> > > -#ifndef CONFIG_64BIT
+> > > -	smp_wmb();
+> > > -	cfs_rq->min_vruntime_copy = cfs_rq->min_vruntime;
+> > > -#endif
+> > > +	u64_u32_store(cfs_rq->min_vruntime,
+> > > +		      max_vruntime(cfs_rq->min_vruntime, vruntime));
+> > >  }
+> > >  
+> > >  static inline bool __entity_less(struct rb_node *a, const struct rb_node *b)
+> > > @@ -3313,6 +3310,11 @@ static inline void cfs_rq_util_change(struct cfs_rq *cfs_rq, int flags)
+> > >  }
+> > >  
+> > >  #ifdef CONFIG_SMP
+> > > +static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
+> > > +{
+> > > +	return u64_u32_load_copy(cfs_rq->avg.last_update_time,
+> > > +				 cfs_rq->last_update_time_copy);
+> > > +}
+> > >  #ifdef CONFIG_FAIR_GROUP_SCHED
+> > >  /*
+> > >   * Because list_add_leaf_cfs_rq always places a child cfs_rq on the list
+> > > @@ -3423,27 +3425,9 @@ void set_task_rq_fair(struct sched_entity *se,
+> > >  	if (!(se->avg.last_update_time && prev))
+> > >  		return;
+> > >  
+> > > -#ifndef CONFIG_64BIT
+> > > -	{
+> > > -		u64 p_last_update_time_copy;
+> > > -		u64 n_last_update_time_copy;
+> > > -
+> > > -		do {
+> > > -			p_last_update_time_copy = prev->load_last_update_time_copy;
+> > > -			n_last_update_time_copy = next->load_last_update_time_copy;
+> > > -
+> > > -			smp_rmb();
+> > > -
+> > > -			p_last_update_time = prev->avg.last_update_time;
+> > > -			n_last_update_time = next->avg.last_update_time;
+> > > +	p_last_update_time = cfs_rq_last_update_time(prev);
+> > > +	n_last_update_time = cfs_rq_last_update_time(next);
+> > >  
+> > > -		} while (p_last_update_time != p_last_update_time_copy ||
+> > > -			 n_last_update_time != n_last_update_time_copy);
+> > > -	}
+> > > -#else
+> > > -	p_last_update_time = prev->avg.last_update_time;
+> > > -	n_last_update_time = next->avg.last_update_time;
+> > > -#endif
+> > >  	__update_load_avg_blocked_se(p_last_update_time, se);
+> > >  	se->avg.last_update_time = n_last_update_time;
+> > >  }
+> > > @@ -3796,12 +3780,9 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq)
+> > >  	}
+> > >  
+> > >  	decayed |= __update_load_avg_cfs_rq(now, cfs_rq);
+> > > -
+> > > -#ifndef CONFIG_64BIT
+> > > -	smp_wmb();
+> > > -	cfs_rq->load_last_update_time_copy = sa->last_update_time;
+> > > -#endif
+> > > -
+> > > +	u64_u32_store_copy(sa->last_update_time,
+> > > +			   cfs_rq->last_update_time_copy,
+> > > +			   sa->last_update_time);
+> > >  	return decayed;
+> > >  }
+> > >  
+> > > @@ -3933,27 +3914,6 @@ static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
+> > >  	}
+> > >  }
+> > >  
+> > > -#ifndef CONFIG_64BIT
+> > > -static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
+> > > -{
+> > > -	u64 last_update_time_copy;
+> > > -	u64 last_update_time;
+> > > -
+> > > -	do {
+> > > -		last_update_time_copy = cfs_rq->load_last_update_time_copy;
+> > > -		smp_rmb();
+> > > -		last_update_time = cfs_rq->avg.last_update_time;
+> > > -	} while (last_update_time != last_update_time_copy);
+> > > -
+> > > -	return last_update_time;
+> > > -}
+> > > -#else
+> > > -static inline u64 cfs_rq_last_update_time(struct cfs_rq *cfs_rq)
+> > > -{
+> > > -	return cfs_rq->avg.last_update_time;
+> > > -}
+> > > -#endif
+> > > -
+> > >  /*
+> > >   * Synchronize entity load avg of dequeued entity without locking
+> > >   * the previous rq.
+> > > @@ -6960,21 +6920,8 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
+> > >  	if (READ_ONCE(p->__state) == TASK_WAKING) {
+> > >  		struct sched_entity *se = &p->se;
+> > >  		struct cfs_rq *cfs_rq = cfs_rq_of(se);
+> > > -		u64 min_vruntime;
+> > > -
+> > > -#ifndef CONFIG_64BIT
+> > > -		u64 min_vruntime_copy;
+> > > -
+> > > -		do {
+> > > -			min_vruntime_copy = cfs_rq->min_vruntime_copy;
+> > > -			smp_rmb();
+> > > -			min_vruntime = cfs_rq->min_vruntime;
+> > > -		} while (min_vruntime != min_vruntime_copy);
+> > > -#else
+> > > -		min_vruntime = cfs_rq->min_vruntime;
+> > > -#endif
+> > >  
+> > > -		se->vruntime -= min_vruntime;
+> > > +		se->vruntime -= u64_u32_load(cfs_rq->min_vruntime);
+> > >  	}
+> > >  
+> > >  	if (p->on_rq == TASK_ON_RQ_MIGRATING) {
+> > > @@ -11422,10 +11369,7 @@ static void set_next_task_fair(struct rq *rq, struct task_struct *p, bool first)
+> > >  void init_cfs_rq(struct cfs_rq *cfs_rq)
+> > >  {
+> > >  	cfs_rq->tasks_timeline = RB_ROOT_CACHED;
+> > > -	cfs_rq->min_vruntime = (u64)(-(1LL << 20));
+> > > -#ifndef CONFIG_64BIT
+> > > -	cfs_rq->min_vruntime_copy = cfs_rq->min_vruntime;
+> > > -#endif
+> > > +	u64_u32_store(cfs_rq->min_vruntime, (u64)(-(1LL << 20)));
+> > >  #ifdef CONFIG_SMP
+> > >  	raw_spin_lock_init(&cfs_rq->removed.lock);
+> > >  #endif
+> > > diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+> > > index 1f97f357aacd..bf4a0ec98678 100644
+> > > --- a/kernel/sched/sched.h
+> > > +++ b/kernel/sched/sched.h
+> > > @@ -520,6 +520,45 @@ struct cfs_bandwidth { };
+> > >  
+> > >  #endif	/* CONFIG_CGROUP_SCHED */
+> > >  
+> > > +/*
+> > > + * u64_u32_load/u64_u32_store
+> > > + *
+> > > + * Use a copy of a u64 value to protect against data race. This is only
+> > > + * applicable for 32-bits architectures.
+> > > + */
+> > > +#ifdef CONFIG_64BIT
+> > > +# define u64_u32_load_copy(var, copy)       var
+> > > +# define u64_u32_store_copy(var, copy, val) (var = val)
+> > > +#else
+> > > +# define u64_u32_load_copy(var, copy)					\
+> > > +({									\
+> > > +	u64 __val, __val_copy;						\
+> > > +	do {								\
+> > > +		__val_copy = copy;					\
+> > > +		/*							\
+> > > +		 * paired with u64_u32_store, ordering access		\
+> > 
+> > s/u64_u32_store/u64_u32_store_copy()/
+> 
+> Ack.
+> 
+> > 
+> > > +		 * to var and copy.					\
+> > > +		 */							\
+> > > +		smp_rmb();						\
+> > > +		__val = var;						\
+> > > +	} while (__val != __val_copy);					\
+> > > +	__val;								\
+> > > +})
+> > > +# define u64_u32_store_copy(var, copy, val)				\
+> > > +do {									\
+> > > +	typeof(val) __val = (val);					\
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        Instructs to store a local __val..(I missed this sorry)
+        The time for these cycles is possible that eg. cfs_rq->min_vruntime
+        has been updated in this period. But here locally store the
+        old value.
 
-The blocking method is still available in case someone needs to perform
-this operation synchronously (ie by calling led_set_brightness_sync()).
+> > > +	var = __val;							\
+        ^^^^^^^^^^^^
+        Original code here will load the even updated(more recently)
+        eg. cfs_rq->min_vruntime from other cpus update(the load here
+        is also need a read pair barrier, so I reference that use the
+        smp_mb, but I do not know).
 
-Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
----
- drivers/leds/leds-tlc5925.c | 39 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 37 insertions(+), 2 deletions(-)
+        I mean the __val here is more possible to be stale. That the
+        ->min_vruntime or ->lut is not latest.
 
-diff --git a/drivers/leds/leds-tlc5925.c b/drivers/leds/leds-tlc5925.c
-index eeab1138ba2c..2c083b04d7f6 100644
---- a/drivers/leds/leds-tlc5925.c
-+++ b/drivers/leds/leds-tlc5925.c
-@@ -14,6 +14,7 @@
- #include <linux/leds.h>
- #include <linux/module.h>
- #include <linux/property.h>
-+#include <linux/workqueue.h>
- #include <linux/spi/spi.h>
- 
- struct single_led_priv {
-@@ -24,10 +25,24 @@ struct single_led_priv {
- struct tlc5925_leds_priv {
- 	int max_num_leds;
- 	unsigned long *state;
-+	struct spi_device *spi;
-+	struct work_struct xmit_work;
- 	struct single_led_priv leds[];
- };
- 
--static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
-+static int xmit(struct tlc5925_leds_priv *priv)
-+{
-+	return spi_write(priv->spi, priv->state, BITS_TO_BYTES(priv->max_num_leds));
-+}
-+
-+static void xmit_work(struct work_struct *ws)
-+{
-+	struct tlc5925_leds_priv *priv =
-+		container_of(ws, struct tlc5925_leds_priv, xmit_work);
-+	xmit(priv);
-+};
-+
-+static void tlc5925_brightness_set(struct led_classdev *cdev,
- 					    enum led_brightness brightness)
- {
- 	struct spi_device *spi = to_spi_device(cdev->dev->parent);
-@@ -40,9 +55,25 @@ static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
- 	// assign_bit() is atomic, no need for lock
- 	assign_bit(index, priv->state, !!brightness);
- 
--	return spi_write(spi, priv->state, BITS_TO_BYTES(priv->max_num_leds));
-+	schedule_work(&priv->xmit_work);
- }
- 
-+static int tlc5925_brightness_set_blocking(struct led_classdev *cdev,
-+					    enum led_brightness brightness)
-+{
-+	struct spi_device *spi = to_spi_device(cdev->dev->parent);
-+	struct tlc5925_leds_priv *priv = spi_get_drvdata(spi);
-+	struct single_led_priv *led = container_of(cdev,
-+						   struct single_led_priv,
-+						   cdev);
-+	int index = led->idx;
-+
-+	// assign_bit() is atomic, no need for lock
-+	assign_bit(index, priv->state, !!brightness);
-+
-+	cancel_work_sync(&priv->xmit_work);
-+	return xmit(priv);
-+}
- 
- static int tlc5925_probe(struct spi_device *spi)
- {
-@@ -92,6 +123,9 @@ static int tlc5925_probe(struct spi_device *spi)
- 	if (!priv->state)
- 		return -ENOMEM;
- 
-+	priv->spi = spi;
-+	INIT_WORK(&priv->xmit_work, xmit_work);
-+
- 	priv->max_num_leds = max_num_leds;
- 
- 	device_for_each_child_node(dev, child) {
-@@ -112,6 +146,7 @@ static int tlc5925_probe(struct spi_device *spi)
- 		cdev = &(priv->leds[count].cdev);
- 		cdev->brightness = LED_OFF;
- 		cdev->max_brightness = 1;
-+		cdev->brightness_set = tlc5925_brightness_set;
- 		cdev->brightness_set_blocking = tlc5925_brightness_set_blocking;
- 
- 		ret = devm_led_classdev_register_ext(dev, cdev, &init_data);
--- 
-2.25.1
+Your code simplify something but not lead to be more accurate compared to
+original code. Is it possible to delete that local store and restore
+the Data Dependancies that the original code do if your code is not DD.
 
+All the above may be wrong. Thanks for your time.
+
+> > > +	/*								\
+> > > +	 * paired with u64_u32_load, ordering access to var and		\
+> > 
+> > s/u64_u32_load/u64_u32_load_copy()/
+> 
+> Ack.
+> 
+> > 
+> > > +	 * copy.							\
+> > > +	 */								\
+> > > +	smp_wmb();							\
+> > > +	copy = __val;							\
+> > > +} while (0)
+> > 
+> > Try again here from me.
+> > The semantics of this macro is different from the original code.
+> > To be consistent with the original code, the 'copy = __val;' should
+> > be changed to 'copy = var'. Why not original code here.
+> > 
+> > They are different in that the var can be changed currently on another
+> > CPU and copy can be different from __val.
+> 
+> I'm not sure I understand your point here. We are using a temporary variable to
+> set both var and copy. They'll end-up with the same value which is what we want.
+> If what you worries is a concurrent write, you need a lock to modify the
+> last_update_time or the min_vruntime (and the other values introduced
+> by this patchset).
+> 
+> This is not about reading an up to date value, it is about reading a sane one.
+> 
+> > 
+> > Documentation/memory-barriers.txt(line 1351, 5.19.0-rc1-rt1):
+> > In section:
+> > (*) What are memory barriers?
+> >      - Multicopy atomicity.
+> > The example there can be referenced here I think.
+> > 
+> > And I feel that here the smp_wmb() should be changed to smp_mb(). One user
+> > of this macro have the load/write  write. Another user have write  write
+> > if I am not wrong.
+> 
+> I do not get this part. the _store_copy() only store var and copy. Hence the
+> smp_wmb. While the _load_copy() only load var and and copy, hence the smp_rmb.
+> 
+> This is actually described in the section "SMP BARRIER PAIRING".
+> 
+> > 
+> > Also,
+> > 
+> > 'Memory Barriers: a Hardware View for Software Hackers' (July 23, 2010)
+> > Section: 6.3 Example 2, I just scrolled to the code in table 3 and check
+> > that the semantics there is almost the same with the semantics here.
+> > 
+> > I do not have confidence to convince anything just after some days when I
+> > read it.
+> > 
+> > According to those two examples, if the small penalty is small, this
+> > u64_u32_store_copy() macro should be changed like this:
+> > 
+> > # define u64_u32_store_copy(var, copy, val)				\
+> > do {									\
+> > 	typeof(val) __val = (val);					\
+> > 	var = __val;							\
+> > 	/*								\
+> > 	 * paired with u64_u32_load_copy(), ordering access to var and	\
+> > 	 * copy.							\
+> > 	 */								\
+> > 	smp_mb();							\
+> > 	copy = var;							\
+> > } while (0)
+> > 
+> > Not sure and this is the continuation to my reply to this patch in v4.
+> > 
+> > Thanks,
+> > Tao
+> > > +#endif
+> > > +# define u64_u32_load(var)      u64_u32_load_copy(var, var##_copy)
+> > > +# define u64_u32_store(var, val) u64_u32_store_copy(var, var##_copy, val)
+> > > +
+> > >  /* CFS-related fields in a runqueue */
+> > >  struct cfs_rq {	
+> > >  	struct load_weight	load;
+> > > @@ -560,7 +599,7 @@ struct cfs_rq {
+> > >  	 */
+> > >  	struct sched_avg	avg;
+> > >  #ifndef CONFIG_64BIT
+> > > -	u64			load_last_update_time_copy;
+> > > +	u64			last_update_time_copy;
+> > >  #endif
+> > >  	struct {
+> > >  		raw_spinlock_t	lock ____cacheline_aligned;
+> > > -- 
+> > > 2.36.1.255.ge46751e96f-goog
+> > 
+> > -- 
+> > To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
+> > 
