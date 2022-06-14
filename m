@@ -2,100 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E45DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1B75CCA47E
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354021AbiFNCSS (ORCPT
+        id S1354131AbiFNCSf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57182 "EHLO
+        Mon, 13 Jun 2022 22:18:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354318AbiFNCOk (ORCPT
+        with ESMTP id S1354393AbiFNCOn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32453BA7A;
-        Mon, 13 Jun 2022 19:08:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 13 Jun 2022 22:14:43 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B324A3B55C;
+        Mon, 13 Jun 2022 19:08:43 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2905660B6B;
-        Tue, 14 Jun 2022 02:07:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 633ECC385A2;
-        Tue, 14 Jun 2022 02:07:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172465;
-        bh=n0EDmbEOrkNOBvW/GijmfjermZbvRf0zE44tEbRt0PE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FFBE4Pz5D7YUofqXBQ6tKzOZCM79RNEael/2Itge5upbhIlhK6KTap0LtJMGEp6K7
-         QhRrhtLVOz9pnQ+Mu1/Mn1YGnMkrIbkqerVVtwU+T0J8QvET+Ta1bFNG6CjxplMZTy
-         8IImqCo1aXyQlODb3R559nkPw98/0rLgnoU6e1NTGwHK0dSM1hDaP7yntLQDWd9DwG
-         ZllsV9vWtiyqFlkhA3kPAoUBqJS0muacu97izXdaTdjB3luNa8vKGfc07Z80bif6B4
-         GOZZjT+nckP/kUHD0ehX7dzX+DdQt0ApZu+f5jhmscrt+aMxJPJ1c/1osX+w3Y7Bcs
-         Q6N2LN8YYPOIg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@avagotech.com,
-        dick.kennedy@avagotech.com, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 22/41] scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
-Date:   Mon, 13 Jun 2022 22:06:47 -0400
-Message-Id: <20220614020707.1099487-22-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
-References: <20220614020707.1099487-1-sashal@kernel.org>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LMX0f6VzSz4xZK;
+        Tue, 14 Jun 2022 12:08:34 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1655172515;
+        bh=XF4j9j8vj63p9k9kxUS7826ICnBo920lHxlbbGtHHSI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=CIA/H9RdPG3f88QdmMMI2wfDoBN4xAkefC1zzn/tM4fGFJ8JIEoVCGePhsBOiCkkS
+         x2WnjJHxjR57m/vzSxVTihH9Ql7Rd1PvmDRsUWI0OYbRtzEIt+E07DC/EWgi15KB94
+         yCTWpy428rqCMngVoQgl0/00jlzDbaXnZfDqIMhRyq5QBZIbtkwJm/6IJVgYK00fkD
+         Qb/xYJ7PhAUKN1U3jwv950HEbmEFvSlroTTxu5JddB4/oxggctJiFUhD5QFMhg5OCu
+         X4fGkUv+xW5R1QsfAuLYUJHjUg7QY91R+1XPmBeSZD7MPy6pRlAWrR63BwxBb0yl0S
+         X7mkXz5obyCQg==
+Date:   Tue, 14 Jun 2022 12:08:33 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Greg KH <greg@kroah.com>
+Cc:     Neal Liu <neal_liu@aspeedtech.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the usb tree
+Message-ID: <20220614120833.06cec8e7@canb.auug.org.au>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/MzH=SMk3139Y8vMKMwdtN5C";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+--Sig_/MzH=SMk3139Y8vMKMwdtN5C
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-[ Upstream commit 336d63615466b4c06b9401c987813fd19bdde39b ]
+Hi all,
 
-After issuing a LIP, a specific target vendor does not ACC the FLOGI that
-lpfc sends.  However, it does send its own FLOGI that lpfc ACCs.  The
-target then establishes the port IDs by sending a PLOGI.  lpfc PLOGI_ACCs
-and starts the RPI registration for DID 0x000001.  The target then sends a
-LOGO to the fabric DID.  lpfc is currently treating the LOGO from the
-fabric DID as a link down and cleans up all the ndlps.  The ndlp for DID
-0x000001 is put back into NPR and discovery stops, leaving the port in
-stuck in bypassed mode.
+After merging the usb tree, today's linux-next build (arm
+multi_v7_defconfig) failed like this:
 
-Change lpfc behavior such that if a LOGO is received for the fabric DID in
-PT2PT topology skip the lpfc_linkdown_port() routine and just move the
-fabric DID back to NPR.
 
-Link: https://lore.kernel.org/r/20220603174329.63777-7-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/scsi/lpfc/lpfc_nportdisc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Caused by commit
 
-diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
-index fdf5e777bf11..2bd35a7424c2 100644
---- a/drivers/scsi/lpfc/lpfc_nportdisc.c
-+++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
-@@ -810,7 +810,8 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
- 		lpfc_nvmet_invalidate_host(phba, ndlp);
- 
- 	if (ndlp->nlp_DID == Fabric_DID) {
--		if (vport->port_state <= LPFC_FDISC)
-+		if (vport->port_state <= LPFC_FDISC ||
-+		    vport->fc_flag & FC_PT2PT)
- 			goto out;
- 		lpfc_linkdown_port(vport);
- 		spin_lock_irq(shost->host_lock);
--- 
-2.35.1
+  2cee50bf4590 ("ARM: dts: aspeed: Add USB2.0 device controller node")
 
+I have used the usb tree from next-20220610 for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/MzH=SMk3139Y8vMKMwdtN5C
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKn7aEACgkQAVBC80lX
+0GzT0gf/UssKtshy5NEnxzkSIiix1xrbVEbU+FM2xjAcmsRzzmxinnQK2LH/8r6v
+SEf51c9w3FAjURj5L3PFk5XnKiPDHEsKZp1mKsR0cQPdpKVN8aDuWUo2jagBOoJA
+IA9qP7omqauyWdVLmY+Swb/XKou5IavURbBWHe45Hn3XkocsWNSqR95lPt2Xrmc3
+73kTPupzVvvvlyZubcHlFjcpxLgdbZN+paYFNIHyWQ52rxa61NllhZNVnwvDwsSn
+pEL2g2kIK2DhL5XFMdWzeYpzu9i1Hpr7Zp0CCmwxwFGJI8z1tJkbdZTatB3FKGmE
+Kkdzh55dvNUpWv50DIUGqQA0oQRJzQ==
+=cB0k
+-----END PGP SIGNATURE-----
+
+--Sig_/MzH=SMk3139Y8vMKMwdtN5C--
