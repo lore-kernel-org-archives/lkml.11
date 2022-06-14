@@ -2,115 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 011B1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD8BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355748AbiFNIvS (ORCPT
+        id S1355486AbiFNIvj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46968 "EHLO
+        Tue, 14 Jun 2022 04:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354482AbiFNIuy (ORCPT
+        with ESMTP id S1355983AbiFNIv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:50:54 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90B91004;
-        Tue, 14 Jun 2022 01:50:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655196631;
-        bh=SSwUJf2qwRRbaZd++lZS60kPIH49wvQPY3CwMrUjTd4=;
-        h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-        b=KXdh+hAyaXHpmvpx6xkz9KNcxpWJY6vO2/DbaJhl4A4a5wx1yIK2KNHAIktncIdfq
-         4m4P11upDW54wU1wtvxPmRRdQHZ7RwD1BzeMgAuTA5hYCpOWGHLUUQvUV5KfgMSXT+
-         CIQSinCvmCpk7DJfB7yZxYnXnCVWv6fPgroAfsVE=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [0.0.0.0] ([149.28.201.231]) by mail.gmx.net (mrgmx105
- [212.227.17.174]) with ESMTPSA (Nemesis) id 1MfYPY-1nUBPJ3uJs-00fzXd; Tue, 14
- Jun 2022 10:50:30 +0200
-Message-ID: <2cc67037-cf90-cca2-1655-46b92b43eba8@gmx.com>
-Date:   Tue, 14 Jun 2022 16:50:22 +0800
+        Tue, 14 Jun 2022 04:51:26 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A641004
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:51:25 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id i64so8005778pfc.8
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:51:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GcDmyKbMVJDGWvzcHsGVQuP18Z833uzA4bptR4Fs4pQ=;
+        b=beZRe95Lr0tH7S7mweuSbhUSSjlqnWEWSaa17bsi+kyifdMjiorYCWbcFoF0ud61mk
+         e/BUObi1Qu7XSUMdtdMSYtFzZKOBmWgH2nADQOvCPOIIyy6GzISBRAg16v+c5Rj4RevP
+         tA0sZ+nA+a7Xls+SOjXyrlBDyD8DaVScCxDUgZR7FCb3W3g2YBCpEgVGmfIuYxPYHbhC
+         28qbrS2zu0GSlDYq4JD9RGnQeuIp7lEWVj+5Grh6MQCcCr+Rw2HjoKHHTBmsZy6onD09
+         fn7UOZ3M9Gg8dsqzJTaylsYvorsCFe7NLbCDps5mVzSeBEtyA2ZhpPvzt0qziW6jo7qF
+         OTjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GcDmyKbMVJDGWvzcHsGVQuP18Z833uzA4bptR4Fs4pQ=;
+        b=qRN8y3CCWXZnKKDHMHkkYVXmJZrZlf9T4H9gb7s5u8dzQrlgBmrK+LTHUHS2hP9q0o
+         x5v61ELEmz+uo+L2zspT7i+GrBy1klRMbj/5mxtpZf+7g3zLUNWNvYsHMQTGDiUtYC9U
+         Xpk2eA46xF44oTq5L8nf2FS65UpMRoX25pepP1BrBgIi3tfa2rl5sXhRJMX9vb2JDALq
+         rAHUKAlIpUwJ5UYRmHtDYRCFxng9pz/B64Bfcf4DLjJQXA17ahUwiIvNqQclqIWDDR1T
+         JknO3MFcKqhSbGUU3Pz/CPSRsh/hsjlQ+YcljfqNq2rLF1nT5iFpTFoD0DPkyfxt+9d3
+         pw/A==
+X-Gm-Message-State: AOAM530IHF+zPKXoLU4Ced1Dn94Lkhi3LZF9QS/N4Z0KMi32EjTHB/Y7
+        ReMNU80cPtNeuYQierEQz4c=
+X-Google-Smtp-Source: ABdhPJyZ5oMRTIE5HfG9tFVWHseAEmknEW4pKy164JcpJa0BfXwhIbMHYVfo8W5l18J79jSLtPJ7Gw==
+X-Received: by 2002:a63:dd4c:0:b0:3fd:df6f:5bb1 with SMTP id g12-20020a63dd4c000000b003fddf6f5bb1mr3590057pgj.1.1655196684693;
+        Tue, 14 Jun 2022 01:51:24 -0700 (PDT)
+Received: from hyeyoo ([114.29.24.243])
+        by smtp.gmail.com with ESMTPSA id e129-20020a636987000000b00408a3724b38sm1333865pgc.76.2022.06.14.01.51.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 01:51:23 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 17:51:17 +0900
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Xiongwei Song <sxwjean@gmail.com>
+Cc:     Xiongwei Song <sxwjean@me.com>, Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xiongwei Song <xiongwei.song@windriver.com>
+Subject: Re: [PATCH v2] mm/slub: Simplify __kmem_cache_alias()
+Message-ID: <YqhMBU9T0OY/NGf1@hyeyoo>
+References: <20220603143555.41914-1-sxwjean@me.com>
+ <YpspHqZM27DeEhNR@n2.us-central1-a.c.spheric-algebra-350919.internal>
+ <CAEVVKH_WM321zQPC-xjchqjySi4kngo6CFz-A6HY2tCjNCZ3SA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [syzbot] KASAN: use-after-free Read in copy_page_from_iter_atomic
- (2)
-Content-Language: en-US
-To:     Christoph Hellwig <hch@lst.de>, dsterba@suse.cz,
-        syzbot <syzbot+d2dd123304b4ae59f1bd@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, clm@fb.com, dsterba@suse.com,
-        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
-        willy@infradead.org
-References: <0000000000003ce9d105e0db53c8@google.com>
- <00000000000085068105e112a117@google.com>
- <20220613193912.GI20633@twin.jikos.cz> <20220614071757.GA1207@lst.de>
-From:   Qu Wenruo <quwenruo.btrfs@gmx.com>
-In-Reply-To: <20220614071757.GA1207@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:i8aMBCfBMPWuzbC1vKjvmN0BZxwNkVC5GuImuj/IaO48QbbgqQZ
- rRQUgAI0L+Es+alusDJ4kSYGqc9EoZZMJg0Vrm2aeqjxSCqdWPxEHIGC3/+qHJ4+hzQVnjg
- lO9zc7BI2hfBqFS84n10onGbzULt81Tdoryq48GgWon+x3+NwmSyyVG7QS0o+Ij2y3g0nkf
- gbnozN+NduFMqSy8f0icw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:tl/jVn197pY=:7sRfFjthlxd0bqcIzmCQXu
- CzQwRPhxWErHfYPAcPR8YYj8WMjpe4pqCvMiWnkoI83ZfmT+Wy74o5/UklfG0Eb/5D80slsoe
- 2a3q0tL5PgolRGX6kxDI7Jy7mHjE7QiGKxbU1o6tk+TGaDl8WfwZtxAchTEoIz646ZeVlMjeW
- VA04gq8yLWn0lSUfdm3SCrL78YiHSJAttrNQIJtFDAtCgFGdQ0KvTOK1L1X1QQfQOFsW3vlhd
- 3XC0bJ2CqAuMF0XaiRLDzhC3S6GM9tSwPW+2GZFmbXJBhp92XAiosRTtpbwlK7+MqcxjyBAoZ
- kaiACgDE/4vYE4CuDl9qe/CgpsU9lFf7IErLAN/eNPdiNtLbfZujqrB+6lk8HDoXQEXeZrvpC
- OjiXBpQLSeEYsi7nt+Yq8ZT8vlX91kowuRO+Q2OYrcxmEdEclA7F+7X8nfD5WjxLGRJggzOsA
- 5JEBdYwmxKPv0rqAB6sg8zU0M1W5OMONxXFZZoRIVoVUZvCRVvBOG6QUUUdwYtW8gH55Nh2Mw
- vOGEsFHIKrYgLeIMHPVvsTtFcsn+icszSlr6/9eQX16+Gjf/jwv+Om6+hvX3+0KgEJP4hkI5Z
- fB81sd1BHZWJVoBWeFQ5b1UscrAtvYS8e3+xS8t5vXj9QFQtzeVmZbAgwWLbp+btRF5yRuVZ7
- TjZhVqiFfoJi/RXJRi5vrJHnSZfoNEmwjT7WSb/G9wpSfJrchorQ/F9Np7KsM8S1ZarT4mq0n
- JVG1ubjt1pct2tH9t3rEfGBWSuuYq10wWMc+urg9lqRvFgSx3x0nTEvL5t4/9KMfoz1z6TGEu
- qnCi47NDXx1eYSkpd1Djl2ZleeEhupt2BssVNVHDImpNrEF/qzDwmUHYO/r1WTm5RSsSxxKr8
- nOJKOnnsRuip2bf7yHDkHH9PzGfrJgSeqdeRduLvSYgUfgaOhAs108m8x3edj5TibjP8IDb6A
- np2hZT8/39iCXlXiZlryfFoZS38wzYov5ea1YmYQByPPH7NlFp3oXw8+9NN4wF592ns+sgqM5
- DYwcNg5K+MoelRSnnfW6quR+lEiLQGq+XMLRDXWxfTRqFpGcWenfbfdYKTssx7yhgbwE5VlWT
- WRUmPaMYy+jrvc9z6fkPKVDJYUevWWtK9V6MZop8t7sodSjorFYUcM0yQ==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEVVKH_WM321zQPC-xjchqjySi4kngo6CFz-A6HY2tCjNCZ3SA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun, Jun 05, 2022 at 03:04:44PM +0800, Xiongwei Song wrote:
+> On Sat, Jun 4, 2022 at 5:43 PM Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
+> >
+> > On Fri, Jun 03, 2022 at 10:35:55PM +0800, sxwjean@me.com wrote:
+> > > From: Xiongwei Song <xiongwei.song@windriver.com>
+> > >
+> > > There is no need to do anything if sysfs_slab_alias() return nonzero
+> > > value after getting a mergeable cache.
+> > >
+> > > Signed-off-by: Xiongwei Song <xiongwei.song@windriver.com>
+> > > Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+> > > ---
+> > > v2: Collect Reviewed-by tag from Muchun.
+> > > ---
+> > >  mm/slub.c | 8 +++-----
+> > >  1 file changed, 3 insertions(+), 5 deletions(-)
+> > >
+> > > diff --git a/mm/slub.c b/mm/slub.c
+> > > index d8d5abf49f5f..9444277d669a 100644
+> > > --- a/mm/slub.c
+> > > +++ b/mm/slub.c
+> > > @@ -4861,6 +4861,9 @@ __kmem_cache_alias(const char *name, unsigned int size, unsigned int align,
+> > >
+> > >       s = find_mergeable(size, align, flags, name, ctor);
+> > >       if (s) {
+> > > +             if (sysfs_slab_alias(s, name))
+> > > +                     return NULL;
+> > > +
+> > >               s->refcount++;
+> > >
+> >
+> > I think we should not expose sysfs attributes before initializing
+> > what can be read via sysfs attribute (object_size).
+> >
+> > >               /*
+> > > @@ -4869,11 +4872,6 @@ __kmem_cache_alias(const char *name, unsigned int size, unsigned int align,
+> > >                */
+> > >               s->object_size = max(s->object_size, size);
+> >
+> > this calculation should be done before sysfs_slab_alias().
+> 
 
+Sorry for the late reply.
 
-On 2022/6/14 15:17, Christoph Hellwig wrote:
-> On Mon, Jun 13, 2022 at 09:39:12PM +0200, David Sterba wrote:
->> On Fri, Jun 10, 2022 at 12:10:19AM -0700, syzbot wrote:
->>> syzbot has bisected this issue to:
->>>
->>> commit 4cd4aed63125ccd4efc35162627827491c2a7be7
->>> Author: Christoph Hellwig <hch@lst.de>
->>> Date:   Fri May 27 08:43:20 2022 +0000
->>>
->>>      btrfs: fold repair_io_failure into btrfs_repair_eb_io_failure
->>
->> Josef also reported a crash and found a bug in the patch, now added as
->> fixup that'll be in for-next:
->
-> The patch looks correct to me.  Two things to note here:
->
->   - I hadn't realized you had queued up the series.  I've actually
->     started to merge some of my bio work with the bio split at
->     submission time work from Qu and after a few iterations I think
->     I would do the repair code a bit differently based on that.
->     Can you just drop the series for now?
->   - I find it interesting that syzbot hits btrfs metadata repair.
->     xfstests seems to have no coverage and I could not come up with
->     a good idea how to properly test it.  Does anyone have a good
->     idea on how to intentially corrupt metadata in a deterministic
->     way?
+> Yeah, understood. Should we restore s->object_size and s->inuse if
+> sysfs_slab_alias() returns non zero value?
 
-The same way as data?
-
-map-logical to find the location of a mirror, write 4 bytes of zero into
-the location, then call it a day.
-
-Although for metadata, you may want to choose a metadata that would
-definitely get read.
-Thus tree root is a good candidate.
+In my opinion, yes.
 
 Thanks,
-Qu
+Hyeonggon
+
+> Regards,
+> Xiongwwei
+> 
+> >
+> > Thanks,
+> > Hyeonggon
+> >
+> > >               s->inuse = max(s->inuse, ALIGN(size, sizeof(void *)));
+> > > -
+> > > -             if (sysfs_slab_alias(s, name)) {
+> > > -                     s->refcount--;
+> > > -                     s = NULL;
+> > > -             }
+> > >       }
+> > >
+> > >       return s;
+> > > --
+> > > 2.30.2
+> > >
+> >
+
+-- 
+Thanks,
+Hyeonggon
