@@ -2,120 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3777DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:00:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C41C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:00:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352870AbiFNPA1 (ORCPT
+        id S1353774AbiFNPAe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 11:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58070 "EHLO
+        Tue, 14 Jun 2022 11:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344219AbiFNPAX (ORCPT
+        with ESMTP id S245246AbiFNPAb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 11:00:23 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037F83DDE7
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:00:23 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so12004028pjl.4
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:00:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uCN2gj0r2ydsfLcZI1sFwWz1Fp2OKP8Km+3JkrgTjRM=;
-        b=Ekx5DQ+HUHoSy6kumqYNnkdP9uUsany7Jp1UDBAeYOqVfAh5D+QvFnZtUvpNNK6A1N
-         SND3VfsbuAxMkLo8Hei66R2cs7TpHH74Ih2idmiqz1PxUV3KeAoc82O8bZ2cEGCKzcBy
-         gZDLvH/YQISqZmOf8yt1U8xR/02ZaXtv0MFfrqoPnjMCYXSllEXEH9yhGqRyPoik8tnY
-         BzEOS4b9X5X+7Sd3xGYDipCLfgciwLZZ09qbPk85kHfGRl3OViI6jgC0k1+WrzVpWZyG
-         PEzzC6WH5rFW6vvAIB/h7mfsCc2Fu+1wkhILcYBAQXYsCNeYnlZMMnQvihOV9H+IU0V6
-         PXxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uCN2gj0r2ydsfLcZI1sFwWz1Fp2OKP8Km+3JkrgTjRM=;
-        b=JG8e7B3GKqAxkfMuRvIXCQV+vtDrnYprot/EZbwYn5BMYKSZe372oOiHUUIxY/9uzw
-         2AbXiuFnMYjIT7FeC2xG/adUgcS//ibr9WU9xPVx2hL0vis8qPe33k2q1S2BPzis0ncx
-         8kYTC7+l+ZlIiBYMEcQ/grynGHZNyTzpuw67w5aUgo45/AdyJI5ilpk6i9quIl+YSy3t
-         kkxBYTfNdJlWkbvXryxOiIHcicoL7MkPVeertkeZPeaWf1GKji8TM+kvXzOpMHkmC7ZF
-         yhFvV5dtyTLupHN9GvJeqDoG1V8S1CEHvfNAQMlKMaq1Bishi9ZwVPHJWN+hA+zb7EVW
-         D0jw==
-X-Gm-Message-State: AJIora+8MxDAsaOdIInH58GIkRSo9xG03WKKaJpazcCoaZ1MU5lXk572
-        W0EQ+UVN39eo44/qAP8xrdyu9g==
-X-Google-Smtp-Source: AGRyM1sg6K75KKCe2UYpLfEA2RfY+M58mNgtnd1Q7oxUIKuVCfFQYlLTL3apk/FXgEg14n5GwismSA==
-X-Received: by 2002:a17:90a:e28e:b0:1ea:c3c5:bc61 with SMTP id d14-20020a17090ae28e00b001eac3c5bc61mr4679621pjz.15.1655218822247;
-        Tue, 14 Jun 2022 08:00:22 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id f13-20020a170902684d00b0015e8d4eb26csm7343256pln.182.2022.06.14.08.00.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 08:00:21 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 15:00:18 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Bo Liu <liubo03@inspur.com>
-Cc:     pbonzini@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: Use consistent type for return value of
- kvm_mmu_memory_cache_nr_free_objects()
-Message-ID: <YqiigqccucuU2AQg@google.com>
-References: <20220614093222.25387-1-liubo03@inspur.com>
+        Tue, 14 Jun 2022 11:00:31 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DD23EB92;
+        Tue, 14 Jun 2022 08:00:29 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMs3T2tZgzRjSD;
+        Tue, 14 Jun 2022 22:57:09 +0800 (CST)
+Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 23:00:20 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
+ (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 14 Jun
+ 2022 23:00:19 +0800
+From:   ChenXiaoSong <chenxiaosong2@huawei.com>
+To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>
+CC:     <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <chenxiaosong2@huawei.com>, <liuyongqiang13@huawei.com>,
+        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>
+Subject: [PATCH -next] NFS: report and clear ENOSPC/EFBIG/EDQUOT writeback error on close() file
+Date:   Tue, 14 Jun 2022 23:13:21 +0800
+Message-ID: <20220614151321.256031-1-chenxiaosong2@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614093222.25387-1-liubo03@inspur.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600015.china.huawei.com (7.193.23.52)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022, Bo Liu wrote:
-> The return value type of the function rmap_can_add() is "bool", and it will
-> returns the result of the function kvm_mmu_memory_cache_nr_free_objects().
-> So we should change the return value type of
-> kvm_mmu_memory_cache_nr_free_objects() to "bool".
-> 
-> Signed-off-by: Bo Liu <liubo03@inspur.com>
-> ---
->  include/linux/kvm_host.h | 2 +-
->  virt/kvm/kvm_main.c      | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> index c20f2d55840c..a399a7485795 100644
-> --- a/include/linux/kvm_host.h
-> +++ b/include/linux/kvm_host.h
-> @@ -1358,7 +1358,7 @@ void kvm_flush_remote_tlbs(struct kvm *kvm);
->  
->  #ifdef KVM_ARCH_NR_OBJS_PER_MEMORY_CACHE
->  int kvm_mmu_topup_memory_cache(struct kvm_mmu_memory_cache *mc, int min);
-> -int kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc);
-> +bool kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc);
->  void kvm_mmu_free_memory_cache(struct kvm_mmu_memory_cache *mc);
->  void *kvm_mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
->  #endif
-> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> index a67e996cbf7f..2872569e3580 100644
-> --- a/virt/kvm/kvm_main.c
-> +++ b/virt/kvm/kvm_main.c
-> @@ -394,9 +394,9 @@ int kvm_mmu_topup_memory_cache(struct kvm_mmu_memory_cache *mc, int min)
->  	return 0;
->  }
->  
-> -int kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc)
-> +bool kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc)
+Currently, we report and clear ENOSPC/EFBIG/EDQUOT writeback error on write(),
+write() file will report unexpected error if previous writeback error have not
+been cleared.
 
-Absolutely not, the name of the function is "nr_free_objects".  Renaming it to
-"has_free_objects" is not a net positive IMO.  If we really care about returning
-a bool then we can tweak rmap_can_add().
+Reproducer:
+        nfs server            |       nfs client
+ -----------------------------|---------------------------------------------
+ # No space left on server    |
+ fallocate -l 100G /svr/nospc |
+                              | mount -t nfs $nfs_server_ip:/ /mnt
+                              |
+                              | # Expected error: No space left on device
+                              | dd if=/dev/zero of=/mnt/file count=1 ibs=10K
+                              |
+                              | # Release space on mountpoint
+                              | rm /mnt/nospc
+                              |
+                              | # Just write 512B and report unexpected error
+                              | dd if=/dev/zero of=/mnt/file count=1 ibs=10K
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 17252f39bd7c..047855d134da 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -1018,7 +1018,7 @@ static bool rmap_can_add(struct kvm_vcpu *vcpu)
-        struct kvm_mmu_memory_cache *mc;
+Fix this by clearing ENOSPC/EFBIG/EDQUOT writeback error on close file,
+it will not clear other errors that are not supposed to be reported by close().
 
-        mc = &vcpu->arch.mmu_pte_list_desc_cache;
--       return kvm_mmu_memory_cache_nr_free_objects(mc);
-+       return !!kvm_mmu_memory_cache_nr_free_objects(mc);
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+---
+ fs/nfs/file.c     | 15 ++++++++-------
+ fs/nfs/internal.h | 10 ++++++++++
+ fs/nfs/nfs4file.c |  9 +++++++--
+ 3 files changed, 25 insertions(+), 9 deletions(-)
+
+diff --git a/fs/nfs/file.c b/fs/nfs/file.c
+index 2d72b1b7ed74..a6921f42c155 100644
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -139,6 +139,7 @@ nfs_file_flush(struct file *file, fl_owner_t id)
+ {
+ 	struct inode	*inode = file_inode(file);
+ 	errseq_t since;
++	int error;
+ 
+ 	dprintk("NFS: flush(%pD2)\n", file);
+ 
+@@ -149,7 +150,12 @@ nfs_file_flush(struct file *file, fl_owner_t id)
+ 	/* Flush writes to the server and return any errors */
+ 	since = filemap_sample_wb_err(file->f_mapping);
+ 	nfs_wb_all(inode);
+-	return filemap_check_wb_err(file->f_mapping, since);
++	error = filemap_check_wb_err(file->f_mapping, since);
++
++	if (nfs_should_clear_wb_err(error))
++		file_check_and_advance_wb_err(file);
++
++	return error;
  }
+ 
+ ssize_t
+@@ -673,12 +679,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ out:
+ 	/* Return error values */
+ 	error = filemap_check_wb_err(file->f_mapping, since);
+-	switch (error) {
+-	default:
+-		break;
+-	case -EDQUOT:
+-	case -EFBIG:
+-	case -ENOSPC:
++	if (nfs_should_clear_wb_err(error)) {
+ 		nfs_wb_all(inode);
+ 		error = file_check_and_advance_wb_err(file);
+ 		if (error < 0)
+diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
+index 8f8cd6e2d4db..e49aad8f7d09 100644
+--- a/fs/nfs/internal.h
++++ b/fs/nfs/internal.h
+@@ -859,3 +859,13 @@ static inline void nfs_set_port(struct sockaddr *sap, int *port,
+ 
+ 	rpc_set_port(sap, *port);
+ }
++
++static inline bool nfs_should_clear_wb_err(int error) {
++	switch (error) {
++	case -EDQUOT:
++	case -EFBIG:
++	case -ENOSPC:
++		return true;
++	}
++	return false;
++}
+diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
+index 03d3a270eff4..ddf3f0abd55a 100644
+--- a/fs/nfs/nfs4file.c
++++ b/fs/nfs/nfs4file.c
+@@ -113,7 +113,7 @@ static int
+ nfs4_file_flush(struct file *file, fl_owner_t id)
+ {
+ 	struct inode	*inode = file_inode(file);
+-	errseq_t since;
++	errseq_t since, error;
+ 
+ 	dprintk("NFS: flush(%pD2)\n", file);
+ 
+@@ -131,7 +131,12 @@ nfs4_file_flush(struct file *file, fl_owner_t id)
+ 	/* Flush writes to the server and return any errors */
+ 	since = filemap_sample_wb_err(file->f_mapping);
+ 	nfs_wb_all(inode);
+-	return filemap_check_wb_err(file->f_mapping, since);
++	error = filemap_check_wb_err(file->f_mapping, since);
++
++	if (nfs_should_clear_wb_err(error))
++		file_check_and_advance_wb_err(file);
++
++	return error;
+ }
+ 
+ #ifdef CONFIG_NFS_V4_2
+-- 
+2.31.1
 
- static void rmap_remove(struct kvm *kvm, u64 *spte)
