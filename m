@@ -2,260 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93EDBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356800AbiFNMLo (ORCPT
+        id S1356869AbiFNMM2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
+        Tue, 14 Jun 2022 08:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356714AbiFNMK5 (ORCPT
+        with ESMTP id S1356814AbiFNMMR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:10:57 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4EA49CBF;
-        Tue, 14 Jun 2022 05:10:41 -0700 (PDT)
-X-UUID: 1d337307da7740deb4996dfad3e9ea4f-20220614
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:b82cf837-ff13-483c-adde-d7fbc8c24860,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:b14ad71,CLOUDID:a3ef69c5-c67b-4a73-9b18-726dd8f2eb58,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 1d337307da7740deb4996dfad3e9ea4f-20220614
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
-        (envelope-from <irui.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1769990658; Tue, 14 Jun 2022 20:10:35 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Tue, 14 Jun 2022 20:10:34 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Tue, 14 Jun 2022 20:10:33 +0800
-From:   Irui Wang <irui.wang@mediatek.com>
-To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <nicolas.dufresne@collabora.com>, <wenst@chromium.org>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Tomasz Figa <tfiga@chromium.org>, <xia.jiang@mediatek.com>,
-        <maoguang.meng@mediatek.com>, kyrie wu <kyrie.wu@mediatek.com>,
-        <srv_heupstream@mediatek.com>
-Subject: [RESEND V9,6/7] mtk-jpegenc: add output pic reorder interface
-Date:   Tue, 14 Jun 2022 20:10:23 +0800
-Message-ID: <20220614121024.31667-7-irui.wang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220614121024.31667-1-irui.wang@mediatek.com>
-References: <20220614121024.31667-1-irui.wang@mediatek.com>
+        Tue, 14 Jun 2022 08:12:17 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7B24A3CD;
+        Tue, 14 Jun 2022 05:12:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=gdQNv3H02tLJyNTWKuZB1Pun4d0Yppvy9PsduYHadVU=; b=htPwzWNBUQ+6KH93emBqdgCHcP
+        edy5Qq3D4SjFxNnxqapMHYEdX0urLwxC2lK+BXnvXyNZ8X23OjsD74VManmBvG1InroTibh4lpoGU
+        cvQnb0eWImOz5GP0GRt8zhwrQBWZXTkfsG6SEH/jAbeq2ngYXZPM8Dgu3dM6TseTrgiBWQkb9+Tz+
+        sBJE5C+n6WbZaxvleQ4u6kbq+vwvZwOmxxeWu/HGjRqufgpVDM7/CbaGdiqdWkA5Pkxp4DkL4fO94
+        nsi3GX3uEAHaeD/U80bOI8UOwQpw5z+HtFSYtuwLyUja3Jk0xNftGRqfvcDADCpyOR4ORR+8mi1Zg
+        1XiE6cGw==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1o15Oh-000Gd2-Px;
+        Tue, 14 Jun 2022 12:11:51 +0000
+Date:   Tue, 14 Jun 2022 13:11:51 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     David Howells <dhowells@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        nvdimm@lists.linux.dev
+Subject: Re: [RFC][PATCH] fix short copy handling in copy_mc_pipe_to_iter()
+Message-ID: <Yqh7B+tVDutCwuG1@ZenIV>
+References: <Yqe6EjGTpkvJUU28@ZenIV>
+ <YqaAcKsd6uGfIQzM@zeniv-ca.linux.org.uk>
+ <CAHk-=wjmCzdNDCt6L8-N33WSRaYjnj0=yTc_JG8A_Pd7ZEtEJw@mail.gmail.com>
+ <1586153.1655188579@warthog.procyon.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1586153.1655188579@warthog.procyon.org.uk>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kyrie wu <kyrie.wu@mediatek.com>
+On Tue, Jun 14, 2022 at 07:36:19AM +0100, David Howells wrote:
+> Al Viro <viro@zeniv.linux.org.uk> wrote:
+> 
+> > What's wrong with
+> >         p_occupancy = pipe_occupancy(head, tail);
+> >         if (p_occupancy >= pipe->max_usage)
+> >                 return 0;
+> > 	else
+> > 		return pipe->max_usage - p_occupancy;
+> 
+> Because "pipe->max_usage - p_occupancy" can be negative.
 
-There are two HWs in mt8195. Since the two HWs run
-in parallel, it is necessary to reorder the output images
-to ensure that the order is consistent with the input images.
+Sure can.  And in that case you return 0; no problem wiht that.
+It's what happens when occupancy is below max_usage that is weird.
 
-Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
----
- .../platform/mediatek/jpeg/mtk_jpeg_core.c    | 11 +----
- .../platform/mediatek/jpeg/mtk_jpeg_core.h    | 18 ++++++-
- .../platform/mediatek/jpeg/mtk_jpeg_dec_hw.c  |  1 +
- .../platform/mediatek/jpeg/mtk_jpeg_dec_hw.h  |  3 +-
- .../platform/mediatek/jpeg/mtk_jpeg_enc_hw.c  | 48 ++++++++++++++++++-
- 5 files changed, 68 insertions(+), 13 deletions(-)
+> post_one_notification() is limited by pipe->ring_size, not pipe->max_usage.
+> 
+> The idea is to allow some slack in a watch pipe for the watch_queue code to
+> use that userspace can't.
 
-diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
-index f35ca23d3139..43a0008939b4 100644
---- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
-+++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
-@@ -110,15 +110,6 @@ enum {
- 	MTK_JPEG_BUF_FLAGS_LAST_FRAME		= 1,
- };
- 
--struct mtk_jpeg_src_buf {
--	u32 frame_num;
--	struct vb2_v4l2_buffer b;
--	struct list_head list;
--	struct mtk_jpeg_dec_param dec_param;
--
--	struct mtk_jpeg_ctx *curr_ctx;
--};
--
- static int debug;
- module_param(debug, int, 0644);
- 
-@@ -1375,6 +1366,8 @@ static int mtk_jpeg_open(struct file *file)
- 		}
- 	}
- 
-+	INIT_LIST_HEAD(&ctx->dst_done_queue);
-+	spin_lock_init(&ctx->done_queue_lock);
- 	v4l2_fh_init(&ctx->fh, vfd);
- 	file->private_data = &ctx->fh;
- 	v4l2_fh_add(&ctx->fh);
-diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.h b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.h
-index d233a49bf952..5eebbd0d927a 100644
---- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.h
-+++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.h
-@@ -14,10 +14,11 @@
- #include <media/v4l2-ctrls.h>
- #include <media/v4l2-device.h>
- #include <media/v4l2-fh.h>
-+#include <media/videobuf2-v4l2.h>
- 
--#define MTK_JPEG_NAME		"mtk-jpeg"
-+#include "mtk_jpeg_dec_hw.h"
- 
--#define MTK_JPEG_COMP_MAX		3
-+#define MTK_JPEG_NAME		"mtk-jpeg"
- 
- #define MTK_JPEG_FMT_FLAG_OUTPUT	BIT(0)
- #define MTK_JPEG_FMT_FLAG_CAPTURE	BIT(1)
-@@ -76,6 +77,15 @@ struct mtk_jpeg_variant {
- 	u32 cap_q_default_fourcc;
- };
- 
-+struct mtk_jpeg_src_buf {
-+	u32 frame_num;
-+	struct vb2_v4l2_buffer b;
-+	struct list_head list;
-+	struct mtk_jpeg_dec_param dec_param;
-+
-+	struct mtk_jpeg_ctx *curr_ctx;
-+};
-+
- enum mtk_jpeg_hw_state {
- 	MTK_JPEG_HW_IDLE = 0,
- 	MTK_JPEG_HW_BUSY = 1,
-@@ -222,6 +232,10 @@ struct mtk_jpeg_ctx {
- 
- 	struct work_struct jpeg_work;
- 	u32 total_frame_num;
-+	struct list_head dst_done_queue;
-+	//spinlock protecting the encode done buffer
-+	spinlock_t done_queue_lock;
-+	u32 last_done_frame_num;
- };
- 
- #endif /* _MTK_JPEG_CORE_H */
-diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.c
-index afbbfd5d02bc..1e3852295f2f 100644
---- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.c
-+++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.c
-@@ -9,6 +9,7 @@
- #include <linux/kernel.h>
- #include <media/videobuf2-core.h>
- 
-+#include "mtk_jpeg_core.h"
- #include "mtk_jpeg_dec_hw.h"
- 
- #define MTK_JPEG_DUNUM_MASK(val)	(((val) - 1) & 0x3)
-diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.h b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.h
-index fa0d45fd7c34..87aaa5c9082b 100644
---- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.h
-+++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.h
-@@ -11,9 +11,10 @@
- 
- #include <media/videobuf2-core.h>
- 
--#include "mtk_jpeg_core.h"
- #include "mtk_jpeg_dec_reg.h"
- 
-+#define MTK_JPEG_COMP_MAX		3
-+
- enum {
- 	MTK_JPEG_DEC_RESULT_EOF_DONE		= 0,
- 	MTK_JPEG_DEC_RESULT_PAUSE		= 1,
-diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c
-index c25702f26b9a..3bfdf05b018a 100644
---- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c
-+++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c
-@@ -185,6 +185,51 @@ void mtk_jpeg_set_enc_params(struct mtk_jpeg_ctx *ctx,  void __iomem *base)
- }
- EXPORT_SYMBOL_GPL(mtk_jpeg_set_enc_params);
- 
-+static void mtk_jpegenc_put_buf(struct mtk_jpegenc_comp_dev *jpeg)
-+{
-+	struct mtk_jpeg_ctx *ctx;
-+	struct vb2_v4l2_buffer *dst_buffer;
-+	struct list_head *temp_entry;
-+	struct list_head *pos = NULL;
-+	struct mtk_jpeg_src_buf *dst_done_buf, *tmp_dst_done_buf;
-+	unsigned long flags;
-+
-+	ctx = jpeg->hw_param.curr_ctx;
-+	if (!ctx) {
-+		dev_err(jpeg->dev, "comp_jpeg ctx fail !!!\n");
-+		return;
-+	}
-+
-+	dst_buffer = jpeg->hw_param.dst_buffer;
-+	if (!dst_buffer) {
-+		dev_err(jpeg->dev, "comp_jpeg dst_buffer fail !!!\n");
-+		return;
-+	}
-+
-+	dst_done_buf = container_of(dst_buffer,
-+				    struct mtk_jpeg_src_buf, b);
-+
-+	spin_lock_irqsave(&ctx->done_queue_lock, flags);
-+	list_add_tail(&dst_done_buf->list, &ctx->dst_done_queue);
-+	while (!list_empty(&ctx->dst_done_queue) &&
-+	       (pos != &ctx->dst_done_queue)) {
-+		list_for_each_prev_safe(pos, temp_entry,
-+					(&ctx->dst_done_queue)) {
-+			tmp_dst_done_buf = list_entry(pos,
-+						      struct mtk_jpeg_src_buf,
-+						      list);
-+			if (tmp_dst_done_buf->frame_num ==
-+				ctx->last_done_frame_num) {
-+				list_del(&tmp_dst_done_buf->list);
-+				v4l2_m2m_buf_done(&tmp_dst_done_buf->b,
-+						  VB2_BUF_STATE_DONE);
-+				ctx->last_done_frame_num++;
-+			}
-+		}
-+	}
-+	spin_unlock_irqrestore(&ctx->done_queue_lock, flags);
-+}
-+
- static void mtk_jpegenc_timeout_work(struct work_struct *work)
- {
- 	struct delayed_work *dly_work = to_delayed_work(work);
-@@ -207,6 +252,7 @@ static void mtk_jpegenc_timeout_work(struct work_struct *work)
- 	atomic_inc(&cjpeg->hw_rdy);
- 	wake_up(&master_jpeg->enc_hw_wq);
- 	v4l2_m2m_buf_done(src_buf, buf_state);
-+	mtk_jpegenc_put_buf(cjpeg);
- }
- 
- static irqreturn_t mtk_jpegenc_hw_irq_handler(int irq, void *priv)
-@@ -243,7 +289,7 @@ static irqreturn_t mtk_jpegenc_hw_irq_handler(int irq, void *priv)
- irq_handled:
- 	buf_state = VB2_BUF_STATE_DONE;
- 	v4l2_m2m_buf_done(src_buf, buf_state);
--	v4l2_m2m_buf_done(dst_buf, buf_state);
-+	mtk_jpegenc_put_buf(jpeg);
- 	pm_runtime_put(ctx->jpeg->dev);
- 	clk_disable_unprepare(jpeg->venc_clk.clks->clk);
- 	if (!list_empty(&ctx->fh.m2m_ctx->out_q_ctx.rdy_queue) ||
--- 
-2.18.0
+Sure.  And if this function is supposed to report how many times would
+userspace be able to grab a slot, it's returning the wrong value.
 
+Look: 32-slot ring.  max_usage is 16.  14 slots are already occupied.
+Userland (sure as hell, anything in iov_iter.c) will be able to occupy
+two more before it runs into the pipe_full().  And your function returns
+min(32 - 14, 16), i.e. 16.
+
+What am I missing here?
