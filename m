@@ -2,127 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F93C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB7D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344523AbiFNP7b (ORCPT
+        id S1344684AbiFNQAB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 11:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40168 "EHLO
+        Tue, 14 Jun 2022 12:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243779AbiFNP7R (ORCPT
+        with ESMTP id S1344449AbiFNP75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 11:59:17 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534FC27B33
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:59:16 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id x62so12279791ede.10
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:59:16 -0700 (PDT)
+        Tue, 14 Jun 2022 11:59:57 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C0C344D8;
+        Tue, 14 Jun 2022 08:59:55 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id w27so12282888edl.7;
+        Tue, 14 Jun 2022 08:59:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GpSEw9c3r7sQWr+egbMOGl5Yu6roLaX7F/5rz4bUGTw=;
-        b=ev+JeJYBY/IfjhesmJo4M5OfE/Tk8HXWwSSXslzrDH3gDLtzs9Wx/r8VU4c3UfEGTT
-         oDbe0qvBT8zlehwyDLdzN7e18bs2pIA+L1R9iFDhmZAZYJfw69zDu1abw6YDhFt+BFIU
-         Qi/sUrpCVV9amBgB1PXCdGa8mrfX2OXgMYE+spzfLHXu54cyibgMyg93sEslnEjF14bB
-         EB5dN8/VFd1GnGnQ6Yj+kQJzk7+44J74ZTXTg7Qq729V/ObSHu5zgmFe8VzjqAeYXAkc
-         VPzCk42L6QOHFxhp9hK/KMtiHsFDYBMwE6ZQtwqPaO5jcbz5HJS38Y+EoDxJYHkS4YhO
-         7pEg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HZYr+nXVFt3ZV35WpvqABpP4HeHLwMa+rutNRooSlOQ=;
+        b=SwknY7SV+R82lZZu6lBWLGF6ZlNtU3MgUkz3FhJxCvKCZ/YahpmE7dJP9Jvh0OeIEF
+         K//Mhb50M8XBLpdHVIGud3xpYZA5syjpS/EWGdBLFANwYM7GOMYFnKWWpJw5JCYT/fwS
+         YmvpXBHZCKDQlXM2hkqzWT6EqwIjrNE30zueK0+TTphfirxG8MsR0+CRkBdnGu3f55Eg
+         tsi/S1eWaQXHAy6N6rbFTRPZM68RufoT6onEOzCra0Bm3NxvF7ZVdDWrwAp56sIBNn/9
+         kx22/4ZXycDGuqZvT3reJcElpPB+SHEGRv24Qp+YdiWasFtgAn7ol+YT5R9qtlVY6g/1
+         oElQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GpSEw9c3r7sQWr+egbMOGl5Yu6roLaX7F/5rz4bUGTw=;
-        b=iRpuVT2gat8KgDScrGE8FD3ofaXGulY209Djjc7ivwM1OqbXD4e0aRO+xZaXD6zjbl
-         gXNN4y0RwhwF3sRTvlJF69Ml4V9awqjPyakD/P+6R+bUXnaJR4NUDzO/RVMMIioAMgk6
-         WMAK+5/8W/moHmYQy+Dy+LMGgpuvMDERxmqj/SvYUx0HGnvjSjRLSgTeSqLOl9c+TCU4
-         697RYgFpZ7ulv6DxyenWjfO2tsIUhvzXMV4m2qfo+hBsjqCUMIcNEyHxWkKC5aYjAZtz
-         zk18LHISkIIHeIeQoAytcGXKuo8noCYnjqqOm9lxwac1RgMmev1779MTEfPdpo8H7kH+
-         yJyg==
-X-Gm-Message-State: AJIora83o5O0LoE0UNLBH8be4s212yxMSNCpEomC/RL7INcBq1eZNVn1
-        MLfxM/ri5x1tTzrP4ZbSyu0=
-X-Google-Smtp-Source: ABdhPJwNoT0Ob31bmrxxQpJr7W+KbgZ1IHbwDtGK9fNKcqLLS7rk4rkGYk7XNfskl2zOx6xkHpFkPA==
-X-Received: by 2002:a05:6402:350f:b0:42f:68f9:ae5 with SMTP id b15-20020a056402350f00b0042f68f90ae5mr7134117edd.36.1655222354856;
-        Tue, 14 Jun 2022 08:59:14 -0700 (PDT)
-Received: from nam-dell.fritz.box ([2a02:8109:afbf:ed88:c58b:f186:2720:bdac])
-        by smtp.gmail.com with ESMTPSA id qk10-20020a170906d9ca00b006fed93bf71fsm5327928ejb.18.2022.06.14.08.59.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 08:59:14 -0700 (PDT)
-From:   Nam Cao <namcaov@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     dan.carpenter@oracle.com, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, namcaov@gmail.com,
-        phil@philpotter.co.uk, Larry.Finger@lwfinger.net,
-        paskripkin@gmail.com
-Subject: [PATCH v3 1/2] staging: r8188eu: replace confusing macros
-Date:   Tue, 14 Jun 2022 17:58:44 +0200
-Message-Id: <e697e47aad21362f68d148d2351e6d49f4fa9eaf.1655220367.git.namcaov@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1655220367.git.namcaov@gmail.com>
-References: <cover.1655220367.git.namcaov@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HZYr+nXVFt3ZV35WpvqABpP4HeHLwMa+rutNRooSlOQ=;
+        b=Dpa+zt4KgqFWqsT3Rlo84JrZ+WPdAstrcyUuCCbnjdCBLzZ1JNdeXRkniYm+QNQxF0
+         Ir46mM/en6d+LpOpRIpA4xIfHoEGsHq275eeJKvlPZItg5Dt2hFX+YZab6ikO0ZGCjMT
+         Zk/kE8GILqzykBRh/n+cqaTDmr3jOSkpQpSTZOAJORb5irteLNTXS1pMcUgR5j+G3l+e
+         Kf/J193og0RNefAKATXQ6xbfyep6uSgBb50UDDuKMslcebU13YaVTEKciFblvuLL1eVK
+         nsxU1gY/AkdjoB5UH/kF1j13cvJqK7TD1rpkQ5ypBY36D2xyNku4tRiCNV1EF+syrIA5
+         Cs8g==
+X-Gm-Message-State: AOAM530n7aO+pGedbQqX0kKJOSPzdlaPxXxVxNZqLjJngQswyChS2fpo
+        fAgOBAMm8kjiN0c3g/VBBESGyu5sEocxtvcjPAk=
+X-Google-Smtp-Source: ABdhPJxBgzGSfDSa2OPyIAwZWVZ4H69sFDzX7scvb8R//2XlGvyvV2b2Ots/wrP8InfDFXtxvo8keG0hr7BkujAlk8s=
+X-Received: by 2002:aa7:d481:0:b0:42d:d5fd:f963 with SMTP id
+ b1-20020aa7d481000000b0042dd5fdf963mr6906009edr.209.1655222394209; Tue, 14
+ Jun 2022 08:59:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220614154245.354167-1-jjhiblot@traphandler.com>
+In-Reply-To: <20220614154245.354167-1-jjhiblot@traphandler.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 14 Jun 2022 17:59:17 +0200
+Message-ID: <CAHp75VdCYNGhvEd4kbMX1s26QNatEej5_pi6BhjxuDb+0dP9Vw@mail.gmail.com>
+Subject: Re: [PATCH v5 0/3] Add support for the TLC5925
+To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, krzk+dt@kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The macro GET_TX_REPORT_TYPE1_RERTY_0 and similar macros are not
-obvious on what they are doing. Replace them with clearer codes.
+On Tue, Jun 14, 2022 at 5:42 PM Jean-Jacques Hiblot
+<jjhiblot@traphandler.com> wrote:
+>
+> This series adds the support for the TLC5925 LED controller.
+> This LED controller is driven through SPI. There is little internal logic
+> and it can be thought of as a deserializer + latches.
+> The TLC5925 itself drives up to 16 LEDs, but multiple TLC5925s can be
+> chained to drive more.
+>
+> The first patch describes the dt bindings.
+> The second patch implements most of the driver and supports only
+> synchronous brightness setting (brightness_set_blocking).
+> The last patch implements the non-blocking version (brightness_set).
 
-Signed-off-by: Nam Cao <namcaov@gmail.com>
----
- drivers/staging/r8188eu/hal/Hal8188ERateAdaptive.c  | 12 ++++++------
- .../staging/r8188eu/include/Hal8188ERateAdaptive.h  | 13 -------------
- 2 files changed, 6 insertions(+), 19 deletions(-)
+Thanks!
 
-diff --git a/drivers/staging/r8188eu/hal/Hal8188ERateAdaptive.c b/drivers/staging/r8188eu/hal/Hal8188ERateAdaptive.c
-index 3cefdf90d6e0..1e04de3a6622 100644
---- a/drivers/staging/r8188eu/hal/Hal8188ERateAdaptive.c
-+++ b/drivers/staging/r8188eu/hal/Hal8188ERateAdaptive.c
-@@ -614,12 +614,12 @@ void ODM_RA_TxRPT2Handle_8188E(struct odm_dm_struct *dm_odm, u8 *TxRPT_Buf, u16
- 
- 		pRAInfo = &dm_odm->RAInfo[MacId];
- 		if (valid) {
--			pRAInfo->RTY[0] = (u16)GET_TX_REPORT_TYPE1_RERTY_0(pBuffer);
--			pRAInfo->RTY[1] = (u16)GET_TX_REPORT_TYPE1_RERTY_1(pBuffer);
--			pRAInfo->RTY[2] = (u16)GET_TX_REPORT_TYPE1_RERTY_2((u8 *)pBuffer);
--			pRAInfo->RTY[3] = (u16)GET_TX_REPORT_TYPE1_RERTY_3(pBuffer);
--			pRAInfo->RTY[4] = (u16)GET_TX_REPORT_TYPE1_RERTY_4(pBuffer);
--			pRAInfo->DROP =   (u16)GET_TX_REPORT_TYPE1_DROP_0(pBuffer);
-+			pRAInfo->RTY[0] = le16_to_cpup((__le16 *)pBuffer);
-+			pRAInfo->RTY[1] = pBuffer[2];
-+			pRAInfo->RTY[2] = pBuffer[3];
-+			pRAInfo->RTY[3] = pBuffer[4];
-+			pRAInfo->RTY[4] = pBuffer[5];
-+			pRAInfo->DROP = pBuffer[6];
- 			pRAInfo->TOTAL = pRAInfo->RTY[0] + pRAInfo->RTY[1] +
- 					 pRAInfo->RTY[2] + pRAInfo->RTY[3] +
- 					 pRAInfo->RTY[4] + pRAInfo->DROP;
-diff --git a/drivers/staging/r8188eu/include/Hal8188ERateAdaptive.h b/drivers/staging/r8188eu/include/Hal8188ERateAdaptive.h
-index 20d73ca781e8..c571ad9478ea 100644
---- a/drivers/staging/r8188eu/include/Hal8188ERateAdaptive.h
-+++ b/drivers/staging/r8188eu/include/Hal8188ERateAdaptive.h
-@@ -22,19 +22,6 @@
- 	le32_to_cpu((*(__le32 *)(__rxstatusdesc + 16))
- #define GET_TX_RPT2_DESC_MACID_VALID_2_88E(__rxstatusdesc)	\
- 	le32_to_cpu((*(__le32 *)(__rxstatusdesc + 20))
--
--#define GET_TX_REPORT_TYPE1_RERTY_0(__paddr)			\
--	le16_get_bits(*(__le16 *)__paddr, GENMASK(15, 0))
--#define GET_TX_REPORT_TYPE1_RERTY_1(__paddr)			\
--	LE_BITS_TO_1BYTE(__paddr + 2, 0, 8)
--#define GET_TX_REPORT_TYPE1_RERTY_2(__paddr)			\
--	LE_BITS_TO_1BYTE(__paddr + 3, 0, 8)
--#define GET_TX_REPORT_TYPE1_RERTY_3(__paddr)			\
--	LE_BITS_TO_1BYTE(__paddr + 4, 0, 8)
--#define GET_TX_REPORT_TYPE1_RERTY_4(__paddr)			\
--	LE_BITS_TO_1BYTE(__paddr + 5, 0, 8)
--#define GET_TX_REPORT_TYPE1_DROP_0(__paddr)			\
--	LE_BITS_TO_1BYTE(__paddr + 6, 0, 8)
- /*  End rate adaptive define */
- 
- int ODM_RAInfo_Init_all(struct odm_dm_struct *dm_odm);
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+for the entire series.
+
+You may (if v6 is needed) to keep headers ordered (like gpio/consumer
+as G and workqueue as W in alphabet).
+
+> changes v4->v5:
+>  * add the headers that the code is a direct user of
+>  * replace dev_err() with dev_err_probe() in ->probe()
+>  * comestic changes (spaces, alignment and blank lines)
+>
+> changes v3->v4:
+>  * add missing MODULE_DEVICE_TABLE(of, ...)
+>  * use dev_err_probe() to avoid spamming the log in case of deferred probe
+>  * use bitmap ops instead of direct memory access + lock
+>  * sort headers and a few other cosmetic changes.
+>
+> changes v2->v3:
+>  * fixed the yaml description of the bindings (now passes dt_binding_check)
+>  * renamed shit-register-length into ti,shift-register-length and specify
+>    its type
+>
+> changes v1->v2:
+>  * renamed property shift_register_length into shift-register-length
+>  * add a SPI MODULE_DEVICE_TABLE structure
+>  * fixed the yaml description of the bindings (now passes dt_binding_check)
+>
+> Jean-Jacques Hiblot (3):
+>   dt-bindings: leds: Add bindings for the TLC5925 controller
+>   leds: Add driver for the TLC5925 LED controller
+>   leds: tlc5925: Add support for non blocking operations
+>
+>  .../devicetree/bindings/leds/ti,tlc5925.yaml  | 107 +++++++++++
+>  drivers/leds/Kconfig                          |   6 +
+>  drivers/leds/Makefile                         |   1 +
+>  drivers/leds/leds-tlc5925.c                   | 181 ++++++++++++++++++
+>  4 files changed, 295 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/leds/ti,tlc5925.yaml
+>  create mode 100644 drivers/leds/leds-tlc5925.c
+>
+> --
+> 2.25.1
+>
+
+
 -- 
-2.25.1
-
+With Best Regards,
+Andy Shevchenko
