@@ -2,104 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 03:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D17B2CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 03:19:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349148AbiFNDTX (ORCPT
+        id S1351523AbiFNDTi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 23:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49476 "EHLO
+        Mon, 13 Jun 2022 23:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350410AbiFNDTP (ORCPT
+        with ESMTP id S1350441AbiFNDTc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 23:19:15 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36D12E69B
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:19:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655176754; x=1686712754;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TJReoOj8nE5W5agtQe+sD6ww44oVbp+1qTl06dZ7JY4=;
-  b=PG/zFe9UMzkCy9I+sYMjILIJn1QvzS3ZdpGAwQhshvv0YNVusFsZVVeS
-   oc/O4opAYs4P21r/GpJFL7hVUdnZs4Ws4fWX01v65rHxfDG0crPstf/nm
-   FBm1gitj4/vEp3CzYxzQOE/Rfs2E1RJZ3XYDK4xObVQB9QrXAGaZsJCEU
-   tG5FjtXXok+uqXXf05ZdYHIFCiVU7Ni9I0dHi379lS+J9t7E8w7mqTS9s
-   XHQLxaGiDOZXnKg41VQa03QgtjsyxkUaJ4WfiPRitysfUeyyLy2ruAF1f
-   y25kqOjlFqoi+O29mTriBY8va978xMJsKw72QhIs7nhxqIq6I0dajxlDn
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258318638"
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="258318638"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 20:19:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="535388451"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 13 Jun 2022 20:19:12 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o0x5D-000LQD-0h;
-        Tue, 14 Jun 2022 03:19:11 +0000
-Date:   Tue, 14 Jun 2022 11:18:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [intel-tdx:guest-unaccepted-memory 6/17] fs/proc/meminfo.c:156:5:
- warning: "CONFIG_UNACCEPTED_MEMORY" is not defined, evaluates to 0
-Message-ID: <202206141126.wBfKM00X-lkp@intel.com>
+        Mon, 13 Jun 2022 23:19:32 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C7B2E696
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:19:31 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so10603788pjm.2
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:19:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7L8e1Wz/Bd9z7iLzaFmqZHzg9hGkFUKT87XneuMBC4s=;
+        b=UXGxXFisJTDA5eg/7J+MzK1OfxHBFi3fX5Hr9jfiVqSYvKefez4KuMeV9V2EJcHwyS
+         u0p2ak8L1LS9b0xqmMzO4boRwj+o88ckA/SQhGa0etdFy4Sb+OYvBc1GdtRO9SKYMoLV
+         E/bBmZBENCoJN1eexVato9L4Ks2NmoR5u9fRU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7L8e1Wz/Bd9z7iLzaFmqZHzg9hGkFUKT87XneuMBC4s=;
+        b=Y0cIssAgysb9YnBTdxOtspMAFa2+9GHdsu0O+1enlpfFc7MOhuDb9SIJn0sEkWMLDc
+         RruaArJLgA2XUN0efZ4Eu2g/NBa1PA4vS9dpKSem3aYeBiZkEKj3fKT8ILXVF12VaQRY
+         ugk0OLrOIpmw09pAE6SDvyX9eCD1zzFkOM70WZIlJVD+Cb28yW49+n8TUkjvGaJcrL2b
+         zdkbnPz6jvGuZO4ZJRuESoTUke3//d6cOMlCDKcZaCpy3TTNO38UL03gS1OpmTzva2WI
+         QAQtSN62NBt2K7RYkXkbmZye2oq/B4Ve3io96MyGebylEKOHMzNIvvIvFTi2tAAZGzvw
+         HYfw==
+X-Gm-Message-State: AJIora+vBsWiA1ofAm9HsUe/LowsNUcO+6Xm96QWX//YRF8eWD8iHVnn
+        bFwmGHC/mtSjS276xoIxI/HxtTFoSuxamg==
+X-Google-Smtp-Source: AGRyM1vWB6bubOckC1eBAZ912PtyRJ9dDViWlYRgpIAHNDPo8sztccizLgEYqmphzjIE3Rz/945vWA==
+X-Received: by 2002:a17:90a:c7cf:b0:1e8:2b77:7835 with SMTP id gf15-20020a17090ac7cf00b001e82b777835mr2163700pjb.109.1655176770633;
+        Mon, 13 Jun 2022 20:19:30 -0700 (PDT)
+Received: from google.com ([2401:fa00:8f:203:580a:28cf:a82b:5610])
+        by smtp.gmail.com with ESMTPSA id b6-20020a170902650600b0015ee985999dsm5905819plk.97.2022.06.13.20.19.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 20:19:29 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 12:19:24 +0900
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        umgwanakikbuti@gmail.com, bigeasy@linutronix.de,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        regressions@lists.linux.dev, Jens Axboe <axboe@kernel.dk>,
+        Nitin Gupta <ngupta@vflare.org>
+Subject: Re: qemu-arm: zram: mkfs.ext4 : Unable to handle kernel NULL pointer
+ dereference at virtual address 00000140
+Message-ID: <Yqf+PC+cKePAsaNI@google.com>
+References: <Yp47DODPCz0kNgE8@google.com>
+ <CA+G9fYsjn0zySHU4YYNJWAgkABuJuKtHty7ELHmN-+30VYgCDA@mail.gmail.com>
+ <Yp/kpPA7GdbArXDo@google.com>
+ <YqAL+HeZDk5Wug28@google.com>
+ <YqAMmTiwcyS3Ttla@google.com>
+ <YqANP1K/6oRNCUKZ@google.com>
+ <YqBRZcsfrRMZXMCC@google.com>
+ <CA+G9fYvjpCOcTVdpnHTOWaf3KcDeTM3Njn_NnXvU37ppoHH5uw@mail.gmail.com>
+ <YqbtH9F47dkZghJ7@google.com>
+ <Yqdqfz4Ycbg33k1R@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <Yqdqfz4Ycbg33k1R@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git guest-unaccepted-memory
-head:   7a902d05477ac272558ba731d903c6b0c9d72903
-commit: e4fbeb9c5cb4aa02fcd17388eef920f389fc83ea [6/17] mm: Report unaccepted memory in meminfo
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220614/202206141126.wBfKM00X-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel/tdx/commit/e4fbeb9c5cb4aa02fcd17388eef920f389fc83ea
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx guest-unaccepted-memory
-        git checkout e4fbeb9c5cb4aa02fcd17388eef920f389fc83ea
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash fs/proc/ mm/
+On (22/06/13 09:49), Minchan Kim wrote:
+> > Many thanks for the tests.
+> > 
+> > Quite honestly I was hoping that the patch would not help :) Well, ok,
+> > we now know that it's mapping area lock and the lockdep part of its
+> > memory is zero-ed out. The question is - "why?" It really should not
+> > be zeroed out.
+> 
+> Ccing Mike and Sebastian who are author/expert of the culprit patch
+> 
+> Naresh found zsmalloc crashed on the testing [1] and confirmed
+> that Sergey's patch[2] fixed the problem.
+> However, I don't understand why we need reinit the local_lock
+> on cpu_up handler[3].
+> 
+> Could you guys shed some light?
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+My guess is that it's either something very specific to Naresh's arch/config
+or a bug somewhere, which memset() per-CPU memory. Not sure how to track it
+down. KASAN maybe?
 
-All warnings (new ones prefixed by >>):
+We certainly don't expect that
 
-   fs/proc/meminfo.c:22:28: warning: no previous prototype for 'arch_report_meminfo' [-Wmissing-prototypes]
-      22 | void __attribute__((weak)) arch_report_meminfo(struct seq_file *m)
-         |                            ^~~~~~~~~~~~~~~~~~~
-   fs/proc/meminfo.c: In function 'meminfo_proc_show':
->> fs/proc/meminfo.c:156:5: warning: "CONFIG_UNACCEPTED_MEMORY" is not defined, evaluates to 0 [-Wundef]
-     156 | #if CONFIG_UNACCEPTED_MEMORY
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
+	static DEFINE_PER_CPU(struct mapping_area, zs_map_area) = {
+	        .lock   = INIT_LOCAL_LOCK(lock),
+	};
 
-
-vim +/CONFIG_UNACCEPTED_MEMORY +156 fs/proc/meminfo.c
-
-   155	
- > 156	#if CONFIG_UNACCEPTED_MEMORY
-   157		show_val_kb(m, "UnacceptedPages:",
-   158			    global_node_page_state(NR_UNACCEPTED));
-   159	#endif
-   160	
-   161		hugetlb_report_meminfo(m);
-   162	
-   163		arch_report_meminfo(m);
-   164	
-   165		return 0;
-   166	}
-   167	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+would produce un-initialized dep_map. So I guess we start off with a
+valid per-CPU lock, but then it somehow gets zeroed-out.
