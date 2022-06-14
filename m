@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D685C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC1E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352631AbiFNCK3 (ORCPT
+        id S1352643AbiFNCKf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42058 "EHLO
+        Mon, 13 Jun 2022 22:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352608AbiFNCJQ (ORCPT
+        with ESMTP id S1352534AbiFNCJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:09:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3399C3668A;
-        Mon, 13 Jun 2022 19:06:31 -0700 (PDT)
+        Mon, 13 Jun 2022 22:09:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B5D369C5;
+        Mon, 13 Jun 2022 19:06:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42DB7B816A9;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16911B8168A;
+        Tue, 14 Jun 2022 02:06:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03A5FC341C4;
         Tue, 14 Jun 2022 02:06:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31EF2C341C5;
-        Tue, 14 Jun 2022 02:06:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172389;
-        bh=XOI0c77YmpwmB73ozt+1WFSrwCF5nxhWw69Zwe/maM0=;
+        s=k20201202; t=1655172391;
+        bh=YnT0A5pYx7LECS7ve6dpcfSYlTvAMThZz2MiAayKHIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bXWmK99x/rHDsLxHKDZke0ys1sImNwzLu0g1gUzFThMUzyV1gQYxaAMoI5U8cpcQG
-         PoZA6FbRPKmexbpr9uj/HiAcPhQUhVSPN0Dx9FsRmn3G9oCtLKqhgAKe6k/KIsAcXL
-         vSKwz2VUa9R7R7JsKcdRGO7L3TILzhUdDHWdxyv8XRd4DqXfb19gqGU7BhUqPxAwsP
-         10yD4DKgBIhKTk6/0Yufsrk6X+s/9F6lc+ZAt/EB/aE6/2MqKYQDQm3jMVc3vxUZeA
-         Iz87kNs5/k2Ux8GhwQDLqjxLwrXPkCTUH1+sJ31yDpnYBm5QOHTAGYgSqOZOCIVeHI
-         S1hjYaQbNpNoA==
+        b=p5BMkhzlzsaBlsYTaWhW8SbH4b/bGin9zSjmtv+07Uszs6LI6C2uumKMbWFYADV+T
+         vzEPeITivrwaeoTHfAzNqd1GvczdYDEFQaHn9sxIzbzhwIzd/KdcxZtoWHU4MnJsHy
+         p6QxHjDAZ9CpaxOQ1w23YUfFH9xGhi/3GvmmF5HmLSeKu+UducrHd7hhECpkV6H6uW
+         V4FtnaN/MqlKB73z5R+6mXrTkZQr630csX8h/ZqHnlmZa1vQrNWbuLFQlyJz9RgeVu
+         rpvfGR2ELI6pUug/uaYHH60pBEizRsPF/tbv1hzcFFM728kTAMIyC+6wTQ8GjCcjPV
+         SqFWlXNdDYrNA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 17/43] ASoC: es8328: Fix event generation for deemphasis control
-Date:   Mon, 13 Jun 2022 22:05:36 -0400
-Message-Id: <20220614020602.1098943-17-sashal@kernel.org>
+Cc:     Marius Hoch <mail@mariushoch.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 19/43] Input: soc_button_array - also add Lenovo Yoga Tablet2 1051F to dmi_use_low_level_irq
+Date:   Mon, 13 Jun 2022 22:05:38 -0400
+Message-Id: <20220614020602.1098943-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
 References: <20220614020602.1098943-1-sashal@kernel.org>
@@ -52,45 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Marius Hoch <mail@mariushoch.de>
 
-[ Upstream commit 8259610c2ec01c5cbfb61882ae176aabacac9c19 ]
+[ Upstream commit 6ab2e51898cd4343bbdf8587af8ce8fbabddbcb5 ]
 
-Currently the put() method for the deemphasis control returns 0 when a new
-value is written to the control even if the value changed, meaning events
-are not generated. Fix this, skip the work of updating the value when it is
-unchanged and then return 1 after having done so.
+Commit 223f61b8c5ad ("Input: soc_button_array - add Lenovo Yoga Tablet2
+1051L to the dmi_use_low_level_irq list") added the 1051L to this list
+already, but the same problem applies to the 1051F. As there are no
+further 1051 variants (just the F/L), we can just DMI match 1051.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220603123937.4013603-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Tested on a Lenovo Yoga Tablet2 1051F: Without this patch the
+home-button stops working after a wakeup from suspend.
+
+Signed-off-by: Marius Hoch <mail@mariushoch.de>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220603120246.3065-1-mail@mariushoch.de
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/es8328.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/input/misc/soc_button_array.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/es8328.c b/sound/soc/codecs/es8328.c
-index 9632afc2d4d6..ca3b1c00fa78 100644
---- a/sound/soc/codecs/es8328.c
-+++ b/sound/soc/codecs/es8328.c
-@@ -161,13 +161,16 @@ static int es8328_put_deemph(struct snd_kcontrol *kcontrol,
- 	if (deemph > 1)
- 		return -EINVAL;
- 
-+	if (es8328->deemph == deemph)
-+		return 0;
-+
- 	ret = es8328_set_deemph(component);
- 	if (ret < 0)
- 		return ret;
- 
- 	es8328->deemph = deemph;
- 
--	return 0;
-+	return 1;
- }
- 
- 
+diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
+index cb6ec59a045d..efffcf0ebd3b 100644
+--- a/drivers/input/misc/soc_button_array.c
++++ b/drivers/input/misc/soc_button_array.c
+@@ -85,13 +85,13 @@ static const struct dmi_system_id dmi_use_low_level_irq[] = {
+ 	},
+ 	{
+ 		/*
+-		 * Lenovo Yoga Tab2 1051L, something messes with the home-button
++		 * Lenovo Yoga Tab2 1051F/1051L, something messes with the home-button
+ 		 * IRQ settings, leading to a non working home-button.
+ 		 */
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "60073"),
+-			DMI_MATCH(DMI_PRODUCT_VERSION, "1051L"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "1051"),
+ 		},
+ 	},
+ 	{} /* Terminating entry */
 -- 
 2.35.1
 
