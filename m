@@ -2,129 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6967C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:20:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A43C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:20:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353481AbiFNCUB (ORCPT
+        id S1353366AbiFNCUH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
+        Mon, 13 Jun 2022 22:20:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353426AbiFNCNp (ORCPT
+        with ESMTP id S1353469AbiFNCNt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:13:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7A5340FF;
-        Mon, 13 Jun 2022 19:07:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8851C60B76;
-        Tue, 14 Jun 2022 02:07:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C13DCC3411B;
-        Tue, 14 Jun 2022 02:07:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172464;
-        bh=JicjRnQMDRin8zmcJ7QBb5GWds4gk7oiwtluZKwMO9s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ds9CITjjaOkA9K2BTy98cTZtuDZEPj5TToac1Ff2x19peDQEOJClCv8PtCo/HRgIn
-         agWTkQhIx8pWbl5Pb+i2xhfmg7FUSUF+g43CNxo2w9cEDCaND1LQuO/wwFxNDnqcii
-         70xbTqrPKPo0pzoJV4ffzYJIjybgXutA9HggFfKEdN62e0uTgy6e5CoHERuQgbTtKq
-         6NOaMZrADy5UCHZzEpaOpHqhhmMtdG7N6RFe+VGpzykQOQYSdhrldklI57mNQy02Es
-         hFDyG8vBnpmnK2f+SDm2uWPzO2bqNYbdgtbnpsumbJGiCBlm4zZdPLVv6TjFPfPbiO
-         nFBCaiXFS72BQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@avagotech.com,
-        dick.kennedy@avagotech.com, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 21/41] scsi: lpfc: Resolve NULL ptr dereference after an ELS LOGO is aborted
-Date:   Mon, 13 Jun 2022 22:06:46 -0400
-Message-Id: <20220614020707.1099487-21-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
-References: <20220614020707.1099487-1-sashal@kernel.org>
+        Mon, 13 Jun 2022 22:13:49 -0400
+Received: from challenge-bot.com (challenge-bot.com [IPv6:2602:fffa:fff:108a:0:16:3e15:92b8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF913584E
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:07:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=challenge-bot.com; s=20180430; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=wxg1Qx31xYRL1VBGbLQizcl3JBI7G3epjuGqGFMFwbA=; b=AvPQTmEdyYSBWkDTKSMckZXRSp
+        XzZV9fon/3AhhksNJjs/EjBnaOWaQ3uAaZYLbGNzoRJQFXGgHTmgkmniTvUuGGHINA3Rgote84FI7
+        2gI5zmrgRix/KGmF+JHC0sXP9wDwrm+8ha/fDVPWyIJUq7nAZsvucyfFXOPWkvLcBMwI=;
+Received: from ozzloy by challenge-bot.com with local (Exim 4.92)
+        (envelope-from <ozzloy@challenge-bot.com>)
+        id 1o0vyA-00088E-CQ; Mon, 13 Jun 2022 19:07:50 -0700
+From:   daniel watson <ozzloy@challenge-bot.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc:     Daniel Watson <ozzloy@challenge-bot.com>
+Subject: [PATCH 1/4] staging: r8188eu: remove leading '_' on _rtw_IOL_append_WB_cmd
+Date:   Mon, 13 Jun 2022 19:07:30 -0700
+Message-Id: <a1596a62d8e63afbe6a645919a349a8402277c5f.1655171591.git.ozzloy@challenge-bot.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <cover.1655171591.git.ozzloy@challenge-bot.com>
+References: <cover.1655171591.git.ozzloy@challenge-bot.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Daniel Watson <ozzloy@challenge-bot.com>
 
-[ Upstream commit b1b3440f437b75fb2a9b0cfe58df461e40eca474 ]
+name the function rtw_IOL_append_WB_cmd and call it directly,
+instead of using wrapper macro
 
-A use-after-free crash can occur after an ELS LOGO is aborted.
+delete wrapper macro, which is not needed
 
-Specifically, a nodelist structure is freed and then
-ndlp->vport->cfg_log_verbose is dereferenced in lpfc_nlp_get() when the
-discovery state machine is mistakenly called a second time with
-NLP_EVT_DEVICE_RM argument.
+NOTE: code compiles, not tested on hardware
 
-Rework lpfc_cmpl_els_logo() to prevent the duplicate calls to release a
-nodelist structure.
-
-Link: https://lore.kernel.org/r/20220603174329.63777-6-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Daniel Watson <ozzloy@challenge-bot.com>
 ---
- drivers/scsi/lpfc/lpfc_els.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/staging/r8188eu/core/rtw_iol.c    | 2 +-
+ drivers/staging/r8188eu/include/rtw_iol.h | 6 ++----
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
-index ce28c4a30460..5f44a0763f37 100644
---- a/drivers/scsi/lpfc/lpfc_els.c
-+++ b/drivers/scsi/lpfc/lpfc_els.c
-@@ -2955,18 +2955,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
- 		spin_unlock_irq(&ndlp->lock);
- 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
- 					NLP_EVT_DEVICE_RM);
--		lpfc_els_free_iocb(phba, cmdiocb);
--		lpfc_nlp_put(ndlp);
--
--		/* Presume the node was released. */
--		return;
-+		goto out_rsrc_free;
- 	}
- 
- out:
--	/* Driver is done with the IO.  */
--	lpfc_els_free_iocb(phba, cmdiocb);
--	lpfc_nlp_put(ndlp);
--
- 	/* At this point, the LOGO processing is complete. NOTE: For a
- 	 * pt2pt topology, we are assuming the NPortID will only change
- 	 * on link up processing. For a LOGO / PLOGI initiated by the
-@@ -2993,6 +2985,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
- 				 ndlp->nlp_DID, irsp->ulpStatus,
- 				 irsp->un.ulpWord[4], irsp->ulpTimeout,
- 				 vport->num_disc_nodes);
-+
-+		lpfc_els_free_iocb(phba, cmdiocb);
-+		lpfc_nlp_put(ndlp);
-+
- 		lpfc_disc_start(vport);
- 		return;
- 	}
-@@ -3009,6 +3005,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
- 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
- 					NLP_EVT_DEVICE_RM);
- 	}
-+out_rsrc_free:
-+	/* Driver is done with the I/O. */
-+	lpfc_els_free_iocb(phba, cmdiocb);
-+	lpfc_nlp_put(ndlp);
+diff --git a/drivers/staging/r8188eu/core/rtw_iol.c b/drivers/staging/r8188eu/core/rtw_iol.c
+index af8e84a41b851..8c990b1af5a70 100644
+--- a/drivers/staging/r8188eu/core/rtw_iol.c
++++ b/drivers/staging/r8188eu/core/rtw_iol.c
+@@ -67,7 +67,7 @@ bool rtw_IOL_applied(struct adapter  *adapter)
+ 	return false;
  }
  
- /**
+-int _rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr, u8 value, u8 mask)
++int rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr, u8 value, u8 mask)
+ {
+ 	struct ioreg_cfg cmd = {8, IOREG_CMD_WB_REG, 0x0, 0x0, 0x0};
+ 
+diff --git a/drivers/staging/r8188eu/include/rtw_iol.h b/drivers/staging/r8188eu/include/rtw_iol.h
+index fb88ebc1dabb1..a648f9ba50a62 100644
+--- a/drivers/staging/r8188eu/include/rtw_iol.h
++++ b/drivers/staging/r8188eu/include/rtw_iol.h
+@@ -41,16 +41,14 @@ int rtw_IOL_append_END_cmd(struct xmit_frame *xmit_frame);
+ void read_efuse_from_txpktbuf(struct adapter *adapter, int bcnhead,
+ 			      u8 *content, u16 *size);
+ 
+-int _rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr,
+-			   u8 value, u8 mask);
++int rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr,
++			  u8 value, u8 mask);
+ int _rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr,
+ 			   u16 value, u16 mask);
+ int _rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr,
+ 			   u32 value, u32 mask);
+ int _rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path,
+ 			    u16 addr, u32 value, u32 mask);
+-#define rtw_IOL_append_WB_cmd(xmit_frame, addr, value, mask)		\
+-	_rtw_IOL_append_WB_cmd((xmit_frame), (addr), (value) ,(mask))
+ #define rtw_IOL_append_WW_cmd(xmit_frame, addr, value, mask)		\
+ 	_rtw_IOL_append_WW_cmd((xmit_frame), (addr), (value),(mask))
+ #define rtw_IOL_append_WD_cmd(xmit_frame, addr, value, mask)		\
 -- 
-2.35.1
+2.34.1
 
