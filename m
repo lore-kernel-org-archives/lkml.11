@@ -2,95 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 679C7CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:48:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 952F3CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343510AbiFNQsD (ORCPT
+        id S1344599AbiFNQtK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34644 "EHLO
+        Tue, 14 Jun 2022 12:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349778AbiFNQr2 (ORCPT
+        with ESMTP id S1344657AbiFNQs4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:47:28 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0A72A272
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:47:16 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id u18so8230300plb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:47:16 -0700 (PDT)
+        Tue, 14 Jun 2022 12:48:56 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0843E38792
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:48:55 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id fu3so18311687ejc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:48:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=129WjS6ew4f6MdB7b/M4kO0Bha3LRuES78hDcODKT8U=;
-        b=c5/7Vx7Zmv5TO553+3uBN1i423Qic2cHJdBpOuoB0r7RBPwUmcxWNtZiKtCDJkGFyv
-         KnjXYDP/WMxlX2gwdg0PAivfT+WdD18P6o36oJId2cLsMcp2F1VT/b7utfqE9+OhZtVR
-         1vpAcXxFQd2UwypV8n0svpJcupPMrpb5QQzjj8lNfx3ZHTp29VqiijEQDkI8m4dKe1qk
-         O0ZEEgOhE/N3XJJJSHREgF5jE2g24ZKX265CCkMuMGdfKhmRpZJf1mTGgMlGlsdYmp73
-         TpyPFRsEgCmCdM1/Mm+wpiJgZWnCPI0YGfY4WeRNt21B0/9SXYaIb1jQoXjhOwX+briD
-         Bl3A==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5cvWfPjVNLAIHIZUAi0xIfsh5PXPOWCDCWkx0bXDbAE=;
+        b=fkDY3kih2RQYVtQDrIhydfjyCechMncgd0DM66XBHsRZ/iiPmXjDAf2lJn1ITrb5fe
+         6AYh21Efuj1jfYc2bBSP/QwQ6FuV1plJzy3GzuPFsugU2gYzcTPep5+zaKdjwSkj2nd+
+         DOEU7BQswDunRLHojZJVLtdmZVGnqVRXHs9QY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=129WjS6ew4f6MdB7b/M4kO0Bha3LRuES78hDcODKT8U=;
-        b=s5kGw9DogFT2XdtAEjTnQIW6IJirlS5C10LnbCplnvpxncrnX3rMH3OBAUbvsgioVo
-         A9DoE5wyZaDuARzrySPREmL1KTN+LKnrFDnAnDhtzqbA9nCzj/Xc1joh6Oh4eQW2J19q
-         iYTOO9SZp90v4HII1OnNIPQQBsAdwWwULAnPvI0SMFIxnQ3CAamRz/Ajo7YHlZ9IKYgU
-         nMnVt2OnP+lA1GJaXUoL3hu6ulq13Bvic5tXkJyU7nEswgnShCw3jm89M5TRLtMop2vM
-         lqEtcXef460+J8fEpOTh7Hr8zJDPvvsb11chqBSAc40REG7Fx43iC/PAdrQDa2z/EHGO
-         8hDA==
-X-Gm-Message-State: AJIora+Mqfm2wgd111u9IvWrtSrCjxQ2bBNg/2ztcnyOw6Ps2mUcFQdD
-        gahrHr6QUGOH46rVjR2pd+gtQQ==
-X-Google-Smtp-Source: AGRyM1vvSQOe5i+3ufNEJnLp5MEKfiubz7ftYT3g6jz4wGpbmgd/mmzXoM36pQ+iGatO88cU7fSPIA==
-X-Received: by 2002:a17:90b:48cf:b0:1e8:9438:ce13 with SMTP id li15-20020a17090b48cf00b001e89438ce13mr5452042pjb.235.1655225236072;
-        Tue, 14 Jun 2022 09:47:16 -0700 (PDT)
-Received: from n131-251-240.byted.org ([121.30.179.216])
-        by smtp.gmail.com with ESMTPSA id iy13-20020a170903130d00b0015e8d4eb243sm7505266plb.141.2022.06.14.09.47.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 09:47:15 -0700 (PDT)
-From:   Zhi Song <zhi.song@bytedance.com>
-To:     vilhelm.gray@gmail.com, gregkh@linuxfoundation.org,
-        rafael@kernel.org
-Cc:     linux-kernel@vger.kernel.org, Zhi Song <zhi.song@bytedance.com>
-Subject: [PATCH v2] isa: put_device after failing to device_register
-Date:   Wed, 15 Jun 2022 00:47:10 +0800
-Message-Id: <20220614164710.1744680-1-zhi.song@bytedance.com>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5cvWfPjVNLAIHIZUAi0xIfsh5PXPOWCDCWkx0bXDbAE=;
+        b=1vhNDqruZDjoNucfICvisfOhJTSyV2CABH2FDJHivsVx4saocFFtxlTZCSpSDiZl3E
+         hMwE087zR/6Kw/5mcALvkqlN9/gItyjQoKP9amiizu4Sf8NNugu2cjg9KW6OQ33vQOje
+         /tpFLzoaOr8mw85MLtbTivghHapf63ddX8tU8p2a3iwyA8Cx86fEtyVuKA17C0vDDufp
+         pK+VGlxBBWrmzjCeNFZp7enCBW+6ELwM8SW/pI7ZmoV4mpoPSVD2bsSJoHtvO6UbT+H9
+         1/JpTflo9ZPnwxGjoxXsjqHLMxBZrFDeSOptwKv52zJBqqAcEMAAr0Y2jQK5YWex/YOc
+         oPDw==
+X-Gm-Message-State: AOAM533tHZqybkh4KdaNGape7U8JqLiUNHJ2mnj91UcAKeHXmICRi6Vw
+        LZl0F3x/HZpPXT3DcLTq6cBtElcsPIUyYzja
+X-Google-Smtp-Source: ABdhPJx6Qxl/4eKBcTEfWcrv2wT9DKVGhAY06ibDAbRFDk1i/booqn/+GLyY9PFOniYMpKEV1lcZ3w==
+X-Received: by 2002:a17:906:5352:b0:712:3916:e92 with SMTP id j18-20020a170906535200b0071239160e92mr5109957ejo.756.1655225333240;
+        Tue, 14 Jun 2022 09:48:53 -0700 (PDT)
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
+        by smtp.gmail.com with ESMTPSA id u20-20020a509514000000b0042dd1d3d571sm7538836eda.26.2022.06.14.09.48.52
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 09:48:52 -0700 (PDT)
+Received: by mail-wr1-f47.google.com with SMTP id w17so4559687wrg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:48:52 -0700 (PDT)
+X-Received: by 2002:a5d:6da3:0:b0:219:bcdd:97cd with SMTP id
+ u3-20020a5d6da3000000b00219bcdd97cdmr5767487wrs.274.1655225332260; Tue, 14
+ Jun 2022 09:48:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220614144853.3693273-1-glider@google.com>
+In-Reply-To: <20220614144853.3693273-1-glider@google.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 14 Jun 2022 09:48:35 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com>
+Message-ID: <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com>
+Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Evgenii Stepanov <eugenis@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vitaly Buka <vitalybuka@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-device_register() is used to register a device with the system.
-We need to call put_device() to give up the reference initialized
-in device_register() when it returns an error and this will clean
-up correctly.
+On Tue, Jun 14, 2022 at 7:49 AM Alexander Potapenko <glider@google.com> wrote:
+>
+> The bigger question I want to raise here is whether we want to
+> discourage passing uninitialized variables to functions in the kernel
+> altogether.
 
-Signed-off-by: Zhi Song <zhi.song@bytedance.com>
----
-V1 -> V2: Fix up the changelog text correct.
----
- drivers/base/isa.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+I'm assuming you mean pass by reference.
 
-diff --git a/drivers/base/isa.c b/drivers/base/isa.c
-index 55e3ee2da98f..cf88f3d77b7d 100644
---- a/drivers/base/isa.c
-+++ b/drivers/base/isa.c
-@@ -173,8 +173,10 @@ static int __init isa_bus_init(void)
- 	error = bus_register(&isa_bus_type);
- 	if (!error) {
- 		error = device_register(&isa_bus);
--		if (error)
-+		if (error) {
-+			put_device(&isa_bus);
- 			bus_unregister(&isa_bus_type);
-+		}
- 	}
- 	return error;
- }
--- 
-2.30.2
+Some functions are really fundamentally about initializing things, and
+expect uninitialized allocations.
 
+Obviously the traditional example of this is "memset()", and that one
+can be special-cased as obvious, but we probably have a ton of wrapper
+things like that.
+
+IOW, things like just "snprintf()" etc is fundamentally passed an
+uninitialized buffer, because the whole point is that it will write to
+that buffer.
+
+And no, we don't want to initialize it, since the buffer may be big
+(on purpose).
+
+Now, for *small* things (like that "pointer to inode") that aren't
+some kind of array or big structure, I think it might be good to
+perhaps be stricter. But even there we do have cases where we pass
+things by reference because the function is explicitly designed to
+initialize the value: the argument isn't really "an argument", it's a
+"second return value".
+
+But always initializing in the caller sounds stupid and
+counter-productive, since the point is to initialize by calling the
+helper function (think things like returning a "cookie" or similar:
+initializing the cookie to NULL in the caller is just plain _wrong_.
+
+What I think might be a good model is to be able to mark such
+arguments as "must be initialized by callee".
+
+So then the rule could be that small arguments passed by reference
+have to be either initialized by the caller, or the argument must have
+that "initialized by callee" attribute, and then the initialization
+would be enforced in the callee instead.
+
+But making the rule be that the caller *always* has to initialize
+sounds really wrong to me.
+
+             Linus
