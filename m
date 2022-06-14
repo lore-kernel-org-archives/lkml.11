@@ -2,98 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 533AACCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:35:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED61C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:35:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356014AbiFNCfW (ORCPT
+        id S1356151AbiFNCfo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53734 "EHLO
+        Mon, 13 Jun 2022 22:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356121AbiFNCda (ORCPT
+        with ESMTP id S1355344AbiFNCfK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:33:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53DA390;
-        Mon, 13 Jun 2022 19:12:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99C7CB81699;
-        Tue, 14 Jun 2022 02:12:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C599C34114;
-        Tue, 14 Jun 2022 02:12:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172724;
-        bh=+x2VeOKEfanNJCkkGw7NeraQJLk2kT9/chRQ+GkpS0U=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JioD4HEnSsmc6Z9JIfyuFLNWDZqDoZbFdp22vX6siAq89ZgjXcmJaAzwfm9Eddm0Y
-         B2M+Nr/lJ54a8hbhd09rLNWrMZYLeLWFlg11BcPvhSiAkSLajmvl19bqAk4y9EaKuh
-         mv1Q4Wr5xNEkBDsrSCTxxeUDrwdfzQbfQ0fvazTecYJrKagivLk9Tg1EkXfmIRmiX8
-         hZbgcO2po9tYraU5r89Sp6zOmU1VtXyzendtvaNXUmXrjX8GUYltUszwNiDOaLLHxP
-         fwduH+IkqvqVEos03OItX7CwUGBYk0xF6lV/yqutQTod0Wb481QiB8XvtzMRhaB5z+
-         fr/syYZJwDYqw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 4.19] KVM: Don't null dereference ops->destroy
-Date:   Mon, 13 Jun 2022 22:12:01 -0400
-Message-Id: <20220614021201.1101599-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Mon, 13 Jun 2022 22:35:10 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C25738BDB;
+        Mon, 13 Jun 2022 19:13:28 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id z9so3878128wmf.3;
+        Mon, 13 Jun 2022 19:13:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qx1x66X9cxQ2Do1EWzHRpluo9ytwIzS6EQlleJWoehY=;
+        b=fFWt4iizlpVuwbqmb/m8i1/dvxNDmKsIyRbCjZdRm21fChV8QpPP50TmJbkR0aUw4T
+         whze9ldyTpOeVy0dNlAs2t6gV0/cogGNdu+uKbWzrUGPCwN2WISJ3b6Sa1F7LlTzHO4g
+         iUUn78rEiGDdleKX2k0OJZHvgiFOl7swWPVBeIQsJDGlDhSR4tgaHSsLEwmrHGI8TAal
+         BVxefl1+gEOgHXo0BKa13hmmbqKSDnPHqyXMnezfuiX19BPp9z4Ycd4De6m3cmeoi4Lu
+         zgdC9oBfcizi9O2ZfoEAJOzluaxR9QbTtLCA+tSdUUUPAvsrbxuLkhn0OCiM8sTMKntD
+         0eJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qx1x66X9cxQ2Do1EWzHRpluo9ytwIzS6EQlleJWoehY=;
+        b=QoW4ruPvF29zFVaby59Xb+72BLJLC25xxp/Ag91glRevLTEH37B0Uh20Y9+TzjM27Q
+         tM2P1x2cOtu8g3Um6BnnMByPPYdxti66GxVBV71i0J7F6c2Qe8BFDA/r/hO75QO0paHs
+         tpJTGT/ep+udfBi026yDPcF0pieExlWgp6/zSVQNF/LkHetEWotlmp3GNDqJKpGCye6p
+         eNkL4pVmv+7NI6pxYkVCaINAmp0lX3tPKo+bwnhkaiXmjyXE46F1Fc0N1JjTfPv5C6rE
+         gmOLzZe1WDV2hs7R3o+YA467lrFE5ooddh22KHk5qz5tnvLMCYYI6WMknLZRWoHnjrfW
+         Mtgg==
+X-Gm-Message-State: AOAM530hpBlkBxtGKbp8BbYF9S4kRSyNZEvGa6si+nq1ZoOuYazIrqw+
+        YHanv3+udQqL2ak6yBt6htbZTc+n4KFAAqvB4yo=
+X-Google-Smtp-Source: ABdhPJwoEYy9BBV9NZpta2nTXCP5Zq6MIoI/3/DMRpBP8zIM1i4VyoWJH5O8IzMLWNWoe6HQ1whA1Vcf9JKdtDo3Zj8=
+X-Received: by 2002:a05:600c:d0:b0:39c:5927:3fa7 with SMTP id
+ u16-20020a05600c00d000b0039c59273fa7mr1629426wmm.36.1655172805503; Mon, 13
+ Jun 2022 19:13:25 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220613225723.2734132-1-seanjc@google.com> <20220613225723.2734132-2-seanjc@google.com>
+In-Reply-To: <20220613225723.2734132-2-seanjc@google.com>
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+Date:   Tue, 14 Jun 2022 10:13:14 +0800
+Message-ID: <CAJhGHyDjFCJdRjdV-W5+reg-3jiwJAqeCQ7A-vdUqt+dToJBdA@mail.gmail.com>
+Subject: Re: [PATCH 1/8] KVM: x86/mmu: Drop unused CMPXCHG macro from paging_tmpl.h
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "open list:KERNEL VIRTUAL MACHINE FOR MIPS (KVM/mips)" 
+        <kvm@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+On Tue, Jun 14, 2022 at 6:59 AM Sean Christopherson <seanjc@google.com> wrote:
+>
+> Drop the CMPXCHG macro from paging_tmpl.h, it's no longer used now that
+> KVM uses a common uaccess helper to do 8-byte CMPXCHG.
+>
+> Fixes: f122dfe44768 ("KVM: x86: Use __try_cmpxchg_user() to update guest PTE A/D bits")
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit e8bc2427018826e02add7b0ed0fc625a60390ae5 ]
 
-A KVM device cleanup happens in either of two callbacks:
-1) destroy() which is called when the VM is being destroyed;
-2) release() which is called when a device fd is closed.
-
-Most KVM devices use 1) but Book3s's interrupt controller KVM devices
-(XICS, XIVE, XIVE-native) use 2) as they need to close and reopen during
-the machine execution. The error handling in kvm_ioctl_create_device()
-assumes destroy() is always defined which leads to NULL dereference as
-discovered by Syzkaller.
-
-This adds a checks for destroy!=NULL and adds a missing release().
-
-This is not changing kvm_destroy_devices() as devices with defined
-release() should have been removed from the KVM devices list by then.
-
-Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- virt/kvm/kvm_main.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 3d45ce134227..d3a2eb8ee04e 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -3193,8 +3193,11 @@ static int kvm_ioctl_create_device(struct kvm *kvm,
- 		kvm_put_kvm(kvm);
- 		mutex_lock(&kvm->lock);
- 		list_del(&dev->vm_node);
-+		if (ops->release)
-+			ops->release(dev);
- 		mutex_unlock(&kvm->lock);
--		ops->destroy(dev);
-+		if (ops->destroy)
-+			ops->destroy(dev);
- 		return ret;
- 	}
- 
--- 
-2.35.1
-
+In https://lore.kernel.org/lkml/20220605063417.308311-2-jiangshanlai@gmail.com/
+two other unused macros are also removed.
