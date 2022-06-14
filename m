@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A36CCA47A
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:09:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5AA3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:10:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345116AbiFNSJz (ORCPT
+        id S1345196AbiFNSJ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60750 "EHLO
+        Tue, 14 Jun 2022 14:09:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239612AbiFNSJx (ORCPT
+        with ESMTP id S1345115AbiFNSJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:09:53 -0400
+        Tue, 14 Jun 2022 14:09:55 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C50036326
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:09:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D406F44A0F
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:09:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655230191;
+        s=mimecast20190719; t=1655230194;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=p7xA8r1OE0G47J5o0Tq7Av5J26mdzQALVWbKTBBj4T4=;
-        b=iP4zW9JY8sHrMr6ekLX+3KZnoXxnHGJ5S3Pdegnnus7/Wl+L/wlEGUMIAlLfRHaKqXHVmF
-        eTttfNISaz5JRFaleHD1tHPPbC6CYz2IqytHIYhaE/XaacFnOzrRUF0k+xUFJ5GgEgZESz
-        RrvxmV7RMFXx0FzZ908Mfymyz2rqA04=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MpQuarki66IR7CQ0JeO2Q3emNhjmVObdjJYvYB9eELg=;
+        b=NJnSqpcgnlL2PC4inLByW1apKKnj4/QR96BSVbw/2yEJxYy1j1BoD+Pinn8cte25eTmkTy
+        gq5eEDDoVpxeKlLYJ3w2us76NmkQh+pskXjMjlLkqoG5cMxlta8f+tVvSxXD3jVC/O0kdz
+        Fff4RtETQh7KoLD1d8qIhJPvvBQtR5w=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-588-rLl3PBpiOtCHmPMRsW5s2g-1; Tue, 14 Jun 2022 14:09:50 -0400
-X-MC-Unique: rLl3PBpiOtCHmPMRsW5s2g-1
+ us-mta-442-eKpFmPZfNvq5ByL94CXf4Q-1; Tue, 14 Jun 2022 14:09:50 -0400
+X-MC-Unique: eKpFmPZfNvq5ByL94CXf4Q-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C492D3817A65;
-        Tue, 14 Jun 2022 18:09:49 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7E2F63817A6C;
+        Tue, 14 Jun 2022 18:09:50 +0000 (UTC)
 Received: from bfoster.redhat.com (unknown [10.22.16.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 945BB492C3B;
-        Tue, 14 Jun 2022 18:09:49 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 51D38492C3B;
+        Tue, 14 Jun 2022 18:09:50 +0000 (UTC)
 From:   Brian Foster <bfoster@redhat.com>
 To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     ikent@redhat.com, onestero@redhat.com
-Subject: [PATCH 0/3] proc: improve root readdir latency with many threads
-Date:   Tue, 14 Jun 2022 14:09:46 -0400
-Message-Id: <20220614180949.102914-1-bfoster@redhat.com>
+Subject: [PATCH 3/3] proc: use idr tgid tag hint to iterate pids in readdir
+Date:   Tue, 14 Jun 2022 14:09:49 -0400
+Message-Id: <20220614180949.102914-4-bfoster@redhat.com>
+In-Reply-To: <20220614180949.102914-1-bfoster@redhat.com>
+References: <20220614180949.102914-1-bfoster@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
@@ -52,74 +55,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+The tgid pid/task scan in proc_pid_readdir() is rather inefficient.
+It linearly walks the pid_namespace and checks each allocated pid
+for an associated PIDTYPE_TGID task. This has shown to impact
+getdents() latency in environments that might have processes with
+very large thread counts.
 
-We have a user who has reported performance problems related to
-(presumably) custom task monitoring on Linux systems when running
-processes with large numbers of threads. Unfortunately I don't have much
-information around the practical workload and observations, but only
-that the problem had been narrowed down to excessive readdir latency of
-the /proc root dir in the presence of large numbers of threads in the
-associated pid namespace.
+For example, on a mostly idle 2.4GHz Intel Xeon running Fedora on
+5.19.0-rc2, 'strace -T xfs_io -c readdir /proc' shows the following:
 
-This latency boils down to the inefficient pid_namespace walk down in
-the proc_pid_readdir() path. More specifically, every thread/task
-allocates an associated struct pid, and the procfs next_tgid()
-implementation walks every pid in the namespace looking for those with
-an associated PIDTYPE_TGID task to fill into the directory listing.
+  getdents64(... /* 814 entries */, 32768) = 20624 <0.000568>
 
-Given that ids are part of the idr radix-tree, it seemed fairly logical
-that this could be improved using an internal tree tag. I started
-playing around with an approach that tagged and untagged ids based on
-actual task association (i.e., attach_pid() and friends), but after some
-thought and feedback came to the realization that this could probably be
-simplified to just tag the pid once on allocation and allow procfs to
-use it as a hint for root dir population. This works because post-fork
-tgid task disassociation (without an exit() and freeing the pid) seems
-to be uncommon. The only tool I've seen in my testing so far that leaves
-around a tagged, non-TGID pid is chronyd, which appears to do a fork()
--> setsid() -> fork() pattern where the intermediate task exits but the
-associated pid hangs around for the lifetime of the process due to the
-PIDTYPE_SID association.
+With the addition of a dummy (i.e. idle) process running that
+creates an additional 100k threads, that latency increases to:
 
-Therefore, this series implements this tgid tag hinting approach. Patch
-1 includes a couple tweaks to the idr tree to support traditional
-radix-tree tag propagation. Patch 2 defines the new tag and sets it on
-pid allocation. Patch 3 updates procfs to use the tag for the readdir
-pid_namespace traversal.
+  getdents64(... /* 815 entries */, 32768) = 20656 <0.011315>
 
-As far as testing goes, I've thrown this at fstests (not for filesystem
-testing purposes, but moreso just because I had the test env handy and
-it's a longish running task creation workload), LTP and some of the
-kernel internal tests in tools/testing/selftests (clone, proc,
-pid_namespace) without any obvious regressions. From the performance
-angle, the user who reported this problem has provided some synthetic
-tools to create dummy tasks/threads and run repeated readdir iterations
-of /proc, which is what they've been using to compare results on Linux
-kernels with some $other OS. These tools show a notable improvement in
-terms of the number of /proc readdir iterations possible per-second. For
-example, on 5.19.0-rc2 running on a mostly idle system with an active
-100k thread process, readdirs-per-second improves from a baseline of
-~285 to ~7.3k with the series applied. More detailed getdents() latency
-numbers are included in the commit log of patch 3.
+While this may not be noticeable in one off /proc scans or simple
+usage of ps or top, we have users that report problems caused by
+this latency increase in these sort of scaled environments with
+custom tooling that makes heavier use of task monitoring.
 
-Thoughts, reviews, flames appreciated.
+Optimize the tgid task scanning in proc_pid_readdir() by using
+IDR_TGID tag lookups in the pid namespace tree. Tagged pids are not
+guaranteed to have an associated PIDTYPE_TGID task, but pids that do
+are always tagged. This significantly improves readdir() latency
+when the pid namespace is populated with group leader tasks with
+unusually large thread counts. For example, the above 100k idle task
+test against a patched kernel now results in the following:
 
-Brian
+Idle:
+  getdents64(... /* 861 entries */, 32768) = 21048 <0.000670>
 
-Brian Foster (3):
-  radix-tree: propagate all tags in idr tree
-  pid: use idr tag to hint pids associated with group leader tasks
-  proc: use idr tgid tag hint to iterate pids in readdir
+"" + 100k threads:
+  getdents64(... /* 862 entries */, 32768) = 21096 <0.000959>
 
+... which is a much smaller latency hit after the high thread count
+task is started.
+
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+---
  fs/proc/base.c      |  2 +-
- include/linux/idr.h | 25 +++++++++++++++++++++++++
- include/linux/pid.h |  2 +-
- kernel/fork.c       |  2 +-
- kernel/pid.c        |  9 ++++++++-
- lib/radix-tree.c    | 26 +++++++++++++++-----------
- 6 files changed, 51 insertions(+), 15 deletions(-)
+ include/linux/idr.h | 14 ++++++++++++++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
 
+diff --git a/fs/proc/base.c b/fs/proc/base.c
+index 8dfa36a99c74..fd3c8a5f8c2d 100644
+--- a/fs/proc/base.c
++++ b/fs/proc/base.c
+@@ -3436,7 +3436,7 @@ static struct tgid_iter next_tgid(struct pid_namespace *ns, struct tgid_iter ite
+ 	rcu_read_lock();
+ retry:
+ 	iter.task = NULL;
+-	pid = find_ge_pid(iter.tgid, ns);
++	pid = find_tgid_pid(&ns->idr, iter.tgid);
+ 	if (pid) {
+ 		iter.tgid = pid_nr_ns(pid, ns);
+ 		iter.task = pid_task(pid, PIDTYPE_TGID);
+diff --git a/include/linux/idr.h b/include/linux/idr.h
+index 11e0ccedfc92..5ef32311b232 100644
+--- a/include/linux/idr.h
++++ b/include/linux/idr.h
+@@ -185,6 +185,20 @@ static inline bool idr_is_group_lead(struct idr *idr, unsigned long id)
+ 	return radix_tree_tag_get(&idr->idr_rt, id, IDR_TGID);
+ }
+ 
++/*
++ * Find the next id with a potentially associated TGID task using the internal
++ * tag. Task association is not guaranteed and must be checked explicitly.
++ */
++static inline struct pid *find_tgid_pid(struct idr *idr, unsigned long id)
++{
++	struct pid *pid;
++
++	if (radix_tree_gang_lookup_tag(&idr->idr_rt, (void **) &pid, id, 1,
++				       IDR_TGID) != 1)
++		return NULL;
++	return pid;
++}
++
+ /**
+  * idr_for_each_entry() - Iterate over an IDR's elements of a given type.
+  * @idr: IDR handle.
 -- 
 2.34.1
 
