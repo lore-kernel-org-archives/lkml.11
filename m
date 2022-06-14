@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 148EECCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FCDCCA47D
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355447AbiFNC2h (ORCPT
+        id S1355480AbiFNC2y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54256 "EHLO
+        Mon, 13 Jun 2022 22:28:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355170AbiFNCYH (ORCPT
+        with ESMTP id S1355263AbiFNCYN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:24:07 -0400
+        Mon, 13 Jun 2022 22:24:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE3640A04;
-        Mon, 13 Jun 2022 19:10:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4D940E76;
+        Mon, 13 Jun 2022 19:10:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8733DB80AC1;
-        Tue, 14 Jun 2022 02:10:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B78BC385A2;
-        Tue, 14 Jun 2022 02:10:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C385BB816AF;
+        Tue, 14 Jun 2022 02:10:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EA11C385A5;
+        Tue, 14 Jun 2022 02:10:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172650;
-        bh=u1D/hLqCjUAb9AG1DeAYgoHN8PQ3oSyKG26DNohWGvI=;
+        s=k20201202; t=1655172653;
+        bh=PW9Uc52kYeo+JHHe0JnPlr9wT9JEcdBrvx+CeZ24egk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PJxbwDN9GIAPmA/aL1kSPcM0Ccne6GZigf/SRdwXBXflytKWB0Q2t0s5aM3bFt35f
-         IQ9UogPbOoRwcpgdyIdVeknB7JLF3F+nFakxeKyOcdWQJzrICqLvQeJ5trMCkFZPoD
-         m0aQMtLOG2LK3DBDUzBknJ0rtkKbJ41LmmPr1xPaqvM4H3bzBu4g2Zk+8SPeSeTm2E
-         LvqYzxVR3aiS88krGgO6fYfFgdrGYMv69nkEd1GUMYNSBiThc1Qchtp+mpyESI/g7M
-         zvBKv2v8pL0SCRkpNgJnqFUtwpWIUbVHfqYHd7JDWBQYrcoAeNrxyWzVKEbpsNAi9R
-         fZHUIlhLpaO4w==
+        b=TYLdGz3qkVkdfNuk506xM7uzfmbTcqGIR/S0LCUIq5Ktf4521R02YLvJ3O2FJewv+
+         GA1iW1/QqOqbD3+NImEQyQT+xJEO0aUfe6/EXWmFOhP1bDz303qmK+y+DdsvfvbBCz
+         XdNy2H51FqtsZSi7M/I5LGC88pF8c/JFrMuvXKkFwG96M5S15hQ1dvSFf51e0eQKaL
+         eZMVWZLrS3f7vAM9b/XMGcyNHApNze8lMg6k3pgfv1jf8g1d+mG5uJqECNQgIEs74V
+         V18wEs5Dl+0C9ktkTjzBycoBj6WFuzGRbaC0h5EqHfc3JsMeJaDC4cC33vMkvK8V6a
+         UCTSh0hM1ORxw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Sasha Levin <sashal@kernel.org>, tj@kernel.org,
-        linux-ide@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 05/12] ata: libata-core: fix NULL pointer deref in ata_host_alloc_pinfo()
-Date:   Mon, 13 Jun 2022 22:10:33 -0400
-Message-Id: <20220614021040.1101131-5-sashal@kernel.org>
+Cc:     Wentao Wang <wwentao@vmware.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jgill@vmware.com,
+        pv-drivers@vmware.com, jejb@linux.vnet.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 07/12] scsi: vmw_pvscsi: Expand vcpuHint to 16 bits
+Date:   Mon, 13 Jun 2022 22:10:35 -0400
+Message-Id: <20220614021040.1101131-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614021040.1101131-1-sashal@kernel.org>
 References: <20220614021040.1101131-1-sashal@kernel.org>
@@ -53,48 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Wentao Wang <wwentao@vmware.com>
 
-[ Upstream commit bf476fe22aa1851bab4728e0c49025a6a0bea307 ]
+[ Upstream commit cf71d59c2eceadfcde0fb52e237990a0909880d7 ]
 
-In an unlikely (and probably wrong?) case that the 'ppi' parameter of
-ata_host_alloc_pinfo() points to an array starting with a NULL pointer,
-there's going to be a kernel oops as the 'pi' local variable won't get
-reassigned from the initial value of NULL. Initialize 'pi' instead to
-'&ata_dummy_port_info' to fix the possible kernel oops for good...
+vcpuHint has been expanded to 16 bit on host to enable routing to more
+CPUs. Guest side should align with the change. This change has been tested
+with hosts with 8-bit and 16-bit vcpuHint, on both platforms host side can
+get correct value.
 
-Found by Linux Verification Center (linuxtesting.org) with the SVACE static
-analysis tool.
-
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Link: https://lore.kernel.org/r/EF35F4D5-5DCC-42C5-BCC4-29DF1729B24C@vmware.com
+Signed-off-by: Wentao Wang <wwentao@vmware.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ata/libata-core.c | 4 ++--
+ drivers/scsi/vmw_pvscsi.h | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index 35db918a1de5..42f0a592b5ab 100644
---- a/drivers/ata/libata-core.c
-+++ b/drivers/ata/libata-core.c
-@@ -6051,7 +6051,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
- 				      const struct ata_port_info * const * ppi,
- 				      int n_ports)
- {
--	const struct ata_port_info *pi;
-+	const struct ata_port_info *pi = &ata_dummy_port_info;
- 	struct ata_host *host;
- 	int i, j;
+diff --git a/drivers/scsi/vmw_pvscsi.h b/drivers/scsi/vmw_pvscsi.h
+index d41292ef85f2..98ad17cb6643 100644
+--- a/drivers/scsi/vmw_pvscsi.h
++++ b/drivers/scsi/vmw_pvscsi.h
+@@ -333,8 +333,8 @@ struct PVSCSIRingReqDesc {
+ 	u8	tag;
+ 	u8	bus;
+ 	u8	target;
+-	u8	vcpuHint;
+-	u8	unused[59];
++	u16	vcpuHint;
++	u8	unused[58];
+ } __packed;
  
-@@ -6059,7 +6059,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
- 	if (!host)
- 		return NULL;
- 
--	for (i = 0, j = 0, pi = NULL; i < host->n_ports; i++) {
-+	for (i = 0, j = 0; i < host->n_ports; i++) {
- 		struct ata_port *ap = host->ports[i];
- 
- 		if (ppi[j])
+ /*
 -- 
 2.35.1
 
