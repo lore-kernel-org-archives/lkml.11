@@ -2,147 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3142C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4693FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353993AbiFNHTS (ORCPT
+        id S1354658AbiFNHSo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
+        Tue, 14 Jun 2022 03:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354788AbiFNHSw (ORCPT
+        with ESMTP id S1353059AbiFNHSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:18:52 -0400
-Received: from FRA01-MR2-obe.outbound.protection.outlook.com (mail-eopbgr90042.outbound.protection.outlook.com [40.107.9.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D95722BD3
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:18:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WE31B9IDbvDGIp++BRh5teKkhHmf9GKVoiiJ5dQTZalCq2ympQjeC9Cc168fE1JRpORJ93l0tM6+Qnz/zyuDPir+kfgJbcFwrVxt8fKINrXIN4QB+IsV51cj44+At5vCWl2w0OVp6z0GK+S7RIT23eGIXsLh3Jyhy6USz6htyJhFFXkxTFe+vl1uhP2mpuSAzaQuAghz6ioGSVF7oRUxqLA2FuacGq1+3I+I3o97K439GZamEZOHVnQZeh4OPDbiaZMif19LEE8Sy8NRVr6ssd+ZT1G2k5bmhe8o5iCle8WVQB94BYtv/M6TMJLGPVcC1TCyfnF5qLSG1VBd5USWdw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=taIU5STaP7gEf/i2WBwPVfOTdhulfaM3sk6lQ1BzxvI=;
- b=WSVjpbGhiYwXCGgacznEWx5CtovIOfD6blQfvl8sR5tHew59DFqZvsVI69GQmOHB4LHpdmIg/mYugyeeziMZyxZGLML0A1VR7x9qH+1XPM/UmGGGOe0I13xOLZFAm0KB5w/0efRtYOkPMFqhU/EwG2cNsr9evJNXrqi11PMBppZ2c1Qni5NQ5oO0HZFNW0p/jIhzkb9bXZ7XPkS8jgA7tU8zzKDqhsQVBB12IAkMS59j9kK6hyc2yeJ2QryoIX6FQDqlaPFRB8ZV99kY3hNv5O+dSG9rPfiWfKeBAVCVFSTWHuT5zvOFXfBP7H5s10mUkFaluxbAyG1B7l8zD0/8yw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
- dkim=pass header.d=csgroup.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=csgroup.eu;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=taIU5STaP7gEf/i2WBwPVfOTdhulfaM3sk6lQ1BzxvI=;
- b=EP07bP1dgW7GrFjO/EOF6bPGhOvTTJeeUSf/u4GkY1fhviBXPIWaBY6B8DsUsngAwDEbr2506NVrnn+6ize5pfO59cZ9tKxJJ4uYXoBMxsbgQmra9Q1OHV1ugDgqnDALYPpe2fGRhAR+iP+AOP7Nwff8GmFHCmTVXqOyjgNCS3hkIaQu+uYzBCzu2IEBbZpidVxgm18jb2uoncGLhwfx3BgAwETB213KyvMHkCwwa+Ba+V1swrrjieJM1/F2EUgrSmDpVWoukdkdDHdwy1CQzG2ritB3RLOciFYA/9ovGRiju9qGsJRhaLouzhzq2wNoiTzOQqfteuOpoF1H8nMFtQ==
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by PR1P264MB1581.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:1b2::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Tue, 14 Jun
- 2022 07:18:48 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::b15e:862f:adf7:5356]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::b15e:862f:adf7:5356%6]) with mapi id 15.20.5332.022; Tue, 14 Jun 2022
- 07:18:48 +0000
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Wenhu Wang <wenhu.wang@hotmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-CC:     "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: =?utf-8?B?UmU6IOWbnuWkjTogW1BBVENIIDIvMl0gdWlvOnBvd2VycGM6bXBjODV4eDog?=
- =?utf-8?Q?l2-cache-sram_uio_driver_implementation?=
-Thread-Topic: =?utf-8?B?5Zue5aSNOiBbUEFUQ0ggMi8yXSB1aW86cG93ZXJwYzptcGM4NXh4OiBsMi1j?=
- =?utf-8?Q?ache-sram_uio_driver_implementation?=
-Thread-Index: AQHYe+v2lxuFI4e/SkKc+NMp8W40uq1HDpsAgAdkMYCAABNVgA==
-Date:   Tue, 14 Jun 2022 07:18:48 +0000
-Message-ID: <efebcb50-0481-622a-894c-7000999aacc6@csgroup.eu>
-References: <20220609102855.272270-1-wenhu.wang@hotmail.com>
- <SG2PR01MB295139AA7360917B2C4846E19FA79@SG2PR01MB2951.apcprd01.prod.exchangelabs.com>
- <YqHy1uXwCLlJmftr@kroah.com>
- <SG2PR01MB2951EA9ED70E5F766DD26A069FAA9@SG2PR01MB2951.apcprd01.prod.exchangelabs.com>
-In-Reply-To: <SG2PR01MB2951EA9ED70E5F766DD26A069FAA9@SG2PR01MB2951.apcprd01.prod.exchangelabs.com>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 143c43a0-ca82-477b-b7b1-08da4dd62071
-x-ms-traffictypediagnostic: PR1P264MB1581:EE_
-x-microsoft-antispam-prvs: <PR1P264MB1581154B4BEAD31B43FAA4A3EDAA9@PR1P264MB1581.FRAP264.PROD.OUTLOOK.COM>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: JQldVN8d2v/i8cqMN0p/NXnPATizQwdsVWMpDMBljCNVVntYZz3bz65hMRdJ0MXBNeml/1MqQny8QNoCQNI4QCeIlyAajWrSIjVFfhCGZGI4CS52PnxvFZl8VwwmNo0es7rpW0KPLly4nQkQfKyxWAvDS12ls4JSyb76q22+Tbb52UZnS4S0QzZD1s9vuXX525omO+3Mu+1vK8mWLCS8dUi6npsRci9Q2a/jQjLjpaOKIJCzwkgyVKOCtNiYa0GjabrNDLGVne1P7omBObEZL8kMsTnM1OvWPt4nyQ/CqtBK4+Izx6kU0sQBTAvsSjlLjAJZ7xsgBPFe1GT4lP7m9zHL1R3He/PY6djG4McJ2YGr2/7bI1OQdz6PDDJu/R1bzQ8gPehlQlRxbl3h6gXHKrJTIJy0IhLdKzvuwZ4KcmTfViqfO7LwmohdGo34qQlIStynukQ/eLwN5QiQDmKoCpoxYWBu4RlF+F1dA4cQ/CdXQYIeTKrIesKG3+zaYW67w0RDtP2fY6eP1/wE7tMJIzFoR+YxFe9EuXYQNZfMA8D3+3jbo0o/VOqky3l2j8gGU+69dDFkNrEFfayAieaEjgRgy//U3wG/HMwEfqzy1S1HzQJvXzFDlxflO8l9kquf0lH8rqT0IKCP5EmhyNKby4p6RpaFvzvhHjdF0z8Vdj3X8fu/vXLAWk60674sdRfpNt6z8FU3LZ3lpvpbNe1lrAuF8sbHf7Hm/f57CofsYBBE0YP8uU+nVrlaO7SPnvBOEs0LwehrfxBOuqml7DghrXOZRavFO9CrToQhCjatv/zEO0u64+H9GZcXc01+R6dKNyFiSDJhoUSnyc9uGye1TEuARlNiv3CF6te1Jpf0JWM=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(6506007)(966005)(44832011)(2616005)(186003)(26005)(71200400001)(6512007)(6486002)(508600001)(36756003)(31686004)(54906003)(110136005)(83380400001)(316002)(66574015)(8936002)(66946007)(224303003)(76116006)(66476007)(91956017)(122000001)(38070700005)(2906002)(4326008)(64756008)(38100700002)(66556008)(66446008)(4744005)(31696002)(86362001)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bnJtd2xNZHZrSW9QUkNBOUMzTlBrbTlRNUFNQklCQnFDR09EMHgvN0NTdFlk?=
- =?utf-8?B?T0IyM3dGbGc5Wm8xY0xJQkdyV2drUVE4c05GS1pEcDBUQ2JqYlJjeWQvbjdB?=
- =?utf-8?B?TTJSZGcwbm5NVGlwWFkzMStTTEtWUllPYmVIR1NTMzI2MC9QZ3d2WnlEZlMw?=
- =?utf-8?B?RzR6aDc4UmJobDFHTUZ2V1Q0UUZtUmd5c1dJd09XSzhYWGVtbS9PejIzaThU?=
- =?utf-8?B?eERYYWVoOWtvcE5mR3RPek9DQTFOUFgxZGRiZSsxSHFBWUV5TlpzbGRoQ3Vr?=
- =?utf-8?B?WDY3Vm5UaXBCMmN2cWcydlRoc0creVdLRUJNbzMyZm81dlJNS0lNdEJ5UlpV?=
- =?utf-8?B?c0xKU0RvdHN2ZVN6dko5R2tmVUhwd00xdVRtTkkyVTRCSkhZejJka0JGQ0xG?=
- =?utf-8?B?My91cDJTSjVxWkQyTGJjRi9XTTJkSjBDTmxSUHRna2QyMGo2aTN5UUl3cUlr?=
- =?utf-8?B?emduZWpXTzBieGQwT1ZHWDRKditZUTFmajI4Ym5YbnUxcVpIZlFoZzJ0YW9t?=
- =?utf-8?B?T1Z0TXA0N0wzRlBFbUw4bVE0VHI2dHhTdWFhbE5YRnFaVXVDR1FtZkFFeEV3?=
- =?utf-8?B?dW53TzZIUGJJNkRlK0NmVzVuWS9vSGhLNW1SVU9WQXdHcnh2RTFNMnBOTlRX?=
- =?utf-8?B?dXNHamtERDJPbmNEVlhJREdpUkdSUnZ2NWxZSG1aZ01hb1lZWXNLYm00anBx?=
- =?utf-8?B?Z0FMWC9CeWN3WUZWVUw1ZHJHT21TZVdYb1BaaW51Wk40WkFvSEZXTFhxTm94?=
- =?utf-8?B?ZnVSejV0Y2w3dXFzWS9qbFFRNDN2RjJRb0RidlRRbWVlcVRLNFFsYkp1em9r?=
- =?utf-8?B?ZXpkQ2F4blBwcmhsOE9rUUtKVTJmOHJWWGdlYUwzYkphcVA1dUE5cmhGdUhH?=
- =?utf-8?B?M1dhS0FWeUo1TFJ4RkZrR25nNExEL2poTWk3RmVUaHpSbzQwNFQ2RjFTQ2xq?=
- =?utf-8?B?cVZhRjlGNWFuMUNhU1g4QjNCSG93b0hteTFRQnZZNCtIanU2dzJTdnY1Y3k5?=
- =?utf-8?B?WlpQSEdQVUFiUUFGZlVuNjkvWnZKNTlkMkppcDlhR0Rzc3hjTVhDQkpEeWRp?=
- =?utf-8?B?WXVCa055ZnpmNmRoZzBURFNRME93Z1JuZnNtUVc3azVYVWszTVYwQUtBcTFM?=
- =?utf-8?B?MUxIQWJvVEovYTlCcFpya3o2amFKaU01SlBENHM5bU56cUZUd29XTTd3aW5P?=
- =?utf-8?B?NFVyMGovTzVLM3NZR1FqWTREUE1mTlRLR0VUbUVQSCtXYkp1d1RPN2huKzIx?=
- =?utf-8?B?cXVGRHVPM0dDbCtrZzVUR25BWWRQWVFxdkZQT05hVEdVN1RjL1R0UWs0YjN6?=
- =?utf-8?B?UFRqa3FZWi9KOGRJTkRQdEwxUmx1Z3JjSFliWnd3emYvTkl4TWZ1VnlKR0Rm?=
- =?utf-8?B?enZJQXBWRDZFcmxLc01PcTlVYlN2dkhTUkNGTk56ai9LV0tMRnN1QVNpUVEv?=
- =?utf-8?B?RnJjQkJVcW9QN29UZHliY2M4UmdSUUhpbWQ4bExnR1ZQWFVnUXZaQWVVOU54?=
- =?utf-8?B?Ym1Jc0VLTDljaVRuZXJOMVk2STVHRDlkSlVvMmppQWd5bjdMUjJ0UkNyQkth?=
- =?utf-8?B?QTNRNlU2WDZVNktiMnlFcWxLb1Q0TU9OVHNpS3NFdUthS2xuSDRYTkVPZ3FM?=
- =?utf-8?B?UE5oZHVGMUpQZTRBZWlmZnN4VFdlenZFZjNFSGpieUJ2RHFET3U2Ujl5aHN1?=
- =?utf-8?B?ZUM4K3Z6VldSMHUzbXA1U0o1dDJSNk41K0tKRGR0ZjV0WG92ZythOUVuMUl4?=
- =?utf-8?B?MlBKN2phcDJQOUVITWlyMHp5MTk1U2NUd3BQOS9kUXlza2dPTm1XUUgrdjhO?=
- =?utf-8?B?UzdzMWRsM2FXeUt2dzZmay9hMHV1ckgzcXk1eWZMVlBOSVoyNG5WN3p6MlBP?=
- =?utf-8?B?dkJpenNvVVA2WG9ZWjhnQWRFMkVPUzg4OG4rWEdKWHB3M2RJeVR0SlJNYVV1?=
- =?utf-8?B?T3BhUE12eWxUcCt0SEVlamZjaHRyQnJpeklabGVBcG1tbUN5L0NmbFhEVytl?=
- =?utf-8?B?eDZBT1ZOdmJka3RUYXJKTGk3STdGWHBUYXJVdUVURXR3SnZPNEwydklOMTFr?=
- =?utf-8?B?cWxkU2tnOXgwU1hTZDlrWXBDWmdvNnRQZFkxSjR5TzBiRmpGcUVNd2E5TVRM?=
- =?utf-8?B?eU5yTDl4eEQycWtIMUcvSDNwTUZBWG9QbEZGa2huUEk2WUlrM1haZFd3QkUx?=
- =?utf-8?B?ZFJvd0oybzZWZ2ZwTXdmTmxobXRCcHczTjBVMjdXblhrSndkdllmSjlXMXdh?=
- =?utf-8?B?eG5XVjBoSmJ2czdJb3R4dHcxTTVUb0hESWtCc3B2R2FKb2hJVDZXTDlYcEpk?=
- =?utf-8?B?QXhIeVFNbnp2VVlEazNlbFp0SUtLYys4dFovc2hUbDNYVi9IandKNFFTMmFG?=
- =?utf-8?Q?wXryh+eRXbpQpyUQjaitVHJ5LT0ILfJMKhPG6?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <38753428CA19A04A91AF925514D77A33@FRAP264.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 143c43a0-ca82-477b-b7b1-08da4dd62071
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2022 07:18:48.8853
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: F+sas+R74YJe69VNZ2h7Vt6jCAXYq6Nm3bs/xwWgBXIxGL3oJ9QegzCH4NcXVFsk7Q+GF+h6+cTGXRelAUJmz+lKFM12XAXiVhSDGqhhujw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR1P264MB1581
+        Tue, 14 Jun 2022 03:18:08 -0400
+Received: from mail-io1-xd49.google.com (mail-io1-xd49.google.com [IPv6:2607:f8b0:4864:20::d49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DFF2B1A9
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:17:42 -0700 (PDT)
+Received: by mail-io1-xd49.google.com with SMTP id x13-20020a0566022c4d00b0065491fa5614so3915219iov.9
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:17:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc:content-transfer-encoding;
+        bh=hWQ/pnH1IXBczpgDhNdPRVcRKkX01kpJeoSQmJTZ/E8=;
+        b=NP0JFeVh5/LPbnW/y3636zUCWVda9EYqywiDnvF21ZXsgIBShq1h7BvC4Rrl603A8T
+         +Ace/YsvlFsB0aaxLzuvXzyIhd58XHpVrU//G+O7x2dqEMj1C6LeIb36fPHxh1LZc5zi
+         yub5O7gzo5kn+xhaS8slwkOTTjt6wpwZI0pb5jESWxPZrEIaXq9Rlu/n4JVK2KQoxT5P
+         d3uX+1JCbWJz+sWb9DsMV9q9PLbaZ2v3wHc50k2QgsqR4rfcyPU1cm1TuOqghHT8ZEWV
+         2UxQspqmHz7pUvNuMLC+39LM+xSbuaOWvvsqA9n0TOWQ4ZxUjAmF27Oi8jQabEtD73Pm
+         tCzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=hWQ/pnH1IXBczpgDhNdPRVcRKkX01kpJeoSQmJTZ/E8=;
+        b=1bkG7LL8eiJAFVaDv0APXEkmRALOXutZ/C5rF23ABTQF7JOlnWEGdARSapNDYEVpGq
+         n1xSOAVAlTbAi8pcVpZlpowdKkPn5vPVDN5bTb7gvjQ7h1ZYUZcFdzb/Wut8GM63fJBw
+         YoGzZiW1j+H+xtkBccsyWTyd2TKpFqyLmUI98/YmUddsLKy/qu2DuBHYCR6vb7kbctL7
+         z8xQx9TpXqdNUq048lvXKFjgAo0/nZCCBd4tlsVb2MUkUxPXUlZTGmkXMxehRZ1PMH7c
+         Q4G+anl7hQJoTWmJuF8aayWV2LbZKPbBGlM+HKzJSGF4gVE+ZF/xdNdaKLqZOborfZA5
+         TPWA==
+X-Gm-Message-State: AOAM530+b5EER21zn/th4GA+kLoTOvOZTVfo2eqLag0P5JDo5n5bDZrc
+        jFePZyufUDaG/e97rEMwvbuAjFjKCUU=
+X-Google-Smtp-Source: ABdhPJw5kkiLi1VUjJRTA9t18NMo5X41YB0/ctzW7svU9pT/nobxcfccImde+K9fDSALv1ESSLJTpNZDXas=
+X-Received: from yuzhao.bld.corp.google.com ([2620:15c:183:200:eaa7:1f3f:e74a:2a26])
+ (user=yuzhao job=sendgmr) by 2002:a5d:96d0:0:b0:654:91d3:97b7 with SMTP id
+ r16-20020a5d96d0000000b0065491d397b7mr1829135iol.164.1655191062117; Tue, 14
+ Jun 2022 00:17:42 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 01:16:48 -0600
+In-Reply-To: <20220614071650.206064-1-yuzhao@google.com>
+Message-Id: <20220614071650.206064-12-yuzhao@google.com>
+Mime-Version: 1.0
+References: <20220614071650.206064-1-yuzhao@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH v12 11/14] mm: multi-gen LRU: thrashing prevention
+From:   Yu Zhao <yuzhao@google.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, x86@kernel.org,
+        page-reclaim@google.com, Yu Zhao <yuzhao@google.com>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        "=?UTF-8?q?Holger=20Hoffst=C3=A4tte?=" 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCkxlIDE0LzA2LzIwMjIgw6AgMDg6MDksIFdlbmh1IFdhbmcgYSDDqWNyaXTCoDoNCj4+PiAr
-c3RhdGljIGNvbnN0IHN0cnVjdCB2bV9vcGVyYXRpb25zX3N0cnVjdCB1aW9fY2FjaGVfc3JhbV92
-bV9vcHMgPSB7DQo+Pj4gKyNpZmRlZiBDT05GSUdfSEFWRV9JT1JFTUFQX1BST1QNCj4+DQo+PiBT
-YW1lIGhlcmUuDQo+Pg0KPiANCj4gSSB0cmllZCB0byBlbGltaW5hdGUgaXQgaW4gbWFpbmxpbmUN
-Cj4gU2VlOiBbUEFUQ0ggdjJdIG1tOiBlbGltaW5hdGUgaWZkZWYgb2YgSEFWRV9JT1JFTUFQX1BS
-T1QgaW4gLmMgZmlsZXMNCj4gaHR0cHM6Ly9sa21sLm9yZy9sa21sLzIwMjIvNi8xMC82OTUNCj4g
-DQoNCkkgbG9va2VkIGF0IHRoYXQgcGF0Y2guDQoNCkkgZG9uJ3QgdGhpbmsgeW91IGNhbiBqdXN0
-IGRyb3AgdGhlICNpZmRlZiBpbiBmdW5jdGlvbiANCl9fYWNjZXNzX3JlbW90ZV92bSgpIGluIG1t
-L21lbW9yeS5jDQoNCllvdSBoYXZlIHRvIHJlcGxhY2UgaXQgd2l0aCBzb21ldGhpbmcgbGlrZToN
-Cg0KCWlmICghSVNfRU5BQkxFRChDT05GSUdfSEFWRV9JT1JFTUFQX1BST1QpKQ0KCQlicmVhazsN
-Cg0KQ2hyaXN0b3BoZQ==
+Add /sys/kernel/mm/lru_gen/min_ttl_ms for thrashing prevention, as
+requested by many desktop users [1].
+
+When set to value N, it prevents the working set of N milliseconds
+from getting evicted. The OOM killer is triggered if this working set
+cannot be kept in memory. Based on the average human detectable lag
+(~100ms), N=3D1000 usually eliminates intolerable lags due to thrashing.
+Larger values like N=3D3000 make lags less noticeable at the risk of
+premature OOM kills.
+
+Compared with the size-based approach [2], this time-based approach
+has the following advantages:
+1. It is easier to configure because it is agnostic to applications
+   and memory sizes.
+2. It is more reliable because it is directly wired to the OOM killer.
+
+[1] https://lore.kernel.org/r/Ydza%2FzXKY9ATRoh6@google.com/
+[2] https://lore.kernel.org/r/20101028191523.GA14972@google.com/
+
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Acked-by: Brian Geffon <bgeffon@google.com>
+Acked-by: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+Acked-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Acked-by: Steven Barrett <steven@liquorix.net>
+Acked-by: Suleiman Souhlal <suleiman@google.com>
+Tested-by: Daniel Byrne <djbyrne@mtu.edu>
+Tested-by: Donald Carr <d@chaos-reins.com>
+Tested-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
+Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
+Tested-by: Sofia Trinh <sofia.trinh@edi.works>
+Tested-by: Vaibhav Jain <vaibhav@linux.ibm.com>
+---
+ include/linux/mmzone.h |  2 ++
+ mm/vmscan.c            | 71 +++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 69 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index 840b7ca8b91f..472bd5335517 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -419,6 +419,8 @@ struct lru_gen_struct {
+ 	unsigned long max_seq;
+ 	/* the eviction increments the oldest generation numbers */
+ 	unsigned long min_seq[ANON_AND_FILE];
++	/* the birth time of each generation in jiffies */
++	unsigned long timestamps[MAX_NR_GENS];
+ 	/* the multi-gen LRU lists, lazily sorted on eviction */
+ 	struct list_head lists[MAX_NR_GENS][ANON_AND_FILE][MAX_NR_ZONES];
+ 	/* the multi-gen LRU sizes, eventually consistent */
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 2b6de7e38aa7..075525a9526a 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -4231,6 +4231,7 @@ static void inc_max_seq(struct lruvec *lruvec, bool c=
+an_swap)
+ 	for (type =3D 0; type < ANON_AND_FILE; type++)
+ 		reset_ctrl_pos(lruvec, type, false);
+=20
++	WRITE_ONCE(lrugen->timestamps[next], jiffies);
+ 	/* make sure preceding modifications appear */
+ 	smp_store_release(&lrugen->max_seq, lrugen->max_seq + 1);
+=20
+@@ -4357,7 +4358,7 @@ static unsigned long get_nr_evictable(struct lruvec *=
+lruvec, unsigned long max_s
+ 	return total;
+ }
+=20
+-static void age_lruvec(struct lruvec *lruvec, struct scan_control *sc)
++static bool age_lruvec(struct lruvec *lruvec, struct scan_control *sc, uns=
+igned long min_ttl)
+ {
+ 	bool need_aging;
+ 	unsigned long nr_to_scan;
+@@ -4371,21 +4372,40 @@ static void age_lruvec(struct lruvec *lruvec, struc=
+t scan_control *sc)
+ 	mem_cgroup_calculate_protection(NULL, memcg);
+=20
+ 	if (mem_cgroup_below_min(memcg))
+-		return;
++		return false;
+=20
+ 	nr_to_scan =3D get_nr_evictable(lruvec, max_seq, min_seq, swappiness, &ne=
+ed_aging);
+ 	if (!nr_to_scan)
+-		return;
++		return false;
+=20
+ 	nr_to_scan >>=3D mem_cgroup_online(memcg) ? sc->priority : 0;
+=20
++	if (min_ttl) {
++		int gen =3D lru_gen_from_seq(min_seq[LRU_GEN_FILE]);
++		unsigned long birth =3D READ_ONCE(lruvec->lrugen.timestamps[gen]);
++
++		if (time_is_after_jiffies(birth + min_ttl))
++			return false;
++
++		/* the size is likely too small to be helpful */
++		if (!nr_to_scan && sc->priority !=3D DEF_PRIORITY)
++			return false;
++	}
++
+ 	if (nr_to_scan && need_aging)
+ 		try_to_inc_max_seq(lruvec, max_seq, sc, swappiness);
++
++	return true;
+ }
+=20
++/* to protect the working set of the last N jiffies */
++static unsigned long lru_gen_min_ttl __read_mostly;
++
+ static void lru_gen_age_node(struct pglist_data *pgdat, struct scan_contro=
+l *sc)
+ {
+ 	struct mem_cgroup *memcg;
++	bool success =3D false;
++	unsigned long min_ttl =3D READ_ONCE(lru_gen_min_ttl);
+=20
+ 	VM_WARN_ON_ONCE(!current_is_kswapd());
+=20
+@@ -4411,12 +4431,28 @@ static void lru_gen_age_node(struct pglist_data *pg=
+dat, struct scan_control *sc)
+ 	do {
+ 		struct lruvec *lruvec =3D mem_cgroup_lruvec(memcg, pgdat);
+=20
+-		age_lruvec(lruvec, sc);
++		if (age_lruvec(lruvec, sc, min_ttl))
++			success =3D true;
+=20
+ 		cond_resched();
+ 	} while ((memcg =3D mem_cgroup_iter(NULL, memcg, NULL)));
+=20
+ 	clear_mm_walk();
++
++	/*
++	 * The main goal is to OOM kill if every generation from all memcgs is
++	 * younger than min_ttl. However, another theoretical possibility is all
++	 * memcgs are either below min or empty.
++	 */
++	if (!success && !sc->order && mutex_trylock(&oom_lock)) {
++		struct oom_control oc =3D {
++			.gfp_mask =3D sc->gfp_mask,
++		};
++
++		out_of_memory(&oc);
++
++		mutex_unlock(&oom_lock);
++	}
+ }
+=20
+ /*
+@@ -5128,6 +5164,28 @@ static void lru_gen_change_state(bool enabled)
+  *                          sysfs interface
+  *************************************************************************=
+*****/
+=20
++static ssize_t show_min_ttl(struct kobject *kobj, struct kobj_attribute *a=
+ttr, char *buf)
++{
++	return sprintf(buf, "%u\n", jiffies_to_msecs(READ_ONCE(lru_gen_min_ttl)))=
+;
++}
++
++static ssize_t store_min_ttl(struct kobject *kobj, struct kobj_attribute *=
+attr,
++			     const char *buf, size_t len)
++{
++	unsigned int msecs;
++
++	if (kstrtouint(buf, 0, &msecs))
++		return -EINVAL;
++
++	WRITE_ONCE(lru_gen_min_ttl, msecs_to_jiffies(msecs));
++
++	return len;
++}
++
++static struct kobj_attribute lru_gen_min_ttl_attr =3D __ATTR(
++	min_ttl_ms, 0644, show_min_ttl, store_min_ttl
++);
++
+ static ssize_t show_enabled(struct kobject *kobj, struct kobj_attribute *a=
+ttr, char *buf)
+ {
+ 	unsigned int caps =3D 0;
+@@ -5176,6 +5234,7 @@ static struct kobj_attribute lru_gen_enabled_attr =3D=
+ __ATTR(
+ );
+=20
+ static struct attribute *lru_gen_attrs[] =3D {
++	&lru_gen_min_ttl_attr.attr,
+ 	&lru_gen_enabled_attr.attr,
+ 	NULL
+ };
+@@ -5191,12 +5250,16 @@ static struct attribute_group lru_gen_attr_group =
+=3D {
+=20
+ void lru_gen_init_lruvec(struct lruvec *lruvec)
+ {
++	int i;
+ 	int gen, type, zone;
+ 	struct lru_gen_struct *lrugen =3D &lruvec->lrugen;
+=20
+ 	lrugen->max_seq =3D MIN_NR_GENS + 1;
+ 	lrugen->enabled =3D lru_gen_enabled();
+=20
++	for (i =3D 0; i <=3D MIN_NR_GENS + 1; i++)
++		lrugen->timestamps[i] =3D jiffies;
++
+ 	for_each_gen_type_zone(gen, type, zone)
+ 		INIT_LIST_HEAD(&lrugen->lists[gen][type][zone]);
+=20
+--=20
+2.36.1.476.g0c4daa206d-goog
+
