@@ -2,151 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF67C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 04:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D98EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 04:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241507AbiFNEXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 00:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43172 "EHLO
+        id S244825AbiFNEZR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 00:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230499AbiFNEXj (ORCPT
+        with ESMTP id S230499AbiFNEZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 00:23:39 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79DB32A251;
-        Mon, 13 Jun 2022 21:23:35 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id B6B4B5FD06;
-        Tue, 14 Jun 2022 07:23:32 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1655180612;
-        bh=UgDB4oIyHwb+2ENFZYb+y44PmEnt5wBt6YnBuWTPn+g=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=XxkpFcZ+v6SVsgDcQ4/wh0xxpJwZemuUNrelHfW3n4cpLaJH+b4Mj7YnILj4i21cv
-         Fvq/g23OJUNC7qifcg/SfIfZt/h3WNcyXmtgbi4Yt1Lk7uq9qdvZBIdyDb/7YKk0qT
-         dq0SDLCWu09NRe++nzC5h0Rg6fnTFlENmz5PN/L7DuTKZj+W47nzKEsTYE+l9Q1CBI
-         2G5qaWgok5XDVkt10VHwk9VrY79qipXuSkmPSca3VaPcD6kX6ZEWhPdmQOIwFPecl6
-         gyfcz6d1e9lIMN6dwQG6bAxTf25bUhQdCf/J7O1OgpVgjzhi3c+P3F8vyOmkQP8g7x
-         OByX1uaZHWGwg==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 14 Jun 2022 07:23:29 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-Subject: Re: [RFC PATCH v2 0/8] virtio/vsock: experimental zerocopy receive
-Thread-Topic: [RFC PATCH v2 0/8] virtio/vsock: experimental zerocopy receive
-Thread-Index: AQHYdwquMlGCdyA1qUCtor+NkIn5wa1GnK0AgAA9TQCABgv9AIABRqQA
-Date:   Tue, 14 Jun 2022 04:23:25 +0000
-Message-ID: <0883100c-1a40-537a-fb53-d33658383c8c@sberdevices.ru>
-References: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
- <20220609085428.idi4qzydhdpzszzw@sgarzare-redhat>
- <1c58ec1f-f991-4527-726a-9f45c2ff5684@sberdevices.ru>
- <20220613085420.e4limzn3dneuhu6y@sgarzare-redhat>
-In-Reply-To: <20220613085420.e4limzn3dneuhu6y@sgarzare-redhat>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <CC5EFF7F1208E84F9459444415E52184@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Tue, 14 Jun 2022 00:25:15 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E30B12A25E
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 21:25:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655180714; x=1686716714;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/E70aM5+7qImwWct5bnbfTC5wQK0oj/SG1RqZWw1XsE=;
+  b=C5edi4miOPdv2E5avP9k087JF6Xgnz7tkMhMkYSVSizV5liR6W5UMEES
+   6aOWWWIeNBhLl0nU00Oh5r1lvBAFMAqVr8FPzyCYtfp4gXaPlDloHd8rh
+   YW5pAlPd7OyZOwqSHJSLx0mIKD2hX1hJXgCMtH/oFN5NsIDhwjY9tgyws
+   ucOH230awVNLOX9ytXy5bcfcAyHzb1Cf7d5yhdxrN7GG/65UHkUB7AOse
+   kMZoic2R3otgjjXhac/Lai5bXhMRAzBAM1cAf6KJVxA8v/owkplXfQAzu
+   9d9AgvT/ohO170Y6ygFKaqN7XVAISIKu0PxjGqL9FXchEwlRelxsjFwX8
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="279540650"
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="279540650"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 21:25:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="569675978"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 13 Jun 2022 21:25:13 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o0y77-000LTB-0e;
+        Tue, 14 Jun 2022 04:25:13 +0000
+Date:   Tue, 14 Jun 2022 12:24:56 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [intel-tdx:guest-unaccepted-memory 6/17] mm/page_alloc.c:1015:47:
+ error: 'NR_UNACCEPTED' undeclared
+Message-ID: <202206141254.6aAvKFzZ-lkp@intel.com>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/06/13 16:53:00 #19760221
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMTMuMDYuMjAyMiAxMTo1NCwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiBPbiBUaHUs
-IEp1biAwOSwgMjAyMiBhdCAxMjozMzozMlBNICswMDAwLCBBcnNlbml5IEtyYXNub3Ygd3JvdGU6
-DQo+PiBPbiAwOS4wNi4yMDIyIDExOjU0LCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6DQo+Pj4g
-SGkgQXJzZW5peSwNCj4+PiBJIGxlZnQgc29tZSBjb21tZW50cyBpbiB0aGUgcGF0Y2hlcywgYW5k
-IEknbSBhZGRpbmcgc29tZXRoaW5nIGFsc28gaGVyZToNCj4+IFRoYW5rcyBmb3IgY29tbWVudHMN
-Cj4+Pg0KPj4+IE9uIEZyaSwgSnVuIDAzLCAyMDIyIGF0IDA1OjI3OjU2QU0gKzAwMDAsIEFyc2Vu
-aXkgS3Jhc25vdiB3cm90ZToNCj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgSU5UUk9EVUNUSU9ODQo+Pj4+DQo+Pj4+IMKgwqDCoMKg
-SGVsbG8sIHRoaXMgaXMgZXhwZXJpbWVudGFsIGltcGxlbWVudGF0aW9uIG9mIHZpcnRpbyB2c29j
-ayB6ZXJvY29weQ0KPj4+PiByZWNlaXZlLiBJdCB3YXMgaW5zcGlyZWQgYnkgVENQIHplcm9jb3B5
-IHJlY2VpdmUgYnkgRXJpYyBEdW1hemV0LiBUaGlzIEFQSSB1c2VzDQo+Pj4+IHNhbWUgaWRlYTog
-Y2FsbCAnbW1hcCgpJyBvbiBzb2NrZXQncyBkZXNjcmlwdG9yLCB0aGVuIGV2ZXJ5ICdnZXRzb2Nr
-b3B0KCknIHdpbGwNCj4+Pj4gZmlsbCBwcm92aWRlZCB2bWEgYXJlYSB3aXRoIHBhZ2VzIG9mIHZp
-cnRpbyBSWCBidWZmZXJzLiBBZnRlciByZWNlaXZlZCBkYXRhIHdhcw0KPj4+PiBwcm9jZXNzZWQg
-YnkgdXNlciwgcGFnZXMgbXVzdCBiZSBmcmVlZCBieSAnbWFkdmlzZSgpJ8KgIGNhbGwgd2l0aCBN
-QURWX0RPTlRORUVEDQo+Pj4+IGZsYWcgc2V0KGlmIHVzZXIgd29uJ3QgY2FsbCAnbWFkdmlzZSgp
-JywgbmV4dCAnZ2V0c29ja29wdCgpJyB3aWxsIGZhaWwpLg0KPj4+DQo+Pj4gSWYgaXQgaXMgbm90
-IHRvbyB0aW1lLWNvbnN1bWluZywgY2FuIHdlIGhhdmUgYSB0YWJsZS9saXN0IHRvIGNvbXBhcmUg
-dGhpcyBhbmQgdGhlIFRDUCB6ZXJvY29weT8NCj4+IFlvdSBtZWFuIGNvbXBhcmUgQVBJIHdpdGgg
-bW9yZSBkZXRhaWxzPw0KPiANCj4gWWVzLCBtYXliZSBhIGNvbXBhcmlzb24gZnJvbSB0aGUgdXNl
-cidzIHBvaW50IG9mIHZpZXcgdG8gZG8gemVyby1jb3B5IHdpdGggVENQIGFuZCBWU09DSy4NCj4g
-DQo+Pj4NCj4+Pj4NCj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgREVUQUlMUw0KPj4+Pg0KPj4+PiDCoMKgwqDCoEhlcmUg
-aXMgaG93IG1hcHBpbmcgd2l0aCBtYXBwZWQgcGFnZXMgbG9va3MgZXhhY3RseTogZmlyc3QgcGFn
-ZSBtYXBwaW5nDQo+Pj4+IGNvbnRhaW5zIGFycmF5IG9mIHRyaW1tZWQgdmlydGlvIHZzb2NrIHBh
-Y2tldCBoZWFkZXJzIChpbiBjb250YWlucyBvbmx5IGxlbmd0aA0KPj4+PiBvZiBkYXRhIG9uIHRo
-ZSBjb3JyZXNwb25kaW5nIHBhZ2UgYW5kICdmbGFncycgZmllbGQpOg0KPj4+Pg0KPj4+PiDCoMKg
-wqDCoHN0cnVjdCB2aXJ0aW9fdnNvY2tfdXNyX2hkciB7DQo+Pj4+IMKgwqDCoMKgwqDCoMKgIHVp
-bnQzMl90IGxlbmd0aDsNCj4+Pj4gwqDCoMKgwqDCoMKgwqAgdWludDMyX3QgZmxhZ3M7DQo+Pj4+
-IMKgwqDCoMKgwqDCoMKgIHVpbnQzMl90IGNvcHlfbGVuOw0KPj4+PiDCoMKgwqDCoH07DQo+Pj4+
-DQo+Pj4+IEZpZWxkwqAgJ2xlbmd0aCcgYWxsb3dzIHVzZXIgdG8ga25vdyBleGFjdCBzaXplIG9m
-IHBheWxvYWQgd2l0aGluIGVhY2ggc2VxdWVuY2UNCj4+Pj4gb2YgcGFnZXMgYW5kICdmbGFncycg
-YWxsb3dzIHVzZXIgdG8gaGFuZGxlIFNPQ0tfU0VRUEFDS0VUIGZsYWdzKHN1Y2ggYXMgbWVzc2Fn
-ZQ0KPj4+PiBib3VuZHMgb3IgcmVjb3JkIGJvdW5kcykuIEZpZWxkICdjb3B5X2xlbicgaXMgZGVz
-Y3JpYmVkIGJlbG93IGluICd2MS0+djInIHBhcnQuDQo+Pj4+IEFsbCBvdGhlciBwYWdlcyBhcmUg
-ZGF0YSBwYWdlcyBmcm9tIFJYIHF1ZXVlLg0KPj4+Pg0KPj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIFBhZ2UgMMKgwqDCoMKgwqAgUGFnZSAxwqDCoMKgwqDCoCBQYWdlIE4NCj4+Pj4NCj4+Pj4g
-wqDCoMKgwqBbIGhkcjEgLi4gaGRyTiBdWyBkYXRhIF0gLi4gWyBkYXRhIF0NCj4+Pj4gwqDCoMKg
-wqDCoMKgwqDCoMKgIHzCoMKgwqDCoMKgwqDCoCB8wqDCoMKgwqDCoMKgIF7CoMKgwqDCoMKgwqDC
-oMKgwqDCoCBeDQo+Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoCB8wqDCoMKgwqDCoMKgwqAgfMKgwqDC
-oMKgwqDCoCB8wqDCoMKgwqDCoMKgwqDCoMKgwqAgfA0KPj4+PiDCoMKgwqDCoMKgwqDCoMKgwqAg
-fMKgwqDCoMKgwqDCoMKgICotLS0tLS0tLS0tLS0tLS0tLS0tKg0KPj4+PiDCoMKgwqDCoMKgwqDC
-oMKgwqAgfMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8DQo+Pj4+IMKgwqDCoMKgwqDC
-oMKgwqDCoCB8wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHwNCj4+Pj4gwqDCoMKgwqDC
-oMKgwqDCoMKgICotLS0tLS0tLS0tLS0tLS0tKg0KPj4+Pg0KPj4+PiDCoMKgwqDCoE9mIGNvdXJz
-ZSwgc2luZ2xlIGhlYWRlciBjb3VsZCByZXByZXNlbnQgYXJyYXkgb2YgcGFnZXMgKHdoZW4gcGFj
-a2V0J3MNCj4+Pj4gYnVmZmVyIGlzIGJpZ2dlciB0aGFuIG9uZSBwYWdlKS5TbyBoZXJlIGlzIGV4
-YW1wbGUgb2YgZGV0YWlsZWQgbWFwcGluZyBsYXlvdXQNCj4+Pj4gZm9yIHNvbWUgc2V0IG9mIHBh
-Y2thZ2VzLiBMZXRzIGNvbnNpZGVyIHRoYXQgd2UgaGF2ZSB0aGUgZm9sbG93aW5nIHNlcXVlbmNl
-wqAgb2YNCj4+Pj4gcGFja2FnZXM6IDU2IGJ5dGVzLCA0MDk2IGJ5dGVzIGFuZCA4MjAwIGJ5dGVz
-LiBBbGwgcGFnZXM6IDAsMSwyLDMsNCBhbmQgNSB3aWxsDQo+Pj4+IGJlIGluc2VydGVkIHRvIHVz
-ZXIncyB2bWEodm1hIGlzIGxhcmdlIGVub3VnaCkuDQo+Pj4NCj4+PiBJbiBvcmRlciB0byBoYXZl
-IGEgInVzZXJzcGFjZSBwb2xsaW5nLWZyaWVuZGx5IGFwcHJvYWNoIiBhbmQgcmVkdWNlIG51bWJl
-ciBvZiBzeXNjYWxsLCBjYW4gd2UgYWxsb3cgZm9yIGV4YW1wbGUgdGhlIHVzZXJzcGFjZSB0byBt
-bWFwIGF0IGxlYXN0IHRoZSBmaXJzdCBoZWFkZXIgYmVmb3JlIHBhY2tldHMgYXJyaXZlLg0KPj4+
-IFRoZW4gdGhlIHVzZXJzcGFjZSBjYW4gcG9sbCBhIGZsYWcgb3Igb3RoZXIgZmllbGRzIGluIHRo
-ZSBoZWFkZXIgdG8gdW5kZXJzdGFuZCB0aGF0IHRoZXJlIGFyZSBuZXcgcGFja2V0cy4NCj4+IFlv
-dSBtZWFuIHRvIGF2b2lkICdwb2xsKCknIHN5c2NhbGwsIHVzZXIgd2lsbCBzcGluIG9uIHNvbWUg
-ZmxhZywgcHJvdmlkZWQgYnkga2VybmVsIG9uIHNvbWUgbWFwcGVkIHBhZ2U/IEkgdGhpbmsgeWVz
-LiBUaGlzIGlzIG9rLiBBbHNvIGkgdGhpbmssIHRoYXQgaSBjYW4gYXZvaWQgJ21hZHZpc2UnIGNh
-bGwNCj4+IHRvIGNsZWFyIG1lbW9yeSBtYXBwaW5nIGJlZm9yZSBlYWNoICdnZXRzb2Nrb3B0KCkn
-IC0gbGV0ICdnZXRzb2Nrb3B0KCknIGRvICdtYWR2aXNlKCknIGpvYiBieSByZW1vdmluZyBwYWdl
-cyBmcm9tIHByZXZpb3VzIGRhdGEuIEluIHRoaXMgY2FzZSBvbmx5IG9uZSBzeXN0ZW0gY2FsbCBp
-cyBuZWVkZWQgLSAnZ2V0c29ja29wdCgpJy4NCj4gDQo+IFllcywgdGhhdCdzIHJpZ2h0LiBJIG1l
-YW4gdG8gc3VwcG9ydCBib3RoLCBwb2xsKCkgZm9yIGludGVycnVwdC1iYXNlZCBhcHBsaWNhdGlv
-bnMgYW5kIHRoZSBhYmlsaXR5IHRvIGFjdGl2ZWx5IHBvbGwgYSB2YXJpYWJsZSBpbiB0aGUgc2hh
-cmVkIG1lbW9yeSBmb3IgYXBwbGljYXRpb25zIHRoYXQgd2FudCB0byBtaW5pbWl6ZSBsYXRlbmN5
-Lg0KSSBzZWUsIGluIHRoaXMgY2FzZSBzZWVtcyAndnNvY2tfc29jaycgd2lsbCBtYWludGFpbiBs
-aXN0IG9mIHN1Y2ggc2hhcmVkIHBhZ2VzLCB0byB1cGRhdGUgZXZlcnkgcGFnZSB3aGVuIG5ldyBk
-YXRhIGlzIGF2YWlsYWJsZS4gQW5kIHNvbWV0aW1lcyBjaGVjayB0aGF0IG1hcHBpbmcgd2FzIHJl
-bW92ZWQNCmJ5IHVzZXIoYmVjYXVzZSB3ZSBkb24ndCBoYXZlIG11bm1hcCBjYWxsYmFjayBpbiAn
-cHJvdG9fb3BzJywgbW1hcCBvbmx5KSwgZm9yIGV4YW1wbGUgdXNpbmcgcmVmIGNvdW50ZXIgZm9y
-IHN1Y2ggc2hhcmVkIHBhZ2UuDQoNClRoYW5rcw0KPiANCj4gVGhhbmtzLA0KPiBTdGVmYW5vDQo+
-IA0KDQo=
+tree:   https://github.com/intel/tdx.git guest-unaccepted-memory
+head:   7a902d05477ac272558ba731d903c6b0c9d72903
+commit: e4fbeb9c5cb4aa02fcd17388eef920f389fc83ea [6/17] mm: Report unaccepted memory in meminfo
+config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220614/202206141254.6aAvKFzZ-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel/tdx/commit/e4fbeb9c5cb4aa02fcd17388eef920f389fc83ea
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx guest-unaccepted-memory
+        git checkout e4fbeb9c5cb4aa02fcd17388eef920f389fc83ea
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   mm/page_alloc.c: In function 'accept_page':
+>> mm/page_alloc.c:1015:47: error: 'NR_UNACCEPTED' undeclared (first use in this function)
+    1015 |         mod_node_page_state(page_pgdat(page), NR_UNACCEPTED, -(1 << order));
+         |                                               ^~~~~~~~~~~~~
+   mm/page_alloc.c:1015:47: note: each undeclared identifier is reported only once for each function it appears in
+   mm/page_alloc.c: In function '__free_one_page':
+   mm/page_alloc.c:1152:57: error: 'NR_UNACCEPTED' undeclared (first use in this function)
+    1152 |                 __mod_node_page_state(page_pgdat(page), NR_UNACCEPTED,
+         |                                                         ^~~~~~~~~~~~~
+
+
+vim +/NR_UNACCEPTED +1015 mm/page_alloc.c
+
+  1001	
+  1002	/*
+  1003	 * Page acceptance can be very slow. Do not call under critical locks.
+  1004	 */
+  1005	static void accept_page(struct page *page, unsigned int order)
+  1006	{
+  1007		phys_addr_t start = page_to_phys(page);
+  1008		int i;
+  1009	
+  1010		if (!PageUnaccepted(page))
+  1011			return;
+  1012	
+  1013		accept_memory(start, start + (PAGE_SIZE << order));
+  1014		__ClearPageUnaccepted(page);
+> 1015		mod_node_page_state(page_pgdat(page), NR_UNACCEPTED, -(1 << order));
+  1016	
+  1017		/* Assert that there is no PageUnaccepted() on tail pages */
+  1018		if (IS_ENABLED(CONFIG_DEBUG_VM)) {
+  1019			for (i = 1; i < (1 << order); i++)
+  1020				VM_BUG_ON_PAGE(PageUnaccepted(page + i), page + i);
+  1021		}
+  1022	}
+  1023	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
