@@ -2,91 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 792DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73758C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354716AbiFNKZ0 (ORCPT
+        id S1354954AbiFNKZv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40390 "EHLO
+        Tue, 14 Jun 2022 06:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354793AbiFNKZU (ORCPT
+        with ESMTP id S236694AbiFNKZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:25:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7467347ACB
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:25:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31D26B8184F
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:25:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1194C341C0;
-        Tue, 14 Jun 2022 10:25:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655202314;
-        bh=/4wjBN/XD9r9d8fn277nelFLTt+axEseUdjXrsmW1cU=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=JdeSQWXLchu9QxQUVDqhSTbVyAhOjuRuArsn0syriXa+9Qq9BrxzCpSbML5WI6MvX
-         rieOOwWnvg/qq0YjsQmfXXIgeK6bx8mQHr+Cp7jItHCN2TGh12ndouxY2FFFPOMzoV
-         OIj9Mb9xNVeeg7e7EYjwZAe452Iwx8BRu9WNpRbfAaEvucIA6+u0M2XLRpTQgF4owu
-         hkJKkhk4nlzqH98aZNLkIRN8piFSAYzExErE7j+l41MzNbTwRZ3EqFPXUSTgcaT58B
-         RjsjdaMcL3qclOjPvMSkjIE7/PkiKj4D6GIXIZdSp95ObCXd5jSt0nEnh7dDi9Gs33
-         rlAatUrbYIFqw==
-From:   Mark Brown <broonie@kernel.org>
-To:     ckeepax@opensource.cirrus.com, samuel@sholland.org
-Cc:     linux-mediatek@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        patches@opensource.cirrus.com, jernej.skrabec@gmail.com,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        wens@csie.org, lgirdwood@gmail.com, matthias.bgg@gmail.com
-In-Reply-To: <20220613161552.481337-1-ckeepax@opensource.cirrus.com>
-References: <20220613161552.481337-1-ckeepax@opensource.cirrus.com>
-Subject: Re: [PATCH 1/2] ASoC: sun8i-codec: Partial revert to fix clock specifiers
-Message-Id: <165520231251.3607327.1586830877046934824.b4-ty@kernel.org>
-Date:   Tue, 14 Jun 2022 11:25:12 +0100
+        Tue, 14 Jun 2022 06:25:50 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC5E47AC2;
+        Tue, 14 Jun 2022 03:25:49 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id u12so16216428eja.8;
+        Tue, 14 Jun 2022 03:25:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rZvwfIylD70bucePkFCRGBDvl+eZWioeOXtzXjlTB90=;
+        b=b6kjw2kDvSiTcMhC11SE70LwvKykOdDMuhlbq8hHxrE7qjR3/PX1BCM4ctb06wWKO8
+         AKpWoRCXMQs3zoM1peOvCEltokTWB69GvfEwyA+p81B0yhZGJFwBQn1CiOqvzuR9VyAX
+         6bl03aF6UUhHSQOqwJnI+tYSIYyQO91XzCK/KXCr1flJa8g2z3OrI14UXINLl4TMyKfC
+         lzxxWDN73fsUg0qJij7AlLIpvukC8BxVi4mcGxZxoDEYwdhzbYKnE5/Y+BRLe8uI8dkN
+         2h7TX6K9ZlvSXI600NbxBdyvUUaE+QyskPvRiB2/Vr9vcIcGF7pLhytujWM23oZds1Is
+         auvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rZvwfIylD70bucePkFCRGBDvl+eZWioeOXtzXjlTB90=;
+        b=MhqQ++5QMxFtYR40uQJuyka0MCS3iEV9c5gjyHc+NC0ZneYRwEoNS+4LXLowBaJ4V8
+         H04M9beAejL7dmGIUgxNB56OYgCDzVdhPsJnNESkMmJwUArzNdLpyMbY5jVQC27ttlXZ
+         M8zD2yc/Ksk9nVIw1wCca/aPJVuR+tJMVcQuHs3SqEW9X1DsceDxtjIEiIkopwaGdkG3
+         BEbRgOfbUYGDzeQGTs22Xl1PFhONuShzi6Uz1qNN3DJU8ULVLRvb0C5YJgbNTC770Z6V
+         TRAnHGj85sxVR124CESqj69meMVYOA24GWq45EjRg9jwp2SQTVELv6mITEzKXk86qdzh
+         dZPA==
+X-Gm-Message-State: AOAM53311+9muCIysrHoyQotp6GqTEt/hFDBfqvPBzbvk88TL9FQorof
+        k1aEbv0LakKzsDFvo3DmEoYceXw/ULc=
+X-Google-Smtp-Source: AGRyM1tWLQMjD6MKytQoKP7Q9q1l3bSQGGvz9MkMAmjJ1NoCuLIcBQQazwgWyN+ZvFCYCdQ6v7OS+w==
+X-Received: by 2002:a17:907:6d24:b0:70c:81d9:d5b9 with SMTP id sa36-20020a1709076d2400b0070c81d9d5b9mr3460698ejc.597.1655202347711;
+        Tue, 14 Jun 2022 03:25:47 -0700 (PDT)
+Received: from debian (host-78-150-47-22.as13285.net. [78.150.47.22])
+        by smtp.gmail.com with ESMTPSA id z14-20020a05640240ce00b0042dc8dd59c7sm6967999edb.51.2022.06.14.03.25.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 03:25:47 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 11:25:45 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.4 000/411] 5.4.198-rc1 review
+Message-ID: <YqhiKTSONZPHwXES@debian>
+References: <20220613094928.482772422@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 13 Jun 2022 17:15:51 +0100, Charles Keepax wrote:
-> Recent updates accidentally updated the clock producer/consumer
-> specifiers on this device as part of refactoring the CPU side of the DAI
-> links. However, this device sits on the CODEC side and shouldn't have
-> been updated. Partially revert the changes keeping the switch to the new
-> clock terminology but going back to the CODEC defines.
+Hi Greg,
+
+On Mon, Jun 13, 2022 at 12:04:33PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.198 release.
+> There are 411 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> 
-> [...]
+> Responses should be made by Wed, 15 Jun 2022 09:47:08 +0000.
+> Anything received after that time might be too late.
 
-Applied to
+Build test (gcc version 11.3.1 20220612):
+mips: 65 configs -> no failure
+arm: 106 configs -> no failure
+arm64: 2 configs -> no failure
+x86_64: 4 configs -> no failure
+alpha allmodconfig -> no failure
+s390 allmodconfig -> no failure
+xtensa allmodconfig -> no failure
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+powerpc allmodconfig and riscv allmodconfig failed to build.
+backported patches sent separately.
 
-Thanks!
 
-[1/2] ASoC: sun8i-codec: Partial revert to fix clock specifiers
-      commit: beb89d1d49e9ae1188356d6e37581e5f0b5f62b4
-[2/2] ASoC: mediatek: mt8186: Use new direct clock defines
-      commit: 845a215558647acd4290dd773b9c0de62c123335
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+[1]. https://openqa.qa.codethink.co.uk/tests/1316
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+--
+Regards
+Sudip
 
-Thanks,
-Mark
