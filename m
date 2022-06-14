@@ -2,103 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3992C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 19:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 19:44:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344828AbiFNTnr (ORCPT
+        id S1345086AbiFNToD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 15:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52008 "EHLO
+        Tue, 14 Jun 2022 15:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347396AbiFNTnl (ORCPT
+        with ESMTP id S1345089AbiFNTn7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 15:43:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D26342A701
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 12:43:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655235820;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0kBJ9jVSmrZsPatTagpukwacW+JAMXi3G+ttyb9CVmA=;
-        b=MyiNEDZYK9V2SLrKcBGEeXweuETpKR2OYWzdBF244P6uyu9N45ibDrgDGqtk3oAXDqp8IE
-        R3SBCVAlcip+SKPCGnuB/04kBQSz3JkINfXwBfeWYpGEYxJ0Lq2lEDDM0XcAPj1Srt4nUG
-        dDzOzlQ8HBP54XvLg/in2splZSVCKF8=
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
- [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-177-6xBLddBuP9uS3YiJkqjbow-1; Tue, 14 Jun 2022 15:43:38 -0400
-X-MC-Unique: 6xBLddBuP9uS3YiJkqjbow-1
-Received: by mail-io1-f71.google.com with SMTP id z19-20020a05660200d300b0066583f8cf2eso4861409ioe.2
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 12:43:38 -0700 (PDT)
+        Tue, 14 Jun 2022 15:43:59 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8F82C656
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 12:43:57 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id r1so8571682plo.10
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 12:43:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UrrP/zJdRTkEhRPo0RbWE/0KRS6oPs0nqZx19bNbNaw=;
+        b=H6M31qNEkKNkvbdYFwIE8oo1NJB3Uh0O+pSPhqKIs2vHbVcldJkZMhtps0K2q5cWnG
+         ssIghlzgq0f0UiNyMaT72VwV03kZluLC/THLzmnkvceyV9aUaBE/JG2RxvWbsUZzznHs
+         bltKY6P/IrM5fNgU9zUelJ8R+OAeDDgGNfqR0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0kBJ9jVSmrZsPatTagpukwacW+JAMXi3G+ttyb9CVmA=;
-        b=JgAXrj2rt5Cu+sfoXNX0SbpoCyG1Cd8ygani4C8MDi5Rpb9y+0KGYi5QfA9cL34lhS
-         0r5YXOtfmmOQkzsO5VoO1VJK6rQC705Rg6eIM5/VguPjyHJ2z32FLUJeJH7hBACZClaz
-         oxDNClbO9qB4NtL3dIvsGY5Ov1Usxn43jf3Zyao5mvswIvOPp3h86cy4+30kNo2Zzmow
-         D7xUmtNbALHUK4xAHbiQW2JtK5D1hoXPjrUfuosX7MDOM9d90Z6Ak6cT8A+YZonazbEt
-         epznLJmbYQuP45iVIznfOqsMUsHPOZ5DmQ50vOkVf7e/55/Rcc1peVDt6xwZIjxBmpUI
-         xgBg==
-X-Gm-Message-State: AOAM5327dSwHT0J8vSBODDnUrzd/xSOARJ1r0QCLOySXd9NHfqS+MOnU
-        +GHcsKQ8UgTF1VXsAfUipT2Mzc+maQUENPOYpmkfwe023wgCa1qyvcbCJ1dIi6Fh2CGRMKDVsyt
-        UHEPJaEcu2+TCaPA39sTC904p
-X-Received: by 2002:a05:6638:2711:b0:332:1030:d6c2 with SMTP id m17-20020a056638271100b003321030d6c2mr3742580jav.263.1655235818126;
-        Tue, 14 Jun 2022 12:43:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyka9HjOgMy6b8pnRt/A/embx73zjB9YhZLRYD1IRFIZfVzSN4bJjcwuFQgiPhot6lgYqIMuA==
-X-Received: by 2002:a05:6638:2711:b0:332:1030:d6c2 with SMTP id m17-20020a056638271100b003321030d6c2mr3742560jav.263.1655235817943;
-        Tue, 14 Jun 2022 12:43:37 -0700 (PDT)
-Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id y11-20020a02904b000000b0032e6f0d3796sm5225276jaf.145.2022.06.14.12.43.35
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UrrP/zJdRTkEhRPo0RbWE/0KRS6oPs0nqZx19bNbNaw=;
+        b=timmBWr/zd2/8f4pjkXtCpnAwiw7X3kAyAZcMrm7vmEYKja7HDU1SddaUYqbzRP4tM
+         n4boqkbokzWLo16QXkoibLukMSVDHHfyRyf8DTI7PDBjVlX2Gb3RNS2EkLpDbaMS3kx5
+         0LvQWvVqbXLr/tBeRggW2QlpxE+h2JCX4CwRetPrJNVnEklCYilRViR6S5y/s491Yk8h
+         7nUqh4fV6eczOPnu1pCKaL38cMDgfhSyQh1l/JzHlzdlwWYiFX3kfe2N6Id0+vPm75ZH
+         3gLPOAG5ZyqHXMjm2htopF1LT14AI+fP5K17Qq424/ohL9VGcAWwgBAQGTVLPYsSSQeC
+         45yw==
+X-Gm-Message-State: AJIora8iPNgZwX5dR4d7cYKVnfu9e5F67eAHkl/WAo3tcLMLW16qujv4
+        8UIzsu6R33BeyZxqW+Da9nV7/Abkl1wK+Q==
+X-Google-Smtp-Source: AGRyM1sn/DSEuxrzWgsQgR3jKAz550h1x3Kr9deBUlcjGj2PTAlcKFuJV1v7+Ntk6ZUVumEcwJtWrw==
+X-Received: by 2002:a17:90b:2248:b0:1ea:8403:d81c with SMTP id hk8-20020a17090b224800b001ea8403d81cmr6171253pjb.97.1655235836991;
+        Tue, 14 Jun 2022 12:43:56 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id l21-20020a17090a409500b001df3a251cc2sm10014426pjg.4.2022.06.14.12.43.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 12:43:37 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 15:43:34 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Axel Rasmussen <axelrasmussen@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Charan Teja Reddy <charante@codeaurora.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Dmitry V . Levin" <ldv@altlinux.org>,
-        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
-        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        zhangyi <yi.zhang@huawei.com>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v3 6/6] selftests: vm: add /dev/userfaultfd test cases to
- run_vmtests.sh
-Message-ID: <Yqjk5qEvNk9l72P3@xz-m1.local>
-References: <20220601210951.3916598-1-axelrasmussen@google.com>
- <20220601210951.3916598-7-axelrasmussen@google.com>
+        Tue, 14 Jun 2022 12:43:56 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
+        <nfraprado@collabora.com>, Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: [PATCH v3 5/7] drm/bridge: anx7625: Register number of Type C switches
+Date:   Tue, 14 Jun 2022 19:34:39 +0000
+Message-Id: <20220614193558.1163205-6-pmalani@chromium.org>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+In-Reply-To: <20220614193558.1163205-1-pmalani@chromium.org>
+References: <20220614193558.1163205-1-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220601210951.3916598-7-axelrasmussen@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 02:09:51PM -0700, Axel Rasmussen wrote:
-> This new mode was recently added to the userfaultfd selftest. We want to
-> exercise both userfaultfd(2) as well as /dev/userfaultfd, so add both
-> test cases to the script.
-> 
-> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+Parse the "switches" node, if available, and count and store the number
+of Type-C switches within it. Since we currently don't do anything with
+this info, no functional changes are expected from this change.
 
-Acked-by: Peter Xu <peterx@redhat.com>
+This patch sets a foundation for the actual registering of Type-C
+switches with the Type-C connector class framework.
 
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
+
+Changes since v2:
+- Move ret variable to Patch v3 6/7..
+- Make error print a dev_dbg, since it is noisy.
+- Added Reviewed-by and Tested-by tags.
+
+Changes since v1:
+- No changes.
+
+ drivers/gpu/drm/bridge/analogix/anx7625.c | 18 ++++++++++++++++++
+ drivers/gpu/drm/bridge/analogix/anx7625.h |  1 +
+ 2 files changed, 19 insertions(+)
+
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+index 53a5da6c49dd..e3d4c2738b8c 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.c
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+@@ -2581,6 +2581,20 @@ static void anx7625_runtime_disable(void *data)
+ 	pm_runtime_disable(data);
+ }
+ 
++static int anx7625_register_typec_switches(struct device *device, struct anx7625_data *ctx)
++{
++	struct device_node *of = of_get_child_by_name(device->of_node, "switches");
++
++	if (!of)
++		return -ENODEV;
++
++	ctx->num_typec_switches = of_get_child_count(of);
++	if (ctx->num_typec_switches <= 0)
++		return -ENODEV;
++
++	return 0;
++}
++
+ static int anx7625_i2c_probe(struct i2c_client *client,
+ 			     const struct i2c_device_id *id)
+ {
+@@ -2686,6 +2700,10 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+ 	if (platform->pdata.intp_irq)
+ 		queue_work(platform->workqueue, &platform->work);
+ 
++	ret = anx7625_register_typec_switches(dev, platform);
++	if (ret)
++		dev_dbg(dev, "Didn't register Type C switches, err: %d\n", ret);
++
+ 	platform->bridge.funcs = &anx7625_bridge_funcs;
+ 	platform->bridge.of_node = client->dev.of_node;
+ 	if (!anx7625_of_panel_on_aux_bus(&client->dev))
+diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
+index e257a84db962..d5cbca708842 100644
+--- a/drivers/gpu/drm/bridge/analogix/anx7625.h
++++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
+@@ -473,6 +473,7 @@ struct anx7625_data {
+ 	struct drm_connector *connector;
+ 	struct mipi_dsi_device *dsi;
+ 	struct drm_dp_aux aux;
++	int num_typec_switches;
+ };
+ 
+ #endif  /* __ANX7625_H__ */
 -- 
-Peter Xu
+2.36.1.476.g0c4daa206d-goog
 
