@@ -2,203 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4226DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B3B1CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:53:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356017AbiFNIxG (ORCPT
+        id S1355952AbiFNIxu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58960 "EHLO
+        Tue, 14 Jun 2022 04:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355948AbiFNIwz (ORCPT
+        with ESMTP id S1356020AbiFNIxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:52:55 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9F9F4C;
-        Tue, 14 Jun 2022 01:52:42 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25E7sKMB028296;
-        Tue, 14 Jun 2022 08:52:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=gyfDtNZz1cmWrxBXHGNepl/UxgVnK4jomTFCZjnc4dc=;
- b=HpDw6kfIM0irn+zMgd2gnZhv/0EHn2vHwqz0gFrjSwL58MztnsZ0PGYQs29FGrPpJ2QS
- bOs2w46m9XMKzpkz76L73tdm8v3yqfLKDzg9HOv1k723L7K/NFOkZ6luYE8wFV7salN5
- upBrNK4ZKdIiTivaKodzh1tDshugF6zbasx/1WfaKhKf/BJ52eO7fLfoN0iAnWC8fCCs
- d1dy3JzUklUWz5c0W7xCaZF3mjOXpGjVWCQCIZ+ZaI2M8kSyCXt+axHxpMhh/cVFDLXi
- Ghb1MUZQv7g3KsBr3AgPjEJgip263Of+lIzzhbaLKODBadd/ShIDlbqlFFtrhI87q9+Q kA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gppbqsens-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jun 2022 08:52:39 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25E8nQUu022648;
-        Tue, 14 Jun 2022 08:52:39 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gppbqsen6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jun 2022 08:52:39 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25E8oRfb023979;
-        Tue, 14 Jun 2022 08:52:37 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma02fra.de.ibm.com with ESMTP id 3gmjp934mm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jun 2022 08:52:37 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25E8qXKB22675716
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Jun 2022 08:52:33 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A05DCAE051;
-        Tue, 14 Jun 2022 08:52:33 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6720CAE04D;
-        Tue, 14 Jun 2022 08:52:32 +0000 (GMT)
-Received: from [9.171.87.27] (unknown [9.171.87.27])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 14 Jun 2022 08:52:32 +0000 (GMT)
-Message-ID: <69ec8abd-c579-46d0-08cd-2714de91b6cb@linux.ibm.com>
-Date:   Tue, 14 Jun 2022 10:56:51 +0200
+        Tue, 14 Jun 2022 04:53:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2113414D32
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:53:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655196786;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vkrp4CO/9UvJmo5cc1dfyzRQg7YqDey+RKfYJG/5u98=;
+        b=hCA1H4J1s2PRIO6VVPDP+i3H1U1YrD+b7GOkc4pjgNsMFf8VAxyuCe7NjpDI6y/IrFjKFj
+        kIxVnEQg/lTg5OQJtCXN7dFhxzZS93F3BNoJ+ol1DIOcKi1ybm5Ksf4e1GCuotO87XjwIf
+        e3uYXKYlYKpw0st3NrNmyw8Au050p2I=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-526-ZrUP8yxSOKiS7v3SLAcZGA-1; Tue, 14 Jun 2022 04:53:04 -0400
+X-MC-Unique: ZrUP8yxSOKiS7v3SLAcZGA-1
+Received: by mail-lj1-f199.google.com with SMTP id z10-20020a05651c022a00b00255a0bf5ccfso1101246ljn.13
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:53:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vkrp4CO/9UvJmo5cc1dfyzRQg7YqDey+RKfYJG/5u98=;
+        b=n5e2gg35q3yYBWATNhjtAbkj+ZHMFxAgaG6hsVc6+sOjI26XxDeFwlGTzDV9hC+PE8
+         k4IVq5G/LBFwxa5+J/+Du1zmLusaowJUP5e2ofj3K6pksKQj1SXzk20yV8L6+pRyHSmX
+         cNrl9cR92T/kIs7bTq01AvU88S0JaMpry2l4oD8fvFj/v8jvHrDxGx+9DN1OFe3erunP
+         ORIBgi+3WnsJWGnQ8EsYUZUk8vXFP/Flsx7M1jxtV4bYVWIWqddZKaQgz8zBpB9s3gWL
+         TmXUDdRNbv31T8N15JQFPxnO7K9wxKkqC8LaNUlHpipFb73QmUJRV2QJpfN10djt/v0H
+         7xpQ==
+X-Gm-Message-State: AJIora/Vbwu7PPD3qqNL1mAdqi+wiIG6DEeOsn9osOkpk17TBkWOtWR1
+        0ptgOUM6G4ZlQ4Ft9Zx2LT7rknLkGecbFzZEwvrixk834IVT5/ciIHEGcQMKZ6bkZjRU68KOG2e
+        DUF33spLI73Qf3a7g1hhLDyiH42FFgOaErkEsGstZ
+X-Received: by 2002:a05:6512:3130:b0:479:385f:e2ac with SMTP id p16-20020a056512313000b00479385fe2acmr2413173lfd.575.1655196782574;
+        Tue, 14 Jun 2022 01:53:02 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1v4GFXDXwQ+WJme+RK3CludKMXoAn8uXS7Pj1PsZfLPvN+oKO5SkXXzy51Kwnu4qCl2+DwKCFXMBbWyhCpH97A=
+X-Received: by 2002:a05:6512:3130:b0:479:385f:e2ac with SMTP id
+ p16-20020a056512313000b00479385fe2acmr2413138lfd.575.1655196781990; Tue, 14
+ Jun 2022 01:53:01 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v9 10/21] vfio/pci: introduce CONFIG_VFIO_PCI_ZDEV_KVM
-Content-Language: en-US
-To:     Matthew Rosato <mjrosato@linux.ibm.com>,
-        Thomas Huth <thuth@redhat.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, pasic@linux.ibm.com,
-        pbonzini@redhat.com, corbet@lwn.net, jgg@nvidia.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220606203325.110625-1-mjrosato@linux.ibm.com>
- <20220606203325.110625-11-mjrosato@linux.ibm.com>
- <025699e6-b870-2648-d4a4-ffbc5fff22e8@redhat.com>
- <ac5cd90a-c92b-1bad-fbec-d1ca6287e826@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <ac5cd90a-c92b-1bad-fbec-d1ca6287e826@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: ZsTgDjDy4c79eKKmtexsZutRAXlU9BZm
-X-Proofpoint-ORIG-GUID: kMmIYTe2BBcz5s1DeyMpSniHFDveLBEC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-14_02,2022-06-13_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- priorityscore=1501 suspectscore=0 impostorscore=0 adultscore=0
- phishscore=0 bulkscore=0 mlxscore=0 malwarescore=0 clxscore=1015
- lowpriorityscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2206140033
+References: <0000000000008ea7ac05e09b46a6@google.com> <CACT4Y+Z8fdbQ9Kq1gHSha2q7a6RrOajbPKrSVCFyLNS95XkVgQ@mail.gmail.com>
+ <CACGkMEuK=bYcpNfjcsh64K0_-nYX2btw9Mi9uWsCYcfENBcHuA@mail.gmail.com> <CACT4Y+YF+Jo5kgjqBouw3NnKUq0pxF3geJhbACpN3QgtHSj8kQ@mail.gmail.com>
+In-Reply-To: <CACT4Y+YF+Jo5kgjqBouw3NnKUq0pxF3geJhbACpN3QgtHSj8kQ@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 14 Jun 2022 16:52:50 +0800
+Message-ID: <CACGkMEtaxSBzY+it6N8UmNssDxiCGJ48YrVQEPQSpEisedkwFg@mail.gmail.com>
+Subject: Re: [syzbot] upstream boot error: INFO: task hung in hwrng_register
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+6da75abeed821109137b@syzkaller.appspotmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        linux-crypto@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux@dominikbrodowski.net, llvm@lists.linux.dev, mpm@selenic.com,
+        syzkaller-bugs@googlegroups.com,
+        Laurent Vivier <lvivier@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 14, 2022 at 4:50 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> On Tue, 14 Jun 2022 at 10:07, Jason Wang <jasowang@redhat.com> wrote:
+> > > On Sat, 4 Jun 2022 at 10:46, syzbot
+> > > <syzbot+6da75abeed821109137b@syzkaller.appspotmail.com> wrote:
+> > > >
+> > > > Hello,
+> > > >
+> > > > syzbot found the following issue on:
+> > > >
+> > > > HEAD commit:    032dcf09e2bf Merge tag 'gpio-fixes-for-v5.19-rc1' of git:/..
+> > > > git tree:       upstream
+> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=14409a93f00000
+> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=99f457384a4fea79
+> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=6da75abeed821109137b
+> > > > compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > >
+> > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > > Reported-by: syzbot+6da75abeed821109137b@syzkaller.appspotmail.com
+> > >
+> > > +Jason, Laurent
+> > >
+> > > This started appearing at the same time as 'task hung in
+> > > add_early_randomness" bug reports:
+> > > https://syzkaller.appspot.com/bug?id=256d08cc261a3c38832064a33df4c928b3cd0ef0
+> > > https://syzkaller.appspot.com/bug?id=be1d99e09e499aed3939dc678718371984104e5c
+> > > https://syzkaller.appspot.com/bug?id=1cd11df5d984c694e3e7fc9fe271389b2340bed0
+> > > https://syzkaller.appspot.com/bug?id=35496bafab4c3f81f0b0d6d72c69787300629740
+> > >
+> > > Is this also fixed by "virtio-rng: make device ready before making
+> > > request" patch?
+> >
+> > Yes, I think so.
+> >
+> > Thanks
+>
+> Let's tell the bot so that it reports such bugs in future:
+>
+> #syz fix: virtio-rng: make device ready before making request
 
+Ok.
 
-On 6/8/22 15:15, Matthew Rosato wrote:
-> On 6/8/22 2:19 AM, Thomas Huth wrote:
->> On 06/06/2022 22.33, Matthew Rosato wrote:
->>> The current contents of vfio-pci-zdev are today only useful in a KVM
->>> environment; let's tie everything currently under vfio-pci-zdev to
->>> this Kconfig statement and require KVM in this case, reducing complexity
->>> (e.g. symbol lookups).
->>>
->>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Thanks
 
-Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
+>
+>
+> > > > INFO: task swapper/0:1 blocked for more than 143 seconds.
+> > > >       Not tainted 5.18.0-syzkaller-13760-g032dcf09e2bf #0
+> > > > "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> > > > task:swapper/0       state:D stack:21080 pid:    1 ppid:     0 flags:0x00004000
+> > > > Call Trace:
+> > > >  <TASK>
+> > > >  context_switch kernel/sched/core.c:5116 [inline]
+> > > >  __schedule+0x957/0xec0 kernel/sched/core.c:6428
+> > > >  schedule+0xeb/0x1b0 kernel/sched/core.c:6500
+> > > >  schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6559
+> > > >  __mutex_lock_common+0xecf/0x26c0 kernel/locking/mutex.c:679
+> > > >  __mutex_lock kernel/locking/mutex.c:747 [inline]
+> > > >  mutex_lock_nested+0x17/0x20 kernel/locking/mutex.c:799
+> > > >  add_early_randomness drivers/char/hw_random/core.c:69 [inline]
+> > > >  hwrng_register+0x3bf/0x680 drivers/char/hw_random/core.c:599
+> > > >  virtrng_scan+0x3e/0x90 drivers/char/hw_random/virtio-rng.c:205
+> > > >  virtio_dev_probe+0xa03/0xba0 drivers/virtio/virtio.c:313
+> > > >  call_driver_probe+0x96/0x250
+> > > >  really_probe+0x220/0x940 drivers/base/dd.c:634
+> > > >  __driver_probe_device+0x1f4/0x3f0 drivers/base/dd.c:764
+> > > >  driver_probe_device+0x50/0x240 drivers/base/dd.c:794
+> > > >  __driver_attach+0x35f/0x5a0 drivers/base/dd.c:1163
+> > > >  bus_for_each_dev+0x188/0x1f0 drivers/base/bus.c:301
+> > > >  bus_add_driver+0x32f/0x600 drivers/base/bus.c:618
+> > > >  bus_add_driver+0x32f/0x600 drivers/base/bus.c:618
+> > > >  driver_register+0x2e9/0x3e0 drivers/base/driver.c:240
+> > > >  do_one_initcall+0xbd/0x2b0 init/main.c:1295
+> > > >  do_initcall_level+0x168/0x218 init/main.c:1368
+> > > >  do_initcalls+0x4b/0x8c init/main.c:1384
+> > > >  kernel_init_freeable+0x43a/0x5c3 init/main.c:1610
+> > > >  kernel_init+0x19/0x2b0 init/main.c:1499
+> > > >  ret_from_fork+0x1f/0x30
+> > > >  </TASK>
+> > > >
+> > > > Showing all locks held in the system:
+> > > > 2 locks held by swapper/0/1:
+> > > >  #0: ffff8881468d4170 (&dev->mutex){....}-{3:3}, at: device_lock include/linux/device.h:835 [inline]
+> > > >  #0: ffff8881468d4170 (&dev->mutex){....}-{3:3}, at: __device_driver_lock drivers/base/dd.c:1054 [inline]
+> > > >  #0: ffff8881468d4170 (&dev->mutex){....}-{3:3}, at: __driver_attach+0x353/0x5a0 drivers/base/dd.c:1162
+> > > >  #1: ffffffff8d24ccc8 (reading_mutex){+.+.}-{3:3}, at: add_early_randomness drivers/char/hw_random/core.c:69 [inline]
+> > > >  #1: ffffffff8d24ccc8 (reading_mutex){+.+.}-{3:3}, at: hwrng_register+0x3bf/0x680 drivers/char/hw_random/core.c:599
+> > > > 2 locks held by pr/ttyS0/16:
+> > > > 1 lock held by khungtaskd/29:
+> > > >  #0: ffffffff8cb1eee0 (rcu_read_lock){....}-{1:2}, at: rcu_lock_acquire+0x0/0x30
+> > > > 2 locks held by kworker/u4:4/56:
+> > > >  #0: ffff888011c69138 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_one_work+0x796/0xd10 kernel/workqueue.c:2262
+> > > >  #1: ffffc900013e7d00 ((work_completion)(&(&kfence_timer)->work)){+.+.}-{0:0}, at: process_one_work+0x7d0/0xd10 kernel/workqueue.c:2264
+> > > > 1 lock held by hwrng/755:
+> > > >  #0: ffffffff8d24ccc8 (reading_mutex){+.+.}-{3:3}, at: hwrng_fillfn+0xec/0x470 drivers/char/hw_random/core.c:503
+> > > >
+> > > > =============================================
+> > > >
+> > > >
+> > > >
+> > > > ---
+> > > > This report is generated by a bot. It may contain errors.
+> > > > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > > > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > > >
+> > > > syzbot will keep track of this issue. See:
+> > > > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > > >
+> > > > --
+> > > > You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> > > > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> > > > To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/0000000000008ea7ac05e09b46a6%40google.com.
+> > >
+> >
+>
 
-
->>> ---
->>>   drivers/vfio/pci/Kconfig      | 11 +++++++++++
->>>   drivers/vfio/pci/Makefile     |  2 +-
->>>   include/linux/vfio_pci_core.h |  2 +-
->>>   3 files changed, 13 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
->>> index 4da1914425e1..f9d0c908e738 100644
->>> --- a/drivers/vfio/pci/Kconfig
->>> +++ b/drivers/vfio/pci/Kconfig
->>> @@ -44,6 +44,17 @@ config VFIO_PCI_IGD
->>>         To enable Intel IGD assignment through vfio-pci, say Y.
->>>   endif
->>> +config VFIO_PCI_ZDEV_KVM
->>> +    bool "VFIO PCI extensions for s390x KVM passthrough"
->>> +    depends on S390 && KVM
->>> +    default y
->>> +    help
->>> +      Support s390x-specific extensions to enable support for 
->>> enhancements
->>> +      to KVM passthrough capabilities, such as interpretive 
->>> execution of
->>> +      zPCI instructions.
->>> +
->>> +      To enable s390x KVM vfio-pci extensions, say Y.
->>
->> Is it still possible to disable CONFIG_VFIO_PCI_ZDEV_KVM ? Looking at 
->> the later patches (e.g. 20/21 where you call kvm_s390_pci_zpci_op() 
->> from kvm-s390.c), it rather seems to me that it currently cannot be 
->> disabled independently (as long as KVM is enabled).
-> 
-> Yes, you can build with, for example, CONFIG_VFIO_PCI_ZDEV_KVM=n and 
-> CONFIG_KVM=m -- I tested it again just now.  The result is kvm and 
-> vfio-pci are built and vfio-pci works, but none of the vfio-pci-zdev 
-> extensions are available (including zPCI interpretation).
-> 
-> This is accomplished via the placement of some IS_ENABLED checks.  Some 
-> calls (e.g. AEN init) are fenced by 
-> IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM).  There are also some areas that 
-> are fenced off via a call to kvm_s390_pci_interp_allowed() which also 
-> includes an IS_ENABLED check along with checks for facility and cpu id.
-> 
-> Using patch 20 as an example, KVM_CAP_S390_ZPCI_OP will always be 
-> reported as unavailable to userspace if CONFIG_VFIO_PCI_ZDEV_KVM=n due 
-> to the call to kvm_s390_pci_interp_allowed().  If userspace sends us the 
-> ioctl anyway, we will return -EINVAL because there is again a 
-> IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM) check before we read the ioctl args 
-> from userspace.
-
-Yes and the code will not be generated by the compiler in patch 20 after 
-the break if CONFIG_VFIO_PCI_ZDEV_KVM is not enabled.
-
-+	case KVM_S390_ZPCI_OP: {
-+		struct kvm_s390_zpci_op args;
-+
-+		r = -EINVAL;
-+		if (!IS_ENABLED(CONFIG_VFIO_PCI_ZDEV_KVM))
-+			break;
-
-Code not generated----v
-
-+		if (copy_from_user(&args, argp, sizeof(args))) {
-+			r = -EFAULT;
-+			break;
-+		}
-+		r = kvm_s390_pci_zpci_op(kvm, &args);
-+		break;
-
-----------^
-
-+	}
-> 
->>
->> So if you want to make this selectable by the user, I think you have 
->> to put some more #ifdefs in the following patches.
->> But if this was not meant to be selectable by the user, I think it 
->> should not get a help text and rather be selected by the KVM switch in 
->> arch/s390/kvm/Kconfig instead of having a "default y".
->>
->>   Thomas
->>
-> 
-
--- 
-Pierre Morel
-IBM Lab Boeblingen
