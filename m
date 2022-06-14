@@ -2,91 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAFE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D4AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:32:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235128AbiFNJaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44310 "EHLO
+        id S238904AbiFNJc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 05:32:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230333AbiFNJaU (ORCPT
+        with ESMTP id S230333AbiFNJc0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 05:30:20 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2606840E53;
-        Tue, 14 Jun 2022 02:30:20 -0700 (PDT)
-Received: from fraeml736-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LMjmY2nw7z6H7Tb;
-        Tue, 14 Jun 2022 17:28:45 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml736-chm.china.huawei.com (10.206.15.217) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 11:30:18 +0200
-Received: from [10.195.33.253] (10.195.33.253) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 10:30:17 +0100
-Message-ID: <731c26d2-5124-60a6-c8de-d979ee2af467@huawei.com>
-Date:   Tue, 14 Jun 2022 10:33:24 +0100
+        Tue, 14 Jun 2022 05:32:26 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B594965A6
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 02:32:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655199145; x=1686735145;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=U6mkYQXYPpI8IEu2W57zWGbzpdSdA7n5h8qOkdFmXtc=;
+  b=VJHAeiWpF3UeKffN2xMKRn/804O/ho9X5FYmdDJLRvwykjQEH49x5MsJ
+   pvYm3QTO45F+2/QLTDeBfHdq1dYz6FKoCn//8v1SnTeTcycy1QBTXyTu4
+   lAUk7tbFzqvwmekbJFUZeFABPEeguLamy02Ngovdr6Iyty+GPYGvlhX/q
+   e4NBEzu0ZC7GalqrPZ94nq5R71HOh4zv2fizFRAEGIKHcGb0AqF/xeUlk
+   05ZoMIp6mhdp2tYWUwR4PLDwuaLiqlN+gc279Qc/isw+5DVos7mOSfc9l
+   +is3p+9nVJ42OjOOXa9Dc41EpBSUqTanutOFL8Bj3Rt6R6nZn9m481b0m
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="267251262"
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="267251262"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 02:32:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="588350359"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 14 Jun 2022 02:32:24 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o12uN-000LjN-Bi;
+        Tue, 14 Jun 2022 09:32:23 +0000
+Date:   Tue, 14 Jun 2022 17:32:09 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     William Zhang <william.zhang@broadcom.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [broadcom-stblinux:devicetree/next 15/23] make[2]: *** No rule to
+ make target 'arch/arm/boot/dts/bcm96855.dtb', needed by '__build'.
+Message-ID: <202206141752.IB5xCdXS-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH RFC v2 02/18] scsi: core: Resurrect
- scsi_{get,free}_host_dev()
-To:     Christoph Hellwig <hch@lst.de>
-CC:     <axboe@kernel.dk>, <damien.lemoal@opensource.wdc.com>,
-        <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
-        <brking@us.ibm.com>, <hare@suse.de>, <linux-block@vger.kernel.org>,
-        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <chenxiang66@hisilicon.com>
-References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
- <1654770559-101375-3-git-send-email-john.garry@huawei.com>
- <20220614064403.GB31683@lst.de>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220614064403.GB31683@lst.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.195.33.253]
-X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/06/2022 07:44, Christoph Hellwig wrote:
-> On Thu, Jun 09, 2022 at 06:29:03PM +0800, John Garry wrote:
->> This reverts commit 6bd49b1a8d43ec118c55f3aaa7577729b52bde15.
-> 
-> Please add an actual text describing why you are doing this and how
-> insteasd of this completely pointless revert line.
-> 
-> 
-> .
+tree:   https://github.com/Broadcom/stblinux devicetree/next
+head:   edb052f67bb9f245f9717b3c11b21022a02fae87
+commit: d2d847e696389916239c5521ca533261d0c0026f [15/23] ARM: dts: Add DTS files for bcmbca SoC BCM6855
+config: arm-randconfig-r035-20220613 (https://download.01.org/0day-ci/archive/20220614/202206141752.IB5xCdXS-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/Broadcom/stblinux/commit/d2d847e696389916239c5521ca533261d0c0026f
+        git remote add broadcom-stblinux https://github.com/Broadcom/stblinux
+        git fetch --no-tags broadcom-stblinux devicetree/next
+        git checkout d2d847e696389916239c5521ca533261d0c0026f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-OK. And in hindsight it would have been a good opportunity to mention 
-something which I am undecided on - that is which scsi_device to use for 
-these reserved commands?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-In this series I use the scsi shost sdev for all reserved commands, but 
-maybe we should use the target sdev.
+All errors (new ones prefixed by >>):
 
-Pros of using scsi host sdev:
-- don't need to worry about request queue freezing
-- don't need to worry about running out of request queue budget
-- available when scsi host is added - libata adds target sdev after some 
-internal commands are sent, and this would be a bit painful to change, 
-however adding the sdev earlier would seem to be a good change to make
+>> make[2]: *** No rule to make target 'arch/arm/boot/dts/bcm96855.dtb', needed by '__build'.
+   make[2]: Target '__build' not remade because of errors.
 
-Cons:
-- generally better to use same scsi device as target (or is it?). For 
-example, it seems better to have reserved scsi_cmnd.device actually set 
-to the target sdev.
-- don't need to add stuff like ata_is_scmd_ata_internal() later in this 
-series
-
-Prob other reasons which I have forgot about. Please let me know if you 
-have any thoughts on this.
-
-Cheers,
-John
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
