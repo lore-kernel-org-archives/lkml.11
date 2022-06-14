@@ -2,93 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B332EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40226C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356227AbiFNLL2 (ORCPT
+        id S1354090AbiFNLNX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:11:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35368 "EHLO
+        Tue, 14 Jun 2022 07:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356191AbiFNLLX (ORCPT
+        with ESMTP id S239038AbiFNLNT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 07:11:23 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B51DEAF;
-        Tue, 14 Jun 2022 04:11:19 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LMm2s318dz4xZC;
-        Tue, 14 Jun 2022 21:11:17 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1655205078;
-        bh=iZi7VXD/BQU3IcvSqC2JWvaTS297BwmoOBbqIwBTF5Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=G+uEXtJB77egfNtm4fRMXhvXGQj53V1OC1m633XgfopNtTUkNgWG3QvuiPlA3wCDb
-         YB/8NalgxaV1PEjORlBwfy1evl2GzBuu0hRtKx5rHG76CI0sSh9yhIU+92F2kenmdI
-         4iYQS/8D7B4ikof2rmlbwR9x18Gtk8GkDaNxFsAfb7I1UUQvEclGu4nspZ6KQnsfOr
-         DCimXJCEvP83znV2RzXTfgUC7LoULrIlbYqLyN5lo4C9Gx9y43F7HLZmYeCnxfiOLz
-         LQfrIA2WY8bTCJyLjLlKMCmglm2zUCUAnUrH08Ab/++2PoMWu7ClG7pCMWI7XQJZM7
-         CcnEX/A9CBtqw==
-Date:   Tue, 14 Jun 2022 21:11:16 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     Greg KH <greg@kroah.com>, Neal Liu <neal_liu@aspeedtech.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the usb tree
-Message-ID: <20220614211116.1557b95e@canb.auug.org.au>
-In-Reply-To: <YqhCZoA4SukXq9lf@debian.me>
-References: <20220614120833.06cec8e7@canb.auug.org.au>
-        <YqgtsXSNZKds2bDl@kroah.com>
-        <20220614175247.30b02dc2@canb.auug.org.au>
-        <YqhCZoA4SukXq9lf@debian.me>
+        Tue, 14 Jun 2022 07:13:19 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6355D1EC4F;
+        Tue, 14 Jun 2022 04:13:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655205198; x=1686741198;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=PkAwYlIH+LhC0yR/XXtEdoYqPZCdO4H6sUEzr+OM2pM=;
+  b=dwil8hW0o5C5StvUZV/q5/uEXxxzNm5KM5csMZ/MMQ5NYoT1i3azP/Ew
+   L7FUsqqpZ0BqVpSWSfOrTudBoBR0RvOtFYAoNn0VPnRoZinUVKaNp8K9g
+   T2OEgCfuEKBIuvIb7FyFm08hFyZsi6Wnj1JQyNLD/pYNItNGkiZtw+pjr
+   vOBRV839FrXa7jgndv/CJ48aAePgRGxT72zt6y4PniPozRX1+VTdpZmUc
+   xHWFL4AVq+gYtCmcIviOlQBxPLjPOUIR7qkIhLmvHPbffYAGAOtUXsd5+
+   /WwCHO7sG1kRyuiDD4mLWHbMrvYwDG+tOro7RB56Y/g0Hfv+2/qIPpRrY
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258421930"
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="258421930"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 04:13:18 -0700
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="830358971"
+Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.28.34]) ([10.255.28.34])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 04:13:12 -0700
+Subject: Re: [kbuild-all] Re: [PATCH 1/8] perf: Consolidate branch sample
+ filter helpers
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        kernel test robot <lkp@intel.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
+        will@kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-perf-users@vger.kernel.org
+References: <20220613100119.684673-2-anshuman.khandual@arm.com>
+ <202206140422.ttLxMHtq-lkp@intel.com>
+ <7df0ca46-1ece-2f51-a7a7-a0129724e6bc@arm.com>
+From:   "Chen, Rong A" <rong.a.chen@intel.com>
+Message-ID: <e4cadb9a-2363-f446-0fce-1242e84396bc@intel.com>
+Date:   Tue, 14 Jun 2022 19:13:09 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/pVG0HKi1sIFI_zgWgSr3WdT";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <7df0ca46-1ece-2f51-a7a7-a0129724e6bc@arm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/pVG0HKi1sIFI_zgWgSr3WdT
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi Bagas,
 
-On Tue, 14 Jun 2022 15:10:14 +0700 Bagas Sanjaya <bagasdotme@gmail.com> wro=
-te:
->
-> I mean the missing error you reported was:
->=20
->   DTC     arch/arm/boot/dts/aspeed-ast2500-evb.dtb
->   DTC     arch/arm/boot/dts/aspeed-ast2600-evb-a1.dtb
-> arch/arm/boot/dts/aspeed-g6.dtsi:320.21-328.5: ERROR (duplicate_node_name=
-s): /ahb/usb@1e6a2000: Duplicate node name
-> ERROR: Input tree has errors, aborting (use -f to force output)
+On 6/14/2022 9:36 AM, Anshuman Khandual wrote:
+> 
+> On 6/14/22 02:02, kernel test robot wrote:
+>> Hi Anshuman,
+>>
+>> Thank you for the patch! Yet something to improve:
+>>
+>> [auto build test ERROR on tip/perf/core]
+>> [also build test ERROR on acme/perf/core]
+>> [cannot apply to arm64/for-next/core]
+>> [If your patch is applied to the wrong git tree, kindly drop us a note.
+>> And when submitting patch, we suggest to use '--base' as documented in
+>> https://git-scm.com/docs/git-format-patch]
+>>
+>> url:    https://github.com/intel-lab-lkp/linux/commits/Anshuman-Khandual/arm64-perf-Enable-branch-stack-sampling/20220613-180501
+>> base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git f0fe9f3c7abcc946a676dfb295478c50312523c2
+>> config: x86_64-randconfig-a002-20220613 (https://download.01.org/0day-ci/archive/20220614/202206140422.ttLxMHtq-lkp@intel.com/config)
+>> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d378268ead93c85803c270277f0243737b536ae7)
+>> reproduce (this is a W=1 build):
+>>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>>          chmod +x ~/bin/make.cross
+>>          # https://github.com/intel-lab-lkp/linux/commit/1bd23b8ca1fc92f2f5b28a94ebd95432febfe96c
+>>          git remote add linux-review https://github.com/intel-lab-lkp/linux
+>>          git fetch --no-tags linux-review Anshuman-Khandual/arm64-perf-Enable-branch-stack-sampling/20220613-180501
+>>          git checkout 1bd23b8ca1fc92f2f5b28a94ebd95432febfe96c
+>>          # save the config file
+>>          mkdir build_dir && cp config build_dir/.config
+>>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/acpi/
+>>
+>> If you fix the issue, kindly add following tag where applicable
+>> Reported-by: kernel test robot <lkp@intel.com>
+>>
+>> All errors (new ones prefixed by >>):
+>>
+>>     In file included from drivers/acpi/acpi_pad.c:20:
+>>>> include/linux/perf_event.h:1708:42: error: use of undeclared identifier 'PERF_SAMPLE_BRANCH_PRIV_SAVE'; did you mean 'PERF_SAMPLE_BRANCH_TYPE_SAVE'?
+>>             return event->attr.branch_sample_type & PERF_SAMPLE_BRANCH_PRIV_SAVE;
+>>                                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>                                                     PERF_SAMPLE_BRANCH_TYPE_SAVE
+>>     include/uapi/linux/perf_event.h:231:2: note: 'PERF_SAMPLE_BRANCH_TYPE_SAVE' declared here
+>>             PERF_SAMPLE_BRANCH_TYPE_SAVE    =
+>>             ^
+>>     1 error generated.
+> 
+> This series is dependent on another one which adds symbol PERF_SAMPLE_BRANCH_TYPE_SAVE
+> as mentioned in the cover letter. I understand the '--base' argument for git format-patch
+> output, but how to mention another prerequisite series before this can be built tested ?
 
-Right, thanks.
+Hi Anshuman,
 
---=20
-Cheers,
-Stephen Rothwell
+git format-patch supports to set prerequisite-patch-id, kernel test robot
+can parse the information and apply patch to a proper branch to test.
 
---Sig_/pVG0HKi1sIFI_zgWgSr3WdT
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+    https://git-scm.com/docs/git-format-patch#_base_tree_information
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKobNQACgkQAVBC80lX
-0Gy9gQf/bEUThYasyZV9JYaf2h9nHhtDMtE70J+1hq1BuJNs3ItJ2GSs67XI++jt
-RcMS2x8AjhckJN+9nit53BzO54yygiJqsMUmoBuljqkJSAYR+HE9+V9/JWB+xrwT
-fOefpgTBQV8msSQwdojymuocvx3kD+AT7vk31JLMZK8pPfy4IP+XpO68PfhomNYD
-aQ3QXO1qS39tFJ2d6C3oQb4fevlCKhP/B6VwJV96OMiww3XZFhazFM61JhwjUp3v
-AlJ+vOlc0HIvlhT1aUpDo15jodIkhNQrb4e6WSEToP/FVgcP3aJvQOUbJQZb/fy2
-rmA1IT+Y/HDU3UGJltvCW1ZOpwYQMQ==
-=tl4v
------END PGP SIGNATURE-----
-
---Sig_/pVG0HKi1sIFI_zgWgSr3WdT--
+Best Regards,
+Rong Chen
