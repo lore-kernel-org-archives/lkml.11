@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93CDACCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F76C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355645AbiFNC3M (ORCPT
+        id S1355678AbiFNC3Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
+        Mon, 13 Jun 2022 22:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355309AbiFNCYQ (ORCPT
+        with ESMTP id S1355354AbiFNCYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:24:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E726C41986;
-        Mon, 13 Jun 2022 19:10:59 -0700 (PDT)
+        Mon, 13 Jun 2022 22:24:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C004199C;
+        Mon, 13 Jun 2022 19:11:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F06BDB816A4;
-        Tue, 14 Jun 2022 02:10:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF158C341C5;
-        Tue, 14 Jun 2022 02:10:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 992DFB816BB;
+        Tue, 14 Jun 2022 02:11:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 840CAC341C4;
+        Tue, 14 Jun 2022 02:10:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172630;
-        bh=gwmf6peLKhueY78cBZXQsHDQ+B2rOr5tX1pQlxSjuXc=;
+        s=k20201202; t=1655172659;
+        bh=hpr7dPZ5XWl9ycqC+kESLO4L50zCczShqrP2GtHInnc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GxLlxL4Iey5UVB4swohC11iFDvcC2U+iI7diCbhSDrfhyoHzAOouybT2H3vE0kRGY
-         KR0ML2s5/lUZx7jEtcdEs2v5TDMdVYG0CoxaDvJAtQ/860nkTiToTgbm2p5n1nVUbZ
-         5yTTH0sGJLUdLtLKbc0ir1dno6HZPYt1LSYbRkviSWHqtxvBUCxgftJF5EdhePEna5
-         IgaVmXgz7ic0NGzjQmqf5JWLABxdQIUIhX4LjwE1JbEpIm2P4QNL8qMSsGkuY//EaU
-         qeIZVrOi2OE/7q/Tuf/JEzARBxOnX0MxnEsppZOdTJsRrWLsoyTKUxcccii6Eunpj6
-         +Nz8dhC0cm03A==
+        b=qyKIwjx9ro8+8qZiYMyvXR8hLEcNkIR82WqMiJEs14aYgKcprVxMcMPsk2AT+szrr
+         D96kHDuLkyR+Dw0QaKcAHccEPk90WqZMjJCKBiaLO0bEvUkKDcF86/IkIlmEQdNK+h
+         4wcbww3MhHT3LpQlGMg86O7vD1eutpE1zcj8pqssaXogo8dBfvTJ93EhKmLBSVkfgO
+         h+b9Z4fKyCOSmv5WqwcwAm0EiaxoTAMPqqz9We9o78lswPXHc2MDUmQoEetUzefJxM
+         QCxhAU3maQeE5be20+AUE2eek58m0RrIastTl9x5otRlZe2NfLvDgzXIcQ+DAuo/wm
+         YSV//TUJ0clxA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wentao Wang <wwentao@vmware.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jgill@vmware.com,
-        pv-drivers@vmware.com, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 07/14] scsi: vmw_pvscsi: Expand vcpuHint to 16 bits
-Date:   Mon, 13 Jun 2022 22:10:12 -0400
-Message-Id: <20220614021019.1100929-7-sashal@kernel.org>
+Cc:     Wang Yufen <wangyufen@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 11/12] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
+Date:   Mon, 13 Jun 2022 22:10:39 -0400
+Message-Id: <20220614021040.1101131-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614021019.1100929-1-sashal@kernel.org>
-References: <20220614021019.1100929-1-sashal@kernel.org>
+In-Reply-To: <20220614021040.1101131-1-sashal@kernel.org>
+References: <20220614021040.1101131-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,38 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wentao Wang <wwentao@vmware.com>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit cf71d59c2eceadfcde0fb52e237990a0909880d7 ]
+[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
 
-vcpuHint has been expanded to 16 bit on host to enable routing to more
-CPUs. Guest side should align with the change. This change has been tested
-with hosts with 8-bit and 16-bit vcpuHint, on both platforms host side can
-get correct value.
+When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
+overflow. To fix, we can follow what udpv6 does and subtract the
+transhdrlen from the max.
 
-Link: https://lore.kernel.org/r/EF35F4D5-5DCC-42C5-BCC4-29DF1729B24C@vmware.com
-Signed-off-by: Wentao Wang <wwentao@vmware.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/vmw_pvscsi.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/l2tp/l2tp_ip6.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/vmw_pvscsi.h b/drivers/scsi/vmw_pvscsi.h
-index 75966d3f326e..d87c12324c03 100644
---- a/drivers/scsi/vmw_pvscsi.h
-+++ b/drivers/scsi/vmw_pvscsi.h
-@@ -333,8 +333,8 @@ struct PVSCSIRingReqDesc {
- 	u8	tag;
- 	u8	bus;
- 	u8	target;
--	u8	vcpuHint;
--	u8	unused[59];
-+	u16	vcpuHint;
-+	u8	unused[58];
- } __packed;
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 76ef758db112..e412020029df 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -518,14 +518,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	struct ipcm6_cookie ipc6;
+ 	int addr_len = msg->msg_namelen;
+ 	int transhdrlen = 4; /* zero session-id */
+-	int ulen = len + transhdrlen;
++	int ulen;
+ 	int err;
  
- /*
+ 	/* Rough check on arithmetic overflow,
+ 	   better check is made in ip6_append_data().
+ 	 */
+-	if (len > INT_MAX)
++	if (len > INT_MAX - transhdrlen)
+ 		return -EMSGSIZE;
++	ulen = len + transhdrlen;
+ 
+ 	/* Mirror BSD error message compatibility */
+ 	if (msg->msg_flags & MSG_OOB)
 -- 
 2.35.1
 
