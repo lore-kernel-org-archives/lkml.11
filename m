@@ -2,135 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7592DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 605B9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243101AbiFNOPn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58826 "EHLO
+        id S241162AbiFNORH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242805AbiFNOPj (ORCPT
+        with ESMTP id S231754AbiFNORG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:15:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54E8B33891
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:15:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655216135;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JctC2m2+QZN18u2MNb2HvFmHLpXv366LEOSyUu6TasQ=;
-        b=iDnpfzdKKza6TuZmcvl+vbofoPO7jDrSkkz7OdC8+TPKF9DR8BL3KseY8nqTMPGuFn9O2h
-        6DZ9KPeUG5NQWnBHQaCI+YJ7puia/mzwaJRfCSIrT+Xwyh4VTvPZOSGQJARQRJ5CM5TkWk
-        c9SHn7ojEpCT2axlHqkg6JSovCbIegs=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-564-jTzZCP9PPUawlDPopva-5Q-1; Tue, 14 Jun 2022 10:15:34 -0400
-X-MC-Unique: jTzZCP9PPUawlDPopva-5Q-1
-Received: by mail-qk1-f199.google.com with SMTP id s11-20020a05620a254b00b006a6a23ff939so7522687qko.17
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:15:34 -0700 (PDT)
+        Tue, 14 Jun 2022 10:17:06 -0400
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2D32FE5C;
+        Tue, 14 Jun 2022 07:17:04 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id e184so15372116ybf.8;
+        Tue, 14 Jun 2022 07:17:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:content-transfer-encoding:user-agent
-         :mime-version;
-        bh=JctC2m2+QZN18u2MNb2HvFmHLpXv366LEOSyUu6TasQ=;
-        b=F8AitUP8PxLCdzvdabSA7LnNGODyeVgNjp+fZvA/MMkbBs0Y1Lk8N+hY9y+TSgHfl+
-         ZOM7zwUCUJi0tHwGhGm7cQQtPwAoQpHSv6xj3UzyAcVScr76Krs49hebFoxpjJFtF/JN
-         3jAcET3CL1Mq6qQylhow3MJp3UZ/dMlxAh/n8/LibS/OKCQvm1DmYoKc5ZWhgIcJtyP0
-         hOpr3MCzUo2EUs74awHuRmjcksCuuqYm5Lro/qwD5345yuK+8euSdLDegV/APuo4L5cb
-         lY9ir7Fw+x1R+vd37aZ0iP8WmPc+/G0Hd6rX4QkbXtEIrq+MJnbZ09k7MPPF3vVWFaiN
-         EpNw==
-X-Gm-Message-State: AJIora+8b9DXMP/IGfghxRM1vCdBHJK86VvjlM/ry0ZkIVvu6fq0zq1j
-        1pkZ26MzYKX7e2kB9/Uf5iyQSTh4pR3ly79C6uTZnDxsjFRnqkcAgsCwp8aq+MDVGltM9Z5zo5u
-        WVzGHDbOGcHfKHJZ5verVaXms
-X-Received: by 2002:ad4:5c4a:0:b0:464:5920:7c1a with SMTP id a10-20020ad45c4a000000b0046459207c1amr3579678qva.58.1655216133915;
-        Tue, 14 Jun 2022 07:15:33 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sUmVYfieNEUEGblxVDH6VoXBlZfAPSf7IbUAfA0HBAtNoDeIhDejnqioeqYTK2ssE5LXtTUg==
-X-Received: by 2002:ad4:5c4a:0:b0:464:5920:7c1a with SMTP id a10-20020ad45c4a000000b0046459207c1amr3579632qva.58.1655216133401;
-        Tue, 14 Jun 2022 07:15:33 -0700 (PDT)
-Received: from m8.users.ipa.redhat.com ([93.56.163.49])
-        by smtp.gmail.com with ESMTPSA id h20-20020a05620a245400b006a32bf19502sm9394754qkn.60.2022.06.14.07.15.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 07:15:32 -0700 (PDT)
-Message-ID: <831c7380f7d89fd8fb3a3043cf3b3d01001ae0be.camel@redhat.com>
-Subject: Re: [PATCH 0/2] certs: Add FIPS self-test for signature verification
-From:   Simo Sorce <simo@redhat.com>
-To:     David Howells <dhowells@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 14 Jun 2022 10:15:24 -0400
-In-Reply-To: <165515741424.1554877.9363755381201121213.stgit@warthog.procyon.org.uk>
-References: <165515741424.1554877.9363755381201121213.stgit@warthog.procyon.org.uk>
-Organization: Red Hat
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YzJm+lc8uG4MWjlJ9/R6vxASJYsJF02HZHOuRM57po8=;
+        b=VpOjaG5ljvpTVOFm7MiB9OeiN6S+DKtUYIKS1xmvndtCySnmrcr05TwLlJR415v2jj
+         gGKmG0fmMF05oUa+WAjlmDTNuErM4WjbbJCktcNb1NVoV7r1bjm1wOXNE0bBhBgasFzY
+         EqIDFkV5b2cO6QiRQkIhaXitHP3496EXw3EaFervg5Yl4JjK83rK65iWiP92K0u2112q
+         ZYSJE627n9jS9IEYBM9TWOno0G0RSXfPoUzJ3osNOTzbaq68lbUnoPikYqgOWMIoiMNP
+         fDcnSeKLZ9zH5YyOOpsRWS74PLipvTCceuuEw8koxDch+lZUiQw3Jl7p/5pCXY4QDZT6
+         YO2w==
+X-Gm-Message-State: AJIora/anQtA4mXKCiw7LWHHOOhh8NnNJQ2U0k8ilUrzqUJF6jZRpodV
+        0eieEi+4+kmlY2znTxr0JyDECQ2Xgebbn35emRYUKzOi
+X-Google-Smtp-Source: AGRyM1szUqy4ac7OLk1kEVW53j2FXYhM2hvZR6OvD0S75oBYbi+k7ZtJoo2eKW4lGbZvVkjwxU8I5kvEZSC+cPvJAys=
+X-Received: by 2002:a25:6b50:0:b0:64f:4b33:664 with SMTP id
+ o16-20020a256b50000000b0064f4b330664mr5417608ybm.153.1655216223200; Tue, 14
+ Jun 2022 07:17:03 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220527073445.2474380-1-liuke94@huawei.com>
+In-Reply-To: <20220527073445.2474380-1-liuke94@huawei.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 14 Jun 2022 16:16:52 +0200
+Message-ID: <CAJZ5v0hwJAcaggRD9e9+jwn6KtTwsfdutgjSxQz_SMwC-OeSpQ@mail.gmail.com>
+Subject: Re: [PATCH] thermal: Directly use ida_alloc()/free()
+To:     keliu <liuke94@huawei.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        "Zhang, Rui" <rui.zhang@intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-06-13 at 22:56 +0100, David Howells wrote:
-> Hi Herbert,
->=20
-> If you could look over this pair of patches?  The second patch adds a sim=
-ple
-> selftest to allow the signature verification code so that it can be FIPS
-> compliant.  The first moves load_certificate_list() to the asymmetric key=
- code
-> to make this easier and renames it.
->=20
-> I generated the test data myself, but I'm open to using some standard tes=
-t
-> data if you know of some; we don't want too much, however, as it's
-> incompressible.  Also, it has avoid blacklist checks on the keys it is us=
-ing,
-> lest the UEFI blacklist cause the selftest to fail.
->=20
-> The patches can be found on the following branch:
->=20
-> 	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/lo=
-g/?h=3Dkeys-fixes
->=20
-> David
+On Fri, May 27, 2022 at 9:13 AM keliu <liuke94@huawei.com> wrote:
+>
+> Use ida_alloc()/ida_free() instead of deprecated
+> ida_simple_get()/ida_simple_remove() .
+>
+> Signed-off-by: keliu <liuke94@huawei.com>
 > ---
-> David Howells (2):
->       certs: Move load_certificate_list() to be with the asymmetric keys =
-code
->       certs: Add FIPS selftests
->=20
->=20
->  certs/Makefile                           |   4 +-
->  certs/blacklist.c                        |   8 +-
->  certs/common.c                           |  57 ------
->  certs/common.h                           |   9 -
->  certs/system_keyring.c                   |   6 +-
->  crypto/asymmetric_keys/Kconfig           |  10 +
->  crypto/asymmetric_keys/Makefile          |   2 +
->  crypto/asymmetric_keys/selftest.c        | 224 +++++++++++++++++++++++
->  crypto/asymmetric_keys/x509_loader.c     |  57 ++++++
->  crypto/asymmetric_keys/x509_parser.h     |   9 +
->  crypto/asymmetric_keys/x509_public_key.c |   8 +-
->  include/keys/asymmetric-type.h           |   3 +
->  12 files changed, 321 insertions(+), 76 deletions(-)
->  delete mode 100644 certs/common.c
->  delete mode 100644 certs/common.h
->  create mode 100644 crypto/asymmetric_keys/selftest.c
->  create mode 100644 crypto/asymmetric_keys/x509_loader.c
->=20
->=20
+>  drivers/thermal/thermal_core.c | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+> index 82654dc8382b..b36c348a110b 100644
+> --- a/drivers/thermal/thermal_core.c
+> +++ b/drivers/thermal/thermal_core.c
+> @@ -667,7 +667,7 @@ int thermal_zone_bind_cooling_device(struct thermal_zone_device *tz,
+>         dev->target = THERMAL_NO_TARGET;
+>         dev->weight = weight;
+>
+> -       result = ida_simple_get(&tz->ida, 0, 0, GFP_KERNEL);
+> +       result = ida_alloc(&tz->ida, GFP_KERNEL);
+>         if (result < 0)
+>                 goto free_mem;
+>
+> @@ -721,7 +721,7 @@ int thermal_zone_bind_cooling_device(struct thermal_zone_device *tz,
+>  remove_symbol_link:
+>         sysfs_remove_link(&tz->device.kobj, dev->name);
+>  release_ida:
+> -       ida_simple_remove(&tz->ida, dev->id);
+> +       ida_free(&tz->ida, dev->id);
+>  free_mem:
+>         kfree(dev);
+>         return result;
+> @@ -768,7 +768,7 @@ int thermal_zone_unbind_cooling_device(struct thermal_zone_device *tz,
+>         device_remove_file(&tz->device, &pos->weight_attr);
+>         device_remove_file(&tz->device, &pos->attr);
+>         sysfs_remove_link(&tz->device.kobj, pos->name);
+> -       ida_simple_remove(&tz->ida, pos->id);
+> +       ida_free(&tz->ida, pos->id);
+>         kfree(pos);
+>         return 0;
+>  }
+> @@ -901,7 +901,7 @@ __thermal_cooling_device_register(struct device_node *np,
+>         if (!cdev)
+>                 return ERR_PTR(-ENOMEM);
+>
+> -       ret = ida_simple_get(&thermal_cdev_ida, 0, 0, GFP_KERNEL);
+> +       ret = ida_alloc(&thermal_cdev_ida, GFP_KERNEL);
+>         if (ret < 0)
+>                 goto out_kfree_cdev;
+>         cdev->id = ret;
+> @@ -951,7 +951,7 @@ __thermal_cooling_device_register(struct device_node *np,
+>         put_device(&cdev->device);
+>         cdev = NULL;
+>  out_ida_remove:
+> -       ida_simple_remove(&thermal_cdev_ida, id);
+> +       ida_free(&thermal_cdev_ida, id);
+>  out_kfree_cdev:
+>         kfree(cdev);
+>         return ERR_PTR(ret);
+> @@ -1110,7 +1110,7 @@ void thermal_cooling_device_unregister(struct thermal_cooling_device *cdev)
+>
+>         mutex_unlock(&thermal_list_lock);
+>
+> -       ida_simple_remove(&thermal_cdev_ida, cdev->id);
+> +       ida_free(&thermal_cdev_ida, cdev->id);
+>         device_del(&cdev->device);
+>         thermal_cooling_device_destroy_sysfs(cdev);
+>         kfree(cdev->type);
+> @@ -1227,7 +1227,7 @@ thermal_zone_device_register(const char *type, int trips, int mask,
+>         INIT_LIST_HEAD(&tz->thermal_instances);
+>         ida_init(&tz->ida);
+>         mutex_init(&tz->lock);
+> -       id = ida_simple_get(&thermal_tz_ida, 0, 0, GFP_KERNEL);
+> +       id = ida_alloc(&thermal_tz_ida, GFP_KERNEL);
+>         if (id < 0) {
+>                 result = id;
+>                 goto free_tz;
+> @@ -1318,7 +1318,7 @@ thermal_zone_device_register(const char *type, int trips, int mask,
+>         put_device(&tz->device);
+>         tz = NULL;
+>  remove_id:
+> -       ida_simple_remove(&thermal_tz_ida, id);
+> +       ida_free(&thermal_tz_ida, id);
+>  free_tz:
+>         kfree(tz);
+>         return ERR_PTR(result);
+> @@ -1378,7 +1378,7 @@ void thermal_zone_device_unregister(struct thermal_zone_device *tz)
+>         thermal_set_governor(tz, NULL);
+>
+>         thermal_remove_hwmon_sysfs(tz);
+> -       ida_simple_remove(&thermal_tz_ida, tz->id);
+> +       ida_free(&thermal_tz_ida, tz->id);
+>         ida_destroy(&tz->ida);
+>         mutex_destroy(&tz->lock);
+>         device_unregister(&tz->device);
+> --
 
-Reviewed-by: Simo Sorce <simo@redhat.com>
-
---=20
-Simo Sorce
-RHEL Crypto Team
-Red Hat, Inc
-
-
-
+Applied as 5.20 material, thanks!
