@@ -2,63 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7362C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C88C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354095AbiFNChc (ORCPT
+        id S1353023AbiFNCj4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:37:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58972 "EHLO
+        Mon, 13 Jun 2022 22:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355943AbiFNChR (ORCPT
+        with ESMTP id S1356815AbiFNCi3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:37:17 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90F03CA50
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:16:19 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LMX8K6JFqzjY0X;
-        Tue, 14 Jun 2022 10:15:13 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 10:16:17 +0800
-Subject: Re: [PATCH v3 1/1] mm/memory-failure: don't allow to unpoison hw
- corrupted page
-To:     David Hildenbrand <david@redhat.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        zhenwei pi <pizhenwei@bytedance.com>,
-        <naoya.horiguchi@nec.com>, <akpm@linux-foundation.org>
-References: <20220610114646.162764-1-pizhenwei@bytedance.com>
- <20220610114646.162764-2-pizhenwei@bytedance.com>
- <0fedf6f3-3ab3-e1d2-fd6e-3dbe8e92f06d@redhat.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <844edb08-e145-0209-bf7a-60fb38503705@huawei.com>
-Date:   Tue, 14 Jun 2022 10:16:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Mon, 13 Jun 2022 22:38:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF5038A;
+        Mon, 13 Jun 2022 19:17:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2D4FB816A4;
+        Tue, 14 Jun 2022 02:12:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A161FC34114;
+        Tue, 14 Jun 2022 02:12:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655172721;
+        bh=LijSy99pzpSg1iIzbzqZJpsUfznU587YrJg1vozHGAU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=E+5fKuEZIB96bHfxsYSBfHd9fzJFDKPBSV8/2W4MZIw1UyYWGtqmkxWWDoeByOQp/
+         xQDfQreHaxLSnPMT6fnHeeyNo5UargrYKS3sUg1cq1yeOD/YxHX5rMd4X+lDEs1Rnt
+         zegqaxX9NF7s4w8Do4vwZx+lbohIYghnbFMfAKfkpKqVVMgMoLCEs/Zc2BbG8h0PDj
+         m8G99syV6P8cajGtUOW1aeJWRV1zqqyPktwJgVouau9RZl2iwSBfTZoBb1NjULz5hT
+         r+MG8d0875byGrOd9yazltRttmhGQNk7djBdw7lheQyArfs9hQBSUXn/NGbGDafkFq
+         c6cD/9diTwEtQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.4] KVM: Don't null dereference ops->destroy
+Date:   Mon, 13 Jun 2022 22:11:58 -0400
+Message-Id: <20220614021158.1101574-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <0fedf6f3-3ab3-e1d2-fd6e-3dbe8e92f06d@redhat.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/10 20:12, David Hildenbrand wrote:
-> 
-> I really prefer just disabling the unpoisioning mechanism in case there
-> is a real hw injected error.
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-IMHO, this would be a simple solution that also works on the arches that does not unmap
-the kernel mapping when a page is hardware corrupted.
+[ Upstream commit e8bc2427018826e02add7b0ed0fc625a60390ae5 ]
 
-Thanks!
+A KVM device cleanup happens in either of two callbacks:
+1) destroy() which is called when the VM is being destroyed;
+2) release() which is called when a device fd is closed.
 
-> 
+Most KVM devices use 1) but Book3s's interrupt controller KVM devices
+(XICS, XIVE, XIVE-native) use 2) as they need to close and reopen during
+the machine execution. The error handling in kvm_ioctl_create_device()
+assumes destroy() is always defined which leads to NULL dereference as
+discovered by Syzkaller.
+
+This adds a checks for destroy!=NULL and adds a missing release().
+
+This is not changing kvm_destroy_devices() as devices with defined
+release() should have been removed from the KVM devices list by then.
+
+Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ virt/kvm/kvm_main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 287444e52ccf..4b445dddb798 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -3329,8 +3329,11 @@ static int kvm_ioctl_create_device(struct kvm *kvm,
+ 		kvm_put_kvm(kvm);
+ 		mutex_lock(&kvm->lock);
+ 		list_del(&dev->vm_node);
++		if (ops->release)
++			ops->release(dev);
+ 		mutex_unlock(&kvm->lock);
+-		ops->destroy(dev);
++		if (ops->destroy)
++			ops->destroy(dev);
+ 		return ret;
+ 	}
+ 
+-- 
+2.35.1
 
