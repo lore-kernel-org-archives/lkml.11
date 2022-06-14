@@ -2,225 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D67C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:39:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F85C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242413AbiFNKju (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:39:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57648 "EHLO
+        id S242974AbiFNKkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 06:40:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230157AbiFNKjs (ORCPT
+        with ESMTP id S230157AbiFNKkj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:39:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE66235252;
-        Tue, 14 Jun 2022 03:39:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF974B81856;
-        Tue, 14 Jun 2022 10:39:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7603C3411B;
-        Tue, 14 Jun 2022 10:39:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655203185;
-        bh=1WpNbruZfpiREjP5nt5HMy2K24XhwdQUFBtL7VlCzIM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EPBud0OBnT4YGtLFkEMrFQLy/bCsgRcqOPkc0XW79lwTBSYcD5svdm+wvid3QGguz
-         tdAElO6q1DIS4kHo4IC9FnIlK1wV8nvfg3fe67VkfgJSzYXz9DN7bFi9/h53Hnsr1+
-         wuAFP1mWFUPZ3cmM5r3GaLZEFvMJdtH9Vmyw9VogNN7Zkl1eCOnPp3wlIqGVbVO0Pq
-         QvfB3fs1pelbAWDxvIH6WHtJaPEVQN5QgtVO3gn2PS+aCMaRtc8ezKYfy00EJbhm2+
-         urC7cq9vu5lQCseSz4DsZ47sCiZeCdl6QRCpQX6jvjamqyZTjsdjn5HnwbG44g4+KL
-         wD5lfT8UKEBAg==
-Date:   Tue, 14 Jun 2022 11:48:53 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Luca Weiss <luca@z3ntu.xyz>
-Cc:     Luca Weiss <luca.weiss@fairphone.com>,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Markuss Broks <markuss.broks@gmail.com>,
-        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH 3/5] proximity: vl53l0x: Handle the VDD regulator
-Message-ID: <20220614114853.340e9c36@jic23-huawei>
-In-Reply-To: <13033502.uLZWGnKmhe@g550jk>
-References: <20220523175344.5845-1-markuss.broks@gmail.com>
-        <CKKOCWP2NYO5.GH08U776B1KU@otso>
-        <20220612095333.1479464c@jic23-huawei>
-        <13033502.uLZWGnKmhe@g550jk>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Tue, 14 Jun 2022 06:40:39 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1426B396A0;
+        Tue, 14 Jun 2022 03:40:39 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id h5so10729734wrb.0;
+        Tue, 14 Jun 2022 03:40:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BJB3Jj+W5NRHZEZPtOT6087E76LkDf+KkklgOlWVWzg=;
+        b=Vx9jgtkwFhdUaWrGkqkzajXjR7Jmjk7cSeF52w5i5LknZZbrFOqcOkF7qZRpf/ga3x
+         d4GtXKlDEaZ6mXMxClErNdgkth+XYPu0uG4P+rJYx9ylxK0o7iQLa8gOlrfTHjmi98j4
+         Wh3H5GjFpxFsh9e16Xkmk89ceigDXefdv+XRR5mutiF6b4UrUZRWW2zO+CT9U2c24EoI
+         Vj0q8tsyTfqWc6bBlRA8OXESzZXZR9iOzujRPJeEmNxr9w8h3N1uQh/li+mOiQ52xxAb
+         A9rzOsVoaRmihLMnVqP4J5eu+vcoqxX9S6jVuIU8jRwG6CQ4TC1M5mJuwHKBkQHjVQzm
+         A97g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BJB3Jj+W5NRHZEZPtOT6087E76LkDf+KkklgOlWVWzg=;
+        b=vDPHNDMu9lkJvaOlRYufa9vyp6n6uVl1r79v8yFXLQBbkFxaQCNfB5iZzOjhK5JkhT
+         lmZgpGaDJhQ3Vlh3NLCIGrZCm19DZ2ZrhMLs6CyucK6zdmaOVb0XXQorUdIYiQ8+Jemm
+         7nWBSxHRAsbumeAtf9U3uhpNCizwQqksIYXH2TQx5XA4UGnAVsZh4lHU/SqvHNUZFqzA
+         TmBu/Xdm3b4Pi+YJGEitDU8egLcHeQ36ZGpfQu4gj0lbjuV3YIS1ahc5EUsoK71WIAlu
+         t42/ZJmihqA3/hW8T2J0DGAgqS+oEIa4Tb6y6faNjBrxvrFXYp5I5YOXw7a9gBoZpnXb
+         I3Wg==
+X-Gm-Message-State: AJIora/0V4YS/eaZKGhfk5DXUxqfGdxT2Sa6iDDZg7ReXntkTW8n2tte
+        83b09rq73g7rKrKqwDsdBXQ=
+X-Google-Smtp-Source: AGRyM1uoZWrC1W/k512tGAzARKScdtlh9G+N0yFoFFFZiLcqKJi4jpBJsGpSKHqWRKl+/5ViIFOUHg==
+X-Received: by 2002:a05:6000:1866:b0:218:40cc:a26e with SMTP id d6-20020a056000186600b0021840cca26emr4270476wri.678.1655203237290;
+        Tue, 14 Jun 2022 03:40:37 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id f6-20020a05600c154600b0039c5ab7167dsm18006041wmg.48.2022.06.14.03.40.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 03:40:36 -0700 (PDT)
+Message-ID: <62a865a4.1c69fb81.81506.21c5@mx.google.com>
+X-Google-Original-Message-ID: <Yqhlo8WayYq+68ex@Ansuel-xps.>
+Date:   Tue, 14 Jun 2022 12:40:35 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Mark Mentovai <mark@moxienet.com>
+Subject: Re: [net-next PATCH 2/2] net: ethernet: stmmac: reset force speed
+ bit for ipq806x
+References: <20220609002831.24236-1-ansuelsmth@gmail.com>
+ <20220609002831.24236-2-ansuelsmth@gmail.com>
+ <20220613224917.325aca0a@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613224917.325aca0a@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 12 Jun 2022 11:28:22 +0200
-Luca Weiss <luca@z3ntu.xyz> wrote:
+On Mon, Jun 13, 2022 at 10:49:17PM -0700, Jakub Kicinski wrote:
+> On Thu,  9 Jun 2022 02:28:31 +0200 Christian 'Ansuel' Marangi wrote:
+> > +	dn = of_get_child_by_name(pdev->dev.of_node, "fixed-link");
+> > +	ret = of_property_read_u32(dn, "speed", &link_speed);
+> > +	if (ret) {
+> > +		dev_err(dev, "found fixed-link node with no speed");
+> > +		return ret;
+> 
+> Doesn't this return potentially leak the reference on dn?
+> You move the of_node_put() right before the if (ret) {
+>
 
-> Hi Jonathan,
-> 
-> On Sonntag, 12. Juni 2022 10:53:33 CEST Jonathan Cameron wrote:
-> > On Wed, 08 Jun 2022 12:18:52 +0200
-> > 
-> > "Luca Weiss" <luca.weiss@fairphone.com> wrote:  
-> > > Hi Markuss,
-> > > 
-> > > On Mon May 23, 2022 at 7:53 PM CEST, Markuss Broks wrote:  
-> > > > Handle the regulator supplying the VDD pin of VL53L0X.
-> > > > 
-> > > > Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
-> > > > ---
-> > > > 
-> > > >  drivers/iio/proximity/vl53l0x-i2c.c | 37 +++++++++++++++++++++++++++++
-> > > >  1 file changed, 37 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/iio/proximity/vl53l0x-i2c.c
-> > > > b/drivers/iio/proximity/vl53l0x-i2c.c index 12a3e2eff464..8581a873919f
-> > > > 100644
-> > > > --- a/drivers/iio/proximity/vl53l0x-i2c.c
-> > > > +++ b/drivers/iio/proximity/vl53l0x-i2c.c
-> > > > @@ -43,6 +43,7 @@
-> > > > 
-> > > >  struct vl53l0x_data {
-> > > >  
-> > > >  	struct i2c_client *client;
-> > > >  	struct completion completion;
-> > > > 
-> > > > +	struct regulator *vdd_supply;
-> > > > 
-> > > >  };
-> > > >  
-> > > >  static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
-> > > > 
-> > > > @@ -192,10 +193,31 @@ static const struct iio_info vl53l0x_info = {
-> > > > 
-> > > >  	.read_raw = vl53l0x_read_raw,
-> > > >  
-> > > >  };
-> > > > 
-> > > > +static void vl53l0x_power_off(void *_data)
-> > > > +{
-> > > > +	struct vl53l0x_data *data = _data;
-> > > > +
-> > > > +	regulator_disable(data->vdd_supply);
-> > > > +}
-> > > > +
-> > > > +static int vl53l0x_power_on(struct vl53l0x_data *data)
-> > > > +{
-> > > > +	int ret;
-> > > > +
-> > > > +	ret = regulator_enable(data->vdd_supply);
-> > > > +	if (ret)
-> > > > +		return ret;
-> > > > +
-> > > > +	usleep_range(3200, 5000);
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > > 
-> > > >  static int vl53l0x_probe(struct i2c_client *client)
-> > > >  {
-> > > >  
-> > > >  	struct vl53l0x_data *data;
-> > > >  	struct iio_dev *indio_dev;
-> > > > 
-> > > > +	int error;
-> > > > 
-> > > >  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > > >  	if (!indio_dev)
-> > > > 
-> > > > @@ -210,6 +232,21 @@ static int vl53l0x_probe(struct i2c_client *client)
-> > > > 
-> > > >  				     I2C_FUNC_SMBUS_BYTE_DATA))
-> > > >  		
-> > > >  		return -EOPNOTSUPP;
-> > > > 
-> > > > +	data->vdd_supply = devm_regulator_get_optional(&client->dev,   
-> "vdd");
-> > > > +	if (IS_ERR(data->vdd_supply))
-> > > > +		return dev_err_probe(&client->dev, PTR_ERR(data-  
-> >vdd_supply),  
-> > > > +				     "Unable to get VDD   
-> regulator\n");
-> > > 
-> > > It looks like this optional regulator is not actually optional.
-> > > 
-> > > [    1.919995] vl53l0x-i2c 1-0029: error -ENODEV: Unable to get VDD
-> > > regulator
-> > > 
-> > > When using devm_regulator_get instead, a dummy regulator gets returned
-> > > which I think is what we want here:
-> > > 
-> > > [    1.905518] vl53l0x-i2c 1-0029: supply vdd not found, using dummy
-> > > regulator
-> > > 
-> > > Can you fix this up or should I send a patch?  
-> > 
-> > Hi Luca,
-> > 
-> > Please send a patch.  
-> 
-> Which commit sha can I use for Fixes: here?
-> Based your togreg[0] branch currently shows "Age: 20 hours" I guess it was 
-> rebased recently?
+Totally right. Will fix in v2.
 
-It was rebased onto rc1 as you noticed.
+> > +	}
+> > +
+> > +	of_node_put(dn);
 
-In theory it is now stable, assuming nothing nasty shows up.
-Fixes tag doesn't matter strongly given both will go into mainline via
-the same pull request, so maybe just skip adding one to make my life
-easier :)
-
-Thanks,
-
-Jonathan
-
-> 
-> Regards
-> Luca
-> 
-> [0]https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=togreg
-> 
-> > 
-> > Jonathan
-> >   
-> > > Regards
-> > > Luca
-> > >   
-> > > > +
-> > > > +	error = vl53l0x_power_on(data);
-> > > > +	if (error)
-> > > > +		return dev_err_probe(&client->dev, error,
-> > > > +				     "Failed to power on the   
-> chip\n");
-> > > > +
-> > > > +	error = devm_add_action_or_reset(&client->dev, vl53l0x_power_off,
-> > > > data);
-> > > > +	if (error)
-> > > > +		return dev_err_probe(&client->dev, error,
-> > > > +				     "Failed to install poweroff   
-> action\n");
-> > > > +
-> > > > 
-> > > >  	indio_dev->name = "vl53l0x";
-> > > >  	indio_dev->info = &vl53l0x_info;
-> > > >  	indio_dev->channels = vl53l0x_channels;  
-> 
-> 
-> 
-> 
-
+-- 
+	Ansuel
