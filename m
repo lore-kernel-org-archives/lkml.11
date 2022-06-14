@@ -2,50 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 047F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:23:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7863C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354386AbiFNCXH (ORCPT
+        id S1354412AbiFNCXN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
+        Mon, 13 Jun 2022 22:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353823AbiFNCQ7 (ORCPT
+        with ESMTP id S1353820AbiFNCRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:16:59 -0400
+        Mon, 13 Jun 2022 22:17:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7F23E5F7;
-        Mon, 13 Jun 2022 19:09:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD4183EAA2;
+        Mon, 13 Jun 2022 19:09:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FA38B816B3;
-        Tue, 14 Jun 2022 02:09:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0091C341C6;
-        Tue, 14 Jun 2022 02:09:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D97D9B81699;
+        Tue, 14 Jun 2022 02:09:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B4B0C341C0;
+        Tue, 14 Jun 2022 02:09:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172576;
-        bh=/JxTVNZQgird5HD+oKTweiMNeN6rCY5i+EHHudwkku8=;
+        s=k20201202; t=1655172580;
+        bh=iDY4arXZnyHYHq65woHslZHWS2GnD5hC8l1NrQ/eu2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uHT95jC1Xss4NC9zEP422EFg5jKgllgijzuTYNmlKflbjE1jt5hoWYGZ9QBwx5ArA
-         09BmfKYM/xtPCfHsI4hr9b8/pacHIIO4oiFAWDbVQms2CcFt2DVJoz7MO/Jrq/TYTC
-         b+EXsXy1hducxp088zCly0edNOZR6upIqxU9wwxE1gx/gxP4cbjZtgn/8/Ju2jAd4S
-         INaKyoV6Tzbk38z7U+WPzUgsG2hNYvHFIBraY8lgkqwIbVJv5hhxtUJaAvSBWuAyu0
-         UzuFmw7kU6Dx2LGvpXaXsgRLvgL7DnkwNl3ig0OGm10CGw8+GeYoc+zN26CN50LCDa
-         x586X9WToYbJg==
+        b=OTUjhAoca/PdL3QHk7ea3DpkCw+VU2Ah1HSTdvwmG/c5JL0YFVUUcJV80bkFE0f/N
+         AYR/Sx2B/qWGcqaw8fQ5Ods30VK5oDDevPwhIfx/0xcrYLIBGNbV17ncGhPQwWd/yt
+         uQkgsbD6byph11nSrrE1xI6WOxTB0l7LgfjZ0Evm5UAj947NfUKa0l6eH4vlGDCgb6
+         Ej11AgZ5qBhPGqbHoOh4yZOW/UB+LrdQp/HLWXPqWZc6nyVp0C6SL9PU/E1LkqqKiv
+         QF6K4Y3EkOTLUgDvBPkET/cZrc2vNUEZ/9ul8j9EHs5FBBP7EAcVOhmO5JS4Eq190q
+         uSbuKcXgMPBVw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Yufen <wangyufen@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 21/23] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
-Date:   Mon, 13 Jun 2022 22:08:57 -0400
-Message-Id: <20220614020900.1100401-21-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        David Howells <dhowells@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, zyan@redhat.com,
+        sage@redhat.com, idryomov@gmail.com, linux-afs@lists.infradead.org,
+        ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 23/23] netfs: gcc-12: temporarily disable '-Wattribute-warning' for now
+Date:   Mon, 13 Jun 2022 22:08:59 -0400
+Message-Id: <20220614020900.1100401-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020900.1100401-1-sashal@kernel.org>
 References: <20220614020900.1100401-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,44 +56,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
+[ Upstream commit 507160f46c55913955d272ebf559d63809a8e560 ]
 
-When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
-overflow. To fix, we can follow what udpv6 does and subtract the
-transhdrlen from the max.
+This is a pure band-aid so that I can continue merging stuff from people
+while some of the gcc-12 fallout gets sorted out.
 
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+In particular, gcc-12 is very unhappy about the kinds of pointer
+arithmetic tricks that netfs does, and that makes the fortify checks
+trigger in afs and ceph:
+
+  In function ‘fortify_memset_chk’,
+      inlined from ‘netfs_i_context_init’ at include/linux/netfs.h:327:2,
+      inlined from ‘afs_set_netfs_context’ at fs/afs/inode.c:61:2,
+      inlined from ‘afs_root_iget’ at fs/afs/inode.c:543:2:
+  include/linux/fortify-string.h:258:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
+    258 |                         __write_overflow_field(p_size_field, size);
+        |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+and the reason is that netfs_i_context_init() is passed a 'struct inode'
+pointer, and then it does
+
+        struct netfs_i_context *ctx = netfs_i_context(inode);
+
+        memset(ctx, 0, sizeof(*ctx));
+
+where that netfs_i_context() function just does pointer arithmetic on
+the inode pointer, knowing that the netfs_i_context is laid out
+immediately after it in memory.
+
+This is all truly disgusting, since the whole "netfs_i_context is laid
+out immediately after it in memory" is not actually remotely true in
+general, but is just made to be that way for afs and ceph.
+
+See for example fs/cifs/cifsglob.h:
+
+  struct cifsInodeInfo {
+        struct {
+                /* These must be contiguous */
+                struct inode    vfs_inode;      /* the VFS's inode record */
+                struct netfs_i_context netfs_ctx; /* Netfslib context */
+        };
+	[...]
+
+and realize that this is all entirely wrong, and the pointer arithmetic
+that netfs_i_context() is doing is also very very wrong and wouldn't
+give the right answer if netfs_ctx had different alignment rules from a
+'struct inode', for example).
+
+Anyway, that's just a long-winded way to say "the gcc-12 warning is
+actually quite reasonable, and our code happens to work but is pretty
+disgusting".
+
+This is getting fixed properly, but for now I made the mistake of
+thinking "the week right after the merge window tends to be calm for me
+as people take a breather" and I did a sustem upgrade.  And I got gcc-12
+as a result, so to continue merging fixes from people and not have the
+end result drown in warnings, I am fixing all these gcc-12 issues I hit.
+
+Including with these kinds of temporary fixes.
+
+Cc: Kees Cook <keescook@chromium.org>
+Cc: David Howells <dhowells@redhat.com>
+Link: https://lore.kernel.org/all/AEEBCF5D-8402-441D-940B-105AA718C71F@chromium.org/
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/l2tp/l2tp_ip6.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/afs/inode.c  | 3 +++
+ fs/ceph/inode.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index 0fa694bd3f6a..23e9ce985ed6 100644
---- a/net/l2tp/l2tp_ip6.c
-+++ b/net/l2tp/l2tp_ip6.c
-@@ -515,14 +515,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	struct ipcm6_cookie ipc6;
- 	int addr_len = msg->msg_namelen;
- 	int transhdrlen = 4; /* zero session-id */
--	int ulen = len + transhdrlen;
-+	int ulen;
- 	int err;
+diff --git a/fs/afs/inode.c b/fs/afs/inode.c
+index 90eac3ec01cb..243ba4e0ab1f 100644
+--- a/fs/afs/inode.c
++++ b/fs/afs/inode.c
+@@ -25,6 +25,9 @@
+ #include "internal.h"
+ #include "afs_fs.h"
  
- 	/* Rough check on arithmetic overflow,
- 	   better check is made in ip6_append_data().
- 	 */
--	if (len > INT_MAX)
-+	if (len > INT_MAX - transhdrlen)
- 		return -EMSGSIZE;
-+	ulen = len + transhdrlen;
++// Temporary: netfs does disgusting things with inode pointers
++#pragma GCC diagnostic ignored "-Wattribute-warning"
++
+ static const struct inode_operations afs_symlink_inode_operations = {
+ 	.get_link	= page_get_link,
+ };
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index af85a7237604..d7e0f7cd3768 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -20,6 +20,9 @@
+ #include "cache.h"
+ #include <linux/ceph/decode.h>
  
- 	/* Mirror BSD error message compatibility */
- 	if (msg->msg_flags & MSG_OOB)
++// Temporary: netfs does disgusting things with inode pointers
++#pragma GCC diagnostic ignored "-Wattribute-warning"
++
+ /*
+  * Ceph inode operations
+  *
 -- 
 2.35.1
 
