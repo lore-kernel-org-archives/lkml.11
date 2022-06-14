@@ -2,263 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA52CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:46:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FFC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344068AbiFNQqj (ORCPT
+        id S1344626AbiFNQre (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33562 "EHLO
+        Tue, 14 Jun 2022 12:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244321AbiFNQqU (ORCPT
+        with ESMTP id S244118AbiFNQq6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:46:20 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 544F228981;
-        Tue, 14 Jun 2022 09:46:19 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2783016F3;
-        Tue, 14 Jun 2022 09:46:19 -0700 (PDT)
-Received: from e120937-lin (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 256253F66F;
-        Tue, 14 Jun 2022 09:46:16 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 17:46:10 +0100
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        linux-s390@vger.kernel.org, conghui.chen@intel.com,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        netdev <netdev@vger.kernel.org>, pankaj.gupta.linux@gmail.com,
-        sudeep.holla@arm.com, Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-Subject: Re: [PATCH V6 8/9] virtio: harden vring IRQ
-Message-ID: <Yqi7UhasBDPKCpuV@e120937-lin>
-References: <CACGkMEtRP+0Xy63g0SF_y1avv=3rFv6P9+Z7kp9XBS5d+_py8w@mail.gmail.com>
- <20220613023337-mutt-send-email-mst@kernel.org>
- <CACGkMEs05ZisiPW+7H6Omp80MzmZWZCpc1mf5Vd99C3H-KUtgA@mail.gmail.com>
- <20220613041416-mutt-send-email-mst@kernel.org>
- <CACGkMEsT_fWdPxN1cTWOX=vu-ntp3Xo4j46-ZKALeSXr7DmJFQ@mail.gmail.com>
- <20220613045606-mutt-send-email-mst@kernel.org>
- <CACGkMEtAQck7Nr6SP_pD0MGT3njnwZSyT=xPyYzUU3c5GNNM_w@mail.gmail.com>
- <CACGkMEvUFJkC=mnvL2PSH6-3RMcJUk84f-9X46JVcj2vTAr4SQ@mail.gmail.com>
- <20220613052644-mutt-send-email-mst@kernel.org>
- <CACGkMEstGvhETXThuwO+tLVBuRgQb8uC_6DdAM8ZxOi5UKBRbg@mail.gmail.com>
+        Tue, 14 Jun 2022 12:46:58 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E81728987;
+        Tue, 14 Jun 2022 09:46:56 -0700 (PDT)
+Received: from [IPV6:2a01:e0a:120:3210:9c07:3892:84e3:aba8] (unknown [IPv6:2a01:e0a:120:3210:9c07:3892:84e3:aba8])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: benjamin.gaignard)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3C2BA66016B0;
+        Tue, 14 Jun 2022 17:46:54 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655225214;
+        bh=T1oqS49XxbOgOShLZkSdFGRKIJ5qzYm6xIThOciGkN8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=TAQ4xSf55b3J0A8YfpvBcCTbditlXBn+TqcVxPn6hetbnViwS5fRvqEfRVmpRvL7+
+         ny8OQByTGN94hw/JlA77p+n+T+kZLzuHjjuan1tSge+5dEUDlbLhvXwXfU3TTBibPS
+         9jD3yxjCoTwuK4qJUhRTfLIuLG1P9Xx63+ZL4rqFQmgO2+qHYgNoHxYyMgH0+LGFsq
+         0NMBTvBLAmzEc+4WZcFhfOv044pawdNLHEl0JV8zVvgGQQmpjcb4ctPvgR3FK/3IIf
+         vCaLF2XA7cwYtnqHX2UnP5pj8i6wwvyMja1gxfrg0RtytyVMe5vbqlARPmjBtUxuyZ
+         jJykt4gYsF/nQ==
+Message-ID: <f6c636b6-f379-650a-cc7c-6f1e8b014455@collabora.com>
+Date:   Tue, 14 Jun 2022 18:46:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEstGvhETXThuwO+tLVBuRgQb8uC_6DdAM8ZxOi5UKBRbg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v8 14/17] media: hantro: Stop using Hantro dedicated
+ control
+Content-Language: en-US
+To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Hans Verkuil <hverkuil@xs4all.nl>, mchehab@kernel.org,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, mripard@kernel.org,
+        paul.kocialkowski@bootlin.com, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        andrzej.p@collabora.com
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com
+References: <20220614083614.240641-1-benjamin.gaignard@collabora.com>
+ <20220614083614.240641-15-benjamin.gaignard@collabora.com>
+ <b244e86d-06de-7423-d0df-e77485ce4c87@xs4all.nl>
+ <958ab30f9cfbb14e4a7ea55826064e6a20d5ffd2.camel@collabora.com>
+ <c5c6903d-ec7d-6218-35d3-2ac6caa9d2c5@xs4all.nl>
+ <ac31307f9186fc851f76889a66ffb007de88fa15.camel@collabora.com>
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <ac31307f9186fc851f76889a66ffb007de88fa15.camel@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 03:40:21PM +0800, Jason Wang wrote:
-> On Mon, Jun 13, 2022 at 5:28 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
 
-Hi Jason,
+Le 14/06/2022 à 18:23, Nicolas Dufresne a écrit :
+> Le mardi 14 juin 2022 à 17:47 +0200, Hans Verkuil a écrit :
+>> On 6/14/22 17:43, Nicolas Dufresne wrote:
+>>> Le mardi 14 juin 2022 à 15:58 +0200, Hans Verkuil a écrit :
+>>>> On 6/14/22 10:36, Benjamin Gaignard wrote:
+>>>>> The number of bits to skip in the slice header can be computed
+>>>>> in the driver by using sps, pps and decode_params information.
+>>>>> This allow to remove Hantro dedicated control.
+>>>> allow -> makes it possible
+>>>>
+>>>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+>>>>> ---
+>>>>>   drivers/staging/media/hantro/hantro_drv.c     | 36 -----------
+>>>>>   .../staging/media/hantro/hantro_g2_hevc_dec.c | 62 ++++++++++++++++++-
+>>>>>   include/media/hevc-ctrls.h                    | 13 ----
+>>>>>   3 files changed, 61 insertions(+), 50 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
+>>>>> index 536c8c374952..5aac3a090480 100644
+>>>>> --- a/drivers/staging/media/hantro/hantro_drv.c
+>>>>> +++ b/drivers/staging/media/hantro/hantro_drv.c
+>>>>> @@ -304,26 +304,6 @@ static int hantro_jpeg_s_ctrl(struct v4l2_ctrl *ctrl)
+>>>>>   	return 0;
+>>>>>   }
+>>>>>   
+>>>>> -static int hantro_hevc_s_ctrl(struct v4l2_ctrl *ctrl)
+>>>>> -{
+>>>>> -	struct hantro_ctx *ctx;
+>>>>> -
+>>>>> -	ctx = container_of(ctrl->handler,
+>>>>> -			   struct hantro_ctx, ctrl_handler);
+>>>>> -
+>>>>> -	vpu_debug(1, "s_ctrl: id = %d, val = %d\n", ctrl->id, ctrl->val);
+>>>>> -
+>>>>> -	switch (ctrl->id) {
+>>>>> -	case V4L2_CID_HANTRO_HEVC_SLICE_HEADER_SKIP:
+>>>>> -		ctx->hevc_dec.ctrls.hevc_hdr_skip_length = ctrl->val;
+>>>>> -		break;
+>>>>> -	default:
+>>>>> -		return -EINVAL;
+>>>>> -	}
+>>>>> -
+>>>>> -	return 0;
+>>>>> -}
+>>>>> -
+>>>>>   static const struct v4l2_ctrl_ops hantro_ctrl_ops = {
+>>>>>   	.try_ctrl = hantro_try_ctrl,
+>>>>>   };
+>>>>> @@ -332,10 +312,6 @@ static const struct v4l2_ctrl_ops hantro_jpeg_ctrl_ops = {
+>>>>>   	.s_ctrl = hantro_jpeg_s_ctrl,
+>>>>>   };
+>>>>>   
+>>>>> -static const struct v4l2_ctrl_ops hantro_hevc_ctrl_ops = {
+>>>>> -	.s_ctrl = hantro_hevc_s_ctrl,
+>>>>> -};
+>>>>> -
+>>>>>   #define HANTRO_JPEG_ACTIVE_MARKERS	(V4L2_JPEG_ACTIVE_MARKER_APP0 | \
+>>>>>   					 V4L2_JPEG_ACTIVE_MARKER_COM | \
+>>>>>   					 V4L2_JPEG_ACTIVE_MARKER_DQT | \
+>>>>> @@ -487,18 +463,6 @@ static const struct hantro_ctrl controls[] = {
+>>>>>   		.cfg = {
+>>>>>   			.id = V4L2_CID_STATELESS_HEVC_SCALING_MATRIX,
+>>>>>   		},
+>>>>> -	}, {
+>>>>> -		.codec = HANTRO_HEVC_DECODER,
+>>>>> -		.cfg = {
+>>>>> -			.id = V4L2_CID_HANTRO_HEVC_SLICE_HEADER_SKIP,
+>>>>> -			.name = "Hantro HEVC slice header skip bytes",
+>>>>> -			.type = V4L2_CTRL_TYPE_INTEGER,
+>>>>> -			.min = 0,
+>>>>> -			.def = 0,
+>>>>> -			.max = 0x100,
+>>>>> -			.step = 1,
+>>>>> -			.ops = &hantro_hevc_ctrl_ops,
+>>>>> -		},
+>>>>>   	}, {
+>>>>>   		.codec = HANTRO_VP9_DECODER,
+>>>>>   		.cfg = {
+>>>>> diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+>>>>> index d28653d04d20..3be8d6e60bf0 100644
+>>>>> --- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+>>>>> +++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+>>>>> @@ -117,6 +117,66 @@ static void prepare_tile_info_buffer(struct hantro_ctx *ctx)
+>>>>>   		vpu_debug(1, "%s: no chroma!\n", __func__);
+>>>>>   }
+>>>>>   
+>>>>> +static unsigned int ceil_log2(unsigned int v)
+>>>>> +{
+>>>>> +	/* Compute Ceil(Log2(v))
+>>>>> +	 * Derived from branchless code for integer log2(v) from:
+>>>>> +	 * <http://graphics.stanford.edu/~seander/bithacks.html#IntegerLog>
+>>>>> +	 */
+>>>>> +	unsigned int r, shift;
+>>>>> +
+>>>>> +	v--;
+>>>>> +	r = (v > 0xFFFF) << 4;
+>>>>> +	v >>= r;
+>>>>> +	shift = (v > 0xFF) << 3;
+>>>>> +	v >>= shift;
+>>>>> +	r |= shift;
+>>>>> +	shift = (v > 0xF) << 2;
+>>>>> +	v >>= shift;
+>>>>> +	r |= shift;
+>>>>> +	shift = (v > 0x3) << 1;
+>>>>> +	v >>= shift;
+>>>>> +	r |= shift;
+>>>>> +	r |= (v >> 1);
+>>>>> +
+>>>>> +	return r + 1;
+>>>>> +}
+>>>> Isn't this identical to fls(v - 1)? See also lib/math/reciprocal_div.c
+>>>> where this is used.
+>>> Thanks for pointing this out, I was wondering if there was an equivalent, and
+>>> never knew there was a relation between log2() and the "last set bit". Not sure
+>>> about the -1 here though, can you extend ?
+>> Based on how lib/math/reciprocal_div.c did it. Also, the ceil_log2 function
+>> starts with v--, while fls doesn't. That said, it's wise to verify that that
+>> is correct.
+> Just for the reference, from lib/math/reciprocal_div.c:
+>
+> 	/* ceil(log2(d)) */
+> 	l = fls(d - 1);
+>
+> Perhaps fls() return position starting from 1 rather then 0 ?
 
-> > On Mon, Jun 13, 2022 at 05:14:59PM +0800, Jason Wang wrote:
-> > > On Mon, Jun 13, 2022 at 5:08 PM Jason Wang <jasowang@redhat.com> wrote:
-> > > >
-> > > > On Mon, Jun 13, 2022 at 4:59 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > >
-> > > > > On Mon, Jun 13, 2022 at 04:51:08PM +0800, Jason Wang wrote:
-> > > > > > On Mon, Jun 13, 2022 at 4:19 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > >
-> > > > > > > On Mon, Jun 13, 2022 at 04:07:09PM +0800, Jason Wang wrote:
-> > > > > > > > On Mon, Jun 13, 2022 at 3:23 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > > > >
-> > > > > > > > > On Mon, Jun 13, 2022 at 01:26:59PM +0800, Jason Wang wrote:
-> > > > > > > > > > On Sat, Jun 11, 2022 at 1:12 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > > > > > >
-> > > > > > > > > > > On Fri, May 27, 2022 at 02:01:19PM +0800, Jason Wang wrote:
-> > > > > > > > > > > > This is a rework on the previous IRQ hardening that is done for
-> > > > > > > > > > > > virtio-pci where several drawbacks were found and were reverted:
-> > > > > > > > > > > >
-> > > > > > > > > > > > 1) try to use IRQF_NO_AUTOEN which is not friendly to affinity managed IRQ
-> > > > > > > > > > > >    that is used by some device such as virtio-blk
-> > > > > > > > > > > > 2) done only for PCI transport
-> > > > > > > > > > > >
-> > > > > > > > > > > > The vq->broken is re-used in this patch for implementing the IRQ
-> > > > > > > > > > > > hardening. The vq->broken is set to true during both initialization
-> > > > > > > > > > > > and reset. And the vq->broken is set to false in
-> > > > > > > > > > > > virtio_device_ready(). Then vring_interrupt() can check and return
-> > > > > > > > > > > > when vq->broken is true. And in this case, switch to return IRQ_NONE
-> > > > > > > > > > > > to let the interrupt core aware of such invalid interrupt to prevent
-> > > > > > > > > > > > IRQ storm.
-> > > > > > > > > > > >
-> > > > > > > > > > > > The reason of using a per queue variable instead of a per device one
-> > > > > > > > > > > > is that we may need it for per queue reset hardening in the future.
-> > > > > > > > > > > >
-> > > > > > > > > > > > Note that the hardening is only done for vring interrupt since the
-> > > > > > > > > > > > config interrupt hardening is already done in commit 22b7050a024d7
-> > > > > > > > > > > > ("virtio: defer config changed notifications"). But the method that is
-> > > > > > > > > > > > used by config interrupt can't be reused by the vring interrupt
-> > > > > > > > > > > > handler because it uses spinlock to do the synchronization which is
-> > > > > > > > > > > > expensive.
-> > > > > > > > > > > >
-> > > > > > > > > > > > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > > > > > > > > > > > Cc: Peter Zijlstra <peterz@infradead.org>
-> > > > > > > > > > > > Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> > > > > > > > > > > > Cc: Marc Zyngier <maz@kernel.org>
-> > > > > > > > > > > > Cc: Halil Pasic <pasic@linux.ibm.com>
-> > > > > > > > > > > > Cc: Cornelia Huck <cohuck@redhat.com>
-> > > > > > > > > > > > Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
-> > > > > > > > > > > > Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
-> > > > > > > > > > > > Cc: linux-s390@vger.kernel.org
-> > > > > > > > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > > > > > > > >
-> > > > > > > > > > >
-> > > > > > > > > > > Jason, I am really concerned by all the fallout.
-> > > > > > > > > > > I propose adding a flag to suppress the hardening -
-> > > > > > > > > > > this will be a debugging aid and a work around for
-> > > > > > > > > > > users if we find more buggy drivers.
-> > > > > > > > > > >
-> > > > > > > > > > > suppress_interrupt_hardening ?
-> > > > > > > > > >
-> > > > > > > > > > I can post a patch but I'm afraid if we disable it by default, it
-> > > > > > > > > > won't be used by the users so there's no way for us to receive the bug
-> > > > > > > > > > report. Or we need a plan to enable it by default.
-> > > > > > > > > >
-> > > > > > > > > > It's rc2, how about waiting for 1 and 2 rc? Or it looks better if we
-> > > > > > > > > > simply warn instead of disable it by default.
-> > > > > > > > > >
-> > > > > > > > > > Thanks
-> > > > > > > > >
-> > > > > > > > > I meant more like a flag in struct virtio_driver.
-> > > > > > > > > For now, could you audit all drivers which don't call _ready?
-> > > > > > > > > I found 5 of these:
-> > > > > > > > >
-> > > > > > > > > drivers/bluetooth/virtio_bt.c
-> > > > > > > >
-> > > > > > > > This driver seems to be fine, it doesn't use the device/vq in its probe().
-> > > > > > >
-> > > > > > >
-> > > > > > > But it calls hci_register_dev and that in turn queues all kind of
-> > > > > > > work. Also, can linux start using the device immediately after
-> > > > > > > it's registered?
-> > > > > >
-> > > > > > So I think the driver is allowed to queue before DRIVER_OK.
-> > > > >
-> > > > > it's not allowed to kick
-> > > >
-> > > > Yes.
-> > > >
-> > > > >
-> > > > > > If yes,
-> > > > > > the only side effect is the delay of the tx interrupt after DRIVER_OK
-> > > > > > for a well behaved device.
-> > > > >
-> > > > > your patches drop the interrupt though, it won't be just delayed.
-> > > >
-> > > > For a well behaved device, it can only trigger the interrupt after DRIVER_OK.
-> > > >
-> > > > So for virtio bt, it works like:
-> > > >
-> > > > 1) driver queue buffer and kick
-> > > > 2) driver set DRIVER_OK
-> > > > 3) device start to process the buffer
-> > > > 4) device send an notification
-> > > >
-> > > > The only risk is that the virtqueue could be filled before DRIVER_OK,
-> > > > or anything I missed?
-> > >
-> > > btw, hci has an open and close method and we do rx refill in
-> > > hdev->open, so we're probably fine here.
-> > >
-> > > Thanks
-> >
-> >
-> > Sounds good. Now to audit the rest of them from this POV ;)
-> 
-> Adding maintainers.
-> 
-> >
-> >  drivers/i2c/busses/i2c-virtio.c
-> 
-> It looks to me the device could be used immediately after
-> i2c_add_adapter() return. So we probably need to add
-> virtio_device_ready() before that. Fortunately, there's no rx vq in
-> i2c and the callback looks safe if the callback is called before the
-> i2c registration and after virtio_device_ready().
-> 
-> >  drivers/net/caif/caif_virtio.c
-> 
-> A networking device, RX is backed by vringh so we don't need to
-> refill. TX is backed by virtio and is available until ndo_open. So
-> it's fine to let the core to set DRIVER_OK after probe().
-> 
-> >  drivers/nvdimm/virtio_pmem.c
-> 
-> It doesn't use interrupt so far, so it has nothing to do with the IRQ hardening.
-> 
-> But the device could be used by the subsystem immediately after
-> nvdimm_pmem_region_create(), this means the flush could be issued
-> before DRIVER_OK. We need virtio_device_ready() before. We don't have
-> a RX virtqueue and the callback looks safe if the callback is called
-> after virtio_device_ready() but before the nvdimm region creating.
-> 
-> And it looks to me there's a race between the assignment of
-> provider_data and virtio_pmem_flush(). If the flush was issued before
-> the assignment we will end up with a NULL pointer dereference. This is
-> something we need to fix.
-> 
-> >  arm_scmi
-> 
-> It looks to me the singleton device could be used by SCMI immediately after
-> 
->         /* Ensure initialized scmi_vdev is visible */
->         smp_store_mb(scmi_vdev, vdev);
-> 
-> So we probably need to do virtio_device_ready() before that. It has an
-> optional rx queue but the filling is done after the above assignment,
-> so it's safe. And the callback looks safe is a callback is triggered
-> after virtio_device_ready() buy before the above assignment.
-> 
+I have compare the results of ceil_log2(d) vs fls(d-1)
+for values between 2 (because sps->num_short_term_ref_pic_sets > 1) and 16 (the maximum number of frames)
+they are always the same so I will remove ceil_log2() and use fls().
 
-I wanted to give it a go at this series testing it on the context of
-SCMI but it does not apply
+Regards,
+Benjamin
 
-- not on a v5.18:
-
-17:33 $ git rebase -i v5.18
-17:33 $ git am ./v6_20220527_jasowang_rework_on_the_irq_hardening_of_virtio.mbx
-Applying: virtio: use virtio_device_ready() in virtio_device_restore()
-Applying: virtio: use virtio_reset_device() when possible
-Applying: virtio: introduce config op to synchronize vring callbacks
-Applying: virtio-pci: implement synchronize_cbs()
-Applying: virtio-mmio: implement synchronize_cbs()
-error: patch failed: drivers/virtio/virtio_mmio.c:345
-error: drivers/virtio/virtio_mmio.c: patch does not apply
-Patch failed at 0005 virtio-mmio: implement synchronize_cbs()
-
-- neither on a v5.19-rc2:
-
-17:33 $ git rebase -i v5.19-rc2 
-17:35 $ git am ./v6_20220527_jasowang_rework_on_the_irq_hardening_of_virtio.mbx
-Applying: virtio: use virtio_device_ready() in virtio_device_restore()
-error: patch failed: drivers/virtio/virtio.c:526
-error: drivers/virtio/virtio.c: patch does not apply
-Patch failed at 0001 virtio: use virtio_device_ready() in
-virtio_device_restore()
-hint: Use 'git am --show-current-patch=diff' to see the failed patch
-When you have resolved this problem, run "git am --continue".
-
-... what I should take as base ?
-
-Thanks,
-Cristian
-
+>
+> Nicolas
+>
+>> Regards,
+>>
+>> 	Hans
+>>
+>>>> Regards,
+>>>>
+>>>> 	Hans
+>>>>
+>>>>> +
+>>>>> +static int compute_header_skip_lenght(struct hantro_ctx *ctx)
+>>>>> +{
+>>>>> +	const struct hantro_hevc_dec_ctrls *ctrls = &ctx->hevc_dec.ctrls;
+>>>>> +	const struct v4l2_ctrl_hevc_decode_params *decode_params = ctrls->decode_params;
+>>>>> +	const struct v4l2_ctrl_hevc_sps *sps = ctrls->sps;
+>>>>> +	const struct v4l2_ctrl_hevc_pps *pps = ctrls->pps;
+>>>>> +	int skip = 0;
+>>>>> +
+>>>>> +	if (pps->flags & V4L2_HEVC_PPS_FLAG_OUTPUT_FLAG_PRESENT)
+>>>>> +		/* size of pic_output_flag */
+>>>>> +		skip++;
+>>>>> +
+>>>>> +	if (sps->flags & V4L2_HEVC_SPS_FLAG_SEPARATE_COLOUR_PLANE)
+>>>>> +		/* size of pic_order_cnt_lsb */
+>>>>> +		skip += 2;
+>>>>> +
+>>>>> +	if (!(decode_params->flags & V4L2_HEVC_DECODE_PARAM_FLAG_IDR_PIC)) {
+>>>>> +		/* size of pic_order_cnt_lsb */
+>>>>> +		skip += sps->log2_max_pic_order_cnt_lsb_minus4 + 4;
+>>>>> +
+>>>>> +		/* size of short_term_ref_pic_set_sps_flag */
+>>>>> +		skip++;
+>>>>> +
+>>>>> +		if (decode_params->short_term_ref_pic_set_size)
+>>>>> +			/* size of st_ref_pic_set( num_short_term_ref_pic_sets ) */
+>>>>> +			skip += decode_params->short_term_ref_pic_set_size;
+>>>>> +		else if (sps->num_short_term_ref_pic_sets > 1)
+>>>>> +			skip += ceil_log2(sps->num_short_term_ref_pic_sets);
+>>>>> +
+>>>>> +		skip += decode_params->long_term_ref_pic_set_size;
+>>>>> +	}
+>>>>> +
+>>>>> +	return skip;
+>>>>> +}
+>>>>> +
+>>>>>   static void set_params(struct hantro_ctx *ctx)
+>>>>>   {
+>>>>>   	const struct hantro_hevc_dec_ctrls *ctrls = &ctx->hevc_dec.ctrls;
+>>>>> @@ -134,7 +194,7 @@ static void set_params(struct hantro_ctx *ctx)
+>>>>>   
+>>>>>   	hantro_reg_write(vpu, &g2_output_8_bits, 0);
+>>>>>   
+>>>>> -	hantro_reg_write(vpu, &g2_hdr_skip_length, ctrls->hevc_hdr_skip_length);
+>>>>> +	hantro_reg_write(vpu, &g2_hdr_skip_length, compute_header_skip_lenght(ctx));
+>>>>>   
+>>>>>   	min_log2_cb_size = sps->log2_min_luma_coding_block_size_minus3 + 3;
+>>>>>   	max_log2_ctb_size = min_log2_cb_size + sps->log2_diff_max_min_luma_coding_block_size;
+>>>>> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
+>>>>> index d6cb3779d190..efc0412ac41e 100644
+>>>>> --- a/include/media/hevc-ctrls.h
+>>>>> +++ b/include/media/hevc-ctrls.h
+>>>>> @@ -467,17 +467,4 @@ struct v4l2_ctrl_hevc_scaling_matrix {
+>>>>>   	__u8	scaling_list_dc_coef_32x32[2];
+>>>>>   };
+>>>>>   
+>>>>> -/*  MPEG-class control IDs specific to the Hantro driver as defined by V4L2 */
+>>>>> -#define V4L2_CID_CODEC_HANTRO_BASE				(V4L2_CTRL_CLASS_CODEC | 0x1200)
+>>>>> -/*
+>>>>> - * V4L2_CID_HANTRO_HEVC_SLICE_HEADER_SKIP -
+>>>>> - * the number of data (in bits) to skip in the
+>>>>> - * slice segment header.
+>>>>> - * If non-IDR, the bits to be skipped go from syntax element "pic_output_flag"
+>>>>> - * to before syntax element "slice_temporal_mvp_enabled_flag".
+>>>>> - * If IDR, the skipped bits are just "pic_output_flag"
+>>>>> - * (separate_colour_plane_flag is not supported).
+>>>>> - */
+>>>>> -#define V4L2_CID_HANTRO_HEVC_SLICE_HEADER_SKIP	(V4L2_CID_CODEC_HANTRO_BASE + 0)
+>>>>> -
+>>>>>   #endif
