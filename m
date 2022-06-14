@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2ADC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B228CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355250AbiFNCcN (ORCPT
+        id S1355404AbiFNCcS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58814 "EHLO
+        Mon, 13 Jun 2022 22:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354974AbiFNCZn (ORCPT
+        with ESMTP id S1355188AbiFNC0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:25:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED5637003;
-        Mon, 13 Jun 2022 19:11:22 -0700 (PDT)
+        Mon, 13 Jun 2022 22:26:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4729427D7;
+        Mon, 13 Jun 2022 19:11:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85E16611A6;
-        Tue, 14 Jun 2022 02:11:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF672C385A5;
-        Tue, 14 Jun 2022 02:11:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81F3FB816B9;
+        Tue, 14 Jun 2022 02:10:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DEAAC341C4;
+        Tue, 14 Jun 2022 02:10:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172681;
-        bh=ddHJc4QFsYP8rXNlyEhlD0XlaF0STqcZTxwNBm0blys=;
+        s=k20201202; t=1655172656;
+        bh=o/jyu2ROdm31y2b8cgGf9XEmM2oEVHame+hPgu7jdd4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AFr48vIvddL2lwATDzSMCp2F7/DIZ1IzSOVFzXHT34XLzslJTvhdCxGxFfjIU0LpW
-         4Vasy0gh0dm1gpkAHA7C1MITtbdEud3GZrZE+/iZbnQUTKUeUfLvszX2+4UOXOI0yZ
-         i0oCnaK/KLnZr+T7deVY79rJpZ0EUZFklfN9l2X+/6JSMhnappknC+rAF2Ps24JERd
-         etTkvoEk56SIvppW6d2h2Uf0WqZXkSoCh+bIr8lbKf46vi8AYHS6vYLaze+pQyBlht
-         2C917yHaZ9nGAYnDY7IqEwnXLWsyz8CUT01oN/18nrMm26Hmuw96tN5GSXgMS9dMDG
-         ejSb1Nsbl7ybg==
+        b=URndEBjW5YScMKRngGXuXPQEkDmSxmdxM8wES0Nk5nZjlnQNywW6RUm8ybwtL2ydn
+         BeO+Bhy8t5asb1V3V8TUMUp4EX8qMlGAjtKceWYZdTM0669DhkXtrmRe4pDwTCgOu+
+         n8BkoRHQ42W+tJhufkRpBh/BsiK8dniO2DKJQxnAz4Mh3Pky1GwELd7YlAp4Wuqr7s
+         TdGlFyWTKXb/a7bfv+OCFOei+vyS9z/oQkPATcq/RsYKj3hXuUrqA+E6rIGYh/rSlF
+         kd0TrkPOyfRl+T7DBUwO+SUwd2Cf6uhpn6wcqsGhO1KuKc9r1xzNlKnuI8bOLbz3vG
+         aR9iJ9ypgUz/g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.18 2/6] KVM: x86: do not set st->preempted when going back to user space
-Date:   Mon, 13 Jun 2022 22:11:11 -0400
-Message-Id: <20220614021116.1101331-2-sashal@kernel.org>
+Cc:     chengkaitao <pilgrimtao@gmail.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 4.9 09/12] virtio-mmio: fix missing put_device() when vm_cmdline_parent registration failed
+Date:   Mon, 13 Jun 2022 22:10:37 -0400
+Message-Id: <20220614021040.1101131-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614021116.1101331-1-sashal@kernel.org>
-References: <20220614021116.1101331-1-sashal@kernel.org>
+In-Reply-To: <20220614021040.1101131-1-sashal@kernel.org>
+References: <20220614021040.1101131-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,79 +54,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: chengkaitao <pilgrimtao@gmail.com>
 
-[ Upstream commit 54aa83c90198e68eee8b0850c749bc70efb548da ]
+[ Upstream commit a58a7f97ba11391d2d0d408e0b24f38d86ae748e ]
 
-Similar to the Xen path, only change the vCPU's reported state if the vCPU
-was actually preempted.  The reason for KVM's behavior is that for example
-optimistic spinning might not be a good idea if the guest is doing repeated
-exits to userspace; however, it is confusing and unlikely to make a difference,
-because well-tuned guests will hardly ever exit KVM_RUN in the first place.
+The reference must be released when device_register(&vm_cmdline_parent)
+failed. Add the corresponding 'put_device()' in the error handling path.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: chengkaitao <pilgrimtao@gmail.com>
+Message-Id: <20220602005542.16489-1-chengkaitao@didiglobal.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/x86.c | 26 ++++++++++++++------------
- arch/x86/kvm/xen.h |  6 ++++--
- 2 files changed, 18 insertions(+), 14 deletions(-)
+ drivers/virtio/virtio_mmio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 36453517e847..165e2912995f 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -4648,19 +4648,21 @@ void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
- {
- 	int idx;
- 
--	if (vcpu->preempted && !vcpu->arch.guest_state_protected)
--		vcpu->arch.preempted_in_kernel = !static_call(kvm_x86_get_cpl)(vcpu);
-+	if (vcpu->preempted) {
-+		if (!vcpu->arch.guest_state_protected)
-+			vcpu->arch.preempted_in_kernel = !static_call(kvm_x86_get_cpl)(vcpu);
- 
--	/*
--	 * Take the srcu lock as memslots will be accessed to check the gfn
--	 * cache generation against the memslots generation.
--	 */
--	idx = srcu_read_lock(&vcpu->kvm->srcu);
--	if (kvm_xen_msr_enabled(vcpu->kvm))
--		kvm_xen_runstate_set_preempted(vcpu);
--	else
--		kvm_steal_time_set_preempted(vcpu);
--	srcu_read_unlock(&vcpu->kvm->srcu, idx);
-+		/*
-+		 * Take the srcu lock as memslots will be accessed to check the gfn
-+		 * cache generation against the memslots generation.
-+		 */
-+		idx = srcu_read_lock(&vcpu->kvm->srcu);
-+		if (kvm_xen_msr_enabled(vcpu->kvm))
-+			kvm_xen_runstate_set_preempted(vcpu);
-+		else
-+			kvm_steal_time_set_preempted(vcpu);
-+		srcu_read_unlock(&vcpu->kvm->srcu, idx);
-+	}
- 
- 	static_call(kvm_x86_vcpu_put)(vcpu);
- 	vcpu->arch.last_host_tsc = rdtsc();
-diff --git a/arch/x86/kvm/xen.h b/arch/x86/kvm/xen.h
-index adbcc9ed59db..fda1413f8af9 100644
---- a/arch/x86/kvm/xen.h
-+++ b/arch/x86/kvm/xen.h
-@@ -103,8 +103,10 @@ static inline void kvm_xen_runstate_set_preempted(struct kvm_vcpu *vcpu)
- 	 * behalf of the vCPU. Only if the VMM does actually block
- 	 * does it need to enter RUNSTATE_blocked.
- 	 */
--	if (vcpu->preempted)
--		kvm_xen_update_runstate_guest(vcpu, RUNSTATE_runnable);
-+	if (WARN_ON_ONCE(!vcpu->preempted))
-+		return;
-+
-+	kvm_xen_update_runstate_guest(vcpu, RUNSTATE_runnable);
- }
- 
- /* 32-bit compatibility definitions, also used natively in 32-bit build */
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index 50840984fbfa..f62da3b7c27b 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -630,6 +630,7 @@ static int vm_cmdline_set(const char *device,
+ 	if (!vm_cmdline_parent_registered) {
+ 		err = device_register(&vm_cmdline_parent);
+ 		if (err) {
++			put_device(&vm_cmdline_parent);
+ 			pr_err("Failed to register parent device!\n");
+ 			return err;
+ 		}
 -- 
 2.35.1
 
