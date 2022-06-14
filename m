@@ -2,54 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F2D8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:42:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D9E8CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357124AbiFNSm3 (ORCPT
+        id S1357230AbiFNSmc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:42:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59438 "EHLO
+        Tue, 14 Jun 2022 14:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357112AbiFNSlv (ORCPT
+        with ESMTP id S1345408AbiFNSmH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:41:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56274AE0E;
-        Tue, 14 Jun 2022 11:41:40 -0700 (PDT)
+        Tue, 14 Jun 2022 14:42:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006364B1CE;
+        Tue, 14 Jun 2022 11:41:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 586B9B8186A;
-        Tue, 14 Jun 2022 18:41:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72894C3411D;
-        Tue, 14 Jun 2022 18:41:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFBB5B8186A;
+        Tue, 14 Jun 2022 18:41:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0FBFC3411E;
+        Tue, 14 Jun 2022 18:41:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232098;
-        bh=jQYiJ2B/yh0n5o1YR+tVEwoIRowRhZ8d7T3D5XSYiqk=;
+        s=korg; t=1655232103;
+        bh=5kWMu3VuyNkkAZqF21PQ9b2hFvknVLt8Zm9aKs3pHyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fYI5PJRJw1rTG9g09fKkdsx/MrghZjYPt8dW7Om8F6vpjsLE1VYSDPgL6Lt/O+ymA
-         dJQ/9/4UD0rA7FKW0bC9mcc7sSFim+G4ChTCehZeziG++FXSXYGhlb/2FmYYH5joCL
-         SV9ezOvR8CcUYMIKvGvKqvoat5WDid1hXNXRUY/Q=
+        b=SngsUiDb6ofvab9fwotgPtuXleL0bhnHIsadTkqLqNfyOWtV+/dVysrB7Q0+HyVWL
+         ZLK3ERYQMsv6xIhwsz9/tsfoBc/rmKDsvl/ia2pvBk0QIrGnJICwIVuMyaXWOWb5Fo
+         KJ/+j3ONYG1bNFO5FNiLetmJp2SLT065QnZUh70I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "David E. Box" <david.e.box@intel.com>, dvhart@infradead.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>,
+        ak@linux.intel.com, "H. Peter Anvin" <hpa@zytor.com>,
+        Ingo Molnar <mingo@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
-        platform-driver-x86@vger.kernel.org,
-        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
         Thomas Gleixner <tglx@linutronix.de>, x86-ml <x86@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 4.9 05/20] x86/CPU: Add Icelake model number
-Date:   Tue, 14 Jun 2022 20:39:48 +0200
-Message-Id: <20220614183723.380508297@linuxfoundation.org>
+Subject: [PATCH 4.9 07/20] x86/cpu: Add Comet Lake to the Intel CPU models header
+Date:   Tue, 14 Jun 2022 20:39:50 +0200
+Message-Id: <20220614183723.858445210@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220614183722.061550591@linuxfoundation.org>
 References: <20220614183722.061550591@linuxfoundation.org>
@@ -61,42 +54,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-commit 8cd8f0ce0d6aafe661cb3d6781c8b82bc696c04d upstream.
+commit 8d7c6ac3b2371eb1cbc9925a88f4d10efff374de upstream.
 
-Add the CPUID model number of Icelake (ICL) mobile processors to the
-Intel family list. Icelake U/Y series uses model number 0x7E.
+Comet Lake is the new 10th Gen Intel processor. Add two new CPU model
+numbers to the Intel family list.
 
-Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>
+The CPU model numbers are not published in the SDM yet but they come
+from an authoritative internal source.
+
+ [ bp: Touch up commit message. ]
+
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: "David E. Box" <david.e.box@intel.com>
-Cc: dvhart@infradead.org
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Cc: ak@linux.intel.com
 Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Kan Liang <kan.liang@linux.intel.com>
+Cc: Ingo Molnar <mingo@kernel.org>
 Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: platform-driver-x86@vger.kernel.org
-Cc: Qiuxu Zhuo <qiuxu.zhuo@intel.com>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: x86-ml <x86@kernel.org>
-Link: https://lkml.kernel.org/r/20190214115712.19642-2-rajneesh.bhardwaj@linux.intel.com
+Link: https://lkml.kernel.org/r/1570549810-25049-2-git-send-email-kan.liang@linux.intel.com
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/intel-family.h |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/include/asm/intel-family.h |    3 +++
+ 1 file changed, 3 insertions(+)
 
 --- a/arch/x86/include/asm/intel-family.h
 +++ b/arch/x86/include/asm/intel-family.h
-@@ -54,6 +54,8 @@
+@@ -59,6 +59,9 @@
+ #define INTEL_FAM6_ICELAKE_DESKTOP	0x7D
+ #define INTEL_FAM6_ICELAKE_MOBILE	0x7E
  
- #define INTEL_FAM6_CANNONLAKE_MOBILE	0x66
- 
-+#define INTEL_FAM6_ICELAKE_MOBILE	0x7E
++#define INTEL_FAM6_COMETLAKE		0xA5
++#define INTEL_FAM6_COMETLAKE_L		0xA6
 +
  /* "Small Core" Processors (Atom) */
  
