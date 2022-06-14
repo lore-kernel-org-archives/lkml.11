@@ -2,171 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E5BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4365C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:34:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355575AbiFNKes (ORCPT
+        id S1355713AbiFNKeu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
+        Tue, 14 Jun 2022 06:34:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233180AbiFNKel (ORCPT
+        with ESMTP id S241975AbiFNKem (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:34:41 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6AF4839F;
-        Tue, 14 Jun 2022 03:34:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655202879; x=1686738879;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0jtqphEpXO/EXDUUdHo2AU4BLzmAaPYdQ1jmXTMKYmA=;
-  b=DxfT+UcOJ3y1QfWkjjT9elaCl4e5xK76XrlIRC1qdc7sS3dde9QiTIzw
-   BULX12tbkq4E2/NWZyY+KIvsFCCAbzsaBHQnLnaA70JsK2/ASSdq37MvK
-   UlzHSUEnSZTtPhMGQcsSJSKzImV66Y8pd8ZkryuwEQve3P0AckBVJf3S7
-   hdknvqIO524tXCG9kgGJpMSbX7UsFOrdoTwO5C1XDTOBSUy+qlQF9ISug
-   RnuHrxGedG8IZNbaj0ZSAIDl/nKsQXJaw69TWQMtDB7j2OHxUMaIYeKoG
-   CqACdd36QFMuZQxRz+FQLdYl9Njsayi43YodygxjzvEykBUCexpSrZkZ8
-   w==;
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="163256577"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jun 2022 03:34:39 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 14 Jun 2022 03:34:38 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 14 Jun 2022 03:34:34 -0700
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
-        <lxu@maxlinear.com>, <richardcochran@gmail.com>,
-        <UNGLinuxDriver@microchip.com>, <Ian.Saturley@microchip.com>
-Subject: [PATCH net-next 1/5] net: lan743x: Add support to LAN743x register dump
-Date:   Tue, 14 Jun 2022 16:04:20 +0530
-Message-ID: <20220614103424.58971-2-Raju.Lakkaraju@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220614103424.58971-1-Raju.Lakkaraju@microchip.com>
-References: <20220614103424.58971-1-Raju.Lakkaraju@microchip.com>
+        Tue, 14 Jun 2022 06:34:42 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07CD4483A4
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:34:40 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4LMlDZ55Ysz9tNV;
+        Tue, 14 Jun 2022 12:34:38 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id HmOK5EWRTWTv; Tue, 14 Jun 2022 12:34:38 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4LMlDZ3y1Vz9tNR;
+        Tue, 14 Jun 2022 12:34:38 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 704C68B766;
+        Tue, 14 Jun 2022 12:34:38 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id viGlSsPwX9aF; Tue, 14 Jun 2022 12:34:38 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.204.246])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 21BB38B763;
+        Tue, 14 Jun 2022 12:34:38 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 25EAYR2H198169
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 14 Jun 2022 12:34:27 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 25EAYLaA198135;
+        Tue, 14 Jun 2022 12:34:21 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Maxime Bizon <mbizon@freebox.fr>
+Subject: [PATCH 1/2] powerpc/32: Call mmu_mark_initmem_nx() regardless of data block mapping.
+Date:   Tue, 14 Jun 2022 12:34:08 +0200
+Message-Id: <db3fc14f3bfa6215b0786ef58a6e2bc1e1f964d7.1655202804.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1655202848; l=2629; s=20211009; h=from:subject:message-id; bh=CWIqUkDIpE0cTlWDObjuQQ9rCQCZ66wP1qn7E4f2HIU=; b=o4yZQIyM+TiCgO+EiPa4v7u+AtxpOfdZOftncIiUapJHJkXdLISDQwKbkXI/1PVyRODuQWUXGIa/ YGeActtVAtZWj4SFPH5la/D66PoFg8FRYbCsWKVxxDFrIWEdmiM6
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to LAN743x common register dump
+mark_initmem_nx() calls either mmu_mark_initmem_nx() or
+set_memory_attr() based on return from v_block_mapped()
+of _sinittext.
 
-Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+But we can now handle text and data independently, so that
+text may be mapped by block even when data is mapped by pages.
+
+On the 8xx for instance, at startup 32Mbytes of memory are
+pinned in TLB. So the pinned entries need to go away for sinittext.
+
+In next patch a BAT will be set to also covers sinittext on book3s/32.
+So it will also be needed to call mmu_mark_initmem_nx() even when
+data above sinittext is not mapped with BATs.
+
+As this is highly dependent on the platform, call mmu_mark_initmem_nx()
+regardless of data block mapping. Then the platform will know what to
+do.
+
+Modify 8xx mmu_mark_initmem_nx() so that inittext mapping is modified
+only when pagealloc debug and kfence are not active, otherwise inittext
+is mapped with standard pages. And don't do anything on kernel text
+which is already mapped with PAGE_KERNEL_TEXT.
+
+Cc: Maxime Bizon <mbizon@freebox.fr>
+Fixes: da1adea07576 ("powerpc/8xx: Allow STRICT_KERNEL_RwX with pinned TLB")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- .../net/ethernet/microchip/lan743x_ethtool.c  | 45 +++++++++++++++++++
- .../net/ethernet/microchip/lan743x_ethtool.h  | 26 +++++++++++
- 2 files changed, 71 insertions(+)
+ arch/powerpc/mm/nohash/8xx.c | 4 ++--
+ arch/powerpc/mm/pgtable_32.c | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_ethtool.c b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-index c8fe8b31f07b..48b19dcd4351 100644
---- a/drivers/net/ethernet/microchip/lan743x_ethtool.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-@@ -1178,6 +1178,49 @@ static int lan743x_ethtool_set_wol(struct net_device *netdev,
+diff --git a/arch/powerpc/mm/nohash/8xx.c b/arch/powerpc/mm/nohash/8xx.c
+index 27f9186ae374..1ee08c3efe5b 100644
+--- a/arch/powerpc/mm/nohash/8xx.c
++++ b/arch/powerpc/mm/nohash/8xx.c
+@@ -179,8 +179,8 @@ void mmu_mark_initmem_nx(void)
+ 	unsigned long boundary = strict_kernel_rwx_enabled() ? sinittext : etext8;
+ 	unsigned long einittext8 = ALIGN(__pa(_einittext), SZ_8M);
+ 
+-	mmu_mapin_ram_chunk(0, boundary, PAGE_KERNEL_TEXT, false);
+-	mmu_mapin_ram_chunk(boundary, einittext8, PAGE_KERNEL, false);
++	if (!debug_pagealloc_enabled_or_kfence())
++		mmu_mapin_ram_chunk(boundary, einittext8, PAGE_KERNEL, false);
+ 
+ 	mmu_pin_tlb(block_mapped_ram, false);
  }
- #endif /* CONFIG_PM */
+diff --git a/arch/powerpc/mm/pgtable_32.c b/arch/powerpc/mm/pgtable_32.c
+index a56ade39dc68..3ac73f9fb5d5 100644
+--- a/arch/powerpc/mm/pgtable_32.c
++++ b/arch/powerpc/mm/pgtable_32.c
+@@ -135,9 +135,9 @@ void mark_initmem_nx(void)
+ 	unsigned long numpages = PFN_UP((unsigned long)_einittext) -
+ 				 PFN_DOWN((unsigned long)_sinittext);
  
-+static void lan743x_common_regs(struct net_device *dev,
-+				struct ethtool_regs *regs, void *p)
+-	if (v_block_mapped((unsigned long)_sinittext)) {
+-		mmu_mark_initmem_nx();
+-	} else {
++	mmu_mark_initmem_nx();
 +
-+{
-+	struct lan743x_adapter *adapter = netdev_priv(dev);
-+	u32 *rb = p;
-+
-+	memset(p, 0, (MAX_LAN743X_ETH_REGS * sizeof(u32)));
-+
-+	rb[ETH_PRIV_FLAGS] = adapter->flags;
-+	rb[ETH_ID_REV]     = lan743x_csr_read(adapter, ID_REV);
-+	rb[ETH_FPGA_REV]   = lan743x_csr_read(adapter, FPGA_REV);
-+	rb[ETH_STRAP_READ] = lan743x_csr_read(adapter, STRAP_READ);
-+	rb[ETH_INT_STS]    = lan743x_csr_read(adapter, INT_STS);
-+	rb[ETH_HW_CFG]     = lan743x_csr_read(adapter, HW_CFG);
-+	rb[ETH_PMT_CTL]    = lan743x_csr_read(adapter, PMT_CTL);
-+	rb[ETH_E2P_CMD]    = lan743x_csr_read(adapter, E2P_CMD);
-+	rb[ETH_E2P_DATA]   = lan743x_csr_read(adapter, E2P_DATA);
-+	rb[ETH_MAC_CR]     = lan743x_csr_read(adapter, MAC_CR);
-+	rb[ETH_MAC_RX]     = lan743x_csr_read(adapter, MAC_RX);
-+	rb[ETH_MAC_TX]     = lan743x_csr_read(adapter, MAC_TX);
-+	rb[ETH_FLOW]       = lan743x_csr_read(adapter, MAC_FLOW);
-+	rb[ETH_MII_ACC]    = lan743x_csr_read(adapter, MAC_MII_ACC);
-+	rb[ETH_MII_DATA]   = lan743x_csr_read(adapter, MAC_MII_DATA);
-+	rb[ETH_EEE_TX_LPI_REQ_DLY]  = lan743x_csr_read(adapter,
-+						       MAC_EEE_TX_LPI_REQ_DLY_CNT);
-+	rb[ETH_WUCSR]      = lan743x_csr_read(adapter, MAC_WUCSR);
-+	rb[ETH_WK_SRC]     = lan743x_csr_read(adapter, MAC_WK_SRC);
-+}
-+
-+static int lan743x_get_regs_len(struct net_device *dev)
-+{
-+	return MAX_LAN743X_ETH_REGS * sizeof(u32);
-+}
-+
-+static void lan743x_get_regs(struct net_device *dev,
-+			     struct ethtool_regs *regs, void *p)
-+{
-+	regs->version = LAN743X_ETH_REG_VERSION;
-+
-+	lan743x_common_regs(dev, regs, p);
-+}
-+
- const struct ethtool_ops lan743x_ethtool_ops = {
- 	.get_drvinfo = lan743x_ethtool_get_drvinfo,
- 	.get_msglevel = lan743x_ethtool_get_msglevel,
-@@ -1202,6 +1245,8 @@ const struct ethtool_ops lan743x_ethtool_ops = {
- 	.set_eee = lan743x_ethtool_set_eee,
- 	.get_link_ksettings = phy_ethtool_get_link_ksettings,
- 	.set_link_ksettings = phy_ethtool_set_link_ksettings,
-+	.get_regs_len = lan743x_get_regs_len,
-+	.get_regs = lan743x_get_regs,
- #ifdef CONFIG_PM
- 	.get_wol = lan743x_ethtool_get_wol,
- 	.set_wol = lan743x_ethtool_set_wol,
-diff --git a/drivers/net/ethernet/microchip/lan743x_ethtool.h b/drivers/net/ethernet/microchip/lan743x_ethtool.h
-index d0d11a777a58..7f5996a52488 100644
---- a/drivers/net/ethernet/microchip/lan743x_ethtool.h
-+++ b/drivers/net/ethernet/microchip/lan743x_ethtool.h
-@@ -6,6 +6,32 @@
- 
- #include "linux/ethtool.h"
- 
-+#define LAN743X_ETH_REG_VERSION         1
-+
-+enum {
-+	ETH_PRIV_FLAGS,
-+	ETH_ID_REV,
-+	ETH_FPGA_REV,
-+	ETH_STRAP_READ,
-+	ETH_INT_STS,
-+	ETH_HW_CFG,
-+	ETH_PMT_CTL,
-+	ETH_E2P_CMD,
-+	ETH_E2P_DATA,
-+	ETH_MAC_CR,
-+	ETH_MAC_RX,
-+	ETH_MAC_TX,
-+	ETH_FLOW,
-+	ETH_MII_ACC,
-+	ETH_MII_DATA,
-+	ETH_EEE_TX_LPI_REQ_DLY,
-+	ETH_WUCSR,
-+	ETH_WK_SRC,
-+
-+	/* Add new registers above */
-+	MAX_LAN743X_ETH_REGS
-+};
-+
- extern const struct ethtool_ops lan743x_ethtool_ops;
- 
- #endif /* _LAN743X_ETHTOOL_H */
++	if (!v_block_mapped((unsigned long)_sinittext)) {
+ 		set_memory_nx((unsigned long)_sinittext, numpages);
+ 		set_memory_rw((unsigned long)_sinittext, numpages);
+ 	}
 -- 
-2.25.1
+2.36.1
 
