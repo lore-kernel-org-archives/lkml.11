@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 518AFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17FECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350860AbiFNCFL (ORCPT
+        id S1350735AbiFNCFN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:05:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
+        Mon, 13 Jun 2022 22:05:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240655AbiFNCFA (ORCPT
+        with ESMTP id S1348324AbiFNCFB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:05:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BB433E8F;
-        Mon, 13 Jun 2022 19:04:55 -0700 (PDT)
+        Mon, 13 Jun 2022 22:05:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6149430554;
+        Mon, 13 Jun 2022 19:04:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB35CB8168A;
-        Tue, 14 Jun 2022 02:04:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5985FC341C0;
-        Tue, 14 Jun 2022 02:04:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECB6D60AF2;
+        Tue, 14 Jun 2022 02:04:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A558DC3411E;
+        Tue, 14 Jun 2022 02:04:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172292;
-        bh=Oe8B+tchnVatPgmf1JiGtjFdAcKA9NcNW0/WlQM8Gcw=;
+        s=k20201202; t=1655172295;
+        bh=jpahqU4Ez2Jv2ovq+6xWJVXthFohCC2sf6mGPWztRhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OeQqYRgsvk+3iLA9dS7J7D7ooxRZakatdI4/61IimsQ9LbUY2zNxCKA88CgDW58dL
-         ye6b5ISWOdTbQLM/guQRiE8HN6G0K3lctxWwNgFG4jlKIX5c/jfQGwQ239pPOApUYf
-         4+gjUEa8n0qyPB0RjYGq5OF1+rutNAvc5je8VNvH278MVx50a32HmTN1zAMOThp1iM
-         fnFlvwb3kDEwFwryFZ2YymctTLrglvWoYRvOibh0MldyWI9o+1kF9ypxmprGFQ6/lG
-         FtsfzHLRmqIlKEIvF8HyL+gdk6e3FjrQ3GNajgKo8FVkLN5X+vCjlxzJunqUVNPqF3
-         Ke9f6fOublZYw==
+        b=DnV/KFYk8Zb4ClWS3Htrif2hSytFcUYzbA3x5t1qqRt+fs723Qgs6pYSNSAiSp5qZ
+         QtE1uKhx7LOv9gIOAu1TASgSy7mmXdwhvw69CfOs6FqR3B3cBrbIgfJktv/N8+oJuQ
+         LZIzx6w6ftQ+y3uxRGRoKLeNXfWJeUGeY6KjBplhI5JYajQqfgK3CUkdubz2Wg5hNQ
+         8aJl2NG2E5vwlORrZBUsDdM9Sew5QcOBztbnsS0s/GAZCBEty6bAFEkN/zXxhqeJmS
+         Kkw9iAwm36DKp8kJW9NYvKRU6pEEySuyhduZ9uovqmn+r2jgLmWTzvHK/gOXyjJAV3
+         5jaM5Jk0dbPbg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Candice Li <candice.li@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        airlied@linux.ie, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 05/47] drm/amdgpu: Resolve RAS GFX error count issue after cold boot on Arcturus
-Date:   Mon, 13 Jun 2022 22:03:58 -0400
-Message-Id: <20220614020441.1098348-5-sashal@kernel.org>
+Cc:     Rob Clark <robdclark@chromium.org>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.18 07/47] dma-debug: make things less spammy under memory pressure
+Date:   Mon, 13 Jun 2022 22:04:00 -0400
+Message-Id: <20220614020441.1098348-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020441.1098348-1-sashal@kernel.org>
 References: <20220614020441.1098348-1-sashal@kernel.org>
@@ -54,119 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Candice Li <candice.li@amd.com>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit 2a460963350ec6b1534d28d7f943b5f84815aff2 ]
+[ Upstream commit e19f8fa6ce1ca9b8b934ba7d2e8f34c95abc6e60 ]
 
-Adjust the sequence for ras late init and separate ras reset error status
-from query status.
+Limit the error msg to avoid flooding the console.  If you have a lot of
+threads hitting this at once, they could have already gotten passed the
+dma_debug_disabled() check before they get to the point of allocation
+failure, resulting in quite a lot of this error message spamming the
+log.  Use pr_err_once() to limit that.
 
-v2: squash in fix from Candice
-
-Signed-off-by: Candice Li <candice.li@amd.com>
-Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c |  9 ++++++---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c | 27 ++++++++++++++++++++-----
- 2 files changed, 28 insertions(+), 8 deletions(-)
+ kernel/dma/debug.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
-index 28a736c507bb..bd3b32e5ba9e 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
-@@ -625,17 +625,20 @@ int amdgpu_get_gfx_off_status(struct amdgpu_device *adev, uint32_t *value)
- int amdgpu_gfx_ras_late_init(struct amdgpu_device *adev, struct ras_common_if *ras_block)
- {
- 	int r;
--	r = amdgpu_ras_block_late_init(adev, ras_block);
--	if (r)
--		return r;
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index ac740630c79c..2caafd13f8aa 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -564,7 +564,7 @@ static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
  
- 	if (amdgpu_ras_is_supported(adev, ras_block->block)) {
- 		if (!amdgpu_persistent_edc_harvesting_supported(adev))
- 			amdgpu_ras_reset_error_status(adev, AMDGPU_RAS_BLOCK__GFX);
- 
-+		r = amdgpu_ras_block_late_init(adev, ras_block);
-+		if (r)
-+			return r;
-+
- 		r = amdgpu_irq_get(adev, &adev->gfx.cp_ecc_error_irq, 0);
- 		if (r)
- 			goto late_fini;
-+	} else {
-+		amdgpu_ras_feature_enable_on_boot(adev, ras_block, 0);
- 	}
- 
- 	return 0;
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
-index 424c22a841f4..3f96dadf2698 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
-@@ -195,6 +195,13 @@ static ssize_t amdgpu_ras_debugfs_read(struct file *f, char __user *buf,
- 	if (amdgpu_ras_query_error_status(obj->adev, &info))
- 		return -EINVAL;
- 
-+	/* Hardware counter will be reset automatically after the query on Vega20 and Arcturus */
-+	if (obj->adev->ip_versions[MP0_HWIP][0] != IP_VERSION(11, 0, 2) &&
-+	    obj->adev->ip_versions[MP0_HWIP][0] != IP_VERSION(11, 0, 4)) {
-+		if (amdgpu_ras_reset_error_status(obj->adev, info.head.block))
-+			dev_warn(obj->adev->dev, "Failed to reset error counter and error status");
-+	}
-+
- 	s = snprintf(val, sizeof(val), "%s: %lu\n%s: %lu\n",
- 			"ue", info.ue_count,
- 			"ce", info.ce_count);
-@@ -548,9 +555,10 @@ static ssize_t amdgpu_ras_sysfs_read(struct device *dev,
- 	if (amdgpu_ras_query_error_status(obj->adev, &info))
- 		return -EINVAL;
- 
--	if (obj->adev->asic_type == CHIP_ALDEBARAN) {
-+	if (obj->adev->ip_versions[MP0_HWIP][0] != IP_VERSION(11, 0, 2) &&
-+	    obj->adev->ip_versions[MP0_HWIP][0] != IP_VERSION(11, 0, 4)) {
- 		if (amdgpu_ras_reset_error_status(obj->adev, info.head.block))
--			DRM_WARN("Failed to reset error counter and error status");
-+			dev_warn(obj->adev->dev, "Failed to reset error counter and error status");
- 	}
- 
- 	return sysfs_emit(buf, "%s: %lu\n%s: %lu\n", "ue", info.ue_count,
-@@ -1023,9 +1031,6 @@ int amdgpu_ras_query_error_status(struct amdgpu_device *adev,
- 		}
- 	}
- 
--	if (!amdgpu_persistent_edc_harvesting_supported(adev))
--		amdgpu_ras_reset_error_status(adev, info->head.block);
--
- 	return 0;
- }
- 
-@@ -1145,6 +1150,12 @@ int amdgpu_ras_query_error_count(struct amdgpu_device *adev,
- 		if (res)
- 			return res;
- 
-+		if (adev->ip_versions[MP0_HWIP][0] != IP_VERSION(11, 0, 2) &&
-+		    adev->ip_versions[MP0_HWIP][0] != IP_VERSION(11, 0, 4)) {
-+			if (amdgpu_ras_reset_error_status(adev, info.head.block))
-+				dev_warn(adev->dev, "Failed to reset error counter and error status");
-+		}
-+
- 		ce += info.ce_count;
- 		ue += info.ue_count;
- 	}
-@@ -1705,6 +1716,12 @@ static void amdgpu_ras_log_on_err_counter(struct amdgpu_device *adev)
- 			continue;
- 
- 		amdgpu_ras_query_error_status(adev, &info);
-+
-+		if (adev->ip_versions[MP0_HWIP][0] != IP_VERSION(11, 0, 2) &&
-+		    adev->ip_versions[MP0_HWIP][0] != IP_VERSION(11, 0, 4)) {
-+			if (amdgpu_ras_reset_error_status(adev, info.head.block))
-+				dev_warn(adev->dev, "Failed to reset error counter and error status");
-+		}
- 	}
- }
- 
+ 	rc = active_cacheline_insert(entry);
+ 	if (rc == -ENOMEM) {
+-		pr_err("cacheline tracking ENOMEM, dma-debug disabled\n");
++		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
+ 		global_disable = true;
+ 	} else if (rc == -EEXIST && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
+ 		err_printk(entry->dev, entry,
 -- 
 2.35.1
 
