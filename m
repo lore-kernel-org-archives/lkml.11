@@ -2,131 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D58C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:54:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF3F5CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354578AbiFNOyA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50880 "EHLO
+        id S242317AbiFNOyr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245375AbiFNOxw (ORCPT
+        with ESMTP id S232474AbiFNOyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:53:52 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A7C33E29;
-        Tue, 14 Jun 2022 07:53:51 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id c2so12020028edf.5;
-        Tue, 14 Jun 2022 07:53:51 -0700 (PDT)
+        Tue, 14 Jun 2022 10:54:44 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C5D27CE8
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:54:43 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id l204so15543402ybf.10
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:54:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i002CZ3kNshSLiBB0Sk9zUBde6XACnITYgh2VJAFDjw=;
-        b=YrA/W4Q3CQqJGcPLjWQrYFy4qhMY19avMEq6Zb2Ty68Oc6r3CiV1vZe7TQxnFDLT78
-         +Onq+uNaU+1CGbg4MQ1u1gh0Y5fCaiZNT2jnjupmZNcogDhVGo0aRS8WeniWu//5sfaa
-         43sc2lKlY3W0yORugNFYzW3jWKYnWxJ7X3zKyl2lhxUHrHcfE0drTVBPHVCS27BQzs4T
-         yVjvN7eH3/YwiEUqomyL4QcULTM1nNk15dANKNpOSdAVMFUbyeby/+X1c7rT4gjokGYn
-         9Z9P3PGsrEfjTvI0Tp+XNHIdQpbzPDLKDPrt2c7JAQZYiQuSHOfNOLN1Ixb8FrxRoqLs
-         c8sw==
+         :cc:content-transfer-encoding;
+        bh=BnX2PXmAa5CmcHNKr34lLc/yKhRdA6qLpTj2Oet80hY=;
+        b=VvJdqcL3UKSIR2Q0os5TLMDwm9FDQfrDEFHrc01YDAW2bnYxeXBMEDV65VR407LajM
+         75R0AaJZudMw7eXzkFdXq5MVZsjCK9C7IOrDkdtWxrz0lBRVUrXBPkf/55Xt0ABpOaTC
+         uuyf+JDBDgNp+TmimS/L45rSY2XXqHAio9Bu1j2P+PFqkXV2bBtVfxmjJRaYbazHblG/
+         0ICpOg2/QfIbkzahqM4im6ipZuVNIVCUGbFq9gDuNCzsG+rSkg+x0JZn99tVrwkSwoof
+         ta0PD3jlih49gamqD42U8BBREDm5HrtE0tjQRHrVQd4S1jXIuMl8Ssr/fsjfLmeP53RS
+         HG7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i002CZ3kNshSLiBB0Sk9zUBde6XACnITYgh2VJAFDjw=;
-        b=oD6Tr7GtYDy/kI1lyiYOztAts136uJfXztbQC4wTUMX6lZoAdaqWeYPpDR52kXVBGj
-         By5ow7GdRrQmDus0FRD8lgjUUmVm9MsOykiu0p4lCd3sTulpFsRMdfX2iRdsAPmWED2U
-         hNY7EvDJVogfi+RcwaESPO89PKcrMM09aVYQnsZE63wC7LCX8oGVFJl8jL6xEYgJdxIH
-         z+6iznJYHd6Inw1TJMr/vpMU6KajjGAqjAsbTwld9+kUn+TPRrqUd+7PyGzJuh0/qXww
-         s9+Psp2O4/ksF6EKpxijSfOsyhKjkJ7epKp6REF1Qd5oIiztt+oYyyTKWZDeKcTg4HKn
-         E3XA==
-X-Gm-Message-State: AOAM531AtQD0VlwQirs3qlzMSkVGUro36l2oYa0Iunk+sehmAN8Nfw5D
-        pVnYRu9EiOzL9yq7WqXW9veQ94rZ4xhxjdLBCjs=
-X-Google-Smtp-Source: ABdhPJx3Bq0wNrqEF8lSyUCZ5VshuSRqgNgGBod/kPv3JOjHRqHmbA/j/c4PBm2AG1qjWMfzhi5Ygd4Az6pMkuDLlvQ=
-X-Received: by 2002:aa7:d303:0:b0:42d:d192:4c41 with SMTP id
- p3-20020aa7d303000000b0042dd1924c41mr6640987edq.178.1655218430432; Tue, 14
- Jun 2022 07:53:50 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=BnX2PXmAa5CmcHNKr34lLc/yKhRdA6qLpTj2Oet80hY=;
+        b=zeH2+09cuOrwvH4tcW5MM02CWP0oQPB5Sio82vYfAFiAx2k8UnLeJ4xQjYlzhWpvAl
+         HS/aSuH0ju9bXBVAPhxdMAj0DPLin0p52kzJoJufrH9vyyoXoVJIRnnhS9xFwplf6us9
+         H3HS9C8DWA4mXqt43RJELPwFqeXV2ScmcqlUoUA+j+KVVmiWMf21VvzjLFny7hCBXrZE
+         gnc8FWHC4dHb3AhBhtPn3JXlVP5tgtMrtD8POuqzqfdQ9GtDVgAxwXZkeqlHQn5cHXej
+         1IMRpvJiDn1XPPlgzc0W0z40HtfxKE5NgWbA8v/R8RpbBOoWZNOeJAP0bAJdZfNUiomb
+         eyhw==
+X-Gm-Message-State: AJIora91rtk7WY7vNFSJwD481thb9a1X5XpoUCtcijbOqi25EdsY1XFv
+        82VbPanbQ+tTlFJ2/kEO407SX9cR10iKhFfBB2GN3w==
+X-Google-Smtp-Source: AGRyM1uSNXw4y0oDSzJUdYck26DosV0PNnwQTmYSiPmk5a1a/iw/izDPEntZHZ1sfTyU3neALM16sHfP2KEU6d6RlfE=
+X-Received: by 2002:a05:6902:682:b0:664:e437:9b6 with SMTP id
+ i2-20020a056902068200b00664e43709b6mr5624890ybt.490.1655218482907; Tue, 14
+ Jun 2022 07:54:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220614142704.155496-1-jjhiblot@traphandler.com>
-In-Reply-To: <20220614142704.155496-1-jjhiblot@traphandler.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 14 Jun 2022 16:53:13 +0200
-Message-ID: <CAHp75Vd29e55B7MFfg5A4RLkCzhKbE3FxcnESV2hNxYLA+OWGw@mail.gmail.com>
-Subject: Re: [PATCH v4 0/3] Add support for the TLC5925
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Cc:     Pavel Machek <pavel@ucw.cz>, krzk+dt@kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220613181850.655683495@linuxfoundation.org>
+In-Reply-To: <20220613181850.655683495@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 14 Jun 2022 20:24:31 +0530
+Message-ID: <CA+G9fYukAcS14PAYz_ae9HhFerz_1QGKP6mwWor_NK3g7Fw5=A@mail.gmail.com>
+Subject: Re: [PATCH 5.10 000/173] 5.10.122-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 4:27 PM Jean-Jacques Hiblot
-<jjhiblot@traphandler.com> wrote:
+On Mon, 13 Jun 2022 at 23:50, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> This series add the support for the TLC5925 LED controller.
-
-adds
-
-> This LED controller is driven though SPI. There is little internal logic
-
-through
-
-> and it can be thought of as a deserializer + latches.
-
-> The TLC5925 itself drives up to 16 LEDs, but multiple TLC5925s can be
-> chained to drive more.
+> This is the start of the stable review cycle for the 5.10.122 release.
+> There are 173 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
-> The first patch describes the dt bindings.
-> The second patch implements most of the driver and supports only
-> synchronous brightness setting (brightness_set_blocking).
-> The last patch implements the non-blocking version (brightness_set).
-
-Much better, I have a few comments and I believe next version will be final.
-
-> changes v3->v4:
->  * add missing MODULE_DEVICE_TABLE(of, ...)
->  * use dev_err_probe() to avoid spaming the log in case of deferred probe
-
-spamming
-
->  * use bitmap ops instead of direct mem access + lock
-
-memory
-
->  * sort headers and a few other cosmetic changes.
+> Responses should be made by Wed, 15 Jun 2022 18:18:23 +0000.
+> Anything received after that time might be too late.
 >
-> changes v2->v3:
->  * fixed the yaml description of the bindings (now passes dt_binding_check)
->  * renamed shit-register-length into ti,shift-register-length and specify its
->    type
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.10.122-rc2.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.10.y
+> and the diffstat can be found below.
 >
-> changes v1->v2:
->  * renamed property shift_register_length into shift-register-length
->  * add a SPI MODULE_DEVICE_TABLE structure
->  * fixed the yaml description of the bindings (now passes dt_binding_check)
+> thanks,
 >
-> Jean-Jacques Hiblot (3):
->   dt-bindings: leds: Add bindings for the TLC5925 controller
->   leds: Add driver for the TLC5925 LED controller
->   leds: tlc5925: Add support for non blocking operations
->
->  .../devicetree/bindings/leds/ti,tlc5925.yaml  | 107 ++++++++++
->  drivers/leds/Kconfig                          |   6 +
->  drivers/leds/Makefile                         |   1 +
->  drivers/leds/leds-tlc5925.c                   | 191 ++++++++++++++++++
->  4 files changed, 305 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/leds/ti,tlc5925.yaml
->  create mode 100644 drivers/leds/leds-tlc5925.c
->
-> --
-> 2.25.1
->
+> greg k-h
 
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+
+## Build
+* kernel: 5.10.122-rc2
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.10.y
+* git commit: 355f12b39acea720fa2fe8ce6ef486377e1d0b6a
+* git describe: v5.10.120-624-g355f12b39ace
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10=
+.120-624-g355f12b39ace
+
+## Test Regressions (compared to v5.10.118)
+No test regressions found.
+
+## Metric Regressions (compared to v5.10.118)
+No metric regressions found.
+
+## Test Fixes (compared to v5.10.118)
+No test fixes found.
+
+## Metric Fixes (compared to v5.10.118)
+No metric fixes found.
+
+## Test result summary
+total: 126949, pass: 113862, fail: 232, skip: 12179, xfail: 676
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 314 total, 314 passed, 0 failed
+* arm64: 58 total, 58 passed, 0 failed
+* i386: 52 total, 49 passed, 3 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 51 total, 51 passed, 0 failed
+* riscv: 27 total, 27 passed, 0 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 56 total, 55 passed, 1 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-cap_bounds-tests
+* ltp-commands
+* ltp-commands-tests
+* ltp-containers
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps
+* ltp-filecaps-tests
+* ltp-fs
+* ltp-fs-tests
+* ltp-fs_bind
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple
+* ltp-fs_perms_simple-tests
+* ltp-fsx
+* ltp-fsx-tests
+* ltp-hugetlb
+* ltp-hugetlb-tests
+* ltp-io
+* ltp-io-tests
+* ltp-ipc
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits
+* ltp-securebits-tests
+* ltp-smoke
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
