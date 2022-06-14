@@ -2,122 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF94C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D779BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240088AbiFNBQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 21:16:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52278 "EHLO
+        id S239798AbiFNBQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 21:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235476AbiFNBQE (ORCPT
+        with ESMTP id S240161AbiFNBQ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 21:16:04 -0400
-Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B14AC26112
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 18:16:03 -0700 (PDT)
-X-QQ-mid: bizesmtp90t1655169342tijaaqxk
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 14 Jun 2022 09:15:31 +0800 (CST)
-X-QQ-SSF: 01400000000000G0Q000000A0000000
-X-QQ-FEAT: sAyD0HLl0PAuQOTlQ+tOB27hOHnIdlm//flRfwqXgXhtH9Hgz8VbEkCTjUllm
-        2+OouONG9yKMJ3jCRrRkBZEGz+JIVPuyhRGN+/mbDChOgx4c35tvpguY/vCqaEhbp7EcICx
-        3aRH7P0GBWPefeoMr2CBMx41e/dok1TQrLR1zTXwAvRhjXY1jaeaSpOgoGFVV7byUefuGmQ
-        lxAiPHgwCvQQFjRnRUA9I2OlA3aE2dPpAPzvACb4mnF30lSyG7/TfXkX+L4fiPEg2tzVvKB
-        cZakLygrGWFuzqhaowRAkM7+g1QnB5SxVGPDGLJAijKUxovXrT8JtwY3g4vcgBXE+IcU6Yv
-        9WShbRc/CJX83N/+NDHR7NTwzWZRQ==
-X-QQ-GoodBg: 1
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Meng Tang <tangmeng@uniontech.com>
-Subject: [PATCH 5.10 1/2] commit 1d71eb53e451 ("Revert "PCI: Make pci_enable_ptm() private"")
-Date:   Tue, 14 Jun 2022 09:15:27 +0800
-Message-Id: <20220614011528.32118-1-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign10
-X-QQ-Bgrelay: 1
+        Mon, 13 Jun 2022 21:16:26 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C03725584
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 18:16:21 -0700 (PDT)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220614011618epoutp03c01bddc5b2e88d6fb74c58a5194201fb~4V8fRMvj-1277212772epoutp03B
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:16:18 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220614011618epoutp03c01bddc5b2e88d6fb74c58a5194201fb~4V8fRMvj-1277212772epoutp03B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1655169378;
+        bh=fI2J29nRYzvP7/fnA5tJYjNKV6Zfl3ONJubw126AwbY=;
+        h=Subject:Reply-To:From:To:CC:Date:References:From;
+        b=byM5S9V2vT/G1PmZ9thftDS0QR299Mc55HqAVbO16XwT5odB3IDuSv3QrpxIhNS2q
+         EbI/Fvew3EO0vR1syNbdet5F7j77R1+4RYMpsZXlrHr8Yf/BwyPydvMul11sZ5U/DN
+         kQmaIX2Z4Z/rtm1vBMQg9LUyDqqjNdvzfsvF8ICg=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220614011618epcas2p38f4b9291cffac3ce1b24a646ed233038~4V8ewteed0311603116epcas2p3t;
+        Tue, 14 Jun 2022 01:16:18 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.99]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4LMVrK3Qm3z4x9QB; Tue, 14 Jun
+        2022 01:16:17 +0000 (GMT)
+X-AuditID: b6c32a46-79619a8000002624-ac-62a7e161fdf8
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        FB.18.09764.161E7A26; Tue, 14 Jun 2022 10:16:17 +0900 (KST)
+Mime-Version: 1.0
+Subject: [PATCH v3 0/5] Add support for Axis, ARTPEC-8 PCIe driver
+Reply-To: wangseok.lee@samsung.com
+Sender: Wangseok Lee <wangseok.lee@samsung.com>
+From:   Wangseok Lee <wangseok.lee@samsung.com>
+To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
+        "lars.persson@axis.com" <lars.persson@axis.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "kw@linux.com" <kw@linux.com>,
+        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
+        "kernel@axis.com" <kernel@axis.com>
+CC:     Moon-Ki Jun <moonki.jun@samsung.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Dongjin Yang <dj76.yang@samsung.com>,
+        Yeeun Kim <yeeun119.kim@samsung.com>,
+        Wangseok Lee <wangseok.lee@samsung.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7@epcms2p7>
+Date:   Tue, 14 Jun 2022 10:16:16 +0900
+X-CMS-MailID: 20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrKJsWRmVeSWpSXmKPExsWy7bCmuW7iw+VJBvdvCVssacqweHlI02L+
+        kXOsFrtnLGeymDn1DLPF80OzmC0+tahaXHjaw2bxctY9NouGnt+sFkfefGS22H98JZPF5V1z
+        2CzOzjvOZjFh1TcWize/X7BbnFucadG69wi7xc47J5gt7hw+y2Lxa+sfJgdRjzXz1jB6XF8X
+        4LFgU6nHplWdbB5Prkxn8ti8pN6jb8sqRo/jN7YzeXzeJBfAGZVtk5GamJJapJCal5yfkpmX
+        bqvkHRzvHG9qZmCoa2hpYa6kkJeYm2qr5OIToOuWmQP0mZJCWWJOKVAoILG4WEnfzqYov7Qk
+        VSEjv7jEVim1ICWnwLxArzgxt7g0L10vL7XEytDAwMgUqDAhO+NdwyzWgktyFd0Tz7A1MO6S
+        6GLk4JAQMJFY313TxcjFISSwg1Fi7cJzTCBxXgFBib87hLsYOTmEBZwkdq18wApiCwkoSexY
+        M48ZIq4vcX1FN1icTUBX4t/il2wgtojAZ1aJ63sEQWYyC5xklFh+eD1YQkKAV2JG+1MWCFta
+        YvvyrYwQtobEj2W9zBC2qMTN1W/ZYez3x+ZD1YhItN47C1UjKPHg526ouJTEgieHWCHsaon9
+        f38zQdgNjBL991MhftSX2HHdGCTMK+ArcXnjVLBzWARUJQ6sncYGUeIicXdiIEiYWUBeYvvb
+        OcwgYWYBTYn1u/QhKpQljtxigfmjYeNvdnQ2swCfRMfhv3DxHfOeQN2iJjFv5U5miDEyEltf
+        +k9gVJqFCOVZSNbOQli7gJF5FaNYakFxbnpqsVGBETxek/NzNzGC07eW2w7GKW8/6B1iZOJg
+        PMQowcGsJMI7+eKyJCHelMTKqtSi/Pii0pzU4kOMpkD/TmSWEk3OB2aQvJJ4QxNLAxMzM0Nz
+        I1MDcyVxXq+UDYlCAumJJanZqakFqUUwfUwcnFINTEneP7bEFx7pc5i1/euP1abLPpY80ebg
+        P7VNueOU41NOw3taL+PubXZR23j3gVbo3nPNwjoXjnhEtaq7d7Iu05ZTFLN9deyC84LchSt8
+        3qZu4das+v+VPUlfICb0Xn3iNEZnFT2PlrP6psn6vbejL62dVnZ9waopMTVPFoRX2ba4sDIF
+        7DC4pXPhUsk8k55Nrd+ttLuCFCaytqbGvFGX0+kxn3ls5rWuDyJ5XnbLwyS/Td2160cvy/G/
+        E5dya/oxPPh45dCP90usKhbmyJY+zyoTl749x6Pj4M2n5dnV876EvJobNNGnwUdjckG4sukc
+        R6F7jDeVZm17vVr5wqyZ9teEoyvFWB+4ucSU3WK+qsRSnJFoqMVcVJwIACU0HzBoBAAA
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7
+References: <CGME20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7@epcms2p7>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+This v3 patchset is improvement several review comments received from patchset v2.
 
-Make pci_enable_ptm() accessible from the drivers.
+Main changes since v2 [2]:
+dt-bindings: pci: Add ARTPEC-8 PCIe controller
+-modify version history to fit the linux commit rule
+-remove 'Device Tree Bindings' on title
+-remove the interrupt-names, phy-names entries
+-remove '_clk' suffix
+-add the compatible entries on required
+-change node name to soc from artpec8 on examples
 
-Exposing this to the driver enables the driver to use the
-'ptm_enabled' field of 'pci_dev' to check if PTM is enabled or not.
+dt-bindings: phy: Add ARTPEC-8 PCIe phy
+-modify version history to fit the linux commit rule
+-remove 'Device Tree Bindings' on title
+-remove clock-names entries
+-change node name to soc from artpec8 on excamples
 
-This reverts commit ac6c26da29c1 ("PCI: Make pci_enable_ptm() private").
+ PCI: axis: Add ARTPEC-8 PCIe controller driver
+-add 'COMPILE_TEST' and improvement help on kconfig
+-reorder obj on makefile
+-use clk_bulk_api
+-remove unnecessary comment
+-redefine the ELBI register to distinguish between offset and
+ bit definition
+-improvement order local variable of function
+-remove unnecessary local return variable
 
-In the 5.10 kernel version, even to the latest confirmed version,
-the following error will still be reported when I225-V network card
-is used.
+phy: Add ARTPEC-8 PCIe PHY driver
+-remove unnecessary indentation
+-redefine local struct to statis const
+-add static const to struct that requires static const definition
+-remove wrappers on writel and readl
 
-kernel: [    1.031581] igc: probe of 0000:01:00.0 failed with error -2
-kernel: [    1.066574] igc: probe of 0000:02:00.0 failed with error -2
-kernel: [    1.096152] igc: probe of 0000:03:00.0 failed with error -2
-kernel: [    1.127251] igc: probe of 0000:04:00.0 failed with error -2
+Main changes since v1 [1]:
+-'make dt_binding_check' result improvement
+-Add the missing property list
+-improvement review comment of Krzysztof on driver code
+-change folder name of phy driver to axis from artpec
 
-Even though I confirmed that 7c496de538eebd8212dc2a3c9a468386b2640d4
-and 47bca7de6a4fb8dcb564c7ca4d885c91ed19e03 have been merged into the
-kernel 5.10, the bug is still occurred, and the
-"commit 1b5d73fb8624 ("igc: Enable PCIe PTM")" can fixes it.
+[2] https://lore.kernel.org/lkml/20220613015023epcms2p70e6700a99042d4deb560e40ab5397001@epcms2p7/T/
+[1] https://lore.kernel.org/lkml/20220328014430epcms2p7063834feb0abdf2f38a62723c96c9ff1@epcms2p7/
 
-And this patch is the pre-patch of
-1b5d73fb862414106cf270a1a7300ce8ae77de83.
+--------------------------------------------------------------
+This series patches include newly PCIe support for Axis ARTPEC-8 SoC.
+ARTPEC-8 is the SoC platform of Axis Communications.
+PCIe controller driver and phy driver have been newly added.
+There is also a new MAINTAINER in the addition of phy driver.
+PCIe controller is designed based on Design-Ware PCIe controller IP
+and PCIe phy is desinged based on SAMSUNG PHY IP.
+It also includes modifications to the Design-Ware controller driver to 
+run the 64bit-based ARTPEC-8 PCIe controller driver.
+It consists of 6 patches in total.
 
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
----
- drivers/pci/pci.h   | 3 ---
- include/linux/pci.h | 7 +++++++
- 2 files changed, 7 insertions(+), 3 deletions(-)
+This series has been tested on AXIS SW bring-up board 
+with ARTPEC-8 chipset.
+--------------------------------------------------------------
 
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index a96dc6f53076..4084764bf0b1 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -585,11 +585,8 @@ static inline void pcie_ecrc_get_policy(char *str) { }
- 
- #ifdef CONFIG_PCIE_PTM
- void pci_ptm_init(struct pci_dev *dev);
--int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
- #else
- static inline void pci_ptm_init(struct pci_dev *dev) { }
--static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
--{ return -EINVAL; }
- #endif
- 
- struct pci_dev_reset_methods {
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index bc5a1150f072..692ce678c5f1 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1599,6 +1599,13 @@ static inline bool pci_aer_available(void) { return false; }
- 
- bool pci_ats_disabled(void);
- 
-+#ifdef CONFIG_PCIE_PTM
-+int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
-+#else
-+static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
-+{ return -EINVAL; }
-+#endif
-+
- void pci_cfg_access_lock(struct pci_dev *dev);
- bool pci_cfg_access_trylock(struct pci_dev *dev);
- void pci_cfg_access_unlock(struct pci_dev *dev);
+Wangseok Lee (5):
+  dt-bindings: pci: Add ARTPEC-8 PCIe controller
+  dt-bindings: phy: Add ARTPEC-8 PCIe phy
+  PCI: axis: Add ARTPEC-8 PCIe controller driver
+  phy: Add ARTPEC-8 PCIe PHY driver
+  MAINTAINERS: Add Axis ARTPEC-8 PCIe PHY maintainers
+
+ .../bindings/pci/axis,artpec8-pcie-ep.yaml         | 109 +++
+ .../devicetree/bindings/pci/axis,artpec8-pcie.yaml | 120 ++++
+ .../bindings/phy/axis,artpec8-pcie-phy.yaml        |  73 ++
+ MAINTAINERS                                        |   2 +
+ drivers/pci/controller/dwc/Kconfig                 |  31 +
+ drivers/pci/controller/dwc/Makefile                |   1 +
+ drivers/pci/controller/dwc/pcie-artpec8.c          | 797 +++++++++++++++++++++
+ drivers/phy/Kconfig                                |   1 +
+ drivers/phy/Makefile                               |   1 +
+ drivers/phy/axis/Kconfig                           |   9 +
+ drivers/phy/axis/Makefile                          |   2 +
+ drivers/phy/axis/phy-artpec8-pcie.c                | 776 ++++++++++++++++++++
+ 12 files changed, 1922 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pci/axis,artpec8-pcie-ep.yaml
+ create mode 100644 Documentation/devicetree/bindings/pci/axis,artpec8-pcie.yaml
+ create mode 100644 Documentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml
+ create mode 100644 drivers/pci/controller/dwc/pcie-artpec8.c
+ create mode 100644 drivers/phy/axis/Kconfig
+ create mode 100644 drivers/phy/axis/Makefile
+ create mode 100644 drivers/phy/axis/phy-artpec8-pcie.c
+
 -- 
-2.20.1
-
-
-
+2.9.5
