@@ -2,219 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78BB4CCA47A
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27967CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:17:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353610AbiFNHQv (ORCPT
+        id S1353636AbiFNHRd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55202 "EHLO
+        Tue, 14 Jun 2022 03:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238026AbiFNHQs (ORCPT
+        with ESMTP id S1353629AbiFNHR3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:16:48 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832603C4A9
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:16:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655191005; x=1686727005;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=uOMJ9wLfoNqGl4MRL0O2orAa+q01k5q9ZMDa6qayy94=;
-  b=igNMwrf202lSiNzO/Lu6muP59gfYiBcH9Ske2zGwlB4zKqv75KUedb9w
-   stQdme2Z5lajybBzc/Vu1LfVFDSzOUszn6MaV8W4shc1nTt9WueEzknfK
-   ywZZ0vYPTrw2UAcnyr0yQrYuP0RCkI9G2/3PKRTUP3hmk79dh+WtGnzkf
-   WYWA2o8HBFzfQQNOQ1cY7XSxvz+Sl1xE9GWRT5gfYSHP0/gPBwyQ1FTg7
-   /lIqeoDlk72GpA+QhphvHdr20fulD6pFmuoAHtZutg+mgd6nSpz8ihKk6
-   Cdu7HwNqQ+jDG3hqaHY2TxSVq2CXN0c0dCrxP99GSc5zbJhCzw9nHgNGr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258365905"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="258365905"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:16:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="910834497"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga005.fm.intel.com with ESMTP; 14 Jun 2022 00:16:45 -0700
-Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 14 Jun 2022 00:16:44 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 14 Jun 2022 00:16:44 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.47) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 14 Jun 2022 00:16:19 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D+pMMIaLMzOzAA09hX175divLGnZyTpY9QJl6cofSTUa5HVpN2v8FePyD12zY7TSmLE9LFm9V3CEnZGvp1KuGnz4rYOYdz+zcB1MKzkIVQGVQqVrp/TaaIHp2n3ri5byl9wkBf+r8yQT1xh1fbTIkzzJvaEYDB4GxHbALTV4e/Kqv8YkXupKn6n10GvmvfXvOX8fpUz88IrASDaITc2ylJM1NFuDJcDA2kXf8qnpvFu7bCUDxsnRIGd7RO0a1CqyHSIIpi3vrgLBHSriViarCGMUffXRmGE1+7OrI/WQ5F3UvJklmzOjo9Rl36f7VmCVsKBlCcOGgg9kQNLRR/qiXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3Q7YozYfz/rY7O6R0nRnWG9GUOd8ikWsSf7yZE8l96M=;
- b=FYtl4Q5O4n/0JmFmvuC4k7raP+jmESQJO28r7lAgncpW6p5OeLp5WoxTYaivACBx6rxlME8uqd3u3YGGjXRg8kXz4VbvVeSxNrKs/78VEYLPyTgCqEpSj8HsNR9VYDQpx9pro01Wf0lhu9xmwB7+fSNHBGK9HvW6tp+b4qSmvLH/wGHKujISaVFj54VW4uB0wJWPlKNW9vkEW5nW6Bslm6To6+xo5ntOiEpjyHEMm2X8Ztvzt3y66DxSCQI+lpUoFu5qGfABb4tEYdG5UzmqCei30l6sU/pRapM1Zf6181piN4XDuj3E35+aAY2iY01+ra9dP8ihLWA/YeQ3rQNQlw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by CO6PR11MB5649.namprd11.prod.outlook.com (2603:10b6:5:35b::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Tue, 14 Jun
- 2022 07:16:18 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::3583:afc6:2732:74b8]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::3583:afc6:2732:74b8%4]) with mapi id 15.20.5332.022; Tue, 14 Jun 2022
- 07:16:18 +0000
-From:   "Tian, Kevin" <kevin.tian@intel.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Jason Gunthorpe" <jgg@nvidia.com>
-CC:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 11/12] iommu/vt-d: Use device_domain_lock accurately
-Thread-Topic: [PATCH v2 11/12] iommu/vt-d: Use device_domain_lock accurately
-Thread-Index: AQHYf5pR36hR4UdJTk+LBkAKKigPdK1OfMnQ
-Date:   Tue, 14 Jun 2022 07:16:17 +0000
-Message-ID: <BN9PR11MB52764D7CD86448C5E4EB46668CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220614025137.1632762-1-baolu.lu@linux.intel.com>
- <20220614025137.1632762-12-baolu.lu@linux.intel.com>
-In-Reply-To: <20220614025137.1632762-12-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1936ab95-be1e-4c75-770a-08da4dd5c684
-x-ms-traffictypediagnostic: CO6PR11MB5649:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <CO6PR11MB5649EFC6265D8AA07032369F8CAA9@CO6PR11MB5649.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: JI09Y05h/rasCA63WI3o7uyLNF/fZCe3izum430ONpoF4ywtmBfAPAMa8b0xeuj23sIl0tqgSiyFKww+lO5hKvrzJeeWsQtbrS2P0zWLvtrqZZV8iL9c+eJDAUyAYXFj9FQ2ZYu+7/gxWvBa4b3maVXUZVbJfgAVBADR8K4tlRqAlCeCztjM0tkjZyYr90of0Y/Hzs+TKCjEv7hVONVvkERbi06zHuWx11i3IOwLPE8IO53RjMmD1mvBo68KJHw+gDc49EFVUxopK+0iGjofLjYLbhhRsgAYDyFeLpRlWbBDH0HdYxewtK1G56FPlhW4Yo+l94EOhlfF9j4v2hsAgaB+yHNvOjTOva7Jr0HvXkPs2QXg7DATw7vXldWKAD8IZSPOjwhAj7Urvl1TYZj2RVB0OR5mYkaxEs7+Sz9MwFtLZdR/qqivUPw0GoH0yEvcS0yICn+JZZPdf4MKunAMX52OdMWZOCz21OtSUp5P7IaMnF/QIZzG+SvG6panGSlYXKY+ZUsLkEeZcFNDdPKtoQCfb7Uhm5e+uBHM1bo9ybpHb/+ShhH4ma4Oa9RbdANWxauvPd5fj30vbg2fnoEq7JfZ95PODyif94S74xsrBiZcJMYRjBkhk/KN1B29m5zOUU2X/dvKoLTAUMmZKrTKajhSXqK9HnCLcdoHiypUFdqCKGjUYAC6qlfZThyVccrSRcMBWRmZW5z7ynwbvM9nSQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(54906003)(71200400001)(38100700002)(8936002)(2906002)(38070700005)(9686003)(508600001)(52536014)(66556008)(66946007)(4326008)(64756008)(66446008)(8676002)(110136005)(66476007)(76116006)(5660300002)(7696005)(82960400001)(55016003)(186003)(26005)(6506007)(122000001)(316002)(86362001)(33656002)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?guBEFf9BUTTyuMUuDq3Lb6Sv1zpgCNu9yxoraZCznjLL99+cTYwOeZqZLGJg?=
- =?us-ascii?Q?h7ESV+/IbPwjfw6ui3zVj/QUXyHc1HoKI77wX9fHnjQjN2CcJCf+XHRSL5vv?=
- =?us-ascii?Q?25g3PG3F7OLNwqGiAR1GOENoUJbX+qQEGyjul+X57WmbW8UCyPcis2B17Ro/?=
- =?us-ascii?Q?Au6ilBTeYk0jeM2C4xtrEFkzQSAkiAIrZ3JksamGSEEgkT6+hBRRBgbvz5XW?=
- =?us-ascii?Q?GoXLCU5Qaym2VykiVVXdFTedgM1xS10aMKBo5R70kMYOea/CFQ2R3OQp6ZeW?=
- =?us-ascii?Q?uu0v5zLUB1qTuzSw89rvwE/hLyN61+4HiqCa4iWxGWekciayOm6k7j6cvl5+?=
- =?us-ascii?Q?bi0E4wX0xWwA21YOxvdn+zi9TjZhfx5YFukNSjHjfxfDqLahIkW+vgChIPRc?=
- =?us-ascii?Q?HOkSzXJhbOkQF5UZSuUc2Q3Xef9vI1NTkL255hE3vwGPVX+Jh+ODH0lNGmTZ?=
- =?us-ascii?Q?2DMLoKGoBSsooUjSXYH+kF+zUBEFZtENGwWEsJ+FTwvsFRIbFLknF54O9j9k?=
- =?us-ascii?Q?On+rmGsmJ3Fpx2809SZ4uznQp+RNHFp55g1vw/eH4erj5FaxmoQaXo2YOVmB?=
- =?us-ascii?Q?zB/+9GUuozMwX8+VMJt4rDSaEQsw+hEMIWZzROrtMsAo47IYWv/oxZBd7oLR?=
- =?us-ascii?Q?8vdSlxBwcmsiD75aMy7m8vDhhRh/q8VL+EZRygcqE4DSJLwRDQmaMM/EZHCP?=
- =?us-ascii?Q?gyHNwHtLo32Bu2M5ZwQKVc0H9q/LFI/ZgryRZN0M0E4hG5FSvEnChcTzMrsa?=
- =?us-ascii?Q?tfLc2tnjsJ26CmstV7Xm1XGCjj3VLTB5HQxs8bqi3/UVf8cquBboOKlkSUcO?=
- =?us-ascii?Q?12d4EQOJ1Psug1Vo5HT2N+zL9kdRU7SgYYFfeVWJ7bePZt4C6gXgS24UemuX?=
- =?us-ascii?Q?5zNwfHuJAGLk0Dq0rVDVOjvK6r0nueODbiZ90uV6f+jIoSqtqZbT8oDQegu0?=
- =?us-ascii?Q?DIt/HyktQ541dsV1bZhlUEmNaT8uRFaF0t7GumYQ4CKPFTX5IA7z9wm2kyKI?=
- =?us-ascii?Q?3hgdMedkqedhKbfVr1V+Sou95GU5GYZh7pzdg6eRQF2wAACiOEWKsiPiqWch?=
- =?us-ascii?Q?xTaztCUkOR6eS15SvOpX2c1/mNhlBV/M2i/JrsI0i1/6llR1+Or1g1/XMOOH?=
- =?us-ascii?Q?N6OtwfXk1tv2OFXHP6ljIEZjuA9HdcxAjKzWi6COPeOQW+UJhbHgWznoMzKO?=
- =?us-ascii?Q?9rYTUspJAqFLfWj6hysMSlXw55Y9boFNpvSKd26z2R3wg7Y61DvDN8JZ9Pw1?=
- =?us-ascii?Q?xwnJXuIhgnbk4azVDLP6plpWz6ymK+QL5sDcxMau88W3SFQEIvDr/S2F8O8r?=
- =?us-ascii?Q?ACnlssX0qI4ugW5btVVvjIIAjm8OLgACIuhg+8GtbnvOK80xwsjvEqNWRvjg?=
- =?us-ascii?Q?FfCIOrPjGr6m28XgwLpurqUjF3famssgio7KSeSXuu+2lJcsm2jH6zU6XgOD?=
- =?us-ascii?Q?g/+oMziUOzaqpEi9JHlvRxU1Vs5Xz18wiBbk6yHjcIvp8R00puzccyODdW1Z?=
- =?us-ascii?Q?nqMVjqFoZhib020SHMfRMahrDea2hS9AWu1XdTlAQbmSSW5os1cGIK93LVrx?=
- =?us-ascii?Q?+OG4e57AS2PfY3fdYX4/kPse8pzzAIOOBwPgT0EJTgr2h/osGuZQokii04G2?=
- =?us-ascii?Q?yQfJCmUhGX8G7knSk+2RDrx6CrrNlapJtE6QGHD2zznzS1qjbHFEGNfjlRzf?=
- =?us-ascii?Q?2ZWozo2JsmUBRPDqDAwob0g6bZYvMeJ0rX9io6kJOtn4+gHW8v3Awul3JfZl?=
- =?us-ascii?Q?oacPRqHWCg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
+        Tue, 14 Jun 2022 03:17:29 -0400
+Received: from mail-oa1-x4a.google.com (mail-oa1-x4a.google.com [IPv6:2001:4860:4864:20::4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D301E11A3D
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:17:27 -0700 (PDT)
+Received: by mail-oa1-x4a.google.com with SMTP id 586e51a60fabf-f2bdeb5298so6403753fac.5
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:17:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc:content-transfer-encoding;
+        bh=vXBaUKQKR1itBBQIrpvwQJLIblCkXoAPgOmEgM5x37o=;
+        b=qFOxPUpgwHmYanGPx+o/X6Y43ndAjDbAnyBvOXAWH+syzETGPE9r3eESzC8mCbQU6r
+         vkGc0f4qJU0O4QNNTghuAeiBXANrgH2eFDJy1fcsUrnhPapk3O2pGalNVhIGzhQLiShM
+         TlriVo/0AgiZP3GE2sOlYNqNz4NT/6OZwSaY/PbmvMIn2RrV9koBlO+ZVWQ+RXcdpxm8
+         eoQW2tld54n8dqluLXycdebCP3fkAv77R5QjSzrHAGqTLD0nPpdSWTZP07E5xWwBUlOh
+         mC4FzMRoaPvPqwjXlczL5U18aN8GzsnVKNbSo2q3eFLb8xAeF67QCssozCBqxa5ZPvmG
+         iJ7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=vXBaUKQKR1itBBQIrpvwQJLIblCkXoAPgOmEgM5x37o=;
+        b=AFyIQ+g3vwdpynlfvLtT3cVi0FjnGoHy2SjG1esRVcYf7t5GyzeqIkdiy41BmYopW3
+         iMoJ9CCXcX6jHbrNPJrSpyza3gi6yP8ibSGFlSQWKXlN0US2j0K10o6TiAb7BZy9XEAp
+         KYcR5Xqng+ptmXqazsPTZujZoVzZvbsxcb474bD0hEfpGHYlRFmgKxdjyiF6PwXR/9/C
+         NsrD5qxsfUQftObNumLMDMwLDtXvALZU6TBNbdjgDcLjU53fcSfLvmpMty9pxrldS8FA
+         t2w+gu2iqG7HD71khbvuTQ+Za3k/8Cdv0jb/00FtvV10tKas+eoqKWIDs4ertoQUWCe7
+         ViOA==
+X-Gm-Message-State: AOAM531KUYWWkKjUJWdh7/opCW4HdjRm1AO38cdYMbQENPh0s5OmxqWi
+        9wFqda7hftQQRBTDVqVCa5fXHKMgVC0=
+X-Google-Smtp-Source: ABdhPJzg9LiC/5XayhWhMmYX1rt5EjKR26nMU3dJ/aFV8rfyVsNtJtzsNHySxyTk/8ToG2bVQo6O2Z5l6JM=
+X-Received: from yuzhao.bld.corp.google.com ([2620:15c:183:200:eaa7:1f3f:e74a:2a26])
+ (user=yuzhao job=sendgmr) by 2002:a05:6808:14cf:b0:32f:1805:5c4f with SMTP id
+ f15-20020a05680814cf00b0032f18055c4fmr1298746oiw.197.1655191046884; Tue, 14
+ Jun 2022 00:17:26 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 01:16:38 -0600
+In-Reply-To: <20220614071650.206064-1-yuzhao@google.com>
+Message-Id: <20220614071650.206064-2-yuzhao@google.com>
+Mime-Version: 1.0
+References: <20220614071650.206064-1-yuzhao@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH v12 01/14] mm: x86, arm64: add arch_has_hw_pte_young()
+From:   Yu Zhao <yuzhao@google.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, x86@kernel.org,
+        page-reclaim@google.com, Yu Zhao <yuzhao@google.com>,
+        Barry Song <baohua@kernel.org>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        "=?UTF-8?q?Holger=20Hoffst=C3=A4tte?=" 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1936ab95-be1e-4c75-770a-08da4dd5c684
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2022 07:16:17.9975
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: BUCOmUlP32LEvkkoSmgZrRi7RAUc2HT4DlGmTI9iN6CqvRR8E/yiAhCtvECwlufZGpFp2OO00ci7jloRgsGbzw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR11MB5649
-X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Tuesday, June 14, 2022 10:52 AM
->=20
-> The device_domain_lock is used to protect the device tracking list of
-> a domain. Remove unnecessary spin_lock/unlock()'s and move the necessary
-> ones around the list access.
->=20
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel/iommu.c | 68 +++++++++++++++----------------------
->  1 file changed, 27 insertions(+), 41 deletions(-)
->=20
-[...]
-> +iommu_support_dev_iotlb(struct dmar_domain *domain, struct
-> intel_iommu *iommu,
-> +			u8 bus, u8 devfn)
->  {
-> -	struct device_domain_info *info;
-> -
-> -	assert_spin_locked(&device_domain_lock);
-> +	struct device_domain_info *info =3D NULL, *tmp;
-> +	unsigned long flags;
->=20
->  	if (!iommu->qi)
->  		return NULL;
->=20
-> -	list_for_each_entry(info, &domain->devices, link)
-> -		if (info->iommu =3D=3D iommu && info->bus =3D=3D bus &&
-> -		    info->devfn =3D=3D devfn) {
-> -			if (info->ats_supported && info->dev)
-> -				return info;
-> +	spin_lock_irqsave(&device_domain_lock, flags);
-> +	list_for_each_entry(tmp, &domain->devices, link) {
-> +		if (tmp->iommu =3D=3D iommu && tmp->bus =3D=3D bus &&
-> +		    tmp->devfn =3D=3D devfn) {
-> +			if (tmp->ats_supported)
-> +				info =3D tmp;
+Some architectures automatically set the accessed bit in PTEs, e.g.,
+x86 and arm64 v8.2. On architectures that do not have this capability,
+clearing the accessed bit in a PTE usually triggers a page fault
+following the TLB miss of this PTE (to emulate the accessed bit).
 
-Directly returning with unlock here is clearer than adding
-another tmp variable...
+Being aware of this capability can help make better decisions, e.g.,
+whether to spread the work out over a period of time to reduce bursty
+page faults when trying to clear the accessed bit in many PTEs.
 
-> @@ -2460,15 +2450,14 @@ static int domain_add_dev_info(struct
-> dmar_domain *domain, struct device *dev)
->  	if (!iommu)
->  		return -ENODEV;
->=20
-> -	spin_lock_irqsave(&device_domain_lock, flags);
-> -	info->domain =3D domain;
->  	ret =3D domain_attach_iommu(domain, iommu);
-> -	if (ret) {
-> -		spin_unlock_irqrestore(&device_domain_lock, flags);
-> +	if (ret)
->  		return ret;
-> -	}
-> +
-> +	spin_lock_irqsave(&device_domain_lock, flags);
->  	list_add(&info->link, &domain->devices);
->  	spin_unlock_irqrestore(&device_domain_lock, flags);
-> +	info->domain =3D domain;
->=20
+Note that theoretically this capability can be unreliable, e.g.,
+hotplugged CPUs might be different from builtin ones. Therefore it
+should not be used in architecture-independent code that involves
+correctness, e.g., to determine whether TLB flushes are required (in
+combination with the accessed bit).
 
-This is incorrect. You need fully initialize the object before adding
-it to the list. Otherwise a search right after above unlock and
-before assigning info->domain will get a wrong data
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Reviewed-by: Barry Song <baohua@kernel.org>
+Acked-by: Brian Geffon <bgeffon@google.com>
+Acked-by: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+Acked-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Acked-by: Steven Barrett <steven@liquorix.net>
+Acked-by: Suleiman Souhlal <suleiman@google.com>
+Acked-by: Will Deacon <will@kernel.org>
+Tested-by: Daniel Byrne <djbyrne@mtu.edu>
+Tested-by: Donald Carr <d@chaos-reins.com>
+Tested-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
+Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
+Tested-by: Sofia Trinh <sofia.trinh@edi.works>
+Tested-by: Vaibhav Jain <vaibhav@linux.ibm.com>
+---
+ arch/arm64/include/asm/pgtable.h | 15 ++-------------
+ arch/x86/include/asm/pgtable.h   |  6 +++---
+ include/linux/pgtable.h          | 13 +++++++++++++
+ mm/memory.c                      | 14 +-------------
+ 4 files changed, 19 insertions(+), 29 deletions(-)
+
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgta=
+ble.h
+index 0b6632f18364..c46399c0500c 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -1066,24 +1066,13 @@ static inline void update_mmu_cache(struct vm_area_=
+struct *vma,
+  * page after fork() + CoW for pfn mappings. We don't always have a
+  * hardware-managed access flag on arm64.
+  */
+-static inline bool arch_faults_on_old_pte(void)
+-{
+-	/* The register read below requires a stable CPU to make any sense */
+-	cant_migrate();
+-
+-	return !cpu_has_hw_af();
+-}
+-#define arch_faults_on_old_pte		arch_faults_on_old_pte
++#define arch_has_hw_pte_young		cpu_has_hw_af
+=20
+ /*
+  * Experimentally, it's cheap to set the access flag in hardware and we
+  * benefit from prefaulting mappings as 'old' to start with.
+  */
+-static inline bool arch_wants_old_prefaulted_pte(void)
+-{
+-	return !arch_faults_on_old_pte();
+-}
+-#define arch_wants_old_prefaulted_pte	arch_wants_old_prefaulted_pte
++#define arch_wants_old_prefaulted_pte	cpu_has_hw_af
+=20
+ static inline bool pud_sect_supported(void)
+ {
+diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.=
+h
+index 44e2d6f1dbaa..dc5f7d8ef68a 100644
+--- a/arch/x86/include/asm/pgtable.h
++++ b/arch/x86/include/asm/pgtable.h
+@@ -1431,10 +1431,10 @@ static inline bool arch_has_pfn_modify_check(void)
+ 	return boot_cpu_has_bug(X86_BUG_L1TF);
+ }
+=20
+-#define arch_faults_on_old_pte arch_faults_on_old_pte
+-static inline bool arch_faults_on_old_pte(void)
++#define arch_has_hw_pte_young arch_has_hw_pte_young
++static inline bool arch_has_hw_pte_young(void)
+ {
+-	return false;
++	return true;
+ }
+=20
+ #ifdef CONFIG_PAGE_TABLE_CHECK
+diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
+index 3cdc16cfd867..8eee31bc9bde 100644
+--- a/include/linux/pgtable.h
++++ b/include/linux/pgtable.h
+@@ -260,6 +260,19 @@ static inline int pmdp_clear_flush_young(struct vm_are=
+a_struct *vma,
+ #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+ #endif
+=20
++#ifndef arch_has_hw_pte_young
++/*
++ * Return whether the accessed bit is supported on the local CPU.
++ *
++ * This stub assumes accessing through an old PTE triggers a page fault.
++ * Architectures that automatically set the access bit should overwrite it=
+.
++ */
++static inline bool arch_has_hw_pte_young(void)
++{
++	return false;
++}
++#endif
++
+ #ifndef __HAVE_ARCH_PTEP_GET_AND_CLEAR
+ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+ 				       unsigned long address,
+diff --git a/mm/memory.c b/mm/memory.c
+index 7a089145cad4..49500390b91b 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -125,18 +125,6 @@ int randomize_va_space __read_mostly =3D
+ 					2;
+ #endif
+=20
+-#ifndef arch_faults_on_old_pte
+-static inline bool arch_faults_on_old_pte(void)
+-{
+-	/*
+-	 * Those arches which don't have hw access flag feature need to
+-	 * implement their own helper. By default, "true" means pagefault
+-	 * will be hit on old pte.
+-	 */
+-	return true;
+-}
+-#endif
+-
+ #ifndef arch_wants_old_prefaulted_pte
+ static inline bool arch_wants_old_prefaulted_pte(void)
+ {
+@@ -2862,7 +2850,7 @@ static inline bool __wp_page_copy_user(struct page *d=
+st, struct page *src,
+ 	 * On architectures with software "accessed" bits, we would
+ 	 * take a double page fault, so mark it accessed here.
+ 	 */
+-	if (arch_faults_on_old_pte() && !pte_young(vmf->orig_pte)) {
++	if (!arch_has_hw_pte_young() && !pte_young(vmf->orig_pte)) {
+ 		pte_t entry;
+=20
+ 		vmf->pte =3D pte_offset_map_lock(mm, vmf->pmd, addr, &vmf->ptl);
+--=20
+2.36.1.476.g0c4daa206d-goog
+
