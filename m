@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F3B7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B82C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352987AbiFNCL4 (ORCPT
+        id S1353003AbiFNCL7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54752 "EHLO
+        Mon, 13 Jun 2022 22:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351572AbiFNCLT (ORCPT
+        with ESMTP id S1352745AbiFNCLU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:11:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077963466A;
-        Mon, 13 Jun 2022 19:07:03 -0700 (PDT)
+        Mon, 13 Jun 2022 22:11:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC22C340D6;
+        Mon, 13 Jun 2022 19:07:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3EEFBB8169B;
-        Tue, 14 Jun 2022 02:07:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B04EC3411E;
-        Tue, 14 Jun 2022 02:07:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2920560C15;
+        Tue, 14 Jun 2022 02:06:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97A9BC36AFF;
+        Tue, 14 Jun 2022 02:06:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172422;
-        bh=LUqjWhd2x19oH7kQGPvqJsFKkYqV5H/4feAZdzzEdv0=;
+        s=k20201202; t=1655172411;
+        bh=wlx8IVpnV3uzgVLiWFw1A/YnWrKtwDyrE7/A0OAGLxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=azep3MWpbswUgA1/19rF6cSzK48uV123lVMNeC69OxcE+RAjkqSVLzFbwkZozOFaX
-         mtjgXCLeIlb525B6mid11+cAnXmGAXdujveOz+l/5WnQbDtf7eouxvM70g11xovnnb
-         LHjLu2hqKWDaUQqhQhAdCrA3MmgFGLOxi0418G6tH1o0pDaZxVMUM0fTOAgsNlFpLe
-         LIDX2rgGWnB7QwhPmeewkvkTn+WyJXNZXr7mjQlFoVMUe38FC7swFb1da51BWO+PAH
-         g3AXIL5Uvys0yUSW8C7s0DL5msYOcYiyxXpibVPa29geboGfeO+vnySCwH1HqUTK5z
-         sGYYGZ2/5V1UQ==
+        b=L6FxctM/LtYmB3TimmVDv+xTGHBU34pUzm9Ao1p70Z1ygjVy7uVoyL1mmnhRstIDj
+         rguoOG4VtEzh5DEXGRA5ix3oDl+SNqINGrI9ToNd2EPIxV3Dppcmg/t50vufug6YKY
+         KO9kLmgVYaBDgYX08rSeJcO40qvgLKcdVeGbm2dUeS0G+svdZEvvRz9s9ylt5IukuQ
+         IlVafT0HfsDmw4DXoBewxcdKYNkByHsLM26Gx5ecO37sANtJBbVdnOJnpQ74KPSGM1
+         cJtEltwWhJ7NfBewwjdJ5XvTQlPGsvtdKuOR8jsy58+rXZt/9MLfzuyownYmMxRalt
+         gZsT+iXpI6YXQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     George D Sworo <george.d.sworo@intel.com>,
-        "David E . Box" <david.e.box@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, dvhart@infradead.org,
-        platform-driver-x86@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 40/43] platform/x86/intel: pmc: Support Intel Raptorlake P
-Date:   Mon, 13 Jun 2022 22:05:59 -0400
-Message-Id: <20220614020602.1098943-40-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, saeedm@mellanox.com,
+        matanb@mellanox.com, leonro@mellanox.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 33/43] mellanox: mlx5: avoid uninitialized variable warning with gcc-12
+Date:   Mon, 13 Jun 2022 22:05:52 -0400
+Message-Id: <20220614020602.1098943-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
 References: <20220614020602.1098943-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,34 +54,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: George D Sworo <george.d.sworo@intel.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 552f3b801de6eb062b225a76e140995483a0609c ]
+[ Upstream commit 842c3b3ddc5f4d17275edbaa09e23d712bf8b915 ]
 
-Add Raptorlake P to the list of the platforms that intel_pmc_core driver
-supports for pmc_core device. Raptorlake P PCH is based on Alderlake P
-PCH.
+gcc-12 started warning about 'tracker' being used uninitialized:
 
-Signed-off-by: George D Sworo <george.d.sworo@intel.com>
-Reviewed-by: David E. Box <david.e.box@linux.intel.com>
-Link: https://lore.kernel.org/r/20220602012617.20100-1-george.d.sworo@intel.com
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c: In function ‘mlx5_do_bond’:
+  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c:786:28: warning: ‘tracker’ is used uninitialized [-Wuninitialized]
+    786 |         struct lag_tracker tracker;
+        |                            ^~~~~~~
+
+which seems to be because it doesn't track how the use (and
+initialization) is bound by the 'do_bond' flag.
+
+But admittedly that 'do_bond' usage is fairly complicated, and involves
+passing it around as an argument to helper functions, so it's somewhat
+understandable that gcc doesn't see how that all works.
+
+This function could be rewritten to make the use of that tracker
+variable more obviously safe, but for now I'm just adding the forced
+initialization of it.
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/intel/pmc/core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/platform/x86/intel/pmc/core.c b/drivers/platform/x86/intel/pmc/core.c
-index ac19fcc9abbf..8ee15a7252c7 100644
---- a/drivers/platform/x86/intel/pmc/core.c
-+++ b/drivers/platform/x86/intel/pmc/core.c
-@@ -1912,6 +1912,7 @@ static const struct x86_cpu_id intel_pmc_core_ids[] = {
- 	X86_MATCH_INTEL_FAM6_MODEL(ROCKETLAKE,		&tgl_reg_map),
- 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_L,		&tgl_reg_map),
- 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE,		&adl_reg_map),
-+	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE_P,        &tgl_reg_map),
- 	{}
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+index 4ddf6b330a44..f61b846d43f1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+@@ -485,7 +485,7 @@ static void mlx5_do_bond(struct mlx5_lag *ldev)
+ {
+ 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
+ 	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
+-	struct lag_tracker tracker;
++	struct lag_tracker tracker = { };
+ 	bool do_bond, roce_lag;
+ 	int err;
  
 -- 
 2.35.1
