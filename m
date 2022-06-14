@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB15CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:16:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 900BFCCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:16:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353437AbiFNCQ0 (ORCPT
+        id S1353647AbiFNCQa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:16:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
+        Mon, 13 Jun 2022 22:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353615AbiFNCN5 (ORCPT
+        with ESMTP id S1353614AbiFNCN5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 22:13:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696093A5CF;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE0C3A5D0;
         Mon, 13 Jun 2022 19:08:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40A2FB816AF;
-        Tue, 14 Jun 2022 02:07:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3966C34114;
-        Tue, 14 Jun 2022 02:07:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95A47B816A3;
+        Tue, 14 Jun 2022 02:07:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59016C3411B;
+        Tue, 14 Jun 2022 02:07:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172447;
-        bh=Hk15Ko+XriFcMJvHOag9fZWU72/YW9YpHBaQUG75oCY=;
+        s=k20201202; t=1655172478;
+        bh=kY7M+cF6jVAw2h72tzuT6A72g36+rLAemXxLHPg6FwY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GUxJDTlJ+bIl0L5wiEaYLoIQwLxF5r+90uKv5OMTeW5h3qyoWY0cAeipBXfGzFTIM
-         rwsxSt365v2PIqEZhHy/oJhxaVPVzvGM03LiJ/BcnYj1HqdToFCPH0sh+i2IG72V4Z
-         R3lsnJH6hXmZvnmdeNmGs/9rgZ7URQIOY93PmC8MX3+1CgeyZxeAVjyp7cCr9WOYGG
-         WADalKnMesTwlzeMHE0GaDkpr8H7yP7BiN2Dt0zlZfxrRF2HO0nzSQEaSEkupJ+aPi
-         sgoESGYnLUkAouRjgz9VHj0v9TKIcKAppau+HjvLU26PWHFFMQMeeE4hi2ZOoZCXB3
-         +Al1GMyNI15lQ==
+        b=LbS5UaAmLsFFoqGh+7QkEJryYR2HCPjtROQy5JMdr6kW2TmiYzqNmWfi+UpfqmwBE
+         r6s1TnL4xx235J7mU+k4xoGvh/ogEyUhm7kobTGBZkvgVeGACikmZOn5IT+x5rqMwI
+         g8SYD613qsDUJVbN3KSxCPL9OhtfAZ5Ua/JAp6NmZbFn7ZzlzqdEprvGFJT1Qv1iZZ
+         kEeI6DI1b3y+5aGR1cmeF8fbk79p7xjfkbVaR5TXQ8KKt2VI7pQ31lfI7p9cOcj4XE
+         83itq+2pvuBcx0f0TvZH2bGEkxZkGfcaWV6TP8FX0CT1pJNDa+cZZYkSTbH+wAnk5c
+         nhcYElJLSHYEA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
-        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 11/41] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
-Date:   Mon, 13 Jun 2022 22:06:36 -0400
-Message-Id: <20220614020707.1099487-11-sashal@kernel.org>
+Cc:     Wang Yufen <wangyufen@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 30/41] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
+Date:   Mon, 13 Jun 2022 22:06:55 -0400
+Message-Id: <20220614020707.1099487-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
 References: <20220614020707.1099487-1-sashal@kernel.org>
@@ -54,39 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
+[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
 
-A couple of the SX volume controls specify 0x84 as the lowest volume
-value, however the correct value from the datasheet is 0x44. The
-datasheet don't include spaces in the value it displays as binary so
-this was almost certainly just a typo reading 1000100.
+When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
+overflow. To fix, we can follow what udpv6 does and subtract the
+transhdrlen from the max.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l56.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/l2tp/l2tp_ip6.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
-index 3cf8a0b4478c..b39c25409c23 100644
---- a/sound/soc/codecs/cs42l56.c
-+++ b/sound/soc/codecs/cs42l56.c
-@@ -391,9 +391,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
- 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 96f975777438..d54dbd01d86f 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -502,14 +502,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	struct ipcm6_cookie ipc6;
+ 	int addr_len = msg->msg_namelen;
+ 	int transhdrlen = 4; /* zero session-id */
+-	int ulen = len + transhdrlen;
++	int ulen;
+ 	int err;
  
- 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
--			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
- 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
--			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
+ 	/* Rough check on arithmetic overflow,
+ 	 * better check is made in ip6_append_data().
+ 	 */
+-	if (len > INT_MAX)
++	if (len > INT_MAX - transhdrlen)
+ 		return -EMSGSIZE;
++	ulen = len + transhdrlen;
  
- 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
- 			0, 0x00, 1, tone_tlv),
+ 	/* Mirror BSD error message compatibility */
+ 	if (msg->msg_flags & MSG_OOB)
 -- 
 2.35.1
 
