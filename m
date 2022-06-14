@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B8DCCA47A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67AAFCCA480
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:45:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357660AbiFNSnz (ORCPT
+        id S1357327AbiFNSoM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
+        Tue, 14 Jun 2022 14:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357284AbiFNSm7 (ORCPT
+        with ESMTP id S1357377AbiFNSnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:42:59 -0400
+        Tue, 14 Jun 2022 14:43:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064DD4BB86;
-        Tue, 14 Jun 2022 11:42:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5228165A3;
+        Tue, 14 Jun 2022 11:42:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8EC8FB81AF7;
-        Tue, 14 Jun 2022 18:42:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE5C4C3411B;
-        Tue, 14 Jun 2022 18:42:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A478B81AF7;
+        Tue, 14 Jun 2022 18:42:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A3BCC3411B;
+        Tue, 14 Jun 2022 18:42:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232128;
-        bh=A7/0sohCu0X08Zhzq0tXG6PcuGS3Dfs/yF2CI1GMr9g=;
+        s=korg; t=1655232141;
+        bh=+pBeG0oWEapqd+o1XaPebuRO0PDY+Ny/HZmT5bieLXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YbQK/4cEJVn3wNnjpla3iqv3ZbUi/7+tCDaXFHcN2mD/9NLYC1kMD49RNJvRZ6Fl6
-         xNeW6EEEyVYSwG+rNegDw0iQr9i7jAUAFmaCpVOk6kUD4Zp81ak35ylGVnuohx3zf/
-         ugWNPg2KGKgeeDPs4hxbL8D+1L9f6rvEso2RPuK0=
+        b=V9ZqrLxfRABZK4xaMJOHJ6uHZr5hxO7/gbBBdhUzfqTVUWIVQBbSkxKF0+dgCNx0s
+         E0Y6YcnErivEKomoH+mmpBGfeU/XpktGJzodcGfzBGrB4eTdz8y/bQ0GIEXwMFVJkP
+         RhQxT9XbyYp336zeMAuL8WqDxPJdDforyyx2tp4g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 4.14 03/20] x86/cpu: Add Jasper Lake to Intel family
-Date:   Tue, 14 Jun 2022 20:39:54 +0200
-Message-Id: <20220614183724.158324074@linuxfoundation.org>
+Subject: [PATCH 4.14 08/20] x86/cpu: Add Lakefield, Alder Lake and Rocket Lake models to the to Intel CPU family
+Date:   Tue, 14 Jun 2022 20:39:59 +0200
+Message-Id: <20220614183725.322245196@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220614183723.328825625@linuxfoundation.org>
 References: <20220614183723.328825625@linuxfoundation.org>
@@ -52,32 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Rui <rui.zhang@intel.com>
+From: Tony Luck <tony.luck@intel.com>
 
-commit b2d32af0bff402b4c1fce28311759dd1f6af058a upstream.
+commit e00b62f0b06d0ae2b844049f216807617aff0cdb upstream.
 
-Japser Lake is an Atom family processor.
-It uses Tremont cores and is targeted at mobile platforms.
+Add three new Intel CPU models.
 
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Zhang Rui <rui.zhang@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/20200721043749.31567-1-tony.luck@intel.com
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/intel-family.h |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/include/asm/intel-family.h |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
 --- a/arch/x86/include/asm/intel-family.h
 +++ b/arch/x86/include/asm/intel-family.h
-@@ -71,6 +71,7 @@
+@@ -63,6 +63,13 @@
+ #define INTEL_FAM6_COMETLAKE		0xA5
+ #define INTEL_FAM6_COMETLAKE_L		0xA6
  
- #define INTEL_FAM6_ATOM_TREMONT_X	0x86 /* Jacobsville */
- #define INTEL_FAM6_ATOM_TREMONT		0x96 /* Elkhart Lake */
-+#define INTEL_FAM6_ATOM_TREMONT_L	0x9C /* Jasper Lake */
++#define INTEL_FAM6_ROCKETLAKE		0xA7
++
++/* Hybrid Core/Atom Processors */
++
++#define	INTEL_FAM6_LAKEFIELD		0x8A
++#define INTEL_FAM6_ALDERLAKE		0x97
++
+ /* "Small Core" Processors (Atom) */
  
- /* Xeon Phi */
- 
+ #define INTEL_FAM6_ATOM_BONNELL		0x1C /* Diamondville, Pineview */
 
 
