@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62759C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 816E2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353939AbiFNCVR (ORCPT
+        id S1353952AbiFNCVY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        Mon, 13 Jun 2022 22:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353088AbiFNCPT (ORCPT
+        with ESMTP id S1352691AbiFNCPR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:15:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F25D3CFDD;
-        Mon, 13 Jun 2022 19:09:15 -0700 (PDT)
+        Mon, 13 Jun 2022 22:15:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2873D1ED;
+        Mon, 13 Jun 2022 19:09:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4F8F60EFB;
-        Tue, 14 Jun 2022 02:09:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8CBBC36B00;
-        Tue, 14 Jun 2022 02:09:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40E32B80AC1;
+        Tue, 14 Jun 2022 02:08:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39223C3411B;
+        Tue, 14 Jun 2022 02:08:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172554;
-        bh=7aIlIuEB9N0k6qcme0FaDrGuBkhMzq5/RaPg8hs7DaI=;
+        s=k20201202; t=1655172538;
+        bh=u6BCNLTrsZoIKbQqERzMMZ5VeSUX1G5hq5Lifk5rhkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aeGwO9Q+4ic7FUEiKIbbJ08+2h/hvRYV1VTeDvZ5sFZDY+uD/kTgURerRUeIoZukH
-         8Ij3lwA/ELUxVQGzptxjiLT/p1PkMMlTH2FUaipRof5ayvzE6oNn1k9GRhSdhsGQJC
-         6Wtdz7Kyrg5U0UH/8Zj53vBMStcfCZyVnC7eGOv6CVcBXSpM/IE02zzNq1KfmBGb47
-         CtRTBf3dzi/SlhbCqRzWbbpyoeYOCEP2W+GEG81Xx4/2aG6/OZSNzkg7VFzlDSYwLz
-         lehTELm2dnH5jhpARP0hhHipkrVN1sMrGZ6kVeGhpJqn2oBqz8ZGWOIEQw84ZJEOas
-         pNVWngzH4u1YQ==
+        b=LCMrWfnTQdBjb4RkbJI8CkTLpnYXRgpEAenu1yLtSd5V55zhv9zkbRoOzsU8bB2lU
+         k35M1pGNXVHp1mp8g/yYtrsWuu3kyHEI926o5Ok1WbE42viyKcK5Lh1/sWw1tSXPI1
+         pBDC5vPXUvl278j7qz0s8Xc0e82dhzhEwYSVGcT01Jkc+vGNNqOxy/r36g+SDR6d1I
+         WDeZZGzHyZ67WOvoz5DTvtyrJvZrAdhaIyIZoPKem3ChPgCHAHRCS/uUo+xtIAuGic
+         VDgjU9AejGuWXxpH9yC/GAI+yMrpl5IAg8ZRv3bDsyy68pgVF7tKIQ2rOutZ1QB0Sv
+         whMIp9HR6MPCA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
-        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.4 07/23] ASoC: cs42l52: Correct TLV for Bypass Volume
-Date:   Mon, 13 Jun 2022 22:08:43 -0400
-Message-Id: <20220614020900.1100401-7-sashal@kernel.org>
+Cc:     Yupeng Li <liyupeng@zbhlos.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 28/29] MIPS: Loongson-3: fix compile mips cpu_hwmon as module build error.
+Date:   Mon, 13 Jun 2022 22:08:14 -0400
+Message-Id: <20220614020815.1099999-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020900.1100401-1-sashal@kernel.org>
-References: <20220614020900.1100401-1-sashal@kernel.org>
+In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
+References: <20220614020815.1099999-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,43 +55,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Yupeng Li <liyupeng@zbhlos.com>
 
-[ Upstream commit 91e90c712fade0b69cdff7cc6512f6099bd18ae5 ]
+[ Upstream commit 41e456400212803704e82691716e1d7b0865114a ]
 
-The Bypass Volume is accidentally using a -6dB minimum TLV rather than
-the correct -60dB minimum. Add a new TLV to correct this.
+  set cpu_hwmon as a module build with loongson_sysconf, loongson_chiptemp
+  undefined error,fix cpu_hwmon compile options to be bool.Some kernel
+  compilation error information is as follows:
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-5-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+  Checking missing-syscalls for N32
+  CALL    scripts/checksyscalls.sh
+  Checking missing-syscalls for O32
+  CALL    scripts/checksyscalls.sh
+  CALL    scripts/checksyscalls.sh
+  CHK     include/generated/compile.h
+  CC [M]  drivers/platform/mips/cpu_hwmon.o
+  Building modules, stage 2.
+  MODPOST 200 modules
+ERROR: "loongson_sysconf" [drivers/platform/mips/cpu_hwmon.ko] undefined!
+ERROR: "loongson_chiptemp" [drivers/platform/mips/cpu_hwmon.ko] undefined!
+make[1]: *** [scripts/Makefile.modpost:92：__modpost] 错误 1
+make: *** [Makefile:1261：modules] 错误 2
+
+Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Huacai Chen <chenhuacai@kernel.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l52.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/platform/mips/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
-index 0daa3b4c68ca..6c054b357205 100644
---- a/sound/soc/codecs/cs42l52.c
-+++ b/sound/soc/codecs/cs42l52.c
-@@ -137,6 +137,8 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
+diff --git a/drivers/platform/mips/Kconfig b/drivers/platform/mips/Kconfig
+index 8ac149173c64..495da331ca2d 100644
+--- a/drivers/platform/mips/Kconfig
++++ b/drivers/platform/mips/Kconfig
+@@ -17,7 +17,7 @@ menuconfig MIPS_PLATFORM_DEVICES
+ if MIPS_PLATFORM_DEVICES
  
- static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
- 
-+static DECLARE_TLV_DB_SCALE(pass_tlv, -6000, 50, 0);
-+
- static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
- 
- static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
-@@ -351,7 +353,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
- 			      CS42L52_SPKB_VOL, 0, 0x40, 0xC0, hl_tlv),
- 
- 	SOC_DOUBLE_R_SX_TLV("Bypass Volume", CS42L52_PASSTHRUA_VOL,
--			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pga_tlv),
-+			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pass_tlv),
- 
- 	SOC_DOUBLE("Bypass Mute", CS42L52_MISC_CTL, 4, 5, 1, 0),
- 
+ config CPU_HWMON
+-	tristate "Loongson-3 CPU HWMon Driver"
++	bool "Loongson-3 CPU HWMon Driver"
+ 	depends on MACH_LOONGSON64
+ 	select HWMON
+ 	default y
 -- 
 2.35.1
 
