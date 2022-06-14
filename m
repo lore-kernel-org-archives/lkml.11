@@ -2,297 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60DF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 03:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C75CDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 03:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345008AbiFNDsP (ORCPT
+        id S1348593AbiFNDvV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 23:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45316 "EHLO
+        Mon, 13 Jun 2022 23:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231129AbiFNDsL (ORCPT
+        with ESMTP id S231129AbiFNDvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 23:48:11 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E0F38DB4
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:48:10 -0700 (PDT)
+        Mon, 13 Jun 2022 23:51:16 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B9081BEB3
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:51:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655178490; x=1686714490;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Z+homL9TlDoNnTKO1TKyZ126CI6TtWdfO0J6BkijQUY=;
-  b=WNGU1wNabOMIrS2pa5Hhu9eGuwgwz5avN8/kRwhcA8GqxPhUbFAmV1sn
-   iqdSRtDoJ7jsgBkpKakcEM7oyAUXJt2KEsK6ABNbn6txyOLVbQ1vD9JUh
-   651EVbNizPC4LADGVhR0pi5lDEni/JlHD7lb99/5fnO4Ki6ZdnQbW5DfW
-   iYbskuPs6qNiXF9EW+L2E4g7iA0+cEfHQqCSmbPV0HnHETKa//+lUcShL
-   4EIkWdwwWGebOeJHWPQFVDU1xBr+vg299UEuc6aEOpvYOga9ooe2hywOQ
-   3RKRilD5E4lC7qtdxVy/IhIYjxW31eUZZWgGgy/4doMXNncamPW9CLDgK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="261528273"
+  t=1655178675; x=1686714675;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=kEg7uOhfXo9ddWlHnx0SZS9c0JPMDXJoPAXbcxDBfT4=;
+  b=iOMdbSpiPMMh9wl5vluHHSmiDS7kvwHjxFka5R3VyINO9lFkGp5NPRG7
+   cb1YxKntpBYrVRm/QM4eXjK5ZXV2hCMwLGZwk6otoHSuzxb7n6YYwczKe
+   qi2a/9dTZ5KTLHQsW/MYJ8XfljHC5ruGCTYQufmd/oCQuVZqllkjZR/jD
+   fqjxAnPdMLLqTPPu3vRhqTRDqOzMCapZBD9tLbVtIq0KRlE/9OuMS3HTi
+   O5Jt75xc2n8vq+SdJXUEpcK7sogYRxxnZAtjPV+6Wc3VES7FnlwfX66e1
+   cZgr3nU1jq+yTnWTjsZj37Jx19czh0SHORzt18mp6Acn9ohY1N04KHxsh
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258323556"
 X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="261528273"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 20:48:10 -0700
+   d="scan'208";a="258323556"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 20:51:14 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="830154109"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga006.fm.intel.com with ESMTP; 13 Jun 2022 20:48:07 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] iommu/vt-d: Add set_dev_pasid callbacks for default domain
-Date:   Tue, 14 Jun 2022 11:44:11 +0800
-Message-Id: <20220614034411.1634238-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+   d="scan'208";a="558137413"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 13 Jun 2022 20:51:13 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o0xaC-000LRr-BF;
+        Tue, 14 Jun 2022 03:51:12 +0000
+Date:   Tue, 14 Jun 2022 11:50:33 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Nicholas Piggin <npiggin@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        =?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>,
+        Alexey Kardashevskiy <aik@ozlabs.ru>
+Subject: arch/powerpc/kvm/book3s_xive.c:151:41: sparse: sparse: incorrect
+ type in assignment (different base types)
+Message-ID: <202206141155.emjWGbvB-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This allows the upper layers to set a domain to a PASID of a device
-if the PASID feature is supported by the IOMMU hardware. The typical
-use cases are, for example, kernel DMA with PASID and hardware
-assisted mediated device drivers.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
+commit: 023c3c96ca4d196c09d554d5a98900406e4d7ecb KVM: PPC: Book3S HV P9: implement kvmppc_xive_pull_vcpu in C
+date:   1 year ago
+config: powerpc64-randconfig-s032-20220613 (https://download.01.org/0day-ci/archive/20220614/202206141155.emjWGbvB-lkp@intel.com/config)
+compiler: powerpc64le-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-30-g92122700-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=023c3c96ca4d196c09d554d5a98900406e4d7ecb
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 023c3c96ca4d196c09d554d5a98900406e4d7ecb
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/kvm/ arch/powerpc/platforms/powernv/ kernel/sched/
 
-The attaching device and pasid information is tracked in a per-domain
-list and is used for IOTLB and devTLB invalidation.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.h |   8 +++
- drivers/iommu/intel/iommu.c | 118 +++++++++++++++++++++++++++++++++++-
- 2 files changed, 124 insertions(+), 2 deletions(-)
 
----
-Note: This is a follow-up of this patch:
-https://lore.kernel.org/linux-iommu/20220607014942.3954894-4-baolu.lu@linux.intel.com/
-which, removed the SVM_FLAG_SUPERVISOR_MODE support from the IOMMU SVA
-interface and recommended the device driver to handle kernel DMA with
-PASID through the kernel DMA APIs. It is nothing new anyway. It's
-a simplified version of the previous callbacks which have existed in
-the tree for more than one year. Those callbacks have been removed by
-commit 241469685d8d ("iommu/vt-d: Remove aux-domain related callbacks")
-in order for the new iommufd framework.
+sparse warnings: (new ones prefixed by >>)
+   arch/powerpc/kvm/book3s_xive.c: note: in included file:
+   arch/powerpc/kvm/book3s_xive_template.c:26:15: sparse: sparse: cast to restricted __be16
+   arch/powerpc/kvm/book3s_xive_template.c:339:39: sparse: sparse: incorrect type in initializer (different base types) @@     expected restricted __be64 [usertype] qw1 @@     got unsigned long @@
+   arch/powerpc/kvm/book3s_xive_template.c:339:39: sparse:     expected restricted __be64 [usertype] qw1
+   arch/powerpc/kvm/book3s_xive_template.c:339:39: sparse:     got unsigned long
+   arch/powerpc/kvm/book3s_xive.c:79:49: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned long v @@     got restricted __be64 [usertype] w01 @@
+   arch/powerpc/kvm/book3s_xive.c:79:49: sparse:     expected unsigned long v
+   arch/powerpc/kvm/book3s_xive.c:79:49: sparse:     got restricted __be64 [usertype] w01
+   arch/powerpc/kvm/book3s_xive.c:80:32: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int v @@     got restricted __be32 [usertype] xive_cam_word @@
+   arch/powerpc/kvm/book3s_xive.c:80:32: sparse:     expected unsigned int v
+   arch/powerpc/kvm/book3s_xive.c:80:32: sparse:     got restricted __be32 [usertype] xive_cam_word
+>> arch/powerpc/kvm/book3s_xive.c:151:41: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __be64 [usertype] w01 @@     got unsigned long @@
+   arch/powerpc/kvm/book3s_xive.c:151:41: sparse:     expected restricted __be64 [usertype] w01
+   arch/powerpc/kvm/book3s_xive.c:151:41: sparse:     got unsigned long
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 2dd4c5193cc1..a703e0768f47 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -541,6 +541,7 @@ struct dmar_domain {
- 
- 	spinlock_t lock;		/* Protect device tracking lists */
- 	struct list_head devices;	/* all devices' list */
-+	struct list_head subdevices;	/* all subdevices' list */
- 
- 	struct dma_pte	*pgd;		/* virtual address */
- 	int		gaw;		/* max guest address width */
-@@ -626,6 +627,13 @@ struct device_domain_info {
- 	struct pasid_table *pasid_table; /* pasid table */
- };
- 
-+/* PCI domain-subdevice relationship */
-+struct subdev_domain_info {
-+	struct list_head link_domain;	/* link to domain siblings */
-+	struct device *dev;		/* physical device derived from */
-+	ioasid_t pasid;			/* PASID on physical device */
-+};
-+
- static inline void __iommu_flush_cache(
- 	struct intel_iommu *iommu, void *addr, int size)
- {
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index aeeb1185d397..6eced9e87cda 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1393,6 +1393,7 @@ iommu_support_dev_iotlb(struct dmar_domain *domain, struct intel_iommu *iommu,
- 
- static void domain_update_iotlb(struct dmar_domain *domain)
- {
-+	struct subdev_domain_info *sinfo;
- 	struct device_domain_info *info;
- 	bool has_iotlb_device = false;
- 
-@@ -1403,6 +1404,14 @@ static void domain_update_iotlb(struct dmar_domain *domain)
- 			break;
- 		}
- 	}
-+
-+	list_for_each_entry(sinfo, &domain->subdevices, link_domain) {
-+		info = dev_iommu_priv_get(sinfo->dev);
-+		if (info->ats_enabled) {
-+			has_iotlb_device = true;
-+			break;
-+		}
-+	}
- 	domain->has_iotlb_device = has_iotlb_device;
- 	spin_unlock(&domain->lock);
- }
-@@ -1495,6 +1504,7 @@ static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
- static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 				  u64 addr, unsigned mask)
- {
-+	struct subdev_domain_info *sinfo;
- 	struct device_domain_info *info;
- 
- 	if (!domain->has_iotlb_device)
-@@ -1503,6 +1513,35 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 	spin_lock(&domain->lock);
- 	list_for_each_entry(info, &domain->devices, link)
- 		__iommu_flush_dev_iotlb(info, addr, mask);
-+
-+	list_for_each_entry(sinfo, &domain->subdevices, link_domain) {
-+		info = dev_iommu_priv_get(sinfo->dev);
-+		qi_flush_dev_iotlb_pasid(info->iommu,
-+					 PCI_DEVID(info->bus, info->devfn),
-+					 info->pfsid, sinfo->pasid,
-+					 info->ats_qdep, addr,
-+					 mask);
-+	}
-+	spin_unlock(&domain->lock);
-+}
-+
-+/*
-+ * The VT-d spec requires to use PASID-based-IOTLB Invalidation to invalidate
-+ * IOTLB and the paging-structure-caches for a first-level page table.
-+ */
-+static void domain_flush_pasid_iotlb(struct intel_iommu *iommu,
-+				     struct dmar_domain *domain, u64 addr,
-+				     unsigned long npages, bool ih)
-+{
-+	u16 did = domain->iommu_did[iommu->seq_id];
-+	struct subdev_domain_info *sinfo;
-+
-+	spin_lock(&domain->lock);
-+	list_for_each_entry(sinfo, &domain->subdevices, link_domain)
-+		qi_flush_piotlb(iommu, did, sinfo->pasid, addr, npages, ih);
-+
-+	if (!list_empty(&domain->devices))
-+		qi_flush_piotlb(iommu, did, PASID_RID2PASID, addr, npages, ih);
- 	spin_unlock(&domain->lock);
- }
- 
-@@ -1522,7 +1561,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 		ih = 1 << 6;
- 
- 	if (domain_use_first_level(domain)) {
--		qi_flush_piotlb(iommu, did, PASID_RID2PASID, addr, pages, ih);
-+		domain_flush_pasid_iotlb(iommu, domain, addr, pages, ih);
- 	} else {
- 		unsigned long bitmask = aligned_pages - 1;
- 
-@@ -1591,7 +1630,7 @@ static void intel_flush_iotlb_all(struct iommu_domain *domain)
- 		u16 did = dmar_domain->iommu_did[iommu->seq_id];
- 
- 		if (domain_use_first_level(dmar_domain))
--			qi_flush_piotlb(iommu, did, PASID_RID2PASID, 0, -1, 0);
-+			domain_flush_pasid_iotlb(iommu, dmar_domain, 0, -1, 0);
- 		else
- 			iommu->flush.flush_iotlb(iommu, did, 0, 0,
- 						 DMA_TLB_DSI_FLUSH);
-@@ -1763,6 +1802,7 @@ static struct dmar_domain *alloc_domain(unsigned int type)
- 		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
- 	domain->has_iotlb_device = false;
- 	INIT_LIST_HEAD(&domain->devices);
-+	INIT_LIST_HEAD(&domain->subdevices);
- 	spin_lock_init(&domain->lock);
- 
- 	return domain;
-@@ -4789,6 +4829,78 @@ static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
- 	}
- }
- 
-+static int intel_iommu_attach_device_pasid(struct iommu_domain *domain,
-+					   struct device *dev, ioasid_t pasid)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct intel_iommu *iommu = info->iommu;
-+	struct subdev_domain_info *sinfo;
-+	int ret;
-+
-+	if (!pasid_supported(iommu))
-+		return -ENODEV;
-+
-+	ret = prepare_domain_attach_device(domain, dev);
-+	if (ret)
-+		return ret;
-+
-+	sinfo = kzalloc(sizeof(*sinfo), GFP_KERNEL);
-+	if (!sinfo)
-+		return -ENOMEM;
-+
-+	ret = domain_attach_iommu(dmar_domain, iommu);
-+	if (ret)
-+		goto out_free_sinfo;
-+
-+	if (domain_use_first_level(dmar_domain))
-+		ret = domain_setup_first_level(iommu, dmar_domain, dev, pasid);
-+	else
-+		ret = intel_pasid_setup_second_level(iommu,
-+						     dmar_domain, dev, pasid);
-+	if (ret)
-+		goto out_detach_iommu;
-+
-+	sinfo->dev = dev;
-+	sinfo->pasid = pasid;
-+	spin_lock(&dmar_domain->lock);
-+	list_add(&sinfo->link_domain, &dmar_domain->subdevices);
-+	spin_unlock(&dmar_domain->lock);
-+
-+	return 0;
-+out_detach_iommu:
-+	domain_detach_iommu(dmar_domain, iommu);
-+out_free_sinfo:
-+	kfree(sinfo);
-+	return ret;
-+}
-+
-+static void intel_iommu_detach_device_pasid(struct iommu_domain *domain,
-+					    struct device *dev, ioasid_t pasid)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct subdev_domain_info *i, *n, *sinfo = NULL;
-+	struct intel_iommu *iommu = info->iommu;
-+
-+	spin_lock(&dmar_domain->lock);
-+	list_for_each_entry_safe(i, n, &dmar_domain->subdevices, link_domain) {
-+		if (i->dev == dev && i->pasid == pasid) {
-+			list_del(&i->link_domain);
-+			sinfo = i;
-+			break;
-+		}
-+	}
-+	spin_unlock(&dmar_domain->lock);
-+
-+	if (WARN_ON(!sinfo))
-+		return;
-+
-+	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-+	domain_detach_iommu(dmar_domain, iommu);
-+	kfree(sinfo);
-+}
-+
- const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-@@ -4809,6 +4921,8 @@ const struct iommu_ops intel_iommu_ops = {
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev		= intel_iommu_attach_device,
- 		.detach_dev		= intel_iommu_detach_device,
-+		.set_dev_pasid		= intel_iommu_attach_device_pasid,
-+		.block_dev_pasid	= intel_iommu_detach_device_pasid,
- 		.map_pages		= intel_iommu_map_pages,
- 		.unmap_pages		= intel_iommu_unmap_pages,
- 		.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
+vim +151 arch/powerpc/kvm/book3s_xive.c
+
+   129	
+   130	/*
+   131	 * Pull a vcpu's context from the XIVE on guest exit.
+   132	 * This assumes we are in virtual mode (MMU on)
+   133	 */
+   134	void kvmppc_xive_pull_vcpu(struct kvm_vcpu *vcpu)
+   135	{
+   136		void __iomem *tima = local_paca->kvm_hstate.xive_tima_virt;
+   137	
+   138		if (!vcpu->arch.xive_pushed)
+   139			return;
+   140	
+   141		/*
+   142		 * Should not have been pushed if there is no tima
+   143		 */
+   144		if (WARN_ON(!tima))
+   145			return;
+   146	
+   147		eieio();
+   148		/* First load to pull the context, we ignore the value */
+   149		__raw_readl(tima + TM_SPC_PULL_OS_CTX);
+   150		/* Second load to recover the context state (Words 0 and 1) */
+ > 151		vcpu->arch.xive_saved_state.w01 = __raw_readq(tima + TM_QW1_OS);
+   152	
+   153		/* Fixup some of the state for the next load */
+   154		vcpu->arch.xive_saved_state.lsmfb = 0;
+   155		vcpu->arch.xive_saved_state.ack = 0xff;
+   156		vcpu->arch.xive_pushed = 0;
+   157		eieio();
+   158	}
+   159	EXPORT_SYMBOL_GPL(kvmppc_xive_pull_vcpu);
+   160	
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
