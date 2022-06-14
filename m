@@ -2,93 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB33C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05DF3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349139AbiFNBuO (ORCPT
+        id S1349306AbiFNBuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 21:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58132 "EHLO
+        Mon, 13 Jun 2022 21:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236353AbiFNBuK (ORCPT
+        with ESMTP id S1348863AbiFNBuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 21:50:10 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B4F2C10A;
-        Mon, 13 Jun 2022 18:50:06 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id 25so9549814edw.8;
-        Mon, 13 Jun 2022 18:50:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GC4cC6xqLpNjJcTRVc9cbkZ2veanyHZIOpz/10KHRlE=;
-        b=SylH0oLhpiSNSMQ24eXb2MxaYkBgTx3hdy3OloWuxF7tYYVBMSbP5jX6Ug6AFkCwkH
-         TCJYe5Cj8MOkhwk7mQCXwMK+/57yzF6puQAJGzz1VaEn7JAZrtThZJ9Fa93puXpEmugT
-         OEHbE1yvtIgLWKc1yeI+7T3TbRxRWpY6BCKGFbSeYHyd5qcIiPGsVR+oCUpRb9HfWCzl
-         PpIGBpmjN6epxVKue9GJzjze86HTIAbW1iRJqA7tWN/874C56e4Lac80MEURqohZoo31
-         tHCgmuRDQ1XRNOUu5wmACYTWUqjSOn5o9XsJHM4dPJ+wOkwydFJjSWdYeJ97QSUHQbZX
-         Kmuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GC4cC6xqLpNjJcTRVc9cbkZ2veanyHZIOpz/10KHRlE=;
-        b=ICxccc9LRdcN2HRhv3473dvxtyXU1UIxMU4iXMPAtL+GDrM0cG42wTnXDR3TPjBoUL
-         actjHGJP7Fw7Pnvs5ewF/jWjc5X9T3MshAtN55Ql+yHK4sMWmyYJ1MPLjPJr213CTQbM
-         DCKNK+WYOyJnS3iLrOc97zYnVTzDHQGyJKLasXAev9gZwgJjNP5awT6Ck3BjCwxsvFBK
-         Xeg/fl6cUHHLnBx8ZKAflfBHwG0q/zStpzVL5UAMlWsZ75ivMW6ouQLp+fuh8Rv/DpAP
-         pA6/34CjAJ6N8guhmwzWk/HEZLRVLWnhG5xdkCCf0bTp0OY3js+IseS3yjcQy2UvZHzS
-         rPqg==
-X-Gm-Message-State: AJIora8VEngQ3nbVui6+5sBMbetuoevd5UATSiW9acw8ywYWYnE5u/Su
-        QhkRj8Bs/TvawWYOUoo7Z1uBaSWKM7+Six92CpQ=
-X-Google-Smtp-Source: ABdhPJwnROWsbMWlDeqxyGahZkqEhUbMS48bk+kBqxa4mCeEmj/YxhYUX7snuSgtPgK3zSD2HRg/Po/pa2lotiC/bIY=
-X-Received: by 2002:a05:6402:3681:b0:433:2b63:4866 with SMTP id
- ej1-20020a056402368100b004332b634866mr3065276edb.295.1655171405197; Mon, 13
- Jun 2022 18:50:05 -0700 (PDT)
+        Mon, 13 Jun 2022 21:50:11 -0400
+Received: from progateway7-pub.mail.pro1.eigbox.com (gproxy5-pub.mail.unifiedlayer.com [67.222.38.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37E952C108
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 18:50:10 -0700 (PDT)
+Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
+        by progateway7.mail.pro1.eigbox.com (Postfix) with ESMTP id 8E984100477EB
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:50:09 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id 0vh3oOO85xkuL0vh3o5VvJ; Tue, 14 Jun 2022 01:50:09 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=VbMygHl9 c=1 sm=1 tr=0 ts=62a7e951
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=JPEYwPQDsx4A:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=5BRukEbQ8xg4XJ8KHauk5/+dOJt+TgqUqYd4csDf69Y=; b=BWd+/ILS3vVlnJyAAMph2gICXJ
+        LVdntYLSlwVJmUOu2x/I3vnaDteVzhRBjFv1va5wqDNgtsMqWp6po5SHtJEM1BgSXSiWdFI8kwcjg
+        qriceXiFX6c8R3KRlWxqGdJgg/Jhwzb6Jy03JvaidRVhpV+6riuyACaKXlKmZwy+vaqwXgF5th/z4
+        1CNJbUg4Ju/zgMxWbou+Kf+1rz9CQFVL4ATmCqytc4MC+a4snHSbx7zqYv6wxd6Als4tGReXC0h54
+        jeoT6+QYtlHAMM96U02NHIUzPwTwhWmtpLAWWOdkuxNqxn6q9Mw53xKdv/FTevmprlbScQ7ob1CEk
+        tJUKwsjQ==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:44086 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1o0vh1-001t1k-QL;
+        Mon, 13 Jun 2022 19:50:07 -0600
+Subject: Re: [PATCH 5.18 000/343] 5.18.4-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220613181233.078148768@linuxfoundation.org>
+In-Reply-To: <20220613181233.078148768@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <1a41dbcf-1fd8-c478-ce4b-6c956931eeaa@w6rz.net>
+Date:   Mon, 13 Jun 2022 18:50:05 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220613071243.12961-1-dzm91@hust.edu.cn> <Yqbu8TwmaXdBiIBs@debian.me>
- <alpine.DEB.2.22.394.2206131212160.2812@hadrien>
-In-Reply-To: <alpine.DEB.2.22.394.2206131212160.2812@hadrien>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Tue, 14 Jun 2022 09:49:30 +0800
-Message-ID: <CAD-N9QUOk938-+1CtGfWNKUvWowknKScLuFXXkFAv59M=-F84g@mail.gmail.com>
-Subject: Re: [PATCH] dev-tools: fix one invalid url
-To:     Julia Lawall <julia.lawall@inria.fr>
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Jonathan Corbet <corbet@lwn.net>, cocci@inria.fr,
-        linux-doc@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1o0vh1-001t1k-QL
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:44086
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 6:12 PM Julia Lawall <julia.lawall@inria.fr> wrote:
+On 6/13/22 11:18 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.4 release.
+> There are 343 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
+> Responses should be made by Wed, 15 Jun 2022 18:11:39 +0000.
+> Anything received after that time might be too late.
 >
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.4-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
 >
-> On Mon, 13 Jun 2022, Bagas Sanjaya wrote:
+> thanks,
 >
-> > On Mon, Jun 13, 2022 at 03:12:42PM +0800, Dongliang Mu wrote:
-> > > From: Dongliang Mu <mudongliangabcd@gmail.com>
-> > >
-> > > Fix the invalid url about Semantic Patch Language
-> > >
-> >
-> > I think what this patch doing is to point SPL reference URL from old
-> > Coccinelle documentation (doc root) to actual SPL doc entry on new
-> > Coccinelle page, right? If so, "fix invalid URL" may not be right patch
-> > description and title.
->
-> Agreed, thanks for the suggestion.
+> greg k-h
 
-Okay. Let's modify the title to "modify SPL reference URL to actual
-SPL doc entry".
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-BTW, I modify this URL because the previous URL cannot be accessed.
+Tested-by: Ron Economos <re@w6rz.net>
 
->
-> julia
