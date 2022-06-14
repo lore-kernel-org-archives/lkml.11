@@ -2,97 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FF1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82443CCA47D
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352647AbiFNCQp (ORCPT
+        id S1353046AbiFNCQw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57148 "EHLO
+        Mon, 13 Jun 2022 22:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353687AbiFNCOA (ORCPT
+        with ESMTP id S1353729AbiFNCOD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:00 -0400
-Received: from challenge-bot.com (challenge-bot.com [IPv6:2602:fffa:fff:108a:0:16:3e15:92b8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E533A70A
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:08:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=challenge-bot.com; s=20180430; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=lrL/+oGY+uk9L4jKJpNu2GWREzFwvgfDUFYM4/JAZPE=; b=Sfz7aF+5rivC9q4x6TicBF6p+p
-        mJZnXG3zbLCFd+eoChYJSmaiBQYtA270Wv+UYOs/o7IQGUS9WRbfT9L/ZvffdA1pC9oPHvV2FD5me
-        jwgkmRgnIEWEIds3WbClH7+Au9YX7+96KhtSlmTEcKfu55yY2ENisaotpbhkAOLRvXnQ=;
-Received: from ozzloy by challenge-bot.com with local (Exim 4.92)
-        (envelope-from <ozzloy@challenge-bot.com>)
-        id 1o0vyD-000895-PL; Mon, 13 Jun 2022 19:07:53 -0700
-From:   daniel watson <ozzloy@challenge-bot.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     Daniel Watson <ozzloy@challenge-bot.com>
-Subject: [PATCH 3/4] staging: r8188eu: remove leading '_' on _rtw_IOL_append_WD_cmd
-Date:   Mon, 13 Jun 2022 19:07:32 -0700
-Message-Id: <5eded481b16599ccca5546d776932f75e39db702.1655171591.git.ozzloy@challenge-bot.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1655171591.git.ozzloy@challenge-bot.com>
-References: <cover.1655171591.git.ozzloy@challenge-bot.com>
+        Mon, 13 Jun 2022 22:14:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2343A714;
+        Mon, 13 Jun 2022 19:08:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52190B8169D;
+        Tue, 14 Jun 2022 02:08:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC633C34114;
+        Tue, 14 Jun 2022 02:07:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655172480;
+        bh=3ezzvPXMDNRdnzwVLzGOsLWQEZThp+ItuFIoYPPRs0Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=a4EqCrq11L82aSycyypA3lkGLq9DhDgoimRZNO48rSUsQwvKCdDxCaATENYQfzgKg
+         ktvDSaLKxMka9mSH5iKKRud02MtDjanFcmtYRp+ufuuRQjk2POYXo5gz6sTZuZfP92
+         +ISEy64qNzVo0l2dpFtKigUDHT+URcRv/VnZSMLANuHG0gVA+dBuDhb1KOX/P5Kqun
+         Layp1sbfmYR16XF4zYsKtOKvqdmcxJ4uqKdY6ha6bvVvDfe2C+8KwBVK3g77B2AwMB
+         1zGV9PKgbNOI2ggOurjk1Tpffd6cCPbLvCRVZMkzwvdMUXbdRZuWRaHFb/H2RtAPjx
+         XZk+DHJUH8vyA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Chen Lin <chen45464546@163.com>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, nbd@openwrt.org,
+        blogic@openwrt.org, matthias.bgg@gmail.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 31/41] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
+Date:   Mon, 13 Jun 2022 22:06:56 -0400
+Message-Id: <20220614020707.1099487-31-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
+References: <20220614020707.1099487-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Watson <ozzloy@challenge-bot.com>
+From: Chen Lin <chen45464546@163.com>
 
-name the function rtw_IOL_append_WD_cmd and call it directly,
-instead of using wrapper macro
+[ Upstream commit 2f2c0d2919a14002760f89f4e02960c735a316d2 ]
 
-delete wrapper macro, which is not needed
+When rx_flag == MTK_RX_FLAGS_HWLRO,
+rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
+netdev_alloc_frag is for alloction of page fragment only.
+Reference to other drivers and Documentation/vm/page_frags.rst
 
-NOTE: code compiles, not tested on hardware
+Branch to use __get_free_pages when ring->frag_size > PAGE_SIZE.
 
-Signed-off-by: Daniel Watson <ozzloy@challenge-bot.com>
+Signed-off-by: Chen Lin <chen45464546@163.com>
+Link: https://lore.kernel.org/r/1654692413-2598-1-git-send-email-chen45464546@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/r8188eu/core/rtw_iol.c    | 2 +-
- drivers/staging/r8188eu/include/rtw_iol.h | 6 ++----
- 2 files changed, 3 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_iol.c b/drivers/staging/r8188eu/core/rtw_iol.c
-index 7292bab126074..b7ee3833c908c 100644
---- a/drivers/staging/r8188eu/core/rtw_iol.c
-+++ b/drivers/staging/r8188eu/core/rtw_iol.c
-@@ -95,7 +95,7 @@ int rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr, u16 value, u1
- 	return rtw_IOL_append_cmds(xmit_frame, (u8 *)&cmd, cmd.length);
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index ee1fd472e925..97cc91f302b0 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -820,6 +820,17 @@ static inline bool mtk_rx_get_desc(struct mtk_rx_dma *rxd,
+ 	return true;
  }
  
--int _rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr, u32 value, u32 mask)
-+int rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr, u32 value, u32 mask)
++static void *mtk_max_lro_buf_alloc(gfp_t gfp_mask)
++{
++	unsigned int size = mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH);
++	unsigned long data;
++
++	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
++				get_order(size));
++
++	return (void *)data;
++}
++
+ /* the qdma core needs scratch memory to be setup */
+ static int mtk_init_fq_dma(struct mtk_eth *eth)
  {
- 	struct ioreg_cfg cmd = {8, IOREG_CMD_WD_REG, 0x0, 0x0, 0x0};
+@@ -1311,7 +1322,10 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+ 			goto release_desc;
  
-diff --git a/drivers/staging/r8188eu/include/rtw_iol.h b/drivers/staging/r8188eu/include/rtw_iol.h
-index c99d7d5151099..9ad467759ef1c 100644
---- a/drivers/staging/r8188eu/include/rtw_iol.h
-+++ b/drivers/staging/r8188eu/include/rtw_iol.h
-@@ -45,12 +45,10 @@ int rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr,
- 			  u8 value, u8 mask);
- int rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr,
- 			  u16 value, u16 mask);
--int _rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr,
--			   u32 value, u32 mask);
-+int rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr,
-+			  u32 value, u32 mask);
- int _rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path,
- 			    u16 addr, u32 value, u32 mask);
--#define rtw_IOL_append_WD_cmd(xmit_frame, addr, value, mask)		\
--	_rtw_IOL_append_WD_cmd((xmit_frame), (addr), (value), (mask))
- #define rtw_IOL_append_WRF_cmd(xmit_frame, rf_path, addr, value, mask)	\
- 	_rtw_IOL_append_WRF_cmd((xmit_frame),(rf_path), (addr), (value), (mask))
+ 		/* alloc new buffer */
+-		new_data = napi_alloc_frag(ring->frag_size);
++		if (ring->frag_size <= PAGE_SIZE)
++			new_data = napi_alloc_frag(ring->frag_size);
++		else
++			new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
+ 		if (unlikely(!new_data)) {
+ 			netdev->stats.rx_dropped++;
+ 			goto release_desc;
+@@ -1725,7 +1739,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
+ 		return -ENOMEM;
  
+ 	for (i = 0; i < rx_dma_size; i++) {
+-		ring->data[i] = netdev_alloc_frag(ring->frag_size);
++		if (ring->frag_size <= PAGE_SIZE)
++			ring->data[i] = netdev_alloc_frag(ring->frag_size);
++		else
++			ring->data[i] = mtk_max_lro_buf_alloc(GFP_KERNEL);
+ 		if (!ring->data[i])
+ 			return -ENOMEM;
+ 	}
 -- 
-2.34.1
+2.35.1
 
