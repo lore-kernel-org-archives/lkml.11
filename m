@@ -2,94 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 06:13:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64FE8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 06:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347765AbiFNGNR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 02:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46632 "EHLO
+        id S238641AbiFNGPo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 02:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238738AbiFNGNO (ORCPT
+        with ESMTP id S229937AbiFNGPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 02:13:14 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2E736E20
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 23:13:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655187192; x=1686723192;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=IZRzfWpYvGVD0DwSCHu4cFNQN2SHmCQjRiubdBK1bSs=;
-  b=CyZ6ErbK9PJKrE09geYmOJ6d0ICtrCfGiAbbGa6tMvdyBM/Iff6xPgc/
-   9mOqKnTCxG4eEYpLesgIF5rNZ4JZxSzMBKeBWcJe+SqRZSyXDhtV+4NCl
-   wCWRr4F5k+ERCTaDvtECTzvNlx0cBogEKqJE+9ek/n9l7tgWtNF3wjW20
-   pYBOoNTrMMvahpSxXccnaQSLbvkxBrcvSF8R5ybuw2QH82LLQNu3i/2/K
-   SYohRrXGarApP4rbH63PLcJfMyKNBtxKCptygv2QGDxcQ9+X7dwLfUSgu
-   AoYz8zOy6agTFTUEya7oVXODY9jwf6w/F3UgV7RG+ljffJNdxHsW1lnlY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="340185939"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="340185939"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 23:13:11 -0700
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="910803754"
-Received: from gren5-mobl1.ccr.corp.intel.com (HELO [10.255.29.39]) ([10.255.29.39])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 23:13:09 -0700
-Message-ID: <3e2e6ee7-984f-254e-7a3e-e32d6256c8f2@linux.intel.com>
-Date:   Tue, 14 Jun 2022 14:13:07 +0800
+        Tue, 14 Jun 2022 02:15:39 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 436D3377CF;
+        Mon, 13 Jun 2022 23:15:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A6661CE182F;
+        Tue, 14 Jun 2022 06:15:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4AB6C3411B;
+        Tue, 14 Jun 2022 06:15:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655187335;
+        bh=vo5JOYkEPeFEWpKNIvUVh541SRQIp5YhW0KwaowC1TE=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=EN9q83UhlB8dhqZIow1gnV9jnq1wtW6JSaaGpbPQFx1jpcnu9pWLvl/Ot00hUA5wz
+         RJUDzPVu8bhWqMOjbaytQW1tBJYkzaiO2R4EMYyE9ckYuS3TJxtiUfT5mbDe9FE1c6
+         uCnE7cS3inwzREhYL1LOR1A45ULHJJOdk+G0r9iPi34UU7PHEBL0RlVOorQObAydno
+         llQcgPxq3WUbPPzbiT6WQRGBehDIqXuO+7PSQVzpv9kJX4XnRLc6Femx/AAZXTsmEQ
+         3M8pTbe1A94HsYPT5DMqRPpd0HLaZGpYlahy8IhzIBtdHB6LQx+SLGJWz0tXJ+d2rM
+         vhZulZ2tLmKFA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Christian Lamparter <chunkeey@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        Christian Lamparter <chunkeey@web.de>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2] p54: Fix an error handling path in p54spi_probe()
+References: <297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr>
+        <CAAd0S9DgctqyRx+ppfT6dNntUR-cpySnsYaL=unboQ+qTK2wGQ@mail.gmail.com>
+        <f13c3976-2ba0-e16d-0853-5b5b1be16d11@wanadoo.fr>
+Date:   Tue, 14 Jun 2022 09:15:28 +0300
+In-Reply-To: <f13c3976-2ba0-e16d-0853-5b5b1be16d11@wanadoo.fr> (Christophe
+        JAILLET's message of "Mon, 13 Jun 2022 22:57:25 +0200")
+Message-ID: <871qvrrcsf.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Add set_dev_pasid callbacks for default
- domain
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-References: <20220614034411.1634238-1-baolu.lu@linux.intel.com>
- <DM4PR11MB5278EBE8FA26185D91ACCD118CAA9@DM4PR11MB5278.namprd11.prod.outlook.com>
- <2d2a52db-70a8-788e-fedc-197789caa145@linux.intel.com>
- <BN9PR11MB5276DF2C87451A1164A995FB8CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276DF2C87451A1164A995FB8CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/14 13:36, Tian, Kevin wrote:
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Tuesday, June 14, 2022 12:48 PM
+Christophe JAILLET <christophe.jaillet@wanadoo.fr> writes:
+
+> Le 13/06/2022 =C3=A0 22:02, Christian Lamparter a =C3=A9crit=C2=A0:
+>> On Sun, Jun 12, 2022 at 11:12 PM Christophe JAILLET
+>> <christophe.jaillet@wanadoo.fr> wrote:
+>>>
+>>> If an error occurs after a successful call to p54spi_request_firmware()=
+, it
+>>> must be undone by a corresponding release_firmware() as already done in
+>>> the error handling path of p54spi_request_firmware() and in the .remove=
+()
+>>> function.
+>>>
+>>> Add the missing call in the error handling path and remove it from
+>>> p54spi_request_firmware() now that it is the responsibility of the call=
+er
+>>> to release the firmawre
 >>
->> On 2022/6/14 12:02, Tian, Kevin wrote:
->>>> From: Lu Baolu<baolu.lu@linux.intel.com>
->>>> Sent: Tuesday, June 14, 2022 11:44 AM
->>>>
->>>> This allows the upper layers to set a domain to a PASID of a device
->>>> if the PASID feature is supported by the IOMMU hardware. The typical
->>>> use cases are, for example, kernel DMA with PASID and hardware
->>>> assisted mediated device drivers.
->>>>
->>> why is it not part of the series for those use cases? There is no consumer
->>> of added callbacks in this patch...
->> It could be. I just wanted to maintain the integrity of Intel IOMMU
->> driver implementation.
-> but let's not add dead code. and this patch is actually a right step
-> simply from set_dev_pasid() p.o.v hence you should include in any
-> series which first tries to use that interface.
-> 
+>> that last word hast a typo:  firmware. (maybe Kalle can fix this in post=
+).
+>
+> More or less the same typo twice in a row... _Embarrassed_
 
-Yes, that's my intention. If it reviews well, we can include it in the
-driver's implementation.
+No worries, I can fix the typo.
 
-Best regards,
-baolu
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
