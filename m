@@ -2,111 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8CCCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 06:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C0AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 06:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351119AbiFNGYj (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 02:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
+        id S238835AbiFNG2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 02:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237532AbiFNGYh (ORCPT
+        with ESMTP id S229673AbiFNG2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 02:24:37 -0400
+        Tue, 14 Jun 2022 02:28:50 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8046725C6B;
-        Mon, 13 Jun 2022 23:24:36 -0700 (PDT)
-X-UUID: c6ebceac8f7c40a1bf7afad08944afe9-20220614
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C551A053;
+        Mon, 13 Jun 2022 23:28:44 -0700 (PDT)
+X-UUID: 60ba03447e5242208d7a45c4a509135a-20220614
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:e089cde7-5d95-4aee-a8e9-a09a01500cce,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:b14ad71,CLOUDID:29958407-b57a-4a25-a071-bc7b4972bc68,C
+X-CID-O-INFO: VERSION:1.1.6,REQID:7d242545-ccb6-4726-ad27-5548a84fd232,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:b14ad71,CLOUDID:73c68407-b57a-4a25-a071-bc7b4972bc68,C
         OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
         ,QS:nil,BEC:nil,COL:0
-X-UUID: c6ebceac8f7c40a1bf7afad08944afe9-20220614
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1866991260; Tue, 14 Jun 2022 14:24:30 +0800
+X-UUID: 60ba03447e5242208d7a45c4a509135a-20220614
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <lecopzer.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1522900914; Tue, 14 Jun 2022 14:28:39 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 14 Jun 2022 14:24:29 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 14 Jun 2022 14:28:38 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 14 Jun 2022 14:24:29 +0800
-Message-ID: <9adfb4b98e505c10469395bf3038010024ab86fd.camel@mediatek.com>
-Subject: Re: [PATCH v11 11/12] drm/mediatek: dpi: Only enable dpi after the
- bridge is enabled
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 14 Jun 2022 14:24:29 +0800
-In-Reply-To: <20220613064841.10481-12-rex-bc.chen@mediatek.com>
-References: <20220613064841.10481-1-rex-bc.chen@mediatek.com>
-         <20220613064841.10481-12-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+ Transport; Tue, 14 Jun 2022 14:28:38 +0800
+From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
+To:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <pmladek@suse.com>, <acme@kernel.org>, <akpm@linux-foundation.org>,
+        <alexander.shishkin@linux.intel.com>, <catalin.marinas@arm.com>,
+        <davem@davemloft.net>, <jolsa@redhat.com>, <jthierry@redhat.com>,
+        <keescook@chromium.org>, <kernelfans@gmail.com>,
+        <lecopzer.chen@mediatek.com>, <linux-mediatek@lists.infradead.org>,
+        <linux-perf-users@vger.kernel.org>, <mark.rutland@arm.com>,
+        <masahiroy@kernel.org>, <matthias.bgg@gmail.com>, <maz@kernel.org>,
+        <mcgrof@kernel.org>, <mingo@redhat.com>, <namhyung@kernel.org>,
+        <nixiaoming@huawei.com>, <peterz@infradead.org>,
+        <sparclinux@vger.kernel.org>, <sumit.garg@linaro.org>,
+        <wangqing@vivo.com>, <will@kernel.org>, <yj.chiang@mediatek.com>
+Subject: [PATCH v6 3/6] kernel/watchdog_hld: Ensure CPU-bound context when creating hardlockup detector event
+Date:   Tue, 14 Jun 2022 14:28:32 +0800
+Message-ID: <20220614062835.7196-4-lecopzer.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220614062835.7196-1-lecopzer.chen@mediatek.com>
+References: <20220614062835.7196-1-lecopzer.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bo-Chen:
+From: Pingfan Liu <kernelfans@gmail.com>
 
-On Mon, 2022-06-13 at 14:48 +0800, Bo-Chen Chen wrote:
-> From: Guillaume Ranquet <granquet@baylibre.com>
-> 
-> Enabling the dpi too early causes glitches on screen.
-> 
-> Move the call to mtk_dpi_enable() at the end of the bridge_enable
-> callback to ensure everything is setup properly before enabling dpi.
+hardlockup_detector_event_create() should create perf_event on the
+current CPU. Preemption could not get disabled because
+perf_event_create_kernel_counter() allocates memory. Instead,
+the CPU locality is achieved by processing the code in a per-CPU
+bound kthread.
 
-This seems a bug fix, so add Fixes tag on this patch.
+Add a check to prevent mistakes when calling the code in another
+code path.
 
-Regards,
-CK
+Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
+Co-developed-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
+Signed-off-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+---
+ kernel/watchdog_hld.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-> 
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_dpi.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> index 08c8f21b4421..9668bd5dd14a 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> @@ -480,7 +480,6 @@ static int mtk_dpi_power_on(struct mtk_dpi *dpi)
->  	if (dpi->pinctrl && dpi->pins_dpi)
->  		pinctrl_select_state(dpi->pinctrl, dpi->pins_dpi);
->  
-> -	mtk_dpi_enable(dpi);
->  	return 0;
->  
->  err_pixel:
-> @@ -726,6 +725,7 @@ static void mtk_dpi_bridge_enable(struct
-> drm_bridge *bridge)
->  
->  	mtk_dpi_power_on(dpi);
->  	mtk_dpi_set_display_mode(dpi, &dpi->mode);
-> +	mtk_dpi_enable(dpi);
->  }
->  
->  static enum drm_mode_status
+diff --git a/kernel/watchdog_hld.c b/kernel/watchdog_hld.c
+index 701f35f0e2d4..0573cef0b9dc 100644
+--- a/kernel/watchdog_hld.c
++++ b/kernel/watchdog_hld.c
+@@ -169,10 +169,16 @@ static void watchdog_overflow_callback(struct perf_event *event,
+ 
+ static int hardlockup_detector_event_create(void)
+ {
+-	unsigned int cpu = smp_processor_id();
++	unsigned int cpu;
+ 	struct perf_event_attr *wd_attr;
+ 	struct perf_event *evt;
+ 
++	/*
++	 * Preemption is not disabled because memory will be allocated.
++	 * Ensure CPU-locality by calling this in per-CPU kthread.
++	 */
++	WARN_ON(!is_percpu_thread());
++	cpu = raw_smp_processor_id();
+ 	wd_attr = &wd_hw_attr;
+ 	wd_attr->sample_period = hw_nmi_get_sample_period(watchdog_thresh);
+ 
+-- 
+2.25.1
 
