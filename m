@@ -2,83 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF92DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D183C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:53:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242822AbiFNMvn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33504 "EHLO
+        id S242808AbiFNMxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiFNMvl (ORCPT
+        with ESMTP id S235039AbiFNMxi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:51:41 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1D943205C;
-        Tue, 14 Jun 2022 05:51:40 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 928771650;
-        Tue, 14 Jun 2022 05:51:40 -0700 (PDT)
-Received: from [10.57.37.71] (unknown [10.57.37.71])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1DCEB3F73B;
-        Tue, 14 Jun 2022 05:51:37 -0700 (PDT)
-Message-ID: <92f56aed-e6cd-c65b-f42f-5bd1e07b90c5@arm.com>
-Date:   Tue, 14 Jun 2022 13:51:35 +0100
+        Tue, 14 Jun 2022 08:53:38 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE94D3BFBB;
+        Tue, 14 Jun 2022 05:53:36 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LMntR42tMz1K9t1;
+        Tue, 14 Jun 2022 20:34:07 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 20:36:04 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 14 Jun
+ 2022 20:36:04 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>,
+        <linux-accelerators@lists.ozlabs.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <zhangfei.gao@linaro.org>, <wangzhou1@hisilicon.com>,
+        <yekai13@huawei.com>
+Subject: [PATCH 2/3] Documentation: add a isolation strategy vfs node for uacce
+Date:   Tue, 14 Jun 2022 20:29:42 +0800
+Message-ID: <20220614122943.1406-6-yekai13@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220614122943.1406-1-yekai13@huawei.com>
+References: <20220614122943.1406-1-yekai13@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 0/4] Thermal cpufreq & devfreq cooling minor clean-ups
-Content-Language: en-US
-To:     daniel.lezcano@linaro.org
-Cc:     amitk@kernel.org, rui.zhang@intel.com, viresh.kumar@linaro.org,
-        rafael@kernel.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
-        mingo@redhat.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220613124327.30766-1-lukasz.luba@arm.com>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <20220613124327.30766-1-lukasz.luba@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+Update documentation describing DebugFS that could help to
+configure hard error frequency for users in th user space.
 
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+---
+ Documentation/ABI/testing/sysfs-driver-uacce | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-On 6/13/22 13:43, Lukasz Luba wrote:
-> Hi all,
-> 
-> This is v2 of some minor clean-ups for the thermal cpufreq and devfreq
-> cooling code.
-> 
-> Changes:
-> v2:
-> - extened the cpufreq_cooling_device with private ops field, to not waste
->    memory and simplify allocation/free code (Viresh)
-> - added devfreq_cooling clean-up to align with cpufreq cooling code
-> - added ACKs from Viresh for patch 2/4 and path 3/4
-> - added missing maintainers of tracing to CC list
-> 
-> Regards,
-> Lukasz
-> 
-> Lukasz Luba (4):
->    thermal: cpufreq_cooling: Use private callback ops for each cooling
->      device
->    thermal: cpufreq_cooling : Refactor thermal_power_cpu_get_power
->      tracing
->    thermal: cpufreq_cooling: Update outdated comments
->    thermal: devfreq_cooling: Extend the devfreq_cooling_device with ops
-> 
->   drivers/thermal/cpufreq_cooling.c | 77 ++++++++++---------------------
->   drivers/thermal/devfreq_cooling.c | 27 ++++-------
->   include/trace/events/thermal.h    | 28 ++++-------
->   3 files changed, 42 insertions(+), 90 deletions(-)
-> 
+diff --git a/Documentation/ABI/testing/sysfs-driver-uacce b/Documentation/ABI/testing/sysfs-driver-uacce
+index 08f2591138af..0c4226364182 100644
+--- a/Documentation/ABI/testing/sysfs-driver-uacce
++++ b/Documentation/ABI/testing/sysfs-driver-uacce
+@@ -19,6 +19,23 @@ Contact:        linux-accelerators@lists.ozlabs.org
+ Description:    Available instances left of the device
+                 Return -ENODEV if uacce_ops get_available_instances is not provided
+ 
++What:           /sys/class/uacce/<dev_name>/isolate_strategy
++Date:           Jun 2022
++KernelVersion:  5.19
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    A vfs node that used to configures the hardware
++                error frequency. This frequency is abstract. Like once an hour
++                or once a day. The specific isolation strategy can be defined in
++                each driver module.
++
++What:           /sys/class/uacce/<dev_name>/isolate
++Date:           Jun 2022
++KernelVersion:  5.19
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    A vfs node that show the device isolated state. The value 0
++                means that the device is working. The value 1 means that the
++                device has been isolated.
++
+ What:           /sys/class/uacce/<dev_name>/algorithms
+ Date:           Feb 2020
+ KernelVersion:  5.7
+-- 
+2.33.0
 
-Could you have a look and take the patches into your tree, please?
-The 3 of 4 patches got ACKs, the last one is devfreq cooling, which
-is pretty minor change.
-
-Regards,
-Lukasz
