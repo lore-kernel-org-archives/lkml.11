@@ -2,105 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB11C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE06C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356593AbiFNQH7 (ORCPT
+        id S1356489AbiFNQIq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
+        Tue, 14 Jun 2022 12:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356436AbiFNQHw (ORCPT
+        with ESMTP id S1357071AbiFNQId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:07:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105C531355
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:07:52 -0700 (PDT)
+        Tue, 14 Jun 2022 12:08:33 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1483835AA5;
+        Tue, 14 Jun 2022 09:08:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F4C3B818E9
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 16:07:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0695C3411C;
-        Tue, 14 Jun 2022 16:07:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655222869;
-        bh=CvK4H2JhfLSeydKjsOxaZRUzbWFeeDXWVJ8g0pCp1mo=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6FD10CE1B25;
+        Tue, 14 Jun 2022 16:08:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA653C3411B;
+        Tue, 14 Jun 2022 16:08:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655222909;
+        bh=f6KuiueIv/s3cr+8vOYyA2WSMzAJ801h4xLsZ5d4vCQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jsO0T9u9fPzltYlTEu0r7c7N3/VPq4dG88/SmhunFsor3fP0hOrv6mfOnKJoOwta6
-         xW5SADrFFOEdfuY5HbNmvC2CQypvWz6RI6IdBS8N0acreRzDj94/Y2Wk0mxECtE+nN
-         nUvXS/WO/Pfx0wNuXd3+3e0zNBuNx5e+M7qsOEPg=
-Date:   Tue, 14 Jun 2022 18:07:46 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Zhi Song <zhi.song@bytedance.com>
-Cc:     vilhelm.gray@gmail.com, rafael@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] isa: put_device after failing to device_register
-Message-ID: <YqiyUjCahmYG7bIa@kroah.com>
-References: <20220614160126.1739982-1-zhi.song@bytedance.com>
+        b=SFsM3wa7t0y5/icGPA1hoiUopkaKXnX+CpJLFWVGwSkPa0Qa+k+fznmt3Y/IRdgAv
+         q8oKIyt45anZyqQnBVyf7ijXJq6aD/afzSsX8o5+rU9gr6xZ5V+HuklQOJGmJ02O0Y
+         cSjmb2RSEqIt4H8hR8+gpp846vKuDcYtjRxkzYo2vSYgygE61zxqjfvae9miPVaIcw
+         R1d5VXeNEg5F5q8bdxp5OCJheNQCGau0jUaC4Rz1bEpFy7OouEAR2F5n96+H9iEttu
+         DA/EbzPQhgJJzRGE5DdsGuQ6ZIq9VB64XOlNMizMza2KLLQQnU/d9z78AFcie0XVMp
+         J5oIbSkIiJoPQ==
+Date:   Tue, 14 Jun 2022 17:08:24 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     David Owens <dowens@precisionplanting.com>
+Cc:     Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Jarkko Nikula <jarkko.nikula@bitmer.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: ti: omap-mcbsp: duplicate sysfs failure after
+ PROBE_DEFER
+Message-ID: <YqiyeM2JkDxLIKDe@sirena.org.uk>
+References: <20220614155931.2706437-1-dowens@precisionplanting.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="GYvOB+ScB/4Az0wW"
 Content-Disposition: inline
-In-Reply-To: <20220614160126.1739982-1-zhi.song@bytedance.com>
+In-Reply-To: <20220614155931.2706437-1-dowens@precisionplanting.com>
+X-Cookie: DYSLEXICS OF THE WORLD, UNTIE!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 12:01:26AM +0800, Zhi Song wrote:
-> device_register() is used to register a device with the system.
-> We need to call put_device() to give up the reference initialized
-> in device_register() when it returns an error and this will clean
-> up correctly.
-> 
-> Signed-off-by: Zhi Song <zhi.song@bytedance.com>
-> ---
->  drivers/base/isa.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/base/isa.c b/drivers/base/isa.c
-> index 55e3ee2da98f..cf88f3d77b7d 100644
-> --- a/drivers/base/isa.c
-> +++ b/drivers/base/isa.c
-> @@ -173,8 +173,10 @@ static int __init isa_bus_init(void)
->  	error = bus_register(&isa_bus_type);
->  	if (!error) {
->  		error = device_register(&isa_bus);
-> -		if (error)
-> +		if (error) {
-> +			put_device(&isa_bus);
->  			bus_unregister(&isa_bus_type);
-> +		}
->  	}
->  	return error;
+
+--GYvOB+ScB/4Az0wW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Jun 14, 2022 at 10:59:31AM -0500, David Owens wrote:
+
+> The call to sdma_pcm_platform_register() can return PROBE_DEFER, leading
+> to omap_mcbsp_init() being called multiple times.  sysfs node creation
+> fails in subsequent calls to omap_mcbsp_init(), which prevents
+> the driver from ever successfully probing.  The resulting errors can be
+> seen during boot:
+>=20
+> [    1.749328] sysfs: cannot create duplicate filename '/devices/platform=
+/68000000.ocp/49022000.mcbsp/max_tx_thres'
+> [    1.759643] CPU: 0 PID: 6 Comm: kworker/u2:0 Not tainted 5.18.0-yocto-=
+standard #1
+> [    1.767181] Hardware name: Generic OMAP36xx (Flattened Device Tree)
+> [    1.773498] Workqueue: events_unbound deferred_probe_work_func
+> [    1.779449]  unwind_backtrace from show_stack+0x10/0x14
+> [    1.784729]  show_stack from sysfs_warn_dup+0x4c/0x60
+
+Please think hard before including complete backtraces in upstream
+reports, they are very large and contain almost no useful information
+relative to their size so often obscure the relevant content in your
+message. If part of the backtrace is usefully illustrative (it often is
+for search engines if nothing else) then it's usually better to pull out
+the relevant sections.
+
+> +++ b/sound/soc/ti/omap-mcbsp.c
+> @@ -1403,6 +1403,10 @@ static int asoc_mcbsp_probe(struct platform_device=
+ *pdev)
+>         mcbsp->dev =3D &pdev->dev;
+>         platform_set_drvdata(pdev, mcbsp);
+>=20
+> +       ret =3D sdma_pcm_platform_register(&pdev->dev, "tx", "rx");
+> +       if (ret)
+> +               return ret;
+> +
+>         ret =3D omap_mcbsp_init(pdev);
+>         if (ret)
+>                 return ret;
+> @@ -1412,13 +1416,9 @@ static int asoc_mcbsp_probe(struct platform_device=
+ *pdev)
+>                 omap_mcbsp_dai.capture.formats =3D SNDRV_PCM_FMTBIT_S16_L=
+E;
+>         }
+>=20
+> -       ret =3D devm_snd_soc_register_component(&pdev->dev,
+> +       return devm_snd_soc_register_component(&pdev->dev,
+>                                               &omap_mcbsp_component,
+>                                               &omap_mcbsp_dai, 1);
+> -       if (ret)
+> -               return ret;
+> -
+> -       return sdma_pcm_platform_register(&pdev->dev, "tx", "rx");
 >  }
-> -- 
-> 2.30.2
-> 
 
-Hi,
+It's not clear to me how this fixes the problem, your commit message
+doesn't mention how?  I was expecting to see more error handling paths
+being added to unwind the sysfs allocation, or a conversion to devm.  As
+things stand it's not clear to me that the error won't persist in the
+case where we defer registering the component.
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+--GYvOB+ScB/4Az0wW
+Content-Type: application/pgp-signature; name="signature.asc"
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+-----BEGIN PGP SIGNATURE-----
 
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKosngACgkQJNaLcl1U
+h9DjFwf/WQifCpq8XeOlBLOAvgI3uxiABxHsqoRqe0WDdqyfOiIgCszt2Z77mioC
+FkYGfeIhUiG4PeQENR+LDpKgxL501Is0fRu6G9aRbrYvwRTgkrcA4zNp9nCGRvV/
+9KPONBkkWijwTbh63YuEWZphXpj6D0TcLbZumcIDe9eKwTV2+z95rGUckojuiWUD
+o47x/z9S/n93HwTPzCqFdeVwA8gAmzXYijiMfTRVwAE58ou1CHTd8oNiNQ6Rf/9X
+/dRziXIw6B51hzJH+Q1+18lgkaIrXqpldQ4n45xq5vjI5JEes12ZKK3f+Pyol/u9
+wXQfaVFQBQ9WO9pGNO4AEf3gUsAsSA==
+=DruB
+-----END PGP SIGNATURE-----
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+--GYvOB+ScB/4Az0wW--
