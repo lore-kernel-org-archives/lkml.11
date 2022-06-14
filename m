@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:48:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358207AbiFNUso (ORCPT
+        id S1356877AbiFNUsv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37482 "EHLO
+        Tue, 14 Jun 2022 16:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353181AbiFNUsA (ORCPT
+        with ESMTP id S1357729AbiFNUsJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:48:00 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7598320F53
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:47:51 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-313e5c642dcso35463627b3.3
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:47:51 -0700 (PDT)
+        Tue, 14 Jun 2022 16:48:09 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A483EAB1
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:47:57 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id q62-20020a17090a17c400b001e31a482241so11086pja.5
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:47:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=Avux3DXm0eZx/sc8tRS1iEmdb18s5R6TM2wIGHbP9EE=;
-        b=hrvKljUtWXL5ARSt7y6G/u+Cs1N4fvLQdgAPmuGJAo70I9tNF11gUdsg0zfJK50aUl
-         oRTZbtU2TQYJTOMImRyszjHNTJuF0HSmb+JUSQc9V+mJpttvpvM0qR4ZAxHjF6Qu58o9
-         +72fwqKsaV25Bb0kChYcEipTDB7hN7RklAfUPTCeiC4DFLnjeqY09eoVDvaHjkdk6jXY
-         EelGGRK0+tFrpWrtlARq+fTP3BOMenKSgTJsFtqT8wN1gkT5p5FKenfoFB1oS2VRhyne
-         oCcro7cFFHidqUHztkv6FWHYeFuG/7awI1JcudKnbPBzOwpMZM1hj9oW/jXuzu4giiHg
-         3W+w==
+        bh=DvS0MK4rYpRtDe2fvh6ocxKN7mSQ+xkrM2pZGwGEGi0=;
+        b=LJ3wp6JDRHV6sVfW5nAnFe2WOVDe8Ns3OwIoQoyRTK5yehEbrFRdZs26rivPhQZQmz
+         HjW26zNG65VF3UfxnITX6UHlAA8Ft1CViBPyP04rGrZhWk2XPYHmceiYEV6pjJ+lxv7J
+         nMIbdutaWyeQ5Vn5A8q4o6TpoyFLhxhJClmTHg9TcFJQNnkOiWVTqDoJ+DKrCFOZ2s9y
+         2zzdNBHsJ+mbLn5XCilMcCW28Q25oqG2cUt+V7b/Pf06lI47rvPIuOo6y/IncdjAz1oG
+         xVuv4L2EplswOkw1W4Ba9yuet+wfqYb9xVPv2GUNsbPml9pVy0k8hyngMGPL/h7vuPs1
+         uooQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=Avux3DXm0eZx/sc8tRS1iEmdb18s5R6TM2wIGHbP9EE=;
-        b=ezm7i9QkqQBTicjo01vVcMimT1eSzAGDGI01k3EKmMDHQU17OWyg8nD6gjQ/vARUl9
-         M2XI3JJQpwskmfVW43kIvHtCjucAXBmyleITSmD6nqwBcWybFrtTa1weegUFCsGK4ulL
-         I72xDB1c1UczvcH7cWCWCnqDq255inOZ7BbuU6NgxMMwMYs7Qn8ghIq5AdxB0Zgn4JVp
-         KiBenz6kPPYJOPuehtCMyqSgEN+zoJjCOdoKwDQYnG37idPFkq8QdYjjsT2lWq6TP6GY
-         6/kSga7n2RhlsU5CrDiPS8i15bmRf2CohNJUxi2vTis8JrnPb3PaJT2Xm3YlpUzW5Op5
-         x5OQ==
-X-Gm-Message-State: AJIora+eFQrSib1FkwH4gcS7i2qzm+gyXVPZPsSpQOm1SV5y1wwJlSUT
-        /6QWhVpMHpIIjfKygH7afCRj6+++/GA=
-X-Google-Smtp-Source: AGRyM1vw5g+ASJFYQ4nCkrht/P3qA6AcoGmTK2nrJJTdttY2KNgAVLMaywKrC1SXjEIP8xAPr5qN38Uee48=
+        bh=DvS0MK4rYpRtDe2fvh6ocxKN7mSQ+xkrM2pZGwGEGi0=;
+        b=y1nPlg9ZthuSTOYe98s5Zeu0AwsNp0kg5WiBybxcUrKXsb8UosAgAyxaBGOwk5mx7d
+         r/t4hDW+sydu8MIL5MIuDy2aJzsS970y2HSx/YBIR2RmyyaC+oGouuuENw8Licn6ON4x
+         ICclR4hkkLPWVn1OorJbBEc5sqiIaAi+62FYYK5Lpwp7FMzZ2ova2CSWIwRYnT3GXXqa
+         a0gTtWjcL1by0b3uvkdMd/ayEeH/R9/eICgdAgKeU4p52VQrdqdwQBneJqK0AA2VUSbV
+         0mpudER1SkZaTYVm/gocymiovMqy8KsyFMJGzZbipX1tTexUjM7e2poGdgVv8Omx7AbN
+         rM3g==
+X-Gm-Message-State: AOAM530dJDgTnQB1o5MaG7pmyBDbj6x1Oi+5FvhCXVdkWk4N1T1cH4Qx
+        6wxVpye+RaVLe5jKpuJ1lWv30EsR984=
+X-Google-Smtp-Source: ABdhPJz4ke7bLqZx/KSNR4w7UoBgnHY5w/YAjtmqQr7Qf5jooPhCshyLJvD01vl3B4TVrPipJWjHkDsd7G0=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a25:7447:0:b0:667:b7a8:902a with SMTP id
- p68-20020a257447000000b00667b7a8902amr656805ybc.518.1655239670856; Tue, 14
- Jun 2022 13:47:50 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:a03:b0:522:990c:c795 with SMTP id
+ p3-20020a056a000a0300b00522990cc795mr6250999pfh.15.1655239676339; Tue, 14 Jun
+ 2022 13:47:56 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 14 Jun 2022 20:47:17 +0000
+Date:   Tue, 14 Jun 2022 20:47:20 +0000
 In-Reply-To: <20220614204730.3359543-1-seanjc@google.com>
-Message-Id: <20220614204730.3359543-9-seanjc@google.com>
+Message-Id: <20220614204730.3359543-12-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220614204730.3359543-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH v2 08/21] KVM: nVMX: Ignore SIPI that arrives in L2 when vCPU
- is not in WFS
+Subject: [PATCH v2 11/21] KVM: x86: Rename kvm_x86_ops.queue_exception to inject_exception
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -70,37 +69,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fall through to handling other pending exception/events for L2 if SIPI
-is pending while the CPU is not in Wait-for-SIPI.  KVM correctly ignores
-the event, but incorrectly returns immediately, e.g. a SIPI coincident
-with another event could lead to KVM incorrectly routing the event to L1
-instead of L2.
+Rename the kvm_x86_ops hook for exception injection to better reflect
+reality, and to align with pretty much every other related function name
+in KVM.
 
-Fixes: bf0cd88ce363 ("KVM: x86: emulate wait-for-SIPI and SIPI-VMExit")
+No functional change intended.
+
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/vmx/nested.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/kvm-x86-ops.h | 2 +-
+ arch/x86/include/asm/kvm_host.h    | 2 +-
+ arch/x86/kvm/svm/svm.c             | 4 ++--
+ arch/x86/kvm/vmx/vmx.c             | 4 ++--
+ arch/x86/kvm/x86.c                 | 2 +-
+ 5 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index e794791a6bdd..d080bfca16ef 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3936,10 +3936,12 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
- 			return -EBUSY;
+diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+index 6f2f1affbb78..a42e2d9b04fe 100644
+--- a/arch/x86/include/asm/kvm-x86-ops.h
++++ b/arch/x86/include/asm/kvm-x86-ops.h
+@@ -67,7 +67,7 @@ KVM_X86_OP(get_interrupt_shadow)
+ KVM_X86_OP(patch_hypercall)
+ KVM_X86_OP(inject_irq)
+ KVM_X86_OP(inject_nmi)
+-KVM_X86_OP(queue_exception)
++KVM_X86_OP(inject_exception)
+ KVM_X86_OP(cancel_injection)
+ KVM_X86_OP(interrupt_allowed)
+ KVM_X86_OP(nmi_allowed)
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 7e98b2876380..16a7f91cdf75 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1505,7 +1505,7 @@ struct kvm_x86_ops {
+ 				unsigned char *hypercall_addr);
+ 	void (*inject_irq)(struct kvm_vcpu *vcpu, bool reinjected);
+ 	void (*inject_nmi)(struct kvm_vcpu *vcpu);
+-	void (*queue_exception)(struct kvm_vcpu *vcpu);
++	void (*inject_exception)(struct kvm_vcpu *vcpu);
+ 	void (*cancel_injection)(struct kvm_vcpu *vcpu);
+ 	int (*interrupt_allowed)(struct kvm_vcpu *vcpu, bool for_injection);
+ 	int (*nmi_allowed)(struct kvm_vcpu *vcpu, bool for_injection);
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index c6cca0ce127b..ca39f76ca44b 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -430,7 +430,7 @@ static int svm_update_soft_interrupt_rip(struct kvm_vcpu *vcpu)
+ 	return 0;
+ }
  
- 		clear_bit(KVM_APIC_SIPI, &apic->pending_events);
--		if (vcpu->arch.mp_state == KVM_MP_STATE_INIT_RECEIVED)
-+		if (vcpu->arch.mp_state == KVM_MP_STATE_INIT_RECEIVED) {
- 			nested_vmx_vmexit(vcpu, EXIT_REASON_SIPI_SIGNAL, 0,
- 						apic->sipi_vector & 0xFFUL);
--		return 0;
-+			return 0;
-+		}
-+		/* Fallthrough, the SIPI is completely ignored. */
- 	}
+-static void svm_queue_exception(struct kvm_vcpu *vcpu)
++static void svm_inject_exception(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 	unsigned nr = vcpu->arch.exception.nr;
+@@ -4761,7 +4761,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
+ 	.patch_hypercall = svm_patch_hypercall,
+ 	.inject_irq = svm_inject_irq,
+ 	.inject_nmi = svm_inject_nmi,
+-	.queue_exception = svm_queue_exception,
++	.inject_exception = svm_inject_exception,
+ 	.cancel_injection = svm_cancel_injection,
+ 	.interrupt_allowed = svm_interrupt_allowed,
+ 	.nmi_allowed = svm_nmi_allowed,
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index ec98992024e2..26b863c78a9f 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -1610,7 +1610,7 @@ static void vmx_clear_hlt(struct kvm_vcpu *vcpu)
+ 		vmcs_write32(GUEST_ACTIVITY_STATE, GUEST_ACTIVITY_ACTIVE);
+ }
  
- 	/*
+-static void vmx_queue_exception(struct kvm_vcpu *vcpu)
++static void vmx_inject_exception(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+ 	unsigned nr = vcpu->arch.exception.nr;
+@@ -7993,7 +7993,7 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
+ 	.patch_hypercall = vmx_patch_hypercall,
+ 	.inject_irq = vmx_inject_irq,
+ 	.inject_nmi = vmx_inject_nmi,
+-	.queue_exception = vmx_queue_exception,
++	.inject_exception = vmx_inject_exception,
+ 	.cancel_injection = vmx_cancel_injection,
+ 	.interrupt_allowed = vmx_interrupt_allowed,
+ 	.nmi_allowed = vmx_nmi_allowed,
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 7c3ce601bdcc..b63421d511c5 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -9504,7 +9504,7 @@ static void kvm_inject_exception(struct kvm_vcpu *vcpu)
+ 
+ 	if (vcpu->arch.exception.error_code && !is_protmode(vcpu))
+ 		vcpu->arch.exception.error_code = false;
+-	static_call(kvm_x86_queue_exception)(vcpu);
++	static_call(kvm_x86_inject_exception)(vcpu);
+ }
+ 
+ static int inject_pending_event(struct kvm_vcpu *vcpu, bool *req_immediate_exit)
 -- 
 2.36.1.476.g0c4daa206d-goog
 
