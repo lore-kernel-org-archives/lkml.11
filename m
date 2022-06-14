@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F262FCCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 565EBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355625AbiFNCci (ORCPT
+        id S1355749AbiFNCcp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57648 "EHLO
+        Mon, 13 Jun 2022 22:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355306AbiFNC1C (ORCPT
+        with ESMTP id S1355302AbiFNC1C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 22:27:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB65142A02;
-        Mon, 13 Jun 2022 19:11:31 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A87842A05;
+        Mon, 13 Jun 2022 19:11:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53048B816BC;
-        Tue, 14 Jun 2022 02:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFB75C385A9;
-        Tue, 14 Jun 2022 02:10:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D36A60F1C;
+        Tue, 14 Jun 2022 02:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8027C34114;
+        Tue, 14 Jun 2022 02:10:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172655;
-        bh=yoO8pOvSuOKKaQGSmbkH7dUaUIqXiF2xgtYk0n1/exQ=;
+        s=k20201202; t=1655172661;
+        bh=dZghSl5/idTjRWUvDNqiufb5S8k9qcJhsO74wWIePIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ANKMo8ZULvQSJQSwqT5+kXQq2hj0OsNtqbs5AGJVA9pUydzFjvqdWxov7lD2j5HB/
-         K16q/fQAd9MojtdhepNUzQtwlmcfP3WBtcwMtscADMipD38bnsHceGTNP0eGXtIqXe
-         3lNX3EB9GioE9AiZ+Z/s3JJh+G0WG1BMZzEef1BkEP+uZAIjVi5JlgzBPMgh3ioBeI
-         kdb7Op2KEA4DFJLMGcJGdZEOwdabKilBPLBZ3QCJTG50znQOhJvad0636e7qoEymi8
-         86p3az1wXuSqQC1/awfyUv9h/3AOEGMdHdEfDtEt4s+plYO+UXyaaAk/zNbNyuUXze
-         SD5WrN3pJ0fSg==
+        b=T26vMX0SKiTyMsxV0ZR3FnFLzFPT3R0yMB331Z0moHRhIjkb9d/zrpniHeMQuDagL
+         UCaF6pz1zIDUXI2SI40Lg3K5zZQRRUo6xoCjcDoRooXLU1fa6sScvauQ7tfnlpw/ZP
+         ZMMNsZ9sFuxCKt5uHOx0wfA32L+G+eLl+hySm8bpoWsl/Vp/Fy/c6IbKRz7Y695NJC
+         1ZP9HU4shiG+bf5RcoHOxJr5Oy7MTK3K9j5qeLp4vnCprlBDKGKVRcta/UJeTvwuw0
+         FD5cfo2E1WQm5DqboUNmRUw0aIz98MGvl0CEJ1+Qv5VzNYAYp3+Ltk++3towlVlUvf
+         DdCJuGa41Dh5A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@avagotech.com,
-        dick.kennedy@avagotech.com, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 08/12] scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
-Date:   Mon, 13 Jun 2022 22:10:36 -0400
-Message-Id: <20220614021040.1101131-8-sashal@kernel.org>
+Cc:     Chen Lin <chen45464546@163.com>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, nbd@openwrt.org,
+        blogic@openwrt.org, matthias.bgg@gmail.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.9 12/12] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
+Date:   Mon, 13 Jun 2022 22:10:40 -0400
+Message-Id: <20220614021040.1101131-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614021040.1101131-1-sashal@kernel.org>
 References: <20220614021040.1101131-1-sashal@kernel.org>
@@ -55,47 +54,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Chen Lin <chen45464546@163.com>
 
-[ Upstream commit 336d63615466b4c06b9401c987813fd19bdde39b ]
+[ Upstream commit 2f2c0d2919a14002760f89f4e02960c735a316d2 ]
 
-After issuing a LIP, a specific target vendor does not ACC the FLOGI that
-lpfc sends.  However, it does send its own FLOGI that lpfc ACCs.  The
-target then establishes the port IDs by sending a PLOGI.  lpfc PLOGI_ACCs
-and starts the RPI registration for DID 0x000001.  The target then sends a
-LOGO to the fabric DID.  lpfc is currently treating the LOGO from the
-fabric DID as a link down and cleans up all the ndlps.  The ndlp for DID
-0x000001 is put back into NPR and discovery stops, leaving the port in
-stuck in bypassed mode.
+When rx_flag == MTK_RX_FLAGS_HWLRO,
+rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
+netdev_alloc_frag is for alloction of page fragment only.
+Reference to other drivers and Documentation/vm/page_frags.rst
 
-Change lpfc behavior such that if a LOGO is received for the fabric DID in
-PT2PT topology skip the lpfc_linkdown_port() routine and just move the
-fabric DID back to NPR.
+Branch to use __get_free_pages when ring->frag_size > PAGE_SIZE.
 
-Link: https://lore.kernel.org/r/20220603174329.63777-7-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Chen Lin <chen45464546@163.com>
+Link: https://lore.kernel.org/r/1654692413-2598-1-git-send-email-chen45464546@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_nportdisc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
-index 30b5f65b29d1..7f230d0b2fd6 100644
---- a/drivers/scsi/lpfc/lpfc_nportdisc.c
-+++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
-@@ -633,7 +633,8 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
- 	else
- 		lpfc_els_rsp_acc(vport, ELS_CMD_ACC, cmdiocb, ndlp, NULL);
- 	if (ndlp->nlp_DID == Fabric_DID) {
--		if (vport->port_state <= LPFC_FDISC)
-+		if (vport->port_state <= LPFC_FDISC ||
-+		    vport->fc_flag & FC_PT2PT)
- 			goto out;
- 		lpfc_linkdown_port(vport);
- 		spin_lock_irq(shost->host_lock);
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 5b072bf80783..4d3ce600e7c7 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -527,6 +527,17 @@ static inline void mtk_rx_get_desc(struct mtk_rx_dma *rxd,
+ 	rxd->rxd4 = READ_ONCE(dma_rxd->rxd4);
+ }
+ 
++static void *mtk_max_lro_buf_alloc(gfp_t gfp_mask)
++{
++	unsigned int size = mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH);
++	unsigned long data;
++
++	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
++				get_order(size));
++
++	return (void *)data;
++}
++
+ /* the qdma core needs scratch memory to be setup */
+ static int mtk_init_fq_dma(struct mtk_eth *eth)
+ {
+@@ -928,7 +939,10 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+ 			goto release_desc;
+ 
+ 		/* alloc new buffer */
+-		new_data = napi_alloc_frag(ring->frag_size);
++		if (ring->frag_size <= PAGE_SIZE)
++			new_data = napi_alloc_frag(ring->frag_size);
++		else
++			new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
+ 		if (unlikely(!new_data)) {
+ 			netdev->stats.rx_dropped++;
+ 			goto release_desc;
+@@ -1231,7 +1245,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
+ 		return -ENOMEM;
+ 
+ 	for (i = 0; i < rx_dma_size; i++) {
+-		ring->data[i] = netdev_alloc_frag(ring->frag_size);
++		if (ring->frag_size <= PAGE_SIZE)
++			ring->data[i] = netdev_alloc_frag(ring->frag_size);
++		else
++			ring->data[i] = mtk_max_lro_buf_alloc(GFP_KERNEL);
+ 		if (!ring->data[i])
+ 			return -ENOMEM;
+ 	}
 -- 
 2.35.1
 
