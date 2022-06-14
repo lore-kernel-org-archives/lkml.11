@@ -2,223 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA96C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDCC3CCA47E
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242650AbiFNMaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
+        id S244154AbiFNMaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243448AbiFNM2i (ORCPT
+        with ESMTP id S1356489AbiFNM3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:28:38 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038B2237DB
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:32 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id x5so11418108edi.2
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lfqn0geMWlo2m+epnZ6MFo0Gce8D/c5YwbUMrCOB20U=;
-        b=lA8lImzum331TJJHsTJ65jBz5jhNkv8tw3ezsIi7YzTZ4BvI2AM5rhz+aOgWERPVL8
-         wf6IQ/SDWFEwFigWABBsxv8ZrP5t/FPjJTo8+VozEf4XwRH8ChY7HINrKepv9pKwMjZZ
-         2tLBe1IhgdW/M3DVZLQDHV1wWR1udzWI6jLZQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lfqn0geMWlo2m+epnZ6MFo0Gce8D/c5YwbUMrCOB20U=;
-        b=f0rKEROsHAJ2KTFAVITduNnwowGGfSsSxZQdvZW0uML4Amd3CVeWS/UxNYWJiEBlwo
-         8+Q9VMgkjeTzqTwpVF/m2q4t+ki530lPn2TuVRk8E4GkbcCrutfF5PsClb7kpXTy78zr
-         y+6BWWeZ4w0sv9ZqrbqaCPBfuFQ8C0vVGtxsGtACDZvVoDFPq5SG5NmFQbO6VYkbm5CI
-         b0pM+hLdkxwQCBF2Dt+enHUHLIEZXsF66N7TB9IyOJoAMNu8UImBGkZq6HHpBP/i7Zyt
-         oYejHAxjyL2h3AmG1jkz5Fc4NnNCLHLTKUP1WCN+Lb1R5oEbBID4SA4e4758cMZ5JB0A
-         +vCw==
-X-Gm-Message-State: AOAM532ARf0Pg5rFlvjwcFHj3BLtnr8zuvQLDApqegGTP1Lx8Gdnu8Fc
-        islJ18TbG6kdAVSWC80NKzWlk/mbqC4lsA==
-X-Google-Smtp-Source: ABdhPJzeyedu9lwFUMlzw7cFqiFQ1EtabbKKn8JVnjLWT5ry77nZm6Z0w1GeuZFjBuJt99IQJ8zumw==
-X-Received: by 2002:a05:6402:21a:b0:431:5c52:82bb with SMTP id t26-20020a056402021a00b004315c5282bbmr5877909edv.70.1655209710212;
-        Tue, 14 Jun 2022 05:28:30 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.amarulasolutions.com (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id z22-20020a17090655d600b006f3ef214e2csm5087043ejp.146.2022.06.14.05.28.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 05:28:29 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        michael@amarulasolutions.com,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Tue, 14 Jun 2022 08:29:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC85937A1E;
+        Tue, 14 Jun 2022 05:29:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB27FB8186F;
+        Tue, 14 Jun 2022 12:29:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD278C3411B;
+        Tue, 14 Jun 2022 12:29:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655209746;
+        bh=WwkV+wdhEGuk3aWMSKuKEvN2vXm13Pz6A3nxRaMWcYw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GmZZTh5AcjCClrHWs3VzPNS3NDB/fZYoF2wqNVQLdlvmWn9h0BDbVxVX3F04Uo3T8
+         eZyS1EnQ3QoAm3dhVIyUgjxTAre/c/32LTAFZXWs3tsKqr+GwjbmeRA9amxGaF8ufK
+         6OSafRU0IFiFK/L7SRc97y7385zCc3ibb6HHdRQipLSGFivEgrJ4udUTBdFWQ3oQLH
+         9AEopySQG40sZQUbz4wkez2DOEuhgPETohgRdoIUOq/KteuhQgDpSBf2ZK4CQUpA2z
+         3jydwp78L52Rsmb7dhGJLTuOBiU1Ge15Q/P7JnSLdFb3CUPVyd/Jwyi38eAm6G9BT/
+         bAYTFHxUI9fMQ==
+Date:   Tue, 14 Jun 2022 15:26:59 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jarkko Sakkinen <jarkko@profian.com>,
+        linux-kernel@vger.kernel.org,
+        Nathaniel McCallum <nathaniel@profian.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v4 03/12] can: slcan: use the alloc_can_skb() helper
-Date:   Tue, 14 Jun 2022 14:28:12 +0200
-Message-Id: <20220614122821.3646071-4-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
-References: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Marco Elver <elver@google.com>,
+        Dan Li <ashimida@linux.alibaba.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Song Liu <song@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Mark Brown <broonie@kernel.org>,
+        Luis Machado <luis.machado@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Atsushi Nemoto <anemo@mba.ocn.ne.jp>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dave Anglin <dave.anglin@bell.net>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Daniel Axtens <dja@axtens.net>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jordan Niethe <jniethe5@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Changbin Du <changbin.du@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Liao Chang <liaochang1@huawei.com>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>,
+        Wu Caize <zepan@sipeed.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Tobias Huschle <huschle@linux.ibm.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Michael Roth <michael.roth@amd.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@igalia.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-modules@vger.kernel.org
+Subject: Re: [PATCH] kprobes: Enable tracing for mololithic kernel images
+Message-ID: <Yqh+k7Udth0IOBrd@iki.fi>
+References: <20220608000014.3054333-1-jarkko@profian.com>
+ <YqGlmpbx8HTrWmpF@shell.armlinux.org.uk>
+ <YqH5TfN9w35kHFLU@bombadil.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqH5TfN9w35kHFLU@bombadil.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is used successfully by most (if not all) CAN device drivers. It
-allows to remove replicated code.
+On Thu, Jun 09, 2022 at 06:44:45AM -0700, Luis Chamberlain wrote:
+> On Thu, Jun 09, 2022 at 08:47:38AM +0100, Russell King (Oracle) wrote:
+> > On Wed, Jun 08, 2022 at 02:59:27AM +0300, Jarkko Sakkinen wrote:
+> > > diff --git a/arch/arm/kernel/Makefile b/arch/arm/kernel/Makefile
+> > > index 553866751e1a..d2bb954cd54f 100644
+> > > --- a/arch/arm/kernel/Makefile
+> > > +++ b/arch/arm/kernel/Makefile
+> > > @@ -44,6 +44,11 @@ obj-$(CONFIG_CPU_IDLE)		+= cpuidle.o
+> > >  obj-$(CONFIG_ISA_DMA_API)	+= dma.o
+> > >  obj-$(CONFIG_FIQ)		+= fiq.o fiqasm.o
+> > >  obj-$(CONFIG_MODULES)		+= armksyms.o module.o
+> > > +ifeq ($(CONFIG_MODULES),y)
+> > > +obj-y				+= module_alloc.o
+> > > +else
+> > > +obj-$(CONFIG_KPROBES)		+= module_alloc.o
+> > > +endif
+> > 
+> > Doesn't:
+> > 
+> > obj-$(CONFIG_MODULES)		+= module_alloc.o
+> > obj-$(CONFIG_KPROBES)		+= module_alloc.o
+> 
+> That just begs for a new kconfig symbol for the object, and for
+> the object then to be built with it.
+> 
+> The archs which override the default can use ARCH_HAS_VM_ALLOC_EXEC.
+> Please note that the respective free is important as well and its
+> not clear if we need an another define for the free. Someone has
+> to do that work. We want to ensure to noexec the code on free and
+> this can vary on each arch.
 
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Let me check if I understand this (not 100% sure).
 
----
+So if arch define ARCH_HAS_VMALLOC_EXEC, then this would set
+config flag CONFIG_VMALLOC_EXEC, which would be used to include
+the compilation unit?
 
-(no changes since v3)
-
-Changes in v3:
-- Increment the error counter in case of decoding failure.
-
-Changes in v2:
-- Put the data into the allocated skb directly instead of first
-  filling the "cf" on the stack and then doing a memcpy().
-
- drivers/net/can/slcan.c | 70 +++++++++++++++++++----------------------
- 1 file changed, 33 insertions(+), 37 deletions(-)
-
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index 6162a9c21672..c39580b142e0 100644
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -54,6 +54,7 @@
- #include <linux/kernel.h>
- #include <linux/workqueue.h>
- #include <linux/can.h>
-+#include <linux/can/dev.h>
- #include <linux/can/skb.h>
- #include <linux/can/can-ml.h>
- 
-@@ -143,85 +144,80 @@ static struct net_device **slcan_devs;
- static void slc_bump(struct slcan *sl)
- {
- 	struct sk_buff *skb;
--	struct can_frame cf;
-+	struct can_frame *cf;
- 	int i, tmp;
- 	u32 tmpid;
- 	char *cmd = sl->rbuff;
- 
--	memset(&cf, 0, sizeof(cf));
-+	skb = alloc_can_skb(sl->dev, &cf);
-+	if (unlikely(!skb)) {
-+		sl->dev->stats.rx_dropped++;
-+		return;
-+	}
- 
- 	switch (*cmd) {
- 	case 'r':
--		cf.can_id = CAN_RTR_FLAG;
-+		cf->can_id = CAN_RTR_FLAG;
- 		fallthrough;
- 	case 't':
- 		/* store dlc ASCII value and terminate SFF CAN ID string */
--		cf.len = sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
-+		cf->len = sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
- 		sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN] = 0;
- 		/* point to payload data behind the dlc */
- 		cmd += SLC_CMD_LEN + SLC_SFF_ID_LEN + 1;
- 		break;
- 	case 'R':
--		cf.can_id = CAN_RTR_FLAG;
-+		cf->can_id = CAN_RTR_FLAG;
- 		fallthrough;
- 	case 'T':
--		cf.can_id |= CAN_EFF_FLAG;
-+		cf->can_id |= CAN_EFF_FLAG;
- 		/* store dlc ASCII value and terminate EFF CAN ID string */
--		cf.len = sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
-+		cf->len = sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
- 		sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN] = 0;
- 		/* point to payload data behind the dlc */
- 		cmd += SLC_CMD_LEN + SLC_EFF_ID_LEN + 1;
- 		break;
- 	default:
--		return;
-+		goto decode_failed;
- 	}
- 
- 	if (kstrtou32(sl->rbuff + SLC_CMD_LEN, 16, &tmpid))
--		return;
-+		goto decode_failed;
- 
--	cf.can_id |= tmpid;
-+	cf->can_id |= tmpid;
- 
- 	/* get len from sanitized ASCII value */
--	if (cf.len >= '0' && cf.len < '9')
--		cf.len -= '0';
-+	if (cf->len >= '0' && cf->len < '9')
-+		cf->len -= '0';
- 	else
--		return;
-+		goto decode_failed;
- 
- 	/* RTR frames may have a dlc > 0 but they never have any data bytes */
--	if (!(cf.can_id & CAN_RTR_FLAG)) {
--		for (i = 0; i < cf.len; i++) {
-+	if (!(cf->can_id & CAN_RTR_FLAG)) {
-+		for (i = 0; i < cf->len; i++) {
- 			tmp = hex_to_bin(*cmd++);
- 			if (tmp < 0)
--				return;
--			cf.data[i] = (tmp << 4);
-+				goto decode_failed;
-+
-+			cf->data[i] = (tmp << 4);
- 			tmp = hex_to_bin(*cmd++);
- 			if (tmp < 0)
--				return;
--			cf.data[i] |= tmp;
-+				goto decode_failed;
-+
-+			cf->data[i] |= tmp;
- 		}
- 	}
- 
--	skb = dev_alloc_skb(sizeof(struct can_frame) +
--			    sizeof(struct can_skb_priv));
--	if (!skb)
--		return;
--
--	skb->dev = sl->dev;
--	skb->protocol = htons(ETH_P_CAN);
--	skb->pkt_type = PACKET_BROADCAST;
--	skb->ip_summed = CHECKSUM_UNNECESSARY;
--
--	can_skb_reserve(skb);
--	can_skb_prv(skb)->ifindex = sl->dev->ifindex;
--	can_skb_prv(skb)->skbcnt = 0;
--
--	skb_put_data(skb, &cf, sizeof(struct can_frame));
--
- 	sl->dev->stats.rx_packets++;
--	if (!(cf.can_id & CAN_RTR_FLAG))
--		sl->dev->stats.rx_bytes += cf.len;
-+	if (!(cf->can_id & CAN_RTR_FLAG))
-+		sl->dev->stats.rx_bytes += cf->len;
- 
- 	netif_rx(skb);
-+	return;
-+
-+decode_failed:
-+	sl->dev->stats.rx_errors++;
-+	dev_kfree_skb(skb);
- }
- 
- /* parse tty input stream */
--- 
-2.32.0
-
+BR, Jarkko
