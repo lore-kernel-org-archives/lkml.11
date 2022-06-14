@@ -2,169 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53213CCA47D
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB05C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:59:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237243AbiFNC7b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56418 "EHLO
+        id S1353439AbiFNC7m (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 22:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355562AbiFNC6y (ORCPT
+        with ESMTP id S1354604AbiFNC6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:58:54 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C22F38F
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:55:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655175353; x=1686711353;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=L3qriFSIL9Rs/CZrpXk8fQv7+QTkDASTys7GisGLWzc=;
-  b=ENIpEzokfjnPp0HAjHc14AUBnZzrp+EK33BvFOCwAJSM/cbT/xTQoUMa
-   ZVRgjDmYXz5PZG1WVMhhZOYa2YUbMJ2YRz4KJGSXrEkh135eo7IPon7rY
-   Y/qnKZsQKRkKKe1RxVIYTjDx1vhP5WHh5oDqQIhX4q425RCFtaxdjXC5l
-   jrYA6GQrp5k0vLpB3NnVorLpavG0uouZBqU3si11k7RFjmkYhd+afxRuc
-   v2nuAQbZntdQZTuMSEGrI7s0JzpVshULAJczgQQO3z0jNBUu5cthRGwrS
-   QgNmaYdnDbs4QUbhLezHGWhsOz0VoJdzCKgDILrNIB7p21GPoSQGaLNkU
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258930348"
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="258930348"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 19:55:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="588166546"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga007.fm.intel.com with ESMTP; 13 Jun 2022 19:55:50 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 06/12] iommu/vt-d: Acquiring lock in domain ID allocation helpers
-Date:   Tue, 14 Jun 2022 10:51:31 +0800
-Message-Id: <20220614025137.1632762-7-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220614025137.1632762-1-baolu.lu@linux.intel.com>
-References: <20220614025137.1632762-1-baolu.lu@linux.intel.com>
+        Mon, 13 Jun 2022 22:58:14 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B593B1A
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:51:27 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id 123so7293361pgb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:51:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9f3QGTquyPNqt5Y0ehbeYkFH6SxKJFf9weR2+dr9JWE=;
+        b=P1BYcRUky4pTlBCXgymwrbeyuxVeejqaqw+JSs0ELqecgtAA8S1wQVXLUSyIUEfVnh
+         QvMMpYuen89Ix6WBpHx6Kn6lpOsQnahN1rKirs2nmFI1OBmwttSk7YBJoDBo69aI4mVu
+         Fia2AXw9sK523hRAkVZ0hak767LdTjO9ysOgk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9f3QGTquyPNqt5Y0ehbeYkFH6SxKJFf9weR2+dr9JWE=;
+        b=FuvtjC7UpSFa6HOA22uuWMM5BJed6QN9ch6Bghd9LpaKfW6Ppy+ppW/aMNnZUFccfn
+         Cc1TqXA0TG7v77rB10k7B1ict+J0F8nms+dKiGgOzyLoABWoXX/z2qpgC3VmVTgDNOUe
+         16p3XV0CbUqSGLZtCXoMtk4uz8M/3JmzEJwU6g2X9nbJm9mgEKZoEgp6luN+e/pvzyT6
+         pfjZoa6L6tA3hiMQ/hExga/tLryZA2gTznLdre2lJKGOobSdiyLQw1BZ2daeO9bA8x25
+         O9xiEFP4GdtsAd/wQrEoC/cWo/R9V3YutQb6eBzuaVJqC0FBOLlSIPkfIG4D6GEi7y/k
+         Xorg==
+X-Gm-Message-State: AOAM531x0Gs8c13ZEIdF7WGFrwlKxF/iEIwQpgk1kNxgDM3s/WNTxWLa
+        d1zzqelXVnxEiC+a12uZZMEM17Vz4l7stg==
+X-Google-Smtp-Source: ABdhPJylGhOEry1IwuOWykOk7USTnbbJcg+B07vWOeXChI+8gMoxe5N2wMpODJvV4Ll+IIRjj6BF5w==
+X-Received: by 2002:a63:89c1:0:b0:3fc:6001:e871 with SMTP id v184-20020a6389c1000000b003fc6001e871mr2528817pgd.14.1655175086959;
+        Mon, 13 Jun 2022 19:51:26 -0700 (PDT)
+Received: from google.com ([2401:fa00:8f:203:580a:28cf:a82b:5610])
+        by smtp.gmail.com with ESMTPSA id a10-20020a62d40a000000b0051b416c065esm6147718pfh.8.2022.06.13.19.51.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 19:51:26 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 11:51:19 +0900
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     Alexandru Elisei <alexandru.elisei@arm.com>
+Cc:     sunjunchao2870@gmail.com, jack@suse.cz, viro@zeniv.linux.org.uk,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pmladek@suse.com, senozhatsky@chromium.org, rostedt@goodmis.org,
+        john.ogness@linutronix.de, keescook@chromium.org, anton@enomsg.org,
+        ccross@android.com, tony.luck@intel.com, heiko@sntech.de,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, maco@android.com, hch@lst.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Subject: Re: [BUG] rockpro64 board hangs in console_init() after commit
+ 10e14073107d
+Message-ID: <Yqf3pxG16lQcacUA@google.com>
+References: <Yqdry+IghSWnJ6pe@monolith.localdoman>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yqdry+IghSWnJ6pe@monolith.localdoman>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The iommu->lock is used to protect the per-IOMMU domain ID resource.
-Moving the lock into the ID alloc/free helpers makes the code more
-compact. At the same time, the device_domain_lock is irrelevant to
-the domain ID resource, remove its assertion as well.
+On (22/06/13 17:54), Alexandru Elisei wrote:
+[..]
+> [    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
+> [    0.000001] sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
+> [    0.005107] Console: colour dummy device 80x25
+> [    0.005549] printk: console [tty0] enabled
+> [    0.005956] printk: bootconsole [uart0] disabled
+> 
+> Config can be found at [1] (expires after 6 months). I've also built the
+> kernel with gcc 10.3.1 [2] (aarch64-none-linux-gnu), same issue.
+> 
+> I've bisected the build failure to commit 10e14073107d ("writeback: Fix
+> inode->i_io_list not be protected by inode->i_lock error"); I've confirmed
+> that that commit is responsible by successfully booting the board with a
+> kernel built from v5.19-rc2 + the above commit reverted.
 
-On the other hand, the iommu->lock is never used in interrupt context,
-there's no need to use the irqsave variant of the spinlock calls.
+Hmm, interesting and puzzling.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 25 +++++++++----------------
- 1 file changed, 9 insertions(+), 16 deletions(-)
+If you disable console kthreads (__printk_fallback_preferred_direct) and
+keep 10e14073107d, are you able to successfully boot the board or does it
+boot to a panic?
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index b2ef8af0c3f3..8fdaa01ef10d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1782,16 +1782,13 @@ static struct dmar_domain *alloc_domain(unsigned int type)
- 	return domain;
- }
- 
--/* Must be called with iommu->lock */
- static int domain_attach_iommu(struct dmar_domain *domain,
- 			       struct intel_iommu *iommu)
- {
- 	unsigned long ndomains;
--	int num;
--
--	assert_spin_locked(&device_domain_lock);
--	assert_spin_locked(&iommu->lock);
-+	int num, ret = 0;
- 
-+	spin_lock(&iommu->lock);
- 	domain->iommu_refcnt[iommu->seq_id] += 1;
- 	if (domain->iommu_refcnt[iommu->seq_id] == 1) {
- 		ndomains = cap_ndoms(iommu->cap);
-@@ -1800,7 +1797,8 @@ static int domain_attach_iommu(struct dmar_domain *domain,
- 		if (num >= ndomains) {
- 			pr_err("%s: No free domain ids\n", iommu->name);
- 			domain->iommu_refcnt[iommu->seq_id] -= 1;
--			return -ENOSPC;
-+			ret = -ENOSPC;
-+			goto out_unlock;
- 		}
- 
- 		set_bit(num, iommu->domain_ids);
-@@ -1809,7 +1807,9 @@ static int domain_attach_iommu(struct dmar_domain *domain,
- 		domain_update_iommu_cap(domain);
- 	}
- 
--	return 0;
-+out_unlock:
-+	spin_unlock(&iommu->lock);
-+	return ret;
- }
- 
- static void domain_detach_iommu(struct dmar_domain *domain,
-@@ -1817,9 +1817,7 @@ static void domain_detach_iommu(struct dmar_domain *domain,
- {
- 	int num;
- 
--	assert_spin_locked(&device_domain_lock);
--	assert_spin_locked(&iommu->lock);
--
-+	spin_lock(&iommu->lock);
- 	domain->iommu_refcnt[iommu->seq_id] -= 1;
- 	if (domain->iommu_refcnt[iommu->seq_id] == 0) {
- 		num = domain->iommu_did[iommu->seq_id];
-@@ -1827,6 +1825,7 @@ static void domain_detach_iommu(struct dmar_domain *domain,
- 		domain_update_iommu_cap(domain);
- 		domain->iommu_did[iommu->seq_id] = 0;
- 	}
-+	spin_unlock(&iommu->lock);
- }
- 
- static inline int guestwidth_to_adjustwidth(int gaw)
-@@ -2479,9 +2478,7 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- 
- 	spin_lock_irqsave(&device_domain_lock, flags);
- 	info->domain = domain;
--	spin_lock(&iommu->lock);
- 	ret = domain_attach_iommu(domain, iommu);
--	spin_unlock(&iommu->lock);
- 	if (ret) {
- 		spin_unlock_irqrestore(&device_domain_lock, flags);
- 		return ret;
-@@ -4166,7 +4163,6 @@ static void __dmar_remove_one_dev_info(struct device_domain_info *info)
- {
- 	struct dmar_domain *domain;
- 	struct intel_iommu *iommu;
--	unsigned long flags;
- 
- 	assert_spin_locked(&device_domain_lock);
- 
-@@ -4187,10 +4183,7 @@ static void __dmar_remove_one_dev_info(struct device_domain_info *info)
- 	}
- 
- 	list_del(&info->link);
--
--	spin_lock_irqsave(&iommu->lock, flags);
- 	domain_detach_iommu(domain, iommu);
--	spin_unlock_irqrestore(&iommu->lock, flags);
- }
- 
- static void dmar_remove_one_dev_info(struct device *dev)
--- 
-2.25.1
+> I tried to do some investigating, it seems that the kernel is stuck at
+> printk.c::console_init() -> drivers/tty/vt/vt.c::con_init() ->
+> printk.c::register_console() -> unregister_console() -> console_lock().
 
+Is it console lock (console_kthreads_block() -> mutex_lock(&con->lock))
+that we cannot grab or is it console semaphore?
