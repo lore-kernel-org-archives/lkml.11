@@ -2,98 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C14CCA47A
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7AC3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242714AbiFNLr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34550 "EHLO
+        id S242957AbiFNLrl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 07:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242755AbiFNLr0 (ORCPT
+        with ESMTP id S241585AbiFNLrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 07:47:26 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 699B425D7
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:47:25 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id w21so8404633pfc.0
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:47:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=heitbaum.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9yjCf6oY3gJS5YNfh+t2xkU3PyOSCOkeJrjT3Jr85cM=;
-        b=CsOKP9DatAjY5ULn1fGBTaFBmXY9q1bDyoUJkLdt8pcLNG+jg8zcWSdECEqagQgv9f
-         9NUv02jJYfl30AI+RjDo+TVdnSTbeN6eyjchgdnP2U4r+epXoaE049dEaQBjBMNEaT9k
-         VSWjg0OznvQcuuCo6Uk/o/3VT9XnbQjHbmVEg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9yjCf6oY3gJS5YNfh+t2xkU3PyOSCOkeJrjT3Jr85cM=;
-        b=heqDYmxcr9dWU7jEvhv8x03F18ybm+1pAxo/7XSWuzjghjKl/auv92Mt0lIxRiAUyV
-         ASr6rl/4KdV1DQJlcdTy+g2bzP/9MNE5L8V3UhxSzIsPfoXOqGK1Q63VrMnAOFDfwEus
-         SPF0JJrEbl+WMKQvUTpyDCYpzHGxHiJmJyxipusfh6GlNs/EFfBgzaz8RKCoa4L4hcvW
-         3Hdht5mAEVw71Li2AyT3fwVGL1v4X5qkRli+XzHBpI1ir5m+X+HpK0Bx2aQvvWFGH5ZD
-         uckSppeVUteDOH7Pbc4IfsxeQYVzS9v14kCfihLornz1Cv3vYLloNX9fTAIk10ljACua
-         mRpQ==
-X-Gm-Message-State: AOAM532nQlUZQdezOepDSmYgVEtq8idOuZGfvPPzFp7OP393D1YgFQke
-        YvXLCF02qbhHDuzDzLdpkxulcQ==
-X-Google-Smtp-Source: ABdhPJyS2jpnvZtL2c84oCGG7GjdOJvENERd3a1AmtOYUUk7rt0xRQr3M6SYy0NcwUttJzfbYRg4RQ==
-X-Received: by 2002:a63:864a:0:b0:3fd:97a1:79f with SMTP id x71-20020a63864a000000b003fd97a1079fmr4237636pgd.51.1655207244652;
-        Tue, 14 Jun 2022 04:47:24 -0700 (PDT)
-Received: from 4207e2866154 (194-193-162-175.tpgi.com.au. [194.193.162.175])
-        by smtp.gmail.com with ESMTPSA id m5-20020a170902bb8500b0015e8d4eb2d8sm6992433pls.290.2022.06.14.04.47.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 04:47:24 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 11:47:15 +0000
-From:   Rudi Heitbaum <rudi@heitbaum.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.18 000/343] 5.18.4-rc2 review
-Message-ID: <20220614114715.GA31790@4207e2866154>
-References: <20220613181233.078148768@linuxfoundation.org>
+        Tue, 14 Jun 2022 07:47:37 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19859DFEA
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:47:37 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id C9BDA21B23;
+        Tue, 14 Jun 2022 11:47:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655207255; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=te73DX5kggSfnajOVBmsnuuS8V2hl4yR3sgi0lsOK+M=;
+        b=0aA9MJYYVykJJ7t/bYkVScInYHsGVQV/AdPzpotM/Cim+yIvxT4YZoEudKNODz/67pM4F7
+        pKgrlpT4FcoVNWxC1WVZLUNTNmMHNe6cwhVAn1cNb1duuQTenoeT3VbhJk0eaX8zFaC41U
+        cr9huxnBP8vIgF3zQliFznSAXbmH0pg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655207255;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=te73DX5kggSfnajOVBmsnuuS8V2hl4yR3sgi0lsOK+M=;
+        b=nW75kCYZDixcMtaGdtpfvRxu+/Rr9nI5dsYWSjemPlrB58A1PkhobH2OUYgU5+no/OJntU
+        GJ/f7dQb1TZY8VDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9A963139EC;
+        Tue, 14 Jun 2022 11:47:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 6GYoJVd1qGLLeQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 14 Jun 2022 11:47:35 +0000
+Message-ID: <ab6880b2-54c2-7fad-3cc6-33d9cdafe5f0@suse.cz>
+Date:   Tue, 14 Jun 2022 13:47:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613181233.078148768@linuxfoundation.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] mm: check the function kmalloc_slab return value
+Content-Language: en-US
+To:     tury <renyu@nfschina.com>, cl@linux.com
+Cc:     penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
+        akpm@linux-foundation.org, roman.gushchin@linux.dev,
+        42.hyeyoo@gmail.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
+        qixu@nfschina.com, hukun@nfschina.com, yuzhe@nfschina.com
+References: <20220613102438.27723-1-renyu@nfschina.com>
+ <20220614083939.13508-1-renyu@nfschina.com>
+ <bb8d41fc-bd13-9563-7c54-2850f131e835@suse.cz>
+ <be9a1d54-0558-dbee-fcac-0f357ea32db9@nfschina.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <be9a1d54-0558-dbee-fcac-0f357ea32db9@nfschina.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 08:18:34PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.4 release.
-> There are 343 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 6/14/22 11:26, tury wrote:
 > 
-> Responses should be made by Wed, 15 Jun 2022 18:11:39 +0000.
-> Anything received after that time might be too late.
+> 
+> 在 2022年06月14日 16:48, Vlastimil Babka 写道:
+>> On 6/14/22 10:39, Ren Yu wrote:
+>>> As the possible failure of the kmalloc_slab,
+>>> it should be better to check it.
+>> AFAIK failure is not possible, kmalloc_slab() is not an allocation function,
+>> it just returns a member of kmalloc_caches array, which is initialized
+>> elsewhere and shouldn't contain NULLs. So the patch seems unnecessary to me.
+>>
+>>> Signed-off-by: Ren Yu <renyu@nfschina.com>
+>>> Reported-by: kernel test robot <lkp@intel.com>
+>>> ---
+>>> v2:
+>>> - fix build waring integer from pointer without a cast
+>>> ---
+>>> ---
+>>>   mm/slab.c | 2 ++
+>>>   1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/mm/slab.c b/mm/slab.c
+>>> index f8cd00f4ba13..72135e555827 100644
+>>> --- a/mm/slab.c
+>>> +++ b/mm/slab.c
+>>> @@ -2064,6 +2064,8 @@ int __kmem_cache_create(struct kmem_cache *cachep,
+>>> slab_flags_t flags)
+>>>       if (OFF_SLAB(cachep)) {
+>>>           cachep->freelist_cache =
+>>>               kmalloc_slab(cachep->freelist_size, 0u);
+>>> +        if (unlikely(ZERO_OR_NULL_PTR(cachep->freelist_cache)))
+>> The usual way is "if (!cachep->freelist_cache)". Not sure why check for ZERO.
+>>
+>>> +            return cachep->freelist_cache;
+>> So in case of NULL this would return NULL, thus 0, but __kmem_cache_create()
+>> return 0 on success, so it's wrong. You would have to return e.g. -ENOMEM.
+> Thanks for the advice ,I'll be re-patching
 
-Hi Greg,
+However that was meant just for your information/learning, the patch is
+still unecessary as I wrote above, so I will not merge it so we don't
+complicate the code needlessly.
 
-5.18.4-rc2 tested.
+>>
+>>>       }
+>>>         err = setup_cpu_cache(cachep, gfp);
+>>
+> 
 
-Run tested on:
-- Allwinner H6 (Tanix TX6)
-- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
-
-In addition - build tested for:
-- Allwinner A64
-- Allwinner H3
-- Allwinner H5
-- NXP iMX6
-- NXP iMX8
-- Qualcomm Dragonboard
-- Rockchip RK3288
-- Rockchip RK3328
-- Rockchip RK3399pro
-- Samsung Exynos
-
-Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
---
-Rudi
