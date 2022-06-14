@@ -2,364 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29BF7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:17:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E129C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235629AbiFNIRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36958 "EHLO
+        id S236935AbiFNIRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 04:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234092AbiFNIRH (ORCPT
+        with ESMTP id S235383AbiFNIRK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:17:07 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16503FD94
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:17:05 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id r5so8646964iod.5
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:17:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Ey38FOje1qhBoyFKEwgMBItTmKZu5WAMaNeKEpJx1zk=;
-        b=eiTwxzyxzEyHX1n42w506ist0rSUGGsQziBRqgx3/KscVt5UHXi1WJxi41VHxh4V6Q
-         NtmlnZtnVA2ZVv+Cqe7HfE2cTqRhK422gXGd5TFop+voy/p5r9qvTCrkQdRCjgj9PFO1
-         SenMLkx9vipsJdRznTL5XDk7qGGv+bxJHRwOJ9KRxH3P3FrY/4S1XXqFHbBx0UgaWBSN
-         eyUBx8XQ/Xac7SIRQ+3PGLqTCzNoW6dCHLmWp17XVXdtOSAOWji8b8gL8hqaU6l/vHvZ
-         mb1aJO2GSFSM3cKU4xCcVtdtSxYOZYnuoVm/AgB84aurkcdbYMFIWgpktiTjxmDGr4Wp
-         Vnlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Ey38FOje1qhBoyFKEwgMBItTmKZu5WAMaNeKEpJx1zk=;
-        b=vcn2Zp32W9DZLH4o4MowuUi9MU1tFqujC9sArd9575sRjhcP7pJhJ99zHfH6QvNkhn
-         ApOV2L1nSwNbGNmfEGIzC074kibvpnrvVoQiCaaEFsJQPQYOAjSpMZhxL3ugDJ4BDUu/
-         etg4QQ0khUncr6kN8bSSoLKmj2CwhprWzydNwOI+ZmU+9/+QPuscsR7iWEkhqc0SsChY
-         j3kI+nPYTBwOzjbRfD3lN9tFbetKXdcOgizqbhkKo4G+caWsMsm96N2j0kqun+coOc+z
-         HbHhvjAm6VA+DUZLYa5ATuE4IV2OPJq5Y4P01rtPr+uUub6ECv9iDiWdrdSmjdcr3opF
-         IXOA==
-X-Gm-Message-State: AOAM531HaT4Rlhf/rOGKf+zxk+XQhPcbpTiOnNnUNOTg65hzoDoHdqTE
-        Hdd1qq4EeRc582VoIMLofy/U/K6PqRbi/y5i7czjOA==
-X-Google-Smtp-Source: ABdhPJyFs6N+2S/uhEy9HjTp1j7ZIf1O53t4W42tOEBq3BsEBHCJfES9t1ZQIrKqU3/CDBCDJNjCx7+yXdumAqUJq0c=
-X-Received: by 2002:a05:6638:1c12:b0:333:ef51:ff14 with SMTP id
- ca18-20020a0566381c1200b00333ef51ff14mr2104815jab.137.1655194625062; Tue, 14
- Jun 2022 01:17:05 -0700 (PDT)
+        Tue, 14 Jun 2022 04:17:10 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F223FD94
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:17:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655194629; x=1686730629;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OrVbnJdhn7FtUc03iOArEa+ZxjCDWhYe5bfK90Mzuxg=;
+  b=QXNALCReS17M3dbn9UdQSwnbH1HTkwwOLxd5W1FmSODRi9cJaOosOTPk
+   zM6nYAVxP3rsOKtB8Hi+ozalVpeHEN2KxR+9pQBDnXqPpkXS3HuLQdu5Y
+   bVNyw0UXIJ0cZ/ukTIz+nwuRA4JfcVtJKm1lsELx4gTBUGREwUI3jclOq
+   /dev6gWI9TykPoo7BWaPgWre1NaIXcYpEK6YxEZUdlSvt3xTZhgH0lrp5
+   wU29YdwkQTHK5Ch+M4LUYk8a1lN43Tob7P8pnroBgsS5THfs9VJq55umC
+   KWf354Q2Vbj0tnWBcHj7J+2PtUvPfxy7qmVIi7ayawFiQ9k6SmgMrhf2L
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="261579534"
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="261579534"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:17:09 -0700
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="830274859"
+Received: from unknown (HELO yhuang6-mobl1.ccr.corp.intel.com) ([10.254.215.153])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:17:05 -0700
+From:   Huang Ying <ying.huang@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Huang Ying <ying.huang@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Rik van Riel <riel@surriel.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
+        Wei Xu <weixugc@google.com>, osalvador <osalvador@suse.de>,
+        Shakeel Butt <shakeelb@google.com>,
+        Zhong Jiang <zhongjiang-ali@linux.alibaba.com>
+Subject: [PATCH -V3 0/3] memory tiering: hot page selection
+Date:   Tue, 14 Jun 2022 16:16:32 +0800
+Message-Id: <20220614081635.194014-1-ying.huang@intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220613100433-mutt-send-email-mst@kernel.org>
- <20220614053737.82453-1-huangjie.albert@bytedance.com> <CACGkMEsnvj3MR8oRu-M2D9gTD2sDUJSWkMdjdm6GPum_KUY47w@mail.gmail.com>
-In-Reply-To: <CACGkMEsnvj3MR8oRu-M2D9gTD2sDUJSWkMdjdm6GPum_KUY47w@mail.gmail.com>
-From:   =?UTF-8?B?6buE5p2w?= <huangjie.albert@bytedance.com>
-Date:   Tue, 14 Jun 2022 16:16:53 +0800
-Message-ID: <CABKxMyMMQhbLCu8QN4ZD42802ZQdbGC+YvkQiWz_voecfM1jqw@mail.gmail.com>
-Subject: Re: [PATCH] virtio_ring : keep used_wrap_counter in vq->last_used_idx
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst <mst@redhat.com>, yuanzhu@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jason Wang <jasowang@redhat.com> =E4=BA=8E2022=E5=B9=B46=E6=9C=8814=E6=97=
-=A5=E5=91=A8=E4=BA=8C 15:45=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Tue, Jun 14, 2022 at 1:38 PM Albert Huang
-> <huangjie.albert@bytedance.com> wrote:
-> >
-> > From: "huangjie.albert" <huangjie.albert@bytedance.com>
-> >
-> > the used_wrap_counter and the vq->last_used_idx may get
-> > out of sync if they are separate assignment=EF=BC=8Cand interrupt
-> > might use an incorrect value to check for the used index.
-> >
-> > for example:OOB access
-> > ksoftirqd may consume the packet and it will call:
-> > virtnet_poll
-> >         -->virtnet_receive
-> >                 -->virtqueue_get_buf_ctx
-> >                         -->virtqueue_get_buf_ctx_packed
-> > and in virtqueue_get_buf_ctx_packed:
-> >
-> > vq->last_used_idx +=3D vq->packed.desc_state[id].num;
-> > if (unlikely(vq->last_used_idx >=3D vq->packed.vring.num)) {
-> >          vq->last_used_idx -=3D vq->packed.vring.num;
-> >          vq->packed.used_wrap_counter ^=3D 1;
-> > }
-> >
-> > if at the same time, there comes a vring interrupt=EF=BC=8Cin vring_int=
-errupt:
-> > we will call:
-> > vring_interrupt
-> >         -->more_used
-> >                 -->more_used_packed
-> >                         -->is_used_desc_packed
-> > in is_used_desc_packed, the last_used_idx maybe >=3D vq->packed.vring.n=
-um.
-> > so this could case a memory out of bounds bug.
-> >
-> > this patch is to keep the used_wrap_counter in vq->last_used_idx
-> > so we can get the correct value to check for used index in interrupt.
-> >
-> > Signed-off-by: huangjie.albert <huangjie.albert@bytedance.com>
-> > ---
-> >  drivers/virtio/virtio_ring.c     | 60 ++++++++++++++++++--------------
-> >  include/uapi/linux/virtio_ring.h |  6 ++++
-> >  2 files changed, 40 insertions(+), 26 deletions(-)
-> >
-> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.=
-c
-> > index 13a7348cedff..35c3750e89e1 100644
-> > --- a/drivers/virtio/virtio_ring.c
-> > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -111,7 +111,12 @@ struct vring_virtqueue {
-> >         /* Number we've added since last sync. */
-> >         unsigned int num_added;
-> >
-> > -       /* Last used index we've seen. */
-> > +       /* Last used index  we've seen.
-> > +        * for split ring, it just contains last used index
-> > +        * for packed ring, it not only contains last used index, but a=
-lso
-> > +        * used_wrap_counter, the VRING_PACKED_USED_INDEX_F_WRAP_CTR is
-> > +        * the bit shift in last_used_idx
-> > +        */
-> >         u16 last_used_idx;
-> >
-> >         /* Hint for event idx: already triggered no need to disable. */
-> > @@ -154,9 +159,6 @@ struct vring_virtqueue {
-> >                         /* Driver ring wrap counter. */
-> >                         bool avail_wrap_counter;
-> >
-> > -                       /* Device ring wrap counter. */
-> > -                       bool used_wrap_counter;
-> > -
-> >                         /* Avail used flags. */
-> >                         u16 avail_used_flags;
-> >
-> > @@ -1397,6 +1399,9 @@ static inline bool is_used_desc_packed(const stru=
-ct vring_virtqueue *vq,
-> >         bool avail, used;
-> >         u16 flags;
-> >
-> > +       if (idx >=3D vq->packed.vring.num)
-> > +               return false;
->
-> I wonder if we can avoid this trick, more below.
+To optimize page placement in a memory tiering system with NUMA
+balancing, the hot pages in the slow memory nodes need to be
+identified.  Essentially, the original NUMA balancing implementation
+selects the mostly recently accessed (MRU) pages to promote.  But this
+isn't a perfect algorithm to identify the hot pages.  Because the
+pages with quite low access frequency may be accessed eventually given
+the NUMA balancing page table scanning period could be quite long
+(e.g. 60 seconds).  So in this patchset, we implement a new hot page
+identification algorithm based on the latency between NUMA balancing
+page table scanning and hint page fault.  Which is a kind of mostly
+frequently accessed (MFU) algorithm.
 
-Yes, the idx pass to the is_used_desc_packed can never  >=3D
-vq->packed.vring.num since we
-tweak the math here :
->+       last_used +=3D vq->packed.desc_state[id].num;
->+       if (unlikely(last_used >=3D vq->packed.vring.num)) {
->+               last_used -=3D vq->packed.vring.num;
->+               used_wrap_counter ^=3D 1;
->         }
->+       last_used =3D (last_used | (used_wrap_counter << VRING_PACKED_DESC=
-_F_USED));
->+       vq->last_used_idx =3D last_used;
+In NUMA balancing memory tiering mode, if there are hot pages in slow
+memory node and cold pages in fast memory node, we need to
+promote/demote hot/cold pages between the fast and cold memory nodes.
 
->
-> > +
-> >         flags =3D le16_to_cpu(vq->packed.vring.desc[idx].flags);
-> >         avail =3D !!(flags & (1 << VRING_PACKED_DESC_F_AVAIL));
-> >         used =3D !!(flags & (1 << VRING_PACKED_DESC_F_USED));
-> > @@ -1406,8 +1411,12 @@ static inline bool is_used_desc_packed(const str=
-uct vring_virtqueue *vq,
-> >
-> >  static inline bool more_used_packed(const struct vring_virtqueue *vq)
-> >  {
-> > -       return is_used_desc_packed(vq, vq->last_used_idx,
-> > -                       vq->packed.used_wrap_counter);
-> > +       u16 last_used;
-> > +       bool used_wrap_counter;
-> > +
-> > +       last_used =3D vq->last_used_idx & ~(1 << VRING_PACKED_USED_INDE=
-X_F_WRAP_CTR);
-> > +       used_wrap_counter =3D !!((vq->last_used_idx) >> VRING_PACKED_US=
-ED_INDEX_F_WRAP_CTR);
-> > +       return is_used_desc_packed(vq, last_used, used_wrap_counter);
-> >  }
-> >
-> >  static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
-> > @@ -1416,6 +1425,7 @@ static void *virtqueue_get_buf_ctx_packed(struct =
-virtqueue *_vq,
-> >  {
-> >         struct vring_virtqueue *vq =3D to_vvq(_vq);
-> >         u16 last_used, id;
-> > +       bool used_wrap_counter;
-> >         void *ret;
-> >
-> >         START_USE(vq);
-> > @@ -1434,7 +1444,8 @@ static void *virtqueue_get_buf_ctx_packed(struct =
-virtqueue *_vq,
-> >         /* Only get used elements after they have been exposed by host.=
- */
-> >         virtio_rmb(vq->weak_barriers);
-> >
-> > -       last_used =3D vq->last_used_idx;
-> > +       used_wrap_counter =3D !!((vq->last_used_idx >> VRING_PACKED_USE=
-D_INDEX_F_WRAP_CTR));
-> > +       last_used =3D (vq->last_used_idx) & (~(1 << VRING_PACKED_USED_I=
-NDEX_F_WRAP_CTR));
-> >         id =3D le16_to_cpu(vq->packed.vring.desc[last_used].id);
-> >         *len =3D le32_to_cpu(vq->packed.vring.desc[last_used].len);
-> >
-> > @@ -1451,12 +1462,15 @@ static void *virtqueue_get_buf_ctx_packed(struc=
-t virtqueue *_vq,
-> >         ret =3D vq->packed.desc_state[id].data;
-> >         detach_buf_packed(vq, id, ctx);
-> >
-> > -       vq->last_used_idx +=3D vq->packed.desc_state[id].num;
-> > -       if (unlikely(vq->last_used_idx >=3D vq->packed.vring.num)) {
-> > -               vq->last_used_idx -=3D vq->packed.vring.num;
-> > -               vq->packed.used_wrap_counter ^=3D 1;
-> > +       last_used +=3D vq->packed.desc_state[id].num;
-> > +       if (unlikely(last_used >=3D vq->packed.vring.num)) {
->
-> Can we tweak the math here to avoid the out of bound result?
+A choice is to promote/demote as fast as possible.  But the CPU cycles
+and memory bandwidth consumed by the high promoting/demoting
+throughput will hurt the latency of some workload because of accessing
+inflating and slow memory bandwidth contention.
 
-   Yes, this can avoid the out of bound result. because of  We just
-assign last_used_idx in the following code=EF=BC=9A
-  vq->last_used_idx =3D last_used;
-  and it is a 16bit/32bit operations,and are guaranteed to be atomic
+A way to resolve this issue is to restrict the max promoting/demoting
+throughput.  It will take longer to finish the promoting/demoting.
+But the workload latency will be better.  This is implemented in this
+patchset as the page promotion rate limit mechanism.
 
->
-> > +               last_used -=3D vq->packed.vring.num;
-> > +               used_wrap_counter ^=3D 1;
-> >         }
-> >
-> > +       last_used =3D (last_used | (used_wrap_counter << VRING_PACKED_D=
-ESC_F_USED));
-> > +       vq->last_used_idx =3D last_used;
-> > +
-> >         /*
-> >          * If we expect an interrupt for the next entry, tell host
-> >          * by writing event index and flush out the write before
-> > @@ -1465,9 +1479,7 @@ static void *virtqueue_get_buf_ctx_packed(struct =
-virtqueue *_vq,
-> >         if (vq->packed.event_flags_shadow =3D=3D VRING_PACKED_EVENT_FLA=
-G_DESC)
-> >                 virtio_store_mb(vq->weak_barriers,
-> >                                 &vq->packed.vring.driver->off_wrap,
-> > -                               cpu_to_le16(vq->last_used_idx |
-> > -                                       (vq->packed.used_wrap_counter <=
-<
-> > -                                        VRING_PACKED_EVENT_F_WRAP_CTR)=
-));
-> > +                               cpu_to_le16(vq->last_used_idx));
-> >
-> >         LAST_ADD_TIME_INVALID(vq);
-> >
-> > @@ -1499,9 +1511,7 @@ static unsigned int virtqueue_enable_cb_prepare_p=
-acked(struct virtqueue *_vq)
-> >
-> >         if (vq->event) {
-> >                 vq->packed.vring.driver->off_wrap =3D
-> > -                       cpu_to_le16(vq->last_used_idx |
-> > -                               (vq->packed.used_wrap_counter <<
-> > -                                VRING_PACKED_EVENT_F_WRAP_CTR));
-> > +                       cpu_to_le16(vq->last_used_idx);
-> >                 /*
-> >                  * We need to update event offset and event wrap
-> >                  * counter first before updating event flags.
-> > @@ -1518,8 +1528,7 @@ static unsigned int virtqueue_enable_cb_prepare_p=
-acked(struct virtqueue *_vq)
-> >         }
-> >
-> >         END_USE(vq);
-> > -       return vq->last_used_idx | ((u16)vq->packed.used_wrap_counter <=
-<
-> > -                       VRING_PACKED_EVENT_F_WRAP_CTR);
-> > +       return vq->last_used_idx;
-> >  }
-> >
-> >  static bool virtqueue_poll_packed(struct virtqueue *_vq, u16 off_wrap)
-> > @@ -1550,9 +1559,9 @@ static bool virtqueue_enable_cb_delayed_packed(st=
-ruct virtqueue *_vq)
-> >         if (vq->event) {
-> >                 /* TODO: tune this threshold */
-> >                 bufs =3D (vq->packed.vring.num - vq->vq.num_free) * 3 /=
- 4;
-> > -               wrap_counter =3D vq->packed.used_wrap_counter;
-> > +               wrap_counter =3D !!(vq->last_used_idx >> VRING_PACKED_U=
-SED_INDEX_F_WRAP_CTR);
-> >
-> > -               used_idx =3D vq->last_used_idx + bufs;
-> > +               used_idx =3D (vq->last_used_idx & ~(1 << VRING_PACKED_U=
-SED_INDEX_F_WRAP_CTR)) + bufs;
-> >                 if (used_idx >=3D vq->packed.vring.num) {
-> >                         used_idx -=3D vq->packed.vring.num;
-> >                         wrap_counter ^=3D 1;
-> > @@ -1582,9 +1591,9 @@ static bool virtqueue_enable_cb_delayed_packed(st=
-ruct virtqueue *_vq)
-> >          */
-> >         virtio_mb(vq->weak_barriers);
-> >
-> > -       if (is_used_desc_packed(vq,
-> > -                               vq->last_used_idx,
-> > -                               vq->packed.used_wrap_counter)) {
-> > +       wrap_counter =3D !!(vq->last_used_idx >> VRING_PACKED_USED_INDE=
-X_F_WRAP_CTR);
-> > +       used_idx =3D (vq->last_used_idx & ~(1 << VRING_PACKED_USED_INDE=
-X_F_WRAP_CTR));
-> > +       if (is_used_desc_packed(vq, used_idx, wrap_counter)) {
-> >                 END_USE(vq);
-> >                 return false;
-> >         }
-> > @@ -1689,7 +1698,7 @@ static struct virtqueue *vring_create_virtqueue_p=
-acked(
-> >         vq->notify =3D notify;
-> >         vq->weak_barriers =3D weak_barriers;
-> >         vq->broken =3D true;
-> > -       vq->last_used_idx =3D 0;
-> > +       vq->last_used_idx =3D 0 | (1 << VRING_PACKED_USED_INDEX_F_WRAP_=
-CTR);
-> >         vq->event_triggered =3D false;
-> >         vq->num_added =3D 0;
-> >         vq->packed_ring =3D true;
-> > @@ -1720,7 +1729,6 @@ static struct virtqueue *vring_create_virtqueue_p=
-acked(
-> >
-> >         vq->packed.next_avail_idx =3D 0;
-> >         vq->packed.avail_wrap_counter =3D 1;
-> > -       vq->packed.used_wrap_counter =3D 1;
-> >         vq->packed.event_flags_shadow =3D 0;
-> >         vq->packed.avail_used_flags =3D 1 << VRING_PACKED_DESC_F_AVAIL;
-> >
-> > diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linux/virt=
-io_ring.h
-> > index 476d3e5c0fe7..96bcc4d52fce 100644
-> > --- a/include/uapi/linux/virtio_ring.h
-> > +++ b/include/uapi/linux/virtio_ring.h
-> > @@ -77,6 +77,12 @@
-> >   */
-> >  #define VRING_PACKED_EVENT_F_WRAP_CTR  15
-> >
-> > +
-> > +/*
-> > + * used wrap Counter bit shift in vq->last_used_idx for packed ring
-> > + */
-> > +#define VRING_PACKED_USED_INDEX_F_WRAP_CTR  15
->
-> Let's simply reuse VRING_PACKED_EVENT_F_WRAP_CTR ?
->
-> Thanks
+The promotion hot threshold is workload and system configuration
+dependent.  So in this patchset, a method to adjust the hot threshold
+automatically is implemented.  The basic idea is to control the number
+of the candidate promotion pages to match the promotion rate limit.
 
-Although the two values are the same, I see the meanings are different,
-so I redefine one. Is it possible to rename
-VRING_PACKED_EVENT_F_WRAP_CTR to VRING_PACKED_F_WRAP_CTR?
+We used the pmbench memory accessing benchmark tested the patchset on
+a 2-socket server system with DRAM and PMEM installed.  The test
+results are as follows,
 
-Jason, what is your take?
+		pmbench score		promote rate
+		 (accesses/s)			MB/s
+		-------------		------------
+base		  146887704.1		       725.6
+hot selection     165695601.2		       544.0
+rate limit	  162814569.8		       165.2
+auto adjustment	  170495294.0                  136.9
 
->
-> > +
-> >  /* We support indirect buffer descriptors */
-> >  #define VIRTIO_RING_F_INDIRECT_DESC    28
-> >
-> > --
-> > 2.31.1
-> >
->
+From the results above,
+
+With hot page selection patch [1/3], the pmbench score increases about
+12.8%, and promote rate (overhead) decreases about 25.0%, compared with
+base kernel.
+
+With rate limit patch [2/3], pmbench score decreases about 1.7%, and
+promote rate decreases about 69.6%, compared with hot page selection
+patch.
+
+With threshold auto adjustment patch [3/3], pmbench score increases
+about 4.7%, and promote rate decrease about 17.1%, compared with rate
+limit patch.
+
+Changelogs:
+
+v3:
+
+- Rebased on v5.19-rc1
+
+- Renamed newly-added fields in struct pglist_data.
+
+v2:
+
+- Added ABI document for promote rate limit per Andrew's comments.  Thanks!
+
+- Added function comments when necessary per Andrew's comments.
+
+- Address other comments from Andrew Morton.
+
+Best Regards,
+Huang, Ying
