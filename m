@@ -2,113 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76976C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B51C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245160AbiFNMNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:13:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40288 "EHLO
+        id S235243AbiFNMRW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356831AbiFNMMw (ORCPT
+        with ESMTP id S240713AbiFNMQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:12:52 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8042949FA0;
-        Tue, 14 Jun 2022 05:12:39 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMnMs47CPzjXcV;
-        Tue, 14 Jun 2022 20:11:05 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 20:12:34 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <jmorris@namei.org>, <serge@hallyn.com>
-CC:     <linux-security-module@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] lsm_audit: Clean up redundant NULL pointer check
-Date:   Tue, 14 Jun 2022 20:10:30 +0800
-Message-ID: <20220614121030.115491-1-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 14 Jun 2022 08:16:04 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8195926D1;
+        Tue, 14 Jun 2022 05:16:03 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id x17so11023079wrg.6;
+        Tue, 14 Jun 2022 05:16:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xWqP97KiAJDxiZtnK2LJEZYJu6FuzCpbf5J8wQ1l+A8=;
+        b=LtgPRQh2VSOKYrwUorW93/iyjS2VmL687On0wH0Vzz5Lp1tJCeEC8nJYA0hVSu+CKd
+         Ic4LgHppcJ8kB3NPc+iefq3EABGG3grvmIM1Se8RK2ac9IOLTXKg0WcRo87boB3fL7Ns
+         wbie2Hn2e2hhuJ+J4Y+0AdpNSxsQPa6b97u8rn313apb348/opGB+SK3odI+oxp70p9+
+         65gitqZwukfiiSIPJFWZ5EeInwg8EsXh+Blbv5EuupqNqLpjVT7ydilYgDKulwxTk/6o
+         01jxOAHdPPwl0yhp+rvsE9kRMXtRXoD8qMrb3qodj+SngGWb10u32g5gYk8WV+lemUWI
+         jJYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xWqP97KiAJDxiZtnK2LJEZYJu6FuzCpbf5J8wQ1l+A8=;
+        b=U9di2qA2N3m46ehgaU+T7Wzr2dKzIRlaXpnFmCA3uLFyH/V3dDfX27m5dPdk02itzz
+         abTMTNAL+/LMzgixEn/rJBw3vWRiQQgv+eJ9Dljc9MkZeLjG6KS0cf5V0phLiiOaOgHx
+         dAwhwuFWEbJSUzor5ZPgIX02ram+Vtwz9lZeDnJ9iMZCK7Pqjcz6eaTWHGQ15m1kmmPO
+         640/KGNwB4m5YxsWlqAo4OBMwBozmn+38AA8qik4SBQS9vD+D3+YriTpil0AANGwJDc+
+         RpIvoNZFzchC9VVGumZmWx5IkuIXMoN2o7zXFSfamKcQM/ZxeTnc/A0rg62k2GVAe1aQ
+         uG5A==
+X-Gm-Message-State: AJIora94/4KyG4iRVzeYNX1LuBlyDIXsdEjS1c7xJjksxMGkzGINFCub
+        lhOUJo8Szk1ZQT4OPwxAPpg=
+X-Google-Smtp-Source: AGRyM1ug1V2kWjRUGXEmwuPwLLXsKwhPQsqu+35nXnftUg5oz8d5JDj0nITfFzJs7cuQBKb66LAjXg==
+X-Received: by 2002:a5d:6da3:0:b0:211:3597:62b1 with SMTP id u3-20020a5d6da3000000b00211359762b1mr4732785wrs.660.1655208961985;
+        Tue, 14 Jun 2022 05:16:01 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id u7-20020a05600c19c700b003973b9d0447sm21416366wmq.36.2022.06.14.05.16.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 05:16:01 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <75bdc7ee-bac5-ae05-dffb-cb749c9005e1@redhat.com>
+Date:   Tue, 14 Jun 2022 14:16:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] KVM: nVMX: Don't expose TSC scaling to L1 when on Hyper-V
+Content-Language: en-US
+To:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Ilias Stamatis <ilstam@amazon.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>, mail@anirudhrb.com,
+        kumarpraveen@linux.microsoft.com, wei.liu@kernel.org,
+        robert.bradford@intel.com, liuwe@microsoft.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220613161611.3567556-1-anrayabh@linux.microsoft.com>
+ <592ab920-51f3-4794-331f-8737e1f5b20a@redhat.com>
+ <YqgU2KfFCqawbTkW@anrayabh-desk>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YqgU2KfFCqawbTkW@anrayabh-desk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The implements of {ip,tcp,udp,dccp,sctp,ipv6}_hdr(skb) guarantee that
-they will never return NULL, and elsewhere user don't do the check
-as well, so remove the check here.
+On 6/14/22 06:55, Anirudh Rayabharam wrote:
+>> That said, I think a better implementation of this patch is to just add
+>> a version of evmcs_sanitize_exec_ctrls that takes a struct
+>> nested_vmx_msrs *, and call it at the end of nested_vmx_setup_ctl_msrs like
+>>
+>> 	evmcs_sanitize_nested_vmx_vsrs(msrs);
+> Sanitize at the end might not work because I see some cases in
+> nested_vmx_setup_ctls_msrs() where we want to expose some things to L1
+> even though the hardware doesn't support it.
+> 
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
----
- security/lsm_audit.c | 14 +-------------
- 1 file changed, 1 insertion(+), 13 deletions(-)
+Yes, but these will never include eVMCS-unsupported features.
 
-diff --git a/security/lsm_audit.c b/security/lsm_audit.c
-index 78a278f28e49..75cc3f8d2a42 100644
---- a/security/lsm_audit.c
-+++ b/security/lsm_audit.c
-@@ -44,9 +44,6 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
- 	struct iphdr *ih;
- 
- 	ih = ip_hdr(skb);
--	if (ih == NULL)
--		return -EINVAL;
--
- 	ad->u.net->v4info.saddr = ih->saddr;
- 	ad->u.net->v4info.daddr = ih->daddr;
- 
-@@ -59,8 +56,6 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
- 	switch (ih->protocol) {
- 	case IPPROTO_TCP: {
- 		struct tcphdr *th = tcp_hdr(skb);
--		if (th == NULL)
--			break;
- 
- 		ad->u.net->sport = th->source;
- 		ad->u.net->dport = th->dest;
-@@ -68,8 +63,6 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
- 	}
- 	case IPPROTO_UDP: {
- 		struct udphdr *uh = udp_hdr(skb);
--		if (uh == NULL)
--			break;
- 
- 		ad->u.net->sport = uh->source;
- 		ad->u.net->dport = uh->dest;
-@@ -77,8 +70,6 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
- 	}
- 	case IPPROTO_DCCP: {
- 		struct dccp_hdr *dh = dccp_hdr(skb);
--		if (dh == NULL)
--			break;
- 
- 		ad->u.net->sport = dh->dccph_sport;
- 		ad->u.net->dport = dh->dccph_dport;
-@@ -86,8 +77,7 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
- 	}
- 	case IPPROTO_SCTP: {
- 		struct sctphdr *sh = sctp_hdr(skb);
--		if (sh == NULL)
--			break;
-+
- 		ad->u.net->sport = sh->source;
- 		ad->u.net->dport = sh->dest;
- 		break;
-@@ -115,8 +105,6 @@ int ipv6_skb_to_auditdata(struct sk_buff *skb,
- 	__be16 frag_off;
- 
- 	ip6 = ipv6_hdr(skb);
--	if (ip6 == NULL)
--		return -EINVAL;
- 	ad->u.net->v6info.saddr = ip6->saddr;
- 	ad->u.net->v6info.daddr = ip6->daddr;
- 	/* IPv6 can have several extension header before the Transport header
--- 
-2.17.1
-
+Paolo
