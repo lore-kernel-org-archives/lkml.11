@@ -2,69 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40969C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242223AbiFNNet (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 09:34:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51750 "EHLO
+        id S245606AbiFNNe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 09:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243308AbiFNNeo (ORCPT
+        with ESMTP id S244577AbiFNNe4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 09:34:44 -0400
-Received: from hust.edu.cn (unknown [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5C41C11F
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 06:34:43 -0700 (PDT)
-Received: from localhost.localdomain ([172.16.0.254])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 25EDWoU6010890-25EDWoU9010890
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 14 Jun 2022 21:32:54 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Martin Kaiser <martin@kaiser.cx>,
-        Michael Straube <straube.linux@gmail.com>,
-        Pavel Skripkin <paskripkin@gmail.com>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] driver: r8188eu: remove NULL check before vfree
-Date:   Tue, 14 Jun 2022 21:32:29 +0800
-Message-Id: <20220614133239.147076-1-dzm91@hust.edu.cn>
-X-Mailer: git-send-email 2.35.1
+        Tue, 14 Jun 2022 09:34:56 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA211C121;
+        Tue, 14 Jun 2022 06:34:55 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMq8l6mqqzRjR5;
+        Tue, 14 Jun 2022 21:31:35 +0800 (CST)
+Received: from [10.67.110.112] (10.67.110.112) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 21:34:53 +0800
+Subject: Re: [PATCH -next] selinux: Fix memleak in security_read_state_kernel
+To:     Ondrej Mosnacek <omosnace@redhat.com>
+CC:     Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        =?UTF-8?Q?Christian_G=c3=b6ttsche?= <cgzones@googlemail.com>,
+        <michalorzel.eng@gmail.com>, Austin Kim <austin.kim@lge.com>,
+        SElinux list <selinux@vger.kernel.org>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>
+References: <20220613135953.135998-1-xiujianfeng@huawei.com>
+ <CAFqZXNvHB0cftgbK+mScbZbcO71OLpXrBMxWAx1z1eB27mm8Cw@mail.gmail.com>
+From:   xiujianfeng <xiujianfeng@huawei.com>
+Message-ID: <f7151722-6450-7efd-1e3d-e31245dc3da2@huawei.com>
+Date:   Tue, 14 Jun 2022 21:34:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
+In-Reply-To: <CAFqZXNvHB0cftgbK+mScbZbcO71OLpXrBMxWAx1z1eB27mm8Cw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
+X-Originating-IP: [10.67.110.112]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-vfree can handle NULL pointer as its argument.
-According to coccinelle isnullfree check, remove NULL check
-before vfree operation.
-
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
-v1->v2: fix the logic change in the patch v1
- drivers/staging/r8188eu/os_dep/usb_intf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/staging/r8188eu/os_dep/usb_intf.c b/drivers/staging/r8188eu/os_dep/usb_intf.c
-index 68869c5daeff..cc2b44f60c46 100644
---- a/drivers/staging/r8188eu/os_dep/usb_intf.c
-+++ b/drivers/staging/r8188eu/os_dep/usb_intf.c
-@@ -372,7 +372,7 @@ static struct adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
- free_adapter:
- 	if (pnetdev)
- 		rtw_free_netdev(pnetdev);
--	else if (padapter)
-+	else
- 		vfree(padapter);
- 
- 	return NULL;
--- 
-2.35.1
-
+在 2022/6/14 20:57, Ondrej Mosnacek 写道:
+> On Mon, Jun 13, 2022 at 4:02 PM Xiu Jianfeng <xiujianfeng@huawei.com> wrote:
+>> In this function, it directly returns the result of __security_read_policy
+>> without freeing the allocated memory in *data, cause memory leak issue,
+>> so free the memory if __security_read_policy failed.
+>>
+>> Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+>> ---
+>>   security/selinux/ss/services.c | 9 ++++++++-
+>>   1 file changed, 8 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/security/selinux/ss/services.c b/security/selinux/ss/services.c
+>> index 69b2734311a6..fe5fcf571c56 100644
+>> --- a/security/selinux/ss/services.c
+>> +++ b/security/selinux/ss/services.c
+>> @@ -4048,6 +4048,7 @@ int security_read_policy(struct selinux_state *state,
+>>   int security_read_state_kernel(struct selinux_state *state,
+>>                                 void **data, size_t *len)
+>>   {
+>> +       int err;
+>>          struct selinux_policy *policy;
+>>
+>>          policy = rcu_dereference_protected(
+>> @@ -4060,5 +4061,11 @@ int security_read_state_kernel(struct selinux_state *state,
+>>          if (!*data)
+>>                  return -ENOMEM;
+>>
+>> -       return __security_read_policy(policy, *data, len);
+>> +       err = __security_read_policy(policy, *data, len);
+>> +       if (err) {
+>> +               vfree(*data);
+>> +               *data = NULL;
+>> +               *len = 0;
+>> +       }
+>> +       return err;
+>>   }
+>> --
+>> 2.17.1
+>>
+> security_read_policy() defined a few lines above has the same pattern
+> (just with vmalloc_user() in place of vmalloc()). Would you like to
+> send another patch to fix that function as well?
+No problem, patch already sent.
+>
