@@ -2,86 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 516D7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86005C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238899AbiFNHAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33402 "EHLO
+        id S239316AbiFNHA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 03:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiFNHAP (ORCPT
+        with ESMTP id S239256AbiFNHAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:00:15 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04C63B00F;
-        Tue, 14 Jun 2022 00:00:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655190013; x=1686726013;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=T4nzZezDWWWUTOy8OMeuQhCOxOSUCA20xYUUYSUJEJ4=;
-  b=xtGnTo4nJB5KINBX3erdkGK3vH9x+W3apBUbeoRsGzce1uvlNToY6ohF
-   MPIa5qdprHE48Izp8LoF8CBi6+KxC2AHYChxRer8eXCl6n8YPP1YqKfwj
-   KPTiTfn5Z3Y71SrljSHoa7jFtThP1RYI6vFyS+nWpPG+B7J/xblkZeQX/
-   J9f4y1+EZqxmK9xsC7QdAzyysis7dnVpp3IV6YRIsT8h8GpH0hmIYV9N3
-   BhipSxorQNpL6a3KSJu7uEhyN3z7tb+p7ex1naFxby3N3A0F9QVgP57UK
-   SfTCt76CvMlLDwnSwxMfrwGuzL9ytfKVJXfwdf1fG6rr1+y2moVOhPw5/
-   A==;
+        Tue, 14 Jun 2022 03:00:22 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75A83B036
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:00:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655190020; x=1686726020;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=C6PJlJqUjtyZoqp0A9EmoN36ngJBxIcjaQOm7vXmJTg=;
+  b=PwJPAArDu+nGwsndoJKNaEyymrWNsWguGWudXe7DqXwS2R6fwFc4zQfk
+   YCcIoGYX0hrQUlsBUyIF+d6i1um2wq6E5JA2jhZQUovUJG/HBZm9lrB8N
+   IoWoTUxVflqDOC3nN/xRN0yyTA3qtf3Gm6too7bwbiHqkbncFJpZ0owKB
+   2oPMXUbtwA4Hz6m0/vmKuvqGN3dL/KncY1FlXUgiEmqukB7TOvtb56TMg
+   8Nl7hVv0OsgMC6FRZOOn6TLxJJvPaeIiSjJ3NnrT+oMa8wYbEYrZrGcTQ
+   z4lbXsVItYWIP6JJ3lnas/YU7vpmZ53bJmSWzH6LHBJvWijtRXJM6LoFc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="364863938"
 X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="99902883"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jun 2022 00:00:12 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 14 Jun 2022 00:00:12 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 14 Jun 2022 00:00:10 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Daire McNamara <daire.mcnamara@microchip.com>,
-        Lewis Hanly <lewis.hanly@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        <linux-riscv@lists.infradead.org>, <linux-spi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Yang Li <yang.lee@linux.alibaba.com>
-Subject: [PATCH] spi: microchip-core: fix potentially incorrect return from probe
-Date:   Tue, 14 Jun 2022 07:58:10 +0100
-Message-ID: <20220614065809.1969177-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
+   d="scan'208";a="364863938"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:00:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="582571128"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 14 Jun 2022 00:00:18 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o10XC-000LbD-7t;
+        Tue, 14 Jun 2022 07:00:18 +0000
+Date:   Tue, 14 Jun 2022 14:59:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [rmk-arm:cex7 89/92] drivers/net/phy/qsfp.c:1229:3: warning:
+ misleading indentation; statement is not part of the previous 'if'
+Message-ID: <202206141458.CSdyGV60-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If platform_get_irqi() returns 0, the error case will be triggered but
-probe() will return 0 rather than an error. Ape the other drivers using
-this pattern and return -ENXIO.
+tree:   git://git.armlinux.org.uk/~rmk/linux-arm cex7
+head:   c100f9a83ba091fb3aa1f9f7d2918e903a30be52
+commit: 27d0fce1fe5255fb738b355326ffe8be6f8c154b [89/92] net: add qsfp support                              [*experimental*]
+config: x86_64-allmodconfig (https://download.01.org/0day-ci/archive/20220614/202206141458.CSdyGV60-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c97436f8b6e2718286e8496faf53a2c800e281cf)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        git remote add rmk-arm git://git.armlinux.org.uk/~rmk/linux-arm
+        git fetch --no-tags rmk-arm cex7
+        git checkout 27d0fce1fe5255fb738b355326ffe8be6f8c154b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/phy/
 
-Reported-by: Yang Li <yang.lee@linux.alibaba.com>
-Link: https://lore.kernel.org/linux-spi/20220609055533.95866-2-yang.lee@linux.alibaba.com/
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- drivers/spi/spi-microchip-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/spi/spi-microchip-core.c b/drivers/spi/spi-microchip-core.c
-index 5b22a1395554..856a68fd8e9f 100644
---- a/drivers/spi/spi-microchip-core.c
-+++ b/drivers/spi/spi-microchip-core.c
-@@ -541,7 +541,7 @@ static int mchp_corespi_probe(struct platform_device *pdev)
- 	spi->irq = platform_get_irq(pdev, 0);
- 	if (spi->irq <= 0) {
- 		dev_err(&pdev->dev, "invalid IRQ %d for SPI controller\n", spi->irq);
--		ret = spi->irq;
-+		ret = -ENXIO;
- 		goto error_release_master;
- 	}
- 
+All warnings (new ones prefixed by >>):
+
+>> drivers/net/phy/qsfp.c:1229:3: warning: misleading indentation; statement is not part of the previous 'if' [-Wmisleading-indentation]
+                   qsfp_sm_ins_next(qsfp, SFP_MOD_PRESENT, 0);
+                   ^
+   drivers/net/phy/qsfp.c:1222:2: note: previous statement is here
+           if (!qsfp->gpio_irq[GPIO_INTL])
+           ^
+   1 warning generated.
+
+
+vim +/if +1229 drivers/net/phy/qsfp.c
+
+  1215	
+  1216		if (qsfp->sm_dev_state == SFP_DEV_DETACHED) {
+  1217			qsfp_sm_ins_next(qsfp, SFP_MOD_WATTACH, 0);
+  1218			return;
+  1219		}
+  1220	
+  1221		// Start the poller if there is no interrupt support if not running
+  1222		if (!qsfp->gpio_irq[GPIO_INTL])
+  1223			queue_delayed_work(system_wq, &qsfp->poll, poll_jiffies);
+  1224	
+  1225	//	ret = sfp_module_insert(qsfp->sfp_bus, &id);
+  1226	//	if (ret < 0)
+  1227	//		qsfp_sm_ins_next(qsfp, SFP_MOD_ERROR, 0);
+  1228	//	else
+> 1229			qsfp_sm_ins_next(qsfp, SFP_MOD_PRESENT, 0);
+  1230	}
+  1231	
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
