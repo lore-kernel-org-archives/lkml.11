@@ -2,114 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37818C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:26:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB51FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345212AbiFNW0X (ORCPT
+        id S1345093AbiFNW1i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 18:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49412 "EHLO
+        Tue, 14 Jun 2022 18:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344400AbiFNW0Q (ORCPT
+        with ESMTP id S235582AbiFNW1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 18:26:16 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9200550E21
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 15:26:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655245574; x=1686781574;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1DtxFR7jESUt0Tg8UteAbb/krwgxdAsTgRC8kfkXIEY=;
-  b=acxCcwLoL1PZQU88P6J2MFdxse+tTVFE2kNcSyvoZBqsjVnZdyUBh9eX
-   G/pQM5d7Ah3BaXXHM316mXlwVQhgLNmxFyNAZI4HENRkbfd2eDzm/ujMb
-   j0Xd3HbYH15t6dnvEizbBh6hzefEl9SpC2qb5/cr8BNKfUbxPhay20U5D
-   G5Yl17mYO6eclhadne95usyJHjvURTNu2QfpCgFJwuRAvC1ABQugywN6X
-   Y53oIRPYCOXjwuV2+GU9OOhGINqVe4E/IgpqsXVUTkNzVSfbLzQX2qI3y
-   jab2D/FU5znRSkMhYeyGCHmDiXUPPziiTTfPsBNuy6hsTOqEh3ZB3JNx9
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="340422024"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="340422024"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 15:26:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="588724739"
-Received: from b04f130c83f2.jf.intel.com ([10.165.154.98])
-  by fmsmga007.fm.intel.com with ESMTP; 14 Jun 2022 15:26:13 -0700
-From:   Tim Chen <tim.c.chen@linux.intel.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     Tim Chen <tim.c.chen@linux.intel.com>, Wei Xu <weixugc@google.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
+        Tue, 14 Jun 2022 18:27:35 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B2815712;
+        Tue, 14 Jun 2022 15:27:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=HJr/fmSdEUSj6RNS8UsQWtv/38YJNaYwQGOi8xjnmhk=; b=csmfMYpeqiFH61nyMnTC1wjmny
+        4PoLkBeX5DASAjEJOMgudvSheddDCYi/tRmIXsLGe2pqXWBea9nc91IauraULMBMz58B2WzN+otQu
+        YV6GGJit+9Td+Zf96TVE8ermReBzP/tn5wQvjP+hY4UQwhJSO+AUNzehkeoLredjE0U6+pWVnfKxt
+        M8+j9dGLmObynPegX+ZbCRRPKuLWFn+ekkkwyRavaOicWmAkbX4797DzrSQx5QbdVab08LmnUfNFZ
+        MCNim1faGLMm66QvBjvc9H3+X6al2k8bbD+3a65OlDsfjqsO2S93tDn8NkuZ7stvndGFhNAm4fjjD
+        lvK+A2Zw==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o1F0K-007xuf-1X; Tue, 14 Jun 2022 22:27:21 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 160E030008D;
+        Wed, 15 Jun 2022 00:27:18 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 01CFC26642EEC; Wed, 15 Jun 2022 00:27:17 +0200 (CEST)
+Date:   Wed, 15 Jun 2022 00:27:17 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexander Potapenko <glider@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vitaly Buka <vitalybuka@google.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>,
-        Shakeel Butt <shakeelb@google.com>
-Subject: [RFC PATCH 3/3] mm/memory-tiers: Show toptier memory usage for cgroup
-Date:   Tue, 14 Jun 2022 15:25:35 -0700
-Message-Id: <766f5858d5427c0345a7bd55a16733b39022095c.1655242024.git.tim.c.chen@linux.intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1655242024.git.tim.c.chen@linux.intel.com>
-References: <cover.1655242024.git.tim.c.chen@linux.intel.com>
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
+Message-ID: <YqkLRSBaeb6U1ngW@hirez.programming.kicks-ass.net>
+References: <20220614144853.3693273-1-glider@google.com>
+ <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com>
+ <CAKwvOd=SotrVcZshzGzsMprkORkVXFwYc-3mREkJSDCQ1nvbFw@mail.gmail.com>
+ <CAHk-=wgmezfDP_b93_Hw090vUd-TKb-odZNPhB9L_2vL5pn6kQ@mail.gmail.com>
+ <CAKwvOd=C1GC09zobqLK0higE3xPpghWBbB4xujyC8-QDyd_DTQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOd=C1GC09zobqLK0higE3xPpghWBbB4xujyC8-QDyd_DTQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Show toptier memory usage for a cgroup via sysfs:
+On Tue, Jun 14, 2022 at 11:08:33AM -0700, Nick Desaulniers wrote:
 
-/sys/fs/cgroup/<group>/memory.toptier
----
- mm/memcontrol.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+> One thing I'm curious about; if you have an aggregate in C (struct or
+> array) and don't fully initialize the whole object, just
+> members/sub-objects, but only use those I assume that's not UB? (Which
+> is what my maybe_init example does).  I think that's fine.
 
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 2f20ec2712b8..5fd1e3b686cd 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -6205,6 +6205,14 @@ static u64 memory_current_read(struct cgroup_subsys_state *css,
- 	return (u64)page_counter_read(&memcg->memory) * PAGE_SIZE;
- }
- 
-+static u64 memory_toptier_read(struct cgroup_subsys_state *css,
-+			       struct cftype *cft)
-+{
-+	struct mem_cgroup *memcg = mem_cgroup_from_css(css);
-+
-+	return (u64)mem_cgroup_toptier_usage(memcg) * PAGE_SIZE;
-+}
-+
- static u64 memory_peak_read(struct cgroup_subsys_state *css,
- 			    struct cftype *cft)
- {
-@@ -6516,6 +6524,11 @@ static struct cftype memory_files[] = {
- 		.flags = CFTYPE_NOT_ON_ROOT,
- 		.read_u64 = memory_current_read,
- 	},
-+	{
-+		.name = "toptier",
-+		.flags = CFTYPE_NOT_ON_ROOT,
-+		.read_u64 = memory_toptier_read,
-+	},
- 	{
- 		.name = "peak",
- 		.flags = CFTYPE_NOT_ON_ROOT,
--- 
-2.35.1
+Perf does something like that. We only explicitly initialize the first
+cacheline of a structure because that's *always* used. Any other field
+will only be initialized on request.
 
+At the time (and i've not benchmarked this in a good few years) that was
+a significant performance win.
