@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB7E0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF31EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:26:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355093AbiFNC0H (ORCPT
+        id S1355113AbiFNC0N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:26:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53556 "EHLO
+        Mon, 13 Jun 2022 22:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353990AbiFNCXB (ORCPT
+        with ESMTP id S1354421AbiFNCXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:23:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6715369EA;
-        Mon, 13 Jun 2022 19:10:30 -0700 (PDT)
+        Mon, 13 Jun 2022 22:23:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90623FDB0;
+        Mon, 13 Jun 2022 19:10:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24456610A0;
-        Tue, 14 Jun 2022 02:10:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93B60C34114;
-        Tue, 14 Jun 2022 02:10:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12D8AB8169E;
+        Tue, 14 Jun 2022 02:10:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A28CFC3411B;
+        Tue, 14 Jun 2022 02:10:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172606;
-        bh=ADtRrt3V39JZgtjHY/+41M5NR/geQPE2msmcwBrkHyw=;
+        s=k20201202; t=1655172623;
+        bh=gX6d4W5ZOnEqylI6qnqXvGiuiG+YvJ1yoDEsCSk7LbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bQ3MiisL02JtVYTmf1pRhg1jXi7NIQJy85b7q1IKu6C9VsOZg7oKu8TZEbGrLYpea
-         pOdWx0eNdfQW57e9MDcH7cMaeaL+Lb/l3V+suLG34cBusKnW+rg5FYDPDITi8QUq48
-         4iNlzW0g/UntDBoQYiBTFL952a/8tqen/LAZVyVX+hlG+vcRS0Fm6sikCE8uz529rN
-         cMNS/3eMv8mp0iZTL13CLL1yzHeYSGj8agI5tOqltWm8+IFR867y8+XazodNhzfqxK
-         DIOS0RF/SRq5H9NmK8aWl6AlAsPHOYk3gUiz262UwI9G9zR0r6/qouVMKLMohbQzNF
-         dNTaVNI5rCipw==
+        b=i/fvux1j+MLp+z1QuwLieUHinrbP4Br+FEgM4YgrpLbt6yIazP7GjXrE/92wSKa/i
+         zmxYkMzl3xVdqm378BPutSS2GIvKbG4Ac7tugFS7+63G0DEDKdfIIThkRr5kdKDurU
+         046Ukbml9LH90nEKk4rw9TbfAk7xXkmm/lR6k5snSZ9tNs52o5kG18uK4TznDbjjrh
+         oK2TMIi9+rn7rJuYsetPLZcgQiAb2TJMech3esU2hBvxDOrMbf4EgvOMHR8OkZiOwp
+         2jEcKYfQT9Yt82VTKh9bv8DahxyG66Tqgr+0N7foHRx0yFYfHWW/acFwuGv8sWgPg3
+         qOXy0wNz1teNg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com,
-        patches@opensource.wolfsonmicro.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.19 09/18] ASoC: wm_adsp: Fix event generation for wm_adsp_fw_put()
-Date:   Mon, 13 Jun 2022 22:09:32 -0400
-Message-Id: <20220614020941.1100702-9-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        David Rhodes <david.rhodes@cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
+        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.14 02/14] ASoC: cs53l30: Correct number of volume levels on SX controls
+Date:   Mon, 13 Jun 2022 22:10:07 -0400
+Message-Id: <20220614021019.1100929-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020941.1100702-1-sashal@kernel.org>
-References: <20220614020941.1100702-1-sashal@kernel.org>
+In-Reply-To: <20220614021019.1100929-1-sashal@kernel.org>
+References: <20220614021019.1100929-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,37 +55,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 2abdf9f80019e8244d3806ed0e1c9f725e50b452 ]
+[ Upstream commit 7fbd6dd68127927e844912a16741016d432a0737 ]
 
-Currently wm_adsp_fw_put() returns 0 rather than 1 when updating the value
-of the control, meaning that no event is generated to userspace. Fix this
-by setting the default return value to 1, the code already exits early with
-a return value of 0 if the value is unchanged.
+This driver specified the maximum value rather than the number of volume
+levels on the SX controls, this is incorrect, so correct them.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Richard Fitzgerald <rf@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220603115003.3865834-1-broonie@kernel.org
+Reported-by: David Rhodes <david.rhodes@cirrus.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-4-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm_adsp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/cs53l30.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
-index 02c557e1f779..c5b0b56d9c94 100644
---- a/sound/soc/codecs/wm_adsp.c
-+++ b/sound/soc/codecs/wm_adsp.c
-@@ -697,7 +697,7 @@ int wm_adsp_fw_put(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	struct wm_adsp *dsp = snd_soc_component_get_drvdata(component);
--	int ret = 0;
-+	int ret = 1;
+diff --git a/sound/soc/codecs/cs53l30.c b/sound/soc/codecs/cs53l30.c
+index c7edf2df5e36..f30807b3705d 100644
+--- a/sound/soc/codecs/cs53l30.c
++++ b/sound/soc/codecs/cs53l30.c
+@@ -351,22 +351,22 @@ static const struct snd_kcontrol_new cs53l30_snd_controls[] = {
+ 	SOC_ENUM("ADC2 NG Delay", adc2_ng_delay_enum),
  
- 	if (ucontrol->value.enumerated.item[0] == dsp[e->shift_l].fw)
- 		return 0;
+ 	SOC_SINGLE_SX_TLV("ADC1A PGA Volume",
+-		    CS53L30_ADC1A_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC1A_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC1B PGA Volume",
+-		    CS53L30_ADC1B_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC1B_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2A PGA Volume",
+-		    CS53L30_ADC2A_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC2A_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2B PGA Volume",
+-		    CS53L30_ADC2B_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC2B_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
+ 
+ 	SOC_SINGLE_SX_TLV("ADC1A Digital Volume",
+-		    CS53L30_ADC1A_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC1A_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC1B Digital Volume",
+-		    CS53L30_ADC1B_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC1B_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2A Digital Volume",
+-		    CS53L30_ADC2A_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC2A_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2B Digital Volume",
+-		    CS53L30_ADC2B_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC2B_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ };
+ 
+ static const struct snd_soc_dapm_widget cs53l30_dapm_widgets[] = {
 -- 
 2.35.1
 
