@@ -2,159 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3302FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B89CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344289AbiFNQbq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
+        id S244892AbiFNQbw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 12:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243064AbiFNQbg (ORCPT
+        with ESMTP id S245157AbiFNQbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:31:36 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D82443C9;
-        Tue, 14 Jun 2022 09:31:35 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:56828)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o19S2-00AmWn-9i; Tue, 14 Jun 2022 10:31:34 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:40454 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o19S0-009rSu-TN; Tue, 14 Jun 2022 10:31:33 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Frederick Lawler <fred@cloudflare.com>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
-        samba-technical@lists.samba.org, linux-mm@kvack.org,
-        linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        keyrings@vger.kernel.org, selinux@vger.kernel.org,
-        serge@hallyn.com, amir73il@gmail.com, kernel-team@cloudflare.com,
-        Jeff Moyer <jmoyer@redhat.com>,
-        Paul Moore <paul@paul-moore.com>
-References: <20220608150942.776446-1-fred@cloudflare.com>
-        <87tu8oze94.fsf@email.froward.int.ebiederm.org>
-        <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com>
-        <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
-        <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com>
-Date:   Tue, 14 Jun 2022 11:30:54 -0500
-In-Reply-To: <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com> (Frederick
-        Lawler's message of "Tue, 14 Jun 2022 11:06:24 -0500")
-Message-ID: <87o7yvxl4x.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 14 Jun 2022 12:31:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 42EE54477A
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:31:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655224300;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oavP8gsV6cJWMEx/ty3RSD/S2p03O0ZnolvRU2i8U0U=;
+        b=AXaSp1R5dTOazmBr/xwLsKeIcCQEs8omJNxnUKnr5gFRtHZFo9ymOUIiLNTWDUSmzOXP1e
+        82JqXBY+dYVZ1Zn/YHuF32yjoaD4mpYLDL0yijDLvHhVOCBJjIKCj1/8+sjtnZjIAa7BMa
+        TzgtVf9U3h/Uy6M5f6ssgdz1i5FqWMU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-324-moV3zpJ0OUOLDLd4kuu_Fg-1; Tue, 14 Jun 2022 12:31:39 -0400
+X-MC-Unique: moV3zpJ0OUOLDLd4kuu_Fg-1
+Received: by mail-wm1-f69.google.com with SMTP id k32-20020a05600c1ca000b0039c4cf75023so7810550wms.9
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:31:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oavP8gsV6cJWMEx/ty3RSD/S2p03O0ZnolvRU2i8U0U=;
+        b=NVfApTfAZCLacdPPIYjEkdLw5kQdTXeMNdkvJXg67L0eg9ia0MSfHQFDdVvl0lz1I9
+         qoCIpIE98oOg20g+sNQgunzZa4aai3z1CPo3BoYznn3HXYtN6lc6qLUU0fYXhApXS1eC
+         6L0fwwylcSKLBMK1JVYPi3SC7QHKFRHj/mJMoDiy8FL0ctxw5wkQv8I3hFSJc14wpiXQ
+         0QFbInTeNvTiGgsUt/MBOpotyvOUTbam/hpOxBW16eBvAvO9+OIBWjZyWsCbpwrlYEdD
+         NftEn9aA65k2UH8/aAS+gMV7RYOM/FRpfYm14odKvYHZ55YKH7IUY146Zo0T/tf3SHio
+         NmxQ==
+X-Gm-Message-State: AJIora8O+i5r19I32XnzsCNz/8rp++03ZV/xtR0TMcf+UZlK+QU3EPYE
+        YhfF6VM2GbPD183e2EsWhmj810iU1ceYWJiY0K1jz/oaYUCoVkpH9/gyYZqckQ9DHridGZLHqcf
+        /bh6m3eRzWCNZtI4qAFkl5A5n
+X-Received: by 2002:a5d:6da3:0:b0:219:bcdd:97cd with SMTP id u3-20020a5d6da3000000b00219bcdd97cdmr5702991wrs.274.1655224297799;
+        Tue, 14 Jun 2022 09:31:37 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1svQzIL6zLCvemWeG8M2S6FR8uXiEVS4pzOzqfRybaUZfeRrJrTeJlYzJRR2cIqLDUDDp3ugw==
+X-Received: by 2002:a5d:6da3:0:b0:219:bcdd:97cd with SMTP id u3-20020a5d6da3000000b00219bcdd97cdmr5702966wrs.274.1655224297599;
+        Tue, 14 Jun 2022 09:31:37 -0700 (PDT)
+Received: from [192.168.0.3] (ip-109-42-114-75.web.vodafone.de. [109.42.114.75])
+        by smtp.gmail.com with ESMTPSA id m17-20020adfc591000000b0020fff0ea0a3sm12632199wrg.116.2022.06.14.09.31.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 09:31:37 -0700 (PDT)
+Message-ID: <047aa23e-7926-6f8f-eadd-122dc81a3159@redhat.com>
+Date:   Tue, 14 Jun 2022 18:31:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1o19S0-009rSu-TN;;;mid=<87o7yvxl4x.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX19OwrPXsW8XkXxckntCYt4oo3aNKl7qziA=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] KVM: s390: selftests: Fix memop extension capability
+ check
+Content-Language: en-US
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        borntraeger@linux.ibm.com, frankja@linux.ibm.com,
+        imbrenda@linux.ibm.com, pbonzini@redhat.com
+Cc:     david@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-s390@vger.kernel.org, shuah@kernel.org
+References: <36d83871-343d-e8a0-1aed-05bf386f9b1b@redhat.com>
+ <20220614162635.3445019-1-scgl@linux.ibm.com>
+From:   Thomas Huth <thuth@redhat.com>
+In-Reply-To: <20220614162635.3445019-1-scgl@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Frederick Lawler <fred@cloudflare.com> writes:
+On 14/06/2022 18.26, Janis Schoetterl-Glausch wrote:
+> Fix the inverted logic of the memop extension capability check.
+> 
+> Fixes: 97da92c0ff92 ("KVM: s390: selftests: Use TAP interface in the memop test")
+> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+> ---
+> 
+> 
+> Here you go.
+> Hope it doesn't get lost as a reply, but I can always resend
+> and it's not super critical after all.
+> 
+> 
+>   tools/testing/selftests/kvm/s390x/memop.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
+> index e704c6fa5758..e1056f20dfa1 100644
+> --- a/tools/testing/selftests/kvm/s390x/memop.c
+> +++ b/tools/testing/selftests/kvm/s390x/memop.c
+> @@ -769,7 +769,7 @@ int main(int argc, char *argv[])
+>   	ksft_set_plan(ARRAY_SIZE(testlist));
+>   
+>   	for (idx = 0; idx < ARRAY_SIZE(testlist); idx++) {
+> -		if (testlist[idx].extension >= extension_cap) {
+> +		if (extension_cap >= testlist[idx].extension) {
+>   			testlist[idx].test();
+>   			ksft_test_result_pass("%s\n", testlist[idx].name);
+>   		} else {
 
-> On 6/13/22 11:44 PM, Eric W. Biederman wrote:
->> Frederick Lawler <fred@cloudflare.com> writes:
->> 
->>> Hi Eric,
->>>
->>> On 6/13/22 12:04 PM, Eric W. Biederman wrote:
->>>> Frederick Lawler <fred@cloudflare.com> writes:
->>>>
->>>>> While experimenting with the security_prepare_creds() LSM hook, we
->>>>> noticed that our EPERM error code was not propagated up the callstack.
->>>>> Instead ENOMEM is always returned.  As a result, some tools may send a
->>>>> confusing error message to the user:
->>>>>
->>>>> $ unshare -rU
->>>>> unshare: unshare failed: Cannot allocate memory
->>>>>
->>>>> A user would think that the system didn't have enough memory, when
->>>>> instead the action was denied.
->>>>>
->>>>> This problem occurs because prepare_creds() and prepare_kernel_cred()
->>>>> return NULL when security_prepare_creds() returns an error code. Later,
->>>>> functions calling prepare_creds() and prepare_kernel_cred() return
->>>>> ENOMEM because they assume that a NULL meant there was no memory
->>>>> allocated.
->>>>>
->>>>> Fix this by propagating an error code from security_prepare_creds() up
->>>>> the callstack.
->>>> Why would it make sense for security_prepare_creds to return an error
->>>> code other than ENOMEM?
->>>>   > That seems a bit of a violation of what that function is supposed to do
->>>>
->>>
->>> The API allows LSM authors to decide what error code is returned from the
->>> cred_prepare hook. security_task_alloc() is a similar hook, and has its return
->>> code propagated.
->> It is not an api.  It is an implementation detail of the linux kernel.
->> It is a set of convenient functions that do a job.
->> The general rule is we don't support cases without an in-tree user.  I
->> don't see an in-tree user.
->> 
->>> I'm proposing we follow security_task_allocs() pattern, and add visibility for
->>> failure cases in prepare_creds().
->> I am asking why we would want to.  Especially as it is not an API, and I
->> don't see any good reason for anything but an -ENOMEM failure to be
->> supported.
->>
-> We're writing a LSM BPF policy, and not a new LSM. Our policy aims to solve
-> unprivileged unshare, similar to Debian's patch [1]. We're in a position such
-> that we can't use that patch because we can't block _all_ of our applications
-> from performing an unshare. We prefer a granular approach. LSM BPF seems like a
-> good choice.
+Thanks!
 
-I am quite puzzled why doesn't /proc/sys/user/max_user_namespaces work
-for you?
+Reviewed-by: Thomas Huth <thuth@redhat.com>
 
-> Because LSM BPF exposes these hooks, we should probably treat them as an
-> API. From that perspective, userspace expects unshare to return a EPERM 
-> when the call is denied permissions.
+Paolo, could you please queue this directly as a fix for the "Use TAP 
+interface in the memop test" patch that is currently already in your "next" 
+branch? (or in case you rebase that branch, squash it directly into that patch?)
 
-The BPF code gets to be treated as a out of tree kernel module.
+  Thanks,
+   Thomas
 
->> Without an in-tree user that cares it is probably better to go the
->> opposite direction and remove the possibility of return anything but
->> memory allocation failure.  That will make it clearer to implementors
->> that a general error code is not supported and this is not a location
->> to implement policy, this is only a hook to allocate state for the LSM.
->> 
->
-> That's a good point, and it's possible we're using the wrong hook for the
-> policy. Do you know of other hooks we can look into?
-
-Not off the top of my head.
-
->>>> I have probably missed a very interesting discussion where that was
->>>> mentioned but I don't see link to the discussion or anything explaining
->>>> why we want to do that in this change.
->>>>
->>>
->>> AFAIK, this is the start of the discussion.
->> You were on v3 and had an out of tree piece of code so I assumed someone
->> had at least thought about why you want to implement policy in a piece
->> of code whose only purpose is to allocate memory to store state.
->> 
->
-> No worries.
->
->> Eric
->> 
->> 
->
-> Links:
-> 1:
-> https://sources.debian.org/patches/linux/3.16.56-1+deb8u1/debian/add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch/
-
-Eric
