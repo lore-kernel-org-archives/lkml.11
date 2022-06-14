@@ -2,346 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16BD2CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0ACC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243495AbiFNMal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:30:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60036 "EHLO
+        id S243044AbiFNM3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356858AbiFNM3i (ORCPT
+        with ESMTP id S243894AbiFNM2k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:29:38 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEDB2459B;
-        Tue, 14 Jun 2022 05:29:36 -0700 (PDT)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LMnmj33QMzDqsq;
-        Tue, 14 Jun 2022 20:29:09 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 20:29:34 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 14 Jun
- 2022 20:29:34 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>,
-        <linux-accelerators@lists.ozlabs.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        <zhangfei.gao@linaro.org>, <wangzhou1@hisilicon.com>,
-        <yekai13@huawei.com>
-Subject: [PATCH 3/3] crypto: hisilicon/qm - defining the device isolation strategy
-Date:   Tue, 14 Jun 2022 20:23:11 +0800
-Message-ID: <20220614122311.824-7-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220614122311.824-1-yekai13@huawei.com>
-References: <20220614122311.824-1-yekai13@huawei.com>
+        Tue, 14 Jun 2022 08:28:40 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E5722B19
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:39 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id n10so16848118ejk.5
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=s1QllzXGCUo8JTE+hOZVBSnNVj6x3XTlbwu5/oui3J8=;
+        b=UeS+soY0woVEo83Ch9yUMn7BxrQO2Yv75mFq4TKV7j0bJ6wM6UVI092ssFHWDbXshb
+         adHD3SMfqeSl+23u98d7JiRKp/d6bKikWqnFtSy/sff85hRQIIlNC/ZdZ8JOAN1Q2y60
+         P6buwedBe9Y+h4tvFvXNqJ9Rt1TsUGRy2pKDQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=s1QllzXGCUo8JTE+hOZVBSnNVj6x3XTlbwu5/oui3J8=;
+        b=STo9oelKa54A6Q/0yAyib0XHuJDgixVTGAGTxD3Wa18Mmrrun0MZxLymz3Wl9Px6Uc
+         wQoxo5knmr4uMPWWjtXR0hPJteaNkrHYXqaXmhxujaD0AdBf9ommtxWhQaoQ3vjmonlM
+         UQsMGYNyBCQN5IXDtQTp7Z3EA3DQpLmewQMosDSBdaoSpjn7B7NQkS4svl7x2V4bnB85
+         HdNASXQQQv8wDWA+43TyHc2v5cOXhWEERFJwUH8LDRUzDvQu4ztm3iITSmTeElz4YjJ0
+         y9Y7nre4f2GdwvnrDpn8tSvR/ns1lo5Wr6HGooiSZkNugIPn0ocsRFmwauxENjsniGka
+         B5AA==
+X-Gm-Message-State: AJIora80vdT++w+6HkD2YH9csmpu1dh2DNMMqyHVGrjCAiNi3BGh9reo
+        I3SwdfG3g5W5E9/TWFtAeGIUdkCYFfVigQ==
+X-Google-Smtp-Source: ABdhPJw58NGvARca3elMl/B/Osx1t/HjZIS+sU69SssrBevkCMylAPhKq1550+OfLU7slAzFBfgsEQ==
+X-Received: by 2002:a17:906:74cc:b0:712:381:9c5a with SMTP id z12-20020a17090674cc00b0071203819c5amr4079949ejl.466.1655209718386;
+        Tue, 14 Jun 2022 05:28:38 -0700 (PDT)
+Received: from dario-ThinkPad-T14s-Gen-2i.amarulasolutions.com (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
+        by smtp.gmail.com with ESMTPSA id z22-20020a17090655d600b006f3ef214e2csm5087043ejp.146.2022.06.14.05.28.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 05:28:37 -0700 (PDT)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        michael@amarulasolutions.com,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v4 09/12] can: slcan: move driver into separate sub directory
+Date:   Tue, 14 Jun 2022 14:28:18 +0200
+Message-Id: <20220614122821.3646071-10-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
+References: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Define the device isolation strategy by the device driver. if the
-AER error frequency exceeds the value of setting for a certain
-period of time, The device will not be available in user space. The VF
-device use the PF device isolation strategy. All the hardware errors
-are processed by PF driver.
+This patch moves the slcan driver into a separate directory, a later
+patch will add more files.
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 ---
- drivers/crypto/hisilicon/qm.c | 155 +++++++++++++++++++++++++++++++---
- include/linux/hisi_acc_qm.h   |   9 ++
- 2 files changed, 152 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index b4ca2eb034d7..391d83929ad2 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -12,7 +12,6 @@
- #include <linux/pm_runtime.h>
- #include <linux/seq_file.h>
- #include <linux/slab.h>
--#include <linux/uacce.h>
- #include <linux/uaccess.h>
- #include <uapi/misc/uacce/hisi_qm.h>
- #include <linux/hisi_acc_qm.h>
-@@ -417,6 +416,16 @@ struct hisi_qm_resource {
- 	struct list_head list;
- };
+(no changes since v1)
+
+ drivers/net/can/Makefile                        | 2 +-
+ drivers/net/can/slcan/Makefile                  | 6 ++++++
+ drivers/net/can/{slcan.c => slcan/slcan-core.c} | 0
+ 3 files changed, 7 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/can/slcan/Makefile
+ rename drivers/net/can/{slcan.c => slcan/slcan-core.c} (100%)
+
+diff --git a/drivers/net/can/Makefile b/drivers/net/can/Makefile
+index 0af85983634c..210354df273c 100644
+--- a/drivers/net/can/Makefile
++++ b/drivers/net/can/Makefile
+@@ -5,7 +5,7 @@
  
-+/**
-+ * struct qm_hw_err - structure of describes the device err
-+ * @list: hardware error list
-+ * @tick_stamp: timestamp when the error occurred
-+ */
-+struct qm_hw_err {
-+	struct list_head list;
-+	unsigned long long tick_stamp;
-+};
-+
- struct hisi_qm_hw_ops {
- 	int (*get_vft)(struct hisi_qm *qm, u32 *base, u32 *number);
- 	void (*qm_db)(struct hisi_qm *qm, u16 qn,
-@@ -3265,6 +3274,7 @@ static int hisi_qm_uacce_get_queue(struct uacce_device *uacce,
- 	qp->event_cb = qm_qp_event_notifier;
- 	qp->pasid = arg;
- 	qp->is_in_kernel = false;
-+	atomic_inc(&qm->uacce_ref);
+ obj-$(CONFIG_CAN_VCAN)		+= vcan.o
+ obj-$(CONFIG_CAN_VXCAN)		+= vxcan.o
+-obj-$(CONFIG_CAN_SLCAN)		+= slcan.o
++obj-$(CONFIG_CAN_SLCAN)		+= slcan/
  
- 	return 0;
- }
-@@ -3272,7 +3282,9 @@ static int hisi_qm_uacce_get_queue(struct uacce_device *uacce,
- static void hisi_qm_uacce_put_queue(struct uacce_queue *q)
- {
- 	struct hisi_qp *qp = q->priv;
-+	struct hisi_qm *qm = qp->qm;
- 
-+	atomic_dec(&qm->uacce_ref);
- 	hisi_qm_cache_wb(qp->qm);
- 	hisi_qm_release_qp(qp);
- }
-@@ -3397,6 +3409,102 @@ static long hisi_qm_uacce_ioctl(struct uacce_queue *q, unsigned int cmd,
- 	return 0;
- }
- 
-+/**
-+ * qm_hw_err_isolate() - Try to isolate the uacce device with its VFs
-+ * @qm: The qm which we want to configure.
-+ *
-+ * according to user's configuration of isolation strategy. Warning: this
-+ * API should be called while there is no user on the device, or the users
-+ * on this device are suspended by slot resetting preparation of PCI AER.
-+ */
-+static int qm_hw_err_isolate(struct hisi_qm *qm)
-+{
-+	struct qm_hw_err *err, *tmp, *hw_err;
-+	struct qm_err_isolate *isolate;
-+	u32 count = 0;
+ obj-y				+= dev/
+ obj-y				+= rcar/
+diff --git a/drivers/net/can/slcan/Makefile b/drivers/net/can/slcan/Makefile
+new file mode 100644
+index 000000000000..2e84f7bf7617
+--- /dev/null
++++ b/drivers/net/can/slcan/Makefile
+@@ -0,0 +1,6 @@
++# SPDX-License-Identifier: GPL-2.0
 +
-+	isolate = &qm->isolate_data;
++obj-$(CONFIG_CAN_SLCAN) += slcan.o
 +
-+#define SECONDS_PER_HOUR	3600
-+
-+	/* All the hw errs are processed by PF driver */
-+	if (qm->uacce->is_vf || atomic_read(&isolate->is_isolate) ||
-+		!isolate->hw_err_isolate_hz)
-+		return 0;
-+
-+	hw_err = kzalloc(sizeof(*hw_err), GFP_ATOMIC);
-+	if (!hw_err)
-+		return -ENOMEM;
-+	hw_err->tick_stamp = jiffies;
-+	list_for_each_entry_safe(err, tmp, &qm->uacce_hw_errs, list) {
-+		if ((hw_err->tick_stamp - err->tick_stamp) / HZ >
-+		    SECONDS_PER_HOUR) {
-+			list_del(&err->list);
-+			kfree(err);
-+		} else {
-+			count++;
-+		}
-+	}
-+	list_add(&hw_err->list, &qm->uacce_hw_errs);
-+
-+	if (count >= isolate->hw_err_isolate_hz)
-+		atomic_set(&isolate->is_isolate, 1);
-+
-+	return 0;
-+}
-+
-+static void qm_hw_err_destroy(struct hisi_qm *qm)
-+{
-+	struct qm_hw_err *err, *tmp;
-+
-+	list_for_each_entry_safe(err, tmp, &qm->uacce_hw_errs, list) {
-+		list_del(&err->list);
-+		kfree(err);
-+	}
-+}
-+
-+static enum uacce_dev_state hisi_qm_get_isolate_state(struct uacce_device *uacce)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	struct hisi_qm *pf_qm;
-+
-+	if (uacce->is_vf) {
-+		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
-+		qm->isolate_data.is_isolate = pf_qm->isolate_data.is_isolate;
-+	}
-+
-+	return atomic_read(&qm->isolate_data.is_isolate) ?
-+			UACCE_DEV_ISOLATE : UACCE_DEV_NORMAL;
-+}
-+
-+static int hisi_qm_isolate_strategy_write(struct uacce_device *uacce,
-+						const char *buf)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	unsigned long val = 0;
-+
-+#define MAX_ISOLATE_STRATEGY	65535
-+
-+	if (atomic_read(&qm->uacce_ref))
-+		return -EBUSY;
-+
-+	/* must be set by PF */
-+	if (atomic_read(&qm->isolate_data.is_isolate) || uacce->is_vf)
-+		return -EINVAL;
-+
-+	if (kstrtoul(buf, 0, &val) < 0)
-+		return -EINVAL;
-+
-+	if (val > MAX_ISOLATE_STRATEGY)
-+		return -EINVAL;
-+
-+	qm->isolate_data.hw_err_isolate_hz = val;
-+	dev_info(&qm->pdev->dev,
-+		"the value of isolate_strategy is set to %lu.\n", val);
-+
-+	return 0;
-+}
-+
- static const struct uacce_ops uacce_qm_ops = {
- 	.get_available_instances = hisi_qm_get_available_instances,
- 	.get_queue = hisi_qm_uacce_get_queue,
-@@ -3405,9 +3513,22 @@ static const struct uacce_ops uacce_qm_ops = {
- 	.stop_queue = hisi_qm_uacce_stop_queue,
- 	.mmap = hisi_qm_uacce_mmap,
- 	.ioctl = hisi_qm_uacce_ioctl,
-+	.get_isolate_state = hisi_qm_get_isolate_state,
- 	.is_q_updated = hisi_qm_is_q_updated,
-+	.isolate_strategy_write = hisi_qm_isolate_strategy_write,
- };
- 
-+static void qm_remove_uacce(struct hisi_qm *qm)
-+{
-+	struct uacce_device *uacce = qm->uacce;
-+
-+	if (qm->use_sva) {
-+		qm_hw_err_destroy(qm);
-+		uacce_remove(uacce);
-+		qm->uacce = NULL;
-+	}
-+}
-+
- static int qm_alloc_uacce(struct hisi_qm *qm)
- {
- 	struct pci_dev *pdev = qm->pdev;
-@@ -3420,6 +3541,7 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
- 	};
- 	int ret;
- 
-+	INIT_LIST_HEAD(&qm->uacce_hw_errs);
- 	ret = strscpy(interface.name, dev_driver_string(&pdev->dev),
- 		      sizeof(interface.name));
- 	if (ret < 0)
-@@ -3433,8 +3555,7 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
- 		qm->use_sva = true;
- 	} else {
- 		/* only consider sva case */
--		uacce_remove(uacce);
--		qm->uacce = NULL;
-+		qm_remove_uacce(qm);
- 		return -EINVAL;
- 	}
- 
-@@ -5074,6 +5195,12 @@ static int qm_controller_reset_prepare(struct hisi_qm *qm)
- 		return ret;
- 	}
- 
-+	if (qm->use_sva) {
-+		ret = qm_hw_err_isolate(qm);
-+		if (ret)
-+			pci_err(pdev, "failed to isolate hw err!\n");
-+	}
-+
- 	ret = qm_wait_vf_prepare_finish(qm);
- 	if (ret)
- 		pci_err(pdev, "failed to stop by vfs in soft reset!\n");
-@@ -5401,19 +5528,24 @@ static int qm_controller_reset(struct hisi_qm *qm)
- 	ret = qm_soft_reset(qm);
- 	if (ret) {
- 		pci_err(pdev, "Controller reset failed (%d)\n", ret);
--		qm_reset_bit_clear(qm);
--		return ret;
-+		goto err_reset;
- 	}
- 
- 	ret = qm_controller_reset_done(qm);
--	if (ret) {
--		qm_reset_bit_clear(qm);
--		return ret;
--	}
-+	if (ret)
-+		goto err_reset;
- 
- 	pci_info(pdev, "Controller reset complete\n");
--
- 	return 0;
-+
-+err_reset:
-+	pci_err(pdev, "Controller reset failed (%d)\n", ret);
-+	qm_reset_bit_clear(qm);
-+
-+	/* if resetting fails, isolate the device */
-+	if (qm->use_sva && !qm->uacce->is_vf)
-+		atomic_set(&qm->isolate_data.is_isolate, 1);
-+	return ret;
- }
- 
- /**
-@@ -6186,8 +6318,7 @@ int hisi_qm_init(struct hisi_qm *qm)
- 
- err_alloc_uacce:
- 	if (qm->use_sva) {
--		uacce_remove(qm->uacce);
--		qm->uacce = NULL;
-+		qm_remove_uacce(qm);
- 	}
- err_irq_register:
- 	qm_irq_unregister(qm);
-diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
-index 6cabafffd0dd..c090aaaf9974 100644
---- a/include/linux/hisi_acc_qm.h
-+++ b/include/linux/hisi_acc_qm.h
-@@ -8,6 +8,7 @@
- #include <linux/iopoll.h>
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/uacce.h>
- 
- #define QM_QNUM_V1			4096
- #define QM_QNUM_V2			1024
-@@ -265,6 +266,11 @@ struct hisi_qm_list {
- 	void (*unregister_from_crypto)(struct hisi_qm *qm);
- };
- 
-+struct qm_err_isolate {
-+	u32 hw_err_isolate_hz;	/* user cfg freq which triggers isolation */
-+	atomic_t is_isolate;
-+};
-+
- struct hisi_qm {
- 	enum qm_hw_ver ver;
- 	enum qm_fun_type fun_type;
-@@ -329,6 +335,9 @@ struct hisi_qm {
- 	struct qm_shaper_factor *factor;
- 	u32 mb_qos;
- 	u32 type_rate;
-+	struct list_head uacce_hw_errs;
-+	atomic_t uacce_ref; /* reference of the uacce */
-+	struct qm_err_isolate isolate_data;
- };
- 
- struct hisi_qp_status {
++slcan-objs :=
++slcan-objs += slcan-core.o
+diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan/slcan-core.c
+similarity index 100%
+rename from drivers/net/can/slcan.c
+rename to drivers/net/can/slcan/slcan-core.c
 -- 
-2.33.0
+2.32.0
 
