@@ -2,126 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFB8BCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB411C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354523AbiFNHbi (ORCPT
+        id S1354663AbiFNHbm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47276 "EHLO
+        Tue, 14 Jun 2022 03:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348432AbiFNHbf (ORCPT
+        with ESMTP id S1354512AbiFNHbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 03:31:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A97B43E0F0
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:31:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655191891;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2u1UJeCG+WneWifdMmrdhoGBRpopTVWJT/OvMvoPDO4=;
-        b=OxsNwEpQMg4rmbYxtiFLgaj75lcu9bASiLGCx1TrU0RMfK0njgcmovH1QsJXaWAi1uMFWb
-        HG4eWlsL0t+DJjhsnbe5bpxC8HnPYyVL3aVO0dzpidjlV7gzhg76wFWQITW9r9Jx3aHNAm
-        EE5VwFuD7xzKP35c0fzQuDV1U2sh93k=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-290-4ZXueI-ENXCFF3VJOXoeCA-1; Tue, 14 Jun 2022 03:31:27 -0400
-X-MC-Unique: 4ZXueI-ENXCFF3VJOXoeCA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E9828101A54E;
-        Tue, 14 Jun 2022 07:31:26 +0000 (UTC)
-Received: from T590 (ovpn-8-18.pek2.redhat.com [10.72.8.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id A581E40EC003;
-        Tue, 14 Jun 2022 07:31:20 +0000 (UTC)
-Date:   Tue, 14 Jun 2022 15:31:15 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     axboe@kernel.dk, djeffery@redhat.com, bvanassche@acm.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com, ming.lei@redhat.com
-Subject: Re: [PATCH -next] blk-mq: fix boot time regression for scsi drives
- with multiple hctx
-Message-ID: <Yqg5QxSM+lub8DY0@T590>
-References: <20220614071410.3571204-1-yukuai3@huawei.com>
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585273E5D7;
+        Tue, 14 Jun 2022 00:31:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655191893; x=1686727893;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=BwfIVHuEaK8z+QZZOZqmlU4SXCS0pKVU8k7FqNhuJ+Y=;
+  b=nPDtOROeeJYCkJ9Gto/aTf7q28luIOhBq7Q4CrikfFK/Gn34lmPmYcuS
+   er00auX4GEcl0W5+k2+1YdQkgK+7qKi08yUskedjoM6L8U1vp+NT1nh1b
+   9oKWF8eZbuIAmEYFRu4O/aJ1/vI+T0KREddvV6B3mhxTX4w00A0reTcPx
+   RL5IrTGErBFWfv45Ftv9w8i2oKJIy7yxZ8y1IgsGx4g6qtf7TsaH2Ae+F
+   kqU0BhxzqWnglMSXz8HGMUqvDE9I5fRIm63x6PTGb80lztLdJ7N3cUSam
+   8/xzXqWh0AOu8uJjlsoaKD08UodYQQVIhcAxCoFzXJcVNxyd6dGOPgBUk
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258370173"
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="258370173"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:31:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="582581789"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by orsmga007.jf.intel.com with ESMTP; 14 Jun 2022 00:31:23 -0700
+Date:   Tue, 14 Jun 2022 15:28:00 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vishal Annapurve <vannapurve@google.com>,
+        Marc Orr <marcorr@google.com>, kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86 <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Jun Nakajima <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com
+Subject: Re: [PATCH v6 0/8] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+Message-ID: <20220614072800.GB1783435@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
+ <CAGtprH_83CEC0U-cBR2FzHsxbwbGn0QJ87WFNOEet8sineOcbQ@mail.gmail.com>
+ <20220607065749.GA1513445@chaop.bj.intel.com>
+ <CAA03e5H_vOQS-qdZgacnmqP5T5jJLnEfm44yfRzJQ2KVu0Br+Q@mail.gmail.com>
+ <20220608021820.GA1548172@chaop.bj.intel.com>
+ <CAGtprH8xyf07jMN7ubTC__BvDj+z41uVGRiCJ7Rc5cv3KWg03w@mail.gmail.com>
+ <YqJYEheLiGI4KqXF@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220614071410.3571204-1-yukuai3@huawei.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+In-Reply-To: <YqJYEheLiGI4KqXF@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 03:14:10PM +0800, Yu Kuai wrote:
-> We found that boot time is increased for about 8s after upgrading kernel
-> from v4.19 to v5.10(megaraid-sas is used in the environment).
-
-But 'blk-mq: clearing flush request reference in tags->rqs[]' was merged
-to v5.14, :-)
-
+On Thu, Jun 09, 2022 at 08:29:06PM +0000, Sean Christopherson wrote:
+> On Wed, Jun 08, 2022, Vishal Annapurve wrote:
+> > ...
+> > > With this patch series, it's actually even not possible for userspace VMM
+> > > to allocate private page by a direct write, it's basically unmapped from
+> > > there. If it really wants to, it should so something special, by intention,
+> > > that's basically the conversion, which we should allow.
+> > >
+> > 
+> > A VM can pass GPA backed by private pages to userspace VMM and when
+> > Userspace VMM accesses the backing hva there will be pages allocated
+> > to back the shared fd causing 2 sets of pages backing the same guest
+> > memory range.
+> > 
+> > > Thanks for bringing this up. But in my mind I still think userspace VMM
+> > > can do and it's its responsibility to guarantee that, if that is hard
+> > > required.
 > 
-> Following is where the extra time is spent:
+> That was my initial reaction too, but there are unfortunate side effects to punting
+> this to userspace. 
 > 
-> scsi_probe_and_add_lun
->  __scsi_remove_device
->   blk_cleanup_queue
->    blk_mq_exit_queue
->     blk_mq_exit_hw_queues
->      blk_mq_exit_hctx
->       blk_mq_clear_flush_rq_mapping -> function latency is 0.1ms
-
-So queue_depth looks pretty long, is it 4k?
-
-But if it is 0.1ms, how can the 8sec delay be caused? That requires 80K hw queues
-for making so long, so I guess there must be other delay added by the feature
-of BLK_MQ_F_TAG_HCTX_SHARED.
-
->        cmpxchg
+> > By design, userspace VMM is the decision-maker for page
+> > > conversion and has all the necessary information to know which page is
+> > > shared/private. It also has the necessary knobs to allocate/free the
+> > > physical pages for guest memory. Definitely, we should make userspace
+> > > VMM more robust.
+> > 
+> > Making Userspace VMM more robust to avoid double allocation can get
+> > complex, it will have to keep track of all in-use (by Userspace VMM)
+> > shared fd memory to disallow conversion from shared to private and
+> > will have to ensure that all guest supplied addresses belong to shared
+> > GPA ranges.
 > 
-> There are three reasons:
-> 1) megaraid-sas is using multiple hctxs in v5.10, thus blk_mq_exit_hctx()
-> will be called much more times in v5.10 compared to v4.19.
-> 2) scsi will scan for each target thus __scsi_remove_device() will be
-> called for many times.
-> 3) blk_mq_clear_flush_rq_mapping() is introduced after v4.19, it will
-> call cmpxchg() for each request, and function latency is abount 0.1ms.
+> IMO, the complexity argument isn't sufficient justfication for introducing new
+> kernel functionality.  If multiple processes are accessing guest memory then there
+> already needs to be some amount of coordination, i.e. it can't be _that_ complex.
 > 
-> Since that blk_mq_clear_flush_rq_mapping() will only be called while the
-> queue is freezed already, which means there is no inflight request,
-> it's safe to set NULL for 'tags->rqs[]' directly instead of using
-> cmpxchg(). Tests show that with this change, function latency of
-> blk_mq_clear_flush_rq_mapping() is about 1us, and boot time is not
-> increased.
+> My concern with forcing userspace to fully handle unmapping shared memory is that
+> it may lead to additional performance overhead and/or noisy neighbor issues, even
+> if all guests are well-behaved.
+> 
+> Unnmapping arbitrary ranges will fragment the virtual address space and consume
+> more memory for all the result VMAs.  The extra memory consumption isn't that big
+> of a deal, and it will be self-healing to some extent as VMAs will get merged when
+> the holes are filled back in (if the guest converts back to shared), but it's still
+> less than desirable.
+> 
+> More concerning is having to take mmap_lock for write for every conversion, which
+> is very problematic for configurations where a single userspace process maps memory
+> belong to multiple VMs.  Unmapping and remapping on every conversion will create a
+> bottleneck, especially if a VM has sub-optimal behavior and is converting pages at
+> a high rate.
+> 
+> One argument is that userspace can simply rely on cgroups to detect misbehaving
+> guests, but (a) those types of OOMs will be a nightmare to debug and (b) an OOM
+> kill from the host is typically considered a _host_ issue and will be treated as
+> a missed SLO.
+> 
+> An idea for handling this in the kernel without too much complexity would be to
+> add F_SEAL_FAULT_ALLOCATIONS (terrible name) that would prevent page faults from
+> allocating pages, i.e. holes can only be filled by an explicit fallocate().  Minor
+> faults, e.g. due to NUMA balancing stupidity, and major faults due to swap would
+> still work, but writes to previously unreserved/unallocated memory would get a
+> SIGSEGV on something it has mapped.  That would allow the userspace VMM to prevent
+> unintentional allocations without having to coordinate unmapping/remapping across
+> multiple processes.
 
-tags is shared among all LUNs attached to the host, so freezing single
-request queue here means nothing, so your patch doesn't work.
+Since this is mainly for shared memory and the motivation is catching
+misbehaved access, can we use mprotect(PROT_NONE) for this? We can mark
+those range backed by private fd as PROT_NONE during the conversion so
+subsequence misbehaved accesses will be blocked instead of causing double
+allocation silently.
 
-Please test the following patch, and see if it can improve boot delay for
-your case.
-
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index e9bf950983c7..1463076a527c 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -3443,8 +3443,9 @@ static void blk_mq_exit_hctx(struct request_queue *q,
- 	if (blk_mq_hw_queue_mapped(hctx))
- 		blk_mq_tag_idle(hctx);
- 
--	blk_mq_clear_flush_rq_mapping(set->tags[hctx_idx],
--			set->queue_depth, flush_rq);
-+	if (blk_queue_init_done(q))
-+		blk_mq_clear_flush_rq_mapping(set->tags[hctx_idx],
-+				set->queue_depth, flush_rq);
- 	if (set->ops->exit_request)
- 		set->ops->exit_request(set, flush_rq, hctx_idx);
- 
-
-
-Thanks,
-Ming
-
+Chao
