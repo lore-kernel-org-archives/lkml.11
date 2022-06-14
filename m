@@ -2,178 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB40DCCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E87A7CCA47C
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240978AbiFNM37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58808 "EHLO
+        id S1355494AbiFNMa0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:30:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243564AbiFNM2i (ORCPT
+        with ESMTP id S1356854AbiFNM3i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:28:38 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0153C25EB8
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:36 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id o7so16868672eja.1
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=J7cAHYzHeqO4eieQ7T7B38pR/xwLeH3ndQgGNnjLG/E=;
-        b=XSAUyZOWy5q2GWu3PLxoxE10G+1JlvepEjzvUqXBzxdLsTBIVBjyFLiLgEWy3AefaL
-         qIDG5NM9+f+kytLuYuLs2tW2EsI8Oe9XkNrIgacbkXTyJzOsoPt9CE7Hzq9eDs+tiR0P
-         oI4PRPXqGRbSBWCCi3Piai0AvOjG7IYUYM9KM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=J7cAHYzHeqO4eieQ7T7B38pR/xwLeH3ndQgGNnjLG/E=;
-        b=WQ4dSrYRW8BMBX2I18oIdSbyygnop8wHdkUfO7lKXtgXKv1/l7wo+MKMypOOaerAbN
-         5XuY8fRT73eUevwvGHjBOfBGFrI3/4awpyPafKlnxTaw/1qn7mnOnm7dHipAn3jkDyDw
-         o7gQvkLWo7WTNJHDDY/U9C3+VQdYjUquiKvFtsZ2W8XUWu2wLw7EJKuKX4sZbl7Xek+e
-         xdQFiZ9XDVlQwy58Ahdwz413K7PJy7uNmIo+9OYphuVdoYzSnTYzmKBnMKSN4kqiD0+3
-         aFM6nlds1O+R5+IBBcowz8LV5MrIT1vEc66H/e4eYxyUJ35Hc5+NiN9q2lCn8Q3MtcHD
-         BOtg==
-X-Gm-Message-State: AOAM533nV4lqW+UanuxW8ogGLeOMV5XNHfKRqV1E9lA29Iih6HfdN/6v
-        cgUIwjzPiNQ0aKNQCk3sBga6Lw81NCqmHw==
-X-Google-Smtp-Source: ABdhPJw+07ZbLCl5Rx7GRphIBbK0PZ/uFC+9XZdj48PviEiLyXqTg7Fiq5dkX25nYqp4N27s+Jy1Ng==
-X-Received: by 2002:a17:906:7254:b0:6fe:5637:cbe6 with SMTP id n20-20020a170906725400b006fe5637cbe6mr4030190ejk.612.1655209714188;
-        Tue, 14 Jun 2022 05:28:34 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.amarulasolutions.com (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id z22-20020a17090655d600b006f3ef214e2csm5087043ejp.146.2022.06.14.05.28.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 05:28:33 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        michael@amarulasolutions.com,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v4 06/12] can: slcan: allow to send commands to the adapter
-Date:   Tue, 14 Jun 2022 14:28:15 +0200
-Message-Id: <20220614122821.3646071-7-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
-References: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
+        Tue, 14 Jun 2022 08:29:38 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC1B24F08;
+        Tue, 14 Jun 2022 05:29:35 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMnlS4rspzjY0V;
+        Tue, 14 Jun 2022 20:28:04 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 20:29:34 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 14 Jun
+ 2022 20:29:33 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>,
+        <linux-accelerators@lists.ozlabs.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <zhangfei.gao@linaro.org>, <wangzhou1@hisilicon.com>,
+        <yekai13@huawei.com>
+Subject: [PATCH 1/3] uacce: supports device isolation feature
+Date:   Tue, 14 Jun 2022 20:23:09 +0800
+Message-ID: <20220614122311.824-5-yekai13@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220614122311.824-1-yekai13@huawei.com>
+References: <20220614122311.824-1-yekai13@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a preparation patch for the upcoming support to change the
-bitrate via ip tool, reset the adapter error states via the ethtool API
-and, more generally, send commands to the adapter.
+UACCE add the hardware error isolation API. Users can configure
+the error frequency threshold by this vfs node. This API interface
+certainly supports the configuration of user protocol strategy. Then
+parse it inside the device driver. UACCE only reports the device
+isolate state. When the error frequency is exceeded, the device
+will be isolated. The isolation strategy should be defined in each
+driver module.
 
-Since the close command (i. e. "C\r") will be sent in the ndo_stop()
-where netif_running() returns false, a new flag bit (i. e. SLF_XCMD) for
-serial transmission has to be added.
-
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+Reviewed-by: Zhou Wang <wangzhou1@hisilicon.com>
 ---
+ drivers/misc/uacce/uacce.c | 51 ++++++++++++++++++++++++++++++++++++++
+ include/linux/uacce.h      | 15 ++++++++++-
+ 2 files changed, 65 insertions(+), 1 deletion(-)
 
-Changes in v4:
-- Replace `sl->tty == NULL' with `!sl->tty'.
-
-Changes in v3:
-- Update the commit description.
-
- drivers/net/can/slcan.c | 46 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 45 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index c7ff11dd2278..2afddaf62586 100644
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -97,6 +97,9 @@ struct slcan {
- 	unsigned long		flags;		/* Flag values/ mode etc     */
- #define SLF_INUSE		0		/* Channel in use            */
- #define SLF_ERROR		1               /* Parity, etc. error        */
-+#define SLF_XCMD		2               /* Command transmission      */
-+	wait_queue_head_t       xcmd_wait;      /* Wait queue for commands   */
-+						/* transmission              */
- };
+diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
+index b6219c6bfb48..4d9d9aeb145a 100644
+--- a/drivers/misc/uacce/uacce.c
++++ b/drivers/misc/uacce/uacce.c
+@@ -12,6 +12,20 @@ static dev_t uacce_devt;
+ static DEFINE_MUTEX(uacce_mutex);
+ static DEFINE_XARRAY_ALLOC(uacce_xa);
  
- static struct net_device **slcan_devs;
-@@ -315,12 +318,22 @@ static void slcan_transmit(struct work_struct *work)
- 
- 	spin_lock_bh(&sl->lock);
- 	/* First make sure we're connected. */
--	if (!sl->tty || sl->magic != SLCAN_MAGIC || !netif_running(sl->dev)) {
-+	if (!sl->tty || sl->magic != SLCAN_MAGIC ||
-+	    (unlikely(!netif_running(sl->dev)) &&
-+	     likely(!test_bit(SLF_XCMD, &sl->flags)))) {
- 		spin_unlock_bh(&sl->lock);
- 		return;
- 	}
- 
- 	if (sl->xleft <= 0)  {
-+		if (unlikely(test_bit(SLF_XCMD, &sl->flags))) {
-+			clear_bit(SLF_XCMD, &sl->flags);
-+			clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
-+			spin_unlock_bh(&sl->lock);
-+			wake_up(&sl->xcmd_wait);
-+			return;
-+		}
-+
- 		/* Now serial buffer is almost free & we can start
- 		 * transmission of another packet */
- 		sl->dev->stats.tx_packets++;
-@@ -384,6 +397,36 @@ static netdev_tx_t slc_xmit(struct sk_buff *skb, struct net_device *dev)
-  *   Routines looking at netdevice side.
-  ******************************************/
- 
-+static int slcan_transmit_cmd(struct slcan *sl, const unsigned char *cmd)
++static int cdev_get(struct device *dev, void *data)
 +{
-+	int ret, actual, n;
++	struct uacce_device *uacce;
++	struct device **t_dev = data;
 +
-+	spin_lock(&sl->lock);
-+	if (!sl->tty) {
-+		spin_unlock(&sl->lock);
-+		return -ENODEV;
++	uacce = container_of(dev, struct uacce_device, dev);
++	if (uacce->parent == *t_dev) {
++		*t_dev = dev;
++		return 1;
 +	}
-+
-+	n = snprintf(sl->xbuff, sizeof(sl->xbuff), "%s", cmd);
-+	set_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
-+	actual = sl->tty->ops->write(sl->tty, sl->xbuff, n);
-+	sl->xleft = n - actual;
-+	sl->xhead = sl->xbuff + actual;
-+	set_bit(SLF_XCMD, &sl->flags);
-+	spin_unlock(&sl->lock);
-+	ret = wait_event_interruptible_timeout(sl->xcmd_wait,
-+					       !test_bit(SLF_XCMD, &sl->flags),
-+					       HZ);
-+	clear_bit(SLF_XCMD, &sl->flags);
-+	if (ret == -ERESTARTSYS)
-+		return ret;
-+
-+	if (ret == 0)
-+		return -ETIMEDOUT;
 +
 +	return 0;
 +}
 +
- /* Netdevice UP -> DOWN routine */
- static int slc_close(struct net_device *dev)
+ static int uacce_start_queue(struct uacce_queue *q)
  {
-@@ -541,6 +584,7 @@ static struct slcan *slc_alloc(void)
- 	sl->dev	= dev;
- 	spin_lock_init(&sl->lock);
- 	INIT_WORK(&sl->tx_work, slcan_transmit);
-+	init_waitqueue_head(&sl->xcmd_wait);
- 	slcan_devs[i] = dev;
+ 	int ret = 0;
+@@ -346,12 +360,47 @@ static ssize_t region_dus_size_show(struct device *dev,
+ 		       uacce->qf_pg_num[UACCE_QFRT_DUS] << PAGE_SHIFT);
+ }
  
- 	return sl;
++static ssize_t isolate_show(struct device *dev,
++			    struct device_attribute *attr, char *buf)
++{
++	struct uacce_device *uacce = to_uacce_device(dev);
++
++	return sysfs_emit(buf, "%d\n", uacce->ops->get_isolate_state(uacce));
++}
++
++static ssize_t isolate_strategy_show(struct device *dev,
++				     struct device_attribute *attr, char *buf)
++{
++	struct uacce_device *uacce = to_uacce_device(dev);
++
++	return sysfs_emit(buf, "%s\n", uacce->isolate_strategy);
++}
++
++static ssize_t isolate_strategy_store(struct device *dev,
++				      struct device_attribute *attr,
++				      const char *buf, size_t count)
++{
++	struct uacce_device *uacce = to_uacce_device(dev);
++	int ret;
++
++	if (!buf || sizeof(buf) > UACCE_MAX_ISOLATE_STRATEGY_LEN)
++		return -EINVAL;
++
++	memcpy(uacce->isolate_strategy, buf, strlen(buf));
++
++	ret = uacce->ops->isolate_strategy_write(uacce, buf);
++
++	return ret > 0 ? count : ret;
++}
++
+ static DEVICE_ATTR_RO(api);
+ static DEVICE_ATTR_RO(flags);
+ static DEVICE_ATTR_RO(available_instances);
+ static DEVICE_ATTR_RO(algorithms);
+ static DEVICE_ATTR_RO(region_mmio_size);
+ static DEVICE_ATTR_RO(region_dus_size);
++static DEVICE_ATTR_RO(isolate);
++static DEVICE_ATTR_RW(isolate_strategy);
+ 
+ static struct attribute *uacce_dev_attrs[] = {
+ 	&dev_attr_api.attr,
+@@ -360,6 +409,8 @@ static struct attribute *uacce_dev_attrs[] = {
+ 	&dev_attr_algorithms.attr,
+ 	&dev_attr_region_mmio_size.attr,
+ 	&dev_attr_region_dus_size.attr,
++	&dev_attr_isolate.attr,
++	&dev_attr_isolate_strategy.attr,
+ 	NULL,
+ };
+ 
+diff --git a/include/linux/uacce.h b/include/linux/uacce.h
+index 48e319f40275..e00a43a07e4b 100644
+--- a/include/linux/uacce.h
++++ b/include/linux/uacce.h
+@@ -8,6 +8,7 @@
+ #define UACCE_NAME		"uacce"
+ #define UACCE_MAX_REGION	2
+ #define UACCE_MAX_NAME_SIZE	64
++#define UACCE_MAX_ISOLATE_STRATEGY_LEN	256
+ 
+ struct uacce_queue;
+ struct uacce_device;
+@@ -30,6 +31,8 @@ struct uacce_qfile_region {
+  * @is_q_updated: check whether the task is finished
+  * @mmap: mmap addresses of queue to user space
+  * @ioctl: ioctl for user space users of the queue
++ * @get_isolate_state: get the device state after set the isolate strategy
++ * @isolate_strategy_store: stored the isolate strategy to the device
+  */
+ struct uacce_ops {
+ 	int (*get_available_instances)(struct uacce_device *uacce);
+@@ -43,6 +46,8 @@ struct uacce_ops {
+ 		    struct uacce_qfile_region *qfr);
+ 	long (*ioctl)(struct uacce_queue *q, unsigned int cmd,
+ 		      unsigned long arg);
++	enum uacce_dev_state (*get_isolate_state)(struct uacce_device *uacce);
++	int (*isolate_strategy_write)(struct uacce_device *uacce, const char *buf);
+ };
+ 
+ /**
+@@ -57,6 +62,12 @@ struct uacce_interface {
+ 	const struct uacce_ops *ops;
+ };
+ 
++enum uacce_dev_state {
++	UACCE_DEV_ERR = -1,
++	UACCE_DEV_NORMAL,
++	UACCE_DEV_ISOLATE,
++};
++
+ enum uacce_q_state {
+ 	UACCE_Q_ZOMBIE = 0,
+ 	UACCE_Q_INIT,
+@@ -99,6 +110,7 @@ struct uacce_queue {
+  * @dev: dev of the uacce
+  * @priv: private pointer of the uacce
+  * @queues: list of queues
++ * @ref: reference of the uacce
+  * @queues_lock: lock for queues list
+  * @inode: core vfs
+  */
+@@ -117,6 +129,7 @@ struct uacce_device {
+ 	struct list_head queues;
+ 	struct mutex queues_lock;
+ 	struct inode *inode;
++	char isolate_strategy[UACCE_MAX_ISOLATE_STRATEGY_LEN];
+ };
+ 
+ #if IS_ENABLED(CONFIG_UACCE)
+@@ -125,7 +138,7 @@ struct uacce_device *uacce_alloc(struct device *parent,
+ 				 struct uacce_interface *interface);
+ int uacce_register(struct uacce_device *uacce);
+ void uacce_remove(struct uacce_device *uacce);
+-
++struct uacce_device *dev_to_uacce(struct device *dev);
+ #else /* CONFIG_UACCE */
+ 
+ static inline
 -- 
-2.32.0
+2.33.0
 
