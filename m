@@ -2,53 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:05:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5048C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:05:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351305AbiFNCFj (ORCPT
+        id S1351330AbiFNCFl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:05:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41956 "EHLO
+        Mon, 13 Jun 2022 22:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351007AbiFNCFO (ORCPT
+        with ESMTP id S1350998AbiFNCFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:05:14 -0400
+        Mon, 13 Jun 2022 22:05:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 978B0340DE;
-        Mon, 13 Jun 2022 19:05:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84402340C0;
+        Mon, 13 Jun 2022 19:05:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D583660A56;
-        Tue, 14 Jun 2022 02:05:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C008C385A2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C45E60AEC;
         Tue, 14 Jun 2022 02:05:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50B20C36B03;
+        Tue, 14 Jun 2022 02:05:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172309;
-        bh=jvY6zLIFYZFwPqwJyHm4FYdTHBXHgYFw9HzPnyPYv5M=;
+        s=k20201202; t=1655172307;
+        bh=S/Vkk66dwA0IO7czVdg1bfEsT+DY2lAwrlHSsB0U1QU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OUkp6L2r8oOyhPI7sfOi+3jOeWAInBxyni2x0/Ebwj1nNrKCYnvAEAYcYuVzCJNRl
-         8elJjs9sKQxjD6OKW70GeEmA/Js9X1QyHqDMfUGOGvenkEVdU1Km909kVMvj6k492b
-         3dsOWaHUgWUsWlr0NucT71olaWP4zClss4j4OGfYfXLf4AQm4ANYGqCRIryoOu4DGb
-         mFAvJcdEA8X920iDqQnq3vOy9RGszianebgK7SsM4cke+CGxsCI6iKIZ5ZyIYN3rhV
-         XXKEbsP39ERLgL454Xy+fTyUNenZ424zBVBamu4sfCR9UBlY1HbeJASOSaWxj3lqgs
-         uDKHu3wT/kHXw==
+        b=iC42+e1jjHPBp6Lli9Dpax6cIKreSfNhKZIONA59RJTAZasjeS05gLYZKXgsXW0JF
+         anH/W3JnATG3r9is1NwXHRsILcVabydfzN2oWbIdqJKw+dSXf//3mu6nAIAjxCiuZO
+         jVp/DDh2kPZOriIm5C97UWgmPh/NBVjBV2DFMmxte/hpVN2wlscMiROsnsJlAtCiJc
+         E8c5N1ztFP0qFikxWvz/NspupGii71LCcKdW1P6zhvKN8WdHzRc83ughMWeZD79mVv
+         M88YD2gLp1B0H28yW4iYOihP98ouKLWs5/qRiB9apEhxWiHaB0pTfS+tr6GY7WMHnW
+         4hS8waHLX/GEg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lang Yu <Lang.Yu@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.18 15/47] drm/amdkfd: add pinned BOs to kfd_bo_list
-Date:   Mon, 13 Jun 2022 22:04:08 -0400
-Message-Id: <20220614020441.1098348-15-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
+        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 14/47] ASoC: cs42l51: Correct minimum value for SX volume control
+Date:   Mon, 13 Jun 2022 22:04:07 -0400
+Message-Id: <20220614020441.1098348-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020441.1098348-1-sashal@kernel.org>
 References: <20220614020441.1098348-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,72 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lang Yu <Lang.Yu@amd.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 4fac4fcf4500bce515b0f32195e7bb86aa0246c6 ]
+[ Upstream commit fcb3b5a58926d16d9a338841b74af06d4c29be15 ]
 
-The kfd_bo_list is used to restore process BOs after
-evictions. As page tables could be destroyed during
-evictions, we should also update pinned BOs' page tables
-during restoring to make sure they are valid.
+The minimum value for the PGA Volume is given as 0x1A, however the
+values from there to 0x19 are all the same volume and this is not
+represented in the TLV structure. The number of volumes given is correct
+so this leads to all the volumes being shifted. Move the minimum value
+up to 0x19 to fix this.
 
-So for pinned BOs,
-1, Validate them and update their page tables.
-2, Don't add eviction fence for them.
-
-v2:
- - Don't handle pinned ones specially in BO validation.(Felix)
-
-Signed-off-by: Lang Yu <Lang.Yu@amd.com>
-Acked-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-7-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ sound/soc/codecs/cs42l51.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-index cd89d2e46852..f4509656ea8c 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-@@ -1955,9 +1955,6 @@ int amdgpu_amdkfd_gpuvm_map_gtt_bo_to_kernel(struct amdgpu_device *adev,
- 		return -EINVAL;
- 	}
- 
--	/* delete kgd_mem from kfd_bo_list to avoid re-validating
--	 * this BO in BO's restoring after eviction.
--	 */
- 	mutex_lock(&mem->process_info->lock);
- 
- 	ret = amdgpu_bo_reserve(bo, true);
-@@ -1980,7 +1977,6 @@ int amdgpu_amdkfd_gpuvm_map_gtt_bo_to_kernel(struct amdgpu_device *adev,
- 
- 	amdgpu_amdkfd_remove_eviction_fence(
- 		bo, mem->process_info->eviction_fence);
--	list_del_init(&mem->validate_list.head);
- 
- 	if (size)
- 		*size = amdgpu_bo_size(bo);
-@@ -2544,12 +2540,15 @@ int amdgpu_amdkfd_gpuvm_restore_process_bos(void *info, struct dma_fence **ef)
- 	process_info->eviction_fence = new_fence;
- 	*ef = dma_fence_get(&new_fence->base);
- 
--	/* Attach new eviction fence to all BOs */
-+	/* Attach new eviction fence to all BOs except pinned ones */
- 	list_for_each_entry(mem, &process_info->kfd_bo_list,
--		validate_list.head)
-+		validate_list.head) {
-+		if (mem->bo->tbo.pin_count)
-+			continue;
-+
- 		amdgpu_bo_fence(mem->bo,
- 			&process_info->eviction_fence->base, true);
--
-+	}
- 	/* Attach eviction fence to PD / PT BOs */
- 	list_for_each_entry(peer_vm, &process_info->vm_list_head,
- 			    vm_list_node) {
+diff --git a/sound/soc/codecs/cs42l51.c b/sound/soc/codecs/cs42l51.c
+index e9c3cb4e2bfc..b9c262a15edf 100644
+--- a/sound/soc/codecs/cs42l51.c
++++ b/sound/soc/codecs/cs42l51.c
+@@ -146,7 +146,7 @@ static const struct snd_kcontrol_new cs42l51_snd_controls[] = {
+ 			0, 0xA0, 96, adc_att_tlv),
+ 	SOC_DOUBLE_R_SX_TLV("PGA Volume",
+ 			CS42L51_ALC_PGA_CTL, CS42L51_ALC_PGB_CTL,
+-			0, 0x1A, 30, pga_tlv),
++			0, 0x19, 30, pga_tlv),
+ 	SOC_SINGLE("Playback Deemphasis Switch", CS42L51_DAC_CTL, 3, 1, 0),
+ 	SOC_SINGLE("Auto-Mute Switch", CS42L51_DAC_CTL, 2, 1, 0),
+ 	SOC_SINGLE("Soft Ramp Switch", CS42L51_DAC_CTL, 1, 1, 0),
 -- 
 2.35.1
 
