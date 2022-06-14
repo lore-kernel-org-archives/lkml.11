@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1205C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:09:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B788C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352399AbiFNCJB (ORCPT
+        id S1352569AbiFNCJD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42334 "EHLO
+        Mon, 13 Jun 2022 22:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352374AbiFNCHx (ORCPT
+        with ESMTP id S1352375AbiFNCHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 22:07:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC907340C0;
-        Mon, 13 Jun 2022 19:06:09 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2AB344DB;
+        Mon, 13 Jun 2022 19:06:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E93AB8169E;
-        Tue, 14 Jun 2022 02:06:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8734C341C4;
-        Tue, 14 Jun 2022 02:06:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E448E60AEC;
+        Tue, 14 Jun 2022 02:06:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34E00C341C0;
+        Tue, 14 Jun 2022 02:06:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172366;
-        bh=bk35GxZMSvgCi98hPj3XUWJh2GZvRMQ+zORPkX2Ju3s=;
+        s=k20201202; t=1655172370;
+        bh=3mpdSMCJjajiV5VEiE9vIiCO7N/1lGCy+G1fSo0Qe5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hKbKI7i8Nva97GKq5uhJSQBAcbkCAOMfPY3KlVocDSpzZ1MkCK7D+ihANMA7mRrXJ
-         h6KGAhSXVOUm/CPXvbrnpqu3XO9TsAB9jlZqB/RexOIciQPriQ2QxSuu/KrkTcAPOe
-         VpmnKk/oBWIxDpWfgB3O8kemlCRdcT33fzYyUjkQEzvIPd4aUMbpVG7WuZf3tDz9IU
-         DU9IlpBQHjbPr39gU5LN7Tt4oj7Sv1O5llWTfaeNjccaLp588lVmhwHvbPLxUkZCsV
-         pZmdQcGli6nQq21vx913kbSuQ197WIX6lQZbxbXnaulUcGdto0i4zM/LCKQK5hEL+0
-         8hhfRLIsySgqw==
+        b=k7VCrVmjGVDjFLXR7+a5gmrrNzvwJJFb23rOv4MZkjWsLIiZb5A4e1ft/lrUNdnsL
+         TYgd+Y1otamu7IhgyhpQCrh20E5TAdObKkebVkF0y9hfyBL0SAuatQfyXRwmIfLd0G
+         uz3FoYk3vtqhm6xlHdkcG4jWwJim3GEv/P8OJCteMuKCFTh+fKcTYeuuJnmbZ/o/To
+         qtNjFGW6Cpc8IKjSYdIqOKOcgHgYXG4cfXJhINy/qMlJvq8zkClOw4vrX10RnlmnEh
+         QaAUMusBYFVtHXd5Q2bF7Oe/c3UhxykghEul9mQixfzsv5Nnrutwlfsle1uQvJ5UlO
+         cZ3W3SPTU6BlA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hui Wang <hui.wang@canonical.com>, David Lin <ctlin0@nuvoton.com>,
-        John Hsu <kchsu0@nuvoton.com>, Seven Li <wtli@nuvoton.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 02/43] ASoC: nau8822: Add operation for internal PLL off and on
-Date:   Mon, 13 Jun 2022 22:05:21 -0400
-Message-Id: <20220614020602.1098943-2-sashal@kernel.org>
+Cc:     "Hung, Cruise" <Cruise.Hung@amd.com>,
+        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
+        Jasdeep Dhillon <jdhillon@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        airlied@linux.ie, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 04/43] drm/amd/display: Fix DMUB outbox trace in S4 (#4465)
+Date:   Mon, 13 Jun 2022 22:05:23 -0400
+Message-Id: <20220614020602.1098943-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
 References: <20220614020602.1098943-1-sashal@kernel.org>
@@ -54,70 +56,147 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hui Wang <hui.wang@canonical.com>
+From: "Hung, Cruise" <Cruise.Hung@amd.com>
 
-[ Upstream commit aeca8a3295022bcec46697f16e098140423d8463 ]
+[ Upstream commit 6ecf9773a5030aa4932096754bacff20e1b944b8 ]
 
-We tried to enable the audio on an imx6sx EVB with the codec nau8822,
-after setting the internal PLL fractional parameters, the audio still
-couldn't work and the there was no sdma irq at all.
+[Why]
+DMUB Outbox0 read/write pointer not sync after resumed from S4.
+And that caused old traces were sent to outbox.
 
-After checking with the section "8.1.1 Phase Locked Loop (PLL) Design
-Example" of "NAU88C22 Datasheet Rev 0.6", we found we need to
-turn off the PLL before programming fractional parameters and turn on
-the PLL after programming.
+[How]
+Disable DMUB Outbox0 interrupt
+and clear DMUB Outbox0 read/write pointer when resumes from S4.
+And then enable Outbox0 interrupt before starts DMCUB.
 
-After this change, the audio driver could record and play sound and
-the sdma's irq is triggered when playing or recording.
-
-Cc: David Lin <ctlin0@nuvoton.com>
-Cc: John Hsu <kchsu0@nuvoton.com>
-Cc: Seven Li <wtli@nuvoton.com>
-Signed-off-by: Hui Wang <hui.wang@canonical.com>
-Link: https://lore.kernel.org/r/20220530040151.95221-2-hui.wang@canonical.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
+Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Cruise Hung <Cruise.Hung@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/nau8822.c | 4 ++++
- sound/soc/codecs/nau8822.h | 3 +++
- 2 files changed, 7 insertions(+)
+ .../gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c | 61 +++++++++----------
+ .../gpu/drm/amd/display/dmub/src/dmub_dcn31.c |  2 +
+ 2 files changed, 31 insertions(+), 32 deletions(-)
 
-diff --git a/sound/soc/codecs/nau8822.c b/sound/soc/codecs/nau8822.c
-index 58123390c7a3..b436e532993d 100644
---- a/sound/soc/codecs/nau8822.c
-+++ b/sound/soc/codecs/nau8822.c
-@@ -740,6 +740,8 @@ static int nau8822_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
- 		pll_param->pll_int, pll_param->pll_frac,
- 		pll_param->mclk_scaler, pll_param->pre_factor);
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c
+index ea4f8e06b07c..036cf4ebd9c8 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c
+@@ -464,12 +464,10 @@ void dccg31_set_physymclk(
+ /* Controls the generation of pixel valid for OTG in (OTG -> HPO case) */
+ static void dccg31_set_dtbclk_dto(
+ 		struct dccg *dccg,
+-		int dtbclk_inst,
+-		int req_dtbclk_khz,
+-		int num_odm_segments,
+-		const struct dc_crtc_timing *timing)
++		struct dtbclk_dto_params *params)
+ {
+ 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
++	int req_dtbclk_khz = params->pixclk_khz;
+ 	uint32_t dtbdto_div;
  
-+	snd_soc_component_update_bits(component,
-+		NAU8822_REG_POWER_MANAGEMENT_1, NAU8822_PLL_EN_MASK, NAU8822_PLL_OFF);
- 	snd_soc_component_update_bits(component,
- 		NAU8822_REG_PLL_N, NAU8822_PLLMCLK_DIV2 | NAU8822_PLLN_MASK,
- 		(pll_param->pre_factor ? NAU8822_PLLMCLK_DIV2 : 0) |
-@@ -757,6 +759,8 @@ static int nau8822_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
- 		pll_param->mclk_scaler << NAU8822_MCLKSEL_SFT);
- 	snd_soc_component_update_bits(component,
- 		NAU8822_REG_CLOCKING, NAU8822_CLKM_MASK, NAU8822_CLKM_PLL);
-+	snd_soc_component_update_bits(component,
-+		NAU8822_REG_POWER_MANAGEMENT_1, NAU8822_PLL_EN_MASK, NAU8822_PLL_ON);
+ 	/* Mode	                DTBDTO Rate       DTBCLK_DTO<x>_DIV Register
+@@ -480,57 +478,56 @@ static void dccg31_set_dtbclk_dto(
+ 	 * DSC native 4:2:2     pixel rate/2      4
+ 	 * Other modes          pixel rate        8
+ 	 */
+-	if (num_odm_segments == 4) {
++	if (params->num_odm_segments == 4) {
+ 		dtbdto_div = 2;
+-		req_dtbclk_khz = req_dtbclk_khz / 4;
+-	} else if ((num_odm_segments == 2) ||
+-			(timing->pixel_encoding == PIXEL_ENCODING_YCBCR420) ||
+-			(timing->flags.DSC && timing->pixel_encoding == PIXEL_ENCODING_YCBCR422
+-					&& !timing->dsc_cfg.ycbcr422_simple)) {
++		req_dtbclk_khz = params->pixclk_khz / 4;
++	} else if ((params->num_odm_segments == 2) ||
++			(params->timing->pixel_encoding == PIXEL_ENCODING_YCBCR420) ||
++			(params->timing->flags.DSC && params->timing->pixel_encoding == PIXEL_ENCODING_YCBCR422
++					&& !params->timing->dsc_cfg.ycbcr422_simple)) {
+ 		dtbdto_div = 4;
+-		req_dtbclk_khz = req_dtbclk_khz / 2;
++		req_dtbclk_khz = params->pixclk_khz / 2;
+ 	} else
+ 		dtbdto_div = 8;
  
- 	return 0;
+-	if (dccg->ref_dtbclk_khz && req_dtbclk_khz) {
++	if (params->ref_dtbclk_khz && req_dtbclk_khz) {
+ 		uint32_t modulo, phase;
+ 
+ 		// phase / modulo = dtbclk / dtbclk ref
+-		modulo = dccg->ref_dtbclk_khz * 1000;
+-		phase = div_u64((((unsigned long long)modulo * req_dtbclk_khz) + dccg->ref_dtbclk_khz - 1),
+-			dccg->ref_dtbclk_khz);
++		modulo = params->ref_dtbclk_khz * 1000;
++		phase = div_u64((((unsigned long long)modulo * req_dtbclk_khz) + params->ref_dtbclk_khz - 1),
++				params->ref_dtbclk_khz);
+ 
+-		REG_UPDATE(OTG_PIXEL_RATE_CNTL[dtbclk_inst],
+-				DTBCLK_DTO_DIV[dtbclk_inst], dtbdto_div);
++		REG_UPDATE(OTG_PIXEL_RATE_CNTL[params->otg_inst],
++				DTBCLK_DTO_DIV[params->otg_inst], dtbdto_div);
+ 
+-		REG_WRITE(DTBCLK_DTO_MODULO[dtbclk_inst], modulo);
+-		REG_WRITE(DTBCLK_DTO_PHASE[dtbclk_inst], phase);
++		REG_WRITE(DTBCLK_DTO_MODULO[params->otg_inst], modulo);
++		REG_WRITE(DTBCLK_DTO_PHASE[params->otg_inst], phase);
+ 
+-		REG_UPDATE(OTG_PIXEL_RATE_CNTL[dtbclk_inst],
+-				DTBCLK_DTO_ENABLE[dtbclk_inst], 1);
++		REG_UPDATE(OTG_PIXEL_RATE_CNTL[params->otg_inst],
++				DTBCLK_DTO_ENABLE[params->otg_inst], 1);
+ 
+-		REG_WAIT(OTG_PIXEL_RATE_CNTL[dtbclk_inst],
+-				DTBCLKDTO_ENABLE_STATUS[dtbclk_inst], 1,
++		REG_WAIT(OTG_PIXEL_RATE_CNTL[params->otg_inst],
++				DTBCLKDTO_ENABLE_STATUS[params->otg_inst], 1,
+ 				1, 100);
+ 
+ 		/* The recommended programming sequence to enable DTBCLK DTO to generate
+ 		 * valid pixel HPO DPSTREAM ENCODER, specifies that DTO source select should
+ 		 * be set only after DTO is enabled
+ 		 */
+-		REG_UPDATE(OTG_PIXEL_RATE_CNTL[dtbclk_inst],
+-				PIPE_DTO_SRC_SEL[dtbclk_inst], 1);
+-
+-		dccg->dtbclk_khz[dtbclk_inst] = req_dtbclk_khz;
++		REG_UPDATE(OTG_PIXEL_RATE_CNTL[params->otg_inst],
++				PIPE_DTO_SRC_SEL[params->otg_inst], 1);
+ 	} else {
+-		REG_UPDATE_3(OTG_PIXEL_RATE_CNTL[dtbclk_inst],
+-				DTBCLK_DTO_ENABLE[dtbclk_inst], 0,
+-				PIPE_DTO_SRC_SEL[dtbclk_inst], 0,
+-				DTBCLK_DTO_DIV[dtbclk_inst], dtbdto_div);
++		REG_UPDATE_3(OTG_PIXEL_RATE_CNTL[params->otg_inst],
++				DTBCLK_DTO_ENABLE[params->otg_inst], 0,
++				PIPE_DTO_SRC_SEL[params->otg_inst], 0,
++				DTBCLK_DTO_DIV[params->otg_inst], dtbdto_div);
+ 
+ 		REG_WRITE(DTBCLK_DTO_MODULO[dtbclk_inst], 0);
+ 		REG_WRITE(DTBCLK_DTO_PHASE[dtbclk_inst], 0);
+ 
+-		dccg->dtbclk_khz[dtbclk_inst] = 0;
++		REG_WRITE(DTBCLK_DTO_MODULO[params->otg_inst], 0);
++		REG_WRITE(DTBCLK_DTO_PHASE[params->otg_inst], 0);
+ 	}
  }
-diff --git a/sound/soc/codecs/nau8822.h b/sound/soc/codecs/nau8822.h
-index 489191ff187e..b45d42c15de6 100644
---- a/sound/soc/codecs/nau8822.h
-+++ b/sound/soc/codecs/nau8822.h
-@@ -90,6 +90,9 @@
- #define NAU8822_REFIMP_3K			0x3
- #define NAU8822_IOBUF_EN			(0x1 << 2)
- #define NAU8822_ABIAS_EN			(0x1 << 3)
-+#define NAU8822_PLL_EN_MASK			(0x1 << 5)
-+#define NAU8822_PLL_ON				(0x1 << 5)
-+#define NAU8822_PLL_OFF				(0x0 << 5)
  
- /* NAU8822_REG_AUDIO_INTERFACE (0x4) */
- #define NAU8822_AIFMT_MASK			(0x3 << 3)
+diff --git a/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn31.c b/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn31.c
+index fa0569174aec..3aa676303661 100644
+--- a/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn31.c
++++ b/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn31.c
+@@ -125,6 +125,8 @@ void dmub_dcn31_reset(struct dmub_srv *dmub)
+ 	REG_WRITE(DMCUB_INBOX1_WPTR, 0);
+ 	REG_WRITE(DMCUB_OUTBOX1_RPTR, 0);
+ 	REG_WRITE(DMCUB_OUTBOX1_WPTR, 0);
++	REG_WRITE(DMCUB_OUTBOX0_RPTR, 0);
++	REG_WRITE(DMCUB_OUTBOX0_WPTR, 0);
+ 	REG_WRITE(DMCUB_SCRATCH0, 0);
+ 
+ 	/* Clear the GPINT command manually so we don't send anything during boot. */
 -- 
 2.35.1
 
