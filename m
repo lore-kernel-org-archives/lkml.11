@@ -2,53 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0855C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352922AbiFNCM0 (ORCPT
+        id S1353075AbiFNCMd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54914 "EHLO
+        Mon, 13 Jun 2022 22:12:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352765AbiFNCLW (ORCPT
+        with ESMTP id S1352413AbiFNCLa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:11:22 -0400
+        Mon, 13 Jun 2022 22:11:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565D437A29;
-        Mon, 13 Jun 2022 19:07:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B97337A89;
+        Mon, 13 Jun 2022 19:07:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4721E60B66;
-        Tue, 14 Jun 2022 02:06:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30FEFC34114;
-        Tue, 14 Jun 2022 02:06:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA30660B77;
+        Tue, 14 Jun 2022 02:07:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C543C34114;
+        Tue, 14 Jun 2022 02:07:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172413;
-        bh=uwHDzuN9Io+WZTJmeh6rxLC/HiVmn2fIrdS5XUeVtj8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nxl/ySSUcWdlr0Ts7Rr/fyvAmcmQQ/rpbvwJKb5MaVBgrCkjigtcmu9zjaM/g6AL0
-         oVLqe/mISsrztJ5Z+0t1q9/8LbH3gnBNv+BMTayoWmJxb6H+p3Ft0JIpKaSNQO+6oR
-         O/SCKybkMsu1Ujz7oXbIOEup4THItgS9IDpcVnhJoBpUMh0Jb8A48d+PLIq+vVeYCo
-         hlmU6lPOC16+YJyXebT59EC+utEC7UE3NSUjMW0CebH9WW36F5/RAnNTGTexAZFPQz
-         UgDq7VE8+3uFgZ8xOH5ejwy5bT/CHywvvxYMDp8NhG9/TRpdIXlw+w/nv8fRybhjsT
-         AL3EvRcRcuNfg==
+        s=k20201202; t=1655172430;
+        bh=01mawIc35r+gK++qej0uz5FbVWHFWwVOkaENnGgcWhE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cXC8XmkIsOb2gairFOdJBekbJUQuvp7pTEqZDzAkFkKFFEH1Ggn72b8e+v+g89K6/
+         7slygTUCOU2xQYXsNUJeXlX/UsgPQn9Ez2lD9HSiqBHnfGTHYLxWURz6Bbly487b4Y
+         G7FAHszP5RjXSaNtqO5fYBQfX4EXyikVbtfE1TN3mCjanDopmJb2lyiSc886x2qMqg
+         u3Sorb/jqqYZbpMAEewgDE6zCA6OXCsXcF4cdNLYI31j9op2MLfclwqE4wd56XGKjF
+         OkW7yDHv0KaGjR+iZtxOEH/E61eBvC/au0knO9g9J+bsymD2k2/gtxC2GmB6Ylh/Nt
+         NwqQNFgGPvAcg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+Cc:     He Ying <heying24@huawei.com>, Wanming Hu <huwanming@huaweil.com>,
+        Chen Jingwen <chenjingwen6@huawei.com>,
         Kees Cook <keescook@chromium.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, mmarek@suse.com,
-        schwidefsky@de.ibm.com, heiko.carstens@de.ibm.com,
-        gregkh@linuxfoundation.org, fllinden@amazon.com, ast@kernel.org,
-        daniel@iogearbox.net, linux-kbuild@vger.kernel.org,
-        linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 34/43] gcc-12: disable '-Warray-bounds' universally for now
-Date:   Mon, 13 Jun 2022 22:05:53 -0400
-Message-Id: <20220614020602.1098943-34-sashal@kernel.org>
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, benh@kernel.crashing.org,
+        paulus@samba.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.15 01/41] powerpc/kasan: Silence KASAN warnings in __get_wchan()
+Date:   Mon, 13 Jun 2022 22:06:26 -0400
+Message-Id: <20220614020707.1099487-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
-References: <20220614020602.1098943-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,118 +53,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: He Ying <heying24@huawei.com>
 
-[ Upstream commit f0be87c42cbd341d436d06da4792e6b0c83c3aeb ]
+[ Upstream commit a1b29ba2f2c171b9bea73be993bfdf0a62d37d15 ]
 
-In commit 8b202ee21839 ("s390: disable -Warray-bounds") the s390 people
-disabled the '-Warray-bounds' warning for gcc-12, because the new logic
-in gcc would cause warnings for their use of the S390_lowcore macro,
-which accesses absolute pointers.
+The following KASAN warning was reported in our kernel.
 
-It turns out gcc-12 has many other issues in this area, so this takes
-that s390 warning disable logic, and turns it into a kernel build config
-entry instead.
+  BUG: KASAN: stack-out-of-bounds in get_wchan+0x188/0x250
+  Read of size 4 at addr d216f958 by task ps/14437
 
-Part of the intent is that we can make this all much more targeted, and
-use this conflig flag to disable it in only particular configurations
-that cause problems, with the s390 case as an example:
+  CPU: 3 PID: 14437 Comm: ps Tainted: G           O      5.10.0 #1
+  Call Trace:
+  [daa63858] [c0654348] dump_stack+0x9c/0xe4 (unreliable)
+  [daa63888] [c035cf0c] print_address_description.constprop.3+0x8c/0x570
+  [daa63908] [c035d6bc] kasan_report+0x1ac/0x218
+  [daa63948] [c00496e8] get_wchan+0x188/0x250
+  [daa63978] [c0461ec8] do_task_stat+0xce8/0xe60
+  [daa63b98] [c0455ac8] proc_single_show+0x98/0x170
+  [daa63bc8] [c03cab8c] seq_read_iter+0x1ec/0x900
+  [daa63c38] [c03cb47c] seq_read+0x1dc/0x290
+  [daa63d68] [c037fc94] vfs_read+0x164/0x510
+  [daa63ea8] [c03808e4] ksys_read+0x144/0x1d0
+  [daa63f38] [c005b1dc] ret_from_syscall+0x0/0x38
+  --- interrupt: c00 at 0x8fa8f4
+      LR = 0x8fa8cc
 
-        select GCC12_NO_ARRAY_BOUNDS
+  The buggy address belongs to the page:
+  page:98ebcdd2 refcount:0 mapcount:0 mapping:00000000 index:0x2 pfn:0x1216f
+  flags: 0x0()
+  raw: 00000000 00000000 01010122 00000000 00000002 00000000 ffffffff 00000000
+  raw: 00000000
+  page dumped because: kasan: bad access detected
 
-and we could do that for other configuration cases that cause issues.
+  Memory state around the buggy address:
+   d216f800: 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00 00 00 00
+   d216f880: f2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  >d216f900: 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00
+                                            ^
+   d216f980: f2 f2 f2 f2 f2 f2 f2 00 00 00 00 00 00 00 00 00
+   d216fa00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
-Or we could possibly use the CONFIG_CC_NO_ARRAY_BOUNDS thing in a more
-targeted way, and disable the warning only for particular uses: again
-the s390 case as an example:
+After looking into this issue, I find the buggy address belongs
+to the task stack region. It seems KASAN has something wrong.
+I look into the code of __get_wchan in x86 architecture and
+find the same issue has been resolved by the commit
+f7d27c35ddff ("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
+The solution could be applied to powerpc architecture too.
 
-  KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_CC_NO_ARRAY_BOUNDS),-Wno-array-bounds)
+As Andrey Ryabinin said, get_wchan() is racy by design, it may
+access volatile stack of running task, thus it may access
+redzone in a stack frame and cause KASAN to warn about this.
 
-but this ends up just doing it globally in the top-level Makefile, since
-the current issues are spread fairly widely all over:
+Use READ_ONCE_NOCHECK() to silence these warnings.
 
-  KBUILD_CFLAGS-$(CONFIG_CC_NO_ARRAY_BOUNDS) += -Wno-array-bounds
-
-We'll try to limit this later, since the gcc-12 problems are rare enough
-that *much* of the kernel can be built with it without disabling this
-warning.
-
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: Wanming Hu <huwanming@huaweil.com>
+Signed-off-by: He Ying <heying24@huawei.com>
+Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220121014418.155675-1-heying24@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Makefile           |  1 +
- arch/s390/Kconfig  |  1 +
- arch/s390/Makefile | 10 +---------
- init/Kconfig       |  9 +++++++++
- 4 files changed, 12 insertions(+), 9 deletions(-)
+ arch/powerpc/kernel/process.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Makefile b/Makefile
-index e2a1832681e7..0a344db643b1 100644
---- a/Makefile
-+++ b/Makefile
-@@ -778,6 +778,7 @@ stackp-flags-$(CONFIG_STACKPROTECTOR_STRONG)      := -fstack-protector-strong
- KBUILD_CFLAGS += $(stackp-flags-y)
+diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
+index 50436b52c213..39a0a13a3a27 100644
+--- a/arch/powerpc/kernel/process.c
++++ b/arch/powerpc/kernel/process.c
+@@ -2124,12 +2124,12 @@ static unsigned long __get_wchan(struct task_struct *p)
+ 		return 0;
  
- KBUILD_CFLAGS-$(CONFIG_WERROR) += -Werror
-+KBUILD_CFLAGS-$(CONFIG_CC_NO_ARRAY_BOUNDS) += -Wno-array-bounds
- KBUILD_CFLAGS += $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH)
- 
- ifdef CONFIG_CC_IS_CLANG
-diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
-index be9f39fd06df..b14a18ac2e71 100644
---- a/arch/s390/Kconfig
-+++ b/arch/s390/Kconfig
-@@ -123,6 +123,7 @@ config S390
- 	select CPU_NO_EFFICIENT_FFS if !HAVE_MARCH_Z9_109_FEATURES
- 	select DMA_OPS if PCI
- 	select DYNAMIC_FTRACE if FUNCTION_TRACER
-+	select GCC12_NO_ARRAY_BOUNDS
- 	select GENERIC_ALLOCATOR
- 	select GENERIC_CPU_AUTOPROBE
- 	select GENERIC_CPU_VULNERABILITIES
-diff --git a/arch/s390/Makefile b/arch/s390/Makefile
-index 6e42252214dd..82a44f60ad3c 100644
---- a/arch/s390/Makefile
-+++ b/arch/s390/Makefile
-@@ -30,15 +30,7 @@ KBUILD_CFLAGS_DECOMPRESSOR += -fno-stack-protector
- KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-disable-warning, address-of-packed-member)
- KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO),-g)
- KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO_DWARF4), $(call cc-option, -gdwarf-4,))
--
--ifdef CONFIG_CC_IS_GCC
--	ifeq ($(call cc-ifversion, -ge, 1200, y), y)
--		ifeq ($(call cc-ifversion, -lt, 1300, y), y)
--			KBUILD_CFLAGS += $(call cc-disable-warning, array-bounds)
--			KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-disable-warning, array-bounds)
--		endif
--	endif
--endif
-+KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_CC_NO_ARRAY_BOUNDS),-Wno-array-bounds)
- 
- UTS_MACHINE	:= s390x
- STACK_SIZE	:= $(if $(CONFIG_KASAN),65536,16384)
-diff --git a/init/Kconfig b/init/Kconfig
-index 4a7a569706c5..cbe094645917 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -895,6 +895,15 @@ config CC_IMPLICIT_FALLTHROUGH
- 	default "-Wimplicit-fallthrough=5" if CC_IS_GCC && $(cc-option,-Wimplicit-fallthrough=5)
- 	default "-Wimplicit-fallthrough" if CC_IS_CLANG && $(cc-option,-Wunreachable-code-fallthrough)
- 
-+# Currently, disable gcc-12 array-bounds globally.
-+# We may want to target only particular configurations some day.
-+config GCC12_NO_ARRAY_BOUNDS
-+	def_bool y
-+
-+config CC_NO_ARRAY_BOUNDS
-+	bool
-+	default y if CC_IS_GCC && GCC_VERSION >= 120000 && GCC_VERSION < 130000 && GCC12_NO_ARRAY_BOUNDS
-+
- #
- # For architectures that know their GCC __int128 support is sound
- #
+ 	do {
+-		sp = *(unsigned long *)sp;
++		sp = READ_ONCE_NOCHECK(*(unsigned long *)sp);
+ 		if (!validate_sp(sp, p, STACK_FRAME_OVERHEAD) ||
+ 		    task_is_running(p))
+ 			return 0;
+ 		if (count > 0) {
+-			ip = ((unsigned long *)sp)[STACK_FRAME_LR_SAVE];
++			ip = READ_ONCE_NOCHECK(((unsigned long *)sp)[STACK_FRAME_LR_SAVE]);
+ 			if (!in_sched_functions(ip))
+ 				return ip;
+ 		}
 -- 
 2.35.1
 
