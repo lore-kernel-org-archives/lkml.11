@@ -2,97 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB61C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 03:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AE22C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 03:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236530AbiFNDFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 23:05:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37964 "EHLO
+        id S1346115AbiFNDFM (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 23:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230099AbiFNDFA (ORCPT
+        with ESMTP id S239608AbiFNDFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 23:05:00 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0459F289B8
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:04:59 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-1013ecaf7e0so5229574fac.13
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:04:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GIKXrMJmK00F2CPu/hqVjErFk5SVKd7uP4hFKJeSK5M=;
-        b=AR3QW2VBjJ1hctByyReQYTrPKto4Kki50p5CahepMNg1xyVf3gdjcJy5AYOMbYXJ/R
-         VE98vpMaoXFKdeqZzG0vuy9sycyvsx0KdmgimxHctcDjQfxXriqlXRzyshBlXGVKjfyq
-         esDPDfoiisYhSzGgAoSEEBIbKb7WtCKa/52JM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GIKXrMJmK00F2CPu/hqVjErFk5SVKd7uP4hFKJeSK5M=;
-        b=y2feRmvaBOURGkloJsnBkJ52/95k6UhgU55zDBMpcPO2KlUJVlneRZ9KbKe0WrpI+c
-         MzOZ4iMitl1k2YCEI14aKQsxQX3iUmlTRCYrwrsM9eLmtdCOF0LJ7fNHu5XyMyjfiGNu
-         oA89qmH5C2YRebFf0KWErOJPxEGKFtVjv+rwt9G6U4d1KqMYtSHdC2AzJXUBxQw23Z/d
-         wz4tA6xuzlwyDM5IzlIFS2N5pvJ8Wuujg5xgXZkkFe/YjaiDFKxjjdChxByhjvWbt2Ss
-         8XeU+usgUUuV/0xAbbuS7Uwp1E8RQPdusivQjHjEQRuLSzRdLKOmIiDsVco0BvMhOBpR
-         2U5w==
-X-Gm-Message-State: AJIora/W3pkbwRjdrEYgxdug5NK1vLQ+fFglmwNihjyK5MsPBy/sweGO
-        oXA+mEQaEMku+25BaITNVocaGA==
-X-Google-Smtp-Source: AGRyM1tSQ5vOq7VAoa9DToonIuS86X5DP0QuTUvLINlwWPLN61oD4Qf8sRP0owt3eyRwU+NwCE6Bdg==
-X-Received: by 2002:a05:6870:961b:b0:e2:ffb9:f526 with SMTP id d27-20020a056870961b00b000e2ffb9f526mr1191635oaq.146.1655175898263;
-        Mon, 13 Jun 2022 20:04:58 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id p7-20020a05683019c700b0060c0c6e9186sm4215355otp.15.2022.06.13.20.04.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 20:04:57 -0700 (PDT)
-Subject: Re: [PATCH 5.18 000/343] 5.18.4-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220613181233.078148768@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <0cd002c0-c3a7-7df9-7ccb-e41881ceb94c@linuxfoundation.org>
-Date:   Mon, 13 Jun 2022 21:04:56 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Mon, 13 Jun 2022 23:05:08 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F9D2981C;
+        Mon, 13 Jun 2022 20:05:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655175907; x=1686711907;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0q3A6ZlYknCDTiDq54GQ1dl5Y2j8+ayQDmnfAoNRMts=;
+  b=FHgjKKk/nAIrS4ilRsAUMrJbtEmz0T4r3N24DjdilinVrGqIg+PKng2e
+   w96xzgp8mgw4jzEQMjB35e8Snke2LOfBGpUfN0T3JMDHou33cDDb0BXty
+   j+RTsz0kCmaTKPe64U+eBWpZnNN4x3JfplQIWh2h0hNSFrUgQxU456HN4
+   ZoYJcxi5JJvIEo4BbtKwKETW6+0TcycZxAS0xbLNQ8kfzFZIrApSP3503
+   Z7q4IZLYZC9d6rvkFFGfJZu9c3QyQeXRxLWTBRtyzspdVm7BslBMDfXyL
+   qKzsi2XGSFmbfAg3dzLj1YZZ09DtBYRQKnB4DSCuXPlAGKhIWKqzCXouC
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="278518732"
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="278518732"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 20:05:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="761787650"
+Received: from p12hl98bong5.png.intel.com ([10.158.65.178])
+  by orsmga005.jf.intel.com with ESMTP; 13 Jun 2022 20:05:02 -0700
+From:   Ong Boon Leong <boon.leong.ong@intel.com>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Emilio Riva <emilio.riva@ericsson.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Subject: [PATCH net-next v4 0/5] pcs-xpcs, stmmac: add 1000BASE-X AN for network switch
+Date:   Tue, 14 Jun 2022 11:00:25 +0800
+Message-Id: <20220614030030.1249850-1-boon.leong.ong@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220613181233.078148768@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/13/22 12:18 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.4 release.
-> There are 343 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 15 Jun 2022 18:11:39 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.4-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Hi,
 
-Compiled and booted on my test system. No dmesg regressions.
+Thanks for review feedback from Russell in [1] and [2]. I have changed
+the v4 implementation as follow.
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+v4 changes:
+1/5 - Squash v3:1/7 & 2/7 patches into v4:1/6 so that it passes build.
+2/5 - [No change] same as v3:3/7
+3/5 - [Fix] Fix issues identified by Russell in [1]
+4/5 - [Fix] Drop v3:5/7 patch per input by Russell in [2] and make
+            dwmac-intel clear the ovr_an_inband flag if fixed-link
+            is used in ACPI _DSD.
+5/5 - [No change] same as v3:7/7
 
-thanks,
--- Shuah
+The patches are built with C=1 and W=1 and I have found no additional
+warn and error from these patches (as advised by Jakub)
+
+The record for v3 changes is in [3]
+1/7 - [New] Update xpcs_do_config to accept advertising input
+2/7 - [New] Fix to compilation issue introduced v1. Update xpcs_do_config
+            for sja1105.
+3/7 - Same as 3/4 of v1 series.
+4/7 - [Fix] Fix numerous issues identified by Russell King.
+5/7 - [New] Make fixed-link setting takes precedence over ovr_an_inband.
+            This is a fix to a bug introduced earlier. Separate patch
+            will be sent later.
+6/7 - [New] Allow phy-mode ACPI _DSD setting for dwmac-intel to overwrite
+            the phy_interface detected through PCI DevID.
+7/7 - [New] Make mdio register flow to skip PHY scanning if fixed-link
+            is specified.
+
+Reference:
+[1] https://patchwork.kernel.org/comment/24890210/
+[2] https://patchwork.kernel.org/comment/24890222/
+[3] https://patchwork.kernel.org/project/netdevbpf/cover/20220610033610.114084-1-boon.leong.ong@intel.com/
+
+Thanks
+Boon Leong
+
+Ong Boon Leong (5):
+  net: make xpcs_do_config to accept advertising for pcs-xpcs and
+    sja1105
+  stmmac: intel: prepare to support 1000BASE-X phy interface setting
+  net: pcs: xpcs: add CL37 1000BASE-X AN support
+  stmmac: intel: add phy-mode and fixed-link ACPI _DSD setting support
+  net: stmmac: make mdio register skips PHY scanning for fixed-link
+
+ drivers/net/dsa/sja1105/sja1105_main.c        |   2 +-
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c |  30 ++-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  11 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c |  14 ++
+ drivers/net/pcs/pcs-xpcs.c                    | 178 +++++++++++++++++-
+ drivers/net/pcs/pcs-xpcs.h                    |   3 +-
+ include/linux/pcs/pcs-xpcs.h                  |   3 +-
+ 7 files changed, 228 insertions(+), 13 deletions(-)
+
+--
+2.25.1
+
