@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EDEBCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 842DDCCA486
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:19:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354450AbiFNCTP (ORCPT
+        id S1354485AbiFNCTT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55246 "EHLO
+        Mon, 13 Jun 2022 22:19:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354535AbiFNCOu (ORCPT
+        with ESMTP id S1354537AbiFNCOu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 22:14:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB84A3C4B0;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827103C4AD;
         Mon, 13 Jun 2022 19:08:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B442260B76;
-        Tue, 14 Jun 2022 02:08:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C747C341C5;
-        Tue, 14 Jun 2022 02:08:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7208DB816A3;
+        Tue, 14 Jun 2022 02:08:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C4B3C36AFE;
+        Tue, 14 Jun 2022 02:08:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172532;
-        bh=kY7M+cF6jVAw2h72tzuT6A72g36+rLAemXxLHPg6FwY=;
+        s=k20201202; t=1655172529;
+        bh=Wo2mUQZHnzCIU3apbtY6/KfmGqw52MDcmLbzbLVt4mc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j67cFpAlitJXQDcMOwpxPJ2h6gXADj7pvioTsxcjlZSnbT0YRwdygJiJUMkn8NclK
-         vKsvOcFndiJMrP0o7WrQ7EZdt4vdnZOCMy7MhJxqrkOmqfNXDuPUgR96TUyHtlBMOG
-         zJHWUSrjcg+xeEkhZAJ/FvZNRzaEClRbuZyBbPWvr4xyuXaP6/v5z4XCGO5RD/DOlS
-         uGQlR0tG8Ah+WI1+2r1R1S0urRrRG6Hz4ERY63ZIRBgHg/UaDqjqgN+QnpK+gKhYHB
-         2ZJsdUd9UMK/gnwe9YivBbORXM2zuG42Wmkrz5M8AR0eQxgGLUuQ3kTEf/5zX88rdo
-         +McEdBIbKxgWw==
+        b=faiAnWSS2+opOGak9XHQkaPz8jhG7Dgt+Kf5YTnQHxWeceZFiCt/O+BKmdjrwG4j4
+         VzEcP/lPJpkX0o/0SYLepn30a9uYxvaGBrRvjYtzVsrsDpjYeo29oD5TgenJo1NRp/
+         +vtLpvAFZ8uoFqyOcUvLmMiKz+jMlIHbz3X2chc//NRKMNTZUQ4AkvijMqPKSKrOGK
+         NqlOQOWJ7q1QzQygii2/jSF7Qe+uZdNLU7JLY+LZvuTWhwt815YmNEuMJg3amqLKO/
+         lIfJGNNJRKR5IDczOkT1RnWFK94+wuMF5WjQ+dYFzSDvmcNU5awMAvVQTOma4eTxu6
+         ersW6/jJYI6og==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Yufen <wangyufen@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 24/29] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
-Date:   Mon, 13 Jun 2022 22:08:10 -0400
-Message-Id: <20220614020815.1099999-24-sashal@kernel.org>
+Cc:     chengkaitao <pilgrimtao@gmail.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 5.10 22/29] virtio-mmio: fix missing put_device() when vm_cmdline_parent registration failed
+Date:   Mon, 13 Jun 2022 22:08:08 -0400
+Message-Id: <20220614020815.1099999-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
 References: <20220614020815.1099999-1-sashal@kernel.org>
@@ -53,44 +54,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: chengkaitao <pilgrimtao@gmail.com>
 
-[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
+[ Upstream commit a58a7f97ba11391d2d0d408e0b24f38d86ae748e ]
 
-When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
-overflow. To fix, we can follow what udpv6 does and subtract the
-transhdrlen from the max.
+The reference must be released when device_register(&vm_cmdline_parent)
+failed. Add the corresponding 'put_device()' in the error handling path.
 
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: chengkaitao <pilgrimtao@gmail.com>
+Message-Id: <20220602005542.16489-1-chengkaitao@didiglobal.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/l2tp/l2tp_ip6.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/virtio/virtio_mmio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index 96f975777438..d54dbd01d86f 100644
---- a/net/l2tp/l2tp_ip6.c
-+++ b/net/l2tp/l2tp_ip6.c
-@@ -502,14 +502,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	struct ipcm6_cookie ipc6;
- 	int addr_len = msg->msg_namelen;
- 	int transhdrlen = 4; /* zero session-id */
--	int ulen = len + transhdrlen;
-+	int ulen;
- 	int err;
- 
- 	/* Rough check on arithmetic overflow,
- 	 * better check is made in ip6_append_data().
- 	 */
--	if (len > INT_MAX)
-+	if (len > INT_MAX - transhdrlen)
- 		return -EMSGSIZE;
-+	ulen = len + transhdrlen;
- 
- 	/* Mirror BSD error message compatibility */
- 	if (msg->msg_flags & MSG_OOB)
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index 238383ff1064..5c970e6f664c 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -689,6 +689,7 @@ static int vm_cmdline_set(const char *device,
+ 	if (!vm_cmdline_parent_registered) {
+ 		err = device_register(&vm_cmdline_parent);
+ 		if (err) {
++			put_device(&vm_cmdline_parent);
+ 			pr_err("Failed to register parent device!\n");
+ 			return err;
+ 		}
 -- 
 2.35.1
 
