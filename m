@@ -2,98 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C88C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD800C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353023AbiFNCj4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:39:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33732 "EHLO
+        id S238860AbiFNCkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 22:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356815AbiFNCi3 (ORCPT
+        with ESMTP id S237003AbiFNCiL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:38:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF5038A;
-        Mon, 13 Jun 2022 19:17:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2D4FB816A4;
-        Tue, 14 Jun 2022 02:12:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A161FC34114;
-        Tue, 14 Jun 2022 02:12:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172721;
-        bh=LijSy99pzpSg1iIzbzqZJpsUfznU587YrJg1vozHGAU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=E+5fKuEZIB96bHfxsYSBfHd9fzJFDKPBSV8/2W4MZIw1UyYWGtqmkxWWDoeByOQp/
-         xQDfQreHaxLSnPMT6fnHeeyNo5UargrYKS3sUg1cq1yeOD/YxHX5rMd4X+lDEs1Rnt
-         zegqaxX9NF7s4w8Do4vwZx+lbohIYghnbFMfAKfkpKqVVMgMoLCEs/Zc2BbG8h0PDj
-         m8G99syV6P8cajGtUOW1aeJWRV1zqqyPktwJgVouau9RZl2iwSBfTZoBb1NjULz5hT
-         r+MG8d0875byGrOd9yazltRttmhGQNk7djBdw7lheQyArfs9hQBSUXn/NGbGDafkFq
-         c6cD/9diTwEtQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.4] KVM: Don't null dereference ops->destroy
-Date:   Mon, 13 Jun 2022 22:11:58 -0400
-Message-Id: <20220614021158.1101574-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Mon, 13 Jun 2022 22:38:11 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD4548E5E;
+        Mon, 13 Jun 2022 19:17:02 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LMX7w2F7fzgZBl;
+        Tue, 14 Jun 2022 10:14:52 +0800 (CST)
+Received: from ubuntu1804.huawei.com (10.67.174.58) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 10:16:48 +0800
+From:   Xiu Jianfeng <xiujianfeng@huawei.com>
+To:     <paul@paul-moore.com>, <stephen.smalley.work@gmail.com>,
+        <eparis@parisplace.org>
+CC:     <selinux@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] selinux: Add boundary check in put_entry()
+Date:   Tue, 14 Jun 2022 10:14:49 +0800
+Message-ID: <20220614021449.39255-1-xiujianfeng@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.58]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+Just like next_entry(), boundary check is necessary to prevent memory
+out-of-bound access.
 
-[ Upstream commit e8bc2427018826e02add7b0ed0fc625a60390ae5 ]
-
-A KVM device cleanup happens in either of two callbacks:
-1) destroy() which is called when the VM is being destroyed;
-2) release() which is called when a device fd is closed.
-
-Most KVM devices use 1) but Book3s's interrupt controller KVM devices
-(XICS, XIVE, XIVE-native) use 2) as they need to close and reopen during
-the machine execution. The error handling in kvm_ioctl_create_device()
-assumes destroy() is always defined which leads to NULL dereference as
-discovered by Syzkaller.
-
-This adds a checks for destroy!=NULL and adds a missing release().
-
-This is not changing kvm_destroy_devices() as devices with defined
-release() should have been removed from the KVM devices list by then.
-
-Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
 ---
- virt/kvm/kvm_main.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ security/selinux/ss/policydb.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 287444e52ccf..4b445dddb798 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -3329,8 +3329,11 @@ static int kvm_ioctl_create_device(struct kvm *kvm,
- 		kvm_put_kvm(kvm);
- 		mutex_lock(&kvm->lock);
- 		list_del(&dev->vm_node);
-+		if (ops->release)
-+			ops->release(dev);
- 		mutex_unlock(&kvm->lock);
--		ops->destroy(dev);
-+		if (ops->destroy)
-+			ops->destroy(dev);
- 		return ret;
- 	}
+diff --git a/security/selinux/ss/policydb.h b/security/selinux/ss/policydb.h
+index c24d4e1063ea..ffc4e7bad205 100644
+--- a/security/selinux/ss/policydb.h
++++ b/security/selinux/ss/policydb.h
+@@ -370,6 +370,8 @@ static inline int put_entry(const void *buf, size_t bytes, int num, struct polic
+ {
+ 	size_t len = bytes * num;
  
++	if (len > fp->len)
++		return -EINVAL;
+ 	memcpy(fp->data, buf, len);
+ 	fp->data += len;
+ 	fp->len -= len;
 -- 
-2.35.1
+2.17.1
 
