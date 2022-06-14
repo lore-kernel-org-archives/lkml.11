@@ -2,159 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2070CCA47A
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:15:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32DADC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357065AbiFNQO5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56886 "EHLO
+        id S241309AbiFNQPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 12:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357083AbiFNQNm (ORCPT
+        with ESMTP id S1357081AbiFNQPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:13:42 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1CEC37A0E;
-        Tue, 14 Jun 2022 09:13:38 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0EB231691;
-        Tue, 14 Jun 2022 09:13:38 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.41.154])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4946B3F66F;
-        Tue, 14 Jun 2022 09:13:20 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 17:13:16 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
-        vgupta@kernel.org, linux@armlinux.org.uk,
-        ulli.kroll@googlemail.com, linus.walleij@linaro.org,
-        shawnguo@kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        tony@atomide.com, khilman@kernel.org, catalin.marinas@arm.com,
-        will@kernel.org, guoren@kernel.org, bcain@quicinc.com,
-        chenhuacai@kernel.org, kernel@xen0n.name, geert@linux-m68k.org,
-        sammy@sammy.net, monstr@monstr.eu, tsbogend@alpha.franken.de,
-        dinguyen@kernel.org, jonas@southpole.se,
-        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
-        James.Bottomley@HansenPartnership.com, deller@gmx.de,
-        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
-        davem@davemloft.net, richard@nod.at,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        acme@kernel.org, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org, jgross@suse.com,
-        srivatsa@csail.mit.edu, amakhalov@vmware.com,
-        pv-drivers@vmware.com, boris.ostrovsky@oracle.com,
-        chris@zankel.net, jcmvbkbc@gmail.com, rafael@kernel.org,
-        lenb@kernel.org, pavel@ucw.cz, gregkh@linuxfoundation.org,
-        mturquette@baylibre.com, sboyd@kernel.org,
-        daniel.lezcano@linaro.org, lpieralisi@kernel.org,
-        sudeep.holla@arm.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, anup@brainfault.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        jacob.jun.pan@linux.intel.com, Arnd Bergmann <arnd@arndb.de>,
-        yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, rostedt@goodmis.org, pmladek@suse.com,
-        senozhatsky@chromium.org, john.ogness@linutronix.de,
-        paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
-        josh@joshtriplett.org, mathieu.desnoyers@efficios.com,
-        jiangshanlai@gmail.com, joel@joelfernandes.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com, jpoimboe@kernel.org,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-perf-users@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
-        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-arch@vger.kernel.org,
-        rcu@vger.kernel.org
-Subject: Re: [PATCH 15/36] cpuidle,cpu_pm: Remove RCU fiddling from
- cpu_pm_{enter,exit}()
-Message-ID: <YqiznJL7qB9uSQ9c@FVFF77S0Q05N>
-References: <20220608142723.103523089@infradead.org>
- <20220608144516.871305980@infradead.org>
+        Tue, 14 Jun 2022 12:15:00 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE2C393D1;
+        Tue, 14 Jun 2022 09:14:58 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net [192.222.136.102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: nicolas)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 0749866015D7;
+        Tue, 14 Jun 2022 17:14:55 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655223297;
+        bh=v1oVMG8D/TcLecVQ+c4GKl6+Ukw1Is0dn6GvtnEkISg=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=W4VeWv0nm+oDDfqZcEv6yfok1w2Hs2fCLK9Ii52uXYaSGHd0trXIq40lS2QB+W7XV
+         w+1UbfMWtydh/+IdJkElC07injuWO/FOQ1KD6nkRYrBW/mR2BbqCK2WkzxScUqJNnd
+         o3cqeAsIJaMFaY8q9Q4f5eL7wh5r6rQALkmzzPrXKyXBt3HZEbAmuOzMIgDjf/I04U
+         qO8DeoLY0AGLA41mvyj9VbmjoJinqsBndmsK/ik1qddG+L/z0wETtE8kyAzUSxhKW5
+         0IkdtonfvXbnz1Prl+urYtL0JQnM3t0uDFIBn4DYwG3zHEFrgG3HIEiNChwX2qNlR+
+         tvDyQZZ3s1FAA==
+Message-ID: <46211420a76c7608c34cd6b3569f41accdfd08a1.camel@collabora.com>
+Subject: Re: [PATCH v1 2/5] media: rkvdec: Add an ops to check for decode
+ errors
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Hans Verkuil <hverkuil@xs4all.nl>, linux-media@vger.kernel.org,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     kernel@collabora.com, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Date:   Tue, 14 Jun 2022 12:14:47 -0400
+In-Reply-To: <fed8b2cf-3098-0690-dc40-796dbe0ff424@xs4all.nl>
+References: <20220610125215.240539-1-nicolas.dufresne@collabora.com>
+         <20220610125215.240539-3-nicolas.dufresne@collabora.com>
+         <fed8b2cf-3098-0690-dc40-796dbe0ff424@xs4all.nl>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608144516.871305980@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 04:27:38PM +0200, Peter Zijlstra wrote:
-> All callers should still have RCU enabled.
+Le mardi 14 juin 2022 =C3=A0 16:44 +0200, Hans Verkuil a =C3=A9crit=C2=A0:
+> On 6/10/22 14:52, Nicolas Dufresne wrote:
+> > This optional internal ops allow each codec to do their own
+> > error status checking. The presence of an error is reported
+> > using the ERROR buffer state. This patch have no functional
+> > changes.
+>=20
+> If a buffer is returned with state ERROR, then that means that it is
+> seriously corrupt and userspace is expected to drop it. You might still
+> want to show it for debugging purposes, but the normal action is to drop =
+it.
 
-IIUC with that true we should be able to drop the RCU_NONIDLE() from
-drivers/perf/arm_pmu.c, as we only needed that for an invocation via a pm
-notifier.
+The discussion should be around the ERROR flag, and not the error state. Er=
+ror
+state is just an internal thing that have no meaning API wise, but turns ou=
+t to
+be the only way to get the ERROR flag to be set. With that in mind, this is=
+ not
+what V4L2_BUF_FLAG_ERROR specification says:
 
-I should be able to give that a spin on some hardware.
+> When this flag is set, the buffer has been dequeued successfully, althoug=
+h
+> the data might have been corrupted. This is recoverable, streaming may
+> continue as normal and the buffer may be reused normally. Drivers set=C2=
+=A0
+> this flag when the VIDIOC_DQBUF ioctl is called.
 
-> 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  kernel/cpu_pm.c |    9 ---------
->  1 file changed, 9 deletions(-)
-> 
-> --- a/kernel/cpu_pm.c
-> +++ b/kernel/cpu_pm.c
-> @@ -30,16 +30,9 @@ static int cpu_pm_notify(enum cpu_pm_eve
->  {
->  	int ret;
->  
-> -	/*
-> -	 * This introduces a RCU read critical section, which could be
-> -	 * disfunctional in cpu idle. Copy RCU_NONIDLE code to let RCU know
-> -	 * this.
-> -	 */
-> -	rcu_irq_enter_irqson();
->  	rcu_read_lock();
->  	ret = raw_notifier_call_chain(&cpu_pm_notifier.chain, event, NULL);
->  	rcu_read_unlock();
-> -	rcu_irq_exit_irqson();
+For me "seriously corrupt" and "might have been corrupted" is very differen=
+t.
 
-To make this easier to debug, is it worth adding an assertion that RCU is
-watching here? e.g.
+>=20
+> So this is not a valid approach for a decoder that can still produce a
+> decent picture, albeit with macroblock artifacts.
+>=20
+> A separate control that can be returned as part of the request and contai=
+ns
+> some sort of error indication would be more appropriate.
+>=20
+> Buffer state ERROR is really meant for e.g. DMA errors and it shouldn't
+> be mixed with decode errors that still produce a valid picture.
 
-	RCU_LOCKDEP_WARN(!rcu_is_watching(),
-			 "cpu_pm_notify() used illegally from EQS");
+The ERROR flag has been used for many years by the UVC driver to indicate a
+partially received image (possibly due to DMA error). That driver went even
+further and set the bytesused to the amount of bytes that was received. How=
+ this
+have been interpreted (mostly due to how the spec around ERROR flag is writ=
+ten)
+in GStreamer is that the buffer contains "some valid" data unless payload s=
+ize
+is 0.
 
->  
->  	return notifier_to_errno(ret);
->  }
-> @@ -49,11 +42,9 @@ static int cpu_pm_notify_robust(enum cpu
->  	unsigned long flags;
->  	int ret;
->  
-> -	rcu_irq_enter_irqson();
->  	raw_spin_lock_irqsave(&cpu_pm_notifier.lock, flags);
->  	ret = raw_notifier_call_chain_robust(&cpu_pm_notifier.chain, event_up, event_down, NULL);
->  	raw_spin_unlock_irqrestore(&cpu_pm_notifier.lock, flags);
-> -	rcu_irq_exit_irqson();
+As explained earlier, the decision to display "some valid" data is not some=
+thing
+we should decided for our users. This should be left to the application to
+decide. Same goes for GStreamer, if a buffer exist but has "some valid data=
+", we
+have a GST_BUFFER_FLAG_CORRUPTED flag for it. It is then up for the applica=
+tion
+to drop if needed for the application. I'm pretty sure some stateful decode=
+rs
+also behaves like this (simply because an error is an error, regardless of =
+the
+nature of it).
 
+It might be different today, but few years ago, dropping or not dropping wa=
+s the
+main difference between Apple Facetime (dropping) and the other video strea=
+ming
+applications. One would freeze, the other would show "some valid data".
 
-... and likewise here?
+If you look at the outcome of a partially corrupted decoded images and the
+outcome of a mid-frame DMA error (typically from a camera stream), you'll f=
+ind
+that these are visually the same. So it is unfair to consider these two err=
+or so
+different that a new mechanism must be added. In my opinion, adding RO cont=
+rols
+to signal these corruption only make sense if the hardware can provide deta=
+iled
+reports of what is corrupted (list/range of macro-blocks, or CTU that are
+affected). Then you could measure the level of corruption, but in reality, =
+I
+doubt there would be a vast usage of this, specially that the report will l=
+ikely
+be inconsistent due to limited HW support.
 
-Thanks,
-Mark.
+Finally, in the bitstream decoder world, including all software decoders I'=
+ve
+worked with, the decode is a success only if all bits are perfectly decoded=
+.
+This is the baseline for good vs bad. Userland expected an image, and whate=
+ver
+happened, in real-time scenario, it must send an image. Sending a corrupted
+image, or sending the previously good image remains a decision to be made b=
+y
+application. As application exist around the implemented mechanism here, I'=
+d
+prefer to go for that rather then adding a new API.
 
->  
->  	return notifier_to_errno(ret);
->  }
-> 
-> 
+Nicolas
+
+>=20
+> Regards,
+>=20
+> 	Hans
+>=20
+> >=20
+> > Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> > ---
+> >  drivers/staging/media/rkvdec/rkvdec.c | 10 ++++++----
+> >  drivers/staging/media/rkvdec/rkvdec.h |  2 ++
+> >  2 files changed, 8 insertions(+), 4 deletions(-)
+> >=20
+> > diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/me=
+dia/rkvdec/rkvdec.c
+> > index 7bab7586918c..7e76f8b72885 100644
+> > --- a/drivers/staging/media/rkvdec/rkvdec.c
+> > +++ b/drivers/staging/media/rkvdec/rkvdec.c
+> > @@ -950,6 +950,7 @@ static void rkvdec_v4l2_cleanup(struct rkvdec_dev *=
+rkvdec)
+> >  static irqreturn_t rkvdec_irq_handler(int irq, void *priv)
+> >  {
+> >  	struct rkvdec_dev *rkvdec =3D priv;
+> > +	struct rkvdec_ctx *ctx;
+> >  	enum vb2_buffer_state state;
+> >  	u32 status;
+> > =20
+> > @@ -958,12 +959,13 @@ static irqreturn_t rkvdec_irq_handler(int irq, vo=
+id *priv)
+> >  		VB2_BUF_STATE_DONE : VB2_BUF_STATE_ERROR;
+> > =20
+> >  	writel(0, rkvdec->regs + RKVDEC_REG_INTERRUPT);
+> > -	if (cancel_delayed_work(&rkvdec->watchdog_work)) {
+> > -		struct rkvdec_ctx *ctx;
+> > +	ctx =3D v4l2_m2m_get_curr_priv(rkvdec->m2m_dev);
+> > =20
+> > -		ctx =3D v4l2_m2m_get_curr_priv(rkvdec->m2m_dev);
+> > +	if (ctx->coded_fmt_desc->ops->check_error_info)
+> > +		state =3D ctx->coded_fmt_desc->ops->check_error_info(ctx);
+> > +
+> > +	if (cancel_delayed_work(&rkvdec->watchdog_work))
+> >  		rkvdec_job_finish(ctx, state);
+> > -	}
+> > =20
+> >  	return IRQ_HANDLED;
+> >  }
+> > diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/me=
+dia/rkvdec/rkvdec.h
+> > index 633335ebb9c4..4ae8e6c6b03c 100644
+> > --- a/drivers/staging/media/rkvdec/rkvdec.h
+> > +++ b/drivers/staging/media/rkvdec/rkvdec.h
+> > @@ -73,6 +73,8 @@ struct rkvdec_coded_fmt_ops {
+> >  		     struct vb2_v4l2_buffer *dst_buf,
+> >  		     enum vb2_buffer_state result);
+> >  	int (*try_ctrl)(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl);
+> > +	/* called from IRQ handler */
+> > +	int (*check_error_info)(struct rkvdec_ctx *ctx);
+> >  };
+> > =20
+> >  struct rkvdec_coded_fmt_desc {
+>=20
+
