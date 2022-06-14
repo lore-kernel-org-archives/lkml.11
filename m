@@ -2,165 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9389CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B457C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357755AbiFNUUk (ORCPT
+        id S1357873AbiFNUUo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39292 "EHLO
+        Tue, 14 Jun 2022 16:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358051AbiFNUUc (ORCPT
+        with ESMTP id S1358064AbiFNUUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:20:32 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188C924974
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:20:30 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id t32so16982202ybt.12
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:20:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ARM5wUedhzNDGSfluB0ZEvytB7HNG0S9RsFwKj8ik/4=;
-        b=R0EOyLJjH9igU47Vcr2w25NtncFWmtmJHAXhnb5b0Fl8hPd064VuqpVAczfMhuNqaU
-         Re1TGwI2OGmuIpYS/O/Qj4ddBfbadAS/NkEvQBJvI1LKzItc1eLemkbgk3m4l+BR1KDF
-         cqK7St+LU8i7RLui1/2WC59UMtuIr/0Up/E8LchN8px21vEHGAQTnvHFEIRh8OTnKdhg
-         mmepj+YRt2MfvCFpforx3aOdUH8EacRUZZOgXZqcYmljKy83TQdqTyT42RFUKppV97m9
-         QFcXzSGKLevq7cZzFakwOxQhB9gJRfQb6u41dE9WccfptM9KTmlfmXaGika2/4QFEM5I
-         RfQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ARM5wUedhzNDGSfluB0ZEvytB7HNG0S9RsFwKj8ik/4=;
-        b=yTOp5ENgE62+evPTjyj6Ntx2OL/rShifWd4P1HAETH3Muf0vihbSGWqBUqvnsIrzX2
-         NlcPZiOCsUIS5qC2Bl4EPey3G/3zhjvSK97dquFwm0yby0B6w1n0oYVev7QhN/fw1QmH
-         SzSfiDeJlAzlWvYMlX6z1tPNImcXT7yjxFehVLPeJP7XBS2xErHIQJ2KYer1eWIslZes
-         ml1ebtKWsQY9vxdncqSjiKkxLRBx4T8Atv0MRW25pp6JiM/VZ6UVyt/wBw8pXL10k1Dl
-         6BNY9tmxRfhcqxdeCkb/hNHCl64rheDJ5t1XqukY4oULLQbMW1tfrPdd9g/2iinxCBQW
-         s61Q==
-X-Gm-Message-State: AJIora/lqyiandHoBrp86rUBO+Uj6szOkmtAyFayoEVnC3jvsYwGciVG
-        Oibwce1GSWygx2tXxpeoCKYldlLipl+keSOi/yLzig==
-X-Google-Smtp-Source: AGRyM1uoRQJDRQly7W6sdIqsVN8kRskDMxbuFyQoYccjKNgjAA0Y9fNvYeFUOy8a41hiwm4lqNGH4ZV2ktE4XENG+Ic=
-X-Received: by 2002:a05:6902:1007:b0:665:197a:a3a8 with SMTP id
- w7-20020a056902100700b00665197aa3a8mr6177688ybt.274.1655238028988; Tue, 14
- Jun 2022 13:20:28 -0700 (PDT)
+        Tue, 14 Jun 2022 16:20:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D7BB485;
+        Tue, 14 Jun 2022 13:20:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46B3761560;
+        Tue, 14 Jun 2022 20:20:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA9B1C3411E;
+        Tue, 14 Jun 2022 20:20:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655238031;
+        bh=/YZ/vfdY+LpkLwFedw1kInlGS37UJrgkhllxkJRhf6Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=c72bZ+oCNYTvdU0AwQSmlyiTkpM10TAEYMAsZ3JElFrOEGXaMiEWfqn/XXVHWRX9B
+         YiEkV1PUhV8d1tOvMOXuBtfqR78WZH5HWVIP38H13X52lc8LJzFI8nyYd0bv4ZKyw8
+         E0ReS0tedlRIKuTWEHcbnQpXhMhOms9jwRWHDNUXkYrBMez5+akYdBkmrdj0zTbeVm
+         5IeMUNZKH19mqoaRSPVCDm46iUlL7+/SiZMl9Gc5DaOhxs+QKvFgj5HX9FczzshjKg
+         D0HKkHk6FZIA29okuu+DtStfoWifXSKs56G26KXH4aqU4PHWJvBKFS3l6muGeWHt58
+         T+Xe7OO7Rxa7A==
+Date:   Tue, 14 Jun 2022 22:20:27 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Luca Weiss <luca@z3ntu.xyz>
+Cc:     linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Todor Tomov <todor.too@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        matti.lehtimaki@gmail.com
+Subject: Re: [RFC PATCH 10/14] i2c: qcom-cci: add msm8974 compatible
+Message-ID: <Yqjti8s06LIfTE52@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Luca Weiss <luca@z3ntu.xyz>, linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Todor Tomov <todor.too@gmail.com>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        matti.lehtimaki@gmail.com
+References: <20220522162802.208275-1-luca@z3ntu.xyz>
+ <20220522162802.208275-11-luca@z3ntu.xyz>
 MIME-Version: 1.0
-References: <20220614144853.3693273-1-glider@google.com> <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com>
- <CAG_fn=WEed5NJ8hdrrP_N8aQ_1Ad11VoJgdVxQheo3VfT_xyXQ@mail.gmail.com> <CAHk-=whjz3wO8zD+itoerphWem+JZz4uS3myf6u1Wd6epGRgmQ@mail.gmail.com>
-In-Reply-To: <CAHk-=whjz3wO8zD+itoerphWem+JZz4uS3myf6u1Wd6epGRgmQ@mail.gmail.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Tue, 14 Jun 2022 22:19:53 +0200
-Message-ID: <CAG_fn=UPoM3bafwu6inGPMjg1bPw3HSFM_KrE_hen_MN3fu2vA@mail.gmail.com>
-Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Evgenii Stepanov <eugenis@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Buka <vitalybuka@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="QLG4RjiqBen7yn3N"
+Content-Disposition: inline
+In-Reply-To: <20220522162802.208275-11-luca@z3ntu.xyz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 8:31 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Tue, Jun 14, 2022 at 11:08 AM Alexander Potapenko <glider@google.com> =
-wrote:
-> >
-> > On Tue, Jun 14, 2022 at 6:48 PM Linus Torvalds
-> > >
-> > > I'm assuming you mean pass by reference.
-> >
-> > No, sorry for being unclear. I mean passing by value.
->
-> Pass-by-value most definitely should warn about uninitialized variables.
->
-> > In the given example the prototype of step_into looks as follows (see
-> > https://elixir.bootlin.com/linux/latest/source/fs/namei.c#L1846):
-> >
-> >   static const char *step_into(struct nameidata *nd, int flags, struct
-> > dentry *dentry, struct inode *inode, unsigned seq);
-> >
-> > , and the local variables `struct inode *inode` and `unsigned seq` are
-> > being passed to it by value, i.e. in certain cases the struct inode
-> > pointer and the unsigned seq are uninitialized.
->
-> Then those cases should warn. No question about it.
 
-What about the cases where these uninitialized values are never used
-in the callee?
-step_into() is one of the instances from the kernel, but here is a
-distilled example from https://godbolt.org/z/s1oPve6d4:
+--QLG4RjiqBen7yn3N
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-char *kmalloc(int size);
+On Sun, May 22, 2022 at 06:27:58PM +0200, Luca Weiss wrote:
+> From: Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com>
+>=20
+> MSM8974 CCI is the same as MSM8916 except it has two masters.
+>=20
+> Signed-off-by: Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com>
+> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+> ---
+> To note, the cci_v1_5_data variable name is just a bit arbitrary and
+> isn't meant to reflect IP version "1.5". I'd be happy to change the
+> variable name to something else.
 
-char *kmalloc_or_not(int flag, int size, char *p) {
-  if (flag)
-    return kmalloc(size);
-  else
-    return p;
-}
-
-char global[16];
-
-char *p(int flag) {
-  char *c;
-  int size;
-  if (flag)
-    return kmalloc_or_not(1, 4, c);
-  else
-    return kmalloc_or_not(0, size, global);
-}
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-
-In this example `size` is passed into kmalloc_or_not() initialized,
-however it is never used, so the code probably has defined behavior.
-In this particular case Clang's -Winitialized is able to notice that
-`size` is uninitialized, but in more complex cases it cannot.
-
-> I assume the only reason they don't warn right now is that the
-> compiler doesn't see that they are uninitialized, possibly due to some
-> earlier pass-by-reference use.
-
-That's right, and here is where dynamic analysis comes to the rescue.
-So should we let KMSAN catch such cases and consider them bugs^W
-smelly code patterns that need to be fixed?
-
->
->              Linus
+Loic, Robert: I know this series is marked RFC, but the I2C patches
+adding a new SoC to the driver are maybe interesting already?
 
 
+--QLG4RjiqBen7yn3N
+Content-Type: application/pgp-signature; name="signature.asc"
 
---=20
-Alexander Potapenko
-Software Engineer
+-----BEGIN PGP SIGNATURE-----
 
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKo7YsACgkQFA3kzBSg
+KbbqbRAAoyyAxbFsgQBm8I5Vx+0UoHw0pUnptb52g5CjmSpFUz3rhcc7nFtAGTRq
+4c++op/pMcUHuN53keum60Y0530+cM25HAhvvVY9ggDXuK8Mn2bSHEmC23dHCAX/
+whRjzsH9W2BlOukKhiJyg/EGZgGfeDC2HTcddnzr5WSlZksOcxItocYO4d6rl3xf
+uQLT6cAzCaNtLP1C5KBd2dQb39kdXrrRcNNeWETL8krJHBQjkCWg2guXJDvPnLjE
+b9MvaiZUZ6EMIR+KezE4PFYw6BtlLhH/AeCEgLruK6KlV4muzOIvstnAGGfRgm3u
++EcGebvT3FgFHlqrNF7exFG3ACWJolAaM8ZyehkOKoyA+J+7AINmoKDrpwa33qIE
+YygWfUbH1tUBxMfxJ4tU/ranCmr5ZnJCCoVY2Pt64M/yOCldnkN55BUKiL1Gg/Uq
+po7+6rbLpWJIlSWeyQWRi9RYDGhA1tc0NI+ptSvrA9e7ewyj9ggVIY7KnnYjXrhE
+7YMDeWyowe925c8BW5+E8vsMfgRA6NyHavPiGr0B+aa5eGYjPvBpCxs95F5Tppom
+MONwVTNhmCxEqVWQTQt3Zil8AikUFUa5dYVSFt2pUuXMfmYU6kkvZ8kSH7tL7ASQ
+uWjlcz4x/fjQZ2Oova/E8UOLv/3eOCu6Zxj/grCDPITArk5ftJA=
+=9e2S
+-----END PGP SIGNATURE-----
 
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
-
-Diese E-Mail ist vertraulich. Falls Sie diese f=C3=A4lschlicherweise
-erhalten haben sollten, leiten Sie diese bitte nicht an jemand anderes
-weiter, l=C3=B6schen Sie alle Kopien und Anh=C3=A4nge davon und lassen Sie =
-mich
-bitte wissen, dass die E-Mail an die falsche Person gesendet wurde.
-
-
-This e-mail is confidential. If you received this communication by
-mistake, please don't forward it to anyone else, please erase all
-copies and attachments, and please let me know that it has gone to the
-wrong person.
+--QLG4RjiqBen7yn3N--
