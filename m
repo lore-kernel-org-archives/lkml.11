@@ -2,196 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F25B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:44:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 775C5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356070AbiFNMoi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51194 "EHLO
+        id S236681AbiFNMqK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:46:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356096AbiFNMnY (ORCPT
+        with ESMTP id S230242AbiFNMqG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:43:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C86DFC1;
-        Tue, 14 Jun 2022 05:43:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2B39B81870;
-        Tue, 14 Jun 2022 12:42:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E1EBC3411E;
-        Tue, 14 Jun 2022 12:42:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655210578;
-        bh=8HAAgr9x6d3Aho4yDZuUzaQfjz5OmeJJsR6i0W8q4AA=;
+        Tue, 14 Jun 2022 08:46:06 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FAB525C5;
+        Tue, 14 Jun 2022 05:46:04 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 6D9ECC01E; Tue, 14 Jun 2022 14:46:02 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1655210762; bh=RBQSMhJpK15hWi9SMdepI4O7Y2eSyNHR2US+GQyQ36o=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Lhe/rgtI5TpX93cgKsJMRK8LuBotejc1V8ob+vfhaEWmnW3nK4w1rY5/XW4fHISdK
-         afoBHjqFKQ4iIW75YTilSo/mthgmZrYDG+SsSstbsMqVzeoPpkjkJ6SgCJGZAccgwK
-         vbbCwmD/5SvFei6YSX+lmSZ0oX+dO2onrxOIH7YQ=
-Date:   Tue, 14 Jun 2022 14:42:55 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kai Ye <yekai13@huawei.com>
-Cc:     herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
-        linux-accelerators@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linuxarm@huawei.com, zhangfei.gao@linaro.org,
-        wangzhou1@hisilicon.com
-Subject: Re: [PATCH v2 1/3] uacce: supports device isolation feature
-Message-ID: <YqiCT1HT/Y0BeiBf@kroah.com>
-References: <20220614122943.1406-1-yekai13@huawei.com>
- <20220614122943.1406-2-yekai13@huawei.com>
+        b=LilRbVJUfwYoA1//wDU1shCOR5jIlx8SHihvxDmteQ1l1gMs5kgxlk7aM3k7hIFAw
+         3A0uRVv0xz4CtRSZK6YZUxF2bAZ3e18O0OOswRu9skzz4N90QpkV2qKn83rSv6KWtd
+         vqViBfUVAGcvn02WxoMFlmUDsnA6ae6ww+mwbzj3On574KLvCb1Q9U4rZqn27j9CfH
+         +7vb3NOKulwEBsUfb9dWM1abLj30rBDKUOuCh8WHT8VRH1UfOWGJuIdS68MLBfruDo
+         maz9BHaJqUwPxGX4Ic2m8vmia6GxKVZP5tvrZ0APgofnHBnqIm5W8Op4BIZNPjboaJ
+         Qrkz60btiZZ0A==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 6B33DC009;
+        Tue, 14 Jun 2022 14:45:59 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1655210761; bh=RBQSMhJpK15hWi9SMdepI4O7Y2eSyNHR2US+GQyQ36o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VUcy+z4XRKn7+vtvt02If6n53Kq01LfCtnbgiQl1vimsdQQuBo7mMmbPyEj1vKTzU
+         UkuQcg3gu2kaXLwSRZ0hWQzJxlgsVZc5CweX9hlL64WeGSNSM/qvhOphK9x5NB3NGC
+         nQT2qVZ2nLp2RQIEvrPV+ESJDRrNgoCglQYndTU6cHhI+VdWUGCsTBL9vzb531YY6w
+         qrEQXM6+rUxhbXlpWZzw24Gt/M26s/px/ctjthKXsvmdF7S+wKYUkkkl7lodK1FDe5
+         UWqFGS0xf/iWIbj8BLlkuSSb6Nqu4LomRlCFD1gyJktnqi3qD3YgWYFn9zqVMfg9Z4
+         ohkHGDvGz9xXQ==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 81288279;
+        Tue, 14 Jun 2022 12:45:53 +0000 (UTC)
+Date:   Tue, 14 Jun 2022 21:45:38 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        David Howells <dhowells@redhat.com>,
+        linux-fsdevel@vger.kernel.org, stable@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] 9p: fix EBADF errors in cached mode
+Message-ID: <YqiC8luskkxUftQl@codewreck.org>
+References: <YqW5s+GQZwZ/DP5q@codewreck.org>
+ <20220614033802.1606738-1-asmadeus@codewreck.org>
+ <YqgDdNUxC0hV6KR9@codewreck.org>
+ <19026878.01OTk6HtWb@silver>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220614122943.1406-2-yekai13@huawei.com>
+In-Reply-To: <19026878.01OTk6HtWb@silver>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 08:29:38PM +0800, Kai Ye wrote:
-> UACCE add the hardware error isolation API. Users can configure
-> the error frequency threshold by this vfs node. This API interface
-> certainly supports the configuration of user protocol strategy. Then
-> parse it inside the device driver. UACCE only reports the device
-> isolate state. When the error frequency is exceeded, the device
-> will be isolated. The isolation strategy should be defined in each
-> driver module.
+Christian Schoenebeck wrote on Tue, Jun 14, 2022 at 02:10:01PM +0200:
+> It definitely goes into the right direction, but I think it's going a bit too 
+> far by using writeback_fid also in cases where it is not necessary and wasn't 
+> used before in the past.
+
+Would help if I had an idea of what was used where in the past.. :)
+
+From a quick look at the code, checking out v5.10,
+v9fs_vfs_writepage_locked() used the writeback fid always for all writes
+v9fs_vfs_readpages is a bit more complex but only seems to be using the
+"direct" private_data fid for reads...
+It took me a bit of time but I think the reads you were seeing on
+writeback fid come from v9fs_write_begin that does some readpage on the
+writeback fid to populate the page before a non-filling write happens.
+
+> What about something like this in v9fs_init_request() (yet untested):
 > 
-> Signed-off-by: Kai Ye <yekai13@huawei.com>
-> Reviewed-by: Zhou Wang <wangzhou1@hisilicon.com>
-> ---
->  drivers/misc/uacce/uacce.c | 37 +++++++++++++++++++++++++++++++++++++
->  include/linux/uacce.h      | 16 +++++++++++++---
->  2 files changed, 50 insertions(+), 3 deletions(-)
+>     /* writeback_fid is always opened O_RDWR (instead of just O_WRONLY) 
+>      * explicitly for this case: partial write backs that require a read
+>      * prior to actual write and therefore requires a fid with read
+>      * capability.
+>      */
+>     if (rreq->origin == NETFS_READ_FOR_WRITE)
+>         fid = v9inode->writeback_fid;
+
+... Which seems to be exactly what this origin is about, so if that
+works I'm all for it.
+
+> If desired, this could be further constrained later on like:
 > 
-> diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-> index b6219c6bfb48..525623215132 100644
-> --- a/drivers/misc/uacce/uacce.c
-> +++ b/drivers/misc/uacce/uacce.c
-> @@ -346,12 +346,47 @@ static ssize_t region_dus_size_show(struct device *dev,
->  		       uacce->qf_pg_num[UACCE_QFRT_DUS] << PAGE_SHIFT);
->  }
->  
-> +static ssize_t isolate_show(struct device *dev,
-> +			    struct device_attribute *attr, char *buf)
-> +{
-> +	struct uacce_device *uacce = to_uacce_device(dev);
-> +
-> +	return sysfs_emit(buf, "%d\n", uacce->ops->get_isolate_state(uacce));
-> +}
-> +
-> +static ssize_t isolate_strategy_show(struct device *dev,
-> +				     struct device_attribute *attr, char *buf)
-> +{
-> +	struct uacce_device *uacce = to_uacce_device(dev);
-> +
-> +	return sysfs_emit(buf, "%s\n", uacce->isolate_strategy);
-> +}
-> +
-> +static ssize_t isolate_strategy_store(struct device *dev,
-> +				      struct device_attribute *attr,
-> +				      const char *buf, size_t count)
-> +{
-> +	struct uacce_device *uacce = to_uacce_device(dev);
-> +	int ret;
-> +
-> +	if (!buf || sizeof(buf) > UACCE_MAX_ISOLATE_STRATEGY_LEN)
-> +		return -EINVAL;
-> +
-> +	memcpy(uacce->isolate_strategy, buf, strlen(buf));
-> +
-> +	ret = uacce->ops->isolate_strategy_write(uacce, buf);
-> +
-> +	return ret ? ret : count;
-> +}
-> +
->  static DEVICE_ATTR_RO(api);
->  static DEVICE_ATTR_RO(flags);
->  static DEVICE_ATTR_RO(available_instances);
->  static DEVICE_ATTR_RO(algorithms);
->  static DEVICE_ATTR_RO(region_mmio_size);
->  static DEVICE_ATTR_RO(region_dus_size);
-> +static DEVICE_ATTR_RO(isolate);
-> +static DEVICE_ATTR_RW(isolate_strategy);
->  
->  static struct attribute *uacce_dev_attrs[] = {
->  	&dev_attr_api.attr,
-> @@ -360,6 +395,8 @@ static struct attribute *uacce_dev_attrs[] = {
->  	&dev_attr_algorithms.attr,
->  	&dev_attr_region_mmio_size.attr,
->  	&dev_attr_region_dus_size.attr,
-> +	&dev_attr_isolate.attr,
-> +	&dev_attr_isolate_strategy.attr,
->  	NULL,
->  };
->  
-> diff --git a/include/linux/uacce.h b/include/linux/uacce.h
-> index 48e319f40275..0f7668bfa645 100644
-> --- a/include/linux/uacce.h
-> +++ b/include/linux/uacce.h
-> @@ -8,6 +8,7 @@
->  #define UACCE_NAME		"uacce"
->  #define UACCE_MAX_REGION	2
->  #define UACCE_MAX_NAME_SIZE	64
-> +#define UACCE_MAX_ISOLATE_STRATEGY_LEN	256
+>     if (rreq->origin == NETFS_READ_FOR_WRITE &&
+>         (fid->mode & O_ACCMODE) == O_WRONLY)
+>     {
+>         fid = v9inode->writeback_fid;
+>     }
 
-So it's a random string of characters?  What format?
+That also makes sense, if the fid mode has read permissions we might as
+well use these as the writeback fid would needlessly be doing root IOs.
 
->  
->  struct uacce_queue;
->  struct uacce_device;
-> @@ -30,6 +31,8 @@ struct uacce_qfile_region {
->   * @is_q_updated: check whether the task is finished
->   * @mmap: mmap addresses of queue to user space
->   * @ioctl: ioctl for user space users of the queue
-> + * @get_isolate_state: get the device state after set the isolate strategy
-> + * @isolate_strategy_store: stored the isolate strategy to the device
->   */
->  struct uacce_ops {
->  	int (*get_available_instances)(struct uacce_device *uacce);
-> @@ -43,6 +46,8 @@ struct uacce_ops {
->  		    struct uacce_qfile_region *qfr);
->  	long (*ioctl)(struct uacce_queue *q, unsigned int cmd,
->  		      unsigned long arg);
-> +	enum uacce_dev_state (*get_isolate_state)(struct uacce_device *uacce);
-> +	int (*isolate_strategy_write)(struct uacce_device *uacce, const char *buf);
+> I will definitely give these options some test spins here, a short feedback 
+> ahead would be appreciated though.
 
-Length of the buffer?
+Please let me know how that works out, I'd be happy to use either of
+your versions instead of mine.
+If I can be greedy though I'd like to post it together with the other
+couple of fixes next week, so having something before the end of the
+week would be great -- I think even my first overkill version early and
+building on it would make sense at this point.
 
->  };
->  
->  /**
-> @@ -57,6 +62,12 @@ struct uacce_interface {
->  	const struct uacce_ops *ops;
->  };
->  
-> +enum uacce_dev_state {
-> +	UACCE_DEV_ERR = -1,
-> +	UACCE_DEV_NORMAL,
-> +	UACCE_DEV_ISOLATE,
-> +};
-> +
->  enum uacce_q_state {
->  	UACCE_Q_ZOMBIE = 0,
->  	UACCE_Q_INIT,
-> @@ -117,6 +128,7 @@ struct uacce_device {
->  	struct list_head queues;
->  	struct mutex queues_lock;
->  	struct inode *inode;
-> +	char isolate_strategy[UACCE_MAX_ISOLATE_STRATEGY_LEN];
->  };
->  
->  #if IS_ENABLED(CONFIG_UACCE)
-> @@ -125,7 +137,7 @@ struct uacce_device *uacce_alloc(struct device *parent,
->  				 struct uacce_interface *interface);
->  int uacce_register(struct uacce_device *uacce);
->  void uacce_remove(struct uacce_device *uacce);
-> -
-> +struct uacce_device *dev_to_uacce(struct device *dev);
+But I think you've got the right end, so hopefully won't be needing to
+delay
 
-Why is this moved to the .h file yet the function is not exported?
 
-thanks,
-
-greg k-h
+Cheers,
+-- 
+Dominique
