@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E292C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C17ABCCA480
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356560AbiFNCdp (ORCPT
+        id S1356729AbiFNCdy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41210 "EHLO
+        Mon, 13 Jun 2022 22:33:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356842AbiFNCbc (ORCPT
+        with ESMTP id S1356595AbiFNCbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:31:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DC54474F;
-        Mon, 13 Jun 2022 19:12:27 -0700 (PDT)
+        Mon, 13 Jun 2022 22:31:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D2F443EB;
+        Mon, 13 Jun 2022 19:12:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0BBEB816AA;
-        Tue, 14 Jun 2022 02:12:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA064C3411E;
-        Tue, 14 Jun 2022 02:12:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C62CB816AC;
+        Tue, 14 Jun 2022 02:11:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BCAEC34114;
+        Tue, 14 Jun 2022 02:11:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172745;
-        bh=QPq4A+MPT7ODraj38T+gaiAyBRab/RGhAAvnfWnRn0M=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YIJ8DM+GKq8jv8n8PMPgZOX8E5loTjw2ghHuQWZ8UQp1p+BoRjdmXhWjF7WElibg7
-         VZn8ErmHCmo9NCC0uO8f5W8ebr66fnvInUDTbxvgAN+PQeZ0XdPHwLZ6E2ESoF49A4
-         fmYEbklY8U67bG3wM5+7abGIpC4ARijk10w1HuCnCmuIUXNi19iZ+P7txZBpNA3nlH
-         b5lkRcLFsYD9XVpydyk/OMLsN8Xn+6ZMUVh3LYwnouiaOyT8zV9PsTsbBRXdHJ3tcK
-         h3EMKY28goqq0BocBbjMFvMPnsXwyn1wzMYS8Alc4neOMVVyd+9fqsDhnm+2aFrn3S
-         UelS4HDbksj8A==
+        s=k20201202; t=1655172695;
+        bh=Vi2rp09G4qrB3DUWu/V/nfThCdAQnivpIEvS02ZBuF8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AZvTZEr0ZPrqi0RhPzDBwazsg6NDg1sMyOBBfe7jKwUVtgMoUy+wno/TJD85zYniS
+         caoetrE3K8M9nOlFIf4BetpfIJv9L4WkhV6jlZgbKdJ4RojBjsWhQnLWK158VqHap5
+         21Mn33ZFXufB6abG27dEo4XDnEh3WAEM6cMI6/FImdc588WbWhxS596eFsTMP9FHWz
+         2V9OxS2awmJ2hD08YxW/g3ygUEysuSdTJPPWzgYPVES/kSPRYu+nCgMKyDxzLxTMUE
+         aBKuAPeuyGt8fcjSr1RMlM8ePi5OI3np3D2hddFn7Q+CJICAH1Hs3VBxq6QPlQIq1F
+         BQBmSzRCXU54g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 4.9] KVM: Don't null dereference ops->destroy
-Date:   Mon, 13 Jun 2022 22:12:07 -0400
-Message-Id: <20220614021207.1101649-1-sashal@kernel.org>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.17 2/4] KVM: x86: do not set st->preempted when going back to user space
+Date:   Mon, 13 Jun 2022 22:11:28 -0400
+Message-Id: <20220614021130.1101425-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220614021130.1101425-1-sashal@kernel.org>
+References: <20220614021130.1101425-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,50 +54,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-[ Upstream commit e8bc2427018826e02add7b0ed0fc625a60390ae5 ]
+[ Upstream commit 54aa83c90198e68eee8b0850c749bc70efb548da ]
 
-A KVM device cleanup happens in either of two callbacks:
-1) destroy() which is called when the VM is being destroyed;
-2) release() which is called when a device fd is closed.
+Similar to the Xen path, only change the vCPU's reported state if the vCPU
+was actually preempted.  The reason for KVM's behavior is that for example
+optimistic spinning might not be a good idea if the guest is doing repeated
+exits to userspace; however, it is confusing and unlikely to make a difference,
+because well-tuned guests will hardly ever exit KVM_RUN in the first place.
 
-Most KVM devices use 1) but Book3s's interrupt controller KVM devices
-(XICS, XIVE, XIVE-native) use 2) as they need to close and reopen during
-the machine execution. The error handling in kvm_ioctl_create_device()
-assumes destroy() is always defined which leads to NULL dereference as
-discovered by Syzkaller.
-
-This adds a checks for destroy!=NULL and adds a missing release().
-
-This is not changing kvm_destroy_devices() as devices with defined
-release() should have been removed from the KVM devices list by then.
-
-Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Suggested-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- virt/kvm/kvm_main.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/x86/kvm/x86.c | 26 ++++++++++++++------------
+ arch/x86/kvm/xen.h |  6 ++++--
+ 2 files changed, 18 insertions(+), 14 deletions(-)
 
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index d251b718bf53..5482f47cb07d 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -2995,8 +2995,11 @@ static int kvm_ioctl_create_device(struct kvm *kvm,
- 		kvm_put_kvm(kvm);
- 		mutex_lock(&kvm->lock);
- 		list_del(&dev->vm_node);
-+		if (ops->release)
-+			ops->release(dev);
- 		mutex_unlock(&kvm->lock);
--		ops->destroy(dev);
-+		if (ops->destroy)
-+			ops->destroy(dev);
- 		return ret;
- 	}
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 8445d1d35c79..9b3fa4faf0f9 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4617,19 +4617,21 @@ void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
+ {
+ 	int idx;
  
+-	if (vcpu->preempted && !vcpu->arch.guest_state_protected)
+-		vcpu->arch.preempted_in_kernel = !static_call(kvm_x86_get_cpl)(vcpu);
++	if (vcpu->preempted) {
++		if (!vcpu->arch.guest_state_protected)
++			vcpu->arch.preempted_in_kernel = !static_call(kvm_x86_get_cpl)(vcpu);
+ 
+-	/*
+-	 * Take the srcu lock as memslots will be accessed to check the gfn
+-	 * cache generation against the memslots generation.
+-	 */
+-	idx = srcu_read_lock(&vcpu->kvm->srcu);
+-	if (kvm_xen_msr_enabled(vcpu->kvm))
+-		kvm_xen_runstate_set_preempted(vcpu);
+-	else
+-		kvm_steal_time_set_preempted(vcpu);
+-	srcu_read_unlock(&vcpu->kvm->srcu, idx);
++		/*
++		 * Take the srcu lock as memslots will be accessed to check the gfn
++		 * cache generation against the memslots generation.
++		 */
++		idx = srcu_read_lock(&vcpu->kvm->srcu);
++		if (kvm_xen_msr_enabled(vcpu->kvm))
++			kvm_xen_runstate_set_preempted(vcpu);
++		else
++			kvm_steal_time_set_preempted(vcpu);
++		srcu_read_unlock(&vcpu->kvm->srcu, idx);
++	}
+ 
+ 	static_call(kvm_x86_vcpu_put)(vcpu);
+ 	vcpu->arch.last_host_tsc = rdtsc();
+diff --git a/arch/x86/kvm/xen.h b/arch/x86/kvm/xen.h
+index adbcc9ed59db..fda1413f8af9 100644
+--- a/arch/x86/kvm/xen.h
++++ b/arch/x86/kvm/xen.h
+@@ -103,8 +103,10 @@ static inline void kvm_xen_runstate_set_preempted(struct kvm_vcpu *vcpu)
+ 	 * behalf of the vCPU. Only if the VMM does actually block
+ 	 * does it need to enter RUNSTATE_blocked.
+ 	 */
+-	if (vcpu->preempted)
+-		kvm_xen_update_runstate_guest(vcpu, RUNSTATE_runnable);
++	if (WARN_ON_ONCE(!vcpu->preempted))
++		return;
++
++	kvm_xen_update_runstate_guest(vcpu, RUNSTATE_runnable);
+ }
+ 
+ /* 32-bit compatibility definitions, also used natively in 32-bit build */
 -- 
 2.35.1
 
