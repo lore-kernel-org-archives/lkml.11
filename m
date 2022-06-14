@@ -2,146 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A4CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D02C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:50:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233602AbiFNJt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35356 "EHLO
+        id S245075AbiFNJuB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 05:50:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242541AbiFNJto (ORCPT
+        with ESMTP id S242697AbiFNJtr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 05:49:44 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD655434B5;
-        Tue, 14 Jun 2022 02:49:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655200183; x=1686736183;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=YCR295Yw2oMjSg7OW7athq4DigmdIWHGl8CQCqzIyOk=;
-  b=ihembLyEuALCSdO6nPTvP3UChGKpAe0D5uJ/mWxbweGpeE5m1SkznAsw
-   qZ7QfShYEYp/s8K7oPprRhWCreLWEaU0KT4Yb3TdoeEwjYjch0Hspq8so
-   83jGFtXkcn7bQy1IYmOu0Dl0sxeJ1VoaLUxJGA1ZZuuSIGPOBq8vx/uVn
-   I=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Jun 2022 02:49:43 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 02:49:43 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 02:49:43 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 02:49:38 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V15 8/9] arm64: dts: qcom: pm8008: Add base dts file
-Date:   Tue, 14 Jun 2022 15:18:30 +0530
-Message-ID: <1655200111-18357-9-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1655200111-18357-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1655200111-18357-1-git-send-email-quic_c_skakit@quicinc.com>
+        Tue, 14 Jun 2022 05:49:47 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13337443DC
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 02:49:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=k1; bh=dhx9YTpVwW/F5JDxftQIj4yB0Qv
+        VqWjJfB8eo/F5H8k=; b=kt88BNgDcqZqwQlSj8zR4s+FsMBZbv8/18nGSfjOkno
+        UR0GlYTxKMJVYLf20JQK//pqIWukoYQY3gPWesgzndBwU/mGdrqOO6tyyqBW4Qx6
+        qas2pnvcMqtiKboRbQcS9e1VuFNG7+e8wMLwYDlgBBSxks5dZ+DwwhXe2KRPTCaQ
+        =
+Received: (qmail 1658824 invoked from network); 14 Jun 2022 11:49:41 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 14 Jun 2022 11:49:41 +0200
+X-UD-Smtp-Session: l3s3148p1@QonQUmXh33VZD+ws
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     linux-renesas-soc@vger.kernel.org
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] clk: renesas: r8a779f0: Add HSCIF clocks
+Date:   Tue, 14 Jun 2022 11:49:37 +0200
+Message-Id: <20220614094937.8104-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add base DTS file for pm8008.
-
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 ---
-Changes in V15:
- - Changed copyright from GPL to BSD.
 
-Changes in V14:
- - Changed copyright from BSD to GPL.
+Change since v1: include all HSCIF
 
-Changes in V13:
- - None.
+ drivers/clk/renesas/r8a779f0-cpg-mssr.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
- arch/arm64/boot/dts/qcom/pm8008.dtsi | 54 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
-
-diff --git a/arch/arm64/boot/dts/qcom/pm8008.dtsi b/arch/arm64/boot/dts/qcom/pm8008.dtsi
-new file mode 100644
-index 0000000..0ffef2f
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/pm8008.dtsi
-@@ -0,0 +1,54 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+// Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-+
-+&pm8008_bus {
-+	pm8008: pmic@8 {
-+		compatible = "qcom,pm8008";
-+		reg = <0x8>;
-+		#address-cells = <2>;
-+		#size-cells = <0>;
-+		#interrupt-cells = <2>;
-+
-+		pm8008_l1: ldo1@1,4000 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4000>;
-+			regulator-name = "pm8008_ldo1";
-+		};
-+
-+		pm8008_l2: ldo2@1,4100 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4100>;
-+			regulator-name = "pm8008_ldo2";
-+		};
-+
-+		pm8008_l3: ldo3@1,4200 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4200>;
-+			regulator-name = "pm8008_ldo3";
-+		};
-+
-+		pm8008_l4: ldo4@1,4300 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4300>;
-+			regulator-name = "pm8008_ldo4";
-+		};
-+
-+		pm8008_l5: ldo5@1,4400 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4400>;
-+			regulator-name = "pm8008_ldo5";
-+		};
-+
-+		pm8008_l6: ldo6@1,4500 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4500>;
-+			regulator-name = "pm8008_ldo6";
-+		};
-+
-+		pm8008_l7: ldo7@1,4600 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4600>;
-+			regulator-name = "pm8008_ldo7";
-+		};
-+	};
-+};
+diff --git a/drivers/clk/renesas/r8a779f0-cpg-mssr.c b/drivers/clk/renesas/r8a779f0-cpg-mssr.c
+index 0aec5e8ffd96..4528f50c8174 100644
+--- a/drivers/clk/renesas/r8a779f0-cpg-mssr.c
++++ b/drivers/clk/renesas/r8a779f0-cpg-mssr.c
+@@ -118,6 +118,10 @@ static const struct cpg_core_clk r8a779f0_core_clks[] __initconst = {
+ };
+ 
+ static const struct mssr_mod_clk r8a779f0_mod_clks[] __initconst = {
++	DEF_MOD("hscif0",	514,	R8A779F0_CLK_S0D3),
++	DEF_MOD("hscif1",	515,	R8A779F0_CLK_S0D3),
++	DEF_MOD("hscif2",	516,	R8A779F0_CLK_S0D3),
++	DEF_MOD("hscif3",	517,	R8A779F0_CLK_S0D3),
+ 	DEF_MOD("i2c0",		518,	R8A779F0_CLK_S0D6_PER),
+ 	DEF_MOD("i2c1",		519,	R8A779F0_CLK_S0D6_PER),
+ 	DEF_MOD("i2c2",		520,	R8A779F0_CLK_S0D6_PER),
 -- 
-2.7.4
+2.35.1
 
