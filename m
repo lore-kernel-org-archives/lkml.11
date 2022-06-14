@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D370C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E45DC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354048AbiFNCSW (ORCPT
+        id S1354021AbiFNCSS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57184 "EHLO
+        Mon, 13 Jun 2022 22:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354290AbiFNCOi (ORCPT
+        with ESMTP id S1354318AbiFNCOk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6883BA6F;
+        Mon, 13 Jun 2022 22:14:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32453BA7A;
         Mon, 13 Jun 2022 19:08:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC8D161015;
-        Tue, 14 Jun 2022 02:08:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FCB0C3411B;
-        Tue, 14 Jun 2022 02:08:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2905660B6B;
+        Tue, 14 Jun 2022 02:07:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 633ECC385A2;
+        Tue, 14 Jun 2022 02:07:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172515;
-        bh=6xwjsAZAN6khBLt8KdzfH0uzWkQQWNNqeRfPYu9dOQk=;
+        s=k20201202; t=1655172465;
+        bh=n0EDmbEOrkNOBvW/GijmfjermZbvRf0zE44tEbRt0PE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j7XiLP+SrhbTTfkDH29yDFbVrH+QXcDjweo4MQMbpOaJR7/3Vv/Hvi47nYCZ3n56o
-         bAfVLQX6VmDwFMc6q/nCnsY9DAHR5lawUYs6Xsy8swWY39IPgaAvZR+8eY+VSElAsO
-         04/Gf9NlFE+YQgJzGIN+0Y3CY1RloYub+R4PiyOGlXe/CMD1DGvdyK/aL3DZE2Tzjl
-         0JEXrR1hXSx38VqcoEpMBFm1muRGNs0+Kdzrwq2q63Mm8FWIz4esh1EGu4610s1zQW
-         I9DyYQNTiQuE+BNB23x6IUGtHYcIn1cunR45oeS2InRRh+qTpITiWXo2jtOZIKDa4N
-         Yyrhr89Enoe9Q==
+        b=FFBE4Pz5D7YUofqXBQ6tKzOZCM79RNEael/2Itge5upbhIlhK6KTap0LtJMGEp6K7
+         QhRrhtLVOz9pnQ+Mu1/Mn1YGnMkrIbkqerVVtwU+T0J8QvET+Ta1bFNG6CjxplMZTy
+         8IImqCo1aXyQlODb3R559nkPw98/0rLgnoU6e1NTGwHK0dSM1hDaP7yntLQDWd9DwG
+         ZllsV9vWtiyqFlkhA3kPAoUBqJS0muacu97izXdaTdjB3luNa8vKGfc07Z80bif6B4
+         GOZZjT+nckP/kUHD0ehX7dzX+DdQt0ApZu+f5jhmscrt+aMxJPJ1c/1osX+w3Y7Bcs
+         Q6N2LN8YYPOIg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Adam Ford <aford173@gmail.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com,
-        patches@opensource.wolfsonmicro.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.10 12/29] ASoC: wm8962: Fix suspend while playing music
-Date:   Mon, 13 Jun 2022 22:07:58 -0400
-Message-Id: <20220614020815.1099999-12-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@avagotech.com,
+        dick.kennedy@avagotech.com, jejb@linux.vnet.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 22/41] scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
+Date:   Mon, 13 Jun 2022 22:06:47 -0400
+Message-Id: <20220614020707.1099487-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
-References: <20220614020815.1099999-1-sashal@kernel.org>
+In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
+References: <20220614020707.1099487-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,40 +55,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
+[ Upstream commit 336d63615466b4c06b9401c987813fd19bdde39b ]
 
-If the audio CODEC is playing sound when the system is suspended,
-it can be left in a state which throws the following error:
+After issuing a LIP, a specific target vendor does not ACC the FLOGI that
+lpfc sends.  However, it does send its own FLOGI that lpfc ACCs.  The
+target then establishes the port IDs by sending a PLOGI.  lpfc PLOGI_ACCs
+and starts the RPI registration for DID 0x000001.  The target then sends a
+LOGO to the fabric DID.  lpfc is currently treating the LOGO from the
+fabric DID as a link down and cleans up all the ndlps.  The ndlp for DID
+0x000001 is put back into NPR and discovery stops, leaving the port in
+stuck in bypassed mode.
 
-wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
+Change lpfc behavior such that if a LOGO is received for the fabric DID in
+PT2PT topology skip the lpfc_linkdown_port() routine and just move the
+fabric DID back to NPR.
 
-Once this error has occurred, the audio will not work again until rebooted.
-
-Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
-
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220603174329.63777-7-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8962.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/lpfc/lpfc_nportdisc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
-index 0bd3bbc2aacf..38651022e3d5 100644
---- a/sound/soc/codecs/wm8962.c
-+++ b/sound/soc/codecs/wm8962.c
-@@ -3864,6 +3864,7 @@ static int wm8962_runtime_suspend(struct device *dev)
- #endif
+diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
+index fdf5e777bf11..2bd35a7424c2 100644
+--- a/drivers/scsi/lpfc/lpfc_nportdisc.c
++++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
+@@ -810,7 +810,8 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
+ 		lpfc_nvmet_invalidate_host(phba, ndlp);
  
- static const struct dev_pm_ops wm8962_pm = {
-+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
- 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
- };
- 
+ 	if (ndlp->nlp_DID == Fabric_DID) {
+-		if (vport->port_state <= LPFC_FDISC)
++		if (vport->port_state <= LPFC_FDISC ||
++		    vport->fc_flag & FC_PT2PT)
+ 			goto out;
+ 		lpfc_linkdown_port(vport);
+ 		spin_lock_irq(shost->host_lock);
 -- 
 2.35.1
 
