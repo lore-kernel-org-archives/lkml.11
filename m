@@ -2,104 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB15CCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:16:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353331AbiFNCQQ (ORCPT
+        id S1353437AbiFNCQ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54912 "EHLO
+        Mon, 13 Jun 2022 22:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353523AbiFNCNw (ORCPT
+        with ESMTP id S1353615AbiFNCN5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:13:52 -0400
-Received: from challenge-bot.com (challenge-bot.com [IPv6:2602:fffa:fff:108a:0:16:3e15:92b8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A762C3A197
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:07:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=challenge-bot.com; s=20180430; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=7llz2Z7K7wv92C5VRhxFn9lqL16Y/uLeIOxsPH/Dch0=; b=oyhkw8A5sytlweL7XIAw6unIVd
-        VEjGUR2Jv5PYTw6dvzOc0S4ixI3owkhcgwxy2IFBx06Qgzr/7uOXVj/vhZTKXyiWAjG20fdOZSaOR
-        kNMpsTlCII1Tdf76Pk/FKyxU5zuoR6o/3DzWXGnkZQnrT+5F7j1Kek5e2wVQuXpp5rQU=;
-Received: from ozzloy by challenge-bot.com with local (Exim 4.92)
-        (envelope-from <ozzloy@challenge-bot.com>)
-        id 1o0vyD-000899-Rz; Mon, 13 Jun 2022 19:07:53 -0700
-From:   daniel watson <ozzloy@challenge-bot.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     Daniel Watson <ozzloy@challenge-bot.com>
-Subject: [PATCH 4/4] staging: r8188eu: remove leading '_' on _rtw_IOL_append_WRF_cmd
-Date:   Mon, 13 Jun 2022 19:07:33 -0700
-Message-Id: <3797496ad258ba3d0184b82194c6db729eff28d9.1655171591.git.ozzloy@challenge-bot.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1655171591.git.ozzloy@challenge-bot.com>
-References: <cover.1655171591.git.ozzloy@challenge-bot.com>
+        Mon, 13 Jun 2022 22:13:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696093A5CF;
+        Mon, 13 Jun 2022 19:08:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40A2FB816AF;
+        Tue, 14 Jun 2022 02:07:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3966C34114;
+        Tue, 14 Jun 2022 02:07:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655172447;
+        bh=Hk15Ko+XriFcMJvHOag9fZWU72/YW9YpHBaQUG75oCY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GUxJDTlJ+bIl0L5wiEaYLoIQwLxF5r+90uKv5OMTeW5h3qyoWY0cAeipBXfGzFTIM
+         rwsxSt365v2PIqEZhHy/oJhxaVPVzvGM03LiJ/BcnYj1HqdToFCPH0sh+i2IG72V4Z
+         R3lsnJH6hXmZvnmdeNmGs/9rgZ7URQIOY93PmC8MX3+1CgeyZxeAVjyp7cCr9WOYGG
+         WADalKnMesTwlzeMHE0GaDkpr8H7yP7BiN2Dt0zlZfxrRF2HO0nzSQEaSEkupJ+aPi
+         sgoESGYnLUkAouRjgz9VHj0v9TKIcKAppau+HjvLU26PWHFFMQMeeE4hi2ZOoZCXB3
+         +Al1GMyNI15lQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
+        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 11/41] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
+Date:   Mon, 13 Jun 2022 22:06:36 -0400
+Message-Id: <20220614020707.1099487-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
+References: <20220614020707.1099487-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Watson <ozzloy@challenge-bot.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-name the function rtw_IOL_append_WRF_cmd and call it directly,
-instead of using wrapper macro
+[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
 
-delete wrapper macro, which is not needed
+A couple of the SX volume controls specify 0x84 as the lowest volume
+value, however the correct value from the datasheet is 0x44. The
+datasheet don't include spaces in the value it displays as binary so
+this was almost certainly just a typo reading 1000100.
 
-NOTE: code compiles, not tested on hardware
-
-Signed-off-by: Daniel Watson <ozzloy@challenge-bot.com>
-
-staging: r8188eu: remove leading '_' on  _rtw_IOL_append_WRF_cmd
-
-call rtw_IOL_append_WRF_cmd directly instead of using wrapper macro
-delete wrapper macro, which is not needed
-
-NOTE: code compiles, not tested on hardware
-
-Signed-off-by: Daniel Watson <ozzloy@challenge-bot.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/r8188eu/core/rtw_iol.c    | 2 +-
- drivers/staging/r8188eu/include/rtw_iol.h | 6 ++----
- 2 files changed, 3 insertions(+), 5 deletions(-)
+ sound/soc/codecs/cs42l56.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_iol.c b/drivers/staging/r8188eu/core/rtw_iol.c
-index b7ee3833c908c..31e196ccd899a 100644
---- a/drivers/staging/r8188eu/core/rtw_iol.c
-+++ b/drivers/staging/r8188eu/core/rtw_iol.c
-@@ -109,7 +109,7 @@ int rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr, u32 value, u3
- 	return rtw_IOL_append_cmds(xmit_frame, (u8 *)&cmd, cmd.length);
- }
+diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
+index 3cf8a0b4478c..b39c25409c23 100644
+--- a/sound/soc/codecs/cs42l56.c
++++ b/sound/soc/codecs/cs42l56.c
+@@ -391,9 +391,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
+ 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
  
--int _rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path, u16 addr, u32 value, u32 mask)
-+int rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path, u16 addr, u32 value, u32 mask)
- {
- 	struct ioreg_cfg cmd = {8, IOREG_CMD_W_RF, 0x0, 0x0, 0x0};
+ 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
+-			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
+ 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
+-			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
  
-diff --git a/drivers/staging/r8188eu/include/rtw_iol.h b/drivers/staging/r8188eu/include/rtw_iol.h
-index 9ad467759ef1c..099f5a075274c 100644
---- a/drivers/staging/r8188eu/include/rtw_iol.h
-+++ b/drivers/staging/r8188eu/include/rtw_iol.h
-@@ -47,10 +47,8 @@ int rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr,
- 			  u16 value, u16 mask);
- int rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr,
- 			  u32 value, u32 mask);
--int _rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path,
--			    u16 addr, u32 value, u32 mask);
--#define rtw_IOL_append_WRF_cmd(xmit_frame, rf_path, addr, value, mask)	\
--	_rtw_IOL_append_WRF_cmd((xmit_frame),(rf_path), (addr), (value), (mask))
-+int rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path,
-+			   u16 addr, u32 value, u32 mask);
- 
- u8 rtw_IOL_cmd_boundary_handle(struct xmit_frame *pxmit_frame);
- 
+ 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
+ 			0, 0x00, 1, tone_tlv),
 -- 
-2.34.1
+2.35.1
 
