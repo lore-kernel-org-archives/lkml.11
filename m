@@ -2,129 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02249C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:01:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 850FEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:02:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241932AbiFNJBx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:01:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
+        id S242171AbiFNJC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 05:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239852AbiFNJBs (ORCPT
+        with ESMTP id S242285AbiFNJC0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 05:01:48 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FAD32F00B;
-        Tue, 14 Jun 2022 02:01:47 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LMj783mwBzgZDS;
-        Tue, 14 Jun 2022 16:59:48 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+        Tue, 14 Jun 2022 05:02:26 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BF1B868;
+        Tue, 14 Jun 2022 02:02:23 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMj6J4RFLzRj0h;
+        Tue, 14 Jun 2022 16:59:04 +0800 (CST)
+Received: from ubuntu1804.huawei.com (10.67.174.58) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 17:00:43 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 17:00:41 +0800
-From:   Wupeng Ma <mawupeng1@huawei.com>
-To:     <corbet@lwn.net>, <will@kernel.org>, <ardb@kernel.org>,
-        <catalin.marinas@arm.com>
-CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
-        <dvhart@infradead.org>, <andy@infradead.org>, <rppt@kernel.org>,
-        <akpm@linux-foundation.org>, <paul.walmsley@sifive.com>,
-        <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>,
-        <paulmck@kernel.org>, <keescook@chromium.org>,
-        <songmuchun@bytedance.com>, <rdunlap@infradead.org>,
-        <damien.lemoal@opensource.wdc.com>, <swboyd@chromium.org>,
-        <wei.liu@kernel.org>, <robin.murphy@arm.com>, <david@redhat.com>,
-        <mawupeng1@huawei.com>, <anshuman.khandual@arm.com>,
-        <thunder.leizhen@huawei.com>, <wangkefeng.wang@huawei.com>,
-        <gpiccoli@igalia.com>, <chenhuacai@kernel.org>,
-        <geert@linux-m68k.org>, <vijayb@linux.microsoft.com>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-efi@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
-        <linux-mm@kvack.org>, <linux-riscv@lists.infradead.org>
-Subject: [PATCH v5 5/5] memblock: Disable mirror feature if kernelcore is not specified
-Date:   Tue, 14 Jun 2022 17:21:56 +0800
-Message-ID: <20220614092156.1972846-6-mawupeng1@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220614092156.1972846-1-mawupeng1@huawei.com>
-References: <20220614092156.1972846-1-mawupeng1@huawei.com>
+ 15.1.2375.24; Tue, 14 Jun 2022 17:02:01 +0800
+From:   Xiu Jianfeng <xiujianfeng@huawei.com>
+To:     <john.johansen@canonical.com>, <jmorris@namei.org>,
+        <serge@hallyn.com>
+CC:     <apparmor@lists.ubuntu.com>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] apparmor: Fix memleak in aa_simple_write_to_buffer()
+Date:   Tue, 14 Jun 2022 17:00:01 +0800
+Message-ID: <20220614090001.155107-1-xiujianfeng@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500014.china.huawei.com (7.185.36.153)
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.58]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ma Wupeng <mawupeng1@huawei.com>
+When copy_from_user failed, the memory is freed by kvfree. however the
+management struct and data blob are allocated independently, so only
+kvfree(data) cause a memleak issue here. Use aa_put_loaddata(data) to
+fix this issue.
 
-If system have some mirrored memory and mirrored feature is not specified
-in boot parameter, the basic mirrored feature will be enabled and this will
-lead to the following situations:
-
-- memblock memory allocation prefers mirrored region. This may have some
-  unexpected influence on numa affinity.
-
-- contiguous memory will be split into several parts if parts of them
-  is mirrored memory via memblock_mark_mirror().
-
-To fix this, variable mirrored_kernelcore will be checked in
-memblock_mark_mirror(). Mark mirrored memory with flag MEMBLOCK_MIRROR iff
-kernelcore=mirror is added in the kernel parameters.
-
-Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Fixes: a6a52579e52b5 ("apparmor: split load data into management struct and data blob")
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
 ---
- mm/internal.h   | 2 ++
- mm/memblock.c   | 3 +++
- mm/page_alloc.c | 2 +-
- 3 files changed, 6 insertions(+), 1 deletion(-)
+ security/apparmor/apparmorfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/mm/internal.h b/mm/internal.h
-index c0f8fbe0445b..ddd2d6a46f1b 100644
---- a/mm/internal.h
-+++ b/mm/internal.h
-@@ -861,4 +861,6 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags);
+diff --git a/security/apparmor/apparmorfs.c b/security/apparmor/apparmorfs.c
+index 8b9c92f3ff95..0275a350dc23 100644
+--- a/security/apparmor/apparmorfs.c
++++ b/security/apparmor/apparmorfs.c
+@@ -403,7 +403,7 @@ static struct aa_loaddata *aa_simple_write_to_buffer(const char __user *userbuf,
  
- DECLARE_PER_CPU(struct per_cpu_nodestat, boot_nodestats);
+ 	data->size = copy_size;
+ 	if (copy_from_user(data->data, userbuf, copy_size)) {
+-		kvfree(data);
++		aa_put_loaddata(data);
+ 		return ERR_PTR(-EFAULT);
+ 	}
  
-+extern bool mirrored_kernelcore;
-+
- #endif	/* __MM_INTERNAL_H */
-diff --git a/mm/memblock.c b/mm/memblock.c
-index b1d2a0009733..a9f18b988b7f 100644
---- a/mm/memblock.c
-+++ b/mm/memblock.c
-@@ -924,6 +924,9 @@ int __init_memblock memblock_clear_hotplug(phys_addr_t base, phys_addr_t size)
-  */
- int __init_memblock memblock_mark_mirror(phys_addr_t base, phys_addr_t size)
- {
-+	if (!mirrored_kernelcore)
-+		return 0;
-+
- 	system_has_some_mirror = true;
- 
- 	return memblock_setclr_flag(base, size, 1, MEMBLOCK_MIRROR);
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index e008a3df0485..10dc35ec7479 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -356,7 +356,7 @@ static unsigned long required_kernelcore_percent __initdata;
- static unsigned long required_movablecore __initdata;
- static unsigned long required_movablecore_percent __initdata;
- static unsigned long zone_movable_pfn[MAX_NUMNODES] __initdata;
--static bool mirrored_kernelcore __meminitdata;
-+bool mirrored_kernelcore __initdata_memblock;
- 
- /* movable_zone is the "real" zone pages in ZONE_MOVABLE are taken from */
- int movable_zone;
 -- 
-2.25.1
+2.17.1
 
