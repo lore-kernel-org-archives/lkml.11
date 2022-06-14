@@ -2,199 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2073C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345475AbiFNWbd (ORCPT
+        id S1345516AbiFNWcu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 18:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53418 "EHLO
+        Tue, 14 Jun 2022 18:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352978AbiFNW2o (ORCPT
+        with ESMTP id S236992AbiFNWcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 18:28:44 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D677E4D9DF;
-        Tue, 14 Jun 2022 15:28:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655245721; x=1686781721;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=TXsGVyUodPcbLb1MebJjc7VpvV7kUIfbb97MlIz1RY0=;
-  b=Fse21qLtixeT0LXxOOFwVxUaWPcowaUPqxUs0bODWpcOOb+uRK43GA6b
-   ST1P2HCbJYhwBH3p5O/siq8dw+a05l6gPoI13/sQXwaZWFL1XerXtWSBV
-   zANLYwnHoDnZMP3XrjnznKxXcWgfCakEnngJaPPRopSC/lG7TwixoBjSk
-   w=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Jun 2022 15:28:37 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 15:28:36 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 14 Jun 2022 15:28:36 -0700
-Received: from [10.110.74.141] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 14 Jun
- 2022 15:28:35 -0700
-Message-ID: <5afe209a-31d8-25d3-d087-2ff85eace182@quicinc.com>
-Date:   Tue, 14 Jun 2022 15:28:34 -0700
+        Tue, 14 Jun 2022 18:32:46 -0400
+Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16D92458C;
+        Tue, 14 Jun 2022 15:32:45 -0700 (PDT)
+Received: by mail-io1-f48.google.com with SMTP id d123so10911324iof.10;
+        Tue, 14 Jun 2022 15:32:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CVcb2QfZlvcldcNaLh32HL82gx/d45G76khp2L61DK4=;
+        b=k2z8c1Ql6YRckD67sG5vg0H8W5KdWiHxpWEmNd+mUTZRHn5H1nQhhRfMVpXmsRiPQi
+         xs9P/50JPDbgt7cKuemq/mwaNNInitla0629rmapxi8B5QJCkFQ2vvAzk/xSSmpvG/qa
+         qN/uZvDqDbuthgC3FJfqFwjEC8+FayOZemHzA4MCbtvZu1oo0DsyLyz6MmCxzkqKor2S
+         VOIoGRyfd4qOVU1qmLe6ZFYJpdNxISn0x8okkTBEoMcEnSisb2LB8NbIkHlAsyvOan1k
+         OYiyaw/OoLd1r2qDCgwtvyWED/aXzXlAaN/NXoI5693aCVAyHK7Wnthw6zEETMqqVdEr
+         tXFg==
+X-Gm-Message-State: AOAM533rYT5nrNdj2TCx3AA5PFZjmtnNIzsLFTFc8/2Av7Dt9k0W+WUq
+        v8+yErT7n9oCSD8eaFrUM3+ei5I+kg==
+X-Google-Smtp-Source: ABdhPJyq0EVA3Gxzc2qJ8HO4/M8DLzAPSmeeI6l+hyZb/y7hNm8hyd6w4gg3LC5iya2L+50YOqknZg==
+X-Received: by 2002:a05:6638:1411:b0:331:ac08:5ae3 with SMTP id k17-20020a056638141100b00331ac085ae3mr4141226jad.162.1655245964991;
+        Tue, 14 Jun 2022 15:32:44 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id u9-20020a92da89000000b002d4032b41casm5974649iln.32.2022.06.14.15.32.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 15:32:44 -0700 (PDT)
+Received: (nullmailer pid 2848738 invoked by uid 1000);
+        Tue, 14 Jun 2022 22:32:42 -0000
+Date:   Tue, 14 Jun 2022 16:32:42 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Frank Wunderlich <linux@fw-web.de>
+Cc:     devicetree@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        linux-rockchip@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-mediatek@lists.infradead.org,
+        DENG Qingfang <dqfext@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Greg Ungerer <gerg@kernel.org>
+Subject: Re: [PATCH v4 1/6] dt-bindings: net: dsa: convert binding for
+ mediatek switches
+Message-ID: <20220614223242.GA2848631-robh@kernel.org>
+References: <20220610170541.8643-1-linux@fw-web.de>
+ <20220610170541.8643-2-linux@fw-web.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v6] drm/msm/dp: force link training for display resolution
- change
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
-        <daniel@ffwll.ch>, <dianders@chromium.org>,
-        <dmitry.baryshkov@linaro.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <vkoul@kernel.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1655240702-12230-1-git-send-email-quic_khsieh@quicinc.com>
- <CAE-0n52EAyTcQd6CiwXT1T658C-b+2r14BK_3-tf-ZiJdzqaAw@mail.gmail.com>
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-In-Reply-To: <CAE-0n52EAyTcQd6CiwXT1T658C-b+2r14BK_3-tf-ZiJdzqaAw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610170541.8643-2-linux@fw-web.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, 10 Jun 2022 19:05:36 +0200, Frank Wunderlich wrote:
+> From: Frank Wunderlich <frank-w@public-files.de>
+> 
+> Convert txt binding to yaml binding for Mediatek switches.
+> 
+> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> ---
+> v4:
+> - fix squash of port 5 as cpu-port
+> - drop type from interrupt-controller and add depency for this
+> - use ethernet-ports in examples
+> - drop address-/size-cells
+> 
+> v3:
+> - include standalone patch in mt7530 series
+> - drop some descriptions (gpio-cells,reset-gpios,reset-names)
+> - drop | from descriptions
+> - move patternProperties above allOf
+> 
+> v2:
+> - rename mediatek.yaml => mediatek,mt7530.yaml
+> - drop "boolean" in description
+> - drop description for interrupt-properties
+> - drop #interrupt-cells as requirement
+> - example: eth=>ethernet,mdio0=>mdio,comment indention
+> - replace 0 by GPIO_ACTIVE_HIGH in first example
+> - use port(s)-pattern from dsa.yaml
+> - adress/size-cells not added to required because this
+>   is defined at mdio-level inc current dts , not switch level
+> ---
+>  .../bindings/net/dsa/mediatek,mt7530.yaml     | 406 ++++++++++++++++++
+>  .../devicetree/bindings/net/dsa/mt7530.txt    | 327 --------------
+>  2 files changed, 406 insertions(+), 327 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/dsa/mt7530.txt
+> 
 
-On 6/14/2022 2:59 PM, Stephen Boyd wrote:
-> Quoting Kuogee Hsieh (2022-06-14 14:05:02)
->> Display resolution change is implemented through drm modeset. Older
->> modeset (resolution) has to be disabled first before newer modeset
->> (resolution) can be enabled. Display disable will turn off both
->> pixel clock and main link clock so that main link have to be
->> re-trained during display enable to have new video stream flow
->> again. At current implementation, display enable function manually
->> kicks up irq_hpd_handle which will read panel link status and start
->> link training if link status is not in sync state.
->>
->> However, there is rare case that a particular panel links status keep
->> staying in sync for some period of time after main link had been shut
->> down previously at display disabled. In this case, main link retraining
->> will not be executed by irq_hdp_handle(). Hence video stream of newer
->> display resolution will fail to be transmitted to panel due to main
->> link is not in sync between host and panel.
->>
->> This patch will bypass irq_hpd_hanle() in favor of directly call
-> s/hanle/handle/
->
->> dp_ctrl_on_stream() to always perform link training in regardless of
->> main link status. So that no unexpected exception resolution change
->> failure cases will happen. Also this implementation are more efficient
->> than manual kicking off irq_hpd_handle function.
->>
->> Changes in v2:
->> -- set force_link_train flag on DP only (is_edp == false)
->>
->> Changes in v3:
->> -- revise commit  text
->> -- add Fixes tag
->>
->> Changes in v4:
->> -- revise commit  text
->>
->> Changes in v5:
->> -- fix spelling at commit text
->>
->> Changes in v6:
->> -- split dp_ctrl_on_stream() for phy test case
->> -- revise commit text for modeset
->>
->> Fixes: 62671d2ef24b ("drm/msm/dp: fixes wrong connection state caused by failure of link train")
->> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
->> ---
->>   drivers/gpu/drm/msm/dp/dp_ctrl.c    | 31 +++++++++++++++++++++++--------
->>   drivers/gpu/drm/msm/dp/dp_ctrl.h    |  3 ++-
->>   drivers/gpu/drm/msm/dp/dp_display.c | 13 ++++++-------
->>   3 files changed, 31 insertions(+), 16 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> index af7a80c..cb9c7af 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
->> @@ -1807,7 +1807,27 @@ static int dp_ctrl_link_retrain(struct dp_ctrl_private *ctrl)
->>          return dp_ctrl_setup_main_link(ctrl, &training_step);
->>   }
->>
->> -int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
->> +int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl)
->> +{
->> +       int ret = 0;
-> Drop assignment please.
->
->> +       struct dp_ctrl_private *ctrl;
->> +
->> +       ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
->> +
->> +       ctrl->dp_ctrl.pixel_rate = ctrl->panel->dp_mode.drm_mode.clock;
->> +
->> +       ret = dp_ctrl_enable_stream_clocks(ctrl);
->> +       if (ret) {
->> +               DRM_ERROR("Failed to start pixel clocks. ret=%d\n", ret);
->> +               return ret;
->> +       }
->> +
->> +       dp_ctrl_send_phy_test_pattern(ctrl);
-> None of this code needs to be run in the normal display on case?
->
->> +
->> +       return 0;
->> +}
->> +
->> +int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train)
->>   {
->>          int ret = 0;
->>          bool mainlink_ready = false;
->> @@ -1843,12 +1863,7 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
->>                  goto end;
->>          }
->>
->> -       if (ctrl->link->sink_request & DP_TEST_LINK_PHY_TEST_PATTERN) {
->> -               dp_ctrl_send_phy_test_pattern(ctrl);
->> -               return 0;
->> -       }
->> -
->> -       if (!dp_ctrl_channel_eq_ok(ctrl))
->> +       if (force_link_train || !dp_ctrl_channel_eq_ok(ctrl))
->>                  dp_ctrl_link_retrain(ctrl);
->>
->>          /* stop txing train pattern to end link training */
->> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
->> index c388323..b6d25ab 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_display.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
->> @@ -1688,10 +1689,12 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
->>
->>          state =  dp_display->hpd_state;
->>
->> -       if (state == ST_DISPLAY_OFF)
->> +       if (state == ST_DISPLAY_OFF) {
->>                  dp_display_host_phy_init(dp_display);
->> +               force_link_train = true;
->> +       }
->>
->> -       dp_display_enable(dp_display, 0);
->> +       dp_display_enable(dp_display, force_link_train);
-> Do we need to pass it from here? Why can't dp_display_enable() simply
-> check for 'state == ST_DISPLAY_OFF' and then force retrain the link?
-
-can we keep this as it is?
-
-it is more readable that we do need force link re-training due to 
-ST_DISPLAY_OFF at top level.
-
-Also we only need to do (state == ST_DISPLAY_OFF) checking one time.
-
+Reviewed-by: Rob Herring <robh@kernel.org>
