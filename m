@@ -2,66 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61798C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A0EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355795AbiFNWGb (ORCPT
+        id S1355936AbiFNWIj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 18:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
+        Tue, 14 Jun 2022 18:08:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbiFNWG3 (ORCPT
+        with ESMTP id S1358464AbiFNWI1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 18:06:29 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D546F2FE46;
-        Tue, 14 Jun 2022 15:06:28 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A8B301763;
-        Tue, 14 Jun 2022 15:06:28 -0700 (PDT)
-Received: from [10.57.84.206] (unknown [10.57.84.206])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 19C943F73B;
-        Tue, 14 Jun 2022 15:06:25 -0700 (PDT)
-Message-ID: <9f1ed6be-1bbe-76d2-a622-ce56e25a8397@arm.com>
-Date:   Tue, 14 Jun 2022 23:06:24 +0100
+        Tue, 14 Jun 2022 18:08:27 -0400
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3294EDEC;
+        Tue, 14 Jun 2022 15:08:26 -0700 (PDT)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-fe4ac3b87fso14319370fac.3;
+        Tue, 14 Jun 2022 15:08:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uL+pfJik+rRQSzc9i4k7KVHHfK2XbB8mJChZyZzr7dg=;
+        b=HYQeEdIOv0BAeqhZeFoYdjszgmt2IE42IC/1gm1qQoCEY/px33MW0QAb/KU5JGAhjt
+         x7rUiUZTJjI+Y/X70uS+Neu/VZyBI7y6DrASxieeGquMu/W7vqWBcR57ANEO4Xlczl2o
+         bYSsA4WNWuQFy6AltI/pVzkjofi4GihqzZbyqPdiQCQxdkHPKBOrgYl+Qj5rcqR467PW
+         2XZOPcvOQlUjxZDwvSOem6vIvldJOTKsr9A+Ox59QWS/0WoefZfOHGFHQMLKGw+3PURo
+         MJCkXLbduPWIzBOFhv5SzyDoQJSRLWNkLN7bmsOJ4y0zRnqYXZvWCcLypcRa2WYsF1JS
+         u1Fw==
+X-Gm-Message-State: AJIora9ssO30nTs3rcOHDXIDVR8/YTWwB5deiw1K8FShkLcZTsavfyax
+        JVaVUx1i287DBuFf+VXiM3tvVo6wlxXv5IlG7f0=
+X-Google-Smtp-Source: AGRyM1uTl5swnr44HgvS3WnCGGSBkcYZyGp2KxlIhOgybf9f+SSY/eyv4iYT3URmqg8eMxOPoSae0XBP+EYvB9ug+Qo=
+X-Received: by 2002:a05:6870:4585:b0:fb:5105:76b8 with SMTP id
+ y5-20020a056870458500b000fb510576b8mr3555860oao.92.1655244506189; Tue, 14 Jun
+ 2022 15:08:26 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH v10 04/10] coresight-tpdm: Add DSB dataset support
-To:     Mao Jinlong <quic_jinlmao@quicinc.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
+References: <20220614103751.1395645-1-yajun.deng@linux.dev>
+In-Reply-To: <20220614103751.1395645-1-yajun.deng@linux.dev>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Tue, 14 Jun 2022 15:08:15 -0700
+Message-ID: <CAM9d7cj4=3DNz=kKhVbx0uKYwbbaQF6ZdjkezKPdT67j8rcEMg@mail.gmail.com>
+Subject: Re: [PATCH] perf/core: fix perf_event_mux_interval_ms when set zero
+To:     Yajun Deng <yajun.deng@linux.dev>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        Mike Leach <mike.leach@linaro.org>
-Cc:     Leo Yan <leo.yan@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Tingwei Zhang <quic_tingweiz@quicinc.com>,
-        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        Hao Zhang <quic_hazha@quicinc.com>,
-        linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-References: <20220611004331.7343-1-quic_jinlmao@quicinc.com>
- <20220611004331.7343-5-quic_jinlmao@quicinc.com>
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <20220611004331.7343-5-quic_jinlmao@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Jiri Olsa <jolsa@kernel.org>,
+        Stephane Eranian <eranian@google.com>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/06/2022 01:43, Mao Jinlong wrote:
-> TPDM serves as data collection component for various dataset types.
-> DSB(Discrete Single Bit) is one of the dataset types. DSB subunit
-> can be enabled for data collection by writing 1 to the first bit of
-> DSB_CR register. This change is to add enable/disable function for
-> DSB dataset by writing DSB_CR register.
-> 
-> Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
-> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
+Hello,
 
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+On Tue, Jun 14, 2022 at 3:38 AM Yajun Deng <yajun.deng@linux.dev> wrote:
+>
+> The perf_event_mux_interval_ms is set to zero or one by default.
+
+I see that __perf_mux_hrtimer_init() sets it to PERF_CPU_HRTIMER
+if it's less than 1.
+
+Thanks,
+Namhyung
+
+
+> It can't change back when someone changes it from zero to another
+> value.
+>
+> Make perf_event_mux_interval_ms to PERF_CPU_HRTIMER when set zero.
+>
+> Fixes: 62b856397927 ("perf: Add sysfs entry to adjust multiplexing interval per PMU")
+> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+> ---
+>  kernel/events/core.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/kernel/events/core.c b/kernel/events/core.c
+> index 61ad10862c21..73c8c7462bbf 100644
+> --- a/kernel/events/core.c
+> +++ b/kernel/events/core.c
+> @@ -10954,9 +10954,12 @@ perf_event_mux_interval_ms_store(struct device *dev,
+>         if (ret)
+>                 return ret;
+>
+> -       if (timer < 1)
+> +       if (timer < 0)
+>                 return -EINVAL;
+>
+> +       if (timer < 1)
+> +               timer = PERF_CPU_HRTIMER;
+> +
+>         /* same value, noting to do */
+>         if (timer == pmu->hrtimer_interval_ms)
+>                 return count;
+> --
+> 2.25.1
+>
