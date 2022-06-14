@@ -2,77 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D4B4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D34C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:51:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234485AbiFNOvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46796 "EHLO
+        id S241917AbiFNOv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234044AbiFNOvT (ORCPT
+        with ESMTP id S235534AbiFNOvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:51:19 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35A833340;
-        Tue, 14 Jun 2022 07:51:15 -0700 (PDT)
+        Tue, 14 Jun 2022 10:51:53 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD6636E2E
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:51:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=q5HpLYaReIXbh/47owslMY0HZWewYfHiN1JFwdElSbc=; b=E6aSOb5oyExvAXaBpjFuwkB4yU
-        WeyGRYpcbJvTnv316iGCT3IiC5BlUkGAIG4xZ5ocvX9qmzqaTv8m76L7XmPd/Uy0fexAuX1lDVi4o
-        nzm3K2B27z17K2rTO4yYicz3Mh5AIO7nbuA9IkVpSi7T1EThdcnDJyZiDqsZsTtwHScKgpc/Q1skY
-        QkzjOQfKbO9F4Ge+Zi2spk66hYzzvEbNk6V1JpsHVrjhjZzHGziHQ1O/bAkstRuinFRWjm659e0PK
-        R1SetlBx8YfXqhmYAwZj2i6YzVSFti68OBMqovoqKTaaKDoOALutGtzpjPXAqBa4za63KqagLcq4S
-        sFwN1R6A==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o17sY-000Fqv-Fo; Tue, 14 Jun 2022 14:50:50 +0000
-Message-ID: <ecfa5816-1ada-5d8a-7189-c70e45a311ac@infradead.org>
-Date:   Tue, 14 Jun 2022 07:50:42 -0700
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=0LmPl4GztIpRA6+4CB9Ol9e7Ylz0phFcRmRW6qIz7WQ=; b=SyEpmUH9MrrdwYazFcF80LWkLV
+        OGYG79D94sLe25Isu1o2DZphP7X/pdh1CNcL7rSzMhWNrUcJaVAO8NnKzJxJsKRU0tbzAjdnkLQrs
+        iGqbDgPBHBgukzAErqd3mwcbGR0aIrgQnvjjlxSdtnu+1RRCiAUtMojNkLlYwLXCwiVe14NyK7AfM
+        QI6K/DxDR+rOAg+KVrrIVILvYdaaHZAxO/AgPMUHqXko/L7XIB6AqxJODGG5uYyXQXpTef1kArbK4
+        bsNLFCjN22mRJRagjDnFkFJ2pBkd3CFHZzFNqGubrrPECk4lP3ZEVgscX+XaUs/ixKfJjs2wpJuSM
+        xhOSdfxg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o17tT-00A2Ca-JS; Tue, 14 Jun 2022 14:51:47 +0000
+Date:   Tue, 14 Jun 2022 07:51:47 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Wang Wenhu <wenhu.wang@hotmail.com>
+Cc:     gregkh@linuxfoundation.org, christophe.leroy@csgroup.eu,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] uio:powerpc:mpc85xx: l2-cache-sram uio driver
+ implementation
+Message-ID: <Yqigg7jMu9kwepyH@infradead.org>
+References: <20220609102855.272270-1-wenhu.wang@hotmail.com>
+ <SG2PR01MB295139AA7360917B2C4846E19FA79@SG2PR01MB2951.apcprd01.prod.exchangelabs.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v18 03/10] reset: Add Sunplus SP7021 reset driver
-Content-Language: en-US
-To:     Qin Jian <qinjian@cqplus1.com>, sboyd@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        mturquette@baylibre.com, linux@armlinux.org.uk, arnd@arndb.de,
-        olof@lixom.net, soc@kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        Philipp Zabel <p.zabel@pengutronix.de>
-References: <cover.1655194858.git.qinjian@cqplus1.com>
- <06ac69143ce8c98b4f95e38238e1880953dc9040.1655194858.git.qinjian@cqplus1.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <06ac69143ce8c98b4f95e38238e1880953dc9040.1655194858.git.qinjian@cqplus1.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SG2PR01MB295139AA7360917B2C4846E19FA79@SG2PR01MB2951.apcprd01.prod.exchangelabs.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 6/14/22 01:31, Qin Jian wrote:
-> diff --git a/drivers/reset/Kconfig b/drivers/reset/Kconfig
-> index b496028b6..e6540036b 100644
-> --- a/drivers/reset/Kconfig
-> +++ b/drivers/reset/Kconfig
-> @@ -231,6 +231,15 @@ config RESET_STARFIVE_JH7100
->  	help
->  	  This enables the reset controller driver for the StarFive JH7100 SoC.
->  
-> +config RESET_SUNPLUS
-> +	bool "Sunplus SoCs Reset Driver" if COMPILE_TEST
-> +	default ARCH_SUNPLUS
-> +	help
-> +	  This enables the reset driver support for Sunplus SoCs.
-> +	  The reset lines that can be asserted and deasserted by toggling bits
-> +	  in a contiguous, exclusive register space. The register is HIWORD_MASKED,
-> +	  which means each register hold 16 reset lines.
-
-	                            holds
-
--- 
-~Randy
+UIO seems like the wrong kind of interface for this.  Why isn't this
+a simple character device?
