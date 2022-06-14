@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F012BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C779C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353551AbiFNCdV (ORCPT
+        id S1356128AbiFNCdb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
+        Mon, 13 Jun 2022 22:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356400AbiFNCbJ (ORCPT
+        with ESMTP id S1356451AbiFNCbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:31:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F001B43AE2;
-        Mon, 13 Jun 2022 19:12:03 -0700 (PDT)
+        Mon, 13 Jun 2022 22:31:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DBFD433B6;
+        Mon, 13 Jun 2022 19:12:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D04961024;
-        Tue, 14 Jun 2022 02:11:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECC3EC385A2;
-        Tue, 14 Jun 2022 02:11:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5F2FB816A3;
+        Tue, 14 Jun 2022 02:11:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1774C341C0;
+        Tue, 14 Jun 2022 02:11:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172714;
-        bh=IBCeAButYsRtNeRmHz0Nr8ebRIHdO/EQ3qn0BXhofwY=;
+        s=k20201202; t=1655172688;
+        bh=mqbC7bVhIM0dnxYNVzszPMiYzv0AKKldGP1tDyqt/kk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rcsXFR9bboKrsKUgddAXWBpUka9FuJJPo+trJqNBsiVKYkDVxc7tJFsHbhK0CtHXo
-         dhioDzeWjm754palDJ7naENEEdyIbE6k3k1sc5nkwYGf7VkRYHhZQB6uQ8aTSAAv1U
-         A+Jts08N7emXpOY8J9auJxLeAHjbR+R91dEZX2znMvHZRPhGKULPYocaT8OhEyrwe8
-         pGnbB0ZSuL7c6X+V8cO+nEuRSD+79M9vJDCDcYKbq5Sf9qU8KTuC1qMOoN9HU6buTU
-         QANh9DX5WGJX2RlttSL0q/YI4DXgoc5fuTL2lWzEO0ZvMDJ3zM9IB42c3ywyhMifOG
-         fFWgF7p89zmwQ==
+        b=cO3R5He039RvxjjhaZ7WHC9BCuGtY+dX4UY2XlrB337aqJQPomAf4qWjMzQ6W1uQE
+         HFGUq3koV136+KyO3qjwS4VbU8l2M2HGaPIrAHWgeSlc9RbbYRz9WgXLqHgVGsSTNt
+         S2Jl0KoEUzt0MBDlfsNRC7IyKw5tHxHszmU4f0QHlhS9qRiMrVas1me/5Q76EcLrxE
+         gBIFoxW4gZFod5sDapmDq1GJmRJalPdcGlsdJ2G8xGUu+GLdQjrNNabw30qFyrTxNG
+         tjvc7PgKKAEQ3aNqf6nmhVRFToZCtWH99pkMh7VZbboBynzp3MtaNpH8jdOMjg3enj
+         7UiECvnIQDcpw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
+Cc:     Seth Forshee <sforshee@digitalocean.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Petr Mladek <pmladek@suse.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        seanjc@google.com, kvm@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.15 3/4] KVM: selftests: Make hyperv_clock selftest more stable
-Date:   Mon, 13 Jun 2022 22:11:39 -0400
-Message-Id: <20220614021141.1101486-3-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        peterz@infradead.org, luto@kernel.org
+Subject: [PATCH MANUALSEL 5.18 5/6] entry/kvm: Exit to user mode when TIF_NOTIFY_SIGNAL is set
+Date:   Mon, 13 Jun 2022 22:11:14 -0400
+Message-Id: <20220614021116.1101331-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614021141.1101486-1-sashal@kernel.org>
-References: <20220614021141.1101486-1-sashal@kernel.org>
+In-Reply-To: <20220614021116.1101331-1-sashal@kernel.org>
+References: <20220614021116.1101331-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,73 +55,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Seth Forshee <sforshee@digitalocean.com>
 
-[ Upstream commit eae260be3a0111a28fe95923e117a55dddec0384 ]
+[ Upstream commit 3e684903a8574ffc9475fdf13c4780a7adb506ad ]
 
-hyperv_clock doesn't always give a stable test result, especially with
-AMD CPUs. The test compares Hyper-V MSR clocksource (acquired either
-with rdmsr() from within the guest or KVM_GET_MSRS from the host)
-against rdtsc(). To increase the accuracy, increase the measured delay
-(done with nop loop) by two orders of magnitude and take the mean rdtsc()
-value before and after rdmsr()/KVM_GET_MSRS.
+A livepatch transition may stall indefinitely when a kvm vCPU is heavily
+loaded. To the host, the vCPU task is a user thread which is spending a
+very long time in the ioctl(KVM_RUN) syscall. During livepatch
+transition, set_notify_signal() will be called on such tasks to
+interrupt the syscall so that the task can be transitioned. This
+interrupts guest execution, but when xfer_to_guest_mode_work() sees that
+TIF_NOTIFY_SIGNAL is set but not TIF_SIGPENDING it concludes that an
+exit to user mode is unnecessary, and guest execution is resumed without
+transitioning the task for the livepatch.
 
-Reported-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Tested-by: Maxim Levitsky <mlevitsk@redhat.com>
-Message-Id: <20220601144322.1968742-1-vkuznets@redhat.com>
+This handling of TIF_NOTIFY_SIGNAL is incorrect, as set_notify_signal()
+is expected to break tasks out of interruptible kernel loops and cause
+them to return to userspace. Change xfer_to_guest_mode_work() to handle
+TIF_NOTIFY_SIGNAL the same as TIF_SIGPENDING, signaling to the vCPU run
+loop that an exit to userpsace is needed. Any pending task_work will be
+run when get_signal() is called from exit_to_user_mode_loop(), so there
+is no longer any need to run task work from xfer_to_guest_mode_work().
+
+Suggested-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+Message-Id: <20220504180840.2907296-1-sforshee@digitalocean.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/x86_64/hyperv_clock.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ kernel/entry/kvm.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
-index e0b2bb1339b1..3330fb183c68 100644
---- a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
-+++ b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
-@@ -44,7 +44,7 @@ static inline void nop_loop(void)
- {
- 	int i;
+diff --git a/kernel/entry/kvm.c b/kernel/entry/kvm.c
+index 9d09f489b60e..2e0f75bcb7fd 100644
+--- a/kernel/entry/kvm.c
++++ b/kernel/entry/kvm.c
+@@ -9,12 +9,6 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
+ 		int ret;
  
--	for (i = 0; i < 1000000; i++)
-+	for (i = 0; i < 100000000; i++)
- 		asm volatile("nop");
- }
- 
-@@ -56,12 +56,14 @@ static inline void check_tsc_msr_rdtsc(void)
- 	tsc_freq = rdmsr(HV_X64_MSR_TSC_FREQUENCY);
- 	GUEST_ASSERT(tsc_freq > 0);
- 
--	/* First, check MSR-based clocksource */
-+	/* For increased accuracy, take mean rdtsc() before and afrer rdmsr() */
- 	r1 = rdtsc();
- 	t1 = rdmsr(HV_X64_MSR_TIME_REF_COUNT);
-+	r1 = (r1 + rdtsc()) / 2;
- 	nop_loop();
- 	r2 = rdtsc();
- 	t2 = rdmsr(HV_X64_MSR_TIME_REF_COUNT);
-+	r2 = (r2 + rdtsc()) / 2;
- 
- 	GUEST_ASSERT(r2 > r1 && t2 > t1);
- 
-@@ -181,12 +183,14 @@ static void host_check_tsc_msr_rdtsc(struct kvm_vm *vm)
- 	tsc_freq = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TSC_FREQUENCY);
- 	TEST_ASSERT(tsc_freq > 0, "TSC frequency must be nonzero");
- 
--	/* First, check MSR-based clocksource */
-+	/* For increased accuracy, take mean rdtsc() before and afrer ioctl */
- 	r1 = rdtsc();
- 	t1 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
-+	r1 = (r1 + rdtsc()) / 2;
- 	nop_loop();
- 	r2 = rdtsc();
- 	t2 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
-+	r2 = (r2 + rdtsc()) / 2;
- 
- 	TEST_ASSERT(t2 > t1, "Time reference MSR is not monotonic (%ld <= %ld)", t1, t2);
- 
+ 		if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {
+-			clear_notify_signal();
+-			if (task_work_pending(current))
+-				task_work_run();
+-		}
+-
+-		if (ti_work & _TIF_SIGPENDING) {
+ 			kvm_handle_signal_exit(vcpu);
+ 			return -EINTR;
+ 		}
 -- 
 2.35.1
 
