@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E7BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 460B5CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352786AbiFNCLa (ORCPT
+        id S1352664AbiFNCLe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43502 "EHLO
+        Mon, 13 Jun 2022 22:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352606AbiFNCK0 (ORCPT
+        with ESMTP id S1352067AbiFNCKa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:10:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B42036E34;
-        Mon, 13 Jun 2022 19:06:51 -0700 (PDT)
+        Mon, 13 Jun 2022 22:10:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7467037039;
+        Mon, 13 Jun 2022 19:06:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA075B816B0;
-        Tue, 14 Jun 2022 02:06:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B136DC385A2;
-        Tue, 14 Jun 2022 02:06:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4049460B64;
+        Tue, 14 Jun 2022 02:06:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9A17C341C0;
+        Tue, 14 Jun 2022 02:06:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172401;
-        bh=eH+nCZz2UusixOYuS0U1QLfJWfEH2A8LccdZaK5mGc0=;
+        s=k20201202; t=1655172416;
+        bh=YGPJSIN4rLQzhxISScC7BKlrycx2fKnKwDHRfnaUlJ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JkTS7K+9OVzyqvOKE+AGFeu6kZpE9/SFuEbeXseVDeNhcP4LVII2gXEteEdN0+Fdm
-         /UjfWz0J7Eh//Ddc9U4wutwkaxD1dy/FzetbkVT0DFuA2Tg8yxbJRdZxnAdABR+6h4
-         G1i0wCHGOXt/M7I2k9GrPt6Qz/i0je56DnP8lNv7GohwbyDMRqI4g2pSxtIfEExc8L
-         wheMrcS+6FSjcGDiqND2U6xHNV3Q4EVrqQ1Etkywpe+PoFThzhzZJhN2uZpnnDMWEC
-         UZSZk7r3046Q/eRDq21F98+BHSOXKidyq2jBGuSgQAH8TYA7PI1LXdwwzg+UwGESq0
-         WUsTOTUBy2pHQ==
+        b=bnr+Mk3SAsjzftogrjqubaTJnR7b9mqwWY6mkLkBIJNfmtg/TrN/X53F44/V8iuJD
+         tFiXK8DTUckK40O9nkwPGdh18acmc1VBPFYk7eMvThPiw37MdKRkT8GPS1MGdM3Pdp
+         7+vPZ4xtwxi3HV4f6kq+DzzsErvEGo0KxBSXOk/curDW51BqwUTvqcIE0bihJVMLvR
+         2EIX0SuUeUbmwpZdmubWmzgOEYVxhdqG9AR2SNi4zya5KiMXjDXSzdG+dZiq9FeTyg
+         Cw0L+U5hr0GmlY5LFBiaXgDdolSWGQnE9R91zOdnTt3YOf5YjiC76TpQgJmgYIqaUS
+         Hi4GG5Z/dkJkw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chengguang Xu <cgxu519@mykernel.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 26/43] scsi: pmcraid: Fix missing resource cleanup in error case
-Date:   Mon, 13 Jun 2022 22:05:45 -0400
-Message-Id: <20220614020602.1098943-26-sashal@kernel.org>
+Cc:     Yupeng Li <liyupeng@zbhlos.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 36/43] MIPS: Loongson-3: fix compile mips cpu_hwmon as module build error.
+Date:   Mon, 13 Jun 2022 22:05:55 -0400
+Message-Id: <20220614020602.1098943-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
 References: <20220614020602.1098943-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,35 +55,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: Yupeng Li <liyupeng@zbhlos.com>
 
-[ Upstream commit ec1e8adcbdf661c57c395bca342945f4f815add7 ]
+[ Upstream commit 41e456400212803704e82691716e1d7b0865114a ]
 
-Fix missing resource cleanup (when '(--i) == 0') for error case in
-pmcraid_register_interrupt_handler().
+  set cpu_hwmon as a module build with loongson_sysconf, loongson_chiptemp
+  undefined error,fix cpu_hwmon compile options to be bool.Some kernel
+  compilation error information is as follows:
 
-Link: https://lore.kernel.org/r/20220529153456.4183738-6-cgxu519@mykernel.net
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+  Checking missing-syscalls for N32
+  CALL    scripts/checksyscalls.sh
+  Checking missing-syscalls for O32
+  CALL    scripts/checksyscalls.sh
+  CALL    scripts/checksyscalls.sh
+  CHK     include/generated/compile.h
+  CC [M]  drivers/platform/mips/cpu_hwmon.o
+  Building modules, stage 2.
+  MODPOST 200 modules
+ERROR: "loongson_sysconf" [drivers/platform/mips/cpu_hwmon.ko] undefined!
+ERROR: "loongson_chiptemp" [drivers/platform/mips/cpu_hwmon.ko] undefined!
+make[1]: *** [scripts/Makefile.modpost:92：__modpost] 错误 1
+make: *** [Makefile:1261：modules] 错误 2
+
+Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Huacai Chen <chenhuacai@kernel.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pmcraid.c | 2 +-
+ drivers/platform/mips/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
-index 928532180d32..71f829bd130e 100644
---- a/drivers/scsi/pmcraid.c
-+++ b/drivers/scsi/pmcraid.c
-@@ -4522,7 +4522,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
- 	return 0;
+diff --git a/drivers/platform/mips/Kconfig b/drivers/platform/mips/Kconfig
+index d421e1482395..6b51ad01f791 100644
+--- a/drivers/platform/mips/Kconfig
++++ b/drivers/platform/mips/Kconfig
+@@ -17,7 +17,7 @@ menuconfig MIPS_PLATFORM_DEVICES
+ if MIPS_PLATFORM_DEVICES
  
- out_unwind:
--	while (--i > 0)
-+	while (--i >= 0)
- 		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
- 	pci_free_irq_vectors(pdev);
- 	return rc;
+ config CPU_HWMON
+-	tristate "Loongson-3 CPU HWMon Driver"
++	bool "Loongson-3 CPU HWMon Driver"
+ 	depends on MACH_LOONGSON64
+ 	select HWMON
+ 	default y
 -- 
 2.35.1
 
