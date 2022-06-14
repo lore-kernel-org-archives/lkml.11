@@ -2,141 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 390ABC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 19:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCFC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 19:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238211AbiFNTdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 15:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43196 "EHLO
+        id S238744AbiFNTgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 15:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiFNTdN (ORCPT
+        with ESMTP id S229597AbiFNTgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 15:33:13 -0400
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B9819F8D;
-        Tue, 14 Jun 2022 12:33:11 -0700 (PDT)
-Received: by mail-pj1-f51.google.com with SMTP id v11-20020a17090a4ecb00b001e2c5b837ccso12745973pjl.3;
-        Tue, 14 Jun 2022 12:33:11 -0700 (PDT)
+        Tue, 14 Jun 2022 15:36:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DDFF719F8D
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 12:36:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655235405;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+ox4dj78XDeONpCY/I2byHRWGGL1bbVgG7Ngg4aNtSc=;
+        b=dFGcqIb3iKywVZUSIPN2Nq3DCG3HcS8L7IpGy/wMrKO1wJ+VvoAvT+ttmZbwBYhjoRUgwG
+        jDK/LEMcFOZKZ/lPxhiALRA+F4O6IEaPxe/0v0JEZCCbaZFpEnTzK9hSWumQLUhkxnJP2O
+        91RH0PAYd31i0rqNXfxImeeHwirDfXg=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-407-q2_MCSC3NimfPYwggmiglw-1; Tue, 14 Jun 2022 15:36:41 -0400
+X-MC-Unique: q2_MCSC3NimfPYwggmiglw-1
+Received: by mail-il1-f197.google.com with SMTP id e4-20020a056e020b2400b002d5509de6f3so7165942ilu.6
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 12:36:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0yuY33WdxMB76iynhvTSZPcdcuymbepOOB6v4k/PQOY=;
-        b=jbB+qjSucecXj/HEgCIw1t9EsXmppQ+DavJNYSpUNrariNuH3b/MN6vnNGUdupzrv7
-         Ts0oisAV493ABkX7o5r7XccRpuoTotG9aYWaLeuZGI5NEEZXg5xfH8Etn/oGwBlELKIw
-         TwFDZQIkZR1UsNS3pH4oJd13pgkrt18JLVnTkjk4bOcTyHifJQa2WUIi1z0Kl8sYWRpJ
-         MgV5Npe92Yhbs0SFQkMYx1XllUWHvxta87xXoEo8DX4zVvAgCFprz/61JCFbRLimYkZm
-         0TJQNlQbQOd+0rkt+/RR5M9wFXZg/BRG7CbluA+SR9ofD3E8XaLaWoUvQr6afvSgr/zb
-         jlJw==
-X-Gm-Message-State: AJIora8eDAXkXliL2whctKXAYlQ8Lf1nlHvLBa3mSBrA2fNN3yX/Z7Wy
-        N/cfMLZaKfOSc3sJ38NCO019JbLPqIk=
-X-Google-Smtp-Source: AGRyM1s5w76ZfqYj/+26pMyhfynVA754uE8tmVNVmVHD3j64emOukGeeDvplcoiOLZ4wwUSbu4tMLA==
-X-Received: by 2002:a17:90a:e50c:b0:1ea:14c1:2236 with SMTP id t12-20020a17090ae50c00b001ea14c12236mr6274836pjy.2.1655235190627;
-        Tue, 14 Jun 2022 12:33:10 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:ab60:e1ea:e2eb:c1b6? ([2620:15c:211:201:ab60:e1ea:e2eb:c1b6])
-        by smtp.gmail.com with ESMTPSA id kv18-20020a17090b169200b001ea629a431bsm7969640pjb.8.2022.06.14.12.33.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 12:33:09 -0700 (PDT)
-Message-ID: <b61d3687-70ea-1ab7-63e1-44e381d36012@acm.org>
-Date:   Tue, 14 Jun 2022 12:33:07 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+ox4dj78XDeONpCY/I2byHRWGGL1bbVgG7Ngg4aNtSc=;
+        b=B8gi59Hrhk54kdDaY+Ht1GTkv93fI8cSvEtkUGnipGn3nOmLU7Wq47nQw9VMVGPEm+
+         tSqGM5RKDzHcOGVIizP/pKGtsyyzp4S6ssdPkorMnYgdIspvVg8OZJMcaj3gH79eW+yi
+         uQGKdU4Xm/k2ju0I46BCdIz6T5HV+t4iaM1Pk2xCVCpnIK4/koDWznqm1+qOomU0so1W
+         KjoAOuS+vDcKTnmUME4s9K/FginSgwJKxPdbg4nszFGfpmUGi4WnasWSsQUA+oea0HKV
+         /Jx6wd/n8AWGwBojRqmi2HJ3aBno9f7RaGqaSYd4GGD/W+eQm/cgp/IO+lROy0rzbA0T
+         Z1Uw==
+X-Gm-Message-State: AOAM530gO7qo0L6Yo7xUlLzfd0O9C5KK4kAI7jdx9cNuf2Fu3lLb8yqz
+        HZXr6xbI3pmpZHiHXSjDbzsT/MwWR+uHVn3GNodgkx7twO8NEjs0aek4DE3bKjSGrLQb85fojso
+        n2kdC1kLYcXf9b6yauofzIqgl
+X-Received: by 2002:a05:6638:2722:b0:331:f878:e38b with SMTP id m34-20020a056638272200b00331f878e38bmr3844033jav.272.1655235400378;
+        Tue, 14 Jun 2022 12:36:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy46UsOGrOa9qzN3/0xyOD3Pu8920BAJfUTIRIZ+b23+ZLnb0uaumApmJV1QyQxC2J6j9msQQ==
+X-Received: by 2002:a05:6638:2722:b0:331:f878:e38b with SMTP id m34-20020a056638272200b00331f878e38bmr3844002jav.272.1655235400064;
+        Tue, 14 Jun 2022 12:36:40 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id r2-20020a6bd902000000b00669c107e289sm5783020ioc.29.2022.06.14.12.36.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 12:36:39 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 15:36:36 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Axel Rasmussen <axelrasmussen@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Charan Teja Reddy <charante@codeaurora.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        zhangyi <yi.zhang@huawei.com>, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v3 4/6] userfaultfd: update documentation to describe
+ /dev/userfaultfd
+Message-ID: <YqjjRKcnrmMGuw5n@xz-m1.local>
+References: <20220601210951.3916598-1-axelrasmussen@google.com>
+ <20220601210951.3916598-5-axelrasmussen@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH RFC v2 02/18] scsi: core: Resurrect
- scsi_{get,free}_host_dev()
-Content-Language: en-US
-To:     John Garry <john.garry@huawei.com>, axboe@kernel.dk,
-        damien.lemoal@opensource.wdc.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, brking@us.ibm.com, hare@suse.de,
-        hch@lst.de
-Cc:     linux-block@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        chenxiang66@hisilicon.com
-References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
- <1654770559-101375-3-git-send-email-john.garry@huawei.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <1654770559-101375-3-git-send-email-john.garry@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220601210951.3916598-5-axelrasmussen@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/9/22 03:29, John Garry wrote:
-> +/**
-> + * scsi_get_host_dev - Create a scsi_device that points to the host adapter itself
-                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-What does this mean? That part of the function description is not
-clear to me.
-
-> + * @shost: Host that needs a scsi_device
-                               ^^^^^^^^^^^^^
-This is not detailed enough. Consider changing "a scsi_device" into
-"a scsi device for allocating reserved commands from".
-
-> + *
-> + * Lock status: None assumed.
-> + *
-> + * Returns:     The scsi_device or NULL
-> + *
-> + * Notes:
-> + *	Attach a single scsi_device to the Scsi_Host - this should
-> + *	be made to look like a "pseudo-device" that points to the
-> + *	HA itself.
-> + *
-> + *	Note - this device is not accessible from any high-level
-> + *	drivers (including generics), which is probably not
-> + *	optimal.  We can add hooks later to attach.
-
-The "which is probably not optimal. We can add hooks later to attach."
-part probably should be moved to the patch description.
-
-> + */
-> +struct scsi_device *scsi_get_host_dev(struct Scsi_Host *shost)
-> +{
-> +	struct scsi_device *sdev = NULL;
-> +	struct scsi_target *starget;
+On Wed, Jun 01, 2022 at 02:09:49PM -0700, Axel Rasmussen wrote:
+> Explain the different ways to create a new userfaultfd, and how access
+> control works for each way.
+> 
+> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+> ---
+>  Documentation/admin-guide/mm/userfaultfd.rst | 40 ++++++++++++++++++--
+>  Documentation/admin-guide/sysctl/vm.rst      |  3 ++
+>  2 files changed, 40 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/mm/userfaultfd.rst b/Documentation/admin-guide/mm/userfaultfd.rst
+> index 6528036093e1..9bae1acd431f 100644
+> --- a/Documentation/admin-guide/mm/userfaultfd.rst
+> +++ b/Documentation/admin-guide/mm/userfaultfd.rst
+> @@ -17,7 +17,10 @@ of the ``PROT_NONE+SIGSEGV`` trick.
+>  Design
+>  ======
+>  
+> -Userfaults are delivered and resolved through the ``userfaultfd`` syscall.
+> +Userspace creates a new userfaultfd, initializes it, and registers one or more
+> +regions of virtual memory with it. Then, any page faults which occur within the
+> +region(s) result in a message being delivered to the userfaultfd, notifying
+> +userspace of the fault.
+>  
+>  The ``userfaultfd`` (aside from registering and unregistering virtual
+>  memory ranges) provides two primary functionalities:
+> @@ -34,12 +37,11 @@ The real advantage of userfaults if compared to regular virtual memory
+>  management of mremap/mprotect is that the userfaults in all their
+>  operations never involve heavyweight structures like vmas (in fact the
+>  ``userfaultfd`` runtime load never takes the mmap_lock for writing).
+> -
+>  Vmas are not suitable for page- (or hugepage) granular fault tracking
+>  when dealing with virtual address spaces that could span
+>  Terabytes. Too many vmas would be needed for that.
+>  
+> -The ``userfaultfd`` once opened by invoking the syscall, can also be
+> +The ``userfaultfd``, once created, can also be
+>  passed using unix domain sockets to a manager process, so the same
+>  manager process could handle the userfaults of a multitude of
+>  different processes without them being aware about what is going on
+> @@ -50,6 +52,38 @@ is a corner case that would currently return ``-EBUSY``).
+>  API
+>  ===
+>  
+> +Creating a userfaultfd
+> +----------------------
 > +
-> +	mutex_lock(&shost->scan_mutex);
-> +	if (!scsi_host_scan_allowed(shost))
-> +		goto out;
-> +	starget = scsi_alloc_target(&shost->shost_gendev, 0, shost->this_id);
-                                                           ^^^^^^^^^^^^^^^^^^
-Is it guaranteed that this channel / id combination will not be used for
-any other SCSI device?
-
-What if shost->this_id == -1?
-
-> +	if (!starget)
-> +		goto out;
+> +There are two ways to create a new userfaultfd, each of which provide ways to
+> +restrict access to this functionality (since historically userfaultfds which
+> +handle kernel page faults have been a useful tool for exploiting the kernel).
 > +
-> +	sdev = scsi_alloc_sdev(starget, 0, NULL);
-> +	if (sdev)
-> +		sdev->borken = 0;
-> +	else
-> +		scsi_target_reap(starget);
-> +	put_device(&starget->dev);
-> + out:
-> +	mutex_unlock(&shost->scan_mutex);
-> +	return sdev;
-> +}
-> +EXPORT_SYMBOL(scsi_get_host_dev);
+> +The first way, supported by older kernels, is the userfaultfd(2) syscall.
 
-Elsewhere in the SCSI core "get..dev" means increment the reference count of
-a SCSI device. Maybe scsi_alloc_host_dev() is a better name?
+How about "supported since userfaultfd was introduced"?  Otherwise the
+reader can get a feeling that the syscall won't work on new kernels but
+it will.
 
-> +/*
-> + * These two functions are used to allocate and free a pseudo device
-> + * which will connect to the host adapter itself rather than any
-> + * physical device.  You must deallocate when you are done with the
-> + * thing.  This physical pseudo-device isn't real and won't be available
-> + * from any high-level drivers.
-> + */
+> +Access to this is controlled in several ways:
+> +
+> +- By default, the userfaultfd will be able to handle kernel page faults. This
 
-Please keep function comments in .c files because that makes it more likely
-that the comment and the implementation will remain in sync.
+s/kernel/both user and kernel/?
+
+> +  can be disabled by passing in UFFD_USER_MODE_ONLY.
+> +
+> +- If vm.unprivileged_userfaultfd is 0, then the caller must *either* have
+> +  CAP_SYS_PTRACE, or pass in UFFD_USER_MODE_ONLY.
+> +
+> +- If vm.unprivileged_userfaultfd is 1, then no particular privilege is needed to
+> +  use this syscall, even if UFFD_USER_MODE_ONLY is *not* set.
+
+The separation of above three paragraphs do not feel very clear to me to
+understand these flags.. Entry 1) was trying to define UFFD_USER_MODE_ONLY,
+but entry 2) was also referring to it in another context.
+
+How about using two paragraphs to explain these two flags one by one?  My
+try..
+
+  The user can always creates an userfaultfd that only traps userspace page
+  faults only.  To achieve it, one can create the userfaultfd object using
+  the syscall userfaultfd() with flag UFFD_USER_MODE_ONLY passed in.
+
+  If the user would like to also trap kernel page faults for the address
+  space, then either the process needs to have CAP_SYS_PTRACE capability,
+  or the system must have vm.unprivileged_userfaultfd set to 1.  By
+  default, vm.unprivileged_userfaultfd is set to 0.
+
+> +
+> +The second way, added to the kernel more recently, is by opening and issuing a
+> +USERFAULTFD_IOC_NEW ioctl to /dev/userfaultfd. This method yields equivalent
+> +userfaultfds to the userfaultfd(2) syscall; its benefit is in how access to
+> +creating userfaultfds is controlled.
+
+Since the benefit is immediately mentioned next, how about dropping "its
+benefit is in how ... is controlled" and just connect these two paragraphs?
+
+Again, please take it with a grain of salt on my English-related comments
+(it means all comment above :).
 
 Thanks,
 
-Bart.
+> +
+> +Access to /dev/userfaultfd is controlled via normal filesystem permissions
+> +(user/group/mode for example), which gives fine grained access to userfaultfd
+> +specifically, without also granting other unrelated privileges at the same time
+> +(as e.g. granting CAP_SYS_PTRACE would do).
+> +
+> +Initializing up a userfaultfd
+> +-----------------------------
+> +
+>  When first opened the ``userfaultfd`` must be enabled invoking the
+>  ``UFFDIO_API`` ioctl specifying a ``uffdio_api.api`` value set to ``UFFD_API`` (or
+>  a later API version) which will specify the ``read/POLLIN`` protocol
+> diff --git a/Documentation/admin-guide/sysctl/vm.rst b/Documentation/admin-guide/sysctl/vm.rst
+> index d7374a1e8ac9..e3a952d1fd35 100644
+> --- a/Documentation/admin-guide/sysctl/vm.rst
+> +++ b/Documentation/admin-guide/sysctl/vm.rst
+> @@ -927,6 +927,9 @@ calls without any restrictions.
+>  
+>  The default value is 0.
+>  
+> +An alternative to this sysctl / the userfaultfd(2) syscall is to create
+> +userfaultfds via /dev/userfaultfd. See
+> +Documentation/admin-guide/mm/userfaultfd.rst.
+>  
+>  user_reserve_kbytes
+>  ===================
+> -- 
+> 2.36.1.255.ge46751e96f-goog
+> 
+
+-- 
+Peter Xu
+
