@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7791EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D042C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355267AbiFNCeX (ORCPT
+        id S1356467AbiFNCdj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:34:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
+        Mon, 13 Jun 2022 22:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356455AbiFNCdi (ORCPT
+        with ESMTP id S1356718AbiFNCb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:33:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1D5E4667F;
-        Mon, 13 Jun 2022 19:13:05 -0700 (PDT)
+        Mon, 13 Jun 2022 22:31:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A724476E;
+        Mon, 13 Jun 2022 19:12:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D36DF60B66;
-        Tue, 14 Jun 2022 02:07:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D63C385A9;
-        Tue, 14 Jun 2022 02:07:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A708DB8169F;
+        Tue, 14 Jun 2022 02:11:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96AC0C36AFF;
+        Tue, 14 Jun 2022 02:11:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172467;
-        bh=ToUh3uw+d6OuQ3xQsEOfSMJFmNh46l4CiJEgdqIQs3w=;
+        s=k20201202; t=1655172700;
+        bh=C7mABmTJjJjFAL9xAHiCDoEkCJ2cTkj1vecB2YNbIaQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nkLf0YWyQvcMF2Apo9OBTYVSzoimGpkr8HMES5mJrsL/D7/t538jsb2pwHoUc7ETp
-         9V+/KhWvawXxDCC5OROTOGekvboFD9wZvH0ANkQRtzN3Z4UlzAyRmXVq5GF6ynWYFj
-         aHtEmNI2rqjgRrR66kt8FZLC+KRO4NQlp5rhiz6QiuSNH5/TsJsAQpBE4IpCLaduED
-         bPO6uZKSV7mc+xnHAUp1mWMgOATdY6OSgWOFdMd6v4VE7v4YMxkFx+ubZYK7nMvnqA
-         vKt4cKEGPCTKo8K/0fPLeJ7jEE9iAybSK6qaESG73yyqcfCv20xK/FMmBtKdT2d6dG
-         HKYLXIkOtki/A==
+        b=luFT2HMOXUA74hcvKJhxYc6aYShWN9vGJWB1sC7Z/OSAdRGgciqgDORCHgykE52un
+         gRO2dsysQRUu1Lgu/qbqGrSRhVCtE6mIhm0KBHgu5mdFVg73rURszhIOA1bk+DZH0g
+         hVytUmQMN+X2NgiUy8b0sVn0+AJXQTNfbNa2PhgCJxXitsW6vm0o6e7HAHWzW20v2D
+         HP9f0624YDrtezkE4+0X1jc1xeSGqNYOftfs1nzJpfrUIiPM2/7pZnt/ZHBPmM5AB1
+         Vy94FY5STgNYdian6w5X9pqru+qZvqknfI7YIv4icSIDHVe2u6qKMGIrPZZ8NJtmGc
+         ntlA9nPiUqk3g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@avagotech.com,
-        dick.kennedy@avagotech.com, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 23/41] scsi: lpfc: Allow reduced polling rate for nvme_admin_async_event cmd completion
-Date:   Mon, 13 Jun 2022 22:06:48 -0400
-Message-Id: <20220614020707.1099487-23-sashal@kernel.org>
+Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.17 4/4] KVM: Don't null dereference ops->destroy
+Date:   Mon, 13 Jun 2022 22:11:30 -0400
+Message-Id: <20220614021130.1101425-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
-References: <20220614020707.1099487-1-sashal@kernel.org>
+In-Reply-To: <20220614021130.1101425-1-sashal@kernel.org>
+References: <20220614021130.1101425-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,71 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit 2e7e9c0c1ec05f18d320ecc8a31eec59d2af1af9 ]
+[ Upstream commit e8bc2427018826e02add7b0ed0fc625a60390ae5 ]
 
-NVMe Asynchronous Event Request commands have no command timeout value per
-specifications.
+A KVM device cleanup happens in either of two callbacks:
+1) destroy() which is called when the VM is being destroyed;
+2) release() which is called when a device fd is closed.
 
-Set WQE option to allow a reduced FLUSH polling rate for I/O error
-detection specifically for nvme_admin_async_event commands.
+Most KVM devices use 1) but Book3s's interrupt controller KVM devices
+(XICS, XIVE, XIVE-native) use 2) as they need to close and reopen during
+the machine execution. The error handling in kvm_ioctl_create_device()
+assumes destroy() is always defined which leads to NULL dereference as
+discovered by Syzkaller.
 
-Link: https://lore.kernel.org/r/20220603174329.63777-9-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+This adds a checks for destroy!=NULL and adds a missing release().
+
+This is not changing kvm_destroy_devices() as devices with defined
+release() should have been removed from the KVM devices list by then.
+
+Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_hw4.h  |  3 +++
- drivers/scsi/lpfc/lpfc_nvme.c | 11 +++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
+ virt/kvm/kvm_main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_hw4.h b/drivers/scsi/lpfc/lpfc_hw4.h
-index 7359505e6041..824fc8c08840 100644
---- a/drivers/scsi/lpfc/lpfc_hw4.h
-+++ b/drivers/scsi/lpfc/lpfc_hw4.h
-@@ -4448,6 +4448,9 @@ struct wqe_common {
- #define wqe_sup_SHIFT         6
- #define wqe_sup_MASK          0x00000001
- #define wqe_sup_WORD          word11
-+#define wqe_ffrq_SHIFT         6
-+#define wqe_ffrq_MASK          0x00000001
-+#define wqe_ffrq_WORD          word11
- #define wqe_wqec_SHIFT        7
- #define wqe_wqec_MASK         0x00000001
- #define wqe_wqec_WORD         word11
-diff --git a/drivers/scsi/lpfc/lpfc_nvme.c b/drivers/scsi/lpfc/lpfc_nvme.c
-index 66cb66aea2cf..4fb3dc5092f5 100644
---- a/drivers/scsi/lpfc/lpfc_nvme.c
-+++ b/drivers/scsi/lpfc/lpfc_nvme.c
-@@ -1182,7 +1182,8 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
- {
- 	struct lpfc_hba *phba = vport->phba;
- 	struct nvmefc_fcp_req *nCmd = lpfc_ncmd->nvmeCmd;
--	struct lpfc_iocbq *pwqeq = &(lpfc_ncmd->cur_iocbq);
-+	struct nvme_common_command *sqe;
-+	struct lpfc_iocbq *pwqeq = &lpfc_ncmd->cur_iocbq;
- 	union lpfc_wqe128 *wqe = &pwqeq->wqe;
- 	uint32_t req_len;
- 
-@@ -1239,8 +1240,14 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
- 		cstat->control_requests++;
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 717ee1b2e058..36ccd20c7fc5 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -4277,8 +4277,11 @@ static int kvm_ioctl_create_device(struct kvm *kvm,
+ 		kvm_put_kvm_no_destroy(kvm);
+ 		mutex_lock(&kvm->lock);
+ 		list_del(&dev->vm_node);
++		if (ops->release)
++			ops->release(dev);
+ 		mutex_unlock(&kvm->lock);
+-		ops->destroy(dev);
++		if (ops->destroy)
++			ops->destroy(dev);
+ 		return ret;
  	}
  
--	if (pnode->nlp_nvme_info & NLP_NVME_NSLER)
-+	if (pnode->nlp_nvme_info & NLP_NVME_NSLER) {
- 		bf_set(wqe_erp, &wqe->generic.wqe_com, 1);
-+		sqe = &((struct nvme_fc_cmd_iu *)
-+			nCmd->cmdaddr)->sqe.common;
-+		if (sqe->opcode == nvme_admin_async_event)
-+			bf_set(wqe_ffrq, &wqe->generic.wqe_com, 1);
-+	}
-+
- 	/*
- 	 * Finish initializing those WQE fields that are independent
- 	 * of the nvme_cmnd request_buffer
 -- 
 2.35.1
 
