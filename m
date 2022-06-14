@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 949C0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:44:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A5FCCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357382AbiFNSon (ORCPT
+        id S1357626AbiFNSo5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59438 "EHLO
+        Tue, 14 Jun 2022 14:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357434AbiFNSoQ (ORCPT
+        with ESMTP id S1357731AbiFNSoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:44:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A234D621;
-        Tue, 14 Jun 2022 11:43:09 -0700 (PDT)
+        Tue, 14 Jun 2022 14:44:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9EC4D9DF;
+        Tue, 14 Jun 2022 11:43:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1533C617B3;
-        Tue, 14 Jun 2022 18:43:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22B81C3411B;
-        Tue, 14 Jun 2022 18:43:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7723CB81A3D;
+        Tue, 14 Jun 2022 18:43:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3FCAC3411B;
+        Tue, 14 Jun 2022 18:43:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232188;
-        bh=5S55j8WE8+XzTAiVnrcAmC1PieLKOP//3uBu8H7cGwc=;
+        s=korg; t=1655232191;
+        bh=e0++alf+J7304pXKotEWAAi2YNfDgxJLM6EdwJGGUSg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bKcuvkStsCUadbKHKbEyGdbFUsfC7F7Gw+8QT9HIeaQq5Zb6jvQWutojiKzbojMrB
-         8lgmVjBw4LeOSrX1u8ihGaV2TQHoDyGHnsgM+NYrWc0zjDLS//LjDAy6msUd2GOWwo
-         M3ccUYjbqgPIU4CdSadNYLsIYa9sJOzrkEKXuU0I=
+        b=WDwSKPMRqMDuhPNyu5uX6h6u6NaB5PO/QnB9DJUZBYIawaQStLYIo8aFd9E2Ep+VN
+         mdq/NS/0MGZ5nyzZ4/hZDKXTJQAPfqL3Te1PBTiLcJ7IbQOlyINDL+FXblJiWs9Py+
+         EPjhmtDA8jG9mVXqBGmXszuapV81mvw48UK9wbNg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Thomas Gleixner <tglx@linutronix.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 4.19 14/16] x86/speculation/mmio: Reuse SRBDS mitigation for SBDS
-Date:   Tue, 14 Jun 2022 20:40:15 +0200
-Message-Id: <20220614183724.295250734@linuxfoundation.org>
+Subject: [PATCH 4.19 15/16] KVM: x86/speculation: Disable Fill buffer clear within guests
+Date:   Tue, 14 Jun 2022 20:40:16 +0200
+Message-Id: <20220614183724.544969485@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220614183720.928818645@linuxfoundation.org>
 References: <20220614183720.928818645@linuxfoundation.org>
@@ -54,81 +54,214 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit a992b8a4682f119ae035a01b40d4d0665c4a2875 upstream
+commit 027bbb884be006b05d9c577d6401686053aa789e upstream
 
-The Shared Buffers Data Sampling (SBDS) variant of Processor MMIO Stale
-Data vulnerabilities may expose RDRAND, RDSEED and SGX EGETKEY data.
-Mitigation for this is added by a microcode update.
+The enumeration of MD_CLEAR in CPUID(EAX=7,ECX=0).EDX{bit 10} is not an
+accurate indicator on all CPUs of whether the VERW instruction will
+overwrite fill buffers. FB_CLEAR enumeration in
+IA32_ARCH_CAPABILITIES{bit 17} covers the case of CPUs that are not
+vulnerable to MDS/TAA, indicating that microcode does overwrite fill
+buffers.
 
-As some of the implications of SBDS are similar to SRBDS, SRBDS mitigation
-infrastructure can be leveraged by SBDS. Set X86_BUG_SRBDS and use SRBDS
-mitigation.
+Guests running in VMM environments may not be aware of all the
+capabilities/vulnerabilities of the host CPU. Specifically, a guest may
+apply MDS/TAA mitigations when a virtual CPU is enumerated as vulnerable
+to MDS/TAA even when the physical CPU is not. On CPUs that enumerate
+FB_CLEAR_CTRL the VMM may set FB_CLEAR_DIS to skip overwriting of fill
+buffers by the VERW instruction. This is done by setting FB_CLEAR_DIS
+during VMENTER and resetting on VMEXIT. For guests that enumerate
+FB_CLEAR (explicitly asking for fill buffer clear capability) the VMM
+will not use FB_CLEAR_DIS.
 
-Mitigation is enabled by default; use srbds=off to opt-out. Mitigation
-status can be checked from below file:
-
-  /sys/devices/system/cpu/vulnerabilities/srbds
+Irrespective of guest state, host overwrites CPU buffers before VMENTER
+to protect itself from an MMIO capable guest, as part of mitigation for
+MMIO Stale Data vulnerabilities.
 
 Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-[cascardo: adjust for processor model names]
+[cascardo: arch/x86/kvm/vmx.c has been split and context adjustment at
+ vmx_vcpu_run]
+[cascardo: moved functions so they are after struct vcpu_vmx definition]
+[cascardo: fb_clear is disabled/enabled around __vmx_vcpu_run]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/common.c |   21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ arch/x86/include/asm/msr-index.h |    6 +++
+ arch/x86/kvm/vmx.c               |   74 ++++++++++++++++++++++++++++++++++++++-
+ arch/x86/kvm/x86.c               |    4 ++
+ 3 files changed, 83 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -1021,6 +1021,8 @@ static const __initconst struct x86_cpu_
- #define SRBDS		BIT(0)
- /* CPU is affected by X86_BUG_MMIO_STALE_DATA */
- #define MMIO		BIT(1)
-+/* CPU is affected by Shared Buffers Data Sampling (SBDS), a variant of X86_BUG_MMIO_STALE_DATA */
-+#define MMIO_SBDS	BIT(2)
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -115,6 +115,11 @@
+ 						 * VERW clears CPU fill buffer
+ 						 * even on MDS_NO CPUs.
+ 						 */
++#define ARCH_CAP_FB_CLEAR_CTRL		BIT(18)	/*
++						 * MSR_IA32_MCU_OPT_CTRL[FB_CLEAR_DIS]
++						 * bit available to control VERW
++						 * behavior.
++						 */
  
- static const struct x86_cpu_id cpu_vuln_blacklist[] __initconst = {
- 	VULNBL_INTEL_STEPPINGS(IVYBRIDGE,	X86_STEPPING_ANY,		SRBDS),
-@@ -1042,16 +1044,17 @@ static const struct x86_cpu_id cpu_vuln_
- 	VULNBL_INTEL_STEPPINGS(KABYLAKE_MOBILE,	X86_STEPPINGS(0x0, 0x8),	SRBDS),
- 	VULNBL_INTEL_STEPPINGS(KABYLAKE_DESKTOP,X86_STEPPINGS(0x9, 0xD),	SRBDS | MMIO),
- 	VULNBL_INTEL_STEPPINGS(KABYLAKE_DESKTOP,X86_STEPPINGS(0x0, 0x8),	SRBDS),
--	VULNBL_INTEL_STEPPINGS(ICELAKE_MOBILE,	X86_STEPPINGS(0x5, 0x5),	MMIO),
-+	VULNBL_INTEL_STEPPINGS(ICELAKE_MOBILE,	X86_STEPPINGS(0x5, 0x5),	MMIO | MMIO_SBDS),
- 	VULNBL_INTEL_STEPPINGS(ICELAKE_XEON_D,	X86_STEPPINGS(0x1, 0x1),	MMIO),
- 	VULNBL_INTEL_STEPPINGS(ICELAKE_X,	X86_STEPPINGS(0x4, 0x6),	MMIO),
--	VULNBL_INTEL_STEPPINGS(COMETLAKE,	BIT(2) | BIT(3) | BIT(5),	MMIO),
--	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x1),	MMIO),
--	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPINGS(0x1, 0x1),	MMIO),
-+	VULNBL_INTEL_STEPPINGS(COMETLAKE,	BIT(2) | BIT(3) | BIT(5),	MMIO | MMIO_SBDS),
-+	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
-+	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x0),	MMIO),
-+	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
- 	VULNBL_INTEL_STEPPINGS(ROCKETLAKE,	X86_STEPPINGS(0x1, 0x1),	MMIO),
--	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT,	X86_STEPPINGS(0x1, 0x1),	MMIO),
-+	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
- 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_X,	X86_STEPPING_ANY,		MMIO),
--	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_L,	X86_STEPPINGS(0x0, 0x0),	MMIO),
-+	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_L,	X86_STEPPINGS(0x0, 0x0),	MMIO | MMIO_SBDS),
- 	{}
+ #define MSR_IA32_FLUSH_CMD		0x0000010b
+ #define L1D_FLUSH			BIT(0)	/*
+@@ -132,6 +137,7 @@
+ /* SRBDS support */
+ #define MSR_IA32_MCU_OPT_CTRL		0x00000123
+ #define RNGDS_MITG_DIS			BIT(0)
++#define FB_CLEAR_DIS			BIT(3)	/* CPU Fill buffer clear disable */
+ 
+ #define MSR_IA32_SYSENTER_CS		0x00000174
+ #define MSR_IA32_SYSENTER_ESP		0x00000175
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -212,6 +212,9 @@ static const struct {
+ #define L1D_CACHE_ORDER 4
+ static void *vmx_l1d_flush_pages;
+ 
++/* Control for disabling CPU Fill buffer clear */
++static bool __read_mostly vmx_fb_clear_ctrl_available;
++
+ static int vmx_setup_l1d_flush(enum vmx_l1d_flush_state l1tf)
+ {
+ 	struct page *page;
+@@ -1045,6 +1048,8 @@ struct vcpu_vmx {
+ 	u64 msr_ia32_feature_control;
+ 	u64 msr_ia32_feature_control_valid_bits;
+ 	u64 ept_pointer;
++	u64 msr_ia32_mcu_opt_ctrl;
++	bool disable_fb_clear;
  };
  
-@@ -1130,10 +1133,14 @@ static void __init cpu_set_bug_bits(stru
- 	/*
- 	 * SRBDS affects CPUs which support RDRAND or RDSEED and are listed
- 	 * in the vulnerability blacklist.
-+	 *
-+	 * Some of the implications and mitigation of Shared Buffers Data
-+	 * Sampling (SBDS) are similar to SRBDS. Give SBDS same treatment as
-+	 * SRBDS.
- 	 */
- 	if ((cpu_has(c, X86_FEATURE_RDRAND) ||
- 	     cpu_has(c, X86_FEATURE_RDSEED)) &&
--	    cpu_matches(cpu_vuln_blacklist, SRBDS))
-+	    cpu_matches(cpu_vuln_blacklist, SRBDS | MMIO_SBDS))
- 		    setup_force_cpu_bug(X86_BUG_SRBDS);
+ enum segment_cache_field {
+@@ -2107,6 +2112,60 @@ static inline void __invept(unsigned lon
+ 	BUG_ON(error);
+ }
  
++static void vmx_setup_fb_clear_ctrl(void)
++{
++	u64 msr;
++
++	if (boot_cpu_has(X86_FEATURE_ARCH_CAPABILITIES) &&
++	    !boot_cpu_has_bug(X86_BUG_MDS) &&
++	    !boot_cpu_has_bug(X86_BUG_TAA)) {
++		rdmsrl(MSR_IA32_ARCH_CAPABILITIES, msr);
++		if (msr & ARCH_CAP_FB_CLEAR_CTRL)
++			vmx_fb_clear_ctrl_available = true;
++	}
++}
++
++static __always_inline void vmx_disable_fb_clear(struct vcpu_vmx *vmx)
++{
++	u64 msr;
++
++	if (!vmx->disable_fb_clear)
++		return;
++
++	rdmsrl(MSR_IA32_MCU_OPT_CTRL, msr);
++	msr |= FB_CLEAR_DIS;
++	wrmsrl(MSR_IA32_MCU_OPT_CTRL, msr);
++	/* Cache the MSR value to avoid reading it later */
++	vmx->msr_ia32_mcu_opt_ctrl = msr;
++}
++
++static __always_inline void vmx_enable_fb_clear(struct vcpu_vmx *vmx)
++{
++	if (!vmx->disable_fb_clear)
++		return;
++
++	vmx->msr_ia32_mcu_opt_ctrl &= ~FB_CLEAR_DIS;
++	wrmsrl(MSR_IA32_MCU_OPT_CTRL, vmx->msr_ia32_mcu_opt_ctrl);
++}
++
++static void vmx_update_fb_clear_dis(struct kvm_vcpu *vcpu, struct vcpu_vmx *vmx)
++{
++	vmx->disable_fb_clear = vmx_fb_clear_ctrl_available;
++
++	/*
++	 * If guest will not execute VERW, there is no need to set FB_CLEAR_DIS
++	 * at VMEntry. Skip the MSR read/write when a guest has no use case to
++	 * execute VERW.
++	 */
++	if ((vcpu->arch.arch_capabilities & ARCH_CAP_FB_CLEAR) ||
++	   ((vcpu->arch.arch_capabilities & ARCH_CAP_MDS_NO) &&
++	    (vcpu->arch.arch_capabilities & ARCH_CAP_TAA_NO) &&
++	    (vcpu->arch.arch_capabilities & ARCH_CAP_PSDP_NO) &&
++	    (vcpu->arch.arch_capabilities & ARCH_CAP_FBSDP_NO) &&
++	    (vcpu->arch.arch_capabilities & ARCH_CAP_SBDR_SSDP_NO)))
++		vmx->disable_fb_clear = false;
++}
++
+ static struct shared_msr_entry *find_msr_entry(struct vcpu_vmx *vmx, u32 msr)
+ {
+ 	int i;
+@@ -4314,9 +4373,13 @@ static int vmx_set_msr(struct kvm_vcpu *
+ 			}
+ 			break;
+ 		}
+-		ret = kvm_set_msr_common(vcpu, msr_info);
++			ret = kvm_set_msr_common(vcpu, msr_info);
+ 	}
+ 
++	/* FB_CLEAR may have changed, also update the FB_CLEAR_DIS behavior */
++	if (msr_index == MSR_IA32_ARCH_CAPABILITIES)
++		vmx_update_fb_clear_dis(vcpu, vmx);
++
+ 	return ret;
+ }
+ 
+@@ -6761,6 +6824,8 @@ static void vmx_vcpu_reset(struct kvm_vc
+ 	vpid_sync_context(vmx->vpid);
+ 	if (init_event)
+ 		vmx_clear_hlt(vcpu);
++
++	vmx_update_fb_clear_dis(vcpu, vmx);
+ }
+ 
+ /*
+@@ -10777,6 +10842,8 @@ static void __noclone vmx_vcpu_run(struc
+ 		 kvm_arch_has_assigned_device(vcpu->kvm))
+ 		mds_clear_cpu_buffers();
+ 
++	vmx_disable_fb_clear(vmx);
++
+ 	asm volatile (
+ 		/* Store host registers */
+ 		"push %%" _ASM_DX "; push %%" _ASM_BP ";"
+@@ -10921,6 +10988,8 @@ static void __noclone vmx_vcpu_run(struc
+ #endif
+ 	      );
+ 
++	vmx_enable_fb_clear(vmx);
++
  	/*
+ 	 * We do not use IBRS in the kernel. If this vCPU has used the
+ 	 * SPEC_CTRL MSR it may have left it on; save the value and
+@@ -14626,8 +14695,11 @@ static int __init vmx_init(void)
+ 		}
+ 	}
+ 
++	vmx_setup_fb_clear_ctrl();
++
+ 	for_each_possible_cpu(cpu) {
+ 		INIT_LIST_HEAD(&per_cpu(loaded_vmcss_on_cpu, cpu));
++
+ 		INIT_LIST_HEAD(&per_cpu(blocked_vcpu_on_cpu, cpu));
+ 		spin_lock_init(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
+ 	}
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -1220,6 +1220,10 @@ u64 kvm_get_arch_capabilities(void)
+ 
+ 	/* KVM does not emulate MSR_IA32_TSX_CTRL.  */
+ 	data &= ~ARCH_CAP_TSX_CTRL_MSR;
++
++	/* Guests don't need to know "Fill buffer clear control" exists */
++	data &= ~ARCH_CAP_FB_CLEAR_CTRL;
++
+ 	return data;
+ }
+ 
 
 
