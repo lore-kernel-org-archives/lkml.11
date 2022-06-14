@@ -2,176 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 028A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D67C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354158AbiFNKi6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:38:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56786 "EHLO
+        id S242413AbiFNKju (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 06:39:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230157AbiFNKi4 (ORCPT
+        with ESMTP id S230157AbiFNKjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:38:56 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A468C35252;
-        Tue, 14 Jun 2022 03:38:55 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25E96fHg024970;
-        Tue, 14 Jun 2022 10:38:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=fenuCRyA2MbBa5B5nqlyL4fDAInAfNqYcCHTaK+ep6c=;
- b=suhlY2Ae8Zzv/ThqTEhWxC4kz+32aBI0a+u/g52ayzRnRcUgwGfYjNdfsv+GQ3knLuCf
- Su/MUA+K5IhD1SE1uhVqy9jrejPhLgHYMETkUib1AmrTcQMTEUzehdJca3g6KGzOYRGD
- wzOBTNc9EtDUrERKvAqu0+/gP0GaroH730HLiWUWzJ196+WIPUe7ALzwLqiJ4CZL8hiL
- nnnphSTtdiL/23YMg4dGIJ2ls56Dlp+pr1G9qVqthSZoUdSl8eMiGo0WapwpcPRdDGTG
- etsJ7AaW4r5CinIuz7BsbOdfACS2MvjWA5npXbv+OmUeb19ZAKf16IaG7eTfXoRPHTk3 JA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gpp6hc952-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jun 2022 10:38:47 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25E96uKM025759;
-        Tue, 14 Jun 2022 10:38:47 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gpp6hc94e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jun 2022 10:38:47 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25EAaom7021792;
-        Tue, 14 Jun 2022 10:38:44 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3gmjajc787-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 14 Jun 2022 10:38:44 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25EAcfks8716654
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Jun 2022 10:38:41 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8B9DB42042;
-        Tue, 14 Jun 2022 10:38:41 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2DA8342041;
-        Tue, 14 Jun 2022 10:38:39 +0000 (GMT)
-Received: from [9.171.29.58] (unknown [9.171.29.58])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 14 Jun 2022 10:38:37 +0000 (GMT)
-Message-ID: <07576ae9-9798-316f-d33e-10c91faeebfb@linux.ibm.com>
-Date:   Tue, 14 Jun 2022 12:38:37 +0200
+        Tue, 14 Jun 2022 06:39:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE66235252;
+        Tue, 14 Jun 2022 03:39:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF974B81856;
+        Tue, 14 Jun 2022 10:39:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7603C3411B;
+        Tue, 14 Jun 2022 10:39:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655203185;
+        bh=1WpNbruZfpiREjP5nt5HMy2K24XhwdQUFBtL7VlCzIM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EPBud0OBnT4YGtLFkEMrFQLy/bCsgRcqOPkc0XW79lwTBSYcD5svdm+wvid3QGguz
+         tdAElO6q1DIS4kHo4IC9FnIlK1wV8nvfg3fe67VkfgJSzYXz9DN7bFi9/h53Hnsr1+
+         wuAFP1mWFUPZ3cmM5r3GaLZEFvMJdtH9Vmyw9VogNN7Zkl1eCOnPp3wlIqGVbVO0Pq
+         QvfB3fs1pelbAWDxvIH6WHtJaPEVQN5QgtVO3gn2PS+aCMaRtc8ezKYfy00EJbhm2+
+         urC7cq9vu5lQCseSz4DsZ47sCiZeCdl6QRCpQX6jvjamqyZTjsdjn5HnwbG44g4+KL
+         wD5lfT8UKEBAg==
+Date:   Tue, 14 Jun 2022 11:48:53 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Luca Weiss <luca@z3ntu.xyz>
+Cc:     Luca Weiss <luca.weiss@fairphone.com>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Song Qiang <songqiang1304521@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 3/5] proximity: vl53l0x: Handle the VDD regulator
+Message-ID: <20220614114853.340e9c36@jic23-huawei>
+In-Reply-To: <13033502.uLZWGnKmhe@g550jk>
+References: <20220523175344.5845-1-markuss.broks@gmail.com>
+        <CKKOCWP2NYO5.GH08U776B1KU@otso>
+        <20220612095333.1479464c@jic23-huawei>
+        <13033502.uLZWGnKmhe@g550jk>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v4 1/4] KVM: s390: selftests: Use TAP interface in the
- memop test
-Content-Language: en-US
-To:     Thomas Huth <thuth@redhat.com>, kvm@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Hildenbrand <david@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Shuah Khan <shuah@kernel.org>, linux-s390@vger.kernel.org
-References: <20220531101554.36844-1-thuth@redhat.com>
- <20220531101554.36844-2-thuth@redhat.com>
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-In-Reply-To: <20220531101554.36844-2-thuth@redhat.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: nKt6VK9FhXp14FtCBnSww5of7OpRYt0T
-X-Proofpoint-ORIG-GUID: citumcxVuJL2MZYB4n2rHeF_iUEaQ4ZW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-14_03,2022-06-13_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
- lowpriorityscore=0 priorityscore=1501 clxscore=1011 adultscore=0
- mlxlogscore=999 malwarescore=0 spamscore=0 phishscore=0 suspectscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206140041
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/31/22 12:15, Thomas Huth wrote:
-> The memop test currently does not have any output (unless one of the
-> TEST_ASSERT statement fails), so it's hard to say for a user whether
-> a certain new sub-test has been included in the binary or not. Let's
-> make this a little bit more user-friendly and include some TAP output
-> via the kselftests.h interface.
+On Sun, 12 Jun 2022 11:28:22 +0200
+Luca Weiss <luca@z3ntu.xyz> wrote:
+
+> Hi Jonathan,
 > 
-> Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
-> Signed-off-by: Thomas Huth <thuth@redhat.com>
-> ---
->  tools/testing/selftests/kvm/s390x/memop.c | 95 ++++++++++++++++++-----
->  1 file changed, 77 insertions(+), 18 deletions(-)
+> On Sonntag, 12. Juni 2022 10:53:33 CEST Jonathan Cameron wrote:
+> > On Wed, 08 Jun 2022 12:18:52 +0200
+> > 
+> > "Luca Weiss" <luca.weiss@fairphone.com> wrote:  
+> > > Hi Markuss,
+> > > 
+> > > On Mon May 23, 2022 at 7:53 PM CEST, Markuss Broks wrote:  
+> > > > Handle the regulator supplying the VDD pin of VL53L0X.
+> > > > 
+> > > > Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+> > > > ---
+> > > > 
+> > > >  drivers/iio/proximity/vl53l0x-i2c.c | 37 +++++++++++++++++++++++++++++
+> > > >  1 file changed, 37 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/iio/proximity/vl53l0x-i2c.c
+> > > > b/drivers/iio/proximity/vl53l0x-i2c.c index 12a3e2eff464..8581a873919f
+> > > > 100644
+> > > > --- a/drivers/iio/proximity/vl53l0x-i2c.c
+> > > > +++ b/drivers/iio/proximity/vl53l0x-i2c.c
+> > > > @@ -43,6 +43,7 @@
+> > > > 
+> > > >  struct vl53l0x_data {
+> > > >  
+> > > >  	struct i2c_client *client;
+> > > >  	struct completion completion;
+> > > > 
+> > > > +	struct regulator *vdd_supply;
+> > > > 
+> > > >  };
+> > > >  
+> > > >  static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
+> > > > 
+> > > > @@ -192,10 +193,31 @@ static const struct iio_info vl53l0x_info = {
+> > > > 
+> > > >  	.read_raw = vl53l0x_read_raw,
+> > > >  
+> > > >  };
+> > > > 
+> > > > +static void vl53l0x_power_off(void *_data)
+> > > > +{
+> > > > +	struct vl53l0x_data *data = _data;
+> > > > +
+> > > > +	regulator_disable(data->vdd_supply);
+> > > > +}
+> > > > +
+> > > > +static int vl53l0x_power_on(struct vl53l0x_data *data)
+> > > > +{
+> > > > +	int ret;
+> > > > +
+> > > > +	ret = regulator_enable(data->vdd_supply);
+> > > > +	if (ret)
+> > > > +		return ret;
+> > > > +
+> > > > +	usleep_range(3200, 5000);
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > > > +
+> > > > 
+> > > >  static int vl53l0x_probe(struct i2c_client *client)
+> > > >  {
+> > > >  
+> > > >  	struct vl53l0x_data *data;
+> > > >  	struct iio_dev *indio_dev;
+> > > > 
+> > > > +	int error;
+> > > > 
+> > > >  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> > > >  	if (!indio_dev)
+> > > > 
+> > > > @@ -210,6 +232,21 @@ static int vl53l0x_probe(struct i2c_client *client)
+> > > > 
+> > > >  				     I2C_FUNC_SMBUS_BYTE_DATA))
+> > > >  		
+> > > >  		return -EOPNOTSUPP;
+> > > > 
+> > > > +	data->vdd_supply = devm_regulator_get_optional(&client->dev,   
+> "vdd");
+> > > > +	if (IS_ERR(data->vdd_supply))
+> > > > +		return dev_err_probe(&client->dev, PTR_ERR(data-  
+> >vdd_supply),  
+> > > > +				     "Unable to get VDD   
+> regulator\n");
+> > > 
+> > > It looks like this optional regulator is not actually optional.
+> > > 
+> > > [    1.919995] vl53l0x-i2c 1-0029: error -ENODEV: Unable to get VDD
+> > > regulator
+> > > 
+> > > When using devm_regulator_get instead, a dummy regulator gets returned
+> > > which I think is what we want here:
+> > > 
+> > > [    1.905518] vl53l0x-i2c 1-0029: supply vdd not found, using dummy
+> > > regulator
+> > > 
+> > > Can you fix this up or should I send a patch?  
+> > 
+> > Hi Luca,
+> > 
+> > Please send a patch.  
 > 
-> diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
-> index 49f26f544127..e704c6fa5758 100644
-> --- a/tools/testing/selftests/kvm/s390x/memop.c
-> +++ b/tools/testing/selftests/kvm/s390x/memop.c
-> @@ -14,6 +14,7 @@
->  
+> Which commit sha can I use for Fixes: here?
+> Based your togreg[0] branch currently shows "Age: 20 hours" I guess it was 
+> rebased recently?
 
-[...]
+It was rebased onto rc1 as you noticed.
 
->  int main(int argc, char *argv[])
->  {
-> -	int memop_cap, extension_cap;
-> +	int memop_cap, extension_cap, idx;
->  
->  	setbuf(stdout, NULL);	/* Tell stdout not to buffer its content */
->  
-> +	ksft_print_header();
-> +
->  	memop_cap = kvm_check_cap(KVM_CAP_S390_MEM_OP);
->  	extension_cap = kvm_check_cap(KVM_CAP_S390_MEM_OP_EXTENSION);
->  	if (!memop_cap) {
-> -		print_skip("CAP_S390_MEM_OP not supported");
-> -		exit(KSFT_SKIP);
-> +		ksft_exit_skip("CAP_S390_MEM_OP not supported.\n");
->  	}
->  
-> -	test_copy();
-> -	if (extension_cap > 0) {
-> -		test_copy_key();
-> -		test_copy_key_storage_prot_override();
-> -		test_copy_key_fetch_prot();
-> -		test_copy_key_fetch_prot_override();
-> -		test_errors_key();
-> -		test_termination();
-> -		test_errors_key_storage_prot_override();
-> -		test_errors_key_fetch_prot_override_not_enabled();
-> -		test_errors_key_fetch_prot_override_enabled();
-> -	} else {
-> -		print_skip("storage key memop extension not supported");
-> +	ksft_set_plan(ARRAY_SIZE(testlist));
-> +
-> +	for (idx = 0; idx < ARRAY_SIZE(testlist); idx++) {
-> +		if (testlist[idx].extension >= extension_cap) {
+In theory it is now stable, assuming nothing nasty shows up.
+Fixes tag doesn't matter strongly given both will go into mainline via
+the same pull request, so maybe just skip adding one to make my life
+easier :)
 
-This is reversed, should be
+Thanks,
 
-   		if (testlist[idx].extension <= extension_cap) {
-or
-		if (extension_cap >= testlist[idx].extension) {
+Jonathan
 
-I'd prefer the latter.
-
-> +			testlist[idx].test();
-> +			ksft_test_result_pass("%s\n", testlist[idx].name);
-> +		} else {
-> +			ksft_test_result_skip("%s - extension level %d not supported\n",
-> +					      testlist[idx].name,
-> +					      testlist[idx].extension);
-> +		}
->  	}
-> -	test_errors();
->  
-> -	return 0;
-> +	ksft_finished();	/* Print results and exit() accordingly */
->  }
+> 
+> Regards
+> Luca
+> 
+> [0]https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=togreg
+> 
+> > 
+> > Jonathan
+> >   
+> > > Regards
+> > > Luca
+> > >   
+> > > > +
+> > > > +	error = vl53l0x_power_on(data);
+> > > > +	if (error)
+> > > > +		return dev_err_probe(&client->dev, error,
+> > > > +				     "Failed to power on the   
+> chip\n");
+> > > > +
+> > > > +	error = devm_add_action_or_reset(&client->dev, vl53l0x_power_off,
+> > > > data);
+> > > > +	if (error)
+> > > > +		return dev_err_probe(&client->dev, error,
+> > > > +				     "Failed to install poweroff   
+> action\n");
+> > > > +
+> > > > 
+> > > >  	indio_dev->name = "vl53l0x";
+> > > >  	indio_dev->info = &vl53l0x_info;
+> > > >  	indio_dev->channels = vl53l0x_channels;  
+> 
+> 
+> 
+> 
 
