@@ -2,280 +2,364 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 502C3CCA47A
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:16:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29BF7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:17:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234057AbiFNIQn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:16:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36624 "EHLO
+        id S235629AbiFNIRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 04:17:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231989AbiFNIQl (ORCPT
+        with ESMTP id S234092AbiFNIRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:16:41 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70101.outbound.protection.outlook.com [40.107.7.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86183F8B1;
-        Tue, 14 Jun 2022 01:16:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FS7QwWLzfEbNWCkCU1iVmigMVYbIhHR1kAo1Ow70AmH87cXvxt8aYzpQVaOu3ua6AfJwbzj/Zu+pIIgblWqIJ8xP+DIhnk5fbPrVYEV3Gi9mchAQHJrQNHO1hU1xP3gHWHxKB9/Nl01ZKKCv81HqDL7kwROMyqj7hmvWK5lyAvTNz7IHRtZ0ujXPU3GHOX3A0VwQsjJKJy0EfDR1K9cXld3hNRnFHMy1MY7tQMJcITPm5EAHA4QlkEifCyJLe6if/2DFK0IMOP9amVDndHE08rLL0vAvlc5r63QUdroE3uTn+JCnV6wmvWpf6gQWtd5loCvHYJR+U27XH+1oNaF5Kg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HHAeW8QVknK1Ok3LpnXzd73XIk1dyA7juxqMhJgyfNI=;
- b=Se9nM1iZvIeKmjzSMW1Id8JFl7JnK1tW1RciVY2ozETWRXvTO3MWatU3oaii6rjqILJf8jtBaC7egMUNOqBqZCCbLuyMTdAlzRTHLWnuVER0kxklCjrQD66QIJEqiHoJB/5QgztUnkdRRqqDvVLCF88YplLxB4vpw/Qm1A5Mr5HngJ/NIar5OTOtjmB3nTiVJFY2nQESa9yZzhWGqcf2BdfKMEv7KaD9JiB+WkRfk5hpoKKvJGb80J8nS4la3c8tVvtg6zvaHE+CpvPikhyqbKda47EFyuvhhvNKLQicIgxmTJwZWEhpatIdMpztNNVHS1NW6GKdKmmGVHBhOkzAng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HHAeW8QVknK1Ok3LpnXzd73XIk1dyA7juxqMhJgyfNI=;
- b=gXWthSX9bGcmYJOKGncEGR2RtlQBYGEvhv1uD3z8w6OC40oWap6lJzP/vFugeloC6YzPRnNzKIY92ckZhGo6RbJ6w/HDfaWDyRRQEVWzwZjZGizU/a+yl7zuoOuzbGepAhGXxZFvBHEA0EXlZmAIK8cOwfbnnjYJD68g2cwBi3w=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from VI1P190MB0317.EURP190.PROD.OUTLOOK.COM (2603:10a6:802:38::26)
- by PAXP190MB1693.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:1cd::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Tue, 14 Jun
- 2022 08:16:36 +0000
-Received: from VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
- ([fe80::2c45:bc33:2584:959a]) by VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
- ([fe80::2c45:bc33:2584:959a%7]) with mapi id 15.20.5332.017; Tue, 14 Jun 2022
- 08:16:35 +0000
-Date:   Tue, 14 Jun 2022 11:16:33 +0300
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Konstantin Porotchkin <kostap@marvell.com>,
-        Robert Marko <robert.marko@sartura.hr>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v9 2/3] arm64: dts: marvell: Add Armada 98DX2530 SoC and
- RD-AC5X board
-Message-ID: <20220614081633.GA14160@plvision.eu>
-References: <20220613225338.393-1-vadym.kochan@plvision.eu>
- <20220613225338.393-3-vadym.kochan@plvision.eu>
- <4670aab9-b7fa-f2c7-567a-12ca24535b0c@alliedtelesis.co.nz>
- <37d7b4f1-fd39-dc05-374a-764070c56cc6@alliedtelesis.co.nz>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <37d7b4f1-fd39-dc05-374a-764070c56cc6@alliedtelesis.co.nz>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: BE0P281CA0027.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:14::14) To VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:802:38::26)
+        Tue, 14 Jun 2022 04:17:07 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16503FD94
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:17:05 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id r5so8646964iod.5
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:17:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Ey38FOje1qhBoyFKEwgMBItTmKZu5WAMaNeKEpJx1zk=;
+        b=eiTwxzyxzEyHX1n42w506ist0rSUGGsQziBRqgx3/KscVt5UHXi1WJxi41VHxh4V6Q
+         NtmlnZtnVA2ZVv+Cqe7HfE2cTqRhK422gXGd5TFop+voy/p5r9qvTCrkQdRCjgj9PFO1
+         SenMLkx9vipsJdRznTL5XDk7qGGv+bxJHRwOJ9KRxH3P3FrY/4S1XXqFHbBx0UgaWBSN
+         eyUBx8XQ/Xac7SIRQ+3PGLqTCzNoW6dCHLmWp17XVXdtOSAOWji8b8gL8hqaU6l/vHvZ
+         mb1aJO2GSFSM3cKU4xCcVtdtSxYOZYnuoVm/AgB84aurkcdbYMFIWgpktiTjxmDGr4Wp
+         Vnlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Ey38FOje1qhBoyFKEwgMBItTmKZu5WAMaNeKEpJx1zk=;
+        b=vcn2Zp32W9DZLH4o4MowuUi9MU1tFqujC9sArd9575sRjhcP7pJhJ99zHfH6QvNkhn
+         ApOV2L1nSwNbGNmfEGIzC074kibvpnrvVoQiCaaEFsJQPQYOAjSpMZhxL3ugDJ4BDUu/
+         etg4QQ0khUncr6kN8bSSoLKmj2CwhprWzydNwOI+ZmU+9/+QPuscsR7iWEkhqc0SsChY
+         j3kI+nPYTBwOzjbRfD3lN9tFbetKXdcOgizqbhkKo4G+caWsMsm96N2j0kqun+coOc+z
+         HbHhvjAm6VA+DUZLYa5ATuE4IV2OPJq5Y4P01rtPr+uUub6ECv9iDiWdrdSmjdcr3opF
+         IXOA==
+X-Gm-Message-State: AOAM531HaT4Rlhf/rOGKf+zxk+XQhPcbpTiOnNnUNOTg65hzoDoHdqTE
+        Hdd1qq4EeRc582VoIMLofy/U/K6PqRbi/y5i7czjOA==
+X-Google-Smtp-Source: ABdhPJyFs6N+2S/uhEy9HjTp1j7ZIf1O53t4W42tOEBq3BsEBHCJfES9t1ZQIrKqU3/CDBCDJNjCx7+yXdumAqUJq0c=
+X-Received: by 2002:a05:6638:1c12:b0:333:ef51:ff14 with SMTP id
+ ca18-20020a0566381c1200b00333ef51ff14mr2104815jab.137.1655194625062; Tue, 14
+ Jun 2022 01:17:05 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 99954d9e-3764-4e9a-ad61-08da4dde32c0
-X-MS-TrafficTypeDiagnostic: PAXP190MB1693:EE_
-X-Microsoft-Antispam-PRVS: <PAXP190MB1693DD69F11DEA42C665420895AA9@PAXP190MB1693.EURP190.PROD.OUTLOOK.COM>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: U7wOaqJL8ZX8WSY2x+8Rn48iESiag/jPSad1E0tlgsChHHbNYK9zu6KJi/sBfW/Objp4vmwxZwsky6cWlzqRvPpr/jbsXUwpZa9ICfxwkfZQBEu4hYblTWQgX/khkuFlpL6kXCpO6wxmWdT6MlANFzLzKOE25RXdjfoucsv+ffKbIseJB8D1mR5wbXd693u9AMX+myFQKtCRJflmkx7gZHC7mdjlJIsKmzt5kyw3eyV2XcQ9+FEi5FX2qZaVMkFrsu4pikOLSOjNCbK+2DbBk15Z0w/ugO/XK460qz1I52by9U9mH+waIdYouWfnBpfteGaPvNiwG4vqsYtN3EK4SbiSMH/93r8mX2BxlplDh3am+B/tK2Wn3B5WYlFu60kVdzgCllRLc3wZghUCfKcphuYLIjsC9z4+k6az3OYzpMi1o0tXserJHPbsa9N6tDUZm8JLUymH/ORBT0IKLO8BpEiEuTovJRtqvlG46bTSm8KQzq9F4hUNrnM/I2QqoDFDcQk8mUH8L2bpBfwsug/yNUTGIuyLWXeHbEDqJ1TpPKKxbfbiecBvzWnbvxS3mklm5XB++4Bt+wz22Y2hDDqe6VuFPEgJRc/0C29Zlqm/UgCgogUpK1JtmV1kIuz05EW4o1mr5pOK771Lw65P4qX0MznYDaKMSdU6Rc+8Kc6Q1goJAnSFUDOov+J4/ykMM/CEPc51CM8Fun575MyQKGfv2w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P190MB0317.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(39830400003)(396003)(366004)(2906002)(44832011)(5660300002)(33656002)(36756003)(7416002)(6506007)(86362001)(38100700002)(54906003)(6512007)(53546011)(26005)(6916009)(2616005)(316002)(186003)(52116002)(38350700002)(6486002)(66556008)(66476007)(41300700001)(508600001)(4326008)(8936002)(1076003)(8676002)(66946007)(83380400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?zywKrFYZ3hrPwjc8KBYCxPs4/0WVTaG+m7ocJuTcHbyOgwngcncCzfx25q?=
- =?iso-8859-1?Q?IuY2Jm2WBFWKMkybN0y9hR7aQUrgJrYtuK0KMIom7T+qSTgm5doe5q1k0t?=
- =?iso-8859-1?Q?HGHGZxhLby31+wKDvz6qoV/nmo3WFSTrT4U1LK3WxgOZr1+UVtUx2oJwjk?=
- =?iso-8859-1?Q?YW/oszrSZvGXiWbNtr4AIMOsbIA/W1YSlXvTHpWFox2WKU0hQ5kIcjCBhj?=
- =?iso-8859-1?Q?/Vzlfm3WkxBZ9csUJQ188VRrqxCkqMl6jyhX+8B8mNSQtb6XF8YHMsPrLk?=
- =?iso-8859-1?Q?CGy4jnqOdtOJMifdNMo41vahfwFxB5i02+sBObmWYRPdMNQRc1eL+u0qIs?=
- =?iso-8859-1?Q?DTzoa3LVGGlrOei7uFd3f4lTp1NP1nek9yiPRRPeCmCBJSjcW+3vymtn6G?=
- =?iso-8859-1?Q?MXGoAxw7//FZ06WDDOsNKQEzhjZ5FsmXiuQQ/UMkDHBsBRX8590TZJ1J4L?=
- =?iso-8859-1?Q?hSyeaUU32e4TIy3yISmLOLX7foa4cXhQt4fv7VIAhMX+lRUnCVjSWhlPji?=
- =?iso-8859-1?Q?WvfSY4L+fduXyPGRJmWemhVTj13K+ReopyM2+cwYXk/caPOcyn3ZC947wH?=
- =?iso-8859-1?Q?NmBIxczWs7Rblsnikyh4/jPVI1eErQ3ceYZENOq2isxjcFNarSDFAFRRdS?=
- =?iso-8859-1?Q?91oafnXRb/MVM5EK+rTwlmBcIw+Eqrem9ppsO6vkNMELB5SHNboWNGbW+W?=
- =?iso-8859-1?Q?WsQQCpeEKt4iA7e0u1dHfcaLVs4eDGS9rBpgLxFjFT6HIykmLCtk/yka52?=
- =?iso-8859-1?Q?OF2G9+w+tbX/nBWd/TI/SNgV1FxJ3GC9sA+Dx4+OAs8NYGBdCRov9GlHLX?=
- =?iso-8859-1?Q?tmjeIzFsnVNGu5xaMcNiq900LMR4wFopN8HtiOCHSxsHS48f3sg4eQuHEh?=
- =?iso-8859-1?Q?VslOCdLKaFcZc8U/+OnbW4zGftclCtZccOi07GAkf3WxGwK7BkjWRmtMjf?=
- =?iso-8859-1?Q?AnNNTk5I51m70T9JqSCRovV98OLhQLxBlJgt3NCE5yOxp3GJCZTf/4/XfM?=
- =?iso-8859-1?Q?Tnee2MKR+bW/pZ2u4CuoFaWdEcl0WeKO1C+AN6Swas4ngeoEoSDYwusV6K?=
- =?iso-8859-1?Q?pXB//VQNmY+8EFywI8jtuaq0pd/mWtNCAJwta3CN/MhRaDicljNJT72uJE?=
- =?iso-8859-1?Q?Bz2sQqtASOi11Rn3bC1npS6DMWbMqJ3CJIOZmmpbVYMB6cmxPMaEGUN9qa?=
- =?iso-8859-1?Q?7iGji5BFvSGDrvwLwLm2Pz55ccujmqRXHXEsq1w1MLOFc5IaF7vZHSfPd/?=
- =?iso-8859-1?Q?Pb1F4UQ9cGq4nx5T9k6tp/j4vclbw9BXljj5beJDqTx4a9kduOWI8YLJAA?=
- =?iso-8859-1?Q?QynNblb0+MJ1rCuSxqPwPUDMAWH1NYu3a7MQAElVVjv/POElFklYEoxl7u?=
- =?iso-8859-1?Q?It1uP0PWVwK/1zEJI9cLIntJEk92xrvdA8Yjaai1tHfJaKPiIrzP/Bh8VQ?=
- =?iso-8859-1?Q?Va6XXuis1hhB8desvMofep2QZJLqw6HzcylHM7k7qg5hBJCMe5Gkl7dXtp?=
- =?iso-8859-1?Q?Nf3DZa630o50HU0CH9n83qnlDphoeMYJBaE/JBCdUJ4pTbqjzWOTF8y16s?=
- =?iso-8859-1?Q?Q01iTatJQD0GTqf/nQcuoQ2vpNx99AAul0b50X9o7hz36nF+Gxd7PyjY7v?=
- =?iso-8859-1?Q?lCpOaZdWMMtA3QmEAe4u/M0napdTlt9Qrz74MbN8zqhsY2dMJj30MmrVg2?=
- =?iso-8859-1?Q?u+1cbnEz5LykD1Tr9zzprke+nkUuf557g0eCuAHAARQyiH3076b9jCGlif?=
- =?iso-8859-1?Q?/z1P7hE8B8e3E0ThIE/2ebn35kHL4b47hNcQr+2cVnP5IN+5k9t5ZW+ccr?=
- =?iso-8859-1?Q?YdBiub/QKXA8UqMEeFyWJ78cCchDnR8=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99954d9e-3764-4e9a-ad61-08da4dde32c0
-X-MS-Exchange-CrossTenant-AuthSource: VI1P190MB0317.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2022 08:16:35.7006
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gnLfff3T2ZJwC14lAWmAkOxw0yFMP1F0ef/104/KR0JZtnKLhVZ7I3mICwY4osxqPRGcvV98qkDzUxdninlOXLj6ucRI8EYFHodJvdeG7u4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXP190MB1693
+References: <20220613100433-mutt-send-email-mst@kernel.org>
+ <20220614053737.82453-1-huangjie.albert@bytedance.com> <CACGkMEsnvj3MR8oRu-M2D9gTD2sDUJSWkMdjdm6GPum_KUY47w@mail.gmail.com>
+In-Reply-To: <CACGkMEsnvj3MR8oRu-M2D9gTD2sDUJSWkMdjdm6GPum_KUY47w@mail.gmail.com>
+From:   =?UTF-8?B?6buE5p2w?= <huangjie.albert@bytedance.com>
+Date:   Tue, 14 Jun 2022 16:16:53 +0800
+Message-ID: <CABKxMyMMQhbLCu8QN4ZD42802ZQdbGC+YvkQiWz_voecfM1jqw@mail.gmail.com>
+Subject: Re: [PATCH] virtio_ring : keep used_wrap_counter in vq->last_used_idx
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst <mst@redhat.com>, yuanzhu@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chris,
-
-On Tue, Jun 14, 2022 at 05:26:39AM +0000, Chris Packham wrote:
-> 
-> On 14/06/22 17:11, Chris Packham wrote:
+Jason Wang <jasowang@redhat.com> =E4=BA=8E2022=E5=B9=B46=E6=9C=8814=E6=97=
+=A5=E5=91=A8=E4=BA=8C 15:45=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Tue, Jun 14, 2022 at 1:38 PM Albert Huang
+> <huangjie.albert@bytedance.com> wrote:
 > >
-> > On 14/06/22 10:53, Vadym Kochan wrote:
-> >> From: Chris Packham <chris.packham@alliedtelesis.co.nz>
-> >>
-> >> The 98DX2530 SoC is the Control and Management CPU integrated into
-> >> the Marvell 98DX25xx and 98DX35xx series of switch chip (internally
-> >> referred to as AlleyCat5 and AlleyCat5X).
-> >>
-> >> These files have been taken from the Marvell SDK and lightly cleaned
-> >> up with the License and copyright retained.
-> >>
-> >> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-> >> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
-> >> ---
-> >>
-> >> Notes:
-> >>      The Marvell SDK has a number of new compatible strings. I've 
-> >> brought
-> >>      through some of the drivers or where possible used an in-tree
-> >>      alternative (e.g. there is SDK code for a ac5-gpio but two 
-> >> instances of
-> >>      the existing marvell,orion-gpio seems to cover what is needed if 
-> >> you use
-> >>      an appropriate binding). I expect that there will a new series of
-> >>      patches when I get some different hardware (or additions to this 
-> >> series
-> >>      depending on if/when it lands).
-> >>           Changes in v9 (proposed by Marvell):
-> >>        It was discussed with Chris that Marvell will add some changes:
-> >>
-> >>           1) Rename "armada-" prefix in dts(i) file names to ac5, 
-> >> because
-> >>              Armada has not much common with AC5 SoC.
-> >>
-> >>           2) Add clock fixes:
-> >>              - rename core_clock to cnm_clock
-> >>              - remove axi_clock
-> >>              - change cnm_clock to 325MHZ
-> >>              - use cnm_clock for the UART
-> >>
-> >>      Changes in v8:
-> >>      - Remove unnecessary clock-frequency property on armv8-timer
-> >>      - Remove unnecessary redistributor-stride property on gic
-> >>      - Add GIC_SPI interrupts for gpios
-> >>      Changes in v7:
-> >>      - Add missing compatible on usb1
-> >>      - Add "rd-ac5x" compatible for board
-> >>      - Move aliases to board dts
-> >>      - Move board specific usb info to board dts
-> >>      - Consolidate usb1 board settings and remove unnecessary compatible
-> >>      - Add Allied Telesis copyright
-> >>      - Rename files after mailng-list discussion
-> >>      Changes in v6:
-> >>      - Move CPU nodes above the SoC (Krzysztof)
-> >>      - Minor formatting clean ups (Krzysztof)
-> >>      - Run through `make dtbs_check`
-> >>      - Move gic nodes inside SoC
-> >>      - Group clocks under a clock node
-> >>      Changes in v5:
-> >>      - add #{address,size}-cells property to i2c nodes
-> >>      - make i2c nodes disabled in the SoC and enable them in the board
-> >>      - add interrupt controller attributes to gpio nodes
-> >>      - Move fixed-clock nodes up a level and remove unnecessary @0
-> >>      Changes in v4:
-> >>      - use 'phy-handle' instead of 'phy'
-> >>      - move status="okay" on usb nodes to board dts
-> >>      - Add review from Andrew
-> >>      Changes in v3:
-> >>      - Move memory node to board
-> >>      - Use single digit reg value for phy address
-> >>      - Remove MMC node (driver needs work)
-> >>      - Remove syscon & simple-mfd for pinctrl
-> >>      Changes in v2:
-> >>      - Make pinctrl a child node of a syscon node
-> >>      - Use marvell,armada-8k-gpio instead of orion-gpio
-> >>      - Remove nand peripheral. The Marvell SDK does have some changes 
-> >> for the
-> >>        ac5-nand-controller but I currently lack hardware with NAND 
-> >> fitted so
-> >>        I can't test it right now. I've therefore chosen to omit the 
-> >> node and
-> >>        not attempted to bring in the driver or binding.
-> >>      - Remove pcie peripheral. Again there are changes in the SDK and 
-> >> I have
-> >>        no way of testing them.
-> >>      - Remove prestera node.
-> >>      - Remove "marvell,ac5-ehci" compatible from USB node as
-> >>        "marvell,orion-ehci" is sufficient
-> >>      - Remove watchdog node. There is a buggy driver for the ac5 
-> >> watchdog in
-> >>        the SDK but it needs some work so I've dropped the node for now.
-> >>
-> >>   arch/arm64/boot/dts/marvell/Makefile          |   1 +
-> >>   arch/arm64/boot/dts/marvell/ac5-98dx25xx.dtsi | 291 ++++++++++++++++++
-> >>   .../boot/dts/marvell/ac5-98dx35xx-rd.dts      | 101 ++++++
-> >>   arch/arm64/boot/dts/marvell/ac5-98dx35xx.dtsi |  13 +
-> >>   4 files changed, 406 insertions(+)
-> >>   create mode 100644 arch/arm64/boot/dts/marvell/ac5-98dx25xx.dtsi
-> >>   create mode 100644 arch/arm64/boot/dts/marvell/ac5-98dx35xx-rd.dts
-> >>   create mode 100644 arch/arm64/boot/dts/marvell/ac5-98dx35xx.dtsi
-> >>
-
-[snip]
-
-> >> +
-> >> +            uart0: serial@12000 {
-> >> +                compatible = "snps,dw-apb-uart";
-> >> +                reg = <0x12000 0x100>;
-> >> +                reg-shift = <2>;
-> >> +                interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-> >> +                reg-io-width = <1>;
-> >> +                clocks = <&cnm_clock>;
+> > From: "huangjie.albert" <huangjie.albert@bytedance.com>
 > >
-> > With this change I see some garbled output when the "Serial: AMBA 
-> > PL011 UART" driver starts.
+> > the used_wrap_counter and the vq->last_used_idx may get
+> > out of sync if they are separate assignment=EF=BC=8Cand interrupt
+> > might use an incorrect value to check for the used index.
 > >
-> > It could be that my bootloader has the same wrong clock value as the 
-> > earlier iteration of this device tree.
-> Fixing u-boot doesn't help but there are also references to 328000000 in 
-> mv-ddr and ATF so I'll look to see if updating them fixes the issue 
-> tomorrow.
+> > for example:OOB access
+> > ksoftirqd may consume the packet and it will call:
+> > virtnet_poll
+> >         -->virtnet_receive
+> >                 -->virtqueue_get_buf_ctx
+> >                         -->virtqueue_get_buf_ctx_packed
+> > and in virtqueue_get_buf_ctx_packed:
 > >
+> > vq->last_used_idx +=3D vq->packed.desc_state[id].num;
+> > if (unlikely(vq->last_used_idx >=3D vq->packed.vring.num)) {
+> >          vq->last_used_idx -=3D vq->packed.vring.num;
+> >          vq->packed.used_wrap_counter ^=3D 1;
+> > }
+> >
+> > if at the same time, there comes a vring interrupt=EF=BC=8Cin vring_int=
+errupt:
+> > we will call:
+> > vring_interrupt
+> >         -->more_used
+> >                 -->more_used_packed
+> >                         -->is_used_desc_packed
+> > in is_used_desc_packed, the last_used_idx maybe >=3D vq->packed.vring.n=
+um.
+> > so this could case a memory out of bounds bug.
+> >
+> > this patch is to keep the used_wrap_counter in vq->last_used_idx
+> > so we can get the correct value to check for used index in interrupt.
+> >
+> > Signed-off-by: huangjie.albert <huangjie.albert@bytedance.com>
+> > ---
+> >  drivers/virtio/virtio_ring.c     | 60 ++++++++++++++++++--------------
+> >  include/uapi/linux/virtio_ring.h |  6 ++++
+> >  2 files changed, 40 insertions(+), 26 deletions(-)
+> >
+> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.=
+c
+> > index 13a7348cedff..35c3750e89e1 100644
+> > --- a/drivers/virtio/virtio_ring.c
+> > +++ b/drivers/virtio/virtio_ring.c
+> > @@ -111,7 +111,12 @@ struct vring_virtqueue {
+> >         /* Number we've added since last sync. */
+> >         unsigned int num_added;
+> >
+> > -       /* Last used index we've seen. */
+> > +       /* Last used index  we've seen.
+> > +        * for split ring, it just contains last used index
+> > +        * for packed ring, it not only contains last used index, but a=
+lso
+> > +        * used_wrap_counter, the VRING_PACKED_USED_INDEX_F_WRAP_CTR is
+> > +        * the bit shift in last_used_idx
+> > +        */
+> >         u16 last_used_idx;
+> >
+> >         /* Hint for event idx: already triggered no need to disable. */
+> > @@ -154,9 +159,6 @@ struct vring_virtqueue {
+> >                         /* Driver ring wrap counter. */
+> >                         bool avail_wrap_counter;
+> >
+> > -                       /* Device ring wrap counter. */
+> > -                       bool used_wrap_counter;
+> > -
+> >                         /* Avail used flags. */
+> >                         u16 avail_used_flags;
+> >
+> > @@ -1397,6 +1399,9 @@ static inline bool is_used_desc_packed(const stru=
+ct vring_virtqueue *vq,
+> >         bool avail, used;
+> >         u16 flags;
+> >
+> > +       if (idx >=3D vq->packed.vring.num)
+> > +               return false;
+>
+> I wonder if we can avoid this trick, more below.
 
-Interesting, because Marvell suggested to use cnm_clock with 328MHz for AC5, and 325MHz
-for AC5X.
+Yes, the idx pass to the is_used_desc_packed can never  >=3D
+vq->packed.vring.num since we
+tweak the math here :
+>+       last_used +=3D vq->packed.desc_state[id].num;
+>+       if (unlikely(last_used >=3D vq->packed.vring.num)) {
+>+               last_used -=3D vq->packed.vring.num;
+>+               used_wrap_counter ^=3D 1;
+>         }
+>+       last_used =3D (last_used | (used_wrap_counter << VRING_PACKED_DESC=
+_F_USED));
+>+       vq->last_used_idx =3D last_used;
 
-[snip]
+>
+> > +
+> >         flags =3D le16_to_cpu(vq->packed.vring.desc[idx].flags);
+> >         avail =3D !!(flags & (1 << VRING_PACKED_DESC_F_AVAIL));
+> >         used =3D !!(flags & (1 << VRING_PACKED_DESC_F_USED));
+> > @@ -1406,8 +1411,12 @@ static inline bool is_used_desc_packed(const str=
+uct vring_virtqueue *vq,
+> >
+> >  static inline bool more_used_packed(const struct vring_virtqueue *vq)
+> >  {
+> > -       return is_used_desc_packed(vq, vq->last_used_idx,
+> > -                       vq->packed.used_wrap_counter);
+> > +       u16 last_used;
+> > +       bool used_wrap_counter;
+> > +
+> > +       last_used =3D vq->last_used_idx & ~(1 << VRING_PACKED_USED_INDE=
+X_F_WRAP_CTR);
+> > +       used_wrap_counter =3D !!((vq->last_used_idx) >> VRING_PACKED_US=
+ED_INDEX_F_WRAP_CTR);
+> > +       return is_used_desc_packed(vq, last_used, used_wrap_counter);
+> >  }
+> >
+> >  static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+> > @@ -1416,6 +1425,7 @@ static void *virtqueue_get_buf_ctx_packed(struct =
+virtqueue *_vq,
+> >  {
+> >         struct vring_virtqueue *vq =3D to_vvq(_vq);
+> >         u16 last_used, id;
+> > +       bool used_wrap_counter;
+> >         void *ret;
+> >
+> >         START_USE(vq);
+> > @@ -1434,7 +1444,8 @@ static void *virtqueue_get_buf_ctx_packed(struct =
+virtqueue *_vq,
+> >         /* Only get used elements after they have been exposed by host.=
+ */
+> >         virtio_rmb(vq->weak_barriers);
+> >
+> > -       last_used =3D vq->last_used_idx;
+> > +       used_wrap_counter =3D !!((vq->last_used_idx >> VRING_PACKED_USE=
+D_INDEX_F_WRAP_CTR));
+> > +       last_used =3D (vq->last_used_idx) & (~(1 << VRING_PACKED_USED_I=
+NDEX_F_WRAP_CTR));
+> >         id =3D le16_to_cpu(vq->packed.vring.desc[last_used].id);
+> >         *len =3D le32_to_cpu(vq->packed.vring.desc[last_used].len);
+> >
+> > @@ -1451,12 +1462,15 @@ static void *virtqueue_get_buf_ctx_packed(struc=
+t virtqueue *_vq,
+> >         ret =3D vq->packed.desc_state[id].data;
+> >         detach_buf_packed(vq, id, ctx);
+> >
+> > -       vq->last_used_idx +=3D vq->packed.desc_state[id].num;
+> > -       if (unlikely(vq->last_used_idx >=3D vq->packed.vring.num)) {
+> > -               vq->last_used_idx -=3D vq->packed.vring.num;
+> > -               vq->packed.used_wrap_counter ^=3D 1;
+> > +       last_used +=3D vq->packed.desc_state[id].num;
+> > +       if (unlikely(last_used >=3D vq->packed.vring.num)) {
+>
+> Can we tweak the math here to avoid the out of bound result?
 
-> >> +
-> >> +    clocks {
-> >> +        cnm_clock: core-clock {
-> >> +            compatible = "fixed-clock";
-> >> +            #clock-cells = <0>;
-> >> +            clock-frequency = <325000000>;
-> >> +        };
-> >> +
-> >> +        spi_clock: spi-clock {
-> >> +            compatible = "fixed-clock";
-> >> +            #clock-cells = <0>;
-> >> +            clock-frequency = <200000000>;
-> >> +        };
-> >> +    };
-> >> +};
+   Yes, this can avoid the out of bound result. because of  We just
+assign last_used_idx in the following code=EF=BC=9A
+  vq->last_used_idx =3D last_used;
+  and it is a 16bit/32bit operations,and are guaranteed to be atomic
 
-[snip]
+>
+> > +               last_used -=3D vq->packed.vring.num;
+> > +               used_wrap_counter ^=3D 1;
+> >         }
+> >
+> > +       last_used =3D (last_used | (used_wrap_counter << VRING_PACKED_D=
+ESC_F_USED));
+> > +       vq->last_used_idx =3D last_used;
+> > +
+> >         /*
+> >          * If we expect an interrupt for the next entry, tell host
+> >          * by writing event index and flush out the write before
+> > @@ -1465,9 +1479,7 @@ static void *virtqueue_get_buf_ctx_packed(struct =
+virtqueue *_vq,
+> >         if (vq->packed.event_flags_shadow =3D=3D VRING_PACKED_EVENT_FLA=
+G_DESC)
+> >                 virtio_store_mb(vq->weak_barriers,
+> >                                 &vq->packed.vring.driver->off_wrap,
+> > -                               cpu_to_le16(vq->last_used_idx |
+> > -                                       (vq->packed.used_wrap_counter <=
+<
+> > -                                        VRING_PACKED_EVENT_F_WRAP_CTR)=
+));
+> > +                               cpu_to_le16(vq->last_used_idx));
+> >
+> >         LAST_ADD_TIME_INVALID(vq);
+> >
+> > @@ -1499,9 +1511,7 @@ static unsigned int virtqueue_enable_cb_prepare_p=
+acked(struct virtqueue *_vq)
+> >
+> >         if (vq->event) {
+> >                 vq->packed.vring.driver->off_wrap =3D
+> > -                       cpu_to_le16(vq->last_used_idx |
+> > -                               (vq->packed.used_wrap_counter <<
+> > -                                VRING_PACKED_EVENT_F_WRAP_CTR));
+> > +                       cpu_to_le16(vq->last_used_idx);
+> >                 /*
+> >                  * We need to update event offset and event wrap
+> >                  * counter first before updating event flags.
+> > @@ -1518,8 +1528,7 @@ static unsigned int virtqueue_enable_cb_prepare_p=
+acked(struct virtqueue *_vq)
+> >         }
+> >
+> >         END_USE(vq);
+> > -       return vq->last_used_idx | ((u16)vq->packed.used_wrap_counter <=
+<
+> > -                       VRING_PACKED_EVENT_F_WRAP_CTR);
+> > +       return vq->last_used_idx;
+> >  }
+> >
+> >  static bool virtqueue_poll_packed(struct virtqueue *_vq, u16 off_wrap)
+> > @@ -1550,9 +1559,9 @@ static bool virtqueue_enable_cb_delayed_packed(st=
+ruct virtqueue *_vq)
+> >         if (vq->event) {
+> >                 /* TODO: tune this threshold */
+> >                 bufs =3D (vq->packed.vring.num - vq->vq.num_free) * 3 /=
+ 4;
+> > -               wrap_counter =3D vq->packed.used_wrap_counter;
+> > +               wrap_counter =3D !!(vq->last_used_idx >> VRING_PACKED_U=
+SED_INDEX_F_WRAP_CTR);
+> >
+> > -               used_idx =3D vq->last_used_idx + bufs;
+> > +               used_idx =3D (vq->last_used_idx & ~(1 << VRING_PACKED_U=
+SED_INDEX_F_WRAP_CTR)) + bufs;
+> >                 if (used_idx >=3D vq->packed.vring.num) {
+> >                         used_idx -=3D vq->packed.vring.num;
+> >                         wrap_counter ^=3D 1;
+> > @@ -1582,9 +1591,9 @@ static bool virtqueue_enable_cb_delayed_packed(st=
+ruct virtqueue *_vq)
+> >          */
+> >         virtio_mb(vq->weak_barriers);
+> >
+> > -       if (is_used_desc_packed(vq,
+> > -                               vq->last_used_idx,
+> > -                               vq->packed.used_wrap_counter)) {
+> > +       wrap_counter =3D !!(vq->last_used_idx >> VRING_PACKED_USED_INDE=
+X_F_WRAP_CTR);
+> > +       used_idx =3D (vq->last_used_idx & ~(1 << VRING_PACKED_USED_INDE=
+X_F_WRAP_CTR));
+> > +       if (is_used_desc_packed(vq, used_idx, wrap_counter)) {
+> >                 END_USE(vq);
+> >                 return false;
+> >         }
+> > @@ -1689,7 +1698,7 @@ static struct virtqueue *vring_create_virtqueue_p=
+acked(
+> >         vq->notify =3D notify;
+> >         vq->weak_barriers =3D weak_barriers;
+> >         vq->broken =3D true;
+> > -       vq->last_used_idx =3D 0;
+> > +       vq->last_used_idx =3D 0 | (1 << VRING_PACKED_USED_INDEX_F_WRAP_=
+CTR);
+> >         vq->event_triggered =3D false;
+> >         vq->num_added =3D 0;
+> >         vq->packed_ring =3D true;
+> > @@ -1720,7 +1729,6 @@ static struct virtqueue *vring_create_virtqueue_p=
+acked(
+> >
+> >         vq->packed.next_avail_idx =3D 0;
+> >         vq->packed.avail_wrap_counter =3D 1;
+> > -       vq->packed.used_wrap_counter =3D 1;
+> >         vq->packed.event_flags_shadow =3D 0;
+> >         vq->packed.avail_used_flags =3D 1 << VRING_PACKED_DESC_F_AVAIL;
+> >
+> > diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linux/virt=
+io_ring.h
+> > index 476d3e5c0fe7..96bcc4d52fce 100644
+> > --- a/include/uapi/linux/virtio_ring.h
+> > +++ b/include/uapi/linux/virtio_ring.h
+> > @@ -77,6 +77,12 @@
+> >   */
+> >  #define VRING_PACKED_EVENT_F_WRAP_CTR  15
+> >
+> > +
+> > +/*
+> > + * used wrap Counter bit shift in vq->last_used_idx for packed ring
+> > + */
+> > +#define VRING_PACKED_USED_INDEX_F_WRAP_CTR  15
+>
+> Let's simply reuse VRING_PACKED_EVENT_F_WRAP_CTR ?
+>
+> Thanks
 
-Regards,
+Although the two values are the same, I see the meanings are different,
+so I redefine one. Is it possible to rename
+VRING_PACKED_EVENT_F_WRAP_CTR to VRING_PACKED_F_WRAP_CTR?
+
+Jason, what is your take?
+
+>
+> > +
+> >  /* We support indirect buffer descriptors */
+> >  #define VIRTIO_RING_F_INDIRECT_DESC    28
+> >
+> > --
+> > 2.31.1
+> >
+>
