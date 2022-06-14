@@ -2,113 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C345C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 21:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 802A6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 21:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357540AbiFNVeD (ORCPT
+        id S1357927AbiFNVej (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 17:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60140 "EHLO
+        Tue, 14 Jun 2022 17:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232052AbiFNVeA (ORCPT
+        with ESMTP id S1357627AbiFNVee (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 17:34:00 -0400
-X-Greylist: delayed 134040 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 14 Jun 2022 14:33:59 PDT
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31582656B;
-        Tue, 14 Jun 2022 14:33:59 -0700 (PDT)
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 25ELXbSA002614;
-        Wed, 15 Jun 2022 06:33:38 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 25ELXbSA002614
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1655242418;
-        bh=jMu3IJf/gNsh1yOykgEfXmOTW4pfvsSKna8A1KEVPDk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=H8Vj0TEWaZDAyCb57/jCPeJSrt7udqr5gEj9vpZGF0yiUPM5DWETorzCvL6z4TT6r
-         dvPEbKwUr1Aqw5yycPgaJetlesEOn5iQscdrqVW3Hb+5Oxmwpfaqp/q5R0WxEeJpi2
-         mkb2r1cLq/6dGTbrCXf+EYfUOlBKnTFG8EP9XutPStoqSTK1Hdqss5r9rl1LoypyJH
-         Mt1vkvsmiMdgCwxTAIEJzmJMFomsZQxuIAvYpAGHVqfrl6njsQyy05rr746+JeIkgU
-         IgIL5R9Bs2GeHQ9jfxLcSxjPjoRWYRVYeTriy/oeLb1zS1i8wO3NuK95GyKZ6/BOEZ
-         8ZfbBDzevJtpA==
-X-Nifty-SrcIP: [209.85.128.54]
-Received: by mail-wm1-f54.google.com with SMTP id a10so5341470wmj.5;
-        Tue, 14 Jun 2022 14:33:38 -0700 (PDT)
-X-Gm-Message-State: AOAM5330k/mWGq75deKm8FkX/J9GFrIuCBGCA1PH/LaqY3Lot2dj2kDA
-        VF0gSZ1VxNtGpQKda81RbItGzJK5A6ghij1XHyU=
-X-Google-Smtp-Source: ABdhPJy382JsXm03MT6GFbPL63zd9b3gVqd3oo2ll0beKVq4fIQ7srKKI6FHgfmvJhPvDB9A162ob2fGjKC0YYGqwDs=
-X-Received: by 2002:a7b:ce04:0:b0:394:1f46:213 with SMTP id
- m4-20020a7bce04000000b003941f460213mr6175903wmc.157.1655242416515; Tue, 14
- Jun 2022 14:33:36 -0700 (PDT)
+        Tue, 14 Jun 2022 17:34:34 -0400
+Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4DB515A4;
+        Tue, 14 Jun 2022 14:34:32 -0700 (PDT)
+Received: by mail-il1-f177.google.com with SMTP id d6so7549600ilm.4;
+        Tue, 14 Jun 2022 14:34:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Lw4KopkplTrYRscEG3rSLSQpHs9JVXnvbLHMj0LfULw=;
+        b=q4bIfxFBPG7WXjR3Anmb8NbKAI4xJgQOXW5+vGMp/a0NbTkSg0Krktuz6rtD5rTfMs
+         X6Yz1+mHknYgUBm+tPDFHxX89BqghI0bbeF9MYPWR5YNHVKiCh9Q3B/T7iDc1qcWjT8S
+         9f2vGocUmBYWvUpUhqK9+SMwzp9MHXQn7Z6XyesjFK8ubvyJ3DZszTfQJ0I2MOjCo9ou
+         a4KImic5ffHWtO9ZqCU5ZqtM4UU455/yVkAuFkE4kT6g0hwonWVA6knO8n1CHcCGbQIq
+         sTwZCXRCYno4ptqJsIweYDmQs9VZbzGMuok0K7ksuQ6pimhq9EWFuJQFUxfAmBMTxerW
+         y07A==
+X-Gm-Message-State: AJIora9MqtyXgDHwU+PeaXIeU3/IwxaZeuPo9rYs6zIue/fOPV877EZ5
+        rz4FzbFoPMhUc+f6dvPD/A==
+X-Google-Smtp-Source: AGRyM1sYmRDfslvd2yjDtZY4AFUFvI4YgrlR4n7PSncRNqJQrdg1VxfmuGZMQYQbFywTUA/imP7UGg==
+X-Received: by 2002:a05:6e02:1d91:b0:2d3:bef3:a073 with SMTP id h17-20020a056e021d9100b002d3bef3a073mr4460072ila.60.1655242471610;
+        Tue, 14 Jun 2022 14:34:31 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id l44-20020a02666c000000b0032b3a781767sm5326612jaf.43.2022.06.14.14.34.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 14:34:31 -0700 (PDT)
+Received: (nullmailer pid 2692703 invoked by uid 1000);
+        Tue, 14 Jun 2022 21:34:28 -0000
+Date:   Tue, 14 Jun 2022 15:34:28 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Brad Larson <brad@pensando.io>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, adrian.hunter@intel.com,
+        alcooperx@gmail.com, andy.shevchenko@gmail.com, arnd@arndb.de,
+        blarson@amd.com, brijeshkumar.singh@amd.com,
+        catalin.marinas@arm.com, gsomlo@gmail.com, gerg@linux-m68k.org,
+        krzk@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lee.jones@linaro.org, broonie@kernel.org,
+        yamada.masahiro@socionext.com, p.zabel@pengutronix.de,
+        piotrs@cadence.com, p.yadav@ti.com, rdunlap@infradead.org,
+        samuel@sholland.org, fancer.lancer@gmail.com,
+        suravee.suthikulpanit@amd.com, thomas.lendacky@amd.com,
+        ulf.hansson@linaro.org, will@kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v5 15/15] reset: elbasr: Add AMD Pensando Elba SR Reset
+ Controller
+Message-ID: <20220614213428.GA2684278-robh@kernel.org>
+References: <20220613195658.5607-1-brad@pensando.io>
+ <20220613195658.5607-16-brad@pensando.io>
 MIME-Version: 1.0
-References: <20220613081741.1699713-1-masahiroy@kernel.org> <027dcfc9-be47-5fb5-7ea8-26eb19122095@loongson.cn>
-In-Reply-To: <027dcfc9-be47-5fb5-7ea8-26eb19122095@loongson.cn>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 15 Jun 2022 06:32:59 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAROs84jWCHxKHuv+TOzUkCJDUgkaFU0nKopGPwNKV+VQg@mail.gmail.com>
-Message-ID: <CAK7LNAROs84jWCHxKHuv+TOzUkCJDUgkaFU0nKopGPwNKV+VQg@mail.gmail.com>
-Subject: Re: [PATCH] doc: module: update file references
-To:     Yanteng Si <siyanteng@loongson.cn>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        live-patching@vger.kernel.org, Alex Shi <alexs@kernel.org>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthias Maennich <maennich@google.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613195658.5607-16-brad@pensando.io>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 9:28 PM Yanteng Si <siyanteng@loongson.cn> wrote:
->
-> On 2022/6/13 =E4=B8=8B=E5=8D=884:17, Masahiro Yamada wrote:
-> > Adjust documents to the file moves made by commit cfc1d277891e ("module=
-:
-> > Move all into module/").
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> Acked-by: Yanteng Si <siyanteng@loongson.cn>
-> > ---
-> >
-> > I did not touch
-> >
-> >    Documentation/translations/zh_CN/core-api/kernel-api.rst
-> diff --git a/Documentation/translations/zh_CN/core-api/kernel-api.rst
-> b/Documentation/translations/zh_CN/core-api/kernel-api.rst
-> index e45fe80d1cd8..962d31d019d7 100644
-> --- a/Documentation/translations/zh_CN/core-api/kernel-api.rst
-> +++ b/Documentation/translations/zh_CN/core-api/kernel-api.rst
-> @@ -224,7 +224,7 @@ kernel/kmod.c
->   =E6=A8=A1=E5=9D=97=E6=8E=A5=E5=8F=A3=E6=94=AF=E6=8C=81
->   ------------
->
-> -=E6=9B=B4=E5=A4=9A=E4=BF=A1=E6=81=AF=E8=AF=B7=E5=8F=82=E8=80=83=E6=96=87=
-=E4=BB=B6kernel/module.c=E3=80=82
-> +=E6=9B=B4=E5=A4=9A=E4=BF=A1=E6=81=AF=E8=AF=B7=E5=8F=82=E9=98=85kernel/mo=
-dule/=E7=9B=AE=E5=BD=95=E4=B8=8B=E7=9A=84=E6=96=87=E4=BB=B6=E3=80=82
->
->   =E7=A1=AC=E4=BB=B6=E6=8E=A5=E5=8F=A3
->   =3D=3D=3D=3D=3D=3D=3D=3D
->
-> >
-> > because I cannot modify it.Let me help you, it's my pleasure.  :)
+On Mon, Jun 13, 2022 at 12:56:58PM -0700, Brad Larson wrote:
+> From: Brad Larson <blarson@amd.com>
+> 
+> This patch adds the reset controller functionality for the
+> AMD Pensando Elba System Resource Chip.
+> 
+> Signed-off-by: Brad Larson <blarson@amd.com>
+> ---
+>  drivers/reset/Kconfig                         |  9 ++
+>  drivers/reset/Makefile                        |  1 +
+>  drivers/reset/reset-elbasr.c                  | 94 +++++++++++++++++++
+>  .../reset/amd,pensando-elba-reset.h           | 11 +++
 
+This goes with the binding patch
 
-Thank you very much!
+>  4 files changed, 115 insertions(+)
+>  create mode 100644 drivers/reset/reset-elbasr.c
+>  create mode 100644 include/dt-bindings/reset/amd,pensando-elba-reset.h
+> 
+> diff --git a/drivers/reset/Kconfig b/drivers/reset/Kconfig
+> index 93c8d07ee328..13f5a8ca0f03 100644
+> --- a/drivers/reset/Kconfig
+> +++ b/drivers/reset/Kconfig
+> @@ -66,6 +66,15 @@ config RESET_BRCMSTB_RESCAL
+>  	  This enables the RESCAL reset controller for SATA, PCIe0, or PCIe1 on
+>  	  BCM7216.
+>  
+> +config RESET_ELBASR
+> +	tristate "Pensando Elba System Resource reset controller"
+> +	depends on MFD_PENSANDO_ELBASR || COMPILE_TEST
+> +	help
+> +	  This option enables support for the external reset functions
+> +	  on the Pensando Elba System Resource Chip.  Reset control
+> +	  of peripherals is accessed over SPI to the system resource
+> +	  chip device registers using CS0.
+> +
+>  config RESET_HSDK
+>  	bool "Synopsys HSDK Reset Driver"
+>  	depends on HAS_IOMEM
+> diff --git a/drivers/reset/Makefile b/drivers/reset/Makefile
+> index a80a9c4008a7..c0fe12b9950e 100644
+> --- a/drivers/reset/Makefile
+> +++ b/drivers/reset/Makefile
+> @@ -10,6 +10,7 @@ obj-$(CONFIG_RESET_BCM6345) += reset-bcm6345.o
+>  obj-$(CONFIG_RESET_BERLIN) += reset-berlin.o
+>  obj-$(CONFIG_RESET_BRCMSTB) += reset-brcmstb.o
+>  obj-$(CONFIG_RESET_BRCMSTB_RESCAL) += reset-brcmstb-rescal.o
+> +obj-$(CONFIG_RESET_ELBASR) += reset-elbasr.o
+>  obj-$(CONFIG_RESET_HSDK) += reset-hsdk.o
+>  obj-$(CONFIG_RESET_IMX7) += reset-imx7.o
+>  obj-$(CONFIG_RESET_INTEL_GW) += reset-intel-gw.o
+> diff --git a/drivers/reset/reset-elbasr.c b/drivers/reset/reset-elbasr.c
+> new file mode 100644
+> index 000000000000..6e429cb11466
+> --- /dev/null
+> +++ b/drivers/reset/reset-elbasr.c
+> @@ -0,0 +1,94 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 
-I will send v2 with the update.
-
-
-
---=20
-Best Regards
-Masahiro Yamada
+Kernel code is GPL-2.0-only generally.
