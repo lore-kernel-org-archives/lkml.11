@@ -2,116 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E2CCC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 19:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47BEECCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 19:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242998AbiFNTBB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 15:01:01 -0400
+        id S1357923AbiFNTBT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 15:01:19 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357945AbiFNTAj (ORCPT
+        with ESMTP id S1357538AbiFNTAz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 15:00:39 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F741145A
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:57:19 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id m25so10756716lji.11
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:57:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MxzAGP0pIIN3YqlB0eCdWurjplEWqWQLhiwTRIU/o6M=;
-        b=KQBXCmESvCN88CHPwxmcQJ5LvMrkM0MhhtAfAtIZ6Twv4RRxP1rOM/0FeZOxuBL/+j
-         qL5KOBg0aTONuLHCwI6lIgPp7C4cADiugGhsgPfz2QAlssDmLVrMAHEO++IvAEZcP/F8
-         U/BrtfJnGp5FKckPm8pCQFgb9kp0WGr5O7H40=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MxzAGP0pIIN3YqlB0eCdWurjplEWqWQLhiwTRIU/o6M=;
-        b=gYvQvuAhSdvOYutyWFkX4NDQTE4GQPaSLHhEXxFyrr16f5BWIvx7NiDvu1BiOb/peJ
-         n44v7AZ1kknRkpxDu6MmeIDWdEqQTw6QJraz5yKYwWoMVYPR/5wg7mEo0ZNtgvcWJdUA
-         OiHEL1GxvMmR0TAlBLX66/MooHbHb4/gg53b3GqDJAspECropOPaO0I0+kiV36Wlx9vu
-         zlVJ9tVXIyn0cuVldd16f8b5DtGlPO4FaKIHb54EsEIhjxSTVz6dzPFWl/GwdRNfCFNG
-         uC8MksgGLX8fZQ2UUijYxPv4RukEfHqSPp61wQ9wKMF7IPFvLEjwLcGxyx9JVyRtCRzC
-         4NsQ==
-X-Gm-Message-State: AJIora+w8xdQH1cMyUbzj4oYcH1J6uBAn/qOysS8qDq2C/reksb/TtzH
-        diEJc/Xu58bf9WioyYOxjnaoq7naGDs5VNZT
-X-Google-Smtp-Source: AGRyM1tyRkDpeljqaHUGMNKYewdu8xFyezB51CFS0fDMsUAfk6yXaypiKa7d1/8j4QwR2mQpsH73TA==
-X-Received: by 2002:a2e:968c:0:b0:258:fd7b:43ae with SMTP id q12-20020a2e968c000000b00258fd7b43aemr3343875lji.35.1655233037085;
-        Tue, 14 Jun 2022 11:57:17 -0700 (PDT)
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com. [209.85.167.46])
-        by smtp.gmail.com with ESMTPSA id m12-20020a2e934c000000b00255cb942318sm1448611ljh.110.2022.06.14.11.57.16
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 11:57:16 -0700 (PDT)
-Received: by mail-lf1-f46.google.com with SMTP id c2so15455279lfk.0
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:57:16 -0700 (PDT)
-X-Received: by 2002:a05:6000:16c4:b0:20f:cd5d:4797 with SMTP id
- h4-20020a05600016c400b0020fcd5d4797mr6136973wrf.193.1655232711617; Tue, 14
- Jun 2022 11:51:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <bd80cd0d-a364-4ebd-2a89-933f79eaf4c7@tmb.nu>
-In-Reply-To: <bd80cd0d-a364-4ebd-2a89-933f79eaf4c7@tmb.nu>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 14 Jun 2022 11:51:35 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wix7+mGzS-hANyk7DZsZ1NgGMHjPzSQKggEomYrRCrP_Q@mail.gmail.com>
-Message-ID: <CAHk-=wix7+mGzS-hANyk7DZsZ1NgGMHjPzSQKggEomYrRCrP_Q@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/251] 5.15.47-rc2 review
-To:     Thomas Backlund <tmb@tmb.nu>, Jan Kara <jack@suse.cz>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jon Hunter <jonathanh@nvidia.com>,
+        Tue, 14 Jun 2022 15:00:55 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9228713C;
+        Tue, 14 Jun 2022 11:58:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=IX+klwzAQQ1z7rE9HiAxH5Ct3Iw/kApUkoCb4QjaGFM=; b=SYiH0cCXRGuuwK6ZPC52upau/s
+        dvoOTx/1gHnsIFDJU1fwwGzQmwewiDO58Mco275hgLsQzPVMHZZucOXKxUChjQMS3ip4FiO9BuSH9
+        mThWpbvD030Rya/sFROCX4GqTxtHWq+AnVZc136uSUDMXkn7WhBRA27KtHdqgg+by+AE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o1Bjd-006vCV-6E; Tue, 14 Jun 2022 20:57:53 +0200
+Date:   Tue, 14 Jun 2022 20:57:53 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ong Boon Leong <boon.leong.ong@intel.com>
+Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Slade Watkins <slade@sladewatkins.com>
-Content-Type: text/plain; charset="UTF-8"
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Emilio Riva <emilio.riva@ericsson.com>
+Subject: Re: [PATCH net-next v4 4/5] stmmac: intel: add phy-mode and
+ fixed-link ACPI _DSD setting support
+Message-ID: <YqjaMbUERWuBL9FJ@lunn.ch>
+References: <20220614030030.1249850-1-boon.leong.ong@intel.com>
+ <20220614030030.1249850-5-boon.leong.ong@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614030030.1249850-5-boon.leong.ong@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 11:20 AM Thomas Backlund <tmb@tmb.nu> wrote:
->
-> I "think" this is the suggested fix:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/jack/linux-fs.git/commit/?h=for_next&id=46b6418e26c7c26f98ff9c2c2310bce5ae2aa4dd
+> +	/* For fixed-link setup, we allow phy-mode setting */
+> +	fwnode = dev_fwnode(&pdev->dev);
+> +	if (fwnode) {
+> +		const char *phy_mode;
+> +
+> +		if (!fwnode_property_read_string(fwnode, "phy-mode",
+> +						 &phy_mode)) {
+> +			if (!strcmp(phy_mode, "sgmii"))
+> +				plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
+> +			if (!strcmp(phy_mode, "1000base-x"))
+> +				plat->phy_interface = PHY_INTERFACE_MODE_1000BASEX;
+> +		}
 
-Ugh, this is just too ugly for words.
+fwnode_get_phy_mode() and then validate the value afterwards.
 
-That's not a fix. That's a "hide the problem" patch.
-
-Now, admittedly clearly the "hide the problem" code already existed,
-and was just moved earlier, but I really think this whole "we're
-calling __mark_inode_dirty() on an inode that isn't even *initialized*
-yet" is a much deeper issue, and shouldn't have some hacky work-around
-in __mark_inode_dirty() that just happens to make it work.
-
-I don't mind that patch per se - moving the code is fine.
-
-But I *do* mind the patch when the reason is to hide that wrong
-ordering of operations.
-
-Now, maybe a proper fix might be to say that new_inode_pseudo() should
-always initialize i_state to I_DIRTY_ALL or something like that. The
-comment already says that they cannot participate in writeback, so
-maybe they should be disabled that way (ie a pseudo inode is always
-dirty and marking it dirty does nothing).
-
-And then you get rid of the noop_backing_dev_info entirely.
-
-Or just make sure that noop_backing_dev_info is fully initialized
-before it's used.
-
-Because I think the real problem here is that things have a pointer to
-an uninitialized backing_dev_info.
-
-Hmm? Jan?
-
-                   Linus
+      Andrew
