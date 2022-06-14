@@ -2,385 +2,532 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5AC2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:45:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B287ACCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242551AbiFNIoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
+        id S1355863AbiFNIpd (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 04:45:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240797AbiFNIm7 (ORCPT
+        with ESMTP id S1355651AbiFNIoa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:42:59 -0400
-Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6124043AD6
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:42:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1655196166; x=1686732166;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=seQXUC2yFSK+xh+rRJdR/W+Fvg3IkeD6jADS01tkxBo=;
-  b=Aw6EmerpDq8N4764yzJfE6byQP6tokzz/qNNMM2tZYFs6/Ne/MVxmB38
-   WizpzZ6YnWkUmu8DNU9ofO231YcecNtS8QS4lz7HWVSdMJ43q4qlGPnJ1
-   9+nd85sYA5LFFoKQ0lUI43+IKJgWujA8gDY99mq3QIbh+fcGdOpSin5fA
-   o7Vaoa75XpUcwJENKzF5phA0oHW5xQE5MwQa3FAYFrXDAVwW+6494KlUZ
-   hoCd7ZCeUwxKe6rjExdBHK4RorRDJVimHH00FMq5TyDWhPcpkdB5pUkFx
-   5QEMMC5cPUA5US+pk0Qm3lFNLl2l7gYE7rBu0r/Sqtd4b217e1tHhST9z
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,299,1647273600"; 
-   d="scan'208";a="203866928"
-Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 14 Jun 2022 16:42:41 +0800
-IronPort-SDR: 7ulnaurNeiFWhGw5yggojWPaISW04LZsAVEAmcjzcB6fEYM8sfSrqoI7DBj3VXPAvJX2YOQ1wL
- NMAy4X7NrNzrD9YQTmHhlf+tplgacc7Wn2ODvYkJHv/gtUSfI5KNOKSpda2Lfvrx74i82107NV
- SIfc9HMSv2ftCNARmmhVWNZgwEhJCZF+9t8U0vxLxMAyfiZraf5B0URzTg0lpLc0Vm/NRw6m/a
- AYo23nSJ8fdjLgk2nmI5zDcY2kHW5D9qGXTa32u7Vk8e+K83OxHNeu+WeveBCFGyPZTWEFZMkV
- Pr8gE+xFoLxembog3Gnp1FZi
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 14 Jun 2022 01:01:15 -0700
-IronPort-SDR: 45V8u0XIPjG1mpSysajukr66pBajQeWRvnBYWdXfntONoesul7gqX8Y19f7OoSJGV1XYpDIK54
- R1m1xe1zWc5+b8gbFbCq7Ds/niD+JMSocrb2KBTcSDWbDH5J8KkTmV2DF+FFTomi05RE++3TOC
- QRSFhyesUeyM+2qgUyvSChfD51A8WF3lCepx9iLdVrnm8ExnQIU2D7ffAr0/f9mkWtmLyPDGyJ
- Urg3nhOjET+Hp2qR0/EL80/Bcmp+67xQF2eBVxsLgbcfV3ePrkzo+yzkI5cG2cz7mH8pe2hs+O
- koM=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 14 Jun 2022 01:42:41 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LMhlN0FHQz1SVp3
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:42:40 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1655196158; x=1657788159; bh=seQXUC2yFSK+xh+rRJdR/W+Fvg3IkeD6jAD
-        S01tkxBo=; b=fXeWgrUCqZ+21sntn8IVdwzSKG/Nyml6ACmLw3g+9ilN5+XUUuo
-        v3LFhvOMOwTvUd6pKb1mwVFGNYH83Nz63JTrwbeks2iXFX4sJcOapLOy/MMSRVY5
-        JrVcl0SQItFUJc1bXxCZjtnd6MwVAntB3rkv+TamljEUZ9RPp3gw/iIl5n+QLluc
-        +hF+3fcgECgoVlpwgjkQi50Sp+l2ysrcFXBHHB/zYgeaGvyluEI7HuIYWMJ3A3ez
-        wA2WrPWmVAyGqwaaTOTlRdN3vgJUpOwWxLe0ewvhRwFc7l5q9gP9SrO4BFabeWOy
-        KV6IHEG94q5p2fpDabloMpWNvkiHrrvs5EA==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id fszDTe5wI-Q3 for <linux-kernel@vger.kernel.org>;
-        Tue, 14 Jun 2022 01:42:38 -0700 (PDT)
-Received: from [10.225.163.77] (unknown [10.225.163.77])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LMhlJ1qJKz1Rvlc;
-        Tue, 14 Jun 2022 01:42:36 -0700 (PDT)
-Message-ID: <c1fa74f0-28d7-3394-6c43-5063c62db666@opensource.wdc.com>
-Date:   Tue, 14 Jun 2022 17:42:35 +0900
+        Tue, 14 Jun 2022 04:44:30 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84A3DB64
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:44:10 -0700 (PDT)
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(29251:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Tue, 14 Jun 2022 16:31:21 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     sboyd@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        mturquette@baylibre.com, linux@armlinux.org.uk, arnd@arndb.de,
+        olof@lixom.net, soc@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Qin Jian <qinjian@cqplus1.com>
+Subject: [PATCH v18 10/10] ARM: dts: Add Sunplus SP7021-Demo-V3 board device tree
+Date:   Tue, 14 Jun 2022 16:31:09 +0800
+Message-Id: <0574ed0ad1e9ec4c12645fe2d2dde8f701d285e5.1655194858.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1655194858.git.qinjian@cqplus1.com>
+References: <cover.1655194858.git.qinjian@cqplus1.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 16/23] ata: ahci: Introduce firmware-specific caps
- initialization
-Content-Language: en-US
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220610081801.11854-1-Sergey.Semin@baikalelectronics.ru>
- <20220610081801.11854-17-Sergey.Semin@baikalelectronics.ru>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220610081801.11854-17-Sergey.Semin@baikalelectronics.ru>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/10/22 17:17, Serge Semin wrote:
-> There are systems with no BIOS or comprehensive embedded firmware which
-> could be able to properly initialize the SATA AHCI controller
-> platform-specific capabilities. In that case a good alternative to having
-> a clever bootloader is to create a device tree node with the properties
-> well describing all the AHCI-related platform specifics. All the settings
-> which are normally detected and marked as available in the HBA and its
-> ports capabilities fields [1] could be defined in the platform DTB by
-> means of a set of the dedicated properties. Such approach perfectly fits
-> to the DTB-philosophy - to provide hardware/platform description.
-> 
-> So here we suggest to extend the SATA AHCI device tree bindings with two
-> additional DT-properties:
-> 1) "hba-cap" - HBA platform generic capabilities like:
->    - SSS - Staggered Spin-up support.
->    - SMPS - Mechanical Presence Switch support.
-> 2) "hba-port-cap" - HBA platform port capabilities like:
->    - HPCP - Hot Plug Capable Port.
->    - MPSP - Mechanical Presence Switch Attached to Port.
->    - CPD - Cold Presence Detection.
->    - ESP - External SATA Port.
->    - FBSCP - FIS-based Switching Capable Port.
-> All of these capabilities require to have a corresponding hardware
-> configuration. Thus it's ok to have them defined in DTB.
-> 
-> Even though the driver currently takes into account the state of the ESP
-> and FBSCP flags state only, there is nothing wrong with having all of them
-> supported by the generic AHCI library in order to have a complete OF-based
-> platform-capabilities initialization procedure. These properties will be
-> parsed in the ahci_platform_get_resources() method and their values will
-> be stored in the saved_* fields of the ahci_host_priv structure, which in
-> its turn then will be used to restore the H.CAP, H.PI and P#.CMD
-> capability fields on device init and after HBA reset.
-> 
-> Please note this modification concerns the HW-init HBA and its ports flags
-> only, which are by specification [1] are supposed to be initialized by the
-> BIOS/platform firmware/expansion ROM and which are normally declared in
-> the one-time-writable-after-reset register fields. Even though these flags
-> aren't supposed to be cleared after HBA reset some AHCI instances may
-> violate that rule so we still need to perform the fields resetting after
-> each reset. Luckily the corresponding functionality has already been
-> partly implemented in the framework of the ahci_save_initial_config() and
-> ahci_restore_initial_config() methods.
-> 
-> [1] Serial ATA AHCI 1.3.1 Specification, p. 103
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> 
-> ---
-> 
-> Changelog v4:
-> - Convert the boolean properties to the bitfield DT-properties. (@Rob)
-> ---
->  drivers/ata/ahci.h             |  1 +
->  drivers/ata/libahci.c          | 51 ++++++++++++++++++++++++++++------
->  drivers/ata/libahci_platform.c | 41 +++++++++++++++++++++++++--
->  3 files changed, 82 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
-> index 8b9826533ae5..0de221055961 100644
-> --- a/drivers/ata/ahci.h
-> +++ b/drivers/ata/ahci.h
-> @@ -337,6 +337,7 @@ struct ahci_host_priv {
->  	u32			saved_cap;	/* saved initial cap */
->  	u32			saved_cap2;	/* saved initial cap2 */
->  	u32			saved_port_map;	/* saved initial port_map */
-> +	u32			saved_port_cap[AHCI_MAX_PORTS]; /* saved port_cap */
->  	u32 			em_loc; /* enclosure management location */
->  	u32			em_buf_sz;	/* EM buffer size in byte */
->  	u32			em_msg_type;	/* EM message type */
-> diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-> index 1ffaa5f5f21a..954386a2b500 100644
-> --- a/drivers/ata/libahci.c
-> +++ b/drivers/ata/libahci.c
-> @@ -16,6 +16,7 @@
->   * http://www.intel.com/technology/serialata/pdf/rev1_1.pdf
->   */
->  
-> +#include <linux/bitops.h>
->  #include <linux/kernel.h>
->  #include <linux/gfp.h>
->  #include <linux/module.h>
-> @@ -443,16 +444,28 @@ static ssize_t ahci_show_em_supported(struct device *dev,
->  void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
->  {
->  	void __iomem *mmio = hpriv->mmio;
-> -	u32 cap, cap2, vers, port_map;
-> +	void __iomem *port_mmio;
-> +	unsigned long port_map;
-> +	u32 cap, cap2, vers;
->  	int i;
->  
->  	/* make sure AHCI mode is enabled before accessing CAP */
->  	ahci_enable_ahci(mmio);
->  
-> -	/* Values prefixed with saved_ are written back to host after
-> -	 * reset.  Values without are used for driver operation.
-> +	/*
-> +	 * Values prefixed with saved_ are written back to the HBA and ports
-> +	 * registers after reset. Values without are used for driver operation.
-> +	 */
-> +
-> +	/*
-> +	 * Override HW-init HBA capability fields with the platform-specific
-> +	 * values. The rest of the HBA capabilities are defined as Read-only
-> +	 * and can't be modified in CSR anyway.
->  	 */
-> -	hpriv->saved_cap = cap = readl(mmio + HOST_CAP);
-> +	cap = readl(mmio + HOST_CAP);
-> +	if (hpriv->saved_cap)
-> +		cap = (cap & ~(HOST_CAP_SSS | HOST_CAP_MPS)) | hpriv->saved_cap;
-> +	hpriv->saved_cap = cap;
->  
->  	/* CAP2 register is only defined for AHCI 1.2 and later */
->  	vers = readl(mmio + HOST_VERSION);
-> @@ -519,7 +532,7 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
->  	/* Override the HBA ports mapping if the platform needs it */
->  	port_map = readl(mmio + HOST_PORTS_IMPL);
->  	if (hpriv->saved_port_map && port_map != hpriv->saved_port_map) {
-> -		dev_info(dev, "forcing port_map 0x%x -> 0x%x\n",
-> +		dev_info(dev, "forcing port_map 0x%lx -> 0x%x\n",
+Add the basic support for Sunplus SP7021-Demo-V3 board.
 
-This change is not necessary.
+Signed-off-by: Qin Jian <qinjian@cqplus1.com>
+---
+Fix the comments from Krzysztof.
+---
+ MAINTAINERS                                  |   1 +
+ arch/arm/boot/dts/Makefile                   |   2 +
+ arch/arm/boot/dts/sunplus-sp7021-achip.dtsi  |  84 +++++
+ arch/arm/boot/dts/sunplus-sp7021-demo-v3.dts |  26 ++
+ arch/arm/boot/dts/sunplus-sp7021.dtsi        | 318 +++++++++++++++++++
+ 5 files changed, 431 insertions(+)
+ create mode 100644 arch/arm/boot/dts/sunplus-sp7021-achip.dtsi
+ create mode 100644 arch/arm/boot/dts/sunplus-sp7021-demo-v3.dts
+ create mode 100644 arch/arm/boot/dts/sunplus-sp7021.dtsi
 
->  			 port_map, hpriv->saved_port_map);
->  		port_map = hpriv->saved_port_map;
->  	} else {
-> @@ -527,7 +540,7 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
->  	}
->  
->  	if (hpriv->mask_port_map) {
-> -		dev_warn(dev, "masking port_map 0x%x -> 0x%x\n",
-> +		dev_warn(dev, "masking port_map 0x%lx -> 0x%lx\n",
-
-Same.
-
->  			port_map,
->  			port_map & hpriv->mask_port_map);
->  		port_map &= hpriv->mask_port_map;
-> @@ -546,7 +559,7 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
->  		 */
->  		if (map_ports > ahci_nr_ports(cap)) {
->  			dev_warn(dev,
-> -				 "implemented port map (0x%x) contains more ports than nr_ports (%u), using nr_ports\n",
-> +				 "implemented port map (0x%lx) contains more ports than nr_ports (%u), using nr_ports\n",
-
-Same.
-
->  				 port_map, ahci_nr_ports(cap));
->  			port_map = 0;
->  		}
-> @@ -555,12 +568,26 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
->  	/* fabricate port_map from cap.nr_ports for < AHCI 1.3 */
->  	if (!port_map && vers < 0x10300) {
->  		port_map = (1 << ahci_nr_ports(cap)) - 1;
-> -		dev_warn(dev, "forcing PORTS_IMPL to 0x%x\n", port_map);
-> +		dev_warn(dev, "forcing PORTS_IMPL to 0x%lx\n", port_map);
-
-And again not needed.
-
->  
->  		/* write the fixed up value to the PI register */
->  		hpriv->saved_port_map = port_map;
->  	}
->  
-> +	/*
-> +	 * Preserve the ports capabilities defined by the platform. Note there
-> +	 * is no need in storing the rest of the P#.CMD fields since they are
-> +	 * volatile.
-> +	 */
-> +	for_each_set_bit(i, &port_map, AHCI_MAX_PORTS) {
-> +		if (hpriv->saved_port_cap[i])
-> +			continue;
-> +
-> +		port_mmio = __ahci_port_base(hpriv, i);
-> +		hpriv->saved_port_cap[i] =
-> +			readl(port_mmio + PORT_CMD) & PORT_CMD_CAP;
-> +	}
-> +
->  	/* record values to use during operation */
->  	hpriv->cap = cap;
->  	hpriv->cap2 = cap2;
-> @@ -590,13 +617,21 @@ EXPORT_SYMBOL_GPL(ahci_save_initial_config);
->  static void ahci_restore_initial_config(struct ata_host *host)
->  {
->  	struct ahci_host_priv *hpriv = host->private_data;
-> +	unsigned long port_map = hpriv->port_map;
->  	void __iomem *mmio = hpriv->mmio;
-> +	void __iomem *port_mmio;
-> +	int i;
->  
->  	writel(hpriv->saved_cap, mmio + HOST_CAP);
->  	if (hpriv->saved_cap2)
->  		writel(hpriv->saved_cap2, mmio + HOST_CAP2);
->  	writel(hpriv->saved_port_map, mmio + HOST_PORTS_IMPL);
->  	(void) readl(mmio + HOST_PORTS_IMPL);	/* flush */
-> +
-> +	for_each_set_bit(i, &port_map, AHCI_MAX_PORTS) {
-> +		port_mmio = __ahci_port_base(hpriv, i);
-> +		writel(hpriv->saved_port_cap[i], port_mmio + PORT_CMD);
-> +	}
->  }
->  
->  static unsigned ahci_scr_offset(struct ata_port *ap, unsigned int sc_reg)
-> diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
-> index efe640603f3f..8b542a8bc487 100644
-> --- a/drivers/ata/libahci_platform.c
-> +++ b/drivers/ata/libahci_platform.c
-> @@ -23,6 +23,7 @@
->  #include <linux/pm_runtime.h>
->  #include <linux/of_platform.h>
->  #include <linux/reset.h>
-> +
-
-white line change.
-
->  #include "ahci.h"
->  
->  static void ahci_host_stop(struct ata_host *host);
-> @@ -383,6 +384,34 @@ static int ahci_platform_get_regulator(struct ahci_host_priv *hpriv, u32 port,
->  	return rc;
->  }
->  
-> +static int ahci_platform_get_firmware(struct ahci_host_priv *hpriv,
-> +				      struct device *dev)
-> +{
-> +	struct device_node *child;
-> +	u32 port;
-> +
-> +	if (!of_property_read_u32(dev->of_node, "hba-cap", &hpriv->saved_cap))
-> +		hpriv->saved_cap &= (HOST_CAP_SSS | HOST_CAP_MPS);
-> +
-> +	of_property_read_u32(dev->of_node,
-> +			     "ports-implemented", &hpriv->saved_port_map);
-> +
-> +	for_each_child_of_node(dev->of_node, child) {
-> +		if (!of_device_is_available(child))
-> +			continue;
-> +
-> +		if (of_property_read_u32(child, "reg", &port)) {
-> +			of_node_put(child);
-> +			return -EINVAL;
-> +		}
-> +
-> +		if (!of_property_read_u32(child, "hba-port-cap", &hpriv->saved_port_cap[port]))
-> +			hpriv->saved_port_cap[port] &= PORT_CMD_CAP;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  /**
->   * ahci_platform_get_resources - Get platform resources
->   * @pdev: platform device to get resources for
-> @@ -523,9 +552,6 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
->  		goto err_out;
->  	}
->  
-> -	of_property_read_u32(dev->of_node,
-> -			     "ports-implemented", &hpriv->saved_port_map);
-> -
->  	if (child_nodes) {
->  		for_each_child_of_node(dev->of_node, child) {
->  			u32 port;
-> @@ -590,6 +616,15 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
->  		if (rc == -EPROBE_DEFER)
->  			goto err_out;
->  	}
-> +
-> +	/*
-> +	 * Retrieve firmware-specific flags which then will be used to set
-> +	 * the HW-init fields of HBA and its ports
-> +	 */
-> +	rc = ahci_platform_get_firmware(hpriv, dev);
-> +	if (rc)
-> +		goto err_out;
-> +
->  	pm_runtime_enable(dev);
->  	pm_runtime_get_sync(dev);
->  	hpriv->got_runtime_pm = true;
-
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4435ec6ca..23774ee07 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2814,6 +2814,7 @@ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+ F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ F:	Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
+ F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
++F:	arch/arm/boot/dts/sunplus-sp7021*.dts*
+ F:	arch/arm/configs/sp7021_*defconfig
+ F:	arch/arm/mach-sunplus/
+ F:	drivers/clk/clk-sp7021.c
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 7c16f8a2b..2862dac61 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -79,6 +79,8 @@ dtb-$(CONFIG_SOC_SAM_V7) += \
+ 	at91-vinco.dtb
+ dtb-$(CONFIG_SOC_SAMA7G5) += \
+ 	at91-sama7g5ek.dtb
++dtb-$(CONFIG_SOC_SP7021) += \
++	sunplus-sp7021-demo-v3.dtb
+ dtb-$(CONFIG_ARCH_AXXIA) += \
+ 	axm5516-amarillo.dtb
+ dtb-$(CONFIG_ARCH_BCM2835) += \
+diff --git a/arch/arm/boot/dts/sunplus-sp7021-achip.dtsi b/arch/arm/boot/dts/sunplus-sp7021-achip.dtsi
+new file mode 100644
+index 000000000..67274a49e
+--- /dev/null
++++ b/arch/arm/boot/dts/sunplus-sp7021-achip.dtsi
+@@ -0,0 +1,84 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Device Tree Source for Sunplus SP7021
++ *
++ * Copyright (C) 2021 Sunplus Technology Co.
++ */
++
++#include "sunplus-sp7021.dtsi"
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++
++/ {
++	compatible = "sunplus,sp7021-achip", "sunplus,sp7021";
++	model = "Sunplus SP7021 (CA7)";
++	#address-cells = <1>;
++	#size-cells = <1>;
++	interrupt-parent = <&gic>;
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		cpu0: cpu@0 {
++			compatible = "arm,cortex-a7";
++			device_type = "cpu";
++			reg = <0>;
++			clock-frequency = <931000000>;
++		};
++		cpu1: cpu@1 {
++			compatible = "arm,cortex-a7";
++			device_type = "cpu";
++			reg = <1>;
++			clock-frequency = <931000000>;
++		};
++		cpu2: cpu@2 {
++			compatible = "arm,cortex-a7";
++			device_type = "cpu";
++			reg = <2>;
++			clock-frequency = <931000000>;
++		};
++		cpu3: cpu@3 {
++			compatible = "arm,cortex-a7";
++			device_type = "cpu";
++			reg = <3>;
++			clock-frequency = <931000000>;
++		};
++	};
++
++	gic: interrupt-controller@9f101000 {
++		compatible = "arm,cortex-a7-gic";
++		interrupt-controller;
++		#interrupt-cells = <3>;
++		reg = <0x9f101000 0x1000>,
++		      <0x9f102000 0x2000>,
++		      <0x9f104000 0x2000>,
++		      <0x9f106000 0x2000>;
++	};
++
++	timer {
++		compatible = "arm,armv7-timer";
++		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
++			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
++		clock-frequency = <XTAL>;
++		arm,cpu-registers-not-fw-configured;
++	};
++
++	arm-pmu {
++		compatible = "arm,cortex-a7-pmu";
++		interrupts = <GIC_SPI 219 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 220 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
++	};
++
++	soc {
++		intc: interrupt-controller@9c000780 {
++			interrupt-parent = <&gic>;
++			interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>, /* EXT_INT0 */
++				<GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>; /* EXT_INT1 */
++		};
++	};
++};
+diff --git a/arch/arm/boot/dts/sunplus-sp7021-demo-v3.dts b/arch/arm/boot/dts/sunplus-sp7021-demo-v3.dts
+new file mode 100644
+index 000000000..bfac954bb
+--- /dev/null
++++ b/arch/arm/boot/dts/sunplus-sp7021-demo-v3.dts
+@@ -0,0 +1,26 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Device Tree Source for Sunplus SP7021 Demo V3 SBC board
++ *
++ * Copyright (C) Sunplus Technology Co.
++ */
++
++/dts-v1/;
++
++#include "sunplus-sp7021-achip.dtsi"
++
++/ {
++	compatible = "sunplus,sp7021-demo-v3", "sunplus,sp7021";
++	model = "Sunplus SP7021/CA7/Demo_V3";
++	#address-cells = <1>;
++	#size-cells = <1>;
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x00000000 0x20000000>;
++	};
++};
+diff --git a/arch/arm/boot/dts/sunplus-sp7021.dtsi b/arch/arm/boot/dts/sunplus-sp7021.dtsi
+new file mode 100644
+index 000000000..93266e42d
+--- /dev/null
++++ b/arch/arm/boot/dts/sunplus-sp7021.dtsi
+@@ -0,0 +1,318 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Device Tree Source for Sunplus SP7021
++ *
++ * Copyright (C) 2021 Sunplus Technology Co.
++ */
++
++#include <dt-bindings/clock/sunplus,sp7021-clkc.h>
++#include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/reset/sunplus,sp7021-reset.h>
++#include <dt-bindings/pinctrl/sppctl-sp7021.h>
++#include <dt-bindings/gpio/gpio.h>
++
++#define XTAL	27000000
++
++/ {
++	compatible = "sunplus,sp7021";
++	model = "Sunplus SP7021";
++
++	aliases {
++		serial0 = &uart0;
++		serial1 = &uart1;
++		serial2 = &uart2;
++		serial3 = &uart3;
++		serial4 = &uart4;
++	};
++
++	clocks {
++		extclk: osc0 {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <XTAL>;
++			clock-output-names = "extclk";
++		};
++	};
++
++	soc {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++		interrupt-parent = <&intc>;
++
++		intc: interrupt-controller@9c000780 {
++			compatible = "sunplus,sp7021-intc";
++			reg = <0x9c000780 0x80>, <0x9c000a80 0x80>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++		};
++
++		clkc: clock-controller@9c000004 {
++			compatible = "sunplus,sp7021-clkc";
++			reg = <0x9c000004 0x28>,
++			      <0x9c000200 0x44>,
++			      <0x9c000268 0x04>;
++			clocks = <&extclk>;
++			#clock-cells = <1>;
++		};
++
++		rstc: reset@9c000054 {
++			compatible = "sunplus,sp7021-reset";
++			reg = <0x9c000054 0x28>;
++			#reset-cells = <1>;
++		};
++
++		rtc: serial@9c003a00 {
++			compatible = "sunplus,sp7021-rtc";
++			reg = <0x9c003a00 0x80>;
++			reg-names = "rtc";
++			clocks = <&clkc CLK_RTC>;
++			resets = <&rstc RST_RTC>;
++			interrupts = <163 IRQ_TYPE_EDGE_RISING>;
++		};
++
++		otp: otp@9c00af00 {
++			compatible = "sunplus,sp7021-ocotp";
++			reg = <0x9c00af00 0x34>, <0x9c00af80 0x58>;
++			reg-names = "hb_gpio", "otprx";
++			clocks = <&clkc CLK_OTPRX>;
++			resets = <&rstc RST_OTPRX>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			therm_calib: thermal-calibration@14 {
++				reg = <0x14 0x3>;
++			};
++			disc_vol: disconnect-voltage@18 {
++				reg = <0x18 0x2>;
++			};
++			mac_addr0: mac-address0@34 {
++				reg = <0x34 0x6>;
++			};
++			mac_addr1: mac-address1@3a {
++				reg = <0x3a 0x6>;
++			};
++		};
++
++		uart0: serial@9c000900 {
++			compatible = "sunplus,sp7021-uart";
++			reg = <0x9c000900 0x80>;
++			interrupts = <53 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clkc CLK_UA0>;
++			resets = <&rstc RST_UA0>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&uart0_pins>;
++		};
++
++		uart1: serial@9c000980 {
++			compatible = "sunplus,sp7021-uart";
++			reg = <0x9c000980 0x80>;
++			interrupts = <54 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clkc CLK_UA1>;
++			resets = <&rstc RST_UA1>;
++			status = "disabled";
++			pinctrl-names = "default";
++			pinctrl-0 = <&uart1_pins>;
++		};
++
++		uart2: serial@9c000800 {
++			compatible = "sunplus,sp7021-uart";
++			reg = <0x9c000800 0x80>;
++			interrupts = <55 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clkc CLK_UA2>;
++			resets = <&rstc RST_UA2>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&uart2_pins>;
++			status = "disabled";
++		};
++
++		uart3: serial@9c000880 {
++			compatible = "sunplus,sp7021-uart";
++			reg = <0x9c000880 0x80>;
++			interrupts = <56 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clkc CLK_UA3>;
++			resets = <&rstc RST_UA3>;
++			status = "disabled";
++		};
++
++		uart4: serial@9c008780 {
++			compatible = "sunplus,sp7021-uart";
++			reg = <0x9c008780 0x80>;
++			interrupts = <134 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clkc CLK_UA4>;
++			resets = <&rstc RST_UA4>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&uart4_pins>;
++			status = "disabled";
++		};
++
++		spi_controller0: spi@9c002d80 {
++			compatible = "sunplus,sp7021-spi";
++			reg = <0x9c002d80 0x80>, <0x9c002e00 0x80>;
++			reg-names = "master", "slave";
++			interrupts = <144 IRQ_TYPE_LEVEL_HIGH>,
++				     <146 IRQ_TYPE_LEVEL_HIGH>,
++				     <145 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "dma_w", "master_risc", "slave_risc";
++			clocks = <&clkc CLK_SPI_COMBO_0>;
++			resets = <&rstc RST_SPI_COMBO_0>;
++
++			pinctrl-names = "default";
++			pinctrl-0 = <&spi0_pins>;
++			cs-gpios = <&pctl 26 GPIO_ACTIVE_LOW>,
++				   <&pctl 28 GPIO_ACTIVE_LOW>;
++		};
++
++		spi_controller1: spi@9c00f480 {
++			compatible = "sunplus,sp7021-spi";
++			reg = <0x9c00f480 0x80>, <0x9c00f500 0x80>;
++			reg-names = "master", "slave";
++			interrupts = <67 IRQ_TYPE_LEVEL_HIGH>,
++				     <69 IRQ_TYPE_LEVEL_HIGH>,
++				     <68 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "dma_w", "master_risc", "slave_risc";
++			clocks = <&clkc CLK_SPI_COMBO_1>;
++			resets = <&rstc RST_SPI_COMBO_1>;
++			spi-max-frequency = <25000000>;
++			status = "disabled";
++		};
++
++		spi_controller2: spi@9c00f600 {
++			compatible = "sunplus,sp7021-spi";
++			reg = <0x9c00f600 0x80>, <0x9c00f680 0x80>;
++			reg-names = "master", "slave";
++			interrupts = <70 IRQ_TYPE_LEVEL_HIGH>,
++				     <72 IRQ_TYPE_LEVEL_HIGH>,
++				     <71 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "dma_w", "master_risc", "slave_risc";
++			clocks = <&clkc CLK_SPI_COMBO_2>;
++			resets = <&rstc RST_SPI_COMBO_2>;
++			spi-max-frequency = <25000000>;
++			status = "disabled";
++		};
++
++		spi_controller3: spi@9c00f780 {
++			compatible = "sunplus,sp7021-spi";
++			reg = <0x9c00f780 0x80>, <0x9c00f800 0x80>;
++			reg-names = "master", "slave";
++			interrupts = <73 IRQ_TYPE_LEVEL_HIGH>,
++				     <75 IRQ_TYPE_LEVEL_HIGH>,
++				     <74 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "dma_w", "master_risc", "slave_risc";
++			clocks = <&clkc CLK_SPI_COMBO_3>;
++			resets = <&rstc RST_SPI_COMBO_3>;
++			spi-max-frequency = <25000000>;
++			status = "disabled";
++		};
++
++		pctl: pinctrl@9c000100 {
++			compatible = "sunplus,sp7021-pctl";
++			reg = <0x9C000100 0x100>,
++			      <0x9C000300 0x100>,
++			      <0x9C0032e4 0x1C>,
++			      <0x9C000080 0x20>;
++			reg-names = "moon2", "gpioxt", "first", "moon1";
++			gpio-controller;
++			#gpio-cells = <2>;
++			clocks = <&clkc CLK_GPIO>;
++			resets = <&rstc RST_GPIO>;
++
++			leds_pins: pinmux-leds-pins {
++				sunplus,pins = < SPPCTL_IOPAD(0,SPPCTL_PCTL_G_GPIO,0,SPPCTL_PCTL_L_OUT) >;
++			};
++
++			emmc_pins: pinmux-emmc-pins {
++				function = "CARD0_EMMC";
++				groups = "CARD0_EMMC";
++			};
++
++			sdcard_pins: pinmux-sdcard-pins {
++				function = "SD_CARD";
++				groups = "SD_CARD";
++				sunplus,pins = < SPPCTL_IOPAD(91, SPPCTL_PCTL_G_GPIO, 0, 0) >;
++			};
++
++			emac_pins: pinmux-emac-pins {
++				sunplus,pins = <
++					SPPCTL_IOPAD(49,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_CLK_OUT,0)
++					SPPCTL_IOPAD(44,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_MAC_SMI_MDC,0)
++					SPPCTL_IOPAD(43,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_MAC_SMI_MDIO,0)
++					SPPCTL_IOPAD(52,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P0_MAC_RMII_TXEN,0)
++					SPPCTL_IOPAD(50,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P0_MAC_RMII_TXD0,0)
++					SPPCTL_IOPAD(51,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P0_MAC_RMII_TXD1,0)
++					SPPCTL_IOPAD(46,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P0_MAC_RMII_CRSDV,0)
++					SPPCTL_IOPAD(47,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P0_MAC_RMII_RXD0,0)
++					SPPCTL_IOPAD(48,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P0_MAC_RMII_RXD1,0)
++					SPPCTL_IOPAD(45,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P0_MAC_RMII_RXER,0)
++					SPPCTL_IOPAD(59,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P1_MAC_RMII_TXEN,0)
++					SPPCTL_IOPAD(57,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P1_MAC_RMII_TXD0,0)
++					SPPCTL_IOPAD(58,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P1_MAC_RMII_TXD1,0)
++					SPPCTL_IOPAD(54,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P1_MAC_RMII_CRSDV,0)
++					SPPCTL_IOPAD(55,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P1_MAC_RMII_RXD0,0)
++					SPPCTL_IOPAD(56,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P1_MAC_RMII_RXD1,0)
++					SPPCTL_IOPAD(53,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_P1_MAC_RMII_RXER,0)
++				>;
++				sunplus,zerofunc = <
++					MUXF_L2SW_LED_FLASH0
++					MUXF_L2SW_LED_FLASH1
++					MUXF_L2SW_LED_ON0
++					MUXF_L2SW_LED_ON1
++					MUXF_DAISY_MODE
++				>;
++			};
++
++			uart0_pins: pinmux-uart0-pins {
++				function = "UA0";
++				groups = "UA0";
++			};
++
++			uart1_pins: pinmux-uart1-pins {
++				sunplus,pins = <
++					SPPCTL_IOPAD(14,SPPCTL_PCTL_G_PMUX,MUXF_UA4_TX,0)
++					SPPCTL_IOPAD(16,SPPCTL_PCTL_G_PMUX,MUXF_UA4_RX,0)
++				>;
++			};
++
++			uart2_pins: pinmux-uart2-pins {
++				sunplus,pins = <
++					SPPCTL_IOPAD(16,SPPCTL_PCTL_G_PMUX,MUXF_UA2_TX,0)
++					SPPCTL_IOPAD(17,SPPCTL_PCTL_G_PMUX,MUXF_UA2_RX,0)
++					SPPCTL_IOPAD(18,SPPCTL_PCTL_G_PMUX,MUXF_UA2_RTS,0)
++					SPPCTL_IOPAD(19,SPPCTL_PCTL_G_PMUX,MUXF_UA2_CTS,0)
++				>;
++			};
++
++			uart4_pins: pinmux-uart4-pins {
++				sunplus,pins = <
++					SPPCTL_IOPAD(22,SPPCTL_PCTL_G_PMUX,MUXF_UA4_TX,0)
++					SPPCTL_IOPAD(20,SPPCTL_PCTL_G_PMUX,MUXF_UA4_RX,0)
++					SPPCTL_IOPAD(23,SPPCTL_PCTL_G_PMUX,MUXF_UA4_RTS,0)
++					SPPCTL_IOPAD(21,SPPCTL_PCTL_G_PMUX,MUXF_UA4_CTS,0)
++				>;
++			};
++
++			spi0_pins: pinmux-spi0-pins {
++				sunplus,pins = <
++					SPPCTL_IOPAD(26,SPPCTL_PCTL_G_GPIO,0,0)
++					SPPCTL_IOPAD(28,SPPCTL_PCTL_G_GPIO,0,0)
++					SPPCTL_IOPAD(23,SPPCTL_PCTL_G_PMUX,MUXF_SPI0S_DO,0)
++					SPPCTL_IOPAD(25,SPPCTL_PCTL_G_PMUX,MUXF_SPI0S_DI,0)
++					SPPCTL_IOPAD(27,SPPCTL_PCTL_G_PMUX,MUXF_SPI0S_CLK,0)
++				>;
++			};
++		};
++	};
++
++	led {
++		compatible = "gpio-leds";
++		pinctrl-names = "default";
++		pinctrl-0 = <&leds_pins>;
++		system-led {
++			label = "system-led";
++			gpios = <&pctl 0 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++			linux,default-trigger = "heartbeat";
++		};
++	};
++};
 -- 
-Damien Le Moal
-Western Digital Research
+2.33.1
+
