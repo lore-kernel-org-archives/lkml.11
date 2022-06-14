@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C0CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244641AbiFNNRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 09:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
+        id S244984AbiFNNR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 09:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231859AbiFNNRQ (ORCPT
+        with ESMTP id S231859AbiFNNRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 09:17:16 -0400
-X-Greylist: delayed 1800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 14 Jun 2022 06:17:14 PDT
+        Tue, 14 Jun 2022 09:17:55 -0400
 Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A539369FA;
-        Tue, 14 Jun 2022 06:17:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CBA1A387;
+        Tue, 14 Jun 2022 06:17:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
         Content-ID:Content-Description;
-        bh=JAv4LCz3gTxKSnfh4LIXx7N89/orNIUqz4pbzgwAvLc=; b=KmsKEA5hRPt0/BP4UopWUQqD+5
-        rLLETgl2Q0pg+Xn/V5a0IeRYq+A+oYqKM91rAyj7h2Bp8nAb+dTu12NTrdQK+wBWR6To12H7KRRId
-        f4cgiw98gA6dvNtCur0CGgdhUsXgbBUHix6Tclb00sJFqL54OJmspQ6tL0S02d8gKxdO06Ij37MdA
-        sdIgnbs9MvjU/xNUb8jDnp0gfX29L/ZALkeOFIpNX3Utl8UQXPICcSiD2XSV4eidajMEGegrvma5Z
-        +kV4eVasKkXmtR8slsBzLvfe61BZi850HLm8ektrc6UVXt147XexmDbI++GTaIWnMtYLyrzQ0Y8sC
-        nckC5mxjk0uLCWE28zdRmoJNFa60ZiqVhiADeTD+s1XKkoYw7y3NT7ij1wfY8YEw5Q3tYqkr+rsDd
-        L1NYrsk2aULFPxvREhFiIkiVdAObB1uBEmj4ANx2TFZ4BZQqRVo634an2GxKeUwW0Qp7ugwIOR/Os
-        0yVXKJDCCb1y6WXDy8RDu/PdCNaUZxmKYlLMm9YFfpErtAHCNbAVR+jqOpwoByhZSl/wzuhS1EMjf
-        WmB9r8o/0LabK66WbR0WYKsM/ouVcUyMuV9o/SCsXnPBOX2q0bAEpUBL5LTHl76r6JU+nqPo2OOIc
-        UkPTNjyX05lMvy5w3pBG538R0kmK7oTQDiL8yGI8M=;
+        bh=yPWorgb0nr92bflDyKeZ83J7zJKK6wo32UMgOsFApt0=; b=W5PkkAnkCNWBWUe9Ca6EUMymYt
+        eptL/wb2mi7n+x+RtR8RLGWLarmhCRy6jO7jaYXItiBlm27vOnQrROJRMshwT+8RyBxV3jZhWTqFr
+        l8lD+o/YsWyDhvYBqfazCd4dGi/tsWTXL65TVyk8wG8ys5jnTjhm1MVpKX5VPmgjGlS7bOl2QK4xC
+        P/wti0pMCSAhvg3m3FJ7D5QyUIEAhum19ZcoTYoS3osWKaChRdVMaLR4WvEzXxztkrwo4YP6dEVsG
+        bP8Cx7FMSRdXHn/5EflxYjnTpZLIZDzcLAj2hgj/4HbBVobVnr+QDN+p4AO3n0VIIz8q7cH1pQxJ+
+        dxlNNQg3UbdSltXoNZiRXh6Lhg2CdZKmQeaM0Z3PmjfJlHzA+ubxYAzYAU+KFWopmhR/bmSuBjna/
+        Icwlvx8FDroBO5YclKhpWb7M+kRTGZqQnToQzU7L0OlGrLsjl5EsXogNqMH6nS9RdZanJixETmiVX
+        xmBwRNBzAJWr8Po0LckNZcrzHvKLuzCkKFYyrMOJBd90qyP7uWWcJtCsDmgpKtuPMuJRLH5aJ9mlT
+        cHm63ENQGlf1pE8Z8BBxjath+Sug0S3sh97pjfW9ek06ah9CGPUxeaNtyYkbFBLK80oyc4IVeeriQ
+        JcFQFUdphEIpns3qSm+68ExG1tEeBa9RyExdgGjJ0=;
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Eric Van Hensbergen <ericvh@gmail.com>,
+To:     Tyler Hicks <tyhicks@linux.microsoft.com>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
         Latchesar Ionkov <lucho@ionkov.net>,
-        David Howells <dhowells@redhat.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Jianyong Wu <jianyong.wu@arm.com>,
         Dominique Martinet <asmadeus@codewreck.org>
-Cc:     linux-fsdevel@vger.kernel.org, stable@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] 9p: fix EBADF errors in cached mode
-Date:   Tue, 14 Jun 2022 14:10:01 +0200
-Message-ID: <19026878.01OTk6HtWb@silver>
-In-Reply-To: <YqgDdNUxC0hV6KR9@codewreck.org>
-References: <YqW5s+GQZwZ/DP5q@codewreck.org>
- <20220614033802.1606738-1-asmadeus@codewreck.org>
- <YqgDdNUxC0hV6KR9@codewreck.org>
+Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH 01/06] 9p: fix fid refcount leak in v9fs_vfs_atomic_open_dotl
+Date:   Tue, 14 Jun 2022 15:17:46 +0200
+Message-ID: <5002134.MN0KzyuZDv@silver>
+In-Reply-To: <20220612085330.1451496-2-asmadeus@codewreck.org>
+References: <20220612085330.1451496-1-asmadeus@codewreck.org>
+ <20220612085330.1451496-2-asmadeus@codewreck.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
@@ -51,114 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Dienstag, 14. Juni 2022 05:41:40 CEST Dominique Martinet wrote:
-> Dominique Martinet wrote on Tue, Jun 14, 2022 at 12:38:02PM +0900:
-> > cached operations sometimes need to do invalid operations (e.g. read
-> > on a write only file)
-> > Historic fscache had added a "writeback fid" for this, but the conversion
-> > to new fscache somehow lost usage of it: use the writeback fid instead
-> > of normal one.
-> > 
-> > Note that the way this works (writeback fid being linked to inode) means
-> > we might use overprivileged fid for some operations, e.g. write as root
-> > when we shouldn't.
-> > Ideally we should keep both fids handy, and only use the writeback fid
-> > when really required e.g. reads to a write-only file to fill in the page
-> > cache (read-modify-write); but this is the situation we've always had
-> > and this commit only fixes an issue we've had for too long.
-> > 
-> > Fixes: eb497943fa21 ("9p: Convert to using the netfs helper lib to do
-> > reads and caching") Cc: stable@vger.kernel.org
-> > Cc: David Howells <dhowells@redhat.com>
-> > Reported-By: Christian Schoenebeck <linux_oss@crudebyte.com>
-> > Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
-> > ---
-> > Ok so finally had time to look at this, and it's not a lot so this is
-> > the most straight forward way to do: just reverting to how the old
-> > fscache worked.
-> > 
-> > This appears to work from quick testing, Chiristian could you test it?
-> > 
-> > I think the warnings you added in p9_client_read/write that check
-> > fid->mode might a lot of sense, if you care to resend it as
-> > WARN_ON((fid->mode & ACCMODE) == O_xyz);
-> > instead I'll queue that for 5.20
-> > 
-> > 
-> > @Stable people, I've checked it applies to 5.17 and 5.18 so should be
-> > good to grab once I submit it for inclusion (that commit was included in
-> > 5.16, which is no longer stable)
-> > 
-> >  fs/9p/vfs_addr.c | 6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
-> > index 7382c5227e94..262968d02f55 100644
-> > --- a/fs/9p/vfs_addr.c
-> > +++ b/fs/9p/vfs_addr.c
-> > @@ -58,7 +58,11 @@ static void v9fs_issue_read(struct netfs_io_subrequest
-> > *subreq)> 
-> >   */
-> >  
-> >  static int v9fs_init_request(struct netfs_io_request *rreq, struct file
-> >  *file) {
-> > 
-> > -	struct p9_fid *fid = file->private_data;
-> > +	struct inode *inode = file_inode(file);
-> > +	struct v9fs_inode *v9inode = V9FS_I(inode);
-> > +	struct p9_fid *fid = v9inode->writeback_fid;
-> > +
+On Sonntag, 12. Juni 2022 10:53:24 CEST Dominique Martinet wrote:
+> We need to release directory fid if we fail halfway through open
 > 
-> Sorry for mails back-to-back (grmbl I hate git commit --amend not
-> warning I only have unstaged changes), this is missing the following
-> here:
-
-I think git does actually. It shows you staged and unstaged changes as comment 
-below the commit log text inside the editor. Not as a big fat warning, but the 
-info is there.
-
-> +    /* If there is no writeback fid this file only ever has had
-> +     * read-only opens, so we can use file's fid which should
-> +     * always be set instead */
-> +    if (!fid)
-> +        fid = file->private_data;
+> This fixes fid leaking with xfstests generic 531
 > 
-> Christian, you can find it here to test:
-> https://github.com/martinetd/linux/commit/a6e033c41cc9f0ec105f5d208b0a820118
-> e2bda8
-> > +	BUG_ON(!fid);
-> > 
-> >  	p9_fid_get(fid);
-> >  	rreq->netfs_priv = fid;
+> Fixes: 6636b6dcc3db ("9p: add refcount to p9_fid struct")
+> Cc: stable@vger.kernel.org
+> Reported-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 
-It definitely goes into the right direction, but I think it's going a bit too 
-far by using writeback_fid also in cases where it is not necessary and wasn't 
-used before in the past.
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 
-What about something like this in v9fs_init_request() (yet untested):
+> ---
+>  fs/9p/vfs_inode_dotl.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
+> index d17502a738a9..b6eb1160296c 100644
+> --- a/fs/9p/vfs_inode_dotl.c
+> +++ b/fs/9p/vfs_inode_dotl.c
+> @@ -274,6 +274,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct
+> dentry *dentry, if (IS_ERR(ofid)) {
+>  		err = PTR_ERR(ofid);
+>  		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
+> +		p9_client_clunk(dfid);
+>  		goto out;
+>  	}
+> 
+> @@ -285,6 +286,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct
+> dentry *dentry, if (err) {
+>  		p9_debug(P9_DEBUG_VFS, "Failed to get acl values in creat %d\n",
+>  			 err);
+> +		p9_client_clunk(dfid);
+>  		goto error;
+>  	}
+>  	err = p9_client_create_dotl(ofid, name, v9fs_open_to_dotl_flags(flags),
+> @@ -292,6 +294,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct
+> dentry *dentry, if (err < 0) {
+>  		p9_debug(P9_DEBUG_VFS, "p9_client_open_dotl failed in creat %d\n",
+>  			 err);
+> +		p9_client_clunk(dfid);
+>  		goto error;
+>  	}
+>  	v9fs_invalidate_inode_attr(dir);
 
-    /* writeback_fid is always opened O_RDWR (instead of just O_WRONLY) 
-     * explicitly for this case: partial write backs that require a read
-     * prior to actual write and therefore requires a fid with read
-     * capability.
-     */
-    if (rreq->origin == NETFS_READ_FOR_WRITE)
-        fid = v9inode->writeback_fid;
 
-If desired, this could be further constrained later on like:
-
-    if (rreq->origin == NETFS_READ_FOR_WRITE &&
-        (fid->mode & O_ACCMODE) == O_WRONLY)
-    {
-        fid = v9inode->writeback_fid;
-    }
-
-I will definitely give these options some test spins here, a short feedback 
-ahead would be appreciated though.
-
-Thanks Dominique!
-
-Best regards,
-Christian Schoenebeck
 
 
