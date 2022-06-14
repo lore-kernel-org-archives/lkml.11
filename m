@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 223FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 347D1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354980AbiFNCZp (ORCPT
+        id S1355038AbiFNCZx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
+        Mon, 13 Jun 2022 22:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353982AbiFNCXB (ORCPT
+        with ESMTP id S1353628AbiFNCWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:23:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBA5369D0;
-        Mon, 13 Jun 2022 19:10:29 -0700 (PDT)
+        Mon, 13 Jun 2022 22:22:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B407E369CB;
+        Mon, 13 Jun 2022 19:10:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5AA76B816A3;
-        Tue, 14 Jun 2022 02:10:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 384EFC341C5;
-        Tue, 14 Jun 2022 02:10:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E54FDB8168A;
+        Tue, 14 Jun 2022 02:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7C17C36AFE;
+        Tue, 14 Jun 2022 02:10:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172605;
-        bh=Fw48xkHyH8/DLVrsed+YMJXLK35lFF9hd1liV4MKg1E=;
+        s=k20201202; t=1655172615;
+        bh=ELWPu2WsVA7XBvgFySoXF2QkOya+kpglczV7K/lrUXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QxHGMRs6PAj7VTen6LIE8QXlQoxjQRRaMbKVw8KkBA1XT8z3pBeuJPbFkg9PfX08r
-         AtQ5uqOUevR/AxQr3Bx68HjJM1T4BDKDwIuoXWa4Z+S8i5kbPbSZYnAKl1XJPPPbMu
-         XzWut3AtT8so0S/rUPzP8Eq4HFwtx+TsbEHOcEk/GSMd2O7uOSOSPyUKOLm8+azH2+
-         njRG8xBXQzdqMUVqq0/Bb+jA0P3xaEeGa8lFUSQMmUp61Q82NjfrqD8jsk6sreOARz
-         m4PQcmlhDjQFZpOz+YqwiS6rQlbEoxKCNnHH1QpiikmQuM30MUTtTXLsmm3PBjKb6V
-         3td3oOfwHpZbA==
+        b=u7D9cLeyCqX21DF1yqR+uaHolFXe8Sn+jnxUVxM0yNIe7IATyqbmoF2b4GFKOZ4eo
+         7XLFDDtPPtKjc9V719X5vfLtz/Gr8fO5Mm9isiTz0S8/DFEGx2NS0ZMrgQsMHsR6Db
+         OX2exzpc1HbdANE38Qnl9UnF04qbcNCOBEG7k5CHeUZ2zgDtPyDxZiMEmFtOcmjV4P
+         n3xS6OynaaivB+dSNswYxSENGM1XGZP2NhLNZTko/JMwvnYvEs76fdFWSRI+8qR13x
+         TdxD5P+P0S5+UJZmIKnH5GwafUP/fDL6ucBrQjumaAoIQQww6UiovRwnh0+WTcPgGL
+         VJk+krvnC5TwQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.19 08/18] ASoC: es8328: Fix event generation for deemphasis control
-Date:   Mon, 13 Jun 2022 22:09:31 -0400
-Message-Id: <20220614020941.1100702-8-sashal@kernel.org>
+Cc:     Wang Yufen <wangyufen@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 16/18] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
+Date:   Mon, 13 Jun 2022 22:09:39 -0400
+Message-Id: <20220614020941.1100702-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020941.1100702-1-sashal@kernel.org>
 References: <20220614020941.1100702-1-sashal@kernel.org>
@@ -52,45 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit 8259610c2ec01c5cbfb61882ae176aabacac9c19 ]
+[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
 
-Currently the put() method for the deemphasis control returns 0 when a new
-value is written to the control even if the value changed, meaning events
-are not generated. Fix this, skip the work of updating the value when it is
-unchanged and then return 1 after having done so.
+When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
+overflow. To fix, we can follow what udpv6 does and subtract the
+transhdrlen from the max.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220603123937.4013603-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/es8328.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/l2tp/l2tp_ip6.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/es8328.c b/sound/soc/codecs/es8328.c
-index 3afa163f7652..dcb01889e177 100644
---- a/sound/soc/codecs/es8328.c
-+++ b/sound/soc/codecs/es8328.c
-@@ -165,13 +165,16 @@ static int es8328_put_deemph(struct snd_kcontrol *kcontrol,
- 	if (deemph > 1)
- 		return -EINVAL;
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 2ff25c445b82..9dae10d8880c 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -519,14 +519,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	struct ipcm6_cookie ipc6;
+ 	int addr_len = msg->msg_namelen;
+ 	int transhdrlen = 4; /* zero session-id */
+-	int ulen = len + transhdrlen;
++	int ulen;
+ 	int err;
  
-+	if (es8328->deemph == deemph)
-+		return 0;
-+
- 	ret = es8328_set_deemph(component);
- 	if (ret < 0)
- 		return ret;
+ 	/* Rough check on arithmetic overflow,
+ 	   better check is made in ip6_append_data().
+ 	 */
+-	if (len > INT_MAX)
++	if (len > INT_MAX - transhdrlen)
+ 		return -EMSGSIZE;
++	ulen = len + transhdrlen;
  
- 	es8328->deemph = deemph;
- 
--	return 0;
-+	return 1;
- }
- 
- 
+ 	/* Mirror BSD error message compatibility */
+ 	if (msg->msg_flags & MSG_OOB)
 -- 
 2.35.1
 
