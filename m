@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6792C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C176AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:05:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351080AbiFNCFs (ORCPT
+        id S1351449AbiFNCFz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41790 "EHLO
+        Mon, 13 Jun 2022 22:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350594AbiFNCFN (ORCPT
+        with ESMTP id S1351109AbiFNCFT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:05:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6333833EBF;
-        Mon, 13 Jun 2022 19:05:08 -0700 (PDT)
+        Mon, 13 Jun 2022 22:05:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE66B340F9;
+        Mon, 13 Jun 2022 19:05:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21AD7B8169F;
-        Tue, 14 Jun 2022 02:05:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90484C34114;
-        Tue, 14 Jun 2022 02:05:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 322DF60B78;
+        Tue, 14 Jun 2022 02:05:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4B78C36AFF;
+        Tue, 14 Jun 2022 02:05:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172305;
-        bh=Hk15Ko+XriFcMJvHOag9fZWU72/YW9YpHBaQUG75oCY=;
+        s=k20201202; t=1655172310;
+        bh=pM92xqIpK7CjtIH4rj4N0MbyKRtCtouLiZx0V1/xzyg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HW4OBuMml5VZM/Lt0LXMC+9vN7RhGD9KWke96yfKEEVofM0EDQ6SIAWEtASBwbHL0
-         aNNnnxo5HBh6bNBEqTXjdzT1yFgWAM+8iTgTNYS0ovp7jH2LSH953w0gIB9lGs4Z1i
-         IlAiN3Qm5SSYc4K5RlFOmp1GHLe/v5kQiOizcbu9DkC7XAK4BeEnylEiHyL9Wc7/5F
-         6k0hcX16EG8cJIMYEaZfDNPkeJVegZUirfDR5de0WV+t6DdrmyQCio49hQuvyOV8b4
-         MVURcksFvb/5qf+RoVs56AsREPAiJgC0CBrGfW0M876+eSBDHoT2WoqoSl3wSmjy7i
-         LS4U/pwMiwH0Q==
+        b=Yklp8Y4GwubOefa3KUIjK5uTx1Dg4R+AyEYmXSlFcWKbqBkA4hmPRpRz+dviYLwPt
+         ZEp23471CsyBOjfn+eCppSBUAZTX1wY5Ccwse0gnhWqIG3cekoS5MAGZccfs80E1Mt
+         JMx559x4fO+ZjByGcpNHhX//DpB64zrZplaTKd69kPUcbh7wuhYqJWqxVcRtk4IyRJ
+         RL7HaPcqq+8Pj09Z5H0fadySYF0XsVrJN9te/DCqmeVFnOmBsZ3LThez0gh+/I15Uy
+         kCOub9HBNPE1skucgdwJRuGuArYai6at3yaDkG3gjeYA6t8NcXqLyvyJOqDNyaf0Hd
+         VyvjYec4Qaajg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
-        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 13/47] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
-Date:   Mon, 13 Jun 2022 22:04:06 -0400
-Message-Id: <20220614020441.1098348-13-sashal@kernel.org>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>, tj@kernel.org,
+        linux-ide@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 16/47] ata: libata-core: fix NULL pointer deref in ata_host_alloc_pinfo()
+Date:   Mon, 13 Jun 2022 22:04:09 -0400
+Message-Id: <20220614020441.1098348-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020441.1098348-1-sashal@kernel.org>
 References: <20220614020441.1098348-1-sashal@kernel.org>
@@ -54,39 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
+[ Upstream commit bf476fe22aa1851bab4728e0c49025a6a0bea307 ]
 
-A couple of the SX volume controls specify 0x84 as the lowest volume
-value, however the correct value from the datasheet is 0x44. The
-datasheet don't include spaces in the value it displays as binary so
-this was almost certainly just a typo reading 1000100.
+In an unlikely (and probably wrong?) case that the 'ppi' parameter of
+ata_host_alloc_pinfo() points to an array starting with a NULL pointer,
+there's going to be a kernel oops as the 'pi' local variable won't get
+reassigned from the initial value of NULL. Initialize 'pi' instead to
+'&ata_dummy_port_info' to fix the possible kernel oops for good...
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Found by Linux Verification Center (linuxtesting.org) with the SVACE static
+analysis tool.
+
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l56.c | 4 ++--
+ drivers/ata/libata-core.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
-index 3cf8a0b4478c..b39c25409c23 100644
---- a/sound/soc/codecs/cs42l56.c
-+++ b/sound/soc/codecs/cs42l56.c
-@@ -391,9 +391,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
- 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index ca64837641be..804fc2fc97d7 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -5501,7 +5501,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 				      const struct ata_port_info * const * ppi,
+ 				      int n_ports)
+ {
+-	const struct ata_port_info *pi;
++	const struct ata_port_info *pi = &ata_dummy_port_info;
+ 	struct ata_host *host;
+ 	int i, j;
  
- 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
--			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
- 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
--			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
+@@ -5509,7 +5509,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 	if (!host)
+ 		return NULL;
  
- 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
- 			0, 0x00, 1, tone_tlv),
+-	for (i = 0, j = 0, pi = NULL; i < host->n_ports; i++) {
++	for (i = 0, j = 0; i < host->n_ports; i++) {
+ 		struct ata_port *ap = host->ports[i];
+ 
+ 		if (ppi[j])
 -- 
 2.35.1
 
