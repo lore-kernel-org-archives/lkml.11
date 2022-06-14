@@ -2,96 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F398CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C9F1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:02:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244288AbiFNRBb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 13:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50546 "EHLO
+        id S244764AbiFNRCC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 13:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241415AbiFNQ7l (ORCPT
+        with ESMTP id S1344573AbiFNRBt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:59:41 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7DC2183F
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:59:39 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id u12so18355075eja.8
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 09:59:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=U2tjO3wB6SuKT2q2VheL81s3vpLWkHWnd7v7Vj0VbC4=;
-        b=ce0ba2mehJGzXws79rmY+x6vpadfpFRwhY33iknuRZUfnb7GJ4KhFxGm9oaErVZY1O
-         pJcVlbrGyer4sNDn7eJ5P1hexJDYoYw5HCdLwFcdt1DKZqLHPMnXb1CpeK3L59KNcMMj
-         dTvMcuM2Jk3/g0QOlfAn5mVcsdePxF85B3vlPWhI8z2vWwX+V1XKC9AooT7EVoecMBkz
-         CxunB0iGIwPfj2iLWSBQvR2DCAESx7TmgqmFZ3zqHicQEyE9JQBNIpb5yjtrYjK3I4oL
-         PdPaCgUI0lvA6M+4qCrroQ/MT1Rf5STraSLG4x9uhtowK4VfidDUA0u1LSDCHCSv1b7O
-         iPpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=U2tjO3wB6SuKT2q2VheL81s3vpLWkHWnd7v7Vj0VbC4=;
-        b=tz/F7/JQOeXjgFbiCdZsSeVYhM5mBlL8wplEw4hDDNrte5/tkTCsl9TBOMPlqYkS+Q
-         E29S8fcp1LFAf30tJgYtMCysD1fEK/v+oPBlmanQfF3qPRbkrPOiM6Sf6sDLwvR4i+he
-         pdzAPS2nHOw9ocUmvQiag1YwGxwbzpV8N5lhgeBj7RJbB77ckv89uLmG06M/sswgjZbP
-         wFhn+nqAEXnfId2yRBTbIkmaJXeQ4eLD78LxThpBRogEGeMr24G63EIViQBfBV/fZAVb
-         +hBtHcFRbhlLD5Qug2cQX2jn7+Z2kYuWTEU44tz3l21aBDXjIFakB1LPZ0lwOEzE3HAJ
-         FSCQ==
-X-Gm-Message-State: AOAM533NwgpXMFGXl7OBRnb1c3PFiVrtM9WK36Hv5kTdjz0BFf2/6U9J
-        KIlj68QkIkS+sq8PdxXU4Nf+2PX2wp6gtnu+
-X-Google-Smtp-Source: ABdhPJySTXEk1fKYWKedu40U9nzEgtggOebhMLsTyoQlLqpJIjEWC8rNZ/xGA2ArM6cmbkztZqZuqw==
-X-Received: by 2002:a17:906:6946:b0:70e:e904:8e87 with SMTP id c6-20020a170906694600b0070ee9048e87mr5091697ejs.629.1655225978073;
-        Tue, 14 Jun 2022 09:59:38 -0700 (PDT)
-Received: from stroh80.sec.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
-        by smtp.gmail.com with ESMTPSA id v14-20020a056402348e00b0042dc25fdf5bsm7616375edc.29.2022.06.14.09.59.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 09:59:37 -0700 (PDT)
-From:   Naresh Solanki <naresh.solanki@9elements.com>
-X-Google-Original-From: Naresh Solanki <Naresh.Solanki@9elements.com>
-To:     Patrick Rudolph <patrick.rudolph@9elements.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Naresh Solanki <Naresh.Solanki@9elements.com>
-Subject: [PATCH 0/3] regulator: userspace consumer DT support
-Date:   Tue, 14 Jun 2022 18:58:57 +0200
-Message-Id: <20220614165901.1084639-1-Naresh.Solanki@9elements.com>
-X-Mailer: git-send-email 2.35.3
+        Tue, 14 Jun 2022 13:01:49 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2337C4991C
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:00:53 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VGOFTul_1655226047;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VGOFTul_1655226047)
+          by smtp.aliyun-inc.com;
+          Wed, 15 Jun 2022 01:00:49 +0800
+Date:   Wed, 15 Jun 2022 01:00:47 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     Daeho Jeong <daeho43@gmail.com>
+Cc:     Eric Biggers <ebiggers@kernel.org>,
+        Daeho Jeong <daehojeong@google.com>,
+        Nathan Huckleberry <nhuck@google.com>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: Re: [f2fs-dev] [PATCH] f2fs: handle decompress only post processing
+ in softirq
+Message-ID: <Yqi+vyY4K0mzEdeP@B-P7TQMD6M-0146.local>
+References: <20220613155612.402297-1-daeho43@gmail.com>
+ <Yqge0XS7jbSnNWvq@sol.localdomain>
+ <YqhRBZMYPp/kyxoe@B-P7TQMD6M-0146.local>
+ <CACOAw_wjCyTmwusY6S4+NgMuLOZm9fwGfrvCT272GJ01-RP6PQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CACOAw_wjCyTmwusY6S4+NgMuLOZm9fwGfrvCT272GJ01-RP6PQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devicetree support of the regulator driver userspace-consumer.
-The supply names for this driver is provided through DT properties
-so that proper regulator handle can be acquired.
-Also add support for notification to userspace of regulator events.
+Hi Daeho,
 
-This is useful to interact with regulator from userspace.
-Also use sysfs notify to catch regulator events into userspace
-application.
-This enables userspace application to monitor events in regulator &
-handle them appropriately.
+On Tue, Jun 14, 2022 at 09:46:50AM -0700, Daeho Jeong wrote:
+> >
+> > Some my own previous thoughts about this strategy:
+> >
+> >  - If we allocate all memory and map these before I/Os, all inflight I/Os
+> >    will keep such temporary pages all the time until decompression is
+> >    finished. In contrast, if we allocate or reuse such pages just before
+> >    decompression, it would minimize the memory footprints.
+> >
+> >    I think it will impact the memory numbers at least on the very
+> >    low-ended devices with bslow storage. (I've seen f2fs has some big
+> >    mempool already)
+> >
+> >  - Many compression algorithms are not suitable in the softirq contexts,
+> >    also I vaguely remembered if softirq context lasts for > 2ms, it will
+> >    push into ksoftirqd instead so it's actually another process context.
+> >    And it may delay other important interrupt handling.
+> >
+> >  - Go back to the non-deterministic scheduling of workqueues. I guess it
+> >    may be just due to scheduling punishment due to a lot of CPU consuming
+> >    due to decompression before so the priority becomes low, but that is
+> >    just a pure guess. May be we need to use RT scheduling policy instead.
+> >
+> >    At least with WQ_HIGHPRI for dm-verity at least, but I don't find
+> >    WQ_HIGHPRI mark for dm-verity.
+> >
+> > Thanks,
+> > Gao Xiang
+> 
+> I totally understand what you are worried about. However, in the real
+> world, non-determinism from workqueues is more harsh than we expected.
+> As you know, reading I/Os in the system are critical paths most of the
+> time and now I/O variations with workqueue are too bad.
+> 
+> I also think it's better that we have RT scheduling like things here.
+> We could think about it more.
 
-Laxman Dewangan (1):
-  regulator: userspace-consumer: Add devicetree support
+Yeah, I heard that you folks are really suffered from the scheduling
+issues. But for my own previous experience, extra memory footprints are
+really critical in Android low memory scenarios (no matter low-ended
+devices or artificial workloads), it tossed me a lot. So I finally 
+ntroduced many inplace I/O to handle/minimize that, including inplace
+I/O for compressed pages and temporary pages.
 
-Naresh Solanki (1):
-  dt-bindings: regulator: add bindings for userspace-consumer
+But I'm not quite sure what's currently happening now, since we once
+didn't have such non-deterministic workqueues, and I don't hear from
+other landed vendors.  I think it'd be better to analyse what's going
+on for these kworkers from scheduling POV and why they don't schedule
+in time.
 
-Patrick Rudolph (1):
-  regulator: userspace consumer: Add Notification support
+I also have an idea is much like what I'm doing now for sync
+decompression, is that just before lock page and ->read_folio, we can
+trigger some decompression in addition to kworker decompression, but it
+needs some MM modification, as below:
 
- .../regulator/userspace-consumer.yaml         |  66 ++++++++++++
- drivers/regulator/userspace-consumer.c        | 100 +++++++++++++++++-
- include/linux/regulator/userspace-consumer.h  |   1 +
- 3 files changed, 165 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/regulator/userspace-consumer.yaml
+   !PageUptodate(page)
 
+   some callback to decompress in addition to kworker
 
-base-commit: b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
-prerequisite-patch-id: 0000000000000000000000000000000000000000
--- 
-2.35.3
+   lock_page()
+   ->read_folio()
 
+If mm folks don't like it, I think RT thread is also fine after we
+analysed the root cause of the kworker delay I think.
+
+Thanks,
+Gao Xiang
+
+> 
+> Thanks,
