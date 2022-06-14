@@ -2,141 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D2FCCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0576FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242166AbiFNKJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54610 "EHLO
+        id S242379AbiFNKMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 06:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241279AbiFNKJ3 (ORCPT
+        with ESMTP id S230313AbiFNKMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:09:29 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F396D30573
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:09:27 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id h23so9170085ljl.3
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:09:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=DsZFrxKEYYtj45Hwk8U2QPz1/Ldjsw5xgixABi1aBlM=;
-        b=v57NKOWEyQ6rhRAigKgq4T4hANl6Vaj0YPhvuEdBv0rPiC6k01c4kb5mUXsFZgAE25
-         EnzbiYVVCYH/rOH6lBajNn7/uSJARAxlh4dFZgonTPQUbZT3qRfRJURG8BiKsYemA8I9
-         QZBrr+dvumqLXERgoXkUMhch9UiSTrSMZJKSHJmL+X8KPrfriGHsgd/f4R4lf+QLqUAH
-         fg+i4ZQcgel/hPovoFPahzd3u6jMPGhGakmjT5tOlA7NmWe2IBwnP46vi6PHBMF+3IsT
-         4qV8AL+Nzi2s0v1GZbnGiMIn/Q1wg5f3X6lklzQp58SP4T+Vcl/kmAdYzzy/6eKwoHdm
-         7PPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DsZFrxKEYYtj45Hwk8U2QPz1/Ldjsw5xgixABi1aBlM=;
-        b=Edhni9rqbkdzUfNrXYFfpaW3N2J9R4ge1VM56dlVFH35KbUVP5VlcaIOLoaNT3mYzD
-         PCJU6K7N5s0qgHLAPyRZR1KX7OeXEG3vZOp+iwrBzD0JegcPN7lWc+IKvfKQ4kjdZXjP
-         vovfiZIQ06eVIrNA1It3OejA+M1YBIE0USdHeyTnjxaxPJ3ssgN7esNn2pXwQ5LUEbPx
-         3qLflWjG7CG20J+ZvUgo/OZ3m3PO2cOG38kEqNhS7xtYD1dOf6dpWI7Pi4+FXCv/gZOX
-         4BvjyWycdMtyL5jeQTKDVbOf66+evRE7V1xK2CHkwxV84a2MNDmQ0bK+fVbQI0nPlCLg
-         iPCw==
-X-Gm-Message-State: AJIora/u6ybIwLKnzbYGGDKKS9UgZOOC+ivozWYQKEeUQUXdihwu9z6P
-        NNhkqZJa8FphVIUElAGoNVrWtg==
-X-Google-Smtp-Source: AGRyM1vkEYj3zCeaffJC38HgJLnsTcvhsAF4UYsrQgbbwqYDsuWMGZVtTKdXbGKJ23ksJ7rypPKDxg==
-X-Received: by 2002:a2e:bd86:0:b0:24f:16a6:8c0e with SMTP id o6-20020a2ebd86000000b0024f16a68c0emr2085612ljq.450.1655201366296;
-        Tue, 14 Jun 2022 03:09:26 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id m20-20020a056512359400b004791c4858e0sm1337289lfr.114.2022.06.14.03.09.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 03:09:25 -0700 (PDT)
-Message-ID: <10ac04f9-6374-0f85-166c-223a220a8c0d@linaro.org>
-Date:   Tue, 14 Jun 2022 13:09:13 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] drm/msm/mdp4: Fix refcount leak in mdp4_modeset_init_intf
-Content-Language: en-GB
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Stephen Boyd <swboyd@chromium.org>,
-        David Heidelberg <david@ixit.cz>,
-        Guo Zhengkui <guozhengkui@vivo.com>,
-        Xu Wang <vulab@iscas.ac.cn>,
+        Tue, 14 Jun 2022 06:12:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2717A22BC9;
+        Tue, 14 Jun 2022 03:12:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3D9860AEA;
+        Tue, 14 Jun 2022 10:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C89FC3411B;
+        Tue, 14 Jun 2022 10:12:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655201553;
+        bh=OU/NN+viO7AEHR96HAV2XGs7BeFoWc8CIQP0hQgj6vU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N0h9lZRJmQuixNqG6kalxSCRX53PXSuiPfVYsOlhI8XrzjFCEBMrsy427hsL/bzUa
+         nM/e5pkmu6fOdd7zZJTwHbjipGLTPtj191vmJi/3aFaGrbPAzTwxyKm2iRCLcIU4P5
+         0W1UPsirm5b3jLJLQB5nO2oAe2mFBBx/Uxy+Ut72hOrEDS0zluBfBV10ussQJFdX5k
+         YC3oJC7l13zFtvUvhHcc7y9kQbsx+etzhD9zmWelnUdASAmKnOL5nRgoZOVWi7V8El
+         Oa7P6VbFTmnCbRdpuHJEMoV3JbqmnxOFqlImK18KaWBdDghwG+7RM7Azl4aKS0gGky
+         1GJdoKQuuR7Rw==
+Date:   Tue, 14 Jun 2022 11:21:42 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Neil Armstrong <narmstrong@baylibre.com>,
-        Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220607110841.53889-1-linmq006@gmail.com>
- <059e0a81-3c0a-1c8f-90f0-a836da1204f5@quicinc.com>
- <0bdb3a64-e795-4aa0-86c9-efd7fc3d5a19@gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <0bdb3a64-e795-4aa0-86c9-efd7fc3d5a19@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH v3 1/6] iio: adc: meson_saradc: Don't attach managed
+ resource to IIO device object
+Message-ID: <20220614112142.3eb70a8d@jic23-huawei>
+In-Reply-To: <Ypo80/NpWLLP43jm@smile.fi.intel.com>
+References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
+        <20220603170612.561edfbf@jic23-huawei>
+        <20220603172307.5d2f3c52@jic23-huawei>
+        <20220603172920.3239bbd6@jic23-huawei>
+        <Ypo80/NpWLLP43jm@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/06/2022 13:07, Miaoqian Lin wrote:
-> Hi, Abhinav
+On Fri, 3 Jun 2022 19:54:43 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> On Fri, Jun 03, 2022 at 05:29:20PM +0100, Jonathan Cameron wrote:
+> > On Fri, 3 Jun 2022 17:23:07 +0100
+> > Jonathan Cameron <jic23@kernel.org> wrote:  
 > 
-> On 2022/6/11 7:20, Abhinav Kumar wrote:
->>
->>
->> On 6/7/2022 4:08 AM, Miaoqian Lin wrote:
->>> of_graph_get_remote_node() returns remote device node pointer with
->>> refcount incremented, we should use of_node_put() on it
->>> when not need anymore.
->>> Add missing of_node_put() to avoid refcount leak.
->>>
->>> Fixes: 86418f90a4c1 ("drm: convert drivers to use of_graph_get_remote_node")
->>> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
->>> ---
->>>    drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c | 2 ++
->>>    1 file changed, 2 insertions(+)
->>>
->>
->> This patch itself looks fine and will cover the cases when there was an error and we did not release the refcount.
->>
->> But, even in the normal cases I am not finding where we are releasing the refcount for the panel_node.
->>
->> I dont see a of_node_put() on mdp4_lcdc_encoder->panel_node.
->>
-> Thanks for your review.
+> ...
 > 
-> I don't see it either. It's a bit messy because the reference assigned to mdp4_lcdc_encoder->panel_node and mdp4_lvds_connector->panel_node both.
-
-I have a plan to rework mdp4 lcdc support once I get my ifc6410 lvds 
-cable. Thus I think we can land this patch now and fix the mdp4 
-lcdc/lvds code leaking the reference in the due time.
-
+> > Andy, put a cover letter on these larger series - if nothing else it gives
+> > somewhere convenient for people to give tags for the whole series, or 
+> > maintainer to say what they are doing with it.  
 > 
->> Am i missing something?
->>
->>> diff --git a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
->>> index fb48c8c19ec3..17cb1fc78379 100644
->>> --- a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
->>> +++ b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
->>> @@ -216,6 +216,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
->>>            encoder = mdp4_lcdc_encoder_init(dev, panel_node);
->>>            if (IS_ERR(encoder)) {
->>>                DRM_DEV_ERROR(dev->dev, "failed to construct LCDC encoder\n");
->>> +            of_node_put(panel_node);
->>>                return PTR_ERR(encoder);
->>>            }
->>>    @@ -225,6 +226,7 @@ static int mdp4_modeset_init_intf(struct mdp4_kms *mdp4_kms,
->>>            connector = mdp4_lvds_connector_init(dev, panel_node, encoder);
->>>            if (IS_ERR(connector)) {
->>>                DRM_DEV_ERROR(dev->dev, "failed to initialize LVDS connector\n");
->>> +            of_node_put(panel_node);
->>>                return PTR_ERR(connector);
->>>            }
->>>    
+> I'll try to remember this. The series was started from only a couple of patches
+> and grew to this big, and I forgot to add a cover letter when it seems not
+> anymore obvious what has been done.
+> 
+> > Anyhow, I'm fine with the series, but will leave it on list for a while
+> > longer, particularly to get patch 6 some eyes + testing.
+> > 
+> > Currently I plan to drop the fixes tag from this first patch, but I'm prepared
+> > to be convinced it's a bug fix rather than a consistency cleanup.  
+> 
+> Fine with me, thanks!
+> 
+Applied to the togreg branch of iio.git and pushed out as testing for all the normal
+reasons.
 
+Thanks,
 
--- 
-With best wishes
-Dmitry
+Jonathan
+
