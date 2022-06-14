@@ -2,156 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C006FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:12:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C779FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:12:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245018AbiFNRL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 13:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60906 "EHLO
+        id S241074AbiFNRMl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 13:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344371AbiFNRLv (ORCPT
+        with ESMTP id S244479AbiFNRMi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 13:11:51 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3FE221265
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:11:50 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id j20so10479275ljg.8
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:11:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hyAFd7sRCaU+w7b+0hvxe+0ICDGoRhy4smmcnlfnVf8=;
-        b=VVS3gab1omADGHC2/BM3jOV1A6eY4GdNrthiz8+wp8S5cMIFr2uLLkmB9rWypRLBGh
-         CRxK1pt/YGuuK56vtZsvD/CNMXbTrPe44abbnBJSPlaV01HMvRdyVC7/7MaSsSEpfN7s
-         VDYCYJeggFAC7pCVElIRie85ffAJzopAS55ANKLnocre+BCSHOgwqfWQCRJcTPWE4Isn
-         EMA4XWOG5gWQCH1wII6Qhfdp2vMCpX6b1JJNwkUqT158J1cG33IKcVtKEJAS5U2wsbnf
-         ewajr7lOHPJhZ8+i/OX/prvULKZVaxQeqwV/q5JhEUl6DvRw7s02/8LnPBl0C23kEfKq
-         mpiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hyAFd7sRCaU+w7b+0hvxe+0ICDGoRhy4smmcnlfnVf8=;
-        b=tzv6LRaC/bWBthChqx5hp9NmluWH3UaGhBVxhoHEY2aFA+bW8GNvo4y2IR7nU4w86Q
-         IYXgm8nyuPU5YIbhdDOVocRTfc6ZA5EAWa2nSYG7tOArbnHlflOnw06SzQ3psdf5iLfO
-         nJvYFBNT8eEWjr7+wkxObAJsjJjoMzZiXaGB/uAvnrLebgaqhjaO/lWV+7bn9PQIt/gQ
-         g5pgCeV7W1tRhfzi5yE1/IyvGiCe6cu009q3KpU0vP0+5Pu7pZEJp5BxrZSG6ytJjsMg
-         9tRvXL1OEIhfRyCTCPSt9XO06Vd6tMOORNd51d924YeXlLjb6PY2ZRpg0+orDxPJ2X+L
-         1KWQ==
-X-Gm-Message-State: AJIora9m5NpTil5D33Bof4yvPh18srSs7xPjFna3nzJGYotC4+exj4dX
-        QSlFY0REP+2MR88sdZzHnG5l+2HfQ3jWgSbQtsD2wA==
-X-Google-Smtp-Source: AGRyM1t/zo81ZsO+O0ZI1OPCqjgaCdubDxR4EFdi0YVKZ7767whrD8qazGD2NsdH5B4zjqm8DDOFG4TjN6wHpKoUiwY=
-X-Received: by 2002:a2e:8e98:0:b0:255:9d3d:bac3 with SMTP id
- z24-20020a2e8e98000000b002559d3dbac3mr3037050ljk.103.1655226708884; Tue, 14
- Jun 2022 10:11:48 -0700 (PDT)
+        Tue, 14 Jun 2022 13:12:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7912B13DD9;
+        Tue, 14 Jun 2022 10:12:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A61B6166C;
+        Tue, 14 Jun 2022 17:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6439BC3411D;
+        Tue, 14 Jun 2022 17:12:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655226752;
+        bh=peyZwVSOaogAFeJxpKowfzymLa/etOhDZTzm9M6ehBs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KlUt4+38+8rfoiPeMI4kOjUhIbqNkw4vYxBFtxau4KQN3BdHGtYJ4ubre7hOUkjpl
+         ri35qfOSdhVv5Z6LvLEjKJAzS13WXlFhs+yWHgG7a4dXVm3a1Ye1mSLSEp2AdkPihR
+         Uq9Wc00DGpYaoOF2Whsywp669sjcQzB+616MlJhw=
+Date:   Tue, 14 Jun 2022 19:12:30 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/251] 5.15.47-rc2 review
+Message-ID: <YqjBfjUYVRE1k9iM@kroah.com>
+References: <20220613181847.216528857@linuxfoundation.org>
+ <20220614153607.GB3088490@roeck-us.net>
+ <20220614170827.GB3690098@roeck-us.net>
 MIME-Version: 1.0
-References: <20220614144853.3693273-1-glider@google.com> <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com>
-In-Reply-To: <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 14 Jun 2022 10:11:37 -0700
-Message-ID: <CAKwvOd=SotrVcZshzGzsMprkORkVXFwYc-3mREkJSDCQ1nvbFw@mail.gmail.com>
-Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alexander Potapenko <glider@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Buka <vitalybuka@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614170827.GB3690098@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 9:48 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Tue, Jun 14, 2022 at 7:49 AM Alexander Potapenko <glider@google.com> wrote:
-> >
-> > The bigger question I want to raise here is whether we want to
-> > discourage passing uninitialized variables to functions in the kernel
-> > altogether.
->
-> I'm assuming you mean pass by reference.
->
-> Some functions are really fundamentally about initializing things, and
-> expect uninitialized allocations.
->
-> Obviously the traditional example of this is "memset()", and that one
-> can be special-cased as obvious, but we probably have a ton of wrapper
-> things like that.
->
-> IOW, things like just "snprintf()" etc is fundamentally passed an
-> uninitialized buffer, because the whole point is that it will write to
-> that buffer.
->
-> And no, we don't want to initialize it, since the buffer may be big
-> (on purpose).
->
-> Now, for *small* things (like that "pointer to inode") that aren't
-> some kind of array or big structure, I think it might be good to
-> perhaps be stricter. But even there we do have cases where we pass
-> things by reference because the function is explicitly designed to
-> initialize the value: the argument isn't really "an argument", it's a
-> "second return value".
->
-> But always initializing in the caller sounds stupid and
-> counter-productive, since the point is to initialize by calling the
-> helper function (think things like returning a "cookie" or similar:
-> initializing the cookie to NULL in the caller is just plain _wrong_.
->
-> What I think might be a good model is to be able to mark such
-> arguments as "must be initialized by callee".
+On Tue, Jun 14, 2022 at 10:08:27AM -0700, Guenter Roeck wrote:
+> On Tue, Jun 14, 2022 at 08:36:08AM -0700, Guenter Roeck wrote:
+> > On Mon, Jun 13, 2022 at 08:19:49PM +0200, Greg Kroah-Hartman wrote:
+> > > This is the start of the stable review cycle for the 5.15.47 release.
+> > > There are 251 patches in this series, all will be posted as a response
+> > > to this one.  If anyone has any issues with these being applied, please
+> > > let me know.
+> > > 
+> > > Responses should be made by Wed, 15 Jun 2022 18:18:03 +0000.
+> > > Anything received after that time might be too late.
+> > > 
+> > 
+> > Build results:
+> > 	total: 159 pass: 159 fail: 0
+> > Qemu test results:
+> > 	total: 488 pass: 488 fail: 0
+> > 
+> 
+> I spoke a bit too early. I see the following backtrace in some qemu arm
+> boot tests.
+> 
+> BUG: spinlock bad magic on CPU#0, kdevtmpfs/15
+>  lock: noop_backing_dev_info+0x6c/0x3b0, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
+> CPU: 0 PID: 15 Comm: kdevtmpfs Not tainted 5.15.47-rc2-00252-g677f0128d0ed #1
+> Hardware name: ARM RealView Machine (Device Tree Support)
+> [<c01101d0>] (unwind_backtrace) from [<c010bc0c>] (show_stack+0x10/0x14)
+> [<c010bc0c>] (show_stack) from [<c0a10ae4>] (dump_stack_lvl+0x68/0x90)
+> [<c0a10ae4>] (dump_stack_lvl) from [<c0191250>] (do_raw_spin_lock+0xbc/0x124)
+> [<c0191250>] (do_raw_spin_lock) from [<c02eb578>] (__mark_inode_dirty+0x1cc/0x704)
+> [<c02eb578>] (__mark_inode_dirty) from [<c02e6a74>] (simple_setattr+0x44/0x5c)
+> [<c02e6a74>] (simple_setattr) from [<c02d7a18>] (notify_change+0x400/0x45c)
+> [<c02d7a18>] (notify_change) from [<c0a19ef8>] (devtmpfsd+0x1f8/0x2b8)
+> [<c0a19ef8>] (devtmpfsd) from [<c014cf3c>] (kthread+0x150/0x17c)
+> [<c014cf3c>] (kthread) from [<c0100120>] (ret_from_fork+0x14/0x34)
+> Exception stack(0xd00dbfb0 to 0xd00dbff8)
+> bfa0:                                     00000000 00000000 00000000 00000000
+> bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> bfe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> 
+> This bisects to commit bc5d960d4e58 ("writeback: Fix inode->i_io_list not
+> be protected by inode->i_lock error"). The problem is also seen in the
+> mainline kernel. v5.15.y.queue and later are affected. Reverting the patch
+> here and in mainline fixes the problem.
 
-Yeah, being able to enforce that would be nice.
-
-Now that we have clang's static analyzer wired up (commit 6ad7cbc01527
-("Makefile: Add clang-tidy and static analyzer support to makefile")),
-Intel's 0day bot has been reporting cases it finds for some classes of
-warnings.  There's been a few interesting (to me) cases where these
-"init" routines would conditionally initialize a "second return value"
-but the caller either did not do return value checking or the callee
-was not marked __must_check (or both).
-
-As with -Wsometimes-uninitialized, my experience has been that folks
-consistently get error handling/exceptional cases wrong in so far as
-passing unitialized values later.  Clang's -Wsometimes-uninitialized
-is intra-proceedural, so doesn't catch the problems with "init"
-routines. Clang's static analyzer is interproceedural; the trade off
-being the time the analysis takes.
-
-Maybe a new function parameter attribute would be nice?
-
-#define __must_init __attribute__((must_init))
-int init (int * __must_init x) {
-// ^ warning: function parameter x marked '__attribute__((must_init))'
-not unconditionally initialized
-  if (stars_dont_align) {
-    return -42;
-  }
-  *x = 42;
-  return 0;
-}
-void foo (void) {  int x; init(&x); /* use of x without fear */ }
-
-
->
-> So then the rule could be that small arguments passed by reference
-> have to be either initialized by the caller, or the argument must have
-> that "initialized by callee" attribute, and then the initialization
-> would be enforced in the callee instead.
->
-> But making the rule be that the caller *always* has to initialize
-> sounds really wrong to me.
->
->              Linus
-
-
-
--- 
-Thanks,
-~Nick Desaulniers
+Thanks for letting me know.  Hopefully it gets fixed in upstream...
