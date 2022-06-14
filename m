@@ -2,201 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 744C0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E597CCA47D
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353127AbiFNCPt (ORCPT
+        id S1353145AbiFNCPz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:15:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56414 "EHLO
+        Mon, 13 Jun 2022 22:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353432AbiFNCNq (ORCPT
+        with ESMTP id S1353444AbiFNCNq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 22:13:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 178F73525D;
-        Mon, 13 Jun 2022 19:07:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC5BC60B64;
-        Tue, 14 Jun 2022 02:07:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19FABC3411E;
-        Tue, 14 Jun 2022 02:07:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172436;
-        bh=W+tbdUN1LucndiNBC3woKH5K+UCKflsUd8S5tIXbu14=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TJBVIhzVeQI44ag24avMu/Q8f/0szioWDw2JJVp7ls5vgAjF0ouO8DfGUQDUi7a3o
-         mlr5OAIFZmLlK9ZDp4omN6MrO9IcttpXV2BUC4tvlyWopoQAU5dNG8j1N1F2N2AHUV
-         Qirkf9KO1mRw6qn36o2U+WaBeed+alIjVK87bjDfK1E/Xre54qDqC5rPgBvlfOXJYg
-         SdcboHTkkifx8TjCEG8m6/Ojjpf0Fn/Cisin1kbUC9vgm25k3ZkM5MGc/5CATvB2nu
-         FzsuX2cU3xirJICDZZCHKz4Y7ddsDBQlI0PZgLyERjbg09ZGMm9ZuZqfSRZkSIHtex
-         RjYmoozZwaIXA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Hung, Cruise" <Cruise.Hung@amd.com>,
-        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
-        Jasdeep Dhillon <jdhillon@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        airlied@linux.ie, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 04/41] drm/amd/display: Fix DMUB outbox trace in S4 (#4465)
-Date:   Mon, 13 Jun 2022 22:06:29 -0400
-Message-Id: <20220614020707.1099487-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
-References: <20220614020707.1099487-1-sashal@kernel.org>
+Received: from challenge-bot.com (challenge-bot.com [IPv6:2602:fffa:fff:108a:0:16:3e15:92b8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B343526C
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:07:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=challenge-bot.com; s=20180430; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=VGcRSjLbV9ZwhBfGleDibb3DqhkmCY5REWvPttnsKmE=; b=hCDYokHHkYRXevfvOlQR/aKGnF
+        iktpm/cCXqT7ibOI3bCAz2IslF5oS7ilcHx2wkTl5q6IuC5CnDlvmFWjiZEET50oNOGy7HiySvM7Q
+        VColeqOY4csXLccXUvusNODUkjuI94DcT79HaBur/BWY6bjAiPBAEHYv26fBVK2zajLk=;
+Received: from ozzloy by challenge-bot.com with local (Exim 4.92)
+        (envelope-from <ozzloy@challenge-bot.com>)
+        id 1o0vy8-00087N-0a; Mon, 13 Jun 2022 19:07:48 -0700
+From:   daniel watson <ozzloy@challenge-bot.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc:     Daniel Watson <ozzloy@challenge-bot.com>
+Subject: [PATCH 0/4] remove wrappers on _rtw_IOL_append_*_cmd
+Date:   Mon, 13 Jun 2022 19:07:29 -0700
+Message-Id: <cover.1655171591.git.ozzloy@challenge-bot.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Hung, Cruise" <Cruise.Hung@amd.com>
+From: Daniel Watson <ozzloy@challenge-bot.com>
 
-[ Upstream commit 6ecf9773a5030aa4932096754bacff20e1b944b8 ]
+This patchset removes the #define wrappers around the
+rtl_IOL_append_*_cmd group of functions.  They are not needed.
 
-[Why]
-DMUB Outbox0 read/write pointer not sync after resumed from S4.
-And that caused old traces were sent to outbox.
+Daniel Watson (4):
+  staging: r8188eu: remove leading '_' on _rtw_IOL_append_WB_cmd
+  staging: r8188eu: remove leading '_' on _rtw_IOL_append_WW_cmd
+  staging: r8188eu: remove leading '_' on _rtw_IOL_append_WD_cmd
+  staging: r8188eu: remove leading '_' on _rtw_IOL_append_WRF_cmd
 
-[How]
-Disable DMUB Outbox0 interrupt
-and clear DMUB Outbox0 read/write pointer when resumes from S4.
-And then enable Outbox0 interrupt before starts DMCUB.
+ drivers/staging/r8188eu/core/rtw_iol.c    |  8 ++++----
+ drivers/staging/r8188eu/include/rtw_iol.h | 24 ++++++++---------------
+ 2 files changed, 12 insertions(+), 20 deletions(-)
 
-Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
-Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Cruise Hung <Cruise.Hung@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c | 61 +++++++++----------
- .../gpu/drm/amd/display/dmub/src/dmub_dcn31.c |  2 +
- 2 files changed, 31 insertions(+), 32 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c
-index 696c9307715d..f0dc680377be 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dccg.c
-@@ -111,12 +111,10 @@ void dccg31_set_physymclk(
- /* Controls the generation of pixel valid for OTG in (OTG -> HPO case) */
- void dccg31_set_dtbclk_dto(
- 		struct dccg *dccg,
--		int dtbclk_inst,
--		int req_dtbclk_khz,
--		int num_odm_segments,
--		const struct dc_crtc_timing *timing)
-+		struct dtbclk_dto_params *params)
- {
- 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
-+	int req_dtbclk_khz = params->pixclk_khz;
- 	uint32_t dtbdto_div;
- 
- 	/* Mode	                DTBDTO Rate       DTBCLK_DTO<x>_DIV Register
-@@ -127,57 +125,56 @@ void dccg31_set_dtbclk_dto(
- 	 * DSC native 4:2:2     pixel rate/2      4
- 	 * Other modes          pixel rate        8
- 	 */
--	if (num_odm_segments == 4) {
-+	if (params->num_odm_segments == 4) {
- 		dtbdto_div = 2;
--		req_dtbclk_khz = req_dtbclk_khz / 4;
--	} else if ((num_odm_segments == 2) ||
--			(timing->pixel_encoding == PIXEL_ENCODING_YCBCR420) ||
--			(timing->flags.DSC && timing->pixel_encoding == PIXEL_ENCODING_YCBCR422
--					&& !timing->dsc_cfg.ycbcr422_simple)) {
-+		req_dtbclk_khz = params->pixclk_khz / 4;
-+	} else if ((params->num_odm_segments == 2) ||
-+			(params->timing->pixel_encoding == PIXEL_ENCODING_YCBCR420) ||
-+			(params->timing->flags.DSC && params->timing->pixel_encoding == PIXEL_ENCODING_YCBCR422
-+					&& !params->timing->dsc_cfg.ycbcr422_simple)) {
- 		dtbdto_div = 4;
--		req_dtbclk_khz = req_dtbclk_khz / 2;
-+		req_dtbclk_khz = params->pixclk_khz / 2;
- 	} else
- 		dtbdto_div = 8;
- 
--	if (dccg->ref_dtbclk_khz && req_dtbclk_khz) {
-+	if (params->ref_dtbclk_khz && req_dtbclk_khz) {
- 		uint32_t modulo, phase;
- 
- 		// phase / modulo = dtbclk / dtbclk ref
--		modulo = dccg->ref_dtbclk_khz * 1000;
--		phase = div_u64((((unsigned long long)modulo * req_dtbclk_khz) + dccg->ref_dtbclk_khz - 1),
--			dccg->ref_dtbclk_khz);
-+		modulo = params->ref_dtbclk_khz * 1000;
-+		phase = div_u64((((unsigned long long)modulo * req_dtbclk_khz) + params->ref_dtbclk_khz - 1),
-+				params->ref_dtbclk_khz);
- 
--		REG_UPDATE(OTG_PIXEL_RATE_CNTL[dtbclk_inst],
--				DTBCLK_DTO_DIV[dtbclk_inst], dtbdto_div);
-+		REG_UPDATE(OTG_PIXEL_RATE_CNTL[params->otg_inst],
-+				DTBCLK_DTO_DIV[params->otg_inst], dtbdto_div);
- 
--		REG_WRITE(DTBCLK_DTO_MODULO[dtbclk_inst], modulo);
--		REG_WRITE(DTBCLK_DTO_PHASE[dtbclk_inst], phase);
-+		REG_WRITE(DTBCLK_DTO_MODULO[params->otg_inst], modulo);
-+		REG_WRITE(DTBCLK_DTO_PHASE[params->otg_inst], phase);
- 
--		REG_UPDATE(OTG_PIXEL_RATE_CNTL[dtbclk_inst],
--				DTBCLK_DTO_ENABLE[dtbclk_inst], 1);
-+		REG_UPDATE(OTG_PIXEL_RATE_CNTL[params->otg_inst],
-+				DTBCLK_DTO_ENABLE[params->otg_inst], 1);
- 
--		REG_WAIT(OTG_PIXEL_RATE_CNTL[dtbclk_inst],
--				DTBCLKDTO_ENABLE_STATUS[dtbclk_inst], 1,
-+		REG_WAIT(OTG_PIXEL_RATE_CNTL[params->otg_inst],
-+				DTBCLKDTO_ENABLE_STATUS[params->otg_inst], 1,
- 				1, 100);
- 
- 		/* The recommended programming sequence to enable DTBCLK DTO to generate
- 		 * valid pixel HPO DPSTREAM ENCODER, specifies that DTO source select should
- 		 * be set only after DTO is enabled
- 		 */
--		REG_UPDATE(OTG_PIXEL_RATE_CNTL[dtbclk_inst],
--				PIPE_DTO_SRC_SEL[dtbclk_inst], 1);
--
--		dccg->dtbclk_khz[dtbclk_inst] = req_dtbclk_khz;
-+		REG_UPDATE(OTG_PIXEL_RATE_CNTL[params->otg_inst],
-+				PIPE_DTO_SRC_SEL[params->otg_inst], 1);
- 	} else {
--		REG_UPDATE_3(OTG_PIXEL_RATE_CNTL[dtbclk_inst],
--				DTBCLK_DTO_ENABLE[dtbclk_inst], 0,
--				PIPE_DTO_SRC_SEL[dtbclk_inst], 0,
--				DTBCLK_DTO_DIV[dtbclk_inst], dtbdto_div);
-+		REG_UPDATE_3(OTG_PIXEL_RATE_CNTL[params->otg_inst],
-+				DTBCLK_DTO_ENABLE[params->otg_inst], 0,
-+				PIPE_DTO_SRC_SEL[params->otg_inst], 0,
-+				DTBCLK_DTO_DIV[params->otg_inst], dtbdto_div);
- 
- 		REG_WRITE(DTBCLK_DTO_MODULO[dtbclk_inst], 0);
- 		REG_WRITE(DTBCLK_DTO_PHASE[dtbclk_inst], 0);
- 
--		dccg->dtbclk_khz[dtbclk_inst] = 0;
-+		REG_WRITE(DTBCLK_DTO_MODULO[params->otg_inst], 0);
-+		REG_WRITE(DTBCLK_DTO_PHASE[params->otg_inst], 0);
- 	}
- }
- 
-diff --git a/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn31.c b/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn31.c
-index fc667cb17eb0..08fa747a7c7d 100644
---- a/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn31.c
-+++ b/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn31.c
-@@ -125,6 +125,8 @@ void dmub_dcn31_reset(struct dmub_srv *dmub)
- 	REG_WRITE(DMCUB_INBOX1_WPTR, 0);
- 	REG_WRITE(DMCUB_OUTBOX1_RPTR, 0);
- 	REG_WRITE(DMCUB_OUTBOX1_WPTR, 0);
-+	REG_WRITE(DMCUB_OUTBOX0_RPTR, 0);
-+	REG_WRITE(DMCUB_OUTBOX0_WPTR, 0);
- 	REG_WRITE(DMCUB_SCRATCH0, 0);
- 
- 	/* Clear the GPINT command manually so we don't send anything during boot. */
 -- 
-2.35.1
+2.34.1
 
