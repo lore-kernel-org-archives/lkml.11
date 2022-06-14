@@ -2,185 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE1AEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354889AbiFNLWw (ORCPT
+        id S1355765AbiFNLXo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45756 "EHLO
+        Tue, 14 Jun 2022 07:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354764AbiFNLWr (ORCPT
+        with ESMTP id S1356301AbiFNLX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 07:22:47 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A1622528;
-        Tue, 14 Jun 2022 04:22:47 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id n185so4456576wmn.4;
-        Tue, 14 Jun 2022 04:22:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XAi7yYw1KbeaAyG4ORCQsljXN7rpKYz0Lgy/6AMChJQ=;
-        b=lUPqteObQGzNdhBASmGAVQhbq/1XEP2Lgp5ACwtc4/b4EseGatsEeRcX8qyteDH4JS
-         6X5v60mLdnJtv+/AL1muJL+qbU66mhcG8567Sjo3K2W+iPJXcBEsrR5SUn2Z4cFrKXID
-         NJ6wTbdGksyQz+uh7JcF9ckSL8wwhqHhIyO0jCxFOUJPq8oWy2u0OBYUpNItg56iDvDA
-         wEoCY0NE8jkl/HB3Ga81kjJ2tzdzZHQIbKRF1Ni4DCS9QFsvsx1N9OxosJn10TG/LHl3
-         cjpzmhfMOPgsHyr57ckAijWy0sOTcORIV4OlKPACSQ6jdYNir1ZVZ9mqW6/RPh1rbAm/
-         76Rw==
+        Tue, 14 Jun 2022 07:23:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B154825596
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:23:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655205805;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DeSyU/TE5RCJvUem9lvGVeASpqzw6FLVpfJvGFrZeZA=;
+        b=RKuP4JRAAaLUlTTz8/JXtzaoCXUSV32e3OwcNJmNAsONar/71gsh9a+7ZaZPQRhwju3VAL
+        QmgywiXnPdngAdN6a+bis0O+o3XG5vONe9guIQ3XV5vwFnEyFkS9i0DOmRdGFv9yC0WvmE
+        JoGhQrpW0ef701J63YR74GC9XtmXN9Y=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-602-jRr0AnV9MzypSXSlXQV3NA-1; Tue, 14 Jun 2022 07:23:24 -0400
+X-MC-Unique: jRr0AnV9MzypSXSlXQV3NA-1
+Received: by mail-ed1-f71.google.com with SMTP id m5-20020a056402430500b004319d8ba8afso6002127edc.5
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 04:23:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XAi7yYw1KbeaAyG4ORCQsljXN7rpKYz0Lgy/6AMChJQ=;
-        b=i6lwOihr6gDlbV5Pn57wZtEKxnerP68Ae4KPnnkMEna3CYijWi3PurwayezydaoMWx
-         Ts2xXBZcYeedDbGvRO3PHDJVXRGmeIqNFze8myfcH82caW2HNAlbSGbNYjqPM5fG4EJy
-         +Gxt0ZzSY62bYm2YcMoVF65DIlY8LcQ2HehtLgpPn0XrwvfrC/iZ9A+pLQZehsazfqA2
-         oJ6ZhahiDanc4q0+D+4oJyfUPd36H6bhocKBIUS/OsmZiGKUHXWYTEFFTt8bU21MSNyZ
-         L2c2vjmH02Yuaj1jp+YTJ6igejD16gPLft1t+cfqkOXQyiDrmMtEk61ey2V6ADzvMrOi
-         VzpQ==
-X-Gm-Message-State: AOAM531IQKW89KlgQgsT0NpGxiMPgX5D64ZWA7RcNvAudHPaz19g92e5
-        8ysVxJcW3U6J/3zBwld0Udw=
-X-Google-Smtp-Source: ABdhPJyPIX1VeSzfEnAnyUHfwwBxOlzTXFdDjygeX1gNCUoQDW/NrvecGfaXgomSrSNZoXGvW+e/fA==
-X-Received: by 2002:a7b:c110:0:b0:39c:8270:7b95 with SMTP id w16-20020a7bc110000000b0039c82707b95mr3601441wmi.41.1655205765413;
-        Tue, 14 Jun 2022 04:22:45 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id o19-20020a1c4d13000000b0039c60e33702sm12497390wmh.16.2022.06.14.04.22.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 04:22:44 -0700 (PDT)
-From:   Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>,
-        Mark Mentovai <mark@moxienet.com>
-Subject: [net-next PATCH v2 2/2] net: ethernet: stmmac: reset force speed bit for ipq806x
-Date:   Tue, 14 Jun 2022 13:22:28 +0200
-Message-Id: <20220614112228.1998-2-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220614112228.1998-1-ansuelsmth@gmail.com>
-References: <20220614112228.1998-1-ansuelsmth@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DeSyU/TE5RCJvUem9lvGVeASpqzw6FLVpfJvGFrZeZA=;
+        b=cKVpJpDBM0om4sOTnm0Oz7HReWoJ2c+JqGKA1H7lcMvU+0rNogGkBbFMqafvWYajpX
+         j05bjykn+RA/VKuGYEiMKisWTD35KTZhGXJ2xAWAcMlqa/cs4Oo1uODQg85rCPgRzdvr
+         FoygbBi034h5ilWCiGWl758OUpNiX52V6op0vIsifoSAluNVHYPBV91MjBiErmINLB6Z
+         TWoEax4KeP1zRM54chmjWztlzjVZupxxlKlkIIRRz2yClDuUgOATsEiXXRHBsHAv+Ott
+         JE6IOutCWdQeer3N5cN7jk8vWyL2Ra0FQ9V9+gj9bVJY6dAgy6J2M9uv/xozv3l8/A9r
+         EZTA==
+X-Gm-Message-State: AOAM5320jh5MEHzAHC3VV4KPxqWfpeF+/KkzQEf8KP0x2DW6Vb/e3hGb
+        PD36ovC+VvLU2b8pES9lPXXbk/skkbyzxLNVb7xNoe0SVl+IZjeCDKdR12o0xxnlP7Xb7srAj+3
+        LkcL6y7MlakHPEV5e/pnARJrO
+X-Received: by 2002:a17:907:3f97:b0:711:d61d:df9 with SMTP id hr23-20020a1709073f9700b00711d61d0df9mr3913085ejc.644.1655205803107;
+        Tue, 14 Jun 2022 04:23:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzQHMluBcpPYWc2yp7uCcemI90Mdk5ZmtpRcGvCZkTZAWWy/1vIWBvgwwPdeOTQ0uucLYHirA==
+X-Received: by 2002:a17:907:3f97:b0:711:d61d:df9 with SMTP id hr23-20020a1709073f9700b00711d61d0df9mr3913061ejc.644.1655205802817;
+        Tue, 14 Jun 2022 04:23:22 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
+        by smtp.gmail.com with ESMTPSA id fs36-20020a170907602400b00705f6dab05bsm4902373ejc.183.2022.06.14.04.23.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 04:23:21 -0700 (PDT)
+Message-ID: <bd21d5c6-ed5f-dd8c-f0bf-73f54ca8ee58@redhat.com>
+Date:   Tue, 14 Jun 2022 13:23:21 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v1 1/1] phy: ti: tusb1210: Don't check for write errors
+ when powering on
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Ferry Toth <ftoth@exalondelft.nl>
+References: <20220613160848.82746-1-andriy.shevchenko@linux.intel.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220613160848.82746-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some bootloader may set the force speed regs even if the actual
-interface should use autonegotiation between PCS and PHY.
-This cause the complete malfuction of the interface.
+Hi,
 
-To fix this correctly reset the force speed regs if a fixed-link is not
-defined in the DTS. With a fixed-link node correctly configure the
-forced speed regs to handle any misconfiguration by the bootloader.
+On 6/13/22 18:08, Andy Shevchenko wrote:
+> On some platforms, like Intel Merrifield, the writing values during power on
+> may timeout:
+> 
+>    tusb1210 dwc3.0.auto.ulpi: error -110 writing val 0x41 to reg 0x80
+>    phy phy-dwc3.0.auto.ulpi.0: phy poweron failed --> -110
+>    dwc3 dwc3.0.auto: error -ETIMEDOUT: failed to initialize core
+>    dwc3: probe of dwc3.0.auto failed with error -110
+> 
+> which effectively fails the probe of the USB controller.
+> Drop the check as it was before the culprit commit (see Fixes tag).
+> 
+> Fixes: 09a3512681b3 ("phy: ti: tusb1210: Improve ulpi_read()/_write() error checking")
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Reported-by: Mark Mentovai <mark@moxienet.com>
-Co-developed-by: Mark Mentovai <mark@moxienet.com>
-Signed-off-by: Mark Mentovai <mark@moxienet.com>
-Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
----
-v2:
-- Fix reference leak for 'fixed-link' node
+Copy and pasting my reply about this in another thread to keep everyone up2date:
 
- .../ethernet/stmicro/stmmac/dwmac-ipq806x.c   | 64 +++++++++++++++++++
- 1 file changed, 64 insertions(+)
+"""
+In my experience with using the phy for charger-type detection on some
+x86 android tablets which don't have any other way to do charger detection,
+these errors indicate a real communication issue for reading/writing
+phy registers. At the same time this usually does not seem to be a big
+problem since the phy seems to work fine with its power-on defaults.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-index 832f442254d8..e888c8a9c830 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq806x.c
-@@ -66,6 +66,17 @@
- #define NSS_COMMON_CLK_DIV_SGMII_100		4
- #define NSS_COMMON_CLK_DIV_SGMII_10		49
- 
-+#define QSGMII_PCS_ALL_CH_CTL			0x80
-+#define QSGMII_PCS_CH_SPEED_FORCE		BIT(1)
-+#define QSGMII_PCS_CH_SPEED_10			0x0
-+#define QSGMII_PCS_CH_SPEED_100			BIT(2)
-+#define QSGMII_PCS_CH_SPEED_1000		BIT(3)
-+#define QSGMII_PCS_CH_SPEED_MASK		(QSGMII_PCS_CH_SPEED_FORCE | \
-+						 QSGMII_PCS_CH_SPEED_10 | \
-+						 QSGMII_PCS_CH_SPEED_100 | \
-+						 QSGMII_PCS_CH_SPEED_1000)
-+#define QSGMII_PCS_CH_SPEED_SHIFT(x)		((x) * 4)
-+
- #define QSGMII_PCS_CAL_LCKDT_CTL		0x120
- #define QSGMII_PCS_CAL_LCKDT_CTL_RST		BIT(19)
- 
-@@ -253,6 +264,55 @@ static void ipq806x_gmac_fix_mac_speed(void *priv, unsigned int speed)
- 	ipq806x_gmac_set_speed(gmac, speed);
- }
- 
-+static int
-+ipq806x_gmac_configure_qsgmii_pcs_speed(struct ipq806x_gmac *gmac)
-+{
-+	struct platform_device *pdev = gmac->pdev;
-+	struct device *dev = &pdev->dev;
-+	struct device_node *dn;
-+	int link_speed;
-+	int val = 0;
-+	int ret;
-+
-+	/* Some bootloader may apply wrong configuration and cause
-+	 * not functioning port. If fixed link is not set,
-+	 * reset the force speed bit.
-+	 */
-+	if (!of_phy_is_fixed_link(pdev->dev.of_node))
-+		goto write;
-+
-+	dn = of_get_child_by_name(pdev->dev.of_node, "fixed-link");
-+	ret = of_property_read_u32(dn, "speed", &link_speed);
-+	of_node_put(dn);
-+	if (ret) {
-+		dev_err(dev, "found fixed-link node with no speed");
-+		return ret;
-+	}
-+
-+	val = QSGMII_PCS_CH_SPEED_FORCE;
-+
-+	switch (link_speed) {
-+	case SPEED_1000:
-+		val |= QSGMII_PCS_CH_SPEED_1000;
-+		break;
-+	case SPEED_100:
-+		val |= QSGMII_PCS_CH_SPEED_100;
-+		break;
-+	case SPEED_10:
-+		val |= QSGMII_PCS_CH_SPEED_10;
-+		break;
-+	}
-+
-+write:
-+	regmap_update_bits(gmac->qsgmii_csr, QSGMII_PCS_ALL_CH_CTL,
-+			   QSGMII_PCS_CH_SPEED_MASK <<
-+			   QSGMII_PCS_CH_SPEED_SHIFT(gmac->id),
-+			   val <<
-+			   QSGMII_PCS_CH_SPEED_SHIFT(gmac->id));
-+
-+	return 0;
-+}
-+
- static const struct soc_device_attribute ipq806x_gmac_soc_v1[] = {
- 	{
- 		.revision = "1.*",
-@@ -400,6 +460,10 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
- 		err = ipq806x_gmac_configure_qsgmii_params(gmac);
- 		if (err)
- 			goto err_remove_config_dt;
-+
-+		err = ipq806x_gmac_configure_qsgmii_pcs_speed(gmac);
-+		if (err)
-+			goto err_remove_config_dt;
- 	}
- 
- 	plat_dat->has_gmac = true;
--- 
-2.36.1
+In case of Bay Trail these errors were related to 2 things:
+
+1. Autosuspend of the phy-interface block in the dwc3, fixed by:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d7c93a903f33ff35aa0e6b5a8032eb9755b00826
+
+But dwc3_pci_mrfld_properties[] already sets "snps,dis_u2_susphy_quirk",
+so I guess it is not this.
+
+2. There being no delay in tusb1210_power_on() between toggling the
+reset IO and then trying to communicate with the phy, fixed in:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=df37c99815d9e0775e67276d70c93cbc25f31c70
+
+Maybe the:
+
+#define TUSB1210_RESET_TIME_MS				30
+
+Added by that commit needs to be a bit bigger for the possibly
+older phy revision used on the merifield boards?
+
+(note it is fine to just increase it a bit everywhere).
+"""
+
+IMHO it would be good to try and increase TUSB1210_RESET_TIME_MS (start with say 100
+and then see if e.g. 50 also works). If increasing that does not work
+
+I'm fine with going with this workaround patch to fix things.
+
+Regards,
+
+Hans
+
+
+
+> ---
+>  drivers/phy/ti/phy-tusb1210.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/phy/ti/phy-tusb1210.c b/drivers/phy/ti/phy-tusb1210.c
+> index c3ab4b69ea68..669c13d6e402 100644
+> --- a/drivers/phy/ti/phy-tusb1210.c
+> +++ b/drivers/phy/ti/phy-tusb1210.c
+> @@ -105,8 +105,9 @@ static int tusb1210_power_on(struct phy *phy)
+>  	msleep(TUSB1210_RESET_TIME_MS);
+>  
+>  	/* Restore the optional eye diagram optimization value */
+> -	return tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2,
+> -				   tusb->vendor_specific2);
+> +	tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2, tusb->vendor_specific2);
+> +
+> +	return 0;
+>  }
+>  
+>  static int tusb1210_power_off(struct phy *phy)
 
