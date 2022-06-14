@@ -2,243 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7782C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96355C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352834AbiFNKtq (ORCPT
+        id S1354047AbiFNKtt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40742 "EHLO
+        Tue, 14 Jun 2022 06:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355788AbiFNKtR (ORCPT
+        with ESMTP id S240905AbiFNKtl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:49:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC1549253;
-        Tue, 14 Jun 2022 03:49:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 14 Jun 2022 06:49:41 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E3A48E60
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:49:40 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53E926121B;
-        Tue, 14 Jun 2022 10:49:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A14BC3411B;
-        Tue, 14 Jun 2022 10:49:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655203755;
-        bh=roWnZoctTuO7EfRC+YTK7DM+q3/Q15Ivpx5/o2MsL/M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lgKkXvQ7vFPgU7uuUI/p6W6E3A4F2Es47erkQFgDJCGTZYZ59LM3yJUm2Rqez8U9C
-         cTuk8Pj7LghPfcwUX7FWRLbCUo9RuBfGIE1nkxkHduH7mwnnnDFnV3ZwxNK5+33iLW
-         R5Rq6fdZvJ9oASjg7kBgEqRZLcr3LL4QLOSW6fiSWlxW7I4UpmzqFXWiKn5lJHVPyp
-         RodDEmWCY1xDNdMDSZ3NINa4oPt3cwF7jfyVN30D+e0yEdqWI34lD2odnGbI2LPWjx
-         +9Iios17uWARa7bekWizGOAXxiwT40wlsUF+K8sDEptJlF6xBl00Mhh59uL82e3SHn
-         4uUPhZctZCloA==
-Date:   Tue, 14 Jun 2022 11:58:24 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Luca Weiss <luca@z3ntu.xyz>
-Cc:     Luca Weiss <luca.weiss@fairphone.com>,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Markuss Broks <markuss.broks@gmail.com>,
-        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH 3/5] proximity: vl53l0x: Handle the VDD regulator
-Message-ID: <20220614115824.289aebce@jic23-huawei>
-In-Reply-To: <20220614114853.340e9c36@jic23-huawei>
-References: <20220523175344.5845-1-markuss.broks@gmail.com>
-        <CKKOCWP2NYO5.GH08U776B1KU@otso>
-        <20220612095333.1479464c@jic23-huawei>
-        <13033502.uLZWGnKmhe@g550jk>
-        <20220614114853.340e9c36@jic23-huawei>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 321F821A4A;
+        Tue, 14 Jun 2022 10:49:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655203779; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BRrQFXdCbyVpl82DrmdE8Gz3NAbhN9s8qRhd/Zc1x14=;
+        b=wikKS2WhWNH+VhmBbMHeWIzW+yoxaLMy0arjW2uaxUr7m6mQ5oIJwSxO1oNnktJQKweC0p
+        X5ylPzAwvO3l81eNIAoJ9TtjqIJBDSYObiFapp6k+DUBMW0kuvu0GJOPF0Q5zkRF2qFw+N
+        xjxeEVGKG6g+k+zZO6sybp5/yslZPTs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655203779;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BRrQFXdCbyVpl82DrmdE8Gz3NAbhN9s8qRhd/Zc1x14=;
+        b=9ohBsH8uzbnz/w94dMmwRbPZKJfCUXyTdAVHntYO+Ega88dqMIEIAW+sNqGz9l+/wIPN7M
+        jmjtml0FK2oOMiDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1782B1361C;
+        Tue, 14 Jun 2022 10:49:39 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 18lkBcNnqGLuXwAAMHmgww
+        (envelope-from <tiwai@suse.de>); Tue, 14 Jun 2022 10:49:39 +0000
+Date:   Tue, 14 Jun 2022 12:49:38 +0200
+Message-ID: <87y1xzplj1.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com,
+        naveenkumar.sunkari@in.bosch.com,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+Subject: Re: [PATCH] ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
+In-Reply-To: <2245197.ElGaqSPkdT@opensuse>
+References: <20220409012655.9399-1-fmdefrancesco@gmail.com>
+        <20220614095851.GA4199@lxhi-065>
+        <2245197.ElGaqSPkdT@opensuse>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 14 Jun 2022 11:48:53 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
-
-> On Sun, 12 Jun 2022 11:28:22 +0200
-> Luca Weiss <luca@z3ntu.xyz> wrote:
+On Tue, 14 Jun 2022 12:43:16 +0200,
+Fabio M. De Francesco wrote:
 > 
-> > Hi Jonathan,
+> On martedì 14 giugno 2022 11:58:51 CEST Eugeniu Rosca wrote:
+> > Hello Fabio, hello All,
 > > 
-> > On Sonntag, 12. Juni 2022 10:53:33 CEST Jonathan Cameron wrote:  
-> > > On Wed, 08 Jun 2022 12:18:52 +0200
+> > On Sa, Apr 09, 2022 at 03:26:55 +0200, Fabio M. De Francesco wrote:
+> > > Syzbot reports "KASAN: null-ptr-deref Write in
+> > > snd_pcm_format_set_silence".[1]
 > > > 
-> > > "Luca Weiss" <luca.weiss@fairphone.com> wrote:    
-> > > > Hi Markuss,
-> > > > 
-> > > > On Mon May 23, 2022 at 7:53 PM CEST, Markuss Broks wrote:    
-> > > > > Handle the regulator supplying the VDD pin of VL53L0X.
-> > > > > 
-> > > > > Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
-> > > > > ---
-> > > > > 
-> > > > >  drivers/iio/proximity/vl53l0x-i2c.c | 37 +++++++++++++++++++++++++++++
-> > > > >  1 file changed, 37 insertions(+)
-> > > > > 
-> > > > > diff --git a/drivers/iio/proximity/vl53l0x-i2c.c
-> > > > > b/drivers/iio/proximity/vl53l0x-i2c.c index 12a3e2eff464..8581a873919f
-> > > > > 100644
-> > > > > --- a/drivers/iio/proximity/vl53l0x-i2c.c
-> > > > > +++ b/drivers/iio/proximity/vl53l0x-i2c.c
-> > > > > @@ -43,6 +43,7 @@
-> > > > > 
-> > > > >  struct vl53l0x_data {
-> > > > >  
-> > > > >  	struct i2c_client *client;
-> > > > >  	struct completion completion;
-> > > > > 
-> > > > > +	struct regulator *vdd_supply;
-> > > > > 
-> > > > >  };
-> > > > >  
-> > > > >  static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
-> > > > > 
-> > > > > @@ -192,10 +193,31 @@ static const struct iio_info vl53l0x_info = {
-> > > > > 
-> > > > >  	.read_raw = vl53l0x_read_raw,
-> > > > >  
-> > > > >  };
-> > > > > 
-> > > > > +static void vl53l0x_power_off(void *_data)
-> > > > > +{
-> > > > > +	struct vl53l0x_data *data = _data;
-> > > > > +
-> > > > > +	regulator_disable(data->vdd_supply);
-> > > > > +}
-> > > > > +
-> > > > > +static int vl53l0x_power_on(struct vl53l0x_data *data)
-> > > > > +{
-> > > > > +	int ret;
-> > > > > +
-> > > > > +	ret = regulator_enable(data->vdd_supply);
-> > > > > +	if (ret)
-> > > > > +		return ret;
-> > > > > +
-> > > > > +	usleep_range(3200, 5000);
-> > > > > +
-> > > > > +	return 0;
-> > > > > +}
-> > > > > +
-> > > > > 
-> > > > >  static int vl53l0x_probe(struct i2c_client *client)
-> > > > >  {
-> > > > >  
-> > > > >  	struct vl53l0x_data *data;
-> > > > >  	struct iio_dev *indio_dev;
-> > > > > 
-> > > > > +	int error;
-> > > > > 
-> > > > >  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > > > >  	if (!indio_dev)
-> > > > > 
-> > > > > @@ -210,6 +232,21 @@ static int vl53l0x_probe(struct i2c_client *client)
-> > > > > 
-> > > > >  				     I2C_FUNC_SMBUS_BYTE_DATA))
-> > > > >  		
-> > > > >  		return -EOPNOTSUPP;
-> > > > > 
-> > > > > +	data->vdd_supply = devm_regulator_get_optional(&client->dev,     
-> > "vdd");  
-> > > > > +	if (IS_ERR(data->vdd_supply))
-> > > > > +		return dev_err_probe(&client->dev, PTR_ERR(data-    
-> > >vdd_supply),    
-> > > > > +				     "Unable to get VDD     
-> > regulator\n");  
-> > > > 
-> > > > It looks like this optional regulator is not actually optional.
-> > > > 
-> > > > [    1.919995] vl53l0x-i2c 1-0029: error -ENODEV: Unable to get VDD
-> > > > regulator
-> > > > 
-> > > > When using devm_regulator_get instead, a dummy regulator gets returned
-> > > > which I think is what we want here:
-> > > > 
-> > > > [    1.905518] vl53l0x-i2c 1-0029: supply vdd not found, using dummy
-> > > > regulator
-> > > > 
-> > > > Can you fix this up or should I send a patch?    
+> > > It is due to missing validation of the "silence" field of struct
+> > > "pcm_format_data" in "pcm_formats" array.
 > > > 
-> > > Hi Luca,
+> > > Add a test for valid "pat" and, if it is not so, return -EINVAL.
 > > > 
-> > > Please send a patch.    
-> > 
-> > Which commit sha can I use for Fixes: here?
-> > Based your togreg[0] branch currently shows "Age: 20 hours" I guess it was 
-> > rebased recently?  
-> 
-> It was rebased onto rc1 as you noticed.
-> 
-> In theory it is now stable, assuming nothing nasty shows up.
-> Fixes tag doesn't matter strongly given both will go into mainline via
-> the same pull request, so maybe just skip adding one to make my life
-> easier :)
-The 'in theory stable' bit lasted a few more mins as I had a patch
-I'd otherwise needed to have done a messy revert for.
-
-So definitely safer to skip the Fixes tag for this, though I do
-have scripts that check them and should in theory fix it up
-if it is based on stale version of togreg.  It's just fiddly
-to do.
-
-Thanks
-Jonathan
-
-
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > 
-> > Regards
-> > Luca
-> > 
-> > [0]https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=togreg
-> >   
+> > > [1] https://lore.kernel.org/lkml/
+> 000000000000d188ef05dc2c7279@google.com/
 > > > 
-> > > Jonathan
-> > >     
-> > > > Regards
-> > > > Luca
-> > > >     
-> > > > > +
-> > > > > +	error = vl53l0x_power_on(data);
-> > > > > +	if (error)
-> > > > > +		return dev_err_probe(&client->dev, error,
-> > > > > +				     "Failed to power on the     
-> > chip\n");  
-> > > > > +
-> > > > > +	error = devm_add_action_or_reset(&client->dev, vl53l0x_power_off,
-> > > > > data);
-> > > > > +	if (error)
-> > > > > +		return dev_err_probe(&client->dev, error,
-> > > > > +				     "Failed to install poweroff     
-> > action\n");  
-> > > > > +
-> > > > > 
-> > > > >  	indio_dev->name = "vl53l0x";
-> > > > >  	indio_dev->info = &vl53l0x_info;
-> > > > >  	indio_dev->channels = vl53l0x_channels;    
+> > > Reported-and-tested-by: 
+> syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
+> > > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > > ---
+> > > 
+> > > I wasn't able to figure out the commit for the "Fixes:" tag. If this 
+> patch
+> > > is good, can someone please help with providing this missing 
+> information?
+> > > 
+> > >  sound/core/pcm_misc.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/sound/core/pcm_misc.c b/sound/core/pcm_misc.c
+> > > index 4866aed97aac..5588b6a1ee8b 100644
+> > > --- a/sound/core/pcm_misc.c
+> > > +++ b/sound/core/pcm_misc.c
+> > > @@ -433,7 +433,7 @@ int snd_pcm_format_set_silence(snd_pcm_format_t 
+> format, void *data, unsigned int
+> > >  		return 0;
+> > >  	width = pcm_formats[(INT)format].phys; /* physical width */
+> > >  	pat = pcm_formats[(INT)format].silence;
+> > > -	if (! width)
+> > > +	if (!width || !pat)
+> > >  		return -EINVAL;
+> > >  	/* signed or 1 byte data */
+> > >  	if (pcm_formats[(INT)format].signd == 1 || width <= 8) {
 > > 
+> > JFYI, PVS-Studio 7.19 reports:
 > > 
-> > 
-> >   
+> > sound/core/pcm_misc.c	409	warn	V560 A part of 
+> conditional expression is always false: !pat.
 > 
+> Sorry, I assumed (wrongly!) that when we have
+> 
+> static const struct pcm_format_data 
+> pcm_formats[(INT)SNDRV_PCM_FORMAT_LAST+1] = {
+> 	[SNDRV_PCM_FORMAT_S8] = {
+> 		.width = 8, .phys = 8, .le = -1, .signd = 1,
+> 		.silence = {},
+> 	},
+> 	[snip]
+> 	/* FIXME: the following two formats are not defined properly yet 
+> */
+> 	[SNDRV_PCM_FORMAT_MPEG] = {
+> 		.le = -1, .signd = -1,
+> 	},
+> 	[SNDRV_PCM_FORMAT_GSM] = {
+> 		.le = -1, .signd = -1,
+> 	},
+> 
+> pointer "silence", and then "pat", must be NULL.
 
+Oh right, those are missing ones.  I haven't realized that those
+formats are allowed by PCM OSS layer.
+
+Practically seen, those formats have never been used in reality, and
+we may consider dropping them completely to plug such holes...
+
+
+Takashi
