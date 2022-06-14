@@ -2,154 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2FCBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 23:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82421C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 23:35:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355238AbiFNXeX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 19:34:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54134 "EHLO
+        id S237984AbiFNXfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 19:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351762AbiFNXeF (ORCPT
+        with ESMTP id S1357286AbiFNXf3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 19:34:05 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2913D4F1FA
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 16:33:50 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id e1-20020a17090301c100b00168d7df157cso4260146plh.3
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 16:33:50 -0700 (PDT)
+        Tue, 14 Jun 2022 19:35:29 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696D14D26B;
+        Tue, 14 Jun 2022 16:35:28 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id v19so13762376edd.4;
+        Tue, 14 Jun 2022 16:35:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=UVZzvWgZd/qa60rxNjAcDblynDLVeinGXHSxsImBGrU=;
-        b=DwCFxaRhRl9A9MoEpWb2SQfi4DYTduFc2PKiyCNhwx0btH68sScDN59PD0H9VKIVBM
-         j/tYe+bh2eKxRice15QWiN2N9uma13ApTUjRhZ7Wj2meCm88dpIjI/FjaunvUhbnhD/x
-         Wpw2zZiIoQhapsipnLo306ZtZK/B9XTR2l81FmjjxWzd8/gKFtPQtu/gzQG0wTwDm5aW
-         qSNLff6LQQ/dxyfRtONRsPlG4UOA7x2gejjD1HvDjhN8aYguSIePJRocfy3E+Rj6ZQ61
-         3WZ45B5xtOEI88TfScodCzfp/DgQsHmp5coQI1Czo01GWHg1WNZXdLatLy2C3v9oSgZy
-         7JHQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RwCVoV8orfnRgwChCK+rAQA3GeHEe/lWNU6fYCZRqrw=;
+        b=HyiUT/C87YjhHKbLwF0EpWK4PnzBxNE7YV3xYCMN6FXpXh0QlIyDfuJgfsugtwpqlX
+         tQDc8/Zn/FB68kwisUD4c0VvIiYwGfK9OOgwXguq7LGkq9hFmDC/Zkth0yxXjj2arsgw
+         4Eki4svotj9voOUf7t4ZSB0B9XGnLFeSe9Tr9cUOVkTxJxRyvNuBDOdFeZKXqs+MPusV
+         QPF8ZUHjUAfQ7acYBcdGg8axP2nZ7grUER14ruqPHai/wJ2pHsxEs1G0PgizLHEVpeMe
+         YswVuykcSw75MCZc2s5J5IKPQN+zg5NCbeIv63s/RQlhh/JJp9TzgVgtDYZ8fkAjzC3g
+         0K5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=UVZzvWgZd/qa60rxNjAcDblynDLVeinGXHSxsImBGrU=;
-        b=wYTQEqsuW6MWGNe/62jJ65IXMqrio0xMy1/OFREExg8Ak7CcyOL5BvAMaEBqZHIcGm
-         eZZAarQ2mP+r9LoQN+npTc9+saSAdJDNLRhT9EVR+FuN4zm32d5x3KhiZQVZPufC7W5B
-         S2BURUqe5fA0TpXysw27dfpO/oeAFQD4hG2ZCR8bVHPjyBVCaoFqeVbCupzfh0eWNO2i
-         RYEWDJekHTBUKcHl3sVcx4lJvrmJw/RxkG6ruOld6excczIacV2aA2GAnchHXBUR4/Mb
-         j7vwKfxlmRspSYgnPfvQom29INgAUP/8bzKorwla44CQMhgfwQFZ0t/NErtuMU9pcsn8
-         BviA==
-X-Gm-Message-State: AOAM5337yT//cHTpcMQTTn7sSkMJSNB9PoZN+TwqnqGJNHnlTyIblZjj
-        lg2BNSOJUzdE0GkCiVf14JYGc/G1R8o=
-X-Google-Smtp-Source: ABdhPJxJTmXAQVhdGcazJMBZlTYBCSV4zUdBJr9pYqqItppdglCIH0/nzv8n1cUqXLQLK/9Bp7gGHwSp74w=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a63:587:0:b0:405:559:6df1 with SMTP id
- 129-20020a630587000000b0040505596df1mr6339797pgf.355.1655249629290; Tue, 14
- Jun 2022 16:33:49 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 14 Jun 2022 23:33:28 +0000
-In-Reply-To: <20220614233328.3896033-1-seanjc@google.com>
-Message-Id: <20220614233328.3896033-9-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220614233328.3896033-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH v2 8/8] KVM: x86/mmu: Use common logic for computing the
- 32/64-bit base PA mask
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RwCVoV8orfnRgwChCK+rAQA3GeHEe/lWNU6fYCZRqrw=;
+        b=ntelZJOlhm39AJtOJ3MUOBL+Z2iiUb1guquYG/yVWLkT4aGqy6Uf35Vim0/0yYV6Ag
+         Wc5hFAeSPoegjQRAa+eRygIPqRBcUP6LWKVoAzTk8L/XFgqrSHB7oQ7/Y+EZS7ZfUZZM
+         K6aq2ZMOcayNdXACseLWuHR1Rk9tE7TrFefFKH88JSKzhP0SdREhNGKVwrSxuAsQceNR
+         KYT2IcdwiIYMjiszbZnQ10XtCrX5b+hYB0bpUQFwofNDn6d6y3JnV6BburqgZJEYZguc
+         mfnOeohSpvLtk7KxwmbkexfNGLcbm/nX9wSTt07I13zKMe8lhM6/VHIRZ8eBjq+WiqiI
+         JEWQ==
+X-Gm-Message-State: AOAM530fw1p9LoUEEmFp4441q0MKKV228dxQCVNzp6VDzeBjYA+nz2v7
+        5KFkkc/8tljQjsMrO7bG4HA=
+X-Google-Smtp-Source: AGRyM1s7yi8SKYgGonC6z+fB20MLO4Xt5CUZ8FDxi2I5kdemGH1a5Zybz5MQqTbnia8UfoicrJMPTA==
+X-Received: by 2002:aa7:ce84:0:b0:42d:ce51:8c6e with SMTP id y4-20020aa7ce84000000b0042dce518c6emr9386188edv.10.1655249726709;
+        Tue, 14 Jun 2022 16:35:26 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id l23-20020a17090612d700b006f3ef214daesm5572956ejb.20.2022.06.14.16.35.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 16:35:25 -0700 (PDT)
+From:   Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+Subject: [net-next PATCH] net: ethernet: stmicro: stmmac: permit MTU change with interface up
+Date:   Wed, 15 Jun 2022 00:41:41 +0200
+Message-Id: <20220614224141.23576-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use common logic for computing PT_BASE_ADDR_MASK for 32-bit, 64-bit, and
-EPT paging.  Both PAGE_MASK and the new-common logic are supsersets of
-what is actually needed for 32-bit paging.  PAGE_MASK sets bits 63:12 and
-the former GUEST_PT64_BASE_ADDR_MASK sets bits 51:12, so regardless of
-which value is used, the result will always be bits 31:12.
+Remove the limitation where the interface needs to be down to change
+MTU by releasing and opening the stmmac driver to set the new MTU.
+Also call the set_filter function to correctly init the port.
+This permits to remove the EBUSY error while the ethernet port is
+running permitting a correct MTU change if for example a DSA request
+a MTU change for a switch CPU port.
 
-No functional change intended.
-
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
 ---
- arch/x86/kvm/mmu/mmu.c         | 2 --
- arch/x86/kvm/mmu/paging.h      | 9 ---------
- arch/x86/kvm/mmu/paging_tmpl.h | 4 +---
- 3 files changed, 1 insertion(+), 14 deletions(-)
- delete mode 100644 arch/x86/kvm/mmu/paging.h
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 81f2e58dc85b..a67aac727dc2 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -53,8 +53,6 @@
- #include <asm/kvm_page_track.h>
- #include "trace.h"
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index d1a7cf4567bc..a968a13b3183 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5448,11 +5448,6 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
  
--#include "paging.h"
--
- extern bool itlb_multihit_kvm_mitigation;
+ 	txfifosz /= priv->plat->tx_queues_to_use;
  
- int __read_mostly nx_huge_pages = -1;
-diff --git a/arch/x86/kvm/mmu/paging.h b/arch/x86/kvm/mmu/paging.h
-deleted file mode 100644
-index 9de4976b2d46..000000000000
---- a/arch/x86/kvm/mmu/paging.h
-+++ /dev/null
-@@ -1,9 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/* Shadow paging constants/helpers that don't need to be #undef'd. */
--#ifndef __KVM_X86_PAGING_H
--#define __KVM_X86_PAGING_H
+-	if (netif_running(dev)) {
+-		netdev_err(priv->dev, "must be stopped to change its MTU\n");
+-		return -EBUSY;
+-	}
 -
--#define GUEST_PT64_BASE_ADDR_MASK (((1ULL << 52) - 1) & ~(u64)(PAGE_SIZE-1))
--
--#endif /* __KVM_X86_PAGING_H */
--
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 3ed7ba4730b4..6c29aef4092b 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -25,7 +25,6 @@
- 	#define pt_element_t u64
- 	#define guest_walker guest_walker64
- 	#define FNAME(name) paging##64_##name
--	#define PT_BASE_ADDR_MASK GUEST_PT64_BASE_ADDR_MASK
- 	#define PT_LEVEL_BITS 9
- 	#define PT_GUEST_DIRTY_SHIFT PT_DIRTY_SHIFT
- 	#define PT_GUEST_ACCESSED_SHIFT PT_ACCESSED_SHIFT
-@@ -39,7 +38,6 @@
- 	#define pt_element_t u32
- 	#define guest_walker guest_walker32
- 	#define FNAME(name) paging##32_##name
--	#define PT_BASE_ADDR_MASK ((pt_element_t)PAGE_MASK)
- 	#define PT_LEVEL_BITS PT32_LEVEL_BITS
- 	#define PT_MAX_FULL_LEVELS 2
- 	#define PT_GUEST_DIRTY_SHIFT PT_DIRTY_SHIFT
-@@ -54,7 +52,6 @@
- 	#define pt_element_t u64
- 	#define guest_walker guest_walkerEPT
- 	#define FNAME(name) ept_##name
--	#define PT_BASE_ADDR_MASK GUEST_PT64_BASE_ADDR_MASK
- 	#define PT_LEVEL_BITS 9
- 	#define PT_GUEST_DIRTY_SHIFT 9
- 	#define PT_GUEST_ACCESSED_SHIFT 8
-@@ -65,6 +62,7 @@
- #endif
+ 	if (stmmac_xdp_is_enabled(priv) && new_mtu > ETH_DATA_LEN) {
+ 		netdev_dbg(priv->dev, "Jumbo frames not supported for XDP\n");
+ 		return -EINVAL;
+@@ -5466,6 +5461,14 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
  
- /* Common logic, but per-type values.  These also need to be undefined. */
-+#define PT_BASE_ADDR_MASK	((pt_element_t)(((1ULL << 52) - 1) & ~(u64)(PAGE_SIZE-1)))
- #define PT_LVL_ADDR_MASK(lvl)	__PT_LVL_ADDR_MASK(PT_BASE_ADDR_MASK, lvl, PT_LEVEL_BITS)
- #define PT_LVL_OFFSET_MASK(lvl)	__PT_LVL_OFFSET_MASK(PT_BASE_ADDR_MASK, lvl, PT_LEVEL_BITS)
- #define PT_INDEX(addr, lvl)	__PT_INDEX(addr, lvl, PT_LEVEL_BITS)
+ 	dev->mtu = mtu;
+ 
++	if (netif_running(dev)) {
++		netdev_dbg(priv->dev, "restarting interface to change its MTU\n");
++		stmmac_release(dev);
++
++		stmmac_open(dev);
++		stmmac_set_filter(priv, priv->hw, dev);
++	}
++
+ 	netdev_update_features(dev);
+ 
+ 	return 0;
 -- 
-2.36.1.476.g0c4daa206d-goog
+2.36.1
 
