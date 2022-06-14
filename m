@@ -2,287 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01DE0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:45:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D90A4CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:45:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231408AbiFNUpT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
+        id S234277AbiFNUpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 16:45:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357385AbiFNUnu (ORCPT
+        with ESMTP id S233197AbiFNUp1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:43:50 -0400
-Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB7519014;
-        Tue, 14 Jun 2022 13:43:49 -0700 (PDT)
-Received: by mail-io1-f50.google.com with SMTP id a10so10668605ioe.9;
-        Tue, 14 Jun 2022 13:43:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EWCrP2gVR6iEKu6wld+fLLcPN5tCwcbqGWbRuRjzj3E=;
-        b=OLFMIalh9qPeLI5fmJNnH2JtEGCs+Y8XcCSMNa1jJxJCT1YFNc4MYs7ywx8afdc0ga
-         ihSlAG8d2ljbWRAub3Sk/EOMZ7MBza8X8/grdwshQg+u8PA8O1s31TXno/JhwOyrO3df
-         ANWDynI/mYIN2rcgDkcn41xZkDtjpQfevlTt9SnIKrgnc6fB7t5W3wJGNAOZWe4FPHdT
-         XxZGfEC6mXLsgGU2chCX+AUcD5EAcE9uY3fUXH7YGLgq07v2mjOvXZIKpPavTu3VIc3H
-         yisVFu9KcxHD5qy9bocWx7y/lKRb8XyPTY9NOF+zVbIVitC067mgX9V8fWBV/qURVqPK
-         p+vQ==
-X-Gm-Message-State: AOAM533SykWBwCk1m0Dcx+a+RimGwegO/jqaIPn4GaNvVeHcmKpG2oaG
-        N1quFebJws8E4cDJD1PryQ==
-X-Google-Smtp-Source: ABdhPJyquQnI3HE8yYQ+8Libvzpe4msNa30paW2QwWTY1sk6eZSq9sHUV4oG33HdAbAGa6d2P4Bo5Q==
-X-Received: by 2002:a05:6638:1c19:b0:331:d0b7:4cfe with SMTP id ca25-20020a0566381c1900b00331d0b74cfemr3983850jab.311.1655239428886;
-        Tue, 14 Jun 2022 13:43:48 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id n42-20020a02716a000000b0033197f42be0sm5230647jaf.157.2022.06.14.13.43.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 13:43:48 -0700 (PDT)
-Received: (nullmailer pid 2487460 invoked by uid 1000);
-        Tue, 14 Jun 2022 20:43:45 -0000
-Date:   Tue, 14 Jun 2022 14:43:45 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v10 net-next 6/7] dt-bindings: mfd: ocelot: add bindings
- for VSC7512
-Message-ID: <20220614204345.GA2419690-robh@kernel.org>
-References: <20220610202330.799510-1-colin.foster@in-advantage.com>
- <20220610202330.799510-7-colin.foster@in-advantage.com>
+        Tue, 14 Jun 2022 16:45:27 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2085.outbound.protection.outlook.com [40.107.220.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39CD128E0C;
+        Tue, 14 Jun 2022 13:45:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IJ3bF63yYGUN6eohvnWDP9oKyS+9TiW3ayXA/a22grBqOH2hJwisWr8dg6vL6FouhZIJxnde5LqjRSaB0B+B6jBVGsQk36B93Y7xZpZs+lo13PR26x+v0opZkLXS5oaJN5Qfqj7ancj27L3sTu9l27UYeoUv4RDgI8FjYffqcgUDp5V/qg9/U2iH1q2hqf2FXYMLLk3zd5kohvDblI1mhnW5/Zoso9i+mYdgxPpaLq99t7uaJCD0z+zSDITiw4ywtOfDCKZ9sjhwxtl6lt7Dm2tZfMxBdtDDkok9al6DA7ljsRd0uGbx6pYuf9js6DZSCCbD3myNMfIA0bqVbabvCA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=h+wdnHzm5/tFJI64HWledeJrntDDTEnQRGQb3TjHaak=;
+ b=OqjzX1hhs8nf4EaE+2jE3pmO2Kjv2Mpr0fX4ctxEq4KLBSW0RYxjDnmzTvipUuAhUik3AAYgXsEQ9KKGf8RZgjwoViD4bZ+IrVBJp6v6s1KcottmCIVrRKvabPKML4QZ32oDBXoewriLTn8etvY8/CjbYtPNfIRmzBO78If3Lk65ZZUY+El2wr7LiYLrddG9srRMYGmbc2D6BqCYpYBAoNtR3jdIPEfACZrGqt3eHOPoTaVW3yy5O9+9//T3tuI2ozbvEZgzOk8c0XEx4ZSevYhwo98Qyr3cIaSJAv1K7NBIZAnl3WMPqEUq87YW2fpRPkfLISpEQUG3DqjD5psJSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h+wdnHzm5/tFJI64HWledeJrntDDTEnQRGQb3TjHaak=;
+ b=XfpsHHlhP6RjgRnv2YvQYPgMseZ6o6stX8nOOrlRUvybxcMS0kC7GSuFMym2nIlbXTp7Odm9I5U5Pf3N/Y2WkCxg89a5nmpO9fvfNZnGmnygKuB/JgY2xtYkaauV+jQq0mCRmEzTu9Mw225ue7e9JSF9FC1xZkmQsaZ12oLvnqlPkb77jV0aKtAGged9X2LvbdBlHCNgh624YBjemTB/kCW9nwo5NuB9PgBKzoc81Lw7L3ZFP3iaf855HfB0+bmqlcx/gJwTpcgGazzT9HTEPQPP29lEZR/+LiMa2HOJF1T/T9Z4/taJufU6An6tgBiu7beCFIpJBgw8Q/Wxz4iHPw==
+Received: from BN0PR04CA0144.namprd04.prod.outlook.com (2603:10b6:408:ed::29)
+ by BN6PR1201MB0113.namprd12.prod.outlook.com (2603:10b6:405:55::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Tue, 14 Jun
+ 2022 20:45:23 +0000
+Received: from BN8NAM11FT008.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ed:cafe::87) by BN0PR04CA0144.outlook.office365.com
+ (2603:10b6:408:ed::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.17 via Frontend
+ Transport; Tue, 14 Jun 2022 20:45:23 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT008.mail.protection.outlook.com (10.13.177.95) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5332.12 via Frontend Transport; Tue, 14 Jun 2022 20:45:23 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 14 Jun
+ 2022 20:45:22 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 14 Jun
+ 2022 13:45:22 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22 via Frontend
+ Transport; Tue, 14 Jun 2022 13:45:19 -0700
+Date:   Tue, 14 Jun 2022 13:45:18 -0700
+From:   Nicolin Chen <nicolinc@nvidia.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+CC:     Jason Gunthorpe <jgg@nvidia.com>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "marcan@marcan.st" <marcan@marcan.st>,
+        "sven@svenpeter.dev" <sven@svenpeter.dev>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "robdclark@gmail.com" <robdclark@gmail.com>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
+        "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+        "agross@kernel.org" <agross@kernel.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "heiko@sntech.de" <heiko@sntech.de>,
+        "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
+        "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
+        "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>,
+        "wens@csie.org" <wens@csie.org>,
+        "jernej.skrabec@gmail.com" <jernej.skrabec@gmail.com>,
+        "samuel@sholland.org" <samuel@sholland.org>,
+        "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "alim.akhtar@samsung.com" <alim.akhtar@samsung.com>,
+        "alyssa@rosenzweig.io" <alyssa@rosenzweig.io>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "linux-samsung-soc@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
+        "linux-rockchip@lists.infradead.org" 
+        <linux-rockchip@lists.infradead.org>,
+        "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
+        "linux-sunxi@lists.linux.dev" <linux-sunxi@lists.linux.dev>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "dwmw2@infradead.org" <dwmw2@infradead.org>
+Subject: Re: [PATCH 3/5] vfio/iommu_type1: Prefer to reuse domains vs match
+ enforced cache coherency
+Message-ID: <YqjzXpzuBa4ATf9o@Asurada-Nvidia>
+References: <20220606061927.26049-1-nicolinc@nvidia.com>
+ <20220606061927.26049-4-nicolinc@nvidia.com>
+ <BN9PR11MB5276DC98E75B1906A76F7ADC8CA49@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220608111724.GL1343366@nvidia.com>
+ <DM4PR11MB52781590FB8FB197579DEE848CA49@DM4PR11MB5278.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220610202330.799510-7-colin.foster@in-advantage.com>
+In-Reply-To: <DM4PR11MB52781590FB8FB197579DEE848CA49@DM4PR11MB5278.namprd11.prod.outlook.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c57380c9-1dd6-4d7d-4096-08da4e46ce09
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB0113:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1201MB0113233C3B5CAF3FE03B6129ABAA9@BN6PR1201MB0113.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 01Lo7EEKLCy2OIC9zTeh6zz/WeBLpYGCF/uXe2ghKhndvNCltYjbF+9OT7LjgeEp0EGOYX5nuh8iNeJdBU9ltcgjgxnXDpq2V4ci2ZGnH/qdqBYJAvHqdOHKYZnlUsuyIwMc5/ZbSNSlzit+njn0WYai4x8rr0ZEmgKxr9lbMKggl+67Z3iwkRyy0mB0dp8SfaBVMh1XZDS8flTgxtRw9ggZO3cGg1XUhhsXl9VK5HMTXN8sAFQn3IJgkOd8SZ8F75KGwXFAp8byCM4c6ZzPY0ocQ+1DYLkWW7xxoqtllkzXftPyL/EON92SQXB0iomv5sJSfASJa52ZEdJ9ZCVP8emmMOA0am7u7MWVpExc6P/LjBm1bgZANxlx1mptyq0XjhB057UHTchHzc333st+7lAC+iGMOew4JEbMYoRP//znW+l8zk9usgbzA+tg55NalrgL7Pwht3H1lcAyo+37W026OIYzHwBTwtw0dS3vbt5YA35V7kyPIZnJri/6mo9tuelWk3JF9QPHOG4EAVfkPPv9nWOOTYs4BGK1uO5sxTULTBgNSVwaSw2R+JzRxKw95KPJE1sUFHwcXvCi6mNojKWSjRSoZgD0KA0/ZAbi09qjpoXRJjk/2PiOSdswHXc9qzUWl36cTtF0LUxCn7pNzSodPa/MLmoZXXZ5fZNnEXHmKdEljxtMKov1+RUJYUOPNVkI2hG8arkjz3tAzGtodg==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(40470700004)(36840700001)(46966006)(5660300002)(7416002)(356005)(36860700001)(7406005)(2906002)(186003)(4744005)(40460700003)(82310400005)(26005)(9686003)(33716001)(70586007)(54906003)(8936002)(86362001)(70206006)(55016003)(508600001)(83380400001)(4326008)(47076005)(8676002)(316002)(426003)(336012)(6916009)(81166007)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2022 20:45:23.5861
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c57380c9-1dd6-4d7d-4096-08da4e46ce09
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT008.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0113
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 01:23:29PM -0700, Colin Foster wrote:
-> Add devicetree bindings for SPI-controlled Ocelot chips, specifically the
-> VSC7512.
+Hi Kevin,
+
+On Wed, Jun 08, 2022 at 11:48:27PM +0000, Tian, Kevin wrote:
+> > > > The KVM mechanism for controlling wbinvd is only triggered during
+> > > > kvm_vfio_group_add(), meaning it is a one-shot test done once the
+> > devices
+> > > > are setup.
+> > >
+> > > It's not one-shot. kvm_vfio_update_coherency() is called in both
+> > > group_add() and group_del(). Then the coherency property is
+> > > checked dynamically in wbinvd emulation:
+> >
+> > From the perspective of managing the domains that is still
+> > one-shot. It doesn't get updated when individual devices are
+> > added/removed to domains.
 > 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
->  .../devicetree/bindings/mfd/mscc,ocelot.yaml  | 160 ++++++++++++++++++
->  MAINTAINERS                                   |   1 +
->  2 files changed, 161 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml b/Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
-> new file mode 100644
-> index 000000000000..e298ca8d616d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
-> @@ -0,0 +1,160 @@
-> +# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mfd/mscc,ocelot.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Ocelot Externally-Controlled Ethernet Switch
-> +
-> +maintainers:
-> +  - Colin Foster <colin.foster@in-advantage.com>
-> +
-> +description: |
-> +  The Ocelot ethernet switch family contains chips that have an internal CPU
-> +  (VSC7513, VSC7514) and chips that don't (VSC7511, VSC7512). All switches have
-> +  the option to be controlled externally, which is the purpose of this driver.
-> +
-> +  The switch family is a multi-port networking switch that supports many
-> +  interfaces. Additionally, the device can perform pin control, MDIO buses, and
-> +  external GPIO expanders.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - mscc,vsc7512-spi
+> It's unchanged per-domain but dynamic per-vm when multiple
+> domains are added/removed (i.e. kvm->arch.noncoherent_dma_count).
+> It's the latter being checked in the kvm.
 
-'-spi' is redundant as we know what bus this is on looking at the 
-parent.
+I am going to send a v2, yet not quite getting the point here.
+Meanwhile, Jason is on leave.
 
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 0
+What, in your opinion, would be an accurate description here?
 
-No size? That's odd given the child nodes are the same as memory mapped 
-peripherals which expect a size.
-
-> +
-> +  spi-max-frequency:
-> +    maxItems: 1
-> +
-> +patternProperties:
-> +  "^pinctrl@[0-9a-f]+$":
-> +    type: object
-> +    $ref: /schemas/pinctrl/mscc,ocelot-pinctrl.yaml
-> +
-> +  "^gpio@[0-9a-f]+$":
-> +    type: object
-> +    $ref: /schemas/pinctrl/microchip,sparx5-sgpio.yaml
-> +    properties:
-> +      compatible:
-> +        enum:
-> +          - mscc,ocelot-sgpio
-> +
-> +  "^mdio@[0-9a-f]+$":
-> +    type: object
-> +    $ref: /schemas/net/mscc,miim.yaml
-> +    properties:
-> +      compatible:
-> +        enum:
-> +          - mscc,ocelot-miim
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - '#address-cells'
-> +  - '#size-cells'
-> +  - spi-max-frequency
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    ocelot_clock: ocelot-clock {
-> +          compatible = "fixed-clock";
-> +          #clock-cells = <0>;
-> +          clock-frequency = <125000000>;
-> +      };
-> +
-> +    spi0 {
-
-spi {
-
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        ocelot-chip@0 {
-
-Node names should be generic. I don't think we have a formal definition, 
-but 'switch' seems to be most common.
-
-> +            compatible = "mscc,vsc7512-spi";
-> +            spi-max-frequency = <2500000>;
-> +            reg = <0>;
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +
-> +            mdio0: mdio@7107009c {
-
-Drop unused labels.
-
-> +                compatible = "mscc,ocelot-miim";
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                reg = <0x7107009c>;
-> +
-> +                sw_phy0: ethernet-phy@0 {
-> +                    reg = <0x0>;
-> +                };
-> +            };
-> +
-> +            mdio1: mdio@710700c0 {
-> +                compatible = "mscc,ocelot-miim";
-> +                pinctrl-names = "default";
-> +                pinctrl-0 = <&miim1_pins>;
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                reg = <0x710700c0>;
-> +
-> +                sw_phy4: ethernet-phy@4 {
-> +                    reg = <0x4>;
-> +                };
-> +            };
-> +
-> +            gpio: pinctrl@71070034 {
-> +                compatible = "mscc,ocelot-pinctrl";
-> +                gpio-controller;
-> +                #gpio-cells = <2>;
-> +                gpio-ranges = <&gpio 0 0 22>;
-> +                reg = <0x71070034>;
-> +
-> +                sgpio_pins: sgpio-pins {
-> +                    pins = "GPIO_0", "GPIO_1", "GPIO_2", "GPIO_3";
-> +                    function = "sg0";
-> +                };
-> +
-> +                miim1_pins: miim1-pins {
-> +                    pins = "GPIO_14", "GPIO_15";
-> +                    function = "miim";
-> +                };
-> +            };
-> +
-> +            sgpio: gpio@710700f8 {
-> +                compatible = "mscc,ocelot-sgpio";
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                bus-frequency = <12500000>;
-> +                clocks = <&ocelot_clock>;
-> +                microchip,sgpio-port-ranges = <0 15>;
-> +                pinctrl-names = "default";
-> +                pinctrl-0 = <&sgpio_pins>;
-> +                reg = <0x710700f8>;
-> +
-> +                sgpio_in0: gpio@0 {
-> +                    compatible = "microchip,sparx5-sgpio-bank";
-> +                    reg = <0>;
-> +                    gpio-controller;
-> +                    #gpio-cells = <3>;
-> +                    ngpios = <64>;
-> +                };
-> +
-> +                sgpio_out1: gpio@1 {
-> +                    compatible = "microchip,sparx5-sgpio-bank";
-> +                    reg = <1>;
-> +                    gpio-controller;
-> +                    #gpio-cells = <3>;
-> +                    ngpios = <64>;
-> +                };
-> +            };
-> +        };
-> +    };
-> +
-> +...
-> +
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 91b4151c5ad1..119fb4207ba3 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -14355,6 +14355,7 @@ F:	tools/testing/selftests/drivers/net/ocelot/*
->  OCELOT EXTERNAL SWITCH CONTROL
->  M:	Colin Foster <colin.foster@in-advantage.com>
->  S:	Supported
-> +F:	Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
->  F:	include/linux/mfd/ocelot.h
->  
->  OCXL (Open Coherent Accelerator Processor Interface OpenCAPI) DRIVER
-> -- 
-> 2.25.1
-> 
-> 
+Thanks
+Nic
