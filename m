@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC12C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:26:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5E9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355132AbiFNC0R (ORCPT
+        id S1355148AbiFNC0Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
+        Mon, 13 Jun 2022 22:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354016AbiFNCXO (ORCPT
+        with ESMTP id S1354530AbiFNCXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:23:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD8D403EF;
-        Mon, 13 Jun 2022 19:10:31 -0700 (PDT)
+        Mon, 13 Jun 2022 22:23:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2053E40900;
+        Mon, 13 Jun 2022 19:10:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D43B561123;
-        Tue, 14 Jun 2022 02:10:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 362C6C385A2;
-        Tue, 14 Jun 2022 02:10:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1C5A60F1C;
+        Tue, 14 Jun 2022 02:10:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E138C34114;
+        Tue, 14 Jun 2022 02:10:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172625;
-        bh=qIYgr84JW2wfwskmNEvNzTtO/Z+QttXhLdhRIbSR53E=;
+        s=k20201202; t=1655172633;
+        bh=6rhygkd6Oy5L/KrV0UrhH/iU7JA+Qqh+u3r+bK1jBU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tdnUiLtuTvw64EmBRAk2DduiMnddv/b3SYOUKIaDofBqwe6Uzv8MNXa2X5TmH+Acv
-         DL8eHmtIb+Xr0iRWY/XqgewBevLTHst4HYNTZIvDHCMJJ/aAj6zrAjEm2jKttox8CD
-         7Of9jofROp2aj2bKhG92Ke8WUnURtYPiwH/TunprHHhmvU1/ElgXuV4E2GwmkTc8ej
-         Y0gLFc6z1R8kaOtM199iF8tKzwvrLCMMbuT4uO6CLIABfL32zaIVCp3Z+XLpPHgync
-         aYpsma9vhBfmJAdxT0dxabgThkq//wkcpHQ6ujOD9NxZt7SlNCTE72UoUam7ga3gyY
-         wi3/EDxxlkQqA==
+        b=Z/1WQZutNzhdToCSdSyiEIswUeHUojuFOnrchEnrQPwAifIeDg4AUXjt5glvnU+gL
+         AhUafI4aTO7lbu8maqUlWJQXJRAmGpW22SzW7+E3q3E2EwUxn8rZKFEBk2LKeo6I8E
+         ktO29jJC/iVLqfhIgrHdH7zWDNiWVKbFVt8w0ez3F4+uaT1vRrlYPeuiHkEKZZgqN+
+         P1kUYlQGaSB8YTzVrpPzw22U3LScLJlkJzyQMr+vKC1zR8CzGBG91adz7OGf95lqPT
+         pylCaG3jWpvSnX7w0Dd/wLXPMbEHJIokC05q5k2T+0bb4KbpgDZhBfWPK3StCWAOLM
+         +nHpDDqk/+oNw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
-        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.14 03/14] ASoC: cs42l52: Correct TLV for Bypass Volume
-Date:   Mon, 13 Jun 2022 22:10:08 -0400
-Message-Id: <20220614021019.1100929-3-sashal@kernel.org>
+Cc:     Chengguang Xu <cgxu519@mykernel.net>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Brian King <brking@linux.vnet.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.vnet.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 09/14] scsi: ipr: Fix missing/incorrect resource cleanup in error case
+Date:   Mon, 13 Jun 2022 22:10:14 -0400
+Message-Id: <20220614021019.1100929-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614021019.1100929-1-sashal@kernel.org>
 References: <20220614021019.1100929-1-sashal@kernel.org>
@@ -54,43 +55,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-[ Upstream commit 91e90c712fade0b69cdff7cc6512f6099bd18ae5 ]
+[ Upstream commit d64c491911322af1dcada98e5b9ee0d87e8c8fee ]
 
-The Bypass Volume is accidentally using a -6dB minimum TLV rather than
-the correct -60dB minimum. Add a new TLV to correct this.
+Fix missing resource cleanup (when '(--i) == 0') for error case in
+ipr_alloc_mem() and skip incorrect resource cleanup (when '(--i) == 0') for
+error case in ipr_request_other_msi_irqs() because variable i started from
+1.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-5-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220529153456.4183738-4-cgxu519@mykernel.net
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Brian King <brking@linux.vnet.ibm.com>
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l52.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/scsi/ipr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
-index f733f6b42b53..47f2439fd7b0 100644
---- a/sound/soc/codecs/cs42l52.c
-+++ b/sound/soc/codecs/cs42l52.c
-@@ -141,6 +141,8 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
+diff --git a/drivers/scsi/ipr.c b/drivers/scsi/ipr.c
+index b172f0a02083..99b37e19feca 100644
+--- a/drivers/scsi/ipr.c
++++ b/drivers/scsi/ipr.c
+@@ -9788,7 +9788,7 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
+ 					GFP_KERNEL);
  
- static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
- 
-+static DECLARE_TLV_DB_SCALE(pass_tlv, -6000, 50, 0);
-+
- static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
- 
- static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
-@@ -355,7 +357,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
- 			      CS42L52_SPKB_VOL, 0, 0x40, 0xC0, hl_tlv),
- 
- 	SOC_DOUBLE_R_SX_TLV("Bypass Volume", CS42L52_PASSTHRUA_VOL,
--			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pga_tlv),
-+			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pass_tlv),
- 
- 	SOC_DOUBLE("Bypass Mute", CS42L52_MISC_CTL, 4, 5, 1, 0),
- 
+ 		if (!ioa_cfg->hrrq[i].host_rrq)  {
+-			while (--i > 0)
++			while (--i >= 0)
+ 				dma_free_coherent(&pdev->dev,
+ 					sizeof(u32) * ioa_cfg->hrrq[i].size,
+ 					ioa_cfg->hrrq[i].host_rrq,
+@@ -10060,7 +10060,7 @@ static int ipr_request_other_msi_irqs(struct ipr_ioa_cfg *ioa_cfg,
+ 			ioa_cfg->vectors_info[i].desc,
+ 			&ioa_cfg->hrrq[i]);
+ 		if (rc) {
+-			while (--i >= 0)
++			while (--i > 0)
+ 				free_irq(pci_irq_vector(pdev, i),
+ 					&ioa_cfg->hrrq[i]);
+ 			return rc;
 -- 
 2.35.1
 
