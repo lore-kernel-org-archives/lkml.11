@@ -2,60 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0841C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:49:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7782C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356137AbiFNKs4 (ORCPT
+        id S1352834AbiFNKtq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
+        Tue, 14 Jun 2022 06:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356191AbiFNKs1 (ORCPT
+        with ESMTP id S1355788AbiFNKtR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:48:27 -0400
-Received: from hi1smtp01.de.adit-jv.com (smtp1.de.adit-jv.com [93.241.18.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611BE49685
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:48:16 -0700 (PDT)
-Received: from hi2exch02.adit-jv.com (hi2exch02.adit-jv.com [10.72.92.28])
+        Tue, 14 Jun 2022 06:49:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC1549253;
+        Tue, 14 Jun 2022 03:49:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by hi1smtp01.de.adit-jv.com (Postfix) with ESMTPS id C8C5B520712;
-        Tue, 14 Jun 2022 12:48:14 +0200 (CEST)
-Received: from lxhi-065 (10.72.94.27) by hi2exch02.adit-jv.com (10.72.92.28)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Tue, 14 Jun
- 2022 12:48:14 +0200
-Date:   Tue, 14 Jun 2022 12:48:09 +0200
-From:   Eugeniu Rosca <erosca@de.adit-jv.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-CC:     Eugeniu Rosca <erosca@de.adit-jv.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com>,
-        <naveenkumar.sunkari@in.bosch.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-Subject: Re: [PATCH] ALSA: pcm: Test for "silence" field in struct
- "pcm_format_data"
-Message-ID: <20220614104809.GA4471@lxhi-065>
-References: <20220409012655.9399-1-fmdefrancesco@gmail.com>
- <20220614095851.GA4199@lxhi-065>
- <2245197.ElGaqSPkdT@opensuse>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53E926121B;
+        Tue, 14 Jun 2022 10:49:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A14BC3411B;
+        Tue, 14 Jun 2022 10:49:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655203755;
+        bh=roWnZoctTuO7EfRC+YTK7DM+q3/Q15Ivpx5/o2MsL/M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lgKkXvQ7vFPgU7uuUI/p6W6E3A4F2Es47erkQFgDJCGTZYZ59LM3yJUm2Rqez8U9C
+         cTuk8Pj7LghPfcwUX7FWRLbCUo9RuBfGIE1nkxkHduH7mwnnnDFnV3ZwxNK5+33iLW
+         R5Rq6fdZvJ9oASjg7kBgEqRZLcr3LL4QLOSW6fiSWlxW7I4UpmzqFXWiKn5lJHVPyp
+         RodDEmWCY1xDNdMDSZ3NINa4oPt3cwF7jfyVN30D+e0yEdqWI34lD2odnGbI2LPWjx
+         +9Iios17uWARa7bekWizGOAXxiwT40wlsUF+K8sDEptJlF6xBl00Mhh59uL82e3SHn
+         4uUPhZctZCloA==
+Date:   Tue, 14 Jun 2022 11:58:24 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Luca Weiss <luca@z3ntu.xyz>
+Cc:     Luca Weiss <luca.weiss@fairphone.com>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Song Qiang <songqiang1304521@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 3/5] proximity: vl53l0x: Handle the VDD regulator
+Message-ID: <20220614115824.289aebce@jic23-huawei>
+In-Reply-To: <20220614114853.340e9c36@jic23-huawei>
+References: <20220523175344.5845-1-markuss.broks@gmail.com>
+        <CKKOCWP2NYO5.GH08U776B1KU@otso>
+        <20220612095333.1479464c@jic23-huawei>
+        <13033502.uLZWGnKmhe@g550jk>
+        <20220614114853.340e9c36@jic23-huawei>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <2245197.ElGaqSPkdT@opensuse>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.72.94.27]
-X-ClientProxiedBy: hi2exch02.adit-jv.com (10.72.92.28) To
- hi2exch02.adit-jv.com (10.72.92.28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Takashi, dear Fabio,
+On Tue, 14 Jun 2022 11:48:53 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Thank you for your prompt feedback.
-Please, keep me in the loop in case a revert/fix is submitted to LKML.
+> On Sun, 12 Jun 2022 11:28:22 +0200
+> Luca Weiss <luca@z3ntu.xyz> wrote:
+> 
+> > Hi Jonathan,
+> > 
+> > On Sonntag, 12. Juni 2022 10:53:33 CEST Jonathan Cameron wrote:  
+> > > On Wed, 08 Jun 2022 12:18:52 +0200
+> > > 
+> > > "Luca Weiss" <luca.weiss@fairphone.com> wrote:    
+> > > > Hi Markuss,
+> > > > 
+> > > > On Mon May 23, 2022 at 7:53 PM CEST, Markuss Broks wrote:    
+> > > > > Handle the regulator supplying the VDD pin of VL53L0X.
+> > > > > 
+> > > > > Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+> > > > > ---
+> > > > > 
+> > > > >  drivers/iio/proximity/vl53l0x-i2c.c | 37 +++++++++++++++++++++++++++++
+> > > > >  1 file changed, 37 insertions(+)
+> > > > > 
+> > > > > diff --git a/drivers/iio/proximity/vl53l0x-i2c.c
+> > > > > b/drivers/iio/proximity/vl53l0x-i2c.c index 12a3e2eff464..8581a873919f
+> > > > > 100644
+> > > > > --- a/drivers/iio/proximity/vl53l0x-i2c.c
+> > > > > +++ b/drivers/iio/proximity/vl53l0x-i2c.c
+> > > > > @@ -43,6 +43,7 @@
+> > > > > 
+> > > > >  struct vl53l0x_data {
+> > > > >  
+> > > > >  	struct i2c_client *client;
+> > > > >  	struct completion completion;
+> > > > > 
+> > > > > +	struct regulator *vdd_supply;
+> > > > > 
+> > > > >  };
+> > > > >  
+> > > > >  static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
+> > > > > 
+> > > > > @@ -192,10 +193,31 @@ static const struct iio_info vl53l0x_info = {
+> > > > > 
+> > > > >  	.read_raw = vl53l0x_read_raw,
+> > > > >  
+> > > > >  };
+> > > > > 
+> > > > > +static void vl53l0x_power_off(void *_data)
+> > > > > +{
+> > > > > +	struct vl53l0x_data *data = _data;
+> > > > > +
+> > > > > +	regulator_disable(data->vdd_supply);
+> > > > > +}
+> > > > > +
+> > > > > +static int vl53l0x_power_on(struct vl53l0x_data *data)
+> > > > > +{
+> > > > > +	int ret;
+> > > > > +
+> > > > > +	ret = regulator_enable(data->vdd_supply);
+> > > > > +	if (ret)
+> > > > > +		return ret;
+> > > > > +
+> > > > > +	usleep_range(3200, 5000);
+> > > > > +
+> > > > > +	return 0;
+> > > > > +}
+> > > > > +
+> > > > > 
+> > > > >  static int vl53l0x_probe(struct i2c_client *client)
+> > > > >  {
+> > > > >  
+> > > > >  	struct vl53l0x_data *data;
+> > > > >  	struct iio_dev *indio_dev;
+> > > > > 
+> > > > > +	int error;
+> > > > > 
+> > > > >  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> > > > >  	if (!indio_dev)
+> > > > > 
+> > > > > @@ -210,6 +232,21 @@ static int vl53l0x_probe(struct i2c_client *client)
+> > > > > 
+> > > > >  				     I2C_FUNC_SMBUS_BYTE_DATA))
+> > > > >  		
+> > > > >  		return -EOPNOTSUPP;
+> > > > > 
+> > > > > +	data->vdd_supply = devm_regulator_get_optional(&client->dev,     
+> > "vdd");  
+> > > > > +	if (IS_ERR(data->vdd_supply))
+> > > > > +		return dev_err_probe(&client->dev, PTR_ERR(data-    
+> > >vdd_supply),    
+> > > > > +				     "Unable to get VDD     
+> > regulator\n");  
+> > > > 
+> > > > It looks like this optional regulator is not actually optional.
+> > > > 
+> > > > [    1.919995] vl53l0x-i2c 1-0029: error -ENODEV: Unable to get VDD
+> > > > regulator
+> > > > 
+> > > > When using devm_regulator_get instead, a dummy regulator gets returned
+> > > > which I think is what we want here:
+> > > > 
+> > > > [    1.905518] vl53l0x-i2c 1-0029: supply vdd not found, using dummy
+> > > > regulator
+> > > > 
+> > > > Can you fix this up or should I send a patch?    
+> > > 
+> > > Hi Luca,
+> > > 
+> > > Please send a patch.    
+> > 
+> > Which commit sha can I use for Fixes: here?
+> > Based your togreg[0] branch currently shows "Age: 20 hours" I guess it was 
+> > rebased recently?  
+> 
+> It was rebased onto rc1 as you noticed.
+> 
+> In theory it is now stable, assuming nothing nasty shows up.
+> Fixes tag doesn't matter strongly given both will go into mainline via
+> the same pull request, so maybe just skip adding one to make my life
+> easier :)
+The 'in theory stable' bit lasted a few more mins as I had a patch
+I'd otherwise needed to have done a messy revert for.
 
-BR, Eugeniu.
+So definitely safer to skip the Fixes tag for this, though I do
+have scripts that check them and should in theory fix it up
+if it is based on stale version of togreg.  It's just fiddly
+to do.
+
+Thanks
+Jonathan
+
+
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> > 
+> > Regards
+> > Luca
+> > 
+> > [0]https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=togreg
+> >   
+> > > 
+> > > Jonathan
+> > >     
+> > > > Regards
+> > > > Luca
+> > > >     
+> > > > > +
+> > > > > +	error = vl53l0x_power_on(data);
+> > > > > +	if (error)
+> > > > > +		return dev_err_probe(&client->dev, error,
+> > > > > +				     "Failed to power on the     
+> > chip\n");  
+> > > > > +
+> > > > > +	error = devm_add_action_or_reset(&client->dev, vl53l0x_power_off,
+> > > > > data);
+> > > > > +	if (error)
+> > > > > +		return dev_err_probe(&client->dev, error,
+> > > > > +				     "Failed to install poweroff     
+> > action\n");  
+> > > > > +
+> > > > > 
+> > > > >  	indio_dev->name = "vl53l0x";
+> > > > >  	indio_dev->info = &vl53l0x_info;
+> > > > >  	indio_dev->channels = vl53l0x_channels;    
+> > 
+> > 
+> > 
+> >   
+> 
+
