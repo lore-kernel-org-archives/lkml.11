@@ -2,99 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A878C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:14:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FFAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344004AbiFNPOn (ORCPT
+        id S1344099AbiFNPOq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 11:14:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45952 "EHLO
+        Tue, 14 Jun 2022 11:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245427AbiFNPOk (ORCPT
+        with ESMTP id S239904AbiFNPOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 11:14:40 -0400
-Received: from smtpout30.security-mail.net (smtpout30.security-mail.net [85.31.212.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E4739167
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:14:38 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by fx301.security-mail.net (Postfix) with ESMTP id 6E9F524BD1DF
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 17:14:36 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalrayinc.com;
-        s=sec-sig-email; t=1655219676;
-        bh=XWOIRVk3z5AQ6ureUe+X7StGewlRNrG5efWvD2TbZNo=;
-        h=From:To:Cc:Subject:Date;
-        b=lSB2BH/jCkrOVPI8XwMxvHunktsxwziYoRn3c6yzzl1iwB/8pVL60k8Yo7Ioe0SBz
-         IxsDG4Me+ZSCTihRDAWzmr6H+WDQ/Dfb6LvpLgFpayfGWy24KrmQP2zR0hFbzZhYp3
-         q6gfod2erzIix6KUWxS/Gwdue493DlfqRSA/YV2E=
-Received: from fx301 (localhost [127.0.0.1])
-        by fx301.security-mail.net (Postfix) with ESMTP id 1BC2424BD18D;
-        Tue, 14 Jun 2022 17:14:36 +0200 (CEST)
-X-Virus-Scanned: E-securemail
-Secumail-id: <e731.62a8a5db.87171.0>
-Received: from zimbra2.kalray.eu (unknown [217.181.231.53])
-        by fx301.security-mail.net (Postfix) with ESMTPS id 879DF24BD127;
-        Tue, 14 Jun 2022 17:14:35 +0200 (CEST)
-Received: from zimbra2.kalray.eu (localhost [127.0.0.1])
-        by zimbra2.kalray.eu (Postfix) with ESMTPS id 6177E27E04E1;
-        Tue, 14 Jun 2022 17:14:35 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by zimbra2.kalray.eu (Postfix) with ESMTP id 4999E27E04E4;
-        Tue, 14 Jun 2022 17:14:35 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu 4999E27E04E4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalrayinc.com;
-        s=4F334102-7B72-11EB-A74E-42D0B9747555; t=1655219675;
-        bh=4RXBUPP9gE2oA17EFCo678ZU9BVLqoUuf2Yuh0dqC/s=;
-        h=From:To:Date:Message-Id;
-        b=mZL3TSpDmFyiLAioDimuSKRQ5npMte34kbYHay66/J1jfYiPqO2nGHe7etLGIZ83G
-         DPfdpj+PNUI5wP+1h06ovgRXInt5LTZHodH0x0xlKInyE8l7ouLx+w+YCEjvEn1ogX
-         WE9eqZpqb30gYaieLcJlnYRHjVXO/Wc6gVf9X8a9CbYV2u7DcuKHm6zs7qnUQRUDsq
-         aH9YMpXoSmMpn2AO7qhxCAB7GaIlqJYriWqj9Flcn340wpMKRZza21TwFHbuv2UQPF
-         qt/maByimmFEserUx88xyNtvnIFW3QJqLCN30ce2TYdhQCK5PzWhv3p7kXfkGII/He
-         N1lDaeE7hSVTA==
-Received: from zimbra2.kalray.eu ([127.0.0.1])
-        by localhost (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id hcR2nCMFJ4SD; Tue, 14 Jun 2022 17:14:35 +0200 (CEST)
-Received: from ws2104.lin.mbt.kalray.eu (unknown [192.168.37.162])
-        by zimbra2.kalray.eu (Postfix) with ESMTPSA id 2DE1C27E04E1;
-        Tue, 14 Jun 2022 17:14:35 +0200 (CEST)
-From:   Julian Vetter <jvetter@kalrayinc.com>
-To:     gregkh@linuxfoundation.org, rafael@kernel.org,
-        linux-kernel@vger.kernel.org, ysionneau@kalrayinc.com,
-        jmaselbas@kalrayinc.com
-Cc:     Julian Vetter <jvetter@kalrayinc.com>
-Subject: [PATCH v2 1/2] msi: The MSI framework only supports 2048 platform MSIs
-Date:   Tue, 14 Jun 2022 17:14:10 +0200
-Message-Id: <20220614151411.32674-1-jvetter@kalrayinc.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: by Secumail
+        Tue, 14 Jun 2022 11:14:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93585377DD
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:14:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BF5360EA0
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 15:14:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14664C3411B;
+        Tue, 14 Jun 2022 15:14:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655219679;
+        bh=j9VGIf0zMXWC/ky8RMTbRLod5E9/MceYZUjWaMpKc+U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=k/N/RtvJvBe9XPLoAXhbpTq5xuGqAr4XRugHJN/rEqlIPsmUzfDyl/2VvZ5fKbIse
+         F8iyYx31VDnNSr/mobhTm1RlMJMxjYRv+XUk6BjF/TVopiWM/NOk5vpmsePyoy6Cyq
+         hgs2TLQISsbgWrc8UCl3R3XRYXda+xV7HpcAmV2U=
+Date:   Tue, 14 Jun 2022 17:14:37 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc:     Bard Liao <yung-chuan.liao@linux.intel.com>,
+        alsa-devel@alsa-project.org, vkoul@kernel.org,
+        vinod.koul@linaro.org, linux-kernel@vger.kernel.org, tiwai@suse.de,
+        broonie@kernel.org, srinivas.kandagatla@linaro.org,
+        sanyog.r.kale@intel.com, bard.liao@intel.com
+Subject: Re: [PATCH 2/2] ASoC: SOF: Intel: add trigger callback into
+ sdw_callback
+Message-ID: <Yqil3UDSmoXN3E9M@kroah.com>
+References: <20220614070817.2508-1-yung-chuan.liao@linux.intel.com>
+ <20220614070817.2508-3-yung-chuan.liao@linux.intel.com>
+ <Yqg01aSixhBq9d4+@kroah.com>
+ <3fd14acb-1de9-3fd8-81ab-27fee4a42b84@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3fd14acb-1de9-3fd8-81ab-27fee4a42b84@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some devices need more MSIs. To support this the number must be
-increased.
+On Tue, Jun 14, 2022 at 09:55:41AM -0500, Pierre-Louis Bossart wrote:
+> 
+> >> @@ -809,6 +814,10 @@ void hda_set_dai_drv_ops(struct snd_sof_dev *sdev, struct snd_sof_dsp_ops *ops)
+> >>  		if (!hda_use_tplg_nhlt)
+> >>  			ipc4_data->nhlt = intel_nhlt_init(sdev->dev);
+> >>  
+> >> +#if IS_ENABLED(CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE)
+> >> +		sdw_callback.trigger = ipc4_be_dai_common_trigger;
+> >> +#endif
+> > 
+> > #if should not be in .c files if at all possible.  Surely there's a
+> > better way here...
+> 
+> we could use
+> 
+> if (IS_ENABLED(CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE))
+>     sdw_callback.trigger = ipc4_be_dai_common_trigger;
+> 
+> would that work?
 
-Signed-off-by: Julian Vetter <jvetter@kalrayinc.com>
-Reviewed-by: Yann Sionneau <ysionneau@kalrayinc.com>
----
-(no changes since v1)
+It's more readable, right?  Also easier to maintain over time.
 
- drivers/base/platform-msi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> We try to keep this driver configurable, not all platforms require
+> SoundWire or HDaudio, and that 'sdw_callback' ops structure is
+> conditionally declared.
 
-diff --git a/drivers/base/platform-msi.c b/drivers/base/platform-msi.c
-index 296ea673d661..4b0b2fe3a7ff 100644
---- a/drivers/base/platform-msi.c
-+++ b/drivers/base/platform-msi.c
-@@ -13,7 +13,7 @@
- #include <linux/msi.h>
- #include <linux/slab.h>
- 
--#define DEV_ID_SHIFT	21
-+#define DEV_ID_SHIFT	19
- #define MAX_DEV_MSIS	(1 << (32 - DEV_ID_SHIFT))
- 
- /*
--- 
-2.17.1
+Perhaps don't conditionally declare that?  How much does it really save
+to do that?
 
+thanks,
+
+greg k-h
