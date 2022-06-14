@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60DB2CCA47A
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1368C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:49:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357579AbiFNStH (ORCPT
+        id S1357746AbiFNStJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
+        Tue, 14 Jun 2022 14:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357332AbiFNSqM (ORCPT
+        with ESMTP id S1357725AbiFNSrm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:46:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2176B4B844;
-        Tue, 14 Jun 2022 11:44:24 -0700 (PDT)
+        Tue, 14 Jun 2022 14:47:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0659E4C402;
+        Tue, 14 Jun 2022 11:44:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B340661808;
-        Tue, 14 Jun 2022 18:44:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2410C341C4;
-        Tue, 14 Jun 2022 18:44:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 865356123C;
+        Tue, 14 Jun 2022 18:44:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90B2FC3411D;
+        Tue, 14 Jun 2022 18:44:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232263;
-        bh=ddLRJdnBXp76RgskmoRCcED4kS6cZU+0WZP0iKaDWIA=;
+        s=korg; t=1655232274;
+        bh=3nzlDg8N5IgiLqA8x/4gq5VGBdOPFvqlr1IWGQwV51w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LQwUOnN07ziTAUsZ0vqDanspOqIFXoFLgLB4rR73oX13noUIfE2x0R160UZjoLn10
-         RxHjS4q+5ea753Eq9Ysr3kpyGSyhdDlcSaSBsC+4w37pKmUykoCsgobwn94RWey6GF
-         5AvmEzKQhUkay4B10cN/s/RIwFy+WAPvmlmuUmkI=
+        b=h6bqiWl3DjA/j2hdOp4JyPdokfMJbA2PWjWFSCU17IJCx1GtHw9Ro/68ZBDooGbuR
+         x95suw074/Cn4D5gOP6Yfd9JZu3fmCzKNUajX6xDhwPryrhM6+pscuAWLRTCMQZnET
+         d2vNY3BqTjP6XAfT/no0MNVEG0Yy1pNePbH4Y4Bc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Ingo Molnar <mingo@kernel.org>,
+        stable@vger.kernel.org,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
         Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.4 03/15] x86/cpu: Add Lakefield, Alder Lake and Rocket Lake models to the to Intel CPU family
-Date:   Tue, 14 Jun 2022 20:40:12 +0200
-Message-Id: <20220614183722.498839511@linuxfoundation.org>
+Subject: [PATCH 5.10 02/11] x86/speculation/mmio: Enumerate Processor MMIO Stale Data bug
+Date:   Tue, 14 Jun 2022 20:40:24 +0200
+Message-Id: <20220614183720.461663811@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220614183721.656018793@linuxfoundation.org>
-References: <20220614183721.656018793@linuxfoundation.org>
+In-Reply-To: <20220614183719.878453780@linuxfoundation.org>
+References: <20220614183719.878453780@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +51,178 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Luck <tony.luck@intel.com>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit e00b62f0b06d0ae2b844049f216807617aff0cdb upstream.
+commit 51802186158c74a0304f51ab963e7c2b3a2b046f upstream
 
-Add three new Intel CPU models.
+Processor MMIO Stale Data is a class of vulnerabilities that may
+expose data after an MMIO operation. For more details please refer to
+Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
 
-Signed-off-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Add the Processor MMIO Stale Data bug enumeration. A microcode update
+adds new bits to the MSR IA32_ARCH_CAPABILITIES, define them.
+
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/20200721043749.31567-1-tony.luck@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/intel-family.h |    7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/x86/include/asm/cpufeatures.h       |    1 
+ arch/x86/include/asm/msr-index.h         |   19 +++++++++++++
+ arch/x86/kernel/cpu/common.c             |   43 +++++++++++++++++++++++++++++--
+ tools/arch/x86/include/asm/cpufeatures.h |    1 
+ tools/arch/x86/include/asm/msr-index.h   |   19 +++++++++++++
+ 5 files changed, 81 insertions(+), 2 deletions(-)
 
---- a/arch/x86/include/asm/intel-family.h
-+++ b/arch/x86/include/asm/intel-family.h
-@@ -86,6 +86,13 @@
- #define INTEL_FAM6_COMETLAKE		0xA5
- #define INTEL_FAM6_COMETLAKE_L		0xA6
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -417,5 +417,6 @@
+ #define X86_BUG_TAA			X86_BUG(22) /* CPU is affected by TSX Async Abort(TAA) */
+ #define X86_BUG_ITLB_MULTIHIT		X86_BUG(23) /* CPU may incur MCE during certain page attribute changes */
+ #define X86_BUG_SRBDS			X86_BUG(24) /* CPU may leak RNG bits if not mitigated */
++#define X86_BUG_MMIO_STALE_DATA		X86_BUG(25) /* CPU is affected by Processor MMIO Stale Data vulnerabilities */
  
-+#define INTEL_FAM6_ROCKETLAKE		0xA7
-+
-+/* Hybrid Core/Atom Processors */
-+
-+#define	INTEL_FAM6_LAKEFIELD		0x8A
-+#define INTEL_FAM6_ALDERLAKE		0x97
-+
- /* "Small Core" Processors (Atom) */
+ #endif /* _ASM_X86_CPUFEATURES_H */
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -114,6 +114,25 @@
+ 						 * Not susceptible to
+ 						 * TSX Async Abort (TAA) vulnerabilities.
+ 						 */
++#define ARCH_CAP_SBDR_SSDP_NO		BIT(13)	/*
++						 * Not susceptible to SBDR and SSDP
++						 * variants of Processor MMIO stale data
++						 * vulnerabilities.
++						 */
++#define ARCH_CAP_FBSDP_NO		BIT(14)	/*
++						 * Not susceptible to FBSDP variant of
++						 * Processor MMIO stale data
++						 * vulnerabilities.
++						 */
++#define ARCH_CAP_PSDP_NO		BIT(15)	/*
++						 * Not susceptible to PSDP variant of
++						 * Processor MMIO stale data
++						 * vulnerabilities.
++						 */
++#define ARCH_CAP_FB_CLEAR		BIT(17)	/*
++						 * VERW clears CPU fill buffer
++						 * even on MDS_NO CPUs.
++						 */
  
- #define INTEL_FAM6_ATOM_BONNELL		0x1C /* Diamondville, Pineview */
+ #define MSR_IA32_FLUSH_CMD		0x0000010b
+ #define L1D_FLUSH			BIT(0)	/*
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1098,18 +1098,39 @@ static const __initconst struct x86_cpu_
+ 					    X86_FEATURE_ANY, issues)
+ 
+ #define SRBDS		BIT(0)
++/* CPU is affected by X86_BUG_MMIO_STALE_DATA */
++#define MMIO		BIT(1)
+ 
+ static const struct x86_cpu_id cpu_vuln_blacklist[] __initconst = {
+ 	VULNBL_INTEL_STEPPINGS(IVYBRIDGE,	X86_STEPPING_ANY,		SRBDS),
+ 	VULNBL_INTEL_STEPPINGS(HASWELL,		X86_STEPPING_ANY,		SRBDS),
+ 	VULNBL_INTEL_STEPPINGS(HASWELL_L,	X86_STEPPING_ANY,		SRBDS),
+ 	VULNBL_INTEL_STEPPINGS(HASWELL_G,	X86_STEPPING_ANY,		SRBDS),
++	VULNBL_INTEL_STEPPINGS(HASWELL_X,	BIT(2) | BIT(4),		MMIO),
++	VULNBL_INTEL_STEPPINGS(BROADWELL_D,	X86_STEPPINGS(0x3, 0x5),	MMIO),
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL_G,	X86_STEPPING_ANY,		SRBDS),
++	VULNBL_INTEL_STEPPINGS(BROADWELL_X,	X86_STEPPING_ANY,		MMIO),
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL,	X86_STEPPING_ANY,		SRBDS),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO),
+ 	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPING_ANY,		SRBDS),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE_X,	BIT(3) | BIT(4) | BIT(6) |
++						BIT(7) | BIT(0xB),              MMIO),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO),
+ 	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPING_ANY,		SRBDS),
+-	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x0, 0xC),	SRBDS),
+-	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x0, 0xD),	SRBDS),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x9, 0xC),	SRBDS | MMIO),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x0, 0x8),	SRBDS),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x9, 0xD),	SRBDS | MMIO),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x0, 0x8),	SRBDS),
++	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPINGS(0x5, 0x5),	MMIO),
++	VULNBL_INTEL_STEPPINGS(ICELAKE_D,	X86_STEPPINGS(0x1, 0x1),	MMIO),
++	VULNBL_INTEL_STEPPINGS(ICELAKE_X,	X86_STEPPINGS(0x4, 0x6),	MMIO),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE,	BIT(2) | BIT(3) | BIT(5),	MMIO),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x1),	MMIO),
++	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPINGS(0x1, 0x1),	MMIO),
++	VULNBL_INTEL_STEPPINGS(ROCKETLAKE,	X86_STEPPINGS(0x1, 0x1),	MMIO),
++	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT,	X86_STEPPINGS(0x1, 0x1),	MMIO),
++	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_D,	X86_STEPPING_ANY,		MMIO),
++	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_L,	X86_STEPPINGS(0x0, 0x0),	MMIO),
+ 	{}
+ };
+ 
+@@ -1130,6 +1151,13 @@ u64 x86_read_arch_cap_msr(void)
+ 	return ia32_cap;
+ }
+ 
++static bool arch_cap_mmio_immune(u64 ia32_cap)
++{
++	return (ia32_cap & ARCH_CAP_FBSDP_NO &&
++		ia32_cap & ARCH_CAP_PSDP_NO &&
++		ia32_cap & ARCH_CAP_SBDR_SSDP_NO);
++}
++
+ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
+ {
+ 	u64 ia32_cap = x86_read_arch_cap_msr();
+@@ -1189,6 +1217,17 @@ static void __init cpu_set_bug_bits(stru
+ 	    cpu_matches(cpu_vuln_blacklist, SRBDS))
+ 		    setup_force_cpu_bug(X86_BUG_SRBDS);
+ 
++	/*
++	 * Processor MMIO Stale Data bug enumeration
++	 *
++	 * Affected CPU list is generally enough to enumerate the vulnerability,
++	 * but for virtualization case check for ARCH_CAP MSR bits also, VMM may
++	 * not want the guest to enumerate the bug.
++	 */
++	if (cpu_matches(cpu_vuln_blacklist, MMIO) &&
++	    !arch_cap_mmio_immune(ia32_cap))
++		setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
++
+ 	if (cpu_matches(cpu_vuln_whitelist, NO_MELTDOWN))
+ 		return;
+ 
+--- a/tools/arch/x86/include/asm/cpufeatures.h
++++ b/tools/arch/x86/include/asm/cpufeatures.h
+@@ -417,5 +417,6 @@
+ #define X86_BUG_TAA			X86_BUG(22) /* CPU is affected by TSX Async Abort(TAA) */
+ #define X86_BUG_ITLB_MULTIHIT		X86_BUG(23) /* CPU may incur MCE during certain page attribute changes */
+ #define X86_BUG_SRBDS			X86_BUG(24) /* CPU may leak RNG bits if not mitigated */
++#define X86_BUG_MMIO_STALE_DATA		X86_BUG(25) /* CPU is affected by Processor MMIO Stale Data vulnerabilities */
+ 
+ #endif /* _ASM_X86_CPUFEATURES_H */
+--- a/tools/arch/x86/include/asm/msr-index.h
++++ b/tools/arch/x86/include/asm/msr-index.h
+@@ -114,6 +114,25 @@
+ 						 * Not susceptible to
+ 						 * TSX Async Abort (TAA) vulnerabilities.
+ 						 */
++#define ARCH_CAP_SBDR_SSDP_NO		BIT(13)	/*
++						 * Not susceptible to SBDR and SSDP
++						 * variants of Processor MMIO stale data
++						 * vulnerabilities.
++						 */
++#define ARCH_CAP_FBSDP_NO		BIT(14)	/*
++						 * Not susceptible to FBSDP variant of
++						 * Processor MMIO stale data
++						 * vulnerabilities.
++						 */
++#define ARCH_CAP_PSDP_NO		BIT(15)	/*
++						 * Not susceptible to PSDP variant of
++						 * Processor MMIO stale data
++						 * vulnerabilities.
++						 */
++#define ARCH_CAP_FB_CLEAR		BIT(17)	/*
++						 * VERW clears CPU fill buffer
++						 * even on MDS_NO CPUs.
++						 */
+ 
+ #define MSR_IA32_FLUSH_CMD		0x0000010b
+ #define L1D_FLUSH			BIT(0)	/*
 
 
