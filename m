@@ -2,157 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CEE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:53:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77497C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353841AbiFNRxs (ORCPT
+        id S1352181AbiFNRxv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 13:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47274 "EHLO
+        Tue, 14 Jun 2022 13:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356942AbiFNRxj (ORCPT
+        with ESMTP id S1352729AbiFNRx1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 13:53:39 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8589286FA
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:53:37 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id u18so8374767plb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:53:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=HYjK3rxh/o4Ln2PasJCrv5tlXw/BblIG4nmWymg4CTU=;
-        b=Dmcl6h6O2UsD1cniilERBIHpLI5g0P/K6YyIIZFmCTiO3zfiNP7vsFGI5yW/YR2P0e
-         PHMFqa5OgjTuzo535YbgmMqa3WUOyvshljH6QUOuRceA/vRqu3tHJjXAifNq2QD6lIPT
-         aH2jUZ1mLLUT+psDLg/ujPik8r4QJQ6H8Rc2w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=HYjK3rxh/o4Ln2PasJCrv5tlXw/BblIG4nmWymg4CTU=;
-        b=tV30XNgLKwzfF6q7f2B461930tdlqBxff4fGjYojgBKymwy2WqDXHVHDubX2RaPxXd
-         2nj/XkY1+y/WDknLOMUppdXCp6JFfHbSAf9aHnbTuuvC1Xv9Ba1VWORFA8eNN5oBGo94
-         WpBNuT40iJf/+WJaBpF/3cC9J9wm2JNLY6GJVLqw8lciGc/L4qUm5flMsDf+Ww3sCZgQ
-         ZwuY+VCeRDth/fZ6n0T+9xJRMAGSU9sGi/wJbnL0d3+bloaXsn3+CO58jO8cT3205k3A
-         o4VtH/OL/bZzrk58GRK4zqCeAPMzp99KJ3tqR/xpghZVV//TBCqblt5IUMvTi9Z+5hOR
-         JNdg==
-X-Gm-Message-State: AJIora/QWHlsVz58lLZSsTHkd9TogMcWiKKQOqSr6RPqMiDvhQDST0ck
-        uKf4W6mJNuSpHq0BC7IA5Moatw==
-X-Google-Smtp-Source: AGRyM1tN4d34RCS0aereeUwhiOz9w4OfY8jYpf4mv8FMaFXrXs9yJ1MCFf+jjpM9PjH3Age+3pITZA==
-X-Received: by 2002:a17:902:eb92:b0:168:911c:5946 with SMTP id q18-20020a170902eb9200b00168911c5946mr5497583plg.167.1655229217250;
-        Tue, 14 Jun 2022 10:53:37 -0700 (PDT)
-Received: from localhost ([2620:15c:11a:202:e2d5:2b03:9fb1:ce40])
-        by smtp.gmail.com with UTF8SMTPSA id r29-20020aa7963d000000b0051bc4ed56bcsm7855498pfg.204.2022.06.14.10.53.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 10:53:36 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 10:53:35 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Krishna Kurapati <quic_kriskura@quicinc.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, quic_pkondeti@quicinc.com,
-        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com
-Subject: Re: [PATCH v20 2/5] usb: dwc3: core: Host wake up support from
- system suspend
-Message-ID: <YqjLHyUVEjf7I3MI@google.com>
-References: <1654158277-12921-1-git-send-email-quic_kriskura@quicinc.com>
- <1654158277-12921-3-git-send-email-quic_kriskura@quicinc.com>
- <YpkRDi2m7cLaKYEf@google.com>
- <Yp5nf2w8uVZ38/XZ@google.com>
- <Yqd9IHQEj3Ex+FcF@google.com>
+        Tue, 14 Jun 2022 13:53:27 -0400
+X-Greylist: delayed 312 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 14 Jun 2022 10:53:26 PDT
+Received: from mail.namei.org (namei.org [65.99.196.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61392286C7;
+        Tue, 14 Jun 2022 10:53:26 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.namei.org (Postfix) with ESMTPS id 35079179;
+        Tue, 14 Jun 2022 17:30:23 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.namei.org 35079179
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=namei.org; s=2;
+        t=1655227823; bh=9ylsUPL7VbCdDnr3J7AuARBJq2lzJrjWzQq70E6IeUw=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=PijtgX5xJfyI5RKvQtLc6cCWx4yh5eJ9ahWhS/N7syHhPAIZoSKAsJGH59m7JXFAz
+         OdHIX1ywy21YB07pPZs9KTng8GTg24uCu19NdEQw2MWReKWqXOfLQYGWKeKPneN2CN
+         n5odCHgVVWN16gehJ8ndHnFg1PoJZWSPEjRkx4cQ=
+Date:   Wed, 15 Jun 2022 03:30:23 +1000 (AEST)
+From:   James Morris <jmorris@namei.org>
+To:     kernel test robot <lkp@intel.com>
+cc:     Micah Morton <mortonm@chromium.org>,
+        linux-security-module@vger.kernel.org, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, keescook@chromium.org, serge@hallyn.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] security: Add LSM hook to setgroups() syscall
+In-Reply-To: <202206141619.gvenMkdS-lkp@intel.com>
+Message-ID: <ddcc855c-d8f-98ff-24c5-3abe24c1fe@namei.org>
+References: <20220613202807.447694-1-mortonm@chromium.org> <202206141619.gvenMkdS-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yqd9IHQEj3Ex+FcF@google.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 11:08:32AM -0700, Matthias Kaehlcke wrote:
-> On Mon, Jun 06, 2022 at 01:45:51PM -0700, Matthias Kaehlcke wrote:
-> > On Thu, Jun 02, 2022 at 12:35:42PM -0700, Matthias Kaehlcke wrote:
-> > > Hi Krishna,
-> > > 
-> > > with this version I see xHCI errors on my SC7180 based system, like
-> > > these:
-> > > 
-> > > [   65.352605] xhci-hcd xhci-hcd.13.auto: xHC error in resume, USBSTS 0x401, Reinit
-> > > 
-> > > [  101.307155] xhci-hcd xhci-hcd.13.auto: WARN: xHC CMD_RUN timeout
-> > > 
-> > > After resume a downstream hub isn't enumerated again.
-> > > 
-> > > So far I didn't see those with v13, but I aso saw the first error with
-> > > v16.
-> > 
-> > It also happens with v13, but only when a wakeup capable vUSB <= 2
-> > device is plugged in. Initially I used a wakeup capable USB3 to
-> > Ethernet adapter to trigger the wakeup case, however older versions
-> > of this series that use usb_wakeup_enabled_descendants() to check
-> > for wakeup capable devices didn't actually check for vUSB > 2
-> > devices.
-> > 
-> > So the case were the controller/PHYs is powered down works, but
-> > the controller is unhappy when the runtime PM path is used during
-> > system suspend.
+On Tue, 14 Jun 2022, kernel test robot wrote:
+
+> Hi Micah,
 > 
-> The issue isn't seen on all systems using dwc3-qcom and the problem starts
-> during probe(). The expected probe sequence is something like this:
+> I love your patch! Yet something to improve:
 > 
-> dwc3_qcom_probe
->   dwc3_qcom_of_register_core
->     dwc3_probe
-> 
->   if (device_can_wakeup(&qcom->dwc3->dev))
->     ...
-> 
-> The important part is that device_can_wakeup() is called after dwc3_probe()
-> has completed. That's what I see on a QC SC7280 system, where wakeup is
-> generally working with these patches.
-> 
-> However on a QC SC7180 system dwc3_probe() is deferred and only executed after
-> dwc3_qcom_probe(). As a result the device_can_wakeup() call returns false.
-> With that the controller/driver ends up in an unhappy state after system
-> suspend.
-> 
-> Probing is deferred on SC7180 because device_links_check_suppliers() finds
-> that '88e3000.phy' isn't ready yet.
+> [auto build test ERROR on linus/master]
+> [also build test ERROR on jmorris-security/next-testing kees/for-next/pstore v5.19-rc2 next-20220614]
 
-It seems device links could be used to make sure the dwc3 core is present:
+My next-testing is out of date, I'll push a newer version.
 
-  Another example for an inconsistent state would be a device link that
-  represents a driver presence dependency, yet is added from the consumer’s
-  ->probe callback while the supplier hasn’t probed yet: Had the driver core
-  known about the device link earlier, it wouldn’t have probed the consumer
-  in the first place. The onus is thus on the consumer to check presence of
-  the supplier after adding the link, and defer probing on non-presence.
+-- 
+James Morris
+<jmorris@namei.org>
 
-  https://www.kernel.org/doc/html/v5.18/driver-api/device_link.html#usage
-
-
-You could add something like this to dwc3_qcom_of_register_core():
-
-
-  device_link_add(dev, &qcom->dwc3->dev,
-  		  DL_FLAG_AUTOREMOVE_CONSUMER | DL_FLAG_AUTOPROBE_CONSUMER);
-
-  if (qcom->dwc3->dev.links.status != DL_DEV_DRIVER_BOUND)
-      ret = -EPROBE_DEFER;
-
-
-From the doc it isn't clear how the consumer is supposed to check presence
-of the supplier, the above check of the link status is also used in
-drivers/cpufreq/mediatek-cpufreq.c , but not elsewhere outside of the
-driver framework.
