@@ -2,98 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31533C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6192DCCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352283AbiFNU6R (ORCPT
+        id S1358598AbiFNU7B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52128 "EHLO
+        Tue, 14 Jun 2022 16:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236064AbiFNU6P (ORCPT
+        with ESMTP id S1358411AbiFNU6i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:58:15 -0400
-Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690384FC49;
-        Tue, 14 Jun 2022 13:58:14 -0700 (PDT)
-Received: by mail-io1-f49.google.com with SMTP id h8so10687125iof.11;
-        Tue, 14 Jun 2022 13:58:14 -0700 (PDT)
+        Tue, 14 Jun 2022 16:58:38 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63EC4F9F6
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:58:37 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id mh16-20020a17090b4ad000b001e8313301f1so1974395pjb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:58:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=VhtgMIE5/Wg9DeNfIoD/7ofySaH7LKxXNeBi1f7nprg=;
+        b=nd9cPW0Zt54xwKXnf3Iqq+3nbNSv9YnSZqD18K5ZuoLb8FxShWIrEG2PJLN12gxioC
+         SvF0ZC7HvhioxdS7XgKyqhgphK0f03ZJgBJ/2/vqZ5LS1rCq7g9JvviehoIMBw7OQAuk
+         Fp8Xy4w/Odlbk6L8hBSLbi1toPO4qyq1vH8niXdNJ0z2x9zPwimFl3qNMjizcBuyz7km
+         Nrn1aQMFT3vL1JHRYf7s5Vz2FnCUCTswJG4hlYOOvlf05zTAJgU2W00aGEzIzGT/ZULf
+         DgYK1Ic6IM5x2+R8rkG41yxT4rzGrjL79XZaleoWPXFK2McSlg+ftzEIAf2EUYcLciA8
+         Y1Qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7iMjdZBJ4KMw63aFHTKRe1N4L60iJ+6XfVwG5ZwbGng=;
-        b=sXdsKkp9lAHFN3EkCoj374ZvZ3mvKZu/eewmPqSzISPoQc0+pUDt86jAd2Zs07t5hA
-         kEZ1x56iivspspbYIkdMkJ73Tx87QRUt/O6359mO7rY5aTobFQwsp/E5/8UVVXHGc62V
-         yQ/3WUPXwdq1yYchICb+l8/JFEsT8eo5rWFJJrM0gsWIyBtf55bWogB8O0LmUN72yMRk
-         RB1+9+pX/O5zMj9e4zynf649xeiTgy60QJEH2b9kMd5/0XAYUaiG70Ades407ME9ZHeF
-         J+SS5GsZzbfNNIBB25Jm8DLtAsM2zAPD5LI3d2bR55hsjnmRMaM1a3ylaUtb3wczB0iQ
-         wc+w==
-X-Gm-Message-State: AOAM530W6lsQ+hgrsr8J67urH76oYIHrW2+xIRlyZPDVHUCMDPhTwNL5
-        nre62456N5sXhmrkPvWnZaxxzV1Y+A==
-X-Google-Smtp-Source: ABdhPJzaPjeU08pGK0MfSUVKPEZ9N1AbAOfvFkcbi6Q+ONd4MUogkiyMtEdcQTGGoAmBarcytqPQ4g==
-X-Received: by 2002:a05:6638:1509:b0:331:baca:d2bc with SMTP id b9-20020a056638150900b00331bacad2bcmr3901729jat.299.1655240293668;
-        Tue, 14 Jun 2022 13:58:13 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id x24-20020a026f18000000b00331f48289easm5307203jab.136.2022.06.14.13.58.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 13:58:13 -0700 (PDT)
-Received: (nullmailer pid 2547452 invoked by uid 1000);
-        Tue, 14 Jun 2022 20:58:11 -0000
-Date:   Tue, 14 Jun 2022 14:58:11 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Alexander Steffen <Alexander.Steffen@infineon.com>
-Cc:     jarkko@kernel.org, linux-kernel@vger.kernel.org,
-        linux-integrity@vger.kernel.org, devicetree@vger.kernel.org,
-        peterhuewe@gmx.de, jgg@ziepe.ca, krzysztof.kozlowski+dt@linaro.org,
-        Johannes Holland <johannes.holland@infineon.com>,
-        Amir Mizinski <amirmizi6@gmail.com>
-Subject: Re: [PATCH v6 1/3] dt-bindings: trivial-devices: Add Infineon
- SLB9673 TPM
-Message-ID: <20220614205811.GA2528404-robh@kernel.org>
-References: <20220608173113.9232-1-Alexander.Steffen@infineon.com>
- <20220608173113.9232-2-Alexander.Steffen@infineon.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VhtgMIE5/Wg9DeNfIoD/7ofySaH7LKxXNeBi1f7nprg=;
+        b=vLzth+D1oUBJxFK4+zc7ywT3iT+15sv0v4nw21UsJnP64zIROT214YqY1LXXCzmC3/
+         lKksxYKBrANw3fZwpKwR6Bag9Jzqh0vqLnX6nsu2m8RVFl9cho+XUcdlSi/ROKHzcW0I
+         yVVv9T5cm+2Xg5x5Caq6ou8oggZ/Tq/i3oEOPCAWFzbmWB6DTXdDN/k+tYq+QLDAl2I9
+         TalHRHbUvnoWoSGmaQByvlbX/xt2B/EVIEsbfXF1U/PNg1arvNd/mGrTdMtyyVorBqiw
+         dGj0TRHeYEW4mDylfXnnC1fO/Sk5o6gX6B4s3fqCg7D4gZNTz25il59vRxFxJouTJffw
+         SrWA==
+X-Gm-Message-State: AJIora/reEmHLT9LBiWdiGgw8+8C7yvpWMJrs1CWjGH3ro6ViXvZMqzq
+        KyoouQYWMAoyd70wQoiWnu53lA==
+X-Google-Smtp-Source: AGRyM1swttS5otb7Ake3x9Zuf+nymu832Shm/TyGc9J+pv3ZSyf2ABU3qHozSWtHj3WAswhxf3kIZg==
+X-Received: by 2002:a17:902:f68b:b0:163:f358:d4ad with SMTP id l11-20020a170902f68b00b00163f358d4admr6103713plg.23.1655240317182;
+        Tue, 14 Jun 2022 13:58:37 -0700 (PDT)
+Received: from [172.22.33.138] ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id a15-20020a62d40f000000b0051f2b9f9b05sm8120090pfh.76.2022.06.14.13.58.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 13:58:36 -0700 (PDT)
+Message-ID: <57d11a55-beba-c91b-e168-989417e3910d@linaro.org>
+Date:   Tue, 14 Jun 2022 13:58:35 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608173113.9232-2-Alexander.Steffen@infineon.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v9 1/3] dt-bindings: marvell: Document the AC5/AC5X
+ compatibles
+Content-Language: en-US
+To:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Konstantin Porotchkin <kostap@marvell.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Robert Marko <robert.marko@sartura.hr>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220613225338.393-1-vadym.kochan@plvision.eu>
+ <20220613225338.393-2-vadym.kochan@plvision.eu>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220613225338.393-2-vadym.kochan@plvision.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 07:31:11PM +0200, Alexander Steffen wrote:
-> Initial device to be supported by the upcoming tpm_tis_i2c driver. More
-> to be added later.
+On 13/06/2022 15:53, Vadym Kochan wrote:
+> From: Chris Packham <chris.packham@alliedtelesis.co.nz>
 > 
-> Signed-off-by: Alexander Steffen <Alexander.Steffen@infineon.com>
+> Describe the compatible properties for the Marvell Alleycat5/5X switches
+> with integrated CPUs.
+> 
+> Alleycat5:
+> * 98DX2538: 24x1G + 2x10G + 2x10G Stack
+> * 98DX2535: 24x1G + 4x1G Stack
+> * 98DX2532: 8x1G + 2x10G + 2x1G Stack
+> * 98DX2531: 8x1G + 4x1G Stack
+> * 98DX2528: 24x1G + 2x10G + 2x10G Stack
+> * 98DX2525: 24x1G + 4x1G Stack
+> * 98DX2522: 8x1G + 2x10G + 2x1G Stack
+> * 98DX2521: 8x1G + 4x1G Stack
+> * 98DX2518: 24x1G + 2x10G + 2x10G Stack
+> * 98DX2515: 24x1G + 4x1G Stack
+> * 98DX2512: 8x1G + 2x10G + 2x1G Stack
+> * 98DX2511: 8x1G + 4x1G Stack
+> 
+> Alleycat5X:
+> * 98DX3500: 24x1G + 6x25G
+> * 98DX3501: 16x1G + 6x10G
+> * 98DX3510: 48x1G + 6x25G
+> * 98DX3520: 24x2.5G + 6x25G
+> * 98DX3530: 48x2.5G + 6x25G
+> * 98DX3540: 12x5G/6x10G + 6x25G
+> * 98DX3550: 24x5G/12x10G + 6x25G
+> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
 > ---
->  Documentation/devicetree/bindings/trivial-devices.yaml | 2 ++
->  1 file changed, 2 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
-> index 6aafa71806a3..47a88e891a06 100644
-> --- a/Documentation/devicetree/bindings/trivial-devices.yaml
-> +++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-> @@ -139,6 +139,8 @@ properties:
->            - infineon,slb9635tt
->              # Infineon SLB9645 I2C TPM (new protocol, max 400khz)
->            - infineon,slb9645tt
-> +            # Infineon SLB9673 I2C TPM 2.0
-> +          - infineon,slb9673
+> Notes:
+>     Changes in v9:
+>     - Renamed $id with "ac5" prefix
 
-I suspect these will need to move to here (don't you need to support 
-linux,sml-base?):
- 
-Documentation/devicetree/bindings/security/tpm/tpm-i2c.txt
+I guess this was the reason to drop review? Anyway this is unexpected
+change considering the name does not appear in compatibles.
 
-But for now,
+>     Changes in v8:
+>     - Add review from Krzysztof
 
-Acked-by: Rob Herring <robh@kernel.org>
-
->              # Infineon TLV493D-A1B6 I2C 3D Magnetic Sensor
->            - infineon,tlv493d-a1b6
->              # Infineon Multi-phase Digital VR Controller xdpe11280
-> -- 
-> 2.25.1
-> 
-> 
+Best regards,
+Krzysztof
