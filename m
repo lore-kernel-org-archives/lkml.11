@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B25C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3225DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:18:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353329AbiFNCSF (ORCPT
+        id S1353688AbiFNCSI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57546 "EHLO
+        Mon, 13 Jun 2022 22:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354148AbiFNCO0 (ORCPT
+        with ESMTP id S1354166AbiFNCO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF7C93B29D;
-        Mon, 13 Jun 2022 19:08:29 -0700 (PDT)
+        Mon, 13 Jun 2022 22:14:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00E03B549;
+        Mon, 13 Jun 2022 19:08:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4490DB8168A;
-        Tue, 14 Jun 2022 02:07:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3270FC3411B;
-        Tue, 14 Jun 2022 02:07:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A77A60EED;
+        Tue, 14 Jun 2022 02:08:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEDFAC341C4;
+        Tue, 14 Jun 2022 02:08:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172475;
-        bh=EN2LSdwrHyUj4sryCNoBl23CVmDro7Q1flq5/ck1sI4=;
+        s=k20201202; t=1655172509;
+        bh=MDHUU8abgO5VK7Id2WBvk0k67bBL7YmBlI8K6lW9WKw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a9bWRu+tjq+CKTgiqAbaW81IzZGFbNB+xkqSGb5W67V0R8gpeo4P0pb5lOsUaXrW1
-         i/S8BNmC80nRB+Quo9a+gwMJ+F4GjYXfliGsm1teZ01zb+typGXl/LYIpqlJ4eqYmf
-         YvYV/cROjhpQ5YFeKU4MlYVEBFyDAdaXlq/P3pBfC8PVWQ+qyu+7vb4ex9NYj1DrFE
-         z2vukniWMkQ4eft95lPpj2rK9CakMT913vNsKYzLF9MX0ifTCU4FPm+W5RGDuAgfVu
-         b5GILzrt4vYXWWoQvku2OD+c5Tkb9G1o3Ot2T0Z0Ac0gXGLHxu3qk7S8zk5Wtd28dZ
-         EQAJ2S+rguYDA==
+        b=aPKWACQVxv1e/fpyx5Bc8OYFP2dWNAmVIQgXjj2UzG6AxvkR/qyFzlaQWf5WAMKJu
+         5s2wwxXoVgMC4G8tjvEVidrz948cYxlqolZ1blaro4gfVh5RVGrmUqYVtRA9g1/PTM
+         mkY+j6Nf68u9oFvn8+sgczan7rnkTkd3Th5rcwqyNVF/RNXkhH7NEqJq8FitzfrWU9
+         skVB9j3yF/yCoIh3qikYwg569YTJ34nH0/M4dI+U00QughfrEqjX1TQKfnwhBtVK6i
+         eU60Db+06Y78poqdJgwrCX+PZ7HRELQmPTM4tI4RP4Os3Mw7zcdSMbNRr9uHZibU06
+         07siRR4623Ejg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     chengkaitao <pilgrimtao@gmail.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sasha Levin <sashal@kernel.org>,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.15 28/41] virtio-mmio: fix missing put_device() when vm_cmdline_parent registration failed
-Date:   Mon, 13 Jun 2022 22:06:53 -0400
-Message-Id: <20220614020707.1099487-28-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
+        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.10 08/29] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
+Date:   Mon, 13 Jun 2022 22:07:54 -0400
+Message-Id: <20220614020815.1099999-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
-References: <20220614020707.1099487-1-sashal@kernel.org>
+In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
+References: <20220614020815.1099999-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,34 +54,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: chengkaitao <pilgrimtao@gmail.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit a58a7f97ba11391d2d0d408e0b24f38d86ae748e ]
+[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
 
-The reference must be released when device_register(&vm_cmdline_parent)
-failed. Add the corresponding 'put_device()' in the error handling path.
+A couple of the SX volume controls specify 0x84 as the lowest volume
+value, however the correct value from the datasheet is 0x44. The
+datasheet don't include spaces in the value it displays as binary so
+this was almost certainly just a typo reading 1000100.
 
-Signed-off-by: chengkaitao <pilgrimtao@gmail.com>
-Message-Id: <20220602005542.16489-1-chengkaitao@didiglobal.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virtio/virtio_mmio.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/cs42l56.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 56128b9c46eb..1dd396d4bebb 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -688,6 +688,7 @@ static int vm_cmdline_set(const char *device,
- 	if (!vm_cmdline_parent_registered) {
- 		err = device_register(&vm_cmdline_parent);
- 		if (err) {
-+			put_device(&vm_cmdline_parent);
- 			pr_err("Failed to register parent device!\n");
- 			return err;
- 		}
+diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
+index 06dcfae9dfe7..d41e03193106 100644
+--- a/sound/soc/codecs/cs42l56.c
++++ b/sound/soc/codecs/cs42l56.c
+@@ -391,9 +391,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
+ 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
+ 
+ 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
+-			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
+ 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
+-			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
+ 
+ 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
+ 			0, 0x00, 1, tone_tlv),
 -- 
 2.35.1
 
