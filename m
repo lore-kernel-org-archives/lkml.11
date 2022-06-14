@@ -2,107 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01488C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 21:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 718F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 21:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358089AbiFNVtP (ORCPT
+        id S1358176AbiFNVtS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 17:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43806 "EHLO
+        Tue, 14 Jun 2022 17:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230493AbiFNVtM (ORCPT
+        with ESMTP id S1358083AbiFNVtO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 17:49:12 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10CBA515BA;
-        Tue, 14 Jun 2022 14:49:12 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id e9so9579406pju.5;
-        Tue, 14 Jun 2022 14:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=JnppAby++umsNjCD3pKbHZyzqXGEc4aNf76TasCL78M=;
-        b=KjGXcBr75g9HUX7cG89maVM9ywrCv//4TXxYWvp4lKhtr8/3p2xpjyAyVnH6XI6Oht
-         lCyS5kn8GOk82mhDzYQT3WuUgH4BuzDDpzvUC6sfX5BDUJ308ekG0To+ft5ylZmVvrsn
-         gBS2nwMahrdxz5vdpKvHVDvOHOGkvSMPCw7UyLt8AIpzVYDO3OgT03wSRtbz3FkPJooC
-         Y0deKide8ELVkkJ2i+oJ423Q/FImS3RgYsZpU1kInRzu3zEqegtr719bzV2TPBUW9qgU
-         yKEbWS5Z8cJM0U5Ez8IE1hePLigqPEuk/0KB23HqOGZq4ixkpCau/RGBCbzTMWcbnCXV
-         qjAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JnppAby++umsNjCD3pKbHZyzqXGEc4aNf76TasCL78M=;
-        b=yyumlHXMKngqX+5MouWOBmNXuIAlDP2vEYdFb7W1qmG9Q9dbjz1mQKLrTvkVdpzjgc
-         uMwjkRvoU2USDY2JJHnDxn3UjaUPGOt7hFxSnklXDyK6AipAsP7F2OI/ZAEemQ3uVaSk
-         lWqsUbumBW2x3L7NgUW+GHxdeFtRQ10f/LRvufjQOL4h9dUm6thqHGBIIhKMFsXL4+Cq
-         f6NODRENkR4PkKTGhIXsHKN65ctS2FTQYGQjAj7unXr/M8yLlH0Beg4iAY7Ritk+2PG7
-         DmlyhIMqI7IBtj+qtYqOBukqekGwZavzwJDtkH9yMdOz5jt1F0rCDQrOLGRK9/tCdGrc
-         B3vg==
-X-Gm-Message-State: AJIora8laPhatgIsHkFaritAJTQs8JB1KBUnknzO1MTX7cJOZWc0BpRz
-        ONHL4e+DdN7urUNRfhzo+kY=
-X-Google-Smtp-Source: AGRyM1ssR15ccU5hlqg/aCbI1LIPgD89tj8zm0nZAf8OG5gpOcorkn3Gl/QUpvgWtODgQetKM7iJyA==
-X-Received: by 2002:a17:902:f70a:b0:153:88c7:774 with SMTP id h10-20020a170902f70a00b0015388c70774mr6140678plo.166.1655243351473;
-        Tue, 14 Jun 2022 14:49:11 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id k132-20020a633d8a000000b003fd9e4911f9sm8404374pga.31.2022.06.14.14.49.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 14:49:10 -0700 (PDT)
-Message-ID: <670a18b1-e1f2-0c18-8543-b9ca4b0838bd@gmail.com>
-Date:   Tue, 14 Jun 2022 14:49:07 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH RESEND net-next v7 01/16] net: dsa: allow
- port_bridge_join() to override extack message
-Content-Language: en-US
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=c3=a8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-References: <20220610103712.550644-1-clement.leger@bootlin.com>
- <20220610103712.550644-2-clement.leger@bootlin.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220610103712.550644-2-clement.leger@bootlin.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Tue, 14 Jun 2022 17:49:14 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 67D74515BA;
+        Tue, 14 Jun 2022 14:49:13 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 25ELeePu014655;
+        Tue, 14 Jun 2022 16:40:40 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 25ELeePL014654;
+        Tue, 14 Jun 2022 16:40:40 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Tue, 14 Jun 2022 16:40:39 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vitaly Buka <vitalybuka@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
+Message-ID: <20220614214039.GA25951@gate.crashing.org>
+References: <20220614144853.3693273-1-glider@google.com> <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com> <CAG_fn=WEed5NJ8hdrrP_N8aQ_1Ad11VoJgdVxQheo3VfT_xyXQ@mail.gmail.com> <CAHk-=whjz3wO8zD+itoerphWem+JZz4uS3myf6u1Wd6epGRgmQ@mail.gmail.com> <CAG_fn=UPoM3bafwu6inGPMjg1bPw3HSFM_KrE_hen_MN3fu2vA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAG_fn=UPoM3bafwu6inGPMjg1bPw3HSFM_KrE_hen_MN3fu2vA@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/10/22 03:36, Clément Léger wrote:
-> Some drivers might report that they are unable to bridge ports by
-> returning -EOPNOTSUPP, but still wants to override extack message.
-> In order to do so, in dsa_slave_changeupper(), if port_bridge_join()
-> returns -EOPNOTSUPP, check if extack message is set and if so, do not
-> override it.
-> 
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+Hi!
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+On Tue, Jun 14, 2022 at 10:19:53PM +0200, Alexander Potapenko wrote:
+> ================
+> char *kmalloc(int size);
+> 
+> char *kmalloc_or_not(int flag, int size, char *p) {
+>   if (flag)
+>     return kmalloc(size);
+>   else
+>     return p;
+> }
+> 
+> char global[16];
+> 
+> char *p(int flag) {
+>   char *c;
+>   int size;
+>   if (flag)
+>     return kmalloc_or_not(1, 4, c);
+>   else
+>     return kmalloc_or_not(0, size, global);
+> }
+> ================
+
+Since C11, lvalue conversion of an automatic variable that does not have
+its address taken is explicitly undefined behaviour (6.3.2.1/2).  So in
+function "p", both where "c" and where "size" are passed causes UB (so
+that executing "p" always causes UB btw).
+
+> In this example `size` is passed into kmalloc_or_not() initialized,
+> however it is never used, so the code probably has defined behavior.
+
+No such luck: the passing itself already causes UB.
+
+GCC does not warn, it has already optimised the code to what you expect
+by the time this warning is done.  If you use -fno-inline it does warn
+for both "c" and "size" (via -Wmaybe-uninitialized).
+
+But it is still UB!  All bets are off, no compiler can do any correct
+translation of your program, since there *is none*.
+
+
+Segher
