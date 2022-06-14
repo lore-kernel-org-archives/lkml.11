@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C022C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41ACEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357030AbiFNUIN (ORCPT
+        id S1349457AbiFNUIR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
+        Tue, 14 Jun 2022 16:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355647AbiFNUHl (ORCPT
+        with ESMTP id S1357038AbiFNUHz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:07:41 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F92010FC8
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:07:33 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id t1-20020a62ea01000000b0051be221a3ebso4225990pfh.17
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:07:33 -0700 (PDT)
+        Tue, 14 Jun 2022 16:07:55 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5759213D2C
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:07:37 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id v191-20020a25c5c8000000b00663d6d41f5aso8239115ybe.12
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:07:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=h/OjiDb6ZU4P5Rs5vu7aiUIGzMiM/JPLT2d72W0LmOU=;
-        b=V/PVBaSR2bLGOHRJbPWigQqdEEPXG7MEjVfNM/QRCqTtB7/z8VLHqdL1HAY4cIKh60
-         nQw1kz9GcPK9lyYvtOgx4NSRZ0WQ/nY1eML4nb3GpY6LyyNbs25KuVJNwF8EEZmJUvX/
-         UwoNvUIT5gaC22a4bjCA3q6ite18+bSIiZn+SX3kGMPzxlgT0wKGNO1Ltri6OL689KQG
-         IuloNc3NWtPYLD4sRv8VTVQtCb3JCLOndw9IRZMZdpGjqs2QhR+sbassZmk6ZohOrAod
-         9SMfepYTN7O6dwEpqfO3w37+vydn+++QS7q3zbUqVtoUiN5fJPXn46d+5KErcQImCBcW
-         oxFg==
+        bh=vq20hxrPmqVc31s1r8TPtx4ezGH69rkNq0SRoBaom4o=;
+        b=V/t4JSSMPQa9jPegCIx0X+tIQTdUIpqToRCCfDar4Zuy7FpaRPzQ1oHMzlhfMDSLph
+         U8A0jYqjDHL6wXC0bgEoszqb7jTb8eVqw4ldN4hJtwsZERtszcq7tdbs1yOjpqeMjkj0
+         9gaEcOoX3qzb9qjQzckCe2je27zm9469mWkC+zdtY+3ijy6w5Je1M0r4Oh10dc9YOjJv
+         DJM/E8jyVvRcG7hWDIoK+xG/r4tBR6mvjjDtOlN8GyHQTuw7xt7xfIAeorqa99k4Y1vH
+         /KLTH03//6Jlj9e5vH1mfPrJLGOuxSA2+2Zx43FCpOZHqC4V49fOWfX5GoWmtVCYbwDo
+         A+0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=h/OjiDb6ZU4P5Rs5vu7aiUIGzMiM/JPLT2d72W0LmOU=;
-        b=Y54/ZOwHcDmEGJM2my77hNCh9+l1Ltk5JEMttCKiv/dh/c1xKmVXwaLOOoppEXXXPP
-         cg+5jD9mEByq0l+yrWaRnI7RY2Sx7Ci5YLkRdZBozvkOHYcOtjLAXkXQjfdGteKvFkoI
-         dh+7MxCcklBzbx2+tLkXHftqlibaYhwR9rz4ubDP4nZUOEpEuu+//g4qBQWtAmIFSjEc
-         3QlWTIsR3u8hdFFS8wUjO0Cm3jDRAeNY5+kkh5UcNOc8VU3nAl020F1dk/fvky2BT8ne
-         9RiYQ/ChJ2GjkNcGuxIPL1V8bID9ogl/iDw2YQPy97VJCAG40uT7x6llqiN+4pclTpdx
-         ptDw==
-X-Gm-Message-State: AJIora8zwl77W0dAa1o2a/jGTDaJz+p4SNu3fjYejDJKTEcDA/YzsYD0
-        a4tAL4AW5narBVhCuS2cteoS59a9Gds=
-X-Google-Smtp-Source: AGRyM1sbl6DAPvZxgxT8mIXgVOSQ2LO6MFqbJax4sOk95lVr2Hlq+qrnHEPEhZB92ZdPwkAmkT8eCtHGi/s=
+        bh=vq20hxrPmqVc31s1r8TPtx4ezGH69rkNq0SRoBaom4o=;
+        b=Sp0u8bLz4a/LDVwhZPZx9vhpXUTHowiPJO0Y514RVnIlnqGThJxF0TeC9kTGCXC30Z
+         fwW7X3lcf2aOhfHaOrQa20VSrI1SzxN9f/jx4Tb6Y+3JjhhynzVFrHemWB4fq6XiEwm7
+         HgwOzsCjsyCpkx6iSPdx1FsA5Cg6L8n9L+ro7Q5Oetv3WcajI6HiVHGI+LxA94CvrKdF
+         gz6pe0g2mRwYy/s5MofrNhNgFk0JAVVyv6iAXQsqBAyZ8XqfDhpYEaOImbVJArmTWb+1
+         FyHBAxfn52K25BS3y8tU32hoKfYH13Ait9Hw6RtgIvVY2OSxAB4UqnWI0hibko81VwvQ
+         854g==
+X-Gm-Message-State: AJIora9P6hcIVNzEXSJQ0DsJ96NAHsSp1JdmHNfCuKE02xxJKXkoN2Uo
+        n32mGCVDN5VdGL0/J2nPvm1Xo6NMk8c=
+X-Google-Smtp-Source: AGRyM1uWY1dPZmUvLxKfwFxNKMG50R1/LmedNWgmYjkmMmPw6gtMeKVZPYiya7iuf2HdxjRNxXT11tghX9k=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
- t9-20020a17090a024900b001e0a8a33c6cmr192553pje.0.1655237252726; Tue, 14 Jun
- 2022 13:07:32 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a25:bbc8:0:b0:664:f99f:877 with SMTP id
+ c8-20020a25bbc8000000b00664f99f0877mr6722282ybk.348.1655237256584; Tue, 14
+ Jun 2022 13:07:36 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 14 Jun 2022 20:06:36 +0000
+Date:   Tue, 14 Jun 2022 20:06:38 +0000
 In-Reply-To: <20220614200707.3315957-1-seanjc@google.com>
-Message-Id: <20220614200707.3315957-12-seanjc@google.com>
+Message-Id: <20220614200707.3315957-14-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220614200707.3315957-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH v2 11/42] KVM: selftests: Use kvm_cpu_has() in AMX test
+Subject: [PATCH v2 13/42] KVM: selftests: Remove the obsolete/dead MMU role test
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -65,77 +65,202 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use kvm_cpu_has() in the AMX test instead of open coding equivalent
-functionality using kvm_get_supported_cpuid_entry() and
-kvm_get_supported_cpuid_index().
-
-No functional change intended.
+Remove the MMU role test, which was made obsolete by KVM commit
+feb627e8d6f6 ("KVM: x86: Forbid KVM_SET_CPUID{,2} after KVM_RUN").  The
+ongoing costs of keeping the test updated far outweigh any benefits,
+e.g. the test _might_ be useful as an example or for documentation
+purposes, but otherwise the test is dead weight.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/x86_64/processor.h    |  3 +++
- tools/testing/selftests/kvm/x86_64/amx_test.c   | 17 ++++++-----------
- 2 files changed, 9 insertions(+), 11 deletions(-)
+ tools/testing/selftests/kvm/.gitignore        |   1 -
+ tools/testing/selftests/kvm/Makefile          |   1 -
+ .../selftests/kvm/include/x86_64/processor.h  |   3 -
+ .../selftests/kvm/x86_64/mmu_role_test.c      | 137 ------------------
+ 4 files changed, 142 deletions(-)
+ delete mode 100644 tools/testing/selftests/kvm/x86_64/mmu_role_test.c
 
+diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
+index dd5c88c11059..0ab0e255d292 100644
+--- a/tools/testing/selftests/kvm/.gitignore
++++ b/tools/testing/selftests/kvm/.gitignore
+@@ -27,7 +27,6 @@
+ /x86_64/hyperv_svm_test
+ /x86_64/max_vcpuid_cap_test
+ /x86_64/mmio_warning_test
+-/x86_64/mmu_role_test
+ /x86_64/platform_info_test
+ /x86_64/pmu_event_filter_test
+ /x86_64/set_boot_cpu_id
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index b52c130f7b2f..2ca5400220b9 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -83,7 +83,6 @@ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_svm_test
+ TEST_GEN_PROGS_x86_64 += x86_64/kvm_clock_test
+ TEST_GEN_PROGS_x86_64 += x86_64/kvm_pv_test
+ TEST_GEN_PROGS_x86_64 += x86_64/mmio_warning_test
+-TEST_GEN_PROGS_x86_64 += x86_64/mmu_role_test
+ TEST_GEN_PROGS_x86_64 += x86_64/platform_info_test
+ TEST_GEN_PROGS_x86_64 += x86_64/pmu_event_filter_test
+ TEST_GEN_PROGS_x86_64 += x86_64/set_boot_cpu_id
 diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 2100eb08916a..b5d2e6c69c1a 100644
+index b5d2e6c69c1a..95d1b402da9b 100644
 --- a/tools/testing/selftests/kvm/include/x86_64/processor.h
 +++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -107,9 +107,12 @@ struct kvm_x86_cpu_feature {
- #define	X86_FEATURE_RDPID		KVM_X86_CPU_FEATURE(0x7, 0, ECX, 22)
- #define	X86_FEATURE_SHSTK		KVM_X86_CPU_FEATURE(0x7, 0, ECX, 7)
- #define	X86_FEATURE_IBT			KVM_X86_CPU_FEATURE(0x7, 0, EDX, 20)
-+#define	X86_FEATURE_AMX_TILE		KVM_X86_CPU_FEATURE(0x7, 0, EDX, 24)
- #define	X86_FEATURE_SPEC_CTRL		KVM_X86_CPU_FEATURE(0x7, 0, EDX, 26)
- #define	X86_FEATURE_ARCH_CAPABILITIES	KVM_X86_CPU_FEATURE(0x7, 0, EDX, 29)
- #define	X86_FEATURE_PKS			KVM_X86_CPU_FEATURE(0x7, 0, ECX, 31)
-+#define	X86_FEATURE_XTILECFG		KVM_X86_CPU_FEATURE(0xD, 0, EAX, 17)
-+#define	X86_FEATURE_XTILEDATA		KVM_X86_CPU_FEATURE(0xD, 0, EAX, 18)
- #define	X86_FEATURE_XSAVES		KVM_X86_CPU_FEATURE(0xD, 1, EAX, 3)
+@@ -140,9 +140,6 @@ struct kvm_x86_cpu_feature {
+ #define CPUID_XSAVE		(1ul << 26)
+ #define CPUID_OSXSAVE		(1ul << 27)
  
- /*
-diff --git a/tools/testing/selftests/kvm/x86_64/amx_test.c b/tools/testing/selftests/kvm/x86_64/amx_test.c
-index dcad838953d0..bcf535646321 100644
---- a/tools/testing/selftests/kvm/x86_64/amx_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/amx_test.c
-@@ -312,13 +312,12 @@ void guest_nm_handler(struct ex_regs *regs)
+-/* CPUID.0x8000_0001.EDX */
+-#define CPUID_GBPAGES		(1ul << 26)
+-
+ /* CPUID.0x8000_000A.EDX */
+ #define CPUID_NRIPS		BIT(3)
  
- int main(int argc, char *argv[])
- {
+diff --git a/tools/testing/selftests/kvm/x86_64/mmu_role_test.c b/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
+deleted file mode 100644
+index 383fff2c9587..000000000000
+--- a/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
++++ /dev/null
+@@ -1,137 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-
+-#include "kvm_util.h"
+-#include "processor.h"
+-
+-#define MMIO_GPA	0x100000000ull
+-
+-static void guest_code(void)
+-{
+-	(void)READ_ONCE(*((uint64_t *)MMIO_GPA));
+-	(void)READ_ONCE(*((uint64_t *)MMIO_GPA));
+-
+-	GUEST_ASSERT(0);
+-}
+-
+-static void guest_pf_handler(struct ex_regs *regs)
+-{
+-	/* PFEC == RSVD | PRESENT (read, kernel). */
+-	GUEST_ASSERT(regs->error_code == 0x9);
+-	GUEST_DONE();
+-}
+-
+-static void mmu_role_test(u32 *cpuid_reg, u32 evil_cpuid_val)
+-{
+-	u32 good_cpuid_val = *cpuid_reg;
+-	struct kvm_vcpu *vcpu;
+-	struct kvm_run *run;
+-	struct kvm_vm *vm;
+-	uint64_t cmd;
+-
+-	/* Create VM */
+-	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
+-	run = vcpu->run;
+-
+-	/* Map 1gb page without a backing memlot. */
+-	__virt_pg_map(vm, MMIO_GPA, MMIO_GPA, PG_LEVEL_1G);
+-
+-	vcpu_run(vcpu);
+-
+-	/* Guest access to the 1gb page should trigger MMIO. */
+-	TEST_ASSERT(run->exit_reason == KVM_EXIT_MMIO,
+-		    "Unexpected exit reason: %u (%s), expected MMIO exit (1gb page w/o memslot)\n",
+-		    run->exit_reason, exit_reason_str(run->exit_reason));
+-
+-	TEST_ASSERT(run->mmio.len == 8, "Unexpected exit mmio size = %u", run->mmio.len);
+-
+-	TEST_ASSERT(run->mmio.phys_addr == MMIO_GPA,
+-		    "Unexpected exit mmio address = 0x%llx", run->mmio.phys_addr);
+-
+-	/*
+-	 * Effect the CPUID change for the guest and re-enter the guest.  Its
+-	 * access should now #PF due to the PAGE_SIZE bit being reserved or
+-	 * the resulting GPA being invalid.  Note, kvm_get_supported_cpuid()
+-	 * returns the struct that contains the entry being modified.  Eww.
+-	 */
+-	*cpuid_reg = evil_cpuid_val;
+-	vcpu_set_cpuid(vcpu, kvm_get_supported_cpuid());
+-
+-	/*
+-	 * Add a dummy memslot to coerce KVM into bumping the MMIO generation.
+-	 * KVM does not "officially" support mucking with CPUID after KVM_RUN,
+-	 * and will incorrectly reuse MMIO SPTEs.  Don't delete the memslot!
+-	 * KVM x86 zaps all shadow pages on memslot deletion.
+-	 */
+-	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS,
+-				    MMIO_GPA << 1, 10, 1, 0);
+-
+-	/* Set up a #PF handler to eat the RSVD #PF and signal all done! */
+-	vm_init_descriptor_tables(vm);
+-	vcpu_init_descriptor_tables(vcpu);
+-	vm_install_exception_handler(vm, PF_VECTOR, guest_pf_handler);
+-
+-	vcpu_run(vcpu);
+-
+-	cmd = get_ucall(vcpu, NULL);
+-	TEST_ASSERT(cmd == UCALL_DONE,
+-		    "Unexpected guest exit, exit_reason=%s, ucall.cmd = %lu\n",
+-		    exit_reason_str(run->exit_reason), cmd);
+-
+-	/*
+-	 * Restore the happy CPUID value for the next test.  Yes, changes are
+-	 * indeed persistent across VM destruction.
+-	 */
+-	*cpuid_reg = good_cpuid_val;
+-
+-	kvm_vm_free(vm);
+-}
+-
+-int main(int argc, char *argv[])
+-{
 -	struct kvm_cpuid_entry2 *entry;
- 	struct kvm_regs regs1, regs2;
- 	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
- 	struct kvm_x86_state *state;
--	int xsave_restore_size = 0;
-+	int xsave_restore_size;
- 	vm_vaddr_t amx_cfg, tiledata, xsavedata;
- 	struct ucall uc;
- 	u32 amx_offset;
-@@ -329,17 +328,13 @@ int main(int argc, char *argv[])
- 	/* Create VM */
- 	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
- 
--	entry = kvm_get_supported_cpuid_entry(1);
--	TEST_REQUIRE(entry->ecx & CPUID_XSAVE);
+-	int opt;
 -
--	TEST_REQUIRE(kvm_get_cpuid_max_basic() >= 0xd);
+-	/*
+-	 * All tests are opt-in because TDP doesn't play nice with reserved #PF
+-	 * in the GVA->GPA translation.  The hardware page walker doesn't let
+-	 * software change GBPAGES or MAXPHYADDR, and KVM doesn't manually walk
+-	 * the GVA on fault for performance reasons.
+-	 */
+-	bool do_gbpages = false;
+-	bool do_maxphyaddr = false;
 -
--	entry = kvm_get_supported_cpuid_index(0xd, 0);
--	TEST_REQUIRE(entry->eax & XFEATURE_MASK_XTILECFG);
--	TEST_REQUIRE(entry->eax & XFEATURE_MASK_XTILEDATA);
-+	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_XSAVE));
-+	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_AMX_TILE));
-+	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_XTILECFG));
-+	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_XTILEDATA));
- 
- 	/* Get xsave/restore max size */
--	xsave_restore_size = entry->ecx;
-+	xsave_restore_size = kvm_get_supported_cpuid_index(0xd, 0)->ecx;
- 
- 	run = vcpu->run;
- 	vcpu_regs_get(vcpu, &regs1);
+-	setbuf(stdout, NULL);
+-
+-	while ((opt = getopt(argc, argv, "gm")) != -1) {
+-		switch (opt) {
+-		case 'g':
+-			do_gbpages = true;
+-			break;
+-		case 'm':
+-			do_maxphyaddr = true;
+-			break;
+-		case 'h':
+-		default:
+-			printf("usage: %s [-g (GBPAGES)] [-m (MAXPHYADDR)]\n", argv[0]);
+-			break;
+-		}
+-	}
+-
+-	__TEST_REQUIRE(do_gbpages || do_maxphyaddr, "No sub-tests selected");
+-
+-	entry = kvm_get_supported_cpuid_entry(0x80000001);
+-	TEST_REQUIRE(entry->edx & CPUID_GBPAGES);
+-
+-	if (do_gbpages) {
+-		pr_info("Test MMIO after toggling CPUID.GBPAGES\n\n");
+-		mmu_role_test(&entry->edx, entry->edx & ~CPUID_GBPAGES);
+-	}
+-
+-	if (do_maxphyaddr) {
+-		pr_info("Test MMIO after changing CPUID.MAXPHYADDR\n\n");
+-		entry = kvm_get_supported_cpuid_entry(0x80000008);
+-		mmu_role_test(&entry->eax, (entry->eax & ~0xff) | 0x20);
+-	}
+-
+-	return 0;
+-}
 -- 
 2.36.1.476.g0c4daa206d-goog
 
