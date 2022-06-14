@@ -2,140 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73041C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596E0CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:54:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358445AbiFNSwi (ORCPT
+        id S1358108AbiFNSyZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56980 "EHLO
+        Tue, 14 Jun 2022 14:54:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358253AbiFNSwA (ORCPT
+        with ESMTP id S1358659AbiFNSxf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:52:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB8723170;
-        Tue, 14 Jun 2022 11:46:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1C42B81AF4;
-        Tue, 14 Jun 2022 18:46:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1A39C3411D;
-        Tue, 14 Jun 2022 18:46:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232362;
-        bh=jD7iqbHzI2IOgoksiXZzbMbW1E4b8JW/mmIy3T5+4uk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Mg62KD1TnalSA0LOSH42FtqfKoyryAbLKlOVasGK1gJrN0KJXt09ZSqKLUfLnjq6W
-         SKy6dx5rZOasXPVyb/8qdF06yVwLf33mUOzFboe80XScaDc25gTTq/cEbDnXnqfpsJ
-         J+OeZ3jAgr6+SX23AG8Cbgguna0kECvlEnQXaLrY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.18 00/11] 5.18.5-rc1 review
-Date:   Tue, 14 Jun 2022 20:40:37 +0200
-Message-Id: <20220614183720.861582392@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
+        Tue, 14 Jun 2022 14:53:35 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4C651E4A;
+        Tue, 14 Jun 2022 11:47:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=nv1zvia7YW/sCDV/c7twLHwtsEJhBvBCb96DvXq4RLs=; b=by2kBTic1HD3b40bFBh0cXwH3g
+        PymT00QkEyb05+61XIky0czYGuWXdgNLSYJwWZ3odJQAHMXI2F7P9Ql/Gjlxhopx2/806IO5wgOck
+        n0VIywCwGmO0GSUgHghXfXx5dVCti4Ss7gjd7SDh0srUjVjTL0T/uFM7Wxfj7WIVoUks=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o1BYu-006vA7-QV; Tue, 14 Jun 2022 20:46:48 +0200
+Date:   Tue, 14 Jun 2022 20:46:48 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dan Murphy <dmurphy@ti.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/3] dt-bindings: dp83867: add binding for
+ io_impedance_ctrl nvmem cell
+Message-ID: <YqjXmInBfE/oMc4m@lunn.ch>
+References: <20220606202220.1670714-1-linux@rasmusvillemoes.dk>
+ <20220606202220.1670714-2-linux@rasmusvillemoes.dk>
 MIME-Version: 1.0
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.5-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.18.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.18.5-rc1
-X-KernelTest-Deadline: 2022-06-16T18:37+00:00
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606202220.1670714-2-linux@rasmusvillemoes.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.18.5 release.
-There are 11 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+On Mon, Jun 06, 2022 at 10:22:18PM +0200, Rasmus Villemoes wrote:
+> We have a board where measurements indicate that the current three
+> options - leaving IO_IMPEDANCE_CTRL at the (factory calibrated) reset
+> value or using one of the two boolean properties to set it to the
+> min/max value - are too coarse.
+> 
+> There is no documented mapping from the 32 possible values of the
+> IO_IMPEDANCE_CTRL field to values in the range 35-70 ohms, and the
+> exact mapping is likely to vary from chip to chip. So add a DT binding
+> for an nvmem cell which can be populated during production with a
+> value suitable for each specific board.
+> 
+> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 
-Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
-Anything received after that time might be too late.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.5-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-and the diffstat can be found below.
-
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.18.5-rc1
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    x86/speculation/mmio: Print SMT warning
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    KVM: x86/speculation: Disable Fill buffer clear within guests
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/mmio: Reuse SRBDS mitigation for SBDS
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/srbds: Update SRBDS mitigation selection
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/mmio: Add sysfs reporting for Processor MMIO Stale Data
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/mmio: Enable CPU Fill buffer clearing on idle
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/bugs: Group MDS, TAA & Processor MMIO Stale Data mitigations
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/mmio: Add mitigation for Processor MMIO Stale Data
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation: Add a common function for MD_CLEAR mitigation update
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/mmio: Enumerate Processor MMIO Stale Data bug
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    Documentation: Add documentation for Processor MMIO Stale Data
-
-
--------------
-
-Diffstat:
-
- Documentation/ABI/testing/sysfs-devices-system-cpu |   1 +
- Documentation/admin-guide/hw-vuln/index.rst        |   1 +
- .../hw-vuln/processor_mmio_stale_data.rst          | 246 +++++++++++++++++++++
- Documentation/admin-guide/kernel-parameters.txt    |  36 +++
- Makefile                                           |   4 +-
- arch/x86/include/asm/cpufeatures.h                 |   1 +
- arch/x86/include/asm/msr-index.h                   |  25 +++
- arch/x86/include/asm/nospec-branch.h               |   2 +
- arch/x86/kernel/cpu/bugs.c                         | 235 +++++++++++++++++---
- arch/x86/kernel/cpu/common.c                       |  52 ++++-
- arch/x86/kvm/vmx/vmx.c                             |  72 ++++++
- arch/x86/kvm/vmx/vmx.h                             |   2 +
- arch/x86/kvm/x86.c                                 |   3 +
- drivers/base/cpu.c                                 |   8 +
- include/linux/cpu.h                                |   3 +
- tools/arch/x86/include/asm/cpufeatures.h           |   1 +
- tools/arch/x86/include/asm/msr-index.h             |  25 +++
- 17 files changed, 676 insertions(+), 41 deletions(-)
-
-
+    Andrew
