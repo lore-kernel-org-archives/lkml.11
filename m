@@ -2,166 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2161CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7779CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:47:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239729AbiFNBqb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 21:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53230 "EHLO
+        id S1347395AbiFNBrk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 21:47:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237175AbiFNBq0 (ORCPT
+        with ESMTP id S241377AbiFNBre (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 21:46:26 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9D82A736
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 18:46:22 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25E0sSE9004107;
-        Tue, 14 Jun 2022 01:46:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
- from : message-id : references : date : in-reply-to : content-type :
- mime-version; s=corp-2021-07-09;
- bh=KBkbm0x7ur10Bxu0RvV6G3Gkal7aGAhApFXAMvrIm0Q=;
- b=IxU42weD4+TmZbsMFnZY5aEHm4VLPxvPSALYVvz1xt/jCzuuMMg7s+kQiEDUybNQ94W1
- iTY8NiiKh9WLxdkdHpVF8G0MmuA+pJvPq3W3OpK1OXWK6doX8AH7YBYZF3RS6jR1NKkW
- Yon36IwvSBYRTsElxpO9QFkB8prcar+YDkR4EqL15AjOOB+OzDVzYuHuk5Oj9mw3APEn
- +TU+I+HZtpiZWNTH2Iocs+/QhPlgDLtOKQzvLQoNxRglW41T2Lj3NkknU5a6Cwe2wRgw
- kcl+dlcsV5pWUSGLX4+4YXjmtXnPqshb/CClRRtQ3Wa7r9uSwK0IQqI4lgJ8CMJx7Top uw== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmhu2mm12-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Jun 2022 01:46:13 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25E1aASe036041;
-        Tue, 14 Jun 2022 01:46:12 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2103.outbound.protection.outlook.com [104.47.70.103])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gpgfeggp4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Jun 2022 01:46:12 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CoS41vocGu3X5ajUyUP9fVs8ZRjgiNDDYLFWALbF7D5HYseDpoG5Rj6BxzPGJ5pW/X7iOY763h7u88eC0g0z5XH0+X+SiGjHAYGHq3yO/s32bs4HccgU+3lQTywheKGfR+xJdvN+a/dYeDJozZoYGqbdnb1bdAmXl2iEt0QMCd48EVsTiTDxabkTssomfq7eEzcoggXlkvVR6z/dc+4UMZFEy6DQnfrmy7LfWsDzWTEq6y4yU3pn82qq+L76sEEYYfe5UQYvGSLh2EGsHB1bFZAf2i9mrEKlKLrZnZDpJfhisdXDHxu86Bs1T0pPjwnhALK231mowP8B3f51ZD1rQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KBkbm0x7ur10Bxu0RvV6G3Gkal7aGAhApFXAMvrIm0Q=;
- b=oAwyS+9L4iZxRnWZAiYHka57LHHFwgugpO41kLMTsnQav2g9xLBuDVAiuwYL9pPgrmcI3TX/vSoUrVK4IbWZ4ZnwRlbqe1EqDyfp62wjufAqXSoIjDC7Zq9X5ErL7PomCIkMz0rAHuyy7mMgohnJCNg2ZKaYEWwVwHWMkbbdEKligrKTfnLAiMN8q38qPG8+GeLjMzN0lwf5e3q4UWkZcy91tgfDFO45VD0WbK8/e+4NrhOx9L9ehcN/n3izRcKm8Rclr6Gn7gAvaMPn0hdmCucevKyZk0DzUqF0L9R6QaWr3krqfIUETmbby04C+HpxybBWRbcBwXmR8k/0HxjanA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Mon, 13 Jun 2022 21:47:34 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4236EF70
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 18:47:28 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id a68-20020a25ca47000000b006605f788ff1so6378769ybg.16
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 18:47:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KBkbm0x7ur10Bxu0RvV6G3Gkal7aGAhApFXAMvrIm0Q=;
- b=xnsnXJPpc0geb983xvP03vkR1gk3zhgaG3fnjvg2Cuhimn678Dfwv0+0yj3Qz7x1bv+CqC6wtQs6pJ4jc5auVcurHb5mbI2bEZXtF/qd88be9fSlC4zvD2PuEOSLVuR7Sw6TS2mIgJDC85IaPWMapaIuQ5ofEp2b9zQC55emJ/U=
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com (2603:10b6:510:3d::12)
- by MN2PR10MB3550.namprd10.prod.outlook.com (2603:10b6:208:113::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Tue, 14 Jun
- 2022 01:45:24 +0000
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::6516:e908:d2bd:ca45]) by PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::6516:e908:d2bd:ca45%5]) with mapi id 15.20.5332.020; Tue, 14 Jun 2022
- 01:45:24 +0000
-To:     "Alim Akhtar" <alim.akhtar@samsung.com>
-Cc:     "'kernel test robot'" <lkp@intel.com>, <llvm@lists.linux.dev>,
-        <kbuild-all@lists.01.org>, <linux-kernel@vger.kernel.org>,
-        "'Martin K. Petersen'" <martin.petersen@oracle.com>,
-        "'Chanho Park'" <chanho61.park@samsung.com>,
-        "'Bharat Uppal'" <bharat.uppal@samsung.com>
-Subject: Re: [mkp-scsi:for-next 31/41]
- drivers/phy/samsung/phy-fsd-ufs.c:50:3: error: field designator 'cfgs'
- does not refer to any field in type 'const struct
- samsung_ufs_phy_drvdata'; did you mean 'cfg'?
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <yq1mtegt3ym.fsf@ca-mkp.ca.oracle.com>
-References: <CGME20220611233355epcas5p1970bae9647eae17e20d330775b584695@epcas5p1.samsung.com>
-        <202206120755.03gKC0ne-lkp@intel.com>
-        <000001d87e12$c6962770$53c27650$@samsung.com>
-Date:   Mon, 13 Jun 2022 21:45:22 -0400
-In-Reply-To: <000001d87e12$c6962770$53c27650$@samsung.com> (Alim Akhtar's
-        message of "Sun, 12 Jun 2022 09:43:29 +0530")
-Content-Type: text/plain
-X-ClientProxiedBy: SA9PR13CA0168.namprd13.prod.outlook.com
- (2603:10b6:806:28::23) To PH0PR10MB4759.namprd10.prod.outlook.com
- (2603:10b6:510:3d::12)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5c51a80e-f904-4a9e-d982-08da4da78cd4
-X-MS-TrafficTypeDiagnostic: MN2PR10MB3550:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR10MB3550FB5945961520C1B9C4778EAA9@MN2PR10MB3550.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mlZrq8126n5mWPBweatZfCuhEqPD92qpp+Xa1mu25PzW0SJ1p297ZZItxtTaCAWiVTxmtc1dQEfIUKclRmS1mZCtaah5NtlcmskRq0lwFzAJeI6xUCoJ0piebCNc1y+dO97Y4Y4LC8vdQg/zOzLl+uZJbgXM89PH0Ob5QTUlM8EUiUUThnX5RamGezk0s8mfEiYO2OCqc+ZWK9x4e6aBztBUJTzsMIM8LZILn9pwExv81B470DME603LVsUURBJtmCIViy+UuzmkEoSQjQpSGHnBd8Nlp5omTH129FQIfVeHYE4nuIQKPF3zu7dCSvCk1Ct4XBGr2n27mdkEzKm1b6oC14qC75+nwHR3qyRNbWu5dJTySvn/OWNpSVm+YslPEpOYsTLTsigSHb8yBz93cI/tR7DAfQwXAy0fbzc6khHWZrLuI6gpjQjLRcydgU4zRxRiIDvgDdPwahMZ4RykKTQ+40krgk7Q+445y4VMyzgBNkI10i46hGSrWMTfGAYyqbVu05GFDgGRlYxLUBYpAoAPfqi0VJQ/A5XF6YwQWsMIPWYWPGAAcaZ6bsm7yBccBwn2IAlM4jtxmv7UgkoCGWw8C3lJniX8rNpC44peYSYgwqyc0lWPqIF/T8Az5BaiWX+oFxvMOhx5QfHjJSHs15+hQucZDuf3xMFETRF6g0k/TrK7D9KTHqLOT1XzDjHygXYd8xj7xo4HhepzkSoDDA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4759.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(4326008)(8676002)(66946007)(66476007)(66556008)(86362001)(54906003)(508600001)(5660300002)(8936002)(6486002)(6916009)(4744005)(6512007)(36916002)(52116002)(2906002)(6506007)(26005)(186003)(83380400001)(38350700002)(316002)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?udfEQ3WO1HS7YwU1xWeaBizvZ0xv7l2IJ4qWcCP/L29hHbKctSHNoqzhAiv5?=
- =?us-ascii?Q?Th2B0mQFth3BYJXXw8V/SillLENWar9YE0m7EAyNmcJWgNsvMeRgnn7B8ko7?=
- =?us-ascii?Q?7lBbMcW3vBTKgPj+xlCXTGgDORCQWQoUxbXkyf2i9KouAeD29G7FVtsjq+GY?=
- =?us-ascii?Q?YbTczwFxtlTDa060nl5rnGj38FDKG2Ma4jOgoMHrWnYq41nWoG2IKKoZWkRY?=
- =?us-ascii?Q?mINING4cX66IPnY1cOeK1zgnR29d0lZ1ZrR4d2fq5ZX6FcZwKcQkOdPQbS0+?=
- =?us-ascii?Q?eWGCcNYqT8uEBSdFa3EytP+Rn805Gox0qTeoSJ4OIJ7MF/pa1PNx/J5p+BsZ?=
- =?us-ascii?Q?V42meF9hHowVCRrUqSks7Y8nsRL+ab1uz4FEsWFxEU/XCa8MfmUMTtv1ArD9?=
- =?us-ascii?Q?rUB+Z96OwGCTYne/6KYgrdALr4FXIIPVt0cGsM5a7fHUXri0f1YEgjMbDQ0a?=
- =?us-ascii?Q?/+SCeOGOn+t/SNQfsah+CwFq1ar4pswyujTGNtNLZRM9jyc91pO9aMF413y1?=
- =?us-ascii?Q?oQ/iFzF82eL6jPtFz9NWpsnLi4j68J1Xn3eCIjb09/5LXZJtbAOgFgus+SEo?=
- =?us-ascii?Q?soXFcXLLF9G3kM6HdgPS0uLVibQOsec7pA6dM+kgTTCeG9TA4LLb3Rb/+1LF?=
- =?us-ascii?Q?/wZ4J06cMgvhvI6h3UN24+rytsqAg7fBIZKVnxY3TYc0WYY7Zjbm4xQMy/wM?=
- =?us-ascii?Q?0lkToN72VxwXtlD0p7pMd9N1LFNrW30utLMdLas+8UDReKU/BmIZgW87cq0I?=
- =?us-ascii?Q?h2FdUgb3KpqLFjMfcE8rzoFMR4Q8GAWKeLiVJ0SmeiZhHIW3/gtSW7Sir6zl?=
- =?us-ascii?Q?RwC+PAKtzMc0LJ46fA3+14TwO4qzpX0BilSpJQ40s2KEnJuhM9C6R7rnJk4t?=
- =?us-ascii?Q?GYQiJ2PA/Kc5D/470XXGbUhMlnhL6Z0pJIaRlElT1CRvjHdJGufU7GEp1YRw?=
- =?us-ascii?Q?83pMognB42AGX5imWV/hq73D4QzkziCbarhnyl4WoJNO++HL4g7hcssRMUnL?=
- =?us-ascii?Q?Uq29liKFSrESgRwAuAApkJIO/x3oIQYHY8UYWwJdUO3A/E6glQMfWgjti+Vi?=
- =?us-ascii?Q?QmWMfw1eLWybhSULQNS6lOtNhHEk1k4PbiWZywWKRufc35tLGHZoVlaiMbMb?=
- =?us-ascii?Q?FXvta1yY4w3o8jzkeqg3ivPOLOqTUCP6VoYodCWePpPHmHEovREpiKmjp59L?=
- =?us-ascii?Q?jpOp1mGIWc+z3NhxQ8dGvAKm07kHxtP7ZDPyFKmFeMAdul74VDo2bKAXNvPE?=
- =?us-ascii?Q?KQ+yVUVmGt/9+4Je8AX/sNRQAXGtScxs5SkHpVMS7aou2eaR3MRfJOoJ4pVL?=
- =?us-ascii?Q?HVk+2aGKY4Sf2VRoOdjb/uO5OO/ELuA9nm4Sb8oZVZ3os+p2aVYN4khR+/gJ?=
- =?us-ascii?Q?oKM8gb9oJV2w1LDnnNdF8mqUvzdvCbQILKQDYmzWPXBWchB4iYrVoJXBDiAp?=
- =?us-ascii?Q?HHC6iae+pRWY8FKA47l7wjo4AYTXSiH/TkTyZ4DsWh9XMr9SjCvrsUDkXXHF?=
- =?us-ascii?Q?B/smKq+kI0Y2pYWDS3mT68OJ2HHqOVGw3PfLs77wfRHQEIvBz4mT8GqPLEvd?=
- =?us-ascii?Q?/ZA6q7bMdZGZSfEursyTOJmbh9AnCQznwmPjhjU7W10trDv8sRNh7QvGjgLp?=
- =?us-ascii?Q?R3kizfXqhXXXlNm7b6mrv3L0aHuKiRsb1oVS6m+gPopD8+tqGzW2YPCF3/MN?=
- =?us-ascii?Q?ZecB2lUEF1ZQSAPgXgVtGNE3F6NX9WY+0kfRjeOzT44xxddJsnSJvUiU3b10?=
- =?us-ascii?Q?hmGR4vc+QTJKzqx5EVmKptw5EriQbIU=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c51a80e-f904-4a9e-d982-08da4da78cd4
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4759.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2022 01:45:24.6482
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: A/2W/yZyQUd8XBehE3VJWmNUORwNcNqHMqWwndWanZoa6JMspJ2goAeDxyUJ30TS1DiArl9Qal8Ne4I6s+Er+WfLvdLfMPpfeSvGJ31acwA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3550
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
- definitions=2022-06-14_01:2022-06-13,2022-06-13 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=623 suspectscore=0
- spamscore=0 mlxscore=0 malwarescore=0 phishscore=0 adultscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206140005
-X-Proofpoint-GUID: dea8LnvNWXr98Gfc5K7vvs3pONhrtGR1
-X-Proofpoint-ORIG-GUID: dea8LnvNWXr98Gfc5K7vvs3pONhrtGR1
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=l4PjIvONm1IQKFepEMuDqPyve0EvuaStAKHleWOI5U4=;
+        b=keMrD0lK99MmEmZqNHED9SqQIvx29ap+MgANfW658dwlfZvJrsoNWlI9FXDBxqa+za
+         VARGdXXoJmn5KryQWZj+8ScXKK6VXqNwAmxBq3WrvJtTYqyF49pPQeabsvoQ33dd7Zm9
+         GUdC5cio7eBOfzPKl6VgquXY1jLeMHFBa0mblXnksXxjh9ZBheHBbS2YBLkmyB2cnv0z
+         RODtwrbl065MJcM4aR2i0vB2oIgwB4RMKqps974SsAItXpR+hUM9whwp/5wZxzkdRDOz
+         ZEJKu26kcTh5Mj7t2oGlCPJPuLSeewLtsuZoU0kfm6Fy8cQ92KsRwUtE31ZwuEw4o661
+         pfTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=l4PjIvONm1IQKFepEMuDqPyve0EvuaStAKHleWOI5U4=;
+        b=JFOiZTMYRytOVrT7ANR0h0HlFzP0Y1OZjzoPSNFthlYWxO1zYhDCX5pMxZl9fQ84uf
+         qdXbBJhwLxfbMPSY527dsFJLwi12UvrqVCAid849KbLar9KXNQwwYtN1x9DEtFwMsxuQ
+         7C0ChSx2M2nkICcWKz2wRBgrNEFyu8wgq97n/k+9477lHXfGjcKkqdTKFY4MzMiMkB6g
+         WMfogIIHdi/xlCJQtzqbTF1K64ECM9L3+hQqNHn43rMrGitckLvrtsADPkidLvKQ7J/t
+         PiQ8tCzB1JDIHnaP8215/HqLKDI5SJ4vWqIAVaTCoxYzxzc7UybOrbMcTZFXwGD5q3j/
+         7VIw==
+X-Gm-Message-State: AJIora+TMiXBH6nUIdGznKhL7x66xdEkMILmljj5e35lbqGpv+DCN9JD
+        RDQ6uTWSxuY09w36I8Afs+zQ1CP3nUnQ
+X-Google-Smtp-Source: AGRyM1subzJdwRtf+vAOstyD6tqNevSviIR17aL9d/daU5mnA6A1DY7dA9Gj0iqv9t7BAYwDQeVntF57tsLy
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:e4b4:1d0c:1c56:a7ed])
+ (user=irogers job=sendgmr) by 2002:a25:3c45:0:b0:664:cf75:c2d6 with SMTP id
+ j66-20020a253c45000000b00664cf75c2d6mr2520288yba.446.1655171248020; Mon, 13
+ Jun 2022 18:47:28 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 18:47:14 -0700
+Message-Id: <20220614014714.1407239-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH] perf bpf: 8 byte align bpil data
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+bpil data is accessed assuming 64-bit alignment resulting in undefined
+behavior as the data is just byte aligned. With an -fsanitize=undefined
+build the following errors are observed:
 
-Alim,
+$ sudo perf record -a sleep 1
+util/bpf-event.c:310:22: runtime error: load of misaligned address 0x55f61084520f for type '__u64', which requires 8 byte alignment
+0x55f61084520f: note: pointer points here
+ a8 fe ff ff 3c  51 d3 c0 ff ff ff ff 04  84 d3 c0 ff ff ff ff d8  aa d3 c0 ff ff ff ff a4  c0 d3 c0
+             ^
+util/bpf-event.c:311:20: runtime error: load of misaligned address 0x55f61084522f for type '__u32', which requires 4 byte alignment
+0x55f61084522f: note: pointer points here
+ ff ff ff ff c7  17 00 00 f1 02 00 00 1f  04 00 00 58 04 00 00 00  00 00 00 0f 00 00 00 63  02 00 00
+             ^
+util/bpf-event.c:198:33: runtime error: member access within misaligned address 0x55f61084523f for type 'const struct bpf_func_info', which requires 4 byte alignment
+0x55f61084523f: note: pointer points here
+ 58 04 00 00 00  00 00 00 0f 00 00 00 63  02 00 00 3b 00 00 00 ab  02 00 00 44 00 00 00 14  03 00 00
 
-> I was expecting phy driver changes will go via phy tree, where [1] is
-> available.
->
-> @Martin, can you please take a look?
->
-> You can just take the ufs changes (along with its device tree) and
-> drop the phy change or take the [1] above.
+Correct this by rouding up the data sizes and aligning the pointers.
 
-Doesn't matter to me, happy to drop the series again. I just queued it
-up to see if there would be any warnings.
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/perf/util/bpf-utils.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
+diff --git a/tools/perf/util/bpf-utils.c b/tools/perf/util/bpf-utils.c
+index e271e05e51bc..80b1d2b3729b 100644
+--- a/tools/perf/util/bpf-utils.c
++++ b/tools/perf/util/bpf-utils.c
+@@ -149,11 +149,10 @@ get_bpf_prog_info_linear(int fd, __u64 arrays)
+ 		count = bpf_prog_info_read_offset_u32(&info, desc->count_offset);
+ 		size  = bpf_prog_info_read_offset_u32(&info, desc->size_offset);
+ 
+-		data_len += count * size;
++		data_len += roundup(count * size, sizeof(__u64));
+ 	}
+ 
+ 	/* step 3: allocate continuous memory */
+-	data_len = roundup(data_len, sizeof(__u64));
+ 	info_linear = malloc(sizeof(struct perf_bpil) + data_len);
+ 	if (!info_linear)
+ 		return ERR_PTR(-ENOMEM);
+@@ -180,7 +179,7 @@ get_bpf_prog_info_linear(int fd, __u64 arrays)
+ 		bpf_prog_info_set_offset_u64(&info_linear->info,
+ 					     desc->array_offset,
+ 					     ptr_to_u64(ptr));
+-		ptr += count * size;
++		ptr += roundup(count * size, sizeof(__u64));
+ 	}
+ 
+ 	/* step 5: call syscall again to get required arrays */
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.36.1.476.g0c4daa206d-goog
+
