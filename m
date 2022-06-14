@@ -2,130 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5686C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C37BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355673AbiFNI24 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53976 "EHLO
+        id S231905AbiFNIcq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 04:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355601AbiFNI2q (ORCPT
+        with ESMTP id S229441AbiFNIcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:28:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 66291344C0
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:28:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655195324;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KByEBSgeM4obm3XP5zIe1UTexQSKb/lcAH9UJiuFrIw=;
-        b=VJx5DdY1w5aImPc2rtTc8czfc8DRw5rnYeEm856KnSfrJpqD2HfMVwOj3+90ACWnu6nwZl
-        Cgf0u2jEnyDxLilYYA4ojAno4Qz2TAUgoRT2cRSkbeAOdV9/MwB1WxAgQw6OVqXeWLunXQ
-        Y58j5UUKamcgxe33a14yGErlugNulwg=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-437-cSHe-3wHP46gnnd_ylspSg-1; Tue, 14 Jun 2022 04:28:43 -0400
-X-MC-Unique: cSHe-3wHP46gnnd_ylspSg-1
-Received: by mail-ej1-f69.google.com with SMTP id a9-20020a17090682c900b0070b513b9dc4so2570560ejy.4
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:28:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KByEBSgeM4obm3XP5zIe1UTexQSKb/lcAH9UJiuFrIw=;
-        b=rrXgmZ8uUtQ7IclBvnYoMV1ueUs/Spwt5d0/AEZCw++p0liQXEbtKavMcw21rN1ujm
-         WJDRruxOJT/tCoswKmUGUHshpuete/DvtJRY+V9IHP9rdfdJiGY2E1f1L5rTR/uVbWlJ
-         HA7LJhiZcmeis+oPwLEJXNf1aO7eI4vnjys7UaJFMmSlH4Nw5wOJ51iNbyryslOqoV88
-         x+yCZn5mDsFV2t021PaKvsijcpFnUZaJAvzOdHVV7CmPLBxGyWH5Z8VMXb7xdJPU1tnn
-         cEzIncHQgn+p59ICAB/lBIqG2Bd5nsKHKX6s+CjoLXe79/ujRKYLiFiLOFWlHPyVLvQC
-         2aCQ==
-X-Gm-Message-State: AOAM532vcH77ifELkFAyR94GEUdmD/cxJpM4bCgmR+NvPz2dFiXVO0Gd
-        TVFKX/C7FW6xfXVK1i6xjj4rzmdBCV0VwNvRgnkXxdMhOYXNzq67l+ausrvm12ar0RWLogGcDZ7
-        lfLv14g2aztHqr2FWCqZ+t5iJ
-X-Received: by 2002:a17:906:51d6:b0:712:c9:8a1b with SMTP id v22-20020a17090651d600b0071200c98a1bmr3307711ejk.656.1655195322084;
-        Tue, 14 Jun 2022 01:28:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwDLxiVy9ewakvDf7UcsKF/XgtCeL1lKugQaZWmd6BWzHidp+NQWZiN7h5adae5T4y9GLP1Mw==
-X-Received: by 2002:a17:906:51d6:b0:712:c9:8a1b with SMTP id v22-20020a17090651d600b0071200c98a1bmr3307700ejk.656.1655195321888;
-        Tue, 14 Jun 2022 01:28:41 -0700 (PDT)
-Received: from gator (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
-        by smtp.gmail.com with ESMTPSA id zj11-20020a170907338b00b006ff0fe78cb7sm4751566ejb.133.2022.06.14.01.28.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 01:28:41 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 10:28:39 +0200
-From:   Andrew Jones <drjones@redhat.com>
-To:     shaoqin.huang@intel.com
-Cc:     pbonzini@redhat.com, Shuah Khan <shuah@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Oliver Upton <oupton@google.com>,
-        Ricardo Koller <ricarkol@google.com>,
-        Wei Wang <wei.w.wang@intel.com>,
-        Peter Gonda <pgonda@google.com>,
-        David Dunn <daviddunn@google.com>, kvm@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: selftests: Remove the mismatched parameter comments
-Message-ID: <20220614082839.a5iqpk4td2allbwu@gator>
-References: <20220614224126.211054-1-shaoqin.huang@intel.com>
- <20220614074835.qto55feu74ionlh5@gator>
+        Tue, 14 Jun 2022 04:32:41 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A7764D4;
+        Tue, 14 Jun 2022 01:32:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655195559; x=1686731559;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=f+zHCUo+wuXk7wCEBaujL4BGoT/2SLJqxdPfbepFi1I=;
+  b=mrneGVgoFQ9RkmPHo28sZuQCwzUt1F+xMp8JJOF6h5IGD0EaLihRR809
+   yJV3UNVlb0mOm82shHeEbDZwG2dJLKO/gaHHSBimiz9qZc8rWv4+/ZXZi
+   FVQqXsM7WrNx2Ph2bDNguzm+saV/+ysnFWZrGnbTaL/FlGz3RAJu6905w
+   +9Tka63onWe4rZ51dlAP0AOHBHlEP1v86mEgKmqDrq0bvCCEqmQb/3Oy7
+   B+AB9oV8l5ja89NdJNPVwnQSwOYGsEUpoXjw8vEuzzqjRFxkugslnK87K
+   Dj/lO7Qb37Qz9k122aphWMHjj0yhj27/UxsDmtGhYq6f+VlULq1qFe/Ts
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="278588652"
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="278588652"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:32:37 -0700
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
+   d="scan'208";a="830287005"
+Received: from jlaghzal-mobl1.ger.corp.intel.com ([10.252.32.175])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:32:35 -0700
+Date:   Tue, 14 Jun 2022 11:32:33 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/7] tty/vt: consolemap: use ARRAY_SIZE(), part II.
+In-Reply-To: <68107f11-58bb-5c55-8f45-891717d08d33@linux.intel.com>
+Message-ID: <ff8d1f-c12-67c8-6ebd-57b4466ecb16@linux.intel.com>
+References: <20220614075713.32767-1-jslaby@suse.cz> <68107f11-58bb-5c55-8f45-891717d08d33@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614074835.qto55feu74ionlh5@gator>
+Content-Type: multipart/mixed; boundary="8323329-711606469-1655195556=:1605"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 09:48:35AM +0200, Andrew Jones wrote:
-> On Tue, Jun 14, 2022 at 04:41:19PM -0600, shaoqin.huang@intel.com wrote:
-> > From: Shaoqin Huang <shaoqin.huang@intel.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-711606469-1655195556=:1605
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+
+Hi all,
+
+Err, I take my Reviewed-by back. I just found an issue with this commit 
+while reviewing a later patch in the series that undos that error.
+
+On Tue, 14 Jun 2022, Ilpo Järvinen wrote:
+
+> On Tue, 14 Jun 2022, Jiri Slaby wrote:
+> 
+> > The code still uses constants (macros) as bounds in loops after commit
+> > 17945d317a52 (tty/vt: consolemap: use ARRAY_SIZE()). The contants are at
+> > least macros used also in the definition of the arrays. But use
+> > ARRAY_SIZE() on two more places to ensure the loops never run out of
+> > bounds even if the array definition change.
 > > 
-> > There are some parameter being removed in function but the parameter
-> > comments still exist, so remove them.
-> > 
-> > Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
+> > Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 > > ---
-> >  tools/testing/selftests/kvm/lib/kvm_util.c | 3 ---
-> >  1 file changed, 3 deletions(-)
+> >  drivers/tty/vt/consolemap.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
 > > 
-> > diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-> > index 1665a220abcb..58fdc82b20f4 100644
-> > --- a/tools/testing/selftests/kvm/lib/kvm_util.c
-> > +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-> > @@ -1336,8 +1336,6 @@ static vm_vaddr_t vm_vaddr_unused_gap(struct kvm_vm *vm, size_t sz,
-> >   *   vm - Virtual Machine
-> >   *   sz - Size in bytes
-> >   *   vaddr_min - Minimum starting virtual address
-> > - *   data_memslot - Memory region slot for data pages
-> > - *   pgd_memslot - Memory region slot for new virtual translation tables
-> >   *
-> >   * Output Args: None
-> >   *
-> > @@ -1423,7 +1421,6 @@ vm_vaddr_t vm_vaddr_alloc_page(struct kvm_vm *vm)
-> >   *   vaddr - Virtuall address to map
-> >   *   paddr - VM Physical Address
-> >   *   npages - The number of pages to map
-> > - *   pgd_memslot - Memory region slot for new virtual translation tables
-> >   *
-> >   * Output Args: None
-> >   *
-> > -- 
-> > 2.30.2
-> >
+> > diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+> > index fff97ae87e00..8aa7a48b3647 100644
+> > --- a/drivers/tty/vt/consolemap.c
+> > +++ b/drivers/tty/vt/consolemap.c
+> > @@ -232,7 +232,7 @@ static void set_inverse_transl(struct vc_data *conp, struct uni_pagedict *p,
+> >  	}
+> >  	memset(q, 0, MAX_GLYPH);
+> >  
+> > -	for (j = 0; j < E_TABSZ; j++) {
+> > +	for (j = 0; j < ARRAY_SIZE(translations[i]); j++) {
+
+There's no i variable in this function.
+
+> Any particular reason why you left its definition to have 256 instead of 
+> E_TABSZ (even after the patch series I mean):
 > 
-> Hi Shaoqin,
+> static unsigned short translations[][256] = {
 > 
-> Please check kvm/queue, the extra parameter comments have already been
-> removed.
->
+> 
+> >  		glyph = conv_uni_to_pc(conp, t[j]);
+> >  		if (glyph >= 0 && glyph < MAX_GLYPH && q[glyph] < 32) {
+> >  			/* prefer '-' above SHY etc. */
+> > @@ -367,7 +367,7 @@ int con_get_trans_old(unsigned char __user * arg)
+> >  	unsigned char outbuf[E_TABSZ];
+> >  
+> >  	console_lock();
+> > -	for (i = 0; i < E_TABSZ ; i++)
+> > +	for (i = 0; i < ARRAY_SIZE(outbuf); i++)
+> >  	{
+> >  		ch = conv_uni_to_pc(vc_cons[fg_console].d, p[i]);
+> >  		outbuf[i] = (ch & ~0xff) ? 0 : ch;
+> > 
+> 
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-Eh, never mind, I looked at the wrong functions. Your patch does indeed
-apply to kvm/queue and is indeed necessary. Sorry for the noise.
+This patch is not fine so I take my rev-by back.
 
-Thanks,
-drew 
 
+-- 
+ i.
+
+--8323329-711606469-1655195556=:1605--
