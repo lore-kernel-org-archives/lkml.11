@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A157C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E94ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357727AbiFNSrq (ORCPT
+        id S1357733AbiFNSrt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58106 "EHLO
+        Tue, 14 Jun 2022 14:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357477AbiFNSpU (ORCPT
+        with ESMTP id S1357601AbiFNSpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:45:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24334BE37;
-        Tue, 14 Jun 2022 11:43:54 -0700 (PDT)
+        Tue, 14 Jun 2022 14:45:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97786220F0;
+        Tue, 14 Jun 2022 11:43:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F04B617B3;
-        Tue, 14 Jun 2022 18:43:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D32DC3411B;
-        Tue, 14 Jun 2022 18:43:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BD15617B3;
+        Tue, 14 Jun 2022 18:43:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38700C3411B;
+        Tue, 14 Jun 2022 18:43:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232233;
-        bh=Oc5hmBNVWQ+MMMlpffZNI+TjK4gz8CUw34T+VNsf2y0=;
+        s=korg; t=1655232238;
+        bh=nSSVwMZF76QQKgNCcSjkIf0TzsePzqx5qDWWYainans=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o44RwQeMO9Rdk9V6guM3odKLS2cofuMhoIvekm16VdYlZMFOv2k3cM4iRvSlhZM+j
-         5UV2Wn6VyAFFEvr5TGWPVcSa9IeLDxNJWRml0/nLAi7f73U/EUuEUVNii42RabeeGP
-         D8lO3CsDvY22IB7hvbwg7PSEmxZgSbNVT6NxYTQY=
+        b=acTkpEkqWqIrLqKDWSQ0fHhwhQ7DPCxP2BMsu4J5/TboxzPp2xB8H/EUSXSZ+Kkgb
+         7Y1SeL50Iu2GjpnRN+HFpxwUIoYRcfO7NsPNs1uTOEiglLBplHQDKERZ0aA+aw0BLw
+         KTxKTRV+2wSjHQgOw8sAzCMYilzNrtX2QFdFiU5c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.4 13/15] x86/speculation/mmio: Reuse SRBDS mitigation for SBDS
-Date:   Tue, 14 Jun 2022 20:40:22 +0200
-Message-Id: <20220614183724.876747098@linuxfoundation.org>
+Subject: [PATCH 5.4 15/15] x86/speculation/mmio: Print SMT warning
+Date:   Tue, 14 Jun 2022 20:40:24 +0200
+Message-Id: <20220614183725.311808984@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220614183721.656018793@linuxfoundation.org>
 References: <20220614183721.656018793@linuxfoundation.org>
@@ -51,81 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit a992b8a4682f119ae035a01b40d4d0665c4a2875 upstream
+commit 1dc6ff02c8bf77d71b9b5d11cbc9df77cfb28626 upstream
 
-The Shared Buffers Data Sampling (SBDS) variant of Processor MMIO Stale
-Data vulnerabilities may expose RDRAND, RDSEED and SGX EGETKEY data.
-Mitigation for this is added by a microcode update.
+Similar to MDS and TAA, print a warning if SMT is enabled for the MMIO
+Stale Data vulnerability.
 
-As some of the implications of SBDS are similar to SRBDS, SRBDS mitigation
-infrastructure can be leveraged by SBDS. Set X86_BUG_SRBDS and use SRBDS
-mitigation.
-
-Mitigation is enabled by default; use srbds=off to opt-out. Mitigation
-status can be checked from below file:
-
-  /sys/devices/system/cpu/vulnerabilities/srbds
-
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/common.c |   21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -1101,6 +1101,8 @@ static const __initconst struct x86_cpu_
- #define SRBDS		BIT(0)
- /* CPU is affected by X86_BUG_MMIO_STALE_DATA */
- #define MMIO		BIT(1)
-+/* CPU is affected by Shared Buffers Data Sampling (SBDS), a variant of X86_BUG_MMIO_STALE_DATA */
-+#define MMIO_SBDS	BIT(2)
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -1215,6 +1215,7 @@ static void update_mds_branch_idle(void)
  
- static const struct x86_cpu_id cpu_vuln_blacklist[] __initconst = {
- 	VULNBL_INTEL_STEPPINGS(IVYBRIDGE,	X86_STEPPING_ANY,		SRBDS),
-@@ -1122,16 +1124,17 @@ static const struct x86_cpu_id cpu_vuln_
- 	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x0, 0x8),	SRBDS),
- 	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x9, 0xD),	SRBDS | MMIO),
- 	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x0, 0x8),	SRBDS),
--	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPINGS(0x5, 0x5),	MMIO),
-+	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPINGS(0x5, 0x5),	MMIO | MMIO_SBDS),
- 	VULNBL_INTEL_STEPPINGS(ICELAKE_D,	X86_STEPPINGS(0x1, 0x1),	MMIO),
- 	VULNBL_INTEL_STEPPINGS(ICELAKE_X,	X86_STEPPINGS(0x4, 0x6),	MMIO),
--	VULNBL_INTEL_STEPPINGS(COMETLAKE,	BIT(2) | BIT(3) | BIT(5),	MMIO),
--	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x1),	MMIO),
--	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPINGS(0x1, 0x1),	MMIO),
-+	VULNBL_INTEL_STEPPINGS(COMETLAKE,	BIT(2) | BIT(3) | BIT(5),	MMIO | MMIO_SBDS),
-+	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
-+	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x0),	MMIO),
-+	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
- 	VULNBL_INTEL_STEPPINGS(ROCKETLAKE,	X86_STEPPINGS(0x1, 0x1),	MMIO),
--	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT,	X86_STEPPINGS(0x1, 0x1),	MMIO),
-+	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
- 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_D,	X86_STEPPING_ANY,		MMIO),
--	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_L,	X86_STEPPINGS(0x0, 0x0),	MMIO),
-+	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_L,	X86_STEPPINGS(0x0, 0x0),	MMIO | MMIO_SBDS),
- 	{}
- };
+ #define MDS_MSG_SMT "MDS CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html for more details.\n"
+ #define TAA_MSG_SMT "TAA CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/tsx_async_abort.html for more details.\n"
++#define MMIO_MSG_SMT "MMIO Stale Data CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/processor_mmio_stale_data.html for more details.\n"
  
-@@ -1212,10 +1215,14 @@ static void __init cpu_set_bug_bits(stru
- 	/*
- 	 * SRBDS affects CPUs which support RDRAND or RDSEED and are listed
- 	 * in the vulnerability blacklist.
-+	 *
-+	 * Some of the implications and mitigation of Shared Buffers Data
-+	 * Sampling (SBDS) are similar to SRBDS. Give SBDS same treatment as
-+	 * SRBDS.
- 	 */
- 	if ((cpu_has(c, X86_FEATURE_RDRAND) ||
- 	     cpu_has(c, X86_FEATURE_RDSEED)) &&
--	    cpu_matches(cpu_vuln_blacklist, SRBDS))
-+	    cpu_matches(cpu_vuln_blacklist, SRBDS | MMIO_SBDS))
- 		    setup_force_cpu_bug(X86_BUG_SRBDS);
+ void cpu_bugs_smt_update(void)
+ {
+@@ -1259,6 +1260,16 @@ void cpu_bugs_smt_update(void)
+ 		break;
+ 	}
  
- 	/*
++	switch (mmio_mitigation) {
++	case MMIO_MITIGATION_VERW:
++	case MMIO_MITIGATION_UCODE_NEEDED:
++		if (sched_smt_active())
++			pr_warn_once(MMIO_MSG_SMT);
++		break;
++	case MMIO_MITIGATION_OFF:
++		break;
++	}
++
+ 	mutex_unlock(&spec_ctrl_mutex);
+ }
+ 
 
 
