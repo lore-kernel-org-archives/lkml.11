@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 403DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E8E0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353858AbiFNCVD (ORCPT
+        id S1353897AbiFNCVJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57578 "EHLO
+        Mon, 13 Jun 2022 22:21:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354381AbiFNCOm (ORCPT
+        with ESMTP id S1354491AbiFNCOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69273BBDA;
-        Mon, 13 Jun 2022 19:08:41 -0700 (PDT)
+        Mon, 13 Jun 2022 22:14:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF8D3BFBD;
+        Mon, 13 Jun 2022 19:08:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C44A60EE2;
-        Tue, 14 Jun 2022 02:08:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B99D6C36B00;
-        Tue, 14 Jun 2022 02:08:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2822AB816A9;
+        Tue, 14 Jun 2022 02:08:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C36F2C341C6;
+        Tue, 14 Jun 2022 02:08:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172519;
-        bh=YnT0A5pYx7LECS7ve6dpcfSYlTvAMThZz2MiAayKHIE=;
+        s=k20201202; t=1655172482;
+        bh=UnIZZF/f9YY9ipzH+JMh2mrm+6EHbHRc5zK6zXLOvBY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZDIrAbwl4U12zxl1Zbdj9JOCDD0B8XJkFiV2GdHPnxwwC2OkvaI5T0QvwKSiiXDPe
-         FBGapd7bEyU/+Wf2TCRRDn1mXGhtRQ8VpHxHRtO5wUejvz92M7pGRY6P3SKP0+Z4T6
-         LfV9f2yc8yYjqK2LzRTyS4W7aiwIl65rWCLb3Qe4TASDaE7Pirb3TAZ2HZESskzegg
-         1La3IxNPQEjQ9Wd/WUSg+AiQ+dYnToy41v1bAsx8PNopFDRzLrW+/LfinnhSrrH76N
-         OxmseVUzyIEmG9UuQfqKaqlV6AQkPDi/9JIqTz8F/LZoxGjq+QgdO84ZqGJJThtygj
-         mRQSRTfSS2fYQ==
+        b=gbpic1XHNqZRSd52L2TDgmQUhgO33spR37qycGOjaqgBWyoRuviuXwv7H3VyzAEb5
+         hOeV+dmRgU11TZ+cJam8OkG0u9dKXeeLsE4Cev6meY8uDB322A9hMF+jNVKPs8IsUA
+         U8GCmpMWA3NnEDq/FnSUyRYrb/f3dTzQ7tKYfjHmI4Jy4nbp/L0M01gnFwztjo++sR
+         Vh7rTMObofInQo2hf7mQN9ba+twc+6ZT7d5Yyal9XGH7iGfjcXEqWIXzX8+7QmLmrI
+         ymkgklQB9G0+TfTie0fROj6cR/c4qWVvt+TTeoegZkLifYb906ApPYNkzcOQs4mr/7
+         YMzlGt8u8QZww==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marius Hoch <mail@mariushoch.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, linux-input@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 15/29] Input: soc_button_array - also add Lenovo Yoga Tablet2 1051F to dmi_use_low_level_irq
-Date:   Mon, 13 Jun 2022 22:08:01 -0400
-Message-Id: <20220614020815.1099999-15-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, saeedm@mellanox.com,
+        matanb@mellanox.com, leonro@mellanox.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 33/41] mellanox: mlx5: avoid uninitialized variable warning with gcc-12
+Date:   Mon, 13 Jun 2022 22:06:58 -0400
+Message-Id: <20220614020707.1099487-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
-References: <20220614020815.1099999-1-sashal@kernel.org>
+In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
+References: <20220614020707.1099487-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,47 +54,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marius Hoch <mail@mariushoch.de>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 6ab2e51898cd4343bbdf8587af8ce8fbabddbcb5 ]
+[ Upstream commit 842c3b3ddc5f4d17275edbaa09e23d712bf8b915 ]
 
-Commit 223f61b8c5ad ("Input: soc_button_array - add Lenovo Yoga Tablet2
-1051L to the dmi_use_low_level_irq list") added the 1051L to this list
-already, but the same problem applies to the 1051F. As there are no
-further 1051 variants (just the F/L), we can just DMI match 1051.
+gcc-12 started warning about 'tracker' being used uninitialized:
 
-Tested on a Lenovo Yoga Tablet2 1051F: Without this patch the
-home-button stops working after a wakeup from suspend.
+  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c: In function ‘mlx5_do_bond’:
+  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c:786:28: warning: ‘tracker’ is used uninitialized [-Wuninitialized]
+    786 |         struct lag_tracker tracker;
+        |                            ^~~~~~~
 
-Signed-off-by: Marius Hoch <mail@mariushoch.de>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220603120246.3065-1-mail@mariushoch.de
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+which seems to be because it doesn't track how the use (and
+initialization) is bound by the 'do_bond' flag.
+
+But admittedly that 'do_bond' usage is fairly complicated, and involves
+passing it around as an argument to helper functions, so it's somewhat
+understandable that gcc doesn't see how that all works.
+
+This function could be rewritten to make the use of that tracker
+variable more obviously safe, but for now I'm just adding the forced
+initialization of it.
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/misc/soc_button_array.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
-index cb6ec59a045d..efffcf0ebd3b 100644
---- a/drivers/input/misc/soc_button_array.c
-+++ b/drivers/input/misc/soc_button_array.c
-@@ -85,13 +85,13 @@ static const struct dmi_system_id dmi_use_low_level_irq[] = {
- 	},
- 	{
- 		/*
--		 * Lenovo Yoga Tab2 1051L, something messes with the home-button
-+		 * Lenovo Yoga Tab2 1051F/1051L, something messes with the home-button
- 		 * IRQ settings, leading to a non working home-button.
- 		 */
- 		.matches = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "60073"),
--			DMI_MATCH(DMI_PRODUCT_VERSION, "1051L"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "1051"),
- 		},
- 	},
- 	{} /* Terminating entry */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+index c19d9327095b..bf1c5dc419c3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+@@ -435,7 +435,7 @@ static void mlx5_do_bond(struct mlx5_lag *ldev)
+ {
+ 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
+ 	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
+-	struct lag_tracker tracker;
++	struct lag_tracker tracker = { };
+ 	bool do_bond, roce_lag;
+ 	int err;
+ 
 -- 
 2.35.1
 
