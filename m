@@ -2,608 +2,373 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91147CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357843AbiFNU37 (ORCPT
+        id S1358234AbiFNUaD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49946 "EHLO
+        Tue, 14 Jun 2022 16:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356579AbiFNU34 (ORCPT
+        with ESMTP id S1358162AbiFNU35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:29:56 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2101.outbound.protection.outlook.com [40.107.243.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0824EA12;
-        Tue, 14 Jun 2022 13:29:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HHxVp5vAmq/q1BCzaotvbdXA3ExvHVesbE2Ybw826VhfsO7zt8EBZb4CwHxQ9+izPK466ZKlsw84u2cxjCSMrBdMCDBJxRDBMf+zWyq/y3UI9knMqGdjXLo0/HhHhBopFBiaboKP42xG2dGpEt+Amb19oyiAmqzqWfUhaVOv01b9OUNvEZqvmttsq7VSo93ts5rNl/z768rpxqsARCotvsoTCJJEDQghveAlBw2EUWDOJub2eNUY5BRnfhQJpuQzDkWjIOVWT66vhDW7o4ooxlZJIyX/+PNel3bD2tdGzhrEJdbDd1ENMflkXAqnWP4ZWLajbiY6YtKvrJRWF8p/NA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=C44B/0tWOMpfl5HTsKNb9OgUy1nnuD3Up/YDXOUO+Ts=;
- b=gq8Nw3dGuylh5QUr6PTyRA/vlUlS1S54LehdhSLyjCihIZ/hqlxkEjvtn/0X759iCULmHEHt8FMedz/xgiqD55liyrBo9gtu59TV0eWuKaTCPN36Kkb1hu/XuEB70j5hQA+dssRAWL4wX4hfpNhFvQ5PEdfrm3HQwHyOFfRq5PMYd9f6z4ZQZROw0u1iHNhXmqqaZf+iwJPmTUbY1B2AgLXXaBOQzTZOXjam5MG4XyFcWsv9YsuB0gJ6LTMVkYhP/Y0YBVDM7XdMxMNo9yCZHDmyenFWA5RjTGwh/xkOMZX62ntL5zcsPfqfBlYQFZ48n6kEkuMfDmPbZ5YnracVAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C44B/0tWOMpfl5HTsKNb9OgUy1nnuD3Up/YDXOUO+Ts=;
- b=Rhb4lY+rqO+6XQJREtNFXNeXhSdP0bu8wut7Mffuz/SaPkpvGcpJ/UpcRPuUIM1Jk3SEECrYDE4x6YqCcVLN7u7ctTl/+CquSsBOba1z5AjjBQNEIgsb2Ft0ZvCCmrkzS2BMJucGqV0bkvL6EpybhpGoymR8Psoc/kRpvyqTNmU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-Received: from BYAPR21MB1223.namprd21.prod.outlook.com (2603:10b6:a03:103::11)
- by MN0PR21MB3314.namprd21.prod.outlook.com (2603:10b6:208:37f::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.8; Tue, 14 Jun
- 2022 20:29:49 +0000
-Received: from BYAPR21MB1223.namprd21.prod.outlook.com
- ([fe80::7ceb:34aa:b695:d8ac]) by BYAPR21MB1223.namprd21.prod.outlook.com
- ([fe80::7ceb:34aa:b695:d8ac%5]) with mapi id 15.20.5353.001; Tue, 14 Jun 2022
- 20:29:49 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
-Cc:     haiyangz@microsoft.com, decui@microsoft.com, kys@microsoft.com,
-        sthemmin@microsoft.com, paulros@microsoft.com,
-        shacharr@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com,
-        davem@davemloft.net, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next,v2,1/2] net: mana: Add the Linux MANA PF driver
-Date:   Tue, 14 Jun 2022 13:28:54 -0700
-Message-Id: <1655238535-19257-2-git-send-email-haiyangz@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1655238535-19257-1-git-send-email-haiyangz@microsoft.com>
-References: <1655238535-19257-1-git-send-email-haiyangz@microsoft.com>
-Content-Type: text/plain
-X-ClientProxiedBy: MW4PR04CA0313.namprd04.prod.outlook.com
- (2603:10b6:303:82::18) To BYAPR21MB1223.namprd21.prod.outlook.com
- (2603:10b6:a03:103::11)
+        Tue, 14 Jun 2022 16:29:57 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC544EDE5
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:29:53 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id h23so15744894lfe.4
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:29:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=i1JbdaTpMJydG2La5gQ81SLd4rzBeviDTlLKc1Eh/88=;
+        b=GeEzs3PaW1MdOrbgFZ/otLfl3Zbs0O9rwiW5jR3wEk7DxOJJMNNaAAd9x3vM+ls+vP
+         SYoWgeoNHoBptIJJOojShXU13QiM5QUde3iyhfQnGylp3dfOJv1fd9e/kqkjVyDsO8Ak
+         VGmpHA6oteHXGscOvQXivDkJlXHLf+JVvDS9MfT9/GEguVMCR0iw3TFO1dHFfJjQdgel
+         dBmPayr75a2wpNqnj2UDwqzxBz7W+DedtpboLm1h6z+y3tXbGBua9JMlFEW2dL7oKJdj
+         GChzCb3cE3z0NztobHO7Cc7W8M+GVhNKCvicnUoH5y9Sz2wExD7QaUw7d1WhJejCLPgo
+         KCAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=i1JbdaTpMJydG2La5gQ81SLd4rzBeviDTlLKc1Eh/88=;
+        b=rQB7bAQzp8NQFnWc5L8tLCtIbU15/Bp3HHVZpPE46zgWeNvxA5n2Z89N6fRvGV5nkk
+         8p0mthGvbK+kqc+DZ/YyFAf4JcooI3I19SwAeu71zDwYfgSMqrSLG2Z2G+wlOZh6jf4J
+         s6k6C7xs+XnxHV4wLwg4KfZlJZgXBfF5S41iOSGefM0xI1eAZ+ZklTIFoxFXmi2HcdmY
+         r3MEoexresRYUm2EpQ92ntpB7yL/9wj2hMNMQNHIqqDMW5Fl+HMW6qr2f0NKhNX9URTR
+         cXNBESYqpws3xI5FxbmbsAtAL8GYMrguGN4YcYU6YgV7DUEFoMrLVuij5Rkvhu4sxpZb
+         ZR/w==
+X-Gm-Message-State: AOAM530B7KZg1CZies7MJkmlJdakl40TqVH9drO91YEvaGo+Y7NkuaV0
+        zdT6vrrdGs5TtLUyt8Anc4u57yhvWOnxO919bjoJ2A==
+X-Google-Smtp-Source: AGRyM1uB8vovM2S7g0G+YvxGib/s21Ys3d7Mu/guzm6mTRKwWFEw+NzAwM1UtOZyS5AKzwwfYb7eQjcwM7Mj92nnSGc=
+X-Received: by 2002:a05:6512:238c:b0:479:8c3:e11b with SMTP id
+ c12-20020a056512238c00b0047908c3e11bmr4044322lfv.456.1655238591503; Tue, 14
+ Jun 2022 13:29:51 -0700 (PDT)
 MIME-Version: 1.0
-Sender: LKML haiyangz <lkmlhyz@microsoft.com>
-X-MS-Exchange-MessageSentRepresentingType: 2
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e7956383-672d-4539-283e-08da4e44a115
-X-MS-TrafficTypeDiagnostic: MN0PR21MB3314:EE_
-X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-X-Microsoft-Antispam-PRVS: <MN0PR21MB331428C070FFAF4B6EF4D5D5ACAA9@MN0PR21MB3314.namprd21.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zfeOqUomdmnzN3g6DrulrDE2cZHiA8S1SIhBpIRVptmTJTaTZAEsvckGQYmQDvL1CmRL4RrzG9qlwzYFel+KS/xzWKOOK6PeRY5O2D5TAs+4YE6uleemChsPC5gbNMjKlEMRtP4ZZqjZjEP8yqhGqiSq9U3nuAG2M1iGTBEJppaipzISkUf82La74uSV1ZtEVOEfUGXDpz4zMwCaOgYdRyuM3ICtvNWvebvB7NnLpriybp9L/6egdKy1bokXmcg6InqHC+3SISJbwLi0sDxoue+Ged45L2kR8bDx8WgVDZY7UR+RuuomWGY17FyXtZmkE8HztlU1fMDGFyzzk3+l5k4fC+cHlKNjd0OKPzmmQoy5WyCKGDuzJg0Jon/PapXGdLFeFA1pQiKdN64GuC9SAuZXq2/3Iyt/lgOe3LLmuexuBNp/ipQeWZeL6h2QQrGA03VhOHF1DjvIk71XVG8WOT05Jrs6J/QQWUM7XpEBYVceS5w/tknk3aeXbry6s8BaCq4zX0ZSJyVm+VoY1W58wAoYPL9bXHQGTAxcfd8ulA3DqeBYmzgEt9I1i4T5Xbv3qPwOjk7N0O/ZLYsoo9NYkm8RQRNjiaDdW6cyakkPYbFMJbsv8UdoC2o8s7i0oNJcFSNR0k8KHvwQdBEcnBwNV5lZ9qq55gjSH+ci8rne9/3WWPP3JvgjzNbIjd71ffZLRvTONZR3dyAjFKjIXg0yz4qWh5vULR7kxZQW7S37SFj4vlAmHyzh3id1NKRmyZqd
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1223.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(451199009)(6666004)(6506007)(186003)(52116002)(2616005)(6512007)(26005)(38100700002)(82960400001)(38350700002)(82950400001)(83380400001)(5660300002)(30864003)(66946007)(36756003)(8676002)(4326008)(8936002)(6486002)(316002)(2906002)(66556008)(66476007)(10290500003)(7846003)(508600001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?evbu0ZMPyG8tZCvDHX4N75FflqujpDYW+0Q38rdVFGFS97zjqabU/ODnaIf8?=
- =?us-ascii?Q?jpXTo8wt7ax3UXHuJKk1zIhIWECFshHwXSHKXZ5KUlo4caU6gOSqEuzap/PA?=
- =?us-ascii?Q?WBUi/nlavZlFp0eQVoFQcR/uiY3c9dfBB71w+8bM6WSGqRgrz6sBme2aZ+Y4?=
- =?us-ascii?Q?d/WaN87HqIm1fXJ7sHcr3Fe8lRDY0psmpKrHauZkziy83NrUnhdiwKNbGI2W?=
- =?us-ascii?Q?Ib8n5cRsQG3lFGV96DDGXdS025QoUDW4RLqKBvgINlcPP4K6aLls1nyVQiwt?=
- =?us-ascii?Q?fRpyGV6V3a0guCrEnmWh6OfzwpcoVgbh1GX6hTTGS+wJUSNL+nCa8KIiilun?=
- =?us-ascii?Q?8A0KVYBkoQF5NNOrlkmczAss+QAe+PaSQyd9iXZKS/XsJdGbxv+9jI/hTBKd?=
- =?us-ascii?Q?FEqd+Odw6Dg/nULzM+3nu4KGwBJZBfSS8JnUXPXx2PimxQFVpVr6vankW2VI?=
- =?us-ascii?Q?Yhakc52taILiaySU8JhUVtbhG4Lkyx8Ilk4EYNFqyECXSP3j5Rz0ONNCGyOi?=
- =?us-ascii?Q?BQvAJsXVuPBUMlkOf1HRY2M9/UCZRLGheM/UlQLSeEkT+7NRXYyIoc8vsm70?=
- =?us-ascii?Q?qQOYIhSnpw9uNVNLgZsrL20Z3sQxI4cv2vZ/YKZKyzyA70pp9TmHc8kcF5W5?=
- =?us-ascii?Q?ganOBgg8Oynbo1L+g27IvhHWdTU0o+ab8Io0ve9ED1itucJg3+AQCS67oV0T?=
- =?us-ascii?Q?xTmvh8CvvqBzjkQPMFZR9uF4Mw0Su1zUMZtpjzUFck4tx4u9ugd7PlspSf3S?=
- =?us-ascii?Q?K10WdW3NuKUFYvinVM14spOsmmqDonjkUqAydN3enQmb2RSCiUllbbPfl+ZZ?=
- =?us-ascii?Q?GUgkWFQtV7maTH9ettHxqSLwI5+VKIASt13F16jCgMLKJH4eK9MwzihAcE1t?=
- =?us-ascii?Q?2lUXO9OoHzhSIqqLtrZCaKkUp1smfc0pTVdzFXB12t9S4O5AaVMNvlfJ1g4O?=
- =?us-ascii?Q?f02dXln1RjG+l35hkbsbyfFHn/GmJCBeyGg1+x1jm3hmum11T2QF/Z+jOQFS?=
- =?us-ascii?Q?7qgoZzVmQLm/KsCaBbss6dg7LM6oPPl5kzQTW/wvu/unie3+dWld8WnXfugN?=
- =?us-ascii?Q?mHtt8Q4SXwxOgeo/Qn20jS0QPAXmKikFj7iZPhmGpyQhZrraKj9604WX7uHI?=
- =?us-ascii?Q?nmO0lAoaxmT8NMSB3IhW/2SbjURV8vBHBcxU45KC44YedZy4mK7rX7zfmjFw?=
- =?us-ascii?Q?Pz/i6ektX/o3raLPxTuGFfyioqCCaXFlr26cv8ZHWt7l/i5Bjxm3LpAd9Af/?=
- =?us-ascii?Q?115R2m0UtBbwOYctQyPHhDNggPXMKg60nUK1/Nk0t9Te/ARCmd2pNgba1lYY?=
- =?us-ascii?Q?uoR5Sb1ldCXRwfkONyjfdMImU/YbyBp9wc4FcZGABXl3ExMYocdqjke0KdzT?=
- =?us-ascii?Q?lM5GAvyny3c1dWvR2R0kvktJoT5u5cOrZ+7a+YDwzXR39f2WpSkAvZYCLIXL?=
- =?us-ascii?Q?d5KwI600XBucedEKCmAbshneEW6C7J76l82jT9dEXCXEEF0bl+yF7FkS/9nY?=
- =?us-ascii?Q?H9hn+IpbZcEbuoEVlXnkkGNfiGGflUjF+YN7GSb2/nGxcOtUjkqOs1bJu4+Q?=
- =?us-ascii?Q?AWZldONQ6vLr30Yqs9+v0ooTjKySrawO4zSYg7gqJuddKSXPXHslFMtUGvlh?=
- =?us-ascii?Q?SFLYh6Xh8olhLrJAPcg9c+mjkWxg6hf2lMrybSpgOfL4zJ6X5PwBZrlKTlT+?=
- =?us-ascii?Q?zW43+bcHGPh31I9TNDnMTpedU5/1n6bvlC1AFJsI3uvL2HhVOUVrrpxkGAQN?=
- =?us-ascii?Q?qAeKrRQHJA=3D=3D?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e7956383-672d-4539-283e-08da4e44a115
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1223.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2022 20:29:49.5482
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NhwK3ARllUUmwpNadKeatL5DRGMIeA9YrSlPcf5AQeXyi++2Y5lmYmAtYciOON0b6DqoKh+X0gBKh80r7NvxDA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR21MB3314
+References: <20210820155918.7518-1-brijesh.singh@amd.com> <20210820155918.7518-24-brijesh.singh@amd.com>
+ <CABpDEukdrEbXjOF_QuZqUMQndYx=zVM4s2o-oN_wb2L_HCrONg@mail.gmail.com>
+ <1cadca0d-c3dc-68ed-075f-f88ccb0ccc0a@amd.com> <CABpDEun0rjrNVCGZDXd8SO3tfZi-2ku3mit2XMGLwCsijbF9tg@mail.gmail.com>
+ <ee1a829f-9a89-e447-d182-877d4033c96a@amd.com> <CAMkAt6q3otA3n-daFfEBP7kzD+ucMQjP=3bX1PkuAUFrH9epUQ@mail.gmail.com>
+ <SN6PR12MB27671CDFDAA1E62AD49EC6C68EAA9@SN6PR12MB2767.namprd12.prod.outlook.com>
+ <CAMkAt6r0ZsjS_XtVYnazC8-Z9bHQafLZ7QFq2NqcRQ2gZbUyPg@mail.gmail.com>
+ <SN6PR12MB276764F83F8849603A2F23478EAA9@SN6PR12MB2767.namprd12.prod.outlook.com>
+ <CABpDEum5cmODpA1HQUqG0doKv32AqZ0L9eA88nfg=F=OTMigxA@mail.gmail.com> <SN6PR12MB2767FC7AD341378116DD147D8EAA9@SN6PR12MB2767.namprd12.prod.outlook.com>
+In-Reply-To: <SN6PR12MB2767FC7AD341378116DD147D8EAA9@SN6PR12MB2767.namprd12.prod.outlook.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Tue, 14 Jun 2022 14:29:39 -0600
+Message-ID: <CAMkAt6pW5MUvJoh1HRJjwjWp7WuJGdrHf59k_QgCxfPhvmM20w@mail.gmail.com>
+Subject: Re: [PATCH Part2 v5 23/45] KVM: SVM: Add KVM_SNP_INIT command
+To:     "Kalra, Ashish" <Ashish.Kalra@amd.com>
+Cc:     Alper Gun <alpergun@google.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "Roth, Michael" <Michael.Roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>, Marc Orr <marcorr@google.com>,
+        Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dexuan Cui <decui@microsoft.com>
+On Tue, Jun 14, 2022 at 2:23 PM Kalra, Ashish <Ashish.Kalra@amd.com> wrote:
+>
+> [AMD Official Use Only - General]
+>
+> Hello Alper,
+>
+> Here is the feedback from the SEV/SNP firmware team:
+>
+> The SNP spec has this line in SNP_INIT_EX:
+>
+> =E2=80=9CThe firmware marks all encryption capable ASIDs as unusable for =
+encrypted virtualization.=E2=80=9D
+>
+> This is a back-handed way of saying that after SNP_INIT, all of the ASIDs=
+ are considered =E2=80=9Cdirty=E2=80=9D. None are in use, but the FW can=E2=
+=80=99t know if there=E2=80=99s any data in the caches left over from some =
+prior guest. So after doing an SNP_INIT (or SNP_INIT_EX), a WBINVD (on all =
+threads) and DF_FLUSH sequence is required. It doesn=E2=80=99t matter wheth=
+er it=E2=80=99s an SEV DF_FLUSH or an SNP_DF_FLUSH=E2=80=A6 they both do EX=
+ACTLY the same thing.
+>
+> I don=E2=80=99t understand off hand why SNP_LAUNCH_START would require a =
+DF_FLUSH=E2=80=A6 Usually, it=E2=80=99s only an =E2=80=9Cactivate=E2=80=9D =
+command that requires the DF_FLUSH. ACTIVATE/ACTIVATE_EX/SNP_ACTIVATE/SNP_A=
+CTIVATE_EX
+>
+> [Ashish] That's why I asked if you are getting the DLFLUSH_REQUIRED error=
+ after the SNP activate command ?
+>
+> It=E2=80=99s when you attempt to (re-)use >an ASID that=E2=80=99s =E2=80=
+=9Cdirty=E2=80=9D that you should get the DF_FLUSH_REQUIRED error.
+>
+> [Ashish] And we do SNP_DF_FLUSH/SEV_DF_FLUSH whenever ASIDs are reused/re=
+-cycled.
+>
+> If the host only wants to run SNP guests, there=E2=80=99s no need to do a=
+n SEV INIT or any other SEV operations. If the host DOES want to run SEV AN=
+D SNP guests, then the required sequence is to do the SNP_INIT before the S=
+EV INIT. Doing the WBINVD/DF_FLUSH any time between the SNP_INIT and any AC=
+TIVATE command should be sufficient.
 
-This minimal PF driver runs on bare metal.
-Currently Ethernet TX/RX works. SR-IOV management is not supported yet.
+Thanks for the follow up Ashish! I was assuming there was some issue
+with the ASIDs here but didn't have time to experiment yet. Is there
+any downside to enabling SEV? If not these patches make sense but if
+there is some cost should we make KVM capable of running SNP VMs
+without enabling SEV?
 
-Signed-off-by: Dexuan Cui <decui@microsoft.com>
-Co-developed-by: Haiyang Zhang <haiyangz@microsoft.com>
-Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
----
- drivers/net/ethernet/microsoft/mana/gdma.h    |  10 ++
- .../net/ethernet/microsoft/mana/gdma_main.c   |  39 ++++-
- .../net/ethernet/microsoft/mana/hw_channel.c  |  18 ++-
- .../net/ethernet/microsoft/mana/hw_channel.h  |   5 +
- drivers/net/ethernet/microsoft/mana/mana.h    |  64 +++++++++
- drivers/net/ethernet/microsoft/mana/mana_en.c | 135 ++++++++++++++++++
- 6 files changed, 267 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/microsoft/mana/gdma.h b/drivers/net/ethernet/microsoft/mana/gdma.h
-index 41ecd156e95f..4a6efe6ada08 100644
---- a/drivers/net/ethernet/microsoft/mana/gdma.h
-+++ b/drivers/net/ethernet/microsoft/mana/gdma.h
-@@ -348,6 +348,7 @@ struct gdma_context {
- 	struct completion	eq_test_event;
- 	u32			test_event_eq_id;
- 
-+	bool			is_pf;
- 	void __iomem		*bar0_va;
- 	void __iomem		*shm_base;
- 	void __iomem		*db_page_base;
-@@ -469,6 +470,15 @@ struct gdma_eqe {
- #define GDMA_REG_DB_PAGE_SIZE	0x10
- #define GDMA_REG_SHM_OFFSET	0x18
- 
-+#define GDMA_PF_REG_DB_PAGE_SIZE	0xD0
-+#define GDMA_PF_REG_DB_PAGE_OFF		0xC8
-+#define GDMA_PF_REG_SHM_OFF		0x70
-+
-+#define GDMA_SRIOV_REG_CFG_BASE_OFF	0x108
-+
-+#define MANA_PF_DEVICE_ID 0x00B9
-+#define MANA_VF_DEVICE_ID 0x00BA
-+
- struct gdma_posted_wqe_info {
- 	u32 wqe_size_in_bu;
- };
-diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-index 49b85ca578b0..5f9240182351 100644
---- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
-+++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-@@ -18,7 +18,24 @@ static u64 mana_gd_r64(struct gdma_context *g, u64 offset)
- 	return readq(g->bar0_va + offset);
- }
- 
--static void mana_gd_init_registers(struct pci_dev *pdev)
-+static void mana_gd_init_pf_regs(struct pci_dev *pdev)
-+{
-+	struct gdma_context *gc = pci_get_drvdata(pdev);
-+	void __iomem *sriov_base_va;
-+	u64 sriov_base_off;
-+
-+	gc->db_page_size = mana_gd_r32(gc, GDMA_PF_REG_DB_PAGE_SIZE) & 0xFFFF;
-+	gc->db_page_base = gc->bar0_va +
-+				mana_gd_r64(gc, GDMA_PF_REG_DB_PAGE_OFF);
-+
-+	sriov_base_off = mana_gd_r64(gc, GDMA_SRIOV_REG_CFG_BASE_OFF);
-+
-+	sriov_base_va = gc->bar0_va + sriov_base_off;
-+	gc->shm_base = sriov_base_va +
-+			mana_gd_r64(gc, sriov_base_off + GDMA_PF_REG_SHM_OFF);
-+}
-+
-+static void mana_gd_init_vf_regs(struct pci_dev *pdev)
- {
- 	struct gdma_context *gc = pci_get_drvdata(pdev);
- 
-@@ -30,6 +47,16 @@ static void mana_gd_init_registers(struct pci_dev *pdev)
- 	gc->shm_base = gc->bar0_va + mana_gd_r64(gc, GDMA_REG_SHM_OFFSET);
- }
- 
-+static void mana_gd_init_registers(struct pci_dev *pdev)
-+{
-+	struct gdma_context *gc = pci_get_drvdata(pdev);
-+
-+	if (gc->is_pf)
-+		mana_gd_init_pf_regs(pdev);
-+	else
-+		mana_gd_init_vf_regs(pdev);
-+}
-+
- static int mana_gd_query_max_resources(struct pci_dev *pdev)
- {
- 	struct gdma_context *gc = pci_get_drvdata(pdev);
-@@ -1304,6 +1331,11 @@ static void mana_gd_cleanup(struct pci_dev *pdev)
- 	mana_gd_remove_irqs(pdev);
- }
- 
-+static bool mana_is_pf(unsigned short dev_id)
-+{
-+	return dev_id == MANA_PF_DEVICE_ID;
-+}
-+
- static int mana_gd_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- {
- 	struct gdma_context *gc;
-@@ -1340,10 +1372,10 @@ static int mana_gd_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (!bar0_va)
- 		goto free_gc;
- 
-+	gc->is_pf = mana_is_pf(pdev->device);
- 	gc->bar0_va = bar0_va;
- 	gc->dev = &pdev->dev;
- 
--
- 	err = mana_gd_setup(pdev);
- 	if (err)
- 		goto unmap_bar;
-@@ -1438,7 +1470,8 @@ static void mana_gd_shutdown(struct pci_dev *pdev)
- #endif
- 
- static const struct pci_device_id mana_id_table[] = {
--	{ PCI_DEVICE(PCI_VENDOR_ID_MICROSOFT, 0x00BA) },
-+	{ PCI_DEVICE(PCI_VENDOR_ID_MICROSOFT, MANA_PF_DEVICE_ID) },
-+	{ PCI_DEVICE(PCI_VENDOR_ID_MICROSOFT, MANA_VF_DEVICE_ID) },
- 	{ }
- };
- 
-diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.c b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-index 078d6a5a0768..543a5d5c304f 100644
---- a/drivers/net/ethernet/microsoft/mana/hw_channel.c
-+++ b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-@@ -158,6 +158,14 @@ static void mana_hwc_init_event_handler(void *ctx, struct gdma_queue *q_self,
- 			hwc->rxq->msg_buf->gpa_mkey = val;
- 			hwc->txq->msg_buf->gpa_mkey = val;
- 			break;
-+
-+		case HWC_INIT_DATA_PF_DEST_RQ_ID:
-+			hwc->pf_dest_vrq_id = val;
-+			break;
-+
-+		case HWC_INIT_DATA_PF_DEST_CQ_ID:
-+			hwc->pf_dest_vrcq_id = val;
-+			break;
- 		}
- 
- 		break;
-@@ -773,10 +781,13 @@ void mana_hwc_destroy_channel(struct gdma_context *gc)
- int mana_hwc_send_request(struct hw_channel_context *hwc, u32 req_len,
- 			  const void *req, u32 resp_len, void *resp)
- {
-+	struct gdma_context *gc = hwc->gdma_dev->gdma_context;
- 	struct hwc_work_request *tx_wr;
- 	struct hwc_wq *txq = hwc->txq;
- 	struct gdma_req_hdr *req_msg;
- 	struct hwc_caller_ctx *ctx;
-+	u32 dest_vrcq = 0;
-+	u32 dest_vrq = 0;
- 	u16 msg_id;
- 	int err;
- 
-@@ -803,7 +814,12 @@ int mana_hwc_send_request(struct hw_channel_context *hwc, u32 req_len,
- 
- 	tx_wr->msg_size = req_len;
- 
--	err = mana_hwc_post_tx_wqe(txq, tx_wr, 0, 0, false);
-+	if (gc->is_pf) {
-+		dest_vrq = hwc->pf_dest_vrq_id;
-+		dest_vrcq = hwc->pf_dest_vrcq_id;
-+	}
-+
-+	err = mana_hwc_post_tx_wqe(txq, tx_wr, dest_vrq, dest_vrcq, false);
- 	if (err) {
- 		dev_err(hwc->dev, "HWC: Failed to post send WQE: %d\n", err);
- 		goto out;
-diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.h b/drivers/net/ethernet/microsoft/mana/hw_channel.h
-index 31c6e83c454a..6a757a6e2732 100644
---- a/drivers/net/ethernet/microsoft/mana/hw_channel.h
-+++ b/drivers/net/ethernet/microsoft/mana/hw_channel.h
-@@ -20,6 +20,8 @@
- #define HWC_INIT_DATA_MAX_NUM_CQS	7
- #define HWC_INIT_DATA_PDID		8
- #define HWC_INIT_DATA_GPA_MKEY		9
-+#define HWC_INIT_DATA_PF_DEST_RQ_ID	10
-+#define HWC_INIT_DATA_PF_DEST_CQ_ID	11
- 
- /* Structures labeled with "HW DATA" are exchanged with the hardware. All of
-  * them are naturally aligned and hence don't need __packed.
-@@ -178,6 +180,9 @@ struct hw_channel_context {
- 	struct semaphore sema;
- 	struct gdma_resource inflight_msg_res;
- 
-+	u32 pf_dest_vrq_id;
-+	u32 pf_dest_vrcq_id;
-+
- 	struct hwc_caller_ctx *caller_ctx;
- };
- 
-diff --git a/drivers/net/ethernet/microsoft/mana/mana.h b/drivers/net/ethernet/microsoft/mana/mana.h
-index d36405af9432..f198b34c232f 100644
---- a/drivers/net/ethernet/microsoft/mana/mana.h
-+++ b/drivers/net/ethernet/microsoft/mana/mana.h
-@@ -374,6 +374,7 @@ struct mana_port_context {
- 	unsigned int num_queues;
- 
- 	mana_handle_t port_handle;
-+	mana_handle_t pf_filter_handle;
- 
- 	u16 port_idx;
- 
-@@ -420,6 +421,12 @@ enum mana_command_code {
- 	MANA_FENCE_RQ		= 0x20006,
- 	MANA_CONFIG_VPORT_RX	= 0x20007,
- 	MANA_QUERY_VPORT_CONFIG	= 0x20008,
-+
-+	/* Privileged commands for the PF mode */
-+	MANA_REGISTER_FILTER	= 0x28000,
-+	MANA_DEREGISTER_FILTER	= 0x28001,
-+	MANA_REGISTER_HW_PORT	= 0x28003,
-+	MANA_DEREGISTER_HW_PORT	= 0x28004,
- };
- 
- /* Query Device Configuration */
-@@ -547,6 +554,63 @@ struct mana_cfg_rx_steer_resp {
- 	struct gdma_resp_hdr hdr;
- }; /* HW DATA */
- 
-+/* Register HW vPort */
-+struct mana_register_hw_vport_req {
-+	struct gdma_req_hdr hdr;
-+	u16 attached_gfid;
-+	u8 is_pf_default_vport;
-+	u8 reserved1;
-+	u8 allow_all_ether_types;
-+	u8 reserved2;
-+	u8 reserved3;
-+	u8 reserved4;
-+}; /* HW DATA */
-+
-+struct mana_register_hw_vport_resp {
-+	struct gdma_resp_hdr hdr;
-+	mana_handle_t hw_vport_handle;
-+}; /* HW DATA */
-+
-+/* Deregister HW vPort */
-+struct mana_deregister_hw_vport_req {
-+	struct gdma_req_hdr hdr;
-+	mana_handle_t hw_vport_handle;
-+}; /* HW DATA */
-+
-+struct mana_deregister_hw_vport_resp {
-+	struct gdma_resp_hdr hdr;
-+}; /* HW DATA */
-+
-+/* Register filter */
-+struct mana_register_filter_req {
-+	struct gdma_req_hdr hdr;
-+	mana_handle_t vport;
-+	u8 mac_addr[6];
-+	u8 reserved1;
-+	u8 reserved2;
-+	u8 reserved3;
-+	u8 reserved4;
-+	u16 reserved5;
-+	u32 reserved6;
-+	u32 reserved7;
-+	u32 reserved8;
-+}; /* HW DATA */
-+
-+struct mana_register_filter_resp {
-+	struct gdma_resp_hdr hdr;
-+	mana_handle_t filter_handle;
-+}; /* HW DATA */
-+
-+/* Deregister filter */
-+struct mana_deregister_filter_req {
-+	struct gdma_req_hdr hdr;
-+	mana_handle_t filter_handle;
-+}; /* HW DATA */
-+
-+struct mana_deregister_filter_resp {
-+	struct gdma_resp_hdr hdr;
-+}; /* HW DATA */
-+
- #define MANA_MAX_NUM_QUEUES 64
- 
- #define MANA_SHORT_VPORT_OFFSET_MAX ((1U << 8) - 1)
-diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index b1d773823232..3ef09e0cdbaa 100644
---- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-+++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -446,6 +446,119 @@ static int mana_verify_resp_hdr(const struct gdma_resp_hdr *resp_hdr,
- 	return 0;
- }
- 
-+static int mana_pf_register_hw_vport(struct mana_port_context *apc)
-+{
-+	struct mana_register_hw_vport_resp resp = {};
-+	struct mana_register_hw_vport_req req = {};
-+	int err;
-+
-+	mana_gd_init_req_hdr(&req.hdr, MANA_REGISTER_HW_PORT,
-+			     sizeof(req), sizeof(resp));
-+	req.attached_gfid = 1;
-+	req.is_pf_default_vport = 1;
-+	req.allow_all_ether_types = 1;
-+
-+	err = mana_send_request(apc->ac, &req, sizeof(req), &resp,
-+				sizeof(resp));
-+	if (err) {
-+		netdev_err(apc->ndev, "Failed to register hw vPort: %d\n", err);
-+		return err;
-+	}
-+
-+	err = mana_verify_resp_hdr(&resp.hdr, MANA_REGISTER_HW_PORT,
-+				   sizeof(resp));
-+	if (err || resp.hdr.status) {
-+		netdev_err(apc->ndev, "Failed to register hw vPort: %d, 0x%x\n",
-+			   err, resp.hdr.status);
-+		return err ? err : -EPROTO;
-+	}
-+
-+	apc->port_handle = resp.hw_vport_handle;
-+	return 0;
-+}
-+
-+static void mana_pf_deregister_hw_vport(struct mana_port_context *apc)
-+{
-+	struct mana_deregister_hw_vport_resp resp = {};
-+	struct mana_deregister_hw_vport_req req = {};
-+	int err;
-+
-+	mana_gd_init_req_hdr(&req.hdr, MANA_DEREGISTER_HW_PORT,
-+			     sizeof(req), sizeof(resp));
-+	req.hw_vport_handle = apc->port_handle;
-+
-+	err = mana_send_request(apc->ac, &req, sizeof(req), &resp,
-+				sizeof(resp));
-+	if (err) {
-+		netdev_err(apc->ndev, "Failed to unregister hw vPort: %d\n",
-+			   err);
-+		return;
-+	}
-+
-+	err = mana_verify_resp_hdr(&resp.hdr, MANA_DEREGISTER_HW_PORT,
-+				   sizeof(resp));
-+	if (err || resp.hdr.status)
-+		netdev_err(apc->ndev,
-+			   "Failed to deregister hw vPort: %d, 0x%x\n",
-+			   err, resp.hdr.status);
-+}
-+
-+static int mana_pf_register_filter(struct mana_port_context *apc)
-+{
-+	struct mana_register_filter_resp resp = {};
-+	struct mana_register_filter_req req = {};
-+	int err;
-+
-+	mana_gd_init_req_hdr(&req.hdr, MANA_REGISTER_FILTER,
-+			     sizeof(req), sizeof(resp));
-+	req.vport = apc->port_handle;
-+	memcpy(req.mac_addr, apc->mac_addr, ETH_ALEN);
-+
-+	err = mana_send_request(apc->ac, &req, sizeof(req), &resp,
-+				sizeof(resp));
-+	if (err) {
-+		netdev_err(apc->ndev, "Failed to register filter: %d\n", err);
-+		return err;
-+	}
-+
-+	err = mana_verify_resp_hdr(&resp.hdr, MANA_REGISTER_FILTER,
-+				   sizeof(resp));
-+	if (err || resp.hdr.status) {
-+		netdev_err(apc->ndev, "Failed to register filter: %d, 0x%x\n",
-+			   err, resp.hdr.status);
-+		return err ? err : -EPROTO;
-+	}
-+
-+	apc->pf_filter_handle = resp.filter_handle;
-+	return 0;
-+}
-+
-+static void mana_pf_deregister_filter(struct mana_port_context *apc)
-+{
-+	struct mana_deregister_filter_resp resp = {};
-+	struct mana_deregister_filter_req req = {};
-+	int err;
-+
-+	mana_gd_init_req_hdr(&req.hdr, MANA_DEREGISTER_FILTER,
-+			     sizeof(req), sizeof(resp));
-+	req.filter_handle = apc->pf_filter_handle;
-+
-+	err = mana_send_request(apc->ac, &req, sizeof(req), &resp,
-+				sizeof(resp));
-+	if (err) {
-+		netdev_err(apc->ndev, "Failed to unregister filter: %d\n",
-+			   err);
-+		return;
-+	}
-+
-+	err = mana_verify_resp_hdr(&resp.hdr, MANA_DEREGISTER_FILTER,
-+				   sizeof(resp));
-+	if (err || resp.hdr.status)
-+		netdev_err(apc->ndev,
-+			   "Failed to deregister filter: %d, 0x%x\n",
-+			   err, resp.hdr.status);
-+}
-+
- static int mana_query_device_cfg(struct mana_context *ac, u32 proto_major_ver,
- 				 u32 proto_minor_ver, u32 proto_micro_ver,
- 				 u16 *max_num_vports)
-@@ -1653,6 +1766,7 @@ static int mana_add_rx_queues(struct mana_port_context *apc,
- 
- static void mana_destroy_vport(struct mana_port_context *apc)
- {
-+	struct gdma_dev *gd = apc->ac->gdma_dev;
- 	struct mana_rxq *rxq;
- 	u32 rxq_idx;
- 
-@@ -1666,6 +1780,9 @@ static void mana_destroy_vport(struct mana_port_context *apc)
- 	}
- 
- 	mana_destroy_txq(apc);
-+
-+	if (gd->gdma_context->is_pf)
-+		mana_pf_deregister_hw_vport(apc);
- }
- 
- static int mana_create_vport(struct mana_port_context *apc,
-@@ -1676,6 +1793,12 @@ static int mana_create_vport(struct mana_port_context *apc,
- 
- 	apc->default_rxobj = INVALID_MANA_HANDLE;
- 
-+	if (gd->gdma_context->is_pf) {
-+		err = mana_pf_register_hw_vport(apc);
-+		if (err)
-+			return err;
-+	}
-+
- 	err = mana_cfg_vport(apc, gd->pdid, gd->doorbell);
- 	if (err)
- 		return err;
-@@ -1755,6 +1878,7 @@ static int mana_init_port(struct net_device *ndev)
- int mana_alloc_queues(struct net_device *ndev)
- {
- 	struct mana_port_context *apc = netdev_priv(ndev);
-+	struct gdma_dev *gd = apc->ac->gdma_dev;
- 	int err;
- 
- 	err = mana_create_vport(apc, ndev);
-@@ -1781,6 +1905,12 @@ int mana_alloc_queues(struct net_device *ndev)
- 	if (err)
- 		goto destroy_vport;
- 
-+	if (gd->gdma_context->is_pf) {
-+		err = mana_pf_register_filter(apc);
-+		if (err)
-+			goto destroy_vport;
-+	}
-+
- 	mana_chn_setxdp(apc, mana_xdp_get(apc));
- 
- 	return 0;
-@@ -1825,6 +1955,7 @@ int mana_attach(struct net_device *ndev)
- static int mana_dealloc_queues(struct net_device *ndev)
- {
- 	struct mana_port_context *apc = netdev_priv(ndev);
-+	struct gdma_dev *gd = apc->ac->gdma_dev;
- 	struct mana_txq *txq;
- 	int i, err;
- 
-@@ -1833,6 +1964,9 @@ static int mana_dealloc_queues(struct net_device *ndev)
- 
- 	mana_chn_setxdp(apc, NULL);
- 
-+	if (gd->gdma_context->is_pf)
-+		mana_pf_deregister_filter(apc);
-+
- 	/* No packet can be transmitted now since apc->port_is_up is false.
- 	 * There is still a tiny chance that mana_poll_tx_cq() can re-enable
- 	 * a txq because it may not timely see apc->port_is_up being cleared
-@@ -1915,6 +2049,7 @@ static int mana_probe_port(struct mana_context *ac, int port_idx,
- 	apc->max_queues = gc->max_num_queues;
- 	apc->num_queues = gc->max_num_queues;
- 	apc->port_handle = INVALID_MANA_HANDLE;
-+	apc->pf_filter_handle = INVALID_MANA_HANDLE;
- 	apc->port_idx = port_idx;
- 
- 	ndev->netdev_ops = &mana_devops;
--- 
-2.25.1
-
+>
+> Thanks,
+> Ashish
+>
+> -----Original Message-----
+> From: Alper Gun <alpergun@google.com>
+> Sent: Tuesday, June 14, 2022 1:58 PM
+> To: Kalra, Ashish <Ashish.Kalra@amd.com>
+> Cc: Peter Gonda <pgonda@google.com>; the arch/x86 maintainers <x86@kernel=
+.org>; LKML <linux-kernel@vger.kernel.org>; kvm list <kvm@vger.kernel.org>;=
+ linux-coco@lists.linux.dev; linux-mm@kvack.org; Linux Crypto Mailing List =
+<linux-crypto@vger.kernel.org>; Thomas Gleixner <tglx@linutronix.de>; Ingo =
+Molnar <mingo@redhat.com>; Joerg Roedel <jroedel@suse.de>; Lendacky, Thomas=
+ <Thomas.Lendacky@amd.com>; H. Peter Anvin <hpa@zytor.com>; Ard Biesheuvel =
+<ardb@kernel.org>; Paolo Bonzini <pbonzini@redhat.com>; Sean Christopherson=
+ <seanjc@google.com>; Vitaly Kuznetsov <vkuznets@redhat.com>; Wanpeng Li <w=
+anpengli@tencent.com>; Jim Mattson <jmattson@google.com>; Andy Lutomirski <=
+luto@kernel.org>; Dave Hansen <dave.hansen@linux.intel.com>; Sergio Lopez <=
+slp@redhat.com>; Peter Zijlstra <peterz@infradead.org>; Srinivas Pandruvada=
+ <srinivas.pandruvada@linux.intel.com>; David Rientjes <rientjes@google.com=
+>; Dov Murik <dovmurik@linux.ibm.com>; Tobin Feldman-Fitzthum <tobin@ibm.co=
+m>; Borislav Petkov <bp@alien8.de>; Roth, Michael <Michael.Roth@amd.com>; V=
+lastimil Babka <vbabka@suse.cz>; Kirill A . Shutemov <kirill@shutemov.name>=
+; Andi Kleen <ak@linux.intel.com>; Tony Luck <tony.luck@intel.com>; Marc Or=
+r <marcorr@google.com>; Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppusw=
+amy@linux.intel.com>
+> Subject: Re: [PATCH Part2 v5 23/45] KVM: SVM: Add KVM_SNP_INIT command
+>
+> Let me summarize what I tried.
+>
+> 1- when using psp_init_probe false, the SNP VM fails in SNP_LAUNCH_START =
+step with error SEV_RET_DFFLUSH_REQUIRED(15).
+> 2- added SEV_DF_FLUSH just after SNP platform init and it didn't fail in =
+launch start but failed later during SNP_LAUNCH_UPDATE with
+> SEV_RET_INVALID_PARAM(22)
+> 3- added SNP_DF_FLUSH just after SNP platform init and it failed again du=
+ring SNP_LAUNCH_UPDATE with SEV_RET_INVALID_PARAM(22)
+> 4- added sev_platform_init for SNP VMs and it worked.
+>
+> For me DF_FLUSH alone didn' help boot a VM. I don't know yet why sev plat=
+form status impacts the SNP VM, but sev_platform_init fixes the problem.
+>
+>
+> On Tue, Jun 14, 2022 at 10:16 AM Kalra, Ashish <Ashish.Kalra@amd.com> wro=
+te:
+> >
+> > [AMD Official Use Only - General]
+> >
+> > Hello Alper, Peter,
+> >
+> > -----Original Message-----
+> > From: Peter Gonda <pgonda@google.com>
+> > Sent: Tuesday, June 14, 2022 11:30 AM
+> > To: Kalra, Ashish <Ashish.Kalra@amd.com>
+> > Cc: Alper Gun <alpergun@google.com>; Brijesh Singh
+> > <brijesh.singh@amd.com>; the arch/x86 maintainers <x86@kernel.org>;
+> > LKML <linux-kernel@vger.kernel.org>; kvm list <kvm@vger.kernel.org>;
+> > linux-coco@lists.linux.dev; linux-mm@kvack.org; Linux Crypto Mailing
+> > List <linux-crypto@vger.kernel.org>; Thomas Gleixner
+> > <tglx@linutronix.de>; Ingo Molnar <mingo@redhat.com>; Joerg Roedel
+> > <jroedel@suse.de>; Lendacky, Thomas <Thomas.Lendacky@amd.com>; H.
+> > Peter Anvin <hpa@zytor.com>; Ard Biesheuvel <ardb@kernel.org>; Paolo
+> > Bonzini <pbonzini@redhat.com>; Sean Christopherson
+> > <seanjc@google.com>; Vitaly Kuznetsov <vkuznets@redhat.com>; Wanpeng
+> > Li <wanpengli@tencent.com>; Jim Mattson <jmattson@google.com>; Andy
+> > Lutomirski <luto@kernel.org>; Dave Hansen
+> > <dave.hansen@linux.intel.com>; Sergio Lopez <slp@redhat.com>; Peter
+> > Zijlstra <peterz@infradead.org>; Srinivas Pandruvada
+> > <srinivas.pandruvada@linux.intel.com>; David Rientjes
+> > <rientjes@google.com>; Dov Murik <dovmurik@linux.ibm.com>; Tobin
+> > Feldman-Fitzthum <tobin@ibm.com>; Borislav Petkov <bp@alien8.de>;
+> > Roth, Michael <Michael.Roth@amd.com>; Vlastimil Babka
+> > <vbabka@suse.cz>; Kirill A . Shutemov <kirill@shutemov.name>; Andi
+> > Kleen <ak@linux.intel.com>; Tony Luck <tony.luck@intel.com>; Marc Orr
+> > <marcorr@google.com>; Sathyanarayanan Kuppuswamy
+> > <sathyanarayanan.kuppuswamy@linux.intel.com>; Pavan Kumar Paluri
+> > <papaluri@amd.com>
+> > Subject: Re: [PATCH Part2 v5 23/45] KVM: SVM: Add KVM_SNP_INIT command
+> >
+> > On Tue, Jun 14, 2022 at 10:11 AM Kalra, Ashish <Ashish.Kalra@amd.com> w=
+rote:
+> > >
+> > > [AMD Official Use Only - General]
+> > >
+> > >
+> > > -----Original Message-----
+> > > From: Peter Gonda <pgonda@google.com>
+> > > Sent: Tuesday, June 14, 2022 10:38 AM
+> > > To: Kalra, Ashish <Ashish.Kalra@amd.com>
+> > > Cc: Alper Gun <alpergun@google.com>; Brijesh Singh
+> > > <brijesh.singh@amd.com>; Kalra, Ashish <Ashish.Kalra@amd.com>; the
+> > > arch/x86 maintainers <x86@kernel.org>; LKML
+> > > <linux-kernel@vger.kernel.org>; kvm list <kvm@vger.kernel.org>;
+> > > linux-coco@lists.linux.dev; linux-mm@kvack.org; Linux Crypto Mailing
+> > > List <linux-crypto@vger.kernel.org>; Thomas Gleixner
+> > > <tglx@linutronix.de>; Ingo Molnar <mingo@redhat.com>; Joerg Roedel
+> > > <jroedel@suse.de>; Lendacky, Thomas <Thomas.Lendacky@amd.com>; H.
+> > > Peter Anvin <hpa@zytor.com>; Ard Biesheuvel <ardb@kernel.org>; Paolo
+> > > Bonzini <pbonzini@redhat.com>; Sean Christopherson
+> > > <seanjc@google.com>; Vitaly Kuznetsov <vkuznets@redhat.com>; Wanpeng
+> > > Li <wanpengli@tencent.com>; Jim Mattson <jmattson@google.com>; Andy
+> > > Lutomirski <luto@kernel.org>; Dave Hansen
+> > > <dave.hansen@linux.intel.com>; Sergio Lopez <slp@redhat.com>; Peter
+> > > Zijlstra <peterz@infradead.org>; Srinivas Pandruvada
+> > > <srinivas.pandruvada@linux.intel.com>; David Rientjes
+> > > <rientjes@google.com>; Dov Murik <dovmurik@linux.ibm.com>; Tobin
+> > > Feldman-Fitzthum <tobin@ibm.com>; Borislav Petkov <bp@alien8.de>;
+> > > Roth, Michael <Michael.Roth@amd.com>; Vlastimil Babka
+> > > <vbabka@suse.cz>; Kirill A . Shutemov <kirill@shutemov.name>; Andi
+> > > Kleen <ak@linux.intel.com>; Tony Luck <tony.luck@intel.com>; Marc
+> > > Orr <marcorr@google.com>; Sathyanarayanan Kuppuswamy
+> > > <sathyanarayanan.kuppuswamy@linux.intel.com>; Pavan Kumar Paluri
+> > > <papaluri@amd.com>
+> > > Subject: Re: [PATCH Part2 v5 23/45] KVM: SVM: Add KVM_SNP_INIT
+> > > command
+> > >
+> > > On Mon, Jun 13, 2022 at 6:21 PM Ashish Kalra <ashkalra@amd.com> wrote=
+:
+> > > >
+> > > >
+> > > > On 6/13/22 23:33, Alper Gun wrote:
+> > > > > On Mon, Jun 13, 2022 at 4:15 PM Ashish Kalra <ashkalra@amd.com> w=
+rote:
+> > > > >> Hello Alper,
+> > > > >>
+> > > > >> On 6/13/22 20:58, Alper Gun wrote:
+> > > > >>> static int sev_guest_init(struct kvm *kvm, struct kvm_sev_cmd
+> > > > >>> *argp)
+> > > > >>>>    {
+> > > > >>>> +       bool es_active =3D (argp->id =3D=3D KVM_SEV_ES_INIT ||
+> > > > >>>> + argp->id =3D=3D KVM_SEV_SNP_INIT);
+> > > > >>>>           struct kvm_sev_info *sev =3D &to_kvm_svm(kvm)->sev_i=
+nfo;
+> > > > >>>> -       bool es_active =3D argp->id =3D=3D KVM_SEV_ES_INIT;
+> > > > >>>> +       bool snp_active =3D argp->id =3D=3D KVM_SEV_SNP_INIT;
+> > > > >>>>           int asid, ret;
+> > > > >>>>
+> > > > >>>>           if (kvm->created_vcpus) @@ -249,12 +269,22 @@
+> > > > >>>> static int sev_guest_init(struct kvm *kvm, struct kvm_sev_cmd =
+*argp)
+> > > > >>>>                   return ret;
+> > > > >>>>
+> > > > >>>>           sev->es_active =3D es_active;
+> > > > >>>> +       sev->snp_active =3D snp_active;
+> > > > >>>>           asid =3D sev_asid_new(sev);
+> > > > >>>>           if (asid < 0)
+> > > > >>>>                   goto e_no_asid;
+> > > > >>>>           sev->asid =3D asid;
+> > > > >>>>
+> > > > >>>> -       ret =3D sev_platform_init(&argp->error);
+> > > > >>>> +       if (snp_active) {
+> > > > >>>> +               ret =3D verify_snp_init_flags(kvm, argp);
+> > > > >>>> +               if (ret)
+> > > > >>>> +                       goto e_free;
+> > > > >>>> +
+> > > > >>>> +               ret =3D sev_snp_init(&argp->error);
+> > > > >>>> +       } else {
+> > > > >>>> +               ret =3D sev_platform_init(&argp->error);
+> > > > >>> After SEV INIT_EX support patches, SEV may be initialized in th=
+e platform late.
+> > > > >>> In my tests, if SEV has not been initialized in the platform
+> > > > >>> yet, SNP VMs fail with SEV_DF_FLUSH required error. I tried
+> > > > >>> calling SEV_DF_FLUSH right after the SNP platform init but
+> > > > >>> this time it failed later on the SNP launch update command
+> > > > >>> with SEV_RET_INVALID_PARAM error. Looks like there is another
+> > > > >>> dependency on SEV platform initialization.
+> > > > >>>
+> > > > >>> Calling sev_platform_init for SNP VMs fixes the problem in our =
+tests.
+> > > > >> Trying to get some more context for this issue.
+> > > > >>
+> > > > >> When you say after SEV_INIT_EX support patches, SEV may be
+> > > > >> initialized in the platform late, do you mean sev_pci_init()->se=
+v_snp_init() ...
+> > > > >> sev_platform_init() code path has still not executed on the host=
+ BSP ?
+> > > > >>
+> > > > > Correct, INIT_EX requires the file system to be ready and there
+> > > > > is a ccp module param to call it only when needed.
+> > > > >
+> > > > > MODULE_PARM_DESC(psp_init_on_probe, " if true, the PSP will be
+> > > > > initialized on module init. Else the PSP will be initialized on
+> > > > > the first command requiring it");
+> > > > >
+> > > > > If this module param is false, it won't initialize SEV on the
+> > > > > platform until the first SEV VM.
+> > > > >
+> > > > Ok, that makes sense.
+> > > >
+> > > > So the fix will be to call sev_platform_init() unconditionally
+> > > > here in sev_guest_init(), and both sev_snp_init() and
+> > > > sev_platform_init() are protected from being called again, so
+> > > > there won't be any issues if these functions are invoked again at
+> > > > SNP/SEV VM launch if they have been invoked earlier during module i=
+nit.
+> > >
+> > > >That's one solution. I don't know if there is a downside to the syst=
+em for enabling SEV if SNP is being enabled but another solution could be t=
+o just directly place a DF_FLUSH command instead of calling sev_platform_in=
+it().
+> > >
+> > > Actually sev_platform_init() is already called on module init if psp_=
+init_on_probe is not false. Only need to ensure that SNP firmware is initia=
+lized first with SNP_INIT command.
+> >
+> > > But if psp_init_on_probe is false, sev_platform_init() isn't called d=
+own this path. Alper has suggested we always call sev_platform_init() but w=
+e could just place an SEV_DF_FLUSH command instead. Or am I still missing s=
+omething?
+> >
+> > >After SEV INIT_EX support patches, SEV may be initialized in the platf=
+orm late.
+> > > In my tests, if SEV has not been initialized in the platform  yet,
+> > >SNP VMs fail with SEV_DF_FLUSH required error. I tried  calling
+> > >SEV_DF_FLUSH right after the SNP platform init.
+> >
+> > Are you getting the DLFLUSH_REQUIRED error after the SNP activate comma=
+nd ?
+> >
+> > Also did you use the SEV_DF_FLUSH command or the SNP_DF_FLUSH command ?
+> >
+> > With SNP you need to use SNP_DF_FLUSH command.
+> >
+> > Thanks,
+> > Ashish
