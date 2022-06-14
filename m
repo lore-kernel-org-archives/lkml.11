@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 501FFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 04:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B88C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 04:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351258AbiFNEZv (ORCPT
+        id S1351147AbiFNEZx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 00:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44434 "EHLO
+        Tue, 14 Jun 2022 00:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349068AbiFNEZf (ORCPT
+        with ESMTP id S1346694AbiFNEZh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 00:25:35 -0400
+        Tue, 14 Jun 2022 00:25:37 -0400
 Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48CF2AC76;
-        Mon, 13 Jun 2022 21:25:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5422AC66;
+        Mon, 13 Jun 2022 21:25:36 -0700 (PDT)
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3DB13202719;
-        Tue, 14 Jun 2022 06:25:30 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 07F54202710;
+        Tue, 14 Jun 2022 06:25:35 +0200 (CEST)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id E85B8202718;
-        Tue, 14 Jun 2022 06:25:29 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id B1A13202717;
+        Tue, 14 Jun 2022 06:25:34 +0200 (CEST)
 Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 0E88B180219B;
-        Tue, 14 Jun 2022 12:25:27 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id CC104180219B;
+        Tue, 14 Jun 2022 12:25:32 +0800 (+08)
 From:   Shengjiu Wang <shengjiu.wang@nxp.com>
 To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
         shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
         perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
         robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org
 Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/7] ASoC: fsl_sai: Add PDM daifmt support
-Date:   Tue, 14 Jun 2022 12:11:18 +0800
-Message-Id: <1655179884-12278-2-git-send-email-shengjiu.wang@nxp.com>
+Subject: [PATCH 5/7] ASoC: fsl_sai: Move res variable to be global
+Date:   Tue, 14 Jun 2022 12:11:22 +0800
+Message-Id: <1655179884-12278-6-git-send-email-shengjiu.wang@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1655179884-12278-1-git-send-email-shengjiu.wang@nxp.com>
 References: <1655179884-12278-1-git-send-email-shengjiu.wang@nxp.com>
@@ -42,81 +42,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PDM format is used for 1-bit stream, so clear the FBT and SYWD,
-and the each dataline only has one channel data.
+The resource info need to be accessed by hw_params()
+function for multi fifo case, the start address may
+be not the FIFO0. So move it to be global first.
 
 Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
 ---
- sound/soc/fsl/fsl_sai.c | 17 +++++++++++++++--
- sound/soc/fsl/fsl_sai.h |  1 +
- 2 files changed, 16 insertions(+), 2 deletions(-)
+ sound/soc/fsl/fsl_sai.c | 7 +++----
+ sound/soc/fsl/fsl_sai.h | 1 +
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
-index 4f5bd9597c74..d11ee3b6f163 100644
+index ddfe28cb7df0..86aa0baba848 100644
 --- a/sound/soc/fsl/fsl_sai.c
 +++ b/sound/soc/fsl/fsl_sai.c
-@@ -224,6 +224,7 @@ static int fsl_sai_set_dai_fmt_tr(struct snd_soc_dai *cpu_dai,
- 	if (!sai->is_lsb_first)
- 		val_cr4 |= FSL_SAI_CR4_MF;
+@@ -1077,7 +1077,6 @@ static int fsl_sai_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct fsl_sai *sai;
+ 	struct regmap *gpr;
+-	struct resource *res;
+ 	void __iomem *base;
+ 	char tmp[8];
+ 	int irq, ret, i;
+@@ -1092,7 +1091,7 @@ static int fsl_sai_probe(struct platform_device *pdev)
  
-+	sai->is_pdm_mode = false;
- 	/* DAI mode */
- 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
- 	case SND_SOC_DAIFMT_I2S:
-@@ -262,6 +263,11 @@ static int fsl_sai_set_dai_fmt_tr(struct snd_soc_dai *cpu_dai,
- 		val_cr2 |= FSL_SAI_CR2_BCP;
- 		sai->is_dsp_mode = true;
- 		break;
-+	case SND_SOC_DAIFMT_PDM:
-+		val_cr2 |= FSL_SAI_CR2_BCP;
-+		val_cr4 &= ~FSL_SAI_CR4_MF;
-+		sai->is_pdm_mode = true;
-+		break;
- 	case SND_SOC_DAIFMT_RIGHT_J:
- 		/* To be done */
- 	default:
-@@ -470,6 +476,13 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
+ 	sai->is_lsb_first = of_property_read_bool(np, "lsb-first");
  
- 	pins = DIV_ROUND_UP(channels, slots);
+-	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
++	base = devm_platform_get_and_ioremap_resource(pdev, 0, &sai->res);
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
  
-+	/*
-+	 * PDM mode, channels are independent
-+	 * each channels are on one dataline/FIFO.
-+	 */
-+	if (sai->is_pdm_mode)
-+		pins = channels;
-+
- 	if (!sai->is_consumer_mode) {
- 		if (sai->bclk_ratio)
- 			ret = fsl_sai_set_bclk(cpu_dai, tx,
-@@ -492,13 +505,13 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
- 		}
+@@ -1192,8 +1191,8 @@ static int fsl_sai_probe(struct platform_device *pdev)
+ 				   MCLK_DIR(index));
  	}
  
--	if (!sai->is_dsp_mode)
-+	if (!sai->is_dsp_mode && !sai->is_pdm_mode)
- 		val_cr4 |= FSL_SAI_CR4_SYWD(slot_width);
+-	sai->dma_params_rx.addr = res->start + FSL_SAI_RDR0;
+-	sai->dma_params_tx.addr = res->start + FSL_SAI_TDR0;
++	sai->dma_params_rx.addr = sai->res->start + FSL_SAI_RDR0;
++	sai->dma_params_tx.addr = sai->res->start + FSL_SAI_TDR0;
+ 	sai->dma_params_rx.maxburst = FSL_SAI_MAXBURST_RX;
+ 	sai->dma_params_tx.maxburst = FSL_SAI_MAXBURST_TX;
  
- 	val_cr5 |= FSL_SAI_CR5_WNW(slot_width);
- 	val_cr5 |= FSL_SAI_CR5_W0W(slot_width);
- 
--	if (sai->is_lsb_first)
-+	if (sai->is_lsb_first || sai->is_pdm_mode)
- 		val_cr5 |= FSL_SAI_CR5_FBT(0);
- 	else
- 		val_cr5 |= FSL_SAI_CR5_FBT(word_width - 1);
 diff --git a/sound/soc/fsl/fsl_sai.h b/sound/soc/fsl/fsl_sai.h
-index 1c8f5ca07f9d..bc2a86a413e1 100644
+index c0b6bc42fc3c..4d657edc9c9f 100644
 --- a/sound/soc/fsl/fsl_sai.h
 +++ b/sound/soc/fsl/fsl_sai.h
-@@ -259,6 +259,7 @@ struct fsl_sai {
+@@ -258,6 +258,7 @@ struct fsl_sai {
+ 	struct regmap *regmap;
+ 	struct clk *bus_clk;
+ 	struct clk *mclk_clk[FSL_SAI_MCLK_MAX];
++	struct resource *res;
+ 
  	bool is_consumer_mode;
  	bool is_lsb_first;
- 	bool is_dsp_mode;
-+	bool is_pdm_mode;
- 	bool synchronous[2];
- 
- 	unsigned int mclk_id[2];
 -- 
 2.17.1
 
