@@ -2,128 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E8ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBC1CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:44:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357332AbiFNUnp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
+        id S232098AbiFNUo4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 16:44:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353110AbiFNUnd (ORCPT
+        with ESMTP id S229573AbiFNUox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:43:33 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2E819015
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:43:31 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id v1so19357878ejg.13
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:43:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dhAM/LQikebwPyrwCB/38lxgJLD4HIC2Qhyl28Iz4Bo=;
-        b=F64WuJyflipU8IKSxsvGs9EdDSEd6+FrvI2BKcasSS/0ENM051pT66CjnRViaTl7sw
-         Lwp5sxIwuSmAzzBzwSqg/uYy/OkIfMGeDtO7gOick8FFKeDNMqyzE5X77y+6saloeTcw
-         C2sC9S+KjWM86en5pcv/eMsQB6SPZUaenDdoU=
+        Tue, 14 Jun 2022 16:44:53 -0400
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881C019015;
+        Tue, 14 Jun 2022 13:44:51 -0700 (PDT)
+Received: by mail-il1-f175.google.com with SMTP id a15so7432742ilq.12;
+        Tue, 14 Jun 2022 13:44:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dhAM/LQikebwPyrwCB/38lxgJLD4HIC2Qhyl28Iz4Bo=;
-        b=3sGGjzari481ke74m1yJV7tk0Cv/mcVG6vWCvBUXRjpbSUO5XMnoQqs35fSCa/LwdP
-         cQu1IcW2UFSS6j1YEcEHW/toMGbWerEhn4l+WAST12tUsS4UPMG0INboPNSQphE3+cQC
-         ghXhmksw0g+6WLBmpzDjc7uqqHI4bE56jkV2/KQRfFrnswPmrJP3c24MoOEKcBGm23sD
-         6I0pA/H/ob8v2Kqa2YeMcZ97imTMtteFewgDzDKSXILnexMDvxTDf+Pa5Vh8/BUsyL4F
-         KFJFzSzpk61s6vnT47C27sORf7OZY1dC1p1ynY8KI9SAzkRuBnO61MOLYhYCRP7JTQvs
-         ZbbQ==
-X-Gm-Message-State: AOAM533qn1emDnkwmYF2dckU/+F0CrPqQZuMI2iV1X9IXGMMsT3o6C3Q
-        bo9/mIg1sCLAewbhM/Ocr5EtnTb/E65XJRnk75k=
-X-Google-Smtp-Source: AGRyM1tiWpdYzIGOYrqHbupSlyg/qLDQih/qjU84BV77pkxKPoyPFGAKjib5UCHvprwS5SFI9+xCBw==
-X-Received: by 2002:a17:907:c22:b0:711:dc95:3996 with SMTP id ga34-20020a1709070c2200b00711dc953996mr5929448ejc.62.1655239409801;
-        Tue, 14 Jun 2022 13:43:29 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id x90-20020a50bae3000000b0042ab87ea713sm7815658ede.22.2022.06.14.13.43.27
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 13:43:28 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id u8so12727663wrm.13
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:43:27 -0700 (PDT)
-X-Received: by 2002:a5d:47aa:0:b0:218:5ac8:f3a8 with SMTP id
- 10-20020a5d47aa000000b002185ac8f3a8mr6695741wrb.442.1655239407469; Tue, 14
- Jun 2022 13:43:27 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=awvGoSOV3uXz23uagHoswi3cG08PUgpaB6iJ5hOlJ2g=;
+        b=lGtik4oU47NhAy49pPGTPFhQfiiXvVM5BHVdSUoTuLajbg5up0LfZsRj1wz785aDEH
+         ruX+OINAOA824xLP3WseD28YUUjOHycVi5yWBV+DUNHB2GUQ4WRXx40TJj6LhXqsis34
+         MvDQZ59BZ8UvCcpYXkGe921ZThSof0Lkmi2vwOdKBWV5n5g/cEnlpuL0UFyYSIbCmAY5
+         1foimg+DI9kUFP/fuVn1iKLA2HA11U71DOhDPbUVEidLgj6YYQOP4jNJ3KjhYdUZNUIB
+         Bs3Q7XrTQBnDJ84oI3QjChFFseVvoZbkn1d4/c6Ou4ENi+5sD0GK4pySvDTN1ufZ3xkB
+         4yYg==
+X-Gm-Message-State: AJIora8qTtrpVqTQGtqn1gpBih7D95/xt7KQHYDl/oY4bC9SK6QGzuMK
+        ByPm73jzCethNxgqrKHDfA==
+X-Google-Smtp-Source: AGRyM1s2ZMlh1FZXa5izdJ+WH0oWsaz1MyKom6j49+hfq9JE/z8OSyCZLrr5xmfSgRBdQPbA7E3iIQ==
+X-Received: by 2002:a05:6e02:1aa8:b0:2d3:d69a:6d88 with SMTP id l8-20020a056e021aa800b002d3d69a6d88mr4288462ilv.243.1655239490807;
+        Tue, 14 Jun 2022 13:44:50 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id e2-20020a02caa2000000b00331ad59d8c9sm5291262jap.44.2022.06.14.13.44.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 13:44:50 -0700 (PDT)
+Received: (nullmailer pid 2493034 invoked by uid 1000);
+        Tue, 14 Jun 2022 20:44:48 -0000
+Date:   Tue, 14 Jun 2022 14:44:48 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Mao Jinlong <quic_jinlmao@quicinc.com>
+Cc:     Konrad Dybcio <konradybcio@gmail.com>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, Tao Zhang <quic_taozha@quicinc.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>, coresight@lists.linaro.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Hao Zhang <quic_hazha@quicinc.com>
+Subject: Re: [PATCH v10 03/10] dt-bindings: arm: Adds CoreSight TPDM hardware
+ definitions
+Message-ID: <20220614204448.GA2492603-robh@kernel.org>
+References: <20220611004331.7343-1-quic_jinlmao@quicinc.com>
+ <20220611004331.7343-4-quic_jinlmao@quicinc.com>
 MIME-Version: 1.0
-References: <20220614144853.3693273-1-glider@google.com> <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com>
- <CAG_fn=WEed5NJ8hdrrP_N8aQ_1Ad11VoJgdVxQheo3VfT_xyXQ@mail.gmail.com>
- <CAHk-=whjz3wO8zD+itoerphWem+JZz4uS3myf6u1Wd6epGRgmQ@mail.gmail.com> <CAG_fn=UPoM3bafwu6inGPMjg1bPw3HSFM_KrE_hen_MN3fu2vA@mail.gmail.com>
-In-Reply-To: <CAG_fn=UPoM3bafwu6inGPMjg1bPw3HSFM_KrE_hen_MN3fu2vA@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 14 Jun 2022 13:43:11 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgG0nzFbGi_HmH9Yxi2KCofG5jPYNZQPA5+GsOfsZjWkw@mail.gmail.com>
-Message-ID: <CAHk-=wgG0nzFbGi_HmH9Yxi2KCofG5jPYNZQPA5+GsOfsZjWkw@mail.gmail.com>
-Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Evgenii Stepanov <eugenis@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Buka <vitalybuka@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220611004331.7343-4-quic_jinlmao@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 1:20 PM Alexander Potapenko <glider@google.com> wrote:
->
-> What about the cases where these uninitialized values are never used
-> in the callee?
+On Sat, 11 Jun 2022 08:43:24 +0800, Mao Jinlong wrote:
+> Adds new coresight-tpdm.yaml file describing the bindings required
+> to define tpdm in the device trees.
+> 
+> Acked-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+> Reviewed-by: Mike Leach <mike.leach@linaro.org>
+> Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
+> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
+> ---
+>  .../bindings/arm/qcom,coresight-tpdm.yaml     | 93 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 94 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/qcom,coresight-tpdm.yaml
+> 
 
-I assume that what happens is that when things are inlined, the
-compiler then sees that there is no actual uninitialized value, and
-that's ok.
-
-But if things aren't inlined, I really hope all compilers already warn
-about "look, I'm calling this function with an uninitialized
-argument".
-
-IOW, compilers can - and should - obviously take more information into
-account when they can see it.
-
-So no, don't warn for things you can actually see are not used.
-
-IOW, you shouldn't warn because of any _syntactic_ issue of it being
-an argument to a function. We often use inlining as an actually
-semantically meaningful thing, and the compiler should *not* warn for
-some theoretical "if this was not inlined, the argument would be used
-and be uninitialized" case.
-
-For an example of this kind of "not really used" thing, I could
-imagine that some configuration might need a "cookie" model to pair up
-actions, and you have a
-
-        void *cookie;
-
-        start(arg, &cookie);
-        ....
-        end(cookie);
-
-kind of situation.
-
-But then I could imagine that other configurations don't actually need
-or use that "end()" thing at all, and would leave "cookie"
-uninitialized, because the only valid use would be an inline function
-that is empty, and purely there for those *other* configurations.
-
-Again, if the compiler inlines 'end()', and sees that 'cookie' is not
-actually used, then no complaint is needed - or valid.
-
-But if 'cookie()' is an actual real function call, and you don't see
-the use of it, then it had better warn.
-
-No?
-
-               Linus
+Reviewed-by: Rob Herring <robh@kernel.org>
