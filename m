@@ -2,86 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D51BEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A396C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242545AbiFNJei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49142 "EHLO
+        id S1349852AbiFNJfg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 05:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230333AbiFNJeg (ORCPT
+        with ESMTP id S242192AbiFNJfe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 05:34:36 -0400
-X-Greylist: delayed 122 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 14 Jun 2022 02:34:32 PDT
-Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C2D369D8;
-        Tue, 14 Jun 2022 02:34:32 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id JHV00124;
-        Tue, 14 Jun 2022 17:32:24 +0800
-Received: from localhost.localdomain (10.200.104.97) by
- jtjnmail201602.home.langchao.com (10.100.2.2) with Microsoft SMTP Server id
- 15.1.2308.27; Tue, 14 Jun 2022 17:32:25 +0800
-From:   Bo Liu <liubo03@inspur.com>
-To:     <pbonzini@redhat.com>
-CC:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Bo Liu <liubo03@inspur.com>
-Subject: [PATCH] KVM: Use consistent type for return value of kvm_mmu_memory_cache_nr_free_objects()
-Date:   Tue, 14 Jun 2022 05:32:22 -0400
-Message-ID: <20220614093222.25387-1-liubo03@inspur.com>
-X-Mailer: git-send-email 2.18.2
+        Tue, 14 Jun 2022 05:35:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 56BDC3DA7B
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 02:35:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655199332;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6MtzWc5ofab5C3Xtt/UU+xbF7j8EBZN/y+HPGXLzh6o=;
+        b=Gfo9614SsvMTDcQWdGdfcDGHMi/7CpxRty3hrWO8qv6w/qiwOteFmMj57ETmuTSbEufrQA
+        4DiRImS5T+2INtiIH1u89s4Xar8uYWv1OIPGsy6hZrQgNC+5KNLQmMno9p6iPzVAB6mrms
+        e3F4p7AB8+nfpsB/iSPRheCShGS9gxc=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-132-nrIU1TUaOq6hPc4oE2oobQ-1; Tue, 14 Jun 2022 05:35:30 -0400
+X-MC-Unique: nrIU1TUaOq6hPc4oE2oobQ-1
+Received: by mail-wm1-f71.google.com with SMTP id k15-20020a7bc40f000000b0039c4b7f7d09so4543267wmi.8
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 02:35:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=6MtzWc5ofab5C3Xtt/UU+xbF7j8EBZN/y+HPGXLzh6o=;
+        b=DwPpVPU9It4caJjYKVJz3mdfvewreaB1VQyfxbQstD1pPb8OmsLmV9kUeU9l7uH5dg
+         JQ+mTioA54ZoBxhNru9pfCOdQVYwLBk5I93zhwA44IXLLnaSaLQ+p5opZA6ZyHJ+bbki
+         VZsP4e+muSTs4RTC0pwRCXtlM4gPfFtJ2OzFumKcIDoRBEH0xKQKJiM1GElDOXnCigSZ
+         d428icuOSor8QkTwMkUBoDJ+MJ7zp3Me4zS4H+BY+JVPup4ijRG6+Uz3deUtUJSanfzG
+         YIx3i7nSdRuTse1/yX1HlX4hcWd5onCr6fBCL54PiMsR/VDsQIIyReSfl77WleNgVlWf
+         nbZw==
+X-Gm-Message-State: AOAM533qzLFh95k9L8Dk9jndnp1eU9o+0qAHcNBlwgZ7ocpbU4A2g/PZ
+        Zu3p4McFCpOdajKa/zMD4IBFyk0UhftEaZNHB23AlW4HDvCJlowWjA73uLSy8lnOvQ1Jk0/MBQT
+        4/AjaPOr4z2LTe06s1UUV3D9+
+X-Received: by 2002:a05:600c:4f84:b0:39c:9897:5295 with SMTP id n4-20020a05600c4f8400b0039c98975295mr3163976wmq.158.1655199329713;
+        Tue, 14 Jun 2022 02:35:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJydT242xpHrC7qCjNL4VuiBuNAOuitTkJEsXEJRCe7Z8yDT7urJGUrIk5+392xLlCaSjSrSTw==
+X-Received: by 2002:a05:600c:4f84:b0:39c:9897:5295 with SMTP id n4-20020a05600c4f8400b0039c98975295mr3163959wmq.158.1655199329486;
+        Tue, 14 Jun 2022 02:35:29 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c70b:cf00:aace:de16:d459:d411? (p200300cbc70bcf00aacede16d459d411.dip0.t-ipconnect.de. [2003:cb:c70b:cf00:aace:de16:d459:d411])
+        by smtp.gmail.com with ESMTPSA id r132-20020a1c448a000000b0039c798b2dc5sm14905286wma.8.2022.06.14.02.35.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 02:35:29 -0700 (PDT)
+Message-ID: <2eb3f679-9779-2d7e-0863-5c808cf99ed6@redhat.com>
+Date:   Tue, 14 Jun 2022 11:35:28 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.200.104.97]
-tUid:   202261417322409c0f72d9200304032c44b936001c900
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v1] MAINTAINERS: add MEMORY HOT(UN)PLUG section and add
+ myself as reviewer
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220610101258.75738-1-david@redhat.com>
+ <YqhV7W68zR4yorQL@kroah.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YqhV7W68zR4yorQL@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The return value type of the function rmap_can_add() is "bool", and it will
-returns the result of the function kvm_mmu_memory_cache_nr_free_objects().
-So we should change the return value type of
-kvm_mmu_memory_cache_nr_free_objects() to "bool".
+On 14.06.22 11:33, Greg Kroah-Hartman wrote:
+> On Fri, Jun 10, 2022 at 12:12:58PM +0200, David Hildenbrand wrote:
+>> There are certainly a lot more files that partially fall into the memory
+>> hot(un)plug category, including parts of mm/sparse.c, mm/page_isolation.c
+>> and mm/page_alloc.c. Let's only add what's almost completely memory
+>> hot(un)plug related.
+>>
+>> Add myself as reviewer so it's easier for contributors to figure out
+>> whom to CC.
+>>
+>> Signed-off-by: David Hildenbrand <david@redhat.com>
+>> ---
+>>  MAINTAINERS | 12 ++++++++++++
+>>  1 file changed, 12 insertions(+)
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index a6d3bd9d2a8d..77aebce76288 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -12848,6 +12848,18 @@ F:	include/linux/vmalloc.h
+>>  F:	mm/
+>>  F:	tools/testing/selftests/vm/
+>>  
+>> +MEMORY HOT(UN)PLUG
+>> +M:	Andrew Morton <akpm@linux-foundation.org>
+>> +R:	David Hildenbrand <david@redhat.com>
+>> +L:	linux-mm@kvack.org
+>> +S:	Maintained
+>> +F:	Documentation/admin-guide/mm/memory-hotplug.rst
+>> +F:	Documentation/core-api/memory-hotplug.rst
+>> +F:	drivers/base/memory.c
+>> +F:	include/linux/memory_hotplug.h
+>> +F:	mm/memory_hotplug.c
+>> +F:	tools/testing/selftests/memory-hotplug/
+> 
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> 
+> One question, will patches from you go through my driver core tree, or
+> the -mm tree?  Either is fine for me, just curious.
 
-Signed-off-by: Bo Liu <liubo03@inspur.com>
----
- include/linux/kvm_host.h | 2 +-
- virt/kvm/kvm_main.c      | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+In the past, most stuff regarding drivers/base/memory.c went through
+-mm, so I'd say we keep it like that, unless it's really generic changes
+to the driver model etc.
 
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index c20f2d55840c..a399a7485795 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -1358,7 +1358,7 @@ void kvm_flush_remote_tlbs(struct kvm *kvm);
- 
- #ifdef KVM_ARCH_NR_OBJS_PER_MEMORY_CACHE
- int kvm_mmu_topup_memory_cache(struct kvm_mmu_memory_cache *mc, int min);
--int kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc);
-+bool kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc);
- void kvm_mmu_free_memory_cache(struct kvm_mmu_memory_cache *mc);
- void *kvm_mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
- #endif
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index a67e996cbf7f..2872569e3580 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -394,9 +394,9 @@ int kvm_mmu_topup_memory_cache(struct kvm_mmu_memory_cache *mc, int min)
- 	return 0;
- }
- 
--int kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc)
-+bool kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc)
- {
--	return mc->nobjs;
-+	return !!mc->nobjs;
- }
- 
- void kvm_mmu_free_memory_cache(struct kvm_mmu_memory_cache *mc)
 -- 
-2.27.0
+Thanks,
+
+David / dhildenb
 
