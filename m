@@ -2,142 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A30BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 908A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241269AbiFNOxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50524 "EHLO
+        id S1355050AbiFNOnW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:43:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238361AbiFNOxQ (ORCPT
+        with ESMTP id S236671AbiFNOnP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:53:16 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8073421E2A
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:53:15 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id j5-20020a05600c1c0500b0039c5dbbfa48so6356311wms.5
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:53:15 -0700 (PDT)
+        Tue, 14 Jun 2022 10:43:15 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B8F1A395
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:43:09 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25EBYGvv028312;
+        Tue, 14 Jun 2022 14:42:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=WZLWm2GRDxVCnTzecoazH8KRURQbZ9zm2EbOl26CxGI=;
+ b=g/NRIjRogFWKhLGHwl9dMyNeQ2M+si73k9m5ZwQGmDQU8FfKg/T64BPxdgyMsvRw9vPV
+ QZEm7KAXXUE3PhxSfxNsZ0US7Z1xmpeD68G/pvjIOyoB05Q9qnE2A+JcsAs3KOZTZKJ7
+ ak1hdZm1ZwIHGc4+Wv7XoGUKH+dG4TosRpti6dGXd426/BeGIoVQryJMXn9Hj7oFPMDr
+ lf44Uti5l9NyZxHhP/WyxwI7ct30SwxunE9I3gQi/0yNWc2DWv455HC33ECN25Je1G3j
+ euuLOBGFLDVvjKyceLrb28LNa+AdoWpBJqNNF1m9TWUT/HALV8V6pg3KdrmBX0hP4fSD Fw== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmjns60ys-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 14 Jun 2022 14:42:59 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25EEaNFT010415;
+        Tue, 14 Jun 2022 14:42:58 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2103.outbound.protection.outlook.com [104.47.70.103])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gpr296y39-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 14 Jun 2022 14:42:58 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WmN6wYvzChi37Ht9NCabYjPS7UoywPUIOQSiycT9Q97EfckEyTxm33jOLBpn6Wi56MwWXe7dFwB6Cm+VqcNTAKJvcLJr1xyFjvkUSO1H6/7ZmH0ROSyLXnOCj5YQZJj3KM4BNVOENqveJbpc2hgoxEAvfsNOlcLp4p7gqdY+ggaL69n87wUJpY+RSwsynD8NS2X80Nus/7Cqn99r7a87QYU+Ip3aesezeK0Gz1UpudI+7b20DlTjvmCBnXndiTkaCTPn68J0mndQtI5rA/lEzGAVyYQyCAcvs3zMrd36/B0KW3CzzYh/yUOJfz69u5tOGUPAxD8BA2qXIM9vP/gOmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WZLWm2GRDxVCnTzecoazH8KRURQbZ9zm2EbOl26CxGI=;
+ b=kZubjUKTqVSxiMor1VARR2ZRRMoTyrKx+L1x/5BGXxQ5V+X+r4pWGa7dq2EDFG7Vrf5Qv3/bSPiMqQNaRfh7CYBAEU5J0WbJiv+1lNPWsLQNGB+Vzuw+GSuuUwB1oAFlDD3gfT4T4yYKYQn50uOQg/82Pd9Nd+1EnOlBAWd4JcsaGqV/F883or83YSI2V68DjQNz0FOxC2Dn4347OnxjA7JCWDoe88QME9Lqlhs0wrfnHonhW2vm41iQwPF4UYXvkOvq817v9JhY6saRm4YBp+AVntL6oBkAffpqEf99gL+Uy8NNkDgEcKa193UaO4Hp3ZwnaXtxa/kLTKjcwED3ZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Beybp5XJ8a3dHy7RTQ7s0JAdwjglxG9m7qsg7aTj7KU=;
-        b=gqJqn6qGZ/TOsOaGxprWFd08BSsoSzW9yScic5r1RcJYQwXWr7It7UYmHtWnpGGEsb
-         4+I9bQUv7NRJqAfGoFk+BxPBMGSiyRLmPE0Nv6yKJlTPhd+HzHDXAK5c4hI9fKnn61Qc
-         bcbCUz+1Q21/oQguxzwwTFvww+VnHK6kwwW52Pu5c41tzBG8RTrMKHUjefM+qoQYT0YQ
-         b/0lYYN/d/OAPLf9V/AdPheRlwK63EUpWHmeoEyvrRAw2xQOGsmhOb90Mnc/BJAY8aMa
-         pgZu2HF+7nWTaM+EfE5hBKE8DuAcwFXkw6HNs00ojvk1tn821LZOl4UGAg64u5F3Uu1X
-         o/qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Beybp5XJ8a3dHy7RTQ7s0JAdwjglxG9m7qsg7aTj7KU=;
-        b=sXyKLmSg9WhEBa9UjSY9kTQhLKyBT5a2kPIbA8cGi5TvGtXeW2iLgJlOPaEpSVBO4a
-         KwFnpv0Z+oBEzxj9BNZvwzGWaYaYP+xBNNMx48jAJB86fX4oBlIhFXg8btrmUDFBcSLG
-         +tpYufsxqIhhkNDggBz625fs6oUzbcotAM2o2Ejs2HKE+22rZFbEPVDsdyCSzoKTlFj0
-         Qh+dZs7ci8W9vC+SGOvP0WcAZWXt75kVEWmkKwiQ7SmbF2honURC5e6JDIYNwhXYvgK5
-         Iq/0f0vC1t/WS9Q8xbzVD0pI23+DXswR+g7daVyAIcf+OBzXkERhzpHQ+qk2dpkt3mD9
-         7a1A==
-X-Gm-Message-State: AOAM531bTyLv9VHMaG4sl8zLEbjWNGyULRCvZUoiFvwny0viyqSM0s4F
-        k4lblKP+cdZwWKgWKgHFbMwisQQ6Q5kvZfaRLtfpag==
-X-Google-Smtp-Source: ABdhPJywS2htEDLwBMWXZrrCy9+TllwAinrXt7Rfo/66rSD9A4VOt5bjRN7nbwUdEtwrycbTPh03CIlRqT7H7SMGJyQ=
-X-Received: by 2002:a7b:c7da:0:b0:39c:5b34:3019 with SMTP id
- z26-20020a7bc7da000000b0039c5b343019mr4579162wmk.115.1655218393856; Tue, 14
- Jun 2022 07:53:13 -0700 (PDT)
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WZLWm2GRDxVCnTzecoazH8KRURQbZ9zm2EbOl26CxGI=;
+ b=RKEjf607994JyEPOdiJDO5uBZCZOS8q+ZkFVfjsNkIH4oF3lnVlaaPc7QVgjh7pL87d9YKwFfDd2wSwrdNvb/XKjB3XTd+u1AdKFq74XGFbFjCDQFU3n6+UaFqolFL99YoEz5kHoUOAaxnB6JNs4RcCfBX9cXE8uB471HeXI8Lk=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by CH0PR10MB5244.namprd10.prod.outlook.com
+ (2603:10b6:610:d9::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Tue, 14 Jun
+ 2022 14:42:57 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5332.020; Tue, 14 Jun 2022
+ 14:42:57 +0000
+Date:   Tue, 14 Jun 2022 17:42:45 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     daniel watson <ozzloy@challenge-bot.com>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] staging: r8188eu: remove leading '_' on
+ _rtw_IOL_append_WB_cmd
+Message-ID: <20220614091654.GI2146@kadam>
+References: <cover.1655171591.git.ozzloy@challenge-bot.com>
+ <a1596a62d8e63afbe6a645919a349a8402277c5f.1655171591.git.ozzloy@challenge-bot.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a1596a62d8e63afbe6a645919a349a8402277c5f.1655171591.git.ozzloy@challenge-bot.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MRXP264CA0044.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:14::32) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-References: <20220610113316.6682-1-adrian.hunter@intel.com> <20220610113316.6682-4-adrian.hunter@intel.com>
-In-Reply-To: <20220610113316.6682-4-adrian.hunter@intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 14 Jun 2022 07:53:01 -0700
-Message-ID: <CAP-5=fVWOeqZ+BePoe3Te1fCaru_O5u+E0Lah8pGvSOfLDQaWQ@mail.gmail.com>
-Subject: Re: [PATCH 3/5] perf record: Add new option to sample identifier
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 94b59a3c-ab21-499c-c1ee-08da4e142bd5
+X-MS-TrafficTypeDiagnostic: CH0PR10MB5244:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR10MB52444E7D104F396A0B05ED818EAA9@CH0PR10MB5244.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fyWKkepCFDrBzORNGu+VsR7u7iS3f0/K0cm91ILyVtT3M3g2RWwx1Vv6PHjiqNNMTOiOOS/wF2Xm0VOISShtoliJS6bjhWa0dAnaQTJnpfqRSuuSIn5lJRpZPMH05FsMZ8kob39x26+aoBe/en7HBjZsvypr1Bot/eeQdZTdubzIvjRfQhiz0N4Irjf8sCbwLZJ1ac796idmFTTUwN2PcAJTXrI3IzO/MItD/2YhERdiCwZd3lXVUbxOekF8CU1TLykgUfAcZam3vIbGNR6tN8Z3NWHl2SpRbMXpfkyXFbijJbUOkg/meNtyrixQUREM5nXCYpBnMIHuylVpbPJhXvQWA5bjlgYvdPKHiAYini/B14EM9womBoSOrM4QyWyL7NIbRvEhAxCwiUPU5zFuPVNRwC3vXiII1irzuxZzgjPnacvl0zjyOqCkkndMRqKHCdZR+WLJkp4Nn7oS0jHLKBw2RZeONurnQISUexChyYEzsGkEpQG6xAXSdW63qoLtbCQ2zqBAhhM78UI7vMNfl4FJM9fmVLEJ6ImbrSJ9uTdXF0DaHJjxxrhpWGUrhd4Y2/gsaruXg1iqiytL0Ak/VVLI31KopJeNVTxS018r+B/smpBg5+H7thpswYSaQ5VzF3HMpXAK6pj+fxCrQuIN5+VY7Jg8UVUjTzkGBpbCCEHCNHc5MZ54hKs63+1oPyx6XLDuDDvs5oG6t6A/KqMeHA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(26005)(6512007)(38350700002)(9686003)(6666004)(38100700002)(6486002)(66946007)(6506007)(83380400001)(52116002)(4744005)(44832011)(5660300002)(33716001)(33656002)(6916009)(66476007)(2906002)(8676002)(54906003)(316002)(1076003)(186003)(508600001)(8936002)(4326008)(86362001)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vOY+3IpMOqi5Jmyn6H6u6gOx11mOmsWZwB7quZf5cMvA0/SlBMRb0UtY6A0h?=
+ =?us-ascii?Q?OkVGBKzdCdHUOJKFeHjJW8GaUyY+GIL73w6bUr908GxLNHeU6zRhbCLNqmXs?=
+ =?us-ascii?Q?Is1bsRfMhb0EFBTE7yAIyAsvzv1CFBzuA1CF8qA4UBODiiJOIZSmOQsRP2UR?=
+ =?us-ascii?Q?Bqfd/PrcCkkWrzJ7Oc08G2RsZkw5xpD7a0YX/SklIlm6bK68iRupG9qvDsoo?=
+ =?us-ascii?Q?3eC0xhbhX4WLDDaYs780TTvjQFxW7aoyR3vOG92DUYNJU2ph6DQSgTTT9PHo?=
+ =?us-ascii?Q?jaz7LASKEpJvhvERSzazvFriqAUybxufeBGxJ+RfJQYkTKahd65TjcWMua9o?=
+ =?us-ascii?Q?2LyEzwgqh2b4WybPMuPiNlGsSuFEBgk8KyX349scoZkrwesZ7wip7lMnRHbd?=
+ =?us-ascii?Q?/ozb8btb/NnH5Q8djQYCEQJ8kcaTbWsZAXN/sn9R3nqgFALQmK8v78YAB4rt?=
+ =?us-ascii?Q?WR8k9Uo7Z+IuGaxxW6+2VQfu8TMXbEu5wjZgZsAP3zrfaQVr/8qcZa/HlHr2?=
+ =?us-ascii?Q?6XtehkuzIOqAJSbKHdmDiSzZcja+eWi5G1Ei/0OMZ9mdIf9KbKMylpDOY4e5?=
+ =?us-ascii?Q?a4CDZj5rJDFwzxQoGb36iCNaNyaTPuU/WzH9fVVwYeZTJjq04l2ItkBrMEKr?=
+ =?us-ascii?Q?1/rhtwUYzgJMdR/ilO5mNraFJfH3gooDrCViOQ4HNJmLMxbl7zAXrxKw79cO?=
+ =?us-ascii?Q?fqblST/ailCqh9jucUB9eBbE3bQydG2tJFfDybfW/BSDURc+XTRbK8TIoiU/?=
+ =?us-ascii?Q?3nQRw3noR36St8Vu4YOkSfsLCRGwhNLka9wni9l0fbyIPMU76IUGA1Rih6DI?=
+ =?us-ascii?Q?eKUrk7niWTWuG2Xj2nClWWSpXV9DGXUBLFZaBw9x/kaqoZjhAm0We7KrfOAN?=
+ =?us-ascii?Q?Kd0mFxeNNGX2rY6+Ay8TrgB6ncHGk6halKoNEs49Ydtr79DCGtzu/S/M4scZ?=
+ =?us-ascii?Q?DrVoixvu+FCTJI8NEWiEtTWHEcIr1uEndtLVLiWzz0MZsSQ1klaRdqqr1bL5?=
+ =?us-ascii?Q?EimPgR0Js2/qmf3uzGK7o/G9fFPoULbjhDiaBpZ84o9KThiwYeRKOC2ieSnK?=
+ =?us-ascii?Q?VH5lWie1C8pRfOgbTEvB54aMFhC7T9CTFxGSE0qSuFrVVF9EWeYkb141I9Hd?=
+ =?us-ascii?Q?nmsHtElj8TRrh9sfniQz5W9zV47rIdft7Le2PyvtbG04N0YhTENMGGBc6iGW?=
+ =?us-ascii?Q?3qtMyWhz/Q61MQHQFgfWoRHAcdbyDJNGPUciJzStdO95FCmJoOI06zVh6h9B?=
+ =?us-ascii?Q?YUpvvrA+I0it+YFsgb3jcaYz7Oa32dW+jO6IHCaqoG4ge14vzzpsQInvcJb6?=
+ =?us-ascii?Q?kUMXb0gSvAAb7uxNvrT5hC5/P+Kd+Qf0eYYM3lQI4YvAeDZOrjaLBdiyw1k8?=
+ =?us-ascii?Q?oAcSEPe34bD4w7acVMeXtgAgyPG8SCkMLEBZC9lEfimyYJuZ7L5Ve5Xaf+Td?=
+ =?us-ascii?Q?SNqzjoMkwQrA81ZjaGkiau+jSGoHHuCPzgLoceAR+5kq6tTR4PuCpOPBRZ7e?=
+ =?us-ascii?Q?ntDaryYtG1rb1mgetjq5ezuiPfUTyoybrqK2SfdWZWj/Komjp7bBZ92qjKQ4?=
+ =?us-ascii?Q?ff5BjPt6Sebfo5Ty/+6ItLcgKtHqVHnX7QZyhLJ1eOfFWP+UHbIMlHJGdI2d?=
+ =?us-ascii?Q?SXDbkaJ9OdhyxSlbIsXnm0ccRhYSEno4ZdxgjZVI/4RejfnENVYzfeKVgKI5?=
+ =?us-ascii?Q?uS8dXI4fn8ruV5oJYeiTkSC926wfxwH8w8ROE8U5I4yML9YgJdXGOZh9t5Km?=
+ =?us-ascii?Q?27XB1xnXcHtq2As1nZGmerwTLlBlbpQ=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 94b59a3c-ab21-499c-c1ee-08da4e142bd5
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2022 14:42:57.0900
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rSGvaoR6cMe/MGTn3h0K6jTnC/E/vThTZC44txi/rQCn4Pz02Eyr5Tt8WU8hpaBm0OA9qBmKT56phRzjKOaBOwwrQAdTIpDNysooBOXRcfI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5244
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
+ definitions=2022-06-14_05:2022-06-13,2022-06-14 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 adultscore=0
+ mlxlogscore=836 phishscore=0 malwarescore=0 bulkscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2206140057
+X-Proofpoint-GUID: RkPOlgEbnKYYTo1-zlr7YCKx5CfiNiN5
+X-Proofpoint-ORIG-GUID: RkPOlgEbnKYYTo1-zlr7YCKx5CfiNiN5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 4:33 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->
-> In preparation for recording sideband events in a virtual machine guest so
-> that they can be injected into a host perf.data file.
->
-> Add an option to always include sample type PERF_SAMPLE_IDENTIFIER.
->
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+On Mon, Jun 13, 2022 at 07:07:30PM -0700, daniel watson wrote:
+> From: Daniel Watson <ozzloy@challenge-bot.com>
+> 
+> name the function rtw_IOL_append_WB_cmd and call it directly,
+> instead of using wrapper macro
+> 
+> delete wrapper macro, which is not needed
+> 
+> NOTE: code compiles, not tested on hardware
+
+Don't put this kind of comment in the commit message.  Put it under the
+--- cut off line.
+
+> 
+> Signed-off-by: Daniel Watson <ozzloy@challenge-bot.com>
 > ---
->  tools/perf/Documentation/perf-record.txt | 3 +++
->  tools/perf/builtin-record.c              | 2 ++
->  tools/perf/util/record.c                 | 2 +-
->  tools/perf/util/record.h                 | 1 +
->  4 files changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/perf/Documentation/perf-record.txt b/tools/perf/Documentation/perf-record.txt
-> index cf8ad50f3de1..8fcea74fe3c2 100644
-> --- a/tools/perf/Documentation/perf-record.txt
-> +++ b/tools/perf/Documentation/perf-record.txt
-> @@ -313,6 +313,9 @@ OPTIONS
->  --sample-cpu::
->         Record the sample cpu.
->
-> +--sample-identifier::
-> +       Record the sample identifier.
+  ^^^
+Here.
 
-I can see this is following the pattern of --sample-cpu above, but I'm
-not sure a "sample identifier" is going to be clear to a novice user.
-The comment adds little beyond the option name. Perhaps expand with an
-example?
+You don't even really need to tell us that you compiled the code,
+because we take that as a given.
 
-Thanks,
-Ian
+regards,
+dan carpenter
 
-> +
->  -n::
->  --no-samples::
->         Don't sample.
-> diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
-> index 00c2a6cdf1be..40dca1fba4e3 100644
-> --- a/tools/perf/builtin-record.c
-> +++ b/tools/perf/builtin-record.c
-> @@ -3191,6 +3191,8 @@ static struct option __record_options[] = {
->         OPT_BOOLEAN(0, "code-page-size", &record.opts.sample_code_page_size,
->                     "Record the sampled code address (ip) page size"),
->         OPT_BOOLEAN(0, "sample-cpu", &record.opts.sample_cpu, "Record the sample cpu"),
-> +       OPT_BOOLEAN(0, "sample-identifier", &record.opts.sample_identifier,
-> +                   "Record the sample identifier"),
->         OPT_BOOLEAN_SET('T', "timestamp", &record.opts.sample_time,
->                         &record.opts.sample_time_set,
->                         "Record the sample timestamps"),
-> diff --git a/tools/perf/util/record.c b/tools/perf/util/record.c
-> index 5b09ecbb05dc..b529636ab3ea 100644
-> --- a/tools/perf/util/record.c
-> +++ b/tools/perf/util/record.c
-> @@ -121,7 +121,7 @@ void evlist__config(struct evlist *evlist, struct record_opts *opts, struct call
->         evlist__for_each_entry(evlist, evsel)
->                 evsel__config_leader_sampling(evsel, evlist);
->
-> -       if (opts->full_auxtrace) {
-> +       if (opts->full_auxtrace || opts->sample_identifier) {
->                 /*
->                  * Need to be able to synthesize and parse selected events with
->                  * arbitrary sample types, which requires always being able to
-> diff --git a/tools/perf/util/record.h b/tools/perf/util/record.h
-> index be9a957501f4..4269e916f450 100644
-> --- a/tools/perf/util/record.h
-> +++ b/tools/perf/util/record.h
-> @@ -28,6 +28,7 @@ struct record_opts {
->         bool          sample_time;
->         bool          sample_time_set;
->         bool          sample_cpu;
-> +       bool          sample_identifier;
->         bool          period;
->         bool          period_set;
->         bool          running_time;
-> --
-> 2.25.1
->
+
