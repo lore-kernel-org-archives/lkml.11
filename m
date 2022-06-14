@@ -2,104 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84127C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 238E4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357439AbiFNSps (ORCPT
+        id S1357186AbiFNSpx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58198 "EHLO
+        Tue, 14 Jun 2022 14:45:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356353AbiFNSnH (ORCPT
+        with ESMTP id S1357452AbiFNSnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:43:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540724A91F;
-        Tue, 14 Jun 2022 11:42:16 -0700 (PDT)
+        Tue, 14 Jun 2022 14:43:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2D349C9C;
+        Tue, 14 Jun 2022 11:42:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0CF3CB81AF4;
-        Tue, 14 Jun 2022 18:42:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27CEAC3411B;
-        Tue, 14 Jun 2022 18:42:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61EC7B81751;
+        Tue, 14 Jun 2022 18:42:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93749C3411D;
+        Tue, 14 Jun 2022 18:42:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232133;
-        bh=KuQzGMB/TGELsDVIKt9X9t+czdHlsCotrXvjvJZQ58M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OJKq+NqDQC9srwkw3cwsX+fFV4AE7yLqmvkPJXxN1C0oqftFCc1oVpJ0h++DT2J7U
-         yzhoQ8GsYzMm8a57lIk+IG+WkdAwa7iqHQFJdMnPJw1XvssfpwkqbQvGLMJ7EFo/5j
-         V9A6an28dOBrmKIPrZ40Iu7rkBy2lc0OhD/UDplU=
+        s=korg; t=1655232147;
+        bh=M6QbRsvgPP+dGVj3j/4ODboTt53QFNRbHxPMyHaqdtg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MqFSoOzAbz3brmlCprjmZVvukfZwkAL4S6uWldGnPkycRKVFw+zS7+LYdVhRhB1Vh
+         VVQwBTCnSM15kmRyV/ADt+48Q+TILI+LbZDix16I/5n3f8zRrzwN6T9GP25dnD1Ctl
+         OTzouSq4kUlrB+BStw4giiBtjJVeiPHfY6y9Pnoo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "David E. Box" <david.e.box@intel.com>, dvhart@infradead.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        platform-driver-x86@vger.kernel.org,
-        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>, x86-ml <x86@kernel.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 4.14 05/20] x86/CPU: Add Icelake model number
-Date:   Tue, 14 Jun 2022 20:39:56 +0200
-Message-Id: <20220614183724.632217777@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.14 00/20] 4.14.284-rc1 review
+Date:   Tue, 14 Jun 2022 20:39:51 +0200
+Message-Id: <20220614183723.328825625@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220614183723.328825625@linuxfoundation.org>
-References: <20220614183723.328825625@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.284-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.14.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.14.284-rc1
+X-KernelTest-Deadline: 2022-06-16T18:37+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>
+This is the start of the stable review cycle for the 4.14.284 release.
+There are 20 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 8cd8f0ce0d6aafe661cb3d6781c8b82bc696c04d upstream.
+Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+Anything received after that time might be too late.
 
-Add the CPUID model number of Icelake (ICL) mobile processors to the
-Intel family list. Icelake U/Y series uses model number 0x7E.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.284-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
+and the diffstat can be found below.
 
-Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: "David E. Box" <david.e.box@intel.com>
-Cc: dvhart@infradead.org
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Kan Liang <kan.liang@linux.intel.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: platform-driver-x86@vger.kernel.org
-Cc: Qiuxu Zhuo <qiuxu.zhuo@intel.com>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: x86-ml <x86@kernel.org>
-Link: https://lkml.kernel.org/r/20190214115712.19642-2-rajneesh.bhardwaj@linux.intel.com
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/include/asm/intel-family.h |    2 ++
- 1 file changed, 2 insertions(+)
+thanks,
 
---- a/arch/x86/include/asm/intel-family.h
-+++ b/arch/x86/include/asm/intel-family.h
-@@ -55,6 +55,8 @@
- 
- #define INTEL_FAM6_CANNONLAKE_MOBILE	0x66
- 
-+#define INTEL_FAM6_ICELAKE_MOBILE	0x7E
-+
- /* "Small Core" Processors (Atom) */
- 
- #define INTEL_FAM6_ATOM_BONNELL		0x1C /* Diamondville, Pineview */
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.14.284-rc1
+
+Josh Poimboeuf <jpoimboe@kernel.org>
+    x86/speculation/mmio: Print SMT warning
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    KVM: x86/speculation: Disable Fill buffer clear within guests
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Reuse SRBDS mitigation for SBDS
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/srbds: Update SRBDS mitigation selection
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Add sysfs reporting for Processor MMIO Stale Data
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Enable CPU Fill buffer clearing on idle
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/bugs: Group MDS, TAA & Processor MMIO Stale Data mitigations
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Add mitigation for Processor MMIO Stale Data
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation: Add a common function for MD_CLEAR mitigation update
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Enumerate Processor MMIO Stale Data bug
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    Documentation: Add documentation for Processor MMIO Stale Data
+
+Gayatri Kammela <gayatri.kammela@intel.com>
+    x86/cpu: Add another Alder Lake CPU to the Intel family
+
+Tony Luck <tony.luck@intel.com>
+    x86/cpu: Add Lakefield, Alder Lake and Rocket Lake models to the to Intel CPU family
+
+Kan Liang <kan.liang@linux.intel.com>
+    x86/cpu: Add Comet Lake to the Intel CPU models header
+
+Kan Liang <kan.liang@linux.intel.com>
+    x86/CPU: Add more Icelake model numbers
+
+Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>
+    x86/CPU: Add Icelake model number
+
+Rajneesh Bhardwaj <rajneesh.bhardwaj@intel.com>
+    x86/cpu: Add Cannonlake to Intel family
+
+Zhang Rui <rui.zhang@intel.com>
+    x86/cpu: Add Jasper Lake to Intel family
+
+Guenter Roeck <linux@roeck-us.net>
+    cpu/speculation: Add prototype for cpu_show_srbds()
+
+Gayatri Kammela <gayatri.kammela@intel.com>
+    x86/cpu: Add Elkhart Lake to Intel family
+
+
+-------------
+
+Diffstat:
+
+ Documentation/ABI/testing/sysfs-devices-system-cpu |   1 +
+ Documentation/admin-guide/hw-vuln/index.rst        |   1 +
+ .../hw-vuln/processor_mmio_stale_data.rst          | 246 +++++++++++++++++++++
+ Documentation/admin-guide/kernel-parameters.txt    |  36 +++
+ Makefile                                           |   4 +-
+ arch/x86/include/asm/cpufeatures.h                 |   1 +
+ arch/x86/include/asm/intel-family.h                |  25 +++
+ arch/x86/include/asm/msr-index.h                   |  25 +++
+ arch/x86/include/asm/nospec-branch.h               |   2 +
+ arch/x86/kernel/cpu/bugs.c                         | 235 +++++++++++++++++---
+ arch/x86/kernel/cpu/common.c                       |  52 ++++-
+ arch/x86/kvm/vmx.c                                 |  77 ++++++-
+ arch/x86/kvm/x86.c                                 |   4 +
+ drivers/base/cpu.c                                 |   8 +
+ include/linux/cpu.h                                |   4 +
+ 15 files changed, 679 insertions(+), 42 deletions(-)
 
 
