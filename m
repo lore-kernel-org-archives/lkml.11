@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4DBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:17:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353904AbiFNCR1 (ORCPT
+        id S1353919AbiFNCRb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:17:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
+        Mon, 13 Jun 2022 22:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353885AbiFNCOI (ORCPT
+        with ESMTP id S1353911AbiFNCOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC2C3B01D;
-        Mon, 13 Jun 2022 19:08:17 -0700 (PDT)
+        Mon, 13 Jun 2022 22:14:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774553B02D;
+        Mon, 13 Jun 2022 19:08:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 554DCB80D19;
-        Tue, 14 Jun 2022 02:08:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8698C385A2;
-        Tue, 14 Jun 2022 02:08:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 418FF60AD8;
+        Tue, 14 Jun 2022 02:07:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2DBAC385A9;
+        Tue, 14 Jun 2022 02:07:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172489;
-        bh=ceZJEENNoKNIYwuVdeFITBK2jzsqnH64tuUTXDorleo=;
+        s=k20201202; t=1655172460;
+        bh=YnT0A5pYx7LECS7ve6dpcfSYlTvAMThZz2MiAayKHIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nK++9ItlsrdHcf5fC6uICR/y9Wp1RKRhoGNHb1ELPpi+poNvStauMsRPLbA+N0EeO
-         IJ2dn18U519m3C519w9wDXrTQKUS9FeU1n8zbgWjlnYTfNirloG5sa1dymvbfK10xs
-         rRiETPIElnG8r+Knbw/mUfxEi6XFX2CfCovCPU7JDhc1+/HSSsomoe1AkdNuF2gYdF
-         QwK82UJahqVh2jlBXwfCClw8+wxacksef5AEey8GB7wjDNA/Diq6DxwXVtXrSnRJaz
-         PDpbEuzBxknIz877Zn0kJvpuliOtSeja2D6apxJI6ZxeTSkhw+tiA/U0ggpdoDNZnF
-         3aGFpzXfjjPoA==
+        b=sF37G6cV0yna0VN8QS9RqbE0Qbaf1qahf6RIuf7JAc8KK9+ztFGy5TrQ4O66khoEU
+         LBICQJykvd1O1PpFnnbqQEuLRVvKvBmirEPQGmXGd2n+fuQB17C0FvAEwVWslIFhLD
+         92pWo70YZSBRJjEqRk/SOntcCzYLgtdmYmQEZ/X3Hb2m4vZVlVxkCL4lf/C16/Wji4
+         cFqKYw7LYfazgZBr/wr6H/OIckjPYm48B8MtQD8c5e2fZpItt081QBf1mLoBGC/3l/
+         bwbRUfFGdBKC9Fer8NyKqxGhTb48eCZIsVOIIVzuwl92FKXqykQrApl2KLezMbuTpv
+         1PbUiofiBYgNA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
-        gnurou@gmail.com, linux-gpio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 37/41] gpio: dwapb: Don't print error on -EPROBE_DEFER
-Date:   Mon, 13 Jun 2022 22:07:02 -0400
-Message-Id: <20220614020707.1099487-37-sashal@kernel.org>
+Cc:     Marius Hoch <mail@mariushoch.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 19/41] Input: soc_button_array - also add Lenovo Yoga Tablet2 1051F to dmi_use_low_level_irq
+Date:   Mon, 13 Jun 2022 22:06:44 -0400
+Message-Id: <20220614020707.1099487-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
 References: <20220614020707.1099487-1-sashal@kernel.org>
@@ -54,45 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+From: Marius Hoch <mail@mariushoch.de>
 
-[ Upstream commit 77006f6edc0e0f58617eb25e53731f78641e820d ]
+[ Upstream commit 6ab2e51898cd4343bbdf8587af8ce8fbabddbcb5 ]
 
-Currently if the APB or Debounce clocks aren't yet ready to be requested
-the DW GPIO driver will correctly handle that by deferring the probe
-procedure, but the error is still printed to the system log. It needlessly
-pollutes the log since there was no real error but a request to postpone
-the clock request procedure since the clocks subsystem hasn't been fully
-initialized yet. Let's fix that by using the dev_err_probe method to print
-the APB/clock request error status. It will correctly handle the deferred
-probe situation and print the error if it actually happens.
+Commit 223f61b8c5ad ("Input: soc_button_array - add Lenovo Yoga Tablet2
+1051L to the dmi_use_low_level_irq list") added the 1051L to this list
+already, but the same problem applies to the 1051F. As there are no
+further 1051 variants (just the F/L), we can just DMI match 1051.
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Tested on a Lenovo Yoga Tablet2 1051F: Without this patch the
+home-button stops working after a wakeup from suspend.
+
+Signed-off-by: Marius Hoch <mail@mariushoch.de>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220603120246.3065-1-mail@mariushoch.de
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-dwapb.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/input/misc/soc_button_array.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpio/gpio-dwapb.c b/drivers/gpio/gpio-dwapb.c
-index f98fa33e1679..e981e7a46fc1 100644
---- a/drivers/gpio/gpio-dwapb.c
-+++ b/drivers/gpio/gpio-dwapb.c
-@@ -653,10 +653,9 @@ static int dwapb_get_clks(struct dwapb_gpio *gpio)
- 	gpio->clks[1].id = "db";
- 	err = devm_clk_bulk_get_optional(gpio->dev, DWAPB_NR_CLOCKS,
- 					 gpio->clks);
--	if (err) {
--		dev_err(gpio->dev, "Cannot get APB/Debounce clocks\n");
--		return err;
--	}
-+	if (err)
-+		return dev_err_probe(gpio->dev, err,
-+				     "Cannot get APB/Debounce clocks\n");
- 
- 	err = clk_bulk_prepare_enable(DWAPB_NR_CLOCKS, gpio->clks);
- 	if (err) {
+diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
+index cb6ec59a045d..efffcf0ebd3b 100644
+--- a/drivers/input/misc/soc_button_array.c
++++ b/drivers/input/misc/soc_button_array.c
+@@ -85,13 +85,13 @@ static const struct dmi_system_id dmi_use_low_level_irq[] = {
+ 	},
+ 	{
+ 		/*
+-		 * Lenovo Yoga Tab2 1051L, something messes with the home-button
++		 * Lenovo Yoga Tab2 1051F/1051L, something messes with the home-button
+ 		 * IRQ settings, leading to a non working home-button.
+ 		 */
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "60073"),
+-			DMI_MATCH(DMI_PRODUCT_VERSION, "1051L"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "1051"),
+ 		},
+ 	},
+ 	{} /* Terminating entry */
 -- 
 2.35.1
 
