@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E9ECCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D92C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:17:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353849AbiFNCRA (ORCPT
+        id S1353255AbiFNCRG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54940 "EHLO
+        Mon, 13 Jun 2022 22:17:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353769AbiFNCOE (ORCPT
+        with ESMTP id S1353785AbiFNCOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6E93AA4A;
-        Mon, 13 Jun 2022 19:08:12 -0700 (PDT)
+        Mon, 13 Jun 2022 22:14:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A75B3AA58;
+        Mon, 13 Jun 2022 19:08:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ACB0160F18;
-        Tue, 14 Jun 2022 02:07:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCFB4C385A5;
-        Tue, 14 Jun 2022 02:07:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3BE260F1C;
+        Tue, 14 Jun 2022 02:08:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42CC0C341C4;
+        Tue, 14 Jun 2022 02:08:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172441;
-        bh=sQibBj59stp4hCGLyB0NmNThh+E78SK0QzT/7J/IQME=;
+        s=k20201202; t=1655172493;
+        bh=7lHSFtUY1PHqrzclwXoAD8WLofsBbD+ZxJnchOu5vQQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R2aiVpCQU/DUfw1UwWgwtsLF5w8I/Sgzmjo4aRLMR1viWQDGkSHqF38pyhh1echEf
-         LJ5WVX5YQBq27pMCQt8KyzcEkf3bmqI8WvRB2e0squSXEGidf4M7UMtONjW66oQTVQ
-         OT8gsiwlE68nP7aC7Fm5tetVW09yHC22zwHwFfurw6X/Oez6LKaXNpioVJiVKIaesT
-         pGzpufUSCfuvAeUYbLDmmQEcV1leLbdXEMnvdvQ+MWBPNCz7GStmbkmjFQ7hkQw49j
-         4ULrCV1JNW1ZeHTQkUKZp+agp6//TFa5QLJAF8RxfOGxJNINQ7Mao5CaQy0AXKHKrV
-         +d85wtZ8H6nLw==
+        b=M8AQVi4GtfG4hbw3ye4XkZfdjYB+tBXomqDsaeq7x3ErouQV8BeiMJLr6bAekZyog
+         /Artt8I+iS+fKCiv/BD01DVyD/RQLMyQ/aZuCvU3XUYFYD3sMmA4FJ38+a9yMvgMGM
+         KiEKPss6WqxMFEWzzEofMgXZofsMBUSJMM9A9elQrsth81/+xiIju8Omhe7HOlzlJD
+         55VngVP7D1HwXjJaX9CzXiw4dRuriCT2XpVB33P9mnXgRTw2QJX0usfDy1G3ky02Wy
+         mbS6gnUm7XveWdhZJpCzRJLyJJza4tFPxAXqX95UaMH366yPhsqq2stnrFDfENpFwm
+         uHIxF1QubIPzA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
-        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 07/41] ASoC: cs42l52: Fix TLV scales for mixer controls
-Date:   Mon, 13 Jun 2022 22:06:32 -0400
-Message-Id: <20220614020707.1099487-7-sashal@kernel.org>
+Cc:     August Wikerfors <git@augustwikerfors.se>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, dvhart@infradead.org,
+        platform-driver-x86@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 40/41] platform/x86: gigabyte-wmi: Add support for B450M DS3H-CF
+Date:   Mon, 13 Jun 2022 22:07:05 -0400
+Message-Id: <20220614020707.1099487-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
 References: <20220614020707.1099487-1-sashal@kernel.org>
@@ -54,43 +53,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: August Wikerfors <git@augustwikerfors.se>
 
-[ Upstream commit 8bf5aabf524eec61013e506f764a0b2652dc5665 ]
+[ Upstream commit c6bc7e8ee90845556a90faf8b043cbefd77b8903 ]
 
-The datasheet specifies the range of the mixer volumes as between
--51.5dB and 12dB with a 0.5dB step. Update the TLVs for this.
+Tested and works on my system.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-2-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: August Wikerfors <git@augustwikerfors.se>
+Link: https://lore.kernel.org/r/20220608212028.28307-1-git@augustwikerfors.se
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l52.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/platform/x86/gigabyte-wmi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
-index 80161151b3f2..785caba3f653 100644
---- a/sound/soc/codecs/cs42l52.c
-+++ b/sound/soc/codecs/cs42l52.c
-@@ -137,7 +137,7 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
+diff --git a/drivers/platform/x86/gigabyte-wmi.c b/drivers/platform/x86/gigabyte-wmi.c
+index ad4f789309d6..ebd15c1d13ec 100644
+--- a/drivers/platform/x86/gigabyte-wmi.c
++++ b/drivers/platform/x86/gigabyte-wmi.c
+@@ -140,6 +140,7 @@ static u8 gigabyte_wmi_detect_sensor_usability(struct wmi_device *wdev)
+ 	}}
  
- static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
- 
--static DECLARE_TLV_DB_SCALE(mix_tlv, -50, 50, 0);
-+static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
- 
- static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
- 
-@@ -364,7 +364,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
- 			      CS42L52_ADCB_VOL, 0, 0xA0, 0x78, ipd_tlv),
- 	SOC_DOUBLE_R_SX_TLV("ADC Mixer Volume",
- 			     CS42L52_ADCA_MIXER_VOL, CS42L52_ADCB_MIXER_VOL,
--				0, 0x19, 0x7F, ipd_tlv),
-+				0, 0x19, 0x7F, mix_tlv),
- 
- 	SOC_DOUBLE("ADC Switch", CS42L52_ADC_MISC_CTL, 0, 1, 1, 0),
- 
+ static const struct dmi_system_id gigabyte_wmi_known_working_platforms[] = {
++	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B450M DS3H-CF"),
+ 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B450M S2H V2"),
+ 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B550 AORUS ELITE AX V2"),
+ 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B550 AORUS ELITE"),
 -- 
 2.35.1
 
