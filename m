@@ -2,160 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CFADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC7DDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:31:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbiFNS3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49248 "EHLO
+        id S237759AbiFNSbL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 14:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344513AbiFNS27 (ORCPT
+        with ESMTP id S232378AbiFNSbI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:28:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2DBB046152
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:28:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655231338;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jzGDnMjiVMPl8LoDK9/jjZ3s6cfGJvhDYM+qlDxnnck=;
-        b=ft1RO45ZUt+3fqWlo+7qS6Y1G9v+mb7BtqcH4zqz9KusrtnoC3yofSybu5DaTNSCpDVQ3F
-        XlzlAuZOC1crXMm4LKwZ+0TGFXGlMfkOSZpOcPVNVGCOM1OvK6lXCeu4XjxPmw/c+LzbLH
-        +67Aew282Wg7rO0GJPIWO00ayPb2rrU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-1-ZFBhL40jPHCo3tCVEsDiJg-1; Tue, 14 Jun 2022 14:28:54 -0400
-X-MC-Unique: ZFBhL40jPHCo3tCVEsDiJg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6A9E6101AA45;
-        Tue, 14 Jun 2022 18:28:54 +0000 (UTC)
-Received: from [10.22.33.116] (unknown [10.22.33.116])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 330832026D64;
-        Tue, 14 Jun 2022 18:28:54 +0000 (UTC)
-Message-ID: <c20294e1-b926-efa3-95fd-d30601d44a5d@redhat.com>
-Date:   Tue, 14 Jun 2022 14:28:53 -0400
+        Tue, 14 Jun 2022 14:31:08 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8ED48385
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:31:07 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id b8so12816401edj.11
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:31:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gU3gGBLd+11Y6cn59KJDYz57BLQD7iw6Av0QAwQuCWo=;
+        b=a5oaz7JTGvcAGUojefZXM0Kk/DMpz0sYJzN2Iysi5h6LbRYjcaCHQNKAkZoiOmWMqT
+         vAVKyu7+PwcDw4Qz5YJTYguDLxdPO90/3moHjpH33C/e7AhFQlgMFYzIIK5ZqiPOlnQC
+         1Ry5Ag5ng3RQOipkuRCFroi/1vwsWxeDZ317Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gU3gGBLd+11Y6cn59KJDYz57BLQD7iw6Av0QAwQuCWo=;
+        b=VlqiqmSSzFzcVBnD/G3fqRXqm44/M8T9cpvt1eaWRB0bK79Bzd7crMiPjg1TgN2YmH
+         /kzpCeGMMrHd/IK412U9oUu+a5eJa9pnOFbOsOoF4rBhPN5LL/nn/3cBirm8/bVzjwlc
+         df1tXsO58qCV3Q2sxtM1c47crkMmrZghR/1dWFGfNQgT0aSItRECL4JmZiORZkEaRLeq
+         0F1I6LqWNWt+bsjtyn5hVfhvtmlN2FyLYOQm+Qw9byc+z2nDEfzBL2u0TxuRk/XBKE5T
+         l0PCqTK1c01xDF87A6qnKMIDPTnpLqKtdIRQOgb4dvRR6KzMxPnNQ+T7qnGNh7glqMOS
+         BRDA==
+X-Gm-Message-State: AOAM5305jpgjTuxZI7Dqf3DfbdiwN11uIE1gElvOAh8AYYxUxDNLkt92
+        npPdSu4SDNsp4dxELL3yPL2bv77NpJR7dhTW
+X-Google-Smtp-Source: AGRyM1vwWz5t7/PCV4EIkS6kWRUww8v1U2DD+V1vSNkoW0H8xRXggian0q94OwYSCN8nUiX3h3OcmA==
+X-Received: by 2002:a05:6402:b09:b0:42d:bd80:11ac with SMTP id bm9-20020a0564020b0900b0042dbd8011acmr7827655edb.244.1655231465528;
+        Tue, 14 Jun 2022 11:31:05 -0700 (PDT)
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com. [209.85.128.44])
+        by smtp.gmail.com with ESMTPSA id q8-20020a056402518800b0042dd022787esm7663424edd.6.2022.06.14.11.31.03
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 11:31:04 -0700 (PDT)
+Received: by mail-wm1-f44.google.com with SMTP id l126-20020a1c2584000000b0039c1a10507fso5259815wml.1
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:31:03 -0700 (PDT)
+X-Received: by 2002:a1c:5418:0:b0:39c:3552:c85e with SMTP id
+ i24-20020a1c5418000000b0039c3552c85emr5627002wmb.68.1655231463454; Tue, 14
+ Jun 2022 11:31:03 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 3/3] mm/kmemleak: Prevent soft lockup in first object
- iteration loop of kmemleak_scan()
-Content-Language: en-US
-From:   Waiman Long <longman@redhat.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <20220612183301.981616-1-longman@redhat.com>
- <20220612183301.981616-4-longman@redhat.com> <YqjCGWmM2cGG1OOF@arm.com>
- <YqjFHOMT+rDgz3EK@arm.com> <325768cd-19bd-71ae-83d6-1ca5e84f7462@redhat.com>
-In-Reply-To: <325768cd-19bd-71ae-83d6-1ca5e84f7462@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+References: <20220614144853.3693273-1-glider@google.com> <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com>
+ <CAG_fn=WEed5NJ8hdrrP_N8aQ_1Ad11VoJgdVxQheo3VfT_xyXQ@mail.gmail.com>
+In-Reply-To: <CAG_fn=WEed5NJ8hdrrP_N8aQ_1Ad11VoJgdVxQheo3VfT_xyXQ@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 14 Jun 2022 11:30:47 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whjz3wO8zD+itoerphWem+JZz4uS3myf6u1Wd6epGRgmQ@mail.gmail.com>
+Message-ID: <CAHk-=whjz3wO8zD+itoerphWem+JZz4uS3myf6u1Wd6epGRgmQ@mail.gmail.com>
+Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Evgenii Stepanov <eugenis@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vitaly Buka <vitalybuka@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 14, 2022 at 11:08 AM Alexander Potapenko <glider@google.com> wrote:
+>
+> On Tue, Jun 14, 2022 at 6:48 PM Linus Torvalds
+> >
+> > I'm assuming you mean pass by reference.
+>
+> No, sorry for being unclear. I mean passing by value.
 
-On 6/14/22 14:22, Waiman Long wrote:
-> On 6/14/22 13:27, Catalin Marinas wrote:
->
->>>> raw_spin_unlock_irq(&object->lock);
->>>> +
->>>> +        /*
->>>> +         * With object pinned by a positive reference count, it
->>>> +         * won't go away and we can safely release the RCU read
->>>> +         * lock and do a cond_resched() to avoid soft lockup every
->>>> +         * 64k objects.
->>>> +         */
->>>> +        if (object_pinned && !(gray_list_cnt & 0xffff)) {
->>>> +            rcu_read_unlock();
->>>> +            cond_resched();
->>>> +            rcu_read_lock();
->>>> +        }
->>> I'm not sure this gains much. There should be very few gray objects
->>> initially (those passed to kmemleak_not_leak() for example). The
->>> majority should be white objects.
->>>
->>> If we drop the fine-grained object->lock, we could instead take
->>> kmemleak_lock outside the loop with a cond_resched_lock(&kmemleak_lock)
->>> within the loop. I think we can get away with not having an
->>> rcu_read_lock() at all for list traversal with the big lock outside the
->>> loop.
->> Actually this doesn't work is the current object in the iteration is
->> freed. Does list_for_each_rcu_safe() help?
->
-> list_for_each_rcu_safe() helps if we are worrying about object being 
-> freed. However, it won't help if object->next is freed instead.
->
-> How about something like:
->
-> diff --git a/mm/kmemleak.c b/mm/kmemleak.c
-> index 7dd64139a7c7..fd836e43cb16 100644
-> --- a/mm/kmemleak.c
-> +++ b/mm/kmemleak.c
-> @@ -1417,12 +1417,16 @@ static void kmemleak_scan(void)
->         struct zone *zone;
->         int __maybe_unused i;
->         int new_leaks = 0;
-> +       int loop1_cnt = 0;
->
->         jiffies_last_scan = jiffies;
->
->         /* prepare the kmemleak_object's */
->         rcu_read_lock();
->         list_for_each_entry_rcu(object, &object_list, object_list) {
-> +               bool obj_pinned = false;
-> +
-> +               loop1_cnt++;
->                 raw_spin_lock_irq(&object->lock);
->  #ifdef DEBUG
->                 /*
-> @@ -1437,10 +1441,32 @@ static void kmemleak_scan(void)
->  #endif
->                 /* reset the reference count (whiten the object) */
->                 object->count = 0;
-> -               if (color_gray(object) && get_object(object))
-> +               if (color_gray(object) && get_object(object)) {
->                         list_add_tail(&object->gray_list, &gray_list);
-> +                       obj_pinned = true;
-> +               }
->
->                 raw_spin_unlock_irq(&object->lock);
-> +
-> +               /*
-> +                * Do a cond_resched() to avoid soft lockup every 64k 
-> objects.
-> +                * Make sure a reference has been taken so that the 
-> object
-> +                * won't go away without RCU read lock.
-> +                */
-> +               if (loop1_cnt & 0xffff) {
+Pass-by-value most definitely should warn about uninitialized variables.
 
-
-Sorry, should be "(!(loop1_cnt & 0xffff))".
-
-> + if (!obj_pinned && !get_object(object)) {
-> +                               /* Try the next object instead */
-> +                               loop1_cnt--;
-> +                               continue;
-> +                       }
-> +
-> +                       rcu_read_unlock();
-> +                       cond_resched();
-> +                       rcu_read_lock();
-> +
-> +                       if (!obj_pinned)
-> +                               put_object(object);
-> +               }
->         }
->         rcu_read_unlock();
+> In the given example the prototype of step_into looks as follows (see
+> https://elixir.bootlin.com/linux/latest/source/fs/namei.c#L1846):
 >
-Cheers,
-Longman
+>   static const char *step_into(struct nameidata *nd, int flags, struct
+> dentry *dentry, struct inode *inode, unsigned seq);
+>
+> , and the local variables `struct inode *inode` and `unsigned seq` are
+> being passed to it by value, i.e. in certain cases the struct inode
+> pointer and the unsigned seq are uninitialized.
 
+Then those cases should warn. No question about it.
+
+I assume the only reason they don't warn right now is that the
+compiler doesn't see that they are uninitialized, possibly due to some
+earlier pass-by-reference use.
+
+             Linus
