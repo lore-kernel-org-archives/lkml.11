@@ -2,106 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E774C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:08:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E97C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:08:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353047AbiFNHIm (ORCPT
+        id S1353069AbiFNHIu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:08:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43324 "EHLO
+        Tue, 14 Jun 2022 03:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353222AbiFNHIc (ORCPT
+        with ESMTP id S1353059AbiFNHIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:08:32 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B8631901
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:08:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655190512; x=1686726512;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=GC/A2SjBlztsHvLlZ8tf63JxqBUMLWhTshFRZpzc/hM=;
-  b=krT9bU6rZaQEe7UjTPN4ry/sjLYg98N3V0Kio5P7xw9sWxrGV+ILpT23
-   Wt5KjBa8slYLxf5CwIUED81Cm2Q6dhHXqVAX8TLr/OBp66Ag73gjtn/nw
-   CqFHtyh8JNaJPqIGlQfh/6ppSsaHfapAwMfnKrhjGFUlVHAQWDDk3zx+B
-   xSdFXfC8YaNKy7E1LcGiSpR97mAGP8WWlJq/LajMboR3iLxgdl+rJFvdU
-   vBQvo+0cdMvCt06T3pmDXP+jqTo7ucb3bhOHaKfSgh0S6Jtgadf/DSkTS
-   wPqJ0CdYpzirJ3eDtMA34fRdkiFxWb+1yfHaCsItoDuDExtXFO+KOWJ0g
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258363539"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="258363539"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:08:32 -0700
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="640185936"
-Received: from bard-ubuntu.sh.intel.com ([10.239.185.57])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:08:29 -0700
-From:   Bard Liao <yung-chuan.liao@linux.intel.com>
-To:     alsa-devel@alsa-project.org, vkoul@kernel.org
-Cc:     vinod.koul@linaro.org, linux-kernel@vger.kernel.org, tiwai@suse.de,
-        broonie@kernel.org, gregkh@linuxfoundation.org,
-        srinivas.kandagatla@linaro.org,
-        pierre-louis.bossart@linux.intel.com, sanyog.r.kale@intel.com,
-        bard.liao@intel.com
-Subject: [PATCH 1/2] soundwire: Intel: add trigger callback
-Date:   Tue, 14 Jun 2022 15:08:16 +0800
-Message-Id: <20220614070817.2508-2-yung-chuan.liao@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220614070817.2508-1-yung-chuan.liao@linux.intel.com>
-References: <20220614070817.2508-1-yung-chuan.liao@linux.intel.com>
+        Tue, 14 Jun 2022 03:08:45 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7DFE340E6
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:08:43 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 7DAB61F383;
+        Tue, 14 Jun 2022 07:08:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655190522; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CsU3F1FV0VK5yNn5xxw+vgNY6PidYLtiVeQQK0Ca7R0=;
+        b=pOMaj+Kw5A51nP5+FiPtqTyIWXOa/mAwgtCYBFTM1piG3/gZwhEBVsmULNVJ57IxRuvLTy
+        nhwY8/aWWDWrhOQbwIGIm9Pzqehufjt2BBwAXz31OfPRIYL3e5k8advGzedsbYHkqngie4
+        NJw0TwES3G553lcJSPrp5XfWQOdanpc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655190522;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CsU3F1FV0VK5yNn5xxw+vgNY6PidYLtiVeQQK0Ca7R0=;
+        b=0J8LYTLJnQm4epZv9zFdjTfj6SjCvVpI61QbWAi9fVixEqEIuaogdgf5fTkbqC8mm4XJCW
+        rgEw27LKFGZqiFBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 48863139EC;
+        Tue, 14 Jun 2022 07:08:42 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id gyuiEPozqGIFeAAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Tue, 14 Jun 2022 07:08:42 +0000
+Message-ID: <6b5172b5-ad81-36f9-9288-fd1db2fe0e17@suse.de>
+Date:   Tue, 14 Jun 2022 09:08:41 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 0/3] KUnit tests for drm_format_helper
+Content-Language: en-US
+To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        javierm@redhat.com
+Cc:     davidgow@google.com, dlatypov@google.com,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        airlied@linux.ie, daniel@ffwll.ch, jani.nikula@linux.intel.com,
+        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org
+References: <20220613171738.111013-1-jose.exposito89@gmail.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220613171738.111013-1-jose.exposito89@gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------2tAANik0McvXpimbejM7IiTc"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a pipeline is split into FE and BE parts, the BE pipeline may need to
-be triggered separately in the BE trigger op. So add the trigger callback
-in the link_res ops that will be invoked during BE DAI trigger.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------2tAANik0McvXpimbejM7IiTc
+Content-Type: multipart/mixed; boundary="------------779Lw54ur8NxClLw2PlvBHfC";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+ javierm@redhat.com
+Cc: davidgow@google.com, dlatypov@google.com,
+ maarten.lankhorst@linux.intel.com, mripard@kernel.org, airlied@linux.ie,
+ daniel@ffwll.ch, jani.nikula@linux.intel.com,
+ dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
+ linux-kernel@vger.kernel.org
+Message-ID: <6b5172b5-ad81-36f9-9288-fd1db2fe0e17@suse.de>
+Subject: Re: [PATCH v3 0/3] KUnit tests for drm_format_helper
+References: <20220613171738.111013-1-jose.exposito89@gmail.com>
+In-Reply-To: <20220613171738.111013-1-jose.exposito89@gmail.com>
 
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
----
- drivers/soundwire/intel.c           | 8 ++++++++
- include/linux/soundwire/sdw_intel.h | 1 +
- 2 files changed, 9 insertions(+)
+--------------779Lw54ur8NxClLw2PlvBHfC
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
-index 505c5ef061e3..2e7c27d303b4 100644
---- a/drivers/soundwire/intel.c
-+++ b/drivers/soundwire/intel.c
-@@ -1004,9 +1004,17 @@ static int intel_trigger(struct snd_pcm_substream *substream, int cmd, struct sn
- {
- 	struct sdw_cdns *cdns = snd_soc_dai_get_drvdata(dai);
- 	struct sdw_intel *sdw = cdns_to_intel(cdns);
-+	struct sdw_intel_link_res *res = sdw->link_res;
- 	struct sdw_cdns_dma_data *dma;
- 	int ret = 0;
- 
-+	/* The .trigger callback is used to send required IPC to audio
-+	 * firmware. The .free_stream callback will still be called
-+	 * by intel_free_stream() in the TRIGGER_SUSPEND case.
-+	 */
-+	if (res->ops && res->ops->trigger)
-+		res->ops->trigger(dai, cmd, substream->stream);
-+
- 	dma = snd_soc_dai_get_dma_data(dai, substream);
- 	if (!dma) {
- 		dev_err(dai->dev, "failed to get dma data in %s\n",
-diff --git a/include/linux/soundwire/sdw_intel.h b/include/linux/soundwire/sdw_intel.h
-index 67e0d3e750b5..f638707fd712 100644
---- a/include/linux/soundwire/sdw_intel.h
-+++ b/include/linux/soundwire/sdw_intel.h
-@@ -119,6 +119,7 @@ struct sdw_intel_ops {
- 			     struct sdw_intel_stream_params_data *params_data);
- 	int (*free_stream)(struct device *dev,
- 			   struct sdw_intel_stream_free_data *free_data);
-+	int (*trigger)(struct snd_soc_dai *dai, int cmd, int stream);
- };
- 
- /**
--- 
-2.17.1
+SGkgSm9zZSwNCg0KZm9yIHRoZSB3aG9sZSBwYXRjaHNldDoNCg0KQWNrZWQtYnk6IFRob21h
+cyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPg0KDQpPbmUgc21hbGwgZGV0YWls
+IG9uIGxpY2Vuc2luZzogZHJtX2Zvcm1hdF9oZWxwZXIuYyBpcyBsaWNlbnNlZCB1bmRlciAN
+CkdQTDIgb3IgTUlULiBNYXliZSBjb25zaWRlciBhZGRpbmcgJ29yIE1JVCcgdG8gZHJtX2Zv
+cm1hdF9oZWxwZXJfdGVzdC5jIA0KYXMgd2VsbC4NCg0KQmVzdCByZWdhcmRzDQpUaG9tYXMN
+Cg0KQW0gMTMuMDYuMjIgdW0gMTk6MTcgc2NocmllYiBKb3PDqSBFeHDDs3NpdG86DQo+IEhl
+bGxvIGV2ZXJ5b25lLA0KPiANCj4gSGVyZSBpcyB0aGUgdjMgb2YgdGhlIHNlcmllcywgaW5j
+bHVkaW5nIHRoZSBkb2N1bWVudGF0aW9uLCBwcmV2aW91c2x5DQo+IHNlbnQgYXMgYSBzdGFu
+ZGFsb25lIHBhdGNoIFsxXSwgYW5kIGNoYW5nZXMgc3VnZ2VzdGVkIGR1cmluZyByZXZpZXcu
+DQo+IA0KPiBUaGFua3MgYSBsb3QsDQo+IEpvc8OpIEV4cMOzc2l0bw0KPiANCj4gUkZDIC0+
+IHYxOiBodHRwczovL2xvcmUua2VybmVsLm9yZy9kcmktZGV2ZWwvMjAyMjA1MzAxMDIwMTcu
+NDcxODY1LTEtam9zZS5leHBvc2l0bzg5QGdtYWlsLmNvbS9ULw0KPiANCj4gICAtIEFkZCAu
+a3VuaXRjb25maWcgKE1heGltZSBSaXBhcmQpDQo+ICAgLSBGaXggbWVtb3J5IGxlYWsgKERh
+bmllbCBMYXR5cG92KQ0KPiAgIC0gTWFrZSBjb25maWcgb3B0aW9uIGdlbmVyaWMgKEphdmll
+ciBNYXJ0aW5leiBDYW5pbGxhcyk6DQo+ICAgICBEUk1fRk9STUFSX0hFTFBFUl9URVNUIC0+
+IERSTV9LVU5JVF9URVNUDQo+ICAgLSBSZW1vdmUgRElTQUJMRV9TVFJVQ1RMRUFLX1BMVUdJ
+TiAoRGFuaWVsIExhdHlwb3YpDQo+IA0KPiB2MSAtPiB2MjogaHR0cHM6Ly9sb3JlLmtlcm5l
+bC5vcmcvZHJpLWRldmVsLzIwMjIwNjA2MDk1NTE2LjkzODkzNC0xLWpvc2UuZXhwb3NpdG84
+OUBnbWFpbC5jb20vVC8NCj4gDQo+ICAgVGhvbWFzIFppbW1lcm1hbm46DQo+ICAgLSBBZGQg
+RFJNX1JFQ1RfSU5JVCgpIG1hY3JvDQo+ICAgLSBNb3ZlIHRlc3RzIHRvIGRyaXZlcnMvZ3B1
+L2RybS9rdW5pdA0KPiAgIC0gSW1wcm92ZSB0ZXN0IGRvY3VtZW50YXRpb24NCj4gDQo+IHYy
+IC0+IHYzOiBodHRwczovL2xvcmUua2VybmVsLm9yZy9kcmktZGV2ZWwvMjAyMjA2MTIxNjEy
+NDguMjcxNTkwLTEtam9zZS5leHBvc2l0bzg5QGdtYWlsLmNvbS9ULw0KPiANCj4gICAtIFVz
+ZSBkZXNpZ25hdGVkIGluaXRpYWxpemVyIGluIERSTV9SRUNUX0lOSVQgKEphbmkgTmlrdWxh
+KQ0KPiAgIC0gU2ltcGxpZnkgdGhlICJjb252ZXJzaW9uX2J1Zl9zaXplIiBoZWxwZXINCj4g
+DQo+IFsxXSBodHRwczovL2xvcmUua2VybmVsLm9yZy9kcmktZGV2ZWwvMjAyMjA2MDYxODA5
+NDAuNDMzNzEtMS1qb3NlLmV4cG9zaXRvODlAZ21haWwuY29tL1QvDQo+IA0KPiBKb3PDqSBF
+eHDDs3NpdG8gKDMpOg0KPiAgICBkcm0vcmVjdDogQWRkIERSTV9SRUNUX0lOSVQoKSBtYWNy
+bw0KPiAgICBkcm0vZm9ybWF0LWhlbHBlcjogQWRkIEtVbml0IHRlc3RzIGZvciBkcm1fZmJf
+eHJnYjg4ODhfdG9fcmdiMzMyKCkNCj4gICAgZHJtL2RvYzogQWRkIEtVbml0IGRvY3VtZW50
+YXRpb24NCj4gDQo+ICAgRG9jdW1lbnRhdGlvbi9ncHUvZHJtLWludGVybmFscy5yc3QgICAg
+ICAgICAgIHwgIDMyICsrKysNCj4gICBkcml2ZXJzL2dwdS9kcm0vS2NvbmZpZyAgICAgICAg
+ICAgICAgICAgICAgICAgfCAgMTYgKysNCj4gICBkcml2ZXJzL2dwdS9kcm0vTWFrZWZpbGUg
+ICAgICAgICAgICAgICAgICAgICAgfCAgIDEgKw0KPiAgIGRyaXZlcnMvZ3B1L2RybS9rdW5p
+dC8ua3VuaXRjb25maWcgICAgICAgICAgICB8ICAgMyArDQo+ICAgZHJpdmVycy9ncHUvZHJt
+L2t1bml0L01ha2VmaWxlICAgICAgICAgICAgICAgIHwgICAzICsNCj4gICAuLi4vZ3B1L2Ry
+bS9rdW5pdC9kcm1fZm9ybWF0X2hlbHBlcl90ZXN0LmMgICAgfCAxNjAgKysrKysrKysrKysr
+KysrKysrDQo+ICAgaW5jbHVkZS9kcm0vZHJtX3JlY3QuaCAgICAgICAgICAgICAgICAgICAg
+ICAgIHwgIDE2ICsrDQo+ICAgNyBmaWxlcyBjaGFuZ2VkLCAyMzEgaW5zZXJ0aW9ucygrKQ0K
+PiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dwdS9kcm0va3VuaXQvLmt1bml0Y29u
+ZmlnDQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvZ3B1L2RybS9rdW5pdC9NYWtl
+ZmlsZQ0KPiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dwdS9kcm0va3VuaXQvZHJt
+X2Zvcm1hdF9oZWxwZXJfdGVzdC5jDQo+IA0KDQotLSANClRob21hcyBaaW1tZXJtYW5uDQpH
+cmFwaGljcyBEcml2ZXIgRGV2ZWxvcGVyDQpTVVNFIFNvZnR3YXJlIFNvbHV0aW9ucyBHZXJt
+YW55IEdtYkgNCk1heGZlbGRzdHIuIDUsIDkwNDA5IE7DvHJuYmVyZywgR2VybWFueQ0KKEhS
+QiAzNjgwOSwgQUcgTsO8cm5iZXJnKQ0KR2VzY2jDpGZ0c2bDvGhyZXI6IEl2byBUb3Rldg0K
 
+
+--------------779Lw54ur8NxClLw2PlvBHfC--
+
+--------------2tAANik0McvXpimbejM7IiTc
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmKoM/kFAwAAAAAACgkQlh/E3EQov+De
+nA/+I5D0b3wcrfcCumVecCs+PyKrEjHypaGBWAsUqtYfkD7wqBrPF+CRd2lbc/8hW+OUiypBDMYF
+3melrKUQYvRO2GXc4zbNhbBblJDkuJIoSDtyOhqd8l1HO2W6RmaZXHczsacYxJAaoTjYk+ucUflD
+IMdXaiiSSmkWjhpxl5xt9zwvcDLNZmaBhYDYcoDpsRjgb+tUDb096KbhLvvJ1texF3VNFWW3iJFI
+jzOlBea1kYXpCRCuH3IE/MR1JSIqgLzXpvavGZYlsFvvXSCxCPkUUZV7mvJcJX/Ed6VKpPNzENFh
+4xU+yzlxi2FjVSQ/pUyH7iODyCEzeAs2VWtiou0hfyHaEjC+iAq91b0avls3Y5sV4e5RG5Kfg/sk
+N5arCYe4FZFWqazpH8Aq+nF81/5hcbFDGkV7Bn2qhLAyO2RNMGCEjUjcgYBWycmek6xXgOGmVh6b
+JlHExM13/zxIzIZTsa/4/7wOwCcuxNm+cjvAF8ahz+bPRYBHTxAfsYmjmt2dVIS0jvrQdz/485WW
+JzPtiDFMyh6ErJusvXWQ/w4YSTE4Qq7d32ellRjTLh0qQeJWauMDF6JZccJ4NH7trpUNcoTH+0uW
+St48KEaMbob1u7uruBjJAp9oGhC+S6QqRephsrrajSlQM2FPhznGBxYGReOfL23CH60X5k0JpYWh
+mL4=
+=TR4G
+-----END PGP SIGNATURE-----
+
+--------------2tAANik0McvXpimbejM7IiTc--
