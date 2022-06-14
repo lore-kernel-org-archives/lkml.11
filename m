@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B21A4CCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC43CCA47D
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354103AbiFNCSc (ORCPT
+        id S1354184AbiFNCSq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57638 "EHLO
+        Mon, 13 Jun 2022 22:18:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354366AbiFNCOl (ORCPT
+        with ESMTP id S1354376AbiFNCOm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35663BBD3;
-        Mon, 13 Jun 2022 19:08:39 -0700 (PDT)
+        Mon, 13 Jun 2022 22:14:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88203BBDB;
+        Mon, 13 Jun 2022 19:08:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 780EEB8168A;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88D2860EE1;
+        Tue, 14 Jun 2022 02:08:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC834C36AFE;
         Tue, 14 Jun 2022 02:08:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C2EEC385A5;
-        Tue, 14 Jun 2022 02:08:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172518;
-        bh=MOmFRCE5a3dD/N+54ASVvo0IJf6wG1WFdHcxInrx+eE=;
+        s=k20201202; t=1655172521;
+        bh=gwmf6peLKhueY78cBZXQsHDQ+B2rOr5tX1pQlxSjuXc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4VcsjjxxrZ2kFqSNwven/8ItoGxag79sGETteDZlMZ98OOFyXcn78Ipaiix8LjCh
-         k9z77AvjRBG/iOZ0Gx4Xm8/yUXocBB+9UbmGw1y7ik1yZFItmXsjcZq5CMpWP0FoSl
-         Vg+hn+2d7P2mNin4+EDLzoKptqX3/lo0OqRCwcXdUTv4vgLvxDW+TdO4vfyggQIydr
-         ZuOgCho+wLzKUWgcagWupPbqte51T0dhItuDHoc0pinti7Sl6p3Sj0i/SAP0c8qEq9
-         66PwhHM0qtscx+dXDcEllGruwf78YPbUaqiZyOLLCF4PWhZPyjxOEJvw6NXm72hbQp
-         ywDzbg7bMc6NQ==
+        b=uw9doquibiEsWKTuw6nhWRjxSfAX/g2LqiozT+LWb56hk0uAbXaK1reaDMVbhVEpE
+         6keda2RewnWHRyWrDPScgLmD5oPWNUykx/bWx7EGINLpH4PQYR0mtA/m+1mmSY9+9R
+         4pQa7UqO+DYYP08b0uVZIcnr+POQVUrQ9TVQOQDC7Tamr8hN4QA6cnQqwPF7+PkEK2
+         SKCRv25qQwDwPoqdJB7e/saaxTjJNhUn4QpbgpJZMkMNVa/gHjYcUhKnL8/KS0a3IK
+         1047sO5pnDg9yoz8oG1D8ljRhrtMk9gHgO1ZQN4WAYWsmdhiPam1xUrfqY3UUW7PGu
+         M4bQrloueK0bQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com,
-        patches@opensource.wolfsonmicro.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.10 14/29] ASoC: wm_adsp: Fix event generation for wm_adsp_fw_put()
-Date:   Mon, 13 Jun 2022 22:08:00 -0400
-Message-Id: <20220614020815.1099999-14-sashal@kernel.org>
+Cc:     Wentao Wang <wwentao@vmware.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jgill@vmware.com,
+        pv-drivers@vmware.com, jejb@linux.vnet.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 16/29] scsi: vmw_pvscsi: Expand vcpuHint to 16 bits
+Date:   Mon, 13 Jun 2022 22:08:02 -0400
+Message-Id: <20220614020815.1099999-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
 References: <20220614020815.1099999-1-sashal@kernel.org>
@@ -54,37 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Wentao Wang <wwentao@vmware.com>
 
-[ Upstream commit 2abdf9f80019e8244d3806ed0e1c9f725e50b452 ]
+[ Upstream commit cf71d59c2eceadfcde0fb52e237990a0909880d7 ]
 
-Currently wm_adsp_fw_put() returns 0 rather than 1 when updating the value
-of the control, meaning that no event is generated to userspace. Fix this
-by setting the default return value to 1, the code already exits early with
-a return value of 0 if the value is unchanged.
+vcpuHint has been expanded to 16 bit on host to enable routing to more
+CPUs. Guest side should align with the change. This change has been tested
+with hosts with 8-bit and 16-bit vcpuHint, on both platforms host side can
+get correct value.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Richard Fitzgerald <rf@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220603115003.3865834-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/EF35F4D5-5DCC-42C5-BCC4-29DF1729B24C@vmware.com
+Signed-off-by: Wentao Wang <wwentao@vmware.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm_adsp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/vmw_pvscsi.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
-index 51d95437e0fd..10189f44af28 100644
---- a/sound/soc/codecs/wm_adsp.c
-+++ b/sound/soc/codecs/wm_adsp.c
-@@ -800,7 +800,7 @@ int wm_adsp_fw_put(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	struct wm_adsp *dsp = snd_soc_component_get_drvdata(component);
--	int ret = 0;
-+	int ret = 1;
+diff --git a/drivers/scsi/vmw_pvscsi.h b/drivers/scsi/vmw_pvscsi.h
+index 75966d3f326e..d87c12324c03 100644
+--- a/drivers/scsi/vmw_pvscsi.h
++++ b/drivers/scsi/vmw_pvscsi.h
+@@ -333,8 +333,8 @@ struct PVSCSIRingReqDesc {
+ 	u8	tag;
+ 	u8	bus;
+ 	u8	target;
+-	u8	vcpuHint;
+-	u8	unused[59];
++	u16	vcpuHint;
++	u8	unused[58];
+ } __packed;
  
- 	if (ucontrol->value.enumerated.item[0] == dsp[e->shift_l].fw)
- 		return 0;
+ /*
 -- 
 2.35.1
 
