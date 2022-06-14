@@ -2,94 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B56C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:46:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D04C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357239AbiFNSq4 (ORCPT
+        id S1357641AbiFNSq7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:46:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59288 "EHLO
+        Tue, 14 Jun 2022 14:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357418AbiFNSpQ (ORCPT
+        with ESMTP id S1357458AbiFNSpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:45:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466CE13C;
-        Tue, 14 Jun 2022 11:43:40 -0700 (PDT)
+        Tue, 14 Jun 2022 14:45:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3AA1093;
+        Tue, 14 Jun 2022 11:43:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8098617C2;
-        Tue, 14 Jun 2022 18:43:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E568DC3411B;
-        Tue, 14 Jun 2022 18:43:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B287CB8186A;
+        Tue, 14 Jun 2022 18:43:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E878FC3411B;
+        Tue, 14 Jun 2022 18:43:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232219;
-        bh=cPPNQI8KRpFebR09bSogYnaPNqhEHX374CY0CLZ9oxM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xEmEB4Vje7u94rnDg3LGWfhjzX7HIDd8CUu8Bq6+TOJX6ujyiAEmp88yFEENhiHYP
-         TLhVxF8G1UOydPDAO6dSBlT3OqjUViR0Xnsni9LwfoWHezcR/Toe3zwbZ5ceAjyKdr
-         rcwzp/jFOJ3QJlE5pfYrkUhq4RZy1Nh1ZkdK/J20=
+        s=korg; t=1655232227;
+        bh=+C2iRvF2iZzG1ZikcJTKk76FroC9eh1AhRqJ3d7/g+k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Dq+MJ/vZfP+JS9NIc8U/FMoYvOSDTQXVj6fCl2Q5Yp7Z41sh3l3vnf5mmxdyOi1Dh
+         wbBDnPBl9YwsIiecG/V7hINVFafYI0mAL8bMMvBgG2yTQUYfii5E/FV9+OseYr4Yga
+         hU1ulA5ZFL/SbuciGSUdCjdt3xIh6fIGplwbXxfg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rahul Tanwar <rahul.tanwar@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@kernel.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 4.19 01/16] x86/cpu: Add Elkhart Lake to Intel family
-Date:   Tue, 14 Jun 2022 20:40:02 +0200
-Message-Id: <20220614183721.272431899@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.4 00/15] 5.4.199-rc1 review
+Date:   Tue, 14 Jun 2022 20:40:09 +0200
+Message-Id: <20220614183721.656018793@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220614183720.928818645@linuxfoundation.org>
-References: <20220614183720.928818645@linuxfoundation.org>
+MIME-Version: 1.0
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.199-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.4.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.4.199-rc1
+X-KernelTest-Deadline: 2022-06-16T18:37+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gayatri Kammela <gayatri.kammela@intel.com>
+This is the start of the stable review cycle for the 5.4.199 release.
+There are 15 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 0f65605a8d744b3a205d0a2cd8f20707e31fc023 upstream.
+Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+Anything received after that time might be too late.
 
-Add the model number/CPUID of atom based Elkhart Lake to the Intel
-family.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.199-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+and the diffstat can be found below.
 
-Signed-off-by: Gayatri Kammela <gayatri.kammela@intel.com>
-Signed-off-by: Tony Luck <tony.luck@intel.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lkml.kernel.org/r/20190905193020.14707-3-tony.luck@intel.com
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/include/asm/intel-family.h |    2 ++
- 1 file changed, 2 insertions(+)
+thanks,
 
---- a/arch/x86/include/asm/intel-family.h
-+++ b/arch/x86/include/asm/intel-family.h
-@@ -83,7 +83,9 @@
- #define INTEL_FAM6_ATOM_GOLDMONT	0x5C /* Apollo Lake */
- #define INTEL_FAM6_ATOM_GOLDMONT_X	0x5F /* Denverton */
- #define INTEL_FAM6_ATOM_GOLDMONT_PLUS	0x7A /* Gemini Lake */
-+
- #define INTEL_FAM6_ATOM_TREMONT_X	0x86 /* Jacobsville */
-+#define INTEL_FAM6_ATOM_TREMONT		0x96 /* Elkhart Lake */
- 
- /* Xeon Phi */
- 
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.4.199-rc1
+
+Josh Poimboeuf <jpoimboe@kernel.org>
+    x86/speculation/mmio: Print SMT warning
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    KVM: x86/speculation: Disable Fill buffer clear within guests
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Reuse SRBDS mitigation for SBDS
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/srbds: Update SRBDS mitigation selection
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Add sysfs reporting for Processor MMIO Stale Data
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Enable CPU Fill buffer clearing on idle
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/bugs: Group MDS, TAA & Processor MMIO Stale Data mitigations
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Add mitigation for Processor MMIO Stale Data
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation: Add a common function for MD_CLEAR mitigation update
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Enumerate Processor MMIO Stale Data bug
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    Documentation: Add documentation for Processor MMIO Stale Data
+
+Gayatri Kammela <gayatri.kammela@intel.com>
+    x86/cpu: Add another Alder Lake CPU to the Intel family
+
+Tony Luck <tony.luck@intel.com>
+    x86/cpu: Add Lakefield, Alder Lake and Rocket Lake models to the to Intel CPU family
+
+Zhang Rui <rui.zhang@intel.com>
+    x86/cpu: Add Jasper Lake to Intel family
+
+Guenter Roeck <linux@roeck-us.net>
+    cpu/speculation: Add prototype for cpu_show_srbds()
+
+
+-------------
+
+Diffstat:
+
+ Documentation/ABI/testing/sysfs-devices-system-cpu |   1 +
+ Documentation/admin-guide/hw-vuln/index.rst        |   1 +
+ .../hw-vuln/processor_mmio_stale_data.rst          | 246 +++++++++++++++++++++
+ Documentation/admin-guide/kernel-parameters.txt    |  36 +++
+ Makefile                                           |   4 +-
+ arch/x86/include/asm/cpufeatures.h                 |   1 +
+ arch/x86/include/asm/intel-family.h                |   9 +
+ arch/x86/include/asm/msr-index.h                   |  25 +++
+ arch/x86/include/asm/nospec-branch.h               |   2 +
+ arch/x86/kernel/cpu/bugs.c                         | 235 +++++++++++++++++---
+ arch/x86/kernel/cpu/common.c                       |  52 ++++-
+ arch/x86/kvm/vmx/vmx.c                             |  75 ++++++-
+ arch/x86/kvm/vmx/vmx.h                             |   3 +
+ arch/x86/kvm/x86.c                                 |   4 +
+ drivers/base/cpu.c                                 |   8 +
+ include/linux/cpu.h                                |   4 +
+ 16 files changed, 664 insertions(+), 42 deletions(-)
 
 
