@@ -2,109 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3531C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB40DCCA47E
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244739AbiFNMaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59434 "EHLO
+        id S240978AbiFNM37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:29:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356594AbiFNM3N (ORCPT
+        with ESMTP id S243564AbiFNM2i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:29:13 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B0A23BDD;
-        Tue, 14 Jun 2022 05:29:10 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id o7so16871760eja.1;
-        Tue, 14 Jun 2022 05:29:10 -0700 (PDT)
+        Tue, 14 Jun 2022 08:28:38 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0153C25EB8
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:36 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id o7so16868672eja.1
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=axAoTgW4f9hEkpnjg5fk+kCuJUrcn/1GVTmzDalaTpE=;
-        b=TC2i7XA7+9Xlrhf2dw40ePmPdZiuddA5zyiu0EL3XudVgt7iMQ76XXD090WPUwKYo2
-         9Nynx4bkyvSKns2UbUrHBv83yWFIT6kEG5MsIa4E+VrqDkFyl5hIZ+VgoIkETMBGe3fr
-         Nh1NH3Auzr8xBCYZo8Ms7ZoV8Q78axRaf6/zQRn4WQVypJ7x/KG/7+pZwuCdi6jGx9TH
-         Y4Dc1xYnzdLx73qEjyzX6MwktZGp7uUy97J0M1P6csFAsVkuAhfl1qnKnwkIndBmmS8x
-         TartraPrDPxftKMy0WCDH9SAqEvIRe2ZOktv9Pm/S5wMGjcTjug8uEzcNjdsjXJuegXw
-         SkCg==
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=J7cAHYzHeqO4eieQ7T7B38pR/xwLeH3ndQgGNnjLG/E=;
+        b=XSAUyZOWy5q2GWu3PLxoxE10G+1JlvepEjzvUqXBzxdLsTBIVBjyFLiLgEWy3AefaL
+         qIDG5NM9+f+kytLuYuLs2tW2EsI8Oe9XkNrIgacbkXTyJzOsoPt9CE7Hzq9eDs+tiR0P
+         oI4PRPXqGRbSBWCCi3Piai0AvOjG7IYUYM9KM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=axAoTgW4f9hEkpnjg5fk+kCuJUrcn/1GVTmzDalaTpE=;
-        b=2LxkQ/Me/QE6d449KCic8JPHrfv3nkBzZwXYNsymSmQF+tCEYFMLrdW7LoN9nHpA9p
-         T1JwurqX1TKiXs4vqB1p26xLemyOF0HFMMs6cEXBwt5Wq2rwbDx/QM32u4y0XDKzeRAM
-         UJo6h03Zs0slHbMtiYmCClQVdRAYPvhL9BZAy/iX2fv/jPaLRDyFwHplcVVOaN3jIHW8
-         LZ6NAFUPkBe3k9R6TZyH8m4j/Hw5q++NPyw3bD3/d/wFoiZkVs3lA515jEqvyQsWW3bs
-         80OgjKqUxcDgB9Cxv0r/XOllTHVpwZzyS1IlS6tGH2Bx61uBS59gKDE6OkPKL3lo3qnJ
-         lR/Q==
-X-Gm-Message-State: AOAM530bWCJvGoJc57dK70tSFCHJXb4M79ZB3JWA/gMyBq/OXeyLOVAX
-        AMY0PIJfdf9M61OKlVKK318=
-X-Google-Smtp-Source: ABdhPJyywCmnpHZqwVSmt50ed8p/dYmi/CUTgqEnog5vo72tdHnTWhxx4t9rRMHalfnoYRdREvIu2Q==
-X-Received: by 2002:a17:906:51c6:b0:712:2a1a:afc8 with SMTP id v6-20020a17090651c600b007122a1aafc8mr4298295ejk.649.1655209749213;
-        Tue, 14 Jun 2022 05:29:09 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id i9-20020a05640242c900b0042dce73168csm7170844edc.13.2022.06.14.05.29.08
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=J7cAHYzHeqO4eieQ7T7B38pR/xwLeH3ndQgGNnjLG/E=;
+        b=WQ4dSrYRW8BMBX2I18oIdSbyygnop8wHdkUfO7lKXtgXKv1/l7wo+MKMypOOaerAbN
+         5XuY8fRT73eUevwvGHjBOfBGFrI3/4awpyPafKlnxTaw/1qn7mnOnm7dHipAn3jkDyDw
+         o7gQvkLWo7WTNJHDDY/U9C3+VQdYjUquiKvFtsZ2W8XUWu2wLw7EJKuKX4sZbl7Xek+e
+         xdQFiZ9XDVlQwy58Ahdwz413K7PJy7uNmIo+9OYphuVdoYzSnTYzmKBnMKSN4kqiD0+3
+         aFM6nlds1O+R5+IBBcowz8LV5MrIT1vEc66H/e4eYxyUJ35Hc5+NiN9q2lCn8Q3MtcHD
+         BOtg==
+X-Gm-Message-State: AOAM533nV4lqW+UanuxW8ogGLeOMV5XNHfKRqV1E9lA29Iih6HfdN/6v
+        cgUIwjzPiNQ0aKNQCk3sBga6Lw81NCqmHw==
+X-Google-Smtp-Source: ABdhPJw+07ZbLCl5Rx7GRphIBbK0PZ/uFC+9XZdj48PviEiLyXqTg7Fiq5dkX25nYqp4N27s+Jy1Ng==
+X-Received: by 2002:a17:906:7254:b0:6fe:5637:cbe6 with SMTP id n20-20020a170906725400b006fe5637cbe6mr4030190ejk.612.1655209714188;
+        Tue, 14 Jun 2022 05:28:34 -0700 (PDT)
+Received: from dario-ThinkPad-T14s-Gen-2i.amarulasolutions.com (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
+        by smtp.gmail.com with ESMTPSA id z22-20020a17090655d600b006f3ef214e2csm5087043ejp.146.2022.06.14.05.28.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 05:29:08 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Tue, 14 Jun 2022 14:29:06 +0200
-To:     Blake Jones <blakejones@google.com>
-Cc:     Jiri Olsa <olsajiri@gmail.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND] Add a "-m" option to "perf buildid-list".
-Message-ID: <Yqh/EkVy99Bej46S@krava>
-References: <20220607191550.4141024-1-blakejones@google.com>
- <YqZmSRS8UPQJzWFE@krava>
- <CAP_z_CgkJ8RgWevJnDiq-+JjB=ni0OzJ3npwW+S9RZ66i0Y3Kg@mail.gmail.com>
+        Tue, 14 Jun 2022 05:28:33 -0700 (PDT)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        michael@amarulasolutions.com,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v4 06/12] can: slcan: allow to send commands to the adapter
+Date:   Tue, 14 Jun 2022 14:28:15 +0200
+Message-Id: <20220614122821.3646071-7-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
+References: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAP_z_CgkJ8RgWevJnDiq-+JjB=ni0OzJ3npwW+S9RZ66i0Y3Kg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 03:02:39PM -0700, Blake Jones wrote:
-> Thanks for taking a look at this!
-> 
-> On Sun, Jun 12, 2022 at 3:18 PM Jiri Olsa <olsajiri@gmail.com> wrote:
-> > why 'modules' ? it shows all maps (including kernel)
-> > so perhaps -m/--maps would be better?
-> 
->  I called it "modules" because it only operates on the kernel. Calling it
-> "maps" would suggest to me that it might also be able to show
-> information about the maps in perf.data files, which it can't (just as the
-> "-k" option only operates on the kernel). Given that, does it still seem
-> like "maps" would be more appropriate?
+This is a preparation patch for the upcoming support to change the
+bitrate via ip tool, reset the adapter error states via the ethtool API
+and, more generally, send commands to the adapter.
 
-still there's kernel map included, so it's strange to me call it modules
+Since the close command (i. e. "C\r") will be sent in the ndo_stop()
+where netif_running() returns false, a new flag bit (i. e. SLF_XCMD) for
+serial transmission has to be added.
 
-  --m/--kernel-maps ?
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
-> 
-> > also please state that it's from running kernel
-> 
-> Happy to make this change.
-> 
-> > any reason why not use the dso fields directly?
-> 
-> I was just following my general software engineering instincts to
-> encapsulate implementation details, so that e.g. the caller doesn't need to
-> know about details such as the "has_build_id" boolean. I haven't made
-> changes to perf before, so if that's not the preferred style, I can do it
-> a different way.
+---
 
-we have some helpers for dso fields, but AFAICS long_name and has_build_id
-are used directly all over the place
+Changes in v4:
+- Replace `sl->tty == NULL' with `!sl->tty'.
 
-jirka
+Changes in v3:
+- Update the commit description.
+
+ drivers/net/can/slcan.c | 46 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 45 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
+index c7ff11dd2278..2afddaf62586 100644
+--- a/drivers/net/can/slcan.c
++++ b/drivers/net/can/slcan.c
+@@ -97,6 +97,9 @@ struct slcan {
+ 	unsigned long		flags;		/* Flag values/ mode etc     */
+ #define SLF_INUSE		0		/* Channel in use            */
+ #define SLF_ERROR		1               /* Parity, etc. error        */
++#define SLF_XCMD		2               /* Command transmission      */
++	wait_queue_head_t       xcmd_wait;      /* Wait queue for commands   */
++						/* transmission              */
+ };
+ 
+ static struct net_device **slcan_devs;
+@@ -315,12 +318,22 @@ static void slcan_transmit(struct work_struct *work)
+ 
+ 	spin_lock_bh(&sl->lock);
+ 	/* First make sure we're connected. */
+-	if (!sl->tty || sl->magic != SLCAN_MAGIC || !netif_running(sl->dev)) {
++	if (!sl->tty || sl->magic != SLCAN_MAGIC ||
++	    (unlikely(!netif_running(sl->dev)) &&
++	     likely(!test_bit(SLF_XCMD, &sl->flags)))) {
+ 		spin_unlock_bh(&sl->lock);
+ 		return;
+ 	}
+ 
+ 	if (sl->xleft <= 0)  {
++		if (unlikely(test_bit(SLF_XCMD, &sl->flags))) {
++			clear_bit(SLF_XCMD, &sl->flags);
++			clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
++			spin_unlock_bh(&sl->lock);
++			wake_up(&sl->xcmd_wait);
++			return;
++		}
++
+ 		/* Now serial buffer is almost free & we can start
+ 		 * transmission of another packet */
+ 		sl->dev->stats.tx_packets++;
+@@ -384,6 +397,36 @@ static netdev_tx_t slc_xmit(struct sk_buff *skb, struct net_device *dev)
+  *   Routines looking at netdevice side.
+  ******************************************/
+ 
++static int slcan_transmit_cmd(struct slcan *sl, const unsigned char *cmd)
++{
++	int ret, actual, n;
++
++	spin_lock(&sl->lock);
++	if (!sl->tty) {
++		spin_unlock(&sl->lock);
++		return -ENODEV;
++	}
++
++	n = snprintf(sl->xbuff, sizeof(sl->xbuff), "%s", cmd);
++	set_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
++	actual = sl->tty->ops->write(sl->tty, sl->xbuff, n);
++	sl->xleft = n - actual;
++	sl->xhead = sl->xbuff + actual;
++	set_bit(SLF_XCMD, &sl->flags);
++	spin_unlock(&sl->lock);
++	ret = wait_event_interruptible_timeout(sl->xcmd_wait,
++					       !test_bit(SLF_XCMD, &sl->flags),
++					       HZ);
++	clear_bit(SLF_XCMD, &sl->flags);
++	if (ret == -ERESTARTSYS)
++		return ret;
++
++	if (ret == 0)
++		return -ETIMEDOUT;
++
++	return 0;
++}
++
+ /* Netdevice UP -> DOWN routine */
+ static int slc_close(struct net_device *dev)
+ {
+@@ -541,6 +584,7 @@ static struct slcan *slc_alloc(void)
+ 	sl->dev	= dev;
+ 	spin_lock_init(&sl->lock);
+ 	INIT_WORK(&sl->tx_work, slcan_transmit);
++	init_waitqueue_head(&sl->xcmd_wait);
+ 	slcan_devs[i] = dev;
+ 
+ 	return sl;
+-- 
+2.32.0
+
