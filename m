@@ -2,164 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECAB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 17:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:00:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237685AbiFNR7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 13:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52412 "EHLO
+        id S1345075AbiFNSAo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 14:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238735AbiFNR7i (ORCPT
+        with ESMTP id S237431AbiFNSAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 13:59:38 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29D029CAF
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:59:36 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-31332df12a6so37974137b3.4
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 10:59:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=26g0MRBcct9YNTtppVTH2VrL+ERGht+b/7zwiSemUyA=;
-        b=J/nOyu12o+bRB6Fge5isqT7wonLs+xdaSOYk2ZzUXUfdYO+tT/NdTBYHgwhpGYQ2OZ
-         RPmye6epdqPtaw2Nbws6asqaYf+6aVxIqXDMZqxjNbzCQ3zwB1L5G/BhpEzxNla/VIO8
-         cDStVQFFwJb6UTJpX5S+LIugBTOAwh6cGWRiIgHiZi3tWxT7rMU+TWdd2QMU7ovh8PNx
-         gwaIT5F7fFUR2oLX1CsaFR9TrEfJFASZUCVW8i9DhsF3f8y+wbxkjn4QyC9i8LNrGM93
-         gQQlBK9AywuTU1ofkcSnNRSmzJuv/FDzyMjYLJrFjuFY9oaCAxFePfAUwZONNTzqOrtA
-         C31g==
+        Tue, 14 Jun 2022 14:00:43 -0400
+Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98C52A24F;
+        Tue, 14 Jun 2022 11:00:42 -0700 (PDT)
+Received: by mail-pf1-f169.google.com with SMTP id 187so9224788pfu.9;
+        Tue, 14 Jun 2022 11:00:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=26g0MRBcct9YNTtppVTH2VrL+ERGht+b/7zwiSemUyA=;
-        b=O6j3fbG6jZOTsRaliUVpzua3588HKXp5Zgxtx0vK+zcc1bgvji6xEWr6ywsG8k00M6
-         yGEXCjl/E6zJiOrIV1SsolHtxSl7dQdn9N6eG4EHURJQvdePWVZH2hJqiyasXvC3hJ0O
-         8/mGmQyPH301HR+rBS1GifArp4MR01mBawL9QshOkogcauJ/hz8i9xThGo58xsSr2ygE
-         moLGtmKH+D8mtCB1OvmDJCHB9mgU1pbgOuwMo//VBBzOPRv5J1A1gJ9B7PRgEJCcKR1C
-         z5crS1GEpNqq3Myh4SYZOqZ4UMqeMVwEWiHaMKs/J68ip7fQ0lsUm3bhEoMxt4/L7oCX
-         14cA==
-X-Gm-Message-State: AJIora8mWJ+1GlVE1rMOSOsDptKH71Ykhu+zqZnz/75PhIB7nhY5nsM7
-        0/nVtxJeNtSn0jCik3TTNFCQ72/iWkEzAVyTBbaDfA==
-X-Google-Smtp-Source: AGRyM1uYZTCyS6ekVxMN4LE950ueaI6pIZQPKcwQF0t97ENb1ZzjK0WrhozZcmpCzb6Uo04yXOpLPQ3F6GVqXwU6Q74=
-X-Received: by 2002:a81:2f84:0:b0:314:2bfd:bf1f with SMTP id
- v126-20020a812f84000000b003142bfdbf1fmr7094481ywv.320.1655229576055; Tue, 14
- Jun 2022 10:59:36 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9WKPI79Gjph2WfiqwNvS+zcjQJjDViwq87Qamyz2DXk=;
+        b=KjsuvBWDonPyN7jrDJropfLzF+q9XTDK0sSiecl+hB+u3ceBBdwd1+GdAC2wrpJ1ZK
+         yPVNBmXmUIupt1cEALtKMrkbnm7ahdKUpZB4v317OduDBMU/dlCVcsYmU6sKeRh6unBW
+         I4Uo2bdtVehxxrtu62i+fycf0g6YybPHqcVO8Ur4sG7WQiepbAsC9LT3VY1hCrtyfEM9
+         4wRMfB+Qp4Ik/dIANzPTc8RHk9E5qbZxj8NEeW6SqS1W5u9WeoYo+feDPmStTOri2BVg
+         /NDa9vlOoMyZ7+u0uknqI3A/GYiwOklRYLheEwIbk82hJ5xse+J0zjOgtNki2WC9ONvZ
+         ieZA==
+X-Gm-Message-State: AOAM532gpzlvC4oBVhcQzrnWuW9cioHjLGTQlxDlVIKN5SokYPCdOAJo
+        /P2meB5mUNHp/VPnBVqCLeo=
+X-Google-Smtp-Source: ABdhPJyeLEADYZlXGQ6fcr2O2NZgYjSFxVUQw7IEtpwqZAiMRkvSNcDi5EBIoIpVpSmrvmXuGWFljQ==
+X-Received: by 2002:a63:155:0:b0:3fd:1b8e:16ca with SMTP id 82-20020a630155000000b003fd1b8e16camr5514696pgb.407.1655229642302;
+        Tue, 14 Jun 2022 11:00:42 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:ab60:e1ea:e2eb:c1b6? ([2620:15c:211:201:ab60:e1ea:e2eb:c1b6])
+        by smtp.gmail.com with ESMTPSA id jf21-20020a170903269500b0015e8d4eb1d1sm7552726plb.27.2022.06.14.11.00.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 11:00:41 -0700 (PDT)
+Message-ID: <1f8e7891-a557-bd8e-221a-6cb14770ea8b@acm.org>
+Date:   Tue, 14 Jun 2022 11:00:39 -0700
 MIME-Version: 1.0
-References: <20220525081416.3306043-10-sudeep.holla@arm.com>
- <20220525081416.3306043-11-sudeep.holla@arm.com> <20220525081416.3306043-12-sudeep.holla@arm.com>
- <20220525081416.3306043-13-sudeep.holla@arm.com> <20220525081416.3306043-14-sudeep.holla@arm.com>
- <20220525081416.3306043-15-sudeep.holla@arm.com> <20220525081416.3306043-16-sudeep.holla@arm.com>
- <947470ba-35fc-3c72-d01b-c0a7337216a2@arm.com> <20220606102159.dduxmvq4m2fm6gks@bogus>
- <CAKfTPtB8iPzEXipsJqNtd9-aJMKx-FAaiGMzOg58HgRQuo39iA@mail.gmail.com> <20220610102753.virkx47uyfsojol6@bogus>
-In-Reply-To: <20220610102753.virkx47uyfsojol6@bogus>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Tue, 14 Jun 2022 19:59:23 +0200
-Message-ID: <CAKfTPtD==UMjbSGHvKxT_z=LyvsJt=UCHsqkbgVnagbn5Aqpcw@mail.gmail.com>
-Subject: Re: [PATCH v3 15/16] arch_topology: Set cluster identifier in each
- core/thread from /cpu-map
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        linux-kernel@vger.kernel.org, Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH RFC v2 01/18] blk-mq: Add a flag for reserved requests
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>, axboe@kernel.dk,
+        damien.lemoal@opensource.wdc.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, brking@us.ibm.com, hare@suse.de,
+        hch@lst.de
+Cc:     linux-block@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        chenxiang66@hisilicon.com
+References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
+ <1654770559-101375-2-git-send-email-john.garry@huawei.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <1654770559-101375-2-git-send-email-john.garry@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 10 Jun 2022 at 12:27, Sudeep Holla <sudeep.holla@arm.com> wrote:
->
-> On Fri, Jun 10, 2022 at 12:08:44PM +0200, Vincent Guittot wrote:
-> > On Mon, 6 Jun 2022 at 12:22, Sudeep Holla <sudeep.holla@arm.com> wrote:
-> > >
->
-> [...]
->
-> > > Why ? Are you suggesting that we shouldn't present the hardware cluster
-> > > to the topology because of the above reason ? If so, sorry that is not a
-> > > valid reason. We could add login to return NULL or appropriate value
-> > > needed in cpu_clustergroup_mask id it matches MC level mask if we can't
-> > > deal that in generic scheduler code. But the topology code can't be
-> > > compromised for that reason as it is user visible.
-> >
-> > I tend to agree with Dietmar. The legacy use of cluster node in DT
-> > refers to the dynamiQ or legacy b.L cluster which is also aligned to
-> > the LLC and the MC scheduling level. The new cluster level that has
-> > been introduced recently does not target this level but some
-> > intermediate levels either inside like for the kupeng920 or the v9
-> > complex or outside like for the ampere altra. So I would say that
-> > there is one cluster node level in DT that refers to the same MC/LLC
-> > level and only an additional child/parent cluster node should be used
-> > to fill the clustergroup_mask.
-> >
->
-> Again I completely disagree. Let us look at the problems separately.
-> The hardware topology that some of the tools like lscpu and lstopo expects
-> what the hardware looks like and not the scheduler's view of the hardware.
-> So the topology masks that gets exposed to the user-space needs fixing
-> even today. I have reports from various tooling people about the same.
-> E.g. Juno getting exposed as dual socket system is utter non-sense.
->
-> Yes scheduler uses most of the topology masks as is but that is not a must.
-> There are these *group_mask functions that can implement what scheduler
-> needs to be fed.
->
-> I am not sure why the 2 issues are getting mixed up and that is the main
-> reason why I jumped into this to make sure the topology masks are
-> not tampered based on the way it needs to be used for scheduler.
->
-> Both ACPI and DT on a platform must present exact same hardware topology
-> to the user-space, there is no space for argument there.
+On 6/9/22 03:29, John Garry wrote:
+> Add a flag for reserved requests so that drivers may know this for any
+> special handling.
+> 
+> The 'reserved' argument in blk_mq_ops.timeout callback could now be
+> replaced by using this flag.
 
-But that's exactly my point there:
-ACPI doesn't show the dynamiQ level anywhere but only the llc which
-are the same and your patch makes the dynamiQ level visible for DT in
-addition to llc
+Why not to combine that change into this patch?
 
->
-> > IIUC, we don't describe the dynamiQ level in ACPI which  uses cache
-> > topology instead to define cpu_coregroup_mask whereas DT described the
-> > dynamiQ instead of using cache topology. If you use cache topology
-> > now, then you should skip the dynamiQ
-> >
->
-> Yes, unless someone can work out a binding to represent that and convince
-> DT maintainers ;).
->
-> > Finally, even if CLS and MC have the same scheduling behavior for now,
-> > they might ends up with different scheduling properties which would
-> > mean that replacing MC level by CLS one for current SoC would become
-> > wrong
-> >
->
-> Again as I mentioned to Dietmar, that is something we can and must deal with
-> in those *group_mask and not expect topology mask to be altered to meet
-> CLS/MC or whatever sched domains needs. Sorry, that is my strong opinion
-> as the topology is already user-space visible and (tooling) people are
-> complaining that DT systems are broken and doesn't match ACPI systems.
+Anyway:
 
-again, your proposal doesn't help here because the DT will show a
-level that doesn't appears in ACPI
-
->
-> So unless someone gives me non-scheduler and topology specific reasons
-> to change that, sorry but my opinion on this matter is not going to change ;).
->
-> You will get this view of topology, find a way to manage with all those
-> *group_mask functions. By the way it is already handled for ACPI systems,
-
-AFAICT, no it's not, the cluster described in ACPI is not the dynamiQ
-level that you make now visible to DT
-
-> so if you are not happy with that, then that needs fixing as this change
-> set just aligns the behaviour on similar ACPI system. So the Juno example
-> is incorrect for the reason that the behaviour of scheduler there is different
-> with DT and ACPI.
->
-> --
-> Regards,
-> Sudeep
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
