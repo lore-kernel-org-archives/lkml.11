@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2493DC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B228CCA47B
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236801AbiFNCb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55578 "EHLO
+        id S1355379AbiFNCb7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 22:31:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353661AbiFNCZB (ORCPT
+        with ESMTP id S1354444AbiFNCZ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:25:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0794A424B1;
-        Mon, 13 Jun 2022 19:11:16 -0700 (PDT)
+        Mon, 13 Jun 2022 22:25:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8185340C8;
+        Mon, 13 Jun 2022 19:11:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8276B816A3;
-        Tue, 14 Jun 2022 02:10:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B7EC341C4;
-        Tue, 14 Jun 2022 02:10:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D62C61024;
+        Tue, 14 Jun 2022 02:10:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0C95C36AFF;
+        Tue, 14 Jun 2022 02:10:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172638;
-        bh=Y9Q+sZ1S2ROpRtb37xjqV9pJ3RXtolmlwum1ox9Goc8=;
+        s=k20201202; t=1655172652;
+        bh=OhAGgrsd2hb8cxfZVSqxF5k5FDAbFKwyrNdGMaFnscM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZSrmzYW7+5fdk9UdEQkvA9ycEQjMqEKN3J96+v4T1OwQBSrpl0x504X8YKqbGDAhN
-         iHT8uYnJEPx5BdjL5OsODJQKi1aU+9JYlRxj3pbbf67+yqBW+0VyZRGkWnTETn9V0H
-         pjbBchCx00uIpK9MTswkbDf2IQnnVHZjDOg6okeu4NvtlvkCf/KEiyxIh7Q48rox7H
-         aQP48OrvSEhGT2Fep9xfIOyeefVtWmfHVeDyO1gqa93CTpaaUSzMVi6HbT4ZQqSWtQ
-         reTHgwRh3e0A4hovVg3dfJsGmNNviCpWOC6Vqm/omi4VBldswNa+N6MACLFGQumz2y
-         4iOPoGrH+b+ow==
+        b=W8b/hA3XdAOIOOUPuz2v+jsbwlUcY7Vb4lp2+Qx7KSUrA8WsquKwVPzcPVNh0qYQ6
+         jhItzS8ICt/Awb/Ys1yc7FmebxqKR7wUjuovCHSYjyQn0CoOCoj/scqq5SVzgZIg08
+         6FfHDlrP/Dzt+cx4hUudM7NdIjiQxditGcpV2m7eMbUAxaNx/BTL0Q0NKWEJ/sb52S
+         nW8/NT/HCc7hYREi1QhCfsw/jY36tf3KtmTJjjIvqJNpzEq2ovAkDtsrWlz75JM6VH
+         aRAPnH6PtBeIFbyXMBllxKP3VpUAcH16HLpi9RmPcUlBWzw/04dh+xL6+0dr+ZJfSP
+         hsrL/+rxhURSw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Yufen <wangyufen@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 13/14] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
-Date:   Mon, 13 Jun 2022 22:10:18 -0400
-Message-Id: <20220614021019.1100929-13-sashal@kernel.org>
+Cc:     Adam Ford <aford173@gmail.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com,
+        patches@opensource.wolfsonmicro.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.9 06/12] ASoC: wm8962: Fix suspend while playing music
+Date:   Mon, 13 Jun 2022 22:10:34 -0400
+Message-Id: <20220614021040.1101131-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614021019.1100929-1-sashal@kernel.org>
-References: <20220614021019.1100929-1-sashal@kernel.org>
+In-Reply-To: <20220614021040.1101131-1-sashal@kernel.org>
+References: <20220614021040.1101131-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,44 +55,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
+[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
 
-When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
-overflow. To fix, we can follow what udpv6 does and subtract the
-transhdrlen from the max.
+If the audio CODEC is playing sound when the system is suspended,
+it can be left in a state which throws the following error:
 
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
+
+Once this error has occurred, the audio will not work again until rebooted.
+
+Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
+
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/l2tp/l2tp_ip6.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ sound/soc/codecs/wm8962.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index 9c4670fb29d7..7b0963712c22 100644
---- a/net/l2tp/l2tp_ip6.c
-+++ b/net/l2tp/l2tp_ip6.c
-@@ -526,14 +526,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	struct ipcm6_cookie ipc6;
- 	int addr_len = msg->msg_namelen;
- 	int transhdrlen = 4; /* zero session-id */
--	int ulen = len + transhdrlen;
-+	int ulen;
- 	int err;
+diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
+index 0e8008d38161..d46881f96c16 100644
+--- a/sound/soc/codecs/wm8962.c
++++ b/sound/soc/codecs/wm8962.c
+@@ -3861,6 +3861,7 @@ static int wm8962_runtime_suspend(struct device *dev)
+ #endif
  
- 	/* Rough check on arithmetic overflow,
- 	   better check is made in ip6_append_data().
- 	 */
--	if (len > INT_MAX)
-+	if (len > INT_MAX - transhdrlen)
- 		return -EMSGSIZE;
-+	ulen = len + transhdrlen;
+ static const struct dev_pm_ops wm8962_pm = {
++	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
+ 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
+ };
  
- 	/* Mirror BSD error message compatibility */
- 	if (msg->msg_flags & MSG_OOB)
 -- 
 2.35.1
 
