@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA4CCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F83FCCA47D
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:25:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354273AbiFNCY4 (ORCPT
+        id S1354422AbiFNCZB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:24:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40254 "EHLO
+        Mon, 13 Jun 2022 22:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352984AbiFNCTp (ORCPT
+        with ESMTP id S1353661AbiFNCUg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:19:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A69E3FBD6;
-        Mon, 13 Jun 2022 19:10:12 -0700 (PDT)
+        Mon, 13 Jun 2022 22:20:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7547A3FBF7;
+        Mon, 13 Jun 2022 19:10:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C22E761121;
-        Tue, 14 Jun 2022 02:10:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DA8DC36B0C;
-        Tue, 14 Jun 2022 02:10:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 591EEB80AC1;
+        Tue, 14 Jun 2022 02:10:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41880C341C5;
+        Tue, 14 Jun 2022 02:10:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172609;
-        bh=iw50gbSjabpucUX0/rYmkGKA6LdGRAt/18oM3zoVtzQ=;
+        s=k20201202; t=1655172602;
+        bh=2NaLsw+VKS3gezcd5noKb0OnET71MfjOfMTBsv/wb2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lUKEzQAGG5gmurSOIwcNGQJEJlEMOad9/WQf8tx7a1vWz/QCBvB7l8XuYyIrOMFDh
-         lc+iQbKQKnp7ov7ZpNh7ByxCd0qL1So7TgfXDZZ4wLbEN92QqGRTY9rc0R6VEHWys4
-         +6HlwYQMMnbkznfv6jUs1kX/FZSxlCDSFwjOYL7EALDUgONTfs+UEUPNZNPmhaIQPW
-         w9+5uV7geyv8eeXspbNfltJ4VYNK2EyXLZMS9Ze4u2cL/OrauMJP7LrhQ5TsRXCw4N
-         AgQQCc+UMD/+didhOAVt2eLaete/f8Y0+iDu2/Z2R3bVnJ26TIZNziJUgyeV/rERWm
-         lUhraUe6ye/pQ==
+        b=Jh0B1tp3WBA2kzUjTskfCJIDynKriDxhRVZC1GIpYjoOgMnPHlnQjJMBv9WcGn+8m
+         N9RlNq0TmXwN2r7O26en8czusWuwjE01C6YeJaW4oE6bBvV5hEjfqln8DaKGASJ4Q7
+         VxrBgMDA14eOeZvZ0SS138XHvZqDF7eM4nIr/aME8oNHUDPFCK/vBl5GQGUrNmLaUU
+         yKC0XUItU6pskZM47gKXLqPFljQqlskGAmEiqvJ3vOPwchGJ0mdIiprIrZbr/yJuoU
+         9YpAgF2zSqQp2jNbE/gj6GGuxU0twSvadg8Z7p/DOmeygbHNldEv8JIo0E7hCfCOev
+         0Yy5GAuUsmlKw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@avagotech.com,
-        dick.kennedy@avagotech.com, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 11/18] scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
-Date:   Mon, 13 Jun 2022 22:09:34 -0400
-Message-Id: <20220614020941.1100702-11-sashal@kernel.org>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>, tj@kernel.org,
+        linux-ide@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 06/18] ata: libata-core: fix NULL pointer deref in ata_host_alloc_pinfo()
+Date:   Mon, 13 Jun 2022 22:09:29 -0400
+Message-Id: <20220614020941.1100702-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020941.1100702-1-sashal@kernel.org>
 References: <20220614020941.1100702-1-sashal@kernel.org>
@@ -55,47 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-[ Upstream commit 336d63615466b4c06b9401c987813fd19bdde39b ]
+[ Upstream commit bf476fe22aa1851bab4728e0c49025a6a0bea307 ]
 
-After issuing a LIP, a specific target vendor does not ACC the FLOGI that
-lpfc sends.  However, it does send its own FLOGI that lpfc ACCs.  The
-target then establishes the port IDs by sending a PLOGI.  lpfc PLOGI_ACCs
-and starts the RPI registration for DID 0x000001.  The target then sends a
-LOGO to the fabric DID.  lpfc is currently treating the LOGO from the
-fabric DID as a link down and cleans up all the ndlps.  The ndlp for DID
-0x000001 is put back into NPR and discovery stops, leaving the port in
-stuck in bypassed mode.
+In an unlikely (and probably wrong?) case that the 'ppi' parameter of
+ata_host_alloc_pinfo() points to an array starting with a NULL pointer,
+there's going to be a kernel oops as the 'pi' local variable won't get
+reassigned from the initial value of NULL. Initialize 'pi' instead to
+'&ata_dummy_port_info' to fix the possible kernel oops for good...
 
-Change lpfc behavior such that if a LOGO is received for the fabric DID in
-PT2PT topology skip the lpfc_linkdown_port() routine and just move the
-fabric DID back to NPR.
+Found by Linux Verification Center (linuxtesting.org) with the SVACE static
+analysis tool.
 
-Link: https://lore.kernel.org/r/20220603174329.63777-7-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_nportdisc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/ata/libata-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
-index 9442fb30e7cd..f666518d84b0 100644
---- a/drivers/scsi/lpfc/lpfc_nportdisc.c
-+++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
-@@ -662,7 +662,8 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
- 	else
- 		lpfc_els_rsp_acc(vport, ELS_CMD_ACC, cmdiocb, ndlp, NULL);
- 	if (ndlp->nlp_DID == Fabric_DID) {
--		if (vport->port_state <= LPFC_FDISC)
-+		if (vport->port_state <= LPFC_FDISC ||
-+		    vport->fc_flag & FC_PT2PT)
- 			goto out;
- 		lpfc_linkdown_port(vport);
- 		spin_lock_irq(shost->host_lock);
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 0c10d9557754..b0dea0702c74 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -6253,7 +6253,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 				      const struct ata_port_info * const * ppi,
+ 				      int n_ports)
+ {
+-	const struct ata_port_info *pi;
++	const struct ata_port_info *pi = &ata_dummy_port_info;
+ 	struct ata_host *host;
+ 	int i, j;
+ 
+@@ -6261,7 +6261,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 	if (!host)
+ 		return NULL;
+ 
+-	for (i = 0, j = 0, pi = NULL; i < host->n_ports; i++) {
++	for (i = 0, j = 0; i < host->n_ports; i++) {
+ 		struct ata_port *ap = host->ports[i];
+ 
+ 		if (ppi[j])
 -- 
 2.35.1
 
