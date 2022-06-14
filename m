@@ -2,173 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48241C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:06:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A50E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:08:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244205AbiFNNGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 09:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
+        id S234015AbiFNNIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 09:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234534AbiFNNGl (ORCPT
+        with ESMTP id S239020AbiFNNH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 09:06:41 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D4B21E36;
-        Tue, 14 Jun 2022 06:06:39 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LMpZ7743tz67Zsv;
-        Tue, 14 Jun 2022 21:05:03 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 15:06:36 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kpsingh@kernel.org>, <john.fastabend@gmail.com>,
-        <songliubraving@fb.com>, <kafai@fb.com>, <yhs@fb.com>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [RESEND][PATCH v4 3/4] bpf: Add bpf_verify_pkcs7_signature() helper
-Date:   Tue, 14 Jun 2022 15:06:20 +0200
-Message-ID: <20220614130621.1976089-4-roberto.sassu@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220614130621.1976089-1-roberto.sassu@huawei.com>
-References: <20220614130621.1976089-1-roberto.sassu@huawei.com>
+        Tue, 14 Jun 2022 09:07:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2649711824
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 06:07:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 746916166B
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:07:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C7C9C3411B;
+        Tue, 14 Jun 2022 13:07:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655212063;
+        bh=o1i62i9cvcd6zXd6+ZKu0naAcMPa5eKgxWy6B4lu02k=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Z6k5BnOssL4pis2anV8YUt2r+AigMLzMiGGeo8b0AO4vBL++oEct0NLuPZ+1a2iMQ
+         BBGEW0gyIhOOL0uOIZpP/uVB3H5Y1mUc7eyJ8IM/m595KBHkXljkhh6wVfmyXxJI2g
+         B3HzNNV/zhDSGx64Qvb9tueKXZjTRpmtPekoPuVPZAsqI7RZqPin6vUfIzxXWXiXIa
+         Q2n3EHCpVlHUG53+vmZ/e2Nor4OQYyUAu5kgQSRmxetAN7hkF69bONJdq8YmBAbG5b
+         6x4EUcWgCE0OQz1dYfjBy+JnCCSW14dMHcL8WLon0U+SMpBvZxbgCjNgTOB07k38Wj
+         Fbtx97cgz9LNw==
+Message-ID: <5f295a8f-058a-97d1-d9e0-095fdb5e5a7c@kernel.org>
+Date:   Tue, 14 Jun 2022 15:07:40 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/3] mm/page_alloc: use might_alloc()
+Content-Language: en-US
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+References: <20220605152539.3196045-1-daniel.vetter@ffwll.ch>
+From:   "Vlastimil Babka (SUSE)" <vbabka@kernel.org>
+In-Reply-To: <20220605152539.3196045-1-daniel.vetter@ffwll.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the bpf_verify_pkcs7_signature() helper, to give eBPF security modules
-the ability to check the validity of a signature against supplied data, by
-using system-provided keys as trust anchor.
+On 6/5/22 17:25, Daniel Vetter wrote:
+> ... instead of open codding it. Completely equivalent code, just
+> a notch more meaningful when reading.
+> 
+> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: linux-mm@kvack.org
 
-The new helper makes it possible to enforce mandatory policies, as eBPF
-programs might be allowed to make security decisions only based on data
-sources the system administrator approves.
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 
-The caller should provide both the data to be verified and the signature as
-eBPF dynamic pointers (to minimize the number of parameters). The caller
-should also provide a keyring pointer, that can be currently obtained with
-the bpf_request_key_by_id() helper. In the future, it will be possible to
-search a keyring by its description.
-
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-Reported-by: kernel test robot <lkp@intel.com> (cast warning)
----
- include/uapi/linux/bpf.h       |  8 ++++++++
- kernel/bpf/bpf_lsm.c           | 30 ++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h |  8 ++++++++
- 3 files changed, 46 insertions(+)
-
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index dfd93e0e0759..e6d9158e4981 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5265,6 +5265,13 @@ union bpf_attr {
-  *	Return
-  *		A non-NULL pointer if *id* is valid and not 0, a NULL pointer
-  *		otherwise.
-+ *
-+ * long bpf_verify_pkcs7_signature(struct bpf_dynptr *data_ptr, struct bpf_dynptr *sig_ptr, struct key *trusted_keys)
-+ *	Description
-+ *		Verify the PKCS#7 signature *sig* against the supplied *data*
-+ *		with keys in *trusted_keys*.
-+ *	Return
-+ *		0 on success, a negative value on error.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5472,6 +5479,7 @@ union bpf_attr {
- 	FN(dynptr_write),		\
- 	FN(dynptr_data),		\
- 	FN(request_key_by_id),		\
-+	FN(verify_pkcs7_signature),	\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-index e1911812398b..6c0d71b8c3b6 100644
---- a/kernel/bpf/bpf_lsm.c
-+++ b/kernel/bpf/bpf_lsm.c
-@@ -156,6 +156,31 @@ static const struct bpf_func_proto bpf_request_key_by_id_proto = {
- 	.ret_btf_id	= &bpf_request_key_by_id_btf_ids[0],
- 	.arg1_type	= ARG_ANYTHING,
- };
-+
-+#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
-+BPF_CALL_3(bpf_verify_pkcs7_signature, struct bpf_dynptr_kern *, data_ptr,
-+	   struct bpf_dynptr_kern *, sig_ptr, struct key *, trusted_keys)
-+{
-+	return verify_pkcs7_signature(data_ptr->data,
-+				      bpf_dynptr_get_size(data_ptr),
-+				      sig_ptr->data,
-+				      bpf_dynptr_get_size(sig_ptr),
-+				      trusted_keys,
-+				      VERIFYING_UNSPECIFIED_SIGNATURE, NULL,
-+				      NULL);
-+}
-+
-+static const struct bpf_func_proto bpf_verify_pkcs7_signature_proto = {
-+	.func		= bpf_verify_pkcs7_signature,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_LOCAL,
-+	.arg2_type	= ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_LOCAL,
-+	.arg3_type	= ARG_PTR_TO_BTF_ID_OR_NULL,
-+	.arg3_btf_id	= &bpf_request_key_by_id_btf_ids[0],
-+	.allowed	= bpf_ima_inode_hash_allowed,
-+};
-+#endif /* CONFIG_SYSTEM_DATA_VERIFICATION */
- #endif /* CONFIG_KEYS */
- 
- static const struct bpf_func_proto *
-@@ -187,6 +212,11 @@ bpf_lsm_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- #ifdef CONFIG_KEYS
- 	case BPF_FUNC_request_key_by_id:
- 		return &bpf_request_key_by_id_proto;
-+#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
-+	case BPF_FUNC_verify_pkcs7_signature:
-+		return prog->aux->sleepable ?
-+		       &bpf_verify_pkcs7_signature_proto : NULL;
-+#endif /* CONFIG_SYSTEM_DATA_VERIFICATION */
- #endif /* CONFIG_KEYS */
- 	default:
- 		return tracing_prog_func_proto(func_id, prog);
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index dfd93e0e0759..e6d9158e4981 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -5265,6 +5265,13 @@ union bpf_attr {
-  *	Return
-  *		A non-NULL pointer if *id* is valid and not 0, a NULL pointer
-  *		otherwise.
-+ *
-+ * long bpf_verify_pkcs7_signature(struct bpf_dynptr *data_ptr, struct bpf_dynptr *sig_ptr, struct key *trusted_keys)
-+ *	Description
-+ *		Verify the PKCS#7 signature *sig* against the supplied *data*
-+ *		with keys in *trusted_keys*.
-+ *	Return
-+ *		0 on success, a negative value on error.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5472,6 +5479,7 @@ union bpf_attr {
- 	FN(dynptr_write),		\
- 	FN(dynptr_data),		\
- 	FN(request_key_by_id),		\
-+	FN(verify_pkcs7_signature),	\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
--- 
-2.25.1
+> ---
+>  mm/page_alloc.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 2db95780e003..277774d170cb 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -5177,10 +5177,7 @@ static inline bool prepare_alloc_pages(gfp_t gfp_mask, unsigned int order,
+>  			*alloc_flags |= ALLOC_CPUSET;
+>  	}
+>  
+> -	fs_reclaim_acquire(gfp_mask);
+> -	fs_reclaim_release(gfp_mask);
+> -
+> -	might_sleep_if(gfp_mask & __GFP_DIRECT_RECLAIM);
+> +	might_alloc(gfp_mask);
+>  
+>  	if (should_fail_alloc_page(gfp_mask, order))
+>  		return false;
 
