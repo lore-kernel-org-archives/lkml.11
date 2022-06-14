@@ -2,110 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB61CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA96C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356844AbiFNM3i (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58888 "EHLO
+        id S242650AbiFNMaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244165AbiFNM2p (ORCPT
+        with ESMTP id S243448AbiFNM2i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:28:45 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41AEB22B02;
-        Tue, 14 Jun 2022 05:28:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655209725; x=1686745725;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=G/BX8Uxdz+yrMTFWd+nOOlTWRC0rRAkVHt5072WNsL8=;
-  b=WytpUNbvjE1IvZE7C8TDPCkkamy+L5n0cTedZ4BxzHgXUpFxbeEr7y+X
-   80Y4EK0gbV1pOJq8o7H4Bpq7EOGTNCwe4x3jBx8qp6KUgAUusg+VJGzKV
-   SvQ/rISa9oq1vWsOlhaokZ6xJ22ou2x7qdFtT2JW4x4aMDS7BnMb5J1XT
-   q2uDt2Yio4wwacE+vuu6qAortVlXgIa2lqkm4gE5JZ3Nxelx46y3qNo9g
-   Z5E0mLejcRhIZDEx+RA6VvIMqYy1WMP3x962aipCNWr7T4Dh9TvxF5OnK
-   yF+gt6MP1m+MN+5SVMF4D4N4wPUyVeShMwM3p+fYVrzsARk3GbgY23zxH
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="279639124"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="279639124"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 05:28:44 -0700
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="582677693"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 05:28:40 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1o15eu-000cKr-Bp;
-        Tue, 14 Jun 2022 15:28:36 +0300
-Date:   Tue, 14 Jun 2022 15:28:36 +0300
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Benoit =?iso-8859-1?Q?Gr=E9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Guilherme G . Piccoli" <gpiccoli@igalia.com>
-Subject: Re: [PATCH] x86/PCI: Revert: "Clip only host bridge windows for E820
- regions"
-Message-ID: <Yqh+9Ei5BLhKB/da@smile.fi.intel.com>
-References: <20220612144325.85366-1-hdegoede@redhat.com>
+        Tue, 14 Jun 2022 08:28:38 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038B2237DB
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:32 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id x5so11418108edi.2
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=lfqn0geMWlo2m+epnZ6MFo0Gce8D/c5YwbUMrCOB20U=;
+        b=lA8lImzum331TJJHsTJ65jBz5jhNkv8tw3ezsIi7YzTZ4BvI2AM5rhz+aOgWERPVL8
+         wf6IQ/SDWFEwFigWABBsxv8ZrP5t/FPjJTo8+VozEf4XwRH8ChY7HINrKepv9pKwMjZZ
+         2tLBe1IhgdW/M3DVZLQDHV1wWR1udzWI6jLZQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=lfqn0geMWlo2m+epnZ6MFo0Gce8D/c5YwbUMrCOB20U=;
+        b=f0rKEROsHAJ2KTFAVITduNnwowGGfSsSxZQdvZW0uML4Amd3CVeWS/UxNYWJiEBlwo
+         8+Q9VMgkjeTzqTwpVF/m2q4t+ki530lPn2TuVRk8E4GkbcCrutfF5PsClb7kpXTy78zr
+         y+6BWWeZ4w0sv9ZqrbqaCPBfuFQ8C0vVGtxsGtACDZvVoDFPq5SG5NmFQbO6VYkbm5CI
+         b0pM+hLdkxwQCBF2Dt+enHUHLIEZXsF66N7TB9IyOJoAMNu8UImBGkZq6HHpBP/i7Zyt
+         oYejHAxjyL2h3AmG1jkz5Fc4NnNCLHLTKUP1WCN+Lb1R5oEbBID4SA4e4758cMZ5JB0A
+         +vCw==
+X-Gm-Message-State: AOAM532ARf0Pg5rFlvjwcFHj3BLtnr8zuvQLDApqegGTP1Lx8Gdnu8Fc
+        islJ18TbG6kdAVSWC80NKzWlk/mbqC4lsA==
+X-Google-Smtp-Source: ABdhPJzeyedu9lwFUMlzw7cFqiFQ1EtabbKKn8JVnjLWT5ry77nZm6Z0w1GeuZFjBuJt99IQJ8zumw==
+X-Received: by 2002:a05:6402:21a:b0:431:5c52:82bb with SMTP id t26-20020a056402021a00b004315c5282bbmr5877909edv.70.1655209710212;
+        Tue, 14 Jun 2022 05:28:30 -0700 (PDT)
+Received: from dario-ThinkPad-T14s-Gen-2i.amarulasolutions.com (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
+        by smtp.gmail.com with ESMTPSA id z22-20020a17090655d600b006f3ef214e2csm5087043ejp.146.2022.06.14.05.28.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 05:28:29 -0700 (PDT)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        michael@amarulasolutions.com,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v4 03/12] can: slcan: use the alloc_can_skb() helper
+Date:   Tue, 14 Jun 2022 14:28:12 +0200
+Message-Id: <20220614122821.3646071-4-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
+References: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220612144325.85366-1-hdegoede@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 04:43:25PM +0200, Hans de Goede wrote:
-> Clipping the bridge windows directly from pci_acpi_root_prepare_resources()
-> instead of clipping from arch_remove_reservations(), has a number of
-> unforseen consequences.
-> 
-> If there is an e820 reservation in the middle of a bridge window, then
-> the smallest of the 2 remaining parts of the window will be also clipped
-> off. Where as the previous code would clip regions requested by devices,
-> rather then the entire window, leaving regions which were either entirely
-> above or below a reservation in the middle of the window alone.
-> 
-> E.g. on the Steam Deck this leads to this log message:
-> 
-> acpi PNP0A08:00: clipped [mem 0x80000000-0xf7ffffff window] to [mem 0xa0100000-0xf7ffffff window]
-> 
-> which then gets followed by these log messages:
-> 
-> pci 0000:00:01.2: can't claim BAR 14 [mem 0x80600000-0x806fffff]: no compatible bridge window
-> pci 0000:00:01.3: can't claim BAR 14 [mem 0x80500000-0x805fffff]: no compatible bridge window
-> 
-> and many more of these. Ultimately this leads to the Steam Deck
-> no longer booting properly, so revert the change.
-> 
-> Note this is not a clean revert, this revert keeps the later change
-> to make the clipping dependent on a new pci_use_e820 bool, moving
-> the checking of this bool to arch_remove_reservations().
+It is used successfully by most (if not all) CAN device drivers. It
+allows to remove replicated code.
 
-It does _not_ fix the Intel MID case. It requires to have my patch applied as well.
-So the difference as I see is the flags checking. I believe that you still need to
-have it in case pci_use_e820 == true. But it might be that I missed an importan
-detail.
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
+---
+
+(no changes since v3)
+
+Changes in v3:
+- Increment the error counter in case of decoding failure.
+
+Changes in v2:
+- Put the data into the allocated skb directly instead of first
+  filling the "cf" on the stack and then doing a memcpy().
+
+ drivers/net/can/slcan.c | 70 +++++++++++++++++++----------------------
+ 1 file changed, 33 insertions(+), 37 deletions(-)
+
+diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
+index 6162a9c21672..c39580b142e0 100644
+--- a/drivers/net/can/slcan.c
++++ b/drivers/net/can/slcan.c
+@@ -54,6 +54,7 @@
+ #include <linux/kernel.h>
+ #include <linux/workqueue.h>
+ #include <linux/can.h>
++#include <linux/can/dev.h>
+ #include <linux/can/skb.h>
+ #include <linux/can/can-ml.h>
+ 
+@@ -143,85 +144,80 @@ static struct net_device **slcan_devs;
+ static void slc_bump(struct slcan *sl)
+ {
+ 	struct sk_buff *skb;
+-	struct can_frame cf;
++	struct can_frame *cf;
+ 	int i, tmp;
+ 	u32 tmpid;
+ 	char *cmd = sl->rbuff;
+ 
+-	memset(&cf, 0, sizeof(cf));
++	skb = alloc_can_skb(sl->dev, &cf);
++	if (unlikely(!skb)) {
++		sl->dev->stats.rx_dropped++;
++		return;
++	}
+ 
+ 	switch (*cmd) {
+ 	case 'r':
+-		cf.can_id = CAN_RTR_FLAG;
++		cf->can_id = CAN_RTR_FLAG;
+ 		fallthrough;
+ 	case 't':
+ 		/* store dlc ASCII value and terminate SFF CAN ID string */
+-		cf.len = sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
++		cf->len = sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
+ 		sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN] = 0;
+ 		/* point to payload data behind the dlc */
+ 		cmd += SLC_CMD_LEN + SLC_SFF_ID_LEN + 1;
+ 		break;
+ 	case 'R':
+-		cf.can_id = CAN_RTR_FLAG;
++		cf->can_id = CAN_RTR_FLAG;
+ 		fallthrough;
+ 	case 'T':
+-		cf.can_id |= CAN_EFF_FLAG;
++		cf->can_id |= CAN_EFF_FLAG;
+ 		/* store dlc ASCII value and terminate EFF CAN ID string */
+-		cf.len = sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
++		cf->len = sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
+ 		sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN] = 0;
+ 		/* point to payload data behind the dlc */
+ 		cmd += SLC_CMD_LEN + SLC_EFF_ID_LEN + 1;
+ 		break;
+ 	default:
+-		return;
++		goto decode_failed;
+ 	}
+ 
+ 	if (kstrtou32(sl->rbuff + SLC_CMD_LEN, 16, &tmpid))
+-		return;
++		goto decode_failed;
+ 
+-	cf.can_id |= tmpid;
++	cf->can_id |= tmpid;
+ 
+ 	/* get len from sanitized ASCII value */
+-	if (cf.len >= '0' && cf.len < '9')
+-		cf.len -= '0';
++	if (cf->len >= '0' && cf->len < '9')
++		cf->len -= '0';
+ 	else
+-		return;
++		goto decode_failed;
+ 
+ 	/* RTR frames may have a dlc > 0 but they never have any data bytes */
+-	if (!(cf.can_id & CAN_RTR_FLAG)) {
+-		for (i = 0; i < cf.len; i++) {
++	if (!(cf->can_id & CAN_RTR_FLAG)) {
++		for (i = 0; i < cf->len; i++) {
+ 			tmp = hex_to_bin(*cmd++);
+ 			if (tmp < 0)
+-				return;
+-			cf.data[i] = (tmp << 4);
++				goto decode_failed;
++
++			cf->data[i] = (tmp << 4);
+ 			tmp = hex_to_bin(*cmd++);
+ 			if (tmp < 0)
+-				return;
+-			cf.data[i] |= tmp;
++				goto decode_failed;
++
++			cf->data[i] |= tmp;
+ 		}
+ 	}
+ 
+-	skb = dev_alloc_skb(sizeof(struct can_frame) +
+-			    sizeof(struct can_skb_priv));
+-	if (!skb)
+-		return;
+-
+-	skb->dev = sl->dev;
+-	skb->protocol = htons(ETH_P_CAN);
+-	skb->pkt_type = PACKET_BROADCAST;
+-	skb->ip_summed = CHECKSUM_UNNECESSARY;
+-
+-	can_skb_reserve(skb);
+-	can_skb_prv(skb)->ifindex = sl->dev->ifindex;
+-	can_skb_prv(skb)->skbcnt = 0;
+-
+-	skb_put_data(skb, &cf, sizeof(struct can_frame));
+-
+ 	sl->dev->stats.rx_packets++;
+-	if (!(cf.can_id & CAN_RTR_FLAG))
+-		sl->dev->stats.rx_bytes += cf.len;
++	if (!(cf->can_id & CAN_RTR_FLAG))
++		sl->dev->stats.rx_bytes += cf->len;
+ 
+ 	netif_rx(skb);
++	return;
++
++decode_failed:
++	sl->dev->stats.rx_errors++;
++	dev_kfree_skb(skb);
+ }
+ 
+ /* parse tty input stream */
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.32.0
 
