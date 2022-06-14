@@ -2,154 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 360F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D1E9CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243902AbiFNO37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50658 "EHLO
+        id S1343928AbiFNOaF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244639AbiFNO35 (ORCPT
+        with ESMTP id S1343777AbiFNOaB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:29:57 -0400
+        Tue, 14 Jun 2022 10:30:01 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5523615E;
-        Tue, 14 Jun 2022 07:29:56 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id BEC371F930;
-        Tue, 14 Jun 2022 14:29:54 +0000 (UTC)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A539ADEFC;
+        Tue, 14 Jun 2022 07:29:58 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 4FEB01F9A9;
+        Tue, 14 Jun 2022 14:29:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655216994;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        t=1655216997; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=9sUM5JezTgOeH5YJB4qMver/nDgsiIG+jHJ6CxJ8KWo=;
-        b=AHIc1T+T63d/dp4JPI0aPXI1J/Ffvkhgx7JM2UYhD8elN+0r+3Ifs6Zwg+7ULyghHhiiUh
-        YibkkXoirEqLwGb6CsleFLJh0ahhdn+M8hJP8upt3BMf2Gf3HpuUDfgxsASJFHkjVJTCAV
-        kz3izirGp2dwYelsC7ghMHp4B0Fr1VI=
+        bh=iGoaGjGP6j/udP5ooaRRpjCZ4pfh/sVO4ewkgPS8RJ0=;
+        b=FaGGYI2cAI6HiApREyD21snUqkJFheeNopmLSWacycbmwcmjsm2GsWL9/2W0oO39khzIS6
+        6wMJcRuDJy0f+Nux70OX2DehF/oGD3uzpCFFHEf+1iPE86RmgaTO2tJx//27rzYnDbyTp7
+        46vHe/bFhK2ZO4qonhGhLxEtPyLIkoM=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655216994;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        s=susede2_ed25519; t=1655216997;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=9sUM5JezTgOeH5YJB4qMver/nDgsiIG+jHJ6CxJ8KWo=;
-        b=lX0I1sytpWX/NIHU0zaVY6xhxK9HYG/KBdugW8wblolTfSY7A1Tzt4qT/olWouWPCNuvr+
-        EHSGJU2RJ+IvSmCg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        bh=iGoaGjGP6j/udP5ooaRRpjCZ4pfh/sVO4ewkgPS8RJ0=;
+        b=cwUGXG7IP061V1p/bwmD6vTjS9UnnD599g/2i+GRLU7cYZ9o56dt+WeaOTmfOKGPEEkqYd
+        WmoWUhmqPtNrV+Aw==
+Received: from quack3.suse.cz (unknown [10.163.28.18])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 69A61139EC;
-        Tue, 14 Jun 2022 14:29:54 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id HbrBGGKbqGJDRQAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Tue, 14 Jun 2022 14:29:54 +0000
-Date:   Tue, 14 Jun 2022 16:25:21 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     dsterba@suse.cz, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Nick Terrell <terrelln@fb.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Filipe Manana <fdmanana@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] btrfs: Replace kmap() with kmap_local_page() in zstd.c
-Message-ID: <20220614142521.GN20633@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Filipe Manana <fdmanana@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220611135203.27992-1-fmdefrancesco@gmail.com>
- <20220613183913.GD20633@twin.jikos.cz>
- <1936552.usQuhbGJ8B@opensuse>
+        by relay2.suse.de (Postfix) with ESMTPS id 11C3F2C141;
+        Tue, 14 Jun 2022 14:29:56 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 03D76A062E; Tue, 14 Jun 2022 16:29:55 +0200 (CEST)
+Date:   Tue, 14 Jun 2022 16:29:55 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, stable@vger.kernel.org,
+        Jchao Sun <sunjunchao2870@gmail.com>, Jan Kara <jack@suse.cz>
+Subject: Re: [PATCH] writeback: Avoid grabbing the wb if the we don't add it
+ to dirty list
+Message-ID: <20220614142955.7wvv5dfqdcwp5ftw@quack3.lan>
+References: <20220614124618.2830569-1-suzuki.poulose@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1936552.usQuhbGJ8B@opensuse>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <20220614124618.2830569-1-suzuki.poulose@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 01:22:50AM +0200, Fabio M. De Francesco wrote:
-> On lunedì 13 giugno 2022 20:39:13 CEST David Sterba wrote:
-> > On Sat, Jun 11, 2022 at 03:52:03PM +0200, Fabio M. De Francesco wrote:
-> > > The use of kmap() is being deprecated in favor of kmap_local_page(). 
-> With
-> > > kmap_local_page(), the mapping is per thread, CPU local and not 
-> globally
-> > > visible.
-> > > 
-> > > Therefore, use kmap_local_page() / kunmap_local() in zstd.c because in
-> > > this file the mappings are per thread and are not visible in other
-> > > contexts; meanwhile refactor zstd_compress_pages() to comply with 
-> nested
-> > > local mapping / unmapping ordering rules.
-> > > 
-> > > Tested with xfstests on a QEMU + KVM 32 bits VM with 4GB of RAM and
-> > > HIGHMEM64G enabled.
-> > > 
-> > > Cc: Filipe Manana <fdmanana@kernel.org>
-> > > Suggested-by: Ira Weiny <ira.weiny@intel.com>
-> > > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> > > ---
-> > > 
-> > > @@ -477,15 +479,16 @@ int zstd_compress_pages(struct list_head *ws, 
-> struct address_space *mapping,
-> > >  		/* Check if we need more input */
-> > >  		if (workspace->in_buf.pos == workspace->in_buf.size) {
-> > >  			tot_in += PAGE_SIZE;
-> > > -			kunmap(in_page);
-> > > +			kunmap_local(workspace->out_buf.dst);
-> > > +			kunmap_local((void *)workspace->in_buf.src);
-> > 
-> > Why is the cast needed?
+On Tue 14-06-22 13:46:18, Suzuki K Poulose wrote:
+> Commit 10e14073107d moved grabbing the wb for an inode early enough,
+> skipping the checks whether if this inode needs to be really added
+> to the dirty list (backed by blockdev or unhashed inode). This causes
+> a crash with kdevtmpfs as below, on an arm64 Juno board, as below:
 > 
-> As I wrote in an email I sent some days ago ("[RFC PATCH] btrfs: Replace 
-> kmap() with kmap_local_page() in zstd.c")[1] I get a series of errors like 
-> the following:
+> [    1.446493] printk: console [ttyAMA0] printing thread started
+> [    1.447195] printk: bootconsole [pl11] printing thread stopped
+> [    1.467193] Unable to handle kernel paging request at virtual address ffff800871242000
+> [    1.467793] Mem abort info:
+> [    1.468093]   ESR = 0x0000000096000005
+> [    1.468413]   EC = 0x25: DABT (current EL), IL = 32 bits
+> [    1.468741]   SET = 0, FnV = 0
+> [    1.469093]   EA = 0, S1PTW = 0
+> [    1.469396]   FSC = 0x05: level 1 translation fault
+> [    1.470493] Data abort info:
+> [    1.470793]   ISV = 0, ISS = 0x00000005
+> [    1.471093]   CM = 0, WnR = 0
+> [    1.471444] swapper pgtable: 4k pages, 48-bit VAs, 	pgdp=0000000081c10000
+> [    1.471798] [ffff800871242000] pgd=10000008fffff003,
+> p4d=10000008fffff003, pud=0000000000000000
+> [    1.472836] Internal error: Oops: 96000005 [#1] PREEMPT SMP
+> [    1.472918] Modules linked in:
+> [    1.473085] CPU: 1 PID: 35 Comm: kdevtmpfs Tainted: G T 5.19.0-rc1+ #49
+> [    1.473246] Hardware name: Foundation-v8A (DT)
+> [    1.473345] pstate: 40400009 (nZcv daif +PAN -UAO -TCO -DIT 	-SSBS BTYPE=--)
+> [    1.473493] pc : locked_inode_to_wb_and_lock_list+0xbc/0x2a4
+> [    1.473656] lr : locked_inode_to_wb_and_lock_list+0x8c/0x2a4
+> [    1.473820] sp : ffff80000b77bc10
+> [    1.473901] x29: ffff80000b77bc10 x28: 0000000000000001 x27: 0000000000000004
+> [    1.474193] x26: 0000000000000000 x25: ffff000800888600 x24: ffff0008008885e8
+> [    1.474393] x23: ffff80000848ddd4 x22: ffff80000a754f30 x21: ffff80000a7eaaf0
+> [    1.474693] x20: ffff000800888150 x19: ffff80000b6a4150 x18: ffff80000ac3ac00
+> [    1.474917] x17: 0000000070526bee x16: 000000003ac581ee x15: ffff80000ac42660
+> [    1.475195] x14: 0000000000000000 x13: 0000000000007a60 x12: 0000000000000002
+> [    1.475428] x11: ffff80000a7eaaf0 x10: 0000000000000004 x9 : 000000008845fe88
+> [    1.475622] x8 : ffff000800868000 x7 : ffff80000ab98000 x6 : 00000000114514e2
+> [    1.475893] x5 : 0000000000000000 x4 : 0000000000020019 x3 : 0000000000000001
+> [    1.476113] x2 : ffff800871242000 x1 : ffff800871242000 x0 : ffff000800868000
+> [    1.476393] Call trace:
+> [    1.476493]  locked_inode_to_wb_and_lock_list+0xbc/0x2a4
+> [    1.476605]  __mark_inode_dirty+0x3d8/0x6e0
+> [    1.476793]  simple_setattr+0x5c/0x84
+> [    1.476933]  notify_change+0x3ec/0x470
+> [    1.477096]  handle_create+0x1b8/0x224
+> [    1.477193]  devtmpfsd+0x98/0xf8
+> [    1.477342]  kthread+0x124/0x130
+> [    1.477512]  ret_from_fork+0x10/0x20
+> [    1.477670] Code: b9000802 d2800023 d53cd042 8b020021 (f823003f)
+> [    1.477793] ---[ end trace 0000000000000000 ]---
+> [    1.478093] note: kdevtmpfs[35] exited with preempt_count 2
 > 
-> /usr/src/git/kernels/linux/fs/btrfs/zstd.c:547:33: warning: passing 
-> argument 1 of '__kunmap_local' discards 'const' qualifier from pointer 
-> target type [-Wdiscarded-qualifiers]
->   547 |   kunmap_local(workspace->in_buf.src);
->       |                ~~~~~~~~~~~~~~~~~^~~~
-> /usr/src/git/kernels/linux/include/linux/highmem-internal.h:284:17: note: 
-> in definition of macro 'kunmap_local'
->   284 |  __kunmap_local(__addr);     \
->       |                 ^~~~~~
-> /usr/src/git/kernels/linux/include/linux/highmem-internal.h:92:41: note: 
-> expected 'void *' but argument is of type 'const void *'
->    92 | static inline void __kunmap_local(void *vaddr)
->       |                                   ~~~~~~^~~~~
+> The problem was bisected to the above commit and moving the bail check
+> early solves the problem for me.
 > 
-> Therefore, this is a (bad?) hack to make these changes compile.
+> Fixes: 10e14073107d ("writeback: Fix inode->i_io_list not be protected by inode->i_lock error")
+> CC: stable@vger.kernel.org
+> Cc: Jchao Sun <sunjunchao2870@gmail.com>
+> Cc: Jan Kara <jack@suse.cz>
+> Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 
-I think it's a bad practice and that API that does not modify parameters
-should declare the pointers const. Type casts should be used in
-justified cases and not to paper over fixable issues.
+Thanks for debugging this! The problem actually is not that we cannot call 
+locked_inode_to_wb_and_lock_list() for devtmpfs inode. The problem is that
+we get called so early during boot that noop_backing_dev_info is not
+initialized yet and that breaks the code. But I agree the quick fix for
+this breakage is to exclude unhashed inodes early in __mark_inode_dirty().
+I'll update the changelog and code comment (and cleanup the condition when
+moving it) and push the result to my tree.
 
-> A better solution is changing the prototype of __kunmap_local(); I
-> suppose that Andrew won't object, but who knows?
-> 
-> (+Cc Andrew Morton).
-> 
-> I was waiting for your comments. At now I've done about 15 conversions 
-> across the kernel but it's the first time I had to pass a pointer to const 
-> void to kunmap_local(). Therefore, I was not sure if changing the API were 
-> better suited (however I have already discussed this with Ira).
+								Honza
 
-IMHO it should be fixed in the API.
+> ---
+>  fs/fs-writeback.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
+> 
+> diff --git a/fs/fs-writeback.c b/fs/fs-writeback.c
+> index 05221366a16d..cf68114af68b 100644
+> --- a/fs/fs-writeback.c
+> +++ b/fs/fs-writeback.c
+> @@ -2416,6 +2416,14 @@ void __mark_inode_dirty(struct inode *inode, int flags)
+>  			inode->i_state &= ~I_DIRTY_TIME;
+>  		inode->i_state |= flags;
+>  
+> +		/*
+> +		 * Only add valid (hashed) inodes to the superblock's
+> +		 * dirty list.  Add blockdev inodes as well.
+> +		 */
+> +		if (!S_ISBLK(inode->i_mode)) {
+> +			if (inode_unhashed(inode))
+> +				goto out_unlock_inode;
+> +		}
+>  		/*
+>  		 * Grab inode's wb early because it requires dropping i_lock and we
+>  		 * need to make sure following checks happen atomically with dirty
+> @@ -2436,14 +2444,6 @@ void __mark_inode_dirty(struct inode *inode, int flags)
+>  		if (inode->i_state & I_SYNC_QUEUED)
+>  			goto out_unlock;
+>  
+> -		/*
+> -		 * Only add valid (hashed) inodes to the superblock's
+> -		 * dirty list.  Add blockdev inodes as well.
+> -		 */
+> -		if (!S_ISBLK(inode->i_mode)) {
+> -			if (inode_unhashed(inode))
+> -				goto out_unlock;
+> -		}
+>  		if (inode->i_state & I_FREEING)
+>  			goto out_unlock;
+>  
+> -- 
+> 2.35.3
+> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
