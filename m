@@ -2,112 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A9BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB0AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347465AbiFNBSA (ORCPT
+        id S1346879AbiFNBSz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 21:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
+        Mon, 13 Jun 2022 21:18:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347989AbiFNBRj (ORCPT
+        with ESMTP id S1349139AbiFNBSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 21:17:39 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 13 Jun 2022 18:17:14 PDT
-Received: from qq.com (smtpbg480.qq.com [59.36.132.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C7633365;
-        Mon, 13 Jun 2022 18:17:14 -0700 (PDT)
-X-QQ-mid: bizesmtp90t1655169347tmx1hhqk
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 14 Jun 2022 09:15:44 +0800 (CST)
-X-QQ-SSF: 01400000000000G0Q000000A0000000
-X-QQ-FEAT: xoS364mEyr2ZQyZa9egGpWkiXbaENEOHC3w6ZHbbovTwW4KRqizNrvRiUb/mB
-        69Yd9l9taMDvEMrVM5AgAC/i5zaipdqpScM8ywGwZ2hhW8E3xghQVFEQINXfzopsxWONLdg
-        WIOO9qp6FSUReuFEnVB4rbmZEROYLoN9NmnA8FVyQavgUuwcWdMHrXpPAfCenYwLH2IgqzA
-        OQ4rSdMZZqQce+d2BsGuoT5JqKDAHwx5zpDyQqCFpDWJsz7eFTKKSYxUhS2jdqI5mdWa8N0
-        h08leJFyDr9lYRsouGEB4D887k+LNhkS/AJY8XdWCMS4M/i2ZGVJZz7s0me5Tw+MSD/8VUl
-        t0aBzFKJKLfjL7UdEkTV0peLti+meuYttoH/QROAB/gtfSWDnE=
-X-QQ-GoodBg: 1
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Meng Tang <tangmeng@uniontech.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.10 2/2] commit 1b5d73fb8624 ("igc: Enable PCIe PTM")
-Date:   Tue, 14 Jun 2022 09:15:28 +0800
-Message-Id: <20220614011528.32118-2-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220614011528.32118-1-tangmeng@uniontech.com>
-References: <20220614011528.32118-1-tangmeng@uniontech.com>
+        Mon, 13 Jun 2022 21:18:45 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9272A13CD0;
+        Mon, 13 Jun 2022 18:18:41 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMVq95HPPzRjHT;
+        Tue, 14 Jun 2022 09:15:17 +0800 (CST)
+Received: from [10.67.110.112] (10.67.110.112) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 09:18:34 +0800
+Subject: Re: [PATCH -next] selinux: Fix potential memory leak in
+ selinux_add_opt
+To:     Paul Moore <paul@paul-moore.com>
+CC:     <stephen.smalley.work@gmail.com>, <eparis@parisplace.org>,
+        <omosnace@redhat.com>, <selinux@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220611090550.135674-1-xiujianfeng@huawei.com>
+ <CAHC9VhSwYdrHw8jNYxWApPYMjnmX-ZDN1=CzmRBeS1HoL-KOOA@mail.gmail.com>
+From:   xiujianfeng <xiujianfeng@huawei.com>
+Message-ID: <c54658e5-f0bd-b3f6-3cf8-d7d0e8b1c4df@huawei.com>
+Date:   Tue, 14 Jun 2022 09:18:34 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
+In-Reply-To: <CAHC9VhSwYdrHw8jNYxWApPYMjnmX-ZDN1=CzmRBeS1HoL-KOOA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign4
-X-QQ-Bgrelay: 1
+X-Originating-IP: [10.67.110.112]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the 5.10 kernel version, even to the latest confirmed version,
-the following error will still be reported when I225-V network card
-is used.
+Hi,
 
-kernel: [    1.031581] igc: probe of 0000:01:00.0 failed with error -2
-kernel: [    1.066574] igc: probe of 0000:02:00.0 failed with error -2
-kernel: [    1.096152] igc: probe of 0000:03:00.0 failed with error -2
-kernel: [    1.127251] igc: probe of 0000:04:00.0 failed with error -2
+在 2022/6/14 4:22, Paul Moore 写道:
+> On Sat, Jun 11, 2022 at 5:07 AM Xiu Jianfeng <xiujianfeng@huawei.com> wrote:
+>> In the entry of selinux_add_opt, *mnt_opts may be assigned to new
+>> allocated memory, and also may be freed and reset at the end of the
+>> function. however, if security_context_str_to_sid failed, it returns
+>> directly and skips the procedure for free and reset, even if it may be
+>> handled at the caller of this function, It is better to handle it
+>> inside.
+>>
+>> Fixes: 70f4169ab421 ("selinux: parse contexts for mount options early")
+>> Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+>> ---
+>>   security/selinux/hooks.c | 12 +++++++-----
+>>   1 file changed, 7 insertions(+), 5 deletions(-)
+> Have you actually observed a memory leak from the selinux_mnt_opts
+> allocation in selinux_add_opt()?
+>
+> The selinux_add_opt() function has two callers:
+> selinux_sb_eat_lsm_opts() and selinux_fs_context_parse_param().  The
+> former cleans up the selinux_mnt_opts allocation it its error handler
+> while the latter will end up calling
+> security_free_mnt_opts()/selinux_free_mnt_opts() to free the
+> fs_context:security when the fs_context is destroyed.
+>
+> This patch shouldn't be necessary.
 
-Even though I confirmed that 7c496de538eebd8212dc2a3c9a468386b2640d4
-and 47bca7de6a4fb8dcb564c7ca4d885c91ed19e03 have been merged into the
-kernel 5.10, but bug still occurred, and this patch can fixes it.
+I may not have made it clear, I said potential means may have a third 
+caller in the future. Anyway,
 
-Enables PCIe PTM (Precision Time Measurement) support in the igc
-driver. Notifies the PCI devices that PCIe PTM should be enabled.
+Yes, you are right,  currently no memleak here, because the two callers 
+will do the cleanup, from this point of view,
 
-PCIe PTM is similar protocol to PTP (Precision Time Protocol) running
-in the PCIe fabric, it allows devices to report time measurements from
-their internal clocks and the correlation with the PCIe root clock.
+I think the error handler as following is not necessary:
 
-The i225 NIC exposes some registers that expose those time
-measurements, those registers will be used, in later patches, to
-implement the PTP_SYS_OFFSET_PRECISE ioctl().
+err:
+         if (is_alloc_opts) {
+                 kfree(opts);
+                 *mnt_opts = NULL;
+         }
 
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
----
- drivers/net/ethernet/intel/igc/igc_main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+otherwise, some error paths goto err label while others don't, It's 
+confusing.
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index fd9257c7059a..298e968629db 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -10,6 +10,7 @@
- #include <linux/ip.h>
- #include <linux/pm_runtime.h>
- #include <net/pkt_sched.h>
-+#include <linux/pci.h>
- 
- #include <net/ipv6.h>
- 
-@@ -5041,6 +5042,10 @@ static int igc_probe(struct pci_dev *pdev,
- 
- 	pci_enable_pcie_error_reporting(pdev);
- 
-+	err = pci_enable_ptm(pdev, NULL);
-+	if (err < 0)
-+		dev_info(&pdev->dev, "PCIe PTM not supported by PCIe bus/controller\n");
-+
- 	pci_set_master(pdev);
- 
- 	err = -ENOMEM;
--- 
-2.20.1
-
-
-e=10�
