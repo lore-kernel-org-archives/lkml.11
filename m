@@ -2,213 +2,292 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31205CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4045ECCA481
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356075AbiFNK4k (ORCPT
+        id S1356117AbiFNK4m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47918 "EHLO
+        Tue, 14 Jun 2022 06:56:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355992AbiFNK4X (ORCPT
+        with ESMTP id S1356010AbiFNK4a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:56:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81B13B3EC;
-        Tue, 14 Jun 2022 03:56:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 840C361243;
-        Tue, 14 Jun 2022 10:56:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 684A4C3411B;
-        Tue, 14 Jun 2022 10:56:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655204181;
-        bh=00Prm+cUcZ84XpftD1dN/FsJdtVgLrlVbBRu1vY0N5M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GJ95osrVTc29XfAfsEoUU7WX2toadBvY3p7QFX5tpiu1BguwysX9r9TxGtw8aYY9n
-         7dlCDWef80SO6YKztD5/KX6n7Y63tLpHsHD4tZLe39NPNprDEuYJ4QV3OB37cZGvAj
-         IaIu2GguR8oHWbINnEHCM3cx9QcpbJSvuqjzsrMfDYUfocAyaRNr0Pt1A51rT53dh9
-         rDPotEBWirI+Y2P11VJvRfmmoENEdUlYds3MF8ovi7JJoImaYhf0YnPNPIDSD1X1Qu
-         u+E1S/fX8sdfiEnKYnQt3gWGX8HCuLdUK3Dn9KpHAkPUmWIlOW27FtAzM7KU1xfWdH
-         fGJYQOPmMLlqw==
-Date:   Tue, 14 Jun 2022 13:54:18 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Song Liu <song@kernel.org>, Masami Hiramatsu <mhiramat@kernel.org>,
-        Guo Ren <guoren@kernel.org>,
-        Jarkko Sakkinen <jarkko@profian.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nathaniel McCallum <nathaniel@profian.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Marco Elver <elver@google.com>,
-        Dan Li <ashimida@linux.alibaba.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Mark Brown <broonie@kernel.org>,
-        Luis Machado <luis.machado@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Atsushi Nemoto <anemo@mba.ocn.ne.jp>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dave Anglin <dave.anglin@bell.net>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Daniel Axtens <dja@axtens.net>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jordan Niethe <jniethe5@gmail.com>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Changbin Du <changbin.du@intel.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Liao Chang <liaochang1@huawei.com>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        Wu Caize <zepan@sipeed.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Tobias Huschle <huschle@linux.ibm.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Michael Roth <michael.roth@amd.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@igalia.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-modules@vger.kernel.org
-Subject: Re: [PATCH] kprobes: Enable tracing for mololithic kernel images
-Message-ID: <Yqho2hu5q/n10D7g@iki.fi>
-References: <20220608000014.3054333-1-jarkko@profian.com>
- <CAJF2gTQgCn2CyZ4+VBqEEBT2b4+1KxoEXxrd+Ritk=58+U8EFA@mail.gmail.com>
- <YqAy0qjI4Lktk/uJ@iki.fi>
- <20220608232115.ccd4399f4a1d133e9b65c2a9@kernel.org>
- <CAPhsuW6iUieQvA6KqzSLgtxmjkVSWCuVwNA338DATb_myHxo7w@mail.gmail.com>
- <YqHx1d+MwRLLzGQe@iki.fi>
- <CAMj1kXGGyO-DL9hjKYKR2sp87s4KExiQybES8pp4JgqJcHkfLA@mail.gmail.com>
+        Tue, 14 Jun 2022 06:56:30 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1374537011
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:56:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655204188; x=1686740188;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=VaWHjvVuwDzgt6SVvPb7NbGD9IG9OYeUIWJSACJLAFY=;
+  b=esvGov2sgeiqfkJ709e1qkMZXr4IkxwRhxQ0R5DYHRMwG+LO1qhjPa04
+   u7FOEsL4WD5SWXrNyhMHwSlfE4DujVUoBYwMY+gn+LTZVKpOyIfFAV8Pb
+   aCjWXYLbr0vkUNuB2Z98ySX/M7g+PXwsi5h9Ptk8rGgMWaxFd2Upjp5+h
+   mXrVfPsOqgiZ/pIDSZ2H4RSm3fx6JyXejcrWPT1pH6ykTFq7dvtJFiDXN
+   SSonYfQc3a5wZpdh3neHpqw5nMOrHlN9S0mP5wpzzKEUL9T/l3PCwlvBs
+   GyFRwtLp555wtNI3Pb54qfXOsies/KTb/g1fAt99xeCLKmO/YWCRz1p4p
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258417823"
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="258417823"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 03:56:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="588401998"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 14 Jun 2022 03:56:26 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o14Dh-000Lnx-Vi;
+        Tue, 14 Jun 2022 10:56:25 +0000
+Date:   Tue, 14 Jun 2022 18:56:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     =?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: arch/powerpc/kvm/book3s_64_mmu.c:263:28: sparse: sparse: cast to
+ restricted __be64
+Message-ID: <202206141847.wWCc8uur-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <CAMj1kXGGyO-DL9hjKYKR2sp87s4KExiQybES8pp4JgqJcHkfLA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 03:23:16PM +0200, Ard Biesheuvel wrote:
-> On Thu, 9 Jun 2022 at 15:14, Jarkko Sakkinen <jarkko@kernel.org> wrote:
-> >
-> > On Wed, Jun 08, 2022 at 09:12:34AM -0700, Song Liu wrote:
-> > > On Wed, Jun 8, 2022 at 7:21 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> > > >
-> > > > Hi Jarkko,
-> > > >
-> > > > On Wed, 8 Jun 2022 08:25:38 +0300
-> > > > Jarkko Sakkinen <jarkko@kernel.org> wrote:
-> > > >
-> > > > > On Wed, Jun 08, 2022 at 10:35:42AM +0800, Guo Ren wrote:
-> > > > > > .
-> > > > > >
-> > > > > > On Wed, Jun 8, 2022 at 8:02 AM Jarkko Sakkinen <jarkko@profian.com> wrote:
-> > > > > > >
-> > > > > > > Tracing with kprobes while running a monolithic kernel is currently
-> > > > > > > impossible because CONFIG_KPROBES is dependent of CONFIG_MODULES.  This
-> > > > > > > dependency is a result of kprobes code using the module allocator for the
-> > > > > > > trampoline code.
-> > > > > > >
-> > > > > > > Detaching kprobes from modules helps to squeeze down the user space,
-> > > > > > > e.g. when developing new core kernel features, while still having all
-> > > > > > > the nice tracing capabilities.
-> > > > > > >
-> > > > > > > For kernel/ and arch/*, move module_alloc() and module_memfree() to
-> > > > > > > module_alloc.c, and compile as part of vmlinux when either CONFIG_MODULES
-> > > > > > > or CONFIG_KPROBES is enabled.  In addition, flag kernel module specific
-> > > > > > > code with CONFIG_MODULES.
-> > > > > > >
-> > > > > > > As the result, kprobes can be used with a monolithic kernel.
-> > > > > > It's strange when MODULES is n, but vmlinux still obtains module_alloc.
-> > > > > >
-> > > > > > Maybe we need a kprobe_alloc, right?
-> > > > >
-> > > > > Perhaps not the best name but at least it documents the fact that
-> > > > > they use the same allocator.
-> > > > >
-> > > > > Few years ago I carved up something "half-way there" for kprobes,
-> > > > > and I used the name text_alloc() [*].
-> > > > >
-> > > > > [*] https://lore.kernel.org/all/20200724050553.1724168-1-jarkko.sakkinen@linux.intel.com/
-> > > >
-> > > > Yeah, I remember that. Thank you for updating your patch!
-> > > > I think the idea (split module_alloc() from CONFIG_MODULE) is good to me.
-> > > > If module support maintainers think this name is not good, you may be
-> > > > able to rename it as text_alloc() and make the module_alloc() as a
-> > > > wrapper of it.
-> > >
-> > > IIUC, most users of module_alloc() use it to allocate memory for text, except
-> > > that module code uses it for both text and data. Therefore, I guess calling it
-> > > text_alloc() is not 100% accurate until we change the module code (to use
-> > > a different API to allocate memory for data).
-> >
-> > After reading the feedback, I'd stay on using module_alloc() because
-> > it has arch-specific quirks baked in. Easier to deal with them in one
-> > place.
-> >
-> 
-> In that case, please ensure that you enable this only on architectures
-> where it is needed. arm64 implements alloc_insn_page() without relying
-> on module_alloc() so I would not expect to see any changes there.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
+commit: b352ddae7b2ccd2cb29f495ca0a7c9b6848b623f KVM: PPC: Book3S PR: Remove unused variable
+date:   10 months ago
+config: powerpc64-randconfig-s032-20220613 (https://download.01.org/0day-ci/archive/20220614/202206141847.wWCc8uur-lkp@intel.com/config)
+compiler: powerpc64le-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-30-g92122700-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b352ddae7b2ccd2cb29f495ca0a7c9b6848b623f
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout b352ddae7b2ccd2cb29f495ca0a7c9b6848b623f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/kvm/ arch/powerpc/platforms/powernv/ kernel/sched/
 
-Right, got it, thanks for remark.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-BR, Jarkko
+
+sparse warnings: (new ones prefixed by >>)
+>> arch/powerpc/kvm/book3s_64_mmu.c:263:28: sparse: sparse: cast to restricted __be64
+   arch/powerpc/kvm/book3s_64_mmu.c:264:28: sparse: sparse: cast to restricted __be64
+   arch/powerpc/kvm/book3s_64_mmu.c:288:13: sparse: sparse: cast to restricted __be64
+   arch/powerpc/kvm/book3s_64_mmu.c: note: in included file:
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __be64
+   arch/powerpc/include/asm/kvm_ppc.h:966:1: sparse: sparse: cast to restricted __le64
+
+vim +263 arch/powerpc/kvm/book3s_64_mmu.c
+
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  190  
+e71b2a39afff245 Alexander Graf       2009-10-30  191  static int kvmppc_mmu_book3s_64_xlate(struct kvm_vcpu *vcpu, gva_t eaddr,
+93b159b466bdc97 Paul Mackerras       2013-09-20  192  				      struct kvmppc_pte *gpte, bool data,
+93b159b466bdc97 Paul Mackerras       2013-09-20  193  				      bool iswrite)
+e71b2a39afff245 Alexander Graf       2009-10-30  194  {
+e71b2a39afff245 Alexander Graf       2009-10-30  195  	struct kvmppc_slb *slbe;
+e71b2a39afff245 Alexander Graf       2009-10-30  196  	hva_t ptegp;
+e71b2a39afff245 Alexander Graf       2009-10-30  197  	u64 pteg[16];
+e71b2a39afff245 Alexander Graf       2009-10-30  198  	u64 avpn = 0;
+b352ddae7b2ccd2 Cédric Le Goater     2021-08-19  199  	u64 r;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  200  	u64 v_val, v_mask;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  201  	u64 eaddr_mask;
+e71b2a39afff245 Alexander Graf       2009-10-30  202  	int i;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  203  	u8 pp, key = 0;
+e71b2a39afff245 Alexander Graf       2009-10-30  204  	bool found = false;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  205  	bool second = false;
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  206  	int pgsize;
+e8508940a88691a Alexander Graf       2010-07-29  207  	ulong mp_ea = vcpu->arch.magic_page_ea;
+e8508940a88691a Alexander Graf       2010-07-29  208  
+e8508940a88691a Alexander Graf       2010-07-29  209  	/* Magic page override */
+e8508940a88691a Alexander Graf       2010-07-29  210  	if (unlikely(mp_ea) &&
+e8508940a88691a Alexander Graf       2010-07-29  211  	    unlikely((eaddr & ~0xfffULL) == (mp_ea & ~0xfffULL)) &&
+5deb8e7ad8ac7e3 Alexander Graf       2014-04-24  212  	    !(kvmppc_get_msr(vcpu) & MSR_PR)) {
+e8508940a88691a Alexander Graf       2010-07-29  213  		gpte->eaddr = eaddr;
+e8508940a88691a Alexander Graf       2010-07-29  214  		gpte->vpage = kvmppc_mmu_book3s_64_ea_to_vp(vcpu, eaddr, data);
+e8508940a88691a Alexander Graf       2010-07-29  215  		gpte->raddr = vcpu->arch.magic_page_pa | (gpte->raddr & 0xfff);
+e8508940a88691a Alexander Graf       2010-07-29  216  		gpte->raddr &= KVM_PAM;
+e8508940a88691a Alexander Graf       2010-07-29  217  		gpte->may_execute = true;
+e8508940a88691a Alexander Graf       2010-07-29  218  		gpte->may_read = true;
+e8508940a88691a Alexander Graf       2010-07-29  219  		gpte->may_write = true;
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  220  		gpte->page_size = MMU_PAGE_4K;
+6c7d47c33ed323f Alexey Kardashevskiy 2017-11-22  221  		gpte->wimg = HPTE_R_M;
+e8508940a88691a Alexander Graf       2010-07-29  222  
+e8508940a88691a Alexander Graf       2010-07-29  223  		return 0;
+e8508940a88691a Alexander Graf       2010-07-29  224  	}
+e71b2a39afff245 Alexander Graf       2009-10-30  225  
+c4befc58a0cc5a8 Paul Mackerras       2011-06-29  226  	slbe = kvmppc_mmu_book3s_64_find_slbe(vcpu, eaddr);
+e71b2a39afff245 Alexander Graf       2009-10-30  227  	if (!slbe)
+e71b2a39afff245 Alexander Graf       2009-10-30  228  		goto no_seg_found;
+e71b2a39afff245 Alexander Graf       2009-10-30  229  
+0f296829b5a59d5 Paul Mackerras       2013-06-22  230  	avpn = kvmppc_mmu_book3s_64_get_avpn(slbe, eaddr);
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  231  	v_val = avpn & HPTE_V_AVPN;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  232  
+0f296829b5a59d5 Paul Mackerras       2013-06-22  233  	if (slbe->tb)
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  234  		v_val |= SLB_VSID_B_1T;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  235  	if (slbe->large)
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  236  		v_val |= HPTE_V_LARGE;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  237  	v_val |= HPTE_V_VALID;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  238  
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  239  	v_mask = SLB_VSID_B | HPTE_V_AVPN | HPTE_V_LARGE | HPTE_V_VALID |
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  240  		HPTE_V_SECONDARY;
+0f296829b5a59d5 Paul Mackerras       2013-06-22  241  
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  242  	pgsize = slbe->large ? MMU_PAGE_16M : MMU_PAGE_4K;
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  243  
+9308ab8e2da933d Paul Mackerras       2013-09-20  244  	mutex_lock(&vcpu->kvm->arch.hpt_mutex);
+9308ab8e2da933d Paul Mackerras       2013-09-20  245  
+e71b2a39afff245 Alexander Graf       2009-10-30  246  do_second:
+3ff955024d186c5 Paul Mackerras       2013-09-20  247  	ptegp = kvmppc_mmu_book3s_64_get_pteg(vcpu, slbe, eaddr, second);
+e71b2a39afff245 Alexander Graf       2009-10-30  248  	if (kvm_is_error_hva(ptegp))
+e71b2a39afff245 Alexander Graf       2009-10-30  249  		goto no_page_found;
+e71b2a39afff245 Alexander Graf       2009-10-30  250  
+e71b2a39afff245 Alexander Graf       2009-10-30  251  	if(copy_from_user(pteg, (void __user *)ptegp, sizeof(pteg))) {
+4da934dc6515afa Vipin K Parashar     2017-02-16  252  		printk_ratelimited(KERN_ERR
+4da934dc6515afa Vipin K Parashar     2017-02-16  253  			"KVM: Can't copy data from 0x%lx!\n", ptegp);
+e71b2a39afff245 Alexander Graf       2009-10-30  254  		goto no_page_found;
+e71b2a39afff245 Alexander Graf       2009-10-30  255  	}
+e71b2a39afff245 Alexander Graf       2009-10-30  256  
+5deb8e7ad8ac7e3 Alexander Graf       2014-04-24  257  	if ((kvmppc_get_msr(vcpu) & MSR_PR) && slbe->Kp)
+e71b2a39afff245 Alexander Graf       2009-10-30  258  		key = 4;
+5deb8e7ad8ac7e3 Alexander Graf       2014-04-24  259  	else if (!(kvmppc_get_msr(vcpu) & MSR_PR) && slbe->Ks)
+e71b2a39afff245 Alexander Graf       2009-10-30  260  		key = 4;
+e71b2a39afff245 Alexander Graf       2009-10-30  261  
+e71b2a39afff245 Alexander Graf       2009-10-30  262  	for (i=0; i<16; i+=2) {
+4e509af9f83debe Alexander Graf       2014-04-24 @263  		u64 pte0 = be64_to_cpu(pteg[i]);
+4e509af9f83debe Alexander Graf       2014-04-24  264  		u64 pte1 = be64_to_cpu(pteg[i + 1]);
+4e509af9f83debe Alexander Graf       2014-04-24  265  
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  266  		/* Check all relevant fields of 1st dword */
+4e509af9f83debe Alexander Graf       2014-04-24  267  		if ((pte0 & v_mask) == v_val) {
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  268  			/* If large page bit is set, check pgsize encoding */
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  269  			if (slbe->large &&
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  270  			    (vcpu->arch.hflags & BOOK3S_HFLAG_MULTI_PGSIZE)) {
+4e509af9f83debe Alexander Graf       2014-04-24  271  				pgsize = decode_pagesize(slbe, pte1);
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  272  				if (pgsize < 0)
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  273  					continue;
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  274  			}
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  275  			found = true;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  276  			break;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  277  		}
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  278  	}
+e71b2a39afff245 Alexander Graf       2009-10-30  279  
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  280  	if (!found) {
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  281  		if (second)
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  282  			goto no_page_found;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  283  		v_val |= HPTE_V_SECONDARY;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  284  		second = true;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  285  		goto do_second;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  286  	}
+e71b2a39afff245 Alexander Graf       2009-10-30  287  
+4e509af9f83debe Alexander Graf       2014-04-24  288  	r = be64_to_cpu(pteg[i+1]);
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  289  	pp = (r & HPTE_R_PP) | key;
+03a9c90334d611c Paul Mackerras       2013-09-20  290  	if (r & HPTE_R_PP0)
+03a9c90334d611c Paul Mackerras       2013-09-20  291  		pp |= 8;
+e71b2a39afff245 Alexander Graf       2009-10-30  292  
+e71b2a39afff245 Alexander Graf       2009-10-30  293  	gpte->eaddr = eaddr;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  294  	gpte->vpage = kvmppc_mmu_book3s_64_ea_to_vp(vcpu, eaddr, data);
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  295  
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  296  	eaddr_mask = (1ull << mmu_pagesize(pgsize)) - 1;
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  297  	gpte->raddr = (r & HPTE_R_RPN & ~eaddr_mask) | (eaddr & eaddr_mask);
+a4a0f2524acc2c6 Paul Mackerras       2013-09-20  298  	gpte->page_size = pgsize;
+e71b2a39afff245 Alexander Graf       2009-10-30  299  	gpte->may_execute = ((r & HPTE_R_N) ? false : true);
+f3383cf80e417e8 Alexander Graf       2014-05-12  300  	if (unlikely(vcpu->arch.disable_kernel_nx) &&
+f3383cf80e417e8 Alexander Graf       2014-05-12  301  	    !(kvmppc_get_msr(vcpu) & MSR_PR))
+f3383cf80e417e8 Alexander Graf       2014-05-12  302  		gpte->may_execute = true;
+e71b2a39afff245 Alexander Graf       2009-10-30  303  	gpte->may_read = false;
+e71b2a39afff245 Alexander Graf       2009-10-30  304  	gpte->may_write = false;
+96df2267695199b Alexey Kardashevskiy 2017-03-24  305  	gpte->wimg = r & HPTE_R_WIMG;
+e71b2a39afff245 Alexander Graf       2009-10-30  306  
+e71b2a39afff245 Alexander Graf       2009-10-30  307  	switch (pp) {
+e71b2a39afff245 Alexander Graf       2009-10-30  308  	case 0:
+e71b2a39afff245 Alexander Graf       2009-10-30  309  	case 1:
+e71b2a39afff245 Alexander Graf       2009-10-30  310  	case 2:
+e71b2a39afff245 Alexander Graf       2009-10-30  311  	case 6:
+e71b2a39afff245 Alexander Graf       2009-10-30  312  		gpte->may_write = true;
+8fc6ba0a205e9ad Joe Perches          2020-03-10  313  		fallthrough;
+e71b2a39afff245 Alexander Graf       2009-10-30  314  	case 3:
+e71b2a39afff245 Alexander Graf       2009-10-30  315  	case 5:
+e71b2a39afff245 Alexander Graf       2009-10-30  316  	case 7:
+03a9c90334d611c Paul Mackerras       2013-09-20  317  	case 10:
+e71b2a39afff245 Alexander Graf       2009-10-30  318  		gpte->may_read = true;
+e71b2a39afff245 Alexander Graf       2009-10-30  319  		break;
+e71b2a39afff245 Alexander Graf       2009-10-30  320  	}
+e71b2a39afff245 Alexander Graf       2009-10-30  321  
+e71b2a39afff245 Alexander Graf       2009-10-30  322  	dprintk("KVM MMU: Translated 0x%lx [0x%llx] -> 0x%llx "
+af7b4d104b36e78 Alexander Graf       2010-04-20  323  		"-> 0x%lx\n",
+e71b2a39afff245 Alexander Graf       2009-10-30  324  		eaddr, avpn, gpte->vpage, gpte->raddr);
+e71b2a39afff245 Alexander Graf       2009-10-30  325  
+e71b2a39afff245 Alexander Graf       2009-10-30  326  	/* Update PTE R and C bits, so the guest's swapper knows we used the
+e71b2a39afff245 Alexander Graf       2009-10-30  327  	 * page */
+9308ab8e2da933d Paul Mackerras       2013-09-20  328  	if (gpte->may_read && !(r & HPTE_R_R)) {
+9308ab8e2da933d Paul Mackerras       2013-09-20  329  		/*
+9308ab8e2da933d Paul Mackerras       2013-09-20  330  		 * Set the accessed flag.
+9308ab8e2da933d Paul Mackerras       2013-09-20  331  		 * We have to write this back with a single byte write
+9308ab8e2da933d Paul Mackerras       2013-09-20  332  		 * because another vcpu may be accessing this on
+9308ab8e2da933d Paul Mackerras       2013-09-20  333  		 * non-PAPR platforms such as mac99, and this is
+9308ab8e2da933d Paul Mackerras       2013-09-20  334  		 * what real hardware does.
+9308ab8e2da933d Paul Mackerras       2013-09-20  335  		 */
+740f834eb2505e1 Alexander Graf       2014-04-24  336                  char __user *addr = (char __user *) (ptegp + (i + 1) * sizeof(u64));
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  337  		r |= HPTE_R_R;
+9308ab8e2da933d Paul Mackerras       2013-09-20  338  		put_user(r >> 8, addr + 6);
+e71b2a39afff245 Alexander Graf       2009-10-30  339  	}
+93b159b466bdc97 Paul Mackerras       2013-09-20  340  	if (iswrite && gpte->may_write && !(r & HPTE_R_C)) {
+93b159b466bdc97 Paul Mackerras       2013-09-20  341  		/* Set the dirty flag */
+9308ab8e2da933d Paul Mackerras       2013-09-20  342  		/* Use a single byte write */
+740f834eb2505e1 Alexander Graf       2014-04-24  343                  char __user *addr = (char __user *) (ptegp + (i + 1) * sizeof(u64));
+7e48c101e0c53e6 Paul Mackerras       2013-08-06  344  		r |= HPTE_R_C;
+9308ab8e2da933d Paul Mackerras       2013-09-20  345  		put_user(r, addr + 7);
+e71b2a39afff245 Alexander Graf       2009-10-30  346  	}
+e71b2a39afff245 Alexander Graf       2009-10-30  347  
+9308ab8e2da933d Paul Mackerras       2013-09-20  348  	mutex_unlock(&vcpu->kvm->arch.hpt_mutex);
+e71b2a39afff245 Alexander Graf       2009-10-30  349  
+93b159b466bdc97 Paul Mackerras       2013-09-20  350  	if (!gpte->may_read || (iswrite && !gpte->may_write))
+6ed1485f65f0eb1 Paul Mackerras       2013-06-22  351  		return -EPERM;
+e71b2a39afff245 Alexander Graf       2009-10-30  352  	return 0;
+e71b2a39afff245 Alexander Graf       2009-10-30  353  
+e71b2a39afff245 Alexander Graf       2009-10-30  354  no_page_found:
+9308ab8e2da933d Paul Mackerras       2013-09-20  355  	mutex_unlock(&vcpu->kvm->arch.hpt_mutex);
+e71b2a39afff245 Alexander Graf       2009-10-30  356  	return -ENOENT;
+e71b2a39afff245 Alexander Graf       2009-10-30  357  
+e71b2a39afff245 Alexander Graf       2009-10-30  358  no_seg_found:
+e71b2a39afff245 Alexander Graf       2009-10-30  359  	dprintk("KVM MMU: Trigger segment fault\n");
+e71b2a39afff245 Alexander Graf       2009-10-30  360  	return -EINVAL;
+e71b2a39afff245 Alexander Graf       2009-10-30  361  }
+e71b2a39afff245 Alexander Graf       2009-10-30  362  
+
+:::::: The code at line 263 was first introduced by commit
+:::::: 4e509af9f83debe296661d2e09a8a214850efe3c KVM: PPC: Book3S_64 PR: Access HTAB in big endian
+
+:::::: TO: Alexander Graf <agraf@suse.de>
+:::::: CC: Alexander Graf <agraf@suse.de>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
