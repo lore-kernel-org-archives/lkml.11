@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81129C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2ADC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:32:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354961AbiFNCcH (ORCPT
+        id S1355250AbiFNCcN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56148 "EHLO
+        Mon, 13 Jun 2022 22:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354882AbiFNCZX (ORCPT
+        with ESMTP id S1354974AbiFNCZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:25:23 -0400
+        Mon, 13 Jun 2022 22:25:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46A536E34;
-        Mon, 13 Jun 2022 19:11:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED5637003;
+        Mon, 13 Jun 2022 19:11:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74A9E60B76;
-        Tue, 14 Jun 2022 02:10:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AACCAC341C4;
-        Tue, 14 Jun 2022 02:10:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85E16611A6;
+        Tue, 14 Jun 2022 02:11:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF672C385A5;
+        Tue, 14 Jun 2022 02:11:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172648;
-        bh=E7cEh5bK6lTWhyfkc4/D18C7BicyDM/aUr421bJZuwI=;
+        s=k20201202; t=1655172681;
+        bh=ddHJc4QFsYP8rXNlyEhlD0XlaF0STqcZTxwNBm0blys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y/z0uwkkir+rUxkHxSRHLIC7FAfEXv+OyB2WtWBhXqkrITJAOk5uycVDD4PulYdnI
-         MBXN14AhAJ4XK4XiYnYtlVcELSZKgJ7H58mF6/zE5U+gQW53MiOUDz8BeY3CreuOhQ
-         vwlO4nMO8Um8n4vkTlEBmJu0yTLcM4rI98lGssdIyZLz25FXCddPm8LHkydFeXZ/e9
-         qBgq1ohOyG9y+d+n1jYqs/vqpqa1xlCMxVeiFC2my9FhFU/tICwZVfHqUY20GhuZjQ
-         TTLS/yUvwayh4Czuj+z2mij4drrpXs2QgG1xoLTEgCVxh4dnnaYEqLw4jdcX0ONVVb
-         PgVtAwq/baweg==
+        b=AFr48vIvddL2lwATDzSMCp2F7/DIZ1IzSOVFzXHT34XLzslJTvhdCxGxFfjIU0LpW
+         4Vasy0gh0dm1gpkAHA7C1MITtbdEud3GZrZE+/iZbnQUTKUeUfLvszX2+4UOXOI0yZ
+         i0oCnaK/KLnZr+T7deVY79rJpZ0EUZFklfN9l2X+/6JSMhnappknC+rAF2Ps24JERd
+         etTkvoEk56SIvppW6d2h2Uf0WqZXkSoCh+bIr8lbKf46vi8AYHS6vYLaze+pQyBlht
+         2C917yHaZ9nGAYnDY7IqEwnXLWsyz8CUT01oN/18nrMm26Hmuw96tN5GSXgMS9dMDG
+         ejSb1Nsbl7ybg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
-        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.9 04/12] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
-Date:   Mon, 13 Jun 2022 22:10:32 -0400
-Message-Id: <20220614021040.1101131-4-sashal@kernel.org>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.18 2/6] KVM: x86: do not set st->preempted when going back to user space
+Date:   Mon, 13 Jun 2022 22:11:11 -0400
+Message-Id: <20220614021116.1101331-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614021040.1101131-1-sashal@kernel.org>
-References: <20220614021040.1101131-1-sashal@kernel.org>
+In-Reply-To: <20220614021116.1101331-1-sashal@kernel.org>
+References: <20220614021116.1101331-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,39 +54,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
+[ Upstream commit 54aa83c90198e68eee8b0850c749bc70efb548da ]
 
-A couple of the SX volume controls specify 0x84 as the lowest volume
-value, however the correct value from the datasheet is 0x44. The
-datasheet don't include spaces in the value it displays as binary so
-this was almost certainly just a typo reading 1000100.
+Similar to the Xen path, only change the vCPU's reported state if the vCPU
+was actually preempted.  The reason for KVM's behavior is that for example
+optimistic spinning might not be a good idea if the guest is doing repeated
+exits to userspace; however, it is confusing and unlikely to make a difference,
+because well-tuned guests will hardly ever exit KVM_RUN in the first place.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l56.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kvm/x86.c | 26 ++++++++++++++------------
+ arch/x86/kvm/xen.h |  6 ++++--
+ 2 files changed, 18 insertions(+), 14 deletions(-)
 
-diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
-index a2535a7eb4bb..f9f8a9112ff8 100644
---- a/sound/soc/codecs/cs42l56.c
-+++ b/sound/soc/codecs/cs42l56.c
-@@ -405,9 +405,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
- 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 36453517e847..165e2912995f 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4648,19 +4648,21 @@ void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
+ {
+ 	int idx;
  
- 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
--			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
- 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
--			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
+-	if (vcpu->preempted && !vcpu->arch.guest_state_protected)
+-		vcpu->arch.preempted_in_kernel = !static_call(kvm_x86_get_cpl)(vcpu);
++	if (vcpu->preempted) {
++		if (!vcpu->arch.guest_state_protected)
++			vcpu->arch.preempted_in_kernel = !static_call(kvm_x86_get_cpl)(vcpu);
  
- 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
- 			0, 0x00, 1, tone_tlv),
+-	/*
+-	 * Take the srcu lock as memslots will be accessed to check the gfn
+-	 * cache generation against the memslots generation.
+-	 */
+-	idx = srcu_read_lock(&vcpu->kvm->srcu);
+-	if (kvm_xen_msr_enabled(vcpu->kvm))
+-		kvm_xen_runstate_set_preempted(vcpu);
+-	else
+-		kvm_steal_time_set_preempted(vcpu);
+-	srcu_read_unlock(&vcpu->kvm->srcu, idx);
++		/*
++		 * Take the srcu lock as memslots will be accessed to check the gfn
++		 * cache generation against the memslots generation.
++		 */
++		idx = srcu_read_lock(&vcpu->kvm->srcu);
++		if (kvm_xen_msr_enabled(vcpu->kvm))
++			kvm_xen_runstate_set_preempted(vcpu);
++		else
++			kvm_steal_time_set_preempted(vcpu);
++		srcu_read_unlock(&vcpu->kvm->srcu, idx);
++	}
+ 
+ 	static_call(kvm_x86_vcpu_put)(vcpu);
+ 	vcpu->arch.last_host_tsc = rdtsc();
+diff --git a/arch/x86/kvm/xen.h b/arch/x86/kvm/xen.h
+index adbcc9ed59db..fda1413f8af9 100644
+--- a/arch/x86/kvm/xen.h
++++ b/arch/x86/kvm/xen.h
+@@ -103,8 +103,10 @@ static inline void kvm_xen_runstate_set_preempted(struct kvm_vcpu *vcpu)
+ 	 * behalf of the vCPU. Only if the VMM does actually block
+ 	 * does it need to enter RUNSTATE_blocked.
+ 	 */
+-	if (vcpu->preempted)
+-		kvm_xen_update_runstate_guest(vcpu, RUNSTATE_runnable);
++	if (WARN_ON_ONCE(!vcpu->preempted))
++		return;
++
++	kvm_xen_update_runstate_guest(vcpu, RUNSTATE_runnable);
+ }
+ 
+ /* 32-bit compatibility definitions, also used natively in 32-bit build */
 -- 
 2.35.1
 
