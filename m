@@ -2,124 +2,284 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EDB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BECA5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345290AbiFNW3M (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 18:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53730 "EHLO
+        id S244276AbiFNWb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 18:31:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345198AbiFNW3A (ORCPT
+        with ESMTP id S1350908AbiFNW22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 18:29:00 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761A652526
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 15:28:59 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id mh16-20020a17090b4ad000b001e8313301f1so2094346pjb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 15:28:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KRnsDnmzLVNJLD4XQT4OOkfWd3Wv3kaVliobD56LDKY=;
-        b=eeK29CNLmpmnGvffPElFI3R5kizjdYTm2bmjh3/DAtzRv4bxOEbQtqE0k+ChAX8hPf
-         BdhRkSeyr0admaHZEvD8srfe/iRbFt2VSGfoVBL/CepvGCqAde+/m2WJSuQTyzMSSKWI
-         bm2R37DaoGnSuaDulrkvjmT4YcyK9tZN5f+4xihtv73rOLWxgheTePZyjXVafO3kRfDx
-         KbIgjzGONeT6zfgdCRJoamh5GQ1+eM6MgqzhoQK2nLq/QIG3PY6DCHU/3Av+ZHxHHPo+
-         9wiIlwS1ynUbq7L9V2zB9dD37ek9s2NoG5NgEbUPyqqctLiGbCiHE5EctHu9GckDdfH+
-         v5hQ==
+        Tue, 14 Jun 2022 18:28:28 -0400
+Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97CF4AE37;
+        Tue, 14 Jun 2022 15:27:57 -0700 (PDT)
+Received: by mail-io1-f50.google.com with SMTP id h8so10893707iof.11;
+        Tue, 14 Jun 2022 15:27:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=KRnsDnmzLVNJLD4XQT4OOkfWd3Wv3kaVliobD56LDKY=;
-        b=I2dHyfoBgK1r25xGmdItU6YSPd1GUSO0YBPAdkkPFjlzmSqzsSp6KMgP19a1FOQWM2
-         tn9IQtl705fT61LLbT81ZoQGNgD+2H4tg5ZqrdDVbCYpZRPTrYApV1883ijOY5w82r3q
-         zv70u010Eq01YUQgofs8wL+YZ74PlfULGsiNRGOmTUIAV2tVO6G4Cdl0QgkCCfNBkc56
-         aEGqwT5umXa2lklUsx+22kIjvgIwnJ6SxbBWLW71nrjhRXp1Jyq/YnS3gvZvtJFrdki0
-         OBh68qZ65j1AA1sLci+bOVjllz16ONhT8KobbwpEk0/gp3CHOSSVWtUHz6rGXWQ9uu2z
-         RuXw==
-X-Gm-Message-State: AJIora8mya4rehJ8zW+d8m96LSVZsW30lYTJ+geYtJob1KNP6qU4dSgG
-        VcFaqP7O43ukVe9A6Dy2z40pyg==
-X-Google-Smtp-Source: AGRyM1v+i/wHlb7BJZUwkeZoDYuk2cZeUxb+qwT1JnX5NVO7/5IejyC4N3W0/iW3bCy4FUzjTlNAtQ==
-X-Received: by 2002:a17:90b:4c0c:b0:1ea:87ef:546a with SMTP id na12-20020a17090b4c0c00b001ea87ef546amr6724342pjb.209.1655245738693;
-        Tue, 14 Jun 2022 15:28:58 -0700 (PDT)
-Received: from p14s ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id c3-20020a170902d90300b00163c0a1f718sm7746920plz.303.2022.06.14.15.28.56
+        bh=ijnM6qqps/61JEPhDY+exeWmv8F27GG2ZRzYNTTkDdI=;
+        b=YluoaUQFF5biecY8bQJWsyqOTFmtP7gVIV/xDz/hCPB60wg9F4wKIH+Je12VIrsnqr
+         AT/bANsbnkX77La+0zsYP2NVs4LQzE6Ew8gNhUYHByI8vG/uaSUDTb+vy3LNPIPRauNr
+         tavW1Xhwq2wp6r6cTMwipCt53IAm1HQ2Bpip8QJ4SyLJYRFcHSyUPsnJdU4ydAr6UfML
+         BXw5UFfU3HtBDr/HwE3bgd4S23KGPL1SH1ZMhsaVR/mjx5CQl6xZeAYCkNadXz+5xEnn
+         ESsH4TgAW2lGSp42ym4KtPIUmm0NDJpnhwx1AaC6+vR82uJ1iM9vZqzCudXk8UBd0POp
+         sxwQ==
+X-Gm-Message-State: AOAM532YwRGC45fuTX0xpFeF1TAMiO5j7NIGbev3U13cBsTY1der70Tu
+        cpEM6595PuwMAPGpOXZ53Q==
+X-Google-Smtp-Source: ABdhPJzbTj6BQ/OtQQ/H0TzS/7EgQ4bX0DXg7IDkhc9vrhCiPRjg/U1m4E4hYebaesNmCw3R6N/RTA==
+X-Received: by 2002:a05:6638:d4d:b0:333:1aea:4b9f with SMTP id d13-20020a0566380d4d00b003331aea4b9fmr3988177jak.149.1655245676867;
+        Tue, 14 Jun 2022 15:27:56 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id s4-20020a056e02020400b002d3da8e4af5sm6212682ilr.23.2022.06.14.15.27.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 15:28:57 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 16:28:54 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Shengjiu Wang <shengjiu.wang@nxp.com>
-Cc:     bjorn.andersson@linaro.org, arnaud.pouliquen@foss.st.com,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shengjiu.wang@gmail.com
-Subject: Re: [RESEND PATCH] rpmsg: char: Add mutex protection for
- rpmsg_eptdev_open()
-Message-ID: <20220614222854.GA1236509@p14s>
-References: <1653104105-16779-1-git-send-email-shengjiu.wang@nxp.com>
+        Tue, 14 Jun 2022 15:27:56 -0700 (PDT)
+Received: (nullmailer pid 2841909 invoked by uid 1000);
+        Tue, 14 Jun 2022 22:27:54 -0000
+Date:   Tue, 14 Jun 2022 16:27:54 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 17/23] dt-bindings: ata: ahci: Add DWC AHCI SATA
+ controller DT schema
+Message-ID: <20220614222754.GA2830345-robh@kernel.org>
+References: <20220610081801.11854-1-Sergey.Semin@baikalelectronics.ru>
+ <20220610081801.11854-18-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1653104105-16779-1-git-send-email-shengjiu.wang@nxp.com>
+In-Reply-To: <20220610081801.11854-18-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 21, 2022 at 11:35:05AM +0800, Shengjiu Wang wrote:
-> There is no mutex protection for rpmsg_eptdev_open(),
-> especially for eptdev->ept read and write operation.
-> It may cause issues when multiple instances call
-> rpmsg_eptdev_open() in parallel,the return state
-> may be success or EBUGY.
+On Fri, Jun 10, 2022 at 11:17:55AM +0300, Serge Semin wrote:
+> Synopsys AHCI SATA controller is mainly compatible with the generic AHCI
+> SATA controller except a few peculiarities and the platform environment
+> requirements. In particular it can have one or two reference clocks to
+> feed up its AXI/AHB interface and SATA PHYs domain and at least one reset
+> control for the application clock domain. In addition to that the DMA
+> interface of each port can be tuned up to work with the predefined maximum
+> data chunk size. Note unlike generic AHCI controller DWC AHCI can't have
+> more than 8 ports. All of that is reflected in the new DWC AHCI SATA
+> device DT binding.
 > 
-> Fixes: 964e8bedd5a1 ("rpmsg: char: Return an error if device already open")
-> Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+> Note the DWC AHCI SATA controller DT-schema has been created in a way so
+> to be reused for the vendor-specific DT-schemas (see for example the
+> "snps,dwc-ahci" compatible string binding). One of which we are about to
+> introduce.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> 
 > ---
-> changes in resend:
-> - add fixes tag
 > 
->  drivers/rpmsg/rpmsg_char.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-
-I have applied your patch.
-
-Thanks,
-Mathieu
-
+> Changelog v2:
+> - Replace min/max constraints of the snps,{tx,rx}-ts-max property with
+>   enum [ 1, 2, 4, ..., 1024 ]. (@Rob)
 > 
-> diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
-> index b6183d4f62a2..4f2189111494 100644
-> --- a/drivers/rpmsg/rpmsg_char.c
-> +++ b/drivers/rpmsg/rpmsg_char.c
-> @@ -120,8 +120,11 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
->  	struct rpmsg_device *rpdev = eptdev->rpdev;
->  	struct device *dev = &eptdev->dev;
+> Changelog v4:
+> - Decrease the "additionalProperties" property identation otherwise it's
+>   percieved as the node property instead of the key one. (@Rob)
+> - Use the ahci-port properties definition from the AHCI common schema
+>   in order to extend it with DWC AHCI SATA port properties. (@Rob)
+> - Remove the Hannes' rb tag since the patch content has changed.
+> ---
+>  .../bindings/ata/ahci-platform.yaml           |   8 --
+>  .../bindings/ata/snps,dwc-ahci.yaml           | 129 ++++++++++++++++++
+>  2 files changed, 129 insertions(+), 8 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/ata/ahci-platform.yaml b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
+> index e19cf9828e68..7dc2a2e8f598 100644
+> --- a/Documentation/devicetree/bindings/ata/ahci-platform.yaml
+> +++ b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
+> @@ -30,8 +30,6 @@ select:
+>            - marvell,armada-3700-ahci
+>            - marvell,armada-8k-ahci
+>            - marvell,berlin2q-ahci
+> -          - snps,dwc-ahci
+> -          - snps,spear-ahci
+>    required:
+>      - compatible
 >  
-> -	if (eptdev->ept)
-> +	mutex_lock(&eptdev->ept_lock);
-> +	if (eptdev->ept) {
-> +		mutex_unlock(&eptdev->ept_lock);
->  		return -EBUSY;
-> +	}
+> @@ -48,17 +46,11 @@ properties:
+>                - marvell,berlin2-ahci
+>                - marvell,berlin2q-ahci
+>            - const: generic-ahci
+> -      - items:
+> -          - enum:
+> -              - rockchip,rk3568-dwc-ahci
+> -          - const: snps,dwc-ahci
+>        - enum:
+>            - cavium,octeon-7130-ahci
+>            - hisilicon,hisi-ahci
+>            - ibm,476gtr-ahci
+>            - marvell,armada-3700-ahci
+> -          - snps,dwc-ahci
+> -          - snps,spear-ahci
 >  
->  	get_device(dev);
->  
-> @@ -137,11 +140,13 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
->  	if (!ept) {
->  		dev_err(dev, "failed to open %s\n", eptdev->chinfo.name);
->  		put_device(dev);
-> +		mutex_unlock(&eptdev->ept_lock);
->  		return -EINVAL;
->  	}
->  
->  	eptdev->ept = ept;
->  	filp->private_data = eptdev;
-> +	mutex_unlock(&eptdev->ept_lock);
->  
->  	return 0;
->  }
+>    reg:
+>      minItems: 1
+> diff --git a/Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml b/Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml
+> new file mode 100644
+> index 000000000000..af78f6c9b857
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml
+> @@ -0,0 +1,129 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/ata/snps,dwc-ahci.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Synopsys DWC AHCI SATA controller
+> +
+> +maintainers:
+> +  - Serge Semin <fancer.lancer@gmail.com>
+> +
+> +description:
+> +  This document defines device tree bindings for the Synopsys DWC
+> +  implementation of the AHCI SATA controller.
+> +
+> +allOf:
+> +  - $ref: ahci-common.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - description: Synopsys AHCI SATA-compatible devices
+> +        contains:
+> +          const: snps,dwc-ahci
+> +      - description: SPEAr1340 AHCI SATA device
+> +        const: snps,spear-ahci
+> +      - description: Rockhip RK3568 ahci controller
+> +        const: rockchip,rk3568-dwc-ahci
+
+This is never true because there is a fallback. We should keep what we 
+had before.
+
+
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    description:
+> +      Basic DWC AHCI SATA clock sources like application AXI/AHB BIU clock
+> +      and embedded PHYs reference clock together with vendor-specific set
+> +      of clocks.
+> +    minItems: 1
+> +    maxItems: 4
+> +
+> +  clock-names:
+> +    contains:
+> +      anyOf:
+> +        - description: Application AXI/AHB BIU clock source
+> +          enum:
+> +            - aclk
+> +            - sata
+> +        - description: SATA Ports reference clock
+> +          enum:
+> +            - ref
+> +            - sata_ref
+> +
+> +  resets:
+> +    description:
+> +      At least basic core and application clock domains reset is normally
+> +      supported by the DWC AHCI SATA controller. Some platform specific
+> +      clocks can be also specified though.
+
+s/clocks/resets/ ?
+
+This allows any number of resets which isn't great. I think this schema 
+should just be the 'simple' cases where there's only 1 reset and 1 
+clock (or how many the DWC block actually has if you have that info). 
+More complicated cases get there own schema.
+
+> +
+> +  reset-names:
+> +    contains:
+> +      description: Core and application clock domains reset control
+> +      const: arst
+> +
+> +patternProperties:
+> +  "^sata-port@[0-9a-e]$":
+> +    $ref: '#/$defs/dwc-ahci-port'
+> +
+> +    unevaluatedProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +
+> +unevaluatedProperties: false
+> +
+> +$defs:
+> +  dwc-ahci-port:
+> +    $ref: /schemas/ata/ahci-common.yaml#/$defs/ahci-port
+> +
+> +    properties:
+> +      reg:
+> +        minimum: 0
+> +        maximum: 7
+> +
+> +      snps,tx-ts-max:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description: Maximal size of Tx DMA transactions in FIFO words
+> +        enum: [ 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 ]
+> +
+> +      snps,rx-ts-max:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description: Maximal size of Rx DMA transactions in FIFO words
+> +        enum: [ 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 ]
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/ata/ahci.h>
+> +
+> +    sata@122f0000 {
+> +      compatible = "snps,dwc-ahci";
+> +      reg = <0x122F0000 0x1ff>;
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
+> +
+> +      clocks = <&clock1>, <&clock2>;
+> +      clock-names = "aclk", "ref";
+> +
+> +      phys = <&sata_phy>;
+> +      phy-names = "sata-phy";
+> +
+> +      ports-implemented = <0x1>;
+> +
+> +      sata-port@0 {
+> +        reg = <0>;
+> +
+> +        hba-port-cap = <HBA_PORT_FBSCP>;
+> +
+> +        snps,tx-ts-max = <512>;
+> +        snps,rx-ts-max = <512>;
+> +      };
+> +    };
+> +...
 > -- 
-> 2.17.1
+> 2.35.1
+> 
 > 
