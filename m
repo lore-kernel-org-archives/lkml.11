@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3174CCCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5BA9CCA48E
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354839AbiFNCTd (ORCPT
+        id S1354931AbiFNCTf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54752 "EHLO
+        Mon, 13 Jun 2022 22:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354654AbiFNCO5 (ORCPT
+        with ESMTP id S1354688AbiFNCO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9710D3CA58;
-        Mon, 13 Jun 2022 19:08:56 -0700 (PDT)
+        Mon, 13 Jun 2022 22:14:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB4B3C484;
+        Mon, 13 Jun 2022 19:08:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E26D160EED;
-        Tue, 14 Jun 2022 02:08:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA8EC36B00;
-        Tue, 14 Jun 2022 02:08:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D49161019;
+        Tue, 14 Jun 2022 02:08:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85007C341C0;
+        Tue, 14 Jun 2022 02:08:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172522;
-        bh=4m8I5bsa9rUFm8cqQsgwl+vx1oK5Vr/2ogHeFYZGsRg=;
+        s=k20201202; t=1655172536;
+        bh=kPhGt68UYbMxmvBml7tLO2pug4dgiKx+pxPUPlsO/Rk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lq5LersDho4T/JHcFE99v2BEiQ+M8UDYLaoh8npVJC+TamabxQiNMfWz/fMMlw+Gx
-         T5IrlcSZYbV9zl6M2WatlY8OJ7+jI4N4vZQDLRlKi7bk6tprRFtAXl3NzOg7glafFM
-         2t2rTZwfRfko3aEJERkA6zaUl3+3tbh05KC4Pi9RMv7KVD1zZI+9negk2GRGoHztzo
-         BcxhabEbtWbDNi9P1Y/DPunwg+rSPGtdV7kNJPxovww8poM4F/odZjEOY+RL7mKYe7
-         VpTmyCKsfQTlPepF6Zu4hmc26Iwr9JDiZRqLIioaDe7yU4nH1058KqbOOL1Jys62sJ
-         J9Zbc/1xNY2gw==
+        b=jyz1ihuDnGrJY47+RAttUFwGmpoUVlhBx+VFMMrE8Tb+p8/vRrdQlRLWspnqM/PSo
+         RgbmEh4K49aGiT2xeIDCIO3dUAn54fHZUeRcHTd5BTJQ7RT9++vBRrVytzkSugtcA4
+         G2ey+nl2mLCETLByPehy/bNJpaYjt84Tm3AU3NpjyXIPOdmkp7PorHjto6/rQyuuAe
+         SQkKpik58z4lLwC57IcrrNW3EeIWwIRZ0P+QarhFvQpiYRVmrg15wT08o4j+z05Yhx
+         OkjTmXawwwr9UPMiDmatQ4G7vcgo4m25ji9rRAAwbO65Eo3y5MG1BKnDddwp2heWfx
+         LU3X6NueDWAPQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@avagotech.com,
-        dick.kennedy@avagotech.com, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 17/29] scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
-Date:   Mon, 13 Jun 2022 22:08:03 -0400
-Message-Id: <20220614020815.1099999-17-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        David Howells <dhowells@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, zyan@redhat.com,
+        sage@redhat.com, idryomov@gmail.com, linux-afs@lists.infradead.org,
+        ceph-devel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 27/29] netfs: gcc-12: temporarily disable '-Wattribute-warning' for now
+Date:   Mon, 13 Jun 2022 22:08:13 -0400
+Message-Id: <20220614020815.1099999-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
 References: <20220614020815.1099999-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,47 +56,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 336d63615466b4c06b9401c987813fd19bdde39b ]
+[ Upstream commit 507160f46c55913955d272ebf559d63809a8e560 ]
 
-After issuing a LIP, a specific target vendor does not ACC the FLOGI that
-lpfc sends.  However, it does send its own FLOGI that lpfc ACCs.  The
-target then establishes the port IDs by sending a PLOGI.  lpfc PLOGI_ACCs
-and starts the RPI registration for DID 0x000001.  The target then sends a
-LOGO to the fabric DID.  lpfc is currently treating the LOGO from the
-fabric DID as a link down and cleans up all the ndlps.  The ndlp for DID
-0x000001 is put back into NPR and discovery stops, leaving the port in
-stuck in bypassed mode.
+This is a pure band-aid so that I can continue merging stuff from people
+while some of the gcc-12 fallout gets sorted out.
 
-Change lpfc behavior such that if a LOGO is received for the fabric DID in
-PT2PT topology skip the lpfc_linkdown_port() routine and just move the
-fabric DID back to NPR.
+In particular, gcc-12 is very unhappy about the kinds of pointer
+arithmetic tricks that netfs does, and that makes the fortify checks
+trigger in afs and ceph:
 
-Link: https://lore.kernel.org/r/20220603174329.63777-7-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+  In function ‘fortify_memset_chk’,
+      inlined from ‘netfs_i_context_init’ at include/linux/netfs.h:327:2,
+      inlined from ‘afs_set_netfs_context’ at fs/afs/inode.c:61:2,
+      inlined from ‘afs_root_iget’ at fs/afs/inode.c:543:2:
+  include/linux/fortify-string.h:258:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
+    258 |                         __write_overflow_field(p_size_field, size);
+        |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+and the reason is that netfs_i_context_init() is passed a 'struct inode'
+pointer, and then it does
+
+        struct netfs_i_context *ctx = netfs_i_context(inode);
+
+        memset(ctx, 0, sizeof(*ctx));
+
+where that netfs_i_context() function just does pointer arithmetic on
+the inode pointer, knowing that the netfs_i_context is laid out
+immediately after it in memory.
+
+This is all truly disgusting, since the whole "netfs_i_context is laid
+out immediately after it in memory" is not actually remotely true in
+general, but is just made to be that way for afs and ceph.
+
+See for example fs/cifs/cifsglob.h:
+
+  struct cifsInodeInfo {
+        struct {
+                /* These must be contiguous */
+                struct inode    vfs_inode;      /* the VFS's inode record */
+                struct netfs_i_context netfs_ctx; /* Netfslib context */
+        };
+	[...]
+
+and realize that this is all entirely wrong, and the pointer arithmetic
+that netfs_i_context() is doing is also very very wrong and wouldn't
+give the right answer if netfs_ctx had different alignment rules from a
+'struct inode', for example).
+
+Anyway, that's just a long-winded way to say "the gcc-12 warning is
+actually quite reasonable, and our code happens to work but is pretty
+disgusting".
+
+This is getting fixed properly, but for now I made the mistake of
+thinking "the week right after the merge window tends to be calm for me
+as people take a breather" and I did a sustem upgrade.  And I got gcc-12
+as a result, so to continue merging fixes from people and not have the
+end result drown in warnings, I am fixing all these gcc-12 issues I hit.
+
+Including with these kinds of temporary fixes.
+
+Cc: Kees Cook <keescook@chromium.org>
+Cc: David Howells <dhowells@redhat.com>
+Link: https://lore.kernel.org/all/AEEBCF5D-8402-441D-940B-105AA718C71F@chromium.org/
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_nportdisc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/afs/inode.c  | 3 +++
+ fs/ceph/inode.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
-index e33f752318c1..1e22364a31fc 100644
---- a/drivers/scsi/lpfc/lpfc_nportdisc.c
-+++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
-@@ -857,7 +857,8 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
- 		lpfc_nvmet_invalidate_host(phba, ndlp);
+diff --git a/fs/afs/inode.c b/fs/afs/inode.c
+index 7e7a9454bcb9..942badb9b24b 100644
+--- a/fs/afs/inode.c
++++ b/fs/afs/inode.c
+@@ -25,6 +25,9 @@
+ #include "internal.h"
+ #include "afs_fs.h"
  
- 	if (ndlp->nlp_DID == Fabric_DID) {
--		if (vport->port_state <= LPFC_FDISC)
-+		if (vport->port_state <= LPFC_FDISC ||
-+		    vport->fc_flag & FC_PT2PT)
- 			goto out;
- 		lpfc_linkdown_port(vport);
- 		spin_lock_irq(shost->host_lock);
++// Temporary: netfs does disgusting things with inode pointers
++#pragma GCC diagnostic ignored "-Wattribute-warning"
++
+ static const struct inode_operations afs_symlink_inode_operations = {
+ 	.get_link	= page_get_link,
+ };
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index 76be50f6f041..394501d347f4 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -20,6 +20,9 @@
+ #include "cache.h"
+ #include <linux/ceph/decode.h>
+ 
++// Temporary: netfs does disgusting things with inode pointers
++#pragma GCC diagnostic ignored "-Wattribute-warning"
++
+ /*
+  * Ceph inode operations
+  *
 -- 
 2.35.1
 
