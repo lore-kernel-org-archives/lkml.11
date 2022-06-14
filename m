@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEAF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE5ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:15:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353352AbiFNCPZ (ORCPT
+        id S1353486AbiFNCP3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
+        Mon, 13 Jun 2022 22:15:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352975AbiFNCNO (ORCPT
+        with ESMTP id S1353281AbiFNCN0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:13:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F3A3916F;
-        Mon, 13 Jun 2022 19:07:40 -0700 (PDT)
+        Mon, 13 Jun 2022 22:13:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D3E3980C;
+        Mon, 13 Jun 2022 19:07:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BC61B81699;
-        Tue, 14 Jun 2022 02:07:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13AECC385A2;
-        Tue, 14 Jun 2022 02:07:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72D3960F28;
+        Tue, 14 Jun 2022 02:07:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9702AC34114;
+        Tue, 14 Jun 2022 02:07:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172459;
-        bh=Wb9zf+MdbLEL6269vRZQ5BnfGJNFA8u3ASZMRlx1A2o=;
+        s=k20201202; t=1655172455;
+        bh=35ASCPnS8+xGT0L0LVS2NYvX5iXNUglTyS4P5OUQwgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aRZ9vPQYGGojsa6O3Z0EPaWAGrqpkkF4xZ49bwMYgew9BEqv5BU7MpSBQP7TG8pBl
-         0ihtS4tnNLU35bhfVdWoLwW7hfkEj9lzsnrTg4VIpC+n1rVDKNd3pvg/IFM+i6+dMd
-         1pGkqBSABEHLFv/Q9ee8D1k5V2l6kgvdLIyNsHRspcrQy37TT59T5wxcDuxEWUo6dm
-         SUJW4SOHNYAEy0zJ9UJYjbeUNEQZBZ7+IwHkax3JHqvhVVaQPMifCts8c7WVgAQpoO
-         SpozCCuYX5FXmryXSbUknkg1J9A0z3vPMtOVXcawDzBNJ/6Xs3xQMhhp6sWCauemlu
-         rEneP9rrJGi5g==
+        b=WkscnIVOgqtfnZMuNGegEd/8zPJgKKit9Ttp/Mo7QAR64U816+nIMG3eWQPkJqIhA
+         LZvBNNF6nsEXF0kly6j0bARgepcAj1mjzK+ukDcxJnY76epdpXaZgZoDuWSOPmpaMQ
+         VSt9L3pf8WHrxMhHn/mhO5nkJewFdqt4TdEDYupQM7h1O2bIn3821TaQL/u1GunYxF
+         OxwbUbyTTpAlrgterdOY1Up8t0QZ0Ywg+lSA3XKAtYbj7bdSqFyyGnrtiqJ2LQ4ngq
+         p+wBLJ0jankuy35oM1fHzdzulygv3zv3+WEgrIr70lkk0/7MOqMDexpIgMeM3IANOO
+         byCO1LQP5ZTaQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
+Cc:     Adam Ford <aford173@gmail.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
         perex@perex.cz, tiwai@suse.com,
         patches@opensource.wolfsonmicro.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 18/41] ASoC: wm_adsp: Fix event generation for wm_adsp_fw_put()
-Date:   Mon, 13 Jun 2022 22:06:43 -0400
-Message-Id: <20220614020707.1099487-18-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 16/41] ASoC: wm8962: Fix suspend while playing music
+Date:   Mon, 13 Jun 2022 22:06:41 -0400
+Message-Id: <20220614020707.1099487-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
 References: <20220614020707.1099487-1-sashal@kernel.org>
@@ -54,37 +55,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit 2abdf9f80019e8244d3806ed0e1c9f725e50b452 ]
+[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
 
-Currently wm_adsp_fw_put() returns 0 rather than 1 when updating the value
-of the control, meaning that no event is generated to userspace. Fix this
-by setting the default return value to 1, the code already exits early with
-a return value of 0 if the value is unchanged.
+If the audio CODEC is playing sound when the system is suspended,
+it can be left in a state which throws the following error:
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Richard Fitzgerald <rf@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220603115003.3865834-1-broonie@kernel.org
+wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
+
+Once this error has occurred, the audio will not work again until rebooted.
+
+Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
+
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm_adsp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/wm8962.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
-index f7c800927cb2..08fc1a025b1a 100644
---- a/sound/soc/codecs/wm_adsp.c
-+++ b/sound/soc/codecs/wm_adsp.c
-@@ -794,7 +794,7 @@ int wm_adsp_fw_put(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	struct wm_adsp *dsp = snd_soc_component_get_drvdata(component);
--	int ret = 0;
-+	int ret = 1;
+diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
+index ba16bdf9e478..a5a4ae4440cc 100644
+--- a/sound/soc/codecs/wm8962.c
++++ b/sound/soc/codecs/wm8962.c
+@@ -3867,6 +3867,7 @@ static int wm8962_runtime_suspend(struct device *dev)
+ #endif
  
- 	if (ucontrol->value.enumerated.item[0] == dsp[e->shift_l].fw)
- 		return 0;
+ static const struct dev_pm_ops wm8962_pm = {
++	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
+ 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
+ };
+ 
 -- 
 2.35.1
 
