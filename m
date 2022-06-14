@@ -2,138 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE39C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E5B4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:51:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358152AbiFNSvJ (ORCPT
+        id S1358295AbiFNSvO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43016 "EHLO
+        Tue, 14 Jun 2022 14:51:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358136AbiFNSuK (ORCPT
+        with ESMTP id S1357929AbiFNSuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:50:10 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DA14F1CA
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:45:29 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id x4so9318071pfj.10
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:45:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=16pqE78FIa7Vn0gONS3Mr3i/kFD37bxENtXTZbSNIFQ=;
-        b=VKKn8qJyhwod3mgi0CI6lP3Ur7bQ6AY1/ev0p6s562DDaxLbNSbrJuw2f98+u9MmXt
-         8jIjJ0fqlYujWH4pQjpzCuysA0HRkcLOOFP7bEbDNvgTDdKGy1ALbQpGfQJodFG1E3yC
-         J+Tvo/i52kgWubacs1M2uV4qt4ctU5pTRtdEfyQtpZ8bfwv0C6TsmutMsV6CYJ6vzfwA
-         9hriFxIO3xllf8tljqu8iNCXCLjnvgdBVzXAG02pz5XwZ237wCmXq4e0jBiOOFOmXXVh
-         V/Rd8Sw17yqb0BVujRMXTKLP/XsQbp4mBRHzcvcKX2wNeGsGsopInbREKFGXE/dKhU5L
-         kNjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=16pqE78FIa7Vn0gONS3Mr3i/kFD37bxENtXTZbSNIFQ=;
-        b=gVF/yNtu8ABoTJUxu4Mi7OU4lgXN6sv+n76EXl1oKdf2f1Wj7H0aEp3GsbwrxFCiI5
-         VSP4J9qhCkAQaotLGYBqqNhn9PGuSLPcXc1rZflCeWuW7uC/Dmquk0Ke3v05kaSpiiyD
-         yLtfNWXv1tSYvaW9wOQopVua08CzK9FHo9VVytDpiA/hT8wznmrU1cjxWXWmuNoL073Z
-         P+Sm0FbA0wj/9VeD2SbgfuAvR/UVKKGZeFn1D0WdwNjkPnCLMAIDONC34dmMVr0EUUYo
-         xfneIOB+mTSfKGAqKZUk673MNOdZlm8zHytVED01zftdvYWRhfcpnLdlEjKifoK/qB6H
-         3UDQ==
-X-Gm-Message-State: AOAM530Y7zSbJkg6EvCs7bJ+H1P2o1rU4l22bU6FfYMn129dPxqH6Lgf
-        jlRI+pvcT57fGXgS+TBTt5zapg==
-X-Google-Smtp-Source: ABdhPJxB9munx6OcvzcGf4InmtZO8eaosh9UBWh4dIEDauGg41G+tx8wlbCns8L0ZfmE/wMq7zbYNQ==
-X-Received: by 2002:a63:a0e:0:b0:3fd:a62e:fa5f with SMTP id 14-20020a630a0e000000b003fda62efa5fmr5692170pgk.126.1655232328628;
-        Tue, 14 Jun 2022 11:45:28 -0700 (PDT)
-Received: from google.com (249.189.233.35.bc.googleusercontent.com. [35.233.189.249])
-        by smtp.gmail.com with ESMTPSA id x8-20020a170902a38800b001640537511esm7528770pla.71.2022.06.14.11.45.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 11:45:27 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 18:45:24 +0000
-From:   William McVicker <willmcvicker@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>, Tejun Heo <tj@kernel.org>,
-        kernel-team@android.com, Christoph Hellwig <hch@lst.de>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] sysfs: fix sysfs_kf_seq_show null pointer dereference
-Message-ID: <YqjXRMg2HZyk7+Cl@google.com>
-References: <20220614172401.3010509-1-willmcvicker@google.com>
- <YqjFPxuPO6SZuvg2@kroah.com>
+        Tue, 14 Jun 2022 14:50:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8454A4F1DD;
+        Tue, 14 Jun 2022 11:45:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0C7C617F4;
+        Tue, 14 Jun 2022 18:45:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B02E0C385A5;
+        Tue, 14 Jun 2022 18:45:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655232329;
+        bh=2zWyVM28cNK43QaCfHg0mwdo6n7E74a4xXRNKUIbhDc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MEeyb2fMw2UuNwlJ/cyPXWGrYesjE1+kfh1eob/EJ44gHKdHuDDFyEoFOZdh4UvLp
+         L6qAWv+oCIo0gfdBhs2ZtI+F0NI1p95/Q8nnw+j0YtCvmTD5Tb1zh1cF028EO6S7TZ
+         kofLsskuTJIY+jtIIQFWidxZFybax3u6Y4aSGQac=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.15 00/11] 5.15.48-rc1 review
+Date:   Tue, 14 Jun 2022 20:40:29 +0200
+Message-Id: <20220614183720.512073672@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqjFPxuPO6SZuvg2@kroah.com>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.48-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.15.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.15.48-rc1
+X-KernelTest-Deadline: 2022-06-16T18:37+00:00
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/14/2022, Greg Kroah-Hartman wrote:
-> On Tue, Jun 14, 2022 at 05:24:01PM +0000, Will McVicker wrote:
-> > When the kobj->ktype is null,
-> 
-> How can that happen?  What in-tree code does that?
+This is the start of the stable review cycle for the 5.15.48 release.
+There are 11 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-This kernel panic happens randomly for me. The call trace shows that this
-happens when the read syscall is invoked by Android. GDB gave me this line when
-disassembling __arm64_sys_read+0x20/0x30:
+Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+Anything received after that time might be too late.
 
-fs/read_write.c:628
-SYSCALL_DEFINE3(read, unsigned int, fd, char __user *, buf, size_t, count)
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.48-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+and the diffstat can be found below.
 
-> 
-> > sysfs_file_ops() returns a NULL pointer
-> > for the sysfs_ops. When this happens, we hit a kernel panic in
-> > sysfs_kf_seq_show() by dereferencing ops to check if ->show is NULL.
-> > Based on commit 820879ee1865 ("sysfs: simplify sysfs_kf_seq_show"), it
-> > sounds like we won't hit this often, but I have randomly hit this on my
-> > Pixel 6 with 5.19-rc1. Refer to the crash stack below:
-> > 
-> >    Unable to handle kernel paging request at virtual address ...
-> >    Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> >    Hardware name: Oriole EVT 1.0 (DT)
-> >    pc : sysfs_kf_seq_show+0x3c/0x160
-> >    lr : kernfs_seq_show+0x54/0xa0
-> >    Call trace:
-> >     sysfs_kf_seq_show+0x3c/0x160
-> >     kernfs_seq_show+0x54/0xa0
-> >     seq_read_iter+0x17c/0x638
-> >     kernfs_fop_read_iter+0x70/0x1f4
-> >     vfs_read+0x240/0x36c
-> >     ksys_read+0x7c/0xf0
-> >     __arm64_sys_read+0x20/0x30
-> >     invoke_syscall+0x60/0x150
-> >     el0_svc_common+0xb8/0x100
-> >     do_el0_svc+0x30/0xd4
-> >     el0_svc+0x30/0xc0
-> >     el0t_64_sync_handler+0x88/0xf8
-> >     el0t_64_sync+0x1a0/0x1a4
-> > 
-> > Fixes: 820879ee1865 ("sysfs: simplify sysfs_kf_seq_show")
-> > Signed-off-by: Will McVicker <willmcvicker@google.com>
-> > ---
-> >  fs/sysfs/file.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
-> > index a12ac0356c69..f09f86f10410 100644
-> > --- a/fs/sysfs/file.c
-> > +++ b/fs/sysfs/file.c
-> > @@ -45,7 +45,7 @@ static int sysfs_kf_seq_show(struct seq_file *sf, void *v)
-> >  	ssize_t count;
-> >  	char *buf;
-> >  
-> > -	if (WARN_ON_ONCE(!ops->show))
-> > +	if (WARN_ON_ONCE(!ops || !ops->show))
-> >  		return -EINVAL;
-> 
-> Seems reasonable, but I want to track down how ops can be NULL here
-> under normal operation.
+thanks,
 
-Let me try to follow the code path through the call trace to see if I can track
-down how ops could be NULL. It appears we could have hit this before commit
-820879ee1865 ("sysfs: simplify sysfs_kf_seq_show") as well.
+greg k-h
 
-> 
-> thanks,
-> 
-> greg k-h
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.15.48-rc1
+
+Josh Poimboeuf <jpoimboe@kernel.org>
+    x86/speculation/mmio: Print SMT warning
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    KVM: x86/speculation: Disable Fill buffer clear within guests
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Reuse SRBDS mitigation for SBDS
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/srbds: Update SRBDS mitigation selection
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Add sysfs reporting for Processor MMIO Stale Data
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Enable CPU Fill buffer clearing on idle
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/bugs: Group MDS, TAA & Processor MMIO Stale Data mitigations
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Add mitigation for Processor MMIO Stale Data
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation: Add a common function for MD_CLEAR mitigation update
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    x86/speculation/mmio: Enumerate Processor MMIO Stale Data bug
+
+Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+    Documentation: Add documentation for Processor MMIO Stale Data
+
+
+-------------
+
+Diffstat:
+
+ Documentation/ABI/testing/sysfs-devices-system-cpu |   1 +
+ Documentation/admin-guide/hw-vuln/index.rst        |   1 +
+ .../hw-vuln/processor_mmio_stale_data.rst          | 246 +++++++++++++++++++++
+ Documentation/admin-guide/kernel-parameters.txt    |  36 +++
+ Makefile                                           |   4 +-
+ arch/x86/include/asm/cpufeatures.h                 |   1 +
+ arch/x86/include/asm/msr-index.h                   |  25 +++
+ arch/x86/include/asm/nospec-branch.h               |   2 +
+ arch/x86/kernel/cpu/bugs.c                         | 235 +++++++++++++++++---
+ arch/x86/kernel/cpu/common.c                       |  52 ++++-
+ arch/x86/kvm/vmx/vmx.c                             |  72 ++++++
+ arch/x86/kvm/vmx/vmx.h                             |   2 +
+ arch/x86/kvm/x86.c                                 |   3 +
+ drivers/base/cpu.c                                 |   8 +
+ include/linux/cpu.h                                |   3 +
+ tools/arch/x86/include/asm/cpufeatures.h           |   1 +
+ tools/arch/x86/include/asm/msr-index.h             |  25 +++
+ 17 files changed, 676 insertions(+), 41 deletions(-)
+
+
