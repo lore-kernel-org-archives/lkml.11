@@ -2,90 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B5BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF751CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 20:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234329AbiFNUpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 16:45:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34380 "EHLO
+        id S237537AbiFNUrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 16:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233371AbiFNUp1 (ORCPT
+        with ESMTP id S229585AbiFNUri (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 16:45:27 -0400
-Received: from mail-io1-f46.google.com (mail-io1-f46.google.com [209.85.166.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF9128E1E;
-        Tue, 14 Jun 2022 13:45:25 -0700 (PDT)
-Received: by mail-io1-f46.google.com with SMTP id 19so10659755iou.12;
-        Tue, 14 Jun 2022 13:45:25 -0700 (PDT)
+        Tue, 14 Jun 2022 16:47:38 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E818E1D0F3
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:47:36 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id a68-20020a25ca47000000b006605f788ff1so8482643ybg.16
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 13:47:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
+        bh=RNfsBnrb019GwwlDncDGa0smr28pomq7mA55AJKJhHI=;
+        b=R325LsRZneFNEFs8J6A6K9NT69ICE7hR+z6FsW/5Db9t8H6xLdqgyEpeRzkOBdLCO/
+         XQCmFcsCKJt7FSotMJUlI6ZBcOVL9BatykBhuM1yBHYmz3ZilAF4/D4eC2XkhNHdtAkJ
+         scgUUyd4ok2n2uXyg2qcJSVX809jw/dkHJEm8qde54teS95v+M3B8e5rIo/QaVzOtoSv
+         Rcqv2Rgt2kvMXuS1BvxVEvuxOy3DwocOX33yLWhfR3rpGcqZcPjMDZCQlgjJYTKE7W54
+         rCoffxIBjX7bY2L7ZhgeeEBK/6eTvKCUKnqePEQJHcg9mRv9oHzqhWmq9vLROZhuOVCB
+         S3yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GGYmomEIPWiGIqFRCO19qX9ba5T2sMGBWXRgciDZr6c=;
-        b=elbJQhFW5yQSzzYGsa5SRcnUSJTLcDoc3Y5U2Uf9/QcdTEB47dsRxVBmUQ7bwl6/cA
-         MzkdzoHx82CGR9U6yJxq/XZ6HObPdvnUKCkwsjYMp195OfXZdf9+mngagxtUXn8HlI9m
-         T21nveaq+rUQeFUI5BhgbiMWwENkkWN7H7+ZtYBQtW3+rCRyKNDO2NozdTq3WlUT8vxj
-         SyYiB9BJNynmtPgKZuW4ecCFgp3EILdk9NKmwv/35whzn2nKHeZe9l20KRmjEZtX9GVN
-         C2jjLf7YtFZMT2SsEy34K4YLTZSAOmxDSYULlorf6tuzp22fR2EBqawmpZ+lYVcCw119
-         uvuw==
-X-Gm-Message-State: AOAM530pzUG0Avw0j7/Wyp/jN8xGr0gaRGY3d4e38mTmRGQ4GDNEYqED
-        m+THnI7S1pEZ5oy4QI5Ypg==
-X-Google-Smtp-Source: ABdhPJw2AB9ZgFOPWqBNs7nRAT4ePVUiVt0DMGlQhs8AKGXiLV65876+Jq2I8iyns/vOZJW5zMmEng==
-X-Received: by 2002:a05:6638:2242:b0:331:8bfd:c864 with SMTP id m2-20020a056638224200b003318bfdc864mr3989048jas.214.1655239524890;
-        Tue, 14 Jun 2022 13:45:24 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id v2-20020a056602014200b0066a0c0beee7sm1840732iot.44.2022.06.14.13.45.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 13:45:24 -0700 (PDT)
-Received: (nullmailer pid 2498361 invoked by uid 1000);
-        Tue, 14 Jun 2022 20:45:22 -0000
-Date:   Tue, 14 Jun 2022 14:45:22 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Mao Jinlong <quic_jinlmao@quicinc.com>
-Cc:     Leo Yan <leo.yan@linaro.org>,
-        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        devicetree@vger.kernel.org,
-        Tingwei Zhang <quic_tingweiz@quicinc.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hao Zhang <quic_hazha@quicinc.com>,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        linux-arm-msm@vger.kernel.org,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Subject: Re: [PATCH v10 08/10] dt-bindings: arm: Adds CoreSight TPDA hardware
- definitions
-Message-ID: <20220614204522.GA2497116-robh@kernel.org>
-References: <20220611004331.7343-1-quic_jinlmao@quicinc.com>
- <20220611004331.7343-9-quic_jinlmao@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220611004331.7343-9-quic_jinlmao@quicinc.com>
+        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
+         :from:to:cc;
+        bh=RNfsBnrb019GwwlDncDGa0smr28pomq7mA55AJKJhHI=;
+        b=lGm8gVwrxV43gIxprJOZ564CKrP1jKGr90Mumn5aULH3gr0D0WsN1JPR03iUaIdVvg
+         57Y+1HnvIiYY34b5k/cCXpS+z1jxQqbl4QtVOna4E1qq29XKLdNuZ7rA06W7PgS7QzHR
+         vHXyAlG9CG1kR0lUC/1vsRHaY78PyTODKvfYyCGrnTfALc1ERXRJZ677qefP7GOlMtOb
+         c1C715pJ0N+xBEBd9XAFFpRFJHcMepm+NglBBDXNaAdb4loOLqG+eidtqRFJ+eo1GogR
+         bajs0ZmTlDDRNoqfxxDZuLIqxBAVXkqNS8B8Heohd6cGbzxFSkc45R0hQUJ493bUZt9f
+         SNdw==
+X-Gm-Message-State: AJIora98auvagY0GtHmRmAp78Lz/wzSgPqQ/HwJzIFFcdGfEOiQM1G2y
+        PGMbKVeN3SAj3PY+d86P42PAu8WDVGs=
+X-Google-Smtp-Source: AGRyM1vaT5geIv0+nQuGaH5hx7l6hUj5FbIN6ax9c/UTf8qAI7MTavn23/SMXsJJTDkFsNPPjKgejO8Ibpo=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a81:260a:0:b0:300:1729:7654 with SMTP id
+ m10-20020a81260a000000b0030017297654mr7643645ywm.125.1655239656113; Tue, 14
+ Jun 2022 13:47:36 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue, 14 Jun 2022 20:47:09 +0000
+Message-Id: <20220614204730.3359543-1-seanjc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH v2 00/21] KVM: x86: Event/exception fixes and cleanups
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
+        Peter Shier <pshier@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 11 Jun 2022 08:43:29 +0800, Mao Jinlong wrote:
-> Adds new coresight-tpda.yaml file describing the bindings required
-> to define tpda in the device trees.
-> 
-> Reviewed-by: Mike Leach <mike.leach@linaro.org>
-> Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
-> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
-> ---
->  .../bindings/arm/qcom,coresight-tpda.yaml     | 111 ++++++++++++++++++
->  MAINTAINERS                                   |   1 +
->  2 files changed, 112 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/qcom,coresight-tpda.yaml
-> 
+The main goal of this series is to fix KVM's longstanding bug of not
+honoring L1's exception intercepts wants when handling an exception that
+occurs during delivery of a different exception.  E.g. if L0 and L1 are
+using shadow paging, and L2 hits a #PF, and then hits another #PF while
+vectoring the first #PF due to _L1_ not having a shadow page for the IDT,
+KVM needs to check L1's intercepts before morphing the #PF => #PF => #DF
+so that the #PF is routed to L1, not injected into L2 as a #DF.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+nVMX has hacked around the bug for years by overriding the #PF injector
+for shadow paging to go straight to VM-Exit, and nSVM has started doing
+the same.  The hacks mostly work, but they're incomplete, confusing, and
+lead to other hacky code, e.g. bailing from the emulator because #PF
+injection forced a VM-Exit and suddenly KVM is back in L1.
+
+Everything leading up to that are related fixes and cleanups I encountered
+along the way; some through code inspection, some through tests.
+
+v2:
+  - Rebased to kvm/queue (commit 8baacf67c76c) + selftests CPUID
+    overhaul.
+    https://lore.kernel.org/all/20220614200707.3315957-1-seanjc@google.com
+  - Treat KVM_REQ_TRIPLE_FAULT as a pending exception.
+
+v1: https://lore.kernel.org/all/20220311032801.3467418-1-seanjc@google.com
+
+Sean Christopherson (21):
+  KVM: nVMX: Unconditionally purge queued/injected events on nested
+    "exit"
+  KVM: VMX: Drop bits 31:16 when shoving exception error code into VMCS
+  KVM: x86: Don't check for code breakpoints when emulating on exception
+  KVM: nVMX: Treat General Detect #DB (DR7.GD=1) as fault-like
+  KVM: nVMX: Prioritize TSS T-flag #DBs over Monitor Trap Flag
+  KVM: x86: Treat #DBs from the emulator as fault-like (code and
+    DR7.GD=1)
+  KVM: x86: Use DR7_GD macro instead of open coding check in emulator
+  KVM: nVMX: Ignore SIPI that arrives in L2 when vCPU is not in WFS
+  KVM: nVMX: Unconditionally clear mtf_pending on nested VM-Exit
+  KVM: VMX: Inject #PF on ENCLS as "emulated" #PF
+  KVM: x86: Rename kvm_x86_ops.queue_exception to inject_exception
+  KVM: x86: Make kvm_queued_exception a properly named, visible struct
+  KVM: x86: Formalize blocking of nested pending exceptions
+  KVM: x86: Use kvm_queue_exception_e() to queue #DF
+  KVM: x86: Hoist nested event checks above event injection logic
+  KVM: x86: Evaluate ability to inject SMI/NMI/IRQ after potential
+    VM-Exit
+  KVM: x86: Morph pending exceptions to pending VM-Exits at queue time
+  KVM: x86: Treat pending TRIPLE_FAULT requests as pending exceptions
+  KVM: VMX: Update MTF and ICEBP comments to document KVM's subtle
+    behavior
+  KVM: selftests: Use uapi header to get VMX and SVM exit reasons/codes
+  KVM: selftests: Add an x86-only test to verify nested exception
+    queueing
+
+ arch/x86/include/asm/kvm-x86-ops.h            |   2 +-
+ arch/x86/include/asm/kvm_host.h               |  35 +-
+ arch/x86/kvm/emulate.c                        |   3 +-
+ arch/x86/kvm/svm/nested.c                     | 102 ++---
+ arch/x86/kvm/svm/svm.c                        |  18 +-
+ arch/x86/kvm/vmx/nested.c                     | 319 +++++++++-----
+ arch/x86/kvm/vmx/sgx.c                        |   2 +-
+ arch/x86/kvm/vmx/vmx.c                        |  53 ++-
+ arch/x86/kvm/x86.c                            | 404 +++++++++++-------
+ arch/x86/kvm/x86.h                            |  11 +-
+ tools/testing/selftests/kvm/.gitignore        |   1 +
+ tools/testing/selftests/kvm/Makefile          |   1 +
+ .../selftests/kvm/include/x86_64/svm_util.h   |   7 +-
+ .../selftests/kvm/include/x86_64/vmx.h        |  51 +--
+ .../kvm/x86_64/nested_exceptions_test.c       | 295 +++++++++++++
+ 15 files changed, 886 insertions(+), 418 deletions(-)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/nested_exceptions_test.c
+
+
+base-commit: 816967202161955f398ce379f9cbbedcb1eb03cb
+-- 
+2.36.1.476.g0c4daa206d-goog
+
