@@ -2,142 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC33C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E88C7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:06:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238385AbiFNNFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 09:05:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
+        id S242486AbiFNNGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 09:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232691AbiFNNFa (ORCPT
+        with ESMTP id S232691AbiFNNGi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 09:05:30 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B789BDF89
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 06:05:29 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 72EE11F899;
-        Tue, 14 Jun 2022 13:05:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655211928; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l5MLiLIewYAuhnoSSewDxITeaWh65ALzvG8g23+AsnQ=;
-        b=XAKIbySfJeZlWAUb4XvzTdwWr6jaBJyunR3aCj3Y4AJ3reNnXfUYIorazWg7V8/i2MYkhk
-        iIbCg4DHno/OCqGLwq+dC209Rmk5BL4cBYpHxZ7V/pwsbDFl3+2Xrk9TZ7Rc6mrz5FST7a
-        bm2bb65Fpi13BVw9qfJtSuTXQWTwZO8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655211928;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l5MLiLIewYAuhnoSSewDxITeaWh65ALzvG8g23+AsnQ=;
-        b=bAtm/E8qWNtDo8C7WiG6NK/GYLAXvmm0ue8eoR0TEXWBPVNt/rgE2p4uliOiJq0J0dCUmM
-        i/OUR1TH97ND+WDA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 487851361C;
-        Tue, 14 Jun 2022 13:05:28 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id qBrrEJiHqGKeHgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Tue, 14 Jun 2022 13:05:28 +0000
-Message-ID: <c5a0e1e5-026a-19ba-ac5e-7a0012acd8ee@suse.cz>
-Date:   Tue, 14 Jun 2022 15:05:28 +0200
+        Tue, 14 Jun 2022 09:06:38 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCCD6164;
+        Tue, 14 Jun 2022 06:06:37 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LMpWf0TtFz67xv7;
+        Tue, 14 Jun 2022 21:02:54 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 15:06:34 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kpsingh@kernel.org>, <john.fastabend@gmail.com>,
+        <songliubraving@fb.com>, <kafai@fb.com>, <yhs@fb.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Joanne Koong <joannelkoong@gmail.com>
+Subject: [RESEND][PATCH v4 1/4] bpf: Export bpf_dynptr_get_size()
+Date:   Tue, 14 Jun 2022 15:06:18 +0200
+Message-ID: <20220614130621.1976089-2-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220614130621.1976089-1-roberto.sassu@huawei.com>
+References: <20220614130621.1976089-1-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 2/3] mm/slab: delete cache_alloc_debugcheck_before()
-Content-Language: en-US
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org
-References: <20220605152539.3196045-1-daniel.vetter@ffwll.ch>
- <20220605152539.3196045-2-daniel.vetter@ffwll.ch>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220605152539.3196045-2-daniel.vetter@ffwll.ch>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/5/22 17:25, Daniel Vetter wrote:
-> It only does a might_sleep_if(GFP_RECLAIM) check, which is already
-> covered by the might_alloc() in slab_pre_alloc_hook(). And all callers
-> of cache_alloc_debugcheck_before() call that beforehand already.
-> 
-> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-> Cc: Christoph Lameter <cl@linux.com>
-> Cc: Pekka Enberg <penberg@kernel.org>
-> Cc: David Rientjes <rientjes@google.com>
-> Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Vlastimil Babka <vbabka@suse.cz>
-> Cc: Roman Gushchin <roman.gushchin@linux.dev>
-> Cc: linux-mm@kvack.org
+Export bpf_dynptr_get_size(), so that kernel code dealing with eBPF dynamic
+pointers can obtain the real size of data carried by this data structure.
 
-Thanks, added to slab/for-5.20/cleanup as it's slab-specific and independent
-from 1/3 and 3/3.
+Cc: Joanne Koong <joannelkoong@gmail.com>
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+---
+ include/linux/bpf.h  | 1 +
+ kernel/bpf/helpers.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-> ---
->  mm/slab.c | 10 ----------
->  1 file changed, 10 deletions(-)
-> 
-> diff --git a/mm/slab.c b/mm/slab.c
-> index b04e40078bdf..75779ac5f5ba 100644
-> --- a/mm/slab.c
-> +++ b/mm/slab.c
-> @@ -2973,12 +2973,6 @@ static void *cache_alloc_refill(struct kmem_cache *cachep, gfp_t flags)
->  	return ac->entry[--ac->avail];
->  }
->  
-> -static inline void cache_alloc_debugcheck_before(struct kmem_cache *cachep,
-> -						gfp_t flags)
-> -{
-> -	might_sleep_if(gfpflags_allow_blocking(flags));
-> -}
-> -
->  #if DEBUG
->  static void *cache_alloc_debugcheck_after(struct kmem_cache *cachep,
->  				gfp_t flags, void *objp, unsigned long caller)
-> @@ -3219,7 +3213,6 @@ slab_alloc_node(struct kmem_cache *cachep, gfp_t flags, int nodeid, size_t orig_
->  	if (unlikely(ptr))
->  		goto out_hooks;
->  
-> -	cache_alloc_debugcheck_before(cachep, flags);
->  	local_irq_save(save_flags);
->  
->  	if (nodeid == NUMA_NO_NODE)
-> @@ -3304,7 +3297,6 @@ slab_alloc(struct kmem_cache *cachep, struct list_lru *lru, gfp_t flags,
->  	if (unlikely(objp))
->  		goto out;
->  
-> -	cache_alloc_debugcheck_before(cachep, flags);
->  	local_irq_save(save_flags);
->  	objp = __do_cache_alloc(cachep, flags);
->  	local_irq_restore(save_flags);
-> @@ -3541,8 +3533,6 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
->  	if (!s)
->  		return 0;
->  
-> -	cache_alloc_debugcheck_before(s, flags);
-> -
->  	local_irq_disable();
->  	for (i = 0; i < size; i++) {
->  		void *objp = kfence_alloc(s, s->object_size, flags) ?: __do_cache_alloc(s, flags);
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 8e6092d0ea95..6eb03a0c9687 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2420,5 +2420,6 @@ void bpf_dynptr_init(struct bpf_dynptr_kern *ptr, void *data,
+ 		     enum bpf_dynptr_type type, u32 offset, u32 size);
+ void bpf_dynptr_set_null(struct bpf_dynptr_kern *ptr);
+ int bpf_dynptr_check_size(u32 size);
++u32 bpf_dynptr_get_size(struct bpf_dynptr_kern *ptr);
+ 
+ #endif /* _LINUX_BPF_H */
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 225806a02efb..29e1810afaf6 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -1430,7 +1430,7 @@ static void bpf_dynptr_set_type(struct bpf_dynptr_kern *ptr, enum bpf_dynptr_typ
+ 	ptr->size |= type << DYNPTR_TYPE_SHIFT;
+ }
+ 
+-static u32 bpf_dynptr_get_size(struct bpf_dynptr_kern *ptr)
++u32 bpf_dynptr_get_size(struct bpf_dynptr_kern *ptr)
+ {
+ 	return ptr->size & DYNPTR_SIZE_MASK;
+ }
+-- 
+2.25.1
 
