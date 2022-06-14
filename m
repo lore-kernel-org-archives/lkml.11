@@ -2,552 +2,452 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65154C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5481C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236129AbiFNLD4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55888 "EHLO
+        id S241368AbiFNLEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 07:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230495AbiFNLDy (ORCPT
+        with ESMTP id S243277AbiFNLEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 07:03:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F7743EAB4;
+        Tue, 14 Jun 2022 07:04:04 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126A23EAA4;
+        Tue, 14 Jun 2022 04:03:56 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id m20so16383599ejj.10;
+        Tue, 14 Jun 2022 04:03:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3qivlV79zdER8caslPsaNrs1/3I18RVucM2ZcSuWZy0=;
+        b=JtGKhaAACq7J+ucB2crVZsY7vZFRyy9hUGV+zRv3ldGV64/ET7HD9ad2KMPWeVv9Qh
+         lSrTs7Fh3QtirXahYEPgmgIcj123RoAnSvLtCZrjsVxE8hrGrYnw37SvXCOV+2VBVED9
+         fgV1+nPgrkoo4FaECUy+Nz/7IK1LcFdgv5OLPRGlOMG1rwTDsht7pin1FvOjOdK7Won3
+         9x1y6ggGdPuksp6oBmf6NRuUpBsRZsSWxJq4Wc/GsyQktg3CB2lz5X7lKqX0z8WAHZ80
+         VzzQ2/Zn5iugIWHng/wm8fonqEAlB/nAgYM3LijtLwNyc+SXKG2LUsgXxCs2Kwa84757
+         gF6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3qivlV79zdER8caslPsaNrs1/3I18RVucM2ZcSuWZy0=;
+        b=Cdv/2uokPLjOygqbsyVQCVk5EOMwmxnxFiKJFvBTRYXDAfDHH5XARa5DXabtGApz5m
+         ASoJlSVBGS7M2r5F+Tfax2ImOqpo4eBmZkOWBg23Nt1ue8InQ0gucmtgTSKj4Ekk0S6M
+         oy4U38gRX8fGtX1wiW7UWDbQHsBMqxCuvYEJT+ZC586HEajWrLEeIWfcs3p4GLdVKGwZ
+         hoLvGOy5mfKCj7q5sfCShLlmXQB4CQ2V09XizSq/XIzVNM3icYQMAj67SxfJGEtQBjqo
+         zznRAlj+f1yvDx2crGEH9E3WCagn6hEWA8vjTIvhjPQVrA9WlQy/PCtPwRZJ7zDpsKyk
+         jIDA==
+X-Gm-Message-State: AOAM5316J5KNKMEzj0AMVr7BFYSWFF0q0beHJeqgKfFWAp7Nqcwf7lCL
+        /d5zCsuyxnuUf5FmqIT9TPs=
+X-Google-Smtp-Source: AGRyM1vSWwHRvENbiwCmGp/Zh6ybJ9z9U6dZaXoP9qp2fu8BNFtk9iDSkrcJ4rQacn3SrNtXPleMVQ==
+X-Received: by 2002:a17:907:7b85:b0:711:e42d:4955 with SMTP id ne5-20020a1709077b8500b00711e42d4955mr3774713ejc.482.1655204634336;
+        Tue, 14 Jun 2022 04:03:54 -0700 (PDT)
+Received: from anparri (host-79-55-35-126.retail.telecomitalia.it. [79.55.35.126])
+        by smtp.gmail.com with ESMTPSA id kb17-20020a170907925100b006f3ef214e63sm4901193ejb.201.2022.06.14.04.03.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 14 Jun 2022 04:03:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D10CCB817D7;
-        Tue, 14 Jun 2022 11:03:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41031C3411B;
-        Tue, 14 Jun 2022 11:03:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655204630;
-        bh=hFhEVStybwk1TJWBXwlTESQhpbrksyYRx+POKlCrPes=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lvHRygt50NjcZ+1vUVCjRfEZfpgjcE40VWtkv5gE9mrO9tiEqB8gEqS8zmlkq+apU
-         p+EqRahIfzP60o/CrfH0BOkdealx6VU40WmvITfkyp33lUwr+ZGieExe4OvIdWXSgO
-         YKBiUfOp+jmRwNDZIJ6UUv5F5LxdnzHzbDD+bFTWh9JI9U0mIrQlPWKXKO9bIK22oK
-         Y2PrpyV9wVFUC3aOPrydtSLXTBlVhYsP1HETZt8dA9QuBrt/GnFJbeu5cfPfYMJ0gb
-         J+qgC5YpBStqTT2Ust/DMhzsnTUNPYwbbPaZfFwhQsOdNX2Nozs8FOVRAR8T9IOvws
-         RHnG/wxPjQskA==
-Date:   Tue, 14 Jun 2022 12:13:02 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Syed Nayyar Waris <syednwaris@gmail.com>
-Subject: Re: [PATCH] counter: 104-quad-8: Implement and utilize register
- structures
-Message-ID: <20220614121302.27a13e4d@jic23-huawei>
-In-Reply-To: <20220601203629.73858-1-william.gray@linaro.org>
-References: <20220601203629.73858-1-william.gray@linaro.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+Date:   Tue, 14 Jun 2022 13:03:47 +0200
+From:   Andrea Parri <parri.andrea@gmail.com>
+To:     Guo Ren <guoren@kernel.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Subject: Re: [PATCH V4 5/5] riscv: atomic: Optimize LRSC-pairs atomic ops
+ with .aqrl annotation
+Message-ID: <20220614110258.GA32157@anparri>
+References: <CAJF2gTQoSQq_S4UvAiXgMviT040Ls8+VkDszQSke1a0zbXZ82A@mail.gmail.com>
+ <mhng-7a274375-0d99-41c8-98a3-853d110f62e9@palmer-ri-x1c9>
+ <CAJF2gTTXO42_TsZudaQuB9Re0teu__EZ11JZ96nktMqsQkMYNA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJF2gTTXO42_TsZudaQuB9Re0teu__EZ11JZ96nktMqsQkMYNA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  1 Jun 2022 16:36:29 -0400
-William Breathitt Gray <william.gray@linaro.org> wrote:
+Guo,
 
-> Reduce magic numbers and improve code readability by implementing and
-> utilizing named register data structures.
+On Mon, Jun 13, 2022 at 07:49:50PM +0800, Guo Ren wrote:
+> On Thu, Jun 2, 2022 at 1:59 PM Palmer Dabbelt <palmer@dabbelt.com> wrote:
+> >
+> > On Sun, 22 May 2022 06:12:56 PDT (-0700), guoren@kernel.org wrote:
+> > > On Sun, May 22, 2022 at 4:46 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
+> > >>
+> > >> On Wed, 04 May 2022 20:55:26 PDT (-0700), guoren@kernel.org wrote:
+> > >> > From: Guo Ren <guoren@linux.alibaba.com>
+> > >> >
+> > >> > The current implementation is the same with 8e86f0b409a4
+> > >> > ("arm64: atomics: fix use of acquire + release for full barrier
+> > >> > semantics"). RISC-V could combine acquire and release into the SC
+> > >> > instructions and it could reduce a fence instruction to gain better
+> > >> > performance. Here is related descriptio from RISC-V ISA 10.2
+> > >> > Load-Reserved/Store-Conditional Instructions:
+> > >> >
+> > >> >  - .aq:   The LR/SC sequence can be given acquire semantics by
+> > >> >           setting the aq bit on the LR instruction.
+> > >> >  - .rl:   The LR/SC sequence can be given release semantics by
+> > >> >           setting the rl bit on the SC instruction.
+> > >> >  - .aqrl: Setting the aq bit on the LR instruction, and setting
+> > >> >           both the aq and the rl bit on the SC instruction makes
+> > >> >           the LR/SC sequence sequentially consistent, meaning that
+> > >> >           it cannot be reordered with earlier or later memory
+> > >> >           operations from the same hart.
+> > >> >
+> > >> >  Software should not set the rl bit on an LR instruction unless
+> > >> >  the aq bit is also set, nor should software set the aq bit on an
+> > >> >  SC instruction unless the rl bit is also set. LR.rl and SC.aq
+> > >> >  instructions are not guaranteed to provide any stronger ordering
+> > >> >  than those with both bits clear, but may result in lower
+> > >> >  performance.
+> > >> >
+> > >> > The only difference is when sc.w/d.aqrl failed, it would cause .aq
+> > >> > effect than before. But it's okay for sematic because overlap
+> > >> > address LR couldn't beyond relating SC.
+> > >>
+> > >> IIUC that's not accurate, or at least wasn't in 2018.  The ISA tends to
+> > >> drift around a bit, so it's possible things have changed since then.
+> > >> 5ce6c1f3535f ("riscv/atomic: Strengthen implementations with fences")
+> > > Thx for explaining, that why I suspected with the sentence in the comment:
+> > > "which do not give full-ordering with .aqrl"
+> >
+> > Sorry, I'm not quite sure what you're saying here.  My understanding is
+> > that this change results in mappings that violate LKMM, based on the
+> > rationale in that previous commit.  IIUC that all still holds, but I'm
+> > not really a memory model person so I frequently miss stuff around
+> > there.
+> 5ce6c1f3535f ("riscv/atomic: Strengthen implementations with fences")
+> is about fixup wrong spinlock/unlock implementation and not relate to
+> this patch.
+
+No.  The commit in question is evidence of the fact that the changes
+you are presenting here (as an optimization) were buggy/incorrect at
+the time in which that commit was worked out.
+
+
+> Actually, sc.w.aqrl is very strong and the same with:
+> fence rw, rw
+> sc.w
+> fence rw,rw
 > 
-> Cc: Syed Nayyar Waris <syednwaris@gmail.com>
-> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
-
-In this particular case this does clean up the + 1's scattered through
-the code to access the control registers so I'm more or less convinced
-readability is improved.  The access via an offset from a base is
-a very common pattern though in kernel drivers, so reviewers tend
-to be used to it, hence I'm not sure I'd want to see lots of drivers
-go this way.  Fine here though.
-
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
-> ---
->  drivers/counter/104-quad-8.c | 166 ++++++++++++++++++++---------------
->  1 file changed, 93 insertions(+), 73 deletions(-)
+> So "which do not give full-ordering with .aqrl" is not writen in
+> RISC-V ISA and we could use sc.w/d.aqrl with LKMM.
 > 
-> diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-> index 43dde9abfdcf..a1ec04313926 100644
-> --- a/drivers/counter/104-quad-8.c
-> +++ b/drivers/counter/104-quad-8.c
-> @@ -33,6 +33,36 @@ MODULE_PARM_DESC(irq, "ACCES 104-QUAD-8 interrupt line numbers");
->  
->  #define QUAD8_NUM_COUNTERS 8
->  
-> +/**
-> + * struct channel_reg - channel register structure
-> + * @data:	Count data
-> + * @control:	Channel flags and control
-> + */
-> +struct channel_reg {
-> +	u8 data;
-> +	u8 control;
-> +};
-> +
-> +/**
-> + * struct quad8_reg - device register structure
-> + * @channel:		quadrature counter data and control
-> + * @interrupt_status:	channel interrupt status
-> + * @channel_oper:	enable/reset counters and interrupt functions
-> + * @index_interrupt:	enable channel interrupts
-> + * @reserved:		reserved for Factory Use
-> + * @index_input_levels:	index signal logical input level
-> + * @cable_status:	differential encoder cable status
-> + */
-> +struct quad8_reg {
-> +	struct channel_reg channel[QUAD_NUM_COUNTERS];
-> +	u8 interrupt_status;
-> +	u8 channel_oper;
-> +	u8 index_interrupt;
-> +	u8 reserved[3];
-> +	u8 index_input_levels;
-> +	u8 cable_status;
-> +};
-> +
->  /**
->   * struct quad8 - device private data structure
->   * @lock:		lock to prevent clobbering device states during R/W ops
-> @@ -48,7 +78,7 @@ MODULE_PARM_DESC(irq, "ACCES 104-QUAD-8 interrupt line numbers");
->   * @synchronous_mode:	array of index function synchronous mode configurations
->   * @index_polarity:	array of index function polarity configurations
->   * @cable_fault_enable:	differential encoder cable status enable configurations
-> - * @base:		base port address of the device
-> + * @reg:		I/O address offset for the device registers
->   */
->  struct quad8 {
->  	spinlock_t lock;
-> @@ -63,14 +93,9 @@ struct quad8 {
->  	unsigned int synchronous_mode[QUAD8_NUM_COUNTERS];
->  	unsigned int index_polarity[QUAD8_NUM_COUNTERS];
->  	unsigned int cable_fault_enable;
-> -	void __iomem *base;
-> +	struct quad8_reg __iomem *reg;
->  };
->  
-> -#define QUAD8_REG_INTERRUPT_STATUS 0x10
-> -#define QUAD8_REG_CHAN_OP 0x11
-> -#define QUAD8_REG_INDEX_INTERRUPT 0x12
-> -#define QUAD8_REG_INDEX_INPUT_LEVELS 0x16
-> -#define QUAD8_DIFF_ENCODER_CABLE_STATUS 0x17
->  /* Borrow Toggle flip-flop */
->  #define QUAD8_FLAG_BT BIT(0)
->  /* Carry Toggle flip-flop */
-> @@ -118,8 +143,7 @@ static int quad8_signal_read(struct counter_device *counter,
->  	if (signal->id < 16)
->  		return -EINVAL;
->  
-> -	state = ioread8(priv->base + QUAD8_REG_INDEX_INPUT_LEVELS) &
-> -		BIT(signal->id - 16);
-> +	state = ioread8(&priv->reg->index_input_levels) & BIT(signal->id - 16);
->  
->  	*level = (state) ? COUNTER_SIGNAL_LEVEL_HIGH : COUNTER_SIGNAL_LEVEL_LOW;
->  
-> @@ -130,14 +154,14 @@ static int quad8_count_read(struct counter_device *counter,
->  			    struct counter_count *count, u64 *val)
->  {
->  	struct quad8 *const priv = counter_priv(counter);
-> -	void __iomem *const base_offset = priv->base + 2 * count->id;
-> +	struct channel_reg __iomem *const chan = priv->reg->channel + count->id;
->  	unsigned int flags;
->  	unsigned int borrow;
->  	unsigned int carry;
->  	unsigned long irqflags;
->  	int i;
->  
-> -	flags = ioread8(base_offset + 1);
-> +	flags = ioread8(&chan->control);
->  	borrow = flags & QUAD8_FLAG_BT;
->  	carry = !!(flags & QUAD8_FLAG_CT);
->  
-> @@ -148,10 +172,10 @@ static int quad8_count_read(struct counter_device *counter,
->  
->  	/* Reset Byte Pointer; transfer Counter to Output Latch */
->  	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP | QUAD8_RLD_CNTR_OUT,
-> -		 base_offset + 1);
-> +		 &chan->control);
->  
->  	for (i = 0; i < 3; i++)
-> -		*val |= (unsigned long)ioread8(base_offset) << (8 * i);
-> +		*val |= (unsigned long)ioread8(&chan->data) << (8 * i);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -162,7 +186,7 @@ static int quad8_count_write(struct counter_device *counter,
->  			     struct counter_count *count, u64 val)
->  {
->  	struct quad8 *const priv = counter_priv(counter);
-> -	void __iomem *const base_offset = priv->base + 2 * count->id;
-> +	struct channel_reg __iomem *const chan = priv->reg->channel + count->id;
->  	unsigned long irqflags;
->  	int i;
->  
-> @@ -173,27 +197,27 @@ static int quad8_count_write(struct counter_device *counter,
->  	spin_lock_irqsave(&priv->lock, irqflags);
->  
->  	/* Reset Byte Pointer */
-> -	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
->  
->  	/* Counter can only be set via Preset Register */
->  	for (i = 0; i < 3; i++)
-> -		iowrite8(val >> (8 * i), base_offset);
-> +		iowrite8(val >> (8 * i), &chan->data);
->  
->  	/* Transfer Preset Register to Counter */
-> -	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_PRESET_CNTR, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_PRESET_CNTR, &chan->control);
->  
->  	/* Reset Byte Pointer */
-> -	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
->  
->  	/* Set Preset Register back to original value */
->  	val = priv->preset[count->id];
->  	for (i = 0; i < 3; i++)
-> -		iowrite8(val >> (8 * i), base_offset);
-> +		iowrite8(val >> (8 * i), &chan->data);
->  
->  	/* Reset Borrow, Carry, Compare, and Sign flags */
-> -	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, &chan->control);
->  	/* Reset Error flag */
-> -	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, &chan->control);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -246,7 +270,7 @@ static int quad8_function_write(struct counter_device *counter,
->  	unsigned int *const quadrature_mode = priv->quadrature_mode + id;
->  	unsigned int *const scale = priv->quadrature_scale + id;
->  	unsigned int *const synchronous_mode = priv->synchronous_mode + id;
-> -	void __iomem *const base_offset = priv->base + 2 * id + 1;
-> +	u8 __iomem *const control = &priv->reg->channel[id].control;
->  	unsigned long irqflags;
->  	unsigned int mode_cfg;
->  	unsigned int idr_cfg;
-> @@ -266,7 +290,7 @@ static int quad8_function_write(struct counter_device *counter,
->  		if (*synchronous_mode) {
->  			*synchronous_mode = 0;
->  			/* Disable synchronous function mode */
-> -			iowrite8(QUAD8_CTR_IDR | idr_cfg, base_offset);
-> +			iowrite8(QUAD8_CTR_IDR | idr_cfg, control);
->  		}
->  	} else {
->  		*quadrature_mode = 1;
-> @@ -292,7 +316,7 @@ static int quad8_function_write(struct counter_device *counter,
->  	}
->  
->  	/* Load mode configuration to Counter Mode Register */
-> -	iowrite8(QUAD8_CTR_CMR | mode_cfg, base_offset);
-> +	iowrite8(QUAD8_CTR_CMR | mode_cfg, control);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -305,7 +329,7 @@ static int quad8_direction_read(struct counter_device *counter,
->  {
->  	const struct quad8 *const priv = counter_priv(counter);
->  	unsigned int ud_flag;
-> -	void __iomem *const flag_addr = priv->base + 2 * count->id + 1;
-> +	u8 __iomem *const flag_addr = &priv->reg->channel[count->id].control;
->  
->  	/* U/D flag: nonzero = up, zero = down */
->  	ud_flag = ioread8(flag_addr) & QUAD8_FLAG_UD;
-> @@ -402,7 +426,6 @@ static int quad8_events_configure(struct counter_device *counter)
->  	struct counter_event_node *event_node;
->  	unsigned int next_irq_trigger;
->  	unsigned long ior_cfg;
-> -	void __iomem *base_offset;
->  
->  	spin_lock_irqsave(&priv->lock, irqflags);
->  
-> @@ -437,14 +460,14 @@ static int quad8_events_configure(struct counter_device *counter)
->  		ior_cfg = priv->ab_enable[event_node->channel] |
->  			  priv->preset_enable[event_node->channel] << 1 |
->  			  priv->irq_trigger[event_node->channel] << 3;
-> -		base_offset = priv->base + 2 * event_node->channel + 1;
-> -		iowrite8(QUAD8_CTR_IOR | ior_cfg, base_offset);
-> +		iowrite8(QUAD8_CTR_IOR | ior_cfg,
-> +			 &priv->reg->channel[event_node->channel].control);
->  
->  		/* Enable IRQ line */
->  		irq_enabled |= BIT(event_node->channel);
->  	}
->  
-> -	iowrite8(irq_enabled, priv->base + QUAD8_REG_INDEX_INTERRUPT);
-> +	iowrite8(irq_enabled, &priv->reg->index_interrupt);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -508,7 +531,7 @@ static int quad8_index_polarity_set(struct counter_device *counter,
->  {
->  	struct quad8 *const priv = counter_priv(counter);
->  	const size_t channel_id = signal->id - 16;
-> -	void __iomem *const base_offset = priv->base + 2 * channel_id + 1;
-> +	u8 __iomem *const control = &priv->reg->channel[channel_id].control;
->  	unsigned long irqflags;
->  	unsigned int idr_cfg = index_polarity << 1;
->  
-> @@ -519,7 +542,7 @@ static int quad8_index_polarity_set(struct counter_device *counter,
->  	priv->index_polarity[channel_id] = index_polarity;
->  
->  	/* Load Index Control configuration to Index Control Register */
-> -	iowrite8(QUAD8_CTR_IDR | idr_cfg, base_offset);
-> +	iowrite8(QUAD8_CTR_IDR | idr_cfg, control);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -549,7 +572,7 @@ static int quad8_synchronous_mode_set(struct counter_device *counter,
->  {
->  	struct quad8 *const priv = counter_priv(counter);
->  	const size_t channel_id = signal->id - 16;
-> -	void __iomem *const base_offset = priv->base + 2 * channel_id + 1;
-> +	u8 __iomem *const control = &priv->reg->channel[channel_id].control;
->  	unsigned long irqflags;
->  	unsigned int idr_cfg = synchronous_mode;
->  
-> @@ -566,7 +589,7 @@ static int quad8_synchronous_mode_set(struct counter_device *counter,
->  	priv->synchronous_mode[channel_id] = synchronous_mode;
->  
->  	/* Load Index Control configuration to Index Control Register */
-> -	iowrite8(QUAD8_CTR_IDR | idr_cfg, base_offset);
-> +	iowrite8(QUAD8_CTR_IDR | idr_cfg, control);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -614,7 +637,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
->  	struct quad8 *const priv = counter_priv(counter);
->  	unsigned int count_mode;
->  	unsigned int mode_cfg;
-> -	void __iomem *const base_offset = priv->base + 2 * count->id + 1;
-> +	u8 __iomem *const control = &priv->reg->channel[count->id].control;
->  	unsigned long irqflags;
->  
->  	/* Map Generic Counter count mode to 104-QUAD-8 count mode */
-> @@ -648,7 +671,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
->  		mode_cfg |= (priv->quadrature_scale[count->id] + 1) << 3;
->  
->  	/* Load mode configuration to Counter Mode Register */
-> -	iowrite8(QUAD8_CTR_CMR | mode_cfg, base_offset);
-> +	iowrite8(QUAD8_CTR_CMR | mode_cfg, control);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -669,7 +692,7 @@ static int quad8_count_enable_write(struct counter_device *counter,
->  				    struct counter_count *count, u8 enable)
->  {
->  	struct quad8 *const priv = counter_priv(counter);
-> -	void __iomem *const base_offset = priv->base + 2 * count->id;
-> +	u8 __iomem *const control = &priv->reg->channel[count->id].control;
->  	unsigned long irqflags;
->  	unsigned int ior_cfg;
->  
-> @@ -681,7 +704,7 @@ static int quad8_count_enable_write(struct counter_device *counter,
->  		  priv->irq_trigger[count->id] << 3;
->  
->  	/* Load I/O control configuration */
-> -	iowrite8(QUAD8_CTR_IOR | ior_cfg, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_IOR | ior_cfg, control);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -697,9 +720,9 @@ static int quad8_error_noise_get(struct counter_device *counter,
->  				 struct counter_count *count, u32 *noise_error)
->  {
->  	const struct quad8 *const priv = counter_priv(counter);
-> -	void __iomem *const base_offset = priv->base + 2 * count->id + 1;
-> +	u8 __iomem *const flag_addr = &priv->reg->channel[count->id].control;
->  
-> -	*noise_error = !!(ioread8(base_offset) & QUAD8_FLAG_E);
-> +	*noise_error = !!(ioread8(flag_addr) & QUAD8_FLAG_E);
->  
->  	return 0;
->  }
-> @@ -717,17 +740,17 @@ static int quad8_count_preset_read(struct counter_device *counter,
->  static void quad8_preset_register_set(struct quad8 *const priv, const int id,
->  				      const unsigned int preset)
->  {
-> -	void __iomem *const base_offset = priv->base + 2 * id;
-> +	struct channel_reg __iomem *const chan = priv->reg->channel + id;
->  	int i;
->  
->  	priv->preset[id] = preset;
->  
->  	/* Reset Byte Pointer */
-> -	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
->  
->  	/* Set Preset Register */
->  	for (i = 0; i < 3; i++)
-> -		iowrite8(preset >> (8 * i), base_offset);
-> +		iowrite8(preset >> (8 * i), &chan->data);
->  }
->  
->  static int quad8_count_preset_write(struct counter_device *counter,
-> @@ -816,7 +839,7 @@ static int quad8_count_preset_enable_write(struct counter_device *counter,
->  					   u8 preset_enable)
->  {
->  	struct quad8 *const priv = counter_priv(counter);
-> -	void __iomem *const base_offset = priv->base + 2 * count->id + 1;
-> +	u8 __iomem *const control = &priv->reg->channel[count->id].control;
->  	unsigned long irqflags;
->  	unsigned int ior_cfg;
->  
-> @@ -831,7 +854,7 @@ static int quad8_count_preset_enable_write(struct counter_device *counter,
->  		  priv->irq_trigger[count->id] << 3;
->  
->  	/* Load I/O control configuration to Input / Output Control Register */
-> -	iowrite8(QUAD8_CTR_IOR | ior_cfg, base_offset);
-> +	iowrite8(QUAD8_CTR_IOR | ior_cfg, control);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -858,7 +881,7 @@ static int quad8_signal_cable_fault_read(struct counter_device *counter,
->  	}
->  
->  	/* Logic 0 = cable fault */
-> -	status = ioread8(priv->base + QUAD8_DIFF_ENCODER_CABLE_STATUS);
-> +	status = ioread8(&priv->reg->cable_status);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -899,8 +922,7 @@ static int quad8_signal_cable_fault_enable_write(struct counter_device *counter,
->  	/* Enable is active low in Differential Encoder Cable Status register */
->  	cable_fault_enable = ~priv->cable_fault_enable;
->  
-> -	iowrite8(cable_fault_enable,
-> -		 priv->base + QUAD8_DIFF_ENCODER_CABLE_STATUS);
-> +	iowrite8(cable_fault_enable, &priv->reg->cable_status);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -924,7 +946,7 @@ static int quad8_signal_fck_prescaler_write(struct counter_device *counter,
->  {
->  	struct quad8 *const priv = counter_priv(counter);
->  	const size_t channel_id = signal->id / 2;
-> -	void __iomem *const base_offset = priv->base + 2 * channel_id;
-> +	struct channel_reg __iomem *const chan = priv->reg->channel + channel_id;
->  	unsigned long irqflags;
->  
->  	spin_lock_irqsave(&priv->lock, irqflags);
-> @@ -932,12 +954,12 @@ static int quad8_signal_fck_prescaler_write(struct counter_device *counter,
->  	priv->fck_prescaler[channel_id] = prescaler;
->  
->  	/* Reset Byte Pointer */
-> -	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
->  
->  	/* Set filter clock factor */
-> -	iowrite8(prescaler, base_offset);
-> +	iowrite8(prescaler, &chan->data);
->  	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP | QUAD8_RLD_PRESET_PSC,
-> -		 base_offset + 1);
-> +		 &chan->control);
->  
->  	spin_unlock_irqrestore(&priv->lock, irqflags);
->  
-> @@ -1085,12 +1107,11 @@ static irqreturn_t quad8_irq_handler(int irq, void *private)
->  {
->  	struct counter_device *counter = private;
->  	struct quad8 *const priv = counter_priv(counter);
-> -	void __iomem *const base = priv->base;
->  	unsigned long irq_status;
->  	unsigned long channel;
->  	u8 event;
->  
-> -	irq_status = ioread8(base + QUAD8_REG_INTERRUPT_STATUS);
-> +	irq_status = ioread8(&priv->reg->interrupt_status);
->  	if (!irq_status)
->  		return IRQ_NONE;
->  
-> @@ -1119,36 +1140,36 @@ static irqreturn_t quad8_irq_handler(int irq, void *private)
->  	}
->  
->  	/* Clear pending interrupts on device */
-> -	iowrite8(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC, base + QUAD8_REG_CHAN_OP);
-> +	iowrite8(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC, &priv->reg->channel_oper);
->  
->  	return IRQ_HANDLED;
->  }
->  
-> -static void quad8_init_counter(void __iomem *const base_offset)
-> +static void quad8_init_counter(struct channel_reg __iomem *const chan)
->  {
->  	unsigned long i;
->  
->  	/* Reset Byte Pointer */
-> -	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
->  	/* Reset filter clock factor */
-> -	iowrite8(0, base_offset);
-> +	iowrite8(0, &chan->data);
->  	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP | QUAD8_RLD_PRESET_PSC,
-> -		 base_offset + 1);
-> +		 &chan->control);
->  	/* Reset Byte Pointer */
-> -	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
->  	/* Reset Preset Register */
->  	for (i = 0; i < 3; i++)
-> -		iowrite8(0x00, base_offset);
-> +		iowrite8(0x00, &chan->data);
->  	/* Reset Borrow, Carry, Compare, and Sign flags */
-> -	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, &chan->control);
->  	/* Reset Error flag */
-> -	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, &chan->control);
->  	/* Binary encoding; Normal count; non-quadrature mode */
-> -	iowrite8(QUAD8_CTR_CMR, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_CMR, &chan->control);
->  	/* Disable A and B inputs; preset on index; FLG1 as Carry */
-> -	iowrite8(QUAD8_CTR_IOR, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_IOR, &chan->control);
->  	/* Disable index function; negative index polarity */
-> -	iowrite8(QUAD8_CTR_IDR, base_offset + 1);
-> +	iowrite8(QUAD8_CTR_IDR, &chan->control);
->  }
->  
->  static int quad8_probe(struct device *dev, unsigned int id)
-> @@ -1169,8 +1190,8 @@ static int quad8_probe(struct device *dev, unsigned int id)
->  		return -ENOMEM;
->  	priv = counter_priv(counter);
->  
-> -	priv->base = devm_ioport_map(dev, base[id], QUAD8_EXTENT);
-> -	if (!priv->base)
-> +	priv->reg = devm_ioport_map(dev, base[id], QUAD8_EXTENT);
-> +	if (!priv->reg)
->  		return -ENOMEM;
->  
->  	/* Initialize Counter device and driver data */
-> @@ -1185,17 +1206,16 @@ static int quad8_probe(struct device *dev, unsigned int id)
->  	spin_lock_init(&priv->lock);
->  
->  	/* Reset Index/Interrupt Register */
-> -	iowrite8(0x00, priv->base + QUAD8_REG_INDEX_INTERRUPT);
-> +	iowrite8(0x00, &priv->reg->index_interrupt);
->  	/* Reset all counters and disable interrupt function */
-> -	iowrite8(QUAD8_CHAN_OP_RESET_COUNTERS, priv->base + QUAD8_REG_CHAN_OP);
-> +	iowrite8(QUAD8_CHAN_OP_RESET_COUNTERS, &priv->reg->channel_oper);
->  	/* Set initial configuration for all counters */
->  	for (i = 0; i < QUAD8_NUM_COUNTERS; i++)
-> -		quad8_init_counter(priv->base + 2 * i);
-> +		quad8_init_counter(priv->reg->channel + i);
->  	/* Disable Differential Encoder Cable Status for all channels */
-> -	iowrite8(0xFF, priv->base + QUAD8_DIFF_ENCODER_CABLE_STATUS);
-> +	iowrite8(0xFF, &priv->reg->cable_status);
->  	/* Enable all counters and enable interrupt function */
-> -	iowrite8(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC,
-> -		 priv->base + QUAD8_REG_CHAN_OP);
-> +	iowrite8(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC, &priv->reg->channel_oper);
->  
->  	err = devm_request_irq(&counter->dev, irq[id], quad8_irq_handler,
->  			       IRQF_SHARED, counter->name, counter);
+> >
+> > >> describes the issue more specifically, that's when we added these
+> > >> fences.  There have certainly been complains that these fences are too
+> > >> heavyweight for the HW to go fast, but IIUC it's the best option we have
+> > > Yeah, it would reduce the performance on D1 and our next-generation
+> > > processor has optimized fence performance a lot.
+> >
+> > Definately a bummer that the fences make the HW go slow, but I don't
+> > really see any other way to go about this.  If you think these mappings
+> > are valid for LKMM and RVWMO then we should figure this out, but trying
+> > to drop fences to make HW go faster in ways that violate the memory
+> > model is going to lead to insanity.
+> Actually, this patch is okay with the ISA spec, and Dan also thought
+> it was valid.
 > 
-> base-commit: e971b897cacfac4cb2eca478f5533d2875f5cadd
+> ref: https://lore.kernel.org/lkml/41e01514-74ca-84f2-f5cc-2645c444fd8e@nvidia.com/raw
 
+"Thoughts" on this regard have _changed_.  Please compare that quote
+with, e.g.
+
+  https://lore.kernel.org/linux-riscv/ddd5ca34-805b-60c4-bf2a-d6a9d95d89e7@nvidia.com/
+
+So here's a suggestion:
+
+Reviewers of your patches have asked:  How come that code we used to
+consider as buggy is now considered "an optimization" (correct)?
+
+Denying the evidence or going around it is not making their job (and
+this upstreaming) easier, so why don't you address it?  Take time to
+review previous works and discussions in this area, understand them,
+and integrate such knowledge in future submissions.
+
+  Andrea
+
+
+> ------
+> > 2. Using .aqrl to replace the fence rw, rw is okay to ISA manual,
+> > right? And reducing a fence instruction to gain better performance:
+> >                 "0:     lr.w     %[p],  %[c]\n"
+> >                  "       sub      %[rc], %[p], %[o]\n"
+> >                  "       bltz     %[rc], 1f\n".
+> >  -               "       sc.w.rl  %[rc], %[rc], %[c]\n"
+> >  +              "       sc.w.aqrl %[rc], %[rc], %[c]\n"
+> >                  "       bnez     %[rc], 0b\n"
+> >  -               "       fence    rw, rw\n"
+> 
+> Yes, using .aqrl is valid.
+> 
+> Dan
+> ------
+> 
+> 
+> >
+> > I can definately buy the argument that we have mappings of various
+> > application memory models that are difficult to make fast given the ISA
+> > encodings of RVWMO we have, but that's not really an issue we can fix in
+> > the atomic mappings.
+> >
+> > >> given the current set of memory model primitives we implement in the
+> > >> ISA (ie, there's more in RVWMO but no way to encode that).
+> > >>
+> > >> The others all look good, though, and as these are really all
+> > >> independent cleanups I'm going to go ahead and put those three on
+> > >> for-next.
+> > >>
+> > >> There's also a bunch of checkpatch errors.  The ones about "*" seem
+> > >> spurious, but the alignment ones aren't.  Here's my fixups:
+> > > Thx for the fixup.
+> > >
+> > >>
+> > >>     diff --git a/arch/riscv/include/asm/atomic.h b/arch/riscv/include/asm/atomic.h
+> > >>     index 34f757dfc8f2..0bde499fa8bc 100644
+> > >>     --- a/arch/riscv/include/asm/atomic.h
+> > >>     +++ b/arch/riscv/include/asm/atomic.h
+> > >>     @@ -86,9 +86,9 @@ ATOMIC_OPS(xor, xor,  i)
+> > >>       * versions, while the logical ops only have fetch versions.
+> > >>       */
+> > >>      #define ATOMIC_FETCH_OP(op, asm_op, I, asm_type, c_type, prefix)   \
+> > >>     -static __always_inline                                                     \
+> > >>     -c_type arch_atomic##prefix##_fetch_##op##_relaxed(c_type i,                \
+> > >>     -                                        atomic##prefix##_t *v)     \
+> > >>     +static __always_inline c_type                                              \
+> > >>     +arch_atomic##prefix##_fetch_##op##_relaxed(c_type i,                       \
+> > >>     +                                      atomic##prefix##_t *v)       \
+> > >>      {                                                                  \
+> > >>         register c_type ret;                                            \
+> > >>         __asm__ __volatile__ (                                          \
+> > >>     @@ -98,9 +98,9 @@ c_type arch_atomic##prefix##_fetch_##op##_relaxed(c_type i,               \
+> > >>                 : "memory");                                            \
+> > >>         return ret;                                                     \
+> > >>      }                                                                  \
+> > >>     -static __always_inline                                                     \
+> > >>     -c_type arch_atomic##prefix##_fetch_##op##_acquire(c_type i,                \
+> > >>     -                                        atomic##prefix##_t *v)     \
+> > >>     +static __always_inline c_type                                              \
+> > >>     +arch_atomic##prefix##_fetch_##op##_acquire(c_type i,                       \
+> > >>     +                                      atomic##prefix##_t *v)       \
+> > >>      {                                                                  \
+> > >>         register c_type ret;                                            \
+> > >>         __asm__ __volatile__ (                                          \
+> > >>     @@ -110,9 +110,9 @@ c_type arch_atomic##prefix##_fetch_##op##_acquire(c_type i,             \
+> > >>                 : "memory");                                            \
+> > >>         return ret;                                                     \
+> > >>      }                                                                  \
+> > >>     -static __always_inline                                                     \
+> > >>     -c_type arch_atomic##prefix##_fetch_##op##_release(c_type i,                \
+> > >>     -                                        atomic##prefix##_t *v)     \
+> > >>     +static __always_inline c_type                                              \
+> > >>     +arch_atomic##prefix##_fetch_##op##_release(c_type i,                       \
+> > >>     +                                      atomic##prefix##_t *v)       \
+> > >>      {                                                                  \
+> > >>         register c_type ret;                                            \
+> > >>         __asm__ __volatile__ (                                          \
+> > >>     @@ -122,8 +122,8 @@ c_type arch_atomic##prefix##_fetch_##op##_release(c_type i,             \
+> > >>                 : "memory");                                            \
+> > >>         return ret;                                                     \
+> > >>      }                                                                  \
+> > >>     -static __always_inline                                                     \
+> > >>     -c_type arch_atomic##prefix##_fetch_##op(c_type i, atomic##prefix##_t *v)   \
+> > >>     +static __always_inline c_type                                              \
+> > >>     +arch_atomic##prefix##_fetch_##op(c_type i, atomic##prefix##_t *v)  \
+> > >>      {                                                                  \
+> > >>         register c_type ret;                                            \
+> > >>         __asm__ __volatile__ (                                          \
+> > >>     @@ -135,28 +135,28 @@ c_type arch_atomic##prefix##_fetch_##op(c_type i, atomic##prefix##_t *v)      \
+> > >>      }
+> > >>
+> > >>      #define ATOMIC_OP_RETURN(op, asm_op, c_op, I, asm_type, c_type, prefix)    \
+> > >>     -static __always_inline                                                     \
+> > >>     -c_type arch_atomic##prefix##_##op##_return_relaxed(c_type i,               \
+> > >>     -                                         atomic##prefix##_t *v)    \
+> > >>     +static __always_inline c_type                                              \
+> > >>     +arch_atomic##prefix##_##op##_return_relaxed(c_type i,                      \
+> > >>     +                                       atomic##prefix##_t *v)      \
+> > >>      {                                                                  \
+> > >>     -        return arch_atomic##prefix##_fetch_##op##_relaxed(i, v) c_op I;    \
+> > >>     +   return arch_atomic##prefix##_fetch_##op##_relaxed(i, v) c_op I; \
+> > >>      }                                                                  \
+> > >>     -static __always_inline                                                     \
+> > >>     -c_type arch_atomic##prefix##_##op##_return_acquire(c_type i,               \
+> > >>     -                                         atomic##prefix##_t *v)    \
+> > >>     +static __always_inline c_type                                              \
+> > >>     +arch_atomic##prefix##_##op##_return_acquire(c_type i,                      \
+> > >>     +                                       atomic##prefix##_t *v)      \
+> > >>      {                                                                  \
+> > >>     -        return arch_atomic##prefix##_fetch_##op##_acquire(i, v) c_op I;    \
+> > >>     +   return arch_atomic##prefix##_fetch_##op##_acquire(i, v) c_op I; \
+> > >>      }                                                                  \
+> > >>     -static __always_inline                                                     \
+> > >>     -c_type arch_atomic##prefix##_##op##_return_release(c_type i,               \
+> > >>     -                                         atomic##prefix##_t *v)    \
+> > >>     +static __always_inline c_type                                              \
+> > >>     +arch_atomic##prefix##_##op##_return_release(c_type i,                      \
+> > >>     +                                       atomic##prefix##_t *v)      \
+> > >>      {                                                                  \
+> > >>     -        return arch_atomic##prefix##_fetch_##op##_release(i, v) c_op I;    \
+> > >>     +   return arch_atomic##prefix##_fetch_##op##_release(i, v) c_op I; \
+> > >>      }                                                                  \
+> > >>     -static __always_inline                                                     \
+> > >>     -c_type arch_atomic##prefix##_##op##_return(c_type i, atomic##prefix##_t *v)        \
+> > >>     +static __always_inline c_type                                              \
+> > >>     +arch_atomic##prefix##_##op##_return(c_type i, atomic##prefix##_t *v)       \
+> > >>      {                                                                  \
+> > >>     -        return arch_atomic##prefix##_fetch_##op(i, v) c_op I;              \
+> > >>     +   return arch_atomic##prefix##_fetch_##op(i, v) c_op I;           \
+> > >>      }
+> > >>
+> > >>      #ifdef CONFIG_GENERIC_ATOMIC64
+> > >>
+> > >>
+> > >> >
+> > >> > Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> > >> > Signed-off-by: Guo Ren <guoren@kernel.org>
+> > >> > Cc: Palmer Dabbelt <palmer@dabbelt.com>
+> > >> > Cc: Mark Rutland <mark.rutland@arm.com>
+> > >> > Cc: Dan Lustig <dlustig@nvidia.com>
+> > >> > Cc: Andrea Parri <parri.andrea@gmail.com>
+> > >> > ---
+> > >> >  arch/riscv/include/asm/atomic.h  | 24 ++++++++----------------
+> > >> >  arch/riscv/include/asm/cmpxchg.h |  6 ++----
+> > >> >  2 files changed, 10 insertions(+), 20 deletions(-)
+> > >> >
+> > >> > diff --git a/arch/riscv/include/asm/atomic.h b/arch/riscv/include/asm/atomic.h
+> > >> > index 34f757dfc8f2..aef8aa9ac4f4 100644
+> > >> > --- a/arch/riscv/include/asm/atomic.h
+> > >> > +++ b/arch/riscv/include/asm/atomic.h
+> > >> > @@ -269,9 +269,8 @@ static __always_inline int arch_atomic_fetch_add_unless(atomic_t *v, int a, int
+> > >> >               "0:     lr.w     %[p],  %[c]\n"
+> > >> >               "       beq      %[p],  %[u], 1f\n"
+> > >> >               "       add      %[rc], %[p], %[a]\n"
+> > >> > -             "       sc.w.rl  %[rc], %[rc], %[c]\n"
+> > >> > +             "       sc.w.aqrl  %[rc], %[rc], %[c]\n"
+> > >> >               "       bnez     %[rc], 0b\n"
+> > >> > -             "       fence    rw, rw\n"
+> > >> >               "1:\n"
+> > >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> > >> >               : [a]"r" (a), [u]"r" (u)
+> > >> > @@ -290,9 +289,8 @@ static __always_inline s64 arch_atomic64_fetch_add_unless(atomic64_t *v, s64 a,
+> > >> >               "0:     lr.d     %[p],  %[c]\n"
+> > >> >               "       beq      %[p],  %[u], 1f\n"
+> > >> >               "       add      %[rc], %[p], %[a]\n"
+> > >> > -             "       sc.d.rl  %[rc], %[rc], %[c]\n"
+> > >> > +             "       sc.d.aqrl  %[rc], %[rc], %[c]\n"
+> > >> >               "       bnez     %[rc], 0b\n"
+> > >> > -             "       fence    rw, rw\n"
+> > >> >               "1:\n"
+> > >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> > >> >               : [a]"r" (a), [u]"r" (u)
+> > >> > @@ -382,9 +380,8 @@ static __always_inline bool arch_atomic_inc_unless_negative(atomic_t *v)
+> > >> >               "0:     lr.w      %[p],  %[c]\n"
+> > >> >               "       bltz      %[p],  1f\n"
+> > >> >               "       addi      %[rc], %[p], 1\n"
+> > >> > -             "       sc.w.rl   %[rc], %[rc], %[c]\n"
+> > >> > +             "       sc.w.aqrl %[rc], %[rc], %[c]\n"
+> > >> >               "       bnez      %[rc], 0b\n"
+> > >> > -             "       fence     rw, rw\n"
+> > >> >               "1:\n"
+> > >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> > >> >               :
+> > >> > @@ -402,9 +399,8 @@ static __always_inline bool arch_atomic_dec_unless_positive(atomic_t *v)
+> > >> >               "0:     lr.w      %[p],  %[c]\n"
+> > >> >               "       bgtz      %[p],  1f\n"
+> > >> >               "       addi      %[rc], %[p], -1\n"
+> > >> > -             "       sc.w.rl   %[rc], %[rc], %[c]\n"
+> > >> > +             "       sc.w.aqrl %[rc], %[rc], %[c]\n"
+> > >> >               "       bnez      %[rc], 0b\n"
+> > >> > -             "       fence     rw, rw\n"
+> > >> >               "1:\n"
+> > >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> > >> >               :
+> > >> > @@ -422,9 +418,8 @@ static __always_inline int arch_atomic_dec_if_positive(atomic_t *v)
+> > >> >               "0:     lr.w     %[p],  %[c]\n"
+> > >> >               "       addi     %[rc], %[p], -1\n"
+> > >> >               "       bltz     %[rc], 1f\n"
+> > >> > -             "       sc.w.rl  %[rc], %[rc], %[c]\n"
+> > >> > +             "       sc.w.aqrl %[rc], %[rc], %[c]\n"
+> > >> >               "       bnez     %[rc], 0b\n"
+> > >> > -             "       fence    rw, rw\n"
+> > >> >               "1:\n"
+> > >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> > >> >               :
+> > >> > @@ -444,9 +439,8 @@ static __always_inline bool arch_atomic64_inc_unless_negative(atomic64_t *v)
+> > >> >               "0:     lr.d      %[p],  %[c]\n"
+> > >> >               "       bltz      %[p],  1f\n"
+> > >> >               "       addi      %[rc], %[p], 1\n"
+> > >> > -             "       sc.d.rl   %[rc], %[rc], %[c]\n"
+> > >> > +             "       sc.d.aqrl %[rc], %[rc], %[c]\n"
+> > >> >               "       bnez      %[rc], 0b\n"
+> > >> > -             "       fence     rw, rw\n"
+> > >> >               "1:\n"
+> > >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> > >> >               :
+> > >> > @@ -465,9 +459,8 @@ static __always_inline bool arch_atomic64_dec_unless_positive(atomic64_t *v)
+> > >> >               "0:     lr.d      %[p],  %[c]\n"
+> > >> >               "       bgtz      %[p],  1f\n"
+> > >> >               "       addi      %[rc], %[p], -1\n"
+> > >> > -             "       sc.d.rl   %[rc], %[rc], %[c]\n"
+> > >> > +             "       sc.d.aqrl %[rc], %[rc], %[c]\n"
+> > >> >               "       bnez      %[rc], 0b\n"
+> > >> > -             "       fence     rw, rw\n"
+> > >> >               "1:\n"
+> > >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> > >> >               :
+> > >> > @@ -486,9 +479,8 @@ static __always_inline s64 arch_atomic64_dec_if_positive(atomic64_t *v)
+> > >> >               "0:     lr.d     %[p],  %[c]\n"
+> > >> >               "       addi      %[rc], %[p], -1\n"
+> > >> >               "       bltz     %[rc], 1f\n"
+> > >> > -             "       sc.d.rl  %[rc], %[rc], %[c]\n"
+> > >> > +             "       sc.d.aqrl %[rc], %[rc], %[c]\n"
+> > >> >               "       bnez     %[rc], 0b\n"
+> > >> > -             "       fence    rw, rw\n"
+> > >> >               "1:\n"
+> > >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> > >> >               :
+> > >> > diff --git a/arch/riscv/include/asm/cmpxchg.h b/arch/riscv/include/asm/cmpxchg.h
+> > >> > index 1af8db92250b..9269fceb86e0 100644
+> > >> > --- a/arch/riscv/include/asm/cmpxchg.h
+> > >> > +++ b/arch/riscv/include/asm/cmpxchg.h
+> > >> > @@ -307,9 +307,8 @@
+> > >> >               __asm__ __volatile__ (                                  \
+> > >> >                       "0:     lr.w %0, %2\n"                          \
+> > >> >                       "       bne  %0, %z3, 1f\n"                     \
+> > >> > -                     "       sc.w.rl %1, %z4, %2\n"                  \
+> > >> > +                     "       sc.w.aqrl %1, %z4, %2\n"                \
+> > >> >                       "       bnez %1, 0b\n"                          \
+> > >> > -                     "       fence rw, rw\n"                         \
+> > >> >                       "1:\n"                                          \
+> > >> >                       : "=&r" (__ret), "=&r" (__rc), "+A" (*__ptr)    \
+> > >> >                       : "rJ" ((long)__old), "rJ" (__new)              \
+> > >> > @@ -319,9 +318,8 @@
+> > >> >               __asm__ __volatile__ (                                  \
+> > >> >                       "0:     lr.d %0, %2\n"                          \
+> > >> >                       "       bne %0, %z3, 1f\n"                      \
+> > >> > -                     "       sc.d.rl %1, %z4, %2\n"                  \
+> > >> > +                     "       sc.d.aqrl %1, %z4, %2\n"                \
+> > >> >                       "       bnez %1, 0b\n"                          \
+> > >> > -                     "       fence rw, rw\n"                         \
+> > >> >                       "1:\n"                                          \
+> > >> >                       : "=&r" (__ret), "=&r" (__rc), "+A" (*__ptr)    \
+> > >> >                       : "rJ" (__old), "rJ" (__new)                    \
+> 
+> 
+> 
+> -- 
+> Best Regards
+>  Guo Ren
+> 
+> ML: https://lore.kernel.org/linux-csky/
