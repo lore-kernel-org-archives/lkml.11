@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:08:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DB03C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:08:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352501AbiFNCIf (ORCPT
+        id S1352507AbiFNCIk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43302 "EHLO
+        Mon, 13 Jun 2022 22:08:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351513AbiFNCGt (ORCPT
+        with ESMTP id S1351095AbiFNCHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:06:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7158534660;
-        Mon, 13 Jun 2022 19:05:51 -0700 (PDT)
+        Mon, 13 Jun 2022 22:07:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C6F35273;
+        Mon, 13 Jun 2022 19:06:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CD9060A56;
-        Tue, 14 Jun 2022 02:05:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B423C3411B;
-        Tue, 14 Jun 2022 02:05:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8BE6AB8169A;
+        Tue, 14 Jun 2022 02:06:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FACAC34114;
+        Tue, 14 Jun 2022 02:05:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172350;
-        bh=YGPJSIN4rLQzhxISScC7BKlrycx2fKnKwDHRfnaUlJ0=;
+        s=k20201202; t=1655172359;
+        bh=7NUMHzQlN+H4b3c+QV6ZaAVLc79YAd+yAe4WU2xah7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cibUiXhaqDJ7x02BXwTkJieRbUUZ0/hFFN+AvmSLcTiW/RJcEcm1tIN6sAaIatS0r
-         qfussmOI1SeFjN+MDLdwWxIzTadHwiRoqsHRLVWknBfXmBEN4EGob9ZlNn8uPXh6U6
-         1fUVGAf8Km06ecfFZAsASboxrT1xnwEhNC02bK71vtDncqO1zh4c31ptIH3gvRE3ha
-         VbNn1gCeksysYaQvJ0arWf4rdcC8W3DZS3tm50gyyjUPStSZikfDDFnHpGq0uX/wsJ
-         WkB0l3uxn/nEvpLkgmACbc98NvTZlnrwgAH7l8CpOY7+Bl2B2zYny5flVXO/ce+nS6
-         JzJPJp7eakSyw==
+        b=gw/w4M6cwO806kjba5yjJiufXyN/MVoQv7fJsr6SiJRVJMBqxgUwPpbXU6YJnsCAE
+         SZSG7J2K5BqTnU4UF7TgeknWRHoof9T5kPF1SUw5Sc7+PijCVd4to2H7nbWs93Gvsg
+         dG9Kupmmixe3hY4t/N5F7CkT6tEWgQNPa9A3OG+GwBtylcsj5DYB0qsIsa1fTrUbNK
+         7/40n1XAp4wyEwP0qTi/x/zLoI0PH/hzhntvnGZqCTUaodAk2SrQ3/PGREfRGn7hFy
+         NFkIH02r1GbIGDJOJwWuMxw4izJ7qJ+pKIjzPcQHPttsFeBdbL0Ribqok+iGLEy0Ug
+         Wadn2dXdqMUIg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yupeng Li <liyupeng@zbhlos.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.18 40/47] MIPS: Loongson-3: fix compile mips cpu_hwmon as module build error.
-Date:   Mon, 13 Jun 2022 22:04:33 -0400
-Message-Id: <20220614020441.1098348-40-sashal@kernel.org>
+Cc:     August Wikerfors <git@augustwikerfors.se>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, dvhart@infradead.org,
+        platform-driver-x86@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 46/47] platform/x86: gigabyte-wmi: Add support for B450M DS3H-CF
+Date:   Mon, 13 Jun 2022 22:04:39 -0400
+Message-Id: <20220614020441.1098348-46-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020441.1098348-1-sashal@kernel.org>
 References: <20220614020441.1098348-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,50 +53,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yupeng Li <liyupeng@zbhlos.com>
+From: August Wikerfors <git@augustwikerfors.se>
 
-[ Upstream commit 41e456400212803704e82691716e1d7b0865114a ]
+[ Upstream commit c6bc7e8ee90845556a90faf8b043cbefd77b8903 ]
 
-  set cpu_hwmon as a module build with loongson_sysconf, loongson_chiptemp
-  undefined error,fix cpu_hwmon compile options to be bool.Some kernel
-  compilation error information is as follows:
+Tested and works on my system.
 
-  Checking missing-syscalls for N32
-  CALL    scripts/checksyscalls.sh
-  Checking missing-syscalls for O32
-  CALL    scripts/checksyscalls.sh
-  CALL    scripts/checksyscalls.sh
-  CHK     include/generated/compile.h
-  CC [M]  drivers/platform/mips/cpu_hwmon.o
-  Building modules, stage 2.
-  MODPOST 200 modules
-ERROR: "loongson_sysconf" [drivers/platform/mips/cpu_hwmon.ko] undefined!
-ERROR: "loongson_chiptemp" [drivers/platform/mips/cpu_hwmon.ko] undefined!
-make[1]: *** [scripts/Makefile.modpost:92：__modpost] 错误 1
-make: *** [Makefile:1261：modules] 错误 2
-
-Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Huacai Chen <chenhuacai@kernel.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: August Wikerfors <git@augustwikerfors.se>
+Link: https://lore.kernel.org/r/20220608212028.28307-1-git@augustwikerfors.se
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/mips/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/x86/gigabyte-wmi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/platform/mips/Kconfig b/drivers/platform/mips/Kconfig
-index d421e1482395..6b51ad01f791 100644
---- a/drivers/platform/mips/Kconfig
-+++ b/drivers/platform/mips/Kconfig
-@@ -17,7 +17,7 @@ menuconfig MIPS_PLATFORM_DEVICES
- if MIPS_PLATFORM_DEVICES
+diff --git a/drivers/platform/x86/gigabyte-wmi.c b/drivers/platform/x86/gigabyte-wmi.c
+index 05588a47ac38..78446b1953f7 100644
+--- a/drivers/platform/x86/gigabyte-wmi.c
++++ b/drivers/platform/x86/gigabyte-wmi.c
+@@ -140,6 +140,7 @@ static u8 gigabyte_wmi_detect_sensor_usability(struct wmi_device *wdev)
+ 	}}
  
- config CPU_HWMON
--	tristate "Loongson-3 CPU HWMon Driver"
-+	bool "Loongson-3 CPU HWMon Driver"
- 	depends on MACH_LOONGSON64
- 	select HWMON
- 	default y
+ static const struct dmi_system_id gigabyte_wmi_known_working_platforms[] = {
++	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B450M DS3H-CF"),
+ 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B450M S2H V2"),
+ 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B550 AORUS ELITE AX V2"),
+ 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B550 AORUS ELITE"),
 -- 
 2.35.1
 
