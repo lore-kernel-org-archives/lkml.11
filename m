@@ -2,113 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A9A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 03:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 03:19:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241200AbiFNDSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 23:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48768 "EHLO
+        id S1343843AbiFNDTI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 23:19:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234859AbiFNDR5 (ORCPT
+        with ESMTP id S233298AbiFNDTH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 23:17:57 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAE92E0B3
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:17:55 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id e11so7445775pfj.5
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:17:55 -0700 (PDT)
+        Mon, 13 Jun 2022 23:19:07 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5C42E0B8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:19:06 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id 15so7451499pfy.3
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:19:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=1qN6OyaRDLN8PZ+93yGw5yJBTOUHt5MGOB2eLLMCogI=;
-        b=cMrFBCIPYz7c80i80c0FXtORHnLG3GjW5yZlTVd2mKvLYcPe0tAzISoqrP9Qf8Wp9P
-         Vh+8L1urE9XjyjN7IL/1+2MpLTRg5IgOhE4SM5v7WFYnMjrHfWq2l0MA5S/sMwfUVby+
-         MthRAqvCngQMPtChLRHFvH1lUi6pCGnOTZ33tgSGP+2+KMPfPCgON4M1TEhaPy4fsK9Z
-         6pI7amuFqIGdzrI/3jxo7sSNAtoRzXlE9myGq5ybu6n5RkLEFzZlh8Q5QGJIdBR8PFGE
-         FEQFtG2zRLxfEGM4itilu61zxTjT8YQqLw3fDNXFt+nwu+JgzMdctjpOq3RErTCHk//f
-         pHng==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/e6JAN91T9e89/lPNtlCsxwSmh8l6RVHLbvzMmDBIwc=;
+        b=dq0Y6PayEq+t+JXCl6y6hIB+rMABYHAt1q71bZlxgrvfqjx+UuQKYAv0Iv2bbY0XNn
+         b1IcC9sJd3ZqaB9xTr7Tk05idcEREChlxaVSaXiJsJF8hcsDPgE3b5Hf9cumro46hB9t
+         UU9oBGxMHOhdtStmucng2teG43v2Cx8HVlG4l9+Va+GGVcX8HSXK+iMgUykA0AFo8Hkn
+         aw+2g5UeZQyyW4YGD6xW/tiYuVzuKBKAv9WdmVlGAAQfJafk/l4BtK+zr9UxJ99+5Y3S
+         FJD1QBdV2sU80bHS4ZCaM4rHYLIuPISoaNaa9Rf+DjxmM+DFbxWi5U/TuzL92pjGk4/w
+         b1EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=1qN6OyaRDLN8PZ+93yGw5yJBTOUHt5MGOB2eLLMCogI=;
-        b=W1F0RqBYDERFZVACW0EnRdC8iAm2OxlrD7k1G1x10m0Kp0JA57lz2Qql48Fdolwynb
-         VO3kf0k/uKy+edixqoCR4hvqnc0RoPa+cibMb8Awn0/NqibOP4mrtP4V1qiOvLkCrUhb
-         t+scQVMzv6MpocjS/9zff84vQgG6PzaC1zuipIJP8gfEgaJLFkYoOOQ/kYhF3da1JazB
-         NOLe4n/idxg2M5VmfsFH92JQi1+Ysd+tK9Ozv7rVcuuZPc2VZgNgrWHAz8Li6qBSLToo
-         VIzobiyoBDdYYGn6183FnLi10O9TP1/P4Q2VpURE6oYTTgFQLe950MOsldSPfB18ahCd
-         IcZA==
-X-Gm-Message-State: AOAM5328sSxYf43tZC4YmNgt1XTbpk4ubRmhAD0bnMUatUN0d1ZEqI1W
-        VW0XkssSOx5eOyVreveHvWqi1w==
-X-Google-Smtp-Source: ABdhPJybAwFxTDtuR72OKzjrJeDCMIasDLrfdWXowpUEhQqNagPhQ2nRpzBgl2V57Ds6ZcIjEDwFfA==
-X-Received: by 2002:a05:6a00:1350:b0:51c:26d2:9ce5 with SMTP id k16-20020a056a00135000b0051c26d29ce5mr2493957pfu.69.1655176674581;
-        Mon, 13 Jun 2022 20:17:54 -0700 (PDT)
-Received: from localhost ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id g13-20020a170902d1cd00b0016767ff327dsm5868146plb.129.2022.06.13.20.17.53
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=/e6JAN91T9e89/lPNtlCsxwSmh8l6RVHLbvzMmDBIwc=;
+        b=39YrSWka6FA/USozkJzWpcnErqMi+/tleNDZ9gEeGvdTR0G43T3vBxecfDoHGN3d+6
+         ZiXB/LWeI/UknrsT5vC7htafrMMxUCZvpmyUWr7RGvaVNL5lDkPTbJLlYUqsXvDxiarx
+         pAjEN7tCDwvKrnvvZnu4QwF2MJQ9Pe0ee6rXhoQ6jJNb0GGn1LeWdbGm4HBETTVGIFR6
+         ixHTp/d8/7hG8ot/76I8YoajzcKBxPF2nsduvdCXbbzp84fcbqpuSt/bk6LVY+vaFMgH
+         sdPPNR/i7Dw/LvyNuXZYm9WGAtSYNZtnY11R4wenmjBbi7lv7egpnThpuE7qPzA9g+1m
+         e2KQ==
+X-Gm-Message-State: AOAM531xBtwVpcxcMKskd8p9NM4Pin5ph/6CkKUcyIojxX16iStZj30S
+        j9DyKzSoBvwxNpdhOCn+gMNJwHZR61Q=
+X-Google-Smtp-Source: ABdhPJzDff4vhZ4C5TjzjV0yIVLw0dB2fQEzBghjbmxfv1Y/aC16pd1b9VpKXpCHoUBq2d7/hUn+vw==
+X-Received: by 2002:a63:40c3:0:b0:3fd:12b8:3207 with SMTP id n186-20020a6340c3000000b003fd12b83207mr2579618pga.57.1655176745797;
+        Mon, 13 Jun 2022 20:19:05 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:ea37])
+        by smtp.gmail.com with ESMTPSA id jb2-20020a170903258200b0015e8d4eb25asm5883262plb.164.2022.06.13.20.19.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 20:17:54 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 11:17:51 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     david@redhat.com, akpm@linux-foundation.org, corbet@lwn.net,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH 3/6] mm: hugetlb_vmemmap: introduce the name HVO
-Message-ID: <Yqf937fyfV4xEiON@FVFYT0MHHV2J.usts.net>
-References: <20220613063512.17540-1-songmuchun@bytedance.com>
- <20220613063512.17540-4-songmuchun@bytedance.com>
- <Yqep8QwtfcRCCPsI@monkey>
+        Mon, 13 Jun 2022 20:19:05 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 13 Jun 2022 17:19:03 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 1/4] kernfs: make ->attr.open RCU protected.
+Message-ID: <Yqf+J/P1/24i6rN9@slm.duckdns.org>
+References: <20220614020840.546013-1-imran.f.khan@oracle.com>
+ <20220614020840.546013-2-imran.f.khan@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yqep8QwtfcRCCPsI@monkey>
+In-Reply-To: <20220614020840.546013-2-imran.f.khan@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 02:19:45PM -0700, Mike Kravetz wrote:
-> On Mon, Jun 13, 2022 at 02:35:09PM +0800”, Muchun Song wrote:
-> > It it inconvenient to mention the feature of optimizing vmemmap pages associated
-> > with HugeTLB pages when communicating with others since there is no specific or
-> > abbreviated name for it when it is first introduced.  Let us give it a name HVO
-> > (HugeTLB Vmemmap Optimization) from now.
-> > 
-> > This commit also updates the document about "hugetlb_free_vmemmap" by the way
-> > discussed in thread [1].
-> > 
-> > Link: https://lore.kernel.org/all/21aae898-d54d-cc4b-a11f-1bb7fddcfffa@redhat.com/ [1]
-> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> > ---
-> 
-> > diff --git a/Documentation/admin-guide/mm/hugetlbpage.rst b/Documentation/admin-guide/mm/hugetlbpage.rst
-> > index a90330d0a837..64e0d5c512e7 100644
-> > --- a/Documentation/admin-guide/mm/hugetlbpage.rst
-> > +++ b/Documentation/admin-guide/mm/hugetlbpage.rst
-> > @@ -164,8 +164,7 @@ default_hugepagesz
-> >  	will all result in 256 2M huge pages being allocated.  Valid default
-> >  	huge page size is architecture dependent.
-> >  hugetlb_free_vmemmap
-> > -	When CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP is set, this enables optimizing
-> > -	unused vmemmap pages associated with each HugeTLB page.
-> > +	When CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP is set, this enables HVO.
-> 
-> I think we need to define HVO before using it here.  Readers may be able
-> to determine the meaning, but to be sure I would suggest:
->
+On Tue, Jun 14, 2022 at 12:08:37PM +1000, Imran Khan wrote:
+> +static struct kernfs_open_node *
+> +kernfs_deref_open_node(struct kernfs_open_file *of, struct kernfs_node *kn)
+> +{
+> +	struct kernfs_open_node *on;
+> +	bool deref_ok;
+> +
+> +	deref_ok = (of ? !list_empty(&of->list) : false) ||
+> +		   lockdep_is_held(&kernfs_open_file_mutex);
+> +
+> +	on = rcu_dereference_check(kn->attr.open, deref_ok);
+> +
+> +	return on;
+> +}
 
-Agree.
- 
-> When CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP is set this enables
-> HugeTLB Vmemmap Optimization (HVO).
-> 
+Hahahaha didn't know they'd be taking two different arguments. Sorry about
+the many iterations but it'd probably be better to have two different
+versions for the two argument types. Other than that, looks fine to me.
 
-I would use this. Thanks.
+Thanks.
 
-> Everything else looks good to me.
-> Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
-
-Thanks for your review.
-
+-- 
+tejun
