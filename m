@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E724EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80379C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352609AbiFNCM4 (ORCPT
+        id S1353065AbiFNCNB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
+        Mon, 13 Jun 2022 22:13:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352871AbiFNCLn (ORCPT
+        with ESMTP id S1353060AbiFNCMX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:11:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A42337BEC;
+        Mon, 13 Jun 2022 22:12:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B147737BF7;
         Mon, 13 Jun 2022 19:07:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE7E460C15;
-        Tue, 14 Jun 2022 02:07:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11CFCC34114;
-        Tue, 14 Jun 2022 02:07:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF784B81699;
+        Tue, 14 Jun 2022 02:07:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0AC9C341C0;
+        Tue, 14 Jun 2022 02:06:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172434;
-        bh=fYqEYfMpMmnw3A/eQFnbEnCAsansYVE/WSANxNzwF+8=;
+        s=k20201202; t=1655172420;
+        bh=9jDDsgQyQTjlFBuKLov8y6UFAbc1Ox58tCBgC74fWGY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ko9ecJ290gW3lFhfYyTomV6QhO9EyghwE4Ri8/TED/MSuwdl6YCA/wuDgoh1e3plh
-         xx3GCQ98cK646Be4HxusmlZXlLT3qgi+TNKQQeKkd/iu4NiY2HgyU+HuNTY7v1cuZF
-         SENVhc6nO9kwpLF79eGs8qTzH2mWuP2PW3zSbrQwZ/mKNFGcN6frGUNsQOmx4OP5tK
-         SnMh/mm1Aab346uMIScP7o0Ckq5Nlg4B9wvhCzBJGSeqW/LmnWYpODkQ576fZxRuUC
-         j/Qc/tK4mO4yw1KZZgUuqZZZNEgcX5KTQsmg8L+MNk1kRWemoQFUMYtME2eBYzz34K
-         rirwjv9SauZUA==
+        b=XEpvdb6o/1WVItxEIQ47T2flyoT+Uwe/QEDoU8ud+tYdNNyTTCpgoiO7I7NOelmJh
+         a54djrbs+tZlapTbeGEUYKiyF+NZl8Hko4hk9jPF7p81VAlchcqOX6aGm60At2nPfk
+         QQCvwJbvMuaQQuwI7BFRUtLZ2tyOgtfXH9NKsmbvpjB/KXhI8s01WfmW3JMqfE1E2U
+         HrxukRghCh8kYnNDpNAF81a0r9Q1Mmcuxiwm0J0/qHtTRErC3hhvX4DqKXHNyWvdlZ
+         9q8hQ7xU4A2ZlrpVzGVhc38mx9mVn6zmsnHsxArj7tHyyyLJPDcqQ9m3YWt2iAiEW4
+         MKmCSgPyxYFag==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sherry Wang <YAO.WANG1@amd.com>,
-        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
-        Jasdeep Dhillon <jdhillon@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        airlied@linux.ie, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 03/41] drm/amd/display: Read Golden Settings Table from VBIOS
-Date:   Mon, 13 Jun 2022 22:06:28 -0400
-Message-Id: <20220614020707.1099487-3-sashal@kernel.org>
+Cc:     David Arcari <darcari@redhat.com>,
+        "David E. Box" <david.e.box@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, dvhart@infradead.org,
+        platform-driver-x86@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 39/43] platform/x86/intel: Fix pmt_crashlog array reference
+Date:   Mon, 13 Jun 2022 22:05:58 -0400
+Message-Id: <20220614020602.1098943-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
-References: <20220614020707.1099487-1-sashal@kernel.org>
+In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
+References: <20220614020602.1098943-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,44 +55,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sherry Wang <YAO.WANG1@amd.com>
+From: David Arcari <darcari@redhat.com>
 
-[ Upstream commit 4b81dd2cc6f4f4e8cea0ed6ee8d5193a8ae14a72 ]
+[ Upstream commit 66cb3a2d7ad0d0e9af4d3430a4f2a32ffb9ac098 ]
 
-[Why]
-Dmub read AUX_DPHY_RX_CONTROL0 from Golden Setting Table,
-but driver will set it to default value 0x103d1110, which
-causes issue in some case
+The probe function pmt_crashlog_probe() may incorrectly reference
+the 'priv->entry array' as it uses 'i' to reference the array instead
+of 'priv->num_entries' as it should.  This is similar to the problem
+that was addressed in pmt_telemetry_probe via commit 2cdfa0c20d58
+("platform/x86/intel: Fix 'rmmod pmt_telemetry' panic").
 
-[How]
-Remove the driver code, use the value set by dmub in
-dp_aux_init
-
-Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
-Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Sherry Wang <YAO.WANG1@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: "David E. Box" <david.e.box@linux.intel.com>
+Cc: Hans de Goede <hdegoede@redhat.com>
+Cc: Mark Gross <markgross@kernel.org>
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: David Arcari <darcari@redhat.com>
+Reviewed-by: David E. Box <david.e.box@linux.intel.com>
+Link: https://lore.kernel.org/r/20220526203140.339120-1-darcari@redhat.com
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/platform/x86/intel/pmt/crashlog.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
-index b0892443fbd5..c7c27a605f15 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
-@@ -168,9 +168,7 @@ void enc31_hw_init(struct link_encoder *enc)
- 	AUX_RX_PHASE_DETECT_LEN,  [21,20] = 0x3 default is 3
- 	AUX_RX_DETECTION_THRESHOLD [30:28] = 1
- */
--	AUX_REG_WRITE(AUX_DPHY_RX_CONTROL0, 0x103d1110);
--
--	AUX_REG_WRITE(AUX_DPHY_TX_CONTROL, 0x21c7a);
-+	// dmub will read AUX_DPHY_RX_CONTROL0/AUX_DPHY_TX_CONTROL from vbios table in dp_aux_init
+diff --git a/drivers/platform/x86/intel/pmt/crashlog.c b/drivers/platform/x86/intel/pmt/crashlog.c
+index 34daf9df168b..ace1239bc0a0 100644
+--- a/drivers/platform/x86/intel/pmt/crashlog.c
++++ b/drivers/platform/x86/intel/pmt/crashlog.c
+@@ -282,7 +282,7 @@ static int pmt_crashlog_probe(struct auxiliary_device *auxdev,
+ 	auxiliary_set_drvdata(auxdev, priv);
  
- 	//AUX_DPHY_TX_REF_CONTROL'AUX_TX_REF_DIV HW default is 0x32;
- 	// Set AUX_TX_REF_DIV Divider to generate 2 MHz reference from refclk
+ 	for (i = 0; i < intel_vsec_dev->num_resources; i++) {
+-		struct intel_pmt_entry *entry = &priv->entry[i].entry;
++		struct intel_pmt_entry *entry = &priv->entry[priv->num_entries].entry;
+ 
+ 		ret = intel_pmt_dev_create(entry, &pmt_crashlog_ns, intel_vsec_dev, i);
+ 		if (ret < 0)
 -- 
 2.35.1
 
