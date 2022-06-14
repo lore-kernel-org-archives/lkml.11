@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD4A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:31:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D00CCA480
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:31:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243370AbiFNM3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
+        id S245349AbiFNM3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243885AbiFNM2k (ORCPT
+        with ESMTP id S243953AbiFNM2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:28:40 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED4123148
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:38 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id s12so16869140ejx.3
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:38 -0700 (PDT)
+        Tue, 14 Jun 2022 08:28:42 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD7823BFF
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:41 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id y19so16842608ejq.6
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4Ikx/I3Y696YQQvJOfJvkR+b8+rk3mrxAawgjIDEUZ0=;
-        b=fcozqSg6IKoKg9kPzNk4vgpeYJBfA6sRK6QUNqlE5NGhEPGgKBho033KaqjRspCizB
-         SqJWccoggeLwKFyCo25eeFXDvXO1lQoxQGi/uhEkA0etpMW/1iDdWvYlaWea8rr6SYjB
-         ASpWjX2+Vw4TGE6xjCOUb4HdAumC/gkcubYVs=
+        bh=UY9xGJVeCuDiPWb4quL1k0Um37OolG5UZs6VBw/8AE4=;
+        b=Ja543dMnsKVa7wE7vuA6UlJiYXkD9BavIblMmMDRdLnKW7bCJrM2IIjuTxTLUa4zc7
+         uVtITCAEoFl0NcEewAfa1WXTa70NjmLqNp/cbTZMmJprWmqvGUMBnmcIZIxbJAcdjIrj
+         0nAK46ia7vSr4W9Hz2eGoJjUjFYilr226hhXM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4Ikx/I3Y696YQQvJOfJvkR+b8+rk3mrxAawgjIDEUZ0=;
-        b=XpMJRlIW1DwFAyvaq6nzGDKoPC6DDGzbou/bv/AY1omtvvw0hL4I1rfGGBmIdQf5mv
-         NTA4K8BOL2n9TpGSkJW0mUDvVstjweGnJ9ogLvozOejTx7zs3orFMI+fgyICjUSFyZyD
-         241212BbQpLdOhOmuVuFFrnNMubgmjSICP1wIAYKzA1s1RedUVR+9vRaFEUP2d2Tk0W3
-         pKHsLe19X9462voINtWPGWJNuHMzQhQZfV49j1f7fSYVfS3DEfs/iWNX7MTLwelOknY2
-         EPcGCd7OWLq9MHXkC19gVW28ijPURVAv8GzfJ7oeXAdGmKBUK1tWcu7AOlHvhiy24DOA
-         rshg==
-X-Gm-Message-State: AOAM5334TGOapXo+9ew2UpvzVP59LG4FjAHTTZ++u40h3AptY7JG5GDh
-        cDAmgEZFZTLTbvEGonZwt+tGe90AqhUkXw==
-X-Google-Smtp-Source: AGRyM1uelCB/Qv4o1YlAs/EirN062K8SD18mCxEGk2AXw8TotOBNzQGInbqvWk0FaZZYTQfuTN2XLA==
-X-Received: by 2002:a17:906:73d4:b0:715:701c:ae96 with SMTP id n20-20020a17090673d400b00715701cae96mr4033479ejl.50.1655209716999;
-        Tue, 14 Jun 2022 05:28:36 -0700 (PDT)
+        bh=UY9xGJVeCuDiPWb4quL1k0Um37OolG5UZs6VBw/8AE4=;
+        b=WTIUqc/TxnCEnoyHhulZq8LcNN7Y6SLd3hp8JUg+uOy3aLK0iqmSDxeC41JG2XJ4ZQ
+         om1q0c3QZMxjZYpULDJ8GazwBH7N8jkYkN4mn8lNVI0bLlM7lmkt2NdJwqhWq2M/KJY5
+         jUwOxB4DWsHcwxMxAVhGtbiSvhBBeDXcHUYqjnyEBfwGhYXfTEM/Ums9UC+y0O0i/Rir
+         uvGWuH25HZnrOHzy8+9OVJf/aLNxHMuaXwppJXaUfQ/RtbW4xr4w8dqqx0pu6yggRvyh
+         xkhtc4z78QYRBB5Eq/WHaJq3Efl+CkNje4dFuo4exqNiNhTSPux2ZL5I62JYCjMF2fA7
+         dmUg==
+X-Gm-Message-State: AOAM532Xp4WW4bL8XB67IP0bZmmYN09wgv7Chsxe9sD1WiqPbxF0y4+H
+        7ZAZNDe3YCKSkSJSSSE1Ix4ss70pvymm5g==
+X-Google-Smtp-Source: ABdhPJwKLJW79JRioqe4q4q0L5vsiJcGfGbq3CLDF09ftdlAWx5GCdDH3yrVc9h4vQzyecCO5U90UA==
+X-Received: by 2002:a17:906:4482:b0:70a:19e3:d18a with SMTP id y2-20020a170906448200b0070a19e3d18amr3911625ejo.510.1655209721319;
+        Tue, 14 Jun 2022 05:28:41 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.amarulasolutions.com (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id z22-20020a17090655d600b006f3ef214e2csm5087043ejp.146.2022.06.14.05.28.35
+        by smtp.gmail.com with ESMTPSA id z22-20020a17090655d600b006f3ef214e2csm5087043ejp.146.2022.06.14.05.28.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 05:28:36 -0700 (PDT)
+        Tue, 14 Jun 2022 05:28:40 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
@@ -53,14 +53,18 @@ Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
         Dario Binacchi <dario.binacchi@amarulasolutions.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v4 08/12] can: slcan: send the open/close commands to the adapter
-Date:   Tue, 14 Jun 2022 14:28:17 +0200
-Message-Id: <20220614122821.3646071-9-dario.binacchi@amarulasolutions.com>
+Subject: [PATCH v4 11/12] can: slcan: extend the protocol with error info
+Date:   Tue, 14 Jun 2022 14:28:20 +0200
+Message-Id: <20220614122821.3646071-12-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
 References: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
@@ -70,75 +74,188 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case the bitrate has been set via ip tool, this patch changes the
-driver to send the open ("O\r") and close ("C\r) commands to the
-adapter.
+It extends the protocol to receive the adapter CAN communication errors
+and forward them to the netdev upper levels.
 
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
 ---
 
 Changes in v4:
-- Squashed to the patch [v3,09/13] can: slcan: send the close command to the adapter.
-- Use the CAN_BITRATE_UNKNOWN macro.
+- Add description of slc_bump_err() function.
+- Remove check for the 'e' character at the beggining of the function.
+  It was already checked by the caller function.
+- Protect decoding against the case the len value is longer than the
+  received data.
+- Some small changes to make the decoding more readable.
+- Increment all the error counters at the end of the function.
 
 Changes in v2:
-- Improve the commit message.
+- Protect decoding against the case the len value is longer than the
+  received data.
+- Continue error handling even if no skb can be allocated.
 
- drivers/net/can/slcan.c | 24 ++++++++++++++++++++++--
- 1 file changed, 22 insertions(+), 2 deletions(-)
+ drivers/net/can/slcan/slcan-core.c | 140 ++++++++++++++++++++++++++++-
+ 1 file changed, 139 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index bd3cf53246c7..b08e63f59b8e 100644
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -436,9 +436,20 @@ static int slcan_transmit_cmd(struct slcan *sl, const unsigned char *cmd)
- static int slc_close(struct net_device *dev)
+diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
+index b4f29ab2ab72..6c7c815eaf45 100644
+--- a/drivers/net/can/slcan/slcan-core.c
++++ b/drivers/net/can/slcan/slcan-core.c
+@@ -176,7 +176,7 @@ int slcan_enable_err_rst_on_open(struct net_device *ndev, bool on)
+   ************************************************************************/
+ 
+ /* Send one completely decapsulated can_frame to the network layer */
+-static void slc_bump(struct slcan *sl)
++static void slc_bump_frame(struct slcan *sl)
  {
- 	struct slcan *sl = netdev_priv(dev);
-+	int err;
- 
- 	spin_lock_bh(&sl->lock);
- 	if (sl->tty) {
-+		if (sl->can.bittiming.bitrate &&
-+		    sl->can.bittiming.bitrate != CAN_BITRATE_UNKNOWN) {
-+			spin_unlock_bh(&sl->lock);
-+			err = slcan_transmit_cmd(sl, "C\r");
-+			spin_lock_bh(&sl->lock);
-+			if (err)
-+				netdev_warn(dev,
-+					    "failed to send close command 'C\\r'\n");
-+		}
-+
- 		/* TTY discipline is running. */
- 		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
- 	}
-@@ -497,14 +508,23 @@ static int slc_open(struct net_device *dev)
- 			netdev_err(dev,
- 				   "failed to send bitrate command 'C\\rS%d\\r'\n",
- 				   s);
--			close_candev(dev);
--			return err;
-+			goto cmd_transmit_failed;
-+		}
-+
-+		err = slcan_transmit_cmd(sl, "O\r");
-+		if (err) {
-+			netdev_err(dev, "failed to send open command 'O\\r'\n");
-+			goto cmd_transmit_failed;
- 		}
- 	}
- 
- 	sl->can.state = CAN_STATE_ERROR_ACTIVE;
- 	netif_start_queue(dev);
- 	return 0;
-+
-+cmd_transmit_failed:
-+	close_candev(dev);
-+	return err;
+ 	struct sk_buff *skb;
+ 	struct can_frame *cf;
+@@ -255,6 +255,144 @@ static void slc_bump(struct slcan *sl)
+ 	dev_kfree_skb(skb);
  }
  
- static void slc_dealloc(struct slcan *sl)
++/* An error frame can contain more than one type of error.
++ *
++ * Examples:
++ *
++ * e1a : len 1, errors: ACK error
++ * e3bcO: len 3, errors: Bit0 error, CRC error, Tx overrun error
++ */
++static void slc_bump_err(struct slcan *sl)
++{
++	struct net_device *dev = sl->dev;
++	struct sk_buff *skb;
++	struct can_frame *cf;
++	char *cmd = sl->rbuff;
++	bool rx_errors = false, tx_errors = false, rx_over_errors = false;
++	int i, len;
++
++	/* get len from sanitized ASCII value */
++	len = cmd[1];
++	if (len >= '0' && len < '9')
++		len -= '0';
++	else
++		return;
++
++	if ((len + SLC_CMD_LEN + 1) > sl->rcount)
++		return;
++
++	skb = alloc_can_err_skb(dev, &cf);
++
++	if (skb)
++		cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
++
++	cmd += SLC_CMD_LEN + 1;
++	for (i = 0; i < len; i++, cmd++) {
++		switch (*cmd) {
++		case 'a':
++			netdev_dbg(dev, "ACK error\n");
++			tx_errors = true;
++			if (skb) {
++				cf->can_id |= CAN_ERR_ACK;
++				cf->data[3] = CAN_ERR_PROT_LOC_ACK;
++			}
++
++			break;
++		case 'b':
++			netdev_dbg(dev, "Bit0 error\n");
++			tx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_BIT0;
++
++			break;
++		case 'B':
++			netdev_dbg(dev, "Bit1 error\n");
++			tx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_BIT1;
++
++			break;
++		case 'c':
++			netdev_dbg(dev, "CRC error\n");
++			rx_errors = true;
++			if (skb) {
++				cf->data[2] |= CAN_ERR_PROT_BIT;
++				cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
++			}
++
++			break;
++		case 'f':
++			netdev_dbg(dev, "Form Error\n");
++			rx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_FORM;
++
++			break;
++		case 'o':
++			netdev_dbg(dev, "Rx overrun error\n");
++			rx_over_errors = true;
++			rx_errors = true;
++			if (skb) {
++				cf->can_id |= CAN_ERR_CRTL;
++				cf->data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
++			}
++
++			break;
++		case 'O':
++			netdev_dbg(dev, "Tx overrun error\n");
++			tx_errors = true;
++			if (skb) {
++				cf->can_id |= CAN_ERR_CRTL;
++				cf->data[1] = CAN_ERR_CRTL_TX_OVERFLOW;
++			}
++
++			break;
++		case 's':
++			netdev_dbg(dev, "Stuff error\n");
++			rx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_STUFF;
++
++			break;
++		default:
++			if (skb)
++				dev_kfree_skb(skb);
++
++			return;
++		}
++	}
++
++	if (rx_errors)
++		dev->stats.rx_errors++;
++
++	if (rx_over_errors)
++		dev->stats.rx_over_errors++;
++
++	if (tx_errors)
++		dev->stats.tx_errors++;
++
++	if (skb)
++		netif_rx(skb);
++}
++
++static void slc_bump(struct slcan *sl)
++{
++	switch (sl->rbuff[0]) {
++	case 'r':
++		fallthrough;
++	case 't':
++		fallthrough;
++	case 'R':
++		fallthrough;
++	case 'T':
++		return slc_bump_frame(sl);
++	case 'e':
++		return slc_bump_err(sl);
++	default:
++		return;
++	}
++}
++
+ /* parse tty input stream */
+ static void slcan_unesc(struct slcan *sl, unsigned char s)
+ {
 -- 
 2.32.0
 
