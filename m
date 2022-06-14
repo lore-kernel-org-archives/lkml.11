@@ -2,174 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35BEEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A38F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235410AbiFNM2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
+        id S236748AbiFNM3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233019AbiFNM16 (ORCPT
+        with ESMTP id S243131AbiFNM2g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:27:58 -0400
-Received: from es400ra02.iit.it (mx.iit.it [90.147.26.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDF921269;
-        Tue, 14 Jun 2022 05:27:50 -0700 (PDT)
-Received: from es400ra02.iit.it (127.0.0.1) id hl1vc40171s9; Mon, 13 Jun 2022 14:05:57 +0200 (envelope-from <prvs=1163b4114e=Andrea.Merello@iit.it>)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iit.it;
-        s=mx; i=@iit.it; h=Received:Received:From:To:CC:Subject:Date:
-        Message-ID:In-Reply-To:References:MIME-Version:
-        Content-Transfer-Encoding:Content-Type; bh=l8Ahxgl+9kp6R2YaL5zEc
-        e2N/Lu7/gPoBOC+0RYxG7w=; b=HbkqlXgSkqXTuyBFoGd441G7xXfDp8vpml+FZ
-        /h+lVGxnfgphKJ0/CeMP/gYmFDLAzZ5/9rzY2rCQgCMVuZW1dEitNZfZetH9QcB4
-        hdsQ0Xa2ErFGN7TGH0CoK7BRDhjVFfHqV4eGg2mepCbK19Kp1rsEwsBgco4tZOvZ
-        RZrV5E=
-Received: from mail.iit.it ([10.255.8.186])
-        by es400ra02.iit.it ([172.31.0.242]) (SonicWall 10.0.16.7295)
-        with ESMTPS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256)
-        id o202206131205570231027-8; Mon, 13 Jun 2022 14:05:57 +0200
-Received: from poker.lan (90.147.26.235) by iitmxwge020.iit.local
- (10.255.8.186) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.17; Mon, 13 Jun
- 2022 14:05:56 +0200
-From:   <andrea.merello@iit.it>
-To:     <jic23@kernel.org>, <mchehab+huawei@kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <lars@metafoo.de>, <robh+dt@kernel.org>,
-        <andy.shevchenko@gmail.com>, <matt.ranostay@konsulko.com>,
-        <ardeleanalex@gmail.com>, <jacopo@jmondi.org>,
-        Andrea Merello <andrea.merello@iit.it>
-Subject: [v6 13/14] iio: imu: add BNO055 I2C driver
-Date:   Mon, 13 Jun 2022 14:05:33 +0200
-Message-ID: <20220613120534.36991-14-andrea.merello@iit.it>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220613120534.36991-1-andrea.merello@iit.it>
-References: <20220613120534.36991-1-andrea.merello@iit.it>
+        Tue, 14 Jun 2022 08:28:36 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F5C240B2
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:27 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id n10so16848118ejk.5
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:28:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bhHRX/oRi5clzdn2dE/EY8/wgTCSEE9g8vSH+WhoX2I=;
+        b=fXAyHR6wYOrAjEoa121kXDAMBiQuKOeHTZzLKSajLlgrarAw/anKuBKZGX+sWqZhKc
+         u0w23AieZe9pPny/F0Sg5T27H2I61hCiOjE4KfV1SHvON11Iirp/kVren2/7s6BTdpDX
+         s0GckUugcWpBj6AlHsAHWQpbmQ9EPo0wjK7+o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bhHRX/oRi5clzdn2dE/EY8/wgTCSEE9g8vSH+WhoX2I=;
+        b=YtIVWzqZ1l1mtsoD+ASvzI8KasNM4YLUTuBFrCmUC3reDUz00M7wiDx9p6eUOc8C5S
+         I5MoiCW1Vzs62E9caVc82l5Z1bY+ewi9zF/B+c1jNjD19HoCKekIKqgCeXH/PaiDeZpG
+         Dhov6rMLbLvz+K8BQA29gbIb0huYK31c6Ww0C7Gr68xNnt7BtDNVDml+wTQRSC9+QmAU
+         R1piDNidj3BdECOp1xoEbA0M0h4sbKiLJeuFFeZJTyy5Upsxg+FzScHxG0kf+1XyeaRr
+         z0e4MhPFPjE5qflePeBg4NB5+SRPE/0q6X3a+Uc5ygobldZehgsKlfLzViMrkhH5hzLx
+         Uicg==
+X-Gm-Message-State: AOAM533fJ+jleebVen6QnuhdYQZHnq4pl7uxFEEcjzzSZLHz/P6XhVFP
+        vwQYAxKQsmlpgbUf/BOzuyIxo50NieByqQeq
+X-Google-Smtp-Source: ABdhPJy4pF7H8NgtPphY1WJTnN9t4SyQU2HyYAAQHT08cCgUQ2lc4xy7jniRTEaogLds279Um4nTuQ==
+X-Received: by 2002:a17:906:6a27:b0:708:1282:cbe9 with SMTP id qw39-20020a1709066a2700b007081282cbe9mr4290023ejc.186.1655209705333;
+        Tue, 14 Jun 2022 05:28:25 -0700 (PDT)
+Received: from dario-ThinkPad-T14s-Gen-2i.amarulasolutions.com (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
+        by smtp.gmail.com with ESMTPSA id z22-20020a17090655d600b006f3ef214e2csm5087043ejp.146.2022.06.14.05.28.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 05:28:24 -0700 (PDT)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        michael@amarulasolutions.com,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v4 00/12] can: slcan: extend supported features
+Date:   Tue, 14 Jun 2022 14:28:09 +0200
+Message-Id: <20220614122821.3646071-1-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [90.147.26.235]
-X-ClientProxiedBy: IITMXWGE021.iit.local (10.255.8.187) To
- iitmxwge020.iit.local (10.255.8.186)
-X-Mlf-DSE-Version: 6873
-X-Mlf-Rules-Version: s20220519150137; ds20200715013501;
-        di20220610180234; ri20160318003319; fs20220610211824
-X-Mlf-Smartnet-Version: 20210917223710
-X-Mlf-Envelope-From: Andrea.Merello@iit.it
-X-Mlf-Version: 10.0.16.7295
-X-Mlf-License: BSV_C_AP_T_R
-X-Mlf-UniqueId: o202206131205570231027
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrea Merello <andrea.merello@iit.it>
+This series originated as a result of CAN communication tests for an
+application using the USBtin adapter (https://www.fischl.de/usbtin/).
+The tests showed some errors but for the driver everything was ok.
+Also, being the first time I used the slcan driver, I was amazed that
+it was not possible to configure the bitrate via the ip tool.
+For these two reasons, I started looking at the driver code and realized
+that it didn't use the CAN network device driver interface.
 
-Add an I2C driver for communicating to a BNO055 IMU via I2C bus and enable
-the BNO055 core driver to work in this scenario.
+Starting from these assumptions, I tried to:
+- Use the CAN network device driver interface.
+- Set the bitrate via the ip tool.
+- Send the open/close command to the adapter from the driver.
+- Add ethtool support to reset the adapter errors.
+- Extend the protocol to forward the adapter CAN communication
+  errors and the CAN state changes to the netdev upper layers.
 
-Signed-off-by: Andrea Merello <andrea.merello@iit.it>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- drivers/iio/imu/bno055/Kconfig      | 11 ++++++
- drivers/iio/imu/bno055/Makefile     |  2 +
- drivers/iio/imu/bno055/bno055_i2c.c | 57 +++++++++++++++++++++++++++++
- 3 files changed, 70 insertions(+)
- create mode 100644 drivers/iio/imu/bno055/bno055_i2c.c
+Except for the protocol extension patches (i. e. forward the adapter CAN
+communication errors and the CAN state changes to the netdev upper
+layers), the whole series has been tested under QEMU with Linux 4.19.208
+using the USBtin adapter.
+Testing the extension protocol patches requires updating the adapter
+firmware. Before modifying the firmware I think it makes sense to know if
+these extensions can be considered useful.
 
-diff --git a/drivers/iio/imu/bno055/Kconfig b/drivers/iio/imu/bno055/Kconfig
-index d014b68cd43d..ccf9ea7c50f8 100644
---- a/drivers/iio/imu/bno055/Kconfig
-+++ b/drivers/iio/imu/bno055/Kconfig
-@@ -12,3 +12,14 @@ config BOSCH_BNO055_SERIAL
- 
- 	  This driver can also be built as a module. If so, the module will be
- 	  called bno055_sl.
-+
-+config BOSCH_BNO055_I2C
-+	tristate "Bosch BNO055 attached via I2C bus"
-+	depends on I2C
-+	select REGMAP_I2C
-+	select BOSCH_BNO055_IIO
-+	help
-+	  Enable this to support Bosch BNO055 IMUs attached via I2C bus.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called bno055_i2c.
-diff --git a/drivers/iio/imu/bno055/Makefile b/drivers/iio/imu/bno055/Makefile
-index 212307ce9c08..f0be80accb5b 100644
---- a/drivers/iio/imu/bno055/Makefile
-+++ b/drivers/iio/imu/bno055/Makefile
-@@ -6,3 +6,5 @@ bno055_ser-y := bno055_ser_core.o
- # define_trace.h needs to know how to find our header
- CFLAGS_bno055_ser_trace.o := -I$(src)
- bno055_ser-$(CONFIG_TRACING) += bno055_ser_trace.o
-+
-+obj-$(CONFIG_BOSCH_BNO055_I2C) += bno055_i2c.o
-diff --git a/drivers/iio/imu/bno055/bno055_i2c.c b/drivers/iio/imu/bno055/bno055_i2c.c
-new file mode 100644
-index 000000000000..9bb256fdb0d3
---- /dev/null
-+++ b/drivers/iio/imu/bno055/bno055_i2c.c
-@@ -0,0 +1,57 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Support for I2C-interfaced Bosch BNO055 IMU.
-+ *
-+ * Copyright (C) 2021-2022 Istituto Italiano di Tecnologia
-+ * Electronic Design Laboratory
-+ * Written by Andrea Merello <andrea.merello@iit.it>
-+ */
-+
-+#include <linux/i2c.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/regmap.h>
-+
-+#include "bno055.h"
-+
-+#define BNO055_I2C_XFER_BURST_BREAK_THRESHOLD 3 /* FIXME */
-+
-+static int bno055_i2c_probe(struct i2c_client *client)
-+{
-+	struct regmap *regmap;
-+
-+	regmap = devm_regmap_init_i2c(client, &bno055_regmap_config);
-+	if (IS_ERR(regmap))
-+		return dev_err_probe(&client->dev, PTR_ERR(regmap),
-+				     "Unable to init register map");
-+
-+	return bno055_probe(&client->dev, regmap,
-+			    BNO055_I2C_XFER_BURST_BREAK_THRESHOLD, true);
-+}
-+
-+static const struct i2c_device_id bno055_i2c_id[] = {
-+	{"bno055", 0},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, bno055_i2c_id);
-+
-+static const struct of_device_id __maybe_unused bno055_i2c_of_match[] = {
-+	{ .compatible = "bosch,bno055" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, bno055_i2c_of_match);
-+
-+static struct i2c_driver bno055_driver = {
-+	.driver = {
-+		.name = "bno055-i2c",
-+		.of_match_table = of_match_ptr(bno055_i2c_of_match),
-+	},
-+	.probe_new = bno055_i2c_probe,
-+	.id_table = bno055_i2c_id,
-+};
-+module_i2c_driver(bno055_driver);
-+
-+MODULE_AUTHOR("Andrea Merello");
-+MODULE_DESCRIPTION("Bosch BNO055 I2C interface");
-+MODULE_IMPORT_NS(IIO_BNO055);
-+MODULE_LICENSE("GPL");
+Before applying the series I used these commands:
+
+slcan_attach -f -s6 -o /dev/ttyACM0
+slcand ttyACM0 can0
+ip link set can0 up
+
+After applying the series I am using these commands:
+
+slcan_attach /dev/ttyACM0
+slcand ttyACM0 can0
+ip link set dev can0 down
+ip link set can0 type can bitrate 500000
+ethtool --set-priv-flags can0 err-rst-on-open on
+ip link set dev can0 up
+
+Now there is a clearer separation between serial line and CAN,
+but above all, it is possible to use the ip and ethtool commands
+as it happens for any CAN device driver. The changes are backward
+compatible, you can continue to use the slcand and slcan_attach
+command options.
+
+
+Changes in v4:
+- Move the patch in front of the patch "[v3,04/13] can: slcan: use CAN network device driver API".
+- Add the CAN_BITRATE_UNSET (0) and CAN_BITRATE_UNKNOWN (-1U) macros.
+- Simplify the bitrate check to dump it.
+- Update the commit description.
+- Update the commit description.
+- Use the CAN_BITRATE_UNKNOWN macro.
+- Use kfree_skb() instead of can_put_echo_skb() in the slc_xmit().
+- Remove the `if (slcan_devs)' check in the slc_dealloc().
+- Replace `sl->tty == NULL' with `!sl->tty'.
+- Use CAN_BITRATE_UNSET (0) and CAN_BITRATE_UNKNOWN (-1U) macros.
+- Don't reset the bitrate in ndo_stop() if it has been configured.
+- Squashed to the patch [v3,09/13] can: slcan: send the close command to the adapter.
+- Use the CAN_BITRATE_UNKNOWN macro.
+- Add description of slc_bump_err() function.
+- Remove check for the 'e' character at the beggining of the function.
+  It was already checked by the caller function.
+- Protect decoding against the case the len value is longer than the
+  received data.
+- Some small changes to make the decoding more readable.
+- Increment all the error counters at the end of the function.
+- Add description of slc_bump_state() function.
+- Remove check for the 's' character at the beggining of the function.
+  It was already checked by the caller function.
+- Protect decoding against the case the frame len is longer than the
+  received data (add SLC_STATE_FRAME_LEN macro).
+- Set cf to NULL in case of alloc_can_err_skb() failure.
+- Some small changes to make the decoding more readable.
+- Use the character 'b' instead of 'f' for bus-off state.
+
+Changes in v3:
+- Increment the error counter in case of decoding failure.
+- Replace (-1) with (-1U) in the commit description.
+- Update the commit description.
+- Remove the slc_do_set_bittiming().
+- Set the bitrate in the ndo_open().
+- Replace -1UL with -1U in setting a fake value for the bitrate.
+- Drop the patch "can: slcan: simplify the device de-allocation".
+- Add the patch "can: netlink: dump bitrate 0 if can_priv::bittiming.bitrate is -1U".
+
+Changes in v2:
+- Put the data into the allocated skb directly instead of first
+  filling the "cf" on the stack and then doing a memcpy().
+- Move CAN_SLCAN Kconfig option inside CAN_DEV scope.
+- Improve the commit message.
+- Use the CAN framework support for setting fixed bit rates.
+- Improve the commit message.
+- Protect decoding against the case the len value is longer than the
+  received data.
+- Continue error handling even if no skb can be allocated.
+- Continue error handling even if no skb can be allocated.
+
+Dario Binacchi (12):
+  can: slcan: use the BIT() helper
+  can: slcan: use netdev helpers to print out messages
+  can: slcan: use the alloc_can_skb() helper
+  can: netlink: dump bitrate 0 if can_priv::bittiming.bitrate is -1U
+  can: slcan: use CAN network device driver API
+  can: slcan: allow to send commands to the adapter
+  can: slcan: set bitrate by CAN device driver API
+  can: slcan: send the open/close commands to the adapter
+  can: slcan: move driver into separate sub directory
+  can: slcan: add ethtool support to reset adapter errors
+  can: slcan: extend the protocol with error info
+  can: slcan: extend the protocol with CAN state info
+
+ drivers/net/can/Kconfig                       |  40 +-
+ drivers/net/can/Makefile                      |   2 +-
+ drivers/net/can/dev/netlink.c                 |   3 +-
+ drivers/net/can/slcan/Makefile                |   7 +
+ .../net/can/{slcan.c => slcan/slcan-core.c}   | 527 ++++++++++++++----
+ drivers/net/can/slcan/slcan-ethtool.c         |  65 +++
+ drivers/net/can/slcan/slcan.h                 |  18 +
+ include/linux/can/bittiming.h                 |   2 +
+ 8 files changed, 549 insertions(+), 115 deletions(-)
+ create mode 100644 drivers/net/can/slcan/Makefile
+ rename drivers/net/can/{slcan.c => slcan/slcan-core.c} (64%)
+ create mode 100644 drivers/net/can/slcan/slcan-ethtool.c
+ create mode 100644 drivers/net/can/slcan/slcan.h
+
 -- 
-2.17.1
+2.32.0
 
