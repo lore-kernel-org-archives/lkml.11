@@ -2,76 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:00:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D24C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345075AbiFNSAo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53130 "EHLO
+        id S242563AbiFNSF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 14:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237431AbiFNSAn (ORCPT
+        with ESMTP id S238035AbiFNSFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:00:43 -0400
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98C52A24F;
-        Tue, 14 Jun 2022 11:00:42 -0700 (PDT)
-Received: by mail-pf1-f169.google.com with SMTP id 187so9224788pfu.9;
-        Tue, 14 Jun 2022 11:00:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9WKPI79Gjph2WfiqwNvS+zcjQJjDViwq87Qamyz2DXk=;
-        b=KjsuvBWDonPyN7jrDJropfLzF+q9XTDK0sSiecl+hB+u3ceBBdwd1+GdAC2wrpJ1ZK
-         yPVNBmXmUIupt1cEALtKMrkbnm7ahdKUpZB4v317OduDBMU/dlCVcsYmU6sKeRh6unBW
-         I4Uo2bdtVehxxrtu62i+fycf0g6YybPHqcVO8Ur4sG7WQiepbAsC9LT3VY1hCrtyfEM9
-         4wRMfB+Qp4Ik/dIANzPTc8RHk9E5qbZxj8NEeW6SqS1W5u9WeoYo+feDPmStTOri2BVg
-         /NDa9vlOoMyZ7+u0uknqI3A/GYiwOklRYLheEwIbk82hJ5xse+J0zjOgtNki2WC9ONvZ
-         ieZA==
-X-Gm-Message-State: AOAM532gpzlvC4oBVhcQzrnWuW9cioHjLGTQlxDlVIKN5SokYPCdOAJo
-        /P2meB5mUNHp/VPnBVqCLeo=
-X-Google-Smtp-Source: ABdhPJyeLEADYZlXGQ6fcr2O2NZgYjSFxVUQw7IEtpwqZAiMRkvSNcDi5EBIoIpVpSmrvmXuGWFljQ==
-X-Received: by 2002:a63:155:0:b0:3fd:1b8e:16ca with SMTP id 82-20020a630155000000b003fd1b8e16camr5514696pgb.407.1655229642302;
-        Tue, 14 Jun 2022 11:00:42 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:ab60:e1ea:e2eb:c1b6? ([2620:15c:211:201:ab60:e1ea:e2eb:c1b6])
-        by smtp.gmail.com with ESMTPSA id jf21-20020a170903269500b0015e8d4eb1d1sm7552726plb.27.2022.06.14.11.00.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 11:00:41 -0700 (PDT)
-Message-ID: <1f8e7891-a557-bd8e-221a-6cb14770ea8b@acm.org>
-Date:   Tue, 14 Jun 2022 11:00:39 -0700
+        Tue, 14 Jun 2022 14:05:54 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8774666C
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:05:53 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 49C601F8D7;
+        Tue, 14 Jun 2022 18:05:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655229952; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GIzC5m4VIawCPqN9AdaqRh8x0GtJQ/9Kc4xrd4raz1Q=;
+        b=oH5k1z4RYZNWwR0xlp0zAraLdDxW7DNqsZ1A175H2B8MV3M0P/VcjaJd3fL/LDNIb21VuT
+        EP3Uq9fLn+ZUBi8SGH6fDvbJ/2aqbdtq+CYczy5Gq6xTdZsHAB0xJDxPduCwX7kG+ulszX
+        ojzRXSqXgFkiWZ9kYvjYIoG7LcUQwVg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655229952;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GIzC5m4VIawCPqN9AdaqRh8x0GtJQ/9Kc4xrd4raz1Q=;
+        b=bwHGEJzpqp6ZmbWScv3JU0i6kulB9ipvoO7GyJaZwStxr4HvxeHSghDE/sXYCji2oBwUoM
+        RsLs3hBZdDqv3BDg==
+Received: from quack3.suse.cz (jack.udp.ovpn1.nue.suse.de [10.163.28.18])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 06A532C141;
+        Tue, 14 Jun 2022 18:05:52 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 39D3AA062E; Tue, 14 Jun 2022 20:05:49 +0200 (CEST)
+Date:   Tue, 14 Jun 2022 20:05:49 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jchao Sun <sunjunchao2870@gmail.com>, Jan Kara <jack@suse.cz>
+Subject: Re: Linux 5.19-rc2
+Message-ID: <20220614180549.lkcvi2qfnsy7d3gq@quack3.lan>
+References: <CAHk-=wiLDbZ9ch9vSLxrYBdr-bBujr5sehH_HszWzSah54UiQw@mail.gmail.com>
+ <20220613154640.GA3881687@roeck-us.net>
+ <20220614170316.GA3690098@roeck-us.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH RFC v2 01/18] blk-mq: Add a flag for reserved requests
-Content-Language: en-US
-To:     John Garry <john.garry@huawei.com>, axboe@kernel.dk,
-        damien.lemoal@opensource.wdc.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, brking@us.ibm.com, hare@suse.de,
-        hch@lst.de
-Cc:     linux-block@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        chenxiang66@hisilicon.com
-References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
- <1654770559-101375-2-git-send-email-john.garry@huawei.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <1654770559-101375-2-git-send-email-john.garry@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614170316.GA3690098@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/9/22 03:29, John Garry wrote:
-> Add a flag for reserved requests so that drivers may know this for any
-> special handling.
+On Tue 14-06-22 10:03:16, Guenter Roeck wrote:
+> On Mon, Jun 13, 2022 at 08:46:42AM -0700, Guenter Roeck wrote:
+> > 
+> > There are also various UAF and "spinlock bad magic" BUG/WARNING logs in arm
+> > boot tests. I don't know if those are new or if I just see them now because
+> > I enabled KFENCE. Here is an (incomplete) sample.
+> > 
+> > [    0.430290] printk: console [ramoops-1] printing thread started
+> > [    0.436219] BUG: spinlock bad magic on CPU#0, kdevtmpfs/23
+> > [    0.436250]  lock: noop_backing_dev_info+0x6c/0x3b0, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
+> > [    0.436808] CPU: 0 PID: 23 Comm: kdevtmpfs Not tainted 5.19.0-rc2 #1
+> > 
 > 
-> The 'reserved' argument in blk_mq_ops.timeout callback could now be
-> replaced by using this flag.
+> This is caused by commit 10e14073107dd0 ("writeback: Fix inode->i_io_list
+> not be protected by inode->i_lock error"). Reverting this commit fixes
+> the problem. Here is a complete backtrace:
 
-Why not to combine that change into this patch?
+Yeah, I've already queued a fix into my tree, I'll send it to Linus
+tomorrow. With kdevtmpfs inode gets dirtied before noop_backing_dev_info is
+initialized...
 
-Anyway:
+								Honza
 
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+> 
+> BUG: spinlock bad magic on CPU#0, kdevtmpfs/16
+>  lock: noop_backing_dev_info+0x6c/0x3b0, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
+> CPU: 0 PID: 16 Comm: kdevtmpfs Not tainted 5.19.0-rc2-00001-g8bd0807eb95c #1
+> Hardware name: ARM RealView Machine (Device Tree Support)
+>  unwind_backtrace from show_stack+0x10/0x14
+>  show_stack from dump_stack_lvl+0x68/0x90
+>  dump_stack_lvl from do_raw_spin_lock+0xa8/0xf4
+>  do_raw_spin_lock from __mark_inode_dirty+0x1a4/0x664
+>  __mark_inode_dirty from simple_setattr+0x44/0x5c
+>  simple_setattr from notify_change+0x404/0x460
+>  notify_change from devtmpfsd+0x1ec/0x2b8
+>  devtmpfsd from kthread+0xe0/0x104
+>  kthread from ret_from_fork+0x14/0x24
+> Exception stack(0xe0851fb0 to 0xe0851ff8)
+> 1fa0:                                     00000000 00000000 00000000 00000000
+> 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> 
+> Guenter
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
