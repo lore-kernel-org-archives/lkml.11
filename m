@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46858CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 023CBC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355037AbiFNCTi (ORCPT
+        id S1354989AbiFNCTh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55246 "EHLO
+        Mon, 13 Jun 2022 22:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354726AbiFNCO7 (ORCPT
+        with ESMTP id S1354684AbiFNCO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:14:59 -0400
+        Mon, 13 Jun 2022 22:14:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD263CA67;
-        Mon, 13 Jun 2022 19:08:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A6C3CA4B;
+        Mon, 13 Jun 2022 19:08:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6ADFA60ED5;
-        Tue, 14 Jun 2022 02:08:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3361C3411B;
-        Tue, 14 Jun 2022 02:08:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F2F46101C;
+        Tue, 14 Jun 2022 02:08:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF279C34114;
+        Tue, 14 Jun 2022 02:08:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172523;
-        bh=gC3Xx2zFCXwqUVpSF+7ZiWx0Laaw7FOFLzekA/Sq/VY=;
+        s=k20201202; t=1655172516;
+        bh=+1TLaFmHua8IBNRCN5x+vDP5VBwQ5CoiTgi7CN00kSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dxieMjPx6/8ztfxhu3mHDYX/9OTdWk8H8Z2uXs2wd0HDFtiCWG7RV4l5fnDe+SYvm
-         gKMLe86LxDHaeNdkFGBkTVKn5ODvPh18CY09Z5dWBiBAl5LJYk7Z9AMAevJpCFDmxp
-         yakODNyXTh4RsGV5LFZvVZT4hs7gLl8vvGYCGQymkEEZAD3MZxrOowiS4eC6PrtJcd
-         2oUo8exDJz3aPuk4VUylj5TiW2fhZ/VxN+9YPh3cbaqu3h9S+/+2sVk8CWcLn+vyGx
-         sPFm6D3EJF7r23tcfQDFi8xZiBn8du0u2j2f21qrcnRdsJyFYl3RCKTgCrNE4S4VL0
-         NCHzyHlypLUiA==
+        b=EUW1xA0pGLTr/75ADSkwly1xGRiqU0J933Gk4hwecqj1mBRxG4Nsww3bLEQUbyoQh
+         Oa5EyVG/vcvcAlhFAkmD/qLvHyMrus2yvfcbwfHvKFYPdR9L7dizRXm6uKd1f7I0X0
+         Lpwk9jG3tAnQvKw1IbfUYQzP+7N29Akg09cIQZ6VFslDFgveKVFR6A4v5WmqFkOvf3
+         otYlvHgcKBKJ+5+QXHQHcthDyGaaTf55VRMtyhUjduszq6m0s6z/be6QrtRCvXKjGa
+         cZE0lMB77+VaQUK61WClr/AfK9h991aG0heFM03oAI1dfNzrgfnRTBdTXXeo0dWAc5
+         BMXQn//z8G0SA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@avagotech.com,
-        dick.kennedy@avagotech.com, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 18/29] scsi: lpfc: Allow reduced polling rate for nvme_admin_async_event cmd completion
-Date:   Mon, 13 Jun 2022 22:08:04 -0400
-Message-Id: <20220614020815.1099999-18-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.10 13/29] ASoC: es8328: Fix event generation for deemphasis control
+Date:   Mon, 13 Jun 2022 22:07:59 -0400
+Message-Id: <20220614020815.1099999-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020815.1099999-1-sashal@kernel.org>
 References: <20220614020815.1099999-1-sashal@kernel.org>
@@ -55,71 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 2e7e9c0c1ec05f18d320ecc8a31eec59d2af1af9 ]
+[ Upstream commit 8259610c2ec01c5cbfb61882ae176aabacac9c19 ]
 
-NVMe Asynchronous Event Request commands have no command timeout value per
-specifications.
+Currently the put() method for the deemphasis control returns 0 when a new
+value is written to the control even if the value changed, meaning events
+are not generated. Fix this, skip the work of updating the value when it is
+unchanged and then return 1 after having done so.
 
-Set WQE option to allow a reduced FLUSH polling rate for I/O error
-detection specifically for nvme_admin_async_event commands.
-
-Link: https://lore.kernel.org/r/20220603174329.63777-9-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220603123937.4013603-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_hw4.h  |  3 +++
- drivers/scsi/lpfc/lpfc_nvme.c | 11 +++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
+ sound/soc/codecs/es8328.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_hw4.h b/drivers/scsi/lpfc/lpfc_hw4.h
-index 47e832b7f2c2..bfbc1c4fcab1 100644
---- a/drivers/scsi/lpfc/lpfc_hw4.h
-+++ b/drivers/scsi/lpfc/lpfc_hw4.h
-@@ -4281,6 +4281,9 @@ struct wqe_common {
- #define wqe_sup_SHIFT         6
- #define wqe_sup_MASK          0x00000001
- #define wqe_sup_WORD          word11
-+#define wqe_ffrq_SHIFT         6
-+#define wqe_ffrq_MASK          0x00000001
-+#define wqe_ffrq_WORD          word11
- #define wqe_wqec_SHIFT        7
- #define wqe_wqec_MASK         0x00000001
- #define wqe_wqec_WORD         word11
-diff --git a/drivers/scsi/lpfc/lpfc_nvme.c b/drivers/scsi/lpfc/lpfc_nvme.c
-index 03c81cec6bc9..ef92e0b4b9cf 100644
---- a/drivers/scsi/lpfc/lpfc_nvme.c
-+++ b/drivers/scsi/lpfc/lpfc_nvme.c
-@@ -1315,7 +1315,8 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
- {
- 	struct lpfc_hba *phba = vport->phba;
- 	struct nvmefc_fcp_req *nCmd = lpfc_ncmd->nvmeCmd;
--	struct lpfc_iocbq *pwqeq = &(lpfc_ncmd->cur_iocbq);
-+	struct nvme_common_command *sqe;
-+	struct lpfc_iocbq *pwqeq = &lpfc_ncmd->cur_iocbq;
- 	union lpfc_wqe128 *wqe = &pwqeq->wqe;
- 	uint32_t req_len;
+diff --git a/sound/soc/codecs/es8328.c b/sound/soc/codecs/es8328.c
+index 7e26231a596a..081b5f189632 100644
+--- a/sound/soc/codecs/es8328.c
++++ b/sound/soc/codecs/es8328.c
+@@ -161,13 +161,16 @@ static int es8328_put_deemph(struct snd_kcontrol *kcontrol,
+ 	if (deemph > 1)
+ 		return -EINVAL;
  
-@@ -1371,8 +1372,14 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
- 		cstat->control_requests++;
- 	}
- 
--	if (pnode->nlp_nvme_info & NLP_NVME_NSLER)
-+	if (pnode->nlp_nvme_info & NLP_NVME_NSLER) {
- 		bf_set(wqe_erp, &wqe->generic.wqe_com, 1);
-+		sqe = &((struct nvme_fc_cmd_iu *)
-+			nCmd->cmdaddr)->sqe.common;
-+		if (sqe->opcode == nvme_admin_async_event)
-+			bf_set(wqe_ffrq, &wqe->generic.wqe_com, 1);
-+	}
++	if (es8328->deemph == deemph)
++		return 0;
 +
- 	/*
- 	 * Finish initializing those WQE fields that are independent
- 	 * of the nvme_cmnd request_buffer
+ 	ret = es8328_set_deemph(component);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	es8328->deemph = deemph;
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ 
 -- 
 2.35.1
 
