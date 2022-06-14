@@ -2,138 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AABB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6B1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:38:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241468AbiFNSfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53618 "EHLO
+        id S243862AbiFNSiQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 14:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234199AbiFNSfw (ORCPT
+        with ESMTP id S232018AbiFNSiN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:35:52 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6396C49692
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:35:50 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id q140so9261182pgq.6
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:35:50 -0700 (PDT)
+        Tue, 14 Jun 2022 14:38:13 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D59B6340F5;
+        Tue, 14 Jun 2022 11:38:12 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id q15so12370908wrc.11;
+        Tue, 14 Jun 2022 11:38:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/BHxuvsblLJskDtY/Ztfk5dtjeHyzSHSV/rpTnqFptw=;
-        b=lcoBGgDAY+q45GquTu+sVCB0NXJEi5szmJMRopFLtIAqeBX+DDMcbjxDxiFwpC6zuq
-         SaP7ZnWqwKmm1ss9NYvk9GsPgjTWagLliMbiufb3MUDO2jPbOJcUZ5EaZ55OIlsxwLEF
-         NkHIEPzarwZ0qK4KUQZJvUYA7rom3TlhIw+uiT5pGZDKFXtbOxbcntaM0B90E1sEpwNn
-         vmAN8Vpw7zfFPSf81U2uSU2RKS3fkJdH+3VuIyFkmkuBoOoLImfiXvobBy8ahzbbR68Z
-         xAGNn3t4qswNweXxmmwC5EB4Bhyi5ust0I8h6rtp+ELtY3a5nfz0XBBFbiLVxTplFWXT
-         kehA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WsJ5u2umY9+S+mCev0i/Sc2pgxCFrn1uJHhSVkU6Img=;
+        b=nrg+QsCKmHI0Bt8jlxnugL6kmmj7Q2M/0Oqzm6eeYPqd6Xq/8Eno1RgjevR4EWVzTq
+         kLeQcpw1i7J8QXjOlwrrPSVJHubL920hzCbb1L8Ijo5UZtcIDk4OL5VLpQsxnuDFHM9I
+         wxx69E18GZJPZpPBOUwOLmBMevbA4DSUJE2BESoR0bp2s109g8RRLpOWqS+zOOYoUeEZ
+         GHy0K39iuSb5G0dYXcQvLJhJQ0G6FJwXZDyvx0kyhac4OudcP0Se19obqIQ2jr8KgyUG
+         cYakpuFk5ncN8Jp5a0WTegYE3ZrICStS+X6ZxdWtn6IWcrYPGEE9oBspB3Le0l/1ymC+
+         Lptg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=/BHxuvsblLJskDtY/Ztfk5dtjeHyzSHSV/rpTnqFptw=;
-        b=7j+PdPKdGB8KQEsOt8N/0ZLhs9x07j0SFB7E2A0tARiHBk9ok8Oow2kkWcBENaqTaV
-         7lTo+Z3gXGUaxZ/rfIZKMvuONqdv+DUWPDFTU6gH/Vim4Kq9HCdft5WorG8fJRZ5DOsd
-         Ph/DW0WuH6qfoEYTVsIkEQTXfsmbsXcVtLor7BftfOtNg0IMElm1CH9flkT0TWiZm5tW
-         Oy/4iPeWMCVhmbn976QEMKEKSvCjWPk5ZIxCh/XLjHQf7IoxatccjDoKEwEPXwkDzxJF
-         7O/gIcD/k4bP/oVBg7RDl2Y8ZBwxLZi07m4E0DVE8CRb3dHZykgQdBmJYSmBgLjjU69a
-         2AxQ==
-X-Gm-Message-State: AOAM532bbnutcBOB9BHuDS5lhvpzwCYk81VYsmKkjdPxryHX3zFd8j2W
-        MFWIADaNUW5O8f2GRfjwkLKM6w==
-X-Google-Smtp-Source: ABdhPJzDFH6QBQEGfpJxh/mQFjNzcSLTTlMIgYVW/e/UgH6wiLL/c2cBLAcoqjqL2X2p7IuRr9EweQ==
-X-Received: by 2002:a63:d50f:0:b0:408:994a:96d5 with SMTP id c15-20020a63d50f000000b00408994a96d5mr5600253pgg.299.1655231749808;
-        Tue, 14 Jun 2022 11:35:49 -0700 (PDT)
-Received: from [192.168.2.1] (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.googlemail.com with ESMTPSA id r21-20020a170902e3d500b0016393148c9esm7522489ple.110.2022.06.14.11.35.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 11:35:45 -0700 (PDT)
-Message-ID: <277ec646-b709-4a4a-8216-49d528d0e43e@linaro.org>
-Date:   Tue, 14 Jun 2022 20:35:35 +0200
+        bh=WsJ5u2umY9+S+mCev0i/Sc2pgxCFrn1uJHhSVkU6Img=;
+        b=x7sKL11ugHFPDDbgz2duISxMfOVjIT9bRbZ2/o4bd3J+v2JSI7zbnA213PoxLiIqCd
+         1s6EqaDMdMtQGG5ZAufgU6SpUCbQqCAEhz7nLebd4mt4Wh35OpzWofW8iMY8a/6wJFYI
+         UXmLSJ6OhMPaEmyhWd3deQ4ERWsiyiANkIljkOzwVVA2DdA6Na1kEs8txbQFTXFq42JJ
+         C9kk9Mwgv+JFSOPQa8+0MJvxgU2gJqV9jXXYCSeIaunDOktoWc5PiauFvQDZ0dq2/b2W
+         ntzvEFYzIvXXIpYQ8wK2i0prqLHK+IYGiyPrDUl6XtZmVAPYbGMdlX3sCO5cjJayUIsj
+         gzrw==
+X-Gm-Message-State: AJIora8Dn9Q+L3geECpV4IYSUMvwyNolqgkA016FwNahjiMjQhz0ClLL
+        7gvuIeBYpC9ozyNQ/q/GQESaLKOy70RZIu7W
+X-Google-Smtp-Source: AGRyM1uAsMJfnYLUOIdK4OUtkl30vxeZBgEqqzIgFwWK3F8AHsx9AfxTYTNGfrwUzmhPuq6IWdl1sg==
+X-Received: by 2002:a05:6000:1f8b:b0:219:bee5:6b77 with SMTP id bw11-20020a0560001f8b00b00219bee56b77mr6103544wrb.658.1655231891386;
+        Tue, 14 Jun 2022 11:38:11 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id a4-20020adff7c4000000b0021033caa332sm12928303wrq.42.2022.06.14.11.38.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 11:38:10 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: Intel: Skylake: remove redundant re-assignments to pointer array
+Date:   Tue, 14 Jun 2022 19:38:09 +0100
+Message-Id: <20220614183809.163531-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4 2/2] clocksource/drivers/timer-mediatek: Implement
- CPUXGPT timers
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     tglx@linutronix.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, konrad.dybcio@somainline.org,
-        marijn.suijten@somainline.org, martin.botka@somainline.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        paul.bouchara@somainline.org
-References: <20220613133819.35318-1-angelogioacchino.delregno@collabora.com>
- <20220613133819.35318-3-angelogioacchino.delregno@collabora.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20220613133819.35318-3-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/06/2022 15:38, AngeloGioacchino Del Regno wrote:
-> Some MediaTek platforms with a buggy TrustZone ATF firmware will not
-> initialize the AArch64 System Timer correctly: in these cases, the
-> System Timer address is correctly programmed, as well as the CNTFRQ_EL0
-> register (reading 13MHz, as it should be), but the assigned hardware
-> timers are never started before (or after) booting Linux.
-> 
-> In this condition, any call to function get_cycles() will be returning
-> zero, as CNTVCT_EL0 will always read zero.
-> 
-> One common critical symptom of that is trying to use the udelay()
-> function (calling __delay()), which executes the following loop:
-> 
->              start = get_cycles();
->              while ((get_cycles() - start) < cycles)
->                      cpu_relax();
-> 
-> which, when CNTVCT_EL0 always reads zero, translates to:
-> 
->              while((0 - 0) < 0)  ==> while(0 < 0)
-> 
-> ... generating an infinite loop, even though zero is never less
-> than zero, but always equal to it (this has to be researched,
-> but it's out of the scope of this commit).
-> 
-> To fix this issue on the affected MediaTek platforms, the solution
-> is to simply start the timers that are designed to be System Timer(s).
-> These timers, downstream, are called "CPUXGPT" and there is one
-> timer per CPU core; luckily, it is not necessary to set a start bit
-> on each CPUX General Purpose Timer, but it's conveniently enough to:
->   - Set the clock divider (input = 26MHz, divider = 2, output = 13MHz);
->   - Set the ENABLE bit on a global register (starts all CPUX timers).
-> 
-> The only small hurdle with this setup is that it's all done through
-> the MCUSYS wrapper, where it is needed, for each read or write, to
-> select a register address (by writing it to an index register) and
-> then to perform any R/W on a "CON" register.
-> 
-> For example, writing "0x1" to the CPUXGPT register offset 0x4:
-> - Write 0x4 to mcusys INDEX register
-> - Write 0x1 to mcusys CON register
-> 
-> Reading from CPUXGPT register offset 0x4:
-> - Write 0x4 to mcusys INDEX register
-> - Read mcusys CON register.
-> 
-> Finally, starting this timer makes platforms affected by this issue
-> to work correctly.
+There are two occurrences where the pointer array is being assigned a value
+that is never read, the pointer gets updated in the next iteration of a
+loop. These assignments are redundant and can be removed.
 
-Why not fix the ATF ?
+Cleans up clang scan-build warnings:
+sound/soc/intel/skylake/skl-topology.c:2953:3: warning: Value stored to
+'array' is never read [deadcode.DeadStores]
+sound/soc/intel/skylake/skl-topology.c:3602:3: warning: Value stored to
+'array' is never read [deadcode.DeadStores]
 
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ sound/soc/intel/skylake/skl-topology.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-
-
+diff --git a/sound/soc/intel/skylake/skl-topology.c b/sound/soc/intel/skylake/skl-topology.c
+index 9bdf020a2b64..e06eac592da1 100644
+--- a/sound/soc/intel/skylake/skl-topology.c
++++ b/sound/soc/intel/skylake/skl-topology.c
+@@ -2950,9 +2950,6 @@ static int skl_tplg_get_pvt_data(struct snd_soc_tplg_dapm_widget *tplg_w,
+ 		block_size = ret;
+ 		off += array->size;
+ 
+-		array = (struct snd_soc_tplg_vendor_array *)
+-			(tplg_w->priv.data + off);
+-
+ 		data = (tplg_w->priv.data + off);
+ 
+ 		if (block_type == SKL_TYPE_TUPLE) {
+@@ -3599,9 +3596,6 @@ static int skl_tplg_get_manifest_data(struct snd_soc_tplg_manifest *manifest,
+ 		block_size = ret;
+ 		off += array->size;
+ 
+-		array = (struct snd_soc_tplg_vendor_array *)
+-			(manifest->priv.data + off);
+-
+ 		data = (manifest->priv.data + off);
+ 
+ 		if (block_type == SKL_TYPE_TUPLE) {
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+2.35.3
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
