@@ -2,92 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0576FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 725A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242379AbiFNKMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56890 "EHLO
+        id S242454AbiFNKNX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 06:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230313AbiFNKMg (ORCPT
+        with ESMTP id S230313AbiFNKNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:12:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2717A22BC9;
-        Tue, 14 Jun 2022 03:12:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 14 Jun 2022 06:13:20 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439F23DDE7
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 03:13:17 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25E9r3Pt001868;
+        Tue, 14 Jun 2022 10:13:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : date : in-reply-to : references : content-type : mime-version
+ : content-transfer-encoding; s=pp1;
+ bh=r4ovlHpgokjajuVjg0b4TmtD/s1dqH+HimeeeMcuaJI=;
+ b=X+c+EcjObBA/becTecgp6uety8MP1LpiOigDQ7Qmq8xIawFx3Bcq51KaI8ZPJPeEUqBd
+ McTgpTglRxckaAdsUL3vaMSrrRDQPeEYTnEfLYKX6V141+df0IcMiBBQdFFW+K7sTkUD
+ Az8EMHlteYyC0P7BHFnal5rCq+mSrgYHsStfqEZ8sCdAbpoHUvNEN51IqDxipQXy59Pu
+ tbw9x5oRPUgsDs5hTGMquao+N1U4U5QBBnHlj6NFFEgA04Gqgk6XaMF7chkkp4gWQgp7
+ 0KLfm4SBb2PZQQZRgMO3IGB5WYq/PK/0KR+FFloUuXWdfzJJwSbQc7sLn4p91t96JzNo nQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gpr3f0f1n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Jun 2022 10:13:05 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25EA7BbL019154;
+        Tue, 14 Jun 2022 10:13:05 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gpr3f0f12-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Jun 2022 10:13:05 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25EA6c9i024881;
+        Tue, 14 Jun 2022 10:13:03 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gmjp9c67w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 14 Jun 2022 10:13:03 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25EAD0gX19202458
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 14 Jun 2022 10:13:01 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E087842049;
+        Tue, 14 Jun 2022 10:13:00 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8B20942042;
+        Tue, 14 Jun 2022 10:13:00 +0000 (GMT)
+Received: from ozlabs.au.ibm.com (unknown [9.192.253.14])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 14 Jun 2022 10:13:00 +0000 (GMT)
+Received: from [9.43.232.226] (unknown [9.43.232.226])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3D9860AEA;
-        Tue, 14 Jun 2022 10:12:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C89FC3411B;
-        Tue, 14 Jun 2022 10:12:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655201553;
-        bh=OU/NN+viO7AEHR96HAV2XGs7BeFoWc8CIQP0hQgj6vU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N0h9lZRJmQuixNqG6kalxSCRX53PXSuiPfVYsOlhI8XrzjFCEBMrsy427hsL/bzUa
-         nM/e5pkmu6fOdd7zZJTwHbjipGLTPtj191vmJi/3aFaGrbPAzTwxyKm2iRCLcIU4P5
-         0W1UPsirm5b3jLJLQB5nO2oAe2mFBBx/Uxy+Ut72hOrEDS0zluBfBV10ussQJFdX5k
-         YC3oJC7l13zFtvUvhHcc7y9kQbsx+etzhD9zmWelnUdASAmKnOL5nRgoZOVWi7V8El
-         Oa7P6VbFTmnCbRdpuHJEMoV3JbqmnxOFqlImK18KaWBdDghwG+7RM7Azl4aKS0gGky
-         1GJdoKQuuR7Rw==
-Date:   Tue, 14 Jun 2022 11:21:42 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH v3 1/6] iio: adc: meson_saradc: Don't attach managed
- resource to IIO device object
-Message-ID: <20220614112142.3eb70a8d@jic23-huawei>
-In-Reply-To: <Ypo80/NpWLLP43jm@smile.fi.intel.com>
-References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
-        <20220603170612.561edfbf@jic23-huawei>
-        <20220603172307.5d2f3c52@jic23-huawei>
-        <20220603172920.3239bbd6@jic23-huawei>
-        <Ypo80/NpWLLP43jm@smile.fi.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        by ozlabs.au.ibm.com (Postfix) with ESMTPSA id C757E600B4;
+        Tue, 14 Jun 2022 20:12:53 +1000 (AEST)
+Message-ID: <269ecf828ebaa4212a5be6310619aba6d8cfe41d.camel@linux.ibm.com>
+Subject: Re: [PATCH] cxl: Fix refcount leak in cxl_calc_capp_routing
+From:   Andrew Donnellan <ajd@linux.ibm.com>
+To:     Miaoqian Lin <linmq006@gmail.com>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Christophe Lombard <clombard@linux.vnet.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Date:   Tue, 14 Jun 2022 20:12:48 +1000
+In-Reply-To: <20220605060038.62217-1-linmq006@gmail.com>
+References: <20220605060038.62217-1-linmq006@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: fwTu15Na8Suf3BZQk5RnP5sMvIgpE5_F
+X-Proofpoint-GUID: 5itWkOXL3wwUOFWlG2l8XAMaXCELVMMP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-14_02,2022-06-13_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 adultscore=0 phishscore=0 priorityscore=1501 clxscore=1011
+ bulkscore=0 suspectscore=0 spamscore=0 mlxlogscore=999 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206140040
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 3 Jun 2022 19:54:43 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Sun, 2022-06-05 at 10:00 +0400, Miaoqian Lin wrote:
+> of_get_next_parent() returns a node pointer with refcount
+> incremented,
+> we should use of_node_put() on it when not need anymore.
+> This function only calls of_node_put() in normal path,
+> missing it in the error path.
+> Add missing of_node_put() to avoid refcount leak.
+> 
+> Fixes: f24be42aab37 ("cxl: Add psl9 specific code")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 
-> On Fri, Jun 03, 2022 at 05:29:20PM +0100, Jonathan Cameron wrote:
-> > On Fri, 3 Jun 2022 17:23:07 +0100
-> > Jonathan Cameron <jic23@kernel.org> wrote:  
-> 
-> ...
-> 
-> > Andy, put a cover letter on these larger series - if nothing else it gives
-> > somewhere convenient for people to give tags for the whole series, or 
-> > maintainer to say what they are doing with it.  
-> 
-> I'll try to remember this. The series was started from only a couple of patches
-> and grew to this big, and I forgot to add a cover letter when it seems not
-> anymore obvious what has been done.
-> 
-> > Anyhow, I'm fine with the series, but will leave it on list for a while
-> > longer, particularly to get patch 6 some eyes + testing.
-> > 
-> > Currently I plan to drop the fixes tag from this first patch, but I'm prepared
-> > to be convinced it's a bug fix rather than a consistency cleanup.  
-> 
-> Fine with me, thanks!
-> 
-Applied to the togreg branch of iio.git and pushed out as testing for all the normal
-reasons.
+Thanks!
 
-Thanks,
+Acked-by: Andrew Donnellan <ajd@linux.ibm.com>
 
-Jonathan
+> ---
+>  drivers/misc/cxl/pci.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/misc/cxl/pci.c b/drivers/misc/cxl/pci.c
+> index 3de0aea62ade..62385a529d86 100644
+> --- a/drivers/misc/cxl/pci.c
+> +++ b/drivers/misc/cxl/pci.c
+> @@ -387,6 +387,7 @@ int cxl_calc_capp_routing(struct pci_dev *dev,
+> u64 *chipid,
+>         rc = get_phb_index(np, phb_index);
+>         if (rc) {
+>                 pr_err("cxl: invalid phb index\n");
+> +               of_node_put(np);
+>                 return rc;
+>         }
+>  
+
 
