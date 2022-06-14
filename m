@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C4DAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:10:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E930C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:10:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352732AbiFNCKH (ORCPT
+        id S1352736AbiFNCKN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:10:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42878 "EHLO
+        Mon, 13 Jun 2022 22:10:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352464AbiFNCJI (ORCPT
+        with ESMTP id S1352470AbiFNCJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:09:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98BE436681;
-        Mon, 13 Jun 2022 19:06:28 -0700 (PDT)
+        Mon, 13 Jun 2022 22:09:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9400636698;
+        Mon, 13 Jun 2022 19:06:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A098B816B3;
-        Tue, 14 Jun 2022 02:06:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45143C341C4;
-        Tue, 14 Jun 2022 02:06:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 117D460AF2;
+        Tue, 14 Jun 2022 02:06:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 719C9C3411B;
+        Tue, 14 Jun 2022 02:06:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172386;
-        bh=GNVhN8oxEYeMg60d7RL3ZFYRy4UDTM6B8Kb1KDFy4so=;
+        s=k20201202; t=1655172390;
+        bh=68NMvNghBcXdGZX4yoLNezSki2KhcCcVBbWjRDWG2tc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eqU1TjXlV6YRucq2Y2TPJiyqTNmocOAv9PP6KTLVnsiZit5Fw6vonpcRYgexnzB5Z
-         lPxT72i6nz43wRP4DYE7oFgIKjmOGJKO7lFDGDNBoQLfuhyfsk5JBQJol5AqpS3xLj
-         auwyPPOXdkf+9WGHEMjGO92izVNwc9Ob4yz6DD4Hoh/qYb9c/NZit7jMq9CrEQRrY5
-         +8RQ7LgiFZn/HV/UnIBrwFyCL29DeFrzhUs4MBCad4RiD3hN2CFDo5ZZP1bv3C66ts
-         dikRzfUvRUTplj3rlqF/VtDHau+VbSYF7laYaD8oQPxyYiwNbkLg4Daa5PNJpesfoV
-         nofAmCEtXa8/g==
+        b=dmW/epbrzV9J7sRJrobSHTkSQ+yZiQPUQpeli9lVpdz9rWk0feOOiEf9E3DSIMPCN
+         zl4dbTxnoERALRXa4cMoP8A342Kjo2CBmUJ7bpx0o2FFQAr6N92zCAKqZDnIcBIZ3p
+         h5cy8th2QVSw5k7Bmlqe7Y2EnVeaeAPLZTvbpix5rHNBbK0ys89+QNsaYVMLCANzUd
+         1Vc5W2iY/H22dn+uEid1kd+B39npHioGqtGiVJWjZsK4tJojwx4+kH+xdJemE3BVOP
+         XAiXLZ45w/Ec8EIz3SObsS6oQrQeFYE7GOfRZoJavCIvXvKTrIN069GHhrQZym/BXi
+         YIjDpITRf62Lg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>,
-        jack@suse.com
-Subject: [PATCH AUTOSEL 5.17 15/43] quota: Prevent memory allocation recursion while holding dq_lock
-Date:   Mon, 13 Jun 2022 22:05:34 -0400
-Message-Id: <20220614020602.1098943-15-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com,
+        patches@opensource.wolfsonmicro.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 18/43] ASoC: wm_adsp: Fix event generation for wm_adsp_fw_put()
+Date:   Mon, 13 Jun 2022 22:05:37 -0400
+Message-Id: <20220614020602.1098943-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
 References: <20220614020602.1098943-1-sashal@kernel.org>
@@ -52,95 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 537e11cdc7a6b3ce94fa25ed41306193df9677b7 ]
+[ Upstream commit 2abdf9f80019e8244d3806ed0e1c9f725e50b452 ]
 
-As described in commit 02117b8ae9c0 ("f2fs: Set GF_NOFS in
-read_cache_page_gfp while doing f2fs_quota_read"), we must not enter
-filesystem reclaim while holding the dq_lock.  Prevent this more generally
-by using memalloc_nofs_save() while holding the lock.
+Currently wm_adsp_fw_put() returns 0 rather than 1 when updating the value
+of the control, meaning that no event is generated to userspace. Fix this
+by setting the default return value to 1, the code already exits early with
+a return value of 0 if the value is unchanged.
 
-Link: https://lore.kernel.org/r/20220605143815.2330891-2-willy@infradead.org
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220603115003.3865834-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/quota/dquot.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ sound/soc/codecs/wm_adsp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
-index a74aef99bd3d..09d1307959d0 100644
---- a/fs/quota/dquot.c
-+++ b/fs/quota/dquot.c
-@@ -79,6 +79,7 @@
- #include <linux/capability.h>
- #include <linux/quotaops.h>
- #include <linux/blkdev.h>
-+#include <linux/sched/mm.h>
- #include "../internal.h" /* ugh */
+diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
+index 0582585236a2..93677b9f3a68 100644
+--- a/sound/soc/codecs/wm_adsp.c
++++ b/sound/soc/codecs/wm_adsp.c
+@@ -328,7 +328,7 @@ int wm_adsp_fw_put(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+ 	struct wm_adsp *dsp = snd_soc_component_get_drvdata(component);
+-	int ret = 0;
++	int ret = 1;
  
- #include <linux/uaccess.h>
-@@ -425,9 +426,11 @@ EXPORT_SYMBOL(mark_info_dirty);
- int dquot_acquire(struct dquot *dquot)
- {
- 	int ret = 0, ret2 = 0;
-+	unsigned int memalloc;
- 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
- 
- 	mutex_lock(&dquot->dq_lock);
-+	memalloc = memalloc_nofs_save();
- 	if (!test_bit(DQ_READ_B, &dquot->dq_flags)) {
- 		ret = dqopt->ops[dquot->dq_id.type]->read_dqblk(dquot);
- 		if (ret < 0)
-@@ -458,6 +461,7 @@ int dquot_acquire(struct dquot *dquot)
- 	smp_mb__before_atomic();
- 	set_bit(DQ_ACTIVE_B, &dquot->dq_flags);
- out_iolock:
-+	memalloc_nofs_restore(memalloc);
- 	mutex_unlock(&dquot->dq_lock);
- 	return ret;
- }
-@@ -469,9 +473,11 @@ EXPORT_SYMBOL(dquot_acquire);
- int dquot_commit(struct dquot *dquot)
- {
- 	int ret = 0;
-+	unsigned int memalloc;
- 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
- 
- 	mutex_lock(&dquot->dq_lock);
-+	memalloc = memalloc_nofs_save();
- 	if (!clear_dquot_dirty(dquot))
- 		goto out_lock;
- 	/* Inactive dquot can be only if there was error during read/init
-@@ -481,6 +487,7 @@ int dquot_commit(struct dquot *dquot)
- 	else
- 		ret = -EIO;
- out_lock:
-+	memalloc_nofs_restore(memalloc);
- 	mutex_unlock(&dquot->dq_lock);
- 	return ret;
- }
-@@ -492,9 +499,11 @@ EXPORT_SYMBOL(dquot_commit);
- int dquot_release(struct dquot *dquot)
- {
- 	int ret = 0, ret2 = 0;
-+	unsigned int memalloc;
- 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
- 
- 	mutex_lock(&dquot->dq_lock);
-+	memalloc = memalloc_nofs_save();
- 	/* Check whether we are not racing with some other dqget() */
- 	if (dquot_is_busy(dquot))
- 		goto out_dqlock;
-@@ -510,6 +519,7 @@ int dquot_release(struct dquot *dquot)
- 	}
- 	clear_bit(DQ_ACTIVE_B, &dquot->dq_flags);
- out_dqlock:
-+	memalloc_nofs_restore(memalloc);
- 	mutex_unlock(&dquot->dq_lock);
- 	return ret;
- }
+ 	if (ucontrol->value.enumerated.item[0] == dsp[e->shift_l].fw)
+ 		return 0;
 -- 
 2.35.1
 
