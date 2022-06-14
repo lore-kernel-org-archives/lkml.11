@@ -2,120 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9877EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B57C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232474AbiFNPtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 11:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58950 "EHLO
+        id S1344297AbiFNPtf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 11:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237623AbiFNPtK (ORCPT
+        with ESMTP id S1344263AbiFNPt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 11:49:10 -0400
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F512E08F;
-        Tue, 14 Jun 2022 08:49:09 -0700 (PDT)
-Received: by mail-qt1-f170.google.com with SMTP id hf10so6371872qtb.7;
-        Tue, 14 Jun 2022 08:49:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2Lz2xm2OeZO7pMrkyEsrx4M6KP6BHP9ACsFmmAuNdJE=;
-        b=xVvu73MHUUEUj5+r+6n9WWuTseX4F2sccRHYu+YldWfqvA8mMn6/pXcQtD+jFJL1ui
-         6cPQSeHEl9HSuqZq42zDFsnQI9Fwk4sM6/S6FIRj8sR1P/WwcRMXUN0V4jRNaJUYi/2k
-         A0V2YLT7kEyM4jyCyIWI0PzCi6MHaxRRbDH2jcnpnMJwLL1JGsKI3S9fxcKqh1Q8F0Sq
-         HsbmwP6eChRfVZgjXn9nKC0WYd+p2mhZAiPLnp2YjaMJ/urXbxbHNxA5vgDXSMrQCo37
-         eaQj492q3ujuUSq3CKiWp0gZ00FDdIWQsFtcBI1KRuJ/+2+c4TRvBihUaeH6oM5U9AsM
-         29dg==
-X-Gm-Message-State: AOAM530gjNvijQSxjvAoVgb/zu0JptURiE9v2CWanc7F5vasq+S72d4C
-        P7g2VIbRKacHhU75/GDpKHi6zv/JC9kF8A==
-X-Google-Smtp-Source: ABdhPJyjZcL86ZtgiGvwCCHzMJs3/IaCrGdoWU8qbUZEZINAZox7I51VQVdQ2FJypRfyrO20F7QkBQ==
-X-Received: by 2002:a05:622a:1393:b0:304:b6c8:bca2 with SMTP id o19-20020a05622a139300b00304b6c8bca2mr4637798qtk.642.1655221748403;
-        Tue, 14 Jun 2022 08:49:08 -0700 (PDT)
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
-        by smtp.gmail.com with ESMTPSA id j9-20020ae9c209000000b006a377a015d4sm9466708qkg.39.2022.06.14.08.49.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 08:49:08 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id v81so15942249ybe.0;
-        Tue, 14 Jun 2022 08:49:08 -0700 (PDT)
-X-Received: by 2002:a05:6902:905:b0:64a:2089:f487 with SMTP id
- bu5-20020a056902090500b0064a2089f487mr5874556ybb.202.1655221747725; Tue, 14
- Jun 2022 08:49:07 -0700 (PDT)
+        Tue, 14 Jun 2022 11:49:27 -0400
+Received: from mailout1.rbg.tum.de (mailout1.rbg.tum.de [131.159.0.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0546A2EA14
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:49:25 -0700 (PDT)
+Received: from mailrelay1.rbg.tum.de (mailrelay1.in.tum.de [IPv6:2a09:80c0:254::14])
+        by mailout1.rbg.tum.de (Postfix) with ESMTPS id 501D6B1B;
+        Tue, 14 Jun 2022 17:49:14 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=in.tum.de;
+        s=20220209; t=1655221754;
+        bh=1YhOTVDbcaz5aNnY1gjxQfdQ/am6Ukomt+EudTq2P2M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MnPhEdQqyQ1dj/LdIOb1/ik+eBP2cXlELw5VAJ4ZScoIVFbkwpvTRn4lRYr9nd95z
+         bpi6zH4cmJ97p4VIqa5mB0GIttqcjxsuTSiO+aIXn1VSnSIEXP7h3cyFw2XsZAcj+m
+         lTguT6BeX1U1HrhmptlwHBWZFb294oWbroWDzjeHypXsZzZHDFzEZvJYXqWRF/Wktp
+         Sls1uXGCT1+n6uKXHFwOYWNp41+59ziA9diqr+Xolumj0ybiuw47RUBp0qq9Tt7elg
+         LoyBZwSwT5TZQi1GnEiKcTFWcgBrIJZ6i0c5w/Tuao76wl5F5LahW+IjfrJjw7MiQZ
+         Hw02rTSxcCSDQ==
+Received: by mailrelay1.rbg.tum.de (Postfix, from userid 112)
+        id 4C06C28B; Tue, 14 Jun 2022 17:49:14 +0200 (CEST)
+Received: from mailrelay1.rbg.tum.de (localhost [127.0.0.1])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTP id 1D39E28A;
+        Tue, 14 Jun 2022 17:49:14 +0200 (CEST)
+Received: from mail.in.tum.de (mailproxy.in.tum.de [IPv6:2a09:80c0::78])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTPS id 17A50286;
+        Tue, 14 Jun 2022 17:49:14 +0200 (CEST)
+Received: by mail.in.tum.de (Postfix, from userid 112)
+        id 13CFB4A01EC; Tue, 14 Jun 2022 17:49:14 +0200 (CEST)
+Received: (Authenticated sender: heidekrp)
+        by mail.in.tum.de (Postfix) with ESMTPSA id B21584A013B;
+        Tue, 14 Jun 2022 17:49:13 +0200 (CEST)
+        (Extended-Queue-bit xtech_hi@fff.in.tum.de)
+From:   =?UTF-8?q?Paul=20Heidekr=C3=BCger?= <paul.heidekrueger@in.tum.de>
+To:     Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        =?UTF-8?q?Paul=20Heidekr=C3=BCger?= <paul.heidekrueger@in.tum.de>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
+Cc:     Marco Elver <elver@google.com>,
+        Charalampos Mainas <charalampos.mainas@gmail.com>,
+        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
+        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
+        Martin Fink <martin.fink@in.tum.de>
+Subject: [PATCH v2] tools/memory-model: Clarify LKMM's limitations in litmus-tests.txt
+Date:   Tue, 14 Jun 2022 15:48:11 +0000
+Message-Id: <20220614154812.1870099-1-paul.heidekrueger@in.tum.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <Yqdb3CZ8bKtbWZ+z@rowland.harvard.edu>
+References: <Yqdb3CZ8bKtbWZ+z@rowland.harvard.edu>
 MIME-Version: 1.0
-References: <20220613134914.18655-1-wsa+renesas@sang-engineering.com> <20220613134914.18655-3-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20220613134914.18655-3-wsa+renesas@sang-engineering.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 14 Jun 2022 17:48:56 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWJ9N1=X0O0LtpPrjH-uSbupKAVr+J3KwStL7xYgMxfWw@mail.gmail.com>
-Message-ID: <CAMuHMdWJ9N1=X0O0LtpPrjH-uSbupKAVr+J3KwStL7xYgMxfWw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] arm64: dts: renesas: spider-cpu: Enable SCIF0 on
- second connector
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Wolfram,
+As discussed, clarify LKMM not recognizing certain kinds of orderings.
+In particular, highlight the fact that LKMM might deliberately make
+weaker guarantees than compilers and architectures.
 
-On Mon, Jun 13, 2022 at 3:49 PM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
-> The schematics label it as SCIF0 debug port.
->
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Link: https://lore.kernel.org/all/YpoW1deb%2FQeeszO1@ethstick13.dse.in.tum.de/T/#u
+Signed-off-by: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
+Co-developed-by: Alan Stern <stern@rowland.harvard.edu>
+Cc: Marco Elver <elver@google.com>
+Cc: Charalampos Mainas <charalampos.mainas@gmail.com>
+Cc: Pramod Bhatotia <pramod.bhatotia@in.tum.de>
+Cc: Soham Chakraborty <s.s.chakraborty@tudelft.nl>
+Cc: Martin Fink <martin.fink@in.tum.de>
+---
 
-Thanks for your patch!
+v2:
+- Incorporate Alan Stern's feedback.
+- Add suggested text by Alan Stern to clearly state how the branch and the
+  smp_mb() affect ordering.
+- Add "Co-developed-by: Alan Stern <stern@rowland.harvard.edu>" based on the
+  above.
 
-> --- a/arch/arm64/boot/dts/renesas/r8a779f0-spider-cpu.dtsi
-> +++ b/arch/arm64/boot/dts/renesas/r8a779f0-spider-cpu.dtsi
-> @@ -68,6 +68,11 @@ i2c4_pins: i2c4 {
->                 function = "i2c4";
->         };
->
-> +       scif0_pins: scif0 {
-> +               groups = "scif0_data", "scif0_ctrl";
-> +               function = "scif0";
-> +       };
-> +
->         scif_clk_pins: scif_clk {
->                 groups = "scif_clk";
->                 function = "scif_clk";
-> @@ -79,6 +84,14 @@ &rwdt {
->         status = "okay";
->  };
->
-> +&scif0 {
-> +       pinctrl-0 = <&scif0_pins>;
-> +       pinctrl-names = "default";
-> +
-> +       uart-has-rtscts;
-> +       status = "okay";
-> +};
-> +
->  &scif_clk {
->         clock-frequency = <24000000>;
->  };
+ .../Documentation/litmus-tests.txt            | 37 ++++++++++++++-----
+ 1 file changed, 27 insertions(+), 10 deletions(-)
 
-This needs a new serial alias under /aliases.
-Mixing dynamic and static serial IDs may cause conflicts, cfr. commit
-7678f4c20fa7670f ("serial: sh-sci: Add support for dynamic instances").
+diff --git a/tools/memory-model/Documentation/litmus-tests.txt b/tools/memory-model/Documentation/litmus-tests.txt
+index 8a9d5d2787f9..cc355999815c 100644
+--- a/tools/memory-model/Documentation/litmus-tests.txt
++++ b/tools/memory-model/Documentation/litmus-tests.txt
+@@ -946,22 +946,39 @@ Limitations of the Linux-kernel memory model (LKMM) include:
+ 	carrying a dependency, then the compiler can break that dependency
+ 	by substituting a constant of that value.
+ 
+-	Conversely, LKMM sometimes doesn't recognize that a particular
+-	optimization is not allowed, and as a result, thinks that a
+-	dependency is not present (because the optimization would break it).
+-	The memory model misses some pretty obvious control dependencies
+-	because of this limitation.  A simple example is:
++	Conversely, LKMM will sometimes overestimate the amount of
++	reordering compilers and CPUs can carry out, leading it to miss
++	some pretty obvious cases of ordering.  A simple example is:
+ 
+ 		r1 = READ_ONCE(x);
+ 		if (r1 == 0)
+ 			smp_mb();
+ 		WRITE_ONCE(y, 1);
+ 
+-	There is a control dependency from the READ_ONCE to the WRITE_ONCE,
+-	even when r1 is nonzero, but LKMM doesn't realize this and thinks
+-	that the write may execute before the read if r1 != 0.  (Yes, that
+-	doesn't make sense if you think about it, but the memory model's
+-	intelligence is limited.)
++	The WRITE_ONCE() does not depend on the READ_ONCE(), and as a
++	result, LKMM does not claim ordering.  However, even though no
++	dependency is present, the WRITE_ONCE() will not be executed before
++	the READ_ONCE().  There are two reasons for this:
++
++                The presence of the smp_mb() in one of the branches
++                prevents the compiler from moving the WRITE_ONCE()
++                up before the "if" statement, since the compiler has
++                to assume that r1 will sometimes be 0 (but see the
++                comment below);
++
++                CPUs do not execute stores before po-earlier conditional
++                branches, even in cases where the store occurs after the
++                two arms of the branch have recombined.
++
++	It is clear that it is not dangerous in the slightest for LKMM to
++	make weaker guarantees than architectures.  In fact, it is
++	desirable, as it gives compilers room for making optimizations.  
++	For instance, suppose that a 0 value in r1 would trigger undefined
++	behavior elsewhere.  Then a clever compiler might deduce that r1
++	can never be 0 in the if condition.  As a result, said clever
++	compiler might deem it safe to optimize away the smp_mb(),
++	eliminating the branch and any ordering an architecture would
++	guarantee otherwise.
+ 
+ 2.	Multiple access sizes for a single variable are not supported,
+ 	and neither are misaligned or partially overlapping accesses.
+-- 
+2.35.1
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
