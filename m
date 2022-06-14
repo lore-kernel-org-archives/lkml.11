@@ -2,139 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C00FFCCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC17C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 10:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356024AbiFNKgq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 06:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52704 "EHLO
+        id S234229AbiFNKiQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 06:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355785AbiFNKgk (ORCPT
+        with ESMTP id S230157AbiFNKiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 06:36:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C4C49688;
-        Tue, 14 Jun 2022 03:36:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E74BBB81853;
-        Tue, 14 Jun 2022 10:36:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0F8AC3411B;
-        Tue, 14 Jun 2022 10:36:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655202989;
-        bh=rwLTNV8FtkV1nVo+pSkSat5md/4dvMxUVJY4Yqt7PS4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lNUD21J3oMZVICFV1A4umZXFSuY+r0Wbjc32YEh6ZLdW2Wben/pKmyyhjS6Eph/2/
-         OsZTd+oDTvOrTYlE+ppEMzYey9QEzsJ8NntbGuMguSthXA0PaRS1dKLzMs7hNuPttV
-         hQhjK7yHq8a2Bo3rxKWoYw05J+gs/+mlzQnMxG4SMnSfCYtEZLXCsiMX50etKdLpTK
-         0X64Scn+oWJP8P6pvdtQQQns+1Ynb9Ukc3toxAFzzOa6o+GbZMRtulZm4UOXHWMQ74
-         ciUjOlEgG7WTKfOXj6AvMmKeGeJ9EcpDp/5s/wiI33xlz+/9idZqw6noxu6ubL6u35
-         R6HPMQENRNP4A==
-Date:   Tue, 14 Jun 2022 11:45:39 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Caleb Connolly <caleb.connolly@linaro.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        Jami Kettunen <jami.kettunen@somainline.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>
-Subject: Re: [PATCH v14 04/10] dt-bindings: iio: adc: document
- qcom-spmi-rradc
-Message-ID: <20220614114539.45598cc3@jic23-huawei>
-In-Reply-To: <20220429220904.137297-5-caleb.connolly@linaro.org>
-References: <20220429220904.137297-1-caleb.connolly@linaro.org>
-        <20220429220904.137297-5-caleb.connolly@linaro.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Tue, 14 Jun 2022 06:38:09 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973E62ED53;
+        Tue, 14 Jun 2022 03:38:08 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1655203086;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=h30HHa9jF+uZdIEOGOAgUHK0WvfWButVsj8i2bL6Vio=;
+        b=Sh8gtiA1sKFv8/Ql9eFUL/Ok8GiV66l69lGl/WsbFhcgfTSJfEF3pdAfC9Z58sulDCO6nM
+        p+t8pBlPRjZbRB9r689/7AwZHFTl2quBZBTHXx/rKSoHDnpdcazCvIHL8zRcZT2w8kOKhT
+        sAAdyLrQyOBMOnUnKVSE1V2AnEyrGvg=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org, eranian@google.com
+Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH] perf/core: fix perf_event_mux_interval_ms when set zero
+Date:   Tue, 14 Jun 2022 18:37:51 +0800
+Message-Id: <20220614103751.1395645-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022 23:08:59 +0100
-Caleb Connolly <caleb.connolly@linaro.org> wrote:
+The perf_event_mux_interval_ms is set to zero or one by default.
+It can't change back when someone changes it from zero to another
+value.
 
-> Add dt-binding docs for the Qualcomm SPMI RRADC found in PMICs like
-> PMI8998 and PMI8994
-> 
-> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-#to let Lee pick it up via mfd if he prefers.
+Make perf_event_mux_interval_ms to PERF_CPU_HRTIMER when set zero.
 
-Thanks,
+Fixes: 62b856397927 ("perf: Add sysfs entry to adjust multiplexing interval per PMU")
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ kernel/events/core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Jonathan
-
-> ---
->  .../bindings/iio/adc/qcom,spmi-rradc.yaml     | 51 +++++++++++++++++++
->  1 file changed, 51 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
-> new file mode 100644
-> index 000000000000..c8cbfd3444be
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
-> @@ -0,0 +1,51 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/qcom,spmi-rradc.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm's SPMI PMIC Round Robin ADC
-> +
-> +maintainers:
-> +  - Caleb Connolly <caleb.connolly@linaro.org>
-> +
-> +description: |
-> +  The Qualcomm SPMI Round Robin ADC (RRADC) provides interface to clients to
-> +  read the voltage, current and temperature for supported peripherals such as
-> +  the battery thermistor die temperature, charger temperature, USB and DC input
-> +  voltage / current and battery ID resistor.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - qcom,pmi8998-rradc
-> +      - qcom,pm660-rradc
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  qcom,batt-id-delay-ms:
-> +    description: Sets the hardware settling time for the battery ID resistor.
-> +    enum: [0, 1, 4, 12, 20, 40, 60, 80]
-> +
-> +  "#io-channel-cells":
-> +    const: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    pmic {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      pmic_rradc: adc@4500 {
-> +          compatible = "qcom,pmi8998-rradc";
-> +          reg = <0x4500>;
-> +          #io-channel-cells  = <1>;
-> +      };
-> +    };
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 61ad10862c21..73c8c7462bbf 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -10954,9 +10954,12 @@ perf_event_mux_interval_ms_store(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	if (timer < 1)
++	if (timer < 0)
+ 		return -EINVAL;
+ 
++	if (timer < 1)
++		timer = PERF_CPU_HRTIMER;
++
+ 	/* same value, noting to do */
+ 	if (timer == pmu->hrtimer_interval_ms)
+ 		return count;
+-- 
+2.25.1
 
