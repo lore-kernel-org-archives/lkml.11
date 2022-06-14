@@ -2,195 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C97D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85126C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:42:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354685AbiFNImW (ORCPT
+        id S1354804AbiFNIm2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33722 "EHLO
+        Tue, 14 Jun 2022 04:42:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355768AbiFNIlx (ORCPT
+        with ESMTP id S1355806AbiFNImA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:41:53 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7DF443D9
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:41:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655196102; x=1686732102;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fd/lbLyA5AI0yS74VK2NbXXwkzPBzN8ClOqlIpUds/I=;
-  b=dJ+DoiUvmGAkVU+QNJp8AGCQqeLGHXGsEGHUrQsPBQduQ455zKpjQ8kc
-   0vshLi4QPQQkbCnHh09n6xcFlM2oBFdh7eGjWVAoZoNIKSiPMkSO6fHil
-   BdhG5VjMjuT9flmjazriN1CqUldK2+Bbp7T/jFgurd/V2ph1QSMyYb68P
-   Wh3hgb544BmJHdd9nTGvaibV0TuLbV739lJSab5qn85O/3IXdweBiSrxX
-   8o/LOWwrmNldbNvnhuYk6HlMAWEH5GZ2lQts/PRdmlBKEqL4C5616uTNe
-   L53HXHgYtIY4bchlyERC2FL7PplXTp/f8Si6PsGJ7z6RokG1GcCrO1wyK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="277333383"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="277333383"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:41:03 -0700
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="640222026"
-Received: from unknown (HELO yhuang6-mobl1.ccr.corp.intel.com) ([10.254.215.153])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 01:40:58 -0700
-Message-ID: <245802940528e11c879d4b54a9c25ef8497a9547.camel@intel.com>
-Subject: Re: [PATCH v6 03/13] mm/demotion: Return error on write to
- numa_demotion sysfs
-From:   Ying Huang <ying.huang@intel.com>
-To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-Date:   Tue, 14 Jun 2022 16:40:56 +0800
-In-Reply-To: <e1e25713-3c06-5f31-e98f-20faa28d4ef9@linux.ibm.com>
-References: <20220610135229.182859-1-aneesh.kumar@linux.ibm.com>
-         <20220610135229.182859-4-aneesh.kumar@linux.ibm.com>
-         <7ed1f9f544937b5c82ab380a4977e5ae22a98c43.camel@intel.com>
-         <9da3c6ef-ba0d-6229-2188-0956222b04f1@linux.ibm.com>
-         <33b42a802a07721c639db99ed208ed43f743bb37.camel@intel.com>
-         <e1e25713-3c06-5f31-e98f-20faa28d4ef9@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Tue, 14 Jun 2022 04:42:00 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 56C204338C
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:41:30 -0700 (PDT)
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(29251:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Tue, 14 Jun 2022 16:31:20 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     sboyd@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        mturquette@baylibre.com, linux@armlinux.org.uk, arnd@arndb.de,
+        olof@lixom.net, soc@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Qin Jian <qinjian@cqplus1.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v18 04/10] dt-bindings: clock: Add bindings for SP7021 clock driver
+Date:   Tue, 14 Jun 2022 16:31:03 +0800
+Message-Id: <4c096a22224e0ba6fba113c172cec45ed705aa47.1655194858.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1655194858.git.qinjian@cqplus1.com>
+References: <cover.1655194858.git.qinjian@cqplus1.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-06-13 at 11:18 +0530, Aneesh Kumar K V wrote:
-> On 6/13/22 11:03 AM, Ying Huang wrote:
-> > On Mon, 2022-06-13 at 09:05 +0530, Aneesh Kumar K V wrote:
-> > > On 6/13/22 8:56 AM, Ying Huang wrote:
-> > > > On Fri, 2022-06-10 at 19:22 +0530, Aneesh Kumar K.V wrote:
-> > > > > With CONFIG_MIGRATION disabled return EINVAL on write.
-> > > > > 
-> > > > > Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-> > > > > ---
-> > > > >    mm/memory-tiers.c | 3 +++
-> > > > >    1 file changed, 3 insertions(+)
-> > > > > 
-> > > > > diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-> > > > > index 9c6b40d7e0bf..c3123a457d90 100644
-> > > > > --- a/mm/memory-tiers.c
-> > > > > +++ b/mm/memory-tiers.c
-> > > > > @@ -105,6 +105,9 @@ static ssize_t numa_demotion_enabled_store(struct kobject *kobj,
-> > > > >    {
-> > > > >    	ssize_t ret;
-> > > > >    
-> > > > > 
-> > > > > 
-> > > > > 
-> > > > > +	if (!IS_ENABLED(CONFIG_MIGRATION))
-> > > > > +		return -EINVAL;
-> > > > > +
-> > > > 
-> > > > How about enclose numa_demotion_enabled_xxx related code with CONFIG_MIGRATION?
-> > > > 
-> > > 
-> > > IIUC there is a desire to use IS_ENABLED() in the kernel instead of
-> > > #ifdef since that helps in more compile time checks. Because there are
-> > > no dead codes during compile now with IS_ENABLED().
-> > 
-> > IS_ENABLED() is used to reduce usage of "#ifdef" in ".c" file,
-> > especially inside a function.  We have good build test coverage with
-> > 0Day now.
-> > 
-> > To avoid code size inflate, it's better to use #ifdef CONFIG_MIGRATION.
-> > 
-> 
-> For a diff like below I am finding IS_ENABLED better.
-> 
-> size memory-tiers.o.isenabled memory-tiers.o
->     text    data     bss     dec     hex filename
->     4776     989       5    5770    168a memory-tiers.o.isenabled
->     5257     990       5    6252    186c memory-tiers.o
-> 
-> 
-> modified   mm/memory-tiers.c
-> @@ -710,12 +710,11 @@ static int __meminit 
-> migrate_on_reclaim_callback(struct notifier_block *self,
-> 
->   static void __init migrate_on_reclaim_init(void)
->   {
-> -
-> -	if (IS_ENABLED(CONFIG_MIGRATION)) {
-> +#ifdef CONFIG_MIGRATION
->   		node_demotion = kcalloc(MAX_NUMNODES, sizeof(struct demotion_nodes),
->   					GFP_KERNEL);
->   		WARN_ON(!node_demotion);
-> -	}
-> +#endif
->   	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
->   }
-> 
-> @@ -844,14 +843,19 @@ static ssize_t numa_demotion_enabled_show(struct 
-> kobject *kobj,
->   			  numa_demotion_enabled ? "true" : "false");
->   }
-> 
-> +#ifdef CONFIG_MIGRATION
->   static ssize_t numa_demotion_enabled_store(struct kobject *kobj,
->   					   struct kobj_attribute *attr,
->   					   const char *buf, size_t count)
->   {
-> -	ssize_t ret;
-> -
-> -	if (!IS_ENABLED(CONFIG_MIGRATION))
-> -		return -EINVAL;
-> +	return -EINVAL;
-> +}
-> +#else
-> +static ssize_t numa_demotion_enabled_store(struct kobject *kobj,
-> +					   struct kobj_attribute *attr,
-> +					   const char *buf, size_t count)
-> +{
-> +		ssize_t ret;
-> 
->   	ret = kstrtobool(buf, &numa_demotion_enabled);
->   	if (ret)
-> @@ -859,6 +863,7 @@ static ssize_t numa_demotion_enabled_store(struct 
-> kobject *kobj,
-> 
->   	return count;
->   }
-> +#endif
-> 
->   static struct kobj_attribute numa_demotion_enabled_attr =
->   	__ATTR(demotion_enabled, 0644, numa_demotion_enabled_show,
-> 
-> I also find that #ifdef config not easier to the eyes. If there is a 
-> large code that we can end up #ifdef out, then it might be worth it. 
-> IIUC, we might want to keep the establish_migration target to find 
-> top_tier rank and lower_tier mask. Once we do that only thing that we 
-> could comment out is the node_demotion sysfs creation and I was 
-> considering to keep that even if migration is disabled with a write to 
-> the file returning EINVAL. I could switch that if you strongly feel that 
-> we should hide node_demotion sysfs file.
+Add documentation to describe Sunplus SP7021 clock driver bindings.
 
-Per my understanding, we can enclose most code about
-demoting/promoting inside CONFIG_MIGRATION, including
-numa/demotion_enabled sysfs interface.  In this way, the code size can
-be reduced.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Qin Jian <qinjian@cqplus1.com>
+---
+ .../bindings/clock/sunplus,sp7021-clkc.yaml   | 52 +++++++++++
+ MAINTAINERS                                   |  2 +
+ .../dt-bindings/clock/sunplus,sp7021-clkc.h   | 88 +++++++++++++++++++
+ 3 files changed, 142 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ create mode 100644 include/dt-bindings/clock/sunplus,sp7021-clkc.h
 
-Best Regards,
-Huang, Ying
+diff --git a/Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml b/Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+new file mode 100644
+index 000000000..bcc140882
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+@@ -0,0 +1,52 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/sunplus,sp7021-clkc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sunplus SP7021 SoC Clock Controller
++
++maintainers:
++  - Qin Jian <qinjian@cqplus1.com>
++
++properties:
++  compatible:
++    const: sunplus,sp7021-clkc
++
++  reg:
++    maxItems: 3
++
++  clocks:
++    maxItems: 1
++
++  "#clock-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - "#clock-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    extclk: osc0 {
++      compatible = "fixed-clock";
++      #clock-cells = <0>;
++      clock-frequency = <27000000>;
++      clock-output-names = "extclk";
++    };
++
++    clkc: clock-controller@9c000004 {
++      compatible = "sunplus,sp7021-clkc";
++      reg = <0x9c000004 0x28>,
++            <0x9c000200 0x44>,
++            <0x9c000268 0x08>;
++      clocks = <&extclk>;
++      #clock-cells = <1>;
++    };
++
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 5e352bb97..91b92b4fb 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2811,8 +2811,10 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for mon-subscribers)
+ S:	Maintained
+ W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
++F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+ F:	drivers/reset/reset-sunplus.c
++F:	include/dt-bindings/clock/sunplus,sp7021-clkc.h
+ F:	include/dt-bindings/reset/sunplus,sp7021-reset.h
+ 
+ ARM/Synaptics SoC support
+diff --git a/include/dt-bindings/clock/sunplus,sp7021-clkc.h b/include/dt-bindings/clock/sunplus,sp7021-clkc.h
+new file mode 100644
+index 000000000..cd84321eb
+--- /dev/null
++++ b/include/dt-bindings/clock/sunplus,sp7021-clkc.h
+@@ -0,0 +1,88 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * Copyright (C) Sunplus Technology Co., Ltd.
++ *       All rights reserved.
++ */
++#ifndef _DT_BINDINGS_CLOCK_SUNPLUS_SP7021_H
++#define _DT_BINDINGS_CLOCK_SUNPLUS_SP7021_H
++
++/* gates */
++#define CLK_RTC         0
++#define CLK_OTPRX       1
++#define CLK_NOC         2
++#define CLK_BR          3
++#define CLK_SPIFL       4
++#define CLK_PERI0       5
++#define CLK_PERI1       6
++#define CLK_STC0        7
++#define CLK_STC_AV0     8
++#define CLK_STC_AV1     9
++#define CLK_STC_AV2     10
++#define CLK_UA0         11
++#define CLK_UA1         12
++#define CLK_UA2         13
++#define CLK_UA3         14
++#define CLK_UA4         15
++#define CLK_HWUA        16
++#define CLK_DDC0        17
++#define CLK_UADMA       18
++#define CLK_CBDMA0      19
++#define CLK_CBDMA1      20
++#define CLK_SPI_COMBO_0 21
++#define CLK_SPI_COMBO_1 22
++#define CLK_SPI_COMBO_2 23
++#define CLK_SPI_COMBO_3 24
++#define CLK_AUD         25
++#define CLK_USBC0       26
++#define CLK_USBC1       27
++#define CLK_UPHY0       28
++#define CLK_UPHY1       29
++#define CLK_I2CM0       30
++#define CLK_I2CM1       31
++#define CLK_I2CM2       32
++#define CLK_I2CM3       33
++#define CLK_PMC         34
++#define CLK_CARD_CTL0   35
++#define CLK_CARD_CTL1   36
++#define CLK_CARD_CTL4   37
++#define CLK_BCH         38
++#define CLK_DDFCH       39
++#define CLK_CSIIW0      40
++#define CLK_CSIIW1      41
++#define CLK_MIPICSI0    42
++#define CLK_MIPICSI1    43
++#define CLK_HDMI_TX     44
++#define CLK_VPOST       45
++#define CLK_TGEN        46
++#define CLK_DMIX        47
++#define CLK_TCON        48
++#define CLK_GPIO        49
++#define CLK_MAILBOX     50
++#define CLK_SPIND       51
++#define CLK_I2C2CBUS    52
++#define CLK_SEC         53
++#define CLK_DVE         54
++#define CLK_GPOST0      55
++#define CLK_OSD0        56
++#define CLK_DISP_PWM    57
++#define CLK_UADBG       58
++#define CLK_FIO_CTL     59
++#define CLK_FPGA        60
++#define CLK_L2SW        61
++#define CLK_ICM         62
++#define CLK_AXI_GLOBAL  63
++
++/* plls */
++#define PLL_A           64
++#define PLL_E           65
++#define PLL_E_2P5       66
++#define PLL_E_25        67
++#define PLL_E_112P5     68
++#define PLL_F           69
++#define PLL_TV          70
++#define PLL_TV_A        71
++#define PLL_SYS         72
++
++#define CLK_MAX         73
++
++#endif
+-- 
+2.33.1
 
