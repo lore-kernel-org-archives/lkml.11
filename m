@@ -2,117 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9753C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 04:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81273CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 04:44:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233245AbiFNEi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 00:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53654 "EHLO
+        id S237205AbiFNEok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 00:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbiFNEix (ORCPT
+        with ESMTP id S229611AbiFNEoi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 00:38:53 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCE02E9F1;
-        Mon, 13 Jun 2022 21:38:52 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:33452)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        Tue, 14 Jun 2022 00:44:38 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032D52E9E4;
+        Mon, 13 Jun 2022 21:44:37 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:60056)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <ebiederm@xmission.com>)
-        id 1o0yKD-009rqF-7K; Mon, 13 Jun 2022 22:38:45 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:40370 helo=email.froward.int.ebiederm.org.xmission.com)
+        id 1o0yPs-002t3o-D4; Mon, 13 Jun 2022 22:44:36 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:40374 helo=email.froward.int.ebiederm.org.xmission.com)
         by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <ebiederm@xmission.com>)
-        id 1o0yKC-008XSK-1u; Mon, 13 Jun 2022 22:38:44 -0600
+        id 1o0yPr-008Y07-9H; Mon, 13 Jun 2022 22:44:36 -0600
 From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Seth Forshee <sforshee@digitalocean.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, tglx@linutronix.de,
-        peterz@infradead.org, luto@kernel.org
-References: <20220614021116.1101331-1-sashal@kernel.org>
-        <20220614021116.1101331-5-sashal@kernel.org>
-Date:   Mon, 13 Jun 2022 23:38:37 -0500
-In-Reply-To: <20220614021116.1101331-5-sashal@kernel.org> (Sasha Levin's
-        message of "Mon, 13 Jun 2022 22:11:14 -0400")
-Message-ID: <87edzrzwoi.fsf@email.froward.int.ebiederm.org>
+To:     Frederick Lawler <fred@cloudflare.com>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, selinux@vger.kernel.org,
+        serge@hallyn.com, amir73il@gmail.com, kernel-team@cloudflare.com,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Paul Moore <paul@paul-moore.com>
+References: <20220608150942.776446-1-fred@cloudflare.com>
+        <87tu8oze94.fsf@email.froward.int.ebiederm.org>
+        <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com>
+Date:   Mon, 13 Jun 2022 23:44:28 -0500
+In-Reply-To: <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com> (Frederick
+        Lawler's message of "Mon, 13 Jun 2022 15:52:38 -0500")
+Message-ID: <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
-X-XM-SPF: eid=1o0yKC-008XSK-1u;;;mid=<87edzrzwoi.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX19hJcz2jzzt3lJfRIeFyelpahjNOpDMtP0=
+X-XM-SPF: eid=1o0yPr-008Y07-9H;;;mid=<87y1xzyhub.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1+prA+7T4gv0KWu4+rCykKSU9Ye39R87hA=
 X-SA-Exim-Connect-IP: 68.227.174.4
 X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH MANUALSEL 5.18 5/6] entry/kvm: Exit to user mode when
- TIF_NOTIFY_SIGNAL is set
+Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
 X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
 X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Frederick Lawler <fred@cloudflare.com> writes:
 
-Starting with v5.18 TIF_NOTIFY_SIGNAL and task_work_run are separated,
-so backporting this to v5.18 looks safe.
+> Hi Eric,
+>
+> On 6/13/22 12:04 PM, Eric W. Biederman wrote:
+>> Frederick Lawler <fred@cloudflare.com> writes:
+>> 
+>>> While experimenting with the security_prepare_creds() LSM hook, we
+>>> noticed that our EPERM error code was not propagated up the callstack.
+>>> Instead ENOMEM is always returned.  As a result, some tools may send a
+>>> confusing error message to the user:
+>>>
+>>> $ unshare -rU
+>>> unshare: unshare failed: Cannot allocate memory
+>>>
+>>> A user would think that the system didn't have enough memory, when
+>>> instead the action was denied.
+>>>
+>>> This problem occurs because prepare_creds() and prepare_kernel_cred()
+>>> return NULL when security_prepare_creds() returns an error code. Later,
+>>> functions calling prepare_creds() and prepare_kernel_cred() return
+>>> ENOMEM because they assume that a NULL meant there was no memory
+>>> allocated.
+>>>
+>>> Fix this by propagating an error code from security_prepare_creds() up
+>>> the callstack.
+>> Why would it make sense for security_prepare_creds to return an error
+>> code other than ENOMEM?
+>>  > That seems a bit of a violation of what that function is supposed to do
+>>
+>
+> The API allows LSM authors to decide what error code is returned from the
+> cred_prepare hook. security_task_alloc() is a similar hook, and has its return
+> code propagated.
 
-For anyone considering backporting this any farther please be aware
-that TIF_NOTIFY_SIGNAL and task_work were all mixed together and
-to backport this also likely requires backporting my cleanups that
-separated them.
+It is not an api.  It is an implementation detail of the linux kernel.
+It is a set of convenient functions that do a job.
+
+The general rule is we don't support cases without an in-tree user.  I
+don't see an in-tree user.
+
+> I'm proposing we follow security_task_allocs() pattern, and add visibility for
+> failure cases in prepare_creds().
+
+I am asking why we would want to.  Especially as it is not an API, and I
+don't see any good reason for anything but an -ENOMEM failure to be
+supported.
+
+Without an in-tree user that cares it is probably better to go the
+opposite direction and remove the possibility of return anything but
+memory allocation failure.  That will make it clearer to implementors
+that a general error code is not supported and this is not a location
+to implement policy, this is only a hook to allocate state for the LSM.
+
+>> I have probably missed a very interesting discussion where that was
+>> mentioned but I don't see link to the discussion or anything explaining
+>> why we want to do that in this change.
+>> 
+>
+> AFAIK, this is the start of the discussion.
+
+You were on v3 and had an out of tree piece of code so I assumed someone
+had at least thought about why you want to implement policy in a piece
+of code whose only purpose is to allocate memory to store state.
 
 Eric
 
 
-Sasha Levin <sashal@kernel.org> writes:
 
-> From: Seth Forshee <sforshee@digitalocean.com>
->
-> [ Upstream commit 3e684903a8574ffc9475fdf13c4780a7adb506ad ]
->
-> A livepatch transition may stall indefinitely when a kvm vCPU is heavily
-> loaded. To the host, the vCPU task is a user thread which is spending a
-> very long time in the ioctl(KVM_RUN) syscall. During livepatch
-> transition, set_notify_signal() will be called on such tasks to
-> interrupt the syscall so that the task can be transitioned. This
-> interrupts guest execution, but when xfer_to_guest_mode_work() sees that
-> TIF_NOTIFY_SIGNAL is set but not TIF_SIGPENDING it concludes that an
-> exit to user mode is unnecessary, and guest execution is resumed without
-> transitioning the task for the livepatch.
->
-> This handling of TIF_NOTIFY_SIGNAL is incorrect, as set_notify_signal()
-> is expected to break tasks out of interruptible kernel loops and cause
-> them to return to userspace. Change xfer_to_guest_mode_work() to handle
-> TIF_NOTIFY_SIGNAL the same as TIF_SIGPENDING, signaling to the vCPU run
-> loop that an exit to userpsace is needed. Any pending task_work will be
-> run when get_signal() is called from exit_to_user_mode_loop(), so there
-> is no longer any need to run task work from xfer_to_guest_mode_work().
->
-> Suggested-by: "Eric W. Biederman" <ebiederm@xmission.com>
-> Cc: Petr Mladek <pmladek@suse.com>
-> Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
-> Message-Id: <20220504180840.2907296-1-sforshee@digitalocean.com>
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  kernel/entry/kvm.c | 6 ------
->  1 file changed, 6 deletions(-)
->
-> diff --git a/kernel/entry/kvm.c b/kernel/entry/kvm.c
-> index 9d09f489b60e..2e0f75bcb7fd 100644
-> --- a/kernel/entry/kvm.c
-> +++ b/kernel/entry/kvm.c
-> @@ -9,12 +9,6 @@ static int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)
->  		int ret;
->  
->  		if (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {
-> -			clear_notify_signal();
-> -			if (task_work_pending(current))
-> -				task_work_run();
-> -		}
-> -
-> -		if (ti_work & _TIF_SIGPENDING) {
->  			kvm_handle_signal_exit(vcpu);
->  			return -EINTR;
->  		}
