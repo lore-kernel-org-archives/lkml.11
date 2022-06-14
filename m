@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DF0CCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 207DCCCA47D
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352710AbiFNCKA (ORCPT
+        id S1352585AbiFNCKE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43668 "EHLO
+        Mon, 13 Jun 2022 22:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352572AbiFNCJD (ORCPT
+        with ESMTP id S1352579AbiFNCJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:09:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEAF3632E;
-        Mon, 13 Jun 2022 19:06:26 -0700 (PDT)
+        Mon, 13 Jun 2022 22:09:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98CD836682;
+        Mon, 13 Jun 2022 19:06:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2A6FB816A4;
-        Tue, 14 Jun 2022 02:06:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A48FC341C4;
-        Tue, 14 Jun 2022 02:06:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2551760B64;
+        Tue, 14 Jun 2022 02:06:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87B55C3411B;
+        Tue, 14 Jun 2022 02:06:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172383;
-        bh=q2J83CbzGStsLYiuVZ5PRD403IkLh1WMVtqYr6V+AUU=;
+        s=k20201202; t=1655172387;
+        bh=Z8Xq68xdswcbRuITMR0/0mROJ/UDggcKz9rSjlswhFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q885gXXE4h+SMnSsvGw1R3JsLEVW0uBa0p22hWSYTJzop5JoJLq54OYFePgYsdhsK
-         VAjRh5b64MRjNtvJ598GqNRtkwIkJxLpvdQid6BTDIU7wJZR/lpSpsuPpaC7vKml2m
-         /a4q9KKdtDbBeS40wsMVnL7z/FVpvj6XimD44Gc+AkV5UdGjKh6uCcv7NvXc7iE+Tq
-         jM46+dTLVBifX9JtnKJqT5xui1Gpg0hT4gySZ12Fm0KZ+rlyBFeB/ewOCo7utgQgSL
-         xGkcsFGRqLZCMBiatMFWyNqfFWX/KyGbSZUQ4m9mpIIhQi47uMQlMQlw4uMfxLMnJj
-         O4LAhS8EF760A==
+        b=Cst981I8nXNrfwWnTV/lG5nFz9h62u/oBChdYo98oQOT8AiJAaWOrvv7geLH6+YeT
+         Y1VbdjY8N3vXCJie5unhO6+UnYaptdRfp/oev6+oJj9ynnU8zXRJi0K5zX3pB2Qdzi
+         hyt12IIeyVwtf5HjcQzyEMWWem2AO+ze5skev+DD++E/s7+h2m7Gdg9yOnv1aPN4+G
+         mTZh5fM1k0th0EUvstpDlOCIVGq22QZKj5kVncmSJxo7qcvQsbgO2Qg2sFakAp1bUX
+         WifNzxh/Zc+qK3/unKs3O/ie+eihn8UtesjDGqPm6C+qbB2+DxcqKtAWmgxbS9eYRK
+         A+GY2CBu4jYyg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lang Yu <Lang.Yu@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 13/43] drm/amdkfd: add pinned BOs to kfd_bo_list
-Date:   Mon, 13 Jun 2022 22:05:32 -0400
-Message-Id: <20220614020602.1098943-13-sashal@kernel.org>
+Cc:     Adam Ford <aford173@gmail.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com,
+        patches@opensource.wolfsonmicro.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 16/43] ASoC: wm8962: Fix suspend while playing music
+Date:   Mon, 13 Jun 2022 22:05:35 -0400
+Message-Id: <20220614020602.1098943-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
 References: <20220614020602.1098943-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,72 +55,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lang Yu <Lang.Yu@amd.com>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit 4fac4fcf4500bce515b0f32195e7bb86aa0246c6 ]
+[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
 
-The kfd_bo_list is used to restore process BOs after
-evictions. As page tables could be destroyed during
-evictions, we should also update pinned BOs' page tables
-during restoring to make sure they are valid.
+If the audio CODEC is playing sound when the system is suspended,
+it can be left in a state which throws the following error:
 
-So for pinned BOs,
-1, Validate them and update their page tables.
-2, Don't add eviction fence for them.
+wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
 
-v2:
- - Don't handle pinned ones specially in BO validation.(Felix)
+Once this error has occurred, the audio will not work again until rebooted.
 
-Signed-off-by: Lang Yu <Lang.Yu@amd.com>
-Acked-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
+
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ sound/soc/codecs/wm8962.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-index 5df387c4d7fb..e6b88642d6c7 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-@@ -1912,9 +1912,6 @@ int amdgpu_amdkfd_gpuvm_map_gtt_bo_to_kernel(struct amdgpu_device *adev,
- 		return -EINVAL;
- 	}
+diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
+index a5584ba962dc..e97eaca7049f 100644
+--- a/sound/soc/codecs/wm8962.c
++++ b/sound/soc/codecs/wm8962.c
+@@ -3858,6 +3858,7 @@ static int wm8962_runtime_suspend(struct device *dev)
+ #endif
  
--	/* delete kgd_mem from kfd_bo_list to avoid re-validating
--	 * this BO in BO's restoring after eviction.
--	 */
- 	mutex_lock(&mem->process_info->lock);
+ static const struct dev_pm_ops wm8962_pm = {
++	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
+ 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
+ };
  
- 	ret = amdgpu_bo_reserve(bo, true);
-@@ -1937,7 +1934,6 @@ int amdgpu_amdkfd_gpuvm_map_gtt_bo_to_kernel(struct amdgpu_device *adev,
- 
- 	amdgpu_amdkfd_remove_eviction_fence(
- 		bo, mem->process_info->eviction_fence);
--	list_del_init(&mem->validate_list.head);
- 
- 	if (size)
- 		*size = amdgpu_bo_size(bo);
-@@ -2497,12 +2493,15 @@ int amdgpu_amdkfd_gpuvm_restore_process_bos(void *info, struct dma_fence **ef)
- 	process_info->eviction_fence = new_fence;
- 	*ef = dma_fence_get(&new_fence->base);
- 
--	/* Attach new eviction fence to all BOs */
-+	/* Attach new eviction fence to all BOs except pinned ones */
- 	list_for_each_entry(mem, &process_info->kfd_bo_list,
--		validate_list.head)
-+		validate_list.head) {
-+		if (mem->bo->tbo.pin_count)
-+			continue;
-+
- 		amdgpu_bo_fence(mem->bo,
- 			&process_info->eviction_fence->base, true);
--
-+	}
- 	/* Attach eviction fence to PD / PT BOs */
- 	list_for_each_entry(peer_vm, &process_info->vm_list_head,
- 			    vm_list_node) {
 -- 
 2.35.1
 
