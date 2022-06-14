@@ -2,91 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B323CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1286DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 01:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241406AbiFNBjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 21:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49016 "EHLO
+        id S232299AbiFNBoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 21:44:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiFNBi7 (ORCPT
+        with ESMTP id S229556AbiFNBoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 21:38:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69262283
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 18:38:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFB0561602
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:38:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54E22C385A2
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:38:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655170737;
-        bh=5K0rZDOd8EKBPVEMl6OdGLOdRdSloI6ew+DWoHxL2zM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=IN1ILMep94AF990ZX/Y8NhOvwwDWsSH3Y5sIszcEzzq9jovdo9vdSbrTlnKsFtfnx
-         CIOc6vEJfC3i1gE/8YPjLkoFK7XzZbtybbjbENu15zXFwlKhb8/s+KgT7NQSpG8m5u
-         t0Nu/OEqtxqFJD714w10V9EdfIMrabsIwlk32pA1oEOkmaESf2vsunH4Lbna3569cY
-         E2hJk/wh6e4ol8EgIccnxuzW27xSJ8qgTyQnWVKxW5rEIrR3uogMqumPwZCm3pyYvh
-         qX7LLsc3jB/fKIIJS12KtJLn4MAsy5maoUOMKYXYyWK8/dVf9lrg8h748Va4cGjIE5
-         6HSwXiQaVneNA==
-Received: by mail-lf1-f43.google.com with SMTP id be31so11569053lfb.10
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 18:38:57 -0700 (PDT)
-X-Gm-Message-State: AJIora9wkxOqYF8RDhviAOPkSbCLTqLRbRkBIuxkB1qyx17Hmz9EF5T3
-        QXq5W+l3IKjJfE4V4hVDZh+hvNrkVrVYFxLqV98=
-X-Google-Smtp-Source: AGRyM1uXt5j3oU6ftbiOVEIYRIsxTTYL6Hvqsp/kuGJlLCmuU2BinWhwymXgfFFFJmXFijd2WMkCh5zsZkfBuUksm/w=
-X-Received: by 2002:a05:6512:e9c:b0:479:1fd9:1b94 with SMTP id
- bi28-20020a0565120e9c00b004791fd91b94mr1460580lfb.591.1655170735343; Mon, 13
- Jun 2022 18:38:55 -0700 (PDT)
+        Mon, 13 Jun 2022 21:44:22 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 472552872A;
+        Mon, 13 Jun 2022 18:44:21 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2A93623A;
+        Mon, 13 Jun 2022 18:44:21 -0700 (PDT)
+Received: from [10.162.40.17] (unknown [10.162.40.17])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B8D463F792;
+        Mon, 13 Jun 2022 18:44:16 -0700 (PDT)
+Message-ID: <0bc0f99d-41ad-3ce3-deeb-c4c713100e74@arm.com>
+Date:   Tue, 14 Jun 2022 07:14:14 +0530
 MIME-Version: 1.0
-References: <1655117652-11166-1-git-send-email-tangyouling@loongson.cn>
-In-Reply-To: <1655117652-11166-1-git-send-email-tangyouling@loongson.cn>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Tue, 14 Jun 2022 09:38:44 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H4KVssJ6+QDFAaUeuBdO3UznKV28xP8OPXU+ewL=kY7kA@mail.gmail.com>
-Message-ID: <CAAhV-H4KVssJ6+QDFAaUeuBdO3UznKV28xP8OPXU+ewL=kY7kA@mail.gmail.com>
-Subject: Re: [PATCH] LoongArch: vmlinux.lds.S: Add missing ELF_DETAILS
-To:     Youling Tang <tangyouling@loongson.cn>
-Cc:     Xuerui Wang <kernel@xen0n.name>, Guo Ren <guoren@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 7/8] arm64/perf: Add BRBE driver
+Content-Language: en-US
+To:     German Gomez <german.gomez@arm.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, peterz@infradead.org,
+        acme@kernel.org, mark.rutland@arm.com, will@kernel.org
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-perf-users@vger.kernel.org
+References: <20220613100119.684673-1-anshuman.khandual@arm.com>
+ <20220613100119.684673-8-anshuman.khandual@arm.com>
+ <f84187d1-b7eb-e25e-090a-d09532f15594@arm.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <f84187d1-b7eb-e25e-090a-d09532f15594@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Youling,
 
-On Mon, Jun 13, 2022 at 6:54 PM Youling Tang <tangyouling@loongson.cn> wrote:
->
-> Commit c604abc3f6e ("vmlinux.lds.h: Split ELF_DETAILS from STABS_DEBUG") split
-> ELF_DETAILS from STABS_DEBUG, resulting in missing ELF_DETAILS information in
-> LoongArch architecture, so add it.
-Looks good to me, thanks.
 
-Huacai
->
-> Fixes: c604abc3f6e ("vmlinux.lds.h: Split ELF_DETAILS from STABS_DEBUG")
-> Signed-off-by: Youling Tang <tangyouling@loongson.cn>
-> ---
->  arch/loongarch/kernel/vmlinux.lds.S | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/arch/loongarch/kernel/vmlinux.lds.S b/arch/loongarch/kernel/vmlinux.lds.S
-> index 9d508158fe1a..78311a6101a3 100644
-> --- a/arch/loongarch/kernel/vmlinux.lds.S
-> +++ b/arch/loongarch/kernel/vmlinux.lds.S
-> @@ -101,6 +101,7 @@ SECTIONS
->
->         STABS_DEBUG
->         DWARF_DEBUG
-> +       ELF_DETAILS
->
->         .gptab.sdata : {
->                 *(.gptab.data)
-> --
-> 2.36.1
->
+On 6/13/22 17:46, German Gomez wrote:
+> Hi Anshuman, thanks for the update,
+> 
+> As I mentioned offline, I have a perf test that I've been using for the
+> branch records and filters. I'll let you know the result using this set.
+
+Sure, thanks !
+
+> 
+> On 13/06/2022 11:01, Anshuman Khandual wrote:
+>> [...]
+>>
+>> +
+>> +static int brbe_fetch_perf_priv(u64 brbinf)
+>> +{
+>> +       int brbe_el = brbe_fetch_el(brbinf);
+>> +
+>> +       switch (brbe_el) {
+>> +       case BRBINF_EL_EL0:
+>> +               return PERF_BR_PRIV_USER;
+>> +       case BRBINF_EL_EL1:
+>> +               return PERF_BR_PRIV_KERNEL;
+>> +       case BRBINF_EL_EL2:
+>> +               if (is_kernel_in_hyp_mode())
+>> +                       return PERF_BR_PRIV_KERNEL;
+>> +               return PERF_BR_PRIV_HV;
+>> +       default:
+>> +               pr_warn("unknown branch privilege captured\n");
+>> +               return -1;
+> 
+> This looks like it should return PERF_BR_PRIV_UNKNOWN.
+
+Right, return from this function gets into perf branch record's priv
+element and '-1' is not something that can be parsed correctly in the
+user space tools as the corresponding enum itself starts with 0 i.e
+PERF_BR_PRIV_UNKNOWN.
+
+cpuc->brbe_entries[idx].priv = brbe_fetch_perf_priv(brbinf)
+
+Will change the return as PERF_BR_PRIV_UNKNOWN instead.
