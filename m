@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 227CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B36D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352249AbiFNCH3 (ORCPT
+        id S1352290AbiFNCHv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:07:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41900 "EHLO
+        Mon, 13 Jun 2022 22:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351610AbiFNCGI (ORCPT
+        with ESMTP id S1351668AbiFNCGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:06:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244EF34B8D;
-        Mon, 13 Jun 2022 19:05:42 -0700 (PDT)
+        Mon, 13 Jun 2022 22:06:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD474344C1;
+        Mon, 13 Jun 2022 19:05:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E8DFB81698;
-        Tue, 14 Jun 2022 02:05:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30C5DC385A2;
-        Tue, 14 Jun 2022 02:05:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F3D3B816A2;
+        Tue, 14 Jun 2022 02:05:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EB7DC385A2;
+        Tue, 14 Jun 2022 02:05:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172340;
-        bh=kY7M+cF6jVAw2h72tzuT6A72g36+rLAemXxLHPg6FwY=;
+        s=k20201202; t=1655172343;
+        bh=Y0CrsHuCpT5FIY3MPvSOUDooFQA1XjbxrPWWfr7pVxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C9o3lM6ESKcoYA4JzLz/wPXI2I4nVQUshmD14ZHWHEx/WDEInJNwGZTR02Hp+lBUg
-         qhOmxXQMpR8yoSSnYnW3sKaI3ImwsfmNBhxEmkHhxzOtkMa+Hg8rVzTtC0WPvtnjCR
-         uzlZI7mzb6iCVIjBvN9adtsWIBOgbdAE8OP9p22cBTjIV/mzX3HJTcW4eXR3y2xJMG
-         WP5w3fVq18u02SjJkI05rVFKrVU+KqeVw5cDQDftAh8wpvacE/q8W0FzIzsgEdVTka
-         kKhK3SGC9kUVHyKdLF2v7/2iY4p++oHtKhonMMyAmvpu9SCDCdvpLGl2znlFMLwXV8
-         77dY5BHYu5wWg==
+        b=TgX1FSo3b583ILFbr8xJcabnu7MNB/uULhCfcFqLQpKI2suh1+cddSKkKzaNGI9u0
+         zcguBL81BL1wrw4Zg0xERG4pR709EG0bxvEvW5xt4Ik65MRYe4uWeFLnb8IUOBLp5j
+         faWMZcr9vdsFsDKhsINJJb07n8mWiKfi+KuG8xFfuJvV5y7GNNTVLynikMdhzif5ht
+         H8rhExvZeKNyRUWyakkiuCU8QCLE/wj3BeTBGoEBDSO4UYPOUyjaKRW0efcYx6HwL6
+         ++Ovc+zbQLwRCG5aPdFOR2VV9zR8Z5qWlrmHTNtKFwF0EHrpsvbrDAWKIiPIpYLXMl
+         IgaqvJ4H2nqYQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Yufen <wangyufen@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 34/47] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
-Date:   Mon, 13 Jun 2022 22:04:27 -0400
-Message-Id: <20220614020441.1098348-34-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, mmarek@suse.com,
+        linux-kbuild@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 36/47] gcc-12: disable '-Wdangling-pointer' warning for now
+Date:   Mon, 13 Jun 2022 22:04:29 -0400
+Message-Id: <20220614020441.1098348-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020441.1098348-1-sashal@kernel.org>
 References: <20220614020441.1098348-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,44 +53,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
+[ Upstream commit 49beadbd47c270a00754c107a837b4f29df4c822 ]
 
-When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
-overflow. To fix, we can follow what udpv6 does and subtract the
-transhdrlen from the max.
+While the concept of checking for dangling pointers to local variables
+at function exit is really interesting, the gcc-12 implementation is not
+compatible with reality, and results in false positives.
 
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+For example, gcc sees us putting things on a local list head allocated
+on the stack, which involves exactly those kinds of pointers to the
+local stack entry:
+
+  In function ‘__list_add’,
+      inlined from ‘list_add_tail’ at include/linux/list.h:102:2,
+      inlined from ‘rebuild_snap_realms’ at fs/ceph/snap.c:434:2:
+  include/linux/list.h:74:19: warning: storing the address of local variable ‘realm_queue’ in ‘*&realm_27(D)->rebuild_item.prev’ [-Wdangling-pointer=]
+     74 |         new->prev = prev;
+        |         ~~~~~~~~~~^~~~~~
+
+But then gcc - understandably - doesn't really understand the big
+picture how the doubly linked list works, so doesn't see how we then end
+up emptying said list head in a loop and the pointer we added has been
+removed.
+
+Gcc also complains about us (intentionally) using this as a way to store
+a kind of fake stack trace, eg
+
+  drivers/acpi/acpica/utdebug.c:40:38: warning: storing the address of local variable ‘current_sp’ in ‘acpi_gbl_entry_stack_pointer’ [-Wdangling-pointer=]
+     40 |         acpi_gbl_entry_stack_pointer = &current_sp;
+        |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+
+which is entirely reasonable from a compiler standpoint, and we may want
+to change those kinds of patterns, but not not.
+
+So this is one of those "it would be lovely if the compiler were to
+complain about us leaving dangling pointers to the stack", but not this
+way.
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/l2tp/l2tp_ip6.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index 96f975777438..d54dbd01d86f 100644
---- a/net/l2tp/l2tp_ip6.c
-+++ b/net/l2tp/l2tp_ip6.c
-@@ -502,14 +502,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	struct ipcm6_cookie ipc6;
- 	int addr_len = msg->msg_namelen;
- 	int transhdrlen = 4; /* zero session-id */
--	int ulen = len + transhdrlen;
-+	int ulen;
- 	int err;
+diff --git a/Makefile b/Makefile
+index eb3adfec0b22..a8de148aeb04 100644
+--- a/Makefile
++++ b/Makefile
+@@ -804,6 +804,9 @@ endif
+ KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
+ KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
  
- 	/* Rough check on arithmetic overflow,
- 	 * better check is made in ip6_append_data().
- 	 */
--	if (len > INT_MAX)
-+	if (len > INT_MAX - transhdrlen)
- 		return -EMSGSIZE;
-+	ulen = len + transhdrlen;
- 
- 	/* Mirror BSD error message compatibility */
- 	if (msg->msg_flags & MSG_OOB)
++# These result in bogus false positives
++KBUILD_CFLAGS += $(call cc-disable-warning, dangling-pointer)
++
+ ifdef CONFIG_FRAME_POINTER
+ KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
+ else
 -- 
 2.35.1
 
