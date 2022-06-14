@@ -2,68 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A2ACCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D12C7CCA47A
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:22:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356059AbiFNJWP (ORCPT
+        id S1355517AbiFNJWK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:22:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
+        Tue, 14 Jun 2022 05:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355406AbiFNJVh (ORCPT
+        with ESMTP id S1355514AbiFNJVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 05:21:37 -0400
-Received: from mx4.veeam.com (mx4.veeam.com [104.41.138.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60108443D1;
+        Tue, 14 Jun 2022 05:21:39 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DA8443EA;
         Tue, 14 Jun 2022 02:21:37 -0700 (PDT)
-Received: from mail.veeam.com (prgmbx01.amust.local [172.24.128.102])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx4.veeam.com (Postfix) with ESMTPS id 422601BED3;
-        Tue, 14 Jun 2022 12:21:35 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=veeam.com;
-        s=mx4-2022; t=1655198495;
-        bh=1o9DeVG8YeM34HzPAkbwky9SDW6qSepU54xAMe2uuYw=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To:From;
-        b=BpzHGI1ZZBqYCBOpwFEYNJwwJfkiSrNu615jpifWqUw6PTGPDuUhuYgzWB9yD0doU
-         g/dvjqSUx/9/fR2rxWzp1TQNomXak7gxDaCwCfTuuXohCxpOp8EOiIGuQ2rmHHRFJN
-         39xRnwsemjCGGn4Mu1/zDgIu6XHTTcDaPp+jOSTlUHG4ZmKUtTxL96UeFRvBhR6p2M
-         GGgxIXQ2sx/dfVUgEg/p7+cm5aVLIgRFBv+VLMZb1dHZ5SJI1ZY4bR7SylNJh8RUF/
-         nFq+foofck8s2RTVKoSQ1lNy1oabjcXSXUbbDKcURfff4lAE0m31lP4dduu8DUympV
-         Wp4t2XCM3S5aA==
-Received: from veeam.com (172.24.14.5) by prgmbx01.amust.local
- (172.24.128.102) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Tue, 14 Jun
- 2022 11:21:32 +0200
-Date:   Tue, 14 Jun 2022 12:21:30 +0300
-From:   Sergei Shtepa <sergei.shtepa@veeam.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-CC:     <axboe@kernel.dk>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 01/20] block, blk_filter: enable block device filters
-Message-ID: <20220614092130.GB2429@veeam.com>
-References: <1655135593-1900-1-git-send-email-sergei.shtepa@veeam.com>
- <1655135593-1900-2-git-send-email-sergei.shtepa@veeam.com>
- <44efdfc2-526f-0ea7-e332-ec29c00ef762@infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description;
+        bh=+EyUK3dKswXrlm11sruY7rScrZafjFDT3g4fWhHAhqE=; b=WUzsoSQwT+/C2bBO10G0NZPwkY
+        WwaxZvCCbEutMfgYrywJ3HTvHULmmPmYULh5dc9QIxhrRb5nBsJl0+SteM1DBHCt3H/2aiyxJBrlb
+        h22n73BkU3hBeYiCWkstSTuOdXf+m1qL7mcv0RCjV2PQyzPNLUs/oGlXScmxpRixyxxGmGq/LDIBU
+        Lk3NTeMSwkRz09h/57MsI/JSupKQzeIOclSox4vDgI5kR5dciHY620b3XeWdKWzhtDh/XfLZjJagf
+        oF4Y7WSiToqBl2uu28sg/wNDSZYrOG/q4Yiz6TvrSerX/7gFcyZBQ4jkmk8QNDEXCIQ95Vfsp6zFC
+        N6Tb0N3Q==;
+Received: from [2001:4bb8:180:36f6:1fed:6d48:cf16:d13c] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o12jf-008fUj-QZ; Tue, 14 Jun 2022 09:21:20 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 10/10] ARM/dma-mapping: merge IOMMU ops
+Date:   Tue, 14 Jun 2022 11:20:47 +0200
+Message-Id: <20220614092047.572235-11-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220614092047.572235-1-hch@lst.de>
+References: <20220614092047.572235-1-hch@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <44efdfc2-526f-0ea7-e332-ec29c00ef762@infradead.org>
-X-Originating-IP: [172.24.14.5]
-X-ClientProxiedBy: prgmbx01.amust.local (172.24.128.102) To
- prgmbx01.amust.local (172.24.128.102)
-X-EsetResult: clean, is OK
-X-EsetId: 37303A29D2A50A536D7662
-X-Veeam-MMEX: True
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Randy.
+From: Robin Murphy <robin.murphy@arm.com>
 
-Thanks for the review.
-I agree with all the comments and will pay more attention to the documentation.
+The dma_sync_* operations are now the only difference between the
+coherent and non-coherent IOMMU ops. Some minor tweaks to make those
+safe for coherent devices with minimal overhead, and we can condense
+down to a single set of DMA ops.
 
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Tested-by: Marc Zyngier <maz@kernel.org>
+---
+ arch/arm/mm/dma-mapping.c | 37 +++++++++++++------------------------
+ 1 file changed, 13 insertions(+), 24 deletions(-)
+
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index e7ccf7c82e025..e68d1d2ac4be0 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1341,6 +1341,9 @@ static void arm_iommu_sync_sg_for_cpu(struct device *dev,
+ 	struct scatterlist *s;
+ 	int i;
+ 
++	if (dev->dma_coherent)
++		return;
++
+ 	for_each_sg(sg, s, nents, i)
+ 		__dma_page_dev_to_cpu(sg_page(s), s->offset, s->length, dir);
+ 
+@@ -1360,6 +1363,9 @@ static void arm_iommu_sync_sg_for_device(struct device *dev,
+ 	struct scatterlist *s;
+ 	int i;
+ 
++	if (dev->dma_coherent)
++		return;
++
+ 	for_each_sg(sg, s, nents, i)
+ 		__dma_page_cpu_to_dev(sg_page(s), s->offset, s->length, dir);
+ }
+@@ -1493,12 +1499,13 @@ static void arm_iommu_sync_single_for_cpu(struct device *dev,
+ {
+ 	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
+ 	dma_addr_t iova = handle & PAGE_MASK;
+-	struct page *page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
++	struct page *page;
+ 	unsigned int offset = handle & ~PAGE_MASK;
+ 
+-	if (!iova)
++	if (dev->dma_coherent || !iova)
+ 		return;
+ 
++	page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
+ 	__dma_page_dev_to_cpu(page, offset, size, dir);
+ }
+ 
+@@ -1507,12 +1514,13 @@ static void arm_iommu_sync_single_for_device(struct device *dev,
+ {
+ 	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
+ 	dma_addr_t iova = handle & PAGE_MASK;
+-	struct page *page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
++	struct page *page;
+ 	unsigned int offset = handle & ~PAGE_MASK;
+ 
+-	if (!iova)
++	if (dev->dma_coherent || !iova)
+ 		return;
+ 
++	page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
+ 	__dma_page_cpu_to_dev(page, offset, size, dir);
+ }
+ 
+@@ -1536,22 +1544,6 @@ static const struct dma_map_ops iommu_ops = {
+ 	.unmap_resource		= arm_iommu_unmap_resource,
+ };
+ 
+-static const struct dma_map_ops iommu_coherent_ops = {
+-	.alloc		= arm_iommu_alloc_attrs,
+-	.free		= arm_iommu_free_attrs,
+-	.mmap		= arm_iommu_mmap_attrs,
+-	.get_sgtable	= arm_iommu_get_sgtable,
+-
+-	.map_page	= arm_iommu_map_page,
+-	.unmap_page	= arm_iommu_unmap_page,
+-
+-	.map_sg		= arm_iommu_map_sg,
+-	.unmap_sg	= arm_iommu_unmap_sg,
+-
+-	.map_resource	= arm_iommu_map_resource,
+-	.unmap_resource	= arm_iommu_unmap_resource,
+-};
+-
+ /**
+  * arm_iommu_create_mapping
+  * @bus: pointer to the bus holding the client device (for IOMMU calls)
+@@ -1750,10 +1742,7 @@ static void arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ 		return;
+ 	}
+ 
+-	if (coherent)
+-		set_dma_ops(dev, &iommu_coherent_ops);
+-	else
+-		set_dma_ops(dev, &iommu_ops);
++	set_dma_ops(dev, &iommu_ops);
+ }
+ 
+ static void arm_teardown_iommu_dma_ops(struct device *dev)
 -- 
-Sergei Shtepa
-Veeam Software developer.
+2.30.2
+
