@@ -2,84 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB8ACCA47A
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFAE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354213AbiFNHX7 (ORCPT
+        id S1354333AbiFNHYD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:23:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38996 "EHLO
+        Tue, 14 Jun 2022 03:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354644AbiFNHXh (ORCPT
+        with ESMTP id S1354275AbiFNHYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:23:37 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B1A3CA56;
-        Tue, 14 Jun 2022 00:23:34 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id o17so7070263pla.6;
-        Tue, 14 Jun 2022 00:23:34 -0700 (PDT)
+        Tue, 14 Jun 2022 03:24:00 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12E53BF93
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:23:58 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id y16so5941468ili.13
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:23:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=uXSamoUp6MeZ/46qZXQdg656MMVfUNs/18XCR1U3fiw=;
-        b=EKQjsmVZozA/XvJq1p2xbZEJN0A0H5Q7RkhuSZl0UuYnPOidEvO4nk+Bdudkwz3DnL
-         YDM8qbjd0TCrqYKlVeQvodxgeXHXsW4fdnxss1pIPgvh538ECSxHcEpcesRZdVeYwvie
-         5hgjrPWHRBoOtok+VY2Bu4X3LXpAA27/oRuhi3tpZMUGMrbwX2Elcal3h7X9iJCDWmuz
-         Kwafy9hK5BLoYhE1C8AcNgeUiGlccVIUFG8cXxgKWVOOpAq0DjkD3kp4FJ5WxWkQyuY4
-         JTmLikgP7zx7JNUPo+xYvx/jf6UJSFba2KEHNMhzz6ySe+PiY+ij/3PEAve3BqLrjePy
-         AYAQ==
+        bh=WgsPByWFwvmxTN6GW/uMi6kC/eCqUxKkzQvH+8GjA0Q=;
+        b=NpIAuWM0RbO9xoxmZjSOjTmrkmHw9aJ0t4AZ/Wbpsg6xH7ArIvcbtmqUcBM5cUbKHH
+         5xqRXIZ27/l9KZtdtnpcqsycUrnqML4JuLEVmW6jeC73ec1QkNGGkqtwAt07d27DVnpX
+         0MvW5YY5H66m65onie1kxC12c+WNiv9Y7+mZUBkFFCgg2cqzs5dKfw4Kjs43vqnFJpI3
+         pWOAgAG0h61eBIpprpOLGscaRiEgzhbIeiTYzm/S+llD55TjkYAiJGOzt1OmwCNPzoCJ
+         bpnCWmI05A8hdqBzIhwhLALelmCucxBQt4yDdO3Z1DjHHolziDMEzep2UbwmCO7kzO5D
+         ToxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=uXSamoUp6MeZ/46qZXQdg656MMVfUNs/18XCR1U3fiw=;
-        b=CL2atQWPHlV6C4V+FCXC1HNKRhvycm5qm+BkrZxd/qgKxTtFBSTcXho1Iz8b7foAqF
-         wlrI8lGvH5+nNOmFr75wSQaeHv5DkcfLqGlcXfpPCGubIld+O0JBSVmf/x1ofCZnsZJ0
-         jzD4HL2mRoOPIE6BWjEwbzOq8IZBzkYMkukbnqIBsUTFoFJz5I7pkR6seGPIM/aarN2Z
-         Wt0iwN2yFkuAQk9d2lSkGrAstBk+DG7Bs4futFTJpBBEG3cUN2S8IkQVu9Q4Ct58csw6
-         NFTYY5//lxhneNABKut0Bqwb2N/D7bDVsTosNl7gjcpelbBzYoclhiFLAuh7tiHglen5
-         Qq/w==
-X-Gm-Message-State: AJIora+P3W5mkMG8uBRwlS5wE/XRi1ugOKx+F5t/OMNSWVUpiqj9A5HL
-        wRuYAjaF7BbvT5LxIoiXxb4=
-X-Google-Smtp-Source: AGRyM1t4U0AtFhCET949Kol0aCHYqnQE/e0mHhbltZ+mlhDE+zKbIpvtwtedoqZ5IQS7PUZPtucmTQ==
-X-Received: by 2002:a17:902:76c1:b0:167:6ef7:dab4 with SMTP id j1-20020a17090276c100b001676ef7dab4mr3240028plt.146.1655191413875;
-        Tue, 14 Jun 2022 00:23:33 -0700 (PDT)
-Received: from localhost (subs32-116-206-28-37.three.co.id. [116.206.28.37])
-        by smtp.gmail.com with ESMTPSA id ja21-20020a170902efd500b0016632179ecfsm6365167plb.264.2022.06.14.00.23.32
+        bh=WgsPByWFwvmxTN6GW/uMi6kC/eCqUxKkzQvH+8GjA0Q=;
+        b=l9dMJXU2SMzgdHYbBOkYKZ9VmmxeE64veZuHbgWHzZrvF8ARy2ZHbQYA/XBT9Z9JqJ
+         ksYin7c/HE7JiPk+jLt8iIBZSwVRNFXXov/ExPu8N3WdnX9YwKMqHVImk/jiRrayMf1D
+         XAy18aiXsJo+KgiKeHonZ5G+JDkwQzUno8Ex/sdXJF/GUvZYYSWsooQqoAJhjDQSrP8K
+         mZqA31FutYZmBPaj/1hGzbGBYqy4ODIyjJw9xtiraFteTVWwGIyTAJANQFbxL6WXq/jF
+         wh1YJc3OSRnAMyvQ1MmeXhPzsbhAn3y2ZGNEUYyvE94txLEM5Hb1ZglBIkjklc0mtLTw
+         FJ/g==
+X-Gm-Message-State: AJIora9Yg47ZPdTakSh7U9levk+ayxxtuayJpXZ38zVZ9X09cq7qlTDX
+        RV26v/VrkNwio/JWCVzMGaGw3A==
+X-Google-Smtp-Source: AGRyM1tTdAgY4KPZSG2TLNgC428eedn0ZcqHWQI+CM35U4PQPM8vuUi36BqDkOW7JRkwKXukuMZr/g==
+X-Received: by 2002:a92:504:0:b0:2d6:5aff:82ad with SMTP id q4-20020a920504000000b002d65aff82admr2153215ile.3.1655191437980;
+        Tue, 14 Jun 2022 00:23:57 -0700 (PDT)
+Received: from google.com ([2620:15c:183:200:eaa7:1f3f:e74a:2a26])
+        by smtp.gmail.com with ESMTPSA id f8-20020a02cac8000000b00331d411da60sm4544641jap.75.2022.06.14.00.23.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 00:23:33 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 14:23:30 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.18 000/339] 5.18.4-rc1 review
-Message-ID: <Yqg3cnnE70gS6cI2@debian.me>
-References: <20220613094926.497929857@linuxfoundation.org>
+        Tue, 14 Jun 2022 00:23:57 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 01:23:52 -0600
+From:   Yu Zhao <yuzhao@google.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, x86@kernel.org,
+        page-reclaim@google.com, Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Subject: Re: [PATCH v12 08/14] mm: multi-gen LRU: support page table walks
+Message-ID: <Yqg3iLBGPyHOEfA2@google.com>
+References: <20220614071650.206064-1-yuzhao@google.com>
+ <20220614071650.206064-9-yuzhao@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
+In-Reply-To: <20220614071650.206064-9-yuzhao@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 12:07:05PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.4 release.
-> There are 339 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
+On Tue, Jun 14, 2022 at 01:16:45AM -0600, Yu Zhao wrote:
+> +static bool get_next_vma(unsigned long mask, unsigned long size, struct mm_walk *args,
+> +			 unsigned long *vm_start, unsigned long *vm_end)
+> +{
+> +	unsigned long start = round_up(*vm_end, size);
+> +	unsigned long end = (start | ~mask) + 1;
+> +
+> +	VM_WARN_ON_ONCE(mask & size);
+> +	VM_WARN_ON_ONCE((start & mask) != (*vm_start & mask));
+> +
+> +	while (args->vma) {
+> +		if (start >= args->vma->vm_end) {
+> +			args->vma = args->vma->vm_next;
+> +			continue;
+> +		}
+> +
+> +		if (end && end <= args->vma->vm_start)
+> +			return false;
+> +
+> +		if (should_skip_vma(args->vma->vm_start, args->vma->vm_end, args)) {
+> +			args->vma = args->vma->vm_next;
+> +			continue;
+> +		}
+> +
+> +		*vm_start = max(start, args->vma->vm_start);
+> +		*vm_end = min(end - 1, args->vma->vm_end - 1) + 1;
+> +
+> +		return true;
+> +	}
+> +
+> +	return false;
+> +}
 
-Successfully cross-compiled for arm (multi_v7_defconfig, GCC 12.1.0,
-ARMv7 with neon FPU) and arm64 (bcm2711_defconfig, GCC 12.1.0).
+Andrew,
 
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+The above function has a conflict with Maple Tree. Please use the
+following fix-up if you apply MGLRU on top of Maple Tree. Thanks.
 
--- 
-An old man doll... just what I always wanted! - Clara
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 69a52aae1e03..05e62948e365 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -3749,23 +3749,14 @@ static bool get_next_vma(unsigned long mask, unsigned long size, struct mm_walk
+ {
+ 	unsigned long start = round_up(*vm_end, size);
+ 	unsigned long end = (start | ~mask) + 1;
++	VMA_ITERATOR(vmi, args->mm, start);
+ 
+ 	VM_WARN_ON_ONCE(mask & size);
+ 	VM_WARN_ON_ONCE((start & mask) != (*vm_start & mask));
+ 
+-	while (args->vma) {
+-		if (start >= args->vma->vm_end) {
+-			args->vma = args->vma->vm_next;
++	for_each_vma_range(vmi, args->vma, end) {
++		if (should_skip_vma(args->vma->vm_start, args->vma->vm_end, args))
+ 			continue;
+-		}
+-
+-		if (end && end <= args->vma->vm_start)
+-			return false;
+-
+-		if (should_skip_vma(args->vma->vm_start, args->vma->vm_end, args)) {
+-			args->vma = args->vma->vm_next;
+-			continue;
+-		}
+ 
+ 		*vm_start = max(start, args->vma->vm_start);
+ 		*vm_end = min(end - 1, args->vma->vm_end - 1) + 1;
