@@ -2,144 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 959BEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 05:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7EA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 05:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239943AbiFNF10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 01:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39856 "EHLO
+        id S239988AbiFNF1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 01:27:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230137AbiFNF1T (ORCPT
+        with ESMTP id S231349AbiFNF1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 01:27:19 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B4027176;
-        Mon, 13 Jun 2022 22:27:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655184437; x=1686720437;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3R/m9ZYiDMw+eVKxVZcWQRpsASUlvIbz8hBNCg/KPZ4=;
-  b=goX9ySWdiv3Ci3aSIvhQScIiodCA5feTrcH6RurK+RWqMFS3znQUUgsx
-   +5xTQE+hwtn3JRz17B2jVAlOzLEyFuvvgOGe5vFQ8qRY+21Trd7YOU/5N
-   3FMxZAAvP9UU3gI0Z28M6XoHeK0UmzdUggso6obGkKr6jyb1QTHgti5m4
-   Ht+534kW2VfIYDBh4kW4L2TgSULYJvjT+hQ6EI0sqgyB+7SUKQ8XgCcXC
-   SC/EChPHeaF2OvSRpbUc0ytny0hQxJFosMuEOyEjTOfEDevKCLCazjm9S
-   bbPt7kBlGiIoRxi4Sx48yJZt+L0xWx+IQZWg28/BoqkRTfUaAtDHF372H
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258341116"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="258341116"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 22:27:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="712326117"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 13 Jun 2022 22:27:15 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o0z58-000LW1-Bz;
-        Tue, 14 Jun 2022 05:27:14 +0000
-Date:   Tue, 14 Jun 2022 13:27:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Micah Morton <mortonm@chromium.org>,
-        linux-security-module@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        keescook@chromium.org, jmorris@namei.org, serge@hallyn.com,
-        linux-kernel@vger.kernel.org, Micah Morton <mortonm@chromium.org>
-Subject: Re: [PATCH 1/2] security: Add LSM hook to setgroups() syscall
-Message-ID: <202206141343.mSI8gmLO-lkp@intel.com>
-References: <20220613202807.447694-1-mortonm@chromium.org>
+        Tue, 14 Jun 2022 01:27:48 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFD422B0D;
+        Mon, 13 Jun 2022 22:27:43 -0700 (PDT)
+X-UUID: cce60e827447461ea48904c8499a199d-20220614
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:abed1bd9-a2d6-4683-a2ee-cb9f8aa0d493,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:b14ad71,CLOUDID:572d5ac5-c67b-4a73-9b18-726dd8f2eb58,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: cce60e827447461ea48904c8499a199d-20220614
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 792446519; Tue, 14 Jun 2022 13:27:38 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 14 Jun 2022 13:27:36 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 14 Jun 2022 13:27:36 +0800
+Message-ID: <e431cca23add678bb39dbc75d783d239914d256a.camel@mediatek.com>
+Subject: Re: [PATCH v11 04/12] drm/mediatek: dpi: implement a swap_input
+ toggle in SoC config
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 14 Jun 2022 13:27:36 +0800
+In-Reply-To: <20220613064841.10481-5-rex-bc.chen@mediatek.com>
+References: <20220613064841.10481-1-rex-bc.chen@mediatek.com>
+         <20220613064841.10481-5-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613202807.447694-1-mortonm@chromium.org>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Micah,
+Hi, Bo-Chen:
 
-I love your patch! Yet something to improve:
+On Mon, 2022-06-13 at 14:48 +0800, Bo-Chen Chen wrote:
+> From: Guillaume Ranquet <granquet@baylibre.com>
+> 
+> The hardware design of dp_intf does not support input swap, so we add
+> a bit of flexibility to support SoCs without swap_input support.
+> 
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> [Bo-Chen: Add modification reason in commit message.]
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 14 +++++++++++---
+>  1 file changed, 11 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index 15218c1e8c11..c1438c744120 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -126,6 +126,7 @@ struct mtk_dpi_conf {
+>  	const u32 *output_fmts;
+>  	u32 num_output_fmts;
+>  	bool is_ck_de_pol;
+> +	bool swap_input_support;
+>  	const struct mtk_dpi_yc_limit *limit;
+>  };
+>  
+> @@ -378,18 +379,21 @@ static void mtk_dpi_config_color_format(struct
+> mtk_dpi *dpi,
+>  	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
+>  		mtk_dpi_config_yuv422_enable(dpi, false);
+>  		mtk_dpi_config_csc_enable(dpi, true);
+> -		mtk_dpi_config_swap_input(dpi, false);
+> +		if (dpi->conf->swap_input_support)
+> +			mtk_dpi_config_swap_input(dpi, false);
+>  		mtk_dpi_config_channel_swap(dpi,
+> MTK_DPI_OUT_CHANNEL_SWAP_BGR);
+>  	} else if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_422) ||
+>  		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
+>  		mtk_dpi_config_yuv422_enable(dpi, true);
+>  		mtk_dpi_config_csc_enable(dpi, true);
+> -		mtk_dpi_config_swap_input(dpi, true);
+> +		if (dpi->conf->swap_input_support)
+> +			mtk_dpi_config_swap_input(dpi, true);
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on kees/for-next/pstore v5.19-rc2 next-20220610]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+In this case, we need swap input, but hardware does not support, so
+just skip config hardware and everything works fine? Should print any
+error message?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Micah-Morton/security-Add-LSM-hook-to-setgroups-syscall/20220614-050341
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
-config: hexagon-randconfig-r045-20220613 (https://download.01.org/0day-ci/archive/20220614/202206141343.mSI8gmLO-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c97436f8b6e2718286e8496faf53a2c800e281cf)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/b21cba6f759a2a60439de4d0f85323ed745b3ade
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Micah-Morton/security-Add-LSM-hook-to-setgroups-syscall/20220614-050341
-        git checkout b21cba6f759a2a60439de4d0f85323ed745b3ade
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+Regards,
+CK
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+>  		mtk_dpi_config_channel_swap(dpi,
+> MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+>  	} else {
+>  		mtk_dpi_config_yuv422_enable(dpi, false);
+>  		mtk_dpi_config_csc_enable(dpi, false);
+> -		mtk_dpi_config_swap_input(dpi, false);
+> +		if (dpi->conf->swap_input_support)
+> +			mtk_dpi_config_swap_input(dpi, false);
+>  		mtk_dpi_config_channel_swap(dpi,
+> MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+>  	}
+>  }
+> @@ -808,6 +812,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
+>  	.output_fmts = mt8173_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+>  	.is_ck_de_pol = true,
+> +	.swap_input_support = true,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> @@ -819,6 +824,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
+>  	.output_fmts = mt8173_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+>  	.is_ck_de_pol = true,
+> +	.swap_input_support = true,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> @@ -829,6 +835,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
+>  	.output_fmts = mt8183_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+>  	.is_ck_de_pol = true,
+> +	.swap_input_support = true,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> @@ -839,6 +846,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
+>  	.output_fmts = mt8183_output_fmts,
+>  	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+>  	.is_ck_de_pol = true,
+> +	.swap_input_support = true,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
 
-All errors (new ones prefixed by >>):
-
->> kernel/groups.c:143:6: error: assigning to 'struct cred *' from 'typeof (*((__current_thread_info->task)->cred)) *' (aka 'const struct cred *') discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
-           old = current_cred();
-               ^ ~~~~~~~~~~~~~~
->> kernel/groups.c:147:2: error: use of undeclared identifier 'retval'
-           retval = security_task_fix_setgroups(new, old);
-           ^
-   kernel/groups.c:148:6: error: use of undeclared identifier 'retval'
-           if (retval < 0)
-               ^
-   kernel/groups.c:155:9: error: use of undeclared identifier 'retval'
-           return retval;
-                  ^
-   4 errors generated.
-
-
-vim +143 kernel/groups.c
-
-   126	
-   127	/**
-   128	 * set_current_groups - Change current's group subscription
-   129	 * @group_info: The group list to impose
-   130	 *
-   131	 * Validate a group subscription and, if valid, impose it upon current's task
-   132	 * security record.
-   133	 */
-   134	int set_current_groups(struct group_info *group_info)
-   135	{
-   136		struct cred *new;
-   137		struct cred *old;
-   138	
-   139		new = prepare_creds();
-   140		if (!new)
-   141			return -ENOMEM;
-   142	
- > 143		old = current_cred();
-   144	
-   145		set_groups(new, group_info);
-   146	
- > 147		retval = security_task_fix_setgroups(new, old);
-   148		if (retval < 0)
-   149			goto error;
-   150	
-   151		return commit_creds(new);
-   152	
-   153	error:
-   154		abort_creds(new);
-   155		return retval;
-   156	}
-   157	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
