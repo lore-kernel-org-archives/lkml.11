@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66008C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC0AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:06:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351346AbiFNJGB (ORCPT
+        id S1352640AbiFNJGG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44524 "EHLO
+        Tue, 14 Jun 2022 05:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239456AbiFNJFn (ORCPT
+        with ESMTP id S239679AbiFNJFn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 05:05:43 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94DE33D4AC;
-        Tue, 14 Jun 2022 02:05:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D353DDE6;
+        Tue, 14 Jun 2022 02:05:43 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 53A451F935;
+        by smtp-out2.suse.de (Postfix) with ESMTP id C1DD01F94B;
         Tue, 14 Jun 2022 09:05:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
         t=1655197541; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=HDq66hKzlbSU13apIN/KRzKQB6pSsthPwOlVeYmmgX4=;
-        b=i5XXfXcY7gd+O5XAGxGUbj6tEAYyzNkelJTm77qgUExjT6x8u4RQQsRHlr3hQrp5I5Rg8e
-        Qwl6bwShlIeiwf7jDiQITNSEpQbVrb4LPLMdqFXQRIQAhcph/2VHCQ65/vRG0dOf3BKqDI
-        BHeC6YwfvbU0E2X2D4xTMK828ll2foU=
+        bh=xe6GvvsoQamREKSFfsgIANQWYjRr6/747QxLbv2QSJo=;
+        b=aXu3B88ylDNDHoEvkGwIY2Jm9hwwQvV6l9t4H4+6pXmRJLWiQ2tumFZ3W9aNEXS1qKN18A
+        ayw5g1SrjaPS543gFuEwQxYrfPNHqQHXk2pUKZzNz/YyRud+Jax9gbRt7p/tAd5YoLifTb
+        bs3J5kOux9vCk++sdfltl54ErA/nsJI=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
         s=susede2_ed25519; t=1655197541;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=HDq66hKzlbSU13apIN/KRzKQB6pSsthPwOlVeYmmgX4=;
-        b=bSehLvoSByNIVVh580PYnSg6tcy75UArfiGchYkxS9q93FX53zt8SUXe7O4B9LEMelpjcp
-        lTnN7hUXyG7RVVBg==
+        bh=xe6GvvsoQamREKSFfsgIANQWYjRr6/747QxLbv2QSJo=;
+        b=N2y7uQUlK6S0Mfwd+9E4LSIU2Zs+EF9Me0FeBW7KkG7EBZCR8GEzl99eAZW7bJu7WnA/AS
+        YtvpLI/B6K64w3CQ==
 Received: from localhost.localdomain (unknown [10.100.201.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 28E6F2C141;
+        by relay2.suse.de (Postfix) with ESMTPS id 97A302C141;
         Tue, 14 Jun 2022 09:05:41 +0000 (UTC)
 From:   Jiri Slaby <jslaby@suse.cz>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jiri Slaby <jslaby@suse.cz>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v2 4/8] tty/vt: consolemap: saner variable names in set_inverse_transl()
-Date:   Tue, 14 Jun 2022 11:05:33 +0200
-Message-Id: <20220614090537.15557-4-jslaby@suse.cz>
+Subject: [PATCH v2 6/8] tty/vt: consolemap: improve UNI_*() macros definitions
+Date:   Tue, 14 Jun 2022 11:05:35 +0200
+Message-Id: <20220614090537.15557-6-jslaby@suse.cz>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220614090537.15557-1-jslaby@suse.cz>
 References: <20220614075713.32767-1-jslaby@suse.cz>
@@ -61,71 +61,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function uses too vague variable names like i, j, k for iterators, p,
-q, p1, p2 for pointers etc.
+Use FIELD_GET() and GENMASK() helpers instead of direct shifts and ANDs.
+This makes the code even more obvious. I didn't know about the helpers
+at the time of writing the macros.
 
-Rename all these, so that it is clear what is going on:
-- dict: for dictionaries.
-- d, r, g: for dir, row, glyph iterators -- these are unsigned now.
-- dir, row: for directory and row pointers.
-- glyph: for the glyph.
-- and so on...
-
-This is a lot of shuffling, but the result pays off, IMO.
-
+Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 ---
- drivers/tty/vt/consolemap.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/tty/vt/consolemap.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index 55fb466361c1..3d0e10dac6d9 100644
+index 16d0d8f04f0e..9e94ec0e0f83 100644
 --- a/drivers/tty/vt/consolemap.c
 +++ b/drivers/tty/vt/consolemap.c
-@@ -214,29 +214,29 @@ struct uni_pagedict {
+@@ -23,6 +23,8 @@
+  * stack overflow.
+  */
  
- static struct uni_pagedict *dflt;
++#include <linux/bitfield.h>
++#include <linux/bits.h>
+ #include <linux/module.h>
+ #include <linux/kd.h>
+ #include <linux/errno.h>
+@@ -190,10 +192,17 @@ static enum translation_map inv_translate[MAX_NR_CONSOLES];
+ #define UNI_DIR_ROWS	32U
+ #define UNI_ROW_GLYPHS	64U
  
--static void set_inverse_transl(struct vc_data *conp, struct uni_pagedict *p,
-+static void set_inverse_transl(struct vc_data *conp, struct uni_pagedict *dict,
- 	       enum translation_map m)
- {
--	int j, glyph;
- 	unsigned short *t = translations[m];
--	unsigned char *q;
-+	unsigned char *inv;
+-#define UNI_DIR(uni)		( (uni)                   >> 11)
+-#define UNI_ROW(uni)		(((uni) & GENMASK(10, 6)) >>  6)
+-#define UNI_GLYPH(uni)		( (uni) & GENMASK( 5, 0))
+-#define UNI(dir, row, glyph)	(((dir) << 11) | ((row) << 6) | (glyph))
++#define UNI_DIR_BITS		GENMASK(15, 11)
++#define UNI_ROW_BITS		GENMASK(10,  6)
++#define UNI_GLYPH_BITS		GENMASK( 5,  0)
++
++#define UNI_DIR(uni)		FIELD_GET(UNI_DIR_BITS, (uni))
++#define UNI_ROW(uni)		FIELD_GET(UNI_ROW_BITS, (uni))
++#define UNI_GLYPH(uni)		FIELD_GET(UNI_GLYPH_BITS, (uni))
++
++#define UNI(dir, row, glyph)	(FIELD_PREP(UNI_DIR_BITS, (dir)) | \
++				 FIELD_PREP(UNI_ROW_BITS, (row)) | \
++				 FIELD_PREP(UNI_GLYPH_BITS, (glyph)))
  
--	if (!p)
-+	if (!dict)
- 		return;
--	q = p->inverse_translations[m];
-+	inv = dict->inverse_translations[m];
- 
--	if (!q) {
--		q = p->inverse_translations[m] = kmalloc(MAX_GLYPH, GFP_KERNEL);
--		if (!q)
-+	if (!inv) {
-+		inv = dict->inverse_translations[m] = kmalloc(MAX_GLYPH,
-+				GFP_KERNEL);
-+		if (!inv)
- 			return;
- 	}
--	memset(q, 0, MAX_GLYPH);
-+	memset(inv, 0, MAX_GLYPH);
- 
--	for (j = 0; j < ARRAY_SIZE(translations[m]); j++) {
--		glyph = conv_uni_to_pc(conp, t[j]);
--		if (glyph >= 0 && glyph < MAX_GLYPH && q[glyph] < 32) {
-+	for (unsigned int ch = 0; ch < ARRAY_SIZE(translations[m]); ch++) {
-+		int glyph = conv_uni_to_pc(conp, t[ch]);
-+		if (glyph >= 0 && glyph < MAX_GLYPH && inv[glyph] < 32) {
- 			/* prefer '-' above SHY etc. */
--			q[glyph] = j;
-+			inv[glyph] = ch;
- 		}
- 	}
- }
+ /**
+  * struct uni_pagedict -- unicode directory
 -- 
 2.36.1
 
