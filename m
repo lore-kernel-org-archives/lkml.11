@@ -2,134 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0CB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:59:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B38A8CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242134AbiFNI7z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:59:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
+        id S233199AbiFNJAs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 05:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242103AbiFNI7u (ORCPT
+        with ESMTP id S229758AbiFNJAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:59:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61BFA25E81
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:59:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655197188;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IwpnFeqpjQPPhi0b6JCKQ8hffeOUpqZ7wRTwt/30kI4=;
-        b=QX4maYfUKW4wwSjJ8+RIXZW3y0QxvUNzl+D+n/ezKE0SEzX0Fz9qyMVxqygsIeYiCwlkHe
-        7zSUhMJwKQR9CllEEjHvEFGBRNLPDpL89wilhhG6+4G8FQnDCkmzOB2w7lABiIZJGNrhgq
-        S6md13VCNjJ+HtQrrMoJ48FhNrNaBoA=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-446-RPgRlXCcOtWiDZIyFmGO1w-1; Tue, 14 Jun 2022 04:59:39 -0400
-X-MC-Unique: RPgRlXCcOtWiDZIyFmGO1w-1
-Received: by mail-qk1-f199.google.com with SMTP id bm2-20020a05620a198200b006a5dac37fa2so6975075qkb.16
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:59:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=IwpnFeqpjQPPhi0b6JCKQ8hffeOUpqZ7wRTwt/30kI4=;
-        b=zE7nBjapdgpm/C+mgsHcYaiwCPAoPX3QvEcjT72EDl/tyfZuZz1jwUoVFop/LMHxPj
-         HgI1eRuMvBOvefD8gdGX2DHIoehhsFzY1KGR95fYPhEjuaSJy9uwB4YQNEvuCisC5yd9
-         2iUupUdYvOIT3eonFMldAiY6IM0AdXmSy+1Y5ACLWX6COTLUWoF3E/3k6kMIQsAtd2dU
-         HGpCtxh9pf5zkAfjjkriMYtuoNCmQkwUXPvQrrV++3cKkf9GldFT1dMC4Rm4XmRB5AGy
-         w6vxXEvibqGUJANx74kWD0PxsVqZOxfK2wDGg3brI0E0TPXbAJxfULqrncTa6AxPNpCj
-         cW+Q==
-X-Gm-Message-State: AOAM532FPjLeliqrmYCQTKCf0tF23atZHMTg2UAUb9wywnC8BAf0vB9P
-        FF/HEnetn5WNrF+B7zEsK8/PHxAerFAyCvPuVXZ5G4Bxcru2ZUwZ1IB4n6cGXLR8/5lbaaTNJdG
-        Y4DZWky1k+3UlcIugJmXYX4eW
-X-Received: by 2002:a05:620a:1094:b0:6a7:1861:66e7 with SMTP id g20-20020a05620a109400b006a7186166e7mr3049290qkk.323.1655197179446;
-        Tue, 14 Jun 2022 01:59:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzyc/79DVoJuW2vdiVgQb+wK/7pfp+CMdc4B6TqbLHAn5s1EiYdEl+m3b7Q0MbmEaN07zu+uQ==
-X-Received: by 2002:a05:620a:1094:b0:6a7:1861:66e7 with SMTP id g20-20020a05620a109400b006a7186166e7mr3049287qkk.323.1655197179157;
-        Tue, 14 Jun 2022 01:59:39 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-202.dyn.eolo.it. [146.241.113.202])
-        by smtp.gmail.com with ESMTPSA id f19-20020a05620a409300b006a6278a2b31sm9311562qko.75.2022.06.14.01.59.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 01:59:38 -0700 (PDT)
-Message-ID: <cdcd1de63ff8fd6ce5fb23f38669ee9092ceb45a.camel@redhat.com>
-Subject: Re: [PATCH net v4] net: ax25: Fix deadlock caused by
- skb_recv_datagram in ax25_recvmsg
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Duoming Zhou <duoming@zju.edu.cn>, linux-kernel@vger.kernel.org
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-hams@vger.kernel.org, thomas@osterried.de
-Date:   Tue, 14 Jun 2022 10:59:35 +0200
-In-Reply-To: <20220610123319.32118-1-duoming@zju.edu.cn>
-References: <20220610123319.32118-1-duoming@zju.edu.cn>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Tue, 14 Jun 2022 05:00:46 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDE5E27158;
+        Tue, 14 Jun 2022 02:00:43 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMj4M4SW0zRjS7;
+        Tue, 14 Jun 2022 16:57:23 +0800 (CST)
+Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 17:00:36 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 17:00:35 +0800
+From:   Wupeng Ma <mawupeng1@huawei.com>
+To:     <corbet@lwn.net>, <will@kernel.org>, <ardb@kernel.org>,
+        <catalin.marinas@arm.com>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
+        <dvhart@infradead.org>, <andy@infradead.org>, <rppt@kernel.org>,
+        <akpm@linux-foundation.org>, <paul.walmsley@sifive.com>,
+        <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>,
+        <paulmck@kernel.org>, <keescook@chromium.org>,
+        <songmuchun@bytedance.com>, <rdunlap@infradead.org>,
+        <damien.lemoal@opensource.wdc.com>, <swboyd@chromium.org>,
+        <wei.liu@kernel.org>, <robin.murphy@arm.com>, <david@redhat.com>,
+        <mawupeng1@huawei.com>, <anshuman.khandual@arm.com>,
+        <thunder.leizhen@huawei.com>, <wangkefeng.wang@huawei.com>,
+        <gpiccoli@igalia.com>, <chenhuacai@kernel.org>,
+        <geert@linux-m68k.org>, <vijayb@linux.microsoft.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-efi@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
+        <linux-mm@kvack.org>, <linux-riscv@lists.infradead.org>
+Subject: [PATCH v5 1/5] efi: arm64: Introduce ability to find mirrored memory ranges
+Date:   Tue, 14 Jun 2022 17:21:52 +0800
+Message-ID: <20220614092156.1972846-2-mawupeng1@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220614092156.1972846-1-mawupeng1@huawei.com>
+References: <20220614092156.1972846-1-mawupeng1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500014.china.huawei.com (7.185.36.153)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-06-10 at 20:33 +0800, Duoming Zhou wrote:
-> The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
-> and block until it receives a packet from the remote. If the client
-> doesn`t connect to server and calls read() directly, it will not
-> receive any packets forever. As a result, the deadlock will happen.
-> 
-> The fail log caused by deadlock is shown below:
-> 
-> [  369.606973] INFO: task ax25_deadlock:157 blocked for more than 245 seconds.
-> [  369.608919] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> [  369.613058] Call Trace:
-> [  369.613315]  <TASK>
-> [  369.614072]  __schedule+0x2f9/0xb20
-> [  369.615029]  schedule+0x49/0xb0
-> [  369.615734]  __lock_sock+0x92/0x100
-> [  369.616763]  ? destroy_sched_domains_rcu+0x20/0x20
-> [  369.617941]  lock_sock_nested+0x6e/0x70
-> [  369.618809]  ax25_bind+0xaa/0x210
-> [  369.619736]  __sys_bind+0xca/0xf0
-> [  369.620039]  ? do_futex+0xae/0x1b0
-> [  369.620387]  ? __x64_sys_futex+0x7c/0x1c0
-> [  369.620601]  ? fpregs_assert_state_consistent+0x19/0x40
-> [  369.620613]  __x64_sys_bind+0x11/0x20
-> [  369.621791]  do_syscall_64+0x3b/0x90
-> [  369.622423]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  369.623319] RIP: 0033:0x7f43c8aa8af7
-> [  369.624301] RSP: 002b:00007f43c8197ef8 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-> [  369.625756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f43c8aa8af7
-> [  369.626724] RDX: 0000000000000010 RSI: 000055768e2021d0 RDI: 0000000000000005
-> [  369.628569] RBP: 00007f43c8197f00 R08: 0000000000000011 R09: 00007f43c8198700
-> [  369.630208] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff845e6afe
-> [  369.632240] R13: 00007fff845e6aff R14: 00007f43c8197fc0 R15: 00007f43c8198700
-> 
-> This patch replaces skb_recv_datagram() with an open-coded variant of it
-> releasing the socket lock before the __skb_wait_for_more_packets() call
-> and re-acquiring it after such call in order that other functions that
-> need socket lock could be executed.
-> 
-> what's more, the socket lock will be released only when recvmsg() will
-> block and that should produce nicer overall behavior.
-> 
-> Fixes: 40d0a923f55a ("Implement locking of internal data for NET/ROM and ROSE.")
+From: Ma Wupeng <mawupeng1@huawei.com>
 
-The correct tag is actually: 
+Commit b05b9f5f9dcf ("x86, mirror: x86 enabling - find mirrored memory
+ranges") introduce the efi_find_mirror() function on x86. In order to reuse
+the API we make it public.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Arm64 can support mirrored memory too, so function efi_find_mirror() is added to
+efi_init() to this support for arm64.
 
-We don't pick hashes from historicaly repository, as they would confuse
-most/all users. Please re-post with the correct tag. Note that you can
-check patchwork yourself for this kind of formal errors.
+Since efi_init() is shared by ARM, arm64 and riscv, this patch will bring
+mirror memory support for these architectures, but this support is only tested
+in arm64.
 
-The patch LGTM, when you repost you can append:
+Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
+---
+ arch/x86/include/asm/efi.h      |  4 ----
+ arch/x86/platform/efi/efi.c     | 23 -----------------------
+ drivers/firmware/efi/efi-init.c |  1 +
+ drivers/firmware/efi/efi.c      | 23 +++++++++++++++++++++++
+ include/linux/efi.h             |  3 +++
+ 5 files changed, 27 insertions(+), 27 deletions(-)
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-
-Thanks,
-
-Paolo
+diff --git a/arch/x86/include/asm/efi.h b/arch/x86/include/asm/efi.h
+index 71943dce691e..eb90206eae80 100644
+--- a/arch/x86/include/asm/efi.h
++++ b/arch/x86/include/asm/efi.h
+@@ -383,7 +383,6 @@ static inline bool efi_is_64bit(void)
+ extern bool efi_reboot_required(void);
+ extern bool efi_is_table_address(unsigned long phys_addr);
+ 
+-extern void efi_find_mirror(void);
+ extern void efi_reserve_boot_services(void);
+ #else
+ static inline void parse_efi_setup(u64 phys_addr, u32 data_len) {}
+@@ -395,9 +394,6 @@ static inline  bool efi_is_table_address(unsigned long phys_addr)
+ {
+ 	return false;
+ }
+-static inline void efi_find_mirror(void)
+-{
+-}
+ static inline void efi_reserve_boot_services(void)
+ {
+ }
+diff --git a/arch/x86/platform/efi/efi.c b/arch/x86/platform/efi/efi.c
+index 1591d67e0bcd..6e598bd78eef 100644
+--- a/arch/x86/platform/efi/efi.c
++++ b/arch/x86/platform/efi/efi.c
+@@ -108,29 +108,6 @@ static int __init setup_add_efi_memmap(char *arg)
+ }
+ early_param("add_efi_memmap", setup_add_efi_memmap);
+ 
+-void __init efi_find_mirror(void)
+-{
+-	efi_memory_desc_t *md;
+-	u64 mirror_size = 0, total_size = 0;
+-
+-	if (!efi_enabled(EFI_MEMMAP))
+-		return;
+-
+-	for_each_efi_memory_desc(md) {
+-		unsigned long long start = md->phys_addr;
+-		unsigned long long size = md->num_pages << EFI_PAGE_SHIFT;
+-
+-		total_size += size;
+-		if (md->attribute & EFI_MEMORY_MORE_RELIABLE) {
+-			memblock_mark_mirror(start, size);
+-			mirror_size += size;
+-		}
+-	}
+-	if (mirror_size)
+-		pr_info("Memory: %lldM/%lldM mirrored memory\n",
+-			mirror_size>>20, total_size>>20);
+-}
+-
+ /*
+  * Tell the kernel about the EFI memory map.  This might include
+  * more than the max 128 entries that can fit in the passed in e820
+diff --git a/drivers/firmware/efi/efi-init.c b/drivers/firmware/efi/efi-init.c
+index b2c829e95bd1..8e3a0d14dac5 100644
+--- a/drivers/firmware/efi/efi-init.c
++++ b/drivers/firmware/efi/efi-init.c
+@@ -241,6 +241,7 @@ void __init efi_init(void)
+ 	 */
+ 	early_init_dt_check_for_usable_mem_range();
++	efi_find_mirror();
+ 	efi_esrt_init();
+ 	efi_mokvar_table_init();
+ 
+ 	memblock_reserve(data.phys_map & PAGE_MASK,
+diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
+index 860534bcfdac..79c232e07de7 100644
+--- a/drivers/firmware/efi/efi.c
++++ b/drivers/firmware/efi/efi.c
+@@ -446,6 +446,29 @@ static int __init efisubsys_init(void)
+ 
+ subsys_initcall(efisubsys_init);
+ 
++void __init efi_find_mirror(void)
++{
++	efi_memory_desc_t *md;
++	u64 mirror_size = 0, total_size = 0;
++
++	if (!efi_enabled(EFI_MEMMAP))
++		return;
++
++	for_each_efi_memory_desc(md) {
++		unsigned long long start = md->phys_addr;
++		unsigned long long size = md->num_pages << EFI_PAGE_SHIFT;
++
++		total_size += size;
++		if (md->attribute & EFI_MEMORY_MORE_RELIABLE) {
++			memblock_mark_mirror(start, size);
++			mirror_size += size;
++		}
++	}
++	if (mirror_size)
++		pr_info("Memory: %lldM/%lldM mirrored memory\n",
++			mirror_size>>20, total_size>>20);
++}
++
+ /*
+  * Find the efi memory descriptor for a given physical address.  Given a
+  * physical address, determine if it exists within an EFI Memory Map entry,
+diff --git a/include/linux/efi.h b/include/linux/efi.h
+index 7d9b0bb47eb3..53f64c14a525 100644
+--- a/include/linux/efi.h
++++ b/include/linux/efi.h
+@@ -872,6 +872,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+ {
+ 	return (efi.runtime_supported_mask & mask) == mask;
+ }
++extern void efi_find_mirror(void);
+ #else
+ static inline bool efi_enabled(int feature)
+ {
+@@ -889,6 +890,8 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+ {
+ 	return false;
+ }
++
++static inline void efi_find_mirror(void) {}
+ #endif
+ 
+ extern int efi_status_to_err(efi_status_t status);
+-- 
+2.25.1
 
