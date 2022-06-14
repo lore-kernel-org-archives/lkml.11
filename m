@@ -2,166 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C41C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2597CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 15:01:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353774AbiFNPAe (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 11:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
+        id S237168AbiFNPBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 11:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245246AbiFNPAb (ORCPT
+        with ESMTP id S1350701AbiFNPBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 11:00:31 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DD23EB92;
-        Tue, 14 Jun 2022 08:00:29 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMs3T2tZgzRjSD;
-        Tue, 14 Jun 2022 22:57:09 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 23:00:20 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 14 Jun
- 2022 23:00:19 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>
-CC:     <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <chenxiaosong2@huawei.com>, <liuyongqiang13@huawei.com>,
-        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>
-Subject: [PATCH -next] NFS: report and clear ENOSPC/EFBIG/EDQUOT writeback error on close() file
-Date:   Tue, 14 Jun 2022 23:13:21 +0800
-Message-ID: <20220614151321.256031-1-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 14 Jun 2022 11:01:43 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A3C41989
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:01:41 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id v19so12062606edd.4
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ODxKv9DXEzyXisW4L2tDdOPQuT/fUgqqrwiPKscw3fY=;
+        b=dkRLuS0K2v319PcXm79Yz14PlggFsMt6Q4N5YFB5jl+SHs7stUFsx+coHokzgJJH3h
+         299y17G/0dbEqff95oaV0FYeWPzppSBxZuXGaB+HZwvVQ6d2j7M+J8kroFyNVqQW0P7K
+         AZy2aV48j43OARlj0tuXcNA05O42ayDB13CF4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ODxKv9DXEzyXisW4L2tDdOPQuT/fUgqqrwiPKscw3fY=;
+        b=R/FBO4IA6Jh/V56WbfbKt4xxJ3zp3ynw0qwaG3N0pnsw/vFWbLxkp8+njItBTDkzOb
+         7o/ZuajQO+OyQzrPKdEd1Hcmtn4QMzbAjKBoom9haTPl8eTz/rq/BtaWou8fC72jhRzs
+         sMbe08+IbfV3zH+2oCvVdVzcCDl0rtYVL0s3w4gmYEbW/HOZ6QgM2286bS+HPgPQU0c/
+         wjC0cwoio84PRd9XUH0KALz2w7l0sRFF1BSplBpIcUzX1kOeTAHvSmhG6SyJOxV17Ul8
+         RYrS6lf3WiQLuN2TsGbxAN8sGJ0Y777QyGAJZiuV+Xh1vdKqwy2CQDGdyVlIiJNoVMx1
+         KJtQ==
+X-Gm-Message-State: AOAM533iU6U67FzbYo47GsPAICCw4Zn0hO4AguaxGAvDJ7HlQa1aedqL
+        s9GSpgoLdG+8iwcLEE+gAnmKn2Mzgmm3sdRH
+X-Google-Smtp-Source: ABdhPJxgC4cV08pDVzTZ3v2MT40BgrH5uFW1hOIEqGIK467RnBdUdVI04Jruf249NMw8cNHO5riESg==
+X-Received: by 2002:a05:6402:2710:b0:42e:28c9:fa7 with SMTP id y16-20020a056402271000b0042e28c90fa7mr6699588edd.2.1655218900022;
+        Tue, 14 Jun 2022 08:01:40 -0700 (PDT)
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
+        by smtp.gmail.com with ESMTPSA id zj11-20020a170907338b00b006ff0fe78cb7sm5123879ejb.133.2022.06.14.08.01.39
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 08:01:39 -0700 (PDT)
+Received: by mail-wr1-f43.google.com with SMTP id o8so11684626wro.3
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 08:01:39 -0700 (PDT)
+X-Received: by 2002:a5d:414d:0:b0:213:be00:a35 with SMTP id
+ c13-20020a5d414d000000b00213be000a35mr5170207wrq.97.1655218898671; Tue, 14
+ Jun 2022 08:01:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600015.china.huawei.com (7.193.23.52)
-X-CFilter-Loop: Reflected
+References: <20220614083552.1559600-1-pbonzini@redhat.com> <YqihVgV1AHGJ1GKw@google.com>
+In-Reply-To: <YqihVgV1AHGJ1GKw@google.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 14 Jun 2022 08:01:22 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whZWxdfY3Ks7E_G0=8TmUyc0nnGGiBij_ARsk4JNZiQeQ@mail.gmail.com>
+Message-ID: <CAHk-=whZWxdfY3Ks7E_G0=8TmUyc0nnGGiBij_ARsk4JNZiQeQ@mail.gmail.com>
+Subject: Re: [GIT PULL] More KVM changes for Linux 5.19-rc3
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, we report and clear ENOSPC/EFBIG/EDQUOT writeback error on write(),
-write() file will report unexpected error if previous writeback error have not
-been cleared.
+On Tue, Jun 14, 2022 at 7:55 AM Sean Christopherson <seanjc@google.com> wrote:
+>
+> This patch has a bug that breaks 32-bit builds, and undoubtedly does weird things
+> for 64-bit builds.
 
-Reproducer:
-        nfs server            |       nfs client
- -----------------------------|---------------------------------------------
- # No space left on server    |
- fallocate -l 100G /svr/nospc |
-                              | mount -t nfs $nfs_server_ip:/ /mnt
-                              |
-                              | # Expected error: No space left on device
-                              | dd if=/dev/zero of=/mnt/file count=1 ibs=10K
-                              |
-                              | # Release space on mountpoint
-                              | rm /mnt/nospc
-                              |
-                              | # Just write 512B and report unexpected error
-                              | dd if=/dev/zero of=/mnt/file count=1 ibs=10K
+Thanks, you caught me just as I was merging it.
 
-Fix this by clearing ENOSPC/EFBIG/EDQUOT writeback error on close file,
-it will not clear other errors that are not supposed to be reported by close().
+I fixed it up in the merge itself.
 
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
----
- fs/nfs/file.c     | 15 ++++++++-------
- fs/nfs/internal.h | 10 ++++++++++
- fs/nfs/nfs4file.c |  9 +++++++--
- 3 files changed, 25 insertions(+), 9 deletions(-)
-
-diff --git a/fs/nfs/file.c b/fs/nfs/file.c
-index 2d72b1b7ed74..a6921f42c155 100644
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -139,6 +139,7 @@ nfs_file_flush(struct file *file, fl_owner_t id)
- {
- 	struct inode	*inode = file_inode(file);
- 	errseq_t since;
-+	int error;
- 
- 	dprintk("NFS: flush(%pD2)\n", file);
- 
-@@ -149,7 +150,12 @@ nfs_file_flush(struct file *file, fl_owner_t id)
- 	/* Flush writes to the server and return any errors */
- 	since = filemap_sample_wb_err(file->f_mapping);
- 	nfs_wb_all(inode);
--	return filemap_check_wb_err(file->f_mapping, since);
-+	error = filemap_check_wb_err(file->f_mapping, since);
-+
-+	if (nfs_should_clear_wb_err(error))
-+		file_check_and_advance_wb_err(file);
-+
-+	return error;
- }
- 
- ssize_t
-@@ -673,12 +679,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
- out:
- 	/* Return error values */
- 	error = filemap_check_wb_err(file->f_mapping, since);
--	switch (error) {
--	default:
--		break;
--	case -EDQUOT:
--	case -EFBIG:
--	case -ENOSPC:
-+	if (nfs_should_clear_wb_err(error)) {
- 		nfs_wb_all(inode);
- 		error = file_check_and_advance_wb_err(file);
- 		if (error < 0)
-diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
-index 8f8cd6e2d4db..e49aad8f7d09 100644
---- a/fs/nfs/internal.h
-+++ b/fs/nfs/internal.h
-@@ -859,3 +859,13 @@ static inline void nfs_set_port(struct sockaddr *sap, int *port,
- 
- 	rpc_set_port(sap, *port);
- }
-+
-+static inline bool nfs_should_clear_wb_err(int error) {
-+	switch (error) {
-+	case -EDQUOT:
-+	case -EFBIG:
-+	case -ENOSPC:
-+		return true;
-+	}
-+	return false;
-+}
-diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
-index 03d3a270eff4..ddf3f0abd55a 100644
---- a/fs/nfs/nfs4file.c
-+++ b/fs/nfs/nfs4file.c
-@@ -113,7 +113,7 @@ static int
- nfs4_file_flush(struct file *file, fl_owner_t id)
- {
- 	struct inode	*inode = file_inode(file);
--	errseq_t since;
-+	errseq_t since, error;
- 
- 	dprintk("NFS: flush(%pD2)\n", file);
- 
-@@ -131,7 +131,12 @@ nfs4_file_flush(struct file *file, fl_owner_t id)
- 	/* Flush writes to the server and return any errors */
- 	since = filemap_sample_wb_err(file->f_mapping);
- 	nfs_wb_all(inode);
--	return filemap_check_wb_err(file->f_mapping, since);
-+	error = filemap_check_wb_err(file->f_mapping, since);
-+
-+	if (nfs_should_clear_wb_err(error))
-+		file_check_and_advance_wb_err(file);
-+
-+	return error;
- }
- 
- #ifdef CONFIG_NFS_V4_2
--- 
-2.31.1
-
+                 Linus
