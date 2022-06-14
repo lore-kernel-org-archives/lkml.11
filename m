@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B57B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E5EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353283AbiFNCeN (ORCPT
+        id S1353614AbiFNCeU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40084 "EHLO
+        Mon, 13 Jun 2022 22:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357128AbiFNCbq (ORCPT
+        with ESMTP id S1354688AbiFNCcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:31:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A382457BB;
-        Mon, 13 Jun 2022 19:12:43 -0700 (PDT)
+        Mon, 13 Jun 2022 22:32:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 449C545AFA;
+        Mon, 13 Jun 2022 19:12:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C05756114C;
-        Tue, 14 Jun 2022 02:11:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B83DC341C0;
-        Tue, 14 Jun 2022 02:11:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 968A8B8169B;
+        Tue, 14 Jun 2022 02:07:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 196EEC3411B;
+        Tue, 14 Jun 2022 02:07:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172715;
-        bh=+35HzUDBzWDmuJJwatR1Q4D5ggHiaXyT+HsNG6pXQTg=;
+        s=k20201202; t=1655172446;
+        bh=+PYrvTFnip/gg9TheCSfPkipohp84RZ+kbpGq3MpCVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eg/ioAlY69y+1TabcBJFxdRE6ojSv4Q89M3DrYzdFbhe88XcK6SmJNWmPmnCwwJtz
-         5/bFJvKEgWM3doV+OWf6ow+ZL8EHGJk5iENpqMrYJ1jgqoA3/32sG/qqdjaXhELGxT
-         MKmH3Mpmo2V4/vlp7ACTZF0Q252pIvP+z5ThrMJWvPpAYUrLSBEGTph6HF7sFFmdjz
-         tecrfQAoMlAzYyjxLaLkFGabAj2wmI4d4ze0o8u5A5qD0c+s9uGXUcNulrue8azE2N
-         PU/SH0MeaH7AEnZ78uO3evhjwaUhmC45vUQbuDiB+PJqZxDux7dKoQVC3LPmIVxBcg
-         i3pZDy8EjroMA==
+        b=a86eNXtVPKHKeXnY8L1Ib220lFPllZhYeh1nFgjmZv/6ysVmBSJdL5uSG3jrlO+qq
+         wdcBz7Od+q04NS5LVdwgroTBZHovCWBWXiYzOo6Tu4p330yDA9UWu8+VQNYI3LbJlM
+         cvyP4QWndmIhQwXjUpxsp6k6afYYOaFS44EgHeqyMCnaKMSHIjWsQvi3G3zkEtP1pR
+         VpQLhSHfIaQaWp5fDlb1HdrfYGgYIcJpRMbFg3Q4QRW3TsJyPh3sc5tOEFlQGK+BZo
+         cA9F9zQf44qSJkS0O04XTfSJYDWyXDD3q85hmxENNCpbEgo/vUuwn1CZMnHVkVc2gc
+         WBkyVf1fm92xA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.15 4/4] KVM: Don't null dereference ops->destroy
-Date:   Mon, 13 Jun 2022 22:11:40 -0400
-Message-Id: <20220614021141.1101486-4-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
+        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 10/41] ASoC: cs42l52: Correct TLV for Bypass Volume
+Date:   Mon, 13 Jun 2022 22:06:35 -0400
+Message-Id: <20220614020707.1099487-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614021141.1101486-1-sashal@kernel.org>
-References: <20220614021141.1101486-1-sashal@kernel.org>
+In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
+References: <20220614020707.1099487-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,49 +54,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit e8bc2427018826e02add7b0ed0fc625a60390ae5 ]
+[ Upstream commit 91e90c712fade0b69cdff7cc6512f6099bd18ae5 ]
 
-A KVM device cleanup happens in either of two callbacks:
-1) destroy() which is called when the VM is being destroyed;
-2) release() which is called when a device fd is closed.
+The Bypass Volume is accidentally using a -6dB minimum TLV rather than
+the correct -60dB minimum. Add a new TLV to correct this.
 
-Most KVM devices use 1) but Book3s's interrupt controller KVM devices
-(XICS, XIVE, XIVE-native) use 2) as they need to close and reopen during
-the machine execution. The error handling in kvm_ioctl_create_device()
-assumes destroy() is always defined which leads to NULL dereference as
-discovered by Syzkaller.
-
-This adds a checks for destroy!=NULL and adds a missing release().
-
-This is not changing kvm_destroy_devices() as devices with defined
-release() should have been removed from the KVM devices list by then.
-
-Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-5-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- virt/kvm/kvm_main.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ sound/soc/codecs/cs42l52.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index fefdf3a6dae3..b9de910a86d8 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -4166,8 +4166,11 @@ static int kvm_ioctl_create_device(struct kvm *kvm,
- 		kvm_put_kvm_no_destroy(kvm);
- 		mutex_lock(&kvm->lock);
- 		list_del(&dev->vm_node);
-+		if (ops->release)
-+			ops->release(dev);
- 		mutex_unlock(&kvm->lock);
--		ops->destroy(dev);
-+		if (ops->destroy)
-+			ops->destroy(dev);
- 		return ret;
- 	}
+diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
+index 785caba3f653..c19ad3c24702 100644
+--- a/sound/soc/codecs/cs42l52.c
++++ b/sound/soc/codecs/cs42l52.c
+@@ -137,6 +137,8 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
+ 
+ static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
+ 
++static DECLARE_TLV_DB_SCALE(pass_tlv, -6000, 50, 0);
++
+ static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
+ 
+ static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
+@@ -351,7 +353,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
+ 			      CS42L52_SPKB_VOL, 0, 0x40, 0xC0, hl_tlv),
+ 
+ 	SOC_DOUBLE_R_SX_TLV("Bypass Volume", CS42L52_PASSTHRUA_VOL,
+-			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pga_tlv),
++			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pass_tlv),
+ 
+ 	SOC_DOUBLE("Bypass Mute", CS42L52_MISC_CTL, 4, 5, 1, 0),
  
 -- 
 2.35.1
