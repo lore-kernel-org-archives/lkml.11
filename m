@@ -2,198 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7196EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:36:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D96CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239451AbiFNIf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:35:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60468 "EHLO
+        id S1352384AbiFNIgi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 04:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235876AbiFNIf4 (ORCPT
+        with ESMTP id S239270AbiFNIgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:35:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A63B3DA55
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:35:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655195754;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UXZdGN4B5WR+HokB4bvG7NAu5UijaXumZB4FPqVWwNc=;
-        b=Copo7BvXqJkcUqVyhL2LxzQtxI6KmQT4cz9VnADcySMK6NazPVR534bR9xvd5qhkVfvLTd
-        wkjPQ3Cjk8Ola5S9LifC2EdcRZpALIAB60h/w0JbS0xhJ0ET1VtEV9/dDL9PIXMypDDsDg
-        hQlF8u0uyVNOA+ADGwWx/RwuTdLRS+U=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-220-pqy-A3KoPRuemZ1Sg9ABjw-1; Tue, 14 Jun 2022 04:35:52 -0400
-X-MC-Unique: pqy-A3KoPRuemZ1Sg9ABjw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 14 Jun 2022 04:36:35 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52FE842480;
+        Tue, 14 Jun 2022 01:36:33 -0700 (PDT)
+Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:4a7b:8d3a:acaa:ec46])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7D396185A7BA;
-        Tue, 14 Jun 2022 08:35:52 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5F063400DF1D;
-        Tue, 14 Jun 2022 08:35:52 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     torvalds@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: [GIT PULL] More KVM changes for Linux 5.19-rc3
-Date:   Tue, 14 Jun 2022 04:35:52 -0400
-Message-Id: <20220614083552.1559600-1-pbonzini@redhat.com>
+        (Authenticated sender: benjamin.gaignard)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5C09366016A4;
+        Tue, 14 Jun 2022 09:36:31 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655195791;
+        bh=v/Qj9dkCpC1sNaB07KNbLhoqv0M/1payaJLdzsZJWFE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=P4aRVtMBme11hZZLn7Df6ia1+6gBadDyGSYN5XBvoKPIqbMHttMiPlT+tqJHOxP92
+         8hyQZMM3mXbgaIdnE/nzD8z0DbmlwWajxAFwfuHySDmnqwvURdDgQWqgtPAMZDvFLD
+         +hkuI5oA6jC7x3GJ2SQcTbXUpTuSqoaGLT2eU3S4bYmHbRWPiRSGnzJkG8TzIObMAb
+         bnELYK5+EYfkYP05qKEaxYQ55ouTJ92IRWmz4qkic8IbnIVxXPbeoxG8F+hGXcEWyD
+         1L/7dqkkvrqo904rDnabLgymhnbY4eQoPKQ3QlB3Sgk4bQqQCCmKOCbY3lQ9Qjqjxu
+         35Ca3UWuCttdw==
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+To:     mchehab@kernel.org, hverkuil@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, mripard@kernel.org,
+        paul.kocialkowski@bootlin.com, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        nicolas.dufresne@collabora.com, andrzej.p@collabora.com
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Subject: [PATCH v8 01/17] videodev2.h: add V4L2_CTRL_FLAG_DYNAMIC_ARRAY
+Date:   Tue, 14 Jun 2022 10:35:58 +0200
+Message-Id: <20220614083614.240641-2-benjamin.gaignard@collabora.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220614083614.240641-1-benjamin.gaignard@collabora.com>
+References: <20220614083614.240641-1-benjamin.gaignard@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-The following changes since commit 6cd88243c7e03845a450795e134b488fc2afb736:
+Add a new flag that indicates that this control is a dynamically sized
+array. Also document this flag.
 
-  KVM: x86: do not report a vCPU as preempted outside instruction boundaries (2022-06-08 04:21:07 -0400)
+Currently dynamically sized arrays are limited to one dimensional arrays,
+but that might change in the future if there is a need for it.
 
-are available in the Git repository at:
+The initial use-case of dynamic arrays are stateless codecs. A frame
+can be divided in many slices, so you want to provide an array containing
+slice information for each slice. Typically the number of slices is small,
+but the standard allow for hundreds or thousands of slices. Dynamic arrays
+are a good solution since sizing the array for the worst case would waste
+substantial amounts of memory.
 
-  https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+---
+ .../userspace-api/media/v4l/vidioc-queryctrl.rst          | 8 ++++++++
+ include/uapi/linux/videodev2.h                            | 1 +
+ 2 files changed, 9 insertions(+)
 
-for you to fetch changes up to e0f3f46e42064a51573914766897b4ab95d943e3:
-
-  KVM: selftests: Restrict test region to 48-bit physical addresses when using nested (2022-06-09 10:52:27 -0400)
-
-While last week's pull request contained miscellaneous fixes for x86, this
-one covers other architectures, selftests changes, and a bigger series
-for APIC virtualization bugs that were discovered during 5.20 development.
-The idea is to base 5.20 development for KVM on top of this tag.
-
-Paolo
-
-----------------------------------------------------------------
-ARM64:
-
-* Properly reset the SVE/SME flags on vcpu load
-
-* Fix a vgic-v2 regression regarding accessing the pending
-state of a HW interrupt from userspace (and make the code
-common with vgic-v3)
-
-* Fix access to the idreg range for protected guests
-
-* Ignore 'kvm-arm.mode=protected' when using VHE
-
-* Return an error from kvm_arch_init_vm() on allocation failure
-
-* A bunch of small cleanups (comments, annotations, indentation)
-
-RISC-V:
-
-* Typo fix in arch/riscv/kvm/vmid.c
-
-* Remove broken reference pattern from MAINTAINERS entry
-
-x86-64:
-
-* Fix error in page tables with MKTME enabled
-
-* Dirty page tracking performance test extended to running a nested
-  guest
-
-* Disable APICv/AVIC in cases that it cannot implement correctly
-
-----------------------------------------------------------------
-David Matlack (11):
-      KVM: selftests: Replace x86_page_size with PG_LEVEL_XX
-      KVM: selftests: Add option to create 2M and 1G EPT mappings
-      KVM: selftests: Drop stale function parameter comment for nested_map()
-      KVM: selftests: Refactor nested_map() to specify target level
-      KVM: selftests: Move VMX_EPT_VPID_CAP_AD_BITS to vmx.h
-      KVM: selftests: Add a helper to check EPT/VPID capabilities
-      KVM: selftests: Drop unnecessary rule for STATIC_LIBS
-      KVM: selftests: Link selftests directly with lib object files
-      KVM: selftests: Clean up LIBKVM files in Makefile
-      KVM: selftests: Add option to run dirty_log_perf_test vCPUs in L2
-      KVM: selftests: Restrict test region to 48-bit physical addresses when using nested
-
-Julia Lawall (1):
-      RISC-V: KVM: fix typos in comments
-
-Lukas Bulwahn (1):
-      MAINTAINERS: Limit KVM RISC-V entry to existing selftests
-
-Marc Zyngier (7):
-      KVM: arm64: Always start with clearing SVE flag on load
-      KVM: arm64: Always start with clearing SME flag on load
-      KVM: arm64: Don't read a HW interrupt pending state in user context
-      KVM: arm64: Replace vgic_v3_uaccess_read_pending with vgic_uaccess_read_pending
-      KVM: arm64: Warn if accessing timer pending state outside of vcpu context
-      KVM: arm64: Handle all ID registers trapped for a protected VM
-      KVM: arm64: Drop stale comment
-
-Maxim Levitsky (7):
-      KVM: x86: document AVIC/APICv inhibit reasons
-      KVM: x86: inhibit APICv/AVIC on changes to APIC ID or APIC base
-      KVM: x86: SVM: remove avic's broken code that updated APIC ID
-      KVM: x86: SVM: fix avic_kick_target_vcpus_fast
-      KVM: x86: disable preemption while updating apicv inhibition
-      KVM: x86: disable preemption around the call to kvm_arch_vcpu_{un|}blocking
-      KVM: x86: SVM: drop preempt-safe wrappers for avic_vcpu_load/put
-
-Paolo Bonzini (3):
-      Merge tag 'kvm-riscv-fixes-5.19-1' of https://github.com/kvm-riscv/linux into HEAD
-      Merge tag 'kvmarm-fixes-5.19-1' of git://git.kernel.org/pub/scm/linux/kernel/git/kvmarm/kvmarm into HEAD
-      KVM: x86: SVM: fix nested PAUSE filtering when L0 intercepts PAUSE
-
-Will Deacon (4):
-      KVM: arm64: Return error from kvm_arch_init_vm() on allocation failure
-      KVM: arm64: Ignore 'kvm-arm.mode=protected' when using VHE
-      KVM: arm64: Extend comment in has_vhe()
-      KVM: arm64: Remove redundant hyp_assert_lock_held() assertions
-
-Yuan Yao (1):
-      KVM: x86/mmu: Set memory encryption "value", not "mask", in shadow PDPTRs
-
-sunliming (1):
-      KVM: arm64: Fix inconsistent indenting
-
- Documentation/admin-guide/kernel-parameters.txt    |   1 -
- MAINTAINERS                                        |   1 -
- arch/arm64/include/asm/kvm_host.h                  |   5 -
- arch/arm64/include/asm/virt.h                      |   3 +
- arch/arm64/kernel/cpufeature.c                     |  10 +-
- arch/arm64/kvm/arch_timer.c                        |   3 +
- arch/arm64/kvm/arm.c                               |  10 +-
- arch/arm64/kvm/fpsimd.c                            |   2 +
- arch/arm64/kvm/hyp/nvhe/mem_protect.c              |   4 -
- arch/arm64/kvm/hyp/nvhe/sys_regs.c                 |  42 ++++-
- arch/arm64/kvm/vgic/vgic-mmio-v2.c                 |   4 +-
- arch/arm64/kvm/vgic/vgic-mmio-v3.c                 |  40 +----
- arch/arm64/kvm/vgic/vgic-mmio.c                    |  40 ++++-
- arch/arm64/kvm/vgic/vgic-mmio.h                    |   3 +
- arch/arm64/kvm/vmid.c                              |   2 +-
- arch/riscv/kvm/vmid.c                              |   2 +-
- arch/x86/include/asm/kvm_host.h                    |  67 +++++++-
- arch/x86/kvm/lapic.c                               |  27 +++-
- arch/x86/kvm/mmu/mmu.c                             |   2 +-
- arch/x86/kvm/svm/avic.c                            | 171 +++++++++------------
- arch/x86/kvm/svm/nested.c                          |  39 ++---
- arch/x86/kvm/svm/svm.c                             |   8 +-
- arch/x86/kvm/svm/svm.h                             |   4 +-
- arch/x86/kvm/vmx/vmx.c                             |   4 +-
- arch/x86/kvm/x86.c                                 |   2 +
- tools/testing/selftests/kvm/Makefile               |  49 ++++--
- tools/testing/selftests/kvm/dirty_log_perf_test.c  |  10 +-
- .../testing/selftests/kvm/include/perf_test_util.h |   9 ++
- .../selftests/kvm/include/x86_64/processor.h       |  25 +--
- tools/testing/selftests/kvm/include/x86_64/vmx.h   |   6 +
- tools/testing/selftests/kvm/lib/perf_test_util.c   |  53 ++++++-
- .../selftests/kvm/lib/x86_64/perf_test_util.c      | 112 ++++++++++++++
- tools/testing/selftests/kvm/lib/x86_64/processor.c |  31 ++--
- tools/testing/selftests/kvm/lib/x86_64/vmx.c       | 149 +++++++++++-------
- .../testing/selftests/kvm/max_guest_memory_test.c  |   2 +-
- tools/testing/selftests/kvm/x86_64/mmu_role_test.c |   2 +-
- virt/kvm/kvm_main.c                                |   8 +-
- 37 files changed, 640 insertions(+), 312 deletions(-)
+diff --git a/Documentation/userspace-api/media/v4l/vidioc-queryctrl.rst b/Documentation/userspace-api/media/v4l/vidioc-queryctrl.rst
+index 88f630252d98..a20dfa2a933b 100644
+--- a/Documentation/userspace-api/media/v4l/vidioc-queryctrl.rst
++++ b/Documentation/userspace-api/media/v4l/vidioc-queryctrl.rst
+@@ -625,6 +625,14 @@ See also the examples in :ref:`control`.
+ 	``V4L2_CTRL_FLAG_GRABBED`` flag when buffers are allocated or
+ 	streaming is in progress since most drivers do not support changing
+ 	the format in that case.
++    * - ``V4L2_CTRL_FLAG_DYNAMIC_ARRAY``
++      - 0x0800
++      - This control is a dynamically sized 1-dimensional array. It
++        behaves the same as a regular array, except that the number
++	of elements as reported by the ``elems`` field is between 1 and
++	``dims[0]``. So setting the control with a differently sized
++	array will change the ``elems`` field when the control is
++	queried afterwards.
+ 
+ Return Value
+ ============
+diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+index 5311ac4fde35..9018aa984db3 100644
+--- a/include/uapi/linux/videodev2.h
++++ b/include/uapi/linux/videodev2.h
+@@ -1890,6 +1890,7 @@ struct v4l2_querymenu {
+ #define V4L2_CTRL_FLAG_HAS_PAYLOAD	0x0100
+ #define V4L2_CTRL_FLAG_EXECUTE_ON_WRITE	0x0200
+ #define V4L2_CTRL_FLAG_MODIFY_LAYOUT	0x0400
++#define V4L2_CTRL_FLAG_DYNAMIC_ARRAY	0x0800
+ 
+ /*  Query flags, to be ORed with the control ID */
+ #define V4L2_CTRL_FLAG_NEXT_CTRL	0x80000000
+-- 
+2.32.0
 
