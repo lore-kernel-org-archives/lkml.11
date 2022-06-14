@@ -2,151 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D04C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:47:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5520FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357641AbiFNSq7 (ORCPT
+        id S1357434AbiFNSrI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58736 "EHLO
+        Tue, 14 Jun 2022 14:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357458AbiFNSpS (ORCPT
+        with ESMTP id S1357465AbiFNSpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 14:45:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3AA1093;
-        Tue, 14 Jun 2022 11:43:49 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85296BCA;
+        Tue, 14 Jun 2022 11:43:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B287CB8186A;
-        Tue, 14 Jun 2022 18:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E878FC3411B;
-        Tue, 14 Jun 2022 18:43:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46C87B81AEF;
+        Tue, 14 Jun 2022 18:43:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1EF2C3411B;
+        Tue, 14 Jun 2022 18:43:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232227;
-        bh=+C2iRvF2iZzG1ZikcJTKk76FroC9eh1AhRqJ3d7/g+k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Dq+MJ/vZfP+JS9NIc8U/FMoYvOSDTQXVj6fCl2Q5Yp7Z41sh3l3vnf5mmxdyOi1Dh
-         wbBDnPBl9YwsIiecG/V7hINVFafYI0mAL8bMMvBgG2yTQUYfii5E/FV9+OseYr4Yga
-         hU1ulA5ZFL/SbuciGSUdCjdt3xIh6fIGplwbXxfg=
+        s=korg; t=1655232222;
+        bh=8JHjulThWdYpSXpcMC7/ftnEiVywMATYxrFG+7e5xzw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ua2reheGHSmAM6nifiTsb8Kxu703iRt9Q7MkN3KxtbSOlEOtGDsHZNIRcfL/od8oN
+         YxNepG09HGAcZwxsaFbXO5TMY4pJrYyrKJa0kvIaO8x6LGj+sibRPVa3LV9SUQO+AI
+         ZCmXdU8vi5f+B+qs7LDQVrvJIYDwvSrflnJmNVS8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.4 00/15] 5.4.199-rc1 review
-Date:   Tue, 14 Jun 2022 20:40:09 +0200
-Message-Id: <20220614183721.656018793@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 5.4 01/15] cpu/speculation: Add prototype for cpu_show_srbds()
+Date:   Tue, 14 Jun 2022 20:40:10 +0200
+Message-Id: <20220614183722.001376874@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
+In-Reply-To: <20220614183721.656018793@linuxfoundation.org>
+References: <20220614183721.656018793@linuxfoundation.org>
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.199-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.4.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.4.199-rc1
-X-KernelTest-Deadline: 2022-06-16T18:37+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.4.199 release.
-There are 15 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Guenter Roeck <linux@roeck-us.net>
 
-Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
-Anything received after that time might be too late.
+commit 2accfa69050c2a0d6fc6106f609208b3e9622b26 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.199-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-and the diffstat can be found below.
+0-day is not happy that there is no prototype for cpu_show_srbds():
 
-thanks,
+drivers/base/cpu.c:565:16: error: no previous prototype for 'cpu_show_srbds'
 
-greg k-h
+Fixes: 7e5b3c267d25 ("x86/speculation: Add Special Register Buffer Data Sampling (SRBDS) mitigation")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20200617141410.93338-1-linux@roeck-us.net
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/cpu.h |    1 +
+ 1 file changed, 1 insertion(+)
 
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.4.199-rc1
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    x86/speculation/mmio: Print SMT warning
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    KVM: x86/speculation: Disable Fill buffer clear within guests
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/mmio: Reuse SRBDS mitigation for SBDS
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/srbds: Update SRBDS mitigation selection
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/mmio: Add sysfs reporting for Processor MMIO Stale Data
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/mmio: Enable CPU Fill buffer clearing on idle
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/bugs: Group MDS, TAA & Processor MMIO Stale Data mitigations
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/mmio: Add mitigation for Processor MMIO Stale Data
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation: Add a common function for MD_CLEAR mitigation update
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation/mmio: Enumerate Processor MMIO Stale Data bug
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    Documentation: Add documentation for Processor MMIO Stale Data
-
-Gayatri Kammela <gayatri.kammela@intel.com>
-    x86/cpu: Add another Alder Lake CPU to the Intel family
-
-Tony Luck <tony.luck@intel.com>
-    x86/cpu: Add Lakefield, Alder Lake and Rocket Lake models to the to Intel CPU family
-
-Zhang Rui <rui.zhang@intel.com>
-    x86/cpu: Add Jasper Lake to Intel family
-
-Guenter Roeck <linux@roeck-us.net>
-    cpu/speculation: Add prototype for cpu_show_srbds()
-
-
--------------
-
-Diffstat:
-
- Documentation/ABI/testing/sysfs-devices-system-cpu |   1 +
- Documentation/admin-guide/hw-vuln/index.rst        |   1 +
- .../hw-vuln/processor_mmio_stale_data.rst          | 246 +++++++++++++++++++++
- Documentation/admin-guide/kernel-parameters.txt    |  36 +++
- Makefile                                           |   4 +-
- arch/x86/include/asm/cpufeatures.h                 |   1 +
- arch/x86/include/asm/intel-family.h                |   9 +
- arch/x86/include/asm/msr-index.h                   |  25 +++
- arch/x86/include/asm/nospec-branch.h               |   2 +
- arch/x86/kernel/cpu/bugs.c                         | 235 +++++++++++++++++---
- arch/x86/kernel/cpu/common.c                       |  52 ++++-
- arch/x86/kvm/vmx/vmx.c                             |  75 ++++++-
- arch/x86/kvm/vmx/vmx.h                             |   3 +
- arch/x86/kvm/x86.c                                 |   4 +
- drivers/base/cpu.c                                 |   8 +
- include/linux/cpu.h                                |   4 +
- 16 files changed, 664 insertions(+), 42 deletions(-)
+--- a/include/linux/cpu.h
++++ b/include/linux/cpu.h
+@@ -64,6 +64,7 @@ extern ssize_t cpu_show_tsx_async_abort(
+ 					char *buf);
+ extern ssize_t cpu_show_itlb_multihit(struct device *dev,
+ 				      struct device_attribute *attr, char *buf);
++extern ssize_t cpu_show_srbds(struct device *dev, struct device_attribute *attr, char *buf);
+ 
+ extern __printf(4, 5)
+ struct device *cpu_device_create(struct device *parent, void *drvdata,
 
 
