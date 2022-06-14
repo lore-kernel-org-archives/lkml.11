@@ -2,91 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB18C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E572C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356484AbiFNM6u (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:58:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40578 "EHLO
+        id S244529AbiFNM7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244781AbiFNM6X (ORCPT
+        with ESMTP id S1350563AbiFNM6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:58:23 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AF42B18B;
-        Tue, 14 Jun 2022 05:58:23 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMnty2sHMzjXc0;
-        Tue, 14 Jun 2022 20:34:34 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 20:36:03 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 14 Jun
- 2022 20:36:03 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>,
-        <linux-accelerators@lists.ozlabs.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        <zhangfei.gao@linaro.org>, <wangzhou1@hisilicon.com>,
-        <yekai13@huawei.com>
-Subject: [PATCH v2 2/3] Documentation: add a isolation strategy vfs node for uacce
-Date:   Tue, 14 Jun 2022 20:29:39 +0800
-Message-ID: <20220614122943.1406-3-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220614122943.1406-1-yekai13@huawei.com>
-References: <20220614122943.1406-1-yekai13@huawei.com>
+        Tue, 14 Jun 2022 08:58:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA6572E6A2
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:58:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655211514;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ezBmONPgWBH1++OckHRx+3aB1t/HFHrFb9bdukl8H7M=;
+        b=cTs3/o/bSLZekLLNo08T+mKxTZIKMqeks9xzaLthppUmpvtlMlgmRkILMbM86Ovq5FjVLC
+        bnfJQkDWDtFlMtN3N6GctWSruSuyFbyNIHLKSF2vskF+ZLyZHHjH1qMobOSi8ri0k2dJOd
+        vtvqIVISNFKWGYy5MFwkPELIockpbIo=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-608-fv66oLgEMnGqPCTAFV7dAA-1; Tue, 14 Jun 2022 08:58:32 -0400
+X-MC-Unique: fv66oLgEMnGqPCTAFV7dAA-1
+Received: by mail-wm1-f70.google.com with SMTP id p42-20020a05600c1daa00b0039c62488f7eso7539982wms.7
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 05:58:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ezBmONPgWBH1++OckHRx+3aB1t/HFHrFb9bdukl8H7M=;
+        b=uuG5X+oz36ccFl+QU14iyCRwnjkP/YrvgWFMeyNMQJfwg2FQn7zuRMBCnoRDE3f6Xe
+         U1BiSuxjXF2QuihiNzrXakxVaiP6qyzOUuDYH40hAVbwKHa0W5ORekwqXa1qlOl+1sKM
+         xvDY/4MPs51ql45FnaK20Jaav8MGfCDSJ3VgCv7RFCSUayU7NNlD+KqjpjyXH3IT2HRV
+         4n1qTEOLDyy+sOf6+ZE9XXa7hZ0sq9PpHkGcY72k4zjt+ZflntcB0eBiR3Jq9ZmyZuRK
+         mrm59BH9AqptkUH+3mgiMLVBpNX4jEVlF8qhRPrUsf0WeMV02IT8A7QoMttdZyiC1ctQ
+         RRRg==
+X-Gm-Message-State: AJIora9J44Zuvv+0vuieWeghWYhBzj0O0guQJ8Sxxv27fixgIM37kPi9
+        03pWKy6RMNNDzInBhnJwGUfJlu7rs3g5nw7lE80ml6YkMDhCz0yQFqBvgwv6yXqboD+4XUVzoRD
+        0kLpzQWuKlFd2f3dUkUqfA9mz
+X-Received: by 2002:a5d:61c9:0:b0:213:b518:444c with SMTP id q9-20020a5d61c9000000b00213b518444cmr4684514wrv.509.1655211511556;
+        Tue, 14 Jun 2022 05:58:31 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vAVyVUrWMmUPbTsdBaKIL+Sh7mNJHVQooy5Tzk0KSO/pkczKP/EKYcPXfuVbr1y1EZJoM7TA==
+X-Received: by 2002:a5d:61c9:0:b0:213:b518:444c with SMTP id q9-20020a5d61c9000000b00213b518444cmr4684494wrv.509.1655211511350;
+        Tue, 14 Jun 2022 05:58:31 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id i18-20020a05600c2d9200b0039c235fb6a5sm12555666wmg.8.2022.06.14.05.58.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 05:58:31 -0700 (PDT)
+Message-ID: <c50e5c87-3198-08b7-1e32-d0959af1f296@redhat.com>
+Date:   Tue, 14 Jun 2022 14:58:29 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 3/3] drm/doc: Add KUnit documentation
+Content-Language: en-US
+To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
+Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        airlied@linux.ie, daniel@ffwll.ch, jani.nikula@linux.intel.com,
+        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>
+References: <20220613171738.111013-1-jose.exposito89@gmail.com>
+ <20220613171738.111013-4-jose.exposito89@gmail.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <20220613171738.111013-4-jose.exposito89@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update documentation describing DebugFS that could help to
-configure hard error frequency for users in th user space.
+Hello José,
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
----
- Documentation/ABI/testing/sysfs-driver-uacce | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+On 6/13/22 19:17, José Expósito wrote:
 
-diff --git a/Documentation/ABI/testing/sysfs-driver-uacce b/Documentation/ABI/testing/sysfs-driver-uacce
-index 08f2591138af..0c4226364182 100644
---- a/Documentation/ABI/testing/sysfs-driver-uacce
-+++ b/Documentation/ABI/testing/sysfs-driver-uacce
-@@ -19,6 +19,23 @@ Contact:        linux-accelerators@lists.ozlabs.org
- Description:    Available instances left of the device
-                 Return -ENODEV if uacce_ops get_available_instances is not provided
- 
-+What:           /sys/class/uacce/<dev_name>/isolate_strategy
-+Date:           Jun 2022
-+KernelVersion:  5.19
-+Contact:        linux-accelerators@lists.ozlabs.org
-+Description:    A vfs node that used to configures the hardware
-+                error frequency. This frequency is abstract. Like once an hour
-+                or once a day. The specific isolation strategy can be defined in
-+                each driver module.
-+
-+What:           /sys/class/uacce/<dev_name>/isolate
-+Date:           Jun 2022
-+KernelVersion:  5.19
-+Contact:        linux-accelerators@lists.ozlabs.org
-+Description:    A vfs node that show the device isolated state. The value 0
-+                means that the device is working. The value 1 means that the
-+                device has been isolated.
-+
- What:           /sys/class/uacce/<dev_name>/algorithms
- Date:           Feb 2020
- KernelVersion:  5.7
+[snip]
+
+> +KUnit (Kernel unit testing framework) provides a common framework for unit tests
+> +within the Linux kernel.
+> +
+
+I think that it will be useful to have a reference to the KUnit kernel doc here,
+something like the following:
+
+`KUnit <https://docs.kernel.org/dev-tools/kunit/index.html>`_ (Kernel Unit...
+
+> +This section covers the specifics for the DRM subsystem. For general information
+> +about KUnit, please refer to Documentation/dev-tools/kunit/start.rst.
+> +
+> +How to run the tests?
+> +~~~~~~~~~~~~~~~~~~~~~
+> +
+> +In order to facilitate running the test suite, a configuration file is present
+> +in ``drivers/gpu/drm/kunit/.kunitconfig``. It can be used by ``kunit.py`` as
+> +follows:
+> +
+> +.. code-block:: bash
+> +
+> +	$ ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/gpu/drm/kunit \
+> +		--kconfig_add CONFIG_VIRTIO_UML=y \
+> +		--kconfig_add CONFIG_UML_PCI_OVER_VIRTIO=y
+> +
+> +.. note::
+> +	The configuration included in ``.kunitconfig`` should be as generic as
+> +	possible.
+> +	``CONFIG_VIRTIO_UML`` and ``CONFIG_UML_PCI_OVER_VIRTIO`` are not
+> +	included in it because they are only required for User Mode Linux.
+> +
+> +
+
+Maybe also add something like this ?
+
+For example, the following command can be used to run the test for x86_64:
+
+	$ ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/gpu/drm/kunit \
+		--arch=x86_64
+
+Regardless, the patch looks good to me:
+
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+
 -- 
-2.33.0
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
