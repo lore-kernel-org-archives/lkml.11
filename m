@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD96C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D49AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356048AbiFNCdH (ORCPT
+        id S1356063AbiFNCdN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40466 "EHLO
+        Mon, 13 Jun 2022 22:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355627AbiFNC3K (ORCPT
+        with ESMTP id S1356008AbiFNCaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:29:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F38842EC1;
-        Mon, 13 Jun 2022 19:11:44 -0700 (PDT)
+        Mon, 13 Jun 2022 22:30:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E987843394;
+        Mon, 13 Jun 2022 19:11:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D38D61024;
-        Tue, 14 Jun 2022 02:11:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FBB2C341C0;
-        Tue, 14 Jun 2022 02:11:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6431BB816A4;
+        Tue, 14 Jun 2022 02:11:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E10A1C3411B;
+        Tue, 14 Jun 2022 02:11:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172693;
-        bh=pr6NzkI/XxpvvWceynxWmelVmldc64zZZ/z4qQBpAw8=;
+        s=k20201202; t=1655172709;
+        bh=V3TSzVV9i2ntLV+h4+Q9H9UFVn0/1FK7R0MjMTVOVcM=;
         h=From:To:Cc:Subject:Date:From;
-        b=sCTNonAu9ASXxM1AfMO5mzjr08ECI7hZ96nSnREhKgZvmJhx8DPoDaLDOl9L5eO24
-         8txqD0Rd9PrizgfHHWOUyvDC3/YXZf8ptsouBqOmxPsFpuhGpS3eM3KEZTWGKFl8ff
-         h4oJXKUC3R8REpt6Rmye0u631zneO0/4HkMaYRAH350E8l8clmqXGptA9Oc2+jGt8i
-         5s8q2wC4uVm91d4qaHMzYQRAC/H4F0rRsGFECYG0ZCmrW+Vuoaykbm+iYj6VKj+VoH
-         s343mBK1Is14DgL3EsfUv3wFmPVLyNWh0PVSDmAdN+zhvGYW0JoGAiEZ1TKEew4hhQ
-         cxTej1jHeMYBQ==
+        b=bhi3snlDWs2W7AZIgKuUbaDbVth9TBCw1H9/H6UBitGCzGRP29l7i65EUJruIPjFT
+         n8OSjXE4L1bo91OACAqnp2nca2oe6UJlr8K2kw5KAtDf4zqgJAj2vLzDNLDAgoPGR9
+         4RYyyMS1L6SXSyCw/P0a/Y+yKsxFHSK6srDjujgG8WZFmDIJ6IHMG0gwOhS7vbpHwq
+         VakC6illdqQ/p4OPTmt3ad+QuzgI6xbrAOJqQoWSgcpy3GUPkJfkudGE7wuOUKiO4W
+         Mh1VMiC5KSORIOFPZb6URv97DB+HVGBr6qFhj25mZBKA95lDv2tfdD2WRxEcMTQcQo
+         dNqoIJbrhvusg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>, Jann Horn <jannh@google.com>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.17 1/4] KVM: x86: do not report a vCPU as preempted outside instruction boundaries
-Date:   Mon, 13 Jun 2022 22:11:27 -0400
-Message-Id: <20220614021130.1101425-1-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.15 1/4] KVM: x86: do not report a vCPU as preempted outside instruction boundaries
+Date:   Mon, 13 Jun 2022 22:11:37 -0400
+Message-Id: <20220614021141.1101486-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 X-stable: review
@@ -86,18 +86,18 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  4 files changed, 28 insertions(+)
 
 diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index c4b4c0839dbd..db5d454cdf8f 100644
+index 49d814b2a341..a35f5e23fc2a 100644
 --- a/arch/x86/include/asm/kvm_host.h
 +++ b/arch/x86/include/asm/kvm_host.h
-@@ -646,6 +646,7 @@ struct kvm_vcpu_arch {
+@@ -642,6 +642,7 @@ struct kvm_vcpu_arch {
  	u64 ia32_misc_enable_msr;
  	u64 smbase;
  	u64 smi_count;
 +	bool at_instruction_boundary;
  	bool tpr_access_reporting;
  	bool xsaves_enabled;
- 	bool xfd_no_write_intercept;
-@@ -1283,6 +1284,8 @@ struct kvm_vcpu_stat {
+ 	u64 ia32_xss;
+@@ -1271,6 +1272,8 @@ struct kvm_vcpu_stat {
  	u64 nested_run;
  	u64 directed_yield_attempted;
  	u64 directed_yield_successful;
@@ -107,10 +107,10 @@ index c4b4c0839dbd..db5d454cdf8f 100644
  };
  
 diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index fd3a00c892c7..0b8364f8415c 100644
+index 26f2da1590ed..5b51156712f7 100644
 --- a/arch/x86/kvm/svm/svm.c
 +++ b/arch/x86/kvm/svm/svm.c
-@@ -4182,6 +4182,8 @@ static int svm_check_intercept(struct kvm_vcpu *vcpu,
+@@ -4263,6 +4263,8 @@ static int svm_check_intercept(struct kvm_vcpu *vcpu,
  
  static void svm_handle_exit_irqoff(struct kvm_vcpu *vcpu)
  {
@@ -120,10 +120,10 @@ index fd3a00c892c7..0b8364f8415c 100644
  
  static void svm_sched_in(struct kvm_vcpu *vcpu, int cpu)
 diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index c87be7c52cc2..39a908e3da5a 100644
+index 16a660a0ed5f..08f9f05a6cb2 100644
 --- a/arch/x86/kvm/vmx/vmx.c
 +++ b/arch/x86/kvm/vmx/vmx.c
-@@ -6550,6 +6550,7 @@ static void handle_external_interrupt_irqoff(struct kvm_vcpu *vcpu)
+@@ -6390,6 +6390,7 @@ static void handle_external_interrupt_irqoff(struct kvm_vcpu *vcpu)
  		return;
  
  	handle_interrupt_nmi_irqoff(vcpu, gate_offset(desc));
@@ -132,10 +132,10 @@ index c87be7c52cc2..39a908e3da5a 100644
  
  static void vmx_handle_exit_irqoff(struct kvm_vcpu *vcpu)
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 5204283da798..8445d1d35c79 100644
+index 23905ba3058a..fbf10fa99507 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -287,6 +287,8 @@ const struct _kvm_stats_desc kvm_vcpu_stats_desc[] = {
+@@ -277,6 +277,8 @@ const struct _kvm_stats_desc kvm_vcpu_stats_desc[] = {
  	STATS_DESC_COUNTER(VCPU, nested_run),
  	STATS_DESC_COUNTER(VCPU, directed_yield_attempted),
  	STATS_DESC_COUNTER(VCPU, directed_yield_successful),
@@ -144,7 +144,7 @@ index 5204283da798..8445d1d35c79 100644
  	STATS_DESC_ICOUNTER(VCPU, guest_mode)
  };
  
-@@ -4573,6 +4575,19 @@ static void kvm_steal_time_set_preempted(struct kvm_vcpu *vcpu)
+@@ -4368,6 +4370,19 @@ static void kvm_steal_time_set_preempted(struct kvm_vcpu *vcpu)
  	struct kvm_memslots *slots;
  	static const u8 preempted = KVM_VCPU_PREEMPTED;
  
@@ -164,7 +164,7 @@ index 5204283da798..8445d1d35c79 100644
  	if (!(vcpu->arch.st.msr_val & KVM_MSR_ENABLED))
  		return;
  
-@@ -10261,6 +10276,13 @@ static int vcpu_run(struct kvm_vcpu *vcpu)
+@@ -9936,6 +9951,13 @@ static int vcpu_run(struct kvm_vcpu *vcpu)
  	vcpu->arch.l1tf_flush_l1d = true;
  
  	for (;;) {
