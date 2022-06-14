@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5433BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAFB9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354908AbiFNCZd (ORCPT
+        id S1354952AbiFNCZj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53620 "EHLO
+        Mon, 13 Jun 2022 22:25:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354035AbiFNCVj (ORCPT
+        with ESMTP id S1354284AbiFNCW2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:21:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011D03FDA4;
-        Mon, 13 Jun 2022 19:10:19 -0700 (PDT)
+        Mon, 13 Jun 2022 22:22:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99849403E1;
+        Mon, 13 Jun 2022 19:10:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8B6061024;
-        Tue, 14 Jun 2022 02:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DFBDC385A2;
-        Tue, 14 Jun 2022 02:10:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5096B60EFB;
+        Tue, 14 Jun 2022 02:10:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9A5BC34114;
+        Tue, 14 Jun 2022 02:10:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172614;
-        bh=2aLdP/aNbtKqn9jTpTpT0xifj7OJXFEgTqbU/YlfGfc=;
+        s=k20201202; t=1655172626;
+        bh=cNZNsd8E2/itYUBVSI9x5Pte5cl0YP2kIwJ9nI7tP9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gr0FwfM8T/hFLDlzowNZ8i5D5KaF43bDPQ989VWNpmPYzsXwX08sNgHhyZO66x8CZ
-         zDr1ok3dOzNT7uG1xlgyhJzfzBWbriFY9Q8tv7Q9mrEePM/OEV1eALvAfxU0Ylwpkk
-         PAvUVXS8ZP43zBccjoGmdmp8zSV1M0/hAfRpOf7k7jwRvHBqiWFUxujP4VQQJ+Hvn0
-         KLSIzMBlNL6yLAV0Es+FBCx6XXUMuzXQ6187xA4cH7b3S402d2cgVbLnZwaAEdlDn9
-         o5lxE0MzROB4z2ZS+Op3vipe/NnqIiePrhHZ/wwOgWZtw2Suh+PfyuuVwHnMs6OIyi
-         eeeJqOj9Sy/Lg==
+        b=H2WUTflsq1PZuBnuJXEatJXjvh9kS0nCGiPtLdvlRm3I6wL+ppXlNcuOK5qxlACm3
+         gPoNRLOmiIj0F3KUrzGhT+0FAmPU8P9wuSOfBYJuAc7A8zGmevYq4GINvMvHFNF3Y+
+         aFoqzmcxmmh2Pd3k75udknbCWwxkyDjYTL33mrjKF8kX6Z/pXY+O8rcCtb35XFVHLr
+         y0wMOiaTT+/YNwLvzxmNIFWZ3f2/g0uCY49M4xafyr3wJ7wZpt5i7+4G3wrfEGXsog
+         Dehe4uhIcIb6yGMJaxWFNO4mGDqvGJpXPaU3Fud8Z4nxJc1U1Fe2QNb3o2PKqGb6UE
+         6fj1cbRH0pQqQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lauro.venancio@openbossa.org,
-        aloisio.almeida@openbossa.org, sameo@linux.intel.com,
-        linux-wireless@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 15/18] nfc: nfcmrvl: Fix memory leak in nfcmrvl_play_deferred
-Date:   Mon, 13 Jun 2022 22:09:38 -0400
-Message-Id: <20220614020941.1100702-15-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
+        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.14 04/14] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
+Date:   Mon, 13 Jun 2022 22:10:09 -0400
+Message-Id: <20220614021019.1100929-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020941.1100702-1-sashal@kernel.org>
-References: <20220614020941.1100702-1-sashal@kernel.org>
+In-Reply-To: <20220614021019.1100929-1-sashal@kernel.org>
+References: <20220614021019.1100929-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,64 +54,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 8a4d480702b71184fabcf379b80bf7539716752e ]
+[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
 
-Similar to the handling of play_deferred in commit 19cfe912c37b
-("Bluetooth: btusb: Fix memory leak in play_deferred"), we thought
-a patch might be needed here as well.
+A couple of the SX volume controls specify 0x84 as the lowest volume
+value, however the correct value from the datasheet is 0x44. The
+datasheet don't include spaces in the value it displays as binary so
+this was almost certainly just a typo reading 1000100.
 
-Currently usb_submit_urb is called directly to submit deferred tx
-urbs after unanchor them.
-
-So the usb_giveback_urb_bh would failed to unref it in usb_unanchor_urb
-and cause memory leak.
-
-Put those urbs in tx_anchor to avoid the leak, and also fix the error
-handling.
-
-Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220607083230.6182-1-xiaohuizhang@ruc.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/nfcmrvl/usb.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ sound/soc/codecs/cs42l56.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
-index 888e298f610b..f26986eb53f1 100644
---- a/drivers/nfc/nfcmrvl/usb.c
-+++ b/drivers/nfc/nfcmrvl/usb.c
-@@ -401,13 +401,25 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
- 	int err;
+diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
+index 52858b6c95a6..9274b52edc44 100644
+--- a/sound/soc/codecs/cs42l56.c
++++ b/sound/soc/codecs/cs42l56.c
+@@ -403,9 +403,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
+ 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
  
- 	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
-+		usb_anchor_urb(urb, &drv_data->tx_anchor);
-+
- 		err = usb_submit_urb(urb, GFP_ATOMIC);
--		if (err)
-+		if (err) {
-+			kfree(urb->setup_packet);
-+			usb_unanchor_urb(urb);
-+			usb_free_urb(urb);
- 			break;
-+		}
+ 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
+-			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
+ 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
+-			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
  
- 		drv_data->tx_in_flight++;
-+		usb_free_urb(urb);
-+	}
-+
-+	/* Cleanup the rest deferred urbs. */
-+	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
-+		kfree(urb->setup_packet);
-+		usb_free_urb(urb);
- 	}
--	usb_scuttle_anchored_urbs(&drv_data->deferred);
- }
- 
- static int nfcmrvl_resume(struct usb_interface *intf)
+ 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
+ 			0, 0x00, 1, tone_tlv),
 -- 
 2.35.1
 
