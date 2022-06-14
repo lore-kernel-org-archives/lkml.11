@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA532C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:08:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6EE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:08:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352350AbiFNCIo (ORCPT
+        id S1352524AbiFNCIr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42054 "EHLO
+        Mon, 13 Jun 2022 22:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351993AbiFNCGt (ORCPT
+        with ESMTP id S1352288AbiFNCHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:06:49 -0400
+        Mon, 13 Jun 2022 22:07:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96C434663;
-        Mon, 13 Jun 2022 19:05:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F002833E38;
+        Mon, 13 Jun 2022 19:06:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DE8CB8169E;
-        Tue, 14 Jun 2022 02:05:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEB35C36AFE;
-        Tue, 14 Jun 2022 02:05:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67ACFB81699;
+        Tue, 14 Jun 2022 02:06:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9919C34114;
+        Tue, 14 Jun 2022 02:06:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172349;
-        bh=g6hV2nEfu4q7fWk0v9EQw/74GXzsuzsOm5CE2k8SdLk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WV1B3BWjnbbp+ZS6bZVCISSJik1qJVQtada5i2i/slHyhSKgftk3wwTyqBCa48Oa6
-         D1VI3htojaAIT1K9wDDSpXJh4KJEtBitMcGxRnza5BzrE8ybVg0Dc0BbKLAF42KQfC
-         qlNmQdpzWwjfDkgjCz2XifXHM9xAzzFwrSOMpy4wDHbPUO86g16mGWxcUWND2u8H7u
-         uGWYCtllPGp/VCeW4FycWdt7254FVzNOuT40RPPkt5o+qCV98Q/rrGkvCB0dInlpR3
-         varYv69PBQJleT3V6Du49UleAvFeFuktu/pcP/LWt2oEcqznJ4SHF6nhCHI5mo6Djq
-         drSk/tqaThQNQ==
+        s=k20201202; t=1655172365;
+        bh=z4nS/GuBUxpX0GXkgOCIkr9OBX7vs0RMQDyx7CNotDw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jTYpGgq4zLoSpmZri+s3uQwnzp75K0lR04DHdoFMokWIJhsNu4OCaiRTrQYnNcXez
+         kdOMDe2AzakpW7dPg1h0blh+CWANJu0YtfRjHOyei1KmdOo2lLWJTTtUTjg4VBwxrv
+         9GeU08RZ/c9LcJXg6tGtSaIQ/1VfUbm5hSgqGmGKHazrUffn2vBbOOn9QVfUPGGKeL
+         aII9vlww2302Y7xWwiJUyidZ4BLQfwaW/xWaFYcjMG2K/JQ7zbIyEhJsURwzgnCGf2
+         tBZsK3uvbde+JkXJI75yMy5Zd7dPe1BMEYatgRoqpm8nD6vZtXMacDzaNTunLziTDc
+         BvzUPXKkTZu2Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+Cc:     He Ying <heying24@huawei.com>, Wanming Hu <huwanming@huaweil.com>,
+        Chen Jingwen <chenjingwen6@huawei.com>,
         Kees Cook <keescook@chromium.org>,
-        David Howells <dhowells@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, zyan@redhat.com,
-        sage@redhat.com, idryomov@gmail.com, linux-afs@lists.infradead.org,
-        ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 39/47] netfs: gcc-12: temporarily disable '-Wattribute-warning' for now
-Date:   Mon, 13 Jun 2022 22:04:32 -0400
-Message-Id: <20220614020441.1098348-39-sashal@kernel.org>
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, benh@kernel.crashing.org,
+        paulus@samba.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.17 01/43] powerpc/kasan: Silence KASAN warnings in __get_wchan()
+Date:   Mon, 13 Jun 2022 22:05:20 -0400
+Message-Id: <20220614020602.1098943-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614020441.1098348-1-sashal@kernel.org>
-References: <20220614020441.1098348-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,105 +53,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: He Ying <heying24@huawei.com>
 
-[ Upstream commit 507160f46c55913955d272ebf559d63809a8e560 ]
+[ Upstream commit a1b29ba2f2c171b9bea73be993bfdf0a62d37d15 ]
 
-This is a pure band-aid so that I can continue merging stuff from people
-while some of the gcc-12 fallout gets sorted out.
+The following KASAN warning was reported in our kernel.
 
-In particular, gcc-12 is very unhappy about the kinds of pointer
-arithmetic tricks that netfs does, and that makes the fortify checks
-trigger in afs and ceph:
+  BUG: KASAN: stack-out-of-bounds in get_wchan+0x188/0x250
+  Read of size 4 at addr d216f958 by task ps/14437
 
-  In function ‘fortify_memset_chk’,
-      inlined from ‘netfs_i_context_init’ at include/linux/netfs.h:327:2,
-      inlined from ‘afs_set_netfs_context’ at fs/afs/inode.c:61:2,
-      inlined from ‘afs_root_iget’ at fs/afs/inode.c:543:2:
-  include/linux/fortify-string.h:258:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
-    258 |                         __write_overflow_field(p_size_field, size);
-        |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  CPU: 3 PID: 14437 Comm: ps Tainted: G           O      5.10.0 #1
+  Call Trace:
+  [daa63858] [c0654348] dump_stack+0x9c/0xe4 (unreliable)
+  [daa63888] [c035cf0c] print_address_description.constprop.3+0x8c/0x570
+  [daa63908] [c035d6bc] kasan_report+0x1ac/0x218
+  [daa63948] [c00496e8] get_wchan+0x188/0x250
+  [daa63978] [c0461ec8] do_task_stat+0xce8/0xe60
+  [daa63b98] [c0455ac8] proc_single_show+0x98/0x170
+  [daa63bc8] [c03cab8c] seq_read_iter+0x1ec/0x900
+  [daa63c38] [c03cb47c] seq_read+0x1dc/0x290
+  [daa63d68] [c037fc94] vfs_read+0x164/0x510
+  [daa63ea8] [c03808e4] ksys_read+0x144/0x1d0
+  [daa63f38] [c005b1dc] ret_from_syscall+0x0/0x38
+  --- interrupt: c00 at 0x8fa8f4
+      LR = 0x8fa8cc
 
-and the reason is that netfs_i_context_init() is passed a 'struct inode'
-pointer, and then it does
+  The buggy address belongs to the page:
+  page:98ebcdd2 refcount:0 mapcount:0 mapping:00000000 index:0x2 pfn:0x1216f
+  flags: 0x0()
+  raw: 00000000 00000000 01010122 00000000 00000002 00000000 ffffffff 00000000
+  raw: 00000000
+  page dumped because: kasan: bad access detected
 
-        struct netfs_i_context *ctx = netfs_i_context(inode);
+  Memory state around the buggy address:
+   d216f800: 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00 00 00 00
+   d216f880: f2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  >d216f900: 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00
+                                            ^
+   d216f980: f2 f2 f2 f2 f2 f2 f2 00 00 00 00 00 00 00 00 00
+   d216fa00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
-        memset(ctx, 0, sizeof(*ctx));
+After looking into this issue, I find the buggy address belongs
+to the task stack region. It seems KASAN has something wrong.
+I look into the code of __get_wchan in x86 architecture and
+find the same issue has been resolved by the commit
+f7d27c35ddff ("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
+The solution could be applied to powerpc architecture too.
 
-where that netfs_i_context() function just does pointer arithmetic on
-the inode pointer, knowing that the netfs_i_context is laid out
-immediately after it in memory.
+As Andrey Ryabinin said, get_wchan() is racy by design, it may
+access volatile stack of running task, thus it may access
+redzone in a stack frame and cause KASAN to warn about this.
 
-This is all truly disgusting, since the whole "netfs_i_context is laid
-out immediately after it in memory" is not actually remotely true in
-general, but is just made to be that way for afs and ceph.
+Use READ_ONCE_NOCHECK() to silence these warnings.
 
-See for example fs/cifs/cifsglob.h:
-
-  struct cifsInodeInfo {
-        struct {
-                /* These must be contiguous */
-                struct inode    vfs_inode;      /* the VFS's inode record */
-                struct netfs_i_context netfs_ctx; /* Netfslib context */
-        };
-	[...]
-
-and realize that this is all entirely wrong, and the pointer arithmetic
-that netfs_i_context() is doing is also very very wrong and wouldn't
-give the right answer if netfs_ctx had different alignment rules from a
-'struct inode', for example).
-
-Anyway, that's just a long-winded way to say "the gcc-12 warning is
-actually quite reasonable, and our code happens to work but is pretty
-disgusting".
-
-This is getting fixed properly, but for now I made the mistake of
-thinking "the week right after the merge window tends to be calm for me
-as people take a breather" and I did a sustem upgrade.  And I got gcc-12
-as a result, so to continue merging fixes from people and not have the
-end result drown in warnings, I am fixing all these gcc-12 issues I hit.
-
-Including with these kinds of temporary fixes.
-
-Cc: Kees Cook <keescook@chromium.org>
-Cc: David Howells <dhowells@redhat.com>
-Link: https://lore.kernel.org/all/AEEBCF5D-8402-441D-940B-105AA718C71F@chromium.org/
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: Wanming Hu <huwanming@huaweil.com>
+Signed-off-by: He Ying <heying24@huawei.com>
+Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220121014418.155675-1-heying24@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/inode.c  | 3 +++
- fs/ceph/inode.c | 3 +++
- 2 files changed, 6 insertions(+)
+ arch/powerpc/kernel/process.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/afs/inode.c b/fs/afs/inode.c
-index 30b066299d39..65b439cd53d2 100644
---- a/fs/afs/inode.c
-+++ b/fs/afs/inode.c
-@@ -25,6 +25,9 @@
- #include "internal.h"
- #include "afs_fs.h"
+diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
+index 984813a4d5dc..a75d20f23dac 100644
+--- a/arch/powerpc/kernel/process.c
++++ b/arch/powerpc/kernel/process.c
+@@ -2160,12 +2160,12 @@ static unsigned long ___get_wchan(struct task_struct *p)
+ 		return 0;
  
-+// Temporary: netfs does disgusting things with inode pointers
-+#pragma GCC diagnostic ignored "-Wattribute-warning"
-+
- static const struct inode_operations afs_symlink_inode_operations = {
- 	.get_link	= page_get_link,
- };
-diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
-index 63113e2a4890..83739dae5268 100644
---- a/fs/ceph/inode.c
-+++ b/fs/ceph/inode.c
-@@ -20,6 +20,9 @@
- #include "cache.h"
- #include <linux/ceph/decode.h>
- 
-+// Temporary: netfs does disgusting things with inode pointers
-+#pragma GCC diagnostic ignored "-Wattribute-warning"
-+
- /*
-  * Ceph inode operations
-  *
+ 	do {
+-		sp = *(unsigned long *)sp;
++		sp = READ_ONCE_NOCHECK(*(unsigned long *)sp);
+ 		if (!validate_sp(sp, p, STACK_FRAME_OVERHEAD) ||
+ 		    task_is_running(p))
+ 			return 0;
+ 		if (count > 0) {
+-			ip = ((unsigned long *)sp)[STACK_FRAME_LR_SAVE];
++			ip = READ_ONCE_NOCHECK(((unsigned long *)sp)[STACK_FRAME_LR_SAVE]);
+ 			if (!in_sched_functions(ip))
+ 				return ip;
+ 		}
 -- 
 2.35.1
 
