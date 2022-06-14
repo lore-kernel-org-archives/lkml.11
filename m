@@ -2,105 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D22CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:14:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71237C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238866AbiFNJO1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:14:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54532 "EHLO
+        id S1353984AbiFNJQO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 05:16:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239170AbiFNJOU (ORCPT
+        with ESMTP id S233422AbiFNJQM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 05:14:20 -0400
-Received: from hust.edu.cn (unknown [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15723419BC;
-        Tue, 14 Jun 2022 02:14:18 -0700 (PDT)
-Received: from localhost.localdomain ([172.16.0.254])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 25E9E98v028497-25E9E990028497
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 14 Jun 2022 17:14:13 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Cc:     mudongliang <mudongliangabcd@gmail.com>, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] fs: io_uring: remove NULL check before kfree
-Date:   Tue, 14 Jun 2022 17:13:58 +0800
-Message-Id: <20220614091359.124571-1-dzm91@hust.edu.cn>
-X-Mailer: git-send-email 2.35.1
+        Tue, 14 Jun 2022 05:16:12 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D35141F9C
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 02:16:11 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25E8EEoR024961;
+        Tue, 14 Jun 2022 04:15:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=hGaw1xpIdCRzMGGJr+AjwkBfT2/8u311FkS5dHtbvyc=;
+ b=jc2xlFdBKEffU1+ETM/D+dwgICc4/YvL113PC2Qx2JPrKi+3fJ62DNmX7titImY3CioW
+ Ubp94ZqDHNYjZBXsgSdq8sUNtpBop1DXrNFqA+fY5UAz2G+M6BQkhaTailYQj8j2dp2K
+ WVz2NB5SK/DNyX4mI3kxU8maV8rhVs5+oywWQSP6HowEMBs0/StfZCsQsNfVvNQ3HZRf
+ 5pXwUPRkwE88+lAYvMO3WZoNBBEZLEE/31xik4A/uuJCrVC7jsb15chv0OFa4RdpTJe/
+ xYhjNg1c/7H1P48iMh3rsC2k71aGQ2tCDdUoBYDNk/b1Id01S0wl0MELvmEE4R0txMpD /A== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gmrf32w2m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 14 Jun 2022 04:15:50 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 14 Jun
+ 2022 10:15:48 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
+ Transport; Tue, 14 Jun 2022 10:15:48 +0100
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 089CD458;
+        Tue, 14 Jun 2022 09:15:48 +0000 (UTC)
+Date:   Tue, 14 Jun 2022 09:15:48 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Samuel Holland <samuel@sholland.org>
+CC:     <broonie@kernel.org>, <matthias.bgg@gmail.com>, <wens@csie.org>,
+        <jernej.skrabec@gmail.com>, <linux-mediatek@lists.infradead.org>,
+        <linux-sunxi@lists.linux.dev>, <lgirdwood@gmail.com>,
+        <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/2] ASoC: sun8i-codec: Partial revert to fix clock
+ specifiers
+Message-ID: <20220614091548.GC38351@ediswmail.ad.cirrus.com>
+References: <20220613161552.481337-1-ckeepax@opensource.cirrus.com>
+ <9e105410-94d5-1801-8919-af8c0cef4de1@sholland.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <9e105410-94d5-1801-8919-af8c0cef4de1@sholland.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-GUID: uhUugW3zc5bftMo1ASxJcy0Ldlvdyx22
+X-Proofpoint-ORIG-GUID: uhUugW3zc5bftMo1ASxJcy0Ldlvdyx22
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: mudongliang <mudongliangabcd@gmail.com>
+On Tue, Jun 14, 2022 at 01:39:20AM -0500, Samuel Holland wrote:
+> Hi Charles,
+> 
+> On 6/13/22 11:15 AM, Charles Keepax wrote:
+> > Recent updates accidentally updated the clock producer/consumer
+> > specifiers on this device as part of refactoring the CPU side of the DAI
+> > links. However, this device sits on the CODEC side and shouldn't have
+> > been updated. Partially revert the changes keeping the switch to the new
+> > clock terminology but going back to the CODEC defines.
+> > 
+> > Fixes: 7cc3965fde74 ("ASoC: sunxi: Update to use set_fmt_new callback")
+> > Reported-by: Samuel Holland <samuel@sholland.org>
+> > Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+> 
+> Reviewed-by: Samuel Holland <samuel@sholland.org>
+> Tested-by: Samuel Holland <samuel@sholland.org>
+> 
+> Thanks for the quick follow-up, and sorry for the confusion my earlier comment
+> caused. I verified that sound is broken (loud static) on a Pine A64-LTS board
+> with for-next, and is fixed by this patch.
 
-kfree can handle NULL pointer as its argument.
-According to coccinelle isnullfree check, remove NULL check
-before kfree operation.
+Not at all man, thank you for spotting my foolish mistake. Glad
+we got it fixed up for you, and thank you for testing it.
 
-Signed-off-by: mudongliang <mudongliangabcd@gmail.com>
----
- fs/io_uring.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
-
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 3aab4182fd89..bec47eae2a9b 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -3159,8 +3159,7 @@ static void io_free_batch_list(struct io_ring_ctx *ctx,
- 			if ((req->flags & REQ_F_POLLED) && req->apoll) {
- 				struct async_poll *apoll = req->apoll;
- 
--				if (apoll->double_poll)
--					kfree(apoll->double_poll);
-+				kfree(apoll->double_poll);
- 				list_add(&apoll->poll.wait.entry,
- 						&ctx->apoll_cache);
- 				req->flags &= ~REQ_F_POLLED;
-@@ -4499,8 +4498,7 @@ static int io_read(struct io_kiocb *req, unsigned int issue_flags)
- 	kiocb_done(req, ret, issue_flags);
- out_free:
- 	/* it's faster to check here then delegate to kfree */
--	if (iovec)
--		kfree(iovec);
-+	kfree(iovec);
- 	return 0;
- }
- 
-@@ -4602,8 +4600,7 @@ static int io_write(struct io_kiocb *req, unsigned int issue_flags)
- 	}
- out_free:
- 	/* it's reportedly faster than delegating the null check to kfree() */
--	if (iovec)
--		kfree(iovec);
-+	kfree(iovec);
- 	return ret;
- }
- 
-@@ -6227,8 +6224,7 @@ static int io_sendmsg(struct io_kiocb *req, unsigned int issue_flags)
- 		req_set_fail(req);
- 	}
- 	/* fast path, check for non-NULL to avoid function call */
--	if (kmsg->free_iov)
--		kfree(kmsg->free_iov);
-+	kfree(kmsg->free_iov);
- 	req->flags &= ~REQ_F_NEED_CLEANUP;
- 	if (ret >= 0)
- 		ret += sr->done_io;
-@@ -6481,8 +6477,7 @@ static int io_recvmsg(struct io_kiocb *req, unsigned int issue_flags)
- 	}
- 
- 	/* fast path, check for non-NULL to avoid function call */
--	if (kmsg->free_iov)
--		kfree(kmsg->free_iov);
-+	kfree(kmsg->free_iov);
- 	req->flags &= ~REQ_F_NEED_CLEANUP;
- 	if (ret >= 0)
- 		ret += sr->done_io;
--- 
-2.35.1
-
+Thanks,
+Charles
