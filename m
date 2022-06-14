@@ -2,145 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6AF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61798C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 22:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358382AbiFNWEg (ORCPT
+        id S1355795AbiFNWGb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 18:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59312 "EHLO
+        Tue, 14 Jun 2022 18:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357510AbiFNWEZ (ORCPT
+        with ESMTP id S229880AbiFNWG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 18:04:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1E784093C
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 15:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655244258;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Dq7PRgfYueFTliKJ1ZMorr4opGVcM+i2DptJCykcaYo=;
-        b=DTeyL+2dZA1oR76fT4P6pYztLbOYs56DXQdsMo/tUFyNhpMi1/FbK0zA7/rxjv5cRkGCfH
-        3sUGOSRFyK1x16Hakc98zo+dHrmcAr3QCRRObzOEDZ8QUonEskjmyNHsWiyuSNVLcP7vCX
-        w8zc2HRi9Ist4yFrl0t9GoXi/eT5+5I=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-357-nbuAHervO9iXkg1fBAknOw-1; Tue, 14 Jun 2022 18:04:15 -0400
-X-MC-Unique: nbuAHervO9iXkg1fBAknOw-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A8AB685A581;
-        Tue, 14 Jun 2022 22:04:14 +0000 (UTC)
-Received: from llong.com (unknown [10.22.33.116])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 66D30492CA2;
-        Tue, 14 Jun 2022 22:04:14 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Muchun Song <songmuchun@bytedance.com>,
-        Waiman Long <longman@redhat.com>
-Subject: [PATCH v2 2/3] mm/kmemleak: Skip unlikely objects in kmemleak_scan() without taking lock
-Date:   Tue, 14 Jun 2022 18:03:58 -0400
-Message-Id: <20220614220359.59282-3-longman@redhat.com>
-In-Reply-To: <20220614220359.59282-1-longman@redhat.com>
-References: <20220614220359.59282-1-longman@redhat.com>
+        Tue, 14 Jun 2022 18:06:29 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D546F2FE46;
+        Tue, 14 Jun 2022 15:06:28 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A8B301763;
+        Tue, 14 Jun 2022 15:06:28 -0700 (PDT)
+Received: from [10.57.84.206] (unknown [10.57.84.206])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 19C943F73B;
+        Tue, 14 Jun 2022 15:06:25 -0700 (PDT)
+Message-ID: <9f1ed6be-1bbe-76d2-a622-ce56e25a8397@arm.com>
+Date:   Tue, 14 Jun 2022 23:06:24 +0100
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH v10 04/10] coresight-tpdm: Add DSB dataset support
+To:     Mao Jinlong <quic_jinlmao@quicinc.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Konrad Dybcio <konradybcio@gmail.com>,
+        Mike Leach <mike.leach@linaro.org>
+Cc:     Leo Yan <leo.yan@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>,
+        linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+References: <20220611004331.7343-1-quic_jinlmao@quicinc.com>
+ <20220611004331.7343-5-quic_jinlmao@quicinc.com>
+From:   Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <20220611004331.7343-5-quic_jinlmao@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are 3 RCU-based object iteration loops in kmemleak_scan(). Because
-of the need to take RCU read lock, we can't insert cond_resched() into
-the loop like other parts of the function. As there can be millions of
-objects to be scanned, it takes a while to iterate all of them. The
-kmemleak functionality is usually enabled in a debug kernel which is
-much slower than a non-debug kernel. With sufficient number of kmemleak
-objects, the time to iterate them all may exceed 22s causing soft lockup.
+On 11/06/2022 01:43, Mao Jinlong wrote:
+> TPDM serves as data collection component for various dataset types.
+> DSB(Discrete Single Bit) is one of the dataset types. DSB subunit
+> can be enabled for data collection by writing 1 to the first bit of
+> DSB_CR register. This change is to add enable/disable function for
+> DSB dataset by writing DSB_CR register.
+> 
+> Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
+> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
 
-  watchdog: BUG: soft lockup - CPU#3 stuck for 22s! [kmemleak:625]
-
-In this particular bug report, the soft lockup happen in the 2nd
-iteration loop.
-
-In the 2nd and 3rd loops, most of the objects are checked and then
-skipped under the object lock. Only a selected fews are modified. Those
-objects certainly need lock protection. However, the lock/unlock
-operation is slow especially with interrupt disabling and enabling
-included.
-
-We can actually do some basic check like color_white() without taking
-the lock and skip the object accordingly. Of course, this kind of check
-is racy and may miss objects that are being modified concurrently. The
-cost of missed objects, however, is just that they will be discovered in
-the next scan instead. The advantage of doing so is that iteration can
-be done much faster especially with LOCKDEP enabled in a debug kernel.
-
-With a debug kernel running on a 2-socket 96-thread x86-64 system
-(HZ=1000), the 2nd and 3rd iteration loops speedup with this patch on
-the first kmemleak_scan() call after bootup is shown in the table below.
-
-                   Before patch                    After patch
-  Loop #    # of objects  Elapsed time     # of objects  Elapsed time
-  ------    ------------  ------------     ------------  ------------
-    2        2,599,850      2.392s          2,596,364       0.266s
-    3        2,600,176      2.171s          2,597,061       0.260s
-
-This patch reduces loop iteration times by about 88%. This will greatly
-reduce the chance of a soft lockup happening in the 2nd or 3rd iteration
-loops.
-
-Even though the first loop runs a little bit faster, it can still be
-problematic if many kmemleak objects are there. As the object count
-has to be modified in every object, we cannot avoid taking the object
-lock. So other way to prevent soft lockup will be needed.
-
-Signed-off-by: Waiman Long <longman@redhat.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
----
- mm/kmemleak.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/mm/kmemleak.c b/mm/kmemleak.c
-index dad9219c972c..7dd64139a7c7 100644
---- a/mm/kmemleak.c
-+++ b/mm/kmemleak.c
-@@ -1508,6 +1508,13 @@ static void kmemleak_scan(void)
- 	 */
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(object, &object_list, object_list) {
-+		/*
-+		 * This is racy but we can save the overhead of lock/unlock
-+		 * calls. The missed objects, if any, should be caught in
-+		 * the next scan.
-+		 */
-+		if (!color_white(object))
-+			continue;
- 		raw_spin_lock_irq(&object->lock);
- 		if (color_white(object) && (object->flags & OBJECT_ALLOCATED)
- 		    && update_checksum(object) && get_object(object)) {
-@@ -1535,6 +1542,13 @@ static void kmemleak_scan(void)
- 	 */
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(object, &object_list, object_list) {
-+		/*
-+		 * This is racy but we can save the overhead of lock/unlock
-+		 * calls. The missed objects, if any, should be caught in
-+		 * the next scan.
-+		 */
-+		if (!color_white(object))
-+			continue;
- 		raw_spin_lock_irq(&object->lock);
- 		if (unreferenced_object(object) &&
- 		    !(object->flags & OBJECT_REPORTED)) {
--- 
-2.31.1
-
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
