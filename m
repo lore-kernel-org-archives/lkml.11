@@ -2,49 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6EE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 740A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352524AbiFNCIr (ORCPT
+        id S1352532AbiFNCIw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:08:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42188 "EHLO
+        Mon, 13 Jun 2022 22:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352288AbiFNCHv (ORCPT
+        with ESMTP id S1352317AbiFNCHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:07:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F002833E38;
-        Mon, 13 Jun 2022 19:06:07 -0700 (PDT)
+        Mon, 13 Jun 2022 22:07:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3EB35AAB;
+        Mon, 13 Jun 2022 19:06:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67ACFB81699;
-        Tue, 14 Jun 2022 02:06:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9919C34114;
-        Tue, 14 Jun 2022 02:06:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2451460A56;
+        Tue, 14 Jun 2022 02:06:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 682B0C341C6;
+        Tue, 14 Jun 2022 02:06:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172365;
-        bh=z4nS/GuBUxpX0GXkgOCIkr9OBX7vs0RMQDyx7CNotDw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jTYpGgq4zLoSpmZri+s3uQwnzp75K0lR04DHdoFMokWIJhsNu4OCaiRTrQYnNcXez
-         kdOMDe2AzakpW7dPg1h0blh+CWANJu0YtfRjHOyei1KmdOo2lLWJTTtUTjg4VBwxrv
-         9GeU08RZ/c9LcJXg6tGtSaIQ/1VfUbm5hSgqGmGKHazrUffn2vBbOOn9QVfUPGGKeL
-         aII9vlww2302Y7xWwiJUyidZ4BLQfwaW/xWaFYcjMG2K/JQ7zbIyEhJsURwzgnCGf2
-         tBZsK3uvbde+JkXJI75yMy5Zd7dPe1BMEYatgRoqpm8nD6vZtXMacDzaNTunLziTDc
-         BvzUPXKkTZu2Q==
+        s=k20201202; t=1655172368;
+        bh=mLtv0y/g6P3XgwKmjT/bIE02cfijwDV7UqKTYW+qcXg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=p/9it/7HQLQmRiSHpIsrwk+izuChA/j/b/LmFgjQsq8zC5ePo1GCtD5nPYGBg9o13
+         JYZmg1sVfJ/J29yavXKyxwM7/yQg2Sas3rneWKXzmFpOG4Y9zVdrpKIac/b8g34hJ+
+         5lL4B1Mkpn5Nqq/weH2ctpRs697xOGQsu5NM4lZJZY9ATkYn5hqPVwVOTLWu2v1ka1
+         VLSvwk3jfit+ODeGMeIJ60z3SEtYjzFZ88TyA16nuNDN/3ETTpm/44ULe43FytdDby
+         dpHXvA5KMPsZg1GAfm9nSbI20gB/j73Dr2wpdUvjG0TL2qzf8SpRdEckHQ0T5FVvXu
+         86H8Ofes6fGuA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     He Ying <heying24@huawei.com>, Wanming Hu <huwanming@huaweil.com>,
-        Chen Jingwen <chenjingwen6@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, benh@kernel.crashing.org,
-        paulus@samba.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.17 01/43] powerpc/kasan: Silence KASAN warnings in __get_wchan()
-Date:   Mon, 13 Jun 2022 22:05:20 -0400
-Message-Id: <20220614020602.1098943-1-sashal@kernel.org>
+Cc:     Sherry Wang <YAO.WANG1@amd.com>,
+        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
+        Jasdeep Dhillon <jdhillon@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        airlied@linux.ie, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 03/43] drm/amd/display: Read Golden Settings Table from VBIOS
+Date:   Mon, 13 Jun 2022 22:05:22 -0400
+Message-Id: <20220614020602.1098943-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220614020602.1098943-1-sashal@kernel.org>
+References: <20220614020602.1098943-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,89 +56,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: He Ying <heying24@huawei.com>
+From: Sherry Wang <YAO.WANG1@amd.com>
 
-[ Upstream commit a1b29ba2f2c171b9bea73be993bfdf0a62d37d15 ]
+[ Upstream commit 4b81dd2cc6f4f4e8cea0ed6ee8d5193a8ae14a72 ]
 
-The following KASAN warning was reported in our kernel.
+[Why]
+Dmub read AUX_DPHY_RX_CONTROL0 from Golden Setting Table,
+but driver will set it to default value 0x103d1110, which
+causes issue in some case
 
-  BUG: KASAN: stack-out-of-bounds in get_wchan+0x188/0x250
-  Read of size 4 at addr d216f958 by task ps/14437
+[How]
+Remove the driver code, use the value set by dmub in
+dp_aux_init
 
-  CPU: 3 PID: 14437 Comm: ps Tainted: G           O      5.10.0 #1
-  Call Trace:
-  [daa63858] [c0654348] dump_stack+0x9c/0xe4 (unreliable)
-  [daa63888] [c035cf0c] print_address_description.constprop.3+0x8c/0x570
-  [daa63908] [c035d6bc] kasan_report+0x1ac/0x218
-  [daa63948] [c00496e8] get_wchan+0x188/0x250
-  [daa63978] [c0461ec8] do_task_stat+0xce8/0xe60
-  [daa63b98] [c0455ac8] proc_single_show+0x98/0x170
-  [daa63bc8] [c03cab8c] seq_read_iter+0x1ec/0x900
-  [daa63c38] [c03cb47c] seq_read+0x1dc/0x290
-  [daa63d68] [c037fc94] vfs_read+0x164/0x510
-  [daa63ea8] [c03808e4] ksys_read+0x144/0x1d0
-  [daa63f38] [c005b1dc] ret_from_syscall+0x0/0x38
-  --- interrupt: c00 at 0x8fa8f4
-      LR = 0x8fa8cc
-
-  The buggy address belongs to the page:
-  page:98ebcdd2 refcount:0 mapcount:0 mapping:00000000 index:0x2 pfn:0x1216f
-  flags: 0x0()
-  raw: 00000000 00000000 01010122 00000000 00000002 00000000 ffffffff 00000000
-  raw: 00000000
-  page dumped because: kasan: bad access detected
-
-  Memory state around the buggy address:
-   d216f800: 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00 00 00 00
-   d216f880: f2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  >d216f900: 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00
-                                            ^
-   d216f980: f2 f2 f2 f2 f2 f2 f2 00 00 00 00 00 00 00 00 00
-   d216fa00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-
-After looking into this issue, I find the buggy address belongs
-to the task stack region. It seems KASAN has something wrong.
-I look into the code of __get_wchan in x86 architecture and
-find the same issue has been resolved by the commit
-f7d27c35ddff ("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
-The solution could be applied to powerpc architecture too.
-
-As Andrey Ryabinin said, get_wchan() is racy by design, it may
-access volatile stack of running task, thus it may access
-redzone in a stack frame and cause KASAN to warn about this.
-
-Use READ_ONCE_NOCHECK() to silence these warnings.
-
-Reported-by: Wanming Hu <huwanming@huaweil.com>
-Signed-off-by: He Ying <heying24@huawei.com>
-Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220121014418.155675-1-heying24@huawei.com
+Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
+Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Sherry Wang <YAO.WANG1@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/process.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
-index 984813a4d5dc..a75d20f23dac 100644
---- a/arch/powerpc/kernel/process.c
-+++ b/arch/powerpc/kernel/process.c
-@@ -2160,12 +2160,12 @@ static unsigned long ___get_wchan(struct task_struct *p)
- 		return 0;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
+index 8b9b1a5309ba..0190a90260e9 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
+@@ -230,9 +230,7 @@ static void enc31_hw_init(struct link_encoder *enc)
+ 	AUX_RX_PHASE_DETECT_LEN,  [21,20] = 0x3 default is 3
+ 	AUX_RX_DETECTION_THRESHOLD [30:28] = 1
+ */
+-	AUX_REG_WRITE(AUX_DPHY_RX_CONTROL0, 0x103d1110);
+-
+-	AUX_REG_WRITE(AUX_DPHY_TX_CONTROL, 0x21c7a);
++	// dmub will read AUX_DPHY_RX_CONTROL0/AUX_DPHY_TX_CONTROL from vbios table in dp_aux_init
  
- 	do {
--		sp = *(unsigned long *)sp;
-+		sp = READ_ONCE_NOCHECK(*(unsigned long *)sp);
- 		if (!validate_sp(sp, p, STACK_FRAME_OVERHEAD) ||
- 		    task_is_running(p))
- 			return 0;
- 		if (count > 0) {
--			ip = ((unsigned long *)sp)[STACK_FRAME_LR_SAVE];
-+			ip = READ_ONCE_NOCHECK(((unsigned long *)sp)[STACK_FRAME_LR_SAVE]);
- 			if (!in_sched_functions(ip))
- 				return ip;
- 		}
+ 	//AUX_DPHY_TX_REF_CONTROL'AUX_TX_REF_DIV HW default is 0x32;
+ 	// Set AUX_TX_REF_DIV Divider to generate 2 MHz reference from refclk
 -- 
 2.35.1
 
