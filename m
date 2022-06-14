@@ -2,153 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4965EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:17:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE039CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 11:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243367AbiFNLRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
+        id S1354814AbiFNLTx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 07:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231887AbiFNLRM (ORCPT
+        with ESMTP id S231887AbiFNLTw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 07:17:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D20220F7;
-        Tue, 14 Jun 2022 04:17:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63039B817D7;
-        Tue, 14 Jun 2022 11:17:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F08E6C3411F;
-        Tue, 14 Jun 2022 11:17:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655205429;
-        bh=OLxdqz8v9c0jsmtShQ9ZLaEVr+VzqF9XJMhBZg7aA0s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XUX9WALMpQht+A2WyY/9Y0FRt3yAGu56w8ac6rFSzGJ85yg8dT6J3K6RDGfIB7XYP
-         5HRj8Zqf13Q+sQpnfcdtNH98UD2JYWmX/Jb8tSk0vKQaMzCAs98x6RJzWCrUiIP1WS
-         5UYokwEoFl4RnGKOl/XYv6G1l5hjU+Jv0ozicDBKLOU/1pRJXBsEcIX9pU6VUDZpmS
-         BPOXW6DMtZ4LTYDZLXKIgeikFskqOIjZi7EJJjJzRbhD06VdjY4hs4B/rJWa7cw0B+
-         j0DppMULkWDGui31JWKazA0hSoFKp7OaVzM6kBPz4vSnKrKqJ3BPNQAkaj/+Cm1K9X
-         asz2bWB0wPX9g==
-Date:   Tue, 14 Jun 2022 12:26:18 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: dac: cio-dac: Implement and utilize register
- structures
-Message-ID: <20220614122618.68e2e9d1@jic23-huawei>
-In-Reply-To: <44aec703753f930cceff448babd1c8e2959eebb0.1654118389.git.william.gray@linaro.org>
-References: <cover.1654118389.git.william.gray@linaro.org>
-        <44aec703753f930cceff448babd1c8e2959eebb0.1654118389.git.william.gray@linaro.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Tue, 14 Jun 2022 07:19:52 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3956324084;
+        Tue, 14 Jun 2022 04:19:51 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id s12so16524871ejx.3;
+        Tue, 14 Jun 2022 04:19:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=whlmV8UrxJzjBMd38gq+zS77XEXwKIxpWfDi63X16RI=;
+        b=F1qCqa7i5aglLXWDzkorIGtEyjePLR6cCM7gbkmI2+uEezcDn1ZOYp4nihhGTesqd4
+         Xl/ZSuyl3N9fWkP4au0KcoIJDmje5AqlkwNWBw2dqnx5rs98t9EiXOmryhgPTkAOH/Hz
+         Z0Qb7Q1eO2FOkSl0NqgWnQz8mTJc4bwLeRcURCY21g4v91JncsXfrSOoqCCcdMwd03Oq
+         50Mp8McJiZeEoj7bd69VoyG97750V4T+4+gdSmWslJ/S7rRzFX/SU91IuZb4yqRsgr5m
+         nXp1Gd4BfhEVMM6sj8WCXe0/ffHegE3l8izreEzp4FVrqDYpHsngMGYmm9xrwwgQ2oLY
+         sozQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=whlmV8UrxJzjBMd38gq+zS77XEXwKIxpWfDi63X16RI=;
+        b=lB/KURUPKyU44eQbUyUKbMgVIEkd5lhXDRvPmSZpCY5v5KhF9/uv3DNbQ2i0Q+pnpJ
+         eyFdC09RkLrM/2m+BkZm33kQjrZgUuHsVJULOYCLcck6uheqEFKENbDNhlDqN+K1rfZV
+         nef/cXr82fYX/uwjLqUqWeLwdkg1139kgVPeTgqh8hyyzT+7m9EuJYLIz/mvj50FVMGd
+         IBn1yNdbjf1xIuL76kQro2iChKcAmP6LuYupsvPpo8x6lmFqIb2bEp12m0iuw6JYGge2
+         6Vw1lzuLvSNUHdv1/2Gg07e9Kty07qmd+rqwk9jfDeocEcP0LCkQx+9CAi5iqpcL7qo/
+         yYrw==
+X-Gm-Message-State: AOAM531BeJ/bMxQyRsEzuh6rFtyvP+3dFXjElB6bj525hykQ676p9X3D
+        uA5Z0FKW4s/ajFBGVtC6cVLAI77F58xOrIc6OqE=
+X-Google-Smtp-Source: AGRyM1v0nufiTvDZqbD1JqkDhi9ZtowOUuGXYkOfl3Gt3KfgIcCzvqZo7atHU6qMu0TPXakN/shNiAECtO+30c1F6r0=
+X-Received: by 2002:a17:906:d550:b0:704:7ba6:9854 with SMTP id
+ cr16-20020a170906d55000b007047ba69854mr3792329ejc.579.1655205589593; Tue, 14
+ Jun 2022 04:19:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220613195658.5607-1-brad@pensando.io> <20220613195658.5607-14-brad@pensando.io>
+In-Reply-To: <20220613195658.5607-14-brad@pensando.io>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 14 Jun 2022 13:19:13 +0200
+Message-ID: <CAHp75Vck4xNF=OOseMssF2R7TV2t+y0AQozRDFN2E6zQ51xR0g@mail.gmail.com>
+Subject: Re: [PATCH v5 13/15] mmc: sdhci-cadence: Add AMD Pensando Elba SoC support
+To:     Brad Larson <brad@pensando.io>
+Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Al Cooper <alcooperx@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+        blarson@amd.com, brijeshkumar.singh@amd.com,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Gabriel Somlo <gsomlo@gmail.com>, gerg@linux-m68k.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>, piotrs@cadence.com,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Rob Herring <robh+dt@kernel.org>, samuel@sholland.org,
+        Serge Semin <fancer.lancer@gmail.com>,
+        suravee.suthikulpanit@amd.com,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Will Deacon <will@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  6 Jun 2022 10:15:18 -0400
-William Breathitt Gray <william.gray@linaro.org> wrote:
+On Mon, Jun 13, 2022 at 9:57 PM Brad Larson <brad@pensando.io> wrote:
+>
+> From: Brad Larson <blarson@amd.com>
+>
+> Add support for AMD Pensando Elba SoC which explicitly controls
+> byte-lane enables on writes.  Add priv_write_l() which is
 
-> Reduce magic numbers and improve code readability by implementing and
-> utilizing named register data structures.
-> 
-> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+enabling ?
 
-I'm unconvinced this one really helps readability seeing
-as you are only indexing a straight forward array.
+> used on Elba platforms for byte-lane control.
+>
+> Select MMC_SDHCI_IO_ACCESSORS for MMC_SDHCI_CADENCE which
+> allows Elba SoC sdhci_elba_ops to overwrite the SDHCI
+> IO memory accessors.
 
-Simply using u16 __iomem *
-would provide the main cleanup which is avoiding the indexing
-via * 2.
+...
 
-Thanks,
+> +       void (*priv_write_l)(struct sdhci_cdns_priv *priv, u32 val,
 
-Jonathan
+priv_writel
 
+> +                            void __iomem *reg);
 
-> ---
->  drivers/iio/dac/cio-dac.c | 24 ++++++++++++++++--------
->  1 file changed, 16 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/cio-dac.c b/drivers/iio/dac/cio-dac.c
-> index 8080984dcb03..7860450ceaf3 100644
-> --- a/drivers/iio/dac/cio-dac.c
-> +++ b/drivers/iio/dac/cio-dac.c
-> @@ -16,6 +16,7 @@
->  #include <linux/isa.h>
->  #include <linux/module.h>
->  #include <linux/moduleparam.h>
-> +#include <linux/types.h>
->  
->  #define CIO_DAC_NUM_CHAN 16
->  
-> @@ -34,14 +35,22 @@ static unsigned int num_cio_dac;
->  module_param_hw_array(base, uint, ioport, &num_cio_dac, 0);
->  MODULE_PARM_DESC(base, "Measurement Computing CIO-DAC base addresses");
->  
-> +/**
-> + * struct cio_dac_reg - device register structure
-> + * @da:	D/A data
-> + */
-> +struct cio_dac_reg {
-> +	u16 da[CIO_DAC_NUM_CHAN];
+And perhaps leave it on one line.
+
+I also would swap parameters, so address goes first followed by value.
+
+...
+
+> +static inline void sdhci_cdns_priv_writel(struct sdhci_cdns_priv *priv,
+> +                                         u32 val, void __iomem *reg)
+> +{
+
+> +       if (unlikely(priv->priv_write_l))
+
+First of all, why if (unlikely())-else instead of if (likely())-else?
+
+> +               priv->priv_write_l(priv, val, reg);
+> +       else
+> +               writel(val, reg);
+> +}
+
+Instead of branching each time you do I/O, make sure that callback is
+always set and call it unconditionally. In this case you don't need to
+have this callback, but maybe just a wrapper on `writel()`. As a
+result you may split this to two patches in the first of which you
+simply introduce a callback and a writel() wrapper which is assigned
+unconditionally to all current chips. In the next you add a new chip
+support.
+
+...
+
+> +       u32 m = (reg & 0x3);
+> +       u32 msk = (0x3 << (m));
+> +
+> +       spin_lock_irqsave(&priv->wrlock, flags);
+> +       writel(msk << 3, priv->ctl_addr);
+> +       writew(val, host->ioaddr + reg);
+> +       spin_unlock_irqrestore(&priv->wrlock, flags);
+
+Too many 3:s as magic. Is it GENMASK() or something else? Perhaps it
+needs a definition.
+
+...
+
+> +       u32 m = (reg & 0x3);
+> +       u32 msk = (0x1 << (m));
+> +
+> +       spin_lock_irqsave(&priv->wrlock, flags);
+> +       writel(msk << 3, priv->ctl_addr);
+> +       writeb(val, host->ioaddr + reg);
+> +       spin_unlock_irqrestore(&priv->wrlock, flags);
+
+Ditto.
+
+...
+
+> +       writel(0x78, priv->ctl_addr);
+
+Magic.
+
+...
+
+> +static const struct sdhci_cdns_drv_data sdhci_cdns_drv_data = {
+> +       .pltfm_data = {
+> +               .ops = &sdhci_cdns_ops,
+> +       },
 > +};
 > +
->  /**
->   * struct cio_dac_iio - IIO device private data structure
->   * @chan_out_states:	channels' output states
-> - * @base:		base port address of the IIO device
-> + * @reg:		I/O address offset for the device registers
->   */
->  struct cio_dac_iio {
->  	int chan_out_states[CIO_DAC_NUM_CHAN];
-> -	void __iomem *base;
-> +	struct cio_dac_reg __iomem *reg;
->  };
->  
->  static int cio_dac_read_raw(struct iio_dev *indio_dev,
-> @@ -61,7 +70,6 @@ static int cio_dac_write_raw(struct iio_dev *indio_dev,
->  	struct iio_chan_spec const *chan, int val, int val2, long mask)
->  {
->  	struct cio_dac_iio *const priv = iio_priv(indio_dev);
-> -	const unsigned int chan_addr_offset = 2 * chan->channel;
->  
->  	if (mask != IIO_CHAN_INFO_RAW)
->  		return -EINVAL;
-> @@ -71,7 +79,7 @@ static int cio_dac_write_raw(struct iio_dev *indio_dev,
->  		return -EINVAL;
->  
->  	priv->chan_out_states[chan->channel] = val;
-> -	iowrite16(val, priv->base + chan_addr_offset);
-> +	iowrite16(val, priv->reg->da + chan->channel);
->  
->  	return 0;
->  }
-> @@ -106,8 +114,8 @@ static int cio_dac_probe(struct device *dev, unsigned int id)
->  	}
->  
->  	priv = iio_priv(indio_dev);
-> -	priv->base = devm_ioport_map(dev, base[id], CIO_DAC_EXTENT);
-> -	if (!priv->base)
-> +	priv->reg = devm_ioport_map(dev, base[id], CIO_DAC_EXTENT);
-> +	if (!priv->reg)
->  		return -ENOMEM;
->  
->  	indio_dev->info = &cio_dac_info;
-> @@ -117,8 +125,8 @@ static int cio_dac_probe(struct device *dev, unsigned int id)
->  	indio_dev->name = dev_name(dev);
->  
->  	/* initialize DAC outputs to 0V */
-> -	for (i = 0; i < 32; i += 2)
-> -		iowrite16(0, priv->base + i);
-> +	for (i = 0; i < CIO_DAC_NUM_CHAN; i++)
-> +		iowrite16(0, priv->reg->da + i);
->  
->  	return devm_iio_device_register(dev, indio_dev);
->  }
+> +
 
+One blank line is enough.
+
+...
+
+> +       {
+> +               .compatible = "amd,pensando-elba-sd4hc",
+> +               .data = &sdhci_elba_drv_data
+
+Leave a comma here.
+
+>         },
+
+-- 
+With Best Regards,
+Andy Shevchenko
