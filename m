@@ -2,124 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE1FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354556AbiFNHYR (ORCPT
+        id S1354388AbiFNHY2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40028 "EHLO
+        Tue, 14 Jun 2022 03:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354497AbiFNHYJ (ORCPT
+        with ESMTP id S1353151AbiFNHY0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:24:09 -0400
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0E23CFF8;
-        Tue, 14 Jun 2022 00:24:03 -0700 (PDT)
-Received: by mail-qt1-f178.google.com with SMTP id k18so5516945qtm.9;
-        Tue, 14 Jun 2022 00:24:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aiAvQvUwNZC8349lDrXjWRNqtecYyT5lBSmoXU6X950=;
-        b=W+nw622mbQ+PV9ugfcczqXjFEO19ZF0XPDHLa2tusPuSCzZRhImFAwQiwH5sjsuidK
-         hT7EyfSAYE8gtihwwAqpZJp2drJs1GcFXrRXj+xitEuqPUMeZvQM8WTO83aTiqlZmwlD
-         1dl8+25j2SqHapv7ZVzdKNzpHL2JAtEmnX8W2GP1Rq/pxML3T+Hnlme7B6ptaK2Q1PMo
-         Pou7KUxXeRzRO1FeRoYISppdeA5tjKzRgPuiDcTIEihLA7P+tKIVtpROlpeMt8tccWYJ
-         7EX3mOWTic4h9QolmIiXsLmZmNECTjQ6eeBeF+A6EAMAQibRhT0FSwLBm90QxgrORh17
-         nL7g==
-X-Gm-Message-State: AOAM530m7NL+fuANYG8u0zApUZgDwulCp2j5ahJL0WDvcmnDPcjXpyjS
-        7vCMcQ69ptUjJ0dYhoKT4e3U96CMnIPC+w==
-X-Google-Smtp-Source: ABdhPJzpx3QkJ7zKQfbk0OAzcjnvqNauK0gsSzML3rnackjnVpf702Ju3X4RaZ0YAqWa2YrSd+L8Ow==
-X-Received: by 2002:a05:622a:44c:b0:304:e4a2:3db7 with SMTP id o12-20020a05622a044c00b00304e4a23db7mr2992925qtx.162.1655191442195;
-        Tue, 14 Jun 2022 00:24:02 -0700 (PDT)
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
-        by smtp.gmail.com with ESMTPSA id m4-20020a05620a24c400b006a098381abcsm8705486qkn.114.2022.06.14.00.24.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 00:24:01 -0700 (PDT)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-3137eb64b67so20291157b3.12;
-        Tue, 14 Jun 2022 00:24:01 -0700 (PDT)
-X-Received: by 2002:a81:4811:0:b0:30c:8021:4690 with SMTP id
- v17-20020a814811000000b0030c80214690mr4090852ywa.47.1655191441536; Tue, 14
- Jun 2022 00:24:01 -0700 (PDT)
+        Tue, 14 Jun 2022 03:24:26 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316923C498
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:24:26 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1o10uO-00034J-F5; Tue, 14 Jun 2022 09:24:16 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3A8EB94613;
+        Tue, 14 Jun 2022 07:24:15 +0000 (UTC)
+Date:   Tue, 14 Jun 2022 09:24:14 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org, michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 05/13] can: netlink: dump bitrate 0 if
+ can_priv::bittiming.bitrate is -1U
+Message-ID: <20220614072414.dxdrzrcokusunf3v@pengutronix.de>
+References: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
+ <20220612213927.3004444-6-dario.binacchi@amarulasolutions.com>
+ <20220613071058.h6bmy6emswh76q5s@pengutronix.de>
+ <CABGWkvoNJYfK6bcjYtUi9qKvRfEfHUyrCWDBhOL4EjurW5YJ8Q@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220609150851.23084-1-max.oss.09@gmail.com> <20220609150851.23084-2-max.oss.09@gmail.com>
-In-Reply-To: <20220609150851.23084-2-max.oss.09@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 14 Jun 2022 09:23:50 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWm5WV7L=HJnysw76ObG_QPWicSH1kGg4k-GL8nNHd_SQ@mail.gmail.com>
-Message-ID: <CAMuHMdWm5WV7L=HJnysw76ObG_QPWicSH1kGg4k-GL8nNHd_SQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/5] dt-bindings: power: Add bindings for a power
- domain controlled by a regulator
-To:     Max Krummenacher <max.oss.09@gmail.com>
-Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ziwxdbyycswus75l"
+Content-Disposition: inline
+In-Reply-To: <CABGWkvoNJYfK6bcjYtUi9qKvRfEfHUyrCWDBhOL4EjurW5YJ8Q@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Max,
 
-On Thu, Jun 9, 2022 at 5:16 PM Max Krummenacher <max.oss.09@gmail.com> wrote:
-> From: Max Krummenacher <max.krummenacher@toradex.com>
->
-> Adds binding for a power domain provider which uses a regulator to control
-> the power domain.
->
-> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+--ziwxdbyycswus75l
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for your patch!
+On 13.06.2022 22:44:12, Dario Binacchi wrote:
+> On Mon, Jun 13, 2022 at 9:11 AM Marc Kleine-Budde <mkl@pengutronix.de> wr=
+ote:
+> > This would make the code a lot cleaner. Can you think of a nice macro
+> > name for the -1?
+> >
+> > 0 could be CAN_BITRATE_UNCONFIGURED or _UNSET. For -1 I cannot find a
+> > catchy name, something like CAN_BITRATE_CONFIGURED_UNKOWN or
+> > SET_UNKNOWN.
+> >
+>=20
+> Personally I would use CAN_BITRATE_UNSET (0) and CAN_BITRATE_UNKNOWN (-1).
+> Let me know what your ultimate preference is.
 
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/power/regulator-power-domain.yaml
-> @@ -0,0 +1,58 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/power/regulator-power-domain.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Power domain controlled by a regulator
-> +
-> +maintainers:
-> +  - Max Krummenacher <max.krummenacher@toradex.com>
-> +
-> +description: |+
-> +  Power domain provider which uses a regulator to control
-> +  the power domain.
-> +
-> +allOf:
-> +  - $ref: "power-domain.yaml#"
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - regulator-pm-pd
-> +
-> +  power-supply:
-> +    description: The regulator used to control the power domain.
+Looks good.
 
-I guess there can be more than one?
+Marc
 
-Gr{oetje,eeting}s,
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-                        Geert
+--ziwxdbyycswus75l
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+-----BEGIN PGP SIGNATURE-----
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKoN5wACgkQrX5LkNig
+012SQQf+MCc/KN4pvlFpJLP2EPpCUYG70n+5XaUEvz9ZZ+hDCfpEvX69pVFhGg/8
+58BYsbjIo4lh8XeZ9gzAIkeXjWsoHmBX2XHzcjLPM70sc8RN9VMr+uC32Wgn/VKo
+0e+S3Tvjd4EmSr0D7ulIjssYDatwdxTY+LgJUk47njL+x5PaoDFqub+MScRcNFt1
+cNk+2+B9H0klY6GCMpQiGGSHkNmOB+QVBo5tpBRaSJH9oLTIT3W5KO65U6FPz57H
+xm7kChVAUgHEx9vHRS92v2XyapmpTZwsMU2GJZRvNaoy+blRgsACrR0MbuGPnb6o
+PaGXdriKS8wM/WKuTKky0cuPYR7WLg==
+=OWqG
+-----END PGP SIGNATURE-----
+
+--ziwxdbyycswus75l--
