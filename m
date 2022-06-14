@@ -2,155 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE13CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDDDDCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 09:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239256AbiFNJCm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:02:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
+        id S242713AbiFNJCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 05:02:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242592AbiFNJC1 (ORCPT
+        with ESMTP id S242692AbiFNJCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 05:02:27 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079A01013;
-        Tue, 14 Jun 2022 02:02:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655197346; x=1686733346;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1KfA+Z4zkxUy52TB32Y60QTCmoY7zwc4D2LPQ88A3oM=;
-  b=D1IoUAreOqP48B4KEsajoxFQi+AGoJ2jDkyD6vpqTUDmn6alEOoF3hyt
-   OiamX9fnWtmyCV/m2LXYk8KVMffk9IUe+OuIKEvS9G8OLQWcfShT2tBzl
-   9NllQ3XntgUJ4iHj1QCzVX9OdVj3uHSOj0sHo6yhxB9uNqlZlNI1ZrH7m
-   QGKHhF8g9Bcu19njTHI5YrsMajCFn1sBojQbqTJ7Ddtap8ZZv55RyRDDx
-   6TMq5bN7iajGUp4XvLsoWQbNSl+KRzgYaGOqEknl4YEXtEIhAglc4rDKO
-   69ZpC8OC44EEtB3x59Fh3OkcYx/fdINheOgkV4D42zOZbcnIW/FFVqn6h
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="258391749"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="258391749"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 02:02:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="569832678"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 14 Jun 2022 02:02:22 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o12RK-000LhX-9J;
-        Tue, 14 Jun 2022 09:02:22 +0000
-Date:   Tue, 14 Jun 2022 17:01:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Sibi Sankar <sibis@codeaurora.org>,
-        Saravana Kannan <skannan@codeaurora.org>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org,
-        Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
-Subject: Re: [PATCH v2 1/5] PM / devfreq: Fix cpufreq passive unregister
- erroring on PROBE_DEFER
-Message-ID: <202206141647.zyZy1pSw-lkp@intel.com>
-References: <20220613134213.8904-2-ansuelsmth@gmail.com>
+        Tue, 14 Jun 2022 05:02:40 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9BA2717F;
+        Tue, 14 Jun 2022 02:02:36 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id C03BCE001B;
+        Tue, 14 Jun 2022 09:02:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1655197355;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0VkpGiXPoXaWOWQvypa0vCIM+uO/ijHmOl4KXjKbX0k=;
+        b=ZYsOgvJ4SheAj9johdMIEhkWhCZFkH3Rp+m6pvTevjhTrUmiZ/5WPeF0H+1A91/xUTGqIl
+        06rgGRGplqFKBI9bxayGayLsIE4YQ8468mhQ6tDsD94gcKo2kppaa8wqQH8hqgK96AGfAi
+        72esq1VG+/pvs2iYl2IsqWmTeh9UDHAPLO7ItL7Rr6BuyNeIq8D2wsbxCQldaHDkUzbVdU
+        TMtI2jTGzKy8vmG7FVh+ONC3wMto4Qi0dcIHP7NKfuGgwoRMWIyaqAZ0Ee+rrV2ltoSUmB
+        sIL3iI7WgyJ81OI/RWvsKU00LdLmV19EHAq3R01/xFLk1gmxcXMU5UdMsd9Phg==
+Date:   Tue, 14 Jun 2022 11:02:30 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Sascha Hauer <sha@pengutronix.de>
+Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tom Rini <trini@konsulko.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        linux-arm-kernel@lists.infradead.org, u-boot@lists.denx.de,
+        devicetree@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH V3 2/2] nvmem: add driver handling U-Boot environment
+ variables
+Message-ID: <20220614110230.46fab506@xps-13>
+In-Reply-To: <20220614074657.GQ2387@pengutronix.de>
+References: <20220611204651.19947-1-zajec5@gmail.com>
+        <20220611204651.19947-2-zajec5@gmail.com>
+        <20220614074657.GQ2387@pengutronix.de>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613134213.8904-2-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christian,
+Hello,
 
-Thank you for the patch! Yet something to improve:
+> > +static int u_boot_env_probe(struct platform_device *pdev)
+> > +{
+> > +	struct nvmem_config config =3D {
+> > +		.name =3D "u-boot-env",
+> > +		.reg_read =3D u_boot_env_read,
+> > +	};
+> > +	struct device *dev =3D &pdev->dev;
+> > +	struct device_node *np =3D dev->of_node;
+> > +	const struct of_device_id *of_id;
+> > +	struct u_boot_env *priv;
+> > +	int err;
+> > +
+> > +	priv =3D devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+> > +	if (!priv)
+> > +		return -ENOMEM;
+> > +	priv->dev =3D dev;
+> > +
+> > +	of_id =3D of_match_device(u_boot_env_of_match_table, dev);
+> > +	if (!of_id)
+> > +		return -EINVAL;
+> > +	priv->format =3D (uintptr_t)of_id->data;
+> > +
+> > +	if (of_property_read_u32(np, "reg", (u32 *)&priv->offset) ||
+> > +	    of_property_read_u32_index(np, "reg", 1, (u32 *)&priv->size)) {
+> > +		dev_err(dev, "Failed to read \"reg\" property\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	priv->mtd =3D of_get_mtd_device_by_node(np->parent);
+> > +	if (IS_ERR(priv->mtd)) {
+> > +		dev_err(dev, "Failed to get %pOF MTD: %ld\n", np->parent, PTR_ERR(pr=
+iv->mtd));
+> > +		return PTR_ERR(priv->mtd);
+> > +	} =20
+>=20
+> Partitions are mtd devices themselves and the mtd layer directly
+> associates these devices to their OF node, so it should be possible
+> to do a of_get_mtd_device_by_node(np) which gets you the partition.
+> You can use the whole mtd device then and do not have to fiddle with
+> reg properties, offsets and sizes in your driver yourself.
 
-[auto build test ERROR on chanwoo/devfreq-testing]
-[also build test ERROR on linus/master v5.19-rc2 next-20220614]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Just for the record, there will be one mtd device per partition, but
+the "full" mtd device will only exist if the configuration contains
+CONFIG_MTD_PARTITIONED_MASTER.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Christian-Ansuel-Marangi/PM-devfreq-Various-Fixes-to-cpufreq-based-passive-governor/20220614-020616
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git devfreq-testing
-config: arc-randconfig-r043-20220613 (https://download.01.org/0day-ci/archive/20220614/202206141647.zyZy1pSw-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/378807dd7da24162524c0ba84e996157b3e289c6
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Christian-Ansuel-Marangi/PM-devfreq-Various-Fixes-to-cpufreq-based-passive-governor/20220614-020616
-        git checkout 378807dd7da24162524c0ba84e996157b3e289c6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/devfreq/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/devfreq/governor_passive.c: In function 'cpufreq_passive_unregister_notifier':
->> drivers/devfreq/governor_passive.c:235:79: error: macro "list_for_each_entry_safe" requires 4 arguments, but only 3 given
-     235 |         list_for_each_entry_safe(parent_cpu_data, &p_data->cpu_data_list, node) {
-         |                                                                               ^
-   In file included from include/linux/module.h:12,
-                    from drivers/devfreq/governor_passive.c:10:
-   include/linux/list.h:760: note: macro "list_for_each_entry_safe" defined here
-     760 | #define list_for_each_entry_safe(pos, n, head, member)                  \
-         | 
->> drivers/devfreq/governor_passive.c:235:9: error: 'list_for_each_entry_safe' undeclared (first use in this function)
-     235 |         list_for_each_entry_safe(parent_cpu_data, &p_data->cpu_data_list, node) {
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/devfreq/governor_passive.c:235:9: note: each undeclared identifier is reported only once for each function it appears in
->> drivers/devfreq/governor_passive.c:235:33: error: expected ';' before '{' token
-     235 |         list_for_each_entry_safe(parent_cpu_data, &p_data->cpu_data_list, node) {
-         |                                 ^                                               ~
-         |                                 ;
-   drivers/devfreq/governor_passive.c:225:34: warning: unused variable 'parent_cpu_data' [-Wunused-variable]
-     225 |         struct devfreq_cpu_data *parent_cpu_data;
-         |                                  ^~~~~~~~~~~~~~~
-   drivers/devfreq/governor_passive.c:245:1: error: control reaches end of non-void function [-Werror=return-type]
-     245 | }
-         | ^
-   cc1: some warnings being treated as errors
-
-
-vim +/list_for_each_entry_safe +235 drivers/devfreq/governor_passive.c
-
-   220	
-   221	static int cpufreq_passive_unregister_notifier(struct devfreq *devfreq)
-   222	{
-   223		struct devfreq_passive_data *p_data
-   224				= (struct devfreq_passive_data *)devfreq->data;
-   225		struct devfreq_cpu_data *parent_cpu_data;
-   226		int ret;
-   227	
-   228		if (p_data->nb.notifier_call) {
-   229			ret = cpufreq_unregister_notifier(&p_data->nb,
-   230						CPUFREQ_TRANSITION_NOTIFIER);
-   231			if (ret < 0)
-   232				return ret;
-   233		}
-   234	
- > 235		list_for_each_entry_safe(parent_cpu_data, &p_data->cpu_data_list, node) {
-   236			list_del(&parent_cpu_data->node);
-   237	
-   238			if (parent_cpu_data->opp_table)
-   239				dev_pm_opp_put_opp_table(parent_cpu_data->opp_table);
-   240	
-   241			kfree(parent_cpu_data);
-   242		}
-   243	
-   244		return 0;
-   245	}
-   246	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Miqu=C3=A8l
