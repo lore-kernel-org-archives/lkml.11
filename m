@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78CB5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7706C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353650AbiFNCUg (ORCPT
+        id S1353718AbiFNCUl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54940 "EHLO
+        Mon, 13 Jun 2022 22:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353990AbiFNCOM (ORCPT
+        with ESMTP id S1353989AbiFNCOM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 22:14:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DA683B29E;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8C453587D;
         Mon, 13 Jun 2022 19:08:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66BE2B81699;
-        Tue, 14 Jun 2022 02:07:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE95FC36AFE;
-        Tue, 14 Jun 2022 02:07:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE45960EED;
+        Tue, 14 Jun 2022 02:07:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C21C34114;
+        Tue, 14 Jun 2022 02:07:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172469;
-        bh=z17Ga3WJ++lHqaiRT4zQgkK6L8bZErLb/32G5B5+XmY=;
+        s=k20201202; t=1655172451;
+        bh=SG0d8nWr1NNbbxqYsCX7Km3fIjZdag3mvPeMHmSGtAs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AKAnA9cqpYyCUqA7GUe8c/Wbdbp9m3XClQFPXkRxRBbE7Ek+oGkWpIxSr4Xeds1r2
-         w7djZBL+IO2/xWEr+DrgPcTQqu55N7UG1kWf6kbvOQuX5d4/T9tJy4voArdj9CsAu1
-         sStNpJrM7ESO47c0ZPvgD9355tVRnBcCiLq5Ovs0hzNoL8NoXPiC5GxcgLH3Rp+JxP
-         XfiKed/ra8alPb8AkBpY1uPoWBI0eXi/TXrgj5aFFjl4ShzX0HIVGnq6zQdmH5syQ8
-         /udAbHy05kreJbwKMuysnTEuxUtp5POsbxbIe8z3GlhLpSROoMrwOYj+JRR9GshInu
-         rTGqbG1EjGtiA==
+        b=K+PEyNFE7IIGJxLQHUVFWyZnNy/vXzhjCBXO4KlbRdH+k2GB4mhFouulnLT12109S
+         8aNOT8+E1jME7ygmWnzYaf4HWtKSD92J7J7NZ+guCca1UjZe2mf2WINTWn+QTfohwS
+         VsnfCk19SE+5+GQduJE4EIYlQjmfmLJyaryfTO9OHjHfp6r9+C/Sqw2KZeVH7jhEuM
+         ZxZkla4vuJTlnuYqnHY9xkW3bxNls+0f4q6me+btIxC5vu+myinPHnM8/dK7Fv2QSR
+         iFXFwyV/z/HV3cu7DPD8u141zToVdw81ggTKMedp9lZlLtH/cfI0fzocAFwd8PkVy4
+         UlXAQ2qp9X36w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Helge Deller <deller@gmx.de>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, sathya.prakash@broadcom.com,
-        chaitra.basappa@broadcom.com,
-        suganath-prabu.subramani@broadcom.com, jejb@linux.vnet.ibm.com,
-        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 24/41] scsi: mpt3sas: Fix out-of-bounds compiler warning
-Date:   Mon, 13 Jun 2022 22:06:49 -0400
-Message-Id: <20220614020707.1099487-24-sashal@kernel.org>
+Cc:     Lang Yu <Lang.Yu@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 13/41] drm/amdkfd: add pinned BOs to kfd_bo_list
+Date:   Mon, 13 Jun 2022 22:06:38 -0400
+Message-Id: <20220614020707.1099487-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
 References: <20220614020707.1099487-1-sashal@kernel.org>
@@ -56,89 +56,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Lang Yu <Lang.Yu@amd.com>
 
-[ Upstream commit 120f1d95efb1cdb6fe023c84e38ba06d8f78cd03 ]
+[ Upstream commit 4fac4fcf4500bce515b0f32195e7bb86aa0246c6 ]
 
-I'm facing this warning when building for the parisc64 architecture:
+The kfd_bo_list is used to restore process BOs after
+evictions. As page tables could be destroyed during
+evictions, we should also update pinned BOs' page tables
+during restoring to make sure they are valid.
 
-drivers/scsi/mpt3sas/mpt3sas_base.c: In function ‘_base_make_ioc_operational’:
-drivers/scsi/mpt3sas/mpt3sas_base.c:5396:40: warning: array subscript ‘Mpi2SasIOUnitPage1_t {aka struct _MPI2_CONFIG_PAGE_SASIOUNIT_1}[0]’ is partly outside array bounds of ‘unsigned char[20]’ [-Warray-bounds]
- 5396 |             (le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth)) ?
-drivers/scsi/mpt3sas/mpt3sas_base.c:5382:26: note: referencing an object of size 20 allocated by ‘kzalloc’
- 5382 |         sas_iounit_pg1 = kzalloc(sz, GFP_KERNEL);
-      |                          ^~~~~~~~~~~~~~~~~~~~~~~
+So for pinned BOs,
+1, Validate them and update their page tables.
+2, Don't add eviction fence for them.
 
-The problem is, that only 20 bytes are allocated with kmalloc(), which is
-sufficient to hold the bytes which are needed.  Nevertheless, gcc complains
-because the whole Mpi2SasIOUnitPage1_t struct is 32 bytes in size and thus
-doesn't fit into those 20 bytes.
+v2:
+ - Don't handle pinned ones specially in BO validation.(Felix)
 
-This patch simply allocates all 32 bytes (instead of 20) and thus avoids
-the warning. There is no functional change introduced by this patch.
-
-While touching the code I cleaned up to calculation of max_wideport_qd,
-max_narrowport_qd and max_sata_qd to make it easier readable.
-
-Test successfully tested on a HP C8000 PA-RISC workstation with 64-bit
-kernel.
-
-Link: https://lore.kernel.org/r/YpZ197iZdDZSCzrT@p100
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Lang Yu <Lang.Yu@amd.com>
+Acked-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpt3sas/mpt3sas_base.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
-index c38e68943205..fafa9fbf3b10 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -5381,6 +5381,7 @@ static int _base_assign_fw_reported_qd(struct MPT3SAS_ADAPTER *ioc)
- 	Mpi2ConfigReply_t mpi_reply;
- 	Mpi2SasIOUnitPage1_t *sas_iounit_pg1 = NULL;
- 	Mpi26PCIeIOUnitPage1_t pcie_iounit_pg1;
-+	u16 depth;
- 	int sz;
- 	int rc = 0;
- 
-@@ -5392,7 +5393,7 @@ static int _base_assign_fw_reported_qd(struct MPT3SAS_ADAPTER *ioc)
- 		goto out;
- 	/* sas iounit page 1 */
- 	sz = offsetof(Mpi2SasIOUnitPage1_t, PhyData);
--	sas_iounit_pg1 = kzalloc(sz, GFP_KERNEL);
-+	sas_iounit_pg1 = kzalloc(sizeof(Mpi2SasIOUnitPage1_t), GFP_KERNEL);
- 	if (!sas_iounit_pg1) {
- 		pr_err("%s: failure at %s:%d/%s()!\n",
- 		    ioc->name, __FILE__, __LINE__, __func__);
-@@ -5405,16 +5406,16 @@ static int _base_assign_fw_reported_qd(struct MPT3SAS_ADAPTER *ioc)
- 		    ioc->name, __FILE__, __LINE__, __func__);
- 		goto out;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
+index ab36cce59d2e..21c02f817a84 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
+@@ -1828,9 +1828,6 @@ int amdgpu_amdkfd_gpuvm_map_gtt_bo_to_kernel(struct kgd_dev *kgd,
+ 		return -EINVAL;
  	}
--	ioc->max_wideport_qd =
--	    (le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth)) ?
--	    le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth) :
--	    MPT3SAS_SAS_QUEUE_DEPTH;
--	ioc->max_narrowport_qd =
--	    (le16_to_cpu(sas_iounit_pg1->SASNarrowMaxQueueDepth)) ?
--	    le16_to_cpu(sas_iounit_pg1->SASNarrowMaxQueueDepth) :
--	    MPT3SAS_SAS_QUEUE_DEPTH;
--	ioc->max_sata_qd = (sas_iounit_pg1->SATAMaxQDepth) ?
--	    sas_iounit_pg1->SATAMaxQDepth : MPT3SAS_SATA_QUEUE_DEPTH;
+ 
+-	/* delete kgd_mem from kfd_bo_list to avoid re-validating
+-	 * this BO in BO's restoring after eviction.
+-	 */
+ 	mutex_lock(&mem->process_info->lock);
+ 
+ 	ret = amdgpu_bo_reserve(bo, true);
+@@ -1853,7 +1850,6 @@ int amdgpu_amdkfd_gpuvm_map_gtt_bo_to_kernel(struct kgd_dev *kgd,
+ 
+ 	amdgpu_amdkfd_remove_eviction_fence(
+ 		bo, mem->process_info->eviction_fence);
+-	list_del_init(&mem->validate_list.head);
+ 
+ 	if (size)
+ 		*size = amdgpu_bo_size(bo);
+@@ -2399,12 +2395,15 @@ int amdgpu_amdkfd_gpuvm_restore_process_bos(void *info, struct dma_fence **ef)
+ 	process_info->eviction_fence = new_fence;
+ 	*ef = dma_fence_get(&new_fence->base);
+ 
+-	/* Attach new eviction fence to all BOs */
++	/* Attach new eviction fence to all BOs except pinned ones */
+ 	list_for_each_entry(mem, &process_info->kfd_bo_list,
+-		validate_list.head)
++		validate_list.head) {
++		if (mem->bo->tbo.pin_count)
++			continue;
 +
-+	depth = le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth);
-+	ioc->max_wideport_qd = (depth ? depth : MPT3SAS_SAS_QUEUE_DEPTH);
-+
-+	depth = le16_to_cpu(sas_iounit_pg1->SASNarrowMaxQueueDepth);
-+	ioc->max_narrowport_qd = (depth ? depth : MPT3SAS_SAS_QUEUE_DEPTH);
-+
-+	depth = sas_iounit_pg1->SATAMaxQDepth;
-+	ioc->max_sata_qd = (depth ? depth : MPT3SAS_SATA_QUEUE_DEPTH);
-+
- 	/* pcie iounit page 1 */
- 	rc = mpt3sas_config_get_pcie_iounit_pg1(ioc, &mpi_reply,
- 	    &pcie_iounit_pg1, sizeof(Mpi26PCIeIOUnitPage1_t));
+ 		amdgpu_bo_fence(mem->bo,
+ 			&process_info->eviction_fence->base, true);
+-
++	}
+ 	/* Attach eviction fence to PD / PT BOs */
+ 	list_for_each_entry(peer_vm, &process_info->vm_list_head,
+ 			    vm_list_node) {
 -- 
 2.35.1
 
