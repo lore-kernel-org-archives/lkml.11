@@ -2,135 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1466FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C815C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344526AbiFNSIg (ORCPT
+        id S1344315AbiFNSIw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:08:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
+        Tue, 14 Jun 2022 14:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243228AbiFNSIa (ORCPT
+        with ESMTP id S1343909AbiFNSIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:08:30 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA0835862
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:08:30 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id l204so16449984ybf.10
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:08:30 -0700 (PDT)
+        Tue, 14 Jun 2022 14:08:49 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8443C714
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:08:47 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id g2so10653818ljk.5
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 11:08:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=I7mIzgHlKoo48q72bBYb3vEBCu9Nvd6MDnUH2Y99HDs=;
-        b=rueFW7Hw9BW5aiacWVNeDteqBIXmxnNHCNKISJs/aDl7jnTwrNcJrqHjAEU+ozjnbR
-         8uNLg/U3OLLjTUWHjjkfGiKsRwqdtpppCZ6Ygx7DdKK2WqDZNolZOI4s+G40ALixMZaF
-         LlpPBxi0MX4Nl1LpyZ0wpOAfq71h8fVtHmNRzdbya/rJX38r4NnJQAtI0rI4086LpAKL
-         IlRa0CBNAbJIdlI5v8kIQbF2C5qsJoakcX7uFN3I7SkWdExdKM5jqv2bSwjDB94yoVhG
-         QYEBI26fURbxppMXaezdRzq3ocqQJqs7yAlgNYIQKiCTI+O8pKsk848mFEgrQQ2NDvx1
-         qYiQ==
+         :cc;
+        bh=R1HT10eh1GO5bHFhhzFg6L2ZKS3F6a/ZKqNJB8u6nSo=;
+        b=d+G50quMVzD8X1zWpNXl70m2dG0hT+RVXZR68ghr81UzXBAZxdEj8QLUJC/usbxSJb
+         4sCg875GjsPzfBwk2k5nqnq2PpdMtARImdhKXIDS3vQNgWc/cEC5bhz7y4rWHllTmFMk
+         i5oUYQvRcu0pQgagLIyWvfUSXjghs9/O4s8LE2VOkCiiRJf8SVL7EbxGROvhQLOYS1PM
+         Db1fvMlydmzpmdSD689iyQJigiVU+sfOyDaWbHhjSSnXi4/XmSVE6Ym0hxTaIo4sMJiu
+         WH+YN6YnAZ+cTQCwReRezO5uACl9RF9zltggTFtcdLBaCGSINqKfs5x0+acWu21NoZz4
+         HwSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=I7mIzgHlKoo48q72bBYb3vEBCu9Nvd6MDnUH2Y99HDs=;
-        b=sTCFmkEM5aiY0ZKnArOivxtHUAQdv6qVoa1K0clFzI9cZJR6YeNbQSR3osuuKSMEQJ
-         LkY7PIQ9mmkhyWNbqqi8WdSihCLqezVegq7N/dKxJYRGWDfdcFJ6tB02iVQyyp/71PFL
-         UqZg7el4Pk0NpZSrgj4rflk2lTFQtsSpsgrwHhfEEl43L+XjFAo7RHKgNdN6q4nKsceH
-         +1c5X3+G6JKzs2o6IMbK7WRKDNEs2ykw/27Q0bcHG0JqUwi/SIeD0CDRZ6HRU487dpeg
-         VPGf/nm1kPlltop4m8d8Qgb9I1p23N44L3T7WNiOX66Bpw1rYA+YEd+wnq4JXNLimrrV
-         3kYA==
-X-Gm-Message-State: AJIora8hdJcNw4pPMuslMv2y3gkaY3Fo4PYSqnR+6LQYypSUnrwp9/Ed
-        Yrdb489+fhibfmSJ8uw9Sl3/M7Yibdz8lYk3WwKxKg==
-X-Google-Smtp-Source: AGRyM1v4Pm0uKutjGFFGG8hxEK6A2MV95t6qGASMp568gSd6ZZcLQLhn3uiQz7zYDJnZy348rz4aUrhLiQObaBcCuI4=
-X-Received: by 2002:a25:e68b:0:b0:65c:7aa5:f901 with SMTP id
- d133-20020a25e68b000000b0065c7aa5f901mr6203492ybh.147.1655230108954; Tue, 14
- Jun 2022 11:08:28 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=R1HT10eh1GO5bHFhhzFg6L2ZKS3F6a/ZKqNJB8u6nSo=;
+        b=traPS+BEYKNnOaYWPL0L2RCZbf3TFy44fHi4DFSg57Q0w3jo4kGeu5DTGbO3ZCXt7z
+         rM/iQkZhqXVexymbklxfZ1SeIhPK6SqOYKOZGCjkaq8VLGK8iLDNlA34A4RmkXGG1Bs0
+         yCIJsp+oSUACUjselsO+2QHQBrzCJ3CNAMagGP8AE+LeE4CgOWzp2ryIdOhrQFh6KbW8
+         JCIUwYvZVBLR/b5NUG2qMm0meYzmQpsFUzBYnd/VLlTCoupiuSbtHtBZA5Dv71DXUnqC
+         jScYvjJhKBWkhh41UgkYf2T+LxQkXUTPeW+4texcKIlRzyEeZgSvSkDmefG8BWgCG45l
+         Ea1w==
+X-Gm-Message-State: AJIora/H2jMJYksgADwHh+gknhwTzPY5qx/gxUpDkUcnJ6Uv7g2393+f
+        f/IuRd/J8g1CTeslqBDm2HAtsZAu9hk6JQAZE9+hhw==
+X-Google-Smtp-Source: AGRyM1vlpU+YYoVx423VwrpRCMxHTBgsHKGjOk7TAYtjS0pSAZgttUkcGWdalwmXngjLB35ExMkH4cPI1eCs/qGCrbc=
+X-Received: by 2002:a2e:2ac1:0:b0:255:7677:97f3 with SMTP id
+ q184-20020a2e2ac1000000b00255767797f3mr3227264ljq.513.1655230125976; Tue, 14
+ Jun 2022 11:08:45 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220614144853.3693273-1-glider@google.com> <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com>
-In-Reply-To: <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Tue, 14 Jun 2022 20:07:52 +0200
-Message-ID: <CAG_fn=WEed5NJ8hdrrP_N8aQ_1Ad11VoJgdVxQheo3VfT_xyXQ@mail.gmail.com>
+ <CAKwvOd=SotrVcZshzGzsMprkORkVXFwYc-3mREkJSDCQ1nvbFw@mail.gmail.com> <CAHk-=wgmezfDP_b93_Hw090vUd-TKb-odZNPhB9L_2vL5pn6kQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wgmezfDP_b93_Hw090vUd-TKb-odZNPhB9L_2vL5pn6kQ@mail.gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 14 Jun 2022 11:08:33 -0700
+Message-ID: <CAKwvOd=C1GC09zobqLK0higE3xPpghWBbB4xujyC8-QDyd_DTQ@mail.gmail.com>
 Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
 To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Evgenii Stepanov <eugenis@google.com>,
+Cc:     Alexander Potapenko <glider@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
         Kees Cook <keescook@chromium.org>,
         Marco Elver <elver@google.com>,
         Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Vitaly Buka <vitalybuka@google.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         linux-toolchains <linux-toolchains@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 6:48 PM Linus Torvalds
+On Tue, Jun 14, 2022 at 10:24 AM Linus Torvalds
 <torvalds@linux-foundation.org> wrote:
 >
-> On Tue, Jun 14, 2022 at 7:49 AM Alexander Potapenko <glider@google.com> w=
-rote:
+> On Tue, Jun 14, 2022 at 10:11 AM Nick Desaulniers
+> <ndesaulniers@google.com> wrote:
 > >
-> > The bigger question I want to raise here is whether we want to
-> > discourage passing uninitialized variables to functions in the kernel
-> > altogether.
+> > Maybe a new function parameter attribute would be nice?
 >
-> I'm assuming you mean pass by reference.
+> Right, exactly something like this seems reasonable.
+>
+> > #define __must_init __attribute__((must_init))
+> > int init (int * __must_init x) {
+> > // ^ warning: function parameter x marked '__attribute__((must_init))'
+> > not unconditionally initialized
+> >   if (stars_dont_align) {
+> >     return -42;
+> >   }
+> >   *x = 42;
+> >   return 0;
+> > }
+> > void foo (void) {  int x; init(&x); /* use of x without fear */ }
 
-No, sorry for being unclear. I mean passing by value.
-In the given example the prototype of step_into looks as follows (see
-https://elixir.bootlin.com/linux/latest/source/fs/namei.c#L1846):
+Thinking more about your snprintf example which is potentially more
+costly than initializing just one value...here's another case for us
+to consider.
 
-  static const char *step_into(struct nameidata *nd, int flags, struct
-dentry *dentry, struct inode *inode, unsigned seq);
+int maybe_init (char* buf) {
+  if (stars_align)
+    return -42;
+  buf[42] = 0;
+  return 0;
+}
 
-, and the local variables `struct inode *inode` and `unsigned seq` are
-being passed to it by value, i.e. in certain cases the struct inode
-pointer and the unsigned seq are uninitialized.
+char foo (void) {
+  char buf [PATH_MAX];
+  maybe_init(buf);
+  return char[42];
+}
 
-Does that change anything?
+I'm thinking the attribute would have to go on the pointed to type not
+the pointer, i.e. `__must_init char *` not `char * __must_init`.
+Similarly, you'd need to unconditionally initialize all of buf which
+might be painful.  __must_init would not give you the specificity to
+differentiate between "this whole buffer must be initialized" vs "only
+index 42 need be initialized."  I _think_ that's fine, perhaps "only
+index 42 need be initialized" is YAGNI and you could just _not_ use
+__must_init for such a case.
 
-> Some functions are really fundamentally about initializing things, and
-> expect uninitialized allocations.
+One thing I'm curious about; if you have an aggregate in C (struct or
+array) and don't fully initialize the whole object, just
+members/sub-objects, but only use those I assume that's not UB? (Which
+is what my maybe_init example does).  I think that's fine.
 
-Agreed, there are a lot of functions around that initialize one struct
-or another, they are out of the scope.
+Another thing that makes me uncertain about my maybe_init example
+above is decay-to-pointer, and the compiler's ability to track things
+like __builtin_object_size precisely (or across translation units);
+Kees is having a dog of a time with __builtin_object_size of structs
+that contain flexible array members for example.  If a function
+accepts a `__must_init struct foo*`, can we know if we were passed an
+array of struct foo* vs just one? What if `struct foo` is an opaque
+type; then the callee can't verify that all members of the struct have
+been initialized (at least designated initialized wouldn't work;
+memcpy should though...can you get the sizeof an opaque type though?)
 
-
-> What I think might be a good model is to be able to mark such
-> arguments as "must be initialized by callee".
-
-This sounds interesting. In the given example I would suggest that the
-call to lookup_fast()
-(https://elixir.bootlin.com/linux/latest/source/fs/namei.c#L2016)
-should be initializing &inode and &seq, so that it is guaranteed that
-they are passed initialized into step_into().
-
-
---=20
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
-
-Diese E-Mail ist vertraulich. Falls Sie diese f=C3=A4lschlicherweise
-erhalten haben sollten, leiten Sie diese bitte nicht an jemand anderes
-weiter, l=C3=B6schen Sie alle Kopien und Anh=C3=A4nge davon und lassen Sie =
-mich
-bitte wissen, dass die E-Mail an die falsche Person gesendet wurde.
-
-
-This e-mail is confidential. If you received this communication by
-mistake, please don't forward it to anyone else, please erase all
-copies and attachments, and please let me know that it has gone to the
-wrong person.
+But maybe I'm getting ahead of myself and am just describing good unit
+tests when building such a feature.  Probably worth prototyping to get
+a sense of the ergonomics and limitations.  But it doesn't sound too
+controversial, which is probably good enough to get started. I'm sure
+Alexander and team will have additional ideas or proposals for
+achieving the same outcome.
+-- 
+Thanks,
+~Nick Desaulniers
