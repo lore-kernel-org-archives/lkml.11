@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1D78CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 160E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351547AbiFNCHF (ORCPT
+        id S1352138AbiFNCHJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42172 "EHLO
+        Mon, 13 Jun 2022 22:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351489AbiFNCGE (ORCPT
+        with ESMTP id S1351519AbiFNCGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 22:06:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93C733EBD;
-        Mon, 13 Jun 2022 19:05:32 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDE7340C8;
+        Mon, 13 Jun 2022 19:05:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75DA2B8169F;
-        Tue, 14 Jun 2022 02:05:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27197C341C0;
-        Tue, 14 Jun 2022 02:05:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD93B60A56;
+        Tue, 14 Jun 2022 02:05:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F495C34114;
+        Tue, 14 Jun 2022 02:05:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172330;
-        bh=Y7btmtWqz+zAxG7Ja3P/n/px+Y7cn2ZHLPzm5BXZRds=;
+        s=k20201202; t=1655172333;
+        bh=yFa65pJNfbk70tgVyY3pWTnViaXhYlVwncS3eTnsYZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kRlJ/fpBG3gLE8Rh9neJ73aC7/6wC3Mw0aBwzeo8+TcoPVPhXfW4e58fH1FdwXLID
-         ++KtCzicvOjwwSAbDlr9Wt5qUExYqNhG2D+UUykJYeOCFWFFSQY+2ugyL+iAfUHO68
-         eg9cS6VDXUvl6zyzYsctirGJmkhBVmTtpkJNfHKxrxkYaEJri8ws5jVLJ5dtbHdh9Z
-         th6+2hN/r6uQtN+D2A/d5v4jCC0Eg9ozQGhLXULQg9kc25poOAuDR5wJ0dA2I/tWgK
-         VjCYWUNsotrJkfwB+ohAMnr/SX/I4KJBnYJwxAn+vDFF3g8cbGgoHbLO/+b1QAeNWP
-         wB6vckyauw4vA==
+        b=cbSYaRdIMFc234PDNjxaaFA3YivlOzHdbvoEfEXn3OoBDqEl0bWrfSVw86ew4HdSQ
+         GPpDF2/UhwkVnLVgEJEav7RFjUo9lp+44SFcnqjlCKFIKNddcdr9Wkoxw3u1Tbxhpi
+         tjiOuyQe5N2QzZGwgqL6spzlZr/rKrR2I8/B1qSyjsFeSs+HxxG4J0sx86aueAAEA9
+         YAj2GlkuGUFeUY81pZ2SGrZeyF/9wYOu1Gtp3pqsM0PY4iWajpOAn9dyuQXhr6Mrnu
+         G51IV1d8Sivu0Qz7ZMZfWADaDEd+PzEJNYc4CYrTPUSogewzPUw2a8Toe6Gl9d0qIZ
+         Apb570kTlzu+Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chengguang Xu <cgxu519@mykernel.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Brian King <brking@linux.vnet.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.vnet.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 28/47] scsi: ipr: Fix missing/incorrect resource cleanup in error case
-Date:   Mon, 13 Jun 2022 22:04:21 -0400
-Message-Id: <20220614020441.1098348-28-sashal@kernel.org>
+Cc:     huangwenhui <huangwenhuia@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 30/47] ALSA: hda/realtek - Add HW8326 support
+Date:   Mon, 13 Jun 2022 22:04:23 -0400
+Message-Id: <20220614020441.1098348-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020441.1098348-1-sashal@kernel.org>
 References: <20220614020441.1098348-1-sashal@kernel.org>
@@ -55,47 +52,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: huangwenhui <huangwenhuia@uniontech.com>
 
-[ Upstream commit d64c491911322af1dcada98e5b9ee0d87e8c8fee ]
+[ Upstream commit 527f4643e03c298c1e3321cfa27866b1374a55e1 ]
 
-Fix missing resource cleanup (when '(--i) == 0') for error case in
-ipr_alloc_mem() and skip incorrect resource cleanup (when '(--i) == 0') for
-error case in ipr_request_other_msi_irqs() because variable i started from
-1.
+Added the support of new Huawei codec HW8326. The HW8326 is developed
+by Huawei with Realtek's IP Core, and it's compatible with ALC256.
 
-Link: https://lore.kernel.org/r/20220529153456.4183738-4-cgxu519@mykernel.net
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Brian King <brking@linux.vnet.ibm.com>
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
+Link: https://lore.kernel.org/r/20220608082357.26898-1-huangwenhuia@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ipr.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/hda/hdac_device.c       |  1 +
+ sound/pci/hda/patch_realtek.c | 14 ++++++++++++++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/drivers/scsi/ipr.c b/drivers/scsi/ipr.c
-index 104bee9b3a9d..00593d8953f1 100644
---- a/drivers/scsi/ipr.c
-+++ b/drivers/scsi/ipr.c
-@@ -9795,7 +9795,7 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
- 					GFP_KERNEL);
- 
- 		if (!ioa_cfg->hrrq[i].host_rrq)  {
--			while (--i > 0)
-+			while (--i >= 0)
- 				dma_free_coherent(&pdev->dev,
- 					sizeof(u32) * ioa_cfg->hrrq[i].size,
- 					ioa_cfg->hrrq[i].host_rrq,
-@@ -10068,7 +10068,7 @@ static int ipr_request_other_msi_irqs(struct ipr_ioa_cfg *ioa_cfg,
- 			ioa_cfg->vectors_info[i].desc,
- 			&ioa_cfg->hrrq[i]);
- 		if (rc) {
--			while (--i >= 0)
-+			while (--i > 0)
- 				free_irq(pci_irq_vector(pdev, i),
- 					&ioa_cfg->hrrq[i]);
- 			return rc;
+diff --git a/sound/hda/hdac_device.c b/sound/hda/hdac_device.c
+index 3e9e9ac804f6..b7e5032b61c9 100644
+--- a/sound/hda/hdac_device.c
++++ b/sound/hda/hdac_device.c
+@@ -660,6 +660,7 @@ static const struct hda_vendor_id hda_vendor_ids[] = {
+ 	{ 0x14f1, "Conexant" },
+ 	{ 0x17e8, "Chrontel" },
+ 	{ 0x1854, "LG" },
++	{ 0x19e5, "Huawei" },
+ 	{ 0x1aec, "Wolfson Microelectronics" },
+ 	{ 0x1af4, "QEMU" },
+ 	{ 0x434d, "C-Media" },
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 323c74a04268..87240f71892a 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -443,6 +443,7 @@ static void alc_fill_eapd_coef(struct hda_codec *codec)
+ 	case 0x10ec0245:
+ 	case 0x10ec0255:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 	case 0x10ec0257:
+ 	case 0x10ec0282:
+ 	case 0x10ec0283:
+@@ -580,6 +581,7 @@ static void alc_shutup_pins(struct hda_codec *codec)
+ 	switch (codec->core.vendor_id) {
+ 	case 0x10ec0236:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 	case 0x10ec0283:
+ 	case 0x10ec0286:
+ 	case 0x10ec0288:
+@@ -3247,6 +3249,7 @@ static void alc_disable_headset_jack_key(struct hda_codec *codec)
+ 	case 0x10ec0230:
+ 	case 0x10ec0236:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 		alc_write_coef_idx(codec, 0x48, 0x0);
+ 		alc_update_coef_idx(codec, 0x49, 0x0045, 0x0);
+ 		break;
+@@ -3275,6 +3278,7 @@ static void alc_enable_headset_jack_key(struct hda_codec *codec)
+ 	case 0x10ec0230:
+ 	case 0x10ec0236:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 		alc_write_coef_idx(codec, 0x48, 0xd011);
+ 		alc_update_coef_idx(codec, 0x49, 0x007f, 0x0045);
+ 		break;
+@@ -4910,6 +4914,7 @@ static void alc_headset_mode_unplugged(struct hda_codec *codec)
+ 	case 0x10ec0230:
+ 	case 0x10ec0236:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 		alc_process_coef_fw(codec, coef0256);
+ 		break;
+ 	case 0x10ec0234:
+@@ -5025,6 +5030,7 @@ static void alc_headset_mode_mic_in(struct hda_codec *codec, hda_nid_t hp_pin,
+ 	case 0x10ec0230:
+ 	case 0x10ec0236:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 		alc_write_coef_idx(codec, 0x45, 0xc489);
+ 		snd_hda_set_pin_ctl_cache(codec, hp_pin, 0);
+ 		alc_process_coef_fw(codec, coef0256);
+@@ -5175,6 +5181,7 @@ static void alc_headset_mode_default(struct hda_codec *codec)
+ 	case 0x10ec0230:
+ 	case 0x10ec0236:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
+ 		alc_write_coef_idx(codec, 0x45, 0xc089);
+ 		msleep(50);
+@@ -5274,6 +5281,7 @@ static void alc_headset_mode_ctia(struct hda_codec *codec)
+ 	case 0x10ec0230:
+ 	case 0x10ec0236:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 		alc_process_coef_fw(codec, coef0256);
+ 		break;
+ 	case 0x10ec0234:
+@@ -5388,6 +5396,7 @@ static void alc_headset_mode_omtp(struct hda_codec *codec)
+ 	case 0x10ec0230:
+ 	case 0x10ec0236:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 		alc_process_coef_fw(codec, coef0256);
+ 		break;
+ 	case 0x10ec0234:
+@@ -5489,6 +5498,7 @@ static void alc_determine_headset_type(struct hda_codec *codec)
+ 	case 0x10ec0230:
+ 	case 0x10ec0236:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
+ 		alc_write_coef_idx(codec, 0x06, 0x6104);
+ 		alc_write_coefex_idx(codec, 0x57, 0x3, 0x09a3);
+@@ -5783,6 +5793,7 @@ static void alc255_set_default_jack_type(struct hda_codec *codec)
+ 	case 0x10ec0230:
+ 	case 0x10ec0236:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 		alc_process_coef_fw(codec, alc256fw);
+ 		break;
+ 	}
+@@ -6385,6 +6396,7 @@ static void alc_combo_jack_hp_jd_restart(struct hda_codec *codec)
+ 	case 0x10ec0236:
+ 	case 0x10ec0255:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 		alc_update_coef_idx(codec, 0x1b, 0x8000, 1 << 15); /* Reset HP JD */
+ 		alc_update_coef_idx(codec, 0x1b, 0x8000, 0 << 15);
+ 		break;
+@@ -10147,6 +10159,7 @@ static int patch_alc269(struct hda_codec *codec)
+ 	case 0x10ec0230:
+ 	case 0x10ec0236:
+ 	case 0x10ec0256:
++	case 0x19e58326:
+ 		spec->codec_variant = ALC269_TYPE_ALC256;
+ 		spec->shutup = alc256_shutup;
+ 		spec->init_hook = alc256_init;
+@@ -11597,6 +11610,7 @@ static const struct hda_device_id snd_hda_id_realtek[] = {
+ 	HDA_CODEC_ENTRY(0x10ec0b00, "ALCS1200A", patch_alc882),
+ 	HDA_CODEC_ENTRY(0x10ec1168, "ALC1220", patch_alc882),
+ 	HDA_CODEC_ENTRY(0x10ec1220, "ALC1220", patch_alc882),
++	HDA_CODEC_ENTRY(0x19e58326, "HW8326", patch_alc269),
+ 	{} /* terminator */
+ };
+ MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_realtek);
 -- 
 2.35.1
 
