@@ -2,138 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE06C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42393C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 16:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356489AbiFNQIq (ORCPT
+        id S1356843AbiFNQKe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 12:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50412 "EHLO
+        Tue, 14 Jun 2022 12:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357071AbiFNQId (ORCPT
+        with ESMTP id S240735AbiFNQKa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 12:08:33 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1483835AA5;
-        Tue, 14 Jun 2022 09:08:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6FD10CE1B25;
-        Tue, 14 Jun 2022 16:08:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA653C3411B;
-        Tue, 14 Jun 2022 16:08:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655222909;
-        bh=f6KuiueIv/s3cr+8vOYyA2WSMzAJ801h4xLsZ5d4vCQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SFsM3wa7t0y5/icGPA1hoiUopkaKXnX+CpJLFWVGwSkPa0Qa+k+fznmt3Y/IRdgAv
-         q8oKIyt45anZyqQnBVyf7ijXJq6aD/afzSsX8o5+rU9gr6xZ5V+HuklQOJGmJ02O0Y
-         cSjmb2RSEqIt4H8hR8+gpp846vKuDcYtjRxkzYo2vSYgygE61zxqjfvae9miPVaIcw
-         R1d5VXeNEg5F5q8bdxp5OCJheNQCGau0jUaC4Rz1bEpFy7OouEAR2F5n96+H9iEttu
-         DA/EbzPQhgJJzRGE5DdsGuQ6ZIq9VB64XOlNMizMza2KLLQQnU/d9z78AFcie0XVMp
-         J5oIbSkIiJoPQ==
-Date:   Tue, 14 Jun 2022 17:08:24 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     David Owens <dowens@precisionplanting.com>
-Cc:     Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Jarkko Nikula <jarkko.nikula@bitmer.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: ti: omap-mcbsp: duplicate sysfs failure after
- PROBE_DEFER
-Message-ID: <YqiyeM2JkDxLIKDe@sirena.org.uk>
-References: <20220614155931.2706437-1-dowens@precisionplanting.com>
+        Tue, 14 Jun 2022 12:10:30 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB5C2B1B8;
+        Tue, 14 Jun 2022 09:10:29 -0700 (PDT)
+Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LMtfD5PNxz688jJ;
+        Wed, 15 Jun 2022 00:08:52 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 18:10:26 +0200
+Received: from [10.195.33.253] (10.195.33.253) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 17:10:24 +0100
+Message-ID: <350b905c-1ac1-3577-6b56-c13f2aeab712@huawei.com>
+Date:   Tue, 14 Jun 2022 17:13:32 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="GYvOB+ScB/4Az0wW"
-Content-Disposition: inline
-In-Reply-To: <20220614155931.2706437-1-dowens@precisionplanting.com>
-X-Cookie: DYSLEXICS OF THE WORLD, UNTIE!
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3 0/3] Rewrite jevents program in python
+To:     Ian Rogers <irogers@google.com>
+CC:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        "Namhyung Kim" <namhyung@kernel.org>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        "Felix Fietkau" <nbd@nbd.name>, Qi Liu <liuqi115@huawei.com>,
+        Like Xu <likexu@tencent.com>, <linux-kernel@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        Nick Forrington <nick.forrington@arm.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        Andrew Kilroy <andrew.kilroy@arm.com>,
+        "Paul A . Clarke" <pc@us.ibm.com>, Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        <ananth.narayan@amd.com>, <ravi.bangoria@amd.com>,
+        <santosh.shukla@amd.com>, <sandipan.das@amd.com>,
+        Caleb Biggers <caleb.biggers@intel.com>,
+        Perry Taylor <perry.taylor@intel.com>,
+        Kshipra Bopardikar <kshipra.bopardikar@intel.com>,
+        Stephane Eranian <eranian@google.com>
+References: <20220527185426.240235-1-irogers@google.com>
+ <d9056bc2-f640-f676-2599-c283479376a4@huawei.com>
+ <CAP-5=fU8Wn8wV0whYOraU+5tGf+kKUk73gSwOg+LHp19vzua3A@mail.gmail.com>
+ <f94710b3-4ca8-47c5-939c-1ad01d712d5f@huawei.com>
+ <CAP-5=fWO8wd2xqi2acJ0FGyLgE3dQDw2m9=AUCC_veseyuybJw@mail.gmail.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <CAP-5=fWO8wd2xqi2acJ0FGyLgE3dQDw2m9=AUCC_veseyuybJw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.195.33.253]
+X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 14/06/2022 17:03, Ian Rogers wrote:
+>> diff -u tools/perf/trace/beauty/include/linux/socket.h
+>> include/linux/socket.h
+>> Makefile.config:259: *** which python-config not found. Stop.
+>> Makefile.perf:239: recipe for target 'sub-make' failed
+>> make[1]: *** [sub-make] Error 2
+>> Makefile:69: recipe for target 'all' failed
+>> make: *** [all] Error 2
+>> john@debian:~/linux/tools/perf$
+>>
+>> JFYI, this is my alternatives:
+>>
+>> sudo update-alternatives --config python
+>> There are 3 choices for the alternative python (providing
+>> /usr/bin/python).
+>>
+>>     Selection    Path                     Priority  Status
+>> ------------------------------------------------------------
+>>     0            /usr/local/bin/python3.6   50        auto mode
+>>     1            /usr/bin/python2.7         1         manual mode
+>>     2            /usr/bin/python3.5         2         manual mode
+>> * 3            /usr/local/bin/python3.6   50        manual mode
+>>
+>> Press <enter> to keep the current choice[*], or type selection number:
+> Thanks Gary,
+> 
+> Perhaps it relates to dev packages. Perhaps, apt-get install
+> python-dev-is-python3 which should resolve the symlinks. I wonder that
+> you have python dev for python2 but python3 installed without the dev.
+> We should be able to make a Makefile test for this.
 
---GYvOB+ScB/4Az0wW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+So I was trying another system here as a sanity test (as my main dev box 
+is not working either). And this other system is debian and only 
+supports python up to 3.5, so that is why I have 
+/usr/local/bin/python3.6 as an alt, i.e. I downloaded and built myself.
 
-On Tue, Jun 14, 2022 at 10:59:31AM -0500, David Owens wrote:
+Anyway, I do have python3-dev:
 
-> The call to sdma_pcm_platform_register() can return PROBE_DEFER, leading
-> to omap_mcbsp_init() being called multiple times.  sysfs node creation
-> fails in subsequent calls to omap_mcbsp_init(), which prevents
-> the driver from ever successfully probing.  The resulting errors can be
-> seen during boot:
->=20
-> [    1.749328] sysfs: cannot create duplicate filename '/devices/platform=
-/68000000.ocp/49022000.mcbsp/max_tx_thres'
-> [    1.759643] CPU: 0 PID: 6 Comm: kworker/u2:0 Not tainted 5.18.0-yocto-=
-standard #1
-> [    1.767181] Hardware name: Generic OMAP36xx (Flattened Device Tree)
-> [    1.773498] Workqueue: events_unbound deferred_probe_work_func
-> [    1.779449]  unwind_backtrace from show_stack+0x10/0x14
-> [    1.784729]  show_stack from sysfs_warn_dup+0x4c/0x60
+john@debian:~/linux/tools/perf$ sudo apt-get install python3-dev
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+python3-dev is already the newest version (3.5.3-1).
 
-Please think hard before including complete backtraces in upstream
-reports, they are very large and contain almost no useful information
-relative to their size so often obscure the relevant content in your
-message. If part of the backtrace is usefully illustrative (it often is
-for search engines if nothing else) then it's usually better to pull out
-the relevant sections.
-
-> +++ b/sound/soc/ti/omap-mcbsp.c
-> @@ -1403,6 +1403,10 @@ static int asoc_mcbsp_probe(struct platform_device=
- *pdev)
->         mcbsp->dev =3D &pdev->dev;
->         platform_set_drvdata(pdev, mcbsp);
->=20
-> +       ret =3D sdma_pcm_platform_register(&pdev->dev, "tx", "rx");
-> +       if (ret)
-> +               return ret;
-> +
->         ret =3D omap_mcbsp_init(pdev);
->         if (ret)
->                 return ret;
-> @@ -1412,13 +1416,9 @@ static int asoc_mcbsp_probe(struct platform_device=
- *pdev)
->                 omap_mcbsp_dai.capture.formats =3D SNDRV_PCM_FMTBIT_S16_L=
-E;
->         }
->=20
-> -       ret =3D devm_snd_soc_register_component(&pdev->dev,
-> +       return devm_snd_soc_register_component(&pdev->dev,
->                                               &omap_mcbsp_component,
->                                               &omap_mcbsp_dai, 1);
-> -       if (ret)
-> -               return ret;
-> -
-> -       return sdma_pcm_platform_register(&pdev->dev, "tx", "rx");
->  }
-
-It's not clear to me how this fixes the problem, your commit message
-doesn't mention how?  I was expecting to see more error handling paths
-being added to unwind the sysfs allocation, or a conversion to devm.  As
-things stand it's not clear to me that the error won't persist in the
-case where we defer registering the component.
-
---GYvOB+ScB/4Az0wW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKosngACgkQJNaLcl1U
-h9DjFwf/WQifCpq8XeOlBLOAvgI3uxiABxHsqoRqe0WDdqyfOiIgCszt2Z77mioC
-FkYGfeIhUiG4PeQENR+LDpKgxL501Is0fRu6G9aRbrYvwRTgkrcA4zNp9nCGRvV/
-9KPONBkkWijwTbh63YuEWZphXpj6D0TcLbZumcIDe9eKwTV2+z95rGUckojuiWUD
-o47x/z9S/n93HwTPzCqFdeVwA8gAmzXYijiMfTRVwAE58ou1CHTd8oNiNQ6Rf/9X
-/dRziXIw6B51hzJH+Q1+18lgkaIrXqpldQ4n45xq5vjI5JEes12ZKK3f+Pyol/u9
-wXQfaVFQBQ9WO9pGNO4AEf3gUsAsSA==
-=DruB
------END PGP SIGNATURE-----
-
---GYvOB+ScB/4Az0wW--
