@@ -2,45 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C58EFCCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:45:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84127C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 18:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357298AbiFNSpl (ORCPT
+        id S1357439AbiFNSps (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 14:45:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58458 "EHLO
+        Tue, 14 Jun 2022 14:45:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357266AbiFNSm6 (ORCPT
+        with ESMTP id S1356353AbiFNSnH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 14:42:58 -0400
+        Tue, 14 Jun 2022 14:43:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565334A903;
-        Tue, 14 Jun 2022 11:42:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540724A91F;
+        Tue, 14 Jun 2022 11:42:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8048B81AF1;
-        Tue, 14 Jun 2022 18:42:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35C46C3411B;
-        Tue, 14 Jun 2022 18:42:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CF3CB81AF4;
+        Tue, 14 Jun 2022 18:42:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27CEAC3411B;
+        Tue, 14 Jun 2022 18:42:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655232125;
-        bh=RnmCG4OsvJt2eoM8PLaM8TYlAXhqkJ+2MBbSQA+5vK8=;
+        s=korg; t=1655232133;
+        bh=KuQzGMB/TGELsDVIKt9X9t+czdHlsCotrXvjvJZQ58M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PifRq+wUlSxj024MrGJfDZPdaxwHvEKSBCmEOG9gRJ786Yjrno56N3297E4x5fBtG
-         j40iMIbkgO/r1KEJ3FO9ojuqdhAh2gJdyB8eTni/77LnnEfyPQM4lWHljlVnJ/+mzN
-         enGx08FI/28xc3X2Lm6Vl1B+dXLn1WTqHtnsAaxk=
+        b=OJKq+NqDQC9srwkw3cwsX+fFV4AE7yLqmvkPJXxN1C0oqftFCc1oVpJ0h++DT2J7U
+         yzhoQ8GsYzMm8a57lIk+IG+WkdAwa7iqHQFJdMnPJw1XvssfpwkqbQvGLMJ7EFo/5j
+         V9A6an28dOBrmKIPrZ40Iu7rkBy2lc0OhD/UDplU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org,
+        Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>,
         Borislav Petkov <bp@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "David E. Box" <david.e.box@intel.com>, dvhart@infradead.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        platform-driver-x86@vger.kernel.org,
+        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>, x86-ml <x86@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 4.14 02/20] cpu/speculation: Add prototype for cpu_show_srbds()
-Date:   Tue, 14 Jun 2022 20:39:53 +0200
-Message-Id: <20220614183723.921807953@linuxfoundation.org>
+Subject: [PATCH 4.14 05/20] x86/CPU: Add Icelake model number
+Date:   Tue, 14 Jun 2022 20:39:56 +0200
+Message-Id: <20220614183724.632217777@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220614183723.328825625@linuxfoundation.org>
 References: <20220614183723.328825625@linuxfoundation.org>
@@ -52,35 +61,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>
 
-commit 2accfa69050c2a0d6fc6106f609208b3e9622b26 upstream.
+commit 8cd8f0ce0d6aafe661cb3d6781c8b82bc696c04d upstream.
 
-0-day is not happy that there is no prototype for cpu_show_srbds():
+Add the CPUID model number of Icelake (ICL) mobile processors to the
+Intel family list. Icelake U/Y series uses model number 0x7E.
 
-drivers/base/cpu.c:565:16: error: no previous prototype for 'cpu_show_srbds'
-
-Fixes: 7e5b3c267d25 ("x86/speculation: Add Special Register Buffer Data Sampling (SRBDS) mitigation")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@linux.intel.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lkml.kernel.org/r/20200617141410.93338-1-linux@roeck-us.net
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: "David E. Box" <david.e.box@intel.com>
+Cc: dvhart@infradead.org
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Kan Liang <kan.liang@linux.intel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: platform-driver-x86@vger.kernel.org
+Cc: Qiuxu Zhuo <qiuxu.zhuo@intel.com>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190214115712.19642-2-rajneesh.bhardwaj@linux.intel.com
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/cpu.h |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/include/asm/intel-family.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/include/linux/cpu.h
-+++ b/include/linux/cpu.h
-@@ -64,6 +64,7 @@ extern ssize_t cpu_show_tsx_async_abort(
- 					char *buf);
- extern ssize_t cpu_show_itlb_multihit(struct device *dev,
- 				      struct device_attribute *attr, char *buf);
-+extern ssize_t cpu_show_srbds(struct device *dev, struct device_attribute *attr, char *buf);
+--- a/arch/x86/include/asm/intel-family.h
++++ b/arch/x86/include/asm/intel-family.h
+@@ -55,6 +55,8 @@
  
- extern __printf(4, 5)
- struct device *cpu_device_create(struct device *parent, void *drvdata,
+ #define INTEL_FAM6_CANNONLAKE_MOBILE	0x66
+ 
++#define INTEL_FAM6_ICELAKE_MOBILE	0x7E
++
+ /* "Small Core" Processors (Atom) */
+ 
+ #define INTEL_FAM6_ATOM_BONNELL		0x1C /* Diamondville, Pineview */
 
 
