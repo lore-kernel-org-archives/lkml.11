@@ -2,516 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03604C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:35:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5882AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 14:36:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348134AbiFNOfi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 10:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55450 "EHLO
+        id S239577AbiFNOgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 10:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355722AbiFNOeL (ORCPT
+        with ESMTP id S1348272AbiFNOfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 10:34:11 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92213701C
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:34:09 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id j10-20020aa783ca000000b00518265c7cacso3944095pfn.3
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 07:34:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=Mij7LDAjsaqpdDbRwp/XiyhZ7u53hLBGMhINXu+GQlg=;
-        b=OaigZg+2L79oFOKR0PVEf7ikBXmS77koR30mTyhh45JMHT6MHl67ssAsnYpm4SIkj4
-         G2UQyZxlnHKYzjZbmJZGRBOs5B+4xL25tkmxTgntfPXHrvbglDonXCuQsoxK/GlW2jBT
-         lvDFeXrRIxEKoh2/bcR5T6W43oYLLRd6QdY23S18XzAzkyLW2UpnCvUj4OMdKxKQGGEN
-         pEjgq9tNeKHMfgvIgGzovK3V4Zqde7GeMuMGKLIagFjArgt61HdC6xAhBL+j4hTCJHhn
-         ucRLp5k1XKEinVcaBY/el7gENENZZ+su3sTp1FJgNmrK+jsdd96AG6Lv9raby3Csa+8g
-         b25w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=Mij7LDAjsaqpdDbRwp/XiyhZ7u53hLBGMhINXu+GQlg=;
-        b=cMAhXrmbuOXUrZLcRXbl8CJ4JUu02zNUI7AS0DJMel4sK1sbuiW+FALyOYXvtBNicg
-         D2aCOrEJRwGAkzl6CopYsbdb2b9LpSHU4vUfQ8B+DX3Qgg8Tx2AjyOIIIemssekBWCQL
-         qAAujzQkNXnOsbzXlUHSXK5MNJnt5hpOAR1i6P4HN6o/ZLaJ6kYuIwtGMIXBTVqgLPfR
-         4s+Fi7MAOzL9g5xyRh5yXN9/21KmFS37lJKZhvxkPnR+kgroS5RPlFJ4EBZ6is5n4yue
-         CKjLaVgWTLMhFkV4Iw3klPLnWlThKAugu29sTVVueEpwO0vdS8p+zER+8PqtD3mMf9Is
-         6nTQ==
-X-Gm-Message-State: AJIora/Brvj1ZO7FFsobjmE8sIhVjSye9/b6A6TP/ZKSbbIVPHCrkbhX
-        RzzB2pzpMpG9FJkBmGqCOP6fzAMRxQ8z
-X-Google-Smtp-Source: AGRyM1tGuB6H61/UoEjOl9X8VjtVBe2vfu9khpw7qz+ohCUg/Mg1Uc4M8IvfvsJAdmC2S/tEcOCUClmcxa9a
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:b55a:aaa7:a:1b17])
- (user=irogers job=sendgmr) by 2002:a17:902:e88e:b0:163:ee82:ffb with SMTP id
- w14-20020a170902e88e00b00163ee820ffbmr5052335plg.142.1655217249131; Tue, 14
- Jun 2022 07:34:09 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 07:33:51 -0700
-In-Reply-To: <20220614143353.1559597-1-irogers@google.com>
-Message-Id: <20220614143353.1559597-5-irogers@google.com>
-Mime-Version: 1.0
-References: <20220614143353.1559597-1-irogers@google.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH v2 4/6] perf cpumap: Fix alignment for masks in event encoding
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        James Clark <james.clark@arm.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        German Gomez <german.gomez@arm.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Song Liu <songliubraving@fb.com>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
+        Tue, 14 Jun 2022 10:35:55 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577423B542;
+        Tue, 14 Jun 2022 07:35:48 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMrY35BLLzjY2V;
+        Tue, 14 Jun 2022 22:34:15 +0800 (CST)
+Received: from dggpemm500011.china.huawei.com (7.185.36.110) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 22:35:45 +0800
+Received: from [10.136.114.193] (10.136.114.193) by
+ dggpemm500011.china.huawei.com (7.185.36.110) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 14 Jun 2022 22:35:44 +0800
+Message-ID: <0c0468ae-5fe3-a71f-c987-18475756caca@huawei.com>
+Date:   Tue, 14 Jun 2022 22:35:44 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [syzbot] WARNING: ODEBUG bug in route4_destroy
+Content-Language: en-US
+To:     syzbot <syzbot+2e3efb5eb71cb5075ba7@syzkaller.appspotmail.com>
+References: <000000000000a81af205cb2e2878@google.com>
+CC:     <davem@davemloft.net>, <jhs@mojatatu.com>, <jiri@resnulli.us>,
+        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <syzkaller-bugs@googlegroups.com>,
+        <xiyou.wangcong@gmail.com>
+From:   Zhen Chen <chenzhen126@huawei.com>
+In-Reply-To: <000000000000a81af205cb2e2878@google.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.136.114.193]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500011.china.huawei.com (7.185.36.110)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A mask encoding of a cpu map is laid out as:
-  u16 nr
-  u16 long_size
-  unsigned long mask[];
-However, the mask may be 8-byte aligned meaning there is a 4-byte pad
-after long_size. This means 32-bit and 64-bit builds see the mask as
-being at different offsets. On top of this the structure is in the byte
-data[] encoded as:
-  u16 type
-  char data[]
-This means the mask's struct isn't the required 4 or 8 byte aligned, but
-is offset by 2. Consequently the long reads and writes are causing
-undefined behavior as the alignment is broken.
 
-Fix the mask struct by creating explicit 32 and 64-bit variants, use a
-union to avoid data[] and casts; the struct must be packed so the
-layout matches the existing perf.data layout. Taking an address of a
-member of a packed struct breaks alignment so pass the packed
-perf_record_cpu_map_data to functions, so they can access variables with
-the right alignment.
 
-As the 64-bit version has 4 bytes of padding, optimizing writing to only
-write the 32-bit version.
+On 21/9/5 0:46, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    57f780f1c433 atlantic: Fix driver resume flow.
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=162590a5300000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=765eea9a273a8879
+> dashboard link: https://syzkaller.appspot.com/bug?extid=2e3efb5eb71cb5075ba7
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11979286300000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14391933300000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+2e3efb5eb71cb5075ba7@syzkaller.appspotmail.com
+> 
+> ------------[ cut here ]------------
+> ODEBUG: activate active (active state 1) object type: rcu_head hint: 0x0
+> WARNING: CPU: 0 PID: 8461 at lib/debugobjects.c:505 debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+> Modules linked in:
+> CPU: 0 PID: 8461 Comm: syz-executor318 Not tainted 5.14.0-rc7-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+> Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd e0 c8 e3 89 4c 89 ee 48 c7 c7 e0 bc e3 89 e8 f0 de 0d 05 <0f> 0b 83 05 95 53 92 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+> RSP: 0018:ffffc9000160efb0 EFLAGS: 00010286
+> RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
+> RDX: ffff8880224a8000 RSI: ffffffff815d85b5 RDI: fffff520002c1de8
+> RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+> R10: ffffffff815d23ee R11: 0000000000000000 R12: ffffffff898d3320
+> R13: ffffffff89e3c3a0 R14: 0000000000000000 R15: ffffffff898d3320
+> FS:  00007f00d3339700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f00d3318718 CR3: 0000000018f1d000 CR4: 00000000001506f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  debug_object_activate+0x2da/0x3e0 lib/debugobjects.c:672
+>  debug_rcu_head_queue kernel/rcu/rcu.h:176 [inline]
+>  __call_rcu kernel/rcu/tree.c:3013 [inline]
+>  call_rcu+0x2c/0x750 kernel/rcu/tree.c:3109
+>  queue_rcu_work+0x82/0xa0 kernel/workqueue.c:1754
+>  route4_queue_work net/sched/cls_route.c:272 [inline]
+>  route4_destroy+0x4b9/0x9a0 net/sched/cls_route.c:299
+>  tcf_proto_destroy+0x6a/0x2d0 net/sched/cls_api.c:297
+>  tcf_proto_put+0x8c/0xc0 net/sched/cls_api.c:309
+>  tcf_chain_flush+0x21a/0x360 net/sched/cls_api.c:615
+>  tcf_block_flush_all_chains net/sched/cls_api.c:1016 [inline]
+>  __tcf_block_put+0x15a/0x510 net/sched/cls_api.c:1178
+>  tcf_block_put_ext net/sched/cls_api.c:1383 [inline]
+>  tcf_block_put_ext net/sched/cls_api.c:1375 [inline]
+>  tcf_block_put+0xde/0x130 net/sched/cls_api.c:1393
+>  drr_destroy_qdisc+0x44/0x1d0 net/sched/sch_drr.c:458
+>  qdisc_destroy+0xc4/0x4d0 net/sched/sch_generic.c:1025
+>  qdisc_put+0xcd/0xe0 net/sched/sch_generic.c:1044
+>  notify_and_destroy net/sched/sch_api.c:1006 [inline]
+>  qdisc_graft+0xc7c/0x1260 net/sched/sch_api.c:1078
+>  tc_modify_qdisc+0xba4/0x1a60 net/sched/sch_api.c:1674
+>  rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5575
+>  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+>  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+>  netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+>  sock_sendmsg_nosec net/socket.c:703 [inline]
+>  sock_sendmsg+0xcf/0x120 net/socket.c:723
+>  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2394
+>  ___sys_sendmsg+0xf3/0x170 net/socket.c:2448
+>  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2477
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x445ef9
+> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f00d3339308 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00000000004cb468 RCX: 0000000000445ef9
+> RDX: 0000000000000000 RSI: 0000000020000040 RDI: 0000000000000004
+> RBP: 00000000004cb460 R08: 0000000000000001 R09: 0000000000000000
+> R10: 0000000000000008 R11: 0000000000000246 R12: 00000000004cb46c
+> R13: 000000000049b074 R14: 6d32cc5e8ead0600 R15: 0000000000022000
+> 
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/lib/perf/include/perf/event.h | 36 +++++++++++--
- tools/perf/tests/cpumap.c           | 19 ++++---
- tools/perf/util/cpumap.c            | 80 +++++++++++++++++++++++------
- tools/perf/util/cpumap.h            |  4 +-
- tools/perf/util/session.c           | 30 +++++------
- tools/perf/util/synthetic-events.c  | 34 +++++++-----
- 6 files changed, 143 insertions(+), 60 deletions(-)
+This looks like  route4_destroy is deleting the 'fold' which has been freed by tcf_queue_work in route4_change. It means 'fold' is still in the table.
+I have tested this patch on syzbot and it works well, but I am not sure whether it will introduce other issues...
 
-diff --git a/tools/lib/perf/include/perf/event.h b/tools/lib/perf/include/perf/event.h
-index e7758707cadd..d2d32589758a 100644
---- a/tools/lib/perf/include/perf/event.h
-+++ b/tools/lib/perf/include/perf/event.h
-@@ -6,6 +6,7 @@
- #include <linux/types.h>
- #include <linux/limits.h>
- #include <linux/bpf.h>
-+#include <linux/compiler.h>
- #include <sys/types.h> /* pid_t */
+diff --git a/net/sched/cls_route.c b/net/sched/cls_route.c
+index a35ab8c27866..758c21f9d628 100644
+--- a/net/sched/cls_route.c
++++ b/net/sched/cls_route.c
+@@ -526,7 +526,7 @@ static int route4_change(struct net *net, struct sk_buff *in_skb,
+ 	rcu_assign_pointer(f->next, f1);
+ 	rcu_assign_pointer(*fp, f);
  
- #define event_contains(obj, mem) ((obj).header.size > offsetof(typeof(obj), mem))
-@@ -153,20 +154,47 @@ enum {
- 	PERF_CPU_MAP__MASK = 1,
- };
- 
-+/*
-+ * Array encoding of a perf_cpu_map where nr is the number of entries in cpu[]
-+ * and each entry is a value for a CPU in the map.
-+ */
- struct cpu_map_entries {
- 	__u16			 nr;
- 	__u16			 cpu[];
- };
- 
--struct perf_record_record_cpu_map {
-+/* Bitmap encoding of a perf_cpu_map where bitmap entries are 32-bit. */
-+struct perf_record_mask_cpu_map32 {
-+	/* Number of mask values. */
- 	__u16			 nr;
-+	/* Constant 4. */
- 	__u16			 long_size;
--	unsigned long		 mask[];
-+	/* Bitmap data. */
-+	__u32			 mask[];
- };
- 
--struct perf_record_cpu_map_data {
-+/* Bitmap encoding of a perf_cpu_map where bitmap entries are 64-bit. */
-+struct perf_record_mask_cpu_map64 {
-+	/* Number of mask values. */
-+	__u16			 nr;
-+	/* Constant 8. */
-+	__u16			 long_size;
-+	/* Legacy padding. */
-+	char                     __pad[4];
-+	/* Bitmap data. */
-+	__u64			 mask[];
-+};
-+
-+struct __packed perf_record_cpu_map_data {
- 	__u16			 type;
--	char			 data[];
-+	union {
-+		/* Used when type == PERF_CPU_MAP__CPUS. */
-+		struct cpu_map_entries cpus_data;
-+		/* Used when type == PERF_CPU_MAP__MASK and long_size == 4. */
-+		struct perf_record_mask_cpu_map32 mask32_data;
-+		/* Used when type == PERF_CPU_MAP__MASK and long_size == 8. */
-+		struct perf_record_mask_cpu_map64 mask64_data;
-+	};
- };
- 
- struct perf_record_cpu_map {
-diff --git a/tools/perf/tests/cpumap.c b/tools/perf/tests/cpumap.c
-index f94929ebb54b..7ea150cdc137 100644
---- a/tools/perf/tests/cpumap.c
-+++ b/tools/perf/tests/cpumap.c
-@@ -17,21 +17,23 @@ static int process_event_mask(struct perf_tool *tool __maybe_unused,
- 			 struct machine *machine __maybe_unused)
- {
- 	struct perf_record_cpu_map *map_event = &event->cpu_map;
--	struct perf_record_record_cpu_map *mask;
- 	struct perf_record_cpu_map_data *data;
- 	struct perf_cpu_map *map;
- 	int i;
-+	unsigned int long_size;
- 
- 	data = &map_event->data;
- 
- 	TEST_ASSERT_VAL("wrong type", data->type == PERF_CPU_MAP__MASK);
- 
--	mask = (struct perf_record_record_cpu_map *)data->data;
-+	long_size = data->mask32_data.long_size;
- 
--	TEST_ASSERT_VAL("wrong nr",   mask->nr == 1);
-+	TEST_ASSERT_VAL("wrong long_size", long_size == 4 || long_size == 8);
-+
-+	TEST_ASSERT_VAL("wrong nr",   data->mask32_data.nr == 1);
- 
- 	for (i = 0; i < 20; i++) {
--		TEST_ASSERT_VAL("wrong cpu", test_bit(i, mask->mask));
-+		TEST_ASSERT_VAL("wrong cpu", perf_record_cpu_map_data__test_bit(i, data));
- 	}
- 
- 	map = cpu_map__new_data(data);
-@@ -51,7 +53,6 @@ static int process_event_cpus(struct perf_tool *tool __maybe_unused,
- 			 struct machine *machine __maybe_unused)
- {
- 	struct perf_record_cpu_map *map_event = &event->cpu_map;
--	struct cpu_map_entries *cpus;
- 	struct perf_record_cpu_map_data *data;
- 	struct perf_cpu_map *map;
- 
-@@ -59,11 +60,9 @@ static int process_event_cpus(struct perf_tool *tool __maybe_unused,
- 
- 	TEST_ASSERT_VAL("wrong type", data->type == PERF_CPU_MAP__CPUS);
- 
--	cpus = (struct cpu_map_entries *)data->data;
--
--	TEST_ASSERT_VAL("wrong nr",   cpus->nr == 2);
--	TEST_ASSERT_VAL("wrong cpu",  cpus->cpu[0] == 1);
--	TEST_ASSERT_VAL("wrong cpu",  cpus->cpu[1] == 256);
-+	TEST_ASSERT_VAL("wrong nr",   data->cpus_data.nr == 2);
-+	TEST_ASSERT_VAL("wrong cpu",  data->cpus_data.cpu[0] == 1);
-+	TEST_ASSERT_VAL("wrong cpu",  data->cpus_data.cpu[1] == 256);
- 
- 	map = cpu_map__new_data(data);
- 	TEST_ASSERT_VAL("wrong nr",  perf_cpu_map__nr(map) == 2);
-diff --git a/tools/perf/util/cpumap.c b/tools/perf/util/cpumap.c
-index 12b2243222b0..ae43fb88f444 100644
---- a/tools/perf/util/cpumap.c
-+++ b/tools/perf/util/cpumap.c
-@@ -22,54 +22,102 @@ static int max_node_num;
-  */
- static int *cpunode_map;
- 
--static struct perf_cpu_map *cpu_map__from_entries(struct cpu_map_entries *cpus)
-+bool perf_record_cpu_map_data__test_bit(int i,
-+					const struct perf_record_cpu_map_data *data)
-+{
-+	int bit_word32 = i / 32;
-+	__u32 bit_mask32 = 1U << (i & 31);
-+	int bit_word64 = i / 64;
-+	__u64 bit_mask64 = ((__u64)1) << (i & 63);
-+
-+	return (data->mask32_data.long_size == 4)
-+		? (bit_word32 < data->mask32_data.nr) &&
-+		(data->mask32_data.mask[bit_word32] & bit_mask32) != 0
-+		: (bit_word64 < data->mask64_data.nr) &&
-+		(data->mask64_data.mask[bit_word64] & bit_mask64) != 0;
-+}
-+
-+/* Read ith mask value from data into the given 64-bit sized bitmap */
-+static void perf_record_cpu_map_data__read_one_mask(const struct perf_record_cpu_map_data *data,
-+						    int i, unsigned long *bitmap)
-+{
-+#if __SIZEOF_LONG__ == 8
-+	if (data->mask32_data.long_size == 4)
-+		bitmap[0] = data->mask32_data.mask[i];
-+	else
-+		bitmap[0] = data->mask64_data.mask[i];
-+#else
-+	if (data->mask32_data.long_size == 4) {
-+		bitmap[0] = data->mask32_data.mask[i];
-+		bitmap[1] = 0;
-+	} else {
-+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-+		bitmap[0] = (unsigned long)(data->mask64_data.mask[i] >> 32);
-+		bitmap[1] = (unsigned long)data->mask64_data.mask[i];
-+#else
-+		bitmap[0] = (unsigned long)data->mask64_data.mask[i];
-+		bitmap[1] = (unsigned long)(data->mask64_data.mask[i] >> 32);
-+#endif
-+	}
-+#endif
-+}
-+static struct perf_cpu_map *cpu_map__from_entries(const struct perf_record_cpu_map_data *data)
- {
- 	struct perf_cpu_map *map;
- 
--	map = perf_cpu_map__empty_new(cpus->nr);
-+	map = perf_cpu_map__empty_new(data->cpus_data.nr);
- 	if (map) {
- 		unsigned i;
- 
--		for (i = 0; i < cpus->nr; i++) {
-+		for (i = 0; i < data->cpus_data.nr; i++) {
- 			/*
- 			 * Special treatment for -1, which is not real cpu number,
- 			 * and we need to use (int) -1 to initialize map[i],
- 			 * otherwise it would become 65535.
- 			 */
--			if (cpus->cpu[i] == (u16) -1)
-+			if (data->cpus_data.cpu[i] == (u16) -1)
- 				map->map[i].cpu = -1;
- 			else
--				map->map[i].cpu = (int) cpus->cpu[i];
-+				map->map[i].cpu = (int) data->cpus_data.cpu[i];
- 		}
- 	}
- 
- 	return map;
- }
- 
--static struct perf_cpu_map *cpu_map__from_mask(struct perf_record_record_cpu_map *mask)
-+static struct perf_cpu_map *cpu_map__from_mask(const struct perf_record_cpu_map_data *data)
- {
-+	DECLARE_BITMAP(local_copy, 64);
-+	int weight = 0, mask_nr = data->mask32_data.nr;
- 	struct perf_cpu_map *map;
--	int nr, nbits = mask->nr * mask->long_size * BITS_PER_BYTE;
- 
--	nr = bitmap_weight(mask->mask, nbits);
-+	for (int i = 0; i < mask_nr; i++) {
-+		perf_record_cpu_map_data__read_one_mask(data, i, local_copy);
-+		weight += bitmap_weight(local_copy, 64);
-+	}
-+
-+	map = perf_cpu_map__empty_new(weight);
-+	if (!map)
-+		return NULL;
- 
--	map = perf_cpu_map__empty_new(nr);
--	if (map) {
--		int cpu, i = 0;
-+	for (int i = 0, j = 0; i < mask_nr; i++) {
-+		int cpus_per_i = (i * data->mask32_data.long_size  * BITS_PER_BYTE);
-+		int cpu;
- 
--		for_each_set_bit(cpu, mask->mask, nbits)
--			map->map[i++].cpu = cpu;
-+		perf_record_cpu_map_data__read_one_mask(data, i, local_copy);
-+		for_each_set_bit(cpu, local_copy, 64)
-+			map->map[j++].cpu = cpu + cpus_per_i;
- 	}
- 	return map;
- 
- }
- 
--struct perf_cpu_map *cpu_map__new_data(struct perf_record_cpu_map_data *data)
-+struct perf_cpu_map *cpu_map__new_data(const struct perf_record_cpu_map_data *data)
- {
- 	if (data->type == PERF_CPU_MAP__CPUS)
--		return cpu_map__from_entries((struct cpu_map_entries *)data->data);
-+		return cpu_map__from_entries(data);
- 	else
--		return cpu_map__from_mask((struct perf_record_record_cpu_map *)data->data);
-+		return cpu_map__from_mask(data);
- }
- 
- size_t cpu_map__fprintf(struct perf_cpu_map *map, FILE *fp)
-diff --git a/tools/perf/util/cpumap.h b/tools/perf/util/cpumap.h
-index 703ae6d3386e..fa8a5acdcae1 100644
---- a/tools/perf/util/cpumap.h
-+++ b/tools/perf/util/cpumap.h
-@@ -37,9 +37,11 @@ struct cpu_aggr_map {
- 
- struct perf_record_cpu_map_data;
- 
-+bool perf_record_cpu_map_data__test_bit(int i, const struct perf_record_cpu_map_data *data);
-+
- struct perf_cpu_map *perf_cpu_map__empty_new(int nr);
- 
--struct perf_cpu_map *cpu_map__new_data(struct perf_record_cpu_map_data *data);
-+struct perf_cpu_map *cpu_map__new_data(const struct perf_record_cpu_map_data *data);
- size_t cpu_map__snprint(struct perf_cpu_map *map, char *buf, size_t size);
- size_t cpu_map__snprint_mask(struct perf_cpu_map *map, char *buf, size_t size);
- size_t cpu_map__fprintf(struct perf_cpu_map *map, FILE *fp);
-diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
-index 0aa818977d2b..d52a39ba48e3 100644
---- a/tools/perf/util/session.c
-+++ b/tools/perf/util/session.c
-@@ -914,30 +914,30 @@ static void perf_event__cpu_map_swap(union perf_event *event,
- 				     bool sample_id_all __maybe_unused)
- {
- 	struct perf_record_cpu_map_data *data = &event->cpu_map.data;
--	struct cpu_map_entries *cpus;
--	struct perf_record_record_cpu_map *mask;
--	unsigned i;
- 
- 	data->type = bswap_16(data->type);
- 
- 	switch (data->type) {
- 	case PERF_CPU_MAP__CPUS:
--		cpus = (struct cpu_map_entries *)data->data;
--
--		cpus->nr = bswap_16(cpus->nr);
-+		data->cpus_data.nr = bswap_16(data->cpus_data.nr);
- 
--		for (i = 0; i < cpus->nr; i++)
--			cpus->cpu[i] = bswap_16(cpus->cpu[i]);
-+		for (unsigned i = 0; i < data->cpus_data.nr; i++)
-+			data->cpus_data.cpu[i] = bswap_16(data->cpus_data.cpu[i]);
- 		break;
- 	case PERF_CPU_MAP__MASK:
--		mask = (struct perf_record_record_cpu_map *)data->data;
--
--		mask->nr = bswap_16(mask->nr);
--		mask->long_size = bswap_16(mask->long_size);
-+		data->mask32_data.long_size = bswap_16(data->mask32_data.long_size);
- 
--		switch (mask->long_size) {
--		case 4: mem_bswap_32(&mask->mask, mask->nr); break;
--		case 8: mem_bswap_64(&mask->mask, mask->nr); break;
-+		switch (data->mask32_data.long_size) {
-+		case 4:
-+			data->mask32_data.nr = bswap_16(data->mask32_data.nr);
-+			for (unsigned i = 0; i < data->mask32_data.nr; i++)
-+				data->mask32_data.mask[i] = bswap_32(data->mask32_data.mask[i]);
-+			break;
-+		case 8:
-+			data->mask64_data.nr = bswap_16(data->mask64_data.nr);
-+			for (unsigned i = 0; i < data->mask64_data.nr; i++)
-+				data->mask64_data.mask[i] = bswap_64(data->mask64_data.mask[i]);
-+			break;
- 		default:
- 			pr_err("cpu_map swap: unsupported long size\n");
- 		}
-diff --git a/tools/perf/util/synthetic-events.c b/tools/perf/util/synthetic-events.c
-index 0d87df20ec44..4fa7d0d7dbcf 100644
---- a/tools/perf/util/synthetic-events.c
-+++ b/tools/perf/util/synthetic-events.c
-@@ -1183,27 +1183,33 @@ int perf_event__synthesize_thread_map2(struct perf_tool *tool,
- 	return err;
- }
- 
--static void synthesize_cpus(struct cpu_map_entries *cpus,
-+static void synthesize_cpus(struct perf_record_cpu_map_data *data,
- 			    const struct perf_cpu_map *map)
- {
- 	int i, map_nr = perf_cpu_map__nr(map);
- 
--	cpus->nr = map_nr;
-+	data->cpus_data.nr = map_nr;
- 
- 	for (i = 0; i < map_nr; i++)
--		cpus->cpu[i] = perf_cpu_map__cpu(map, i).cpu;
-+		data->cpus_data.cpu[i] = perf_cpu_map__cpu(map, i).cpu;
- }
- 
--static void synthesize_mask(struct perf_record_record_cpu_map *mask,
-+static void synthesize_mask(struct perf_record_cpu_map_data *data,
- 			    const struct perf_cpu_map *map, int max)
- {
--	int i;
-+	int idx;
-+	struct perf_cpu cpu;
-+
-+	/* Due to padding, the 4bytes per entry mask variant is always smaller. */
-+	data->mask32_data.nr = BITS_TO_U32(max);
-+	data->mask32_data.long_size = 4;
- 
--	mask->nr = BITS_TO_LONGS(max);
--	mask->long_size = sizeof(long);
-+	perf_cpu_map__for_each_cpu(cpu, idx, map) {
-+		int bit_word = cpu.cpu / 32;
-+		__u32 bit_mask = 1U << (cpu.cpu & 31);
- 
--	for (i = 0; i < perf_cpu_map__nr(map); i++)
--		set_bit(perf_cpu_map__cpu(map, i).cpu, mask->mask);
-+		data->mask32_data.mask[bit_word] |= bit_mask;
-+	}
- }
- 
- static size_t cpus_size(const struct perf_cpu_map *map)
-@@ -1214,7 +1220,7 @@ static size_t cpus_size(const struct perf_cpu_map *map)
- static size_t mask_size(const struct perf_cpu_map *map, int *max)
- {
- 	*max = perf_cpu_map__max(map).cpu;
--	return sizeof(struct perf_record_record_cpu_map) + BITS_TO_LONGS(*max) * sizeof(long);
-+	return sizeof(struct perf_record_mask_cpu_map32) + BITS_TO_U32(*max) * sizeof(__u32);
- }
- 
- static void *cpu_map_data__alloc(const struct perf_cpu_map *map, size_t *size,
-@@ -1247,7 +1253,7 @@ static void *cpu_map_data__alloc(const struct perf_cpu_map *map, size_t *size,
- 		*type  = PERF_CPU_MAP__MASK;
- 	}
- 
--	*size += sizeof(struct perf_record_cpu_map_data);
-+	*size += sizeof(__u16); /* For perf_record_cpu_map_data.type. */
- 	*size = PERF_ALIGN(*size, sizeof(u64));
- 	return zalloc(*size);
- }
-@@ -1260,10 +1266,10 @@ static void cpu_map_data__synthesize(struct perf_record_cpu_map_data *data,
- 
- 	switch (type) {
- 	case PERF_CPU_MAP__CPUS:
--		synthesize_cpus((struct cpu_map_entries *) data->data, map);
-+		synthesize_cpus(data, map);
- 		break;
- 	case PERF_CPU_MAP__MASK:
--		synthesize_mask((struct perf_record_record_cpu_map *)data->data, map, max);
-+		synthesize_mask(data, map, max);
- 	default:
- 		break;
- 	}
-@@ -1271,7 +1277,7 @@ static void cpu_map_data__synthesize(struct perf_record_cpu_map_data *data,
- 
- static struct perf_record_cpu_map *cpu_map_event__new(const struct perf_cpu_map *map)
- {
--	size_t size = sizeof(struct perf_record_cpu_map);
-+	size_t size = sizeof(struct perf_event_header);
- 	struct perf_record_cpu_map *event;
- 	int max;
- 	u16 type;
--- 
-2.36.1.476.g0c4daa206d-goog
-
+-	if (fold && fold->handle && f->handle != fold->handle) {
++	if (fold && f->handle != fold->handle) {
+ 		th = to_hash(fold->handle);
+ 		h = from_hash(fold->handle >> 16);
+ 		b = rtnl_dereference(head->table[th]);
