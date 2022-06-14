@@ -2,103 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:26:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63DE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 13:29:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245542AbiFNN0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 09:26:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
+        id S241873AbiFNN3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 09:29:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232896AbiFNN0m (ORCPT
+        with ESMTP id S231493AbiFNN3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 09:26:42 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFE83D1D0;
-        Tue, 14 Jun 2022 06:26:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655213201; x=1686749201;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JF8LZq8ZciI01zA/+wKZIM97ei6FRLP9TQo1UIhxw9U=;
-  b=f8X3KVjA3/7H9hAw/LFI6De6YLBzJZprX5xnnWPpKwFAXRMddHmhWQK8
-   +KikZA88cFR+RWz4tVsYm2oZKITez3QWDM6WVBnOady3BMlPn20NgGZvZ
-   qnRty7zFQNykqRpMLY4UYnLU3p16XvJw1AtcYfYQQOFGRY5ZADy1B68BX
-   WpqQ4KtfDa7DWwImGRhmuxX+tTAiaRPzr/8N++IEBF8BjPUfzN83gVzOb
-   71NJp6f7HpAR4JF/Yq7PJ8PBxZYp/AI5/ZFnWwvSnIRQXyI9M8V+vGCcz
-   q8eiDgMhdq5/oNo8VJTbdWY+2bO8Mlt0NU6ROritdtJf/ls2p2NsBQUov
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="342579798"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="342579798"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 06:26:41 -0700
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="588468908"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 06:26:38 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o16Z0-000cPE-UM;
-        Tue, 14 Jun 2022 16:26:34 +0300
-Date:   Tue, 14 Jun 2022 16:26:34 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Ferry Toth <ftoth@exalondelft.nl>
-Subject: Re: [PATCH v1 1/1] x86/PCI: Disable e820 usage for the resource
- allocation
-Message-ID: <YqiMil2uTT1yDZ8d@smile.fi.intel.com>
-References: <20220613201641.67640-1-andriy.shevchenko@linux.intel.com>
- <45d458f5-4f4e-9ebd-cb51-1a7b784248ec@redhat.com>
- <Yqh/UJQphSFvxX74@smile.fi.intel.com>
- <YqiEAN68MP0l4Mw6@smile.fi.intel.com>
+        Tue, 14 Jun 2022 09:29:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2567312742;
+        Tue, 14 Jun 2022 06:29:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0174B81879;
+        Tue, 14 Jun 2022 13:29:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 331AEC3411B;
+        Tue, 14 Jun 2022 13:29:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655213343;
+        bh=YEx73vfnRAnHRBrz3PVeIi0/8rfDtL+oBfNabAeQlks=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=1j05TVhIBjoG+yVNALTqiebQc3iaVllOkF3KyI17HMtZRW0vM9CIkJAEPJqrW/sq1
+         cIxXPaCYiJAElrrjwQyZfvFY7df7t/LnOG72Jx/8daQ5CLtNoqKv0RcXWms+WI5zmC
+         azueH7QKGohSeoaA1D3eKgzY4b3KtGMGASp8Mj7I=
+Date:   Tue, 14 Jun 2022 15:29:00 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "yekai(A)" <yekai13@huawei.com>
+Cc:     herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
+        linux-accelerators@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linuxarm@huawei.com, zhangfei.gao@linaro.org,
+        wangzhou1@hisilicon.com
+Subject: Re: [PATCH v2 3/3] crypto: hisilicon/qm - defining the device
+ isolation strategy
+Message-ID: <YqiNHOfXHRtaQyZV@kroah.com>
+References: <20220614122943.1406-1-yekai13@huawei.com>
+ <20220614122943.1406-4-yekai13@huawei.com>
+ <YqiCaTAaRoq7c0y0@kroah.com>
+ <b597023a-5569-f4be-1e30-78d0d961dfdc@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YqiEAN68MP0l4Mw6@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <b597023a-5569-f4be-1e30-78d0d961dfdc@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 03:50:09PM +0300, Andy Shevchenko wrote:
-> On Tue, Jun 14, 2022 at 03:30:08PM +0300, Andy Shevchenko wrote:
-> > On Mon, Jun 13, 2022 at 10:31:39PM +0200, Hans de Goede wrote:
-> > > On 6/13/22 22:16, Andy Shevchenko wrote:
-> > > > The resource management improve for PCI on x86 broke booting of Intel MID
-> > > > platforms. It seems that the current code removes all available resources
-> > > > from the list and none of the PCI device may be initialized. Restore the
-> > > > old behaviour by force disabling the e820 usage for the resource allocation.
-> > > > 
-> > > > Fixes: 4c5e242d3e93 ("x86/PCI: Clip only host bridge windows for E820 regions")
-> > > > Depends-on: fa6dae5d8208 ("x86/PCI: Add kernel cmdline options to use/ignore E820 reserved regions")
-> > > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > > 
-> > > Andy, thank you for the patch. Commit 4c5e242d3e93 has also been causing
-> > > issues for other platforms, so I've submitted a revert of it here:
-> > > 
-> > > https://lore.kernel.org/linux-pci/20220612144325.85366-1-hdegoede@redhat.com/T/#u
-> > > 
-> > > can you please give the revert a try, and confirm that that fixes
-> > > the Intel MID platform issue too ?
+On Tue, Jun 14, 2022 at 09:24:08PM +0800, yekai(A) wrote:
+> > >  struct hisi_qm {
+> > >  	enum qm_hw_ver ver;
+> > >  	enum qm_fun_type fun_type;
+> > > @@ -335,6 +341,9 @@ struct hisi_qm {
+> > >  	struct qm_shaper_factor *factor;
+> > >  	u32 mb_qos;
+> > >  	u32 type_rate;
+> > > +	struct list_head uacce_hw_errs;
+> > > +	atomic_t uacce_ref; /* reference of the uacce */
 > > 
-> > Nope, it doesn't fix. The problem is in flags checking as far as I can see.
-> > My patch is needed either we have yours or not.
+> > That is not how reference counts work, sorry.  Please use 'struct kref'
+> > for a real reference count, never roll your own.
+> > 
+> > thanks,
+> > 
+> > greg k-h
+> > .
+> > 
 > 
-> Hold on, it seems I have tried to build something that is not what I develop.
-> Lemme retest.
+> this atomic_t reference is lightweight than 'struct kref',
 
-Yes, I have tested something weird. Now it works, but I will triple check and
-give my tag to your patch later on.
+It's the same size, why would it be "lighter"?  Why do you need it to be
+lighter, what performance issue is there with a kref?
 
--- 
-With Best Regards,
-Andy Shevchenko
+> this reference
+> means whether the task is running. So would it be better to use atomic_t
+> reference?
 
+I do not know, as "running or not running" is a state, not a count or a
+reference.  why does this have to be atomic at all?
 
+thanks,
+
+greg k-h
