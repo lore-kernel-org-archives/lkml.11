@@ -2,167 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F38C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C490C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 08:47:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241624AbiFNIr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 04:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47016 "EHLO
+        id S242359AbiFNIrc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 04:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242359AbiFNIq0 (ORCPT
+        with ESMTP id S1355880AbiFNIpm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 04:46:26 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC96B42A01
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:46:21 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id m25so8906153lji.11
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:46:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=VUSdGLwnJ0Y/lNfZiFkctM/6S+/lIr4cXT4yYV5L0eg=;
-        b=ds3Ls87l3/RTps8cjzbiCoEtfAT/UNTYNbmZ3vxsR0hnyRIM4JISzsT8HkoR+6+4eP
-         3Cqfb+JGxyWAcNqNoxVve8rYObAC8MnNPQ+zdDSbT547/eFDUrPgC4XCC1yhvfm7wVDs
-         gBoQe8fxIVPWmwyvCxK0peaqzLKc2z/XRjO1Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VUSdGLwnJ0Y/lNfZiFkctM/6S+/lIr4cXT4yYV5L0eg=;
-        b=OaCI+tYv+UqNuL+k/tqEOJ8mqFawVXH9mpKTvSfv2skHb5EgngwREPs+/bMWTP9DxV
-         SYE2kxxWj6BBbaZ087gX5RZwlgU+4bOFtmUOVun5AGRgToi2/M+xbTo00JyH8t58zKXW
-         zu/BX+Acvjz1oiR0wKtNJWf6ZzV8O4WIQdp3ct5zjCRdXJtwGY+bUSzxq89uhc3eCoQQ
-         5YTcB9S3AGoT5UawDmV2rvwjEMYnwf5OHHGopr4z4c9At/FGmNw8+lgQWxehO/ESJuhn
-         yJtnwvf0bLvGnAKdy9lT7w22h7aQFSQmlV1zxfYlrXENxEZDri4mGvPrBjVKni9WU/bw
-         x6Iw==
-X-Gm-Message-State: AJIora8ndcdPf89gZw3LNgiTgNbxjd+HF3RmtSToRhOhfEl1O9CR0kh8
-        RT7A+SkYg2RFcAuaZsOYTlPp2g==
-X-Google-Smtp-Source: AGRyM1uPQusPCcTNkLDd/2DQXmi8U8XilZO13Hy3ENCammmq5MEL9OxcbgTxh2SVU/vHcJkV+z5GGA==
-X-Received: by 2002:a2e:3a17:0:b0:255:772a:e9e2 with SMTP id h23-20020a2e3a17000000b00255772ae9e2mr1859147lja.440.1655196380110;
-        Tue, 14 Jun 2022 01:46:20 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id g1-20020ac24d81000000b0047255d2118fsm1306116lfe.190.2022.06.14.01.46.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 01:46:19 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Praneeth Bajjuri <praneeth@ti.com>,
-        linux-kernel@vger.kernel.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH net-next v2 3/3] net: phy: dp83867: implement support for io_impedance_ctrl nvmem cell
-Date:   Tue, 14 Jun 2022 10:46:12 +0200
-Message-Id: <20220614084612.325229-4-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220614084612.325229-1-linux@rasmusvillemoes.dk>
-References: <20220606202220.1670714-1-linux@rasmusvillemoes.dk>
- <20220614084612.325229-1-linux@rasmusvillemoes.dk>
+        Tue, 14 Jun 2022 04:45:42 -0400
+Received: from esa2.hgst.iphmx.com (esa2.hgst.iphmx.com [68.232.143.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC815BCBD
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:45:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1655196341; x=1686732341;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=730WLOxUDl/tCCXOxzEMJE/Etnsc1xvpiRS8SMWclV4=;
+  b=Fs56aKPDnaxtAYnHtHu8a9ZvoIXAGUoGxn5KknLa6Uy67nMnuCZY932a
+   TCYUC7ELi3CJvzGyJq7J5t1OS4W4hVqw9q4krwYNUe7+PgiDmRy7OXQpa
+   Z+m+ObVNiK66ByO8+3T5RdoZDsGCC7i4QGuwoOrF1rtlwaHFcyIyLsWUc
+   KeoKtdmofizCM91oiu7GSppAh8wy/Ux2ibZRQozz09vBae6SksiMlgVst
+   1i2tqwfsZEJkE266I6RO1uuh0CgM2YkfRD62NedjGHVy0W5iplgI8oeYG
+   eHbo0ib4Ggp6bEKfyp8FGB7pzAqsiX8WXs9wojSMgcL0NcBOk6jrNDWvn
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,299,1647273600"; 
+   d="scan'208";a="307388539"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 14 Jun 2022 16:45:40 +0800
+IronPort-SDR: HkUahpm5A3Zh/IWQnH9d0t0uNXevoQUguqM7180TVqgeZ50Vb4UGA9lb+9cS+BCmSxedgEh3/a
+ YhHSHEL82wvmgAD7N6btdrZs5ZOlUwQ5s6bx9j9J28q7jANfr6lh/74ozSjYVeDQ00pHL16hSe
+ wCRCPRyoxHvZ4QLpZG//AT62kD2BcxOuC3s3CShpkY8ITRAJemKE89aWa7ZYyuxEkHFJ3MBDPZ
+ zpiYZb3QXlBDu6ejdbwRSPf5oa/fT6jA9AcRMe6PDPBNtEg1Tu9ZH4wH761FRrNdSD8NCMfB/f
+ SzQss5vAzM/Sc8sAHy11tcqx
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 14 Jun 2022 01:08:39 -0700
+IronPort-SDR: 4xBh05AFk7GH9IHUIpgn/GyLfXwy3+gy/qUkeyrq9SE3QN3NkdNqOT4OMdyRJXtJ/aVagbZKBs
+ jFzaupwGL1azoL4P/EFG2Lrq74VJVh0qQTT3F8OayOjl4dEPanzuvKKB7OYwZVaTrF1/GvCkwC
+ cO0S3Q4BQNoQDm7V7XGoiz8zy/HJvJSy50M47Cq+o0DtKww7Ese8kO7dE/X/4w2XFyDsCnSD+s
+ B7MI22J7g9O9SdBFXFPLHkEEmQ/s2H+WDAaFGP0svBYPCyfz6aJsPjcroUZrIqvIExQ5DoZGJe
+ bf0=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 14 Jun 2022 01:45:41 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LMhpq5ZPFz1SVp3
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 01:45:39 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1655196338; x=1657788339; bh=730WLOxUDl/tCCXOxzEMJE/Etnsc1xvpiRS
+        8SMWclV4=; b=iMAF22D08tLP22EwyW2EGAImbpK8eQcBbDj01cr5hIdTvMvn9pl
+        Z/xRZHFpQs+YVoEdTBqfq0NqDouapToDlh8A9TSpdO9Dp0Bk8kza4wB95o4kOUCh
+        bKBxD34JxEGV1T/fUMszf/o+rIlyL4nCfwxD4dH2MwSnQPm5FH5bRPjMTE2Y3dAz
+        derj6ZqUDHj4Y6mieLfh0do48fDsyz3OA4etLnu5zXg85LW/mwcXOZT/3HKB1QS+
+        O7n1pg/UpQLtzJY5Ikore7lRjNXFehJmKUBmoSYW0mLnHU77J9XxbPrakqxVcf9q
+        vTyT1w9p0RSWdf30ruP4Q40mQQEr7dEcIIQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id OfiwjPnO6XjX for <linux-kernel@vger.kernel.org>;
+        Tue, 14 Jun 2022 01:45:38 -0700 (PDT)
+Received: from [10.225.163.77] (unknown [10.225.163.77])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LMhpn0mkyz1Rvlc;
+        Tue, 14 Jun 2022 01:45:36 -0700 (PDT)
+Message-ID: <611c8eeb-fa7e-286c-bef2-0e24cc2b6b2e@opensource.wdc.com>
+Date:   Tue, 14 Jun 2022 17:45:35 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 18/23] ata: libahci_platform: Add function returning a
+ clock-handle by id
+Content-Language: en-US
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220610081801.11854-1-Sergey.Semin@baikalelectronics.ru>
+ <20220610081801.11854-19-Sergey.Semin@baikalelectronics.ru>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220610081801.11854-19-Sergey.Semin@baikalelectronics.ru>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We have a board where measurements indicate that the current three
-options - leaving IO_IMPEDANCE_CTRL at the (factory calibrated) reset
-value or using one of the two boolean properties to set it to the
-min/max value - are too coarse.
+On 6/10/22 17:17, Serge Semin wrote:
+> Since all the clocks are retrieved by the method
+> ahci_platform_get_resources() there is no need for the LLD (glue) drivers
+> to be looking for some particular of them in the kernel clocks table
+> again. Instead we suggest to add a simple method returning a
+> device-specific clock with passed connection ID if it is managed to be
+> found. Otherwise the function will return NULL. Thus the glue-drivers
+> won't need to either manually touching the hpriv->clks array or calling
+> clk_get()-friends. The AHCI platform drivers will be able to use the new
+> function right after the ahci_platform_get_resources() method invocation
+> and up to the device removal.
+> 
+> Note the method is left unused here, but will be utilized in the framework
+> of the DWC AHCI SATA driver being added in the next commit.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> 
+> ---
+> 
+> Changelog v2:
+> - Fix some grammar mistakes in the method description.
+> 
+> Changelog v4:
+> - Add a note regarding the new method usage.
+> ---
+>  drivers/ata/libahci_platform.c | 27 +++++++++++++++++++++++++++
+>  include/linux/ahci_platform.h  |  3 +++
+>  2 files changed, 30 insertions(+)
+> 
+> diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
+> index 8b542a8bc487..418961f954af 100644
+> --- a/drivers/ata/libahci_platform.c
+> +++ b/drivers/ata/libahci_platform.c
+> @@ -95,6 +95,33 @@ void ahci_platform_disable_phys(struct ahci_host_priv *hpriv)
+>  }
+>  EXPORT_SYMBOL_GPL(ahci_platform_disable_phys);
+>  
+> +/**
+> + * ahci_platform_find_clk - Find platform clock
+> + * @hpriv: host private area to store config values
+> + * @con_id: clock connection ID
+> + *
+> + * This function returns a pointer to the clock descriptor of the clock with
+> + * the passed ID.
+> + *
+> + * RETURNS:
+> + * Pointer to the clock descriptor on success otherwise NULL
+> + */
+> +struct clk *ahci_platform_find_clk(struct ahci_host_priv *hpriv, const char *con_id)
+> +{
+> +	struct clk *clk = NULL;
+> +	int i;
+> +
+> +	for (i = 0; i < hpriv->n_clks; i++) {
+> +		if (!strcmp(hpriv->clks[i].id, con_id)) {
+> +			clk = hpriv->clks[i].clk;
 
-Implement support for the newly added binding allowing device tree to
-specify an nvmem cell containing an appropriate value for this
-specific board.
+			return hpriv->clks[i].clk;
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/net/phy/dp83867.c | 55 ++++++++++++++++++++++++++++++++++-----
- 1 file changed, 49 insertions(+), 6 deletions(-)
+> +			break;
+> +		}
+> +	}
+> +
+> +	return clk;
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 8561f2d4443b..45d8a9298251 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -14,6 +14,7 @@
- #include <linux/netdevice.h>
- #include <linux/etherdevice.h>
- #include <linux/bitfield.h>
-+#include <linux/nvmem-consumer.h>
- 
- #include <dt-bindings/net/ti-dp83867.h>
- 
-@@ -521,6 +522,51 @@ static int dp83867_verify_rgmii_cfg(struct phy_device *phydev)
- }
- 
- #if IS_ENABLED(CONFIG_OF_MDIO)
-+static int dp83867_of_init_io_impedance(struct phy_device *phydev)
-+{
-+	struct dp83867_private *dp83867 = phydev->priv;
-+	struct device *dev = &phydev->mdio.dev;
-+	struct device_node *of_node = dev->of_node;
-+	struct nvmem_cell *cell;
-+	u8 *buf, val;
-+	int ret;
-+
-+	cell = of_nvmem_cell_get(of_node, "io_impedance_ctrl");
-+	if (IS_ERR(cell)) {
-+		ret = PTR_ERR(cell);
-+		if (ret != -ENOENT)
-+			return phydev_err_probe(phydev, ret,
-+						"failed to get nvmem cell io_impedance_ctrl\n");
-+
-+		/* If no nvmem cell, check for the boolean properties. */
-+		if (of_property_read_bool(of_node, "ti,max-output-impedance"))
-+			dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MAX;
-+		else if (of_property_read_bool(of_node, "ti,min-output-impedance"))
-+			dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MIN;
-+		else
-+			dp83867->io_impedance = -1; /* leave at default */
-+
-+		return 0;
-+	}
-+
-+	buf = nvmem_cell_read(cell, NULL);
-+	nvmem_cell_put(cell);
-+
-+	if (IS_ERR(buf))
-+		return PTR_ERR(buf);
-+
-+	val = *buf;
-+	kfree(buf);
-+
-+	if ((val & DP83867_IO_MUX_CFG_IO_IMPEDANCE_MASK) != val) {
-+		phydev_err(phydev, "nvmem cell 'io_impedance_ctrl' contents out of range\n");
-+		return -ERANGE;
-+	}
-+	dp83867->io_impedance = val;
-+
-+	return 0;
-+}
-+
- static int dp83867_of_init(struct phy_device *phydev)
- {
- 	struct dp83867_private *dp83867 = phydev->priv;
-@@ -548,12 +594,9 @@ static int dp83867_of_init(struct phy_device *phydev)
- 		}
- 	}
- 
--	if (of_property_read_bool(of_node, "ti,max-output-impedance"))
--		dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MAX;
--	else if (of_property_read_bool(of_node, "ti,min-output-impedance"))
--		dp83867->io_impedance = DP83867_IO_MUX_CFG_IO_IMPEDANCE_MIN;
--	else
--		dp83867->io_impedance = -1; /* leave at default */
-+	ret = dp83867_of_init_io_impedance(phydev);
-+	if (ret)
-+		return ret;
- 
- 	dp83867->rxctrl_strap_quirk = of_property_read_bool(of_node,
- 							    "ti,dp83867-rxctrl-strap-quirk");
+And then "return NULL;" here and you do not need the clk variable.
+
+> +}
+> +EXPORT_SYMBOL_GPL(ahci_platform_find_clk);
+> +
+>  /**
+>   * ahci_platform_enable_clks - Enable platform clocks
+>   * @hpriv: host private area to store config values
+> diff --git a/include/linux/ahci_platform.h b/include/linux/ahci_platform.h
+> index 6d7dd472d370..3418980b0341 100644
+> --- a/include/linux/ahci_platform.h
+> +++ b/include/linux/ahci_platform.h
+> @@ -13,6 +13,7 @@
+>  
+>  #include <linux/compiler.h>
+>  
+> +struct clk;
+>  struct device;
+>  struct ata_port_info;
+>  struct ahci_host_priv;
+> @@ -21,6 +22,8 @@ struct scsi_host_template;
+>  
+>  int ahci_platform_enable_phys(struct ahci_host_priv *hpriv);
+>  void ahci_platform_disable_phys(struct ahci_host_priv *hpriv);
+> +struct clk *
+> +ahci_platform_find_clk(struct ahci_host_priv *hpriv, const char *con_id);
+
+Please make this:
+
+struct clk *ahci_platform_find_clk(struct ahci_host_priv *hpriv,
+
+                                   const char *con_id);
+
+>  int ahci_platform_enable_clks(struct ahci_host_priv *hpriv);
+>  void ahci_platform_disable_clks(struct ahci_host_priv *hpriv);
+>  int ahci_platform_deassert_rsts(struct ahci_host_priv *hpriv);
+
+
 -- 
-2.31.1
-
+Damien Le Moal
+Western Digital Research
