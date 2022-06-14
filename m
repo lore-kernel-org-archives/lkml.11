@@ -2,65 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD800C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F3CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238860AbiFNCkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58330 "EHLO
+        id S1354671AbiFNCmN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 22:42:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237003AbiFNCiL (ORCPT
+        with ESMTP id S1352649AbiFNCl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:38:11 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD4548E5E;
-        Mon, 13 Jun 2022 19:17:02 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LMX7w2F7fzgZBl;
-        Tue, 14 Jun 2022 10:14:52 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 14 Jun 2022 10:16:48 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <paul@paul-moore.com>, <stephen.smalley.work@gmail.com>,
-        <eparis@parisplace.org>
-CC:     <selinux@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] selinux: Add boundary check in put_entry()
-Date:   Tue, 14 Jun 2022 10:14:49 +0800
-Message-ID: <20220614021449.39255-1-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 13 Jun 2022 22:41:58 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607045005F;
+        Mon, 13 Jun 2022 19:20:35 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id k19so9246392wrd.8;
+        Mon, 13 Jun 2022 19:20:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rUo3H58Xo6jRmNEwjhL/eFhQ7obXUHzajy+AECzxVt4=;
+        b=EJgw/8kmPw3eQcaDqa7qbY1kJIy78gC/KghBVXCdqDMgTzYadRYzJ3sGCCnVrA2kse
+         rywQ+E5TqEPUmp+Jfy7MidbwAdeiDVmzwHPIbfak9JqyDLf+7sxrt9KNhMTxCNLL+6ND
+         HscvHsh1J5UBnvE7uLlaa5Ngbhx9QyyOQsHZehUHmpyy/OkgYsyJGKO6FrZkHqBDN4p6
+         /WYFyoo9Xe6hy2xVV+B4Hb8qQ0nePuiwOQUWwaClsDK7hRXClprraG6bk3ysPp+MNGWw
+         ACvnWlC6LxUakujWE+2Xj7XXWbBX8/JWOr5xHE7q/IhBMW0HZt5XydwoKwdCv3agLIyb
+         zMbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rUo3H58Xo6jRmNEwjhL/eFhQ7obXUHzajy+AECzxVt4=;
+        b=Vegelk6lIPFzUzsGGUK4mnB8b14nUwuTzkJ+tgXJx3hoOnKVjxkM5NaCA2v4vMWV2T
+         +o1zU/LJlpfBg6mtE6wfuR4x7P07m2Jv+5qul0a7w+jfa9sCKoZWi4Y4vvj/Puj1YdiD
+         3V7aFw3UJDzxtb5r/+fAqvoh2U/z85KMOjJrfvPX1bEF57IQSvHR/RYDdiklPIxYe3Xu
+         0qk53BCkEOFzBgNR6kWkX64k3vuiUc7FP+30IrLr0ncpVN+3IA6qJmg7dpgLhkIuQs2I
+         5/0e4+RoyBwIkhh9XkKtyyjbAfxzr3c3Rjk5UGPC9FYNX3oH56ywJaECvYZUbz4Pnx0n
+         qRMg==
+X-Gm-Message-State: AJIora9Fw+Xk3ohsuhT9o0+CtdTh4YAPMKq0IzNRqRRdYXMmQXW7Jy1B
+        PlfEAvOdLrUS6AkQGFzWr5DLLxkiJkXeaPYhfUOHqghDry0SPA==
+X-Google-Smtp-Source: AGRyM1vubLAYvzxsNOBMNnDLnOtApG/1brEj+260Ctcbqrc8JeVzrcSUop4bg/ADhdmxahpfwOZjnagUGwbHugPCQqg=
+X-Received: by 2002:a5d:5c07:0:b0:218:544d:4347 with SMTP id
+ cc7-20020a5d5c07000000b00218544d4347mr2291230wrb.107.1655173228921; Mon, 13
+ Jun 2022 19:20:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+References: <20220613225723.2734132-1-seanjc@google.com> <20220613225723.2734132-4-seanjc@google.com>
+In-Reply-To: <20220613225723.2734132-4-seanjc@google.com>
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+Date:   Tue, 14 Jun 2022 10:20:17 +0800
+Message-ID: <CAJhGHyCMsc4g7rdW8td5vOA5iAZBu7+hewUJW8tUXX=_-UBVOA@mail.gmail.com>
+Subject: Re: [PATCH 3/8] KVM: x86/mmu: Bury 32-bit PSE paging helpers in paging_tmpl.h
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "open list:KERNEL VIRTUAL MACHINE FOR MIPS (KVM/mips)" 
+        <kvm@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just like next_entry(), boundary check is necessary to prevent memory
-out-of-bound access.
+On Tue, Jun 14, 2022 at 6:59 AM Sean Christopherson <seanjc@google.com> wrote:
+>
+> Move a handful of one-off macros and helpers for 32-bit PSE paging into
+> paging_tmpl.h and hide them behind "PTTYPE == 32".  Under no circumstance
+> should anything but 32-bit shadow paging care about PSE paging.
+>
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
----
- security/selinux/ss/policydb.h | 2 ++
- 1 file changed, 2 insertions(+)
+Moving code from paging_tmp.h is on my to-do list.
+I don't think the opposite direction is preferred.
 
-diff --git a/security/selinux/ss/policydb.h b/security/selinux/ss/policydb.h
-index c24d4e1063ea..ffc4e7bad205 100644
---- a/security/selinux/ss/policydb.h
-+++ b/security/selinux/ss/policydb.h
-@@ -370,6 +370,8 @@ static inline int put_entry(const void *buf, size_t bytes, int num, struct polic
- {
- 	size_t len = bytes * num;
- 
-+	if (len > fp->len)
-+		return -EINVAL;
- 	memcpy(fp->data, buf, len);
- 	fp->data += len;
- 	fp->len -= len;
--- 
-2.17.1
-
+And is_cpuid_PSE36() is also used in mmu.c, is it a good idea to move
+it into paging_tmp.h?
