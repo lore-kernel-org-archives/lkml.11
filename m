@@ -2,132 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E96FFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:53:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 771CACCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 07:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353391AbiFNHxD (ORCPT
+        id S1353151AbiFNHxx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 03:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39960 "EHLO
+        Tue, 14 Jun 2022 03:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355423AbiFNHwh (ORCPT
+        with ESMTP id S1355539AbiFNHxV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 03:52:37 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE66B41F9E;
-        Tue, 14 Jun 2022 00:51:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655193089; x=1686729089;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SJhpZ3HQ+EYM455wRZmEEJVkLQgK5F2p4nazZFlQj4I=;
-  b=TLcfRD2gfrVOyq5yBbZoJW6fJ4nuRA8Cab4GAOqil1cCwn6EzfIeAe9W
-   Mp6CQN57s88QTZ9Vj5tr8+dADF802/j+KS8PlIe0INuk/XOQPYw5M9bfZ
-   55jB7X7WURHPubK16BNnWMXARQaFm4p7UZqZTNAOztD7RwpESx/u2L1HP
-   //DxgFk3W6CbuVSDiXYP1DYSzsd3P3HWDg9oOaTPUQiMukoQO/hfRVaDj
-   zLnJjVeBT9VLZTzxnjcneBqnMbXpmCwy/SyBSF0epvCYS1D6MG2HuMG67
-   1wTwU+rOqSEI6YlPswSkGqIfZQjXDcSi1eMxFkSBg8edEEdUJszpbp2/F
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="267229655"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="267229655"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 00:51:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; 
-   d="scan'208";a="673745017"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 14 Jun 2022 00:51:20 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o11KZ-000LdF-Kk;
-        Tue, 14 Jun 2022 07:51:19 +0000
-Date:   Tue, 14 Jun 2022 15:50:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Micah Morton <mortonm@chromium.org>,
-        linux-security-module@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        keescook@chromium.org, jmorris@namei.org, serge@hallyn.com,
-        linux-kernel@vger.kernel.org, Micah Morton <mortonm@chromium.org>
-Subject: Re: [PATCH 2/2] LSM: SafeSetID: Add setgroups() security policy
- handling
-Message-ID: <202206141555.zswTLROZ-lkp@intel.com>
-References: <20220613202852.447738-1-mortonm@chromium.org>
+        Tue, 14 Jun 2022 03:53:21 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C619640E76
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 00:52:16 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id F2C4766016A5;
+        Tue, 14 Jun 2022 08:52:13 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655193134;
+        bh=YiYxfz9UJYMv0Yzl92YcMKOgxfk4MMa4/uB2sRksOJM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=UUod8iVfxYNNRG93+40eRBJxUTQ3ZMgriSgsL2pjQ7TOiQCiDUa9nUiDsYxWRkP1I
+         J5w3HAl/BXe/Q6B6GwMcl3f9CawLTS2jXqIIot2MCzgKx1VFkVC0GNtMAC6dwA2sDu
+         sEDwNJugHElihkizTLODY+vFVbqAyo2Nc0A+SANM34T/+FBJEumOXIHLvqCqkGORER
+         1n53h10MPyNSaoBd/YmIETwznwOUFBZEAvHx3Flg9n9RcaFEA42l6jXeKo+8jwHlhJ
+         md6WWZoS6XWPCD3fJHg9pceZe1BIdNxOqZ1IZUCGa5AbcJ7mX8a4xoOH/xSH5aIdN5
+         E7/yJ3pSnhAkQ==
+Message-ID: <9c8c712c-75d1-bd0f-0205-be769ce5e83d@collabora.com>
+Date:   Tue, 14 Jun 2022 09:52:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613202852.447738-1-mortonm@chromium.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] drm/bridge: anx7625: Zero error variable when panel
+ bridge not present
+Content-Language: en-US
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Robert Foss <robert.foss@linaro.org>
+Cc:     kernel@collabora.com, Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Xin Ji <xji@analogixsemi.com>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20220613163705.1531721-1-nfraprado@collabora.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220613163705.1531721-1-nfraprado@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Micah,
+Il 13/06/22 18:37, Nícolas F. R. A. Prado ha scritto:
+> While parsing the DT, the anx7625 driver checks for the presence of a
+> panel bridge on endpoint 1. If it is missing, pdata->panel_bridge stores
+> the error pointer and the function returns successfully without first
+> cleaning that variable. This is an issue since other functions later
+> check for the presence of a panel bridge by testing the trueness of that
+> variable.
+> 
+> In order to ensure proper behavior, zero out pdata->panel_bridge before
+> returning when no panel bridge is found.
+> 
+> Fixes: 9e82ea0fb1df ("drm/bridge: anx7625: switch to devm_drm_of_get_bridge")
+> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> 
 
-I love your patch! Yet something to improve:
+I would've preferred s/zero out/cleanup/g but it's also fine as you wrote it.
+Besides, good catch!
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on jmorris-security/next-testing kees/for-next/pstore v5.19-rc2 next-20220610]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Micah-Morton/security-Add-LSM-hook-to-setgroups-syscall/20220614-050341
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
-config: x86_64-randconfig-a001-20220613 (https://download.01.org/0day-ci/archive/20220614/202206141555.zswTLROZ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c97436f8b6e2718286e8496faf53a2c800e281cf)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/248aa1aeef5c49d4af78b9c3d09e896413258c76
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Micah-Morton/security-Add-LSM-hook-to-setgroups-syscall/20220614-050341
-        git checkout 248aa1aeef5c49d4af78b9c3d09e896413258c76
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> security/safesetid/lsm.c:248:50: error: use of undeclared identifier 'group_info'
-                   if (!id_permitted_for_cred(old, (kid_t){.gid = group_info->gid[i]}, GID)) {
-                                                                  ^
-   1 error generated.
-
-
-vim +/group_info +248 security/safesetid/lsm.c
-
-   237	
-   238	static int safesetid_task_fix_setgroups(struct cred *new, const struct cred *old)
-   239	{
-   240		int i;
-   241	
-   242		/* Do nothing if there are no setgid restrictions for our old RGID. */
-   243		if (setid_policy_lookup((kid_t){.gid = old->gid}, INVALID_ID, GID) == SIDPOL_DEFAULT)
-   244			return 0;
-   245	
-   246		get_group_info(new->group_info);
-   247		for (i = 0; i < new->group_info->ngroups; i++) {
- > 248			if (!id_permitted_for_cred(old, (kid_t){.gid = group_info->gid[i]}, GID)) {
-   249				put_group_info(new->group_info);
-   250				/*
-   251				 * Kill this process to avoid potential security vulnerabilities
-   252				 * that could arise from a missing allowlist entry preventing a
-   253				 * privileged process from dropping to a lesser-privileged one.
-   254				 */
-   255				force_sig(SIGKILL);
-   256				return -EACCES;
-   257			}
-   258		}
-   259	
-   260		put_group_info(new->group_info);
-   261		return 0;
-   262	}
-   263	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
