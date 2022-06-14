@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE5ECCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:15:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B247FCCA47D
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 02:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353486AbiFNCP3 (ORCPT
+        id S1353430AbiFNCPf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 22:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
+        Mon, 13 Jun 2022 22:15:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353281AbiFNCN0 (ORCPT
+        with ESMTP id S1353437AbiFNCNq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 22:13:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D3E3980C;
-        Mon, 13 Jun 2022 19:07:47 -0700 (PDT)
+        Mon, 13 Jun 2022 22:13:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E208A39B99;
+        Mon, 13 Jun 2022 19:07:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72D3960F28;
-        Tue, 14 Jun 2022 02:07:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9702AC34114;
-        Tue, 14 Jun 2022 02:07:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B10EB816A1;
+        Tue, 14 Jun 2022 02:07:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BABDC385A5;
+        Tue, 14 Jun 2022 02:07:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172455;
-        bh=35ASCPnS8+xGT0L0LVS2NYvX5iXNUglTyS4P5OUQwgg=;
+        s=k20201202; t=1655172462;
+        bh=fc7MFvLBl5S0Dpre7Mc7IFBpLtZ3FB1t+p8Ol2drvI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WkscnIVOgqtfnZMuNGegEd/8zPJgKKit9Ttp/Mo7QAR64U816+nIMG3eWQPkJqIhA
-         LZvBNNF6nsEXF0kly6j0bARgepcAj1mjzK+ukDcxJnY76epdpXaZgZoDuWSOPmpaMQ
-         VSt9L3pf8WHrxMhHn/mhO5nkJewFdqt4TdEDYupQM7h1O2bIn3821TaQL/u1GunYxF
-         OxwbUbyTTpAlrgterdOY1Up8t0QZ0Ywg+lSA3XKAtYbj7bdSqFyyGnrtiqJ2LQ4ngq
-         p+wBLJ0jankuy35oM1fHzdzulygv3zv3+WEgrIr70lkk0/7MOqMDexpIgMeM3IANOO
-         byCO1LQP5ZTaQ==
+        b=aKaywOrpMHh5bySetW+26IxfzqZCVqwtJmwYSRar0Onc8GwGBkf47a4JdHRJl2mPG
+         t5KMusbPEpkZKrzVmJyD21FIaXIJABuM42w4EDQHYZh5kMEBTOgi5ZWd0kNIEbT99V
+         pCh15skDJjFwqHR7442tWRPK0jBZwa2ZS8pmj1ND8ukQy/cxaVtHKiY2mH0+IUloQJ
+         YvOqZWLlJiWRLQLzLQ9z5fk3hEzN7bDfTEg5JnGXm8fBWlfqDx0koCKBK/iDhe4BtA
+         tpnprARts5xY1DoNGO5nrbUX1E71rL5V1t5uTz4NX8rzrMTpH9lpEFNKkIAtfVwPwV
+         MwWLQpbE4IGCQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Adam Ford <aford173@gmail.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com,
-        patches@opensource.wolfsonmicro.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 16/41] ASoC: wm8962: Fix suspend while playing music
-Date:   Mon, 13 Jun 2022 22:06:41 -0400
-Message-Id: <20220614020707.1099487-16-sashal@kernel.org>
+Cc:     Wentao Wang <wwentao@vmware.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jgill@vmware.com,
+        pv-drivers@vmware.com, jejb@linux.vnet.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 20/41] scsi: vmw_pvscsi: Expand vcpuHint to 16 bits
+Date:   Mon, 13 Jun 2022 22:06:45 -0400
+Message-Id: <20220614020707.1099487-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220614020707.1099487-1-sashal@kernel.org>
 References: <20220614020707.1099487-1-sashal@kernel.org>
@@ -55,40 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Wentao Wang <wwentao@vmware.com>
 
-[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
+[ Upstream commit cf71d59c2eceadfcde0fb52e237990a0909880d7 ]
 
-If the audio CODEC is playing sound when the system is suspended,
-it can be left in a state which throws the following error:
+vcpuHint has been expanded to 16 bit on host to enable routing to more
+CPUs. Guest side should align with the change. This change has been tested
+with hosts with 8-bit and 16-bit vcpuHint, on both platforms host side can
+get correct value.
 
-wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
-
-Once this error has occurred, the audio will not work again until rebooted.
-
-Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
-
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/EF35F4D5-5DCC-42C5-BCC4-29DF1729B24C@vmware.com
+Signed-off-by: Wentao Wang <wwentao@vmware.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8962.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/vmw_pvscsi.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
-index ba16bdf9e478..a5a4ae4440cc 100644
---- a/sound/soc/codecs/wm8962.c
-+++ b/sound/soc/codecs/wm8962.c
-@@ -3867,6 +3867,7 @@ static int wm8962_runtime_suspend(struct device *dev)
- #endif
+diff --git a/drivers/scsi/vmw_pvscsi.h b/drivers/scsi/vmw_pvscsi.h
+index 51a82f7803d3..9d16cf925483 100644
+--- a/drivers/scsi/vmw_pvscsi.h
++++ b/drivers/scsi/vmw_pvscsi.h
+@@ -331,8 +331,8 @@ struct PVSCSIRingReqDesc {
+ 	u8	tag;
+ 	u8	bus;
+ 	u8	target;
+-	u8	vcpuHint;
+-	u8	unused[59];
++	u16	vcpuHint;
++	u8	unused[58];
+ } __packed;
  
- static const struct dev_pm_ops wm8962_pm = {
-+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
- 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
- };
- 
+ /*
 -- 
 2.35.1
 
