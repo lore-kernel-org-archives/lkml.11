@@ -2,199 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9474FCCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:01:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC497C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:01:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345812AbiFORBY (ORCPT
+        id S1357083AbiFORBd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35964 "EHLO
+        Wed, 15 Jun 2022 13:01:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355510AbiFORAx (ORCPT
+        with ESMTP id S1349045AbiFOQ63 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:00:53 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C3324EF43
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:00:44 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id u99so21564880ybi.11
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:00:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=EeKp0clsQUA6dW+6qFFUJzrEz+TdOTimew8JgR0bKMA=;
-        b=et/V+90f7nKKr5S5V5II7K0Z18Ceqm9B2OWuHnT5qV224pqU2c6OfRTYEhEYlbJ3cw
-         RnQHWw8DvH4t+NcjNGh9D/zVQcpZCNqTLMmGATmElkNq0TMm0Jwup31R4E/PaofbwfGZ
-         +8Z9iXoKGewQwyULPEwSnqOh7CE25+9MDvy081U1bBdwwC3xfOE3ncIe62F5JtLVICD6
-         28NcVbwUhcmxTg7t0/+iLluLd/DAthY1Ccvkh+7dxVHLMFkonydf6t2mSzJlr/KpMaer
-         5d9Bgwidf0j0IQ6ebNG/o8YQvba9f4hNnmEue1FBwwThM3cZjahvoA8xM7BYyT7zaC+m
-         jMNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=EeKp0clsQUA6dW+6qFFUJzrEz+TdOTimew8JgR0bKMA=;
-        b=nlolHFQLSOY0MP1ITNQC4M/Mu5vRBKsJ3OUNF8f8aQWDyKonWZ0cq1imWfERJa836R
-         WNzDrHDNbx4mxroFIVBlpMRfmL0VrAEP1h6dvGYilB8RU8qS6aVEJ5WPRMi6IrqWMBSK
-         7z0YDa97UtsFH0qi/yZXWglA9rzCQKcwrr4T4Tyh44BnbyQlC8+Yszof1Q7QwYkhyef8
-         IU6IsoXoZJR/TpZYkxLSgznGsLxWw57j/vzeJZhALsYlsnKHJs//vhfEFbm9QUZdbltg
-         k9DPt9nsu5QkzME0CNG6CO7nvsxLANRVas0ro+WvcrHX9ZPP1bydzCCCB/aftw5+L1lv
-         r5bg==
-X-Gm-Message-State: AJIora+QXH4DDW5fyLc3UpQJy4bWVSZLx1LqNV0SSLj83Dqo2ku+aKK2
-        K3CguTkDijT1OCIYJbAn8OoWuPgAxVZNKFT9xfORLg==
-X-Google-Smtp-Source: AGRyM1v2b3hA54fgRS4NKBKo+CNA62mj2BxK70qeaNL2CHESAP83JfajfFeLqwxjrTeSqYQze1aVU28N+x8laK8Zxw8=
-X-Received: by 2002:a25:b51:0:b0:663:4ff1:d20d with SMTP id
- 78-20020a250b51000000b006634ff1d20dmr851309ybl.608.1655312443024; Wed, 15 Jun
- 2022 10:00:43 -0700 (PDT)
+        Wed, 15 Jun 2022 12:58:29 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48A62CDCA
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:58:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655312308; x=1686848308;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bmcpvg7QLQWHYlV2e3pTfXD5SVvwtZuJHl7SPF3EiJE=;
+  b=muAASBUzCCQ2MXABirDGudfJjDOpwonyAEv+Sk5ZMbqnKirSt6AGTIFm
+   B61unKHQXKzFnMdbqXozZsBAHEFxpo4uyb/bQMNMAca9YEWyMyB5mmR2P
+   CSMOTAkmv9HItAKmJKuNmeHrES14OEnjYqwIkhc2KdXq7J24CtV/Q0Wti
+   6RQt38oHlshnD2fgeal4MgHQwLaR/Xa4DPaPD4mQDFmNyiCNaia4sX6rU
+   j8DK1brkDChBR6osImMmLcuSjsfljWA7xKEDMaYt5nVtkwgUig6a1zYn3
+   HIXaJcwF13BOfomjmt+opNaiur3dpg53uOxdWjrZa1m6IHVI5DtZ/IUuu
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="342991361"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="342991361"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 09:58:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="762547847"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 15 Jun 2022 09:58:24 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 0E39F109; Wed, 15 Jun 2022 19:58:28 +0300 (EEST)
+Date:   Wed, 15 Jun 2022 19:58:28 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "peterz@infradead.org" <peterz@infradead.org>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "kcc@google.com" <kcc@google.com>,
+        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "dvyukov@google.com" <dvyukov@google.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "ryabinin.a.a@gmail.com" <ryabinin.a.a@gmail.com>,
+        "glider@google.com" <glider@google.com>
+Subject: Re: [PATCHv3 5/8] x86/uaccess: Provide untagged_addr() and remove
+ tags before address check
+Message-ID: <20220615165828.5ggwnoxo7zhvmqzt@black.fi.intel.com>
+References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
+ <20220610143527.22974-6-kirill.shutemov@linux.intel.com>
+ <c7e2f8fb44da067e7565d091edeac300977b65ed.camel@intel.com>
 MIME-Version: 1.0
-References: <20220614183720.512073672@linuxfoundation.org>
-In-Reply-To: <20220614183720.512073672@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 15 Jun 2022 22:30:31 +0530
-Message-ID: <CA+G9fYvfof7stwFYqyy9fFLGB4+MHYWYPVt3XSiT3teHNdR+SQ@mail.gmail.com>
-Subject: Re: [PATCH 5.15 00/11] 5.15.48-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c7e2f8fb44da067e7565d091edeac300977b65ed.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 at 00:15, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.15.48 release.
-> There are 11 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.15.48-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+On Mon, Jun 13, 2022 at 05:36:43PM +0000, Edgecombe, Rick P wrote:
+> On Fri, 2022-06-10 at 17:35 +0300, Kirill A. Shutemov wrote:
+> > +#ifdef CONFIG_X86_64
+> > +/*
+> > + * Mask out tag bits from the address.
+> > + *
+> > + * Magic with the 'sign' allows to untag userspace pointer without
+> > any branches
+> > + * while leaving kernel addresses intact.
+> 
+> Trying to understand the magic part here. I guess how it works is, when
+> the high bit is set, it does the opposite of untagging the addresses by
+> setting the tag bits instead of clearing them. So:
+>  - For proper canonical kernel addresses (with U57) it leaves them 
+>    intact since the tag bits were already set.
+>  - For non-canonical kernel-half addresses, it fixes them up. 
+>    (0xeffffff000000840->0xfffffff000000840)
+>  - For U48 and 5 level paging, it corrupts some normal kernel 
+>    addresses. (0xff90ffffffffffff->0xffffffffffffffff)
+> 
+> I just ported this to userspace and threw some addresses at it to see
+> what happened, so hopefully I got that right.
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Ouch. Thanks for noticing this. I should have catched this myself. Yes,
+this implementation is broken for LAM_U48 on 5-level machine.
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+What about this:
 
-## Build
-* kernel: 5.15.48-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.15.y
-* git commit: 2e65f63d5e2c817d883c4c8df2010aa23bd07ea4
-* git describe: v5.15.47-12-g2e65f63d5e2c
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
-.47-12-g2e65f63d5e2c
+	#define untagged_addr(mm, addr)	({					\
+		u64 __addr = (__force u64)(addr);				\
+		s64 sign = (s64)__addr >> 63;					\
+		__addr &= (mm)->context.untag_mask | sign;			\
+		(__force __typeof__(addr))__addr;				\
+	})
 
-## Test Regressions (compared to v5.15.40-103-g293cfb310f44)
-No test regressions found.
+It makes mask effectively. all-ones for supervisor addresses. And it is
+less magic to my eyes.
 
-## Metric Regressions (compared to v5.15.40-103-g293cfb310f44)
-No metric regressions found.
+The generated code also look sane to me:
 
-## Test Fixes (compared to v5.15.40-103-g293cfb310f44)
-No test fixes found.
+    11d0:	48 89 f8             	mov    %rdi,%rax
+    11d3:	48 c1 f8 3f          	sar    $0x3f,%rax
+    11d7:	48 0b 05 52 2e 00 00 	or     0x2e52(%rip),%rax        # 4030 <untag_mask>
+    11de:	48 21 f8             	and    %rdi,%rax
 
-## Metric Fixes (compared to v5.15.40-103-g293cfb310f44)
-No metric fixes found.
+Any comments?
 
-## Test result summary
-total: 127914, pass: 114505, fail: 268, skip: 12412, xfail: 729
+> Is this special kernel address handling only needed because
+> copy_to_kernel_nofault(), etc call the user helpers?
 
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 319 total, 316 passed, 3 failed
-* arm64: 64 total, 64 passed, 0 failed
-* i386: 57 total, 50 passed, 7 failed
-* mips: 41 total, 38 passed, 3 failed
-* parisc: 14 total, 14 passed, 0 failed
-* powerpc: 59 total, 56 passed, 3 failed
-* riscv: 27 total, 27 passed, 0 failed
-* s390: 26 total, 23 passed, 3 failed
-* sh: 26 total, 24 passed, 2 failed
-* sparc: 14 total, 14 passed, 0 failed
-* x86_64: 62 total, 61 passed, 1 failed
+I did not have any particular use-case in mind. But just if some kernel
+address gets there and bits get cleared we will have very hard to debug
+bug.
 
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-cap_bounds-tests
-* ltp-commands
-* ltp-commands-tests
-* ltp-containers
-* ltp-containers-tests
-* ltp-controllers
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps
-* ltp-filecaps-tests
-* ltp-fs
-* ltp-fs-tests
-* ltp-fs_bind
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple
-* ltp-fs_perms_simple-tests
-* ltp-fsx
-* ltp-fsx-tests
-* ltp-hugetlb
-* ltp-hugetlb-tests
-* ltp-io
-* ltp-io-tests
-* ltp-ipc
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits
-* ltp-securebits-tests
-* ltp-smoke
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
+-- 
+ Kirill A. Shutemov
