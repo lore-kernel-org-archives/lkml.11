@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C236C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE274CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350196AbiFOSDK (ORCPT
+        id S1358072AbiFOSDf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46382 "EHLO
+        Wed, 15 Jun 2022 14:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349342AbiFOSDI (ORCPT
+        with ESMTP id S1358169AbiFOSDa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:03:08 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2914525EB7
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:03:07 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-10113b4c2b5so15833032fac.6
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:03:07 -0700 (PDT)
+        Wed, 15 Jun 2022 14:03:30 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB3C393CC
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:03:28 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id bf7so15235546oib.11
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:03:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kali.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=t06Whp8J1p63OOXUI0W1zpEYnP4NO86mmZ4mk1dCZBM=;
-        b=YvcDqM7MBtAzPErRZDMbs6OrvTj+QYa+beHr6a1/MPFMs36i4IHHwhi/HrIonOHZ5B
-         hAUWJL3EbN6PE/e8P4Z81X6QJIsNKjUjHq19oEJRFL71hOOBmhYR+56JNNHhAWSN505e
-         Nz/TMvVRs9UNYU48UyVN9DOAZQ90/tRCME+jo9JP1s89FnySs++DfspxfIqCKmzeGvQ+
-         c3/JaoohIEjh16DUNRuaWmdkgUVAZYJ+3hmyBoaLBWEni6QCiIzg8W7Ps3Moz17GYXDX
-         hORteutp7s4Wt1czjZDn+3iZMk9sBrTpR6ZxA5go2qgomPRSoP5I2UfKO3mLRTKU1mBQ
-         UUMQ==
+        bh=7Qb6SH0xrSj5MIpKwdT6FqdKu87C2nKyg2Uc3Hml8l4=;
+        b=lM8MaIY7gRbog/stSQ7OZbHFt9vsgzGYtaBd7ciHQARVx1bSstLXQ3oVOw/kTrxXVy
+         4opS8pQhCeKkZQ85OWcxUlswPcaXHm18fIOG/2zbPhbE6IXshQ4iEzW396qsIJ3I7vnP
+         B2NyL7UK2/QYWDSSUSm4KLMbp/u0Q95Q6aMSWirIUZiSdubCj5v39Nl4FSqbzvslZNWB
+         SjI3+G6iW52KVn7011LUEUo2opM5rxVJqu2Df7a1sCC5KR6ehAlP1xQEqPruBeIlrZrV
+         WozfDL0m1on1rO/6qrrtwRa4oBGcOmxOWfWod1VV4ZEi0Uwi7vw61/RtmbtPRHKXZ9dM
+         G5EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=t06Whp8J1p63OOXUI0W1zpEYnP4NO86mmZ4mk1dCZBM=;
-        b=t6EAQ5TuxZS0GeA3axToldXvHgkkm0X61VS4j9f4I8LoE4tEwosiJ7mm40+cZ3X/Xg
-         wWspZufV+xNeI4eBSFZGCoLLa7i5trAR3RZR45TqivWwACCnDOaGmlXlJjt+MpL2WPGb
-         Bzd/PXurkmD35TYaNICUXVQmUFRMu9+j9T7QBJLI88FdHGUFOMlKDBA2vfN3nRDc0Hl6
-         RxiCvAxQsAXLq83SMgR9mOo22B49SSr5Blq/xZEImV2vJKLU0YWQcUDkdBFvaYSjlS3B
-         kbt8Pn6I0jGQsMhhqxWctEXgsdNIkHgBMJc8wqkklWhbBaNoss6aOKecgdvrKLUjX7Iw
-         Qdow==
-X-Gm-Message-State: AJIora+Zi0cu2Fzy29+ErZyagggJ4e4iNdb9dEc6aWq3NCzUNC42tMrb
-        n33r1Cbvl73mnwyL8yD2DAqUXA==
-X-Google-Smtp-Source: AGRyM1tzJ8Etjk9NLHG0a4rnjXGH2j3pVNbLOrclTtBfeP2QVF6H/r8tCJsVdlCCmanAzxOmg7ofJw==
-X-Received: by 2002:a05:6870:73cc:b0:f5:ff37:ab8e with SMTP id a12-20020a05687073cc00b000f5ff37ab8emr6016895oan.153.1655316186084;
-        Wed, 15 Jun 2022 11:03:06 -0700 (PDT)
+        bh=7Qb6SH0xrSj5MIpKwdT6FqdKu87C2nKyg2Uc3Hml8l4=;
+        b=62EgRXbdNbC3Yjo3CJyusKlfdhkNpR5EqVUPas2B03PS1QVc1m64Qc+bXygyQBH+2h
+         uvEhSkQjQNHpB7BrWGUdDxqQaXBp0ERf4c6D/fvIzV9SSJLzYZxwRKJWPl0YP6BufiWZ
+         nhy7nC/V8SoYXNv9RCqEsVBKTJbMkLqF4vTflJy0rziirAy8jxT77KiGxeaM8JNCFM60
+         vEQGAA9lLXSsn1J8XXgncT3vDuvjO7r678DZazF0AxKmlReAyKTLMGJQy6B/JhL0ylOf
+         Qfhp3xQjuNqR5VyMOVki5iVLV04P28wCMjWQGDLPKbk2UqeX1ewN1eksIAt++CSPTZPT
+         L5YQ==
+X-Gm-Message-State: AJIora9rwnLtT8x3k+XftOdZQsJuhJtp8Fy+WycyG0tZpW0FlwxUUeFv
+        CR4ii8ywa9d6o5iZtMgbbGiG1w==
+X-Google-Smtp-Source: AGRyM1s8OK4QQHb2guTL4MKG5AjsOikS3K57eEMiVVG8213w6pDI4w7HT7jws03bW4C/+i0WaMFNwA==
+X-Received: by 2002:aca:ebcd:0:b0:32e:d6c3:5978 with SMTP id j196-20020acaebcd000000b0032ed6c35978mr475048oih.224.1655316207110;
+        Wed, 15 Jun 2022 11:03:27 -0700 (PDT)
 Received: from [192.168.11.16] (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
-        by smtp.gmail.com with ESMTPSA id q15-20020a056830232f00b0060c030fae2asm6385436otg.54.2022.06.15.11.03.04
+        by smtp.gmail.com with ESMTPSA id el40-20020a056870f6a800b000f32c6b6871sm7624745oab.10.2022.06.15.11.03.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 11:03:05 -0700 (PDT)
-Message-ID: <0eb804a6-050e-5f69-48bb-27a8c41da108@kali.org>
-Date:   Wed, 15 Jun 2022 13:03:03 -0500
+        Wed, 15 Jun 2022 11:03:26 -0700 (PDT)
+Message-ID: <9ff7adc6-570f-8089-c93d-b10fcafc02b6@kali.org>
+Date:   Wed, 15 Jun 2022 13:03:24 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH 1/2] drm/msm: Drop update_fences()
+Subject: Re: [PATCH 2/2] drm/msm: Don't overwrite hw fence in hw_init
 Content-Language: en-US
 To:     Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
 Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
@@ -64,10 +64,15 @@ Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
         open list <linux-kernel@vger.kernel.org>
 References: <20220615150107.2969593-1-robdclark@gmail.com>
+ <20220615150107.2969593-2-robdclark@gmail.com>
 From:   Steev Klimaszewski <steev@kali.org>
-In-Reply-To: <20220615150107.2969593-1-robdclark@gmail.com>
+In-Reply-To: <20220615150107.2969593-2-robdclark@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -78,68 +83,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 On 6/15/22 10:01 AM, Rob Clark wrote:
 > From: Rob Clark <robdclark@chromium.org>
 >
-> I noticed while looking at some traces, that we could miss calls to
-> msm_update_fence(), as the irq could have raced with retire_submits()
-> which could have already popped the last submit on a ring out of the
-> queue of in-flight submits.  But walking the list of submits in the
-> irq handler isn't really needed, as dma_fence_is_signaled() will dtrt.
-> So lets just drop it entirely.
+> Prior to the last commit, this could result in setting the GPU
+> written fence value back to an older value, if we had missed
+> updating completed_fence prior to suspend.  This was mostly
+> harmless as the GPU would eventually overwrite it again with
+> the correct value.  But we should just not do this.  Instead
+> just leave a sanity check that the fence looks plausible (in
+> case the GPU scribbled on memory).
 >
 > Reported-by: Steev Klimaszewski <steev@kali.org>
 > Fixes: 95d1deb02a9c ("drm/msm/gem: Add fenced vma unpin")
 > Signed-off-by: Rob Clark <robdclark@chromium.org>
 > ---
->   drivers/gpu/drm/msm/msm_gpu.c | 22 ++--------------------
->   1 file changed, 2 insertions(+), 20 deletions(-)
+>   drivers/gpu/drm/msm/adreno/adreno_gpu.c | 11 ++++++++---
+>   drivers/gpu/drm/msm/msm_gpu.c           |  2 +-
+>   2 files changed, 9 insertions(+), 4 deletions(-)
 >
-> diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-> index e59a757578df..b61078f0cd0f 100644
-> --- a/drivers/gpu/drm/msm/msm_gpu.c
-> +++ b/drivers/gpu/drm/msm/msm_gpu.c
-> @@ -176,24 +176,6 @@ int msm_gpu_hw_init(struct msm_gpu *gpu)
->   	return ret;
->   }
+> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+> index e1aef4875e2f..dd044d557c7c 100644
+> --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+> +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+> @@ -498,10 +498,15 @@ int adreno_hw_init(struct msm_gpu *gpu)
 >   
-> -static void update_fences(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
-> -		uint32_t fence)
-> -{
-> -	struct msm_gem_submit *submit;
-> -	unsigned long flags;
+>   		ring->cur = ring->start;
+>   		ring->next = ring->start;
 > -
-> -	spin_lock_irqsave(&ring->submit_lock, flags);
-> -	list_for_each_entry(submit, &ring->submits, node) {
-> -		if (fence_after(submit->seqno, fence))
-> -			break;
-> -
-> -		msm_update_fence(submit->ring->fctx,
-> -			submit->hw_fence->seqno);
-> -		dma_fence_signal(submit->hw_fence);
-> -	}
-> -	spin_unlock_irqrestore(&ring->submit_lock, flags);
-> -}
-> -
->   #ifdef CONFIG_DEV_COREDUMP
->   static ssize_t msm_gpu_devcoredump_read(char *buffer, loff_t offset,
->   		size_t count, void *data, size_t datalen)
-> @@ -450,7 +432,7 @@ static void recover_worker(struct kthread_work *work)
->   		if (ring == cur_ring)
->   			fence++;
->   
-> -		update_fences(gpu, ring, fence);
-> +		msm_update_fence(ring->fctx, fence);
+> -		/* reset completed fence seqno: */
+> -		ring->memptrs->fence = ring->fctx->completed_fence;
+>   		ring->memptrs->rptr = 0;
+> +
+> +		/* Detect and clean up an impossible fence, ie. if GPU managed
+> +		 * to scribble something invalid, we don't want that to confuse
+> +		 * us into mistakingly believing that submits have completed.
+> +		 */
+> +		if (fence_before(ring->fctx->last_fence, ring->memptrs->fence)) {
+> +			ring->memptrs->fence = ring->fctx->last_fence;
+> +		}
 >   	}
 >   
->   	if (msm_gpu_active(gpu)) {
-> @@ -753,7 +735,7 @@ void msm_gpu_retire(struct msm_gpu *gpu)
->   	int i;
+>   	return 0;
+> diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+> index b61078f0cd0f..8c00f9187c03 100644
+> --- a/drivers/gpu/drm/msm/msm_gpu.c
+> +++ b/drivers/gpu/drm/msm/msm_gpu.c
+> @@ -430,7 +430,7 @@ static void recover_worker(struct kthread_work *work)
+>   		 * one more to clear the faulting submit
+>   		 */
+>   		if (ring == cur_ring)
+> -			fence++;
+> +			ring->memptrs->fence = ++fence;
 >   
->   	for (i = 0; i < gpu->nr_rings; i++)
-> -		update_fences(gpu, gpu->rb[i], gpu->rb[i]->memptrs->fence);
-> +		msm_update_fence(gpu->rb[i]->fctx, gpu->rb[i]->memptrs->fence);
->   
->   	kthread_queue_work(gpu->worker, &gpu->retire_work);
->   	update_sw_cntrs(gpu);
-
+>   		msm_update_fence(ring->fctx, fence);
+>   	}
 
 Tested on the Lenovo Yoga C630
 
