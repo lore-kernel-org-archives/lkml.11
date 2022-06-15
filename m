@@ -2,114 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E58AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:29:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:29:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346106AbiFOK32 (ORCPT
+        id S1347777AbiFOK3m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48076 "EHLO
+        Wed, 15 Jun 2022 06:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347582AbiFOK20 (ORCPT
+        with ESMTP id S1346496AbiFOK3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:28:26 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17CEE13F49
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:28:23 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id fu17so7815005qtb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:28:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VRRIXOfBq1yQuH5EfBFqRJA+XF3LzpkQlfmJRxNlHxM=;
-        b=eTPtLP4NDpa8P0aI9dKapfMCGv9h90H8cChydbnDbXwDM3c9dFce+zWip7UvMIpzAj
-         MwWt4NSMWMqrTbGPwJOf7l27KNudx15eMZzj6SyR4Zlj5OpOoagmM2K/3bI+5LT3Niyi
-         h1vN0EW/aD3emP+jNz1Zcr7cozm+JkmhQecbNLlW+mU39R/LAtqcL2ahfL9sPHZJmXtA
-         n+McjAPLlSceH+/folG8esKMX+j5OcZkgls4MZ7OITX1SzUtIIuFxa5K+LPw/fz8Cv5V
-         vwmBMQsLsRdxHoNvxi45kD3Ty/9jaUWcXcCG6j3dwqXXCZ+czmFsSDp+cv482KfCuh2i
-         qjyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VRRIXOfBq1yQuH5EfBFqRJA+XF3LzpkQlfmJRxNlHxM=;
-        b=VaBRIEenyXpZkd2yJIy8SNrUdbZaKgZPosNwD2ErhlCjEb/cfPHwUu24nZVUv6QWwW
-         zgpYXTw3MojeqvKE5i4gWhk9w4m+HBt+ON3w7MKgobso5/Suv1jjHN6CAsCpGA5G+5St
-         bE4gTvih3cGy3/VH6Mk5XIiU37/z0uVhebiN+qhPgV0zDmub4sfio7sHxGU8gqiI8D3W
-         nOGt5Hay9efq49f3z+in2PAVPrghl5s0/s8GJW4tLs6dWMPFulbltFWfnD4vU9PdWFAi
-         CdIeB3RIawxmy2iRGLY1hKNPE8Ar//yYIWbdSpeKl47zu+UU0PU+4SCTWOcAemumyE1B
-         pRMw==
-X-Gm-Message-State: AOAM533qIWFl5T/oQ8Ouq+ug0xVoKSyrqxrLk+YoQnb3f+dtocMtlri4
-        2oZbVCB5r9NoGSptTSFS3vbq/hai1SfCQ2N2oP47LQ==
-X-Google-Smtp-Source: ABdhPJzgorGZ/k2s8/OSl6pg37NaKBcKW1yennvKVAegxKpGmun7X2J8lIgtj5Inxl+I5AXypY0S3fE/EQB34TCAN80=
-X-Received: by 2002:a05:622a:1351:b0:305:2e58:939 with SMTP id
- w17-20020a05622a135100b003052e580939mr7765424qtk.295.1655288902992; Wed, 15
- Jun 2022 03:28:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220614230136.3726047-1-emma@anholt.net> <20220614230136.3726047-2-emma@anholt.net>
-In-Reply-To: <20220614230136.3726047-2-emma@anholt.net>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Wed, 15 Jun 2022 13:28:12 +0300
-Message-ID: <CAA8EJpo=vLmsBRo16_xfbSdfFGvR1ocyuXm=2mqRR-9wyUESvw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] arm64: dts: qcom: sm8250: Enable per-process page tables.
-To:     Emma Anholt <emma@anholt.net>
-Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, Rob Clark <robdclark@gmail.com>,
-        Jordan Crouse <jcrouse@codeaurora.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        iommu@lists.linux-foundation.org,
+        Wed, 15 Jun 2022 06:29:37 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1A14BBB8;
+        Wed, 15 Jun 2022 03:29:36 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id AE502200CCB;
+        Wed, 15 Jun 2022 12:29:34 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 77E21200CC9;
+        Wed, 15 Jun 2022 12:29:34 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 0F83D1802205;
+        Wed, 15 Jun 2022 18:29:32 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Cc:     shengjiu.wang@gmail.com
+Subject: [PATCH 0/3] add bt-sco sound card support for i.MX8MQ/MM/MN
+Date:   Wed, 15 Jun 2022 18:15:31 +0800
+Message-Id: <1655288134-14083-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 at 02:01, Emma Anholt <emma@anholt.net> wrote:
->
-> This is an SMMU for the adreno gpu, and adding this compatible lets
-> the driver use per-fd page tables, which are required for security
-> between GPU clients.
->
-> Signed-off-by: Emma Anholt <emma@anholt.net>
-> ---
->
-> Tested with a full deqp-vk run on RB5, which did involve some iommu faults.
->
->  arch/arm64/boot/dts/qcom/sm8250.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-> index a92230bec1dd..483c0e0f1d1a 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-> @@ -2513,7 +2513,7 @@ gpucc: clock-controller@3d90000 {
->                 };
->
->                 adreno_smmu: iommu@3da0000 {
-> -                       compatible = "qcom,sm8250-smmu-500", "arm,mmu-500";
-> +                       compatible = "qcom,sm8250-smmu-500", "arm,mmu-500", "qcom,adreno-smmu";
+add bt-sco sound card support for i.MX8MQ/MM/MN
 
-I see that other dtsi files use a bit different order for the
-compatibility strings. They put "qcom,adreno-smmu" before
-"arm,mmu-500". Can we please follow them?
+Shengjiu Wang (3):
+  arm64: dts: imx8mm-evk: add bt-sco sound card support
+  arm64: dts: imx8mq-evk: add bt-sco sound card support
+  arm64: dts: imx8mn-evk: add bt-sco sound card support
 
-With that fixed:
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-
->                         reg = <0 0x03da0000 0 0x10000>;
->                         #iommu-cells = <2>;
->                         #global-interrupts = <2>;
-> --
-> 2.36.1
->
-
+ arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi | 43 +++++++++++++++++++
+ arch/arm64/boot/dts/freescale/imx8mn-evk.dtsi | 43 +++++++++++++++++++
+ arch/arm64/boot/dts/freescale/imx8mq-evk.dts  | 43 +++++++++++++++++++
+ 3 files changed, 129 insertions(+)
 
 -- 
-With best wishes
-Dmitry
+2.17.1
+
