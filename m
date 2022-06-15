@@ -2,152 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C054C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D628C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:07:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240298AbiFODHB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 23:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51512 "EHLO
+        id S1345736AbiFODH4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 23:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbiFODG5 (ORCPT
+        with ESMTP id S231722AbiFODHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 23:06:57 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5333C4B846;
-        Tue, 14 Jun 2022 20:06:51 -0700 (PDT)
-X-UUID: d4359e43390542e3a412e5f3f9e7e785-20220615
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:6fac960f-eae7-4e47-aba4-4f6689ee5700,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:b14ad71,CLOUDID:ae2640f6-e099-41ba-a32c-13b8bfe63214,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: d4359e43390542e3a412e5f3f9e7e785-20220615
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1589099927; Wed, 15 Jun 2022 11:06:47 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 15 Jun 2022 11:06:45 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Wed, 15 Jun 2022 11:06:45 +0800
-Message-ID: <6efcd9fbd86e923d2b124f7a97e8e3b8ddece252.camel@mediatek.com>
-Subject: Re: [PATCH v11 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
- driver
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Wed, 15 Jun 2022 11:06:45 +0800
-In-Reply-To: <20220610105522.13449-6-rex-bc.chen@mediatek.com>
-References: <20220610105522.13449-1-rex-bc.chen@mediatek.com>
-         <20220610105522.13449-6-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 14 Jun 2022 23:07:53 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9302459B;
+        Tue, 14 Jun 2022 20:07:50 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LN9DH32hzz1KB1D;
+        Wed, 15 Jun 2022 11:05:51 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 15 Jun 2022 11:07:48 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 15 Jun
+ 2022 11:07:48 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <radhey.shyam.pandey@xilinx.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <andy.chiu@sifive.com>,
+        <max.hsu@sifive.com>, <greentime.hu@sifive.com>
+Subject: [PATCH -next] net: axienet: add missing error return code in axienet_probe()
+Date:   Wed, 15 Jun 2022 11:18:10 +0800
+Message-ID: <20220615031810.1876309-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bo-Chen:
+It should return error code in error path in axienet_probe().
 
-On Fri, 2022-06-10 at 18:55 +0800, Bo-Chen Chen wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
-> 
-> This patch adds a embedded displayport driver for the MediaTek mt8195
-> SoC.
-> 
-> It supports the MT8195, the embedded DisplayPort units. It offers
-> DisplayPort 1.4 with up to 4 lanes.
-> 
-> The driver creates a child device for the phy. The child device will
-> never exist without the parent being active. As they are sharing a
-> register range, the parent passes a regmap pointer to the child so
-> that
-> both can work with the same register range. The phy driver sets
-> device
-> data that is read by the parent to get the phy device that can be
-> used
-> to control the phy properties.
-> 
-> This driver is based on an initial version by
-> Jitao shi <jitao.shi@mediatek.com>
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> [Bo-Chen: Cleanup the drivers and modify comments from reviewers]
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> ---
+Fixes: 00be43a74ca2 ("net: axienet: make the 64b addresable DMA depends on 64b archectures")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-[snip]
-
-> +
-> +static int mtk_dp_parse_capabilities(struct mtk_dp *mtk_dp)
-> +{
-> +	u8 val;
-> +	struct mtk_dp_train_info *train_info = &mtk_dp->train_info;
-> +
-> +	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER,
-> DP_SET_POWER_D0);
-> +	usleep_range(2000, 5000);
-> +
-> +	drm_dp_read_dpcd_caps(&mtk_dp->aux, mtk_dp->rx_cap);
-> +
-> +	mtk_dp->rx_cap[DP_TRAINING_AUX_RD_INTERVAL] &=
-> DP_TRAINING_AUX_RD_MASK;
-> +
-> +	train_info->link_rate = min_t(int, mtk_dp->max_linkrate,
-> +				      mtk_dp->rx_cap[mtk_dp-
-> >max_linkrate]);
-> +	train_info->lane_count = min_t(int, mtk_dp->max_lanes,
-> +				       drm_dp_max_lane_count(mtk_dp-
-> >rx_cap));
-> +
-> +	train_info->tps3 = drm_dp_tps3_supported(mtk_dp->rx_cap);
-> +	train_info->tps4 = drm_dp_tps4_supported(mtk_dp->rx_cap);
-> +
-> +	train_info->sink_ssc = !!(mtk_dp->rx_cap[DP_MAX_DOWNSPREAD] &
-> +				  DP_MAX_DOWNSPREAD_0_5);
-
-I think this is redundant because next statement would set sink_scc to
-false.
-
-Regards,
-CK
-
-> +
-> +	train_info->sink_ssc = false;
-> +
-> +	drm_dp_dpcd_readb(&mtk_dp->aux, DP_MSTM_CAP, &val);
-> +	if (val & DP_MST_CAP) {
-> +		/* Clear DP_DEVICE_SERVICE_IRQ_VECTOR_ESI0 */
-> +		drm_dp_dpcd_readb(&mtk_dp->aux,
-> +				  DP_DEVICE_SERVICE_IRQ_VECTOR_ESI0,
-> &val);
-> +		if (val)
-> +			drm_dp_dpcd_writeb(&mtk_dp->aux,
-> +					   DP_DEVICE_SERVICE_IRQ_VECTOR
-> _ESI0,
-> +					   val);
-> +	}
-> +
-> +	return 0;
-> +}
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index fa7bcd2c1892..1760930ec0c4 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -2039,6 +2039,7 @@ static int axienet_probe(struct platform_device *pdev)
+ 	}
+ 	if (!IS_ENABLED(CONFIG_64BIT) && lp->features & XAE_FEATURE_DMA_64BIT) {
+ 		dev_err(&pdev->dev, "64-bit addressable DMA is not compatible with 32-bit archecture\n");
++		ret = -EINVAL;
+ 		goto cleanup_clk;
+ 	}
+ 
+-- 
+2.25.1
 
