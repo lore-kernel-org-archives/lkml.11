@@ -2,223 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C156FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C34BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355984AbiFOODO (ORCPT
+        id S1355968AbiFOODo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46552 "EHLO
+        Wed, 15 Jun 2022 10:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356291AbiFOOCx (ORCPT
+        with ESMTP id S1355665AbiFOODR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:02:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5DA2DE6;
-        Wed, 15 Jun 2022 07:02:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA25161B7F;
-        Wed, 15 Jun 2022 14:02:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1849EC34115;
-        Wed, 15 Jun 2022 14:02:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655301740;
-        bh=4D0SVD6o9DZcpnaifdB+Joi2a7Df3F/4wIsCUGJrE10=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=hVuD5MPRuhChpPh7lk5G0SdbWiLGcFoRNYvmnQgMT7ENk3tvNDyEgkclsUMMGneCd
-         clT2YCjKwE6XPSJPdFWmOszhlvPPGX5+WatXZicOUF+nuwOzsQExEu95IeVzPU/AqE
-         BbnKySGMYzlrOzuTRkYBCu5bzlyyoJxSVlzafQAT6vIA+VNB/+S2eaOdsPrFqwjW1l
-         JJ6DxjHN9Z8mdId10gqXT6ZabWXlVDoJ1LDUBW/rU2If34q4bwOHj50rtkPwGLRfmK
-         IHxNG6yQCLtyOcKtEuxLg396K8deAtrRm07PkXUFbLQ2Ph3N6cV9L2qfQmUaUNsxpw
-         hAaW/A8NCBJ4Q==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id B958D5C013F; Wed, 15 Jun 2022 07:02:19 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 07:02:19 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Uladzislau Rezki <urezki@gmail.com>
-Cc:     Joel Fernandes <joel@joelfernandes.org>,
-        LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
-        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
-Subject: Re: [PATCH 2/2] rcu/kvfree: Introduce KFREE_DRAIN_JIFFIES_[MAX/MIN]
- interval
-Message-ID: <20220615140219.GL1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220602080644.432156-2-urezki@gmail.com>
- <20220604155108.GU1790663@paulmck-ThinkPad-P17-Gen-1>
- <YpxzB3/HRN/EEHa8@pc638.lan>
- <20220607034710.GE1790663@paulmck-ThinkPad-P17-Gen-1>
- <CA+KHdyXU1apQQbVVZ_zX7o86Qp-AQnif2u8aJFULqHNtfCGcSA@mail.gmail.com>
- <YqN1QqRmPpchDm/k@google.com>
- <YqcHrIMefthWe0t4@pc638.lan>
- <YqgtuBXW5pW4ivD/@pc638.lan>
- <20220615051205.GG1790663@paulmck-ThinkPad-P17-Gen-1>
- <YqmLEPD2XVB3LPeA@pc638.lan>
+        Wed, 15 Jun 2022 10:03:17 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDD110F1;
+        Wed, 15 Jun 2022 07:03:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655301782; x=1686837782;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=wB8IdGjwWR4VpCGztcdlKcCnZSDfsh9h9lU6StlhX6Q=;
+  b=UTr6lSsJRpus2LDPO6wGYyoQPDnj63DfpYTp06CToFZe9dB19GwXBBD7
+   qL5qhZqd32deyUf0KlgaPLGA/M6OPUyMwCM9jW+9eQI1SPd9+3ybIFfjp
+   dMSJYN2b66ddHRg7JVWT0qb7zbmhbsbZnmiKYAsmR/cTu3bnS0DFFkXiN
+   yi2Nf0rwfpsKZN+a2gIGlut03Ww2c6KQ+DtMgjOHFynz3JgoRoZWaWc0Y
+   uPFxzh8QdzBCs6OJtgT4/ia1NExN8RotTa+YaqPPMoCT2cg+jIfoLYNhN
+   ce5p+6KNCOPdN+Qjf9K9mXWu4xkXzhc+d3uMJyvcih3NVoTqTfR0lTuDC
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="258822117"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="258822117"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 07:02:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="572033359"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga002.jf.intel.com with ESMTP; 15 Jun 2022 07:02:16 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25FE2EOf020988;
+        Wed, 15 Jun 2022 15:02:14 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matt Turner <mattst88@gmail.com>,
+        Brian Cain <bcain@quicinc.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 6/6] bitops: let optimize out non-atomic bitops on compile-time constants
+Date:   Wed, 15 Jun 2022 16:00:30 +0200
+Message-Id: <20220615140030.1265068-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <YqlRfoB5+VBIw8gJ@yury-laptop>
+References: <20220610113427.908751-1-alexandr.lobakin@intel.com> <20220610113427.908751-7-alexandr.lobakin@intel.com> <YqlRfoB5+VBIw8gJ@yury-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqmLEPD2XVB3LPeA@pc638.lan>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 09:32:32AM +0200, Uladzislau Rezki wrote:
-> > On Tue, Jun 14, 2022 at 08:42:00AM +0200, Uladzislau Rezki wrote:
-> > > > Hello, Joel, Paul.
-> > > > 
-> > > > > Hi Vlad, Paul,
-> > > > > 
-> > > > > On Thu, Jun 09, 2022 at 03:10:57PM +0200, Uladzislau Rezki wrote:
-> > > > > > On Tue, Jun 7, 2022 at 5:47 AM Paul E. McKenney <paulmck@kernel.org> wrote:
-> > > > > > >
-> > > > > > > On Sun, Jun 05, 2022 at 11:10:31AM +0200, Uladzislau Rezki wrote:
-> > > > > > > > > On Thu, Jun 02, 2022 at 10:06:44AM +0200, Uladzislau Rezki (Sony) wrote:
-> > > > > > > > > > Currently the monitor work is scheduled with a fixed interval that
-> > > > > > > > > > is HZ/20 or each 50 milliseconds. The drawback of such approach is
-> > > > > > > > > > a low utilization of page slot in some scenarios. The page can store
-> > > > > > > > > > up to 512 records. For example on Android system it can look like:
-> > > > > > > > > >
-> > > > > > > > > > <snip>
-> > > > > > > > > >   kworker/3:0-13872   [003] .... 11286.007048: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=1
-> > > > > > > > > >   kworker/3:0-13872   [003] .... 11286.015638: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=2
-> > > > > > > > > >   kworker/1:2-20434   [001] .... 11286.051230: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=1
-> > > > > > > > > >   kworker/1:2-20434   [001] .... 11286.059322: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=2
-> > > > > > > > > >   kworker/0:1-20052   [000] .... 11286.095295: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=2
-> > > > > > > > > >   kworker/0:1-20052   [000] .... 11286.103418: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=1
-> > > > > > > > > >   kworker/2:3-14372   [002] .... 11286.135155: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=2
-> > > > > > > > > >   kworker/2:3-14372   [002] .... 11286.135198: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=1
-> > > > > > > > > >   kworker/1:2-20434   [001] .... 11286.155377: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=5
-> > > > > > > > > >   kworker/2:3-14372   [002] .... 11286.167181: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=5
-> > > > > > > > > >   kworker/1:2-20434   [001] .... 11286.179202: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x000000008ef95e14 nr_records=1
-> > > > > > > > > >   kworker/2:3-14372   [002] .... 11286.187398: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000c597d297 nr_records=6
-> > > > > > > > > >   kworker/3:0-13872   [003] .... 11286.187445: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000050bf92e2 nr_records=3
-> > > > > > > > > >   kworker/1:2-20434   [001] .... 11286.198975: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=4
-> > > > > > > > > >   kworker/1:2-20434   [001] .... 11286.207203: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=4
-> > > > > > > > > > <snip>
-> > > > > > > > > >
-> > > > > > > > > > where a page only carries few records to reclaim a memory. In order to
-> > > > > > > > > > improve batching and make utilization more efficient the patch introduces
-> > > > > > > > > > a drain interval that can be set either to KFREE_DRAIN_JIFFIES_MAX or
-> > > > > > > > > > KFREE_DRAIN_JIFFIES_MIN. It is adjusted if a flood is detected, in this
-> > > > > > > > > > case a memory reclaim occurs more often whereas in mostly idle cases the
-> > > > > > > > > > interval is set to its maximum timeout that improves the utilization of
-> > > > > > > > > > page slots.
-> > > > > > > > > >
-> > > > > > > > > > Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
-> > > > > > > > >
-> > > > > > > > > That does look like a problem well worth solving!
-> > > > > > > > >
-> > > > > > > > Agree, better ideas make better final solution :)
-> > > > > > > >
-> > > > > > > > >
-> > > > > > > > > But I am missing one thing. If we are having a callback flood, why do we
-> > > > > > > > > need a shorter timeout?
-> > > > > > > > >
-> > > > > > > > To offload faster, because otherwise we run into classical issue, it is a low
-> > > > > > > > memory condition state resulting in OOM.
-> > > > > > >
-> > > > > > > But doesn't each callback queued during the flood give us an opportunity
-> > > > > > > to react to the flood?  That will be way more fine-grained than any
-> > > > > > > reasonable timer, right?  Or am I missing something?
-> > > > > > >
-> > > > > > We can set the timer to zero or to current "jiffies" to initiate the
-> > > > > > offloading if the
-> > > > > > page is full. In that sense probably it make sense to propagate those two attr.
-> > > > > > to user space, so the user can configure min/max drain interval.
-> > > > > > 
-> > > > > > Or we can only deal with fixed interval exposed via sysfs to control it by user.
-> > > > > > In that case we can get rid of MIN one and just trigger a timer if the page is
-> > > > > > full. I think this approach is better.
-> > > > > 
-> > > > > Yes I also think triggering timer with zero-timeout is better. Can you (Vlad)
-> > > > > accomplish that by just calling the timer callback inline, instead of queuing
-> > > > > a timer? I imagine you would just do queue_work() instead of
-> > > > > queue_delayed_work() in this scenario.
-> > > > > 
-> > > > > > > I do agree that the action would often need to be indirect to avoid the
-> > > > > > > memory-allocation-state hassles, but we already can do that, either via
-> > > > > > > an extremely short-term hrtimer or something like irq-work.
-> > > > > > >
-> > > > > > > > > Wouldn't a check on the number of blocks queued be simpler, more direct,
-> > > > > > > > > and provide faster response to the start of a callback flood?
-> > > > > > > > >
-> > > > > > > > I rely on krcp->count because not always we can store the pointer in the page
-> > > > > > > > slots. We can not allocate a page in the caller context thus we use page-cache
-> > > > > > > > worker that fills the cache in normal context. While it populates the cache,
-> > > > > > > > pointers temporary are queued to the linked-list.
-> > > > > > > >
-> > > > > > > > Any thoughts?
-> > > > > > >
-> > > > > > > There are a great many ways to approach this.  One of them is to maintain
-> > > > > > > a per-CPU free-running counter of kvfree_rcu() calls, and to reset this
-> > > > > > > counter each jiffy.
-> > > > > > >
-> > > > > > > Or am I missing a trick here?
-> > > > > > >
-> > > > > > Do you mean to have a per-cpu timer that checks the per-cpu-freed counter
-> > > > > > and schedule the work when if it is needed? Or i have missed your point?
-> > > > > 
-> > > > > I think he (Paul) is describing the way 'flood detection' can work similar to how the
-> > > > > bypass list code is implemented. There he maintains a count which only if
-> > > > > exceeds a limit, will queue on to the bypass list.
-> > > > > 
-> > > > OK, i see that. We also do similar thing. We say it is a flood - when a
-> > > > page becomes full, so it is kind of threshold that we pass.
-> > > > 
-> > > > > This code:
-> > > > > 
-> > > > >         // If we have advanced to a new jiffy, reset counts to allow
-> > > > >         // moving back from ->nocb_bypass to ->cblist.
-> > > > >         if (j == rdp->nocb_nobypass_last) {
-> > > > >                 c = rdp->nocb_nobypass_count + 1;
-> > > > >         } else {
-> > > > >                 WRITE_ONCE(rdp->nocb_nobypass_last, j);
-> > > > >                 c = rdp->nocb_nobypass_count - nocb_nobypass_lim_per_jiffy;
-> > > > >                 if (ULONG_CMP_LT(rdp->nocb_nobypass_count,
-> > > > >                                  nocb_nobypass_lim_per_jiffy))
-> > > > >                         c = 0;
-> > > > >                 else if (c > nocb_nobypass_lim_per_jiffy)
-> > > > >                         c = nocb_nobypass_lim_per_jiffy;
-> > > > >         }
-> > > > >         WRITE_ONCE(rdp->nocb_nobypass_count, c);
-> > > > > 
-> > > > > 
-> > > > > Your (Vlad's) approach OTOH is also fine to me, you check if page is full and
-> > > > > make that as a 'flood is happening' detector.
-> > > > > 
-> > > > OK, thank you Joel. I also think, that way we improve batching and utilization
-> > > > of the page what is actually an intention of the patch in question.
-> > > > 
-> > > Paul, will you pick this patch?
-> > 
-> > I did pick up the first one:
-> > 
-> > 16224f4cdf03 ("rcu/kvfree: Remove useless monitor_todo flag")
-> > 
-> > On the second one, if you use page-fill as your flood detector, can't
-> > you simplify things by just using the one longer timeout, as discussed
-> > in this thread?
-> > 
-> > Or did I miss a turn somewhere?
-> > 
-> No, you did not :) Agreed i will simplify it with a one interval that
-> corresponding to 1 HZ. The flood is detected when a page is full. When
-> it occurs the work will be rearmed to be run asap. Will resend it.
+From: Yury Norov <yury.norov@gmail.com>
+Date: Tue, 14 Jun 2022 20:26:54 -0700
 
-Very good, and looking forward to it!
-
-> One thing that we have discussed, in case of flood we can minimize a
-> memory footprint by releasing the page directly from the our monitor
-> work if the grace period is passed for the all page slots. In that case
-> we do not need to move the page forward toward the RCU-core for later
-> reclaim.
+> Hi Alexander,
 > 
-> But that is another patches. I will examine it when i return back from 
-> Norway.
+> On Fri, Jun 10, 2022 at 01:34:27PM +0200, Alexander Lobakin wrote:
+> > Currently, many architecture-specific non-atomic bitop
+> > implementations use inline asm or other hacks which are faster or
+> > more robust when working with "real" variables (i.e. fields from
+> > the structures etc.), but the compilers have no clue how to optimize
+> > them out when called on compile-time constants. That said, the
+> > following code:
+> > 
+> > 	DECLARE_BITMAP(foo, BITS_PER_LONG) = { }; // -> unsigned long foo[1];
+> > 	unsigned long bar = BIT(BAR_BIT);
+> > 	unsigned long baz = 0;
+> > 
+> > 	__set_bit(FOO_BIT, foo);
+> > 	baz |= BIT(BAZ_BIT);
+> > 
+> > 	BUILD_BUG_ON(!__builtin_constant_p(test_bit(FOO_BIT, foo));
+> > 	BUILD_BUG_ON(!__builtin_constant_p(bar & BAR_BIT));
+> > 	BUILD_BUG_ON(!__builtin_constant_p(baz & BAZ_BIT));
+> 
+> Can you put this snippet into lib/test_bitops.c?
 
-Agreed, those should be separate patches.
+Great idea, sure!
 
-							Thanx, Paul
+> 
+> Thanks,
+> Yury
+> 
+> > triggers the first assertion on x86_64, which means that the
+> > compiler is unable to evaluate it to a compile-time initializer
+> > when the architecture-specific bitop is used even if it's obvious.
+> > In order to let the compiler optimize out such cases, expand the
+> > bitop() macro to use the "constant" C non-atomic bitop
+> > implementations when all of the arguments passed are compile-time
+> > constants, which means that the result will be a compile-time
+> > constant as well, so that it produces more efficient and simple
+> > code in 100% cases, comparing to the architecture-specific
+> > counterparts.
+> > 
+> > The savings are architecture, compiler and compiler flags dependent,
+> > for example, on x86_64 -O2:
+> > 
+> > GCC 12: add/remove: 78/29 grow/shrink: 332/525 up/down: 31325/-61560 (-30235)
+> > LLVM 13: add/remove: 79/76 grow/shrink: 184/537 up/down: 55076/-141892 (-86816)
+> > LLVM 14: add/remove: 10/3 grow/shrink: 93/138 up/down: 3705/-6992 (-3287)
+> > 
+> > and ARM64 (courtesy of Mark):
+> > 
+> > GCC 11: add/remove: 92/29 grow/shrink: 933/2766 up/down: 39340/-82580 (-43240)
+> > LLVM 14: add/remove: 21/11 grow/shrink: 620/651 up/down: 12060/-15824 (-3764)
+> > 
+> > Cc: Mark Rutland <mark.rutland@arm.com>
+> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > ---
+> >  include/linux/bitops.h | 18 +++++++++++++++++-
+> >  1 file changed, 17 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+> > index 753f98e0dcf5..364bdc3606b4 100644
+> > --- a/include/linux/bitops.h
+> > +++ b/include/linux/bitops.h
+> > @@ -33,8 +33,24 @@ extern unsigned long __sw_hweight64(__u64 w);
+> >  
+> >  #include <asm-generic/bitops/generic-non-atomic.h>
+> >  
+> > +/*
+> > + * Many architecture-specific non-atomic bitops contain inline asm code and due
+> > + * to that the compiler can't optimize them to compile-time expressions or
+> > + * constants. In contrary, gen_*() helpers are defined in pure C and compilers
+> > + * optimize them just well.
+> > + * Therefore, to make `unsigned long foo = 0; __set_bit(BAR, &foo)` effectively
+> > + * equal to `unsigned long foo = BIT(BAR)`, pick the generic C alternative when
+> > + * the arguments can be resolved at compile time. That expression itself is a
+> > + * constant and doesn't bring any functional changes to the rest of cases.
+> > + * The casts to `uintptr_t` are needed to mitigate `-Waddress` warnings when
+> > + * passing a bitmap from .bss or .data (-> `!!addr` is always true).
+> > + */
+> >  #define bitop(op, nr, addr)						\
+> > -	op(nr, addr)
+> > +	((__builtin_constant_p(nr) &&					\
+> > +	  __builtin_constant_p((uintptr_t)(addr) != (uintptr_t)NULL) &&	\
+> > +	  (uintptr_t)(addr) != (uintptr_t)NULL &&			\
+> > +	  __builtin_constant_p(*(const unsigned long *)(addr))) ?	\
+> > +	 const##op(nr, addr) : op(nr, addr))
+> >  
+> >  #define __set_bit(nr, addr)		bitop(___set_bit, nr, addr)
+> >  #define __clear_bit(nr, addr)		bitop(___clear_bit, nr, addr)
+> > -- 
+> 2.36.1
+
+Thanks,
+Olek
