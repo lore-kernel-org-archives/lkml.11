@@ -2,102 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB1B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:08:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348411AbiFOMIo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 08:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40436 "EHLO
+        id S241474AbiFOMJk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 08:09:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240502AbiFOMIm (ORCPT
+        with ESMTP id S235822AbiFOMJj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 08:08:42 -0400
-Received: from m15112.mail.126.com (m15112.mail.126.com [220.181.15.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 396F7403F2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:08:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=58oAQ
-        UJN8JUwGFEUGf4YZNmf+AqCGHJHSJulELfzgaU=; b=jtp6v+PUhO9GNmrF3z/lh
-        0YvwA/qXsvMuR21y9cY0bfot3aw8wi2eiEyEFMCr4ZAoCAp8shH7dwgsnkp/X9cS
-        JZENlIEfTmg6Q6SjQbpMi3Dr2de3eKq1qIwcayjuzFAnJjdSlP5q4bmNykTOvCLh
-        pf/4HcfWS+IXJ+a+BIQH+U=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp2 (Coremail) with SMTP id DMmowABnegV1y6liCKo0DQ--.43270S2;
-        Wed, 15 Jun 2022 20:07:18 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     oss@buserror.net, mpe@ellerman.id.au, benh@kernel.crashing.org,
-        paulus@samba.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Liang He <windhl@126.com>
-Subject: [PATCH] arch: powerpc: platforms: 85xx: Add missing of_node_put in sgy_cts1000.c
-Date:   Wed, 15 Jun 2022 20:07:17 +0800
-Message-Id: <20220615120717.3965164-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 08:09:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB5946B10
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:09:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36018B81D93
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 12:09:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5A62C341C0
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 12:09:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655294975;
+        bh=wkqJ/T68k9r2Oy7BU+HQ4jeUyx1IPklxlT7PijJ0qno=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=hBt3Uo2tvXWSIPqwv/rcfFfzw4wpkZe0NdighutShKy/XFepXHmGKfhpOAhcrLwE+
+         taYYa+aQMG0lR76MSX8kXzT/y0AXI3zot9Q+2g6exppRyo0EIkqVCoXZCZLf9DivHG
+         ljYfN30qUa6XOe65EtlPkcEaFvgUH0d5ZH1XHzhi2g/wH7ayjFNkBZNkEkcK6tgBnk
+         jEAmuctIBOBzAK2CPoRWUKHbJdaWIYFbmSxpYykG0IZwYNjX5zJjeO1Q5o1njuFv8D
+         WGQfXh0ytS8hRUveyO4X8+SU2LMi0T0QjKGzu3ZniBGrTdoGj19NJ7SRXaIMBiEYy/
+         ZWVl+MGVwqjKA==
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-313a8a8b95aso58822797b3.5
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:09:35 -0700 (PDT)
+X-Gm-Message-State: AJIora/GPXjX4QRVk+0lIjTHMGux60RHkBiMjGHkCT1m0ITq9YtW+z79
+        /UrUzAQM4a96FlSna+YCR7IT6BNPWzcYmNbQ9vQ=
+X-Google-Smtp-Source: AGRyM1v1gZhuyIQo1km9VW5YHgE9Bpwhdz8KfSM7SWxOvp4o1BPT2oLt9iJz8J4qcgAqPHbKBgqAXKr5A03/M/GsKic=
+X-Received: by 2002:a0d:d84d:0:b0:314:2bfd:ddf3 with SMTP id
+ a74-20020a0dd84d000000b003142bfdddf3mr11531420ywe.347.1655294974785; Wed, 15
+ Jun 2022 05:09:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DMmowABnegV1y6liCKo0DQ--.43270S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7KF4DZF45Cw48ur1rAr1UKFg_yoW8XFykpF
-        s0kayfCFsrWryxGasrtas8CFy7t3W0qay7Jw1akws7C3W8X39Fvry8ZF4xXrn3uFW8G3yr
-        Jr1ayayq9FsFv3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRT7KfUUUUU=
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/xtbBGgchF1-HZTZrDwAAsE
+References: <CAFJhRnoEifeo0Tr2qfKD031C=9jYZ7oP3zSR9hFUmFp86Og7+Q@mail.gmail.com>
+ <CAK8P3a1RVKLFT0aX38fJoFejgrq7VCz7auHjtsBB9W0rwnedCw@mail.gmail.com>
+ <20220607163053.GD7074@brightrain.aerifal.cx> <CAFJhRnrWPC6pk67Xo9A9EeHFhoJCkE2PfwS4wFUep2JS3D9ujQ@mail.gmail.com>
+ <CAK8P3a04TcLnhEE+MmQGOLU_AcVD5Rb+8vCKFSRF-zg33161ig@mail.gmail.com>
+ <20220614170013.GH7074@brightrain.aerifal.cx> <CAK8P3a0d9hOuv+RiN_eQZtmfc7DCbJe6nEhL+W1AU2kFjiDZWw@mail.gmail.com>
+ <20220614204900.GI7074@brightrain.aerifal.cx> <CAK8P3a0jk736rPueff--Uor=tHmicHZgoikrAsjp0DHxmkaiWg@mail.gmail.com>
+ <20220614232826.GJ7074@brightrain.aerifal.cx>
+In-Reply-To: <20220614232826.GJ7074@brightrain.aerifal.cx>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 15 Jun 2022 14:09:16 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3WZB81QqAJF1zi0Lp0n2vKhjKhiCS4vcOoVi8jt-Y3aA@mail.gmail.com>
+Message-ID: <CAK8P3a3WZB81QqAJF1zi0Lp0n2vKhjKhiCS4vcOoVi8jt-Y3aA@mail.gmail.com>
+Subject: Re: [musl] Question about musl's time() implementation in time.c
+To:     musl@lists.openwall.com
+Cc:     John Stultz <jstultz@google.com>, Stephen Boyd <sboyd@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Adhemerval Zanella <adhemerval.zanella@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Liang He <windhl@126.com>
----
- arch/powerpc/platforms/85xx/sgy_cts1000.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+On Wed, Jun 15, 2022 at 1:28 AM Rich Felker <dalias@libc.org> wrote:
+> On Tue, Jun 14, 2022 at 11:11:32PM +0200, Arnd Bergmann wrote:
+> >
+> > The thing is that a lot of file systems would still behave the same way
+> > because they round times down to a filesystem specific resolution,
+> > often one microsecond or one second, while the kernel time accounting
+> > is in nanoseconds. There have been discussions about an interface
+> > to find out what the actual resolution on a given mount point is (similar
+> > to clock_getres), but that never made it in. The guarantees that you
+> > get from file systems at the moment are:
+>
+> It's normal that they may be rounded down the the filesystem timestamp
+> granularity. I thought what was going on here was worse.
 
-diff --git a/arch/powerpc/platforms/85xx/sgy_cts1000.c b/arch/powerpc/platforms/85xx/sgy_cts1000.c
-index 98ae64075193..2a45b30852b2 100644
---- a/arch/powerpc/platforms/85xx/sgy_cts1000.c
-+++ b/arch/powerpc/platforms/85xx/sgy_cts1000.c
-@@ -85,17 +85,24 @@ static int gpio_halt_probe(struct platform_device *pdev)
- 	/* Technically we could just read the first one, but punish
- 	 * DT writers for invalid form. */
- 	if (of_gpio_count(halt_node) != 1)
-+	{
-+		of_node_put(halt_node);
- 		return -EINVAL;
-+	}
- 
- 	/* Get the gpio number relative to the dynamic base. */
- 	gpio = of_get_gpio_flags(halt_node, 0, &flags);
- 	if (!gpio_is_valid(gpio))
-+	{
-+		of_node_put(halt_node);
- 		return -EINVAL;
-+	}
- 
- 	err = gpio_request(gpio, "gpio-halt");
- 	if (err) {
- 		printk(KERN_ERR "gpio-halt: error requesting GPIO %d.\n",
- 		       gpio);
-+		of_node_put(halt_node);
- 		halt_node = NULL;
- 		return err;
- 	}
-@@ -112,6 +119,7 @@ static int gpio_halt_probe(struct platform_device *pdev)
- 		printk(KERN_ERR "gpio-halt: error requesting IRQ %d for "
- 		       "GPIO %d.\n", irq, gpio);
- 		gpio_free(gpio);
-+		of_node_put(halt_node);
- 		halt_node = NULL;
- 		return err;
- 	}
-@@ -123,6 +131,8 @@ static int gpio_halt_probe(struct platform_device *pdev)
- 	printk(KERN_INFO "gpio-halt: registered GPIO %d (%d trigger, %d"
- 	       " irq).\n", gpio, trigger, irq);
- 
-+	of_node_put(halt_node);
-+
- 	return 0;
- }
- 
--- 
-2.25.1
+It gets rounded down twice: first down to the start of the current
+timer tick, which is at an arbitrary nanosecond value in the past 10ms,
+and then to the resolution of the file system. The result is that the
+file timestamp can point to a slightly earlier value, up to max(timer tick
+cycle, fs resolution) before the actual nanosecond value. We don't
+advertise the granule of the file system though, so I would expect
+this to be within the expected behavior.
 
+> OK, the time syscall doing the wrong thing here (using a different
+> clock that's not correctly ordered with respect to CLOCK_REALTIME)
+> seems to be the worst problem here -- if I'm understanding it right.
+> The filesystem issue might be a non-issue if it's truly equivalent to
+> just having coarser fs timestamp granularity, which is allowed.
+
+Adding the kernel timekeeping maintainers to Cc. I think this is a
+reasonable argument, but it goes against the current behavior.
+
+We have four implementations of the time() syscall that one would
+commonly encounter:
+
+- The kernel syscall, using (effectively) CLOCK_REALTIME_COARSE
+- The kernel vdso, using (effectively) CLOCK_REALTIME_COARSE
+- The glibc interface, calling __clock_gettime64(CLOCK_REALTIME_COARSE, ...)
+- The musl interface, calling __clock_gettime64(CLOCK_REALTIME, ...)
+
+So even if everyone agrees that the musl implementation is the
+correct one, I think both linux and glibc are more likely to stick with
+the traditional behavior to avoid breaking user space code such as the
+libc-test case that Zev brought up initially. At least Adhemerval's
+time() implementation in glibc[1] appears to have done this intentionally,
+while the Linux implementation has simply never changed this in an
+incompatible way since Linux-0.01 added time() and 0.99.13k added
+the high-resolution gettimeofday().
+
+       Arnd
+
+[1] https://sourceware.org/git/?p=glibc.git;a=commitdiff;h=0d56378349
