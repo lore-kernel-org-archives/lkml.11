@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E495CCCA481
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6518AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:25:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346831AbiFOLY5 (ORCPT
+        id S1347102AbiFOLZA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 07:24:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52980 "EHLO
+        Wed, 15 Jun 2022 07:25:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345463AbiFOLYy (ORCPT
+        with ESMTP id S1343678AbiFOLYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 15 Jun 2022 07:24:54 -0400
 Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236E63BF8D;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234BC35A8A;
         Wed, 15 Jun 2022 04:24:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
         d=metrotek.ru; s=mail;
         h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
          in-reply-to:references;
-        bh=PYcsBoWzdiCutgNRzhzdQblCHgmrM9wgVrOHPOZNCxQ=;
-        b=WubsJc9T0cKdJs/LOfFph6c9oHlDT9XttIKh7WXyioqy16IsWGnibxGMHMbOtC1ONP5WCykhba4/C
-         QzfXFK22CvSfzDg+Hd7ywMUOmfRfhkhLZmVF+Ln7MNZC6JqNgbbsrFEtxNwMUvOmtrxUt4vqCc2q/6
-         hpsdlIQOwWkfuO6RcdAah2qcbUnoXEOjgmM+jVRMq7lXrbysEWctDWGZJ96mMwaNomhS7v7ftPKCfN
-         Wj2lPSyu6OMdKWWDKym0IZMD+aME6uKX1lHr6OetdjOmhJ1+gbS+mJBacC7mTtuRjY6A7HhWTcERR0
-         p5siU49Rz2y4OG8VlrYoUrFyBID/D0Q==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000009,0.008181)], BW: [Enabled, t: (0.000020,0.000001)], RTDA: [Enabled, t: (0.073016), Hit: No, Details: v2.40.0; Id: 15.52k2j2.1g5jhnbul.lq7q; mclb], total: 0(700)
+        bh=EcbvH5RPee/rDXWiMNRyyIbGRAOxhEMvSxY8cLtRaOA=;
+        b=JTrJbypxiCe4DA5b8ilhmOAS03uiZCbk6o15Fc8yatSx98SQtP/dwOXMT5iq/lpO1ZrvKWZCrTXz4
+         fFzkTYUIWsDSu9DTvyQ1m+hmisN6RrFOxIXm8hc+42PXxfJL/o1FYZsK9KFFckBCfIW6CZl6s+/tEY
+         1OTf9STlgXuLyD030MsdDp3Jxunn7q6Y6fSOa1/+8zxwv6AWkzUGd3ejk4d/Opmq5rhdRoWro2mbDM
+         Q9Gf2D6i2hoFrU2Dl9GRccvEw8pZcIbEeuQ6AvzFH7p5AiRgALJFdoOWthg6hMTwnA4/qRlDtsgRQo
+         OZ1lexoWE0rxhEUD1fchpylSA13sUhA==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000014,0.011691)], BW: [Enabled, t: (0.000026,0.000001)], RTDA: [Enabled, t: (0.080385), Hit: No, Details: v2.40.0; Id: 15.52kcj6.1g5jhna0l.32ps; mclb], total: 0(700)
 X-Footer: bWV0cm90ZWsucnU=
 Received: from localhost.localdomain ([85.143.252.66])
         (authenticated user i.bornyakov@metrotek.ru)
         by mail.pr-group.ru with ESMTPSA
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Wed, 15 Jun 2022 14:24:34 +0300
+        Wed, 15 Jun 2022 14:24:32 +0300
 From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
 To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
         trix@redhat.com, corbet@lwn.net
@@ -40,11 +40,10 @@ Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
         Conor.Dooley@microchip.com, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
         devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v19 4/4] dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
-Date:   Wed, 15 Jun 2022 14:01:37 +0300
-Message-Id: <20220615110137.21902-5-i.bornyakov@metrotek.ru>
+        linux-kernel@vger.kernel.org, system@metrotek.ru
+Subject: [PATCH v19 2/4] docs: fpga: mgr: document parse_header() callback
+Date:   Wed, 15 Jun 2022 14:01:35 +0300
+Message-Id: <20220615110137.21902-3-i.bornyakov@metrotek.ru>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220615110137.21902-1-i.bornyakov@metrotek.ru>
 References: <20220615110137.21902-1-i.bornyakov@metrotek.ru>
@@ -54,67 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Device Tree Binding doc for Microchip Polarfire FPGA Manager using
-slave SPI to load .dat formatted bitstream image.
+Document newly introduced fpga_manager_ops callback parse_header() along
+with header_size and data_size fields of struct fpga_image_info.
 
 Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Xu Yilun <yilun.xu@intel.com>
 ---
- .../fpga/microchip,mpf-spi-fpga-mgr.yaml      | 44 +++++++++++++++++++
- 1 file changed, 44 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+ Documentation/driver-api/fpga/fpga-mgr.rst | 31 ++++++++++++++++------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-new file mode 100644
-index 000000000000..aee45cb15592
---- /dev/null
-+++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-@@ -0,0 +1,44 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/fpga/microchip,mpf-spi-fpga-mgr.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/Documentation/driver-api/fpga/fpga-mgr.rst b/Documentation/driver-api/fpga/fpga-mgr.rst
+index 42c01f396dce..f1e106c3194c 100644
+--- a/Documentation/driver-api/fpga/fpga-mgr.rst
++++ b/Documentation/driver-api/fpga/fpga-mgr.rst
+@@ -79,14 +79,29 @@ do the programming sequence for this particular FPGA.  These ops return 0 for
+ success or negative error codes otherwise.
+ 
+ The programming sequence is::
+- 1. .write_init
+- 2. .write or .write_sg (may be called once or multiple times)
+- 3. .write_complete
+-
+-The .write_init function will prepare the FPGA to receive the image data.  The
+-buffer passed into .write_init will be at most .initial_header_size bytes long;
+-if the whole bitstream is not immediately available then the core code will
+-buffer up at least this much before starting.
++ 1. .parse_header (optional, may be called once or multiple times)
++ 2. .write_init
++ 3. .write or .write_sg (may be called once or multiple times)
++ 4. .write_complete
 +
-+title: Microchip Polarfire FPGA manager.
++The .parse_header function will set header_size and data_size to
++struct fpga_image_info. If header_size is set, .write function will get image
++buffer starting at header_size offset from the beginning. If data_size is set,
++.write function will get data_size bytes of the image buffer, otherwise .write
++will get data up to the end of image buffer. This will not affect .write_sg,
++.write_sg will still get whole image in sg_table form. If FPGA image is
++already mapped as a single contiguous buffer, whole buffer will be passed into
++.parse_header. If image is in scatter-gather form, core code will buffer up at
++least .initial_header_size before the first call of .parse_header, if it is
++not enough, .parse_header should set desired size into info->header_size and
++return -EAGAIN, then it will be called again with greater part of image buffer
++on the input.
 +
-+maintainers:
-+  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
-+
-+description:
-+  Device Tree Bindings for Microchip Polarfire FPGA Manager using slave SPI to
-+  load the bitstream in .dat format.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - microchip,mpf-spi-fpga-mgr
-+
-+  reg:
-+    description: SPI chip select
-+    maxItems: 1
-+
-+  spi-max-frequency: true
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    spi {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            fpga_mgr@0 {
-+                    compatible = "microchip,mpf-spi-fpga-mgr";
-+                    spi-max-frequency = <20000000>;
-+                    reg = <0>;
-+            };
-+    };
++The .write_init function will prepare the FPGA to receive the image data. The
++buffer passed into .write_init will be at least info->header_size bytes long,
++if it's defined, otherwise .initial_header_size; if the whole bitstream is not
++immediately available then the core code will buffer up at least this much
++before starting.
+ 
+ The .write function writes a buffer to the FPGA. The buffer may be contain the
+ whole FPGA image or may be a smaller chunk of an FPGA image.  In the latter
 -- 
 2.35.1
 
