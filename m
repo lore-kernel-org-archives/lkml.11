@@ -2,209 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDEB6CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CADBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:59:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344888AbiFOQ5F (ORCPT
+        id S1350002AbiFOQ7m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
+        Wed, 15 Jun 2022 12:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348296AbiFOQ5C (ORCPT
+        with ESMTP id S1349990AbiFOQ7f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:57:02 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7963E4ECC7;
-        Wed, 15 Jun 2022 09:56:56 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1o1WJt-0008LU-1G; Wed, 15 Jun 2022 18:56:41 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, guoren@kernel.org, cmuellner@linux.com,
-        philipp.tomsich@vrull.eu, hch@lst.de, samuel@sholland.org,
-        atishp@atishpatra.org, anup@brainfault.org, mick@ics.forth.gr,
-        robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org,
-        drew@beagleboard.org, Atish Patra <atish.patra@wdc.com>
-Subject: Re: [PATCH 2/3] riscv: Implement Zicbom-based cache management operations
-Date:   Wed, 15 Jun 2022 18:56:40 +0200
-Message-ID: <110361853.nniJfEyVGO@diego>
-In-Reply-To: <20220610055608.GA24221@lst.de>
-References: <20220610004308.1903626-1-heiko@sntech.de> <20220610004308.1903626-3-heiko@sntech.de> <20220610055608.GA24221@lst.de>
+        Wed, 15 Jun 2022 12:59:35 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40CF52E084
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:59:33 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id k5-20020a17090a404500b001e8875e6242so2601417pjg.5
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:59:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TgYasgJyDkLKxGP7tFRjaW6ZIrdHuMDeEyRzo2a6X1Q=;
+        b=gnmHEB9YtHSr56xHMm+Ju6lUiJNhW1rHa8GBLrPRWPAKDMVAH23PB6WOAVuUtiEyDn
+         UkSMu1knR7p2h8iUbFoq+px2Oipj3Ep7zqXuNY1eAoL1Qk5WQnKsYclgY3ZunxMdEEmO
+         pw5998B9AhlvSn2Q82yKmOzxD0rD6dOq9sjSLFnLr4j5aba5+5aY99Q7KjeagLLeEDX3
+         QZzmCuBMtpj2NS1K0WnuqzUfFOzi7Z9GpkoF2cgglcA40uc4Sl8/CqNct3HdOEAe4OuV
+         rzMgmQlP8UGyA7KdX5/5Pt4ob+KcVBCz3gvvl2Oh78LGcHvCPB+rKIwaFU7NkTXkjpIH
+         SOkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TgYasgJyDkLKxGP7tFRjaW6ZIrdHuMDeEyRzo2a6X1Q=;
+        b=WPCdsQ4kWYI9k0keMwOEedGIeuBmBCVa9vFLQaSNnePcDrlS66ZNaJJwIM7e0HOmUu
+         U13VW5eCyHDOAWjMOn4zjUs38druvMZLyr1034Xni9TvPTGc9PGhL1EAIGmo9aMF0hku
+         xoOt9VEM69CJpnxnjgI8oqDWRWuDfvLeZoZ1cia0Wfr19g5KJ6x9AImnhyj8x498+5Hi
+         1AYNKr0DCUHHj2Bviral9bnxYbpZQUaQ1QKF7e/7bQYo+rBh98r1kNyh2k3pYJG2EeTu
+         urSXksYceh4yURxPfTtczLe97Rceh2hnfepxHPcnMDGJpvFXEuiw3bGqGkcOMD8x7NBY
+         QRlw==
+X-Gm-Message-State: AJIora+VMOWGhcmaMe/uBsVyyQS2DgRF0JqZTmWkHEjiXDEbmae8sRpQ
+        k1+Bd7XCWF+MY5DXcRcD5xAnkg==
+X-Google-Smtp-Source: AGRyM1tnLfxVY9k3xmR/MfAeKNGvzGPQaEJLVgW4JQvZSmUXpNi8brcF++WTTbZZTcGSrY4lVeQTgg==
+X-Received: by 2002:a17:902:b714:b0:168:f72d:b8d5 with SMTP id d20-20020a170902b71400b00168f72db8d5mr519478pls.66.1655312372688;
+        Wed, 15 Jun 2022 09:59:32 -0700 (PDT)
+Received: from localhost.localdomain ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id s194-20020a6377cb000000b003fd1111d73csm10618513pgc.4.2022.06.15.09.59.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 09:59:32 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/5] net: ipa: more multi-channel event ring work
+Date:   Wed, 15 Jun 2022 11:59:24 -0500
+Message-Id: <20220615165929.5924-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christoph,
+This series makes a little more progress toward supporting multiple
+channels with a single event ring.  The first removes the assumption
+that consecutive events are associated with the same RX channel.
 
-Am Freitag, 10. Juni 2022, 07:56:08 CEST schrieb Christoph Hellwig:
-> On Fri, Jun 10, 2022 at 02:43:07AM +0200, Heiko Stuebner wrote:
-> > +config RISCV_ISA_ZICBOM
-> > +	bool "Zicbom extension support for non-coherent dma operation"
-> > +	select ARCH_HAS_DMA_PREP_COHERENT
-> > +	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
-> > +	select ARCH_HAS_SYNC_DMA_FOR_CPU
-> > +	select ARCH_HAS_SETUP_DMA_OPS
-> > +	select DMA_DIRECT_REMAP
-> > +	select RISCV_ALTERNATIVE
-> > +	default y
-> > +	help
-> > +	   Adds support to dynamically detect the presence of the ZICBOM extension
-> 
-> Overly long line here.
+The second derives the channel associated with an event from the
+event itself, and the next does a small cleanup enabled by that.
 
-fixed
+The fourth causes updates to occur for every event processed (rather
+once).  And the final patch does a little more rework to make TX
+completion have more in common with RX completion.
 
-> 
-> > +	   (Cache Block Management Operations) and enable its usage.
-> > +
-> > +	   If you don't know what to do here, say Y.
-> 
-> But more importantly I think the whole text here is not very helpful.
-> What users care about is non-coherent DMA support.  What extension is
-> used for that is rather secondary.
+					-Alex
 
-I guess it might make sense to split that in some way.
-I.e. Zicbom provides one implementation for handling non-coherence,
-the D1 uses different (but very similar) instructions while the SoC on the
-Beagle-V does something completely different.
+Alex Elder (5):
+  net: ipa: don't assume one channel per event ring
+  net: ipa: don't pass channel when mapping transaction
+  net: ipa: pass GSI pointer to gsi_evt_ring_rx_update()
+  net: ipa: call gsi_evt_ring_rx_update() unconditionally
+  net: ipa: move more code out of gsi_channel_update()
 
-So I guess it could make sense to have a general DMA_NONCOHERENT option
-and which gets selected by the relevant users.
+ drivers/net/ipa/gsi.c         | 59 +++++++++++++++++++----------------
+ drivers/net/ipa/gsi_private.h |  3 --
+ drivers/net/ipa/gsi_trans.c   | 28 +++++------------
+ 3 files changed, 40 insertions(+), 50 deletions(-)
 
-This also fixes the issue that Zicbom needs a very new binutils
-but if beagle-v support happens that wouldn't need that.
-
-
-> Also please capitalize DMA.
-
-fixed
-
-> > +void arch_sync_dma_for_device(phys_addr_t paddr, size_t size, enum dma_data_direction dir)
-> > +{
-> > +	switch (dir) {
-> > +	case DMA_TO_DEVICE:
-> > +		ALT_CMO_OP(CLEAN, (unsigned long)phys_to_virt(paddr), size, riscv_cbom_block_size);
-> > +		break;
-> > +	case DMA_FROM_DEVICE:
-> > +		ALT_CMO_OP(INVAL, (unsigned long)phys_to_virt(paddr), size, riscv_cbom_block_size);
-> > +		break;
-> > +	case DMA_BIDIRECTIONAL:
-> > +		ALT_CMO_OP(FLUSH, (unsigned long)phys_to_virt(paddr), size, riscv_cbom_block_size);
-> > +		break;
-> > +	default:
-> > +		break;
-> > +	}
-> 
-> Pleae avoid all these crazy long lines.  and use a logical variable
-> for the virtual address.  And why do you pass that virtual address
-> as an unsigned long to ALT_CMO_OP?  You're going to make your life
-> much easier if you simply always pass a pointer.
-
-fixed all of those.
-And of course you're right, not having the cast when calling ALT_CMO_OP
-makes things definitly a lot nicer looking.
-
-> Last but not last, does in RISC-V clean mean writeback and flush mean
-> writeback plus invalidate?  If so the code is correct, but the choice
-> of names in the RISC-V spec is extremely unfortunate.
-
-clean: 
-    makes data [...] visible to a set of non-coherent agents [...] by
-    performing a write transfer of a copy of a cache block [...]
-
-flush:
-    performs a clean followed by an invalidate
-
-So that's a yes to your question
-
-> > +void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size, enum dma_data_direction dir)
-> > +{
-> > +	switch (dir) {
-> > +	case DMA_TO_DEVICE:
-> > +		break;
-> > +	case DMA_FROM_DEVICE:
-> > +	case DMA_BIDIRECTIONAL:
-> > +		ALT_CMO_OP(INVAL, (unsigned long)phys_to_virt(paddr), size, riscv_cbom_block_size);
-> > +		break;
-> > +	default:
-> > +		break;
-> > +	}
-> > +}
-> 
-> Same comment here and in few other places.
-
-fixed
-
-> > +
-> > +void arch_dma_prep_coherent(struct page *page, size_t size)
-> > +{
-> > +	void *flush_addr = page_address(page);
-> > +
-> > +	memset(flush_addr, 0, size);
-> > +	ALT_CMO_OP(FLUSH, (unsigned long)flush_addr, size, riscv_cbom_block_size);
-> > +}
-> 
-> arch_dma_prep_coherent should never zero the memory, that is left
-> for the upper layers.`
-
-fixed
-
-> > +void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> > +		const struct iommu_ops *iommu, bool coherent)
-> > +{
-> > +	/* If a specific device is dma-coherent, set it here */
-> 
-> This comment isn't all that useful.
-
-ok, I've dropped it
-
-> > +	dev->dma_coherent = coherent;
-> > +}
-> 
-> But more importantly, this assums that once this code is built all
-> devices are non-coherent by default.  I.e. with this patch applied
-> and the config option enabled we'll now suddenly start doing cache
-> management operations or setups that didn't do it before.
-
-If I'm reading things correctly [0], the default for those functions
-is for those to be empty - but defined in the coherent case.
-
-When you look at the definition of ALT_CMO_OP
-
-#define ALT_CMO_OP(_op, _start, _size, _cachesize)                      \
-asm volatile(ALTERNATIVE_2(                                             \
-        __nops(6),                                                      \
-
- you'll see that it's default variant is to do nothing and it doing any
-non-coherency voodoo is only patched in if the Zicbom extension
-(or T-Head errata) is detected at runtime.
-
-So in the coherent case (with the memset removed as you suggested),
-the arch_sync_dma_* and arch_dma_prep_coherent functions end up as
-something like
-
-void arch_dma_prep_coherent(struct page *page, size_t size)
-{
-        void *flush_addr = page_address(page);
-
-        nops(6);
-}
-
-which is very mich similar to the defaults [0] I guess, or am I
-overlooking something?
-
-Thanks for taking the time for that review
-Heiko
-
-
-[0] https://elixir.bootlin.com/linux/latest/source/include/linux/dma-map-ops.h#L293
-
+-- 
+2.34.1
 
