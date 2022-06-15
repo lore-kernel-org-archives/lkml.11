@@ -2,78 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C09ECCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:30:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244414AbiFOIaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33480 "EHLO
+        id S244482AbiFOIal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 04:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244387AbiFOIaQ (ORCPT
+        with ESMTP id S244124AbiFOIaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 15 Jun 2022 04:30:16 -0400
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D26543D1D1
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 01:30:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=6XYTK
-        65YYA041u3n47xiUBJnCEL7R1gjEAopSqJFnTU=; b=h5G4RUJqKu0pON261uWGi
-        nWk+hINyCYlYXaYqqdry/9XFQgc7X3V6PNv/Ax6ZlWUWPZW/YlYk88ozQr+UQYZP
-        gYzw3dRP8eOw5+7l/+VD7GIAnOS1s3VjWiKQWiOo+H1yDJ6ZtqGfleoaiLFLtHkl
-        hqmgCtUIcIcrT9Bx3ZDmI4=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp1 (Coremail) with SMTP id C8mowAB3fSl0mKlip6ubEQ--.52717S2;
-        Wed, 15 Jun 2022 16:29:45 +0800 (CST)
-From:   heliang <windhl@126.com>
-To:     linus.walleij@linaro.org, mturquette@baylibre.com, sboyd@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, windhl@126.com
-Subject: [PATCH] drivers: clk: Add missing of_node_put() in clk-nomadik.c
-Date:   Wed, 15 Jun 2022 16:29:40 +0800
-Message-Id: <20220615082940.3960612-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6923457BE;
+        Wed, 15 Jun 2022 01:30:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8992361984;
+        Wed, 15 Jun 2022 08:30:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DF227C341C5;
+        Wed, 15 Jun 2022 08:30:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655281813;
+        bh=59x39cqttrbDrklHHKtVqVWVczn1zsvdVlM/WZVa9hs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=IgXQnmMi/5YdYB2yGRqaJzKXoYrXZIsHcyOlfoJb7YHiOaxsoEZU4/hShvw4vsJzf
+         m0Bd20tIbRhmZTdEqPrgk/TRWuKwUpJUlwVLIpRhQFvcb4NdQ7rp/JJKVfM0Ww59gX
+         oBi8XLqHiYlVXSQR9PqHFI5qWCGJlvVvw/ZmZIqbh4JKqckspoVpLkO31i1qp3U/aE
+         9/zpmbKfgjol+hriFBtbjBVB/eHD10clnrq/x/HB/Q8KqPHag6Vmx5QrckmDEPf3M1
+         prx51Yi0SL88dEtWmu/y9hwbE1lnCP1Cmon9/qWH1hRg1s5In+mINt7Ab2Z9R0iFFT
+         wiYsbBO12q4gA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C3210E7385E;
+        Wed, 15 Jun 2022 08:30:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowAB3fSl0mKlip6ubEQ--.52717S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtF1fKFW7Jr4UZF4UGFWUtwb_yoWDJrbEqF
-        1fWrsrCFW29F4kurW2vF1fG3y5u3Z5uFs3X3Wxt3W3A34jvF4UCF4avFs3Xw1UWrW2gFy7
-        XFnrKF4UArWj9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREq2M7UUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizhkhF18RPS+kqAAAsx
+Subject: Re: [PATCH v2 net-next] net: phy: marvell-88x2222: set proper
+ phydev->port
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165528181379.16320.12216919211588572408.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Jun 2022 08:30:13 +0000
+References: <20220612181934.665-1-i.bornyakov@metrotek.ru>
+In-Reply-To: <20220612181934.665-1-i.bornyakov@metrotek.ru>
+To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, system@metrotek.ru
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In nomadik_src_init, of_find_matching_node() return a node pointer
-with refcount incremented. We should use of_node_put() in fail path
-or when it is not used anymore.
+Hello:
 
-Signed-off-by: heliang <windhl@126.com>
----
- drivers/clk/clk-nomadik.c | 2 ++
- 1 file changed, 2 insertions(+)
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/clk/clk-nomadik.c b/drivers/clk/clk-nomadik.c
-index bad2677e11ae..b3b8855d8890 100644
---- a/drivers/clk/clk-nomadik.c
-+++ b/drivers/clk/clk-nomadik.c
-@@ -97,6 +97,7 @@ static void __init nomadik_src_init(void)
- 	}
- 	src_base = of_iomap(np, 0);
- 	if (!src_base) {
-+		of_node_put(np);
- 		pr_err("%s: must have src parent node with REGS (%pOFn)\n",
- 		       __func__, np);
- 		return;
-@@ -130,6 +131,7 @@ static void __init nomadik_src_init(void)
- 		val &= ~SRC_XTALCR_MXTALEN;
- 		pr_info("disabling MXTALO\n");
- 	}
-+	of_node_put(np);
- 	writel(val, src_base + SRC_XTALCR);
- 	register_reboot_notifier(&nomadik_clk_reboot_notifier);
- }
+On Sun, 12 Jun 2022 21:19:34 +0300 you wrote:
+> phydev->port was not set and always reported as PORT_TP.
+> Set phydev->port according to inserted SFP module.
+> 
+> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> ---
+> Changelog:
+>   v1 -> v2: set port as PORT_NONE on SFP removal, instead of PORT_OTHER
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,net-next] net: phy: marvell-88x2222: set proper phydev->port
+    https://git.kernel.org/netdev/net-next/c/9794ef5a6843
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
