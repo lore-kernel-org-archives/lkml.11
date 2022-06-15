@@ -2,132 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A98DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D46D1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355504AbiFOQTs (ORCPT
+        id S1355635AbiFOQTw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:19:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51612 "EHLO
+        Wed, 15 Jun 2022 12:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355006AbiFOQTf (ORCPT
+        with ESMTP id S1355053AbiFOQTf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 15 Jun 2022 12:19:35 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998FACE17
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:19:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655309974; x=1686845974;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MCvI0tPa54YnwXT8fiikTfMGu5joUrBKkdhVfxRHttg=;
-  b=ih22+P5rPvVWFzZ9z9UzfAFrLiKkDmPs/2jv2XZRmO2dIKKoDbAMIKzB
-   Jvu3eXpVqFjgZtDppxLisDncm6J5xdZc7ht94qXmR//IB6d9RZ45+0r+I
-   2am29k0VMDOWBMQfT6ZhFjpU0Dbot2FktfJaqFJMMKG9XiszevyMu2UB0
-   lG0k3Iyjra8KIgRl33HhaSxI9zJYuYHsLGEakpQO0rmGKLdDM0dNzkaPJ
-   0V+xqTEZMwevx4vmHNEVdtmq0knO0bnCqLA5+JaVIb+XPAcVdHN7f2acK
-   ls7K87wtNPqvuHkgoZqOxnxDxlDNnHoaB5YiSTQ31eVLDi23o4Uen3jlI
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="262040071"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="262040071"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 09:19:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="687384863"
-Received: from louislifei-optiplex-7090.sh.intel.com (HELO louislifei-OptiPlex-7090) ([10.239.146.218])
-  by fmsmga002.fm.intel.com with ESMTP; 15 Jun 2022 09:19:28 -0700
-Date:   Thu, 16 Jun 2022 00:20:54 +0800
-From:   Li Fei1 <fei1.li@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, fei1.li@intel.com
-Subject: Re: [PATCH v1 1/1] virt: acrn: Mark the uuid field as unused
-Message-ID: <20220615162054.GA571776@louislifei-OptiPlex-7090>
-References: <20220607174120.34981-1-andriy.shevchenko@linux.intel.com>
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DDC364E3
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:19:30 -0700 (PDT)
+X-UUID: 2bda6adaf21547a9ae64f1e74e363d0d-20220616
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:03543455-41f7-4a9b-b92c-4c064885672b,OB:10,L
+        OB:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:95
+X-CID-INFO: VERSION:1.1.6,REQID:03543455-41f7-4a9b-b92c-4c064885672b,OB:10,LOB
+        :0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:95
+X-CID-META: VersionHash:b14ad71,CLOUDID:9b5a5bf6-e099-41ba-a32c-13b8bfe63214,C
+        OID:706f55ac7a6a,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 2bda6adaf21547a9ae64f1e74e363d0d-20220616
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <yf.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1094555626; Thu, 16 Jun 2022 00:19:24 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 16 Jun 2022 00:19:23 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Thu, 16 Jun 2022 00:19:22 +0800
+From:   <yf.wang@mediatek.com>
+To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        "Will Deacon" <will@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "open list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>,
+        "moderated list:MEDIATEK IOMMU DRIVER" 
+        <linux-mediatek@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list" <linux-kernel@vger.kernel.org>
+CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
+        Yong Wu <Yong.Wu@mediatek.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Yunfei Wang <yf.wang@mediatek.com>,
+        Ning Li <ning.li@mediatek.com>
+Subject: [PATCH v9 2/3] iommu/mediatek: Rename MTK_IOMMU_TLB_ADDR to MTK_IOMMU_ADDR
+Date:   Thu, 16 Jun 2022 00:12:22 +0800
+Message-ID: <20220615161224.6923-3-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220615161224.6923-1-yf.wang@mediatek.com>
+References: <20220615161224.6923-1-yf.wang@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607174120.34981-1-andriy.shevchenko@linux.intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 08:41:20PM +0300, Andy Shevchenko wrote:
-> After the commits for userspace [1][2] the uuid field is not being
-> used in the ACRN code. Update kernel to reflect these changes.
-> I.e. we do the following:
-> - adding a comment explaining that it's not used anymore
-> - replacing the specific type by a raw buffer
-> - updating the example code accordingly
-> 
-> [1]: https://github.com/projectacrn/acrn-hypervisor/commit/da0d24326ed6
-> [2]: https://github.com/projectacrn/acrn-hypervisor/commit/bb0327e70097
-> 
-> Fixes: 5b06931d7f8b ("sample/acrn: Introduce a sample of HSM ioctl interface usage")
-> Fixes: 9c5137aedd11 ("virt: acrn: Introduce VM management interfaces")
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-Signed-off-by: Fei Li <fei1.li@intel.com>
+Rename MTK_IOMMU_TLB_ADDR to MTK_IOMMU_ADDR, and update MTK_IOMMU_ADDR
+definition for better generality.
 
-> ---
->  include/uapi/linux/acrn.h | 5 ++---
->  samples/acrn/vm-sample.c  | 3 ---
->  2 files changed, 2 insertions(+), 6 deletions(-)
-> 
-> diff --git a/include/uapi/linux/acrn.h b/include/uapi/linux/acrn.h
-> index ccf47ed92500..04fa83647ae5 100644
-> --- a/include/uapi/linux/acrn.h
-> +++ b/include/uapi/linux/acrn.h
-> @@ -12,7 +12,6 @@
->  #define _UAPI_ACRN_H
->  
->  #include <linux/types.h>
-> -#include <linux/uuid.h>
->  
->  #define ACRN_IO_REQUEST_MAX		16
->  
-> @@ -186,7 +185,7 @@ struct acrn_ioreq_notify {
->   * @reserved0:		Reserved and must be 0
->   * @vcpu_num:		Number of vCPU in the VM. Return from hypervisor.
->   * @reserved1:		Reserved and must be 0
-> - * @uuid:		UUID of the VM. Pass to hypervisor directly.
-> + * @uuid:		Reserved (used to be UUID of the VM)
->   * @vm_flag:		Flag of the VM creating. Pass to hypervisor directly.
->   * @ioreq_buf:		Service VM GPA of I/O request buffer. Pass to
->   *			hypervisor directly.
-> @@ -198,7 +197,7 @@ struct acrn_vm_creation {
->  	__u16	reserved0;
->  	__u16	vcpu_num;
->  	__u16	reserved1;
-> -	guid_t	uuid;
-> +	__u8	uuid[16];
->  	__u64	vm_flag;
->  	__u64	ioreq_buf;
->  	__u64	cpu_affinity;
-> diff --git a/samples/acrn/vm-sample.c b/samples/acrn/vm-sample.c
-> index b2dad47a77a0..7abd68b20153 100644
-> --- a/samples/acrn/vm-sample.c
-> +++ b/samples/acrn/vm-sample.c
-> @@ -29,8 +29,6 @@ static struct acrn_io_request *io_req_buf = (struct acrn_io_request *)io_request
->  
->  __u16 vcpu_num;
->  __u16 vmid;
-> -/* POST_STANDARD_VM_UUID1, refer to https://github.com/projectacrn/acrn-hypervisor/blob/master/hypervisor/include/common/vm_uuids.h */
-> -guid_t vm_uuid = GUID_INIT(0x385479d2, 0xd625, 0xe811, 0x86, 0x4e, 0xcb, 0x7a, 0x18, 0xb3, 0x46, 0x43);
->  
->  int hsm_fd;
->  int is_running = 1;
-> @@ -63,7 +61,6 @@ int main(int argc, char **argv)
->  	}
->  	hsm_fd = open("/dev/acrn_hsm", O_RDWR|O_CLOEXEC);
->  
-> -	memcpy(&create_vm.uuid, &vm_uuid, 16);
->  	create_vm.ioreq_buf = (__u64)io_req_buf;
->  	ret = ioctl(hsm_fd, ACRN_IOCTL_CREATE_VM, &create_vm);
->  	printf("Created VM! [%d]\n", ret);
-> -- 
-> 2.35.1
-> 
+Signed-off-by: Ning Li <ning.li@mediatek.com>
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+---
+ drivers/iommu/mtk_iommu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index bb9dd92c9898..3d62399e8865 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -265,8 +265,8 @@ static const struct iommu_ops mtk_iommu_ops;
+ 
+ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int bankid);
+ 
+-#define MTK_IOMMU_TLB_ADDR(iova) ({					\
+-	dma_addr_t _addr = iova;					\
++#define MTK_IOMMU_ADDR(addr) ({						\
++	unsigned long long _addr = addr;				\
+ 	((lower_32_bits(_addr) & GENMASK(31, 12)) | upper_32_bits(_addr));\
+ })
+ 
+@@ -381,8 +381,8 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+ 		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+ 			       base + data->plat_data->inv_sel_reg);
+ 
+-		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova), base + REG_MMU_INVLD_START_A);
+-		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova + size - 1),
++		writel_relaxed(MTK_IOMMU_ADDR(iova), base + REG_MMU_INVLD_START_A);
++		writel_relaxed(MTK_IOMMU_ADDR(iova + size - 1),
+ 			       base + REG_MMU_INVLD_END_A);
+ 		writel_relaxed(F_MMU_INV_RANGE, base + REG_MMU_INVALIDATE);
+ 
+-- 
+2.18.0
+
