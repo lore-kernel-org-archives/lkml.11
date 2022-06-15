@@ -2,138 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37058C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA74C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349169AbiFOR0Q (ORCPT
+        id S1349426AbiFOR0q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35614 "EHLO
+        Wed, 15 Jun 2022 13:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349161AbiFOR0N (ORCPT
+        with ESMTP id S1349308AbiFOR0l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:26:13 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3803AA5E;
-        Wed, 15 Jun 2022 10:26:11 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 5C2361F974;
-        Wed, 15 Jun 2022 17:26:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655313970; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=diXZtSs4ge+y3SfxBTClRHiG4CCNfLznzrb0IpVDTr0=;
-        b=OycMHuhNdnbHeX0XjNvCpxdM6uwB4B8LqJJ0xGrYKl5ISiONTapDk7Ai/1dEOLuObucXey
-        OoZ+RXJyG1PTqL6W6De/mMRiICtUFcXR2/p/CAiRDNq4yVTxF9aWkkPXLKf5P9HgKyMz5A
-        J9du69THgknmCtEoPat/7u/Mm1NeFbc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655313970;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=diXZtSs4ge+y3SfxBTClRHiG4CCNfLznzrb0IpVDTr0=;
-        b=LYBze45qd2tGzASyNp/EpE/+mZIhGR6oJYryXP/aV/CDLYNonTPdii5eDy2g5anTDmD2ZA
-        q+dBJn3E6kDeIwCw==
-Received: from quack3.suse.cz (unknown [10.163.28.18])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 427282C141;
-        Wed, 15 Jun 2022 17:26:10 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id CB64CA062E; Wed, 15 Jun 2022 19:26:09 +0200 (CEST)
-Date:   Wed, 15 Jun 2022 19:26:09 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Ritesh Harjani <ritesh.list@gmail.com>
-Cc:     Ye Bin <yebin10@huawei.com>, tytso@mit.edu,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jack@suse.cz
-Subject: Re: [PATCH -next] ext4: fix bug_on in ext4_iomap_begin as race
- between bmap and write
-Message-ID: <20220615172609.oydxhjw7exas23hd@quack3.lan>
-References: <20220615135850.1961759-1-yebin10@huawei.com>
- <20220615152139.vp64tnv46enwnfcs@riteshh-domain>
- <20220615153123.ab32zt75q7yn7jc5@riteshh-domain>
+        Wed, 15 Jun 2022 13:26:41 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B573EF2D
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:26:41 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id o33-20020a17090a0a2400b001ea806e48c6so2676994pjo.1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:26:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=aa7FUr+a4wTLA6dveYSDwzq+b8uS7oCLyp/1t0s5ZQk=;
+        b=CAQ+dmgXLnCpOneVjwNL5kpN6rOGZbSytP5STuLrI3qdQ1hVnuP9caJgZQNzUdthYe
+         uSsFNuTORwXK3GxXnictIpOtpinr5qhJLleVZNgZqY1c0P+lxBEvYCHdMbDup9dctw2z
+         dEVcqC3DjUSckiueSzrMDLdfw55sIl/2w2+QM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=aa7FUr+a4wTLA6dveYSDwzq+b8uS7oCLyp/1t0s5ZQk=;
+        b=39sM1linhCZj8/CqG/K58rMsgrrcZrS09+JKbMV/xQ/fyP4nbw1L389GC1sSOWswGC
+         jAgpxT9MJcTSJAgWl6XV02FgtoIE3ew/+coUDVE/M9DSkKhU1e0lpzzgsd4FGfgMvTDo
+         BNTPkr2qI7eJt6pxUf/t8YMhs2iMMAQTFYxTxKu6BogYFFtvR0u0ypSjKAD9DeDGw1I/
+         JdWMYLW2tf/srIN2ofJVIkbLeV9XPDxZgN2chIGXukaPZDK0njxg9jlU4wWrgKJYrHrh
+         RNXfJuaYfgSAcmJVSZVXCS+6BRgm7pdBrf1B8kAMlhnRxV4yIKho/Zt+iwoFNMCpzn4P
+         1qCw==
+X-Gm-Message-State: AJIora9QbIR6M1HXBy7AVr3DJHilptzen15fWgrzfuRLNiOuRpeZqUFy
+        mH+XKrjHG3aHPg2ad3sVQyImwZqXSYtLTw==
+X-Google-Smtp-Source: AGRyM1uSrdUs/T/dpJk26aZhxjT4s9RRiOCflVK1iLxjEQj7cxNMUO+9tRjyyANhGXkkD90n+7hMZg==
+X-Received: by 2002:a17:90a:f3c1:b0:1ea:a976:dd9a with SMTP id ha1-20020a17090af3c100b001eaa976dd9amr543523pjb.160.1655314000332;
+        Wed, 15 Jun 2022 10:26:40 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id d10-20020aa7814a000000b005103abd2fdbsm10147433pfn.206.2022.06.15.10.26.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 10:26:40 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Prashant Malani <pmalani@chromium.org>,
+        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
+        <nfraprado@collabora.com>, Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: [PATCH v4 4/7] dt-bindings: drm/bridge: anx7625: Add mode-switch support
+Date:   Wed, 15 Jun 2022 17:20:20 +0000
+Message-Id: <20220615172129.1314056-5-pmalani@chromium.org>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+In-Reply-To: <20220615172129.1314056-1-pmalani@chromium.org>
+References: <20220615172129.1314056-1-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220615153123.ab32zt75q7yn7jc5@riteshh-domain>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 15-06-22 21:01:23, Ritesh Harjani wrote:
-> On 22/06/15 08:51PM, Ritesh Harjani wrote:
-> > On 22/06/15 09:58PM, Ye Bin wrote:
-> > > We got issue as follows:
-> > > ------------[ cut here ]------------
-> > > WARNING: CPU: 3 PID: 9310 at fs/ext4/inode.c:3441 ext4_iomap_begin+0x182/0x5d0
-> > > RIP: 0010:ext4_iomap_begin+0x182/0x5d0
-> > > RSP: 0018:ffff88812460fa08 EFLAGS: 00010293
-> > > RAX: ffff88811f168000 RBX: 0000000000000000 RCX: ffffffff97793c12
-> > > RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
-> > > RBP: ffff88812c669160 R08: ffff88811f168000 R09: ffffed10258cd20f
-> > > R10: ffff88812c669077 R11: ffffed10258cd20e R12: 0000000000000001
-> > > R13: 00000000000000a4 R14: 000000000000000c R15: ffff88812c6691ee
-> > > FS:  00007fd0d6ff3740(0000) GS:ffff8883af180000(0000) knlGS:0000000000000000
-> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > CR2: 00007fd0d6dda290 CR3: 0000000104a62000 CR4: 00000000000006e0
-> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > Call Trace:
-> > >  iomap_apply+0x119/0x570
-> > >  iomap_bmap+0x124/0x150
-> > >  ext4_bmap+0x14f/0x250
-> > >  bmap+0x55/0x80
-> > >  do_vfs_ioctl+0x952/0xbd0
-> > >  __x64_sys_ioctl+0xc6/0x170
-> > >  do_syscall_64+0x33/0x40
-> > >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > >
-> > > Above issue may happen as follows:
-> > >           bmap                    write
-> > > bmap
-> > >   ext4_bmap
-> > >     iomap_bmap
-> > >       ext4_iomap_begin
-> > >                             ext4_file_write_iter
-> > > 			      ext4_buffered_write_iter
-> > > 			        generic_perform_write
-> > > 				  ext4_da_write_begin
-> > > 				    ext4_da_write_inline_data_begin
-> > > 				      ext4_prepare_inline_data
-> > > 				        ext4_create_inline_data
-> > > 					  ext4_set_inode_flag(inode,
-> > > 						EXT4_INODE_INLINE_DATA);
-> > >       if (WARN_ON_ONCE(ext4_has_inline_data(inode))) ->trigger bug_on
-> > >
-> > > To solved above issue hold inode lock in ext4_bamp.
-> > 											^^^ ext4_bmap()
-> >
-> > I checked the paths where bmap() kernel api can be called i.e. from jbd2/fc and
-> > generic_swapfile_activate() (apart from ioctl())
-> > For jbd2, it will be called with j_inode within bmap(), hence taking a inode lock
-> > of the inode passed within ext4_bmap() (j_inode in this case) should be safe here.
-> > Same goes with swapfile path as well.
-> >
-> > However I feel maybe we should hold inode_lock_shared() since there is no
-> > block/extent map layout changes that can happen via ext4_bmap().
-> > Hence read lock is what IMO should be used here.
-> 
-> On second thoughts, shoudn't we use ext4_iomap_report_ops here?  Can't
-> recollect why we didn't use ext4_iomap_report_ops for iomap_bmap() in the
-> first place. Should be good to verify it once.
+Analogix 7625 can be used in systems to switch USB Type-C DisplayPort
+alternate mode lane traffic between 2 Type-C ports.
 
-Hum, but I guess there's a deeper problem than ext4_bmap(). Generally we
-have places doing block mapping (such as ext4_writepages(), readahead, or
-page fault) where we don't hold i_rwsem and racing
-ext4_create_inline_data() could confuse them? I guess we need to come up
-with a sound scheme how inline data creation is serialized with these
-operations (or just decide to remove the inline data feature altogether as
-we already discussed once because the complexity likely is not worth the
-gain).
+Update the binding to accommodate this usage by introducing a switch
+property.
 
-								Honza
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
+
+Changes since v3:
+- Fix unevaluatedProperties usage.
+- Add additionalProperties to top level "switches" nodes.
+- Make quotes consistent.
+- Add '^..$' to regex.
+(All suggested by Krzysztof Kozlowski)
+
+Changes since v2:
+- Added Reviewed-by and Tested-by tags.
+
+Changes since v1:
+- Introduced patternProperties for "switch" children (suggested by
+  Krzysztof Kozlowski).
+- Added unevaluatedProperties descriptor (suggested by Krzysztof
+  Kozlowski).
+- Added "address-cells" and "size-cells" properties to "switches".
+
+
+ .../display/bridge/analogix,anx7625.yaml      | 64 +++++++++++++++++++
+ 1 file changed, 64 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+index 35a48515836e..bc6f7644db31 100644
+--- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
++++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+@@ -105,6 +105,34 @@ properties:
+       - port@0
+       - port@1
+ 
++  switches:
++    type: object
++    description: Set of switches controlling DisplayPort traffic on
++      outgoing RX/TX lanes to Type C ports.
++    additionalProperties: false
++
++    properties:
++      '#address-cells':
++        const: 1
++
++      '#size-cells':
++        const: 0
++
++    patternProperties:
++      '^switch@[01]$':
++        $ref: /schemas/usb/typec-switch.yaml#
++        unevaluatedProperties: false
++
++        properties:
++          reg:
++            maxItems: 1
++
++        required:
++          - reg
++
++    required:
++      - switch@0
++
+ required:
+   - compatible
+   - reg
+@@ -167,5 +195,41 @@ examples:
+                     };
+                 };
+             };
++            switches {
++                #address-cells = <1>;
++                #size-cells = <0>;
++                switch@0 {
++                    compatible = "typec-switch";
++                    reg = <0>;
++                    mode-switch;
++
++                    ports {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++                        port@0 {
++                            reg = <0>;
++                            anx_typec0: endpoint {
++                                remote-endpoint = <&typec_port0>;
++                            };
++                        };
++                    };
++                };
++                switch@1 {
++                    compatible = "typec-switch";
++                    reg = <1>;
++                    mode-switch;
++
++                    ports {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++                        port@0 {
++                            reg = <0>;
++                            anx_typec1: endpoint {
++                                remote-endpoint = <&typec_port1>;
++                            };
++                        };
++                    };
++                };
++            };
+         };
+     };
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.36.1.476.g0c4daa206d-goog
+
