@@ -2,118 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED16C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC471C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:29:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349631AbiFOR3b (ORCPT
+        id S1349614AbiFOR3k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
+        Wed, 15 Jun 2022 13:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242586AbiFOR3Y (ORCPT
+        with ESMTP id S1352759AbiFOR3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:29:24 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8FE34BB3
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:29:22 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id u18so11001080plb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:29:22 -0700 (PDT)
+        Wed, 15 Jun 2022 13:29:30 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5512434BB3;
+        Wed, 15 Jun 2022 10:29:28 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id l126-20020a1c2584000000b0039c1a10507fso1502450wml.1;
+        Wed, 15 Jun 2022 10:29:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=il/KBps6ii6Gd5FHFi9j3ZFy5kAtbrCy1Dgg4+ftDI4=;
-        b=nGG3zeC3ujp1Lyr79SQNyz3Yei5eS80xvtngKVpw/5YXlWoG5FFrAxwd8qnLOVoDPS
-         SIaZg0HNQMFqJ/TRcM4ZVL9bkTGfLuu9eUAPFm41Xl9FQLgRlRlMO5MR7y10uklFmE+u
-         PipgW0PTjhJ1/PPY6CMmEFkVkCl9GbkCXKKPs=
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=0mmtAiGES9hy6GbZr6mj1I/9d7FHTjal/1dcnEoMib4=;
+        b=d/ZM+qkibzc1FPpQIVKOPEDkTrF02xlafmgh2XMchXaJDbGefaV7FPRiq9MMt1jujY
+         6nuFUGuuXLbLBgp76pCx/O2r4cIN+CtcNgwKZwpVdzekFdRFqDd7O32A7p8UVj/A62n2
+         Xs6cMKvcbN5gyfoMnqEqagWnM3EnMXZvedk5xE7YpROhUtP/QqXRbL8czsAjvcFJvXuX
+         QANMtQIxUbMg9ZIuPF5DMRMVZ1WQzcr+DX0meZ2TE8KHPIMPWE1d0RQxcFL/aheiGAh7
+         jGGq9WheLGjRcC8FMRMWntkV4+X+jwEX9ITHj/a+kk694HVt/sU0fLCfSXmpuPfrVLhf
+         7FLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=il/KBps6ii6Gd5FHFi9j3ZFy5kAtbrCy1Dgg4+ftDI4=;
-        b=tgVyyAd3vyWEScRVXaQjbK9ovje6iwAq5vSy6KYHicdTUywvmJ6GqwJNvmn+j1fcEJ
-         WuAQO+vSleO3N6/c/4jO4xsTAHUzkIMtNjtlCI2i8R2Segktkhf55lLynpKrZFABbrOI
-         BmcS8cEWWd9vi2V3zRxo3a40O9jfCeOea81+qY/6Qemt+CtTCEbNqcAgFIlsmrvurwCU
-         OSBIrTc7ohZ5eW8UoizTW4tIvzODnsd3f3eEfga7qut9uJMQKUvsM+72CNQH288dDdzI
-         ysHvZpV0jQW9odYB+OfDhe4ek0tHpcYgdKJ/AAsfy80ti3rwSUTJJAUxY1MlMdWWTAgC
-         N05Q==
-X-Gm-Message-State: AJIora99VJQcqyuuwe+QjdCavQMUSp1SgX/dotKmA8WflTLP44GWwU7h
-        e3+TsHV6P8MSKTRwUkIAKy/ouw==
-X-Google-Smtp-Source: AGRyM1sYHET89749fDt5TDoEPXQeflY6qeT3IV7HNP/7XVyGqeBNCkZrte/HBbD0kJf4G/g2FjkDMQ==
-X-Received: by 2002:a17:90a:6444:b0:1ea:b662:c12e with SMTP id y4-20020a17090a644400b001eab662c12emr506120pjm.199.1655314162312;
-        Wed, 15 Jun 2022 10:29:22 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:342:e7bd:5391:5d5b])
-        by smtp.gmail.com with ESMTPSA id g3-20020a636b03000000b003fcfdc9946dsm10402512pgc.51.2022.06.15.10.29.20
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=0mmtAiGES9hy6GbZr6mj1I/9d7FHTjal/1dcnEoMib4=;
+        b=nwHdYC9/mIhD8FirHKHPj4c4nnd0+B559Q/4QxUD3ssj3nZnA31QB02jbujUemqvcD
+         ULfVZYORrLdeXf2C+VHDGOOCd8Ga18XNPMlct5u8yU9I62v5hDNTyHNe8U5KTPT/64aH
+         +TcrLCq1AQXiKKm+eXA+O1Pa6RPiQiyJdb0srQJxWLEX5a0/fB9CFbS0u6Y3chnIJBFJ
+         wzElidQzFGwDxuAOAX1+AM1/qfFZFeCl87cknVMT1g1lQTTkD2UdlMZG73HnT5UyYnU6
+         mQ31hiH0hXpN2fIwyknlGSQjBDHaPxp1nkw9k5HRTJYZ2AZM8eYOxO3MZXsaVjZdL4L5
+         qLTw==
+X-Gm-Message-State: AJIora81U/mcQVvemJKY+BrB54JzsIMGORzf1zzRALDsi/bxQfNlCOhJ
+        9cqlXgbhuOwEMg9OCXuXfEa44yix9yk=
+X-Google-Smtp-Source: AGRyM1u6SrzeH7qCFw4qlFWwaZs3p9N6OsL/H2wxtO516NhvYU71hXSl0/p2IYSj34r7su/3P5K8qA==
+X-Received: by 2002:a05:600c:4e51:b0:39c:4f18:4c29 with SMTP id e17-20020a05600c4e5100b0039c4f184c29mr537734wmq.101.1655314166756;
+        Wed, 15 Jun 2022 10:29:26 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id t1-20020a5d6a41000000b00218468314d7sm15298550wrw.62.2022.06.15.10.29.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 10:29:21 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 10:29:19 -0700
-From:   Brian Norris <briannorris@chromium.org>
-To:     Judy Hsiao <judyhsiao@chromium.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
-        Douglas Anderson <dianders@chromium.org>,
-        Guenter Roeck <groeck@google.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [v1] arm64: dts: rk3399: i2s: switch BCLK to GPIO
-Message-ID: <YqoW7+6iL/SHGaAY@google.com>
-References: <20220615045146.3134420-1-judyhsiao@chromium.org>
+        Wed, 15 Jun 2022 10:29:26 -0700 (PDT)
+Message-ID: <62aa16f6.1c69fb81.816fc.be7a@mx.google.com>
+X-Google-Original-Message-ID: <YqoKTt3G5+hXj2ET@Ansuel-xps.>
+Date:   Wed, 15 Jun 2022 18:35:26 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Manivannan Sadhasivam <mani@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/3] mtd: nand: raw: qcom_nandc: add support for
+ unprotected spare data pages
+References: <20220615000612.3119-1-ansuelsmth@gmail.com>
+ <20220615000612.3119-3-ansuelsmth@gmail.com>
+ <20220615172802.GB3606@thinkpad>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220615045146.3134420-1-judyhsiao@chromium.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220615172802.GB3606@thinkpad>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-Normally the subject should look like "[PATCH v1] ...", not just "[v1]
-...".
-
-On Wed, Jun 15, 2022 at 04:51:46AM +0000, Judy Hsiao wrote:
-> We discoverd that the state of BCLK on, LRCLK off and SD_MODE on
-> may cause the speaker melting issue. Removing LRCLK while BCLK
-> is present can cause unexpected output behavior including a large
-> DC output voltage as described in the Max98357a datasheet.
+On Wed, Jun 15, 2022 at 10:58:02PM +0530, Manivannan Sadhasivam wrote:
+> On Wed, Jun 15, 2022 at 02:06:11AM +0200, Ansuel Smith wrote:
+> > IPQ8064 nand have special pages where a different layout scheme is used.
+> > These special page are used by boot partition and on reading them
+> > lots of warning are reported about wrong ECC data and if written to
+> > results in broken data and not bootable device.
+> > 
+> > The layout scheme used by these special page consist in using 512 bytes
+> > as the codeword size (even for the last codeword) while writing to CFG0
+> > register. This forces the NAND controller to unprotect the 4 bytes of
+> > spare data.
+> > 
+> > Since the kernel is unaware of this different layout for these special
+> > page, it does try to protect the spare data too during read/write and
+> > warn about CRC errors.
+> > 
+> > Add support for this by permitting the user to declare these special
+> > pages in dts by declaring offset and size of the partition. The driver
+> > internally will convert these value to nand pages.
+> > 
+> > On user read/write the page is checked and if it's a boot page the
+> > correct layout is used.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 > 
-> In order to:
->   1. prevent BCLK from turning on by other component.
->   2. keep BCLK and LRCLK being present at the same time
+> Just a few nitpicks below. With those fixed,
 > 
-> This patch adjusts the device tree to allow BCLK to switch
-> to GPIO func before LRCLK output, and switch back during
-> LRCLK is output.
+> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+> 
+> Thanks,
+> Mani
+>
 
-I get how this "allows" switching, but it seems like this would make
-more sense in a patch series that implements the switching.
+Sure! Thanks a lot for the various review. Will send v8 that should be
+the final version.
 
-I'm also not certain, but it might be worth adding this to the DT
-binding, so we set the 'pinctrl-names' piece (which presumably you need
-to use in a driver) in stone.
+> > ---
+> >  drivers/mtd/nand/raw/qcom_nandc.c | 203 +++++++++++++++++++++++++++++-
+> >  1 file changed, 198 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/mtd/nand/raw/qcom_nandc.c b/drivers/mtd/nand/raw/qcom_nandc.c
+> > index f2990d721733..0dbfe32888ff 100644
+> > --- a/drivers/mtd/nand/raw/qcom_nandc.c
+> > +++ b/drivers/mtd/nand/raw/qcom_nandc.c
+> 
+> [...]
+> 
+> > +static bool qcom_nandc_is_boot_partition(struct qcom_nand_host *host, int page)
+> > +{
+> > +	struct qcom_nand_boot_partition *boot_partition;
+> > +	u32 start, end;
+> > +	int i;
+> > +
+> > +	/*
+> > +	 * Since the frequent access will be to the non-boot partitions like rootfs,
+> > +	 * optimize the page check by:
+> > +
+> 
+> Missing "*"
+> 
+> > +	 * 1. Checking if the page lies after the last boot partition.
+> > +	 * 2. Checking from the boot partition end.
+> > +	 */
+> > +
+> > +	/* First check the last boot partition */
+> > +	boot_partition = &host->boot_partitions[host->nr_boot_partitions - 1];
+> > +	start = boot_partition->page_offset;
+> > +	end = start + boot_partition->page_size;
+> > +
+> > +	/* Page is after the last boot partition end. This is NOT a boot partition */
+> > +	if (page > end)
+> > +		return false;
+> > +
+> > +	/* Actually check if it's a boot partition */
+> > +	if (page < end && page >= start)
+> > +		return true;
+> > +
+> > +	/* Check the other boot partition starting from the second-last partition */
+> 
+> s/boot partition/boot partitions
+> 
+> > +	for (i = host->nr_boot_partitions - 2; i >= 0; i--) {
+> > +		boot_partition = &host->boot_partitions[i];
+> > +		start = boot_partition->page_offset;
+> > +		end = start + boot_partition->page_size;
+> > +
+> > +		if (page < end && page >= start)
+> > +			return true;
+> > +	}
+> > +
+> > +	return false;
+> > +}
+> > +
+> > +static void
+> > +qcom_nandc_codeword_fixup(struct qcom_nand_host *host, int page)
+> 
+> As like other functions, please align the function on the same line
+> 
+> > +{
+> > +	bool codeword_fixup = qcom_nandc_is_boot_partition(host, page);
+> > +
+> > +	/* Skip conf write if we are already in the correct mode */
+> > +	if (codeword_fixup == host->codeword_fixup)
+> > +		return;
+> > +
+> > +	host->codeword_fixup = codeword_fixup;
+> > +
+> > +	host->cw_data = codeword_fixup ? 512 : 516;
+> > +	host->spare_bytes = host->cw_size - host->ecc_bytes_hw -
+> > +			    host->bbm_size - host->cw_data;
+> > +
+> > +	host->cfg0 &= ~(SPARE_SIZE_BYTES_MASK | UD_SIZE_BYTES_MASK);
+> > +	host->cfg0 |= host->spare_bytes << SPARE_SIZE_BYTES |
+> > +		      host->cw_data << UD_SIZE_BYTES;
+> > +
+> > +	host->ecc_bch_cfg &= ~ECC_NUM_DATA_BYTES_MASK;
+> > +	host->ecc_bch_cfg |= host->cw_data << ECC_NUM_DATA_BYTES;
+> > +	host->ecc_buf_cfg = (host->cw_data - 1) << NUM_STEPS;
+> > +}
+> 
+> [...]
+> 
+> > +static int qcom_nand_host_parse_boot_partitions(struct qcom_nand_controller *nandc,
+> > +						struct qcom_nand_host *host,
+> > +						struct device_node *dn)
+> > +{
+> > +	struct nand_chip *chip = &host->chip;
+> > +	struct mtd_info *mtd = nand_to_mtd(chip);
+> > +	struct qcom_nand_boot_partition *boot_partition;
+> > +	struct device *dev = nandc->dev;
+> > +	int partitions_count, i, j, ret;
+> > +
+> > +	if (!of_find_property(dn, "qcom,boot-partitions", NULL))
+> > +		return 0;
+> > +
+> > +	partitions_count = of_property_count_u32_elems(dn, "qcom,boot-partitions");
+> > +	if (partitions_count <= 0) {
+> > +		dev_err(dev, "Error parsing boot partition\n");
+> > +		if (partitions_count == 0)
+> > +			return -EINVAL;
+> > +		else
+> > +			return partitions_count;
+> 
+> 		return partitions_count ? partitions_count : -EINVAL;
+> 
+> Thanks,
+> Mani
+> 
+> -- 
+> மணிவண்ணன் சதாசிவம்
 
-> --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-> +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-
-...
-
-> @@ -2225,6 +2226,8 @@ pcfg_input_pull_down: pcfg-input-pull-down {
->  			input-enable;
->  			bias-pull-down;
->  			drive-strength = <2>;
-> +		pcfg_pull_none_hiz: pcfg-pull-none-hiz {
-> +			bias-disable;
->  		};
-
-This isn't valid syntax. You probably didn't resolve conflicts correctly
-when rebasing a patch? You need an extra brace somewhere.
-
-Also, this definition seems like it belongs next to 'pcfg_pull_none'
-(around line 2138), or at least somewhere near the other 'pcfg_pull_*'
-handles.
-
-Brian
-
->  
->  		clock {
- 
+-- 
+	Ansuel
