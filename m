@@ -2,108 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81402C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A92C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356076AbiFOQbz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34414 "EHLO
+        id S234880AbiFOQci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 12:32:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233196AbiFOQbx (ORCPT
+        with ESMTP id S1345836AbiFOQca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:31:53 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B653EAA5
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:31:52 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id s12so24349648ejx.3
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:31:51 -0700 (PDT)
+        Wed, 15 Jun 2022 12:32:30 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1016041312;
+        Wed, 15 Jun 2022 09:32:26 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id z14so6953382pjb.4;
+        Wed, 15 Jun 2022 09:32:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=A5ToRwDKJ0+FqX93pMffATzTfIuM6j3MUyq1/wSACxI=;
-        b=ARtOLIbwlfH3kxf7SSb94YD0Hmg9DKMjf9eblCy13VUqkwf2K1oWJRcPVEwaM0H1GV
-         sYBG0P0MjofVDMlfAk2x7rzHPK6rVIttw/EKUr2wX+KtQPLn00DTJ4GPe9gWDXK9XWDj
-         sEi5pmlhzMzShgeCDxcHWFFUR4+aDWO2T03FE=
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=To6GanTQ5VDmwkEDfHH2NW2hi0lID+6OMpi9DEy3e74=;
+        b=DDfgjPyMURfBUxUYPp/+3LhkxhS7i2Dk0U/oK9GPpGePs16u226NB+gY7wDXybBmvH
+         IihEuZeumLhhSWVqC8ETEwUp6JAH1bBoWrd1QifK4DdijIl2UXi+KbvABB4B5ByzoaX+
+         BKaHQEJ20jAjx16ugn+9ZHGZOP6oo1AIcCZKj7WKuHmn5DPjj2M1AQAU3F2BsbJ57YJ+
+         4tNbhubED4tPo5zbxC52E5+wA0J59hbb7XN24I/4EAIOs0qXBbOPaKN/sDWYgnxX2hv6
+         jcJJh6l3KxyesgiANyGgrbW5idouCfGbtLkc/nx+Um/4lBVC88scTQN8+892ap9oh88E
+         XKIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A5ToRwDKJ0+FqX93pMffATzTfIuM6j3MUyq1/wSACxI=;
-        b=OsaZDLxTu5qBNcr50SffwH+oSQcZnB2h+Nba4baraMZ9WEVXdqWXZrktbKI21/xBso
-         FVLZihN/WMLfHebBsb2EBLIt2y5WX2bu2oyEKzH9zVHSYMZCeQFwvxBQLVkR2D+rcu7a
-         GRVN5vwWUXNj2X8u6Z8Z856U1UAb88gdlLnIowZG7gceymxrTYq9c/Icph0zy4zRNYP7
-         kSLff3B3yI/EJ0m3zqq19/bNIMztaCPYiMs24bn7zPB/9GHGJz6TB6jbtywhMQpBXbV7
-         Bkkk2Z8MJuf0JWOSehC3PjC7jOV7pUVTn6YrJqgBF55vW9+lEYSciQsihiDHauz7noju
-         Z6gQ==
-X-Gm-Message-State: AJIora/xWxDf1hsxJNt6ulA5dMO9dstwCsPt7JQ8gULLBVfICs/KQ75U
-        94itHBi/dMN9ll5Xe4iT0tzwHyw803Z/o18rAto=
-X-Google-Smtp-Source: AGRyM1uJefI65FO+cb/4z7Esuq6/uFLjAdurTh+9wzSmOnk+lBdvkZQLCcuyVoSl4IkuPhOExhBA/Q==
-X-Received: by 2002:a17:907:160f:b0:70f:cceb:d78c with SMTP id hb15-20020a170907160f00b0070fccebd78cmr575325ejc.247.1655310710262;
-        Wed, 15 Jun 2022 09:31:50 -0700 (PDT)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id m26-20020a056402051a00b0042dd2f2bec7sm9624902edv.56.2022.06.15.09.31.49
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 09:31:49 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id h5so16164407wrb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:31:49 -0700 (PDT)
-X-Received: by 2002:a5d:47aa:0:b0:218:5ac8:f3a8 with SMTP id
- 10-20020a5d47aa000000b002185ac8f3a8mr640056wrb.442.1655310709454; Wed, 15 Jun
- 2022 09:31:49 -0700 (PDT)
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=To6GanTQ5VDmwkEDfHH2NW2hi0lID+6OMpi9DEy3e74=;
+        b=MfHrQUbG1wxiPew3SVrPZJOcrJUBZpIUUAY3qbgsev+TFyxCXYKAbrEWn6eI0gCYf2
+         8n12W4Tiv5oro9fXzqWyPTUsmIBfpf8HXAJ54KQSf1zLH0cJCpPfceK7EZ+IUeX2kfaA
+         jB9Wot4Kku3N1F7vL1pOFsx4lubbIhkJjPFQid3nOOwA/lB2qVZ1r0P8+KRgrvGzrwj2
+         I1CEZWF846hJgoO4RpPSHDSxMfP4SeGQOfPxTu5x2WisnXO55XXdv8R3anP1ierI6c0K
+         cT7Vn/s5OHlX3gAl7Ll4kDVA3R4eZSkSj4LxbI0rZedGj5Lf/cf/SR/iBv+IjoBSYSbQ
+         zfrQ==
+X-Gm-Message-State: AJIora+gt5YNwDQoRPxxs7waEf3u2cL6qpHs7kOZFVKPFRMdw7psb5Og
+        8Aeb3tRycAj0h6YiuaeTvl4=
+X-Google-Smtp-Source: AGRyM1vWmD6AXjiwt2vRM4rwafHcK3gqHCqcaDI392vDshYl2I5ADwds+Pr5RhsVmqjl54qTJv+zVA==
+X-Received: by 2002:a17:903:25d6:b0:168:a88f:44ea with SMTP id jc22-20020a17090325d600b00168a88f44eamr520994plb.28.1655310745481;
+        Wed, 15 Jun 2022 09:32:25 -0700 (PDT)
+Received: from balhae.corp.google.com ([2620:15c:2c1:200:6b99:92ca:1efa:c0fb])
+        by smtp.gmail.com with ESMTPSA id q23-20020a170902edd700b00168bffd39a1sm9583881plk.143.2022.06.15.09.32.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 09:32:24 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: [PATCHSET 0/7] perf lock: New lock contention tracepoints support (v4)
+Date:   Wed, 15 Jun 2022 09:32:15 -0700
+Message-Id: <20220615163222.1275500-1-namhyung@kernel.org>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
 MIME-Version: 1.0
-References: <20220615103751.2342910-1-brauner@kernel.org>
-In-Reply-To: <20220615103751.2342910-1-brauner@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 15 Jun 2022 09:31:32 -0700
-X-Gmail-Original-Message-ID: <CAHk-=win6+ahs1EwLkcq8apqLi_1wXFWbrPf340zYEhObpz4jA@mail.gmail.com>
-Message-ID: <CAHk-=win6+ahs1EwLkcq8apqLi_1wXFWbrPf340zYEhObpz4jA@mail.gmail.com>
-Subject: Re: [GIT PULL] fs fix for v5.19-rc3
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 3:39 AM Christian Brauner <brauner@kernel.org> wrote:
->
-> This fixes an issue where we fail to change the group of a file when the caller
-> owns the file and is a member of the group to change to. This is only relevant
-> on idmapped mounts.
+Hello,
 
-Pulled, but this code makes me go "Eww".
+Kernel v5.19 will have a new set of tracepoints to track lock
+contentions for various lock types.  Unlike tracepoints in LOCKDEP and
+LOCK_STAT, it's hit only for contended locks and lock names are not
+available.  So it needs to collect stack traces and display the caller
+function instead.
 
-I do get the feeling that maybe we should have some kind of static
-type help here, with "unmapped" and "filesystem mapped" uid/gid values
-having different types, the same way we have kuid_t vs uid_t for
-user-namespace mapping.
+Changes in v4)
+ * add Acked-by from Ian
+ * more comments on trace_lock_handler
+ * don't create stats in the contention_end handler
+ 
+Changes in v3)
+ * fix build error
+ * support data from different kernels/machines
+ * skip bad stat unless there's actual bad ones
+ 
+Changes in v2)
+ * add Acked-by from Ian
+ * print time with a unit for compact output
+ * add some comments  (Ian)
+ * remove already applied patch
+ 
+This patchset merely adds support for the new tracepoints to the
+existing perf lock commands.  So there's no change to the user.  Later
+I'll add new a sub-command dedicated to the tracepoints to make use of
+the additional information.
 
-Because it feels like the problem here is that "kgid_t" has different
-meanings depending on context.
+Example output:
 
-In fact, just within that one function, we have *three* very different kgid_t's:
+  $ sudo perf lock record -a sleep 3
 
- - the argument to the function is a "kgid_t gid", which has *not*
-been mapped into the filesystem mapping (why not?)
+  $ perf lock report -F acquired,contended,avg_wait,wait_total
 
- - the function itself declares a "kgid_t kgid", which is the inode
-group ID mapped into the mount
+                  Name   acquired  contended     avg wait    total wait
 
- - it how additionally has that thied "kgid_t mapped_gid", which is
-the first 'gid' mapped into the mount
+   update_blocked_a...         40         40      3.61 us     144.45 us
+   kernfs_fop_open+...          5          5      3.64 us      18.18 us
+    _nohz_idle_balance          3          3      2.65 us       7.95 us
+   tick_do_update_j...          1          1      6.04 us       6.04 us
+    ep_scan_ready_list          1          1      3.93 us       3.93 us
+  ...
 
-and honestly, I find that hugely confusing. The naming doesn't exactly
-clarify things either (ie "gid" is a "kgid_t", not a "git_t", and so
-is "kgid" - not helpful).
+You can find the code in the 'perf/lock-contention-v4' branch at
 
-And being confusing with no type system support isn't a great thing.
+  git://git.kernel.org/pub/scm/linux/kernel/git/namhyung/linux-perf.git
 
-So I'm wondering if <linux/mnt_idmapping.h> might be able to do the
-same kind of things we do in <linux/uidgid.h>.
+Thanks,
+Namhyung
 
-NOTE: I did not look into just how hugely painful that would be. Maybe
-the above is the rantings of a madman.
 
-              Linus
+Namhyung Kim (7):
+  perf lock: Print wait times with unit
+  perf lock: Allow to use different kernel symbols
+  perf lock: Skip print_bad_events() if nothing bad
+  perf lock: Add lock contention tracepoints record support
+  perf lock: Handle lock contention tracepoints
+  perf record: Allow to specify max stack depth of fp callchain
+  perf lock: Look up callchain for the contended locks
+
+ tools/perf/Documentation/perf-lock.txt   |   7 +
+ tools/perf/Documentation/perf-record.txt |   5 +
+ tools/perf/builtin-lock.c                | 426 ++++++++++++++++++++++-
+ tools/perf/util/callchain.c              |  18 +-
+ 4 files changed, 434 insertions(+), 22 deletions(-)
+
+
+base-commit: 9886142c7a2226439c1e3f7d9b69f9c7094c3ef6
+-- 
+2.36.1.476.g0c4daa206d-goog
+
