@@ -2,113 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 450F6CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238132AbiFOHwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 03:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58342 "EHLO
+        id S240224AbiFOHxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 03:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234935AbiFOHw2 (ORCPT
+        with ESMTP id S243934AbiFOHxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 03:52:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81D8F55
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:52:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 15 Jun 2022 03:53:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E77841335
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:53:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655279618;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ts9KtjHONM+dDdUL5NJu/c2bC7PtMeeEFKNh8C3021U=;
+        b=VWAPEHM9tFS9VYc/1fZUmRZ52wJMYfbWRYeXikvxywc/QqIuwEqXyWNPMXdI4RAoqaVdx0
+        JlXaFLonnuTiCtGQwqq1h+tm8OY8uIqveg6m88TGYFx3KUPQR898PO6mDplIWNkn09a386
+        KMC/arCT7swCI12rpxuYQUmAka3ZYdg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-588-Uo4PnMDGMlWH1ZtjwZ7Vcw-1; Wed, 15 Jun 2022 03:53:33 -0400
+X-MC-Unique: Uo4PnMDGMlWH1ZtjwZ7Vcw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F31A61917
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:52:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED225C3411C;
-        Wed, 15 Jun 2022 07:52:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655279544;
-        bh=/Cq8JxWDGWPl1V210SZ7wqDAk1YugafyAPEyJX3tbh4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WbXfnxamMI9lriVQxFHGz+SDHAV/InUwRvxz9w+8yPYsVUbPEZC9X+nw40fofM1jP
-         dNldOC17X30lLDafgiwlqAUgKqjfYVUwcJxgj9fpSlPBquLHfAvEWSENSW/MV/BnjW
-         TbJmhDmNRRDEc7U0TuIMkgQqxdadP+3msiO+mwmn+BXhqQ253EIxokGRNJfD6QkNWV
-         ieGANqzWz677uZiaLRBiahDa+Wz7y+gFcv+WF5gpf1dm6765hDMARgcG8e6N+1knT4
-         wjMHUUPuVNfktVIJM/m3X0rHPSzaNb+xHMjnwkLQopi1DvZwS/Wc52y8HvzsUXiWLi
-         LcsRhjzywnBnQ==
-Date:   Wed, 15 Jun 2022 09:52:19 +0200
-From:   Christian Brauner <brauner@kernel.org>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 57209811E75;
+        Wed, 15 Jun 2022 07:53:33 +0000 (UTC)
+Received: from oldenburg.str.redhat.com (unknown [10.39.192.90])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 88085C08F22;
+        Wed, 15 Jun 2022 07:53:31 +0000 (UTC)
+From:   Florian Weimer <fweimer@redhat.com>
 To:     Kees Cook <keescook@chromium.org>
 Cc:     Andrei Vagin <avagin@gmail.com>, linux-kernel@vger.kernel.org,
         Dmitry Safonov <0x7f454c46@gmail.com>,
-        Florian Weimer <fweimer@redhat.com>, linux-mm@kvack.org,
+        Christian Brauner <brauner@kernel.org>, linux-mm@kvack.org,
         Eric Biederman <ebiederm@xmission.com>
 Subject: Re: [PATCH 1/2] fs/exec: allow to unshare a time namespace on
  vfork+exec
-Message-ID: <20220615075219.5cvoc3py3zdm74oo@wittgenstein>
 References: <20220613060723.197407-1-avagin@gmail.com>
- <202206141412.2B0732FF6C@keescook>
+        <202206141412.2B0732FF6C@keescook>
+Date:   Wed, 15 Jun 2022 09:53:29 +0200
+In-Reply-To: <202206141412.2B0732FF6C@keescook> (Kees Cook's message of "Tue,
+        14 Jun 2022 14:14:35 -0700")
+Message-ID: <874k0mqs5i.fsf@oldenburg.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <202206141412.2B0732FF6C@keescook>
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 02:14:35PM -0700, Kees Cook wrote:
+* Kees Cook:
+
 > On Sun, Jun 12, 2022 at 11:07:22PM -0700, Andrei Vagin wrote:
-> > Right now, a new process can't be forked in another time namespace
-> > if it shares mm with its parent. It is prohibited, because each time
-> > namespace has its own vvar page that is mapped into a process address
-> > space.
-> > 
-> > When a process calls exec, it gets a new mm and so it could be "legal"
-> > to switch time namespace in that case. This was not implemented and
-> > now if we want to do this, we need to add another clone flag to not
-> > break backward compatibility.
-> > 
-> > We don't have any user requests to switch times on exec except the
-> > vfork+exec combination, so there is no reason to add a new clone flag.
-> > As for vfork+exec, this should be safe to allow switching timens with
-> > the current clone flag. Right now, vfork (CLONE_VFORK | CLONE_VM) fails
-> > if a child is forked into another time namespace. With this change,
-> > vfork creates a new process in parent's timens, and the following exec
-> > does the actual switch to the target time namespace.
-> 
+>> Right now, a new process can't be forked in another time namespace
+>> if it shares mm with its parent. It is prohibited, because each time
+>> namespace has its own vvar page that is mapped into a process address
+>> space.
+>> 
+>> When a process calls exec, it gets a new mm and so it could be "legal"
+>> to switch time namespace in that case. This was not implemented and
+>> now if we want to do this, we need to add another clone flag to not
+>> break backward compatibility.
+>> 
+>> We don't have any user requests to switch times on exec except the
+>> vfork+exec combination, so there is no reason to add a new clone flag.
+>> As for vfork+exec, this should be safe to allow switching timens with
+>> the current clone flag. Right now, vfork (CLONE_VFORK | CLONE_VM) fails
+>> if a child is forked into another time namespace. With this change,
+>> vfork creates a new process in parent's timens, and the following exec
+>> does the actual switch to the target time namespace.
+>
 > This seems like a very special case. None of the other namespaces do
 > this, do they?
-> 
-> How is CLONE_NEWTIME supposed to be used today?
 
-Time namespaces are similar to pid namespaces. If a process calls
-unshare(CLONE_NEWTIME) it will not change into a new time namespace.
-Only the children of the process will.
+I think this started with CLONE_NEWPID, which had a similar delayed
+effect with unshare: it happens only after fork, not for the current
+process image.  I think it's just a limitation of the unshare interface.
+Some of the effects simply have to be delayed due to their nature.
 
-You can also see this via /proc/<pid>/ns/time and
-/proc/<pid>/ns/time_for_children. After an unshare(CLONE_NEWTIME)
-/proc/<pid>/ns/time will be unchanged while
-/proc/<pid>/ns/time_for_children will reference a new time namespace.
+Thanks,
+Florian
 
-So if the process now calls fork() the child will be placed in a new
-time namespace.
-
-As Andrei correctly points out in the commit message each time namespace
-gets it's own vvar page mapped into the process address space.
-Consequently calls to clone*() with CLONE_VM will need to fail because
-it would alter the parent's mm as well. That includes vfork() which is
-roughly just CLONE_VM | CLONE_VFORK.
-
-fork() remains unaffected. So anything that implements a process
-launcher using vfork() needs to implement a fork() fallback after vfork
-failure() in case the original process has unshared a new time
-namespace.
-
-As posix spawn is implemented using vfork() we would force glibc to
-implement a fork() fallback and enforce the introducing of a lot of
-complexity to work around this.
-
-I think the proposal here makes sense and allows us to avoid introducing
-yet another clone flag. For vfork() it also makes sense because the
-calling process is suspended until exec or exit so the semantics between
-fork() and clone*() are sufficiently distinct to justify this
-difference. Iow, vfork() is distinctly targeted at enforcing an exec*
-call already anyway.
-
-Christian
