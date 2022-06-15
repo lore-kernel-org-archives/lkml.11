@@ -2,92 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 717D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343990AbiFOHzJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 03:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34936 "EHLO
+        id S237229AbiFOIAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 04:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345611AbiFOHzD (ORCPT
+        with ESMTP id S229460AbiFOIAN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 03:55:03 -0400
-X-Greylist: delayed 1833 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Jun 2022 00:54:55 PDT
-Received: from m15114.mail.126.com (m15114.mail.126.com [220.181.15.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B5E3D483AE
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:54:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=87keS
-        6uBfC+apPlQLJjIZduN5M2vxYxrur70owcFKC8=; b=UDpocjkK4sVBDsZgmtVKH
-        17U1gXLYVAz/4vezd8EGpUPe8K19QhcJh53FeEnzJ5382lV6jYtOTsQxw3dX5mnN
-        wZ05Xp21HZjRi84eQnCVf0CN+LGIO5pAAgjxsQ4mEAriIMTmMSLijCfy1Xss35G4
-        t3DlWibgivJ86MCvF7+eZs=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp7 (Coremail) with SMTP id DsmowAAXWvkYialip3paDQ--.36376S2;
-        Wed, 15 Jun 2022 15:24:09 +0800 (CST)
-From:   heliang <windhl@126.com>
-To:     lpieralisi@kernel.org, pali@kernel.org
-Cc:     linux-kernel@vger.kernel.org, windhl@126.com
-Subject: [PATCH] bus: mvebu-mbus: Add missing of_node_put in fail path
-Date:   Wed, 15 Jun 2022 15:24:07 +0800
-Message-Id: <20220615072407.3959470-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 04:00:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A968142A29
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 01:00:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67622B81CD1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 504EBC3411C;
+        Wed, 15 Jun 2022 08:00:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655280010;
+        bh=6o2MLb7XsHU6M7CsxZwl9gU0PjtAnZxBcDJopoaGghk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=J73RlTgReelg60xIHa6SbH9ABCINdG6etM3gufAng5o/7xJta1xs0IfGGfcHazS8m
+         aZAi0dajO7cTixfjIfrGvsbPdYhJCFYIsrjXypRuFrCa7Vmg/UzrE/Ksvc9Z8/GGQM
+         V1R3xHUGZPN6FCJFKR3Z0Q87Ce2r65zodfEQymgxSZkjFIt4+Fw5Zfgrh0yZIiynSe
+         DJCd9mpYcolL8oprd15ZcKNyLzByWqcvxYhfln13h1YzcgiEU1Nd0V/6i3Qt2p7Sw9
+         31o6UVTbPST+LX8ahzkQsyuIo24AfhVODhfZhWP4BitR75puSJg1yV3Tkqisv3jVR6
+         0PjWiiItStX1g==
+Date:   Wed, 15 Jun 2022 10:00:00 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Florian Weimer <fweimer@redhat.com>
+Cc:     Kees Cook <keescook@chromium.org>, Andrei Vagin <avagin@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Dmitry Safonov <0x7f454c46@gmail.com>, linux-mm@kvack.org,
+        Eric Biederman <ebiederm@xmission.com>
+Subject: Re: [PATCH 1/2] fs/exec: allow to unshare a time namespace on
+ vfork+exec
+Message-ID: <20220615080000.qtxeosohhyfabzmg@wittgenstein>
+References: <20220613060723.197407-1-avagin@gmail.com>
+ <202206141412.2B0732FF6C@keescook>
+ <874k0mqs5i.fsf@oldenburg.str.redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsmowAAXWvkYialip3paDQ--.36376S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7CrW8Gw43tF4UKr47JFyrWFg_yoW8Jw18pF
-        W7WrWayry0qr4fXFsYy343WFW3KFn7WrWq9FsFk3ZxAa13XFyUJ3y7C34rZF95AFyF9w15
-        tr1Uta1xWF97JF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UY_MfUUUUU=
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2hkhF1uwMNN+PwAAs8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <874k0mqs5i.fsf@oldenburg.str.redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In mvebu_mbus_dt_init, of_find_matching_node_and_match() and
-of_find_node_by_phandle() will return node pointer with refcounter
-incremented. We should use of_node_put in fail path.
+On Wed, Jun 15, 2022 at 09:53:29AM +0200, Florian Weimer wrote:
+> * Kees Cook:
+> 
+> > On Sun, Jun 12, 2022 at 11:07:22PM -0700, Andrei Vagin wrote:
+> >> Right now, a new process can't be forked in another time namespace
+> >> if it shares mm with its parent. It is prohibited, because each time
+> >> namespace has its own vvar page that is mapped into a process address
+> >> space.
+> >> 
+> >> When a process calls exec, it gets a new mm and so it could be "legal"
+> >> to switch time namespace in that case. This was not implemented and
+> >> now if we want to do this, we need to add another clone flag to not
+> >> break backward compatibility.
+> >> 
+> >> We don't have any user requests to switch times on exec except the
+> >> vfork+exec combination, so there is no reason to add a new clone flag.
+> >> As for vfork+exec, this should be safe to allow switching timens with
+> >> the current clone flag. Right now, vfork (CLONE_VFORK | CLONE_VM) fails
+> >> if a child is forked into another time namespace. With this change,
+> >> vfork creates a new process in parent's timens, and the following exec
+> >> does the actual switch to the target time namespace.
+> >
+> > This seems like a very special case. None of the other namespaces do
+> > this, do they?
+> 
+> I think this started with CLONE_NEWPID, which had a similar delayed
+> effect with unshare: it happens only after fork, not for the current
+> process image.  I think it's just a limitation of the unshare interface.
+> Some of the effects simply have to be delayed due to their nature.
 
-Signed-off-by: heliang <windhl@126.com>
----
- drivers/bus/mvebu-mbus.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+I tried to give more context in another mail wrt to time namespaces
+specifically.
 
-diff --git a/drivers/bus/mvebu-mbus.c b/drivers/bus/mvebu-mbus.c
-index db612045616f..7b16ede5097f 100644
---- a/drivers/bus/mvebu-mbus.c
-+++ b/drivers/bus/mvebu-mbus.c
-@@ -1327,22 +1327,28 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
- 
- 	prop = of_get_property(np, "controller", NULL);
- 	if (!prop) {
-+		of_node_put(np);
- 		pr_err("required 'controller' property missing\n");
- 		return -EINVAL;
- 	}
- 
- 	controller = of_find_node_by_phandle(be32_to_cpup(prop));
- 	if (!controller) {
-+		of_node_put(np);
- 		pr_err("could not find an 'mbus-controller' node\n");
- 		return -ENODEV;
- 	}
- 
- 	if (of_address_to_resource(controller, 0, &mbuswins_res)) {
-+		of_node_put(np);
-+		of_node_put(controller);
- 		pr_err("cannot get MBUS register address\n");
- 		return -EINVAL;
- 	}
- 
- 	if (of_address_to_resource(controller, 1, &sdramwins_res)) {
-+		of_node_put(np);
-+		of_node_put(controller);
- 		pr_err("cannot get SDRAM register address\n");
- 		return -EINVAL;
- 	}
--- 
-2.25.1
+For pid namespaces one problem would be that it could end up confusing a
+process about its own pid. This was a more serious problem when the pid
+cache was still active in glibc; but fwiw systemd still has a pid cache
+afair.
 
+Christian
