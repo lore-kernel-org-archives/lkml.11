@@ -2,86 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E5C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A10C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350247AbiFOWnm (ORCPT
+        id S1350299AbiFOWoe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 18:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59104 "EHLO
+        Wed, 15 Jun 2022 18:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237675AbiFOWnl (ORCPT
+        with ESMTP id S1350327AbiFOWob (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 18:43:41 -0400
-Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1363954BD7
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:43:40 -0700 (PDT)
-Received: by mail-ua1-x929.google.com with SMTP id h21so3533728uaw.7
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:43:40 -0700 (PDT)
+        Wed, 15 Jun 2022 18:44:31 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4185F56390
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:44:30 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-31332df12a6so75694687b3.4
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:44:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=2XObwvEIRFeSUPWlsccqJL2V2/Mvgt3nETnC1b9HKa8=;
-        b=S2S/srd6++j7u7iD7ddlh75/PimyvVkw3xD/iReZx2VdakC+JjCSDBCASxeIHuv3V1
-         v+/dVFIS1Utv6mw9teyrxzcYyDxI7VofJ4oyO6GAUplv10+0M5XXrevWfmgSicsnWWFP
-         6a6FoXCgRLMDABe7hpmFkTJhwRj0JvpEG3N2C8lQkn9FQRrl6IdGuOIT6e7rjyomtpAc
-         NfI6pE8pnIpMEJpgG0lC/bDDw9h0VMc9QWZG8Gs4Iz0i4IEe1pH4oSzcPrQJRgNBrKnm
-         dkeBB4ax2K9f6UGVaK/PjM8jJyuxd2rJVuAu+hDcAdGOqwH/JM8t7kJbxnI80FPQaK3E
-         UlxQ==
+        bh=4tavlAUV9j8wy9Y5ZQvNo9SbXkg+xPmAoMXm4I/5xKc=;
+        b=aZNQ5xMgIiG+HULjGPsz/c4fuu1pIiVq25bbPs0kP7PT4TVBMUXWXxCb+XdLlboNiS
+         BY1QO9YbEkE1ucrqKunLlScMzaeQjou00OCPBM4w+t5MZQLjUIxAd7DQQBe7lKb1FOG+
+         c5NGYsihwrfO1Ad6GDXI18YoVHjQaZ+S2FCfah4pFm6qevntRpdMtuxzgJO8y299+li5
+         Gqz5VJ4/8kRzkg8gMQO32Vz1ItJbqloXo35C1YbgSSBn/9u/TCyYr1NOYhdJhHFkYht2
+         DpG6H7EHtm3JLFKAXgoVXB5PaPGNQANnNBqDYGif7OcNDRf0fXUlmM6+kwFRCJtliAI8
+         CZoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=2XObwvEIRFeSUPWlsccqJL2V2/Mvgt3nETnC1b9HKa8=;
-        b=T87wxEEATyJjeV5Ijhw8Knhw1nDLgvO0JpisqhaXfyIlj40Lx0W3hNr2uDbx43ySv7
-         cNwWEgXnuuORoD668FQgsOqRoAuqRJET7b1xq15giyGHp5B6lGGQ/Uzl5JwMrprbz8Kv
-         WIj9xNrorQSJc9uo9ABkHT6BtgG8fG78KJHFTn7yAYD6wqdgmzF6Rc37pBZXlsmE/npP
-         hoJzYM5RuWAP6Q2z3ge4yLERb9gp+aZmGbXaC36NtyGenvqYNbmgvi2kCqxbUDBhIYKG
-         nN/gECR2yZvsUqZmptv+1L4By11hknYlw6V12dA9SYGQlBII7TFEVQ7rtkkid6tjqR6H
-         ys1g==
-X-Gm-Message-State: AJIora9E9e76suYrtNXlBpwPByP+EGisr9VjOpRC9/5XByq0yOpcWzUk
-        UauyyTRo0mWuWeuOEslCgVhbBzd8f/wgsPEYHyi58A==
-X-Google-Smtp-Source: AGRyM1sJtiK4/NKr4JQEU3uA4VG/CjXI1G2Sh5Ajk9EO+Ng8ddNV3vNXEvLWkGBvxbnZlQvEuR4WKiIkRwH7f2u+jdc=
-X-Received: by 2002:ab0:5781:0:b0:37b:de3d:5d4e with SMTP id
- x1-20020ab05781000000b0037bde3d5d4emr1042184uaa.1.1655333019050; Wed, 15 Jun
- 2022 15:43:39 -0700 (PDT)
+        bh=4tavlAUV9j8wy9Y5ZQvNo9SbXkg+xPmAoMXm4I/5xKc=;
+        b=oHHHzDRlV4zGfLmUZ1oVkTlMU8CYGrcendGEWbLQOW3GIOvymM9sGliU8bSeeVWHP/
+         vccphKwAsMBYg+ZTRnKXsmqz7voZ3I42qXvjvwqq5f3WKC3yT4XkV5CHdvuR/6YFFac1
+         6Mim0BbeZ616UF4rI4P+nIhepG/RDTg7sNE85UgHLlakKf/QyH38UzmPhMPyW2tlCi7U
+         TNEXcZhGVNQLmlfz7TXKGkOtASmmtVdcJLF1+z1b7s2y+nMbycu0ncXIPasGGbzclp5T
+         q+0RLnaxUSVLRPwMjI4CMdVmJuOCjpLnvTy5V//SzZeQtjfOEUKyAbSnOIDaHqA5WVrg
+         Nk/A==
+X-Gm-Message-State: AJIora9bQI2b+OUyxAg92vwk2HSTOhAgBMSv8844GyxG/MCpv/aoHfwW
+        4LNRUYwra1c3T/sNVNy6Bc5ZFdKl+9QVGTJL9WBN2g==
+X-Google-Smtp-Source: AGRyM1stRFtj29Af2h8WR1JcITwxs/W78sA8TWkUE/45znWIrRL39l5SwaqbU8gHEq2Pk+V2tvNYYWtmYMer5uWOrHY=
+X-Received: by 2002:a81:8707:0:b0:314:1c64:eb4d with SMTP id
+ x7-20020a818707000000b003141c64eb4dmr2323993ywf.86.1655333069287; Wed, 15 Jun
+ 2022 15:44:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220613125622.18628-1-mgorman@techsingularity.net> <20220613125622.18628-8-mgorman@techsingularity.net>
-In-Reply-To: <20220613125622.18628-8-mgorman@techsingularity.net>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Wed, 15 Jun 2022 16:43:03 -0600
-Message-ID: <CAOUHufZwT+x3UG9guoyheUsR6rhvqMSH-n+-zWzdFUiO4_ZtCQ@mail.gmail.com>
-Subject: Re: [PATCH 7/7] mm/page_alloc: Replace local_lock with normal spinlock
-To:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
+References: <20220525081416.3306043-12-sudeep.holla@arm.com>
+ <20220525081416.3306043-13-sudeep.holla@arm.com> <20220525081416.3306043-14-sudeep.holla@arm.com>
+ <20220525081416.3306043-15-sudeep.holla@arm.com> <20220525081416.3306043-16-sudeep.holla@arm.com>
+ <947470ba-35fc-3c72-d01b-c0a7337216a2@arm.com> <20220606102159.dduxmvq4m2fm6gks@bogus>
+ <CAKfTPtB8iPzEXipsJqNtd9-aJMKx-FAaiGMzOg58HgRQuo39iA@mail.gmail.com>
+ <20220610102753.virkx47uyfsojol6@bogus> <CAKfTPtD==UMjbSGHvKxT_z=LyvsJt=UCHsqkbgVnagbn5Aqpcw@mail.gmail.com>
+ <20220615170033.q4og4pnmpwdg3l2g@bogus>
+In-Reply-To: <20220615170033.q4og4pnmpwdg3l2g@bogus>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Thu, 16 Jun 2022 00:44:17 +0200
+Message-ID: <CAKfTPtCeox-qjaoXqOawaghZDwsKBF6FBPENFtsQSb2r6JPy2w@mail.gmail.com>
+Subject: Re: [PATCH v3 15/16] arch_topology: Set cluster identifier in each
+ core/thread from /cpu-map
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        linux-kernel@vger.kernel.org, Atish Patra <atishp@atishpatra.org>,
+        Atish Patra <atishp@rivosinc.com>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Qing Wang <wangqing@vivo.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 8:54 AM Mel Gorman <mgorman@techsingularity.net> wrote:
-...
+On Wed, 15 Jun 2022 at 19:01, Sudeep Holla <sudeep.holla@arm.com> wrote:
+>
+> Please note until we agree on unified view for hardware topology, I will
+> temporarily ignore any scheduler domain related issues/concerns as this
+> thread/discussion is mixing up too much IMO. I am not ignoring sched_domain
+> concerns, but deferring it until we agree on the hardware topology view
+> which is user visible and how that impacts sched domain topology can be
+> considered soon following that.
+>
+> On Tue, Jun 14, 2022 at 07:59:23PM +0200, Vincent Guittot wrote:
+> > On Fri, 10 Jun 2022 at 12:27, Sudeep Holla <sudeep.holla@arm.com> wrote:
+> > >
+> > > On Fri, Jun 10, 2022 at 12:08:44PM +0200, Vincent Guittot wrote:
+> > > > On Mon, 6 Jun 2022 at 12:22, Sudeep Holla <sudeep.holla@arm.com> wrote:
+> > > > >
+> > >
+> > > [...]
+> > >
+> > > > > Why ? Are you suggesting that we shouldn't present the hardware cluster
+> > > > > to the topology because of the above reason ? If so, sorry that is not a
+> > > > > valid reason. We could add login to return NULL or appropriate value
+> > > > > needed in cpu_clustergroup_mask id it matches MC level mask if we can't
+> > > > > deal that in generic scheduler code. But the topology code can't be
+> > > > > compromised for that reason as it is user visible.
+> > > >
+> > > > I tend to agree with Dietmar. The legacy use of cluster node in DT
+> > > > refers to the dynamiQ or legacy b.L cluster which is also aligned to
+> > > > the LLC and the MC scheduling level. The new cluster level that has
+> > > > been introduced recently does not target this level but some
+> > > > intermediate levels either inside like for the kupeng920 or the v9
+> > > > complex or outside like for the ampere altra. So I would say that
+> > > > there is one cluster node level in DT that refers to the same MC/LLC
+> > > > level and only an additional child/parent cluster node should be used
+> > > > to fill the clustergroup_mask.
+> > > >
+> > >
+> > > Again I completely disagree. Let us look at the problems separately.
+> > > The hardware topology that some of the tools like lscpu and lstopo expects
+> > > what the hardware looks like and not the scheduler's view of the hardware.
+> > > So the topology masks that gets exposed to the user-space needs fixing
+> > > even today. I have reports from various tooling people about the same.
+> > > E.g. Juno getting exposed as dual socket system is utter non-sense.
+> > >
+> > > Yes scheduler uses most of the topology masks as is but that is not a must.
+> > > There are these *group_mask functions that can implement what scheduler
+> > > needs to be fed.
+> > >
+> > > I am not sure why the 2 issues are getting mixed up and that is the main
+> > > reason why I jumped into this to make sure the topology masks are
+> > > not tampered based on the way it needs to be used for scheduler.
+> > >
+> > > Both ACPI and DT on a platform must present exact same hardware topology
+> > > to the user-space, there is no space for argument there.
+> >
+> > But that's exactly my point there:
+> > ACPI doesn't show the dynamiQ level anywhere but only the llc which
+> > are the same and your patch makes the dynamiQ level visible for DT in
+> > addition to llc
+> >
+>
+> Sorry if I am missing something obvious here, but both ACPI and DT has no
+> special representation for dynamiQ clusters and hence it is impossible to
+> deduce the same from either DT or ACPI. Can you provide some details
+> or example as what you are referring as dynamiQ. Also what you mean by
+> dynamiQ not shown on ACPI while shown with DT systems. If there is any
+> discrepancies, we need to fix.
 
-> +#define pcpu_spin_trylock_irqsave(type, member, ptr, flags)            \
-> +({                                                                     \
-> +       type *_ret;                                                     \
-> +       pcpu_task_pin();                                                \
-> +       _ret = this_cpu_ptr(ptr);                                       \
-> +       if (!spin_trylock_irqsave(&_ret->member, flags))                \
-> +               _ret = NULL;                                            \
+The cpu-map node in DT is following the dynamiQ or the legacy
+big.LITTLE topology. As an example  the hikey6220 has 2 clusters, the
+hikey960 has 2 clusters that reflect big.LITTLE and the sdm845 has one
+cluster that reflects the dynamiQ cluster.
 
-I'm getting "BUG: sleeping function called from invalid context" with
-mm-everything-2022-06-14-19-05.
+now my mistake is to have made the assumption that core_sibling is
+arch_topology was used to reflect the cores sharing cache but after
+looking more deeply in the code it seems to be a lucky coincidence
 
-Perhaps missing a pcpu_task_unpin() here?
-
-> +       _ret;                                                           \
-> +})
+>
+> Now, what I refer as discrepancy for example on Juno is below:
+> (value read from a subset of per cpu sysfs files)
+> cpu                     0       1       2       3       4       5
+> cluster_id              -1      -1      -1      -1      -1      -1
+> physical_package_id     1       0       0       1       1       1
+> cluster_cpus_list       0       1       2       3       4       5
+> package_cpus_list       0,3-5   1-2     1-2     0,3-5   0,3-5   0,3-5
+>
+> The above one is for DT which is wrong in all the 4 entries above.
+> The below one is on ACPI and after applying my series on Juno.
+>
+> cpu                     0       1       2       3       4       5
+> cluster_id              1       0       0       1       1       1
+> physical_package_id     0       0       0       0       0       0
+> cluster_cpus_list       0,3-5   1-2     1-2     0,3-5   0,3-5   0,3-5
+> package_cpus_list       0-5     0-5     0-5     0-5     0-5     0-5
+>
+> This matches the expectation from the various userspace tools like lscpu,
+> lstopo,..etc.
+>
+> > >
+> > > > IIUC, we don't describe the dynamiQ level in ACPI which  uses cache
+> > > > topology instead to define cpu_coregroup_mask whereas DT described the
+> > > > dynamiQ instead of using cache topology. If you use cache topology
+> > > > now, then you should skip the dynamiQ
+> > > >
+> > >
+> > > Yes, unless someone can work out a binding to represent that and convince
+> > > DT maintainers ;).
+> > >
+> > > > Finally, even if CLS and MC have the same scheduling behavior for now,
+> > > > they might ends up with different scheduling properties which would
+> > > > mean that replacing MC level by CLS one for current SoC would become
+> > > > wrong
+> > > >
+> > >
+> > > Again as I mentioned to Dietmar, that is something we can and must deal with
+> > > in those *group_mask and not expect topology mask to be altered to meet
+> > > CLS/MC or whatever sched domains needs. Sorry, that is my strong opinion
+> > > as the topology is already user-space visible and (tooling) people are
+> > > complaining that DT systems are broken and doesn't match ACPI systems.
+> >
+> > again, your proposal doesn't help here because the DT will show a
+> > level that doesn't appears in ACPI
+> >
+>
+> Which level exactly ? It matches exactly for Juno, the sysfs files are
+> exact match after my changes. Again don't mix the scheduler domains for
+> arguments here.
+>
+> > >
+> > > So unless someone gives me non-scheduler and topology specific reasons
+> > > to change that, sorry but my opinion on this matter is not going to change ;).
+> > >
+> > > You will get this view of topology, find a way to manage with all those
+> > > *group_mask functions. By the way it is already handled for ACPI systems,
+> >
+> > AFAICT, no it's not, the cluster described in ACPI is not the dynamiQ
+> > level that you make now visible to DT
+>
+> Again, no. There is no binding for dynamiQ level either in DT or ACPI and
+> hence there is no way it can become visible on DT. So I have no idea why
+> there is a thought process or assumption about existence of dynamiQ level
+> in the DT. It doesn't exist. If that is wrong, can you point me to the
+> bindings as well as existing device tree ? If you are referring to the
+> phantom domains Dietmar mentioned in earlier threads, then they don't exist.
+> It is made up and one need to get the bindings pushed before we can address
+> such a system.
+>
+> --
+> Regards,
+> Sudeep
