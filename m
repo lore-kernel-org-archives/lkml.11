@@ -2,131 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE56C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 05:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6361AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 05:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345776AbiFOFnG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 01:43:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36128 "EHLO
+        id S243116AbiFOFuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 01:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242607AbiFOFnC (ORCPT
+        with ESMTP id S231417AbiFOFuR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 01:43:02 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BB527CD4
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 22:42:59 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id 5B6353200954;
-        Wed, 15 Jun 2022 01:42:56 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Wed, 15 Jun 2022 01:42:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm3; t=1655271775; x=1655358175; bh=5Ktr4vYlyz0VnFc26zfV4hN2K
-        qo9QoraAHP2bMY/PDg=; b=KMMKtA1s02sqAPbxvx2FdTwb9+2bAj1C9yJoal2s0
-        7d5FkAXdtRCBYl9tnhl6fWKHbrUmidXVAGFIAVMQoyHO5erHF4UIZGer/W9cBzP6
-        7n4V8oUOXpH6z34JJ18LeSNrnStvSyu2nprIx37o5MRqMrHerPE6F/Eu8cVSnVuh
-        AA+zQSg9uiK2egLpDx0H1YuQIWdG+6KBA1QI9kkrhxJjvFm7tI2J2pSb6WNQrH1a
-        8K525Wo27Izo5Y/ig9EqhHf0vT7TLbqjtWNEfnj0nWhUUc+GyfxHssu9WKmazvDv
-        GikcgGqcso/cBywFQcK7V/YWsjYFCXSdA7LUSgYILjC0Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-        1655271775; x=1655358175; bh=5Ktr4vYlyz0VnFc26zfV4hN2Kqo9QoraAHP
-        2bMY/PDg=; b=ZndezcDyHErKLOX5G6RxC/ecHQJasGa+gubBIJoi55KxX+zaw2V
-        shvidQ+ga7J45jYelXWNLcNsakPJK8DA/zWDteV4kSw7DOw5QDDU8PwabIjdRKfH
-        3DRWiTEikErIma6DZbs3vzkGmQR48czsQ+3+Nx+BZcCy52bpJ+irlmPlNF3/EzUA
-        FaYIUem8zmoNyHL0FK852pHOllNGPpEoRuRFKrT0ZnAjjX8QPJbVwM55qvb472nj
-        v81Jh6wfiJK3wv8u70nhbO0tivPcNOfRTPJeO9YQ42leZvpyizU84YFQd+WKcZ0u
-        wtFdUZ7v3fIngvTgMe7QDWinWPUFrcXjwhw==
-X-ME-Sender: <xms:X3GpYlg5uzhgxfBmFM9iNkimF1K_PYuEZjrFD9-EQodottwWxYIpCw>
-    <xme:X3GpYqCWUtLDZBIFuJPraHltqW4UDd_FJcjjyNJJdMwHtdY4NzsUsD5lVYUlsj2h_
-    WWKqFq_t3vIJKvG6A>
-X-ME-Received: <xmr:X3GpYlE6XlM1IADqUvb86YXVX6rw7V4zJN8vqNj4VljMYqwOuZJ9UHearuuXsQpqM2xEvZ8rVdy5WzxYNijEvwT3p8c1rhuYMt5u5xfcXIpp__1Ak6cpa4CE__b9VH_2fRSYWQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddvtddgleefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufgrmhhuvghl
-    ucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecuggftrf
-    grthhtvghrnhepkeevlefhjeeuleeltedvjedvfeefteegleehueejffehgffffeekhefh
-    hfekkeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:X3GpYqQGE235Da4u_CqxAhYmNPTlXjLmHN_ZOFojI7eRCmz3xIousA>
-    <xmx:X3GpYizwhBwL1AHT8MlNXqT_WB8ckxYohfAAPqRC6-ZJ5WpUz2lftQ>
-    <xmx:X3GpYg5n2KXNsDyZ_kNp_R-hLfHlPLfMwZMTHBSvQQ_oxjZNpY6KZA>
-    <xmx:X3GpYmcYR3ebHiNAgnlRJSFNQOWQ4-CXGM8NGDzadPfMg8mY_rIMtA>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 15 Jun 2022 01:42:55 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Ondrej Jirman <megous@megous.com>,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: [PATCH] drm/sun4i: Fix crash during suspend after component bind failure
-Date:   Wed, 15 Jun 2022 00:42:53 -0500
-Message-Id: <20220615054254.16352-1-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
+        Wed, 15 Jun 2022 01:50:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDCE01F2F5;
+        Tue, 14 Jun 2022 22:50:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40E7A6177D;
+        Wed, 15 Jun 2022 05:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C129C3411B;
+        Wed, 15 Jun 2022 05:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655272214;
+        bh=uOJq8k0K/tF8dz3zOSCS8OJ30XH24V4q7h1yz7qmYrY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YxlEJkVjxxO1vcO+UDoS/GMfo30Aez0eDAgfLxRFHrWrnfIKGHxOjuTC+ts0JSuv/
+         JC6xz8GULaJ8HF3wmvuwH6a5UNvooOu5fdoqZo7WN8e/yNlb2oM6Z3JEbNWDiADHNo
+         jTFaRNyVSF3GkuUiz0zvg+yOFfV3SLFheOIjo3Sv34/tb7QcmTVgifE3YLcoerFKGd
+         d3MU7DJV76AtmnIVr+0nGNxo8eOHbL8I25D7/r4zoweST3J0ElVZedruKwfHHapVQt
+         rRLqzDEY/Nxiu6yirzMGkdQeOI4BoIiOrapcHhCE8TdJ1EaHntbmo1zOzBEe0BlTp8
+         SvJ8MighoX47A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6F678E56ADF;
+        Wed, 15 Jun 2022 05:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 0/6] Support mt7531 on BPI-R2 Pro
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165527221445.3487.2646030857898317567.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Jun 2022 05:50:14 +0000
+References: <20220610170541.8643-1-linux@fw-web.de>
+In-Reply-To: <20220610170541.8643-1-linux@fw-web.de>
+To:     Frank Wunderlich <linux@fw-web.de>
+Cc:     linux-rockchip@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, frank-w@public-files.de,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        heiko@sntech.de, sean.wang@mediatek.com, Landen.Chao@mediatek.com,
+        dqfext@gmail.com, pgwipeout@gmail.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, gerg@kernel.org,
+        opensource@vdorst.com, mchehab+samsung@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the component driver fails to bind, or is unbound, the driver data
-for the top-level platform device points to a freed drm_device. If the
-system is then suspended, the driver passes this dangling pointer to
-drm_mode_config_helper_suspend(), which crashes.
+Hello:
 
-Fix this by only setting the driver data while the platform driver holds
-a reference to the drm_device.
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Fixes: 624b4b48d9d8 ("drm: sun4i: Add support for suspending the display driver")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+On Fri, 10 Jun 2022 19:05:35 +0200 you wrote:
+> From: Frank Wunderlich <frank-w@public-files.de>
+> 
+> This Series add Support for the mt7531 switch on Bananapi R2 Pro board.
+> 
+> This board uses port5 of the switch to conect to the gmac0 of the
+> rk3568 SoC.
+> 
+> [...]
 
- drivers/gpu/drm/sun4i/sun4i_drv.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Here is the summary with links:
+  - [v4,1/6] dt-bindings: net: dsa: convert binding for mediatek switches
+    https://git.kernel.org/netdev/net-next/c/e0dda3119741
+  - [v4,2/6] net: dsa: mt7530: rework mt7530_hw_vlan_{add,del}
+    https://git.kernel.org/netdev/net-next/c/a9c317417c27
+  - [v4,3/6] net: dsa: mt7530: rework mt753[01]_setup
+    https://git.kernel.org/netdev/net-next/c/6e19bc26cccd
+  - [v4,4/6] net: dsa: mt7530: get cpu-port via dp->cpu_dp instead of constant
+    https://git.kernel.org/netdev/net-next/c/1f9a6abecf53
+  - [v4,5/6] dt-bindings: net: dsa: make reset optional and add rgmii-mode to mt7531
+    https://git.kernel.org/netdev/net-next/c/ae07485d7a1d
+  - [v4,6/6] arm64: dts: rockchip: Add mt7531 dsa node to BPI-R2-Pro board
+    https://git.kernel.org/netdev/net-next/c/c1804463e5c6
 
-diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
-index 275f7e4a03ae..8841dba989ee 100644
---- a/drivers/gpu/drm/sun4i/sun4i_drv.c
-+++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
-@@ -73,7 +73,6 @@ static int sun4i_drv_bind(struct device *dev)
- 		goto free_drm;
- 	}
- 
--	dev_set_drvdata(dev, drm);
- 	drm->dev_private = drv;
- 	INIT_LIST_HEAD(&drv->frontend_list);
- 	INIT_LIST_HEAD(&drv->engine_list);
-@@ -114,6 +113,8 @@ static int sun4i_drv_bind(struct device *dev)
- 
- 	drm_fbdev_generic_setup(drm, 32);
- 
-+	dev_set_drvdata(dev, drm);
-+
- 	return 0;
- 
- finish_poll:
-@@ -130,6 +131,7 @@ static void sun4i_drv_unbind(struct device *dev)
- {
- 	struct drm_device *drm = dev_get_drvdata(dev);
- 
-+	dev_set_drvdata(dev, NULL);
- 	drm_dev_unregister(drm);
- 	drm_kms_helper_poll_fini(drm);
- 	drm_atomic_helper_shutdown(drm);
+You are awesome, thank you!
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
