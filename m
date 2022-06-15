@@ -2,80 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 928AAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 05:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 05:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346099AbiFOFN4 (ORCPT
+        id S1345832AbiFOFNZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 01:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37524 "EHLO
+        Wed, 15 Jun 2022 01:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345611AbiFOFNV (ORCPT
+        with ESMTP id S243490AbiFOFNI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 01:13:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C4B29373
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 22:13:19 -0700 (PDT)
+        Wed, 15 Jun 2022 01:13:08 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888102657B
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 22:13:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A61E4B81BF0
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:13:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 768DAC3411B;
-        Wed, 15 Jun 2022 05:13:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6C49ACE1D14
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:13:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0205C34115;
+        Wed, 15 Jun 2022 05:13:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655269997;
-        bh=+DHhSqosE4XJOM/fy6PqZfeINZkN9gw6GDOPcgfkxIM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DmmvWJt7/KEN9iqPCpXt88y5IrUee/OKe2tBCoTg3FcnO70ioMynPNBJO6Q7JAlY8
-         YKeUotl/SH/UKARFt0EP54uKJEhE/KEmj9mH8G+AxuSuGBbIMF+DcDvmQ6huckjAaK
-         EcLPp+QKdf3XlliPYuFHTueqtTL3stU0/p766OIpNj3iLVYcRzWLpBBlXXbim3LqDb
-         rQi6VQDdXb2YrsbBZpUYiIgyHotRwxq72P+tBApldM/76xjyZ7CvRhKr2Zw+B/w/FU
-         mXYZSzpvVk6heS50n2wfGMtO0TOpxAO1sdjF9nPAPHS30Y8t4La3N3PqH79KvD1HGe
-         dZJhPMHGnVVAQ==
+        s=k20201202; t=1655269983;
+        bh=49EG9xEaXpkgOIcZrB2XUN9zAkDIcNJTAWZ7hH+D/Zo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=roEfoD4Bpl/Yv1A+ollNbp2sgyzQoxmZ6cb+yueRVG7ykB+poUeW5cAvYMFG2iP40
+         FlUdXD84jhxJ+FZW6gtBjokIDe843f9Evv2vJGskf308HdFit9opYetK7EvPVltPsj
+         hcLc0kwsNArCxdJQ/e6EY//dj6xEONtDKFXhIwVwpJagNMN3eNqPqxZpMDAI+9oawh
+         XjAtm5SO2B3O2zA3Bl5rTgPKo8jKqIRpKM8gYhCzQJebN2R4J5MNyP1Wnh0eSsJfpL
+         JoTg9tPwaJMzGA1xjqzxlpqgkhs1BLOieAZCGeXljDtv+J0MuQzbrGsmK0l9FbEsfx
+         ayTEnXpIxBrnQ==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 11/11] platform/chrome: cros_ec_proto: return -EPROTO if empty payload
-Date:   Wed, 15 Jun 2022 05:12:48 +0000
-Message-Id: <20220615051248.1628156-12-tzungbi@kernel.org>
+Subject: [PATCH 00/11] platform/chrome: Kunit tests and refactor for cros_ec_cmd_xfer()
+Date:   Wed, 15 Jun 2022 05:12:37 +0000
+Message-Id: <20220615051248.1628156-1-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220615051248.1628156-1-tzungbi@kernel.org>
-References: <20220615051248.1628156-1-tzungbi@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cros_ec_wait_until_complete() sends EC_CMD_GET_COMMS_STATUS which expects
-to receive sizeof(struct ec_response_get_comms_status) from
-cros_ec_xfer_command().
+The first 5 patches add Kunit tests and refactors for cros_ec_cmd_xfer().
 
-Return -EPROTO if cros_ec_xfer_command() returns 0.
+The last 6 patches change the behavior a bit by altering return codes.
 
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
----
- drivers/platform/chrome/cros_ec_proto.c | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index 5323edddb540..0c7042aa2640 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -166,6 +166,11 @@ static int cros_ec_wait_until_complete(struct cros_ec_device *ec_dev, uint32_t *
- 			break;
- 		}
- 
-+		if (ret == 0) {
-+			ret = -EPROTO;
-+			break;
-+		}
-+
- 		if (!(status->flags & EC_COMMS_STATUS_PROCESSING))
- 			break;
- 	}
+Asynchronous mechanism in EC protocol:
+EC returns EC_RES_IN_PROGRESS if the host command needs more time to complete.
+It saves the result into `saved_result` once the command completed[1].
+
+By design, AP should send another command EC_CMD_RESEND_RESPONSE for getting
+the result from the previous pending command[2].  The mechanism was only
+designed for commands that don't need responses[3].
+
+However, the kernel code doesn't have such logic when dealing with
+EC_RES_IN_PROGRESS.
+
+The series doesn't fix it but leave it as is.  I doubt there is no existing
+use case.
+
+[1]: https://crrev.com/9b80051e01872d8cae86fff999b5d31a0bea985b/common/host_command.c#113
+[2]: https://crrev.com/9b80051e01872d8cae86fff999b5d31a0bea985b/common/host_command.c#748
+[3]: https://crrev.com/9b80051e01872d8cae86fff999b5d31a0bea985b/common/host_command.c#126
+
+
+Return value overridden in cros_ec_send_command() if asynchronous:
+By original intention, cros_ec_send_command() returns number of available
+bytes of input payload.
+
+When it falls into asynchronous path (i.e. EC_RES_IN_PROGRESS), both return
+value and `msg->result` will be overridden by the subsequent
+EC_CMD_GET_COMMS_STATUS.
+
+The series doesn't fix it but leave it as is.
+
+Tzung-Bi Shih (11):
+  platform/chrome: cros_ec_proto: add "cros_ec_" prefix to
+    send_command()
+  platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_cmd_xfer()
+  platform/chrome: cros_ec_proto: add Kunit tests for
+    cros_ec_send_command()
+  platform/chrome: cros_ec_proto: separate cros_ec_xfer_command()
+  platform/chrome: cros_ec_proto: separate cros_ec_wait_until_complete()
+  platform/chrome: cros_ec_proto: change Kunit expectation when timed
+    out
+  platform/chrome: cros_ec_proto: return -EAGAIN when retries timed out
+  platform/chrome: cros_ec_proto: change Kunit expectation for EC errors
+  platform/chrome: cros_ec_proto: return standard error codes for EC
+    errors
+  platform/chrome: cros_ec_proto: add Kunit test for empty payload
+  platform/chrome: cros_ec_proto: return -EPROTO if empty payload
+
+ drivers/platform/chrome/cros_ec_proto.c      | 106 +++--
+ drivers/platform/chrome/cros_ec_proto_test.c | 443 +++++++++++++++++++
+ drivers/platform/chrome/cros_kunit_util.c    |  20 +
+ drivers/platform/chrome/cros_kunit_util.h    |   4 +
+ 4 files changed, 527 insertions(+), 46 deletions(-)
+
 -- 
 2.36.1.476.g0c4daa206d-goog
 
