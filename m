@@ -2,296 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 056C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8DF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:30:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240033AbiFOD3k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 23:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46278 "EHLO
+        id S241853AbiFODag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 23:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233392AbiFOD3i (ORCPT
+        with ESMTP id S242077AbiFODab (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 23:29:38 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05FFE42EDF;
-        Tue, 14 Jun 2022 20:29:36 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 9D8BE1A087E;
-        Wed, 15 Jun 2022 05:29:35 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 35A131A0876;
-        Wed, 15 Jun 2022 05:29:35 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 3B740181D0CA;
-        Wed, 15 Jun 2022 11:29:33 +0800 (+08)
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
-        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
-        alexandre.belloni@bootlin.com, fido_max@inbox.ru,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        vladimir.oltean@nxp.com, leoyang.li@nxp.com,
-        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com
-Subject: [net] net: dsa: felix: update base time of time-aware shaper when adjusting PTP time
-Date:   Wed, 15 Jun 2022 11:36:10 +0800
-Message-Id: <20220615033610.35983-1-xiaoliang.yang_1@nxp.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Tue, 14 Jun 2022 23:30:31 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB1D4E3BB;
+        Tue, 14 Jun 2022 20:30:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655263828; x=1686799828;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=pfu3lsO8xW9KI4LG2YiasA1zK9lhFJ9aSxvCHDpSiMM=;
+  b=ex9bhAGFnQ6EgiS+z1Hx/MVVbjMu4z3/wIIbRgy82Eoh01N4D98Y5Axo
+   Y/vWtwKmpfYosxxnO7MMGdecwudKB/kRNBlOPlHAy3EisBtsrhNCo9zm8
+   KSDpk+LmoBQd3erRylc0OmZdZYTJMLgLzfnIihNXKDNkxwOnhjII/LaK2
+   pSZqH8URnf/Q0Gj1uvhbrg3n+eQRUIPyIvYt/bvR2123xqzIiUIaBA/bw
+   FFX3S60eQy1qoLIvI0Cc6ARWjIRQyzmRdoXU3hQCHykMv2xetC+HoVXh2
+   8yHcYkFnt9W5wFWAcw2Dh7hviHQoy6/R7hAOTRXmw2J4LkSvQiwCixmZ+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="277610274"
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="277610274"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 20:30:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="830792404"
+Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
+  by fmsmga006.fm.intel.com with ESMTP; 14 Jun 2022 20:30:28 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 14 Jun 2022 20:30:27 -0700
+Received: from orsmsx605.amr.corp.intel.com (10.22.229.18) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 14 Jun 2022 20:30:27 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 14 Jun 2022 20:30:27 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.102)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Tue, 14 Jun 2022 20:30:27 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OmFXUHYNCdnvC0U/xNdte48D9lmW+K/kp2fQ3QNoGiHwHqROlAkA9mbdDyfAn41pfnK5+SRwdtMw5n9if3fEwdzsdit1teRu06RP5SMLUe5MiLi0RN3ON5xZ4afg1VXLSAA8iiX+bxu+K9qyYwF5Wmae9RARbP0D74d46rNrsjssujnG0gRGjfnPJ4PN66wE7A8hYURet2ktuzslklazHvzSKDJQvNVdYrIODv4g8RYThZNvCEZrzTbMqqUOYpn8mhJYMOlWYPtKrxoD9vejEdlJJx0HuAOKFa/iWjSiNF5sjdfT+az4A1tDdtNc1f6WVXZOKfqyQr+yh3fe9/dydw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=G8SUelKUICtf/FkLw/MLE1YMjAAsTQ5cryD2ojx4Pqo=;
+ b=k6E8AP1vW3BGR771/a/Zoy8/8tVofhMa7EY8147Gv+fKKrHDGIPXTLOPF23GiwAlnrFtx2uCZ4C9b70qa5AKzjv5bt5R9O1H27rfzKORvNH23t+z/MoXU0qwYsFhLFENnMdO4QWfTVODmgQjO1QVYrlGgqL2flkJPbhmzIyLirzJBIMUnXuaN01G0zG56jR9ktcmYP8/kUU1af+RWETBHeyVlyj4qCkwzIBfW7Go2kuZUKyo3Qq+jFYBEuq1jIV1/W35nFf5aFaSoNL8vHe/eDn/5KnYwxT68ISlOTsU+6tj52eKS75ryN5Eb033XD+6QsCzjgUE88YZIq61DnxKGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6311.namprd11.prod.outlook.com (2603:10b6:8:a6::21) by
+ DM6PR11MB4458.namprd11.prod.outlook.com (2603:10b6:5:14f::30) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5332.12; Wed, 15 Jun 2022 03:30:18 +0000
+Received: from DM4PR11MB6311.namprd11.prod.outlook.com
+ ([fe80::d4e9:9ae1:29b2:90c]) by DM4PR11MB6311.namprd11.prod.outlook.com
+ ([fe80::d4e9:9ae1:29b2:90c%5]) with mapi id 15.20.5332.020; Wed, 15 Jun 2022
+ 03:30:18 +0000
+Date:   Tue, 14 Jun 2022 20:30:05 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     <alison.schofield@intel.com>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        "Steven Rostedt" <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, <linux-cxl@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 3/3] cxl/core: Add sysfs attribute get_poison for list
+ retrieval
+Message-ID: <YqlSPYBdOfTaXW6Q@iweiny-desk3>
+References: <cover.1655250669.git.alison.schofield@intel.com>
+ <57644934bb7af8e1c692735f53c2c415a1ba16d1.1655250669.git.alison.schofield@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <57644934bb7af8e1c692735f53c2c415a1ba16d1.1655250669.git.alison.schofield@intel.com>
+X-ClientProxiedBy: MW4PR04CA0145.namprd04.prod.outlook.com
+ (2603:10b6:303:84::30) To DM4PR11MB6311.namprd11.prod.outlook.com
+ (2603:10b6:8:a6::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 03197a63-c345-4ad0-3579-08da4e7f5e5e
+X-MS-TrafficTypeDiagnostic: DM6PR11MB4458:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-Microsoft-Antispam-PRVS: <DM6PR11MB4458B36504EB9893D58DBFCAF7AD9@DM6PR11MB4458.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JTzTMexEmxG4FCBKvLHw2Zls28HXNCbcjA4S2YWT8MZSBf2wgNUv9L5X2DC39JIH8CvPARYZZd+k7OtOqCrjJox/k10UY+2ZG9waGGc6/z8VewRWCqRmewrm/0bJx7bPnJO88+Qhy7W215qkFlPrRsCC++bFFgtAEPz6gmK0cxte6bugAPY37ZrA2XhAfl32qvTmTEIkVcqOWz/VRrmulNFHrF4NNWMj/GdPVhNn1eJ2wqk9+kgt2q8jvK1UKre8g/y6fdGlKaBOVMnNe+i967DPaH778dv9vulfXvNcn9+nOFKD8PtvvQK8yIPwNXN/SAH63x31EHwARfaXvcxBb8QEuB5lLZpwdLV8OnuEJIIcHDjXJ5bnXsRyi8FSRhvVLovouiIMJTLC91JDALRyur5/Sr5/n78GR189GamNfP24NWueWK2n/cHcJwqpd0pYEtXGaYssyuXX2yrkIMotm9Ia9IpuXwT4YMYxglubucc3NLDtPeqDtGvhNxaT9yNwXhCHze1lhSgNuoOvNLkMK4PAo1oT4wseFFda3tOWcQhe2NARVYBuB6Hxe3bFoUyTo3hg6fvNBwfucoU1RvgB7wQpVavtHYqVDljRNF7LsTEFkWZ2bjjUxg7Ksr21dj9cSmGiN51hQj8GEjV3iVFjtg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6311.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(66556008)(66946007)(8676002)(4326008)(33716001)(66476007)(2906002)(6506007)(44832011)(86362001)(6512007)(26005)(83380400001)(5660300002)(508600001)(9686003)(82960400001)(6636002)(54906003)(8936002)(38100700002)(186003)(316002)(6486002)(34206002)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FJb0aysNiSe5KvqGTjbxQGNi2WUMH+/1ghFKPeSUBWbxb2nLhsr9ReLBXWWn?=
+ =?us-ascii?Q?xqsygjP+I+53mJJg8ClKhGCanTaqVaDA5Lgf0iDrtgAfeNXfS7XPDVx7Kkmr?=
+ =?us-ascii?Q?4SaZR2hSsV6kr3SREgRpEw2WALDqtrVFStd0rQPfhT5NtZe0MBhP5N1396UQ?=
+ =?us-ascii?Q?LxLo++tDx6qnXRCMfwcXoo9jJiw+v5vs/70tlGFELovGXG0mAUYnAgCf+qBa?=
+ =?us-ascii?Q?tLBmxRhZsP60KPpJoolQXeQa0so2OvXI8oRQ3JXbVA680qvVQvrx1v6sgwLu?=
+ =?us-ascii?Q?THliFdaONUDHDVl/b9kFxDkwYEV2JjXiOv4XT+qAGVWXITwK5ckUZwrSlr4L?=
+ =?us-ascii?Q?CPT0LrhOyPQJbeK0N5CV+Ehlp8BgMnFF9kqfPRhmaGo6hSlLkxoG/a9XYEvS?=
+ =?us-ascii?Q?/oGrgkqt2PVY738AcWhO0kNcjQQnTYpqKrqgvseUQ2AJyTwjvdg2Dd/9BRjh?=
+ =?us-ascii?Q?wuuZQFB1LlNkgxzndmsrN24iR1wqSMjjhXIpiGKk7SdgxGFPAK2AlWDPm0Ew?=
+ =?us-ascii?Q?rXiNT9yMLUTzv2uSmrPRIiPqhXCHlqSLGJzTtTJ4ORbrd2GJuHAHI4KZTZBq?=
+ =?us-ascii?Q?BZZUPbfZJ0keV4KL9BFhxVeWMIIXbtqAEMdZRW1x06QSQX2EOmVaNePciF0S?=
+ =?us-ascii?Q?N8wxhkWImNkloKkpaxobgwlMOafQJllYRd49vFewTxKIvzV3FXTEgL5xBh3P?=
+ =?us-ascii?Q?v09WwBu0rKoprW95f8j99yoRvnlAZfFpSCSFAcmptYJyb+2BMI++L2izZ2tu?=
+ =?us-ascii?Q?xwm1gMLZ3ZIvdY/BU2WdM7j8f+b7K2Y4jAHzQyAR06veSjkvRTSSyIXJf9Tj?=
+ =?us-ascii?Q?qwhoLt61ophGvMIdRV66WcguLLrK/UPkHu6pdHMzJkp+Fbkc9tDN+Xh54yXq?=
+ =?us-ascii?Q?hlphDK4In5hSBC/XxicoB83Topn9NvmmFeXmh7PYOmlyM21CU3UbgGVgnf9d?=
+ =?us-ascii?Q?4H9UnSnTR/huMQP8j5m7R24RuQnVgbplTWFj8obWXd4kWaROuGGkxuqyuDIg?=
+ =?us-ascii?Q?2bX+o3cD8MYSR9RVesg2OuYSGsBKPZtXHpHTzE7RQ8yetZuBghj5WddtCMbQ?=
+ =?us-ascii?Q?iFnZUfVpmr5jeom33PmOGyK4F32y/njrLQGzhy0BS4hgCXLwTcXTmYgF2AP3?=
+ =?us-ascii?Q?EIYUOhPqKRpIdilJWR/wpXyP5y9XjSpiE/2oKWgsHsEkjFpOKvIqBktIK4xo?=
+ =?us-ascii?Q?UbhcolxorFpe1NDlgCG91RUfrkehio+SWQ5fitVhWNy0vEuZvW2JmzamvekR?=
+ =?us-ascii?Q?1V1UoOc1xgRktjQa2ypDD6TjEjgrGaHp4SgG/6HMfgsPT49po7M9aKWvFPd4?=
+ =?us-ascii?Q?7Nsj0hEE7ygK7V4QCr0vDC6IotorGuPVFRDv4khuMbN3GFJIZKeEmhHb3fVE?=
+ =?us-ascii?Q?c62dy0GLafAWYDDmXFRF+ednUoX7PBPSqZ3XaxqO/naWnyAjgduKnushz5YZ?=
+ =?us-ascii?Q?Q4RhtfEcWtTt/SfWJJI5MpR5rbZfoo/aCQ5yD59axBQSvjN9b5vMnoZBi0Ou?=
+ =?us-ascii?Q?MPbFdbJuZ1XUKgpmgfcfcEaR2sDXqbXQgZr6FWB0FEznuC8o2DDxiGfXhP08?=
+ =?us-ascii?Q?syhrZduMBtdbMxpZEhzZBy9BkjPVEtVUuBX5hnV+tJlcr/0KaMBeP9kQZdtC?=
+ =?us-ascii?Q?83iq7KWp8ALsjv/DkQYZaJ7UzJkYYYuWuR5byZyRBT4u4FtwS1oPwIAndITe?=
+ =?us-ascii?Q?AhBAgARI6RSucBE23HvkWUojr7CuzaS2wLRqtEps0uJp6dnW8h+LjczOX+sn?=
+ =?us-ascii?Q?acWw9MzpkNdrz8k9l3wzX+CfeAwMKpo=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 03197a63-c345-4ad0-3579-08da4e7f5e5e
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6311.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2022 03:30:17.8641
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pA5YuZCuMnOWF6VvtuF1SzI4wtKaevETHuHMtqDDwmlHigmR1h5RNtTZFJzZAPUSHK4jVUK6UlT3C1k7segSnA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4458
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When adjusting the PTP clock, the base time of the TAS configuration
-will become unreliable. We need reset the TAS configuration by using a
-new base time.
+On Tue, Jun 14, 2022 at 05:10:28PM -0700, Alison Schofield wrote:
+> From: Alison Schofield <alison.schofield@intel.com>
+> 
+> The sysfs attribute, get_poison, allows user space to request the
+> retrieval of a CXL devices poison list for its persistent memory.
+> 
+> From Documentation/ABI/.../sysfs-bus-cxl
+>         (WO) When a '1' is written to this attribute the memdev
+>         driver retrieves the poison list from the device. The list
+>         includes addresses that are poisoned or would result in
+>         poison if accessed, and the source of the poison. This
+>         attribute is only visible for devices supporting the
+>         capability. The retrieved errors are logged as kernel
+>         trace events with the label: cxl_poison_list.
+> 
+> Signed-off-by: Alison Schofield <alison.schofield@intel.com>
 
-For example, if the driver gets a base time 0 of Qbv configuration from
-user, and current time is 20000. The driver will set the TAS base time
-to be 20000. After the PTP clock adjustment, the current time becomes
-10000. If the TAS base time is still 20000, it will be a future time,
-and TAS entry list will stop running. Another example, if the current
-time becomes to be 10000000 after PTP clock adjust, a large time offset
-can cause the hardware to hang.
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
 
-This patch introduces a tas_clock_adjust() function to reset the TAS
-module by using a new base time after the PTP clock adjustment. This can
-avoid issues above.
-
-Due to PTP clock adjustment can occur at any time, it may conflict with
-the TAS configuration. We introduce a new TAS lock to serialize the
-access to the TAS registers.
-
-Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
----
- drivers/net/dsa/ocelot/felix_vsc9959.c | 83 ++++++++++++++++++++++++--
- drivers/net/ethernet/mscc/ocelot.c     |  1 +
- drivers/net/ethernet/mscc/ocelot_ptp.c | 12 +++-
- include/soc/mscc/ocelot.h              |  7 +++
- 4 files changed, 95 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 570d0204b7be..dd9085ae0922 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1196,10 +1196,13 @@ static void vsc9959_tas_gcl_set(struct ocelot *ocelot, const u32 gcl_ix,
- static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
- 				    struct tc_taprio_qopt_offload *taprio)
- {
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 	struct timespec64 base_ts;
- 	int ret, i;
- 	u32 val;
- 
-+	mutex_lock(&ocelot->tas_lock);
-+
- 	if (!taprio->enable) {
- 		ocelot_rmw_rix(ocelot,
- 			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
-@@ -1207,15 +1210,20 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
- 			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
- 			       QSYS_TAG_CONFIG, port);
- 
-+		mutex_unlock(&ocelot->tas_lock);
- 		return 0;
- 	}
- 
- 	if (taprio->cycle_time > NSEC_PER_SEC ||
--	    taprio->cycle_time_extension >= NSEC_PER_SEC)
--		return -EINVAL;
-+	    taprio->cycle_time_extension >= NSEC_PER_SEC) {
-+		ret = -EINVAL;
-+		goto err;
-+	}
- 
--	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX)
--		return -ERANGE;
-+	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX) {
-+		ret = -ERANGE;
-+		goto err;
-+	}
- 
- 	/* Enable guard band. The switch will schedule frames without taking
- 	 * their length into account. Thus we'll always need to enable the
-@@ -1236,8 +1244,10 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
- 	 * config is pending, need reset the TAS module
- 	 */
- 	val = ocelot_read(ocelot, QSYS_PARAM_STATUS_REG_8);
--	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING)
--		return  -EBUSY;
-+	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING) {
-+		ret = -EBUSY;
-+		goto err;
-+	}
- 
- 	ocelot_rmw_rix(ocelot,
- 		       QSYS_TAG_CONFIG_ENABLE |
-@@ -1248,6 +1258,8 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
- 		       QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES_M,
- 		       QSYS_TAG_CONFIG, port);
- 
-+	ocelot_port->base_time = taprio->base_time;
-+
- 	vsc9959_new_base_time(ocelot, taprio->base_time,
- 			      taprio->cycle_time, &base_ts);
- 	ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
-@@ -1271,9 +1283,67 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
- 				 !(val & QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE),
- 				 10, 100000);
- 
-+err:
-+	mutex_unlock(&ocelot->tas_lock);
-+
- 	return ret;
- }
- 
-+static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
-+{
-+	struct ocelot_port *ocelot_port;
-+	struct timespec64 base_ts;
-+	u64 cycletime;
-+	int port;
-+	u32 val;
-+
-+	mutex_lock(&ocelot->tas_lock);
-+
-+	for (port = 0; port < ocelot->num_phys_ports; port++) {
-+		val = ocelot_read_rix(ocelot, QSYS_TAG_CONFIG, port);
-+		if (!(val & QSYS_TAG_CONFIG_ENABLE))
-+			continue;
-+
-+		ocelot_rmw(ocelot,
-+			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port),
-+			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M,
-+			   QSYS_TAS_PARAM_CFG_CTRL);
-+
-+		ocelot_rmw_rix(ocelot,
-+			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
-+			       QSYS_TAG_CONFIG_ENABLE |
-+			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
-+			       QSYS_TAG_CONFIG, port);
-+
-+		cycletime = ocelot_read(ocelot, QSYS_PARAM_CFG_REG_4);
-+		ocelot_port = ocelot->ports[port];
-+
-+		vsc9959_new_base_time(ocelot, ocelot_port->base_time,
-+				      cycletime, &base_ts);
-+
-+		ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
-+		ocelot_write(ocelot, lower_32_bits(base_ts.tv_sec),
-+			     QSYS_PARAM_CFG_REG_2);
-+		val = upper_32_bits(base_ts.tv_sec);
-+		ocelot_rmw(ocelot,
-+			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB(val),
-+			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB_M,
-+			   QSYS_PARAM_CFG_REG_3);
-+
-+		ocelot_rmw(ocelot, QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
-+			   QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
-+			   QSYS_TAS_PARAM_CFG_CTRL);
-+
-+		ocelot_rmw_rix(ocelot,
-+			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF) |
-+			       QSYS_TAG_CONFIG_ENABLE,
-+			       QSYS_TAG_CONFIG_ENABLE |
-+			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
-+			       QSYS_TAG_CONFIG, port);
-+	}
-+	mutex_unlock(&ocelot->tas_lock);
-+}
-+
- static int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
- 				    struct tc_cbs_qopt_offload *cbs_qopt)
- {
-@@ -2210,6 +2280,7 @@ static const struct ocelot_ops vsc9959_ops = {
- 	.psfp_filter_del	= vsc9959_psfp_filter_del,
- 	.psfp_stats_get		= vsc9959_psfp_stats_get,
- 	.cut_through_fwd	= vsc9959_cut_through_fwd,
-+	.tas_clock_adjust	= vsc9959_tas_clock_adjust,
- };
- 
- static const struct felix_info felix_info_vsc9959 = {
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 8da7e25a47c9..d4649e4ee0e7 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -3367,6 +3367,7 @@ int ocelot_init(struct ocelot *ocelot)
- 	mutex_init(&ocelot->ptp_lock);
- 	mutex_init(&ocelot->mact_lock);
- 	mutex_init(&ocelot->fwd_domain_lock);
-+	mutex_init(&ocelot->tas_lock);
- 	spin_lock_init(&ocelot->ptp_clock_lock);
- 	spin_lock_init(&ocelot->ts_id_lock);
- 	snprintf(queue_name, sizeof(queue_name), "%s-stats",
-diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.c b/drivers/net/ethernet/mscc/ocelot_ptp.c
-index 87ad2137ba06..522fdc38d4d0 100644
---- a/drivers/net/ethernet/mscc/ocelot_ptp.c
-+++ b/drivers/net/ethernet/mscc/ocelot_ptp.c
-@@ -72,15 +72,19 @@ int ocelot_ptp_settime64(struct ptp_clock_info *ptp,
- 	ocelot_write_rix(ocelot, val, PTP_PIN_CFG, TOD_ACC_PIN);
- 
- 	spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
-+
-+	if (ocelot->ops->tas_clock_adjust)
-+		ocelot->ops->tas_clock_adjust(ocelot);
-+
- 	return 0;
- }
- EXPORT_SYMBOL(ocelot_ptp_settime64);
- 
- int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
- {
-+	struct ocelot *ocelot = container_of(ptp, struct ocelot, ptp_info);
-+
- 	if (delta > -(NSEC_PER_SEC / 2) && delta < (NSEC_PER_SEC / 2)) {
--		struct ocelot *ocelot = container_of(ptp, struct ocelot,
--						     ptp_info);
- 		unsigned long flags;
- 		u32 val;
- 
-@@ -117,6 +121,10 @@ int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
- 
- 		ocelot_ptp_settime64(ptp, &ts);
- 	}
-+
-+	if (ocelot->ops->tas_clock_adjust)
-+		ocelot->ops->tas_clock_adjust(ocelot);
-+
- 	return 0;
- }
- EXPORT_SYMBOL(ocelot_ptp_adjtime);
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 5f88385a7748..3737570116c3 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -575,6 +575,7 @@ struct ocelot_ops {
- 	int (*psfp_stats_get)(struct ocelot *ocelot, struct flow_cls_offload *f,
- 			      struct flow_stats *stats);
- 	void (*cut_through_fwd)(struct ocelot *ocelot);
-+	void (*tas_clock_adjust)(struct ocelot *ocelot);
- };
- 
- struct ocelot_vcap_policer {
-@@ -691,6 +692,9 @@ struct ocelot_port {
- 	int				bridge_num;
- 
- 	int				speed;
-+
-+	/* Store the AdminBaseTime of EST fetched from userspace. */
-+	s64				base_time;
- };
- 
- struct ocelot {
-@@ -757,6 +761,9 @@ struct ocelot {
- 	/* Lock for serializing forwarding domain changes */
- 	struct mutex			fwd_domain_lock;
- 
-+	/* Lock for serializing Time-Aware Shaper changes */
-+	struct mutex			tas_lock;
-+
- 	struct workqueue_struct		*owq;
- 
- 	u8				ptp:1;
--- 
-2.17.1
-
+> ---
+>  Documentation/ABI/testing/sysfs-bus-cxl | 13 ++++++++++
+>  drivers/cxl/core/memdev.c               | 32 +++++++++++++++++++++++++
+>  2 files changed, 45 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-cxl b/Documentation/ABI/testing/sysfs-bus-cxl
+> index 7c2b846521f3..9d0c3988fdd2 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-cxl
+> +++ b/Documentation/ABI/testing/sysfs-bus-cxl
+> @@ -163,3 +163,16 @@ Description:
+>  		memory (type-3). The 'target_type' attribute indicates the
+>  		current setting which may dynamically change based on what
+>  		memory regions are activated in this decode hierarchy.
+> +
+> +What:		/sys/bus/cxl/devices/memX/get_poison
+> +Date:		June, 2022
+> +KernelVersion:	v5.20
+> +Contact:	linux-cxl@vger.kernel.org
+> +Description:
+> +		(WO) When a '1' is written to this attribute the memdev
+> +		driver retrieves the poison list from the device. The list
+> +		includes addresses that are poisoned or would result in
+> +		poison if accessed, and the source of the poison. This
+> +		attribute is only visible for devices supporting the
+> +		capability. The retrieved errors are logged as kernel
+> +		trace events with the label: cxl_poison_list.
+> diff --git a/drivers/cxl/core/memdev.c b/drivers/cxl/core/memdev.c
+> index f7cdcd33504a..5ef9ffaa934a 100644
+> --- a/drivers/cxl/core/memdev.c
+> +++ b/drivers/cxl/core/memdev.c
+> @@ -106,12 +106,34 @@ static ssize_t numa_node_show(struct device *dev, struct device_attribute *attr,
+>  }
+>  static DEVICE_ATTR_RO(numa_node);
+>  
+> +static ssize_t get_poison_store(struct device *dev,
+> +				struct device_attribute *attr,
+> +				const char *buf, size_t len)
+> +
+> +{
+> +	int rc;
+> +
+> +	if (!sysfs_streq(buf, "1")) {
+> +		dev_err(dev, "%s: unknown value: %s\n", attr->attr.name, buf);
+> +		return -EINVAL;
+> +	}
+> +
+> +	rc = cxl_mem_get_poison_list(dev);
+> +	if (rc) {
+> +		dev_err(dev, "Failed to retrieve poison list %d\n", rc);
+> +		return rc;
+> +	}
+> +	return len;
+> +}
+> +static DEVICE_ATTR_WO(get_poison);
+> +
+>  static struct attribute *cxl_memdev_attributes[] = {
+>  	&dev_attr_serial.attr,
+>  	&dev_attr_firmware_version.attr,
+>  	&dev_attr_payload_max.attr,
+>  	&dev_attr_label_storage_size.attr,
+>  	&dev_attr_numa_node.attr,
+> +	&dev_attr_get_poison.attr,
+>  	NULL,
+>  };
+>  
+> @@ -130,6 +152,16 @@ static umode_t cxl_memdev_visible(struct kobject *kobj, struct attribute *a,
+>  {
+>  	if (!IS_ENABLED(CONFIG_NUMA) && a == &dev_attr_numa_node.attr)
+>  		return 0;
+> +
+> +	if (a == &dev_attr_get_poison.attr) {
+> +		struct device *dev = container_of(kobj, struct device, kobj);
+> +		struct cxl_memdev *cxlmd = to_cxl_memdev(dev);
+> +		struct cxl_dev_state *cxlds = cxlmd->cxlds;
+> +
+> +		if (!test_bit(CXL_MEM_COMMAND_ID_GET_POISON,
+> +			      cxlds->enabled_cmds))
+> +			return 0;
+> +	}
+>  	return a->mode;
+>  }
+>  
+> -- 
+> 2.31.1
+> 
