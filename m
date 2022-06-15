@@ -2,147 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3A5CCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D584FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348486AbiFOPNl (ORCPT
+        id S1343798AbiFOPN4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:13:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34040 "EHLO
+        Wed, 15 Jun 2022 11:13:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243755AbiFOPNK (ORCPT
+        with ESMTP id S1348090AbiFOPNg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:13:10 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9C111C0F
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:13:06 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id o10so16643719edi.1
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:13:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nxHwUwUuK5U+dFx9/GDrIMCnRWc/PWyIrdKraztqqMs=;
-        b=UMiZL2PeR/D3H8SwhhqZ4ytFyghgutCbWGDxabeKT5Pm8/GW4sl6qy6InBRoS7G2cZ
-         jbLOrURxYH+P9z5NdFThCSRDxpMDieDme9bUoQShOJpcAFlLygHolUyf+rbOofF5O8z/
-         J1JU79NDxthQ6K1rH4WHLJNdbvUC7LUoISJr0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nxHwUwUuK5U+dFx9/GDrIMCnRWc/PWyIrdKraztqqMs=;
-        b=Ie3aFLz49RoXN08uW/XWSvwMZqb4WO1WZJSG2Y47BBEcuz6qROvu1hnTQH11PkYo+f
-         Cz4+x3oBv95U8dsYOGyGSFFr2ZEenEelq2MKbRRiN1zL2Abz/FTURfd3z8OkfJ3zPkSP
-         rFOO0gQ5DAtogujlmABeHNc0p6iR/8uuaS1Cfg7u4Dfnim0WcMOqEvOtk9Gb5AZiK4k8
-         GRiOTlm2Xf1GNIG5azjRTBO1Z6JZXIPLh6WhisPtVlxdnEFPDwsKKT/gW0r6WHp0hC5Q
-         1PvVKQg6azo5pqLiQLpeaqjEqg+zQajXJ6FAzE+wZG9eCtC4OkwsWecH5S+50HuF4+I2
-         dLhA==
-X-Gm-Message-State: AJIora+Mt4xqB5y8TsBcazCpXZ5ExYzw2ZziNq8uV/GLi009EpJHzl3+
-        4PeYgKPhiEEv4yhZyw3xQ+4ODw==
-X-Google-Smtp-Source: AGRyM1uF6P0Cu+GigGU7J7pjEn7/Y2CjwsZUdT2jVDX0jzUiOMMUgQ916T46X5GHrLJCyeRKmIzuuQ==
-X-Received: by 2002:a05:6402:84c:b0:430:aae2:6dd8 with SMTP id b12-20020a056402084c00b00430aae26dd8mr249911edz.31.1655305984987;
-        Wed, 15 Jun 2022 08:13:04 -0700 (PDT)
-Received: from alco.lan (80.71.134.83.ipv4.parknet.dk. [80.71.134.83])
-        by smtp.gmail.com with ESMTPSA id b25-20020aa7cd19000000b0042bd2012196sm9610264edw.85.2022.06.15.08.13.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 08:13:04 -0700 (PDT)
-From:   Ricardo Ribalda <ribalda@chromium.org>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tfiga@chromium.org, senozhatsky@chromium.org, yunkec@google.com
-Cc:     Ricardo Ribalda <ribalda@chromium.org>
-Subject: [PATCH v6 4/8] media: uvcvideo: Limit power line control for Quanta UVC Webcam
-Date:   Wed, 15 Jun 2022 17:12:55 +0200
-Message-Id: <20220615151259.77825-5-ribalda@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220615151259.77825-1-ribalda@chromium.org>
-References: <20220615151259.77825-1-ribalda@chromium.org>
+        Wed, 15 Jun 2022 11:13:36 -0400
+Received: from alt-proxy28.mail.unifiedlayer.com (alt-proxy28.mail.unifiedlayer.com [74.220.216.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2569122BDC
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:13:35 -0700 (PDT)
+Received: from cmgw14.mail.unifiedlayer.com (unknown [10.0.90.129])
+        by progateway1.mail.pro1.eigbox.com (Postfix) with ESMTP id A9BA41003C224
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:13:34 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id 1Ui6o7Q9bSReQ1Ui6oywDv; Wed, 15 Jun 2022 15:13:34 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=MPylJOVl c=1 sm=1 tr=0 ts=62a9f71e
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=JPEYwPQDsx4A:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=ieWZb2X5Nz3z-Wn_6k4A:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Z4nPqYG2TqBqwwPo2qCf6x7FPw6Tk77VRbXS8wdJFmc=; b=T28ShSbhcU6PdtJGIJkAvMHO0q
+        38PI6Qsn97PQhDk3+lK9uSpwOmYyZ6L+dk+h5QWL2Lu3ng0jMiNW9T6wQLzpmil2Vme7gn+W2X6af
+        CY86PVJ4mVmny6jLgv5DlPEmrPpgpfDw3r4/qEMPyIWhHBhVR/YZHAFhYN90ocB17BtLlDxqbXHlH
+        PttyQu3aWIBeR+ytwSxi3hoLMuoErnfaPbAPG5MACK1TgVRliAzdhMNQEOdOmEaL+7h96dyFQSdjw
+        nzrcMHC+493nIQkNEEwjVq+8bYgPv9IavCvhvlZ0ufXj9QGlkzIVzZpHZQXOO60GOpWGEI6U+Plqt
+        OVbiUYLw==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:44454 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1o1Ui5-002CBC-4X;
+        Wed, 15 Jun 2022 09:13:33 -0600
+Subject: Re: [PATCH 5.15 00/11] 5.15.48-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220614183720.512073672@linuxfoundation.org>
+In-Reply-To: <20220614183720.512073672@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <1b8232d8-ec31-f192-0ba8-a1481c64fd8a@w6rz.net>
+Date:   Wed, 15 Jun 2022 08:13:31 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1o1Ui5-002CBC-4X
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:44454
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The device does not implement the power line control correctly. Add a
-corresponding control mapping override.
+On 6/14/22 11:40 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.48 release.
+> There are 11 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.48-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Bus 001 Device 003: ID 0408:3090 Quanta Computer, Inc. USB2.0 HD UVC WebCam
-Device Descriptor:
-  bLength                18
-  bDescriptorType         1
-  bcdUSB               2.00
-  bDeviceClass          239 Miscellaneous Device
-  bDeviceSubClass         2
-  bDeviceProtocol         1 Interface Association
-  bMaxPacketSize0        64
-  idVendor           0x0408 Quanta Computer, Inc.
-  idProduct          0x3090
-  bcdDevice            0.04
-  iManufacturer           3 Quanta
-  iProduct                1 USB2.0 HD UVC WebCam
-  iSerial                 2 0x0001
-  bNumConfigurations      1
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
----
- drivers/media/usb/uvc/uvc_driver.c | 35 ++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
-
-diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
-index 6c86faecbea2..4fb07084f1c0 100644
---- a/drivers/media/usb/uvc/uvc_driver.c
-+++ b/drivers/media/usb/uvc/uvc_driver.c
-@@ -2643,6 +2643,32 @@ MODULE_PARM_DESC(timeout, "Streaming control requests timeout");
-  * Driver initialization and cleanup
-  */
- 
-+static const struct uvc_menu_info power_line_frequency_controls_limited[] = {
-+	{ 0, "Invalid" },
-+	{ 1, "50 Hz" },
-+	{ 2, "60 Hz" },
-+};
-+
-+static const struct uvc_control_mapping uvc_ctrl_power_line_mapping_limited = {
-+	.id		= V4L2_CID_POWER_LINE_FREQUENCY,
-+	.entity		= UVC_GUID_UVC_PROCESSING,
-+	.selector	= UVC_PU_POWER_LINE_FREQUENCY_CONTROL,
-+	.size		= 2,
-+	.offset		= 0,
-+	.v4l2_type	= V4L2_CTRL_TYPE_MENU,
-+	.data_type	= UVC_CTRL_DATA_TYPE_ENUM,
-+	.menu_info	= power_line_frequency_controls_limited,
-+	.menu_min	= 1,
-+	.menu_count	= ARRAY_SIZE(power_line_frequency_controls_limited),
-+};
-+
-+static const struct uvc_device_info uvc_ctrl_power_line_limited = {
-+	.mappings = (const struct uvc_control_mapping *[]) {
-+		&uvc_ctrl_power_line_mapping_limited,
-+		NULL, /* Sentinel */
-+	},
-+};
-+
- static const struct uvc_device_info uvc_quirk_probe_minmax = {
- 	.quirks = UVC_QUIRK_PROBE_MINMAX,
- };
-@@ -2673,6 +2699,15 @@ static const struct uvc_device_info uvc_quirk_force_y8 = {
-  * though they are compliant.
-  */
- static const struct usb_device_id uvc_ids[] = {
-+	/* Quanta USB2.0 HD UVC Webcam */
-+	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
-+				| USB_DEVICE_ID_MATCH_INT_INFO,
-+	  .idVendor		= 0x0408,
-+	  .idProduct		= 0x3090,
-+	  .bInterfaceClass	= USB_CLASS_VIDEO,
-+	  .bInterfaceSubClass	= 1,
-+	  .bInterfaceProtocol	= 0,
-+	  .driver_info		= (kernel_ulong_t)&uvc_ctrl_power_line_limited },
- 	/* LogiLink Wireless Webcam */
- 	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
- 				| USB_DEVICE_ID_MATCH_INT_INFO,
--- 
-2.36.1.476.g0c4daa206d-goog
+Tested-by: Ron Economos <re@w6rz.net>
 
