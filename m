@@ -2,83 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2830C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EC5AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347636AbiFOSlO (ORCPT
+        id S1349308AbiFOSog (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:41:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49194 "EHLO
+        Wed, 15 Jun 2022 14:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231737AbiFOSlM (ORCPT
+        with ESMTP id S231737AbiFOSoe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:41:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E0334653
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:41:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41B48B8212F
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 18:41:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F01FC34115;
-        Wed, 15 Jun 2022 18:41:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655318468;
-        bh=aQrwqFLT5KW3RGQgBn+BHZAI/LCgRU4T3zqdiFw1N7U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ltvj3ELLROvjZiA+vZ9/XTdu6ZHC0rN40UdjI9aHr8z17KjaRnfMG5CBqD30ftlZ6
-         kx92xiAp9otoG3YyPqc+cjJwECdxHG8FoppMCCCedaFXI++mWseAIgWHZPB1AEox7T
-         BJqH4dgfwtbwNUjr9wK5aFfuVdJlIbZiXG8XPdk1QXdaSH3xqTUGourVIY4qfd02d9
-         nS70C69mwGmpVmYtSuLi9iDdMAa+I45rpIztDoU1YVnK0dJm/cLBrwZJ5I6z+f/q/d
-         aX/6gJeaeH/68VtFBdqkF1Rpk84cEDlp8uF9ITU0NBCu9IW9I1FBsaB7FLmNi8vTDB
-         1B3tviLs9rFdQ==
-Date:   Wed, 15 Jun 2022 12:41:05 -0600
-From:   Keith Busch <kbusch@kernel.org>
-To:     Erwan Velu <erwanaliasr1@gmail.com>
-Cc:     Erwan Velu <e.velu@criteo.com>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        "open list:NVM EXPRESS DRIVER" <linux-nvme@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] nvme: Report model,sn,fw,pci device information during
- init
-Message-ID: <YqonwfjE8BL6Xowf@kbusch-mbp>
-References: <20220615180213.760756-1-e.velu@criteo.com>
+        Wed, 15 Jun 2022 14:44:34 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D6C340F4
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:44:33 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id p63so9391276qkd.10
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:44:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=F+DGM8o8Zn45hSbzSY35HzK/vbjQGnTANH1Bt8EkX5w=;
+        b=JEZN7GvNEzufQhnj5M+09pKzIE1oQV4hsoD9Q8IZAl54fxgEVjh1hp0CfGrjF3DVR3
+         8kqcANUupPT/K9orIaIv8uo6J4MqQairMRK1KNpeNik7if/ULSDeW2Fir8lhPWA2Zqli
+         Lce3nMmDV+cng9OOHfrObILhRAE6H21/hHx0R90Kr3ibi+v340MK1A9HXFM9XzKnH8lW
+         lURmYabQWMg707cDfSjfMuw7WeWDYFyLJ3jUGhlr0l5sPNj3xtqCB/8jW6a57VjlxMm9
+         mOBA/vI+9iKIGbJfSJroSixFrV5PRm8wDHAfZYn+AKHibVyz3MZ1uqhdRZ7jadRSy2TI
+         YztQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=F+DGM8o8Zn45hSbzSY35HzK/vbjQGnTANH1Bt8EkX5w=;
+        b=lxYngk5VBQIyVXPsuB66nwpUfBtPYiC6Wpd0kE8nQYI8A8TQIP7PU0wLNYvcnNoLyF
+         q2QHp9VlJdLQ84hmCThiSkLQ7O9QZI4jDpds37+rUdbSj8L0kNd5DiJeWzc8IBJyKuM5
+         H76m4w4HHeKgy7ZAm44Jv6dvUmXgoc9T+YE2tcanISHSt3aT9qeThCx3QQwHdvmVKw7m
+         zSNRdKazcJ/NjXIJiNoSsyjjfVxsDwaiXxl1Ly7mhTkwIJE24FBU06w3+Uw3P6NlItPM
+         5F6EaFpOP7peYdaTtWmiajyC8bSr1kdbgFeSQJYamrBAPsRUOtfsADtAs+IhGj+rlXFS
+         +gxg==
+X-Gm-Message-State: AJIora/fQx1tHPeDPrcfIC0bp9yfw41hJh6oFc7q1soJeHGkpvJwt7J8
+        9jJObr5QjR1K2iRGY1ON8vGPQ2nIsTSH2Ug=
+X-Google-Smtp-Source: AGRyM1tH7FIgSf4reVX9Qu761+qXfkvrSe/8PWdSMT/APzVL28xuK/8uWeL5V5DBQ4tXR2wVSPHitg==
+X-Received: by 2002:a37:454:0:b0:6a7:7eb1:7c65 with SMTP id 81-20020a370454000000b006a77eb17c65mr899777qke.474.1655318671155;
+        Wed, 15 Jun 2022 11:44:31 -0700 (PDT)
+Received: from [192.168.1.210] (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
+        by smtp.gmail.com with ESMTPSA id u16-20020a05620a455000b006a6ce613c7csm13676842qkp.89.2022.06.15.11.44.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 11:44:30 -0700 (PDT)
+Message-ID: <ba8d21b8-7aae-6bfb-3553-3baba2bbeee1@gmail.com>
+Date:   Wed, 15 Jun 2022 14:44:29 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220615180213.760756-1-e.velu@criteo.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 03/33] vsprintf: Convert to printbuf
+Content-Language: en-US
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org
+Cc:     pmladek@suse.com, rostedt@goodmis.org
+References: <20220604193042.1674951-1-kent.overstreet@gmail.com>
+ <20220604193042.1674951-4-kent.overstreet@gmail.com>
+ <bc5daffb-e144-2a43-4657-eaf663e94750@rasmusvillemoes.dk>
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+In-Reply-To: <bc5daffb-e144-2a43-4657-eaf663e94750@rasmusvillemoes.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 08:02:13PM +0200, Erwan Velu wrote:
-> SCSI-based device get their identify properties being printed when initialized like :
+On 6/15/22 05:09, Rasmus Villemoes wrote:
+> On 04/06/2022 21.30, Kent Overstreet wrote:
+>> This converts vsnprintf() to printbufs: instead of passing around raw
+>> char * pointers for current buf position and end of buf, we have a real
+>> type!
+>>
+>> This makes the calling convention for our existing pretty printers a lot
+>> saner and less error prone, plus printbufs add some new helpers that
+>> make the code smaller and more readable, with a lot less crazy pointer
+>> arithmetic.
+>>
+>> There are a lot more refactorings to be done: this patch tries to stick
+>> to just converting the calling conventions, as that needs to be done all
+>> at once in order to avoid introducing a ton of wrappers that will just
+>> be deleted.
+>>
+>> Thankfully we have good unit tests for printf, and they have been run
+>> and are all passing with this patch.
 > 
-> [    1.245357] scsi 0:0:0:0: Direct-Access     ATA      HGST HTE721010A9 A3M0 PQ: 0 ANSI: 5
-> 
-> When initializing nvme devices, no identification message is reported
-> making difficult to identify them during the boot process. If the system
-> crashes during boot process or if the init phase fail, it could be very diffcult
-> to identify the faulty disk.
-> 
-> This patch reports model, serial, firmware version and pci information
-> as soon as possible making this early identifying task possible.
-> 
-> Reporting the serial has the interest of being able to ensure which
-> physical drive is concerned if a hardware replacement is required and
-> host features the exact same drive multiple times.
-> 
-> A typical output looks like:
-> [    0.383353] nvme nvme0: pci function 0000:00:03.0
-> [    0.418184] nvme nvme0: MODEL:QEMU NVMe Ctrl                          SN:deadbeef            FW:1.0     PCI_ID:1b36:1af4
-> [    0.422020] nvme nvme0: 1/0/0 default/read/poll queues
+> So, as the primary author of those tests, a somewhat active contributor
+> to vsprintf.c and being listed as R: for both files, why wasn't I cc'ed
+> on this?
 
-The PCI_ID: print is misleading. That format usually indicates VID:DID, but
-you're printing VID:SSVID.
+Apologies for the oversight.
 
-This is also very similar to the recently introduced nvme_print_device_info(),
-but that one removes the annoying trailing spaces if they exist. I guess if
-we're going this direction, just use that print, but change it from dev_err to
-dev_info, and remove the call on global id collision detection.
+> Anyway, my main concern with this is that performance goes down the
+> drain and the generated code will be awful. Have you done any
+> measurements and/or looked at disassembly? Thanks to
+> -fno-strict-aliasing (or perhaps just because we're writing through a
+> char* pointer which IIRC may alias anything), I think the compiler will
+> be forced to reload prt->pos and prt->size over and over and over. I may
+> be wrong, of course, that happens often. Perhaps __restrict could help, IDK.
+
+If we care that much about sprintf performance we must have some 
+benchmarks somewhere - could you point me at them?
+
+
+>> ---
+>>   include/linux/kernel.h |    4 +
+> 
+> Please don't expand that dumping ground. Please, if printbufs will
+> become a thing (whether or not vsprintf internally will be refactored to
+> use them), add a new linux/printf.h where these things can go, and the
+> declarations of vsprintf() and close friends can eventually be moved.
+
+kernel.h is indeed a dumping ground that needs to be reorganized, but 
+this patch series is about printbufs, not reorganizing header files (and 
+my doctor tells me I need to be taking my blood pressure meds more 
+regularly before taking something like that on). For now, prt_printf() 
+goes with the other printf() functions.
