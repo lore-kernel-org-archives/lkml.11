@@ -2,136 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B65CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 05:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C1FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 05:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345978AbiFOFxh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 01:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44748 "EHLO
+        id S242012AbiFOFzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 01:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242012AbiFOFxf (ORCPT
+        with ESMTP id S231657AbiFOFzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 01:53:35 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1A01706F;
-        Tue, 14 Jun 2022 22:53:34 -0700 (PDT)
-X-UUID: 4af5bb5a4d06489dbb6d9fbbcfbeaa94-20220615
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:6e8ed220-7a4d-45ec-9f5b-b96f646e8734,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:b14ad71,CLOUDID:dc338a48-4c92-421c-ad91-b806c0f58b2a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 4af5bb5a4d06489dbb6d9fbbcfbeaa94-20220615
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 999521705; Wed, 15 Jun 2022 13:53:27 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 15 Jun 2022 13:53:25 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 15 Jun 2022 13:53:25 +0800
-Message-ID: <b3d5ba22e0a88abb48261a6a97027361fc535fc6.camel@mediatek.com>
-Subject: Re: [PATCH v11 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
- driver
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Wed, 15 Jun 2022 13:53:25 +0800
-In-Reply-To: <20220610105522.13449-6-rex-bc.chen@mediatek.com>
-References: <20220610105522.13449-1-rex-bc.chen@mediatek.com>
-         <20220610105522.13449-6-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 15 Jun 2022 01:55:43 -0400
+Received: from qproxy6-pub.mail.unifiedlayer.com (qproxy6-pub.mail.unifiedlayer.com [69.89.23.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C2B27CF0
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 22:55:42 -0700 (PDT)
+Received: from gproxy2-pub.mail.unifiedlayer.com (unknown [69.89.18.3])
+        by qproxy6.mail.unifiedlayer.com (Postfix) with ESMTP id 1645F802ADE4
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:55:41 +0000 (UTC)
+Received: from cmgw11.mail.unifiedlayer.com (unknown [10.0.90.126])
+        by progateway4.mail.pro1.eigbox.com (Postfix) with ESMTP id D226510047E3B
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:54:40 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id 1LzEoFcDrrOQ91LzEoLg52; Wed, 15 Jun 2022 05:54:40 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=CpF6zl0D c=1 sm=1 tr=0 ts=62a97420
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=JPEYwPQDsx4A:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=ieWZb2X5Nz3z-Wn_6k4A:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=4z81clygDyJYi9HgKWw2ndNfS4Z+orJGbop8cvsFDWE=; b=KbjSkabUr8Ppem39CGWNfLkgaY
+        8UWE5QqKDVJUt5o2zT21ydNGON7a3jEe1E5SsXXHeGK5fDrfeF1raLV7WHAsKz/Qcot+W16dOXNk/
+        unfzcs6mBr4YyICla+QlSmLJpvH4fvdbk7HLwKLsiguudwbDemrDLRcVl7Tz/uGtmXb4+wy3npL6B
+        1D82amO7mqU5S0bKe26Stp1CWoOf31yrB+/HfxFPzUetbgesyC3lbF8KJcRgvh4+yJUaWAtXdS8uR
+        DL2b8043GsbcbWJJUuysqq9JfPmwo6134tLxpocWv7f2EvGKrPwn51+7BLeO+ZaItJZxeb3nb1xzP
+        y2MZc/Iw==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:44380 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1o1LzD-003Fm7-AZ;
+        Tue, 14 Jun 2022 23:54:39 -0600
+Subject: Re: [PATCH 5.18 00/11] 5.18.5-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220614183720.861582392@linuxfoundation.org>
+In-Reply-To: <20220614183720.861582392@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <827761b3-ac32-ea6e-e4ff-e08b36808736@w6rz.net>
+Date:   Tue, 14 Jun 2022 22:54:37 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1o1LzD-003Fm7-AZ
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:44380
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bo-Chen:
+On 6/14/22 11:40 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.5 release.
+> There are 11 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.5-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-On Fri, 2022-06-10 at 18:55 +0800, Bo-Chen Chen wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
-> 
-> This patch adds a embedded displayport driver for the MediaTek mt8195
-> SoC.
-> 
-> It supports the MT8195, the embedded DisplayPort units. It offers
-> DisplayPort 1.4 with up to 4 lanes.
-> 
-> The driver creates a child device for the phy. The child device will
-> never exist without the parent being active. As they are sharing a
-> register range, the parent passes a regmap pointer to the child so
-> that
-> both can work with the same register range. The phy driver sets
-> device
-> data that is read by the parent to get the phy device that can be
-> used
-> to control the phy properties.
-> 
-> This driver is based on an initial version by
-> Jitao shi <jitao.shi@mediatek.com>
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> [Bo-Chen: Cleanup the drivers and modify comments from reviewers]
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> ---
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-[snip]
-
-> +
-> +static int mtk_dp_train_set_pattern(struct mtk_dp *mtk_dp, int
-> pattern)
-> +{
-> +	if (pattern < 0 || pattern > 4) {
-
-The caller would pass pattern from 0 to 4, so this checking is
-redundant. Remove it and this function would always return true, so let
-this function be void.
-
-Regards,
-CK
-
-> +		drm_err(mtk_dp->drm_dev,
-> +			"Implementation error, no such pattern %d\n",
-> pattern);
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* TPS1 */
-> +	if (pattern == 1)
-> +		mtk_dp_set_idle_pattern(mtk_dp, false);
-> +
-> +	mtk_dp_update_bits(mtk_dp,
-> +			   MTK_DP_TRANS_P0_3400,
-> +			   pattern ?
-> +			   BIT(pattern - 1) <<
-> PATTERN1_EN_DP_TRANS_P0_SHIFT :
-> +			   0,
-> +			   PATTERN1_EN_DP_TRANS_P0_MASK |
-> +			   PATTERN2_EN_DP_TRANS_P0_MASK |
-> +			   PATTERN3_EN_DP_TRANS_P0_MASK |
-> +			   PATTERN4_EN_DP_TRANS_P0_MASK);
-> +	return 0;
-> +}
+Tested-by: Ron Economos <re@w6rz.net>
 
