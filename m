@@ -2,76 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C23E6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AE2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348148AbiFOJgh (ORCPT
+        id S1348181AbiFOJgq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
+        Wed, 15 Jun 2022 05:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiFOJgf (ORCPT
+        with ESMTP id S231876AbiFOJgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:36:35 -0400
-Received: from cmccmta3.chinamobile.com (cmccmta3.chinamobile.com [221.176.66.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 80C08344C9
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:36:31 -0700 (PDT)
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG: 00000000
-Received: from spf.mail.chinamobile.com (unknown[172.16.121.87])
-        by rmmx-syy-dmz-app11-12011 (RichMail) with SMTP id 2eeb62a9a81b5ec-42973;
-        Wed, 15 Jun 2022 17:36:30 +0800 (CST)
-X-RM-TRANSID: 2eeb62a9a81b5ec-42973
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG: 00000000
-Received: from localhost.localdomain (unknown[223.108.79.97])
-        by rmsmtp-syy-appsvrnew04-12029 (RichMail) with SMTP id 2efd62a9a81d15b-c5d4a;
-        Wed, 15 Jun 2022 17:36:30 +0800 (CST)
-X-RM-TRANSID: 2efd62a9a81d15b-c5d4a
-From:   Ding Xiang <dingxiang@cmss.chinamobile.com>
-To:     akpm@linux-foundation.org, shuah@kernel.org
-Cc:     linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests: vm: Fix resource leak when return error
-Date:   Wed, 15 Jun 2022 17:36:29 +0800
-Message-Id: <20220615093629.1330809-1-dingxiang@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 15 Jun 2022 05:36:45 -0400
+Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F350F344C9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:36:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=CUmGd
+        INgk1+n0K54dy4qu6cl1KlOEQmgr2vCPmeguoU=; b=gqGeP1f+cb/gMViYHs/8R
+        DNLaw23Z9akbAXpfyAAf56FGdCDAk1AdwwoYoK0F+laIYWdub0Ol6Za5Hk7blQyE
+        Ifq0bC42hQuozyvx0rh4nA0IFuI1fczxG42fJCA2u3NunX40DlFfQmet8th2JRq8
+        ZkJ+fM9FXMRqFxyFbxbEQA=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp8 (Coremail) with SMTP id NORpCgCXLosSqKliPEuUFg--.44350S2;
+        Wed, 15 Jun 2022 17:36:19 +0800 (CST)
+From:   heliang <windhl@126.com>
+To:     nm@ti.com, ssantosh@kernel.org, linux@armlinux.org.uk
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        windhl@126.com
+Subject: [PATCH] arch: arm: mach-keystone: Add missing of_node_put() in pm_domain.c
+Date:   Wed, 15 Jun 2022 17:36:17 +0800
+Message-Id: <20220615093617.3962482-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NORpCgCXLosSqKliPEuUFg--.44350S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7JFyUCr15GrW3ZryDJw4DCFg_yoW3GFb_J3
+        4xXa1fWF1xJF1kWrW8Aw43Wr9rXw1UGrsFq34a9w4agF48Jw17ZFZrtrnavrW8WrWIkrW3
+        JayDAr1aywn29jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_5l1JUUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbiuBMhF2JVj34a4gAAsj
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When return on an error path, file handle need to be closed
-to prevent resource leak
+In keystone_pm_runtime_init(), of_find_matching_node() will return a
+node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-Signed-off-by: Ding Xiang <dingxiang@cmss.chinamobile.com>
+Signed-off-by: heliang <windhl@126.com>
 ---
- tools/testing/selftests/vm/ksm_tests.c | 2 ++
+ arch/arm/mach-keystone/pm_domain.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/vm/ksm_tests.c b/tools/testing/selftests/vm/ksm_tests.c
-index 2fcf24312da8..f5e4e0bbd081 100644
---- a/tools/testing/selftests/vm/ksm_tests.c
-+++ b/tools/testing/selftests/vm/ksm_tests.c
-@@ -54,6 +54,7 @@ static int ksm_write_sysfs(const char *file_path, unsigned long val)
- 	}
- 	if (fprintf(f, "%lu", val) < 0) {
- 		perror("fprintf");
-+		fclose(f);
- 		return 1;
- 	}
- 	fclose(f);
-@@ -72,6 +73,7 @@ static int ksm_read_sysfs(const char *file_path, unsigned long *val)
- 	}
- 	if (fscanf(f, "%lu", val) != 1) {
- 		perror("fscanf");
-+		fclose(f);
- 		return 1;
- 	}
- 	fclose(f);
+diff --git a/arch/arm/mach-keystone/pm_domain.c b/arch/arm/mach-keystone/pm_domain.c
+index 5eea01cbecf0..50a08721a8d8 100644
+--- a/arch/arm/mach-keystone/pm_domain.c
++++ b/arch/arm/mach-keystone/pm_domain.c
+@@ -44,6 +44,8 @@ int __init keystone_pm_runtime_init(void)
+ 	if (!np)
+ 		return 0;
+ 
++	of_node_put(np);
++
+ 	pm_clk_add_notifier(&platform_bus_type, &platform_domain_notifier);
+ 
+ 	return 0;
 -- 
-2.31.1
-
-
+2.25.1
 
