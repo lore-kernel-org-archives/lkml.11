@@ -2,113 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6163CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:53:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346292AbiFOJwy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
+        id S241386AbiFOJxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 05:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236849AbiFOJwx (ORCPT
+        with ESMTP id S1346983AbiFOJx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:52:53 -0400
+        Wed, 15 Jun 2022 05:53:26 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10ECE167FB;
-        Wed, 15 Jun 2022 02:52:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DD04444A3A
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:53:24 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B2594152B;
-        Wed, 15 Jun 2022 02:52:51 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.38.208])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C56BF3F792;
-        Wed, 15 Jun 2022 02:52:49 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 10:52:41 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        linux-mips@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH 3/3] jump_label: make initial NOP patching the special
- case
-Message-ID: <Yqmr6fvu4OYkarCm@FVFF77S0Q05N>
-References: <20220608104512.1176209-1-ardb@kernel.org>
- <20220608104512.1176209-4-ardb@kernel.org>
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B68F7152B;
+        Wed, 15 Jun 2022 02:53:24 -0700 (PDT)
+Received: from [10.57.7.82] (unknown [10.57.7.82])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3BD563F792;
+        Wed, 15 Jun 2022 02:53:23 -0700 (PDT)
+Message-ID: <10eaa3b1-4cf7-a7b6-a7f6-111a486a343a@arm.com>
+Date:   Wed, 15 Jun 2022 10:53:21 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608104512.1176209-4-ardb@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+From:   Steven Price <steven.price@arm.com>
+Subject: Re: [RESEND PATCH v8 01/11] iommu: Add DMA ownership management
+ interfaces
+To:     Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Robin Murphy <robin.murphy@arm.com>
+References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
+ <20220418005000.897664-2-baolu.lu@linux.intel.com>
+Content-Language: en-GB
+In-Reply-To: <20220418005000.897664-2-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 12:45:12PM +0200, Ard Biesheuvel wrote:
-> Instead of defaulting to patching NOP opcodes at init time, and leaving
-> it to the architectures to override this if this is not needed, switch
-> to a model where doing nothing is the default. This is the common case
-> by far, as only MIPS requires NOP patching at init time. On all other
-> architectures, the correct encodings are emitted by the compiler and so
-> no initial patching is needed.
+On 18/04/2022 01:49, Lu Baolu wrote:
+> Multiple devices may be placed in the same IOMMU group because they
+> cannot be isolated from each other. These devices must either be
+> entirely under kernel control or userspace control, never a mixture.
 > 
-> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-> ---
->  Documentation/staging/static-keys.rst |  3 ---
->  arch/arc/kernel/jump_label.c          | 13 -------------
->  arch/arm/kernel/jump_label.c          |  6 ------
->  arch/arm64/kernel/jump_label.c        | 11 -----------
->  arch/mips/include/asm/jump_label.h    |  2 ++
->  arch/parisc/kernel/jump_label.c       | 11 -----------
->  arch/riscv/kernel/jump_label.c        | 12 ------------
->  arch/s390/kernel/jump_label.c         |  5 -----
->  arch/x86/kernel/jump_label.c          | 13 -------------
->  kernel/jump_label.c                   | 14 +++-----------
->  10 files changed, 5 insertions(+), 85 deletions(-)
+> This adds dma ownership management in iommu core and exposes several
+> interfaces for the device drivers and the device userspace assignment
+> framework (i.e. VFIO), so that any conflict between user and kernel
+> controlled dma could be detected at the beginning.
+> 
+> The device driver oriented interfaces are,
+> 
+> 	int iommu_device_use_default_domain(struct device *dev);
+> 	void iommu_device_unuse_default_domain(struct device *dev);
+> 
+> By calling iommu_device_use_default_domain(), the device driver tells
+> the iommu layer that the device dma is handled through the kernel DMA
+> APIs. The iommu layer will manage the IOVA and use the default domain
+> for DMA address translation.
+> 
+> The device user-space assignment framework oriented interfaces are,
+> 
+> 	int iommu_group_claim_dma_owner(struct iommu_group *group,
+> 					void *owner);
+> 	void iommu_group_release_dma_owner(struct iommu_group *group);
+> 	bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+> 
+> The device userspace assignment must be disallowed if the DMA owner
+> claiming interface returns failure.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-I have one minor comment below, but either way this is a nice cleanup (and I'm
-always happy to see __weak functions disappear), so FWIW:
+I'm seeing a regression that I've bisected to this commit on a Firefly
+RK3288 board. The display driver fails to probe properly because
+__iommu_attach_group() returns -EBUSY. This causes long hangs and splats
+as the display flips timeout.
 
-  Acked-by: Mark Rutland <mark.rutland@arm.com>
+The call stack to __iommu_attach_group() is:
 
-[...]
+ __iommu_attach_group from iommu_attach_device+0x64/0xb4
+ iommu_attach_device from rockchip_drm_dma_attach_device+0x20/0x50
+ rockchip_drm_dma_attach_device from vop_crtc_atomic_enable+0x10c/0xa64
+ vop_crtc_atomic_enable from drm_atomic_helper_commit_modeset_enables+0xa8/0x290
+ drm_atomic_helper_commit_modeset_enables from drm_atomic_helper_commit_tail_rpm+0x44/0x8c
+ drm_atomic_helper_commit_tail_rpm from commit_tail+0x9c/0x180
+ commit_tail from drm_atomic_helper_commit+0x164/0x18c
+ drm_atomic_helper_commit from drm_atomic_commit+0xac/0xe4
+ drm_atomic_commit from drm_client_modeset_commit_atomic+0x23c/0x284
+ drm_client_modeset_commit_atomic from drm_client_modeset_commit_locked+0x60/0x1c8
+ drm_client_modeset_commit_locked from drm_client_modeset_commit+0x24/0x40
+ drm_client_modeset_commit from drm_fb_helper_set_par+0xb8/0xf8
+ drm_fb_helper_set_par from drm_fb_helper_hotplug_event.part.0+0xa8/0xc0
+ drm_fb_helper_hotplug_event.part.0 from output_poll_execute+0xb8/0x224
 
-> diff --git a/kernel/jump_label.c b/kernel/jump_label.c
-> index b1ac2948be79..ff8576c00893 100644
-> --- a/kernel/jump_label.c
-> +++ b/kernel/jump_label.c
-> @@ -332,17 +332,9 @@ static int __jump_label_text_reserved(struct jump_entry *iter_start,
->  	return 0;
->  }
+> @@ -2109,7 +2115,7 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+>  {
+>  	int ret;
 >  
-> -/*
-> - * Update code which is definitely not currently executing.
-> - * Architectures which need heavyweight synchronization to modify
-> - * running code can override this to make the non-live update case
-> - * cheaper.
-> - */
-> -void __weak __init_or_module arch_jump_label_transform_static(struct jump_entry *entry,
-> -					    enum jump_label_type type)
-> -{
-> -	arch_jump_label_transform(entry, type);
-> -}
-> +#ifndef arch_jump_label_transform_static
-> +#define arch_jump_label_transform_static(entry, type)
-> +#endif
+> -	if (group->default_domain && group->domain != group->default_domain)
+> +	if (group->domain && group->domain != group->default_domain)
+>  		return -EBUSY;
+>  
+>  	ret = __iommu_group_for_each_dev(group, domain,
 
-It might be slightly better to make this a static inline stub so that we always
-get the compiler to type-check it, e.g.
+Reverting this 'fixes' the problem for me. The follow up 0286300e6045
+("iommu: iommu_group_claim_dma_owner() must always assign a domain")
+doesn't help.
 
-| #ifndef arch_jump_label_transform_static
-| static inline void arch_jump_label_transform_static(struct jump_entry *entry,
-| 						    enum jump_label_type type)
-| {
-| 	/* nothing to do on most architectures */
-| }
-| #define arch_jump_label_transform_static arch_jump_label_transform_static
-| #endif
+Adding some debug printks I can see that domain is a valid pointer, but
+both default_domain and blocking_domain are NULL.
 
-Mark.
+I'm using the DTB from the kernel tree (rk3288-firefly.dtb).
+
+Any ideas?
+
+Thanks,
+
+Steve
