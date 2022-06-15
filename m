@@ -2,153 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A349BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E935C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357385AbiFORrb (ORCPT
+        id S1357624AbiFORrw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:47:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
+        Wed, 15 Jun 2022 13:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245041AbiFORr2 (ORCPT
+        with ESMTP id S1349899AbiFORrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:47:28 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899F6229;
-        Wed, 15 Jun 2022 10:47:26 -0700 (PDT)
-Received: from [IPv6:2003:f8:3f08:ad00:4f10:e432:a44c:8e65] (p200300f83f08ad004f10e432a44c8e65.dip0.t-ipconnect.de [IPv6:2003:f8:3f08:ad00:4f10:e432:a44c:8e65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: jluebbe@lasnet.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id C6C94C0747;
-        Wed, 15 Jun 2022 19:47:20 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lasnet.de; s=2021;
-        t=1655315241;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9bz2STt3kmdDn2VeVPZgDH8qBkZlDCUWWkMWbxg3vV8=;
-        b=JXvpMPg5zJiUlnfeUG5vuPjKWS3deA/7wOON1oCwrC4EhjLjeBDdi1/RAN5Z4lj3VdNER9
-        p2Z6zB+JpIcMlMug3EuqosgSrBISYDBhUn2objvZiF5OifzA7AjN//b4DQGoBjzakkXEOs
-        /8A5itR9sR1UU8GumA5llZC2F2ga2URSMCuNT7ML7qtDuztN1ZSeVoW6s2YBw7osS+WNVe
-        aWEAoxLmOBlIgqBzz/HPuuDhDYqcl0t+yCTT5pzT2RQBS0cG8pQ1x1GjnjEMvo2RFtzFwb
-        OeD+zD0cF/n7Nri2QsFd7h094QFkDXbTvkX1FG1eTkcL/GBTojkn3xHDgY5Oaw==
-Message-ID: <3d0991cf30d6429e8dd059f7e0d1c54a2200c5a0.camel@lasnet.de>
-Subject: Re: [REGRESSION] connection timeout with routes to VRF
-From:   Jan Luebbe <jluebbe@lasnet.de>
-To:     David Ahern <dsahern@kernel.org>,
-        Robert Shearman <robertshearman@gmail.com>,
-        Andy Roulin <aroulin@nvidia.com>
-Cc:     Mike Manning <mvrmanning@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        regressions@lists.linux.dev,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Date:   Wed, 15 Jun 2022 19:47:44 +0200
-In-Reply-To: <6410890e-333d-5f0e-52f2-1041667c80f8@kernel.org>
-References: <a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de>
-         <6410890e-333d-5f0e-52f2-1041667c80f8@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Wed, 15 Jun 2022 13:47:48 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C442F1147F;
+        Wed, 15 Jun 2022 10:47:47 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id m24so16323263wrb.10;
+        Wed, 15 Jun 2022 10:47:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UEplRBRe8Not6/N/87KHMRBTXuTr13tJIbM6hc9f8sQ=;
+        b=Px0sxprY8EaTIf37otn4bHLOMuOiouEYqETuqdXAoedA3jFIrkkKeHZvQZcfi6IDQd
+         +gPo6UtC+5oE4EUy+jA8XQ7k3lqlL722vCj/oANcJfB4eG3pUwsqRPv0uGe/HecIqW06
+         cSNnPJbGMJNoz1TcKBBRCF+5+Gy+Cravzkx4VbGZqli8BcwNbigqDx4TMiTrEehL3wXu
+         /D+jaAoPIZIEEgXk+EJBQxt2H4K1b7kI15klNggExGmPBJhVD7tPrtpUq9FphpwM1H+2
+         rWMXGX3cud6Dblde43mQIlZpBjDyX+LwEaufSxZUdSU0FK7uOYBP2vVcdz9tV4MoyFOx
+         aIxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UEplRBRe8Not6/N/87KHMRBTXuTr13tJIbM6hc9f8sQ=;
+        b=XmkHLc8sQbZFr9+YfpUvC5ZH2Hs730EVQDCJXfaC4BlUx8++x44X979WJ4s0TAJEcf
+         czsDR6qCe9wnUxjxiDdhLWrNGMjlqo679z46Oa7fM9UHwFa3gTww8JQVgm1G6Itwr+M/
+         mdTBlLpMXq8xiCb5BwGgki6EZD1qqzSJhM7JK8V3HrWmZE9H2YLM2bvW/sORDZoc0oig
+         lzq1RJLQB3x87/qwijIk/z2JDOltq8t/LJNm2v6yj9rhMpd4wy4efYQAmjhUJgZ20oxo
+         pQctcnY0ZKJHdJHqVxWy6nI7KqBOCPVe7ddVTtomtBiFWsRmRgbnQ/aP+IO1APnnsscC
+         zddA==
+X-Gm-Message-State: AJIora9mYJz6gINCGfT/pH7z/3rHTopUqOAVwAyowjn4IwH/4UHSDIr8
+        V/LicxDMldimP+JMyy4OCeFowHQaquU=
+X-Google-Smtp-Source: AGRyM1sdCdaiNcC0qqAatgAXTIR/dGxEV0s1FBUtTraV7r7iycMccsJTIVFL8TKmFtDbKNmYjUCrwg==
+X-Received: by 2002:a05:6000:1548:b0:217:6480:e65 with SMTP id 8-20020a056000154800b0021764800e65mr934830wry.381.1655315266192;
+        Wed, 15 Jun 2022 10:47:46 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id l125-20020a1c2583000000b0039c4d9737f3sm3158157wml.34.2022.06.15.10.47.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 10:47:45 -0700 (PDT)
+Message-ID: <62aa1b41.1c69fb81.95632.5b71@mx.google.com>
+X-Google-Original-Message-ID: <YqoOmlGklknRj8Yf@Ansuel-xps.>
+Date:   Wed, 15 Jun 2022 18:53:46 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: clock: add pcm reset for ipq806x lcc
+References: <20220615163408.30154-1-ansuelsmth@gmail.com>
+ <a92fe431-a995-4c7f-b90b-8e80298bc71a@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a92fe431-a995-4c7f-b90b-8e80298bc71a@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-06-11 at 10:44 -0600, David Ahern wrote:
-> On 6/11/22 5:14 AM, Jan Luebbe wrote:
-> > Hi,
+On Wed, Jun 15, 2022 at 10:43:10AM -0700, Krzysztof Kozlowski wrote:
+> On 15/06/2022 09:34, Christian 'Ansuel' Marangi wrote:
+> > Add pcm reset define for ipq806x lcc.
 > > 
-> > TL;DR: We think we have found a regression in the handling of VRF route
-> > leaking
-> > caused by "net: allow binding socket in a VRF when there's an unbound
-> > socket"
-> > (3c82a21f4320).
+> > Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+> To prevent any confusion about identities (we have strict rules about
+> these), I need to ask - who uses this email address?
 > 
-> This is the 3rd report in the past few months about this commit.
+> https://lore.kernel.org/all/?q=ansuelsmth%40gmail.com
 > 
-> ...
+> Best regards,
+> Krzysztof
 
-Hmm, I've not been able to find other reports. Could you point me to them?
+Same person. Started using extended name, wanted to do this change from
+a long time but all the patch were already pushed so I couldn't change
+it since they were already proposed and on the various mailing list.
 
-> > 
-> > Our minimized test case looks like this:
-> >  ip rule add pref 32765 from all lookup local
-> >  ip rule del pref 0 from all lookup local
-> >  ip link add red type vrf table 1000
-> >  ip link set red up
-> >  ip route add vrf red unreachable default metric 8192
-> >  ip addr add dev red 172.16.0.1/24
-> >  ip route add 172.16.0.0/24 dev red
-> >  ip vrf exec red socat -dd TCP-LISTEN:1234,reuseaddr,fork SYSTEM:"echo
-> > connected" &
-> >  sleep 1
-> >  nc 172.16.0.1 1234 < /dev/null
-> > 
-> 
-> ...
-> Thanks for the detailed analysis and reproducer.
-> 
-> > 
-> > The partial revert
-> > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> > index 98e1ec1a14f0..41e7f20d7e51 100644
-> > --- a/include/net/inet_hashtables.h
-> > +++ b/include/net/inet_hashtables.h
-> > @@ -310,8 +310,9 @@ static inline struct sock *inet_lookup_listener(struct
-> > net *net,
-> >  #define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif,
-> > __sdif) \
-> >         (((__sk)->sk_portpair == (__ports))                     &&      \
-> >          ((__sk)->sk_addrpair == (__cookie))                    &&      \
-> > -        (((__sk)->sk_bound_dev_if == (__dif))                  ||      \
-> > -         ((__sk)->sk_bound_dev_if == (__sdif)))                &&      \
-> > +        (!(__sk)->sk_bound_dev_if      ||                              \
-> > +          ((__sk)->sk_bound_dev_if == (__dif))                 ||      \
-> > +          ((__sk)->sk_bound_dev_if == (__sdif)))               &&      \
-> >          net_eq(sock_net(__sk), (__net)))
-> >  #else /* 32-bit arch */
-> >  #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
-> > @@ -321,8 +322,9 @@ static inline struct sock *inet_lookup_listener(struct
-> > net *net,
-> >         (((__sk)->sk_portpair == (__ports))             &&              \
-> >          ((__sk)->sk_daddr      == (__saddr))           &&              \
-> >          ((__sk)->sk_rcv_saddr  == (__daddr))           &&              \
-> > -        (((__sk)->sk_bound_dev_if == (__dif))          ||              \
-> > -         ((__sk)->sk_bound_dev_if == (__sdif)))        &&              \
-> > +        (!(__sk)->sk_bound_dev_if      ||                              \
-> > +          ((__sk)->sk_bound_dev_if == (__dif))         ||              \
-> > +          ((__sk)->sk_bound_dev_if == (__sdif)))       &&              \
-> >          net_eq(sock_net(__sk), (__net)))
-> >  #endif /* 64-bit arch */
-> > 
-> > restores the original behavior when applied on v5.18. This doesn't apply
-> > directly on master, as the macro was replaced by an inline function in
-> > "inet:
-> > add READ_ONCE(sk->sk_bound_dev_if) in INET_MATCH()" (4915d50e300e).
-> > 
-> > I have to admit I don't quite understand 3c82a21f4320, so I'm not sure how
-> > to proceed. What would be broken by the partial revert above? Are there
-> > better ways to configure routing into the VRF than simply "ip route add
-> > 172.16.0.0/24 dev red" that still work?
-> > 
-> > Thanks,
-> > Jan
-> > 
-> > #regzbot introduced: 3c82a21f4320
-> > 
-> > 
-> > 
-> 
-> Andy Roulin suggested the same fix to the same problem a few weeks back.
-> Let's do it along with a test case in fcnl-test.sh which covers all of
-> these vrf permutations.
-
-Thanks! I'd be happy to test any patch in our real setup.
-
-Regards,
-Jan
-
-
+-- 
+	Ansuel
