@@ -2,232 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 893F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB46CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:54:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242240AbiFOPyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49804 "EHLO
+        id S245689AbiFOPyU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 11:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231167AbiFOPyL (ORCPT
+        with ESMTP id S241258AbiFOPyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:54:11 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADE81D302;
-        Wed, 15 Jun 2022 08:54:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655308449; x=1686844449;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=hQbr63r6g12pXkWSUm16jYJVYXPNC3k9vGnZ4/4C+so=;
-  b=A0hZAtVW8y7mMMM9FwmWYhm2/swaB3W3VndrkMIVi1Z+eZNJy0fXfIbb
-   ORGxwbmbU36M6UcKqTPil/mOiO+D/ioUv95ZWvpf3QyGcrpsJxNI8SN21
-   Fxsl6u1t2JJSblEKyN4apqlptxKTyl0w+Z07cjPtSHq1gYyYc2ujnfPPP
-   w=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 15 Jun 2022 08:54:08 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 08:54:07 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 15 Jun 2022 08:54:07 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 15 Jun 2022 08:54:06 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
-        <dianders@chromium.org>, <vkoul@kernel.org>, <daniel@ffwll.ch>,
-        <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
-        <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v7] drm/msm/dp: force link training for display resolution change
-Date:   Wed, 15 Jun 2022 08:53:57 -0700
-Message-ID: <1655308437-1924-1-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 15 Jun 2022 11:54:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 320C31EEC1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:54:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655308453;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TEmJ1fJ8Yf6oDfx0MBc+zDdacxWq2un2XNoeG1V4KKU=;
+        b=FEMNpxkvKwADUdqE0kEgkLuOBuRM9Wj/u9QOyN59Fios5Jbbpx8wzoI2TZbTLlxF7Qu0ZY
+        24gIpvympXZEaqwHoEApMAYN7X++dudUJ+8+F6pBYh3mFh8g7Nel5RvL4txrnviclkPZbR
+        U8TgnjOk7OPV0eOSV/RhhAUm9t0hcgc=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-58-D_983ZWxOxWyh_k1LNsgaw-1; Wed, 15 Jun 2022 11:54:10 -0400
+X-MC-Unique: D_983ZWxOxWyh_k1LNsgaw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5728B38005CB;
+        Wed, 15 Jun 2022 15:54:10 +0000 (UTC)
+Received: from localhost (unknown [10.39.192.100])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E2EE51415107;
+        Wed, 15 Jun 2022 15:54:09 +0000 (UTC)
+Date:   Wed, 15 Jun 2022 14:54:29 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Deming Wang <wangdeming@inspur.com>
+Cc:     vgoyal@redhat.com, miklos@szeredi.hu,
+        virtualization@lists.linux-foundation.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] virtiofs: delete unused parameter for
+ virtio_fs_cleanup_vqs
+Message-ID: <YqnklWCUQBamzmJJ@stefanha-x1.localdomain>
+References: <20220610020838.1543-1-wangdeming@inspur.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="VSfWJTB4dTlkafrv"
+Content-Disposition: inline
+In-Reply-To: <20220610020838.1543-1-wangdeming@inspur.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Display resolution change is implemented through drm modeset. Older
-modeset (resolution) has to be disabled first before newer modeset
-(resolution) can be enabled. Display disable will turn off both
-pixel clock and main link clock so that main link have to be
-re-trained during display enable to have new video stream flow
-again. At current implementation, display enable function manually
-kicks up irq_hpd_handle which will read panel link status and start
-link training if link status is not in sync state.
 
-However, there is rare case that a particular panel links status keep
-staying in sync for some period of time after main link had been shut
-down previously at display disabled. In this case, main link retraining
-will not be executed by irq_hdp_handle(). Hence video stream of newer
-display resolution will fail to be transmitted to panel due to main
-link is not in sync between host and panel.
+--VSfWJTB4dTlkafrv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This patch will bypass irq_hpd_handle() in favor of directly call
-dp_ctrl_on_stream() to always perform link training in regardless of
-main link status. So that no unexpected exception resolution change
-failure cases will happen. Also this implementation are more efficient
-than manual kicking off irq_hpd_handle function.
+On Thu, Jun 09, 2022 at 10:08:38PM -0400, Deming Wang wrote:
+> fs parameter not used. So, it needs to be deleted.
+>=20
+> Signed-off-by: Deming Wang <wangdeming@inspur.com>
+> ---
+>  fs/fuse/virtio_fs.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
 
-Changes in v2:
--- set force_link_train flag on DP only (is_edp == false)
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-Changes in v3:
--- revise commit  text
--- add Fixes tag
+--VSfWJTB4dTlkafrv
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Changes in v4:
--- revise commit  text
+-----BEGIN PGP SIGNATURE-----
 
-Changes in v5:
--- fix spelling at commit text
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmKp5JUACgkQnKSrs4Gr
+c8i8ogf+JVNIK5wafiTY0HlfRmCOIhYMJ8AbK4vwM0rKJeoQc+tgLDPQHHCVMGDM
+lqtAdpnNzCHGOTTe8+sbTVhxhH+THmJvh1c7fX630vgW6MQWQICOT1ablFIJN/jF
+4snTGcSXXaPWMp9B4YJp4n+LBkH3WPHLYGuy1tzgDSYRCnv7ofeKitJ5b3BVWhuc
+zBgS6VNklGbEycPII0gUR8doCeW3laSbHT/3Cai3lVs6iqfZlv/wfvpG8gszeHqm
+IFb5Y93cFAWvxZg11kx8g8Ps3GirNj/y1tq/USKPaQ1PlbQmSZKrSW/6eku2RMXO
+yvOmooxFHUf/aUVMw/BqAynlUDfLLg==
+=BmCq
+-----END PGP SIGNATURE-----
 
-Changes in v6:
--- split dp_ctrl_on_stream() for phy test case
--- revise commit text for modeset
-
-Changes in v7:
--- drop 0 assignment at local variable (ret = 0)
-
-Fixes: 62671d2ef24b ("drm/msm/dp: fixes wrong connection state caused by failure of link train")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
----
- drivers/gpu/drm/msm/dp/dp_ctrl.c    | 31 +++++++++++++++++++++++--------
- drivers/gpu/drm/msm/dp/dp_ctrl.h    |  3 ++-
- drivers/gpu/drm/msm/dp/dp_display.c | 13 ++++++-------
- 3 files changed, 31 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index af7a80c..01028b5 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1551,7 +1551,7 @@ static int dp_ctrl_process_phy_test_request(struct dp_ctrl_private *ctrl)
- 
- 	ret = dp_ctrl_on_link(&ctrl->dp_ctrl);
- 	if (!ret)
--		ret = dp_ctrl_on_stream(&ctrl->dp_ctrl);
-+		ret = dp_ctrl_on_stream_phy_test_report(&ctrl->dp_ctrl);
- 	else
- 		DRM_ERROR("failed to enable DP link controller\n");
- 
-@@ -1807,7 +1807,27 @@ static int dp_ctrl_link_retrain(struct dp_ctrl_private *ctrl)
- 	return dp_ctrl_setup_main_link(ctrl, &training_step);
- }
- 
--int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
-+int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl)
-+{
-+	int ret;
-+	struct dp_ctrl_private *ctrl;
-+
-+	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
-+
-+	ctrl->dp_ctrl.pixel_rate = ctrl->panel->dp_mode.drm_mode.clock;
-+
-+	ret = dp_ctrl_enable_stream_clocks(ctrl);
-+	if (ret) {
-+		DRM_ERROR("Failed to start pixel clocks. ret=%d\n", ret);
-+		return ret;
-+	}
-+
-+	dp_ctrl_send_phy_test_pattern(ctrl);
-+
-+	return 0;
-+}
-+
-+int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train)
- {
- 	int ret = 0;
- 	bool mainlink_ready = false;
-@@ -1843,12 +1863,7 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
- 		goto end;
- 	}
- 
--	if (ctrl->link->sink_request & DP_TEST_LINK_PHY_TEST_PATTERN) {
--		dp_ctrl_send_phy_test_pattern(ctrl);
--		return 0;
--	}
--
--	if (!dp_ctrl_channel_eq_ok(ctrl))
-+	if (force_link_train || !dp_ctrl_channel_eq_ok(ctrl))
- 		dp_ctrl_link_retrain(ctrl);
- 
- 	/* stop txing train pattern to end link training */
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.h b/drivers/gpu/drm/msm/dp/dp_ctrl.h
-index 0745fde..9a39b00 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.h
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.h
-@@ -21,7 +21,8 @@ struct dp_ctrl {
- };
- 
- int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl);
--int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl);
-+int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train);
-+int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl);
- int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl);
- int dp_ctrl_off_link(struct dp_ctrl *dp_ctrl);
- int dp_ctrl_off(struct dp_ctrl *dp_ctrl);
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index c388323..b6d25ab 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -872,7 +872,7 @@ static int dp_display_enable(struct dp_display_private *dp, u32 data)
- 		return 0;
- 	}
- 
--	rc = dp_ctrl_on_stream(dp->ctrl);
-+	rc = dp_ctrl_on_stream(dp->ctrl, data);
- 	if (!rc)
- 		dp_display->power_on = true;
- 
-@@ -1654,6 +1654,7 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
- 	int rc = 0;
- 	struct dp_display_private *dp_display;
- 	u32 state;
-+	bool force_link_train = false;
- 
- 	dp_display = container_of(dp, struct dp_display_private, dp_display);
- 	if (!dp_display->dp_mode.drm_mode.clock) {
-@@ -1688,10 +1689,12 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
- 
- 	state =  dp_display->hpd_state;
- 
--	if (state == ST_DISPLAY_OFF)
-+	if (state == ST_DISPLAY_OFF) {
- 		dp_display_host_phy_init(dp_display);
-+		force_link_train = true;
-+	}
- 
--	dp_display_enable(dp_display, 0);
-+	dp_display_enable(dp_display, force_link_train);
- 
- 	rc = dp_display_post_enable(dp);
- 	if (rc) {
-@@ -1700,10 +1703,6 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
- 		dp_display_unprepare(dp);
- 	}
- 
--	/* manual kick off plug event to train link */
--	if (state == ST_DISPLAY_OFF)
--		dp_add_event(dp_display, EV_IRQ_HPD_INT, 0, 0);
--
- 	/* completed connection */
- 	dp_display->hpd_state = ST_CONNECTED;
- 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+--VSfWJTB4dTlkafrv--
 
