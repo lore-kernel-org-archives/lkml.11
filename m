@@ -2,90 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AE32C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:11:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC52C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346376AbiFOMLN (ORCPT
+        id S1347087AbiFOMNS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 08:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42772 "EHLO
+        Wed, 15 Jun 2022 08:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237334AbiFOMLL (ORCPT
+        with ESMTP id S240200AbiFOMNR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 08:11:11 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 166434ECC7
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:11:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655295061;
-        bh=ezOnlosGKAAydv3zO7jEy12Plio79ZRPNcLr5oCfANk=;
-        h=X-UI-Sender-Class:From:To:Subject:Date;
-        b=eVdRi8NFzgZMhvm39tOzsTq+7RInziJqqsZw1cO2ZjhlsCdmKpkSERmH3gn4obWak
-         oo/phsUoH/37hA4AD1+6e9EssAMqC3kziu+K/ja2qbHIb+ZYDsyVwHorJHh2V/KMo6
-         9VwTNjHUKRYRbEG95DLL8bN9A+q/dhpXgYNI947s=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [217.61.154.5] ([217.61.154.5]) by web-mail.gmx.net
- (3c-app-gmx-bap28.server.lan [172.19.172.98]) (via HTTP); Wed, 15 Jun 2022
- 14:11:01 +0200
+        Wed, 15 Jun 2022 08:13:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1EEBB26
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:13:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655295195;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=ZYMEr+vgs68hkECrMLJFNGxEkW1dB+c+ZR/f5spIYG9fdbRHDE1AupV3qwy2HYsVxjdSF5
+        QGQebbZpY60+rtcKcRPBKmlf8TEXu9MJuHkLQT73b+/nVF3F+XVysElVvixy+ozIl/GoEX
+        IyJ/IaQcf6lrl59lASp3euSDBjQjLs8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-269-uajBiwuGP9uD6WoAkyDuhw-1; Wed, 15 Jun 2022 08:13:12 -0400
+X-MC-Unique: uajBiwuGP9uD6WoAkyDuhw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 216A6802804;
+        Wed, 15 Jun 2022 12:13:12 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DD8712166B26;
+        Wed, 15 Jun 2022 12:13:11 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Uros Bizjak <ubizjak@gmail.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] KVM: x86/mmu: Use try_cmpxchg64 in fast_pf_fix_direct_spte
+Date:   Wed, 15 Jun 2022 08:13:03 -0400
+Message-Id: <20220615121305.1662014-1-pbonzini@redhat.com>
+In-Reply-To: <20220520144635.63134-1-ubizjak@gmail.com>
+References: 
 MIME-Version: 1.0
-Message-ID: <trinity-685a668a-2395-45f2-81e5-53f526863a66-1655295061671@3c-app-gmx-bap28>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        Robin Murphy <robin.murphy@arm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: helping with remapping vmem for dma
-Content-Type: text/plain; charset=UTF-8
-Date:   Wed, 15 Jun 2022 14:11:01 +0200
-Importance: normal
-Sensitivity: Normal
-X-Priority: 3
-X-Provags-ID: V03:K1:prJPJkK3LsA2dyv/B4CgBXInvxwhazHL2+i4NT5HILEb0X3vFX2cw2FHYhNF3WSJuZ6Dh
- jhmKjare/8EgAott0Sca5YAcM35WB3vvDVwE2cfCmpzzTqusTiZ8Zq6eDILWAG17d/5G/fsnZ586
- I8jgOiDFMu6lr/hfrSGxg4/f5ZKAMzmBzODiFRIN5igr7MtzHmHpB68fiJL+gz+YfHZ6guHCqJCt
- DeIXT4zSWnkGfa+akDLPrXRo96raafEoUrhBhKIqJQctZiu4ENZZ0BNQLtNjc8xroQHqEW+1ONgF
- tg=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:I5EpnuWbdMs=:ufROBBNVL+7PfkfwLzSBOr
- 2RuWzvzA64Ae3f+/XuatqJmvz620Weh1IefvrkyIXvyLA67qUtJtiVDfEaX6LnTAp/xQ5g6GM
- rDiZ3XjUikldjRPWTvVB/7skxGqu5tq5Z4KNloGhXyDeeDhaZAih8X74pbBzN5yB0BN4Om8Ja
- lxCSTBk+uVVp2AUXE/jz4+7tZVF1vZ+DTx7Pqr3Yqo3rfgcRmqDxemgPtAF0T+nQ1YreojLTT
- OU1AtRFpEXZF4A7O8rD5t9ahaB1Gk1+pPAT7xroPav7RXihvjRR1Etef8H9f6eVmp33Xve2kQ
- lX3Eo1y0CUYkWyz+Vx+BOe2XAX/E//9nqmh9lXnxFqVpZ5TYsC+2rwVkMApcOLwb2qXMoMK1M
- 8T2GmMDA4srPiO7kRGSS2zQa8NKe1I6Lpf72iYRGEBStv3dZU3CfiMqQpSvdqYqZyorWZ8d9k
- TVcKlTvNOLGbm6ol2prRUXGuUPHNw0lML1K+Mo1A4v3SAPF/7Q+Ps9bOO9Rs6/uZNM+Ua1NT+
- nmOurj7u4hrtjoMS15LiTBjHk42SV168r421WfclqUEbQ5FlAUibXEsH3LHO11B84p5Yp8lV2
- Zw6lyCNJqOmsQtFVXUN1nhrnASqwwaYAr/qBm+a+VnY+HEEd389u5lfSn0c8k/GqOK4P5ucI1
- IVf0Y3kf9Z/iKbNpN2LiCivRaf3QI5jjmrg0QH62vivEofrM+hEkt4TOh6GRcp5Td6gaAxMK1
- lEqZvgIi30Com2Imo/i7oYn4mY6kevap9kufnW/J5BiektwbyYNGhHHYpxRL5wr/drF4ILsMI
- J8k0Nbb
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Queued, thanks.
 
-i have upported a wifi-driver (mt6625l for armhf) for some time and fall now (at least 5.18) in the
-"rejecting DMA map of vmalloc memory" error [1].
+Paolo
 
-maybe anybody here can guide me on how to nail it down and maybe fix it.
-
-as far as i have debugged it, it uses dma_map_single [2] to get dma memory from a previous
-allocated memory region.
-
-this function "kalDevPortRead" in [2] is used via macro HAL_PORT_RD [3] (used in HAL_READ_RX_PORT
-and HAL_READ_INTR_STATUS in same hal.h file)
-
-HAL_READ_INTR_STATUS is always called with an empty int array as buf which i guess is not the problem.
-I think the issue is using the use with an preallocated prSDIOCtrl struct (have not completely traced
-it back where it is allocated).
-
-calls of HAL_PORT_RD/HAL_READ_RX_PORT are in nic{,_rx}.c (with sdio-struct) ([4] as example)
-
-maybe there is a simple way to get an address in preallocated memory as replacement for the dma_map_simple call (and the unmap of course).
-
-regards Frank
-
-[1] https://elixir.bootlin.com/linux/latest/source/include/linux/dma-mapping.h#L327
-[2] https://github.com/frank-w/BPI-R2-4.14/blob/5.18-main/drivers/misc/mediatek/connectivity/wlan/gen2/os/linux/hif/ahb/ahb.c#L940
-[3] https://github.com/frank-w/BPI-R2-4.14/blob/5.18-main/drivers/misc/mediatek/connectivity/wlan/gen2/include/nic/hal.h#L176
-[4] https://github.com/frank-w/BPI-R2-4.14/blob/5.18-main/drivers/misc/mediatek/connectivity/wlan/gen2/nic/nic_rx.c#L3604
