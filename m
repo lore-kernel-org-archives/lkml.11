@@ -2,97 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 734F3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E01ACCA480
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:03:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349370AbiFOQAR (ORCPT
+        id S242845AbiFOQDn convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55556 "EHLO
+        Wed, 15 Jun 2022 12:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348588AbiFOQAI (ORCPT
+        with ESMTP id S230162AbiFOQDk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:00:08 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F3DBF0
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:00:05 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id B024821AEE;
-        Wed, 15 Jun 2022 16:00:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1655308803; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ygjyshnlbg3+pSNVNR1FjCFt/v865tBihLkOKM937/E=;
-        b=mie4c7DI40Uh042n1iLaOmGvSPGdHGfuFfPg5NSbr6YEHCBZpvJc5xMWWe5wsMoeJQHBIJ
-        DvZ4eu+qUis0dtWO1/vup6a6iDlwXBgp4sh8CF2dRMrZk8omjKXagUgfQSgRRkVliKZz8F
-        O9Z/ptPbrKuitAHATw3+GPf98REucWY=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id CF1062C141;
-        Wed, 15 Jun 2022 16:00:02 +0000 (UTC)
-Date:   Wed, 15 Jun 2022 17:59:59 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Tim Chen <tim.c.chen@linux.intel.com>
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
-        Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>,
-        Shakeel Butt <shakeelb@google.com>
-Subject: Re: [RFC PATCH 0/3] Cgroup accounting of memory tier usage
-Message-ID: <YqoB/yqZCB0ZTVmb@dhcp22.suse.cz>
-References: <cover.1655242024.git.tim.c.chen@linux.intel.com>
- <Yqm+ZnHfkxuyuzyD@dhcp22.suse.cz>
- <34f985f63e6dbaa60bb9d1edb6022e83b98304e4.camel@linux.intel.com>
+        Wed, 15 Jun 2022 12:03:40 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16F9237EF;
+        Wed, 15 Jun 2022 09:03:37 -0700 (PDT)
+Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LNVRp2wCgz683yD;
+        Thu, 16 Jun 2022 00:01:58 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
+ fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Wed, 15 Jun 2022 18:03:35 +0200
+Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
+ fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
+ Wed, 15 Jun 2022 18:03:35 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+CC:     "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
+        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
+        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
+        "takondra@cisco.com" <takondra@cisco.com>,
+        "kamensky@cisco.com" <kamensky@cisco.com>,
+        "hpa@zytor.com" <hpa@zytor.com>, "arnd@arndb.de" <arnd@arndb.de>,
+        "rob@landley.net" <rob@landley.net>,
+        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
+        "niveditas98@gmail.com" <niveditas98@gmail.com>
+Subject: RE: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
+ ram disk
+Thread-Topic: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
+ ram disk
+Thread-Index: AQHYgM+mPH1HC/8x8Uq7oovD5MPpKK1QoLWg
+Date:   Wed, 15 Jun 2022 16:03:35 +0000
+Message-ID: <d6479ebe656d4a75909b556d4cbcee22@huawei.com>
+References: <20190523121803.21638-1-roberto.sassu@huawei.com>
+ <20220615155034.1271240-1-alexandr.lobakin@intel.com>
+In-Reply-To: <20220615155034.1271240-1-alexandr.lobakin@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.204.63.21]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <34f985f63e6dbaa60bb9d1edb6022e83b98304e4.camel@linux.intel.com>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 15-06-22 08:23:56, Tim Chen wrote:
-> On Wed, 2022-06-15 at 13:11 +0200, Michal Hocko wrote:
-[...]
-> > > The patchset works with Aneesh's v6 memory-tiering implementation [1].
-> > > It is a preparatory patch set before introducing features to
-> > > control top tiered memory in cgroups.
-> > > 
-> > > I'll like to first get feedback to see if 
-> > > (1) Controllng the topmost tiered memory is enough 
-> > > or
-> > > (2) Multiple tiers at the top levels need to be grouped into "toptier"
-> > > or
-> > > (3) There are use cases not covered by (1) and (2). 
-> > 
-> > I would start by asking why do we need a dedicated interface in the
-> > first place. Why the existing numa_stat is not a proper interface. Right
-> > now we only report LRU per node stats. Is this insufficient?
-> > What is userspace expect to do based on the reported data?
+> From: Alexander Lobakin [mailto:alexandr.lobakin@intel.com]
+> Sent: Wednesday, June 15, 2022 5:51 PM
+> From: Roberto Sassu <roberto.sassu@huawei.com>
+> Date: Thu, 23 May 2019 14:18:00 +0200
 > 
-> Exporting the toptier information here is convenient for me for debugging
-> purpose of seeing whether a cgroup's toptier usage is under control.
-> Otherwise writing a script to parse numastat and the memtier heirachy will
-> work too. Exporting toptier usage directly is optional and we don't have to do it.
+> > This patch set aims at solving the following use case: appraise files from
+> > the initial ram disk. To do that, IMA checks the signature/hash from the
+> 
+> Hi,
+> is this[0] relatable somehow?
 
-Please keep in mind this is an userspace API which has to be maintained
-for ever. We do not add those just to make debugging more convenient.
+Hi Alexander
 
--- 
-Michal Hocko
-SUSE Labs
+seems a separate problem. For that, we opted for having a dedicated
+kernel option:
+
+https://github.com/openeuler-mirror/kernel/commit/18a502f7e3b1de7b9ba0c70896ce08ee13d052da
+
+Thanks
+
+Roberto
+
+HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
+Managing Director: Li Peng, Yang Xi, Li He
+
+> > security.ima xattr. Unfortunately, this use case cannot be implemented
+> > currently, as the CPIO format does not support xattrs.
+> >
+> > This proposal consists in including file metadata as additional files named
+> > METADATA!!!, for each file added to the ram disk. The CPIO parser in the
+> > kernel recognizes these special files from the file name, and calls the
+> > appropriate parser to add metadata to the previously extracted file. It has
+> > been proposed to use bit 17:16 of the file mode as a way to recognize files
+> > with metadata, but both the kernel and the cpio tool declare the file mode
+> > as unsigned short.
+> >
+> > The difference from v2, v3 (https://lkml.org/lkml/2019/5/9/230,
+> > https://lkml.org/lkml/2019/5/17/466) is that file metadata are stored in
+> > separate files instead of a single file. Given that files with metadata
+> > must immediately follow the files metadata will be added to, image
+> > generators have to be modified in this version.
+> >
+> > The difference from v1 (https://lkml.org/lkml/2018/11/22/1182) is that
+> > all files have the same name. The file metadata are added to is always the
+> > previous one, and the image generator in user space will make sure that
+> > files are in the correct sequence.
+> >
+> > The difference with another proposal
+> > (https://lore.kernel.org/patchwork/cover/888071/) is that xattrs can be
+> > included in an image without changing the image format. Files with metadata
+> > will appear as regular files. It will be task of the parser in the kernel
+> > to process them.
+> >
+> > This patch set extends the format of data defined in patch 9/15 of the last
+> > proposal. It adds header version and type, so that new formats can be
+> > defined and arbitrary metadata types can be processed.
+> >
+> > The changes introduced by this patch set don't cause any compatibility
+> > issue: kernels without the metadata parser simply extract the special files
+> > and don't process metadata; kernels with the metadata parser don't process
+> > metadata if the special files are not included in the image.
+> >
+> > >>From the kernel space perspective, backporting this functionality to older
+> > kernels should be very easy. It is sufficient to add two calls to the new
+> > function do_process_metadata() in do_copy(), and to check the file name in
+> > do_name(). From the user space perspective, unlike the previous version of
+> > the patch set, it is required to modify the image generators in order to
+> > include metadata as separate files.
+> >
+> > Changelog
+> >
+> > v3:
+> > - include file metadata as separate files named METADATA!!!
+> > - add the possibility to include in the ram disk arbitrary metadata types
+> >
+> > v2:
+> > - replace ksys_lsetxattr() with kern_path() and vfs_setxattr()
+> >   (suggested by Jann Horn)
+> > - replace ksys_open()/ksys_read()/ksys_close() with
+> >   filp_open()/kernel_read()/fput()
+> >   (suggested by Jann Horn)
+> > - use path variable instead of name_buf in do_readxattrs()
+> > - set last byte of str to 0 in do_readxattrs()
+> > - call do_readxattrs() in do_name() before replacing an existing
+> >   .xattr-list
+> > - pass pathname to do_setxattrs()
+> >
+> > v1:
+> > - move xattr unmarshaling to CPIO parser
+> >
+> >
+> > Mimi Zohar (1):
+> >   initramfs: add file metadata
+> >
+> > Roberto Sassu (2):
+> >   initramfs: read metadata from special file METADATA!!!
+> >   gen_init_cpio: add support for file metadata
+> >
+> >  include/linux/initramfs.h |  21 ++++++
+> >  init/initramfs.c          | 137 +++++++++++++++++++++++++++++++++++++-
+> >  usr/Kconfig               |   8 +++
+> >  usr/Makefile              |   4 +-
+> >  usr/gen_init_cpio.c       | 137 ++++++++++++++++++++++++++++++++++++--
+> >  usr/gen_initramfs_list.sh |  10 ++-
+> >  6 files changed, 305 insertions(+), 12 deletions(-)
+> >  create mode 100644 include/linux/initramfs.h
+> >
+> > --
+> > 2.17.1
+> 
+> [0] https://lore.kernel.org/all/20210702233727.21301-1-alobakin@pm.me
+> 
+> Thanks,
+> Olek
