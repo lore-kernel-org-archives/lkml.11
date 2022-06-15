@@ -2,18 +2,18 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F46AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 00:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37283C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 00:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238144AbiFOAti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 20:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55312 "EHLO
+        id S238614AbiFOAtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 20:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237400AbiFOAtf (ORCPT
+        with ESMTP id S233156AbiFOAtf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 20:49:35 -0400
 Received: from challenge-bot.com (challenge-bot.com [IPv6:2602:fffa:fff:108a:0:16:3e15:92b8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0A24C424
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C3994C431
         for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 17:49:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=challenge-bot.com; s=20180430; h=Content-Transfer-Encoding:MIME-Version:
@@ -21,21 +21,21 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=0Q3FHgAu/LszUBpsWqPLEtKOSAyaNdoFckgppE/2eXg=; b=lYSowu9/Ue/dI80FFtSO0ucXNv
-        Kuwz+v5SYD4w6e2cRkbzaq8/APMwimMU4rcEllbJoTbhUSnvgDrf5O990GfqjE4W4/zOnGpdSaMmN
-        AbGsEyunSUOfQqzRiRcE6HkgtWdS5AJzt4FLwRV1YIV7VG3oUNfIqR7jRblBeoE2mmZ8=;
+        bh=sQrT+LTV1XsCMYBzfhykUc6nm3kVLttVyQD6H2eeam8=; b=jqHSqA1SED+WCFD9jwUC8Fo9f+
+        F7yjeYyHYLtttm5rJJ1TEeVgxfrfrRISics+Yy7iXxsFHzVFLieRXf6bPbXn/sP4vN+Z31OsiLiC4
+        A1hOosRjV5nESxrnVzGvi+AaYcnmoY5EPySBLaraU0NXS9Kxg3HWQlQxz461A2r497Og=;
 Received: from ozzloy by challenge-bot.com with local (Exim 4.92)
         (envelope-from <ozzloy@challenge-bot.com>)
-        id 1o1HDu-0002Sz-3F; Tue, 14 Jun 2022 17:49:30 -0700
+        id 1o1HDu-0002T7-Ac; Tue, 14 Jun 2022 17:49:30 -0700
 From:   daniel watson <ozzloy@challenge-bot.com>
 To:     Larry Finger <Larry.Finger@lwfinger.net>,
         Phillip Potter <phil@philpotter.co.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
 Cc:     Daniel Watson <ozzloy@challenge-bot.com>
-Subject: [PATCH v2 2/4] staging: r8188eu: call rtw_IOL_append_WW_cmd directly
-Date:   Tue, 14 Jun 2022 17:49:26 -0700
-Message-Id: <a7890db856c8838b63d201c19950927e75f886b8.1655249804.git.ozzloy@challenge-bot.com>
+Subject: [PATCH v2 4/4] staging: r8188eu: call rtw_IOL_append_WRF_cmd directly
+Date:   Tue, 14 Jun 2022 17:49:28 -0700
+Message-Id: <1775458f6f544da7d80ab281d2185f9cbf8d17a9.1655249804.git.ozzloy@challenge-bot.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1655249804.git.ozzloy@challenge-bot.com>
 References: <cover.1655249804.git.ozzloy@challenge-bot.com>
@@ -47,7 +47,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Watson <ozzloy@challenge-bot.com>
 
-Call rtw_IOL_append_WW_cmd directly, instead of using wrapper macro.
+Call rtw_IOL_append_WRF_cmd directly, instead of using wrapper macro.
 
 Delete wrapper macro, which is not needed.
 
@@ -63,39 +63,35 @@ Note: This code has not been run on hardware.
  2 files changed, 3 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_iol.c b/drivers/staging/r8188eu/core/rtw_iol.c
-index 8c990b1af5a70..7292bab126074 100644
+index b7ee3833c908c..31e196ccd899a 100644
 --- a/drivers/staging/r8188eu/core/rtw_iol.c
 +++ b/drivers/staging/r8188eu/core/rtw_iol.c
-@@ -81,7 +81,7 @@ int rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr, u8 value, u8
+@@ -109,7 +109,7 @@ int rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr, u32 value, u3
  	return rtw_IOL_append_cmds(xmit_frame, (u8 *)&cmd, cmd.length);
  }
  
--int _rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr, u16 value, u16 mask)
-+int rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr, u16 value, u16 mask)
+-int _rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path, u16 addr, u32 value, u32 mask)
++int rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path, u16 addr, u32 value, u32 mask)
  {
- 	struct ioreg_cfg cmd = {8, IOREG_CMD_WW_REG, 0x0, 0x0, 0x0};
+ 	struct ioreg_cfg cmd = {8, IOREG_CMD_W_RF, 0x0, 0x0, 0x0};
  
 diff --git a/drivers/staging/r8188eu/include/rtw_iol.h b/drivers/staging/r8188eu/include/rtw_iol.h
-index a648f9ba50a62..c99d7d5151099 100644
+index 9ad467759ef1c..099f5a075274c 100644
 --- a/drivers/staging/r8188eu/include/rtw_iol.h
 +++ b/drivers/staging/r8188eu/include/rtw_iol.h
-@@ -43,14 +43,12 @@ void read_efuse_from_txpktbuf(struct adapter *adapter, int bcnhead,
+@@ -47,10 +47,8 @@ int rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr,
+ 			  u16 value, u16 mask);
+ int rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr,
+ 			  u32 value, u32 mask);
+-int _rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path,
+-			    u16 addr, u32 value, u32 mask);
+-#define rtw_IOL_append_WRF_cmd(xmit_frame, rf_path, addr, value, mask)	\
+-	_rtw_IOL_append_WRF_cmd((xmit_frame),(rf_path), (addr), (value), (mask))
++int rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path,
++			   u16 addr, u32 value, u32 mask);
  
- int rtw_IOL_append_WB_cmd(struct xmit_frame *xmit_frame, u16 addr,
- 			  u8 value, u8 mask);
--int _rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr,
--			   u16 value, u16 mask);
-+int rtw_IOL_append_WW_cmd(struct xmit_frame *xmit_frame, u16 addr,
-+			  u16 value, u16 mask);
- int _rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr,
- 			   u32 value, u32 mask);
- int _rtw_IOL_append_WRF_cmd(struct xmit_frame *xmit_frame, u8 rf_path,
- 			    u16 addr, u32 value, u32 mask);
--#define rtw_IOL_append_WW_cmd(xmit_frame, addr, value, mask)		\
--	_rtw_IOL_append_WW_cmd((xmit_frame), (addr), (value),(mask))
- #define rtw_IOL_append_WD_cmd(xmit_frame, addr, value, mask)		\
- 	_rtw_IOL_append_WD_cmd((xmit_frame), (addr), (value), (mask))
- #define rtw_IOL_append_WRF_cmd(xmit_frame, rf_path, addr, value, mask)	\
+ u8 rtw_IOL_cmd_boundary_handle(struct xmit_frame *pxmit_frame);
+ 
 -- 
 2.34.1
 
