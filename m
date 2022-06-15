@@ -2,197 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F5BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92DCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358009AbiFOSUP (ORCPT
+        id S1348449AbiFOSV5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
+        Wed, 15 Jun 2022 14:21:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238164AbiFOSUM (ORCPT
+        with ESMTP id S235304AbiFOSVz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:20:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5336B53A67;
-        Wed, 15 Jun 2022 11:20:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2E7C61C1A;
-        Wed, 15 Jun 2022 18:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00963C34115;
-        Wed, 15 Jun 2022 18:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655317210;
-        bh=zgMm3tT9CMOKGocsDUTWvQnrf6rZzPwugTdww0pEwQg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kA2H6iCIfbsuQDEdBsjB51SdyM8UmeClAPVHQ7KBXx263xxyHSM1UUN2G0NmDzERf
-         n05l061sd2keBXkJ9uTSDhHXPy0DILiyeTkjAH1fBLtsynnjNnW/Xyu0izNOGJPZ+K
-         MJRm42OXpkTj6+2uF2oNVzdPnirelaZ130lKQMgj+39NQho3YAT9HGLBN1ycNGf99Y
-         E3IGLnWh4m3O2ZAu089iVv3EEJA0jbsXbSCxKys2QlfD4aq+c/k4yK/4j+B0JUd3/2
-         vf2+98bAbu+Chk3x+/l2xd5Aiur/nbNpyw5870aXlVBovX2+UVz0C6uX4icOZOoHvG
-         QaBpVsjOIKwLQ==
-Date:   Wed, 15 Jun 2022 21:18:01 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     LinoSanfilippo@gmx.de
-Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
-        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com,
-        lukas@wunner.de, p.rosenberger@kunbus.com
-Subject: Re: [PATCH v5 05/10] tpm, tpm_tis: Store result of interrupt
- capability query
-Message-ID: <YqoiWdwcds6AZgoO@iki.fi>
-References: <20220610110846.8307-1-LinoSanfilippo@gmx.de>
- <20220610110846.8307-6-LinoSanfilippo@gmx.de>
+        Wed, 15 Jun 2022 14:21:55 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2048.outbound.protection.outlook.com [40.107.220.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E7E544F6;
+        Wed, 15 Jun 2022 11:21:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F4a9aKKCaDPAQgIKDxp7r4z2i4SXcwSFk/i9IcKIDAQOdhm2QiSvqIiJd7TDiJ0DVUEizxIBDKRga1PX+felJlpKKTc2Imabe4trFKMAdlBiTU6oM7GzfbFPpZIt5GK7Lf1RBKDezHHdfpd6pyYJ0ejWFbDR/ZjMZovlGDJ7t5u5spMfNy7V45v8H8D6pSip7HYiTZud2TLZiJMU7++fcppyGDxPckvYBVKoXz+U5ZYR66a6g6BqlqzXRClscDmPamq8BqACoUWh7UIDjeGZaRqPY1Vr7KhU9RcAnSGVfFyeACO2DyctoEzuDC+Glaj0jeeWA+IGFibk39RAeX8RGw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=16NcllNhshOWBZDssPVg8X7a0B1e5cRcq333y2PvZuU=;
+ b=CULarb4W6nekoXyY1e8SYH/KrZSiodegi1kVXUdGHBIgGuhMcJgtJ+8W66T0jjnRHhSvd12OKDtQ0pUHZn1xmUmKQvjbxpBPcih6gDHXg9ZYwRSnRTHRmIxO6aKg+vupL4kuKsHt3IpTdCQ5q4p9Ck9ijwV+WgaKqvayE6wcvxzbxI7vuHbITe0W+nIiWN8c1qOCMs/+2Aq+yxZ6bZxRvHPEJj00Gdo7WK1MxZmxFBWHutbOLiK1iFj2D6CT5XF+ki8cRb+CcsxBc2scbK6x3BpnPgXz8tfo9M0vZhEjltLIyRilxcAEhtj7L1gLRV8pvWP4zCGU7nHxyjSDwqoMww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=16NcllNhshOWBZDssPVg8X7a0B1e5cRcq333y2PvZuU=;
+ b=C+a3CSsWxDwSqBuRaqsQWnUOhCEttfoe4VKmIiKlcH6/qG1HohivS3FaxKnF+hMgA+kTcp7NzSYh/v11a8UUhm/owIHHNmNjmplSBmlYUkyCUh0HiNDRdTWgNsUhKI2ISl56oGn7ObeLpllypn+UBn+bMp8/TlErGwHELjfiBJYkPGH1v1fwt4Oe32xORA49x9C5ipLTVLLvUyyHGERfg2e5bVkrlhI0xTrERrEj17X0sEhBX9OtXMdkQz0e3NIHQ9opDn4Qp2EhDbDU8pjlfUwpBQHSdYOIjGHtlFEcceysmXcSXFl0Hi0aiR/coFREpH2QqEH6WFPiHls3vBxVVQ==
+Received: from DM6PR12MB3500.namprd12.prod.outlook.com (2603:10b6:5:11d::16)
+ by BN8PR12MB3156.namprd12.prod.outlook.com (2603:10b6:408:96::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14; Wed, 15 Jun
+ 2022 18:21:53 +0000
+Received: from DM6PR12MB3500.namprd12.prod.outlook.com
+ ([fe80::d450:aced:134c:78ae]) by DM6PR12MB3500.namprd12.prod.outlook.com
+ ([fe80::d450:aced:134c:78ae%5]) with mapi id 15.20.5332.022; Wed, 15 Jun 2022
+ 18:21:53 +0000
+From:   Kechen Lu <kechenl@nvidia.com>
+To:     Chao Gao <chao.gao@intel.com>
+CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        Somdutta Roy <somduttar@nvidia.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [RFC PATCH v3 7/7] KVM: selftests: Add tests for VM and vCPU cap
+ KVM_CAP_X86_DISABLE_EXITS
+Thread-Topic: [RFC PATCH v3 7/7] KVM: selftests: Add tests for VM and vCPU cap
+ KVM_CAP_X86_DISABLE_EXITS
+Thread-Index: AQHYgFW05l6dlnrEPEaeZiMoTvE3oK1Py00AgAD6S2A=
+Date:   Wed, 15 Jun 2022 18:21:53 +0000
+Message-ID: <DM6PR12MB3500F48AD42562C7DB7A3DEACAAD9@DM6PR12MB3500.namprd12.prod.outlook.com>
+References: <20220615011622.136646-1-kechenl@nvidia.com>
+ <20220615011622.136646-8-kechenl@nvidia.com> <20220615031407.GC7808@gao-cwp>
+In-Reply-To: <20220615031407.GC7808@gao-cwp>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8567fef0-5e29-4c58-7dd0-08da4efbec37
+x-ms-traffictypediagnostic: BN8PR12MB3156:EE_
+x-microsoft-antispam-prvs: <BN8PR12MB31562A0C33A274B0961DEF92CAAD9@BN8PR12MB3156.namprd12.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: q4ZM5ocK0RsjXubeg2z7hLvZLJSbRQY34p9QGPUvgHLSomFFVnJxB7ZzGS50uzIKfzSaMBgI3NlZt4KnxsITW3VphVL7+1uQXbEYTk4jXWZppALIXxqwoR9ZK66c15K+J05/4qV+l26zBh+XxvoLcQnPPRxjM3/r+X02/CPz5n2U6G/5raxEZlaGZVPP7YALQhgKqUFboAJhVOW49s/kgY7l9uS9AOQf6GBDOsnBRlIL/mnOeUy85hJ5ncSqhcDcqi2tlk5IXQlwaokNIGATZ9GzJH8YFiGI/E55wJXvHtZ9qFSjhkLjGbZpT02hzqlrlelo5c/RDNinre6MJaatBOBfxP2AYZM73enQgy5CrfeIZEUiB3Q62UyqORoZQv7Xd92d/AD4G03oDg2vuxGA8gjfZa7TsQ4CM8GWtwfz7VH2g2PxcAO/MDKLKU8SBSPVicmBSajxlr8muRDOvyoTrKDWs+2FY1UlrHpi/dims8ydYQZXzsJV4l9MWw1G6yyS723fQ3YSK94Vzynx13pfZ8FUTLAz+fCgSbsLiskyy21DS2JF2RyxYuYYWRH5b2mfZTX0jFqIbE9AbofZllvLepAgSo27XELv/vc9oY5t4DzBa6ulqQd6ak5qRXn/z91sYmJY47J0a+09rIODniomL88NYHR4LIS7K8NcikFMc7miv55Fa7YRB9dUtcl3kw+6YMcy+geIAlE2SGYlZdObCA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3500.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(38100700002)(316002)(55016003)(122000001)(6916009)(54906003)(186003)(38070700005)(83380400001)(52536014)(26005)(5660300002)(8936002)(33656002)(4744005)(64756008)(66446008)(8676002)(76116006)(66476007)(4326008)(66946007)(66556008)(2906002)(508600001)(7696005)(6506007)(53546011)(71200400001)(9686003)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?fLTEybJjv6+dL2qnlVaechPxudw7pX+sVG9xgkKjSMM5UlFtwjLZJhqQ199Q?=
+ =?us-ascii?Q?PWiDklIeApNZ0UG4TUtR6I5iA1/PjR4VpkcgoP4/oabBYgJP2GWNQEFZEsON?=
+ =?us-ascii?Q?A7qZDOtuyGqWyNieymBPEzmwY7k8QqDe+YG7+vzWpy+VEjG9wC1KRzBiyDQn?=
+ =?us-ascii?Q?6YC4uFYTzrP9qpZMFokF12pPfHDqnlbliZ8CKlVLvrFHhS2Go4ICnbmxrjyQ?=
+ =?us-ascii?Q?kx5eF8MQbaZ2D8t4SiHoS8dj4ehQVlXJcxli0DTaY22RZFBBtDHIhvLsUAYD?=
+ =?us-ascii?Q?MJG2pvDR8Utbs3bKivwvygxCGbDKWPwiJH7FNvnT5V1AqG68EkUkKuhCykUp?=
+ =?us-ascii?Q?dbk+s2VeOQYfZVxGy9y/9zQ6vJCx50p08Dv5WsoBTMBmmGYqb1sfBDzHI2nV?=
+ =?us-ascii?Q?xyshLQF/FkO9NNZDegns4bOnEJwJ4HlTGYYOpE/NuuxJX1XWhJpoGkCupgZ/?=
+ =?us-ascii?Q?twcPAHWiUMBtVn0QSAL41PRfl0gfDwo1vIXP4ns1nGHHcEdlmKoQ5bVjGf21?=
+ =?us-ascii?Q?K+LGLz8S624DQlovtCvtlvHJ+N6J/IOc+LnMgauSSbLBCwPgRfXJ3EP1I/QJ?=
+ =?us-ascii?Q?ZEOAwLwAi6X78HSdEvzTuCK+dlST5BqsMM2vllay0Mkz/KYa3JdETcwWpJiQ?=
+ =?us-ascii?Q?APfT4RIUK6ITyMBbX9Cv7zNCzoIMcaMsqcDVgmXRqW+mUF+KTCBbw8LRMueT?=
+ =?us-ascii?Q?Yksc3BUhqYovn+gD/BAnaoUy/WkvxlxEFnb+Dk1686oW4LX7zLshkYf2CZdJ?=
+ =?us-ascii?Q?u6DJAB+10qCv/c/YfxwzU/u6OO5SG0TVG95aED1z1f+Tb9X2S4URZjcf/BtV?=
+ =?us-ascii?Q?X68wvL3qX96umMS8aDF8e9uUHiMw3V5ukGho2BHQi1ZUuLX9NaaG/mvgG0dq?=
+ =?us-ascii?Q?ohBO6izFPTtkNr4yGx62RDtCTfeISSyZTQtBk1ucaZfoEzIUoIWdSYU8yhQ4?=
+ =?us-ascii?Q?T1kgiXyZYq4HPz0i8ljzETxf8cOuplE0wteZYPNYjaAv0aRyXk6xMQZ+fgeu?=
+ =?us-ascii?Q?y0IPBhh1K2ySmmcR1sobjJdJWc+TnOwlJOBb6YUPN+wZWng/np3paMHx2Um0?=
+ =?us-ascii?Q?uoHBsYpGXHMokCj2kBJqBN6kum8JLntCC6UjL0RYV9Vq9qwo/5A6rHlGCDVe?=
+ =?us-ascii?Q?bmsrjgMFILADCFrWUL5Es7Uo2KaNFm6Me4IQNo2IL8OWZqi2asa08WaK4yzX?=
+ =?us-ascii?Q?D//G5UnJS/dhaB1VcGfae+u8bKVf0NA8Ey8+4Iyzl6si0wQsZW+4TQQdUXml?=
+ =?us-ascii?Q?LJ5XrzdnqRRahLNBsQO7bTAiuSCDvXIFB1fruCB2IFDdDtSJWZI/gDLFP8r9?=
+ =?us-ascii?Q?KhtihFlGV+kG1GZiMdFJ1Lco7vmKPyrEAi67I9lX4xqMYpnu/LvQYJ8yEyI6?=
+ =?us-ascii?Q?KoChmkY5woCibCTwzJwpaipRbAclX0+Qsap9JtsqkpltC1WQeRv6Ppbbuumb?=
+ =?us-ascii?Q?BWvhTo9W9PP4BvVLJHfj/wXSRV6fCPhM5vnO6YtEeBLqxHfeyrVca9BuZn12?=
+ =?us-ascii?Q?oiRLr/kfXsICRWnBlZqtVJr2UeGSKrqAi0HopD9HKfPQOl9jyu4W4bjdhQp5?=
+ =?us-ascii?Q?waKjpblY+lbLXcF4cf5I/ZAPduU+T61Lw0q2c0W6CoeXK2s17Mo5GoeiFx/K?=
+ =?us-ascii?Q?Hqfk7hZqDpYZpebn+1oMs49jCOccsDEVH7nPO16FHvTR7tINtuHZPdICfAOc?=
+ =?us-ascii?Q?qWNtvkRJLzXHuEEBCMdHNDWtMHCvKWeJeIgYXw4FLHfGhCptaPFc3lgWzFz4?=
+ =?us-ascii?Q?6sAmYiP1Yg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610110846.8307-6-LinoSanfilippo@gmx.de>
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3500.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8567fef0-5e29-4c58-7dd0-08da4efbec37
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2022 18:21:53.2851
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mAb8eqW7q4b99m51iSWdXUm5elOpVDTXJYJq2zcFoIxbaxlBkqSxWEENW90vAugNz1sY9jrycAPebt18LOr3vA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3156
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 01:08:41PM +0200, LinoSanfilippo@gmx.de wrote:
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> 
-> According to the TPM Interface Specification (TIS) support for "stsValid"
-> and "commandReady" interrupts is only optional.
-> This has to be taken into account when handling the interrupts in functions
-> like wait_for_tpm_stat(). So query the set of supported interrupts and
-> store it in a global variable so that it can be accessed later.
-> 
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> ---
->  drivers/char/tpm/tpm_tis_core.c | 73 +++++++++++++++++----------------
->  drivers/char/tpm/tpm_tis_core.h |  1 +
->  2 files changed, 38 insertions(+), 36 deletions(-)
-> 
-> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
-> index 718525fcadc0..2f03fefa1706 100644
-> --- a/drivers/char/tpm/tpm_tis_core.c
-> +++ b/drivers/char/tpm/tpm_tis_core.c
-> @@ -1007,8 +1007,39 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
->  	if (rc < 0)
->  		goto out_err;
->  
-> -	intmask |= TPM_INTF_CMD_READY_INT | TPM_INTF_LOCALITY_CHANGE_INT |
-> -		   TPM_INTF_DATA_AVAIL_INT | TPM_INTF_STS_VALID_INT;
-> +	/* Figure out the capabilities */
-> +	rc = tpm_tis_read32(priv, TPM_INTF_CAPS(priv->locality), &intfcaps);
-> +	if (rc < 0)
-> +		goto out_err;
-> +
-> +	dev_dbg(dev, "TPM interface capabilities (0x%x):\n",
-> +		intfcaps);
-> +	if (intfcaps & TPM_INTF_BURST_COUNT_STATIC)
-> +		dev_dbg(dev, "\tBurst Count Static\n");
-> +	if (intfcaps & TPM_INTF_CMD_READY_INT) {
-> +		intmask |= TPM_INTF_CMD_READY_INT;
-> +		dev_dbg(dev, "\tCommand Ready Int Support\n");
-> +	}
-> +	if (intfcaps & TPM_INTF_INT_EDGE_FALLING)
-> +		dev_dbg(dev, "\tInterrupt Edge Falling\n");
-> +	if (intfcaps & TPM_INTF_INT_EDGE_RISING)
-> +		dev_dbg(dev, "\tInterrupt Edge Rising\n");
-> +	if (intfcaps & TPM_INTF_INT_LEVEL_LOW)
-> +		dev_dbg(dev, "\tInterrupt Level Low\n");
-> +	if (intfcaps & TPM_INTF_INT_LEVEL_HIGH)
-> +		dev_dbg(dev, "\tInterrupt Level High\n");
-> +	if (intfcaps & TPM_INTF_LOCALITY_CHANGE_INT)
-> +		intmask |= TPM_INTF_LOCALITY_CHANGE_INT;
-> +		dev_dbg(dev, "\tLocality Change Int Support\n");
-> +	if (intfcaps & TPM_INTF_STS_VALID_INT) {
-> +		intmask |= TPM_INTF_STS_VALID_INT;
-> +		dev_dbg(dev, "\tSts Valid Int Support\n");
-> +	}
-> +	if (intfcaps & TPM_INTF_DATA_AVAIL_INT) {
-> +		intmask |= TPM_INTF_DATA_AVAIL_INT;
-> +		dev_dbg(dev, "\tData Avail Int Support\n");
-> +	}
-> +
->  	intmask &= ~TPM_GLOBAL_INT_ENABLE;
->  
->  	rc = request_locality(chip, 0);
-> @@ -1042,32 +1073,6 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
->  		goto out_err;
->  	}
->  
-> -	/* Figure out the capabilities */
-> -	rc = tpm_tis_read32(priv, TPM_INTF_CAPS(priv->locality), &intfcaps);
-> -	if (rc < 0)
-> -		goto out_err;
-> -
-> -	dev_dbg(dev, "TPM interface capabilities (0x%x):\n",
-> -		intfcaps);
-> -	if (intfcaps & TPM_INTF_BURST_COUNT_STATIC)
-> -		dev_dbg(dev, "\tBurst Count Static\n");
-> -	if (intfcaps & TPM_INTF_CMD_READY_INT)
-> -		dev_dbg(dev, "\tCommand Ready Int Support\n");
-> -	if (intfcaps & TPM_INTF_INT_EDGE_FALLING)
-> -		dev_dbg(dev, "\tInterrupt Edge Falling\n");
-> -	if (intfcaps & TPM_INTF_INT_EDGE_RISING)
-> -		dev_dbg(dev, "\tInterrupt Edge Rising\n");
-> -	if (intfcaps & TPM_INTF_INT_LEVEL_LOW)
-> -		dev_dbg(dev, "\tInterrupt Level Low\n");
-> -	if (intfcaps & TPM_INTF_INT_LEVEL_HIGH)
-> -		dev_dbg(dev, "\tInterrupt Level High\n");
-> -	if (intfcaps & TPM_INTF_LOCALITY_CHANGE_INT)
-> -		dev_dbg(dev, "\tLocality Change Int Support\n");
-> -	if (intfcaps & TPM_INTF_STS_VALID_INT)
-> -		dev_dbg(dev, "\tSts Valid Int Support\n");
-> -	if (intfcaps & TPM_INTF_DATA_AVAIL_INT)
-> -		dev_dbg(dev, "\tData Avail Int Support\n");
-> -
->  	/* INTERRUPT Setup */
->  	init_waitqueue_head(&priv->read_queue);
->  	init_waitqueue_head(&priv->int_queue);
-> @@ -1098,7 +1103,9 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
->  		else
->  			tpm_tis_probe_irq(chip, intmask);
->  
-> -		if (!(chip->flags & TPM_CHIP_FLAG_IRQ)) {
-> +		if (chip->flags & TPM_CHIP_FLAG_IRQ) {
-> +			priv->irqs_in_use = intmask;
-> +		} else {
->  			dev_err(&chip->dev, FW_BUG
->  					"TPM interrupt not working, polling instead\n");
->  
-> @@ -1145,13 +1152,7 @@ static void tpm_tis_reenable_interrupts(struct tpm_chip *chip)
->  	if (rc < 0)
->  		goto out;
->  
-> -	rc = tpm_tis_read32(priv, TPM_INT_ENABLE(priv->locality), &intmask);
-> -	if (rc < 0)
-> -		goto out;
-> -
-> -	intmask |= TPM_INTF_CMD_READY_INT
-> -	    | TPM_INTF_LOCALITY_CHANGE_INT | TPM_INTF_DATA_AVAIL_INT
-> -	    | TPM_INTF_STS_VALID_INT | TPM_GLOBAL_INT_ENABLE;
-> +	intmask = priv->irqs_in_use | TPM_GLOBAL_INT_ENABLE;
->  
->  	tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), intmask);
->  
-> diff --git a/drivers/char/tpm/tpm_tis_core.h b/drivers/char/tpm/tpm_tis_core.h
-> index 0f29d0b68c3e..8e02faa4079d 100644
-> --- a/drivers/char/tpm/tpm_tis_core.h
-> +++ b/drivers/char/tpm/tpm_tis_core.h
-> @@ -96,6 +96,7 @@ struct tpm_tis_data {
->  	u16 manufacturer_id;
->  	int locality;
->  	int irq;
-> +	unsigned int irqs_in_use;
->  	unsigned long irqtest_flags;
->  	unsigned long flags;
->  	void __iomem *ilb_base_addr;
-> -- 
-> 2.36.1
-> 
+Hi Chao,
 
-int_mask would be imho a better name.
+> -----Original Message-----
+> From: Chao Gao <chao.gao@intel.com>
+> Sent: Tuesday, June 14, 2022 8:14 PM
+> To: Kechen Lu <kechenl@nvidia.com>
+> Cc: kvm@vger.kernel.org; pbonzini@redhat.com; seanjc@google.com;
+> vkuznets@redhat.com; Somdutta Roy <somduttar@nvidia.com>; linux-
+> kernel@vger.kernel.org
+> Subject: Re: [RFC PATCH v3 7/7] KVM: selftests: Add tests for VM and vCPU
+> cap KVM_CAP_X86_DISABLE_EXITS
+>=20
+> External email: Use caution opening links or attachments
+>=20
+>=20
+> >+/* Set debug control for trapped instruction exiting to userspace */
+> >+static void vcpu_set_debug_exit_userspace(struct kvm_vm *vm, int
+> vcpuid,
+> >+              struct kvm_guest_debug *debug) {
+>=20
+> The debug argument looks pointless. Probably you can remove it.
 
-Can you squash this and the following patch? It's good to slice in
-small patches but here I think it would make sense to tie the field
-to use case, in order for it to make sense.
+Makes sense. Thanks for pointing out. Will remove it.
 
-BR, Jarkko
+BR,
+Kechen
+
+>=20
+> >+      memset(debug, 0, sizeof(*debug));
+> >+      debug->control =3D KVM_GUESTDBG_ENABLE |
+> KVM_GUESTDBG_EXIT_USERSPACE;
+> >+      vcpu_set_guest_debug(vm, VCPU_ID_1, debug); }
