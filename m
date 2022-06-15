@@ -2,173 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C34BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E75F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355968AbiFOODo (ORCPT
+        id S1356018AbiFOOEJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
+        Wed, 15 Jun 2022 10:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355665AbiFOODR (ORCPT
+        with ESMTP id S1356195AbiFOOEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:03:17 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDD110F1;
-        Wed, 15 Jun 2022 07:03:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655301782; x=1686837782;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wB8IdGjwWR4VpCGztcdlKcCnZSDfsh9h9lU6StlhX6Q=;
-  b=UTr6lSsJRpus2LDPO6wGYyoQPDnj63DfpYTp06CToFZe9dB19GwXBBD7
-   qL5qhZqd32deyUf0KlgaPLGA/M6OPUyMwCM9jW+9eQI1SPd9+3ybIFfjp
-   dMSJYN2b66ddHRg7JVWT0qb7zbmhbsbZnmiKYAsmR/cTu3bnS0DFFkXiN
-   yi2Nf0rwfpsKZN+a2gIGlut03Ww2c6KQ+DtMgjOHFynz3JgoRoZWaWc0Y
-   uPFxzh8QdzBCs6OJtgT4/ia1NExN8RotTa+YaqPPMoCT2cg+jIfoLYNhN
-   ce5p+6KNCOPdN+Qjf9K9mXWu4xkXzhc+d3uMJyvcih3NVoTqTfR0lTuDC
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="258822117"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="258822117"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 07:02:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="572033359"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga002.jf.intel.com with ESMTP; 15 Jun 2022 07:02:16 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25FE2EOf020988;
-        Wed, 15 Jun 2022 15:02:14 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 6/6] bitops: let optimize out non-atomic bitops on compile-time constants
-Date:   Wed, 15 Jun 2022 16:00:30 +0200
-Message-Id: <20220615140030.1265068-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <YqlRfoB5+VBIw8gJ@yury-laptop>
-References: <20220610113427.908751-1-alexandr.lobakin@intel.com> <20220610113427.908751-7-alexandr.lobakin@intel.com> <YqlRfoB5+VBIw8gJ@yury-laptop>
+        Wed, 15 Jun 2022 10:04:00 -0400
+Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61FA814020
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:03:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=xGjqN
+        1CzFGgxxXJufcBxFeGfgDwPCWB316shxSNIbJs=; b=JVHxeNujKk5t7no8ctG1Q
+        xSBB2a0rzeK6LpMG1MP7z2IcKj8wzgC8R/tMRRAbUPk14+EZTngtMMnb7ES9AfpX
+        ACciMZcwt021YJhkv6pYS/wgRzd3ZxE8wER2KbbNjjPCh36ARQ1eKeoMLewvDNte
+        tIV5FyITVMya3u22tGtURU=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp10 (Coremail) with SMTP id NuRpCgDHFmt45qliXpPJEg--.48216S2;
+        Wed, 15 Jun 2022 22:02:33 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        windhl@126.com
+Subject: [PATCH] drivers: soc: bcm: brcmstb: Add missing of_node_put() in biuctrl.c
+Date:   Wed, 15 Jun 2022 22:02:31 +0800
+Message-Id: <20220615140231.3968187-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NuRpCgDHFmt45qliXpPJEg--.48216S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZr1rCry8Gw15XFykWr18uFg_yoWkZwcEgF
+        93Xr9rXr4UZw48XFyDCw4fZas7uFs8XFs7ZFyIqa43CF92qw1DJrWkZr9xCw4kWrWvkFy7
+        Cw4qgrW0vr1UGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_znQ7UUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizhkhF18RPTF-wQAAsd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yury Norov <yury.norov@gmail.com>
-Date: Tue, 14 Jun 2022 20:26:54 -0700
+In brcmstb_biuctrl_init(), of_find_compatible_node() will return a
+node pointer with refcount incremented. We should use of_node_put()
+in each fail path or when it is not used anymore.
 
-> Hi Alexander,
-> 
-> On Fri, Jun 10, 2022 at 01:34:27PM +0200, Alexander Lobakin wrote:
-> > Currently, many architecture-specific non-atomic bitop
-> > implementations use inline asm or other hacks which are faster or
-> > more robust when working with "real" variables (i.e. fields from
-> > the structures etc.), but the compilers have no clue how to optimize
-> > them out when called on compile-time constants. That said, the
-> > following code:
-> > 
-> > 	DECLARE_BITMAP(foo, BITS_PER_LONG) = { }; // -> unsigned long foo[1];
-> > 	unsigned long bar = BIT(BAR_BIT);
-> > 	unsigned long baz = 0;
-> > 
-> > 	__set_bit(FOO_BIT, foo);
-> > 	baz |= BIT(BAZ_BIT);
-> > 
-> > 	BUILD_BUG_ON(!__builtin_constant_p(test_bit(FOO_BIT, foo));
-> > 	BUILD_BUG_ON(!__builtin_constant_p(bar & BAR_BIT));
-> > 	BUILD_BUG_ON(!__builtin_constant_p(baz & BAZ_BIT));
-> 
-> Can you put this snippet into lib/test_bitops.c?
+Signed-off-by: Liang He <windhl@126.com>
+---
+ drivers/soc/bcm/brcmstb/biuctrl.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-Great idea, sure!
+diff --git a/drivers/soc/bcm/brcmstb/biuctrl.c b/drivers/soc/bcm/brcmstb/biuctrl.c
+index 2c975d79fe8e..1467bbd59690 100644
+--- a/drivers/soc/bcm/brcmstb/biuctrl.c
++++ b/drivers/soc/bcm/brcmstb/biuctrl.c
+@@ -340,12 +340,12 @@ static int __init brcmstb_biuctrl_init(void)
+ 
+ 	ret = setup_hifcpubiuctrl_regs(np);
+ 	if (ret)
+-		return ret;
++		goto out_put;
+ 
+ 	ret = mcp_write_pairing_set();
+ 	if (ret) {
+ 		pr_err("MCP: Unable to disable write pairing!\n");
+-		return ret;
++		goto out_put;
+ 	}
+ 
+ 	a72_b53_rac_enable_all(np);
+@@ -353,6 +353,9 @@ static int __init brcmstb_biuctrl_init(void)
+ #ifdef CONFIG_PM_SLEEP
+ 	register_syscore_ops(&brcmstb_cpu_credit_syscore_ops);
+ #endif
+-	return 0;
++	ret = 0;
++out_put:
++	of_node_put(np);
++	return ret;
+ }
+ early_initcall(brcmstb_biuctrl_init);
+-- 
+2.25.1
 
-> 
-> Thanks,
-> Yury
-> 
-> > triggers the first assertion on x86_64, which means that the
-> > compiler is unable to evaluate it to a compile-time initializer
-> > when the architecture-specific bitop is used even if it's obvious.
-> > In order to let the compiler optimize out such cases, expand the
-> > bitop() macro to use the "constant" C non-atomic bitop
-> > implementations when all of the arguments passed are compile-time
-> > constants, which means that the result will be a compile-time
-> > constant as well, so that it produces more efficient and simple
-> > code in 100% cases, comparing to the architecture-specific
-> > counterparts.
-> > 
-> > The savings are architecture, compiler and compiler flags dependent,
-> > for example, on x86_64 -O2:
-> > 
-> > GCC 12: add/remove: 78/29 grow/shrink: 332/525 up/down: 31325/-61560 (-30235)
-> > LLVM 13: add/remove: 79/76 grow/shrink: 184/537 up/down: 55076/-141892 (-86816)
-> > LLVM 14: add/remove: 10/3 grow/shrink: 93/138 up/down: 3705/-6992 (-3287)
-> > 
-> > and ARM64 (courtesy of Mark):
-> > 
-> > GCC 11: add/remove: 92/29 grow/shrink: 933/2766 up/down: 39340/-82580 (-43240)
-> > LLVM 14: add/remove: 21/11 grow/shrink: 620/651 up/down: 12060/-15824 (-3764)
-> > 
-> > Cc: Mark Rutland <mark.rutland@arm.com>
-> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > ---
-> >  include/linux/bitops.h | 18 +++++++++++++++++-
-> >  1 file changed, 17 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
-> > index 753f98e0dcf5..364bdc3606b4 100644
-> > --- a/include/linux/bitops.h
-> > +++ b/include/linux/bitops.h
-> > @@ -33,8 +33,24 @@ extern unsigned long __sw_hweight64(__u64 w);
-> >  
-> >  #include <asm-generic/bitops/generic-non-atomic.h>
-> >  
-> > +/*
-> > + * Many architecture-specific non-atomic bitops contain inline asm code and due
-> > + * to that the compiler can't optimize them to compile-time expressions or
-> > + * constants. In contrary, gen_*() helpers are defined in pure C and compilers
-> > + * optimize them just well.
-> > + * Therefore, to make `unsigned long foo = 0; __set_bit(BAR, &foo)` effectively
-> > + * equal to `unsigned long foo = BIT(BAR)`, pick the generic C alternative when
-> > + * the arguments can be resolved at compile time. That expression itself is a
-> > + * constant and doesn't bring any functional changes to the rest of cases.
-> > + * The casts to `uintptr_t` are needed to mitigate `-Waddress` warnings when
-> > + * passing a bitmap from .bss or .data (-> `!!addr` is always true).
-> > + */
-> >  #define bitop(op, nr, addr)						\
-> > -	op(nr, addr)
-> > +	((__builtin_constant_p(nr) &&					\
-> > +	  __builtin_constant_p((uintptr_t)(addr) != (uintptr_t)NULL) &&	\
-> > +	  (uintptr_t)(addr) != (uintptr_t)NULL &&			\
-> > +	  __builtin_constant_p(*(const unsigned long *)(addr))) ?	\
-> > +	 const##op(nr, addr) : op(nr, addr))
-> >  
-> >  #define __set_bit(nr, addr)		bitop(___set_bit, nr, addr)
-> >  #define __clear_bit(nr, addr)		bitop(___clear_bit, nr, addr)
-> > -- 
-> 2.36.1
-
-Thanks,
-Olek
