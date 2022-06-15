@@ -2,222 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22FBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:52:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB63CCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346830AbiFOIwR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
+        id S238082AbiFOIx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 04:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232170AbiFOIwQ (ORCPT
+        with ESMTP id S230240AbiFOIx4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 04:52:16 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9C349CA5;
-        Wed, 15 Jun 2022 01:52:15 -0700 (PDT)
-Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LNJt54MHKz67sVG;
-        Wed, 15 Jun 2022 16:50:37 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Wed, 15 Jun 2022 10:52:13 +0200
-Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 15 Jun
- 2022 09:52:12 +0100
-Date:   Wed, 15 Jun 2022 09:52:11 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Kai Ye via Linux-accelerators 
-        <linux-accelerators@lists.ozlabs.org>
-CC:     Kai Ye <yekai13@huawei.com>, <gregkh@linuxfoundation.org>,
-        <herbert@gondor.apana.org.au>, <linuxarm@huawei.com>,
-        <linux-kernel@vger.kernel.org>, <wangzhou1@hisilicon.com>,
-        <linux-crypto@vger.kernel.org>, <zhangfei.gao@linaro.org>
-Subject: Re: [PATCH v2 1/3] uacce: supports device isolation feature
-Message-ID: <20220615095211.00000889@Huawei.com>
-In-Reply-To: <20220614122943.1406-2-yekai13@huawei.com>
-References: <20220614122943.1406-1-yekai13@huawei.com>
-        <20220614122943.1406-2-yekai13@huawei.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Wed, 15 Jun 2022 04:53:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3440F12085
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 01:53:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C36B061976
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:53:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49E71C34115;
+        Wed, 15 Jun 2022 08:53:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655283235;
+        bh=2nPPSVGZHcu+cNkg9BTNypk51Gwnzl3wSf0DXtYRlRU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sng/P/z+Z9T8pkPrzl0gwASUr17lQI8Nzd0g5ur7HPXXOa6DcJbGNlLOk1NWfl7hR
+         hzXlaJ85TUMmjDQBaBy7rTYAXDU5CgDEQ5sSu3TzbZk4BOZQB/dJR3B7Dv9hrrfN/5
+         5hCpOeO253VgT+sJQQMgsOJYV2Iro62qRdGXuC9GvQQ+peK2k1aTOy2WltGnw2ifWi
+         Od8m/REztUqOu2pYb65RqN8IHIjXYscOb72NnGgL+Xec8MqrvzxBJLD7u0zcihsY0D
+         uIkNDAO8j6LUjqgyx4gL0O06k8pmJ1YcSBGy1qF85JETRKBm1x0gOL1xVYzMLhkXwI
+         nawQ/b3qFby9w==
+Date:   Wed, 15 Jun 2022 10:53:50 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Florian Weimer <fweimer@redhat.com>
+Cc:     Kees Cook <keescook@chromium.org>, Andrei Vagin <avagin@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Dmitry Safonov <0x7f454c46@gmail.com>, linux-mm@kvack.org,
+        Eric Biederman <ebiederm@xmission.com>
+Subject: Re: [PATCH 1/2] fs/exec: allow to unshare a time namespace on
+ vfork+exec
+Message-ID: <20220615085350.theicffhehgbmfep@wittgenstein>
+References: <20220613060723.197407-1-avagin@gmail.com>
+ <202206141412.2B0732FF6C@keescook>
+ <874k0mqs5i.fsf@oldenburg.str.redhat.com>
+ <20220615080000.qtxeosohhyfabzmg@wittgenstein>
+ <87zgiepcmc.fsf@oldenburg.str.redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhreml739-chm.china.huawei.com (10.201.108.189) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87zgiepcmc.fsf@oldenburg.str.redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 14 Jun 2022 20:29:38 +0800
-Kai Ye via Linux-accelerators <linux-accelerators@lists.ozlabs.org> wrote:
-
-> UACCE add the hardware error isolation API. Users can configure
-> the error frequency threshold by this vfs node. This API interface
-> certainly supports the configuration of user protocol strategy. Then
-> parse it inside the device driver. UACCE only reports the device
-> isolate state. When the error frequency is exceeded, the device
-> will be isolated. The isolation strategy should be defined in each
-> driver module.
+On Wed, Jun 15, 2022 at 10:14:19AM +0200, Florian Weimer wrote:
+> * Christian Brauner:
 > 
-> Signed-off-by: Kai Ye <yekai13@huawei.com>
-> Reviewed-by: Zhou Wang <wangzhou1@hisilicon.com>
-> ---
->  drivers/misc/uacce/uacce.c | 37 +++++++++++++++++++++++++++++++++++++
->  include/linux/uacce.h      | 16 +++++++++++++---
->  2 files changed, 50 insertions(+), 3 deletions(-)
+> > For pid namespaces one problem would be that it could end up confusing a
+> > process about its own pid. This was a more serious problem when the pid
+> > cache was still active in glibc; but fwiw systemd still has a pid cache
+> > afair.
 > 
-> diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-> index b6219c6bfb48..525623215132 100644
-> --- a/drivers/misc/uacce/uacce.c
-> +++ b/drivers/misc/uacce/uacce.c
-> @@ -346,12 +346,47 @@ static ssize_t region_dus_size_show(struct device *dev,
->  		       uacce->qf_pg_num[UACCE_QFRT_DUS] << PAGE_SHIFT);
->  }
->  
-> +static ssize_t isolate_show(struct device *dev,
-> +			    struct device_attribute *attr, char *buf)
-> +{
-> +	struct uacce_device *uacce = to_uacce_device(dev);
-> +
-> +	return sysfs_emit(buf, "%d\n", uacce->ops->get_isolate_state(uacce));
-> +}
-> +
-> +static ssize_t isolate_strategy_show(struct device *dev,
-> +				     struct device_attribute *attr, char *buf)
-> +{
-> +	struct uacce_device *uacce = to_uacce_device(dev);
-> +
-> +	return sysfs_emit(buf, "%s\n", uacce->isolate_strategy);
-> +}
-> +
-> +static ssize_t isolate_strategy_store(struct device *dev,
-> +				      struct device_attribute *attr,
-> +				      const char *buf, size_t count)
-> +{
-> +	struct uacce_device *uacce = to_uacce_device(dev);
-> +	int ret;
-> +
-> +	if (!buf || sizeof(buf) > UACCE_MAX_ISOLATE_STRATEGY_LEN)
-> +		return -EINVAL;
-> +
-> +	memcpy(uacce->isolate_strategy, buf, strlen(buf));
-What if it's not a valid strategy for the driver?  We shouldn't
-store this until we know it's valid.
+> Right.  glibc still has a TID cache, mainly for use with recursive
+> mutexes (where we need a 32-bit thread identifier and can't perform a
+> system call on every locking operation for performance reasons).
+> Assuming that a non-delayed CLONE_NEWPID would also change the TID
+> underneath us, we'd have subtly broken recursive mutexes.
 
-> +
-> +	ret = uacce->ops->isolate_strategy_write(uacce, buf);
-Having copied the buf into uacce, why pass it as well?
+Fwiw, you can't call CLONE_NEWPID with CLONE_THREAD. This guarantees
+that threads can send signals to each other and all threads within the
+same threadgroup can be reached via proc. It'd be awkward if you'd have
+a thread whose thread-group leader lives in an ancestor pidns.
 
-My preference would be to pass buf and length and not do
-the memcpy in here.  Leave that choice to the driver.
-If this were a single value, it would be better stored
-as an integer than as a string.   Obviously that means
-you need an isolate_strategy_read() as well (that also
-solves the comment above about not storing what was written
-until we know it was valid.
+Even if you'd make whole threadgroup change pid namespaces immediately
+it would mean allocating new TGID and TIDs in the new pid namespaces -
+unless they are accidently not already allocated.
 
-Thanks,
+> 
+> vfork gets away with not updating the TID cache (which is shared with
+> the parent process) because the parent process is suspended while the
+> new subprocess is still running and has not execve'ed yet.
+> 
+> Now one could argue that calling unshare automatically means that you
+> must not call any glibc functions afterwards (similar to thread-creating
+> clone), or at least that you cannot call any functions which are not
+> async-signal-safe, but that does not match existing application
+> practice.  And I think we actually prefer that file servers call chroot
 
-Jonathan
-
-
-
-> +
-> +	return ret ? ret : count;
-> +}
-> +
->  static DEVICE_ATTR_RO(api);
->  static DEVICE_ATTR_RO(flags);
->  static DEVICE_ATTR_RO(available_instances);
->  static DEVICE_ATTR_RO(algorithms);
->  static DEVICE_ATTR_RO(region_mmio_size);
->  static DEVICE_ATTR_RO(region_dus_size);
-> +static DEVICE_ATTR_RO(isolate);
-> +static DEVICE_ATTR_RW(isolate_strategy);
->  
->  static struct attribute *uacce_dev_attrs[] = {
->  	&dev_attr_api.attr,
-> @@ -360,6 +395,8 @@ static struct attribute *uacce_dev_attrs[] = {
->  	&dev_attr_algorithms.attr,
->  	&dev_attr_region_mmio_size.attr,
->  	&dev_attr_region_dus_size.attr,
-> +	&dev_attr_isolate.attr,
-> +	&dev_attr_isolate_strategy.attr,
->  	NULL,
->  };
->  
-> diff --git a/include/linux/uacce.h b/include/linux/uacce.h
-> index 48e319f40275..0f7668bfa645 100644
-> --- a/include/linux/uacce.h
-> +++ b/include/linux/uacce.h
-> @@ -8,6 +8,7 @@
->  #define UACCE_NAME		"uacce"
->  #define UACCE_MAX_REGION	2
->  #define UACCE_MAX_NAME_SIZE	64
-> +#define UACCE_MAX_ISOLATE_STRATEGY_LEN	256
->  
->  struct uacce_queue;
->  struct uacce_device;
-> @@ -30,6 +31,8 @@ struct uacce_qfile_region {
->   * @is_q_updated: check whether the task is finished
->   * @mmap: mmap addresses of queue to user space
->   * @ioctl: ioctl for user space users of the queue
-> + * @get_isolate_state: get the device state after set the isolate strategy
-> + * @isolate_strategy_store: stored the isolate strategy to the device
->   */
->  struct uacce_ops {
->  	int (*get_available_instances)(struct uacce_device *uacce);
-> @@ -43,6 +46,8 @@ struct uacce_ops {
->  		    struct uacce_qfile_region *qfr);
->  	long (*ioctl)(struct uacce_queue *q, unsigned int cmd,
->  		      unsigned long arg);
-> +	enum uacce_dev_state (*get_isolate_state)(struct uacce_device *uacce);
-> +	int (*isolate_strategy_write)(struct uacce_device *uacce, const char *buf);
->  };
->  
->  /**
-> @@ -57,6 +62,12 @@ struct uacce_interface {
->  	const struct uacce_ops *ops;
->  };
->  
-> +enum uacce_dev_state {
-> +	UACCE_DEV_ERR = -1,
-> +	UACCE_DEV_NORMAL,
-> +	UACCE_DEV_ISOLATE,
-> +};
-> +
->  enum uacce_q_state {
->  	UACCE_Q_ZOMBIE = 0,
->  	UACCE_Q_INIT,
-> @@ -117,6 +128,7 @@ struct uacce_device {
->  	struct list_head queues;
->  	struct mutex queues_lock;
->  	struct inode *inode;
-> +	char isolate_strategy[UACCE_MAX_ISOLATE_STRATEGY_LEN];
->  };
->  
->  #if IS_ENABLED(CONFIG_UACCE)
-> @@ -125,7 +137,7 @@ struct uacce_device *uacce_alloc(struct device *parent,
->  				 struct uacce_interface *interface);
->  int uacce_register(struct uacce_device *uacce);
->  void uacce_remove(struct uacce_device *uacce);
-> -
-> +struct uacce_device *dev_to_uacce(struct device *dev);
->  #else /* CONFIG_UACCE */
->  
->  static inline
-> @@ -140,8 +152,6 @@ static inline int uacce_register(struct uacce_device *uacce)
->  	return -EINVAL;
->  }
->  
-> -static inline void uacce_remove(struct uacce_device *uacce) {}
-> -
->  #endif /* CONFIG_UACCE */
->  
->  #endif /* _LINUX_UACCE_H */
-
+Yeah, that'd be a rather subtle and risky change for pid namespaces.
