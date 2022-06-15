@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A63CCA473
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D198CCA47F
 	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:14:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349650AbiFOQNe (ORCPT
+        id S1354914AbiFOQNr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39790 "EHLO
+        Wed, 15 Jun 2022 12:13:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244528AbiFOQMx (ORCPT
+        with ESMTP id S244835AbiFOQMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 15 Jun 2022 12:12:53 -0400
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BCE322BE7;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA53723159;
         Wed, 15 Jun 2022 09:12:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Cc:To:From:content-disposition;
-        bh=NVweqEcjCecZ0bg5dlWjMJWWbRBpQR845+naXv01S1E=; b=mGlJB+Mc6r6QavYLUJHJ2f6Gcf
-        4KC3tU5HmwUMDyO6T64JnNBflaA1Oaq/889fD31ncukdVXKstY3aDuLUssracQXrTgPh503f7c3Gm
-        9oj+XtAemKDfgOgUrEkOhMLRx7YNuoTdepVnGBAGOZtn7In3FvSV64tzpxAi3mfRaDQNZByACspsC
-        XfjfXCXxwzOBwEvK7qOAPCqBKHK80aqj8hMmZYlu9nFhBs4fE1kVcpjRmX6n3I+3TQ0fbrvvOg9Lw
-        zNRi3B96PZzbaOrO/k/k6P23XfdlbDDDJPP/i6fydDuKVlrF5ptVyivsSZrkhvrBfWhPjYBHZ1EJC
-        Ese8FOBw==;
+        bh=ZrjQH0Cup1rM4nd2GRv9TzKM0VooeR2ywa/jH43VO8E=; b=K8b3a3dLtKbLAQ6EXSvANzTKW7
+        3dU+pmoDHBQAn7sU5St+kCSqesBVWJ4lYut+OeGrHoX68Ll1zV5tc6HClutZ7TB3pNyFXAwO4hLg+
+        hQDPpja0a0r/3AvjLtBw98XXsTreXz5lLyXuffaL9rfY/dEiYcoNOnDfcBNwltLQbbOKxJdNxc0Rz
+        1uENncVKvga+5BagrJPsBwuwx9DzG9LxScBVTTgwXNzqKH90kRniGUiJ0rt9+CJ5ixFsT07fLMxpP
+        M/Y0MUscOGcW2knHL7l3cDhTqon3LpK4J7xo7UtDulpaN2V3IiRSkGtg6pJR2wUzormLlbKk2xqxv
+        jFTOI/Ug==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
         by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1o1VdQ-0084iR-Hv; Wed, 15 Jun 2022 10:12:49 -0600
+        id 1o1VdQ-0084iP-Qs; Wed, 15 Jun 2022 10:12:49 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1o1VdI-0004ag-Qo; Wed, 15 Jun 2022 10:12:40 -0600
+        id 1o1VdI-0004aY-Gc; Wed, 15 Jun 2022 10:12:40 -0600
 From:   Logan Gunthorpe <logang@deltatee.com>
 To:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
         linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
@@ -56,134 +56,166 @@ Cc:     Stephen Bates <sbates@raithlin.com>,
         Martin Oliveira <martin.oliveira@eideticom.com>,
         Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
         Ralph Campbell <rcampbell@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>
-Date:   Wed, 15 Jun 2022 10:12:27 -0600
-Message-Id: <20220615161233.17527-16-logang@deltatee.com>
+        Logan Gunthorpe <logang@deltatee.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>
+Date:   Wed, 15 Jun 2022 10:12:25 -0600
+Message-Id: <20220615161233.17527-14-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220615161233.17527-1-logang@deltatee.com>
 References: <20220615161233.17527-1-logang@deltatee.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com, logang@deltatee.com
+X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com, bhelgaas@google.com, jhubbard@nvidia.com, rcampbell@nvidia.com, jgg@nvidia.com, mgurtovoy@nvidia.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v7 15/21] iov_iter: introduce iov_iter_get_pages_[alloc_]flags()
+Subject: [PATCH v7 13/21] PCI/P2PDMA: Remove pci_p2pdma_[un]map_sg()
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add iov_iter_get_pages_flags() and iov_iter_get_pages_alloc_flags()
-which take a flags argument that is passed to get_user_pages_fast().
-
-This is so that FOLL_PCI_P2PDMA can be passed when appropriate.
+This interface is superseded by support in dma_map_sg() which now supports
+heterogeneous scatterlists. There are no longer any users, so remove it.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 ---
- include/linux/uio.h |  6 ++++++
- lib/iov_iter.c      | 25 +++++++++++++++++++------
- 2 files changed, 25 insertions(+), 6 deletions(-)
+ drivers/pci/p2pdma.c       | 66 --------------------------------------
+ include/linux/pci-p2pdma.h | 27 ----------------
+ 2 files changed, 93 deletions(-)
 
-diff --git a/include/linux/uio.h b/include/linux/uio.h
-index 739285fe5a2f..ddf9e4cf4a59 100644
---- a/include/linux/uio.h
-+++ b/include/linux/uio.h
-@@ -232,8 +232,14 @@ void iov_iter_pipe(struct iov_iter *i, unsigned int direction, struct pipe_inode
- void iov_iter_discard(struct iov_iter *i, unsigned int direction, size_t count);
- void iov_iter_xarray(struct iov_iter *i, unsigned int direction, struct xarray *xarray,
- 		     loff_t start, size_t count);
-+ssize_t iov_iter_get_pages_flags(struct iov_iter *i, struct page **pages,
-+		size_t maxsize, unsigned maxpages, size_t *start,
-+		unsigned int gup_flags);
- ssize_t iov_iter_get_pages(struct iov_iter *i, struct page **pages,
- 			size_t maxsize, unsigned maxpages, size_t *start);
-+ssize_t iov_iter_get_pages_alloc_flags(struct iov_iter *i,
-+		struct page ***pages, size_t maxsize, size_t *start,
-+		unsigned int gup_flags);
- ssize_t iov_iter_get_pages_alloc(struct iov_iter *i, struct page ***pages,
- 			size_t maxsize, size_t *start);
- int iov_iter_npages(const struct iov_iter *i, int maxpages);
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index 6dd5330f7a99..9bf6e3af5120 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -1515,9 +1515,9 @@ static struct page *first_bvec_segment(const struct iov_iter *i,
- 	return page;
+diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+index 2fc0f4750a2e..d4e635012ffe 100644
+--- a/drivers/pci/p2pdma.c
++++ b/drivers/pci/p2pdma.c
+@@ -885,72 +885,6 @@ enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
+ 	return type;
  }
  
--ssize_t iov_iter_get_pages(struct iov_iter *i,
-+ssize_t iov_iter_get_pages_flags(struct iov_iter *i,
- 		   struct page **pages, size_t maxsize, unsigned maxpages,
--		   size_t *start)
-+		   size_t *start, unsigned int gup_flags)
+-static int __pci_p2pdma_map_sg(struct pci_p2pdma_pagemap *p2p_pgmap,
+-		struct device *dev, struct scatterlist *sg, int nents)
+-{
+-	struct scatterlist *s;
+-	int i;
+-
+-	for_each_sg(sg, s, nents, i) {
+-		s->dma_address = sg_phys(s) + p2p_pgmap->bus_offset;
+-		sg_dma_len(s) = s->length;
+-	}
+-
+-	return nents;
+-}
+-
+-/**
+- * pci_p2pdma_map_sg_attrs - map a PCI peer-to-peer scatterlist for DMA
+- * @dev: device doing the DMA request
+- * @sg: scatter list to map
+- * @nents: elements in the scatterlist
+- * @dir: DMA direction
+- * @attrs: DMA attributes passed to dma_map_sg() (if called)
+- *
+- * Scatterlists mapped with this function should be unmapped using
+- * pci_p2pdma_unmap_sg_attrs().
+- *
+- * Returns the number of SG entries mapped or 0 on error.
+- */
+-int pci_p2pdma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+-		int nents, enum dma_data_direction dir, unsigned long attrs)
+-{
+-	struct pci_p2pdma_pagemap *p2p_pgmap =
+-		to_p2p_pgmap(sg_page(sg)->pgmap);
+-
+-	switch (pci_p2pdma_map_type(sg_page(sg)->pgmap, dev)) {
+-	case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+-		return dma_map_sg_attrs(dev, sg, nents, dir, attrs);
+-	case PCI_P2PDMA_MAP_BUS_ADDR:
+-		return __pci_p2pdma_map_sg(p2p_pgmap, dev, sg, nents);
+-	default:
+-		/* Mapping is not Supported */
+-		return 0;
+-	}
+-}
+-EXPORT_SYMBOL_GPL(pci_p2pdma_map_sg_attrs);
+-
+-/**
+- * pci_p2pdma_unmap_sg_attrs - unmap a PCI peer-to-peer scatterlist that was
+- *	mapped with pci_p2pdma_map_sg()
+- * @dev: device doing the DMA request
+- * @sg: scatter list to map
+- * @nents: number of elements returned by pci_p2pdma_map_sg()
+- * @dir: DMA direction
+- * @attrs: DMA attributes passed to dma_unmap_sg() (if called)
+- */
+-void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
+-		int nents, enum dma_data_direction dir, unsigned long attrs)
+-{
+-	enum pci_p2pdma_map_type map_type;
+-
+-	map_type = pci_p2pdma_map_type(sg_page(sg)->pgmap, dev);
+-
+-	if (map_type == PCI_P2PDMA_MAP_THRU_HOST_BRIDGE)
+-		dma_unmap_sg_attrs(dev, sg, nents, dir, attrs);
+-}
+-EXPORT_SYMBOL_GPL(pci_p2pdma_unmap_sg_attrs);
+-
+ /**
+  * pci_p2pdma_map_segment - map an sg segment determining the mapping type
+  * @state: State structure that should be declared outside of the for_each_sg()
+diff --git a/include/linux/pci-p2pdma.h b/include/linux/pci-p2pdma.h
+index 8318a97c9c61..2c07aa6b7665 100644
+--- a/include/linux/pci-p2pdma.h
++++ b/include/linux/pci-p2pdma.h
+@@ -30,10 +30,6 @@ struct scatterlist *pci_p2pmem_alloc_sgl(struct pci_dev *pdev,
+ 					 unsigned int *nents, u32 length);
+ void pci_p2pmem_free_sgl(struct pci_dev *pdev, struct scatterlist *sgl);
+ void pci_p2pmem_publish(struct pci_dev *pdev, bool publish);
+-int pci_p2pdma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+-		int nents, enum dma_data_direction dir, unsigned long attrs);
+-void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
+-		int nents, enum dma_data_direction dir, unsigned long attrs);
+ int pci_p2pdma_enable_store(const char *page, struct pci_dev **p2p_dev,
+ 			    bool *use_p2pdma);
+ ssize_t pci_p2pdma_enable_show(char *page, struct pci_dev *p2p_dev,
+@@ -83,17 +79,6 @@ static inline void pci_p2pmem_free_sgl(struct pci_dev *pdev,
+ static inline void pci_p2pmem_publish(struct pci_dev *pdev, bool publish)
  {
- 	size_t len;
- 	int n, res;
-@@ -1528,7 +1528,6 @@ ssize_t iov_iter_get_pages(struct iov_iter *i,
- 		return 0;
- 
- 	if (likely(iter_is_iovec(i))) {
--		unsigned int gup_flags = 0;
- 		unsigned long addr;
- 
- 		if (iov_iter_rw(i) != WRITE)
-@@ -1558,6 +1557,13 @@ ssize_t iov_iter_get_pages(struct iov_iter *i,
- 		return iter_xarray_get_pages(i, pages, maxsize, maxpages, start);
- 	return -EFAULT;
  }
-+EXPORT_SYMBOL_GPL(iov_iter_get_pages_flags);
-+
-+ssize_t iov_iter_get_pages(struct iov_iter *i, struct page **pages,
-+			   size_t maxsize, unsigned maxpages, size_t *start)
-+{
-+	return iov_iter_get_pages_flags(i, pages, maxsize, maxpages, start, 0);
-+}
- EXPORT_SYMBOL(iov_iter_get_pages);
- 
- static struct page **get_pages_array(size_t n)
-@@ -1640,9 +1646,9 @@ static ssize_t iter_xarray_get_pages_alloc(struct iov_iter *i,
- 	return actual;
- }
- 
--ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
-+ssize_t iov_iter_get_pages_alloc_flags(struct iov_iter *i,
- 		   struct page ***pages, size_t maxsize,
--		   size_t *start)
-+		   size_t *start, unsigned int gup_flags)
+-static inline int pci_p2pdma_map_sg_attrs(struct device *dev,
+-		struct scatterlist *sg, int nents, enum dma_data_direction dir,
+-		unsigned long attrs)
+-{
+-	return 0;
+-}
+-static inline void pci_p2pdma_unmap_sg_attrs(struct device *dev,
+-		struct scatterlist *sg, int nents, enum dma_data_direction dir,
+-		unsigned long attrs)
+-{
+-}
+ static inline int pci_p2pdma_enable_store(const char *page,
+ 		struct pci_dev **p2p_dev, bool *use_p2pdma)
  {
- 	struct page **p;
- 	size_t len;
-@@ -1654,7 +1660,6 @@ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
- 		return 0;
- 
- 	if (likely(iter_is_iovec(i))) {
--		unsigned int gup_flags = 0;
- 		unsigned long addr;
- 
- 		if (iov_iter_rw(i) != WRITE)
-@@ -1667,6 +1672,7 @@ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
- 		p = get_pages_array(n);
- 		if (!p)
- 			return -ENOMEM;
-+
- 		res = get_user_pages_fast(addr, n, gup_flags, p);
- 		if (unlikely(res <= 0)) {
- 			kvfree(p);
-@@ -1694,6 +1700,13 @@ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
- 		return iter_xarray_get_pages_alloc(i, pages, maxsize, start);
- 	return -EFAULT;
+@@ -119,16 +104,4 @@ static inline struct pci_dev *pci_p2pmem_find(struct device *client)
+ 	return pci_p2pmem_find_many(&client, 1);
  }
-+EXPORT_SYMBOL_GPL(iov_iter_get_pages_alloc_flags);
-+
-+ssize_t iov_iter_get_pages_alloc(struct iov_iter *i, struct page ***pages,
-+				 size_t maxsize, size_t *start)
-+{
-+	return iov_iter_get_pages_alloc_flags(i, pages, maxsize, start, 0);
-+}
- EXPORT_SYMBOL(iov_iter_get_pages_alloc);
  
- size_t csum_and_copy_from_iter(void *addr, size_t bytes, __wsum *csum,
+-static inline int pci_p2pdma_map_sg(struct device *dev, struct scatterlist *sg,
+-				    int nents, enum dma_data_direction dir)
+-{
+-	return pci_p2pdma_map_sg_attrs(dev, sg, nents, dir, 0);
+-}
+-
+-static inline void pci_p2pdma_unmap_sg(struct device *dev,
+-		struct scatterlist *sg, int nents, enum dma_data_direction dir)
+-{
+-	pci_p2pdma_unmap_sg_attrs(dev, sg, nents, dir, 0);
+-}
+-
+ #endif /* _LINUX_PCI_P2P_H */
 -- 
 2.30.2
 
