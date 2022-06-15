@@ -2,85 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F0E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:46:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18458C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347033AbiFOKqO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
+        id S245460AbiFOKrB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 06:47:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237029AbiFOKqL (ORCPT
+        with ESMTP id S229519AbiFOKq6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:46:11 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F1551585
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:46:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655289970; x=1686825970;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=oQxuhjGD9lCIYMLV95OHuSL2ojSWpZXWYvCIMI/HCLg=;
-  b=J+QvQ6UZoFGAxE4mI+dJfuBCMlut86WyB36v17PjA8mNhObsPBpvVY7W
-   CttiDh3CAW4OS7Py3LLFqGV4Gguo+/dfyJPN5nrb25CPYIQ+tXNBn/wVQ
-   GQdFcJ+tvNWM8XPJciRQ0SABdx/Ok7BIhguR2UXbrZ+gnHQmUZQdEfBzR
-   qJOKcSAHNjs9WtuzARE4W4lv8bCpmVvNEK86vS2/wdqSXuaQFpEKYOnbe
-   mLUCyQdhCt6VS3luo/sPNH/hc8BNfuyEuyMGUL3Kw1BtDJj1Ozrrfsyzh
-   wq5PlqPVdpMNF2muM7/0GaXhAGfOhR6Hhip4k76XCnChDNSXb9zeZL2Ql
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="258768275"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="258768275"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 03:46:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="830973785"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 15 Jun 2022 03:46:09 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1QXJ-000Mld-0u;
-        Wed, 15 Jun 2022 10:46:09 +0000
-Date:   Wed, 15 Jun 2022 18:45:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: xtensa-linux-ld: section .start VMA
- [00000000d1000000,00000000d1000007] overlaps section .image VMA
- [00000000d0003000,00000000d1535037]
-Message-ID: <202206151848.twvxfjn7-lkp@intel.com>
+        Wed, 15 Jun 2022 06:46:58 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469C451585;
+        Wed, 15 Jun 2022 03:46:57 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id c189so906279iof.3;
+        Wed, 15 Jun 2022 03:46:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yTUVYFQ7BTygwQjRTAV8Sb3bsuCzr4QHgu9dQejfz7A=;
+        b=EX0aHXkPD0arR3eKdZkP7M4g3NiNmnHOQPv5kl6c9bR7tLAnqE4MVinbzUEhQlHxY/
+         8AQtkBPQ1tAaKij/g+uX0xIfOlSmTH0NKw9zr6+q2mlVVl4sAq571kkAfweMPExI1k0V
+         6PWcVKDrhUkcz5J+8yVlfJHB5e8epjOYOHV6pvLQ0C6ao+2c/KBgQvOOk5ys720YwWqw
+         LFrXPkMdMbbm75aVs9EHMrcW27iEGRovNb75ZCgP3egZeBu0w7302k4qApuBigBkoguZ
+         1Mx+j+4IknJyMF2ZIwG6VEopLUGeu7zduYeQClPt8hPXYVAKSgMJnMgzuuI5KnQpGgKR
+         1lVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yTUVYFQ7BTygwQjRTAV8Sb3bsuCzr4QHgu9dQejfz7A=;
+        b=xg5M5Q2/kFRi34icR160qa31PRFM/2LjKWJKM9rxPtNV/z6OgZY3ysyfpXTwa1c4v9
+         ywquCohV+6BO3X5vkBaXJcQKsrwieCeXRHkzzoQHID6Rqtkv0qIDXwwetDXK/vc2/DVk
+         BESOzomOkRgSM5Ni8IsrvQHe8YElmIMXApLjTHC5nEv2kWJt7es2KTZ+zj8zNX9s6DCy
+         qJu6rox+shLu74bk78newuz03QDTfFVrKfB+bDsc7v/QDUnFA8thWqc7pev6D3bBQcBf
+         Th7nO64vMFCCmhNJctpSBRb6xextpaz6H/8nq5saciWrmalrJdgmr9wyGiSqNCnW0exT
+         YubA==
+X-Gm-Message-State: AOAM533+QYIIPCqHvXyalqFBbDj65P3si95mteKa679RZ4PObI985lYa
+        E+vkSi+WH+Fjl+9mW8bWU7PrVVNWjcxqtIiEL9mHCR56TwM=
+X-Google-Smtp-Source: ABdhPJyIPNIpZmcnnUJO5fJnnarWv6wNKkDx8A5k1vGMLHqVJqvNUt3tP/ca7SfwERh8u4rp6b5I6CdKKiAFBG0994k=
+X-Received: by 2002:a05:6638:1690:b0:331:950f:8ea9 with SMTP id
+ f16-20020a056638169000b00331950f8ea9mr5542815jat.67.1655290016748; Wed, 15
+ Jun 2022 03:46:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220615104520.35687-1-eugene.shalygin@gmail.com>
+In-Reply-To: <20220615104520.35687-1-eugene.shalygin@gmail.com>
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+Date:   Wed, 15 Jun 2022 12:46:45 +0200
+Message-ID: <CAB95QAT3Ng0pR+tqKZZaaX1psO8ewrZqCcoqC4nTAM8V-q=8KA@mail.gmail.com>
+Subject: Re: [PATCH] hwmon: (asus-ec-sensors) add missing comma in board name list.
+To:     Eugene Shalygin <eugene.shalygin@gmail.com>
+Cc:     Michael Carns <mike@carns.com>, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-hwmon@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   018ab4fabddd94f1c96f3b59e180691b9e88d5d8
-commit: da0a4e5c8fbcce3d1afebf9f2a967083bb19634d xtensa: only build windowed register support code when needed
-date:   8 months ago
-config: xtensa-buildonly-randconfig-r001-20220615 (https://download.01.org/0day-ci/archive/20220615/202206151848.twvxfjn7-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=da0a4e5c8fbcce3d1afebf9f2a967083bb19634d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout da0a4e5c8fbcce3d1afebf9f2a967083bb19634d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> xtensa-linux-ld: section .start VMA [00000000d1000000,00000000d1000007] overlaps section .image VMA [00000000d0003000,00000000d1535037]
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+The error already made it into 5.19-rc1, unfortunately...
