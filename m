@@ -2,106 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53FA4CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348931AbiFOMs1 (ORCPT
+        id S1348972AbiFOMtF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 08:48:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54060 "EHLO
+        Wed, 15 Jun 2022 08:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348826AbiFOMsZ (ORCPT
+        with ESMTP id S1348941AbiFOMtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 08:48:25 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394E81758B
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:48:24 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id v8so2091503ljj.8
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:48:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=IKkEI1vEAYy+wKZ0nZJbXYdiseAo5I2B96TpHBLOCmU=;
-        b=dil/QRv2b/+pgYvnTk+wUqC3Cwp1uy4EqTIdoZshFp3gnU+y7nTLSEE8a+JCYTQdEX
-         UspKPIMjc2gz4WLI9G9hDJfvxvT7GmcfRNob78gK3lHxjkKZC1hxjnqsLZ4i/rdku/qK
-         TI9sBkSgPSOpBz8jNsWTfDakANzDLpS3/thSMQYt7lkVcQiggvUUcQN96w0D/CU1qf9w
-         Z+sgm+WzJEvK8AYrJiDeiNACECWIyr7c5Oi8gSgiF3B2qbigGRAqvoYOkpAwZjxiSFn8
-         co8Quua2Iq1d+BF/rUejm4SXYJTNRGY2oca8oOWPmGsegz+1iwQGURpzlOhonvv+70+l
-         hZXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=IKkEI1vEAYy+wKZ0nZJbXYdiseAo5I2B96TpHBLOCmU=;
-        b=IVweYlvcnE6T3JODg0lKHLqCK/CpoaSWOf7d5Noc1y0svCHsWrub8PGSyN70slr7iW
-         FfAJrsAF0aJfKlGiMRO5GjTBRH7pyxVZZwapj7LLU1Ngm7q4IgcbavnQ8eeQqJAIfLPS
-         p2gdnao4L213jTbaICjwN0+svGPLHGoI9oV9gA/XlXaXDyf1S9L9bU6QsIdmi5pYrUM8
-         glKW/kDhg6UXB3Yn8I7YRXOJYm0gf/pgXEOev0Sys5a4fNRqvF8UZz7CyxflsY1c2rpr
-         b+eNBkK1s1L0MVlXKGghZLDaBtagbFNnNGPevDf3XQxsXo/GhIzi+8ba2NU2i83z+q4o
-         zkUQ==
-X-Gm-Message-State: AJIora+QysKS2n4yRHKIOq1c6mCs7bphMD1TlkH6hmIqSUYl9/Ry6X9K
-        ti662lS1GoeznTtCEesygf0RIA==
-X-Google-Smtp-Source: AGRyM1uetcxrCiKpy9pOfOUbCy/it8Y6OjjPF+K52yYDh1v5ozTUJOrEQmpJBZfAc5I/iizeKGJCLg==
-X-Received: by 2002:a2e:91c6:0:b0:259:1427:f85c with SMTP id u6-20020a2e91c6000000b002591427f85cmr5091572ljg.405.1655297302558;
-        Wed, 15 Jun 2022 05:48:22 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id y1-20020a199141000000b0047255d2119bsm1784208lfj.202.2022.06.15.05.48.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 05:48:21 -0700 (PDT)
-Message-ID: <6ad85a23-0156-2774-1215-ea02257cc107@linaro.org>
-Date:   Wed, 15 Jun 2022 15:48:21 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] drm/msm: Use div64_ul instead of do_div
-Content-Language: en-GB
-To:     Wan Jiabing <wanjiabing@vivo.com>, Rob Clark <robdclark@gmail.com>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        Wed, 15 Jun 2022 08:49:01 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE3818388;
+        Wed, 15 Jun 2022 05:49:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655297341; x=1686833341;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=JHPkMButEgJGfhuR/OtkqVccOXMnbqA9ViT875XCBAg=;
+  b=J8q5m/psA5Dt1BW97uKG5TFdQugQ4gAQpBezZgzGhT6qUH0xFpJKbkRG
+   TjP+4xft2w86ulENdFBojJMBCUKeZqSbMn1P0T4Uz2I22MSdKmfU6qj8k
+   SvvAc3uEdI0OmJAxDtAH8YuM++/oVicTrOvT4CsQxWZi+pavDzIJ1soKZ
+   72zJOIIiIEIWbPqMGyLFVa3kWbgFmeST6os7ul/XSb6PHyVjxbr9s7fBg
+   ycMimE/QnrJGxPvq0p7sOMEgZIP9vlGxIfc2yUCj7CJdDo5XhVYO5yaVr
+   8UgE6VHzgGTcO+nriW1sStaDSB/BZgetay0Q3F+hxEhDmsYbdA1iIZ8PO
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="261973584"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="261973584"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 05:48:55 -0700
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="687288110"
+Received: from mgrymel-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.41.34])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 05:48:52 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org
-References: <20220426132126.686447-1-wanjiabing@vivo.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220426132126.686447-1-wanjiabing@vivo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v7 2/6] serial: 8250: create lsr_save_mask
+Date:   Wed, 15 Jun 2022 15:48:25 +0300
+Message-Id: <20220615124829.34516-3-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220615124829.34516-1-ilpo.jarvinen@linux.intel.com>
+References: <20220615124829.34516-1-ilpo.jarvinen@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26/04/2022 16:21, Wan Jiabing wrote:
-> Fix following coccicheck warning:
-> drivers/gpu/drm/msm/msm_gpu_devfreq.c:72:1-7: WARNING: do_div() does a 64-by-32 division, please consider using div64_ul instead.
-> 
-> Use div64_ul instead of do_div to avoid a possible truncation.
-> 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Allow drivers to alter LSR save mask.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250.h      | 2 +-
+ drivers/tty/serial/8250/8250_core.c | 4 ++++
+ drivers/tty/serial/8250/8250_dw.c   | 2 +-
+ include/linux/serial_8250.h         | 1 +
+ 4 files changed, 7 insertions(+), 2 deletions(-)
 
-> ---
->   drivers/gpu/drm/msm/msm_gpu_devfreq.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> index d2539ca78c29..c2ea978c8921 100644
-> --- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> +++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> @@ -69,7 +69,7 @@ static void get_raw_dev_status(struct msm_gpu *gpu,
->   	df->time = time;
->   
->   	busy_time *= USEC_PER_SEC;
-> -	do_div(busy_time, sample_rate);
-> +	busy_time = div64_ul(busy_time, sample_rate);
->   	if (WARN_ON(busy_time > ~0LU))
->   		busy_time = ~0LU;
->   
-
-
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 0ff5688ba90c..5cc967fe3b59 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -138,7 +138,7 @@ static inline u16 serial_lsr_in(struct uart_8250_port *up)
+ 	u16 lsr = up->lsr_saved_flags;
+ 
+ 	lsr |= serial_in(up, UART_LSR);
+-	up->lsr_saved_flags = lsr & LSR_SAVE_FLAGS;
++	up->lsr_saved_flags = lsr & up->lsr_save_mask;
+ 
+ 	return lsr;
+ }
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 90ddc8924811..57e86133af4f 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -1007,6 +1007,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 		uart->port.rs485	= up->port.rs485;
+ 		uart->rs485_start_tx	= up->rs485_start_tx;
+ 		uart->rs485_stop_tx	= up->rs485_stop_tx;
++		uart->lsr_save_mask	= up->lsr_save_mask;
+ 		uart->dma		= up->dma;
+ 
+ 		/* Take tx_loadsz from fifosize if it wasn't set separately */
+@@ -1094,6 +1095,9 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 			ret = 0;
+ 		}
+ 
++		if (!uart->lsr_save_mask)
++			uart->lsr_save_mask = LSR_SAVE_FLAGS;	/* Use default LSR mask */
++
+ 		/* Initialise interrupt backoff work if required */
+ 		if (up->overrun_backoff_time_ms > 0) {
+ 			uart->overrun_backoff_time_ms =
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 4cc69bb612ab..167a691c7b19 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -129,7 +129,7 @@ static void dw8250_tx_wait_empty(struct uart_port *p)
+ 
+ 	while (tries--) {
+ 		lsr = readb (p->membase + (UART_LSR << p->regshift));
+-		up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
++		up->lsr_saved_flags |= lsr & up->lsr_save_mask;
+ 
+ 		if (lsr & UART_LSR_TEMT)
+ 			break;
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 4565f25ba9a2..8c7b793aa4d7 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -120,6 +120,7 @@ struct uart_8250_port {
+ 	 */
+ #define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
+ 	u16			lsr_saved_flags;
++	u16			lsr_save_mask;
+ #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
+ 	unsigned char		msr_saved_flags;
+ 
 -- 
-With best wishes
-Dmitry
+2.30.2
+
