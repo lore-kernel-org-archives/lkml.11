@@ -2,97 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 01:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E000C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 01:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344029AbiFOBtZ (ORCPT
+        id S1344909AbiFOBth (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 21:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47664 "EHLO
+        Tue, 14 Jun 2022 21:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232340AbiFOBtW (ORCPT
+        with ESMTP id S232340AbiFOBtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 21:49:22 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE1748322
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 18:49:20 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LN7Th546Zz1K9xF;
-        Wed, 15 Jun 2022 09:47:20 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 15 Jun 2022 09:49:17 +0800
-Received: from huawei.com (10.67.174.169) by dggpemm500001.china.huawei.com
- (7.185.36.107) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 14 Jun 2022 21:49:36 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6CA48320;
+        Tue, 14 Jun 2022 18:49:35 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LN7W057bWzjY7G;
+        Wed, 15 Jun 2022 09:48:28 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 15 Jun
- 2022 09:49:16 +0800
-From:   Chen Lifu <chenlifu@huawei.com>
-To:     <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
-        <aou@eecs.berkeley.edu>, <akira.tsukamoto@gmail.com>,
-        <jszhang@kernel.org>, <wangkefeng.wang@huawei.com>,
-        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <alankao@andestech.com>
-CC:     <chenlifu@huawei.com>
-Subject: [PATCH -next] riscv: lib: uaccess: fix CSR_STATUS SR_SUM bit
-Date:   Wed, 15 Jun 2022 09:47:14 +0800
-Message-ID: <20220615014714.1650349-1-chenlifu@huawei.com>
-X-Mailer: git-send-email 2.35.1
+ 2022 09:49:32 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH ipsec-next] xfrm: change the type of xfrm_register_km and xfrm_unregister_km
+Date:   Wed, 15 Jun 2022 09:55:19 +0800
+Message-ID: <20220615015519.96975-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.169]
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
 X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500001.china.huawei.com (7.185.36.107)
+ dggpeml500026.china.huawei.com (7.185.36.106)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
-and commit ebcbd75e3962 ("riscv: Fix the bug in memory access fixup code"),
-if __clear_user and __copy_user return from an fixup branch,
-CSR_STATUS SR_SUM bit will be set, it is a vulnerability, so that
-S-mode memory accesses to pages that are accessible by U-mode will success.
-Disable S-mode access to U-mode memory should clear SR_SUM bit.
+Functions xfrm_register_km and xfrm_unregister_km do always return 0,
+change the type of functions to void.
 
-Fixes: 5d8544e2d007 ("RISC-V: Generic library routines and assembly")
-Fixes: ebcbd75e3962 ("riscv: Fix the bug in memory access fixup code")
-
-Signed-off-by: Chen Lifu <chenlifu@huawei.com>
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- arch/riscv/lib/uaccess.S | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/xfrm.h    | 4 ++--
+ net/key/af_key.c      | 6 +-----
+ net/xfrm/xfrm_state.c | 6 ++----
+ net/xfrm/xfrm_user.c  | 6 ++----
+ 4 files changed, 7 insertions(+), 15 deletions(-)
 
-diff --git a/arch/riscv/lib/uaccess.S b/arch/riscv/lib/uaccess.S
-index 8c475f4da308..ec486e5369d9 100644
---- a/arch/riscv/lib/uaccess.S
-+++ b/arch/riscv/lib/uaccess.S
-@@ -173,11 +173,11 @@ ENTRY(__asm_copy_from_user)
- 	ret
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index c39d910d4b45..2b2d93aaae78 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -583,8 +583,8 @@ struct xfrm_mgr {
+ 	bool			(*is_alive)(const struct km_event *c);
+ };
  
- 	/* Exception fixup code */
- 10:
- 	/* Disable access to user memory */
--	csrs CSR_STATUS, t6
-+	csrc CSR_STATUS, t6
- 	mv a0, t5
- 	ret
- ENDPROC(__asm_copy_to_user)
- ENDPROC(__asm_copy_from_user)
- EXPORT_SYMBOL(__asm_copy_to_user)
-@@ -225,10 +225,10 @@ ENTRY(__clear_user)
- 	j 3b
+-int xfrm_register_km(struct xfrm_mgr *km);
+-int xfrm_unregister_km(struct xfrm_mgr *km);
++void xfrm_register_km(struct xfrm_mgr *km);
++void xfrm_unregister_km(struct xfrm_mgr *km);
  
- 	/* Exception fixup code */
- 11:
- 	/* Disable access to user memory */
--	csrs CSR_STATUS, t6
-+	csrc CSR_STATUS, t6
- 	mv a0, a1
- 	ret
- ENDPROC(__clear_user)
- EXPORT_SYMBOL(__clear_user)
+ struct xfrm_tunnel_skb_cb {
+ 	union {
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index fb16d7c4e1b8..fda2dcc8a383 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -3894,14 +3894,10 @@ static int __init ipsec_pfkey_init(void)
+ 	err = sock_register(&pfkey_family_ops);
+ 	if (err != 0)
+ 		goto out_unregister_pernet;
+-	err = xfrm_register_km(&pfkeyv2_mgr);
+-	if (err != 0)
+-		goto out_sock_unregister;
++	xfrm_register_km(&pfkeyv2_mgr);
+ out:
+ 	return err;
+ 
+-out_sock_unregister:
+-	sock_unregister(PF_KEY);
+ out_unregister_pernet:
+ 	unregister_pernet_subsys(&pfkey_net_ops);
+ out_unregister_key_proto:
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 08564e0eef20..03b180878e61 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -2481,22 +2481,20 @@ EXPORT_SYMBOL(xfrm_user_policy);
+ 
+ static DEFINE_SPINLOCK(xfrm_km_lock);
+ 
+-int xfrm_register_km(struct xfrm_mgr *km)
++void xfrm_register_km(struct xfrm_mgr *km)
+ {
+ 	spin_lock_bh(&xfrm_km_lock);
+ 	list_add_tail_rcu(&km->list, &xfrm_km_list);
+ 	spin_unlock_bh(&xfrm_km_lock);
+-	return 0;
+ }
+ EXPORT_SYMBOL(xfrm_register_km);
+ 
+-int xfrm_unregister_km(struct xfrm_mgr *km)
++void xfrm_unregister_km(struct xfrm_mgr *km)
+ {
+ 	spin_lock_bh(&xfrm_km_lock);
+ 	list_del_rcu(&km->list);
+ 	spin_unlock_bh(&xfrm_km_lock);
+ 	synchronize_rcu();
+-	return 0;
+ }
+ EXPORT_SYMBOL(xfrm_unregister_km);
+ 
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index 6a58fec6a1fb..2ff017117730 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -3633,10 +3633,8 @@ static int __init xfrm_user_init(void)
+ 	rv = register_pernet_subsys(&xfrm_user_net_ops);
+ 	if (rv < 0)
+ 		return rv;
+-	rv = xfrm_register_km(&netlink_mgr);
+-	if (rv < 0)
+-		unregister_pernet_subsys(&xfrm_user_net_ops);
+-	return rv;
++	xfrm_register_km(&netlink_mgr);
++	return 0;
+ }
+ 
+ static void __exit xfrm_user_exit(void)
 -- 
-2.35.1
+2.17.1
 
