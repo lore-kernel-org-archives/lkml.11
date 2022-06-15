@@ -2,174 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F41C0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 19:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAA5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 19:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356246AbiFOTMk (ORCPT
+        id S1350133AbiFOTMn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 15:12:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45928 "EHLO
+        Wed, 15 Jun 2022 15:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345405AbiFOTMg (ORCPT
+        with ESMTP id S1345414AbiFOTMh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 15:12:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866C36588;
-        Wed, 15 Jun 2022 12:12:35 -0700 (PDT)
+        Wed, 15 Jun 2022 15:12:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FAEC65E3;
+        Wed, 15 Jun 2022 12:12:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16AC2B81DDC;
-        Wed, 15 Jun 2022 19:12:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 827E6C3411E;
-        Wed, 15 Jun 2022 19:12:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A88760BAF;
+        Wed, 15 Jun 2022 19:12:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3635C34115;
+        Wed, 15 Jun 2022 19:12:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655320352;
-        bh=EmBZNbmAwzZz5T1AwRENrG2S2XQx9T3QhcM/Fcd4TYo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Exx7mwM5si+NElK18+gIfDw0eViHbp3efkfqn9QWiC9xd+IKVqm9Z82BEc2YSi+/S
-         y9ae/+P0Ecc53X/3L2/nG0wUvhwkslFYIuDdR7uPCwPrpwG2+6xwTUqbpkPgJFQflr
-         nSdcB6LOOCSq8QeUTYmK7Ffi30aBUDuMZJMe9OmcXCa0e3np6gslAGEuDA0e13Mf2X
-         6byVkD+Vzjh0MwiuSgr70660bUPf1/+G82PFehzAplAX5RZwFFhroTt0+o6YLRUZKV
-         r3QjPVaZ0ENB6qcUvgF7wXrRK/GlztlvOb09BTZWJcFaEAxzDWz/CqX1QdSjAiP/I9
-         oqkw8VmK9koiQ==
-From:   Dinh Nguyen <dinguyen@kernel.org>
-To:     jarkko.nikula@linux.intel.com
-Cc:     dinguyen@kernel.org, andriy.shevchenko@linux.intel.com,
-        mika.westerberg@linux.intel.com, robh+dt@kernel.org,
-        krzk+dt@kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCHv4 1/2] i2c: designware: introduce a custom scl recovery for SoCFPGA platforms
-Date:   Wed, 15 Jun 2022 14:12:13 -0500
-Message-Id: <20220615191214.826879-1-dinguyen@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        s=k20201202; t=1655320355;
+        bh=aBOcucEGYvvvWUKMiG7ck3GFTJH/y+rjo3oRAZKefCs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=L3qN7bWAFQSKXjkYhc9TwspKC2crGuSj7nyK7rS9UK1FSHsdpgcIogd/ldeF9WXP0
+         0KQuUQB2krRWqicXjNKySrPbr9t+einpWC6Tqmb+IOLPXNp1cphF1eXAUiXdrbZDhG
+         pbL3HAmeqwMKoCe2WtSkfeUGfHFCqgoGbmKDjtlLyFqPQd6j9li2KYRPKGFlixyW37
+         LB8W56550jbrJnJH0+tXAWw+0xDH6ToBnw2WmjQEY70bvhRoe9HCL2V3jxORBWnEy3
+         okXzIdOXzKzFXiBg5yWMUVNRoufipEpnCTPBI/vlVVM114mRep+SDp6D1miBbqxqn6
+         TijqHGg7j1xsA==
+Date:   Wed, 15 Jun 2022 20:12:26 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        "max.oss.09@gmail.com" <max.oss.09@gmail.com>,
+        "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
+        "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "linux-imx@nxp.com" <linux-imx@nxp.com>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        "robh@kernel.org" <robh@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
+        "biju.das.jz@bp.renesas.com" <biju.das.jz@bp.renesas.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "geert+renesas@glider.be" <geert+renesas@glider.be>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "khilman@kernel.org" <khilman@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        Andrejs Cainikovs <andrejs.cainikovs@toradex.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        Max Krummenacher <max.krummenacher@toradex.com>
+Subject: Re: [PATCH v1 0/5] power: domain: Add driver for a PM domain
+ provider which controls
+Message-ID: <YqovGo+ozPMeUERo@sirena.org.uk>
+References: <20220609150851.23084-1-max.oss.09@gmail.com>
+ <20220613191549.GA4092455-robh@kernel.org>
+ <CAMuHMdU+aOw_D3SR6714U_i5WhE8S-FCLdPJaf_+Fncz4aH8VA@mail.gmail.com>
+ <CAEHkU3VVM0zUsaKMUGeSzfbLmVJW6rqXGLv7TqaLTEQeXEVkUA@mail.gmail.com>
+ <12e3bb72-af2d-653f-b342-c6b4d6a1f292@linaro.org>
+ <ddbeba186bf662348e8594f322f750cf89326a66.camel@toradex.com>
+ <dacd4a2d-a2b9-d2c2-4d47-f030dd01ee25@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zB2UHw7muFO3meeO"
+Content-Disposition: inline
+In-Reply-To: <dacd4a2d-a2b9-d2c2-4d47-f030dd01ee25@arm.com>
+X-Cookie: byob, v:
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The I2C pins on the SoCFPGA platforms do not go through a GPIO module,
-thus cannot be recovered by the default method of by doing a GPIO access.
-Only a reset of the I2C IP block can a recovery be successful.
 
-The assignment of the recover_bus needs to get done before the call to
-devm_gpiod_get_optional(), otherwise, the assignment is not taking place
-because of an error after returning from devm_gpiod_get_optional().
+--zB2UHw7muFO3meeO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
----
-v4: re-arrange code per Andy Shevchenko's recommendation
-v3: simplify the function
-    update commit message
-v2: remove change to MODEL_MASK
-    s/i2c_custom_scl_recovery/i2c_socfpga_scl_recovery
----
- drivers/i2c/busses/i2c-designware-core.h    |  1 +
- drivers/i2c/busses/i2c-designware-master.c  | 50 ++++++++++++++++++---
- drivers/i2c/busses/i2c-designware-platdrv.c |  1 +
- 3 files changed, 46 insertions(+), 6 deletions(-)
+On Wed, Jun 15, 2022 at 07:24:50PM +0100, Robin Murphy wrote:
 
-diff --git a/drivers/i2c/busses/i2c-designware-core.h b/drivers/i2c/busses/i2c-designware-core.h
-index 70b80e710990..7b22ec1d6a96 100644
---- a/drivers/i2c/busses/i2c-designware-core.h
-+++ b/drivers/i2c/busses/i2c-designware-core.h
-@@ -303,6 +303,7 @@ struct dw_i2c_dev {
- #define MODEL_MSCC_OCELOT	BIT(8)
- #define MODEL_BAIKAL_BT1	BIT(9)
- #define MODEL_AMD_NAVI_GPU	BIT(10)
-+#define MODEL_SOCFPGA		BIT(11)
- #define MODEL_MASK		GENMASK(11, 8)
- 
- /*
-diff --git a/drivers/i2c/busses/i2c-designware-master.c b/drivers/i2c/busses/i2c-designware-master.c
-index 44a94b225ed8..6b75a08a1c1f 100644
---- a/drivers/i2c/busses/i2c-designware-master.c
-+++ b/drivers/i2c/busses/i2c-designware-master.c
-@@ -813,10 +813,26 @@ static void i2c_dw_unprepare_recovery(struct i2c_adapter *adap)
- 	i2c_dw_init_master(dev);
- }
- 
--static int i2c_dw_init_recovery_info(struct dw_i2c_dev *dev)
-+static int i2c_socfpga_scl_recovery(struct i2c_adapter *adap)
-+{
-+	struct i2c_bus_recovery_info *bri = adap->bus_recovery_info;
-+
-+	bri->prepare_recovery(adap);
-+	bri->unprepare_recovery(adap);
-+
-+	return 0;
-+}
-+
-+static int i2c_dw_init_socfpga_recovery_info(struct dw_i2c_dev *dev,
-+					     struct i2c_bus_recovery_info *rinfo)
-+{
-+	rinfo->recover_bus = i2c_socfpga_scl_recovery;
-+	return 1;
-+}
-+
-+static int i2c_dw_init_generic_recovery_info(struct dw_i2c_dev *dev,
-+					     struct i2c_bus_recovery_info *rinfo)
- {
--	struct i2c_bus_recovery_info *rinfo = &dev->rinfo;
--	struct i2c_adapter *adap = &dev->adapter;
- 	struct gpio_desc *gpio;
- 
- 	gpio = devm_gpiod_get_optional(dev->dev, "scl", GPIOD_OUT_HIGH);
-@@ -831,16 +847,38 @@ static int i2c_dw_init_recovery_info(struct dw_i2c_dev *dev)
- 	rinfo->sda_gpiod = gpio;
- 
- 	rinfo->recover_bus = i2c_generic_scl_recovery;
--	rinfo->prepare_recovery = i2c_dw_prepare_recovery;
--	rinfo->unprepare_recovery = i2c_dw_unprepare_recovery;
--	adap->bus_recovery_info = rinfo;
- 
- 	dev_info(dev->dev, "running with gpio recovery mode! scl%s",
- 		 rinfo->sda_gpiod ? ",sda" : "");
- 
-+	return 1;
-+}
-+
-+static int i2c_dw_init_recovery_info(struct dw_i2c_dev *dev)
-+{
-+	struct i2c_bus_recovery_info *rinfo = &dev->rinfo;
-+	struct i2c_adapter *adap = &dev->adapter;
-+	int ret;
-+
-+	switch (dev->flags & MODEL_MASK) {
-+	case MODEL_SOCFPGA:
-+		ret = i2c_dw_init_socfpga_recovery_info(dev, rinfo);
-+		break;
-+	default:
-+		ret = i2c_dw_init_generic_recovery_info(dev, rinfo);
-+		break;
-+	}
-+	if (ret <= 0)
-+		return ret;
-+
-+	rinfo->prepare_recovery = i2c_dw_prepare_recovery;
-+	rinfo->unprepare_recovery = i2c_dw_unprepare_recovery;
-+	adap->bus_recovery_info = rinfo;
-+
- 	return 0;
- }
- 
-+
- static int amd_i2c_adap_quirk(struct dw_i2c_dev *dev)
- {
- 	struct i2c_adapter *adap = &dev->adapter;
-diff --git a/drivers/i2c/busses/i2c-designware-platdrv.c b/drivers/i2c/busses/i2c-designware-platdrv.c
-index 70ade5306e45..b33e015e6732 100644
---- a/drivers/i2c/busses/i2c-designware-platdrv.c
-+++ b/drivers/i2c/busses/i2c-designware-platdrv.c
-@@ -153,6 +153,7 @@ static const struct of_device_id dw_i2c_of_match[] = {
- 	{ .compatible = "snps,designware-i2c", },
- 	{ .compatible = "mscc,ocelot-i2c", .data = (void *)MODEL_MSCC_OCELOT },
- 	{ .compatible = "baikal,bt1-sys-i2c", .data = (void *)MODEL_BAIKAL_BT1 },
-+	{ .compatible = "intel,socfpga-i2c", .data = (void *)MODEL_SOCFPGA },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, dw_i2c_of_match);
--- 
-2.25.1
+> Multiple consumers sharing a voltage rail provided by a single regulator =
+is
+> so standard and well-supported that it barely seems worth pointing out, b=
+ut
+> for the avoidance of doubt I shall. Adding a new non-standard way to hide=
+ a
+> specific subset of regulator functionality behind behind a magic driver
+> because it seems like slightly less work than handling it the well-known
+> established way sounds like a great recipe for technical debt and future
+> compatibility headaches. What if down the line you end up with a situation
+> where if device A is suspended, devices B and C are happy to save some po=
+wer
+> by running the "domain" at a lower voltage? Do we stubbornly start
+> duplicating more of the regulator framework in the magic power domain
+> driver, or is that the point where we have to switch all the consumers to
+> explicit supplies, and get to regret having "saved" that effort in the fi=
+rst
+> place...
 
+We also loose the runtime validation that the supplies being described
+in the DT correspond to the hardware in any meaningful way which would
+also make it harder to transition to explicit control of the supplies
+further down the line. =20
+
+--zB2UHw7muFO3meeO
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKqLxkACgkQJNaLcl1U
+h9A8oQf/Qy+hNv0kHNOoFGSq8IZn9KhUnfZ1urDwa0BVgVd9o3gGVjfyGo2DRi4w
+C1+ssj8EA61LDsquEBRULVokHyU9usYmXKfRJRHweArlWyZvbxoHvRfgk+kjCBhZ
+A/VYrv2LvZHpYzrAVeviYllJs+ZGCq2Y1wMw8cFP558j8z2o5tEAFMdbpJRJvPNy
+WeFvgrixx2yNQr0VgkCWr/RJ+vCY+80hgrhEWvJj6wEtIpGRqgoYbDw6LM9EU4Gu
+hmSPorQNZbFBVQ8Dk597Ffq90RK8Y9axZGn1FvqXx07s2CYdS/wn1QiZLWdrLOf8
+vpJIHU0pSsKo+plFfCiboC9PItlMLw==
+=ratS
+-----END PGP SIGNATURE-----
+
+--zB2UHw7muFO3meeO--
