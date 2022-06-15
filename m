@@ -2,183 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E3A4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E86C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:25:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241597AbiFOJYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37080 "EHLO
+        id S244911AbiFOJZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 05:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232109AbiFOJY0 (ORCPT
+        with ESMTP id S241256AbiFOJZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:24:26 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153F315726
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:24:24 -0700 (PDT)
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 25F9O0B1025279
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 18:24:01 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 25F9O0B1025279
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1655285041;
-        bh=z11ovVAKqI6ZA7KGXOW96R1KX78wxZ9sWHcYkCBNvWg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ApQ8fSYtWZBsD7TbE6Ktx2ZrVkQyDEepc6TLORaln5uOlE9z6x8Pys64Uuqt/4Hx0
-         eSXlBMR7sJoLVjsw5oAUTjE0OJjJJJVx7TGeRyxRGG1ZJ7tw7He73J8M90jDcWtEU0
-         +ZwPmJ0QxCClZ3WdbGAShZREpuD0c0Pi6VOq31tg1KzcHONPaQfHbVL4MptqEL6yP/
-         GUyz8E4q9Fs2NeKEUQnXZtOOMK0M4teDpbbIhtKQvCYxyX08APMxj6IL1TXym6IUHd
-         qh3Hd9c2BIobtwgt19gYjztzCXqJzN/rDEcfiIrCULo43gf5jQilvENycbiaMVefA7
-         97kGQg4RYUK4w==
-X-Nifty-SrcIP: [209.85.221.54]
-Received: by mail-wr1-f54.google.com with SMTP id o8so14520603wro.3
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:24:01 -0700 (PDT)
-X-Gm-Message-State: AJIora/bucf5LQlD2DAt/X/BifGhfzPxaDy9MH3oiIYCCDQTY/qyvIcE
-        eOeHyi1XQmzXUc9Y4U8NlXJkuISR9+5I2HtXYvI=
-X-Google-Smtp-Source: AGRyM1sqFYEVeX64ueL9l7/Y7mETTav4VvtRR1t9Qr1JlCTC/16FkyM+glftepeHKk6lexJFVxZcY9atNgWvoVVAmUM=
-X-Received: by 2002:a05:6000:156d:b0:210:3135:ce1c with SMTP id
- 13-20020a056000156d00b002103135ce1cmr9167065wrz.409.1655285039469; Wed, 15
- Jun 2022 02:23:59 -0700 (PDT)
+        Wed, 15 Jun 2022 05:25:24 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C5A1581E
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:25:23 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id e66so10845483pgc.8
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:25:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=QD1mf5DnBqcLEVOFoiWBRR1QBiCXzXfoEa1RUQMHEbg=;
+        b=gmVSCn46TlF8cm8ao3weZQ1dQ+919xti8x+JNTqvEbhjNEFZdvPMGRwZbobjNM3xbf
+         uC1/HxtqLlOGh00UA96fBXAz35WiunpTXGZzV5kQH/ocYMckFGEggHTjUPX+MI/pZmOc
+         0Nyfs4DBuxMJLPDFXQUFccwTvxRzbEGEEK+TKSrcCe+eTJmjpPY47aruJ1kRn/cku3kK
+         luPIiVacfBtMMAvwPdeNm4mBL5eFXYP++g0eRxmGW7FuPJI23ZPCpYI5ypPiJCZkOwWa
+         9BR0ntAlHQ+6Q4rk86UEoZfkZ/Qds91d142Z3ertz6dMEcCU9As+k+oOuPVQSa+tI6ap
+         YaWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QD1mf5DnBqcLEVOFoiWBRR1QBiCXzXfoEa1RUQMHEbg=;
+        b=B3vqCtO/tRKW9Tol8hyjxXXUXsSYT2SQyuPINrodu1b38gYha1OFocR7pW6ncoLSne
+         dRVE/KR2AFZHx17aEEhmzCbRCkdn/XaizSO/eECFoeQ/hlXLih+Ji50ksIMDsXgIwSKy
+         NmYztCV8Uq91w6hxj82XUghfOwu7qUPcLdKOA/293Cx8phNah8EbjXIc6Lyvm3G849Z4
+         pPuS/e2HBcRvdKdXbXBDTk/+7J3XBVKbWixEBMyGu/HGpZT0EHebOGirAZSt5Zmf/XID
+         7t9Xneq1N/8dVxoNLnQMO9OjJ1To2btEBOrO2zcyJrNdO3jFnDzf2hvdww68K9yz1LnU
+         dO9g==
+X-Gm-Message-State: AOAM530Ne06ONXFoRlKoCLk+V9Kc7hE7OrLsfyjkDOtPATNQQmXKu0AP
+        Hlm2XKob46pTXnjkSrMcLAaQUNNj1m0o5Q==
+X-Google-Smtp-Source: ABdhPJy/EMp63lY79wavrcwsuOIlryAFSfAtHCajQFGqGhcTul+yPCkHJc1P94NUfLJmE8bfCaxLrA==
+X-Received: by 2002:a63:6c4a:0:b0:3fe:2813:b1d with SMTP id h71-20020a636c4a000000b003fe28130b1dmr8063133pgc.613.1655285122694;
+        Wed, 15 Jun 2022 02:25:22 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id v2-20020a17090a778200b001ea90dada74sm1231965pjk.12.2022.06.15.02.25.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 02:25:21 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 14:55:19 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Subject: Re: [PATCH] xen: don't require virtio with grants for non-PV guests
+Message-ID: <20220615092519.5677clabobheziet@vireshk-i7>
+References: <20220615084835.27113-1-jgross@suse.com>
 MIME-Version: 1.0
-References: <20220615063315.279489-1-jhubbard@nvidia.com>
-In-Reply-To: <20220615063315.279489-1-jhubbard@nvidia.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 15 Jun 2022 18:23:22 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARsHxH1LF8Pq70EMAYW-p1btgAVC1cJMOkXSTjW5LZuKA@mail.gmail.com>
-Message-ID: <CAK7LNARsHxH1LF8Pq70EMAYW-p1btgAVC1cJMOkXSTjW5LZuKA@mail.gmail.com>
-Subject: Re: [PATCH] gen_compile_commands: fix overlooked module files
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615084835.27113-1-jgross@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 3:33 PM John Hubbard <jhubbard@nvidia.com> wrote:
->
-> scripts/clang-tools/gen_compile_commands.py incorrectly assumes that
-> each .mod file only contains one line.
-
-Thanks for catching this.
-
-That assumption was correct until recently.
-  The first line contained member objects.
-  The second line, if CONFIG_TRIM_UNUSED_KSYMS=y, contained unresolved symbols
-
-
-
-Commit 9413e7640564 ("kbuild: split the second line of *.mod into *.usyms")
-changed the format of *.mod so member objects are listed per-line.
-
-
-
-
-> In fact, such files contain one
-> entry per line, and for some subsystems, there can be many, many lines.
-> For example, Nouveau has 762 entries, but only the first entry was being
-> processed. This problem causes clangd to fail to provide references and
-> definitions for valid files that are part of the current kernel
-> configuration.
->
-> This problem only occurs when using Kbuild to generate, like this:
->
->    make CC=clang compile_commands.json
->
-> It does not occur if you just run gen_compile_commands.py "bare", like
-> this (below):
->
->    scripts/clang-tools/gen_compile_commands.py/gen_compile_commands.py .
->
-> Fix this by fully processing each .mod file. This fix causes the number
-> of build commands that clangd finds in my kernel build (these numbers
-> are heavily dependent upon .config), from 2848 to 5292, which is an 85%
-> increase.
->
-> Fixes: ecca4fea1ede4 ("gen_compile_commands: support *.o, *.a, modules.order in positional argument")
-
-This should be
-
-Fixes: 9413e7640564 ("kbuild: split the second line of *.mod into *.usyms")
-
-
-Can you update the commit log?
-
-
-> Cc: Masahiro Yamada <masahiroy@kernel.org>
-> Cc: Nick Desaulniers <ndesaulniers@google.com>
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+On 15-06-22, 10:48, Juergen Gross wrote:
+> Commit fa1f57421e0b ("xen/virtio: Enable restricted memory access using
+> Xen grant mappings") introduced a new requirement for using virtio
+> devices: the backend now needs to support the VIRTIO_F_ACCESS_PLATFORM
+> feature.
+> 
+> This is an undue requirement for non-PV guests, as those can be operated
+> with existing backends without any problem, as long as those backends
+> are running in dom0.
+> 
+> Per default allow virtio devices without grant support for non-PV
+> guests.
+> 
+> The setting can be overridden by using the new "xen_virtio_grant"
+> command line parameter.
+> 
+> Add a new config item to always force use of grants for virtio.
+> 
+> Fixes: fa1f57421e0b ("xen/virtio: Enable restricted memory access using Xen grant mappings")
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 > ---
->  scripts/clang-tools/gen_compile_commands.py | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
->
-> diff --git a/scripts/clang-tools/gen_compile_commands.py b/scripts/clang-tools/gen_compile_commands.py
-> index 1d1bde1fd45e..53590e886889 100755
-> --- a/scripts/clang-tools/gen_compile_commands.py
-> +++ b/scripts/clang-tools/gen_compile_commands.py
-> @@ -157,10 +157,11 @@ def cmdfiles_for_modorder(modorder):
->              if ext != '.ko':
->                  sys.exit('{}: module path must end with .ko'.format(ko))
->              mod = base + '.mod'
-> -           # The first line of *.mod lists the objects that compose the module.
-> +           # Read from *.mod, to get a list of objects that compose the module.
->              with open(mod) as m:
-> -                for obj in m.readline().split():
-> -                    yield to_cmdfile(obj)
-> +                for line in m.readlines():
+>  .../admin-guide/kernel-parameters.txt         |  6 +++++
+>  drivers/xen/Kconfig                           |  9 ++++++++
+>  drivers/xen/grant-dma-ops.c                   | 22 +++++++++++++++++++
+>  include/xen/xen.h                             | 12 +++++-----
+>  4 files changed, 42 insertions(+), 7 deletions(-)
 
+Thanks for the quick fix.
 
-                    for line in m:
+With CONFIG_DEBUG_SECTION_MISMATCH=y, this generates a warning.
 
-is simpler, (and maybe will work more efficiently).
+WARNING: modpost: vmlinux.o(.text+0x7a8270): Section mismatch in reference from the function xen_set_restricted_virtio_memory_access() to the variable .init.data:xen_virtio_grants
+The function xen_set_restricted_virtio_memory_access() references
+the variable __initdata xen_virtio_grants.
+This is often because xen_set_restricted_virtio_memory_access lacks a __initdata
+annotation or the annotation of xen_virtio_grants is wrong.
 
+This can be fixed by:
 
-One more note, the 'line' iterator is shadowing (overwriting)
-the outer 'line' iterator, which has been used a few lines above.
+diff --git a/drivers/xen/grant-dma-ops.c b/drivers/xen/grant-dma-ops.c
+index d1fae789dfad..1099097b4515 100644
+--- a/drivers/xen/grant-dma-ops.c
++++ b/drivers/xen/grant-dma-ops.c
+@@ -42,7 +42,7 @@ static __init int parse_use_grants(char *arg)
+ }
+ early_param("xen_virtio_grant", parse_use_grants);
 
-    with open(modorder) as f:
-        for line in f:
+-void xen_set_restricted_virtio_memory_access(void)
++void __init xen_set_restricted_virtio_memory_access(void)
+ {
+        if (IS_ENABLED(CONFIG_XEN_VIRTIO_FORCE_GRANT) || xen_virtio_grants ||
+            (!xen_virtio_grants_set && xen_pv_domain()))
 
+With that:
 
-
-Maybe, it is safer to use a different name for the inner iterator
-because shadowing does not work in Python.
-
-
-
-
-
-> +                    for obj in line.split():
-
-This loop is unneeded because each line
-contains only one word.
-.rstpip() will do.
-
-
-
-To sum up, this part can be simpler,
-for example like this:
-
-           # Read from *.mod, to get a list of objects that compose the module.
-            with open(mod) as m:
-                for line2 in m:
-                    yield to_cmdfile(line2.rstrip())
-
-
-
-
-
-> +                        yield to_cmdfile(obj)
->
->
->  def process_line(root_directory, command_prefix, file_path):
-> --
-> 2.36.1
->
-
+Tested-by: Viresh Kumar <viresh.kumar@linaro.org>
 
 -- 
-Best Regards
-Masahiro Yamada
+viresh
