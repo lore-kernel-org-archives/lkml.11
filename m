@@ -2,101 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AFE4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 06:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E26C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 06:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351413AbiFOGLQ (ORCPT
+        id S1351653AbiFOGMe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 02:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58478 "EHLO
+        Wed, 15 Jun 2022 02:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346051AbiFOGLJ (ORCPT
+        with ESMTP id S235477AbiFOGMc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 02:11:09 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B1627CE5;
-        Tue, 14 Jun 2022 23:11:08 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id k5-20020a17090a404500b001e8875e6242so1069789pjg.5;
-        Tue, 14 Jun 2022 23:11:08 -0700 (PDT)
+        Wed, 15 Jun 2022 02:12:32 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D44192AF
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 23:12:31 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id x138so10494243pfc.12
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 23:12:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=A0WUe+ant8QpycVpCnxMIq6JosP90ibIEJ2d6QtyqYw=;
-        b=T+038nmKBBf4KuTEJj/v5IT7sB1IPYgA/s9u8T4/+81XodtSAmt46Q5BL3tGHmNG9S
-         mDPZXFcSihOzfHGqRyjvogPkrA5VFTg6QJvY6z1CXw7Wfj0eL2IHH1pS2jXBxb0taQLI
-         fkgSTsswNiRQpD+LnKRlXhsDpbe5lc7Q22rvFQY0TNgZGiLAXetZcoKKIDJV3UCYfOs+
-         eCehZq6NjrI6KN0mRGQXACkv467JTG1a1V/qf4KX96AX9vlzH7iRFT6Q/7FAxgRA+4KG
-         3GDqW8tNtvcoII/A4UTlNIm/YicAkD74GSuucJkoObPpZcSAR7AQNWdTj6ylPuOiAaZw
-         tZ4w==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9Tdsc7ElAP0+huyaWwaYeur9yVzd2yI+7V/8yx/aIBc=;
+        b=cLbNc3PAW59J4cj7Cb+E+uurhiCojwSgdCshxrzx/lLIQJaZiylX06qW0HYo8cMKe7
+         EjJCA77ZwuPokDJt8wyixdlfI5Q5vbrF42Q3uZzBpT5ieD7uIq+4EeYm5LJavU/mqK7y
+         JEyyUErnN+Phxr/OAtaT/Vhv+R3xqd0sUG92kSREMcoRQ5H6Jv3ZlEXLZ9mK82tcLuR3
+         Ola+5DFuKW6zMXI7gQUh4XlV+SmjVbxFZCDOaOEtrkSAHMH2/z19fM+uLD35fwGCUd4H
+         OeGHG60335MkX5CbugMYZokC3MBnkT4NOoTWQHmL18oSjBY1ctJNXksUUkQTaHIs5zbx
+         iXmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=A0WUe+ant8QpycVpCnxMIq6JosP90ibIEJ2d6QtyqYw=;
-        b=tmk5GuZaICV+epyI7dhqcSFdgINE8kd8iVAuRHzg1eB+k8xWkFN0TgsAEq9RkElGUC
-         7pd1zZFsQvccTy3rLwTClJe//tF+KJjWHs2LoEQ28RDZW2BVzitSwjsHQmTxkV8HMIPZ
-         LGJK4y8/pRvdvb8BAtf1OnChBDrx3yG1+LTLTISdMLqircmbzsB8U20GhMBHplMD7WZZ
-         g1aQe7cCPnWG3NBnpFpbRFW0mN3sbn+OnP3+tU4IwFDy/i14pgt2uFATp74CkXfHI/yU
-         +NJ7hJQAWH2gOxyWfr5BpCIRQj3quNw/ptEpyAMu/Ly0DFgvbcHvNxhc3CtZmhuHWtQM
-         vocg==
-X-Gm-Message-State: AJIora/hkYG4fIRXtRz2pPCjoac265OuCy+05S89xnR/qBxJzBI3qAtb
-        8ZNJuDeu/T6EUdLUXBiafTHcdzKpSsM=
-X-Google-Smtp-Source: AGRyM1tA+bL6FJK7kE8UZTprkXFTpmn4zCf/iuCUvS3zyiSH2HIqFUwRoJfp3VVRwXP0QcrJ5T5wRw==
-X-Received: by 2002:a17:90b:3ec6:b0:1e8:a001:5c95 with SMTP id rm6-20020a17090b3ec600b001e8a0015c95mr8554338pjb.96.1655273468035;
-        Tue, 14 Jun 2022 23:11:08 -0700 (PDT)
-Received: from DESKTOP-8REGVGF.localdomain ([211.25.125.254])
-        by smtp.gmail.com with ESMTPSA id z10-20020aa785ca000000b0051b95c76752sm8725907pfn.153.2022.06.14.23.11.05
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=9Tdsc7ElAP0+huyaWwaYeur9yVzd2yI+7V/8yx/aIBc=;
+        b=I0EUR4zqEoc3mY6jFaqrEvt/yWRnUFxlNFAFIWpOoVA1HS+68pbduokk7rXsb02KEm
+         8QcVP04q0kI86UOLIOdxl9bLPj2hGz7dG3J2rk6waU/84XF+iQvgYBMVMYjEkqk1+wsl
+         PUW1jH+amSipaSFuN7lQCTvTzxcrAxCIOmZOG/DAUVCsqkkvBEkM//VbUhd75IJe1wtp
+         jSxmJEKJHbxHuWTqOn568wr0hdWS/NGKxsvVJS22Fys6WwfKdL1PC3tTBIlE+VuWLT2k
+         ffNsdjPrDwhqgN5DY00eDUAdymrG0L1Wf8/Dn3gPrSA32/1z6w91i9P1R6ZttbTzQjE4
+         Xy/A==
+X-Gm-Message-State: AOAM5302U+3vDLjsV1dN0/t/772FluvLivxzDRBx6ivWTzbySJpGCOhM
+        Tb3/ukeKTNzazXP1r7/YRrY=
+X-Google-Smtp-Source: ABdhPJxfUICQhXQB6709mzdivAeSAnfNAjz10sNmqLBJvDbJkhwyOdBzhVj1+P4qXCtk4LpR3N6Rag==
+X-Received: by 2002:a63:6806:0:b0:3fc:3b43:52d5 with SMTP id d6-20020a636806000000b003fc3b4352d5mr7576994pgc.319.1655273550299;
+        Tue, 14 Jun 2022 23:12:30 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:7e4d])
+        by smtp.gmail.com with ESMTPSA id n23-20020aa78a57000000b0051c01aa7d31sm8761660pfa.46.2022.06.14.23.12.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 23:11:07 -0700 (PDT)
-From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
-Subject: [PATCH V2] bcm63xx_enet: switch to napi_build_skb() to reuse skbuff_heads
-Date:   Wed, 15 Jun 2022 14:09:22 +0800
-Message-Id: <20220615060922.3402-1-liew.s.piaw@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220614021009.696-1-liew.s.piaw@gmail.com>
-References: <20220614021009.696-1-liew.s.piaw@gmail.com>
+        Tue, 14 Jun 2022 23:12:28 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 14 Jun 2022 20:12:27 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 1/4] kernfs: make ->attr.open RCU protected.
+Message-ID: <Yql4S8+I8nDX0QA6@slm.duckdns.org>
+References: <20220614070346.810168-1-imran.f.khan@oracle.com>
+ <20220614070346.810168-2-imran.f.khan@oracle.com>
+ <Yqi1RVRK2XahPWlg@slm.duckdns.org>
+ <89ca35ba-0290-b155-b290-5e70efafa9bb@oracle.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <89ca35ba-0290-b155-b290-5e70efafa9bb@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-napi_build_skb() reuses NAPI skbuff_head cache in order to save some
-cycles on freeing/allocating skbuff_heads on every new Rx or completed
-Tx.
-Use napi_consume_skb() to feed the cache with skbuff_heads of completed
-Tx so it's never empty.
+On Wed, Jun 15, 2022 at 12:13:48PM +1000, Imran Khan wrote:
+> Full patch-set will avoid this small conflict. I hope sending full
+> patch-set is okay for this time. The full patch-set (v7) is available at [1]
 
-Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/ethernet/broadcom/bcm63xx_enet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+It's just easier to focus on a single patch when repatedly iterating on it
+like this. It's easy to repost the whole thing when the patch is settled. It
+becomes a bit tiring to keep reposting essentially the same patchset over
+and over again.
 
-diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-index 698438a2ee0f..514d61dd91c7 100644
---- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-+++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-@@ -388,7 +388,7 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
- 					 priv->rx_buf_size, DMA_FROM_DEVICE);
- 			priv->rx_buf[desc_idx] = NULL;
- 
--			skb = build_skb(buf, priv->rx_frag_size);
-+			skb = napi_build_skb(buf, priv->rx_frag_size);
- 			if (unlikely(!skb)) {
- 				skb_free_frag(buf);
- 				dev->stats.rx_dropped++;
-@@ -468,7 +468,7 @@ static int bcm_enet_tx_reclaim(struct net_device *dev, int force)
- 			dev->stats.tx_errors++;
- 
- 		bytes += skb->len;
--		dev_kfree_skb(skb);
-+		napi_consume_skb(skb, !force);
- 		released++;
- 	}
- 
+Thanks.
+
 -- 
-2.17.1
-
+tejun
