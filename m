@@ -2,164 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19589C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC90C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349348AbiFOMyO (ORCPT
+        id S1346663AbiFOM6N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 08:54:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34208 "EHLO
+        Wed, 15 Jun 2022 08:58:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349376AbiFOMyH (ORCPT
+        with ESMTP id S238939AbiFOM6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 08:54:07 -0400
-Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CD04C2DD5F;
-        Wed, 15 Jun 2022 05:54:04 -0700 (PDT)
-IronPort-Data: =?us-ascii?q?A9a23=3A7AsUtKId1AvLrT49FE+RupQlxSXFcZb7ZxGrkP8?=
- =?us-ascii?q?bfHDo0Dkr02BTnWVNUWrQaPqNYWqjKNoib4u3pE4Gv8fVmoNqS1BcGVNFFSwT8?=
- =?us-ascii?q?ZWfbTi6wuYcBwvLd4ubChsPA/w2MrEsF+hpCC+MzvuRGuK59yMkj/nRHuOU5NP?=
- =?us-ascii?q?sYUideyc1EU/Ntjozw4bVsqYw6TSIK1vlVeHa+qUzC3f5s9JACV/43orYwP9ZU?=
- =?us-ascii?q?FsejxtD1rA2TagjUFYzDBD5BrpHTU26ByOQroW5goeHq+j/ILGRpgs1/j8mDJW?=
- =?us-ascii?q?rj7T6blYXBLXVOGBiiFIPA+773EcE/Xd0j87XN9JFAatToy+UltZq2ZNDs4esY?=
- =?us-ascii?q?Qk0PKzQg/lbWB5de817FfQcpO6YcCnl4KR/yGWDKRMA2c5GAEgoPIEw9PxwBGZ?=
- =?us-ascii?q?U//0EbjsKa3irh+m26LO9RPNliskqII/sJox3kn1py3fbS+knRZTCSqDRzd5ew?=
- =?us-ascii?q?Do0wMtJGJ72a8gGbjxgRBfNeRtCPhEQEp1WtOOpgGTvNjhdgFGLrKE0pW/Jw2R?=
- =?us-ascii?q?Z1qbhMd/QUtiLXtlO2EKZoH/WuWj0HHkyNtWZxHyO8m+EgfXGlif2HokVEdWQ8?=
- =?us-ascii?q?v9snU3WyHcfBQMbUXOlrvSjzE2zQdRSLwoT4CVGhawz8lG7C9rwRRu1pFaasRM?=
- =?us-ascii?q?GHdldCes37EeK0KW8ywKYAHUUCy5Pc/Q4u8IsAz8nzFmEm5XuHzMHjVE/YRpx7?=
- =?us-ascii?q?Z/N9XXrZ3dTdjREOEc5ocI+y4GLiOkOYtjnFL6PyJKIs+A=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AMlXlkql4KcWskQNZcoFR3X7Hn73pDfIQ3DAb?=
- =?us-ascii?q?v31ZSRFFG/Fw9vre+MjzsCWYtN9/Yh8dcK+7UpVoLUm8yXcX2/h1AV7BZniEhI?=
- =?us-ascii?q?LAFugLgrcKqAeQeREWmNQ86Y5QN4B6CPDVSWNxlNvG5mCDeOoI8Z2q97+JiI7l?=
- =?us-ascii?q?o0tQcQ=3D=3D?=
-X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
-   d="scan'208";a="124979929"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 15 Jun 2022 20:54:03 +0800
-Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
-        by cn.fujitsu.com (Postfix) with ESMTP id D8E334D1719F;
-        Wed, 15 Jun 2022 20:54:02 +0800 (CST)
-Received: from G08CNEXJMPEKD02.g08.fujitsu.local (10.167.33.202) by
- G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Wed, 15 Jun 2022 20:54:04 +0800
-Received: from G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) by
- G08CNEXJMPEKD02.g08.fujitsu.local (10.167.33.202) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Wed, 15 Jun 2022 20:54:02 +0800
-Received: from irides.mr.mr (10.167.225.141) by
- G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Wed, 15 Jun 2022 20:54:02 +0800
-From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
-        <nvdimm@lists.linux.dev>, <linux-mm@kvack.org>,
-        <linux-fsdevel@vger.kernel.org>
-CC:     <djwong@kernel.org>, <dan.j.williams@intel.com>,
-        <david@fromorbit.com>, <hch@infradead.org>, <jane.chu@oracle.com>
-Subject: [RFC PATCH v3] mm, pmem, xfs: Introduce MF_MEM_REMOVE for unbind
-Date:   Wed, 15 Jun 2022 20:54:00 +0800
-Message-ID: <20220615125400.880067-1-ruansy.fnst@fujitsu.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220410171623.3788004-1-ruansy.fnst@fujitsu.com>
-References: <20220410171623.3788004-1-ruansy.fnst@fujitsu.com>
+        Wed, 15 Jun 2022 08:58:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3A01D1BEB9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:58:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655297881;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fSDv3pB77XuzeUNZezPJm4SyZkEnyUHPf0B4cMPJ4cY=;
+        b=MOR1nMTiKFcBNQsmD+SdiunXIzLy756HuoD08CUoAiVo0I+k1jt6O/m6+hKlh27/Jz1brs
+        xZAKkmhc9FC9+ZSITqkrHNPMOTMR3HVpWxwUzoh0sTJnTl/UMayEhsfhY6LQMWY9slirEy
+        lLrvjqNeLyMwPyGGXNp/G9V0TxAsauo=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-264-K5Qw2Al3Nzu4Wzl17xx88w-1; Wed, 15 Jun 2022 08:57:59 -0400
+X-MC-Unique: K5Qw2Al3Nzu4Wzl17xx88w-1
+Received: by mail-qv1-f69.google.com with SMTP id x17-20020a0cfe11000000b004645917e45cso8140562qvr.4
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:57:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fSDv3pB77XuzeUNZezPJm4SyZkEnyUHPf0B4cMPJ4cY=;
+        b=GpD1d28jR3qoaN70xuvy4u007Xni6lhSyYHW/9ebckgVKVdBWlGhTu4L6ZT/jv1l8e
+         pZ7C8bdGmTqf0zTyRscSqMOmkxCChlm7Cvd6tshO98Pmo9WYCceDa7rGGcTsSU/RgSWq
+         ZOpVk59JTRbgoBPavx/nk2mWJE+C0AxbQ+kl40ICZh8L1zvpKxIrR5rthnhzlmaEztaF
+         NuYFsxxdo5YgR8T9K0N7vKw/a9W9plYFkHdcajj1SxShkLU4aL933qHcxBCM36Mea0ni
+         EUtZBOTW87QGgY46aIZU5dvFjjW3JUSaoxLT6QfEOqN/utdJxDKPV8+0qrK1O/pEAklN
+         tvHw==
+X-Gm-Message-State: AJIora/jT4DEUGVhUTjNVayM/AJqWD8TtpDi9FlZCmwKtQHAjJnGrheV
+        ji9Met0CBMkcEy4MAMblVxcqCNUa9YuMzAHcXPAPd0hi12YDn8N8k/1nnPjTdWlZ/uAuSnLseaP
+        BswQBGPXe+Tq/DGnXKaWPOexN
+X-Received: by 2002:ac8:5805:0:b0:306:7772:286f with SMTP id g5-20020ac85805000000b003067772286fmr99496qtg.402.1655297878610;
+        Wed, 15 Jun 2022 05:57:58 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sCeCN28ZKU6d+OG8D7NjHn3G2vBu6R1QHB/HUCDHsoF3WNAM7jk+5+GNqy/PBi6xXTshARZQ==
+X-Received: by 2002:ac8:5805:0:b0:306:7772:286f with SMTP id g5-20020ac85805000000b003067772286fmr99485qtg.402.1655297878383;
+        Wed, 15 Jun 2022 05:57:58 -0700 (PDT)
+Received: from bfoster (c-24-61-119-116.hsd1.ma.comcast.net. [24.61.119.116])
+        by smtp.gmail.com with ESMTPSA id f8-20020a05620a408800b006a77e6df09asm10746678qko.24.2022.06.15.05.57.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 05:57:58 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 08:57:56 -0400
+From:   Brian Foster <bfoster@redhat.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ikent@redhat.com, onestero@redhat.com,
+        Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH 1/3] radix-tree: propagate all tags in idr tree
+Message-ID: <YqnXVMtBkS2nbx70@bfoster>
+References: <20220614180949.102914-1-bfoster@redhat.com>
+ <20220614180949.102914-2-bfoster@redhat.com>
+ <Yqm+jmkDA+um2+hd@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-yoursite-MailScanner-ID: D8E334D1719F.A2FA5
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: ruansy.fnst@fujitsu.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yqm+jmkDA+um2+hd@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch is inspired by Dan's "mm, dax, pmem: Introduce
-dev_pagemap_failure()"[1].  With the help of dax_holder and
-->notify_failure() mechanism, the pmem driver is able to ask filesystem
-(or mapped device) on it to unmap all files in use and notify processes
-who are using those files.
+On Wed, Jun 15, 2022 at 04:12:14AM -0700, Christoph Hellwig wrote:
+> On Tue, Jun 14, 2022 at 02:09:47PM -0400, Brian Foster wrote:
+> > The IDR tree has hardcoded tag propagation logic to handle the
+> > internal IDR_FREE tag and ignore all others. Fix up the hardcoded
+> > logic to support additional tags.
+> > 
+> > This is specifically to support a new internal IDR_TGID radix tree
+> > tag used to improve search efficiency of pids with associated
+> > PIDTYPE_TGID tasks within a pid namespace.
+> 
+> Wouldn't it make sense to switch over to an xarray here rather
+> then adding new features to the radix tree?
+> 
 
-Call trace:
-trigger unbind
- -> unbind_store()
-  -> ... (skip)
-   -> devres_release_all()   # was pmem driver ->remove() in v1
-    -> kill_dax()
-     -> dax_holder_notify_failure(dax_dev, 0, U64_MAX, MF_MEM_REMOVE)
-      -> xfs_dax_notify_failure()
+The xarray question crossed my mind when I first waded into this code
+and realized the idr tree seems to be some sort of offshoot or custom
+mode of the core radix tree. I eventually realized that the problem wrt
+to normal radix tree tags in the idr variant was that the tag
+propagation logic in the idr variant simply didn't care to handle
+traditional tags, presumably because they were unused in that mode. So
+this patch doesn't really add a feature to the radix-tree, it just fixes
+up some of the grotty idr tree logic to handle both forms of tags.
 
-Introduce MF_MEM_REMOVE to let filesystem know this is a remove event.
-So do not shutdown filesystem directly if something not supported, or if
-failure range includes metadata area.  Make sure all files and processes
-are handled correctly.
+I assume it makes sense for this to move towards xarray in general, but
+I don't have enough context on either side to know what the sticking
+points are. In particular, does xarray support something analogous to
+IDR_FREE or otherwise solve whatever problem idr currently depends on it
+for (i.e. efficient id allocation)? I think Willy has done work in this
+area so I'm hoping he can chime in on some of that if he's put any
+thought into the idr thing specifically..
 
-[1]: https://lore.kernel.org/linux-mm/161604050314.1463742.14151665140035795571.stgit@dwillia2-desk3.amr.corp.intel.com/
+WRT to this series, I really don't think it makes much sense to put a
+broad rework of the idr code in front of what is otherwise an
+incremental performance improvement based on using a mechanism that
+radix-tree pretty much already supports (i.e. tags). Is there some
+fundamental problem you see with this patch that apparently depends on
+xarray for some reason, or are you just calling it out as apparent
+technical debt in this area of code? If the latter, then I think it
+makes more sense to consider that as a followup effort.
 
-Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
-
-==
-Changes since v2:
-  1. Rebased on next-20220615
-
-Changes since v1:
-  1. Drop the needless change of moving {kill,put}_dax()
-  2. Rebased on '[PATCHSETS] v14 fsdax-rmap + v11 fsdax-reflink'[2]
-
----
- drivers/dax/super.c         | 2 +-
- fs/xfs/xfs_notify_failure.c | 6 +++++-
- include/linux/mm.h          | 1 +
- 3 files changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/dax/super.c b/drivers/dax/super.c
-index 9b5e2a5eb0ae..d4bc83159d46 100644
---- a/drivers/dax/super.c
-+++ b/drivers/dax/super.c
-@@ -323,7 +323,7 @@ void kill_dax(struct dax_device *dax_dev)
- 		return;
- 
- 	if (dax_dev->holder_data != NULL)
--		dax_holder_notify_failure(dax_dev, 0, U64_MAX, 0);
-+		dax_holder_notify_failure(dax_dev, 0, U64_MAX, MF_MEM_REMOVE);
- 
- 	clear_bit(DAXDEV_ALIVE, &dax_dev->flags);
- 	synchronize_srcu(&dax_srcu);
-diff --git a/fs/xfs/xfs_notify_failure.c b/fs/xfs/xfs_notify_failure.c
-index aa8dc27c599c..91d3f05d4241 100644
---- a/fs/xfs/xfs_notify_failure.c
-+++ b/fs/xfs/xfs_notify_failure.c
-@@ -73,7 +73,9 @@ xfs_dax_failure_fn(
- 	struct failure_info		*notify = data;
- 	int				error = 0;
- 
--	if (XFS_RMAP_NON_INODE_OWNER(rec->rm_owner) ||
-+	/* Do not shutdown so early when device is to be removed */
-+	if (!(notify->mf_flags & MF_MEM_REMOVE) ||
-+	    XFS_RMAP_NON_INODE_OWNER(rec->rm_owner) ||
- 	    (rec->rm_flags & (XFS_RMAP_ATTR_FORK | XFS_RMAP_BMBT_BLOCK))) {
- 		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_ONDISK);
- 		return -EFSCORRUPTED;
-@@ -182,6 +184,8 @@ xfs_dax_notify_failure(
- 
- 	if (mp->m_logdev_targp && mp->m_logdev_targp->bt_daxdev == dax_dev &&
- 	    mp->m_logdev_targp != mp->m_ddev_targp) {
-+		if (mf_flags & MF_MEM_REMOVE)
-+			return -EOPNOTSUPP;
- 		xfs_err(mp, "ondisk log corrupt, shutting down fs!");
- 		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_ONDISK);
- 		return -EFSCORRUPTED;
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 623c2ee8330a..bbeb31883362 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3249,6 +3249,7 @@ enum mf_flags {
- 	MF_SOFT_OFFLINE = 1 << 3,
- 	MF_UNPOISON = 1 << 4,
- 	MF_NO_RETRY = 1 << 5,
-+	MF_MEM_REMOVE = 1 << 6,
- };
- int mf_dax_kill_procs(struct address_space *mapping, pgoff_t index,
- 		      unsigned long count, int mf_flags);
--- 
-2.36.1
-
-
+Brian
 
