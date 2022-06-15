@@ -2,87 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CFBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BED3C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349854AbiFORnR (ORCPT
+        id S1346306AbiFORoE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
+        Wed, 15 Jun 2022 13:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347123AbiFORnN (ORCPT
+        with ESMTP id S1358220AbiFORnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:43:13 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7264338E
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:43:12 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id y196so12077126pfb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:43:12 -0700 (PDT)
+        Wed, 15 Jun 2022 13:43:32 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D9E45075
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:43:31 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id u18so11031456plb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:43:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=MGIXp3QQnrPr2FjVt/U3vBNoRdK68EfU6LQ0hfSMUL4=;
-        b=RGCQ4Brqua5VFRNXzB2Bl2Hn0N1OibZw7EqR4vkm52jNhv3xqmk3k0STCcIbRoGg58
-         uoIOPX0ey/i0ZFT2NOyyMB+YPGyT/xqNRjmRhi/aH3YVQ2wBA0GKAbVrWkRVS+XwdgvR
-         hmwqZRgeqASAYZ8cNfSQXmbitEilH+LtVhQqFYyM820Z3UVJvQnUKh0j9urraxiKDlOT
-         C/1TMPtO/EJQnsSBewdvzcsg8JsWF27I8arIY7bWTzQWnHyRtBv7th4ntybnHMo65bF6
-         qBLUqAZMaRCzLKvLEt5V4U5VsztBSl+EbortBszhEV+eYxD9MK+oFZMtIfaGbT6iha7W
-         P2Ig==
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=H7RU4rTnGyh/N4PK+U9Z+WV3I6PfNhUaTBL3B2sH8vs=;
+        b=pWmQ1AN63QHPI15DR38DwfKKN70ZSvIj6ezA24QEaW1U7P1caKtLLgcFRKFjLyXoYF
+         +3CSmu1yMZ3J/eoM0DJD0R8nZoNYJgiyFKyZTskEyycxjPiVddXLpr6gztyYQbWg3XRk
+         pSLe/SviqTnQbVFMfJIesdao42OHzO5Ntes4gdSIgbbGE6Isvmo79LYbDgyTLvsKfo1b
+         kzj0fdFA1xQGEkSKSAWvafg4ZlZfcbh5s268UQyiQNLGnBqOUbBUeXFLB74Bwbw85IvT
+         zbXZBA6hdMsTR/J4kDW1VDZj2NOBwmK1QHgaSgo+Esl6cEF5FLyJyc3oi8Il0balB3U6
+         OWNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=MGIXp3QQnrPr2FjVt/U3vBNoRdK68EfU6LQ0hfSMUL4=;
-        b=XM+CWGWMvZmznnkxVsvQVVg0Vx0rERdNK91PBGvW2q+pAhgJjEJ4ft3A/bAASxFAC4
-         o9layO/ewhQrtfZ9vvZxtACtVd8nMbJMXV+2h0oOLnAwK96h8PywArOyJXvD1tc4dk0U
-         QKabW21D/Y0Bn3r1Sgs510EW1IXNXrtJrCTUR8A9vJGa1IAfJNF212yf5EZKEBbndGbS
-         HEvNuCJ0v+xOXJfkrO75MdNGcY7t9ORik+WE1SUbvWV//rZPx/V1buLiL32fHVgaLbKi
-         vlPxc0a2jK4nm8p1yq7T1hV0jkLkIH1qbs54PDHSjT5ICEkA5TundrSKQ48XhwMBAcJR
-         qZTw==
-X-Gm-Message-State: AJIora+Dg9D+Ekyhmu1U+IXwjnNF894Yqb36tUzkBClHhzSAijf8bFzP
-        8vFNeoH990RiKsOgIpL8eN6f3w==
-X-Google-Smtp-Source: AGRyM1ugV7Z1jI8FRgQThkABnCGlJIcvgGVKwX50uyrHXDaYc27/9se5ycVDzY8kV1ZsGL2qBopEbw==
-X-Received: by 2002:a63:951b:0:b0:3fc:98c2:4301 with SMTP id p27-20020a63951b000000b003fc98c24301mr787931pgd.515.1655314991688;
-        Wed, 15 Jun 2022 10:43:11 -0700 (PDT)
-Received: from [172.22.33.138] ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id d133-20020a63368b000000b003fe2b87cf03sm10271697pga.80.2022.06.15.10.43.11
+        bh=H7RU4rTnGyh/N4PK+U9Z+WV3I6PfNhUaTBL3B2sH8vs=;
+        b=rXAQC3HWnE31f6QsQEM/IwQUK6JswQLFWbFTPkF/JixGFWes9kFHsf2cBhEn6nOsi8
+         tS5aRvTnaWn3D4YjHX5Fxs4y+Ep9hocKjGJ/Bx9F/T4yxM70xCqrhmBRmyzK9LG1F6Rv
+         uvvFD1xJ49bTpP19SV+NyaLpzbojOEXbZJV4Xrw9Z+fNutcKAH8c/zCUp0knVzq064Mz
+         2Rcc4Tbcswovmsyf8sv/tomlKTGOztGDZawFZYAr4HmXNY0XOuaSRlEENYPQ1yRF1JEC
+         ZTh+A+Kzu7BiC5UNFJsxHmtcMz0jlJzjQ4vypTkz0cgltZSc+Xcmb9Ctkzf8i/NRk2hI
+         VjCA==
+X-Gm-Message-State: AJIora8OODxHO6HKPibx/XV1hY/wvX1IOaMiy/77CCCojEvMFXGc5Q5X
+        VnNDnLI3+pS1oVKMuxECF+CN5+Kuhy0=
+X-Google-Smtp-Source: AGRyM1sBy2Nor3MBmU0h1Mxel91so9WYQPLrnAC4s2DwYFuAiyArTzeVXWlzo9nhEqwxY1j/+nSIQA==
+X-Received: by 2002:a17:902:b090:b0:167:7ae5:e13b with SMTP id p16-20020a170902b09000b001677ae5e13bmr485784plr.170.1655315010873;
+        Wed, 15 Jun 2022 10:43:30 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id ja21-20020a170902efd500b0016632179ecfsm9529144plb.264.2022.06.15.10.43.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 10:43:11 -0700 (PDT)
-Message-ID: <a92fe431-a995-4c7f-b90b-8e80298bc71a@linaro.org>
-Date:   Wed, 15 Jun 2022 10:43:10 -0700
+        Wed, 15 Jun 2022 10:43:30 -0700 (PDT)
+Message-ID: <700e7f0b-a535-545b-1c83-26ce2d4e8be1@gmail.com>
+Date:   Wed, 15 Jun 2022 10:43:28 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/3] dt-bindings: clock: add pcm reset for ipq806x lcc
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] ARM: bcmbca: add VFP and NEON fixup for bcm6846 SoC
 Content-Language: en-US
-To:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220615163408.30154-1-ansuelsmth@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220615163408.30154-1-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
+        anand.gore@broadcom.com, kursad.oney@broadcom.com,
+        samyon.furman@broadcom.com, tomer.yacoby@broadcom.com,
+        philippe.reynes@softathome.com,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        linux-kernel@vger.kernel.org
+References: <20220525003509.2812-1-william.zhang@broadcom.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220525003509.2812-1-william.zhang@broadcom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/06/2022 09:34, Christian 'Ansuel' Marangi wrote:
-> Add pcm reset define for ipq806x lcc.
+On 5/24/22 17:35, William Zhang wrote:
+> BCM6846 SoC only has VFP and NEON support on core 0. So kernel VPF/NEON
+> support is disabled in this chip. Add this fixup to manually turn on
+> VFP/NEON in case userspace app need to access them on core 0.
 > 
-> Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
-To prevent any confusion about identities (we have strict rules about
-these), I need to ask - who uses this email address?
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
 
-https://lore.kernel.org/all/?q=ansuelsmth%40gmail.com
+We have had this conversation internally already, but I do not think 
+this is sufficient in order to have a workable solution, you indicated 
+that there is all sorts of user-space involvement in your SDK to ensure 
+that only VFP tasks are scheduled on core 0, but if we were to seek a 
+proper solution we would have to modify the ARM Linux kernel to forcibly 
+migrate VFP tasks onto a core that can support executing them, or accept 
+emulating them with the implied slow down.
 
-Best regards,
-Krzysztof
+Russell, what are your thoughts on this?
+
+> 
+> ---
+> 
+>   arch/arm/mach-bcm/Makefile |  5 ++++
+>   arch/arm/mach-bcm/bcmbca.c | 54 ++++++++++++++++++++++++++++++++++++++
+>   2 files changed, 59 insertions(+)
+>   create mode 100644 arch/arm/mach-bcm/bcmbca.c
+> 
+> diff --git a/arch/arm/mach-bcm/Makefile b/arch/arm/mach-bcm/Makefile
+> index b2394ddb0558..137b24b52139 100644
+> --- a/arch/arm/mach-bcm/Makefile
+> +++ b/arch/arm/mach-bcm/Makefile
+> @@ -68,3 +68,8 @@ CFLAGS_platsmp-brcmstb.o	+= -march=armv7-a
+>   obj-y				+= brcmstb.o
+>   obj-$(CONFIG_SMP)		+= platsmp-brcmstb.o
+>   endif
+> +
+> +# BCMBCA
+> +ifeq ($(CONFIG_ARCH_BCMBCA),y)
+> +obj-y				+= bcmbca.o
+> +endif
+> diff --git a/arch/arm/mach-bcm/bcmbca.c b/arch/arm/mach-bcm/bcmbca.c
+> new file mode 100644
+> index 000000000000..6fcdfe0b94c1
+> --- /dev/null
+> +++ b/arch/arm/mach-bcm/bcmbca.c
+> @@ -0,0 +1,54 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2022 Broadcom Ltd
+> + *
+> + * This program is free software; you can redistribute it and/or
+> + * modify it under the terms of the GNU General Public License as
+> + * published by the Free Software Foundation version 2.
+> + *
+> + * This program is distributed "as is" WITHOUT ANY WARRANTY of any
+> + * kind, whether express or implied; without even the implied warranty
+> + * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/smp.h>
+> +#include <asm/mach/arch.h>
+> +#include <asm/vfp.h>
+> +#include <asm/cp15.h>
+> +
+> +#include "../vfp/vfpinstr.h"
+> +
+> +/*
+> + * In some low end BCA chips, only core 0 has VPF/NEON support. Kernel VPF
+> + * NEON are disabled on these platforms. Add this fixup to enable VFP/NEON
+> + * on core 0 manually in case some user app need to access vfp/neon on core 0
+> + */
+> +static void __init neon_enable(void *data)
+> +{
+> +	u32 access, fpexc;
+> +	(void)data;
+> +
+> +	/* Enable full access to VFP (cp10 and cp11) */
+> +	access = get_copro_access();
+> +	set_copro_access(access | CPACC_FULL(10) | CPACC_FULL(11));
+> +
+> +	/* enable NEON and VFP extension */
+> +	fpexc = fmrx(FPEXC);
+> +	fmxr(FPEXC, fpexc | FPEXC_EN);
+> +}
+> +
+> +static void __init bcmbca_neon_fixup(void)
+> +{
+> +	smp_call_function_single(0, neon_enable, NULL, 1);
+> +}
+> +
+> +static const char *const bcmbca_match[] __initconst = {
+> +	"brcm,bcm6846",
+> +	NULL
+> +};
+> +
+> +DT_MACHINE_START(BCMBCA, "Broadcom BCMBCA SoC")
+> +	.dt_compat		= bcmbca_match,
+> +	.init_late		= bcmbca_neon_fixup,
+> +MACHINE_END
+
+
+-- 
+Florian
