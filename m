@@ -2,92 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A61CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:16:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348846AbiFONQM (ORCPT
+        id S1348576AbiFONQQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:16:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
+        Wed, 15 Jun 2022 09:16:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348856AbiFONQH (ORCPT
+        with ESMTP id S1351651AbiFONQM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:16:07 -0400
-Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB78B2E096;
-        Wed, 15 Jun 2022 06:16:04 -0700 (PDT)
-Received: by mail-il1-f178.google.com with SMTP id d6so8728417ilm.4;
-        Wed, 15 Jun 2022 06:16:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=8C80sIX/zds/z0xyweVsBMgV7P8Pift98ShjLgz5ZwQ=;
-        b=0iO9xBfkS60awmBiiU63PXTb86zX0eTAEBWBPpXsTeofnnaYPumY1x+xyl78Nr2pBT
-         e12mYeRqVfnOYtWh1YtuwYtckIObiEk2zZWrOFNF1RKjj7kviTn5ee5dqgzgi7YvELup
-         6SdCemA2W6PANsAJ2E8egUoXFl1yNOoa9a0k2pJvNrIijRbCrVR5jDhInUWWY5tCEzIV
-         fIXJhNOH/HnpOegF+Wvp2Fg4byBPVDUubeaFisEjEGZXuCtNsod6t3ipVJgi//rradiz
-         yvsMi10lSrlVkL9L4FVDDivXNVZw1T/WqFKquONI63DVhwJlniAQTXw56chHZ55KJA+F
-         jsLA==
-X-Gm-Message-State: AJIora9CWAD4r7Hpaww1Ri1rWcbVwg+s4Vj5cACdpui5cIqI9DviJkw1
-        EWDtLq6+w7YiussBYtNcCv22ufCmuA==
-X-Google-Smtp-Source: AGRyM1uZ9utNL5h2kFhjalsMtkLLXkoWdL+p72Vo2Z4lpjk/ny0uIeL/R8e97UqCCB1L4EDdFORe3A==
-X-Received: by 2002:a05:6e02:1c02:b0:2d3:ccfe:6551 with SMTP id l2-20020a056e021c0200b002d3ccfe6551mr6203007ilh.134.1655298964054;
-        Wed, 15 Jun 2022 06:16:04 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id z6-20020a023446000000b0033214fb0061sm6121054jaz.23.2022.06.15.06.16.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 06:16:03 -0700 (PDT)
-Received: (nullmailer pid 662450 invoked by uid 1000);
-        Wed, 15 Jun 2022 13:16:02 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Romain Perier <romain.perier@gmail.com>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Lee Jones <lee.jones@linaro.org>, linux-kernel@vger.kernel.org,
-        Daniel Palmer <daniel@0x0f.com>
-In-Reply-To: <20220615070813.7720-2-romain.perier@gmail.com>
-References: <20220615070813.7720-1-romain.perier@gmail.com> <20220615070813.7720-2-romain.perier@gmail.com>
-Subject: Re: [PATCH 1/5] dt-bindings: pwm: Add Mstar MSC313e PWM devicetree bindings documentation
-Date:   Wed, 15 Jun 2022 07:16:02 -0600
-Message-Id: <1655298962.395709.662448.nullmailer@robh.at.kernel.org>
+        Wed, 15 Jun 2022 09:16:12 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43202DD53;
+        Wed, 15 Jun 2022 06:16:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655298971; x=1686834971;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=wzF6b6MTfDg6r5cQXsyGjFsRdC++A5N+KLhQ3vIsIjo=;
+  b=GcchhxsvU9tYLShKkgwTRgpfC6AXfF5HeoIcyFp/u4fmZHgmufc7raju
+   TD0vKKQSKyddZyeqFbD0qhnXqKxqsNEsMHFUjZq8q9HbHVJpmujt4/rfh
+   PQOpMz/ZhWQMoSWivgQ0ZUVVQvap4eKxxWkjr1+kWHu32C3/xSz9PFV28
+   Q=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 15 Jun 2022 06:16:10 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 15 Jun 2022 06:16:07 -0700
+X-QCInternal: smtphost
+Received: from hu-krichai-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.110.37])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 15 Jun 2022 18:45:44 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 4058933)
+        id 4FDBF414F; Wed, 15 Jun 2022 18:45:43 +0530 (+0530)
+From:   Krishna chaitanya chundru <quic_krichai@quicinc.com>
+To:     helgaas@kernel.org
+Cc:     linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_vbadigan@quicinc.com,
+        quic_hemantk@quicinc.com, quic_nitegupt@quicinc.com,
+        quic_skananth@quicinc.com, quic_ramkri@quicinc.com,
+        manivannan.sadhasivam@linaro.org, swboyd@chromium.org,
+        Krishna chaitanya chundru <quic_krichai@quicinc.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH v2] PCI: qcom: Allow L1 and its sub states
+Date:   Wed, 15 Jun 2022 18:45:39 +0530
+Message-Id: <1655298939-392-1-git-send-email-quic_krichai@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1654240730-31322-1-git-send-email-quic_krichai@quicinc.com>
+References: <1654240730-31322-1-git-send-email-quic_krichai@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 09:08:09 +0200, Romain Perier wrote:
-> This adds the documentation for the devicetree bindings of the Mstar
-> MSC313e RTC driver, it includes MSC313e SoCs and SSD20xd.
-> 
-> Signed-off-by: Romain Perier <romain.perier@gmail.com>
-> ---
->  .../bindings/pwm/mstar,msc313e-pwm.yaml       | 47 +++++++++++++++++++
->  1 file changed, 47 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml
-> 
+Allow L1 and its sub-states in the qcom pcie driver.
+By default this is disabled in the hardware. So enabling it explicitly.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Signed-off-by: Krishna chaitanya chundru <quic_krichai@quicinc.com>
+---
+ drivers/pci/controller/dwc/pcie-qcom.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml:20:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
-./Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml:21:11: [warning] wrong indentation: expected 12 but found 10 (indentation)
-
-dtschema/dtc warnings/errors:
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+index 6ab9089..0d8efcc 100644
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -41,6 +41,9 @@
+ #define L23_CLK_RMV_DIS				BIT(2)
+ #define L1_CLK_RMV_DIS				BIT(1)
+ 
++#define PCIE20_PARF_PM_CTRL			0x20
++#define REQ_NOT_ENTR_L1				BIT(5)
++
+ #define PCIE20_PARF_PHY_CTRL			0x40
+ #define PHY_CTRL_PHY_TX0_TERM_OFFSET_MASK	GENMASK(20, 16)
+ #define PHY_CTRL_PHY_TX0_TERM_OFFSET(x)		((x) << 16)
+@@ -1267,6 +1270,11 @@ static int qcom_pcie_init_2_7_0(struct qcom_pcie *pcie)
+ 	val |= BIT(4);
+ 	writel(val, pcie->parf + PCIE20_PARF_MHI_CLOCK_RESET_CTRL);
+ 
++	/* Enable L1 and L1ss */
++	val = readl(pcie->parf + PCIE20_PARF_PM_CTRL);
++	val &= ~REQ_NOT_ENTR_L1;
++	writel(val, pcie->parf + PCIE20_PARF_PM_CTRL);
++
+ 	if (IS_ENABLED(CONFIG_PCI_MSI)) {
+ 		val = readl(pcie->parf + PCIE20_PARF_AXI_MSTR_WR_ADDR_HALT);
+ 		val |= BIT(31);
+-- 
+2.7.4
 
