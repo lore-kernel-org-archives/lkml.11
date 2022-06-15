@@ -2,140 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E000C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 01:49:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC530CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 01:52:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344909AbiFOBth (ORCPT
+        id S1345310AbiFOBwh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 21:49:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47906 "EHLO
+        Tue, 14 Jun 2022 21:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232340AbiFOBtg (ORCPT
+        with ESMTP id S232340AbiFOBwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 21:49:36 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6CA48320;
-        Tue, 14 Jun 2022 18:49:35 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LN7W057bWzjY7G;
-        Wed, 15 Jun 2022 09:48:28 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 15 Jun
- 2022 09:49:32 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH ipsec-next] xfrm: change the type of xfrm_register_km and xfrm_unregister_km
-Date:   Wed, 15 Jun 2022 09:55:19 +0800
-Message-ID: <20220615015519.96975-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 14 Jun 2022 21:52:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF6ACD2;
+        Tue, 14 Jun 2022 18:52:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9A2C619B0;
+        Wed, 15 Jun 2022 01:52:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF64FC3411F;
+        Wed, 15 Jun 2022 01:52:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655257943;
+        bh=9zr1Qys8+OeE2eqRt/+VCrHA+Ge7aWOMj0KzcfgZX4A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rXagdTT5+47yI7dGWUQYXuoJM+LDL7f3J4/UtFO6PYX585JPikq31smDXJ/wL4jrK
+         VccYhm47X+w+WwLRzEBw9o1G6RRNYnaRRbtEKy63WZ/XKIXngvjjtV/MQZtj40SfbQ
+         YMQfDQlL/WaXFssxFJRnb9nuhQdwDAGotCa33zXslnQfFWyjrIBycCivnUBo8wv6jZ
+         afBiSgDK/9Y5FTZMrVv4fwR+ob2YwgPE6oD6KcUUvitVXykwlMe75hdUQQUTA6Mw53
+         vA4FGMUMUGHoSXrMRzRu1DhU39HAnCJe9flvy79Ge4GAcEeKh+mxC9InSSI8c1XyWQ
+         bM+atrzXYZg3w==
+Date:   Tue, 14 Jun 2022 18:52:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
+Message-ID: <20220614185221.79983e9b@kernel.org>
+In-Reply-To: <YqdQJepq3Klvr5n5@lunn.ch>
+References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
+        <YqS+zYHf6eHMWJlD@lunn.ch>
+        <20220613125552.GA4536@pengutronix.de>
+        <YqdQJepq3Klvr5n5@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Functions xfrm_register_km and xfrm_unregister_km do always return 0,
-change the type of functions to void.
+On Mon, 13 Jun 2022 16:56:37 +0200 Andrew Lunn wrote:
+> That would suggest we
+> want a ETHTOOL_LINK_MODE_REMOTE_FAULT_BIT, which we can set in
+> supported and maybe see in lpa?
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- include/net/xfrm.h    | 4 ++--
- net/key/af_key.c      | 6 +-----
- net/xfrm/xfrm_state.c | 6 ++----
- net/xfrm/xfrm_user.c  | 6 ++----
- 4 files changed, 7 insertions(+), 15 deletions(-)
+Does this dovetail well with ETHTOOL_A_LINKSTATE_EXT_STATE /
+ETHTOOL_A_LINKSTATE_EXT_SUBSTATE ?
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index c39d910d4b45..2b2d93aaae78 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -583,8 +583,8 @@ struct xfrm_mgr {
- 	bool			(*is_alive)(const struct km_event *c);
- };
- 
--int xfrm_register_km(struct xfrm_mgr *km);
--int xfrm_unregister_km(struct xfrm_mgr *km);
-+void xfrm_register_km(struct xfrm_mgr *km);
-+void xfrm_unregister_km(struct xfrm_mgr *km);
- 
- struct xfrm_tunnel_skb_cb {
- 	union {
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index fb16d7c4e1b8..fda2dcc8a383 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -3894,14 +3894,10 @@ static int __init ipsec_pfkey_init(void)
- 	err = sock_register(&pfkey_family_ops);
- 	if (err != 0)
- 		goto out_unregister_pernet;
--	err = xfrm_register_km(&pfkeyv2_mgr);
--	if (err != 0)
--		goto out_sock_unregister;
-+	xfrm_register_km(&pfkeyv2_mgr);
- out:
- 	return err;
- 
--out_sock_unregister:
--	sock_unregister(PF_KEY);
- out_unregister_pernet:
- 	unregister_pernet_subsys(&pfkey_net_ops);
- out_unregister_key_proto:
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 08564e0eef20..03b180878e61 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -2481,22 +2481,20 @@ EXPORT_SYMBOL(xfrm_user_policy);
- 
- static DEFINE_SPINLOCK(xfrm_km_lock);
- 
--int xfrm_register_km(struct xfrm_mgr *km)
-+void xfrm_register_km(struct xfrm_mgr *km)
- {
- 	spin_lock_bh(&xfrm_km_lock);
- 	list_add_tail_rcu(&km->list, &xfrm_km_list);
- 	spin_unlock_bh(&xfrm_km_lock);
--	return 0;
- }
- EXPORT_SYMBOL(xfrm_register_km);
- 
--int xfrm_unregister_km(struct xfrm_mgr *km)
-+void xfrm_unregister_km(struct xfrm_mgr *km)
- {
- 	spin_lock_bh(&xfrm_km_lock);
- 	list_del_rcu(&km->list);
- 	spin_unlock_bh(&xfrm_km_lock);
- 	synchronize_rcu();
--	return 0;
- }
- EXPORT_SYMBOL(xfrm_unregister_km);
- 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 6a58fec6a1fb..2ff017117730 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -3633,10 +3633,8 @@ static int __init xfrm_user_init(void)
- 	rv = register_pernet_subsys(&xfrm_user_net_ops);
- 	if (rv < 0)
- 		return rv;
--	rv = xfrm_register_km(&netlink_mgr);
--	if (rv < 0)
--		unregister_pernet_subsys(&xfrm_user_net_ops);
--	return rv;
-+	xfrm_register_km(&netlink_mgr);
-+	return 0;
- }
- 
- static void __exit xfrm_user_exit(void)
--- 
-2.17.1
+That's where people who read extended link state out of FW put it
+(and therefore it's read only now).
 
+In case I'm just confused and this is different we should prolly
+add a paragraph in docs to disambiguate.
