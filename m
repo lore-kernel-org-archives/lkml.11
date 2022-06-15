@@ -2,55 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC52C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C44CBCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:14:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347087AbiFOMNS (ORCPT
+        id S1347521AbiFOMNX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 08:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44586 "EHLO
+        Wed, 15 Jun 2022 08:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240200AbiFOMNR (ORCPT
+        with ESMTP id S245312AbiFOMNR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 15 Jun 2022 08:13:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1EEBB26
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:13:16 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3680FBF76
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:13:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655295195;
+        s=mimecast20190719; t=1655295196;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
         bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
-        b=ZYMEr+vgs68hkECrMLJFNGxEkW1dB+c+ZR/f5spIYG9fdbRHDE1AupV3qwy2HYsVxjdSF5
-        QGQebbZpY60+rtcKcRPBKmlf8TEXu9MJuHkLQT73b+/nVF3F+XVysElVvixy+ozIl/GoEX
-        IyJ/IaQcf6lrl59lASp3euSDBjQjLs8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        b=GVk2dYmEOqG9Mq5mPpyczgcZa4O/tgnx4SSbUnvLyYRnsCTwk3HDBUHJD0SFfdsugGiSTB
+        aN6msCm1cbZHRJzyqLYkl+T6/esa7fnkNthSTw4gk5LQbTjePiequX81h9C9HBPqGhJX45
+        90/3fK+A4YwNXIaIV40gXn3E1+OXq4Q=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-269-uajBiwuGP9uD6WoAkyDuhw-1; Wed, 15 Jun 2022 08:13:12 -0400
-X-MC-Unique: uajBiwuGP9uD6WoAkyDuhw-1
+ us-mta-614-vaNBrGoNNXWWEQaH1DGnFg-1; Wed, 15 Jun 2022 08:13:14 -0400
+X-MC-Unique: vaNBrGoNNXWWEQaH1DGnFg-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 216A6802804;
-        Wed, 15 Jun 2022 12:13:12 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7FDFD3800C24;
+        Wed, 15 Jun 2022 12:13:14 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DD8712166B26;
-        Wed, 15 Jun 2022 12:13:11 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5EB5A2166B26;
+        Wed, 15 Jun 2022 12:13:14 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     Uros Bizjak <ubizjak@gmail.com>
 Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] KVM: x86/mmu: Use try_cmpxchg64 in fast_pf_fix_direct_spte
-Date:   Wed, 15 Jun 2022 08:13:03 -0400
-Message-Id: <20220615121305.1662014-1-pbonzini@redhat.com>
-In-Reply-To: <20220520144635.63134-1-ubizjak@gmail.com>
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [PATCH] KVM: x86/mmu: Use try_cmpxchg64 in tdp_mmu_set_spte_atomic
+Date:   Wed, 15 Jun 2022 08:13:05 -0400
+Message-Id: <20220615121305.1662014-3-pbonzini@redhat.com>
+In-Reply-To: <20220518135111.3535-1-ubizjak@gmail.com>
 References: 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -62,4 +58,5 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 Queued, thanks.
 
 Paolo
+
 
