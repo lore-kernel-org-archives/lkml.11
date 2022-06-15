@@ -2,105 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6813EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9124FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344754AbiFOOWo (ORCPT
+        id S1347705AbiFOOWz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38548 "EHLO
+        Wed, 15 Jun 2022 10:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242702AbiFOOWn (ORCPT
+        with ESMTP id S242702AbiFOOWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:22:43 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50AB3C0F;
-        Wed, 15 Jun 2022 07:22:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655302959; x=1686838959;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9qyp6+bi5a1Nfggtjv4LRguWeuVmJJ6PLYs6RLiuRn4=;
-  b=CnNz3jjRaTFLeQZJGK59xXwRfVNRuTlNlNNdL0RQ2cYHPHK4Byncaytv
-   cX1JwiHqDTn+jF1VCr2NfAsvoFe+WSrwWensiHrI96uTN9t29UJ/7oa0Y
-   oCdtPHa2JEuaP4gbWEHk18xLR8BlL6mj0SimJ5nG6aL64mxuXKNHZO6KH
-   7QrPbb2SLzml3qjuHcYYnXkLw463qKs2wUiFwOg2nwEs892sxEkPlIxbs
-   MDbzfkbAeaVlFH6gpOq9KAEZTBhkiqg1qFZVgdEwrP/7HLMkf3yTWfAKe
-   pIpeGXtm5fGpq5TkRJ9kWR+3mLq1cpZweY0sTc5TXpoH8Js7NlvPluYb9
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="178078168"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jun 2022 07:22:38 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 15 Jun 2022 07:22:37 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 15 Jun 2022 07:22:35 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Daire McNamara <daire.mcnamara@microchip.com>,
-        Lewis Hanly <lewis.hanly@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        <linux-riscv@lists.infradead.org>, <linux-spi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH v2] spi: microchip-core: fix passing zero to PTR_ERR warning
-Date:   Wed, 15 Jun 2022 15:20:29 +0100
-Message-ID: <20220615142028.2991915-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 15 Jun 2022 10:22:49 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C7A19032;
+        Wed, 15 Jun 2022 07:22:48 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id v1so23505165ejg.13;
+        Wed, 15 Jun 2022 07:22:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+cDSM19XhnVItQmXe2GXVbX8IiIZwrvghbIjLeWagA4=;
+        b=T/uAnd4NRj5HaHVJL/NGW4xzIHjJ88SjHm1ylY4aca+8D6wfooiNh1pXFcmjxgVI5z
+         oxoPES4Ga1RtHrg8cGHFuHkSH2f+OhwSwGTCIdhsCCYLUsxNmdilDkXJBny9cRAXwPZM
+         bj8r9HZgGjAb5+5ooOWAC5V7AY+rgW6aZYN3JDn47Ts9R2AcZjZ3lDBwe9qmz0FuX73b
+         Jfcp3Lz9OOReArTRl64Lor4pK9Gl2b8EG10faardk619owy9Pnf2EMV3tb3R3xjJeKiM
+         R/q+Fh8c24KmtesrDZVl0JNopM0eMSrF15SULsMSyCvI4x6xfOthaOBHNdHq8n4QMJq9
+         RjNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+cDSM19XhnVItQmXe2GXVbX8IiIZwrvghbIjLeWagA4=;
+        b=iR9HA6qDl5ORUUI5komj3rPxPDhC2uDdggll+bqqT3fIJ//PwTVqG9L4w785s86W62
+         GvWoBG4Ut8pfatPbVkwx0oXNSTgcMuM/WC8mnXXekoq1D2nQACHbQgnpNpy8xRTf0DvS
+         B7KSjrNRRLRD2mPd6LL3gjqo+DBpfwwnPyiYR6KAuDmbyyZysnOHWywP4S0l3LmKu7M0
+         tMPrixn/0Bpy989+s8WBiyr1H3ip/phKqx17DkkPt8ZiLU1Oz9jBVdeKcC7WTIZmt1Mz
+         IGmU6V7Ag1P94L8DO9FEM37Nt1ofeLINWyTvF/FYw/iTnfJ0Y1gaZXY0f2pRjCkjdr8M
+         eqvQ==
+X-Gm-Message-State: AJIora+vjnWdyEw2stzALAror+DUUFiV6Y6HqSGWOCjFAHeN8NrPZQwc
+        W/bHwPmKYkdH5wy8qoSbIDdAbkK9FOO60dU+kCA=
+X-Google-Smtp-Source: AGRyM1tK+gakBdNkEl/BCl5Wp6p+/qyTwlR5zO3bm+xtxartwOdF0AEvujrW1NR3rivDizKoWarT6AlmcqwpahefijQ=
+X-Received: by 2002:a17:907:2d8d:b0:711:d1bd:d738 with SMTP id
+ gt13-20020a1709072d8d00b00711d1bdd738mr70128ejc.658.1655302966907; Wed, 15
+ Jun 2022 07:22:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <1655179884-12278-1-git-send-email-shengjiu.wang@nxp.com> <1655179884-12278-6-git-send-email-shengjiu.wang@nxp.com>
+In-Reply-To: <1655179884-12278-6-git-send-email-shengjiu.wang@nxp.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Wed, 15 Jun 2022 11:22:38 -0300
+Message-ID: <CAOMZO5BRVBawK2PRvTazkQf-wExOuni9qD76Ha3FYmZZQyPRsg@mail.gmail.com>
+Subject: Re: [PATCH 5/7] ASoC: fsl_sai: Move res variable to be global
+To:     Shengjiu Wang <shengjiu.wang@nxp.com>
+Cc:     Nicolin Chen <nicoleotsuka@gmail.com>,
+        Xiubo Li <Xiubo.Lee@gmail.com>,
+        Shengjiu Wang <shengjiu.wang@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Linux-ALSA <alsa-devel@alsa-project.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is possible that the error case for devm_clk_get() returns NULL,
-in which case zero will be passed to PTR_ERR() as shown by the Smatch
-static checker warning:
-drivers/spi/spi-microchip-core.c:557 mchp_corespi_probe()
-warn: passing zero to 'PTR_ERR'
+Hi Shengjiu,
 
-Remove the NULL check and carry on with a dummy clock in case of an
-error. To avoid a potential div zero, abort calculating clkgen if
-clk_get_rate(spi->clk) is zero.
+On Tue, Jun 14, 2022 at 1:25 AM Shengjiu Wang <shengjiu.wang@nxp.com> wrote:
+>
+> The resource info need to be accessed by hw_params()
+> function for multi fifo case, the start address may
+> be not the FIFO0. So move it to be global first.
 
-Fixes: 9ac8d17694b6 ("spi: add support for microchip fpga spi controllers")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/linux-spi/20220615091633.GI2168@kadam/
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
-v2: drop the NULL check entirely rather than returning -ENXIO if NULL
----
- drivers/spi/spi-microchip-core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Actually, it is not global. It is being added as a member of struct fsl_sai.
 
-diff --git a/drivers/spi/spi-microchip-core.c b/drivers/spi/spi-microchip-core.c
-index 5b2aee30fa04..d866a831104c 100644
---- a/drivers/spi/spi-microchip-core.c
-+++ b/drivers/spi/spi-microchip-core.c
-@@ -433,6 +433,8 @@ static int mchp_corespi_calculate_clkgen(struct mchp_corespi *spi,
- 	unsigned long clk_hz, spi_hz, clk_gen;
- 
- 	clk_hz = clk_get_rate(spi->clk);
-+	if (!clk_hz)
-+		return -EINVAL;
- 	spi_hz = min(target_hz, clk_hz);
- 
- 	/*
-@@ -553,7 +555,7 @@ static int mchp_corespi_probe(struct platform_device *pdev)
- 	}
- 
- 	spi->clk = devm_clk_get(&pdev->dev, NULL);
--	if (!spi->clk || IS_ERR(spi->clk)) {
-+	if (IS_ERR(spi->clk)) {
- 		ret = PTR_ERR(spi->clk);
- 		dev_err(&pdev->dev, "could not get clk: %d\n", ret);
- 		goto error_release_master;
--- 
-2.36.1
+Please rephrase the Subject to:
 
+ASoC: fsl_sai: Make res a member of struct fsl_sai
+
+and then in the commit log:
+
+"So move it to be a member of struct fsl_sai."
