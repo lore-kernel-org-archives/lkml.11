@@ -2,156 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C825CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B9DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344207AbiFOIod (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:44:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47640 "EHLO
+        id S238819AbiFOIoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 04:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346856AbiFOInt (ORCPT
+        with ESMTP id S1347035AbiFOIn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 04:43:49 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2072.outbound.protection.outlook.com [40.107.114.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E213443E6
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 01:43:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CzcSbD98KNJbtB0y1Z/AGKQHVDg7094Lvg5WKaYMcd0iWME2SgknwcQIDNJn1FkmgHP3TA7PvcCVWg2gl6LDhKrny3qsrVHhViZCxr6naPcMukwXEDVdFX8TN1F5/qGZNYUt97OJHq0lBLZJv5ZuOUYL4voNW111gsAAoXa4/3oLE666l9ueChNYkvGYazGfWCuCuiAb+nkLbYfj/jkeUosZubh7pXaAZMYVtrENktf9eCPI2u++61hMzvmiAFk0y5sOHEPCwR27hpit9v9GAuTgxcXDs76ZrzqbUg5bUBsZ3o27qNynZVc5SEaI33lR5c7t0X5qGWqMI/mc9/x/zg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ANmrsr4cs9gk/q2pyaP/wuixRhzDLwkfqyWXOfgcKvE=;
- b=MdlGYTulRXYJzqKcUUYdtDg2pb9hKmVCvp2YeVK0RXy4VEoD2WdcL1YefdmPHA3k4c8MLwmj2s+Ps4Wq8nrmFfgYKZ2BAH2Gho1wIMzByybzMyM1pkOIq5VhWzJEq8VWQ4inTHVye9JHYsZP9C1guCVJfG/v0vZP1ZuVplxSEcx46Pcgw7fp0JVwEPeG/M3DEiMcCp33IR2J9OyiwzSTdWxbyeL2JwaCITpsqwmuovqVUv8XkeFtPEblooy5yvi2Fy7LtE4VX8F0zdwDhIcgclY/R+1gUiyrzEX/VtFlfZm5dQNtGT9/RhpFVzy/hXg5V+tzIvdLh+MltScOjlXY1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nec.com; dmarc=pass action=none header.from=nec.com; dkim=pass
- header.d=nec.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ANmrsr4cs9gk/q2pyaP/wuixRhzDLwkfqyWXOfgcKvE=;
- b=bCp1R2OkVztqchKgmYwB+dq1lyfAPE8+XfIQbKyoQl1JgJSWDtXbW76w/bbJMnBeyBlIcDCt3ESrV0fgA2ek2YJgP7x2BoInZqhVMmDR1rSagFclLynH3doZhytJlBfyc9FEQKRwNiXjUxC2ZMz8A6C9kLCTWnTi6LXWQ6+wTao=
-Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com (2603:1096:400:13c::10)
- by OSBPR01MB3847.jpnprd01.prod.outlook.com (2603:1096:604:48::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Wed, 15 Jun
- 2022 08:43:46 +0000
-Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com
- ([fe80::b00f:b11:37c6:29d0]) by TYWPR01MB8591.jpnprd01.prod.outlook.com
- ([fe80::b00f:b11:37c6:29d0%4]) with mapi id 15.20.5332.023; Wed, 15 Jun 2022
- 08:43:45 +0000
-From:   =?utf-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPo+OAgOebtOS5nyk=?= 
-        <naoya.horiguchi@nec.com>
-To:     David Hildenbrand <david@redhat.com>
-CC:     zhenwei pi <pizhenwei@bytedance.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linmiaohe@huawei.com" <linmiaohe@huawei.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v5 1/1] mm/memory-failure: disable unpoison once hw error
- happens
-Thread-Topic: [PATCH v5 1/1] mm/memory-failure: disable unpoison once hw error
- happens
-Thread-Index: AQHYgFxZplLfJ1ijo0OLciOaJo4Kla1QH2OAgAABn4CAAAZRgA==
-Date:   Wed, 15 Jun 2022 08:43:45 +0000
-Message-ID: <20220615084345.GA1666389@hori.linux.bs1.fc.nec.co.jp>
-References: <20220615020005.246295-1-pizhenwei@bytedance.com>
- <20220615020005.246295-2-pizhenwei@bytedance.com>
- <20220615081521.GB1663556@hori.linux.bs1.fc.nec.co.jp>
- <425e44e9-6ec3-9a87-3441-78881f561a06@redhat.com>
-In-Reply-To: <425e44e9-6ec3-9a87-3441-78881f561a06@redhat.com>
-Accept-Language: ja-JP, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nec.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: df6419c9-f840-4c7c-af01-08da4eab28e2
-x-ms-traffictypediagnostic: OSBPR01MB3847:EE_
-x-microsoft-antispam-prvs: <OSBPR01MB384737E75657F0D3A1B4ED27E7AD9@OSBPR01MB3847.jpnprd01.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QyzOLy1yRBi7BP5kgxV5qsGCAiw4OaB2J43I6ovPLhxhaFDh05BL34rz5URIJPeGpB0sva5/naaKkieSfWobtFazmJloY47z5gmjRaOV28/jVhx8VKAss7z+2awZ2dkQX7Yx12AVeWNpTD5RQnVnWe5sktXisXHICxAu98QJBdKBuxQ+gabq6uHbuHHP2XXcTZZnrC731qLpz5GxcZ8XVV6g2vkD2+xsZsHzPKwlojeNsyhbABsaYbdO6Aamfxd6A6xlKTbzVtk4HnbYNSYTVCS3542jc/ke2W0sqPGYMB4bilpUh48Z9I9OTYy58lCHDyhCsIRf7p61/E5VnZOOwbd5snKYnT176erzz2DECT8any+KB/GUE04BqlWRzaOVBDq18vhBDC+4rQebpw8f6kcOTWDq4V8/T+M8nl/X6S5lcR54CjIGNYv6oG0VHIcrpg5PB3hIsA/bAglzXrUK2BxcelO0rzZ7AODnRZVMvR3IqG9A4aGOFhXdh3or5sfvF0HSUiLmy2hfeX73DGD+2MNjYU6qQZWt6z/koxnyzaeqAPZKcsIiI/YW8pF0+oj7uH4MAZpblEQC0MYE1ag/P5tdiBCvDklHv7CW6Jpo/7HplBwHxEtE/NtqLjKCZKn4jDjTIjosUbEDppzqi2mJjn25SacT2KUn9xpkBpdYD2uihKfc67L3l8flLjGWb1zs24qsJaLwGbvgBme5ENYUXA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYWPR01MB8591.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(8936002)(316002)(186003)(66476007)(38070700005)(4326008)(33656002)(508600001)(1076003)(71200400001)(5660300002)(2906002)(85182001)(6506007)(86362001)(76116006)(54906003)(66946007)(83380400001)(55236004)(26005)(6486002)(82960400001)(122000001)(38100700002)(8676002)(9686003)(53546011)(66556008)(6512007)(64756008)(6916009)(66446008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OGhWaERpUEFDMENVeEc3TFRiRklxWWRUOEtZa0hBZEROYUFQU3EyUzdsZENJ?=
- =?utf-8?B?YVk5Y01YWFRvS3VXMGo0RnlEVkNuVjc3VklhTEtuVXNFZ0JwVEVuNStaTllo?=
- =?utf-8?B?c2VHanVtTGpySkdwd212T1VUdnk1UHNURHNkckgrbkxUNVQ1a0RkUGpKbVZs?=
- =?utf-8?B?bFJ0dm5od3FrTjB3L2w1cW5vdTJJeERTTUNncGN6TWhqY0plTEdmS3RYdU9a?=
- =?utf-8?B?RWtrTFM0ZjVubjl0dUM0K29PYVUrYUtsazhPRFdFcUg3YnVZcjdmU3hjcDZ3?=
- =?utf-8?B?TEVoRDFNRkZvL3diSGpjdWIyNFZwTjlCWjAxU1RVRVNtUzZGQW5xUUE3Y3Zz?=
- =?utf-8?B?THJQUzBnMThwWWUyamROc28yNDBQeTRmWDRJMFU5ZDJVZ1NHN1A4MkNtY0tZ?=
- =?utf-8?B?aUlteTRuNDhTMXFBQW1WbmdpZDYvaFFQMld0NFVGUldkMWtmMTRsVTFvajJS?=
- =?utf-8?B?a1ZVTE9Bd09DeU92REE5RVJ3SXgzU1ZEQXFhYkM5TUk4K0M2dHRrZGh5N0Ja?=
- =?utf-8?B?UzllamdpWUROaGRadEpZWVNmZ0FYTDFEM2ZyRllURXBodmpXMFo5cTUrK2VO?=
- =?utf-8?B?aXhsakczL2pkVHI0anFQV3gyQ2dIMjNHcDBNN0RudTlXZGtjWUF1c1VVNkVB?=
- =?utf-8?B?VHZYMSt0SHQ1RXE3Q0tSVDVkVHZJc2dJdGpFNWptbUZ1NzQ0SzNOT3FvT254?=
- =?utf-8?B?eG9qQk5CbWpJMnBWdzJ2dFpSVE5PWlBmaUc4anZRMTRtVExidVVJeDVENnow?=
- =?utf-8?B?UGRKZVdXZmhwRHJZQW5rQytsclhTMG95SzJ5YnFxZi9vTTdHdFBQNWhxQlhS?=
- =?utf-8?B?bXh4aUpLOGNpUDdyQTBCZFlEOTZ6clNtbU5qWC83RFlGY2xwWnBuWDltcE53?=
- =?utf-8?B?V3N6V2ZTSXd4MDlibG1FTTR5a2U4VnN4ZndSNzNOYmZsVlBjYUI3VTNRSkdW?=
- =?utf-8?B?MzRvT1JEWm55RUNNL1dySGFMT0wzaWtoMmVPT1ViY2t1eld0R3R4VUVEckVq?=
- =?utf-8?B?SHovNzFmcCt3b2RVNWpUTlp0YXVOajJmamJoakozMWYwazV3WTFwbGRjRDlG?=
- =?utf-8?B?LzNscUc2QTF4NEZMTytRM0dGS09uNXBiRkpWUWNKUFlMT0t0eU12Ym5BaXdl?=
- =?utf-8?B?d3krek1xbWJRWklxWmRWNm42d0hXdlNNSzNzMzdqRCswWDBiT1BQM1VObWw5?=
- =?utf-8?B?d004bXh3eXp2ZTkwd1grV2RHZmdQZkFTTUFsb2FxaDJSZ1JUZndMYm1UcWhB?=
- =?utf-8?B?cnhrRm1DNEMwTXNiQWt0ZENpN2lhZS9PeUt5TGYvVllyT2NNTkhnMmJGMEt5?=
- =?utf-8?B?OVJxOUJsQ0RRUGxGSXBGcm8xT1pFTHNpdW1QVTN0UWs4RWhteUptMGlOSkln?=
- =?utf-8?B?NlpJOFlOWGppb2V4YmVyYkRRdDBKbFF5dUpzQzEvaFVQN3FWbnVZbWJENC84?=
- =?utf-8?B?OWpwMCtZSWlEOCtHazNpVkpGSFdRbG90S0lKT1BSVEd6YXhmMXlaZnAydExF?=
- =?utf-8?B?RHQyaEJNejBYbk04WnpEUjV0T3p6VHFERkJVTmF4dWFUUENsbTcveHV2Ti9V?=
- =?utf-8?B?NWRQTWhoS2RkU3hNZUIrUzBlZUZnOWxLYlMyRlZEOG15ck1oNzA1YmhnUG92?=
- =?utf-8?B?RTl0cVZieURnOXQyN1lYVjRxZDgzeXpQVmoycUdQb2IvMDNxdWdFdzFBamx3?=
- =?utf-8?B?Rk8rd0wwRlQzOC9PdHkyWTZ0YTMraVJReEN6eWtGSzRWdGVIS3JJSTdrcWFw?=
- =?utf-8?B?TnIzK29pZW1yT2x5bU9iL2ZNM3F4dmk1OWNQV3NGNWF0Vi9URGY0cWhPU1J1?=
- =?utf-8?B?YnJFT2lMVWNmQmQ0R3FTZHJKVmZtNll4Z1RYNmFXOVA3ZUF3aW9sc1hTUnVQ?=
- =?utf-8?B?TmdWNE5KYjhubzJIbjhTV3B0V1JsTTQ0Z0wzaHlINEpLMXdpaE1Na25HWlE0?=
- =?utf-8?B?MlFzQWhWdHhuVVkwd2d4cGhUbmlaWDhlV05MYlBtNXVsSkZOczd5WXZVWGxE?=
- =?utf-8?B?dk1tM1hDSXplQnRLeEJyekp3a2ZFWktmZlgwOWFaK2ZndiswclN5MzQ1T1pM?=
- =?utf-8?B?SE5PcU5pOE5pd056bzkvb3N0eVhIQ2J1bGg2VUhldEh1SFBxeFhkc1JtNCth?=
- =?utf-8?B?YThvaklNdFFTSFpMQzVuMVVUYzBIYkhTZ2FsaXVRNC90WGdMRTNCMWRGMG81?=
- =?utf-8?B?ODJ1RVY4TW41WXhpTWNYSUtVc3pNOWhsandiK3NkSzArY3J3MTVxYlVoR0kz?=
- =?utf-8?B?QkJjelJTb2Q3SXUzSzVjb1F5cURjam5Pd3hGMWkrb1ExMzQrdVcwZVZCZnp1?=
- =?utf-8?B?VXd0bk9EMzR6aGJxV1NkS1JRNGRBT2JKNm1rVDdyS3lkV0hlWkdOdEZvcE95?=
- =?utf-8?Q?8nyViTNBXegItE14=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <976DD23A5EDF034E8CC2045A4E5F87FD@jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Wed, 15 Jun 2022 04:43:57 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5641F42492;
+        Wed, 15 Jun 2022 01:43:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655282636; x=1686818636;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9BCmaDXuxZ78d4GhPN+LZuRqgQk4eGFz2he5NDkGKa4=;
+  b=mCCHKCM21FJnIc4dzvHH93pTnROJG/VKYN/ySmVdSrBgIqAsRggxJpm4
+   DjAOGqSpVjuvqIAtTkdUOdlGwNYeGrn/Pw5znh0Crthj3n6zZE9wkJDsI
+   zdWH44Q+L55AbDC/5+iuJa+XxQnALs9J+8zAxVExaSyP1yhIuDCUWqKym
+   5d0gGoCcsN/Zl+cK9fbmLVScbtY7j1YAUI+cjslwCfzLjOqouboogtR66
+   1VQqZOzTSiujlvXyRCmY4cHT87XBMTwGfkjchU/cxX+Qskrs9GMeHVsDP
+   11j2x2tgNCQAGVY1vyJUXbcsFPUbqR18AoUX5OVjlSJn7aIrs1+CrRGKH
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="277676289"
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="277676289"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 01:43:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="712849326"
+Received: from p12hl98bong5.png.intel.com ([10.158.65.178])
+  by orsmga004.jf.intel.com with ESMTP; 15 Jun 2022 01:43:49 -0700
+From:   Ong Boon Leong <boon.leong.ong@intel.com>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Emilio Riva <emilio.riva@ericsson.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Subject: [PATCH net-next v5 0/5] pcs-xpcs, stmmac: add 1000BASE-X AN for network switch
+Date:   Wed, 15 Jun 2022 16:39:03 +0800
+Message-Id: <20220615083908.1651975-1-boon.leong.ong@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: nec.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYWPR01MB8591.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: df6419c9-f840-4c7c-af01-08da4eab28e2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2022 08:43:45.8175
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yeaXBVPURtdZMlWeqxWPS0e9CpjWxpjY1xtp0vAZDGF/BrxMZdXAgZCbnbnx4dW/PqhJ9bLKfuyEIDt9LOK9LQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB3847
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gV2VkLCBKdW4gMTUsIDIwMjIgYXQgMTA6MjE6MDlBTSArMDIwMCwgRGF2aWQgSGlsZGVuYnJh
-bmQgd3JvdGU6DQo+IE9uIDE1LjA2LjIyIDEwOjE1LCBIT1JJR1VDSEkgTkFPWUEo5aCA5Y+jIOeb
-tOS5nykgd3JvdGU6DQo+ID4gT24gV2VkLCBKdW4gMTUsIDIwMjIgYXQgMTA6MDA6MDVBTSArMDgw
-MCwgemhlbndlaSBwaSB3cm90ZToNCi4uLg0KPiA+IA0KPiA+IC4uLg0KPiA+IA0KPiA+PiBkaWZm
-IC0tZ2l0IGEvbW0vbWVtb3J5LWZhaWx1cmUuYyBiL21tL21lbW9yeS1mYWlsdXJlLmMNCj4gPj4g
-aW5kZXggYjg1NjYxY2JkYzRhLi4zODViNWU5OWJmYzEgMTAwNjQ0DQo+ID4+IC0tLSBhL21tL21l
-bW9yeS1mYWlsdXJlLmMNCj4gPj4gKysrIGIvbW0vbWVtb3J5LWZhaWx1cmUuYw0KPiA+PiBAQCAt
-NjksNiArNjksOCBAQCBpbnQgc3lzY3RsX21lbW9yeV9mYWlsdXJlX3JlY292ZXJ5IF9fcmVhZF9t
-b3N0bHkgPSAxOw0KPiA+PiAgDQo+ID4+ICBhdG9taWNfbG9uZ190IG51bV9wb2lzb25lZF9wYWdl
-cyBfX3JlYWRfbW9zdGx5ID0gQVRPTUlDX0xPTkdfSU5JVCgwKTsNCj4gPj4gIA0KPiA+PiArc3Rh
-dGljIGJvb2wgaHdfbWVtb3J5X2ZhaWx1cmU7DQo+ID4gDQo+ID4gQ291bGQgeW91IHNldCB0aGUg
-aW5pdGlhbCB2YWx1ZSBleHBsaWNpdGx5PyAgVXNpbmcgYSBkZWZhdWx0IHZhbHVlIGlzIGdvb2Qs
-DQo+ID4gYnV0IGRvaW5nIGFzIHRoZSBzdXJyb3VuZGluZyBjb2RlIGRvIGlzIGJldHRlciBmb3Ig
-Y29uc2lzdGVuY3kuICBBbmQgdGhpcw0KPiA+IHZhcmlhYmxlIGNhbiBiZSB1cGRhdGVkIG9ubHkg
-b25jZSwgc28gYWRkaW5nIF9fcmVhZF9tb3N0bHkgbWFjcm8gaXMgYWxzbyBmaW5lLg0KPiANCj4g
-Tm8gc3Ryb25nIG9waW5pb24uIF9fcmVhZF9tb3N0bHkgbWFrZXMgc2Vuc2UsIGJ1dCBJIGFzc3Vt
-ZSB3ZSBkb24ndA0KPiByZWFsbHkgY2FyZSBhYm91dCBwZXJmb3JtYW5jZSB0aGF0IG11Y2ggd2hl
-biBkZWFsaW5nIHdpdGggSFcgZXJyb3JzLg0KDQpUaGF0J3MgcmlnaHQsIG1tL21lbW9yeS1mYWls
-dXJlLmMgc2hvdWxkIGJlIG1vc3RseSBwZXJmb3JtYW5jZSBpbnNlbnNpdGl2ZS4NCg0KLSBOYW95
-YSBIb3JpZ3VjaGk=
+Thanks for v4 review feedback in [1] and [2]. I have changed the v5
+implementation as follow.
+
+v5 changes:
+1/5 - No change from v4.
+2/5 - No change from v4.
+3/5 - [Fix] make xpcs_modify_changed() static and use
+      mdiodev_modify_changed() for cleaner code as suggested by
+      Russell King.
+4/5 - [Fix] Use fwnode_get_phy_mode() as recommended by Andrew Lunn.
+5/5 - [Fix] Make fwnode = of_fwnode_handle(priv->plat->phylink_node)
+      order after priv = netdev_priv(dev).
+
+v4 changes:
+1/5 - Squash v3:1/7 & 2/7 patches into v4:1/6 so that it passes build.
+2/5 - [No change] same as v3:3/7
+3/5 - [Fix] Fix issues identified by Russell in [1]
+4/5 - [Fix] Drop v3:5/7 patch per input by Russell in [2] and make
+            dwmac-intel clear the ovr_an_inband flag if fixed-link
+            is used in ACPI _DSD.
+5/5 - [No change] same as v3:7/7
+
+For the steps to setup ACPI _DSD and checking, they are the same
+as in [3]
+
+Reference:
+[1] https://patchwork.kernel.org/comment/24894239/
+[2] https://patchwork.kernel.org/comment/24895330/
+[3] https://patchwork.kernel.org/project/netdevbpf/cover/20220610033610.114084-1-boon.leong.ong@intel.com/
+
+Thanks
+Boon Leong
+
+Ong Boon Leong (5):
+  net: make xpcs_do_config to accept advertising for pcs-xpcs and
+    sja1105
+  stmmac: intel: prepare to support 1000BASE-X phy interface setting
+  net: pcs: xpcs: add CL37 1000BASE-X AN support
+  stmmac: intel: add phy-mode and fixed-link ACPI _DSD setting support
+  net: stmmac: make mdio register skips PHY scanning for fixed-link
+
+ drivers/net/dsa/sja1105/sja1105_main.c        |   2 +-
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c |  34 +++-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  12 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c |  14 ++
+ drivers/net/pcs/pcs-xpcs.c                    | 176 +++++++++++++++++-
+ drivers/net/pcs/pcs-xpcs.h                    |   1 -
+ include/linux/pcs/pcs-xpcs.h                  |   3 +-
+ 7 files changed, 229 insertions(+), 13 deletions(-)
+
+--
+2.25.1
+
