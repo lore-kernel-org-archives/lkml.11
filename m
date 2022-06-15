@@ -2,136 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3FC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C2AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238834AbiFOISI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:18:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53370 "EHLO
+        id S243874AbiFOISc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 04:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234799AbiFOISF (ORCPT
+        with ESMTP id S236297AbiFOIS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 04:18:05 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D23C8275DB
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 01:18:03 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AFBA7139F;
-        Wed, 15 Jun 2022 01:18:03 -0700 (PDT)
-Received: from e120937-lin (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 56F2C3F792;
-        Wed, 15 Jun 2022 01:18:02 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 09:17:52 +0100
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        sudeep.holla@arm.com, james.quinlan@broadcom.com,
-        Jonathan.Cameron@huawei.com, etienne.carriere@linaro.org,
-        vincent.guittot@linaro.org, souvik.chakravarty@arm.com
-Subject: Re: [PATCH 11/22] firmware: arm_scmi: Add SCMIv3.1 extended names
- protocols support
-Message-ID: <YqmVsMGgxKuIT5rx@e120937-lin>
-References: <20220330150551.2573938-1-cristian.marussi@arm.com>
- <20220330150551.2573938-12-cristian.marussi@arm.com>
- <6f865d7f-fde8-d923-3c7e-d12bfbc370a6@gmail.com>
+        Wed, 15 Jun 2022 04:18:28 -0400
+Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBF2275DB;
+        Wed, 15 Jun 2022 01:18:24 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id KGI00017;
+        Wed, 15 Jun 2022 16:18:17 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201602.home.langchao.com (10.100.2.2) with Microsoft SMTP Server id
+ 15.1.2308.27; Wed, 15 Jun 2022 16:18:19 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] block: Directly use ida_alloc()/free()
+Date:   Wed, 15 Jun 2022 04:18:16 -0400
+Message-ID: <20220615081816.4342-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6f865d7f-fde8-d923-3c7e-d12bfbc370a6@gmail.com>
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   2022615161817e7cde56c8b56f5d215d9d2f0915e296f
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 05:45:11AM +0200, Florian Fainelli wrote:
-> 
-> 
-> On 3/30/2022 5:05 PM, Cristian Marussi wrote:
-> > Using the common protocol helper implementation add support for all new
-> > SCMIv3.1 extended names commands related to all protocols with the
-> > exception of SENSOR_AXIS_GET_NAME.
-> > 
-> > Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-> 
-> This causes the following splat on a platform where regulators fail to
-> initialize:
-> 
+Use ida_alloc()/ida_free() instead of
+ida_simple_get()/ida_simple_remove().
+The latter is deprecated and more verbose.
 
-Hi Florian,
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ block/blk-core.c  | 4 ++--
+ block/blk-sysfs.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-thanks for the report.
+diff --git a/block/blk-core.c b/block/blk-core.c
+index 06ff5bbfe8f6..eb86c756a7fd 100644
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -448,7 +448,7 @@ struct request_queue *blk_alloc_queue(int node_id, bool alloc_srcu)
+ 
+ 	q->last_merge = NULL;
+ 
+-	q->id = ida_simple_get(&blk_queue_ida, 0, 0, GFP_KERNEL);
++	q->id = ida_alloc(&blk_queue_ida, GFP_KERNEL);
+ 	if (q->id < 0)
+ 		goto fail_srcu;
+ 
+@@ -498,7 +498,7 @@ struct request_queue *blk_alloc_queue(int node_id, bool alloc_srcu)
+ fail_split:
+ 	bioset_exit(&q->bio_split);
+ fail_id:
+-	ida_simple_remove(&blk_queue_ida, q->id);
++	ida_free(&blk_queue_ida, q->id);
+ fail_srcu:
+ 	if (alloc_srcu)
+ 		cleanup_srcu_struct(q->srcu);
+diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
+index 14607565d781..2ed9e7d52b47 100644
+--- a/block/blk-sysfs.c
++++ b/block/blk-sysfs.c
+@@ -799,7 +799,7 @@ static void blk_release_queue(struct kobject *kobj)
+ 	if (blk_queue_has_srcu(q))
+ 		cleanup_srcu_struct(q->srcu);
+ 
+-	ida_simple_remove(&blk_queue_ida, q->id);
++	ida_free(&blk_queue_ida, q->id);
+ 	call_rcu(&q->rcu_head, blk_free_queue_rcu);
+ }
+ 
+-- 
+2.27.0
 
-It seems a memory error while allocating so it was not meant to be
-solved by the fixes, anyway, I've never seen this splat in my testing
-and at first sight I cannot see anything wrong in the devm_k* calls
-inside scmi_voltage_protocol_init...is there any particular config in
-your setup ?
-
-Moreover, the WARNING line 5402 seems to match v5.19-rc1 and it has
-slightly changed with -rc-1, so I'll try rebasing on that at first and
-see if I can reproduce the issue locally.
-
-Thanks,
-Cristian
-
-> [    0.603737] ------------[ cut here ]------------
-> [    0.603752] WARNING: CPU: 1 PID: 1 at mm/page_alloc.c:5402
-> __alloc_pages+0x6c/0x184
-> [    0.603797] Modules linked in:
-> [    0.603809] CPU: 1 PID: 1 Comm: swapper/0 Not tainted
-> 5.19.0-rc1-g44dbdf3bb3f4 #42
-> [    0.603818] Hardware name: BCX972160SV (DT)
-> [    0.603825] pstate: 20000005 (nzCv daif -PAN -UAO -TCO -DIT -SSBS
-> BTYPE=--)
-> [    0.603834] pc : __alloc_pages+0x6c/0x184
-> [    0.603841] lr : kmalloc_order+0x40/0x88
-> [    0.603851] sp : ffffffc00a40b850
-> [    0.603856] x29: ffffffc00a40b850 x28: 0000000000000000 x27:
-> ffffffc008d60404
-> [    0.603867] x26: ffffff80c1e3e1a8 x25: ffffffc00877bd78 x24:
-> 0000000000000058
-> [    0.603878] x23: ffffffc0081921a8 x22: ffffffc008cb04b0 x21:
-> 0000000000000000
-> [    0.603889] x20: 000000000000000b x19: 000000000000000b x18:
-> 0000000000000000
-> [    0.603900] x17: 0000000000000001 x16: 0000000100000000 x15:
-> 000000000000000a
-> [    0.603911] x14: 0000000000000000 x13: ffffff80c1e3c20a x12:
-> ffffffffffffffff
-> [    0.603922] x11: 0000000000000020 x10: 0000000000000880 x9 :
-> ffffffc008159dac
-> [    0.603932] x8 : ffffff80c02708e0 x7 : 0000000000000004 x6 :
-> 000000000041a880
-> [    0.603943] x5 : 0000000000000001 x4 : ffffff8000000000 x3 :
-> 0000000000000000
-> [    0.603954] x2 : 0000000000000000 x1 : 0000000000000001 x0 :
-> ffffffc00a32d3f2
-> [    0.603965] Call trace:
-> [    0.603970]  __alloc_pages+0x6c/0x184
-> [    0.603977]  kmalloc_order+0x40/0x88
-> [    0.603984]  kmalloc_order_trace+0x30/0xd0
-> [    0.603992]  __kmalloc_track_caller+0x64/0x19c
-> [    0.603999]  devm_kmalloc+0x5c/0xe0
-> [    0.604009]  scmi_voltage_protocol_init+0x14c/0x2f4
-> [    0.604020]  scmi_get_protocol_instance+0x128/0x1f4
-> [    0.604030]  scmi_devm_protocol_get+0x64/0xc8
-> [    0.604037]  scmi_regulator_probe+0x5c/0x42c
-> [    0.604049]  scmi_dev_probe+0x28/0x38
-> [    0.604056]  really_probe+0x1b8/0x380
-> [    0.604065]  __driver_probe_device+0x14c/0x164
-> [    0.604073]  driver_probe_device+0x48/0xe0
-> [    0.604080]  __driver_attach+0x160/0x170
-> [    0.604087]  bus_for_each_dev+0x78/0xb8
-> [    0.604095]  driver_attach+0x28/0x30
-> [    0.604101]  bus_add_driver+0xf4/0x208
-> [    0.604108]  driver_register+0xb4/0xf0
-> [    0.604116]  scmi_driver_register+0x5c/0xa4
-> [    0.604123]  scmi_drv_init+0x28/0x30
-> [    0.604132]  do_one_initcall+0x80/0x1a4
-> [    0.604141]  kernel_init_freeable+0x220/0x23c
-> [    0.604149]  kernel_init+0x28/0x128
-> [    0.604158]  ret_from_fork+0x10/0x20
-> [    0.604166] ---[ end trace 0000000000000000 ]---
-> [    0.604194] scmi-regulator: probe of scmi_dev.2 failed with error -12
-> [    0.604792] arm-scmi brcm_scmi@0: Failed. SCMI protocol 22 not active.
-> -- 
-> Florian
