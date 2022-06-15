@@ -2,119 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70ADAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:04:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:05:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347438AbiFOVEd (ORCPT
+        id S1345033AbiFOVFT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 17:04:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
+        Wed, 15 Jun 2022 17:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238600AbiFOVEa (ORCPT
+        with ESMTP id S1344656AbiFOVFQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 17:04:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B241245AB;
-        Wed, 15 Jun 2022 14:04:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16EA760FB7;
-        Wed, 15 Jun 2022 21:04:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09C3AC3411A;
-        Wed, 15 Jun 2022 21:04:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655327068;
-        bh=hE39RVqnoCowXM9bxp3o8FqxXU/Szd80uy6eIhs9g3U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Hi/0jpYEB50JqvcJPwlV1hr/a0AxMbaRoO8oAyLvkAYVFWZwGj8GKEnqLtwNOgg34
-         tceFW5ehstCD7gLBadWuuxHEDK06fmltBb91QlM7fivtrllQIKD5EOR18NvbPAYwDC
-         yTzxH6Fq1txJshoyT6nPaoQD0eIT5lnXjnw2Owxa2IYE3VOY6fTuZ5OkCdtmOutP73
-         RVcgJhpzwG4JkADUERjDiSKLl4Y9rTazee2LAkJzXPe6XpijvNW4j4aRodGscBKhJU
-         Iu3ZUANEFM2U2zeVeymNngISg1EEdQxPlVRGxxPAx9sohffmQM8j8lvOUmPTHuFXAP
-         Lme8ot5GRyPAg==
-Date:   Wed, 15 Jun 2022 22:13:44 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: adc: intel_mrfld_adc: explicitly add proper
- header files
-Message-ID: <20220615221344.308bf5da@jic23-huawei>
-In-Reply-To: <20220615220930.710ed42d@jic23-huawei>
-References: <20220615120803.41350-1-andriy.shevchenko@linux.intel.com>
-        <PH0PR03MB6786A019FB9A1BA810DDE2BC99AD9@PH0PR03MB6786.namprd03.prod.outlook.com>
-        <20220615220930.710ed42d@jic23-huawei>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Wed, 15 Jun 2022 17:05:16 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B155229838
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 14:05:15 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so3321122pjm.2
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 14:05:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=nSPGzfTdZ9LfoOSqIU6EOVEMTSn+8rXd/OcMmHhdRhA=;
+        b=SOMOfzNOEUkBuuBnOrR5RTa6rJffV6+Ngvrq9Yo+bQvLfiiuKPusw6MyqE2JjFK791
+         cu/E/2IDmPD/mfDAsU0A+uJvql58unDxr1ovqwFEfTHzBoULxjdbACa2fl0KBjXJVZP8
+         1wiGEJRBTny54swVMGmUotUJuI6S2TnDHt4lRZvq1V77GQoPYQD6iRdiPLvtMGoQSHUO
+         jC5BCI5T+P+2UwY5eBkJnOTZKmp8UaiZ/0mn1Fjp6JkJT98uQIG+pXXcejb4Od6y1+Q2
+         W4ZK+y7h+roufFwASTDkiZPldmpc9fW3WmW0v31OUBYpSvLixEdF80nsWaQUmwdGe/VC
+         C1JQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nSPGzfTdZ9LfoOSqIU6EOVEMTSn+8rXd/OcMmHhdRhA=;
+        b=r5IGyi0c/bRvxieAqHwGwtQ4HP1Lh3zN0eQahDy8guRd+HFZ+kCM6/eV6ogKFYz1sR
+         6a3pnITX49cOHdBuHe1/Ei36r0RlRyYCKD/ehVkQsPeAIAJZ0oL4GN41wQgju2p3ZDcg
+         3Qv9teNOjKU7tEbXbaMEQiXpH57qAhMWYNmL02I/cHmDWEIV27RkZXPsYHrAC925WEpH
+         dAJj2Z3NulYfURWZ42DHJj+X55FtCTecVZHKbYMwETrnFFKQd7UXydI55VU6bFohwmsq
+         VPqLGNLzoHUOSldrgMfPZ5coThegusYy3e/2japjrpUoP5wZKI+5+jjE67VfV0PMqVrT
+         O0nA==
+X-Gm-Message-State: AJIora8dafr364mzF2eGxSMMAQPGX40NzztQ0ELCWdxlezUNodo5kesa
+        bGJRG/rExfPjRQVSQXaEtHNBwQ==
+X-Google-Smtp-Source: AGRyM1toehBrqqaMQr374mrNlBFnfbhQiBAgvhLstQXz4lea94d8XdLlbwxJ4Mn+NBAsGnu054oJHA==
+X-Received: by 2002:a17:902:d2c9:b0:167:1195:3a41 with SMTP id n9-20020a170902d2c900b0016711953a41mr1424179plc.126.1655327115240;
+        Wed, 15 Jun 2022 14:05:15 -0700 (PDT)
+Received: from [172.22.33.138] ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id w9-20020a17090a780900b001ead46e77e2sm39944pjk.13.2022.06.15.14.05.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 14:05:14 -0700 (PDT)
+Message-ID: <7cc9c5d2-0c42-f24f-1611-0190b24504be@linaro.org>
+Date:   Wed, 15 Jun 2022 14:05:14 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] dt-bindings: dma: rework qcom,adm Documentation to yaml
+ schema
+Content-Language: en-US
+To:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220615175043.20166-1-ansuelsmth@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220615175043.20166-1-ansuelsmth@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 22:09:30 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On 15/06/2022 10:50, Christian 'Ansuel' Marangi wrote:
+> Rework the qcom,adm Documentation to yaml schema.
+> This is not a pure conversion since originally the driver has changed
+> implementation for the #dma-cells and was wrong from the start.
+> Also the driver now handles the common DMA clients implementation with
+> the first cell that denotes the channel number and nothing else since
+> the client will have to provide the crci information via other means.
+> 
+> Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
 
-> On Wed, 15 Jun 2022 12:15:48 +0000
-> "Sa, Nuno" <Nuno.Sa@analog.com> wrote:
->=20
-> > Hi Andy,
-> >  =20
-> > > -----Original Message-----
-> > > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > > Sent: Wednesday, June 15, 2022 2:08 PM
-> > > To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>;
-> > > Alexandru Ardelean <aardelean@deviqon.com>; linux-
-> > > iio@vger.kernel.org; linux-kernel@vger.kernel.org
-> > > Cc: Jonathan Cameron <jic23@kernel.org>; Lars-Peter Clausen
-> > > <lars@metafoo.de>
-> > > Subject: [PATCH v1 1/1] iio: adc: intel_mrfld_adc: explicitly add pro=
-per
-> > > header files
-> > >=20
-> > > [External]
-> > >=20
-> > > Do not trust the fact that iio.h includes of.h which in turn includes
-> > > all the headers we are relying on.
-> > >=20
-> > > The ultimate goal is to actually drop of.h from iio.h.
-> > >=20
-> > > Signed-off-by: Andy Shevchenko
-> > > <andriy.shevchenko@linux.intel.com>
-> > > ---
-> > >=20
-> > > Jonathan, this should be squeezed before we remove of.h in iio.h
-> > > I think Nuno somehow missed this   =20
-> >=20
-> > Yes, I did (compile) tested this on arm and arm64 as I said in the cove=
-r.
-> > I guess this one won't be enabled on those archs :).
-> >=20
-> > I was planning to send this on v2 (I did noticed the kernel test bot
-> > emails) but yeah, this should actually be included with the other
-> > patches before removing of.h from iio. Thanks!
-> >=20
-> > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com> =20
->=20
-> Applied.  Oddly didn't show up in my normal x86 build test.
-Figured out the chain of necessary dependencies so I'll catch anything
-effecting this in my smoke test build going forwards.
+Drop the quotes please.
 
-Thanks,
+As discussed in other patch - trust for me is broken and I have no clue
+which identity is real.
 
-Jonathan
+> ---
+>  .../devicetree/bindings/dma/qcom,adm.yaml     | 95 +++++++++++++++++++
+>  .../devicetree/bindings/dma/qcom_adm.txt      | 61 ------------
+>  2 files changed, 95 insertions(+), 61 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/dma/qcom,adm.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/dma/qcom_adm.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/dma/qcom,adm.yaml b/Documentation/devicetree/bindings/dma/qcom,adm.yaml
+> new file mode 100644
+> index 000000000000..77096a7c9405
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/dma/qcom,adm.yaml
+> @@ -0,0 +1,95 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/dma/qcom,adm.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm ADM DMA Controller
+> +
+> +maintainers:
+> +  - Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
 
->=20
-> As suggested, slotted in before the of.h removal patch.
->=20
-> Thanks,
->=20
-> Jonathan
->=20
-> >  =20
->=20
+Add Bjorn here.
 
+> +
+
+
+Best regards,
+Krzysztof
