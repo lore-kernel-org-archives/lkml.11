@@ -2,138 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E49C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:38:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE82C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346427AbiFOSiz (ORCPT
+        id S1347192AbiFOSjp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48082 "EHLO
+        Wed, 15 Jun 2022 14:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231737AbiFOSix (ORCPT
+        with ESMTP id S231737AbiFOSjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:38:53 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACFE2B24E
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:38:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655318333; x=1686854333;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=42G8vZDc4ZHYS75nOGwaWESZ7FvKXE+QO9Erz/QcALA=;
-  b=E5ckm/JsL9Fv6ylE9OjGR7LBM2Z/Vi28UfZ8UoJFz9qBlq8ASHwSxbus
-   aWsIaHRBQUJ184LJRVE8Gci2xaPfoURG47PeMBtuHMaEgSXwzYDuBOH3N
-   G1jQ+WIU5diLrevDDrM2OqdIWcmpVZH26pYnCZKHypH+j0gTnoBfhRMDf
-   BVpdjH2Ea5cVdfIZvfl9pYCs6CJm5AHgg/YPGG6iZqTjemcX/FvZkMsAE
-   +eo6IOSXlDzC8YyohQ1DrpO3jcniu+K8SoZNm1c3MbzOwgjkjutPVQ6Zl
-   8Jl5lJiwt/HdPjhkJlS81gD1EWOqf1LQ+jsUAEgN1keAIu+oskduvDd2c
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="280102116"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="280102116"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 11:12:35 -0700
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="559273984"
-Received: from mjortiz-mobl.amr.corp.intel.com (HELO [10.212.185.241]) ([10.212.185.241])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 11:12:35 -0700
-Message-ID: <2a6e0dbb-89e3-9735-de20-132992d699b4@intel.com>
-Date:   Wed, 15 Jun 2022 11:12:35 -0700
+        Wed, 15 Jun 2022 14:39:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADDA532EEA
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:39:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655318381;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RcdFFREUfEJEOuSG3gYO2LQRqJJ/FELQTHyfQNEdXjk=;
+        b=OSZPncvsLnJk1ykjwD1bZgcf4tcF99GdxIYdVuMC3Cd7KPVIMtTf4dYUSedKaqSPUI5fi/
+        VFOa2JXji2BxUKJdA6RHQYjIZGL8L0tHsvcjfn24lN3JuwWTrKHr1+G+Bthjg+pl9NyPmQ
+        FPbsYUV25d61wZeCWYgDgu54v+31wPA=
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
+ [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-413-J0nzay-fPmeiQ-Ikkreweg-1; Wed, 15 Jun 2022 14:39:40 -0400
+X-MC-Unique: J0nzay-fPmeiQ-Ikkreweg-1
+Received: by mail-pg1-f197.google.com with SMTP id y2-20020a655b42000000b0040014afa54cso6856479pgr.21
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:39:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RcdFFREUfEJEOuSG3gYO2LQRqJJ/FELQTHyfQNEdXjk=;
+        b=ioAhhjMF4zscUP7xtqzKvj9yAmLemizFwhqncse2zprYwP9bdsPGxiVOWBW8YfhyJQ
+         C7n9AZiAqBgb47wSjikCtO+d7kADbASVuFs9BhFfjro7zrpmI3hfr+QXcfwOyn0tJSZJ
+         hle0oaxYZegbqDoQiUkNImLmTAQUUxuyHQAG+d2yXd9UpbeKfQJMjE+gihjmqNqJE5vk
+         eajpAxCeXjwAdJGslWOTbZuaEtZkkOBXaOiPTWx/2G1e4fLuAj+v67tp2XiHeED6uGqX
+         HfU85vdLhSRfltyyTEY8qY6dHXmmJteYP5Hrn39yp0zTtzbbN6BVFv7aqOjw+uWBVrqp
+         600g==
+X-Gm-Message-State: AJIora8KkoGDgJh1fYSBmmfuJHj9djtrj1nGe6Fh+7/2tF+zOHKli9uH
+        DqZgbFhjlp+CuYsWvx621GxauIhDON62CoXNNNf5Vryc/WJw4ahyzvkL5fZ78nGfHRc9yR2VpI/
+        tBSYPGkAMbRhUtImeh+JIZO70
+X-Received: by 2002:a17:902:6b4c:b0:168:aa50:ddc with SMTP id g12-20020a1709026b4c00b00168aa500ddcmr881388plt.59.1655318379449;
+        Wed, 15 Jun 2022 11:39:39 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sfw24CKmrnxFPIkKzt0RPQftwNck1wdP7tXppKFhlJfFekT0x1FwP0e7fCgN4lHWCzgV5KNg==
+X-Received: by 2002:a17:902:6b4c:b0:168:aa50:ddc with SMTP id g12-20020a1709026b4c00b00168aa500ddcmr881361plt.59.1655318379065;
+        Wed, 15 Jun 2022 11:39:39 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id o1-20020a62f901000000b0051bb79437f7sm10250845pfh.37.2022.06.15.11.39.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 11:39:38 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 11:39:37 -0700
+From:   Jerry Snitselaar <jsnitsel@redhat.com>
+To:     Steve Wahl <steve.wahl@hpe.com>
+Cc:     Joerg Roedel <jroedel@suse.de>,
+        Kyung Min Park <kyung.min.park@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        iommu@lists.linux-foundation.org,
+        Kevin Tian <kevin.tian@intel.com>,
+        Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <sivanich@hpe.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
+Message-ID: <20220615183937.6k3swpax32lsdhkq@cantor>
+References: <9d6177ac-802f-eb11-4307-b0e49d8126b5@linux.intel.com>
+ <20220615183650.32075-1-steve.wahl@hpe.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCHv4 3/3] x86/tdx: Handle load_unaligned_zeropad() page-cross
- to a shared page
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org
-Cc:     ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, linux-kernel@vger.kernel.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, seanjc@google.com,
-        thomas.lendacky@amd.com, x86@kernel.org
-References: <20220614120135.14812-1-kirill.shutemov@linux.intel.com>
- <20220614120135.14812-4-kirill.shutemov@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220614120135.14812-4-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615183650.32075-1-steve.wahl@hpe.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/14/22 05:01, Kirill A. Shutemov wrote:
-> load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
-> The unwanted loads are typically harmless. But, they might be made to
-> totally unrelated or even unmapped memory. load_unaligned_zeropad()
-> relies on exception fixup (#PF, #GP and now #VE) to recover from these
-> unwanted loads.
+On Wed, Jun 15, 2022 at 01:36:50PM -0500, Steve Wahl wrote:
+> To support up to 64 sockets with 10 DMAR units each (640), make the
+> value of DMAR_UNITS_SUPPORTED adjustable by a config variable,
+> CONFIG_DMAR_UNITS_SUPPORTED, and make it's default 1024 when MAXSMP is
+> set.
 > 
-> In TDX guests, the second page can be shared page and VMM may configure
-> it to trigger #VE.
+> If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
+> to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
+> allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
+> remapping doesn't support X2APIC mode x2apic disabled"; and the system
+> fails to boot properly.
 > 
-> Kernel assumes that #VE on a shared page is MMIO access and tries to
-> decode instruction to handle it. In case of load_unaligned_zeropad() it
-> may result in confusion as it is not MMIO access.
-> 
-> Fix it by detecting split page MMIO accesses and fail them.
-> load_unaligned_zeropad() will recover using exception fixups.
-> 
-> The issue was discovered by analysis. It was not triggered during the
-> testing.
-> 
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+
 > ---
->  arch/x86/coco/tdx/tdx.c | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
 > 
-> diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-> index 7d6d484a6d28..3bcaf2170ede 100644
-> --- a/arch/x86/coco/tdx/tdx.c
-> +++ b/arch/x86/coco/tdx/tdx.c
-> @@ -333,8 +333,8 @@ static bool mmio_write(int size, unsigned long addr, unsigned long val)
+> Note that we could not find a reason for connecting
+> DMAR_UNITS_SUPPORTED to MAX_IO_APICS as was done previously.  Perhaps
+> it seemed like the two would continue to match on earlier processors.
+> There doesn't appear to be kernel code that assumes that the value of
+> one is related to the other.
+> 
+> v2: Make this value a config option, rather than a fixed constant.  The default
+> values should match previous configuration except in the MAXSMP case.  Keeping the
+> value at a power of two was requested by Kevin Tian.
+> 
+> v3: Make the config option dependent upon DMAR_TABLE, as it is not used without this.
+> 
+>  drivers/iommu/intel/Kconfig | 7 +++++++
+>  include/linux/dmar.h        | 6 +-----
+>  2 files changed, 8 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> index 39a06d245f12..07aaebcb581d 100644
+> --- a/drivers/iommu/intel/Kconfig
+> +++ b/drivers/iommu/intel/Kconfig
+> @@ -9,6 +9,13 @@ config DMAR_PERF
+>  config DMAR_DEBUG
+>  	bool
 >  
->  static int handle_mmio(struct pt_regs *regs, struct ve_info *ve)
->  {
-> +	unsigned long *reg, val, vaddr;
->  	char buffer[MAX_INSN_SIZE];
-> -	unsigned long *reg, val;
->  	struct insn insn = {};
->  	enum mmio_type mmio;
->  	int size, extend_size;
-> @@ -360,6 +360,19 @@ static int handle_mmio(struct pt_regs *regs, struct ve_info *ve)
->  			return -EINVAL;
->  	}
+> +config DMAR_UNITS_SUPPORTED
+> +	int "Number of DMA Remapping Units supported"
+> +	depends on DMAR_TABLE
+> +	default 1024 if MAXSMP
+> +	default 128  if X86_64
+> +	default 64
+> +
+>  config INTEL_IOMMU
+>  	bool "Support for Intel IOMMU using DMA Remapping Devices"
+>  	depends on PCI_MSI && ACPI && (X86 || IA64)
+> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+> index 45e903d84733..0c03c1845c23 100644
+> --- a/include/linux/dmar.h
+> +++ b/include/linux/dmar.h
+> @@ -18,11 +18,7 @@
 >  
-> +	/*
-> +	 * Reject EPT violation #VEs that split pages.
-> +	 *
-> +	 * MMIO accesses suppose to be naturally aligned and therefore never
-> +	 * cross a page boundary. Seeing split page accesses indicates a bug
-> +	 * or load_unaligned_zeropad() that steps into unmapped shared page.
-
-Isn't this "unmapped" thing a rather superfluous implementation detail?
-
-For the guest, it just needs to know that it *CAN* #VE on access to MMIO
-and that it needs to be prepared.  The fact that MMIO is implemented
-with TDX shared memory *AND* that "unmapped shared pages" can cause
-#VE's seems like too much detail.
-
-Also, is this all precise?  Are literal unmapped shared pages the *ONLY*
-thing that a hypervisor can do do case a #VE?  What about, say, reserved
-bits being set in a shared EPT entry?
-
-I was thinking a comment like this might be better:
-
->         /*
->          * Reject EPT violation #VEs that split pages.
->          *
->          * MMIO accesses are supposed to be naturally aligned and therefore
->          * never cross page boundaries. Seeing split page accesses indicates
->          * a bug or a load_unaligned_zeropad() that stepped into an MMIO page.
->          *
->          * load_unaligned_zeropad() will recover using exception fixups.
->          */
-
+>  struct acpi_dmar_header;
+>  
+> -#ifdef	CONFIG_X86
+> -# define	DMAR_UNITS_SUPPORTED	MAX_IO_APICS
+> -#else
+> -# define	DMAR_UNITS_SUPPORTED	64
+> -#endif
+> +#define	DMAR_UNITS_SUPPORTED	CONFIG_DMAR_UNITS_SUPPORTED
+>  
+>  /* DMAR Flags */
+>  #define DMAR_INTR_REMAP		0x1
+> -- 
+> 2.26.2
+> 
 
