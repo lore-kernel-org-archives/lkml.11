@@ -2,79 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D95D6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 02:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B860CCA47A
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 02:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345647AbiFOCdp (ORCPT
+        id S1345698AbiFOCdr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 22:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54780 "EHLO
+        Tue, 14 Jun 2022 22:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231969AbiFOCda (ORCPT
+        with ESMTP id S1345406AbiFOCda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 14 Jun 2022 22:33:30 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BC315808;
-        Tue, 14 Jun 2022 19:33:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655260398;
-        bh=tDGqBeEH87571LYV7ZipMUnbv8SDiXRnh1Y0I4qsNqU=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=KoRA8e/D+un1T69EIBPFXH0XVvRUlNpFTL2DbETWLfBpCk5HqmNF1MdftUvVW5St+
-         X/T7ZVEZ7wKiL4F8myk67M8LFhYigmfELVraYW3FxslS/CsNedF6IU7cZ3sjNBWyuX
-         78E5Oq74eHRVphvyt/liMnRt35/Y+kwk9a/v5E2Q=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.100.20] ([46.142.34.73]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N7R1J-1ne3QB2AzV-017pEa; Wed, 15
- Jun 2022 04:33:18 +0200
-Message-ID: <45e08686-31dd-64bc-3139-0327526f033e@gmx.de>
-Date:   Wed, 15 Jun 2022 04:33:17 +0200
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF04A140F1
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 19:33:10 -0700 (PDT)
+X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
+        R,40,3)
+Received: from 172.27.96.203
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(28633:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Wed, 15 Jun 2022 10:25:26 +0800 (CST)
+Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
+ CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.6; Wed, 15 Jun 2022 10:25:22 +0800
+Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
+ ([::1]) with mapi id 15.01.2507.006; Wed, 15 Jun 2022 10:25:22 +0800
+From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
+To:     Stephen Boyd <sboyd@kernel.org>
+CC:     "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "arnd@arndb.de" <arnd@arndb.de>, "olof@lixom.net" <olof@lixom.net>,
+        "soc@kernel.org" <soc@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: RE: [PATCH v18 05/10] clk: Add Sunplus SP7021 clock driver
+Thread-Topic: [PATCH v18 05/10] clk: Add Sunplus SP7021 clock driver
+Thread-Index: AQHYf8r5uo30wfgQ7kKLEgfDFgKMD61Ow22AgAD0FaA=
+Date:   Wed, 15 Jun 2022 02:25:22 +0000
+Message-ID: <aaf96491f1a94b5694003797853aa732@cqplus1.com>
+References: <cover.1655194858.git.qinjian@cqplus1.com>
+ <42ed93cf0e5cfeaffdf50d63da558a3f1f6c1021.1655194858.git.qinjian@cqplus1.com>
+ <20220614192555.86436C3411B@smtp.kernel.org>
+In-Reply-To: <20220614192555.86436C3411B@smtp.kernel.org>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.28.110.18]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-From:   Ronald Warsow <rwarsow@gmx.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Language: de-DE
-Subject: Re: [PATCH 5.18 00/11] 5.18.5-rc1 review
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:EhvjiTMlU+GHlRlhcYRO0ZUpm5IAvmybZ17hnowrwxOWuw+X3iQ
- yetuwvKjEiGpm5GOeITTWmRrssw232jTxGfrY6XsNkX1ULJygR4fPSdfrFg1cZfJQBcvHrv
- UbDeQ1cfx7YTmjzNQAn1jhl76gJ3OGiKAnoXreCXF1SrBz3Py5Ov74XrQRL4JeWSYIIyx68
- a1/nNVib4MATYenijRJDg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:SHJt7RVHoKY=:kdHM6HhMXh0OMkjtJ+xtSP
- 5p/k7Ttigu7GkLFzdnRpNAXpJD0n7wPqSOXe2hiA6jvQvlnDxdnTFt6rOMqRr9aW1CpK1FsGh
- N+3wfaiBEIIApOS8T9O5fctxP9JeYKl6sJjWRx0WKc0EBjEr7MHtZWlfMFlK0jK2u/kZVsJv5
- /9UYvN5h1oZ0nmkUDGai/cuPInatl/3WFQ/tXOxorTnnxbonuBdIEYlZXDww5YCFHdXtIaFSV
- Cs88fIWFtUdA/w+muRDlnRCkh4E4w2dNsjWOZyrpKNajiEBHlF2f3CRxhkrly7aVwyBxpCwl6
- 0fmSFDDX6tdaLmJJ2aQu4I/XDqCT/ZJtIczEuqW8Tw9W/85BeE41U0pGT461E3NUM+C2hqZ6i
- 8cGQrDrULfdJCtkwt+igQ6vi+qQdYbNsswsaHgy6BSKo0YmTnTV3TrhwQQvx+xU5c+NtlZMaP
- 4NqMPuC+NWoUDRwUhUEaAKfSAlzYblXO+c/9k0wYmU1iXHJMWXg3E/8fwVDrPTm3ZVsOvEziE
- 9qs1YKWCM+9TExrPy7HXuqt3NmIokFSAx57/XmsqtNFYsN9a6d2ZxZNy8UPngLnCLHZVzKsZp
- +FTJEvgoRcQ8nnFt3wKOXScnjI5V7ZdwwFInrISBOElMZOSOUM7PKb5OaQYrvcK7HBtRek9eQ
- VhWtx5+NxHRGFmOKgQMxnlzpemimEYW9fdhfmmMpav+SSSTAroZYn+u1Iv1XqCPIi6q2JCnU+
- Q3b+Wa+eKh38u/uxlpQNcxQZnAcEthSakae/o77H0p0umcskOq03zF4WdlJzE2UgN+Z7kcXME
- GkK3g5pzp9mU6hEgK8vOFKdAbhmhumNWkLGIkCcPvhZ4Bct1DgpBZfYe40Ctwzgx0sQMBSowc
- PuTwaueS2FlS9wO3TQYmjFq5lmwlEUXbcWHygzUp4UyDwfnu/8+SGQt09znUUXswzM/xz+ARz
- 3iMZ1uBO2d2ksnOUEmY1mKgKCrrPipfs488toUWQxmQu3kCAKdWsVY17uDEFQdjCf/a6j/GNO
- ZTrgTmdet5VDUdAwJcfPrecoWPi99YIQARM8ROHhyY699yhoO2zuTx989DMZ0tfIeJJV77+AL
- NKsOdlLsIl2fDWKg1slJ6eEJ/1PqqZBJZkV
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hallo Greg
-
-5.18.5-rc1
-
-compiles, boots and runs here on x86_64
-(Intel i5-11400, Fedora 36)
-
-Tested-by: Ronald Warsow <rwarsow@gmx.de
-
-
-Thanks
-
-Ronald
-
+PiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2Nsay9jbGstc3A3MDIxLmMgYi9kcml2ZXJzL2Nsay9j
+bGstc3A3MDIxLmMNCj4gPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAw
+MC4uMGNhZWYxYmM3DQo+ID4gLS0tIC9kZXYvbnVsbA0KPiA+ICsrKyBiL2RyaXZlcnMvY2xrL2Ns
+ay1zcDcwMjEuYw0KPiA+IEBAIC0wLDAgKzEsNzI1IEBADQo+ID4gKy8vIFNQRFgtTGljZW5zZS1J
+ZGVudGlmaWVyOiAoR1BMLTIuMC1vbmx5IE9SIEJTRC0yLUNsYXVzZSkNCj4gDQo+IFRoaXMgaXNu
+J3QgYSBjb21tb24gbGljZW5zZSBvbiBkcml2ZXIgZmlsZXMuIElzIGl0IGludGVuZGVkPyBPcg0K
+PiBjb3B5L3Bhc3RlIGZyb20gRFQ/DQoNClllcywgSSBjb3B5L3Bhc3RlIGZyb20gRFQuDQpEaWQg
+SSBuZWVkIGNoYW5nZWQgaXQgdG8gJ0dQTC0yLjAtb25seSc/DQoNCj4gDQo+ID4gKy8qDQo+ID4g
+KyAqIENvcHlyaWdodCAoQykgU3VucGx1cyBUZWNobm9sb2d5IENvLiwgTHRkLg0KPiA+ICsgKiAg
+ICAgICBBbGwgcmlnaHRzIHJlc2VydmVkLg0KPiA+ICsgKi8NCj4gWy4uLl0NCj4gPiArDQo+ID4g
+K3N0YXRpYyBpbnQgc3A3MDIxX2Nsa19wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2
+KQ0KPiA+ICt7DQo+IFsuLi5dDQo+ID4gKw0KPiA+ICsgICAgICAgLyogZ2F0ZXMgKi8NCj4gPiAr
+ICAgICAgIGZvciAoaSA9IDA7IGkgPCBBUlJBWV9TSVpFKHNwX2Nsa19nYXRlcyk7IGkrKykgew0K
+PiA+ICsgICAgICAgICAgICAgICBjaGFyIG5hbWVbMTBdOw0KPiA+ICsgICAgICAgICAgICAgICB1
+MzIgaiA9IHNwX2Nsa19nYXRlc1tpXS5yZWc7DQo+ID4gKyAgICAgICAgICAgICAgIHN0cnVjdCBj
+bGtfcGFyZW50X2RhdGEgKnBkID0gc3BfY2xrX2dhdGVzW2ldLmV4dF9wYXJlbnQgPyAmcGRfZXh0
+IDogJnBkX3N5czsNCj4gPiArDQo+ID4gKyAgICAgICAgICAgICAgIHNwcmludGYobmFtZSwgIiUw
+MmRfMHglMDJ4IiwgaSwgaik7DQo+ID4gKyAgICAgICAgICAgICAgIGh3c1tpXSA9IGNsa19od19y
+ZWdpc3Rlcl9nYXRlX3BhcmVudF9kYXRhKGRldiwgbmFtZSwgcGQsIDAsDQo+IA0KPiBUaGlzIG5l
+ZWRzIHRvIGJlIGRldm0gYXMgd2VsbC4gT3RoZXJ3aXNlIGlmIHRoZSBkcml2ZXIgaXMgdW5ib3Vu
+ZCB3ZSdsbA0KPiBsZWFrIHRoZXNlIHJlZ2lzdGVyZWQgY2xrcy4NCj4gDQoNCmNsay1wcm92aWRl
+ci5oOg0Kc3RydWN0IGNsa19odyAqX19kZXZtX2Nsa19od19yZWdpc3Rlcl9nYXRlKHN0cnVjdCBk
+ZXZpY2UgKmRldiwNCgkJc3RydWN0IGRldmljZV9ub2RlICpucCwgY29uc3QgY2hhciAqbmFtZSwN
+CgkJY29uc3QgY2hhciAqcGFyZW50X25hbWUsIGNvbnN0IHN0cnVjdCBjbGtfaHcgKnBhcmVudF9o
+dywNCgkJY29uc3Qgc3RydWN0IGNsa19wYXJlbnRfZGF0YSAqcGFyZW50X2RhdGEsDQoJCXVuc2ln
+bmVkIGxvbmcgZmxhZ3MsDQoJCXZvaWQgX19pb21lbSAqcmVnLCB1OCBiaXRfaWR4LA0KCQl1OCBj
+bGtfZ2F0ZV9mbGFncywgc3BpbmxvY2tfdCAqbG9jayk7DQojZGVmaW5lIGRldm1fY2xrX2h3X3Jl
+Z2lzdGVyX2dhdGUoZGV2LCBuYW1lLCBwYXJlbnRfbmFtZSwgZmxhZ3MsIHJlZywgYml0X2lkeCxc
+DQoJCQkJICBjbGtfZ2F0ZV9mbGFncywgbG9jaykJCQkgICAgICBcDQoJX19kZXZtX2Nsa19od19y
+ZWdpc3Rlcl9nYXRlKChkZXYpLCBOVUxMLCAobmFtZSksIChwYXJlbnRfbmFtZSksIE5VTEwsIFwN
+CgkJCSAgICAgICBOVUxMLCAoZmxhZ3MpLCAocmVnKSwgKGJpdF9pZHgpLAkJICAgICAgXA0KCQkJ
+ICAgICAgIChjbGtfZ2F0ZV9mbGFncyksIChsb2NrKSkNCg0KU2hvdWxkIEkgdXNlIF9fZGV2bV9j
+bGtfaHdfcmVnaXN0ZXJfZ2F0ZSgpIHdpdGggcGFyZW50X2RhdGENCm9yDQpkZXZtX2Nsa19od19y
+ZWdpc3Rlcl9nYXRlKCkgd2l0aCBwYXJlbnRfbmFtZT8NCg0K
