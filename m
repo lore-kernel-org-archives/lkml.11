@@ -2,80 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E55E4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E9E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349423AbiFOMx4 (ORCPT
+        id S1351031AbiFOMyA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 08:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33944 "EHLO
+        Wed, 15 Jun 2022 08:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349234AbiFOMxq (ORCPT
+        with ESMTP id S1349376AbiFOMxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 08:53:46 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037D432045;
-        Wed, 15 Jun 2022 05:53:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=STcox88mUH+VdAhq8p9+4+XG107fbNNN1YjCyQgqCOI=; b=O5P73Q9Qzq5L30Hih2OX0VQl6k
-        gn5V5w9d7DQLXSwcs0s/7Pj1gS9DkCpladTxY0nLSwA5vB1DQI7e0VIzHByv7vfkjexlpt0z7c9GR
-        bO8Fbg7nkKatNE4FiIiYtXfsK97SZYDg2g4E0re0XcEWKk3qcsdlP+RgdVuFehvLUtn0=;
-Received: from p200300daa7110200c95c40f4ac0d06a0.dip0.t-ipconnect.de ([2003:da:a711:200:c95c:40f4:ac0d:6a0] helo=Maecks.lan)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1o1SWf-0000WR-DJ; Wed, 15 Jun 2022 14:53:37 +0200
-From:   Felix Fietkau <nbd@nbd.name>
-To:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH RESEND v10 2/3] PCI: mediatek: Allow building for ARCH_AIROHA
-Date:   Wed, 15 Jun 2022 14:53:34 +0200
-Message-Id: <20220615125335.96089-2-nbd@nbd.name>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220615125335.96089-1-nbd@nbd.name>
-References: <20220615125335.96089-1-nbd@nbd.name>
+        Wed, 15 Jun 2022 08:53:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AF3B2A273
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:53:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655297631;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=Lop8UNaKmAOsPILLCkqdM7yzdV70kPwMF4GS1JnvQlN7ftz6j+v9h/f6EDDkxgyeNuYH8E
+        8CxZOUtArsib6J7fMHdC2Pp4tuQvjP0LQAQEhXQaTcUzCvgdwpVtPO1UWVGvHLyWGHMEq0
+        LORrhLSh7l99VBsj868KQuNPZJgGcF4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-567-f6eyke9lPeqUP4lGOhrsUQ-1; Wed, 15 Jun 2022 08:53:50 -0400
+X-MC-Unique: f6eyke9lPeqUP4lGOhrsUQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 03E65801756;
+        Wed, 15 Jun 2022 12:53:50 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C20CB2166B26;
+        Wed, 15 Jun 2022 12:53:49 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lei Wang <lei4.wang@intel.com>
+Subject: Re: [PATCH 0/5] KVM: nVMX: Support loading MSRs before nested state
+Date:   Wed, 15 Jun 2022 08:53:47 -0400
+Message-Id: <20220615125347.1664635-1-pbonzini@redhat.com>
+In-Reply-To: <20220614215831.3762138-1-seanjc@google.com>
+References: 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow selecting the pcie-mediatek driver if ARCH_AIROHA is set, because the
-Airoha EN7523 SoC uses the same controller as MT7622.
-The driver itself is not modified. The PCIe controller DT node should use
-mediatek,mt7622-pcie after airoha,en7523-pcie.
+Queued, thanks.
 
-Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
- drivers/pci/controller/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Paolo
 
-diff --git a/drivers/pci/controller/Kconfig b/drivers/pci/controller/Kconfig
-index b8d96d38064d..2f6806dc2a20 100644
---- a/drivers/pci/controller/Kconfig
-+++ b/drivers/pci/controller/Kconfig
-@@ -237,7 +237,7 @@ config PCIE_ROCKCHIP_EP
- 
- config PCIE_MEDIATEK
- 	tristate "MediaTek PCIe controller"
--	depends on ARCH_MEDIATEK || COMPILE_TEST
-+	depends on ARCH_AIROHA || ARCH_MEDIATEK || COMPILE_TEST
- 	depends on OF
- 	depends on PCI_MSI_IRQ_DOMAIN
- 	help
--- 
-2.36.1
 
