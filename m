@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF30EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:20:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C85D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348392AbiFOOUT (ORCPT
+        id S1347099AbiFOOUc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35368 "EHLO
+        Wed, 15 Jun 2022 10:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346483AbiFOOT5 (ORCPT
+        with ESMTP id S1347248AbiFOOT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:19:57 -0400
+        Wed, 15 Jun 2022 10:19:58 -0400
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCAC49937
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:19:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 333264A3E0
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:19:55 -0700 (PDT)
 Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25FDvQ1S015201;
-        Wed, 15 Jun 2022 14:19:41 GMT
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25FDbEJq015196;
+        Wed, 15 Jun 2022 14:19:44 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : references : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=gTOa4sCsowVfnMdwtik+r2rl6y+WpU7ND9MuGs2cInU=;
- b=OwO8JApKapKC6acGaXwDqLR3fnGED+ZobDeMzGxQvqx+jrrUITCKT3qqwkiSkEMAxI7q
- wOYkxsYzOJ0W/r6nnjJnmzaA8exGsYtJj1E9mxh50uWuOXY+1n+qV4tOFOaAECMWVPZ2
- 0pPjZ4IfAn59gpP3b216nNdGw6HX0QhFOqqXF4pbtitusRG+if0cyNgYSTG5e3L/zDXG
- UafYUK6ZACp0HlieOBNGP3Q1IJVGxip7Mu8g5C/B9sA16pVJNqR8M39jc0vu3EaZYr2o
- Q6BR9jCAo52I3rc0NOXcImJbc4aFUP4cirCnFV4mNurkVY/9ywvjacA7VpJvLaGYsH02 Ew== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmhn0gsfw-1
+ bh=lmhWxVhmnXmxvHLPOyPtk7GraaRj0TzIN4wkdhlEmF4=;
+ b=nOFY7FrqqGDAGM7pL8n/PSVLFVbKsyidQ2EjwaQcqBczBtMzBJJL52KXs4beKDq3fp10
+ fA41YH61Of757GuMgSIZFgw8uDS5n4TutKQUw6xB21weC2NrtvR01vU5+a8A44wGA1Tg
+ RUjrOWEpRHpgttgheetYHjRCMKSTy70/Oha0BsL7+ky7MgtibYm1pDVKTQF1B0TLG6Yb
+ UX5z0FHYsuZ5Cmf1yAP6rJ3O53D6JL25z8BhHKV8Mrwt873GtR13+6hze96BB7+GqIwU
+ HU7bcms7B+d9KGcBp8QAqvvDGjP4GFxZMRPQ6B3QI5nQW9bcKqNHIiRJYYtS1N5071m4 hw== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmhn0gsfy-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Jun 2022 14:19:41 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25FDtnhf031252;
-        Wed, 15 Jun 2022 14:19:40 GMT
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2049.outbound.protection.outlook.com [104.47.57.49])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gpr7p2nrp-2
+        Wed, 15 Jun 2022 14:19:44 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25FDtwuU008028;
+        Wed, 15 Jun 2022 14:19:43 GMT
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2044.outbound.protection.outlook.com [104.47.57.44])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gpr25uq1t-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Jun 2022 14:19:40 +0000
+        Wed, 15 Jun 2022 14:19:43 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iAVcxmU5UoP1HFpE8xSFAVXMI4+q4SxUyMjGYGk/SyqIKgWoM5S7Oopq6vrggGsjwsZ4wDxKLIR6xYK8x64zaOz/lVXStZLClgyi4z4UIm/SyQWJJtUTDREaT6mmHQrDxNN4DLMfNkFIQCVbQirGXLTzKIkCu+sEQIYreONvuWYx/ktbAkiEANHTQNTTL72E/qsBMWWlbWaqBHQfM40JsuvD4hCghH1X9xI4qD1udqm3hlS8dDtETEY7bPUW9ISLoIV9YSg4C47BOA27m8u+cJ+OPMCWuiqjqexELPiDXoIZvfynEBxB4vCkTNw7QwJLRpQYOJj3VIuW2TbdqyIy3w==
+ b=CTe92FeI9StVJRQ9YIPwzTc1ZmBSoAX+KvvAjbKE7kwobrk+8ZOdbzLMa75Wb/jQ6Du5LVvmfgu2uPk/wPLC+2iSLQHe3Xc/tcns41+kfUi+nkbGOWgpc7We3rRjWT3UQ7CU3wrRB2/mxWimdhfaZXHkpmAGv1RQxOo/ZuJOre7VppnYYCyfx3vWNvBLGL8DM1ebPAufNcp5XYcXeYcRaT/wiPLVNY3B74g2UsATQgowXpsHI/Ai49fteLHUd6kJQRotWWKDNlDZR3YCk5TJzJrY+2Z+Paeam/NLN7t1TE0IW6i9OqZG/V2GmGC+PpLeUwV4yp0tJbk2Sf46n3etig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gTOa4sCsowVfnMdwtik+r2rl6y+WpU7ND9MuGs2cInU=;
- b=fG100qUb8FKI68ANOFuz7K9igKYwriJ2BJlU0Z/jWuGNxF0l/sSSquIq1jHIGPx36uV5Rcs7EUqKXiUl364fNvdQJ99RCMszw3onrdTQlK9jOKhvK4ttdhOa7mP32NrAgLTmWq8iIHJdWVm5cRUDWG1PtRSmDKxhACzdWSty177mW6lmH4xEFHUcYPbr9bupaaqX7C1Vz77lDU/rTDiMU8q53Xgd5SW5M4xcmXoVUF/uCqxgiDWwuuVwZK0G39l0gNmagInYNa1JHKQeimqTaZpPT+NvrQ0TrPBcPUZPo9VVVNl7jNsFBTygcVA+/ZDKxEDlF+fuivXMQzIvosAKtw==
+ bh=lmhWxVhmnXmxvHLPOyPtk7GraaRj0TzIN4wkdhlEmF4=;
+ b=ejy8XHmZ6uLTZIWHT6TTMfERAmG3IEad97PFh9rvMocXLQEt6dLAAJ4fQCgPmzO61bMU/f1BG7NRFpWPbM3hnsz7L1miGcLk6Apjf+dqXMxgFyMuCWZRFtqZqiPKBg4BElMR7MHY6plrVfPOggOF0z4ekssCPbJ4UNdBBx+ESgIKh+RgZWusczBx3DNnjSP46mYuyNS4fmcKI8Ewal64XzM72TIv2M+LszdxvcBCBKo/sqEvw4uQ8elufd4TMuykhLocrcxbQBEpauuE2PvmCEnPzz1RcLxGBzqL0PlOSy7i45DQAdrrkVpf5uvQlsIJQk4sj0KgSku9gd2babIyHQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gTOa4sCsowVfnMdwtik+r2rl6y+WpU7ND9MuGs2cInU=;
- b=cI93iyTsIzV21JBNqVqRMBgjoZKAdUgmZXw9aVAwmCt5/H4+x30S7ZpRbalR+JLYhMb8P23i9kyy54tZvjPZKZbV7RQhW5Dz+oSYfNlxbXJf9w5f5zbW6Uvm3ccUcaIMUyVysQaLLEHyiIuuS0gm9MWG4i5WncWRIlWxe5tGyLU=
+ bh=lmhWxVhmnXmxvHLPOyPtk7GraaRj0TzIN4wkdhlEmF4=;
+ b=wRkGeQxpAWCcE7XgEfhecJf+YIxwbToxtu6Tq+79J2Lv+vpkWryCARrtlzp0LTy6aEMPFZ/7pDEaLpbANy1R6Ww09OfAidN64xUb+A901CLqQCp+BOFh5hm+nsSVzGlBPwRxn2jbAdzgjxX/PF3adQC6+ggc1R503cTXcOTTVk8=
 Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
  by MN2PR10MB3342.namprd10.prod.outlook.com (2603:10b6:208:12b::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.15; Wed, 15 Jun
- 2022 14:19:39 +0000
+ 2022 14:19:40 +0000
 Received: from SN6PR10MB3022.namprd10.prod.outlook.com
  ([fe80::e1df:2e42:6674:313e]) by SN6PR10MB3022.namprd10.prod.outlook.com
  ([fe80::e1df:2e42:6674:313e%7]) with mapi id 15.20.5332.013; Wed, 15 Jun 2022
- 14:19:39 +0000
+ 14:19:40 +0000
 From:   Liam Howlett <liam.howlett@oracle.com>
 To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
         "linux-mm@kvack.org" <linux-mm@kvack.org>,
@@ -70,13 +70,13 @@ To:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Qian Cai <quic_qiancai@quicinc.com>
 CC:     Yu Zhao <yuzhao@google.com>
-Subject: [PATCH Fix 1/3] maple_tree: Fix mt_destroy_walk() on full non-leaf
- non-alloc nodes
-Thread-Topic: [PATCH Fix 1/3] maple_tree: Fix mt_destroy_walk() on full
- non-leaf non-alloc nodes
-Thread-Index: AQHYgMLys5sMlAg0rkKdMdWAEuRIZQ==
-Date:   Wed, 15 Jun 2022 14:19:38 +0000
-Message-ID: <20220615141921.417598-2-Liam.Howlett@oracle.com>
+Subject: [PATCH Fix 3/3] test_maple_tree: Add tests for preallocations and
+ large spanning writes
+Thread-Topic: [PATCH Fix 3/3] test_maple_tree: Add tests for preallocations
+ and large spanning writes
+Thread-Index: AQHYgMLzPlBKBPzE6UyrbBOdTKnb3Q==
+Date:   Wed, 15 Jun 2022 14:19:40 +0000
+Message-ID: <20220615141921.417598-4-Liam.Howlett@oracle.com>
 References: <20220615141921.417598-1-Liam.Howlett@oracle.com>
 In-Reply-To: <20220615141921.417598-1-Liam.Howlett@oracle.com>
 Accept-Language: en-US
@@ -85,104 +85,379 @@ X-MS-Has-Attach:
 X-MS-TNEF-Correlator: 
 x-mailer: git-send-email 2.35.1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: dc122f79-b9bf-447e-c071-08da4eda1519
+x-ms-office365-filtering-correlation-id: 65dc88f1-e0ca-4383-277f-08da4eda1608
 x-ms-traffictypediagnostic: MN2PR10MB3342:EE_
-x-microsoft-antispam-prvs: <MN2PR10MB334217B461344B6B6EC2E04FFDAD9@MN2PR10MB3342.namprd10.prod.outlook.com>
+x-microsoft-antispam-prvs: <MN2PR10MB334220115E5AD4714B2AFE01FDAD9@MN2PR10MB3342.namprd10.prod.outlook.com>
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: O8yBqy+6DT0/AMzL3EhZF7BS8UaWKcooNaO4E5NrVnFhODI23pHzP3AHN6zllK5sAu6yxuctiEhBfdgq652mzjDtcKwWBUdxBuVKNEu5B/24I5erfCEZADc5CFs+63b6/uFFEOBcVbb80+H1udMsTVx20J9D/RTLD5khKrlWvxE7bzZVK9ayEmdetFLjT+ql0uVdVDsEfv3/LnUa1QtKat+rkn5vTZ2xt6m0/VAurF9XSelFgC5fK7cV+OxnkwAAWSoN1U5e7MQB0b9anq/HZoll5SQEKPTn6F5ihInVbQlDWxy6iRFeRToy56E4zEd4Ag/SONhHqST6z1WhHMYG5zRGGBUCQUJVOzveMuMGnRckneTajhxMbnrpt0GPKDhV2tZhnALgfYURMDnRRhgwg8zv2PTFA2QYKe3ZEScEsHUrBdAJGlS0AdUud9lij3ieLa73LxJNUgy35MUzZ3q30rjAO6DYtiR/p4EymQeG7xg3nZPkFMMcwCiX+h8+xdbrO4aFyh64ZAlxXqXl+/ujRXAAoOUg0KudBR3GJ2dQSy07wry/9wZIA981b4ntv28S93y6DgzPsw88SwtU+48By8paFMUK7tXU/NhfdA8w5mOXJclWWtqtfAT7RX1d9iGO9IhsKMgqI0flFiRl+baDbn+pgUwJvSdfsu/p3dqGrQNM6Zc/EXw2BlrnbuBqEYsAi7iG3SGRPy7U6cAz6zhuqw==
+x-microsoft-antispam-message-info: N5VK+SuB2O1vz92R4cJUKJz/Eht3W6JRH07f8FDzHePAz/KLaUn7hvAokKpwaGeibHFtmH5TGNDXCNfaRACu5MZ+Prgqdo2BoguBORe7Lt6WScrzGTo6ADBqhgOvKNuWs8ua7BUjl8VPtKRRY4huGFnp6qTlTamgoQrXiP3jpDAwYxpANPo/TcThpxjME8LqXEhHZxj0qrEovXrFrQ2lQh8uC2p11E7s/smyprhYa2MpFMkV7oowTHzk4aTq+ufyE1arLYc7Xxe/DZ9/7xp5Yk+leK8SH2mZ6euvjrfUSzbMEdHtBvXpqD/ehH7MSdne6qgr9s+d4tSFSYAx7Iu/+8TX8gpHycXCEXi8fWkNFdqE/hGRTPLhFtzD34TvF8aSVxgGpEBPQegRVVBMrbqPqH4aJkB1ZekCz0CiiJFxeldfk/pouLNDVDnucmnuqDseGHf+HoIB/zf4QCWf4EFKj4XoH9ey+uTS1uOtc0852gbktbV2Vpd4VV4dXdVGqw+B2lAtoRrbjRsJlVFUgeAdOh+Un/1tenaJN8V4iMfN3K34erKAFzRQUu3NLo+P402/3toi950LXxW4+1ELEJ91CVRglxt/VuvjgUXbc+P1PCoymtksLBtcWoUn+lAELAGOVwaocwnR1enNacvt+tl8XMw9Jzexe8sRO1sas7TqwMVmgm1LiZ9k7gkDlvlsQBiWlszPBq1/MnLM4mBtX/zArQ==
 x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(86362001)(316002)(122000001)(110136005)(38100700002)(186003)(5660300002)(4326008)(8936002)(2906002)(71200400001)(38070700005)(66556008)(64756008)(66476007)(8676002)(66446008)(6506007)(76116006)(91956017)(26005)(6512007)(508600001)(83380400001)(6486002)(1076003)(36756003)(44832011)(2616005)(66946007);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?mT24yWl/IIVZDL3daLivHHf70f1REhRlk4R8dYnCG9NKTN9gbBUbUomNjY?=
- =?iso-8859-1?Q?raHKuDw5fFJ2dHEra6mTcrPGqU8dEN4qD6rQm9OBM9kAsqQD/AvMa/Qm8u?=
- =?iso-8859-1?Q?VKMz2XpV5fCuo3jnNFqztLIiLZ7l9r6jODAHhXtTDhcOvFWllNUKJsvWl1?=
- =?iso-8859-1?Q?URD1jPIVbsq1HBMdQD4dE0KXz9icXkHnnSVCkCjrzjOFVO4OyyZlcia4n3?=
- =?iso-8859-1?Q?m7fpo2E2hoT2nxYZnrCV6VLDzTzporaXFyiUQaFX7SUvTE9c/EkkwLVvcB?=
- =?iso-8859-1?Q?RlfRQW7t1uNi2md9jUB2SZ7a3TLxKDKfVBh1aDxP3QWMe83Q6uXgU/LtUA?=
- =?iso-8859-1?Q?DjW5SeZ6usb/g6VSBjfTRtD2MFv7DKJujLIvHFKKtC1VSWzUsBVBlnsz+7?=
- =?iso-8859-1?Q?918ZJZVN+lAV9qsxoY6y5qFoQBY+VZFrzimY1wZnYBz38tOkdNrFvFcMgx?=
- =?iso-8859-1?Q?6nyjiKvWlJaTa5BNvSV/By2Y4/qdjyN50WEYVCovHanxZiSyvydoH3r3qn?=
- =?iso-8859-1?Q?joAJsCHlpLd3bYOqgSovrFPQDZaDTOoh2kHP50Nbi9d5y5z0OCPD+5QLp+?=
- =?iso-8859-1?Q?deK4+3qn0F7BulCF9d9M4AaivBQKjvspza3zHvzYwgMeHYJ7yBwMAvpkah?=
- =?iso-8859-1?Q?rMWI84kocuZmWVT+JBODcB2aHTGW5PtMOnVe1v8s+7gXSBZzE0hYYj/LiL?=
- =?iso-8859-1?Q?cyDnbG0sCIpD6YmsiM3aApZCn02DY3U95aGlm10XnHVDMqh7erZAOd+XRC?=
- =?iso-8859-1?Q?4/IgAilwGrI3I9Ic2BhUvPFhlL+9wuhrF/1gP1irIvYZGQv44aXA5UkpmL?=
- =?iso-8859-1?Q?rRQOFPotp3HIIE5gVKXUp9MVgTABxIHFTJkjJtz4Odk1IQbhxphmXaz2mm?=
- =?iso-8859-1?Q?vPqRodwdbtWQxNOc0iP2fJEhvvQKhqLXloSc7Qhn8LStvrdh02beG3u+OR?=
- =?iso-8859-1?Q?Tx2sfhqKq0Yb21Lg0G1Sh/50yRhFKlPXq8yEhk9MNfqFYHhQtc+KYQHOov?=
- =?iso-8859-1?Q?zFPIkITu5pWqjxSEUDx72kXlpp+Nhp2Vk9jLXg4rGOGKKeZ+WRnwbVQoJC?=
- =?iso-8859-1?Q?h9ALluWIOUw3L+Tgt+OXfSCHPy+zTuNccASpILzsu7M7+mckFY9IBYrxv5?=
- =?iso-8859-1?Q?mdjaCS5c/a6+2tkdst1lzBypjG0HH0fS280f1G4jwzKqe8rYvBPsV1H96o?=
- =?iso-8859-1?Q?f+I6jLfV6aDeiadeTs2tHAXGJsR2oTZ7viHDU879l84lpkugzK5yJ5vdGu?=
- =?iso-8859-1?Q?NlQNxGc9xX8Zb+S2L6DcR3sVNqT5YZn/jV28hIJsij3GLQjpIkmaC2YLZe?=
- =?iso-8859-1?Q?XnhRWprwTctaVtYl501AKlC4gQSPa8PdTa6V+oouxd1GlMjllRGY/ghJqO?=
- =?iso-8859-1?Q?ity+HZkvhu/oFYxi14IgSxuV5j3FlIjM0Rihhdh4qLQqR4mlNi+Ubmuq1d?=
- =?iso-8859-1?Q?4a58mRZbBxT+dnSEpCw+bQ3eVzNd7VgpdUaovROJUNlulVuOYvY9JYrSwb?=
- =?iso-8859-1?Q?K75PRa8FilirTVr85pXDIAG4rIy7Ng9F98+jJ15/VxUGQzVIR1uMCra/KC?=
- =?iso-8859-1?Q?13yvoZyz7JtNO6CqN5IHZZP9skbLyuhFLKvLwm0n1MZLZOtzKUF0nhzIiy?=
- =?iso-8859-1?Q?pgiRNFMQ5FuttUlJoPP45Znkd2dLRG2YhVpY13+im42nByel3dEvSSbDvz?=
- =?iso-8859-1?Q?cYXt0jnI5v/cqBbm248ZXzhZcrExVRcYr+p7UAEcbYcpU2/rCHyFLA+RtM?=
- =?iso-8859-1?Q?lLQ5Pe+fFys70EoXxs/5uK4+VvfSsKQOLzXUClZIn9kr3H2Dn3L+oALE4J?=
- =?iso-8859-1?Q?Nf9HOLMRVkZSKMHK2C9TTU8PGM0xpuk=3D?=
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?hcidxkiWufkod5PZJorYTBYQoQvX6dflMKTRauwxGSYaeL6D4o87MGPOqA?=
+ =?iso-8859-1?Q?EorjqXogLSFC+XpfsBd1mYWoH8wjyuLbUK+YpkCS3Q8J5SHmGi17781SgJ?=
+ =?iso-8859-1?Q?TY0WfRTW7Ai21IsfMqgWS6f1rrG3gqaz+AgUQaPGZsovfrUQGigTRs+Uca?=
+ =?iso-8859-1?Q?UPAAIcU2bwuKBILtBJxr+j+PTjOwmtTJEEhtt5NvvrN1ygKRpyKp5NWdqJ?=
+ =?iso-8859-1?Q?cQDs8xLxtp5eaNBOnXLCfzCjhh9XATajaheD9USyRj9BW/9x3jX7Lj2ppf?=
+ =?iso-8859-1?Q?ZLVIQd7KnAUVFCSJZzDG+18ixv63cusxzdGTVPCJaYRzNI/wBKl/xg3b/p?=
+ =?iso-8859-1?Q?kXjy0pBPxSA+7BeCD9KnafLNNAiEX6vG4/2Suq1vAEqkML70gSdGRR4yhg?=
+ =?iso-8859-1?Q?mhgfw9fa3KhP6zeZ3cRIM9IpoKBoh+q7WVjQNKVV3EbpjobkzhQn3jqphn?=
+ =?iso-8859-1?Q?axHJul5zZQjTj20tI/MqR63jDCg/fOVv0MxS/eZwWtyKuC1uhAZvJOT35L?=
+ =?iso-8859-1?Q?3w6mOEAkyarHVFALUGjG/BVk2hh2wzQpgyKAQhwHy5PzD9uwHQZ4mT3PXq?=
+ =?iso-8859-1?Q?teaN08pwmvIZpDJBiHssv30ysJGp9m2Jw5CqAFiHZP2U1V1MND/koHTIPp?=
+ =?iso-8859-1?Q?DHa8vLy2iiYTiQ7TMwBuLwCQN9sNWNkTmVaVx3DacNXclwrl9iZzruqLeZ?=
+ =?iso-8859-1?Q?KYPEibi8xEVzI5V4x0m03haN4yex9qNr1djDdZh49zItHuN4Y4I/eNbCLi?=
+ =?iso-8859-1?Q?7VseZF5k0GATxcfzYtkoboc8VHuVMAAmNrArJBiodC8wQMH9mPxYZi+fU8?=
+ =?iso-8859-1?Q?XJ5xVY4g9SqRFieguTEWv9LUslP9zo/kF/eKfc5IRVeSwwptEJylekk6yX?=
+ =?iso-8859-1?Q?mTH9gzFhKdKQKvObmC6eQV5MSiTH6glF6/pVECWblE3a4Q7RT/ENTU7wGQ?=
+ =?iso-8859-1?Q?hRP++Cif8BDMPJKugnZbF+eZXwbzQTb3MT+1cmSo1+Zpga6UPwYtRdJdG9?=
+ =?iso-8859-1?Q?2NE1yPXfzOtgk/CJAdLZt9ZA2tlWpHYQ36b4NEq35drxC775QknWot/EQM?=
+ =?iso-8859-1?Q?8WU6fGYa5KGhCtcCF35nl58B5m86FqvzIoKrjqyfJyH3kDy+8OqZeXPWoV?=
+ =?iso-8859-1?Q?D/ID6NskdecmVQqsXw9kvJFxx3hO9qarrLTYBKU22fyIKiY2JbK+S8I02C?=
+ =?iso-8859-1?Q?9RyAaywES731DmVRykHTMynCb7Rkq4SKHACY+f3sDlg3JtGKO2XfTwl31H?=
+ =?iso-8859-1?Q?llNFml9+C+VpqjsiAIc5Zeol35slQw+j/QBmOKOCPYx4846RIQTsSv5VzQ?=
+ =?iso-8859-1?Q?BbzvyOUA0738XyxHBXJABzTxbtwGlkwOgiWsmFE0SWXko6lRlBrBtsUU1M?=
+ =?iso-8859-1?Q?2KLtfIuKzvA6+ZSMWVD40NTc+Hcf76fJoBKAyqEkLun/lweSh1CNieTGxl?=
+ =?iso-8859-1?Q?k4iTCCUhwP7VtL1+f6y4Od+zBVH+pjuEZynaUmjZs0bnwGnvAhOOluJEne?=
+ =?iso-8859-1?Q?fBrDtLFvJw2OaWCBcWmoyUiqbkbCuDnr6rFe2VfXC9eqL/Zw7hnIUS4oPo?=
+ =?iso-8859-1?Q?J8bhHbNCqSh8rQLpSL1C1Vy0zkX231aU9vFU2l7CJwm2RbzsnNm0Ap1Q0h?=
+ =?iso-8859-1?Q?7kOkmjx2ZTvxTCjc46RR2UMaAIgK7DBi5MSfBy/f/KoVgTMwVFoYyrypwE?=
+ =?iso-8859-1?Q?EXK+ZNm7waiZgj9fHbfxQx5eznNycd9SPN6mIZ8V0cJjgJ0YY16cti2iqq?=
+ =?iso-8859-1?Q?KL9vtnHPvXNauNBITyaAea2JFJuHFIsknAcC9+Qz2TKmXbJDaP6zhvUQge?=
+ =?iso-8859-1?Q?kXKDa+2L5pNqmCnfyXUNvckBUvhwUJ0=3D?=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: oracle.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dc122f79-b9bf-447e-c071-08da4eda1519
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2022 14:19:38.9411
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65dc88f1-e0ca-4383-277f-08da4eda1608
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2022 14:19:40.2066
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xxb+cYl0QcKFXL3sxe4ZaCZeeMn2+EUxoGCODm4K/NL211AtU0O3ksUIJ3UFU61Ur59Iy+MPOanUYn1Qz9YC7w==
+X-MS-Exchange-CrossTenant-userprincipalname: yCWr5YEwKqJy3V5rroj8Mz42h3ZMMK+VGdZ3P6WVpYlNJlwwuhUaJF6ezravBGRNhbsft0k5w3l++kxKFmLsKw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3342
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
  definitions=2022-06-15_04:2022-06-15,2022-06-15 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 mlxscore=0
- adultscore=0 suspectscore=0 mlxlogscore=999 spamscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206150056
-X-Proofpoint-GUID: Kn3t0HQrhaVeNK94DqR1lg96wv-dcNP9
-X-Proofpoint-ORIG-GUID: Kn3t0HQrhaVeNK94DqR1lg96wv-dcNP9
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
+ suspectscore=0 spamscore=0 mlxscore=0 phishscore=0 bulkscore=0
+ mlxlogscore=988 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206150056
+X-Proofpoint-GUID: Ftfg1-lK1bshmzOmxZX8RIUQ1tpDuS6S
+X-Proofpoint-ORIG-GUID: Ftfg1-lK1bshmzOmxZX8RIUQ1tpDuS6S
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is possible to iterate over the metadata of full non-leaf nodes when
-operating in non-alloc mode.
+Add test cases to ensure preallocaion works.
+
+Add more tests for spanning writes which alter tress with many levels
+and covers more corner cases.
 
 Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
 ---
- lib/maple_tree.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ lib/test_maple_tree.c | 277 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 277 insertions(+)
 
-diff --git a/lib/maple_tree.c b/lib/maple_tree.c
-index 80622741c6b8..a1035963ae0d 100644
---- a/lib/maple_tree.c
-+++ b/lib/maple_tree.c
-@@ -5429,11 +5429,15 @@ static void mt_destroy_walk(struct maple_enode *eno=
-de, unsigned char ma_flags,
- 			goto start_slots_free;
- 		type =3D mte_node_type(mas.node);
- 		slots =3D ma_slots(mte_to_node(mas.node), type);
--		if ((offset < mt_slots[type]) && (slots[offset])) {
--			struct maple_enode *parent =3D mas.node;
-+		if ((offset < mt_slots[type])) {
-+			struct maple_enode *next =3D slots[offset];
+diff --git a/lib/test_maple_tree.c b/lib/test_maple_tree.c
+index 8277464e182c..9fc0618f4ae7 100644
+--- a/lib/test_maple_tree.c
++++ b/lib/test_maple_tree.c
+@@ -35537,6 +35537,275 @@ static noinline void check_root_expand(struct map=
+le_tree *mt)
+ 	mas_unlock(&mas);
+ }
 =20
--			mas.node =3D mas_slot_locked(&mas, slots, offset);
--			slots =3D mas_destroy_descend(&mas, parent, offset);
-+			if (mte_node_type(next) && mte_to_node(next)) {
-+				struct maple_enode *parent =3D mas.node;
++static noinline void check_prealloc(struct maple_tree *mt)
++{
++	unsigned long i, max =3D 100;
++	unsigned long allocated;
++	unsigned char height;
++	struct maple_node *mn;
++	void *ptr=3D check_prealloc;
++	MA_STATE(mas, mt, 10, 20);
 +
-+				mas.node =3D mas_slot_locked(&mas, slots, offset);
-+				slots =3D mas_destroy_descend(&mas, parent, offset);
-+			}
- 		}
- 		node =3D mas_mn(&mas);
- 	} while (start !=3D mas.node);
++	mt_set_non_kernel(1000);
++	for (i =3D 0; i <=3D max; i++)
++		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
++
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated =3D=3D 0);
++	MT_BUG_ON(mt, allocated !=3D 1 + height * 3);
++	mas_destroy(&mas);
++	allocated =3D mas_allocated(&mas);
++	MT_BUG_ON(mt, allocated !=3D 0);
++
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated =3D=3D 0);
++	MT_BUG_ON(mt, allocated !=3D 1 + height * 3);
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	mas_destroy(&mas);
++	allocated =3D mas_allocated(&mas);
++	MT_BUG_ON(mt, allocated !=3D 0);
++
++
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated =3D=3D 0);
++	MT_BUG_ON(mt, allocated !=3D 1 + height * 3);
++	mn =3D mas_pop_node(&mas);
++	MT_BUG_ON(mt, mas_allocated(&mas) !=3D allocated - 1);
++	ma_free_rcu(mn);
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	mas_destroy(&mas);
++	allocated =3D mas_allocated(&mas);
++	MT_BUG_ON(mt, allocated !=3D 0);
++
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated =3D=3D 0);
++	MT_BUG_ON(mt, allocated !=3D 1 + height * 3);
++	mn =3D mas_pop_node(&mas);
++	MT_BUG_ON(mt, mas_allocated(&mas) !=3D allocated - 1);
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	mas_destroy(&mas);
++	allocated =3D mas_allocated(&mas);
++	MT_BUG_ON(mt, allocated !=3D 0);
++	ma_free_rcu(mn);
++
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated =3D=3D 0);
++	MT_BUG_ON(mt, allocated !=3D 1 + height * 3);
++	mn =3D mas_pop_node(&mas);
++	MT_BUG_ON(mt, mas_allocated(&mas) !=3D allocated - 1);
++	mas_push_node(&mas, mn);
++	MT_BUG_ON(mt, mas_allocated(&mas) !=3D allocated);
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	mas_destroy(&mas);
++	allocated =3D mas_allocated(&mas);
++	MT_BUG_ON(mt, allocated !=3D 0);
++
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated =3D=3D 0);
++	MT_BUG_ON(mt, allocated !=3D 1 + height * 3);
++	mas_store_prealloc(&mas, ptr);
++	MT_BUG_ON(mt, mas_allocated(&mas) !=3D 0);
++
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated =3D=3D 0);
++	MT_BUG_ON(mt, allocated !=3D 1 + height * 3);
++	mas_store_prealloc(&mas, ptr);
++	MT_BUG_ON(mt, mas_allocated(&mas) !=3D 0);
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated =3D=3D 0);
++	MT_BUG_ON(mt, allocated !=3D 1 + height * 3);
++	mas_store_prealloc(&mas, ptr);
++
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated =3D=3D 0);
++	MT_BUG_ON(mt, allocated !=3D 1 + height * 3);
++	mas_store_prealloc(&mas, ptr);
++	MT_BUG_ON(mt, mas_allocated(&mas) !=3D 0);
++	mt_set_non_kernel(1);
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL & GFP_NOWAIT) =3D=3D =
+0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated !=3D 0);
++	mas_destroy(&mas);
++
++
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL) !=3D 0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated =3D=3D 0);
++	MT_BUG_ON(mt, allocated !=3D 1 + height * 3);
++	mas_store_prealloc(&mas, ptr);
++	MT_BUG_ON(mt, mas_allocated(&mas) !=3D 0);
++	mt_set_non_kernel(1);
++	MT_BUG_ON(mt, mas_preallocate(&mas, ptr, GFP_KERNEL & GFP_NOWAIT) =3D=3D =
+0);
++	allocated =3D mas_allocated(&mas);
++	height =3D mas_mt_height(&mas);
++	MT_BUG_ON(mt, allocated !=3D 0);
++}
++
++static noinline void check_spanning_write(struct maple_tree *mt)
++{
++	unsigned long i, max =3D 5000;
++	MA_STATE(mas, mt, 1200, 2380);
++
++	for (i =3D 0; i <=3D max; i++)
++		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
++
++	mtree_lock(mt);
++	mas_store_gfp(&mas, NULL, GFP_KERNEL);
++	mas_set(&mas, 1205);
++	MT_BUG_ON(mt, mas_walk(&mas) !=3D NULL);
++	mtree_unlock(mt);
++	mtree_destroy(mt);
++
++	/* Test spanning store that requires a right cousin rebalance */
++	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
++	for (i =3D 0; i <=3D max; i++)
++		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
++
++	mas_set_range(&mas, 0, 12900); /* Spans more than 2 levels */
++	mtree_lock(mt);
++	mas_store_gfp(&mas, NULL, GFP_KERNEL);
++	mas_set(&mas, 1205);
++	MT_BUG_ON(mt, mas_walk(&mas) !=3D NULL);
++	mtree_unlock(mt);
++	mtree_destroy(mt);
++
++	/* Test non-alloc tree spanning store */
++	mt_init_flags(mt, 0);
++	for (i =3D 0; i <=3D max; i++)
++		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
++
++	mas_set_range(&mas, 0, 300);
++	mtree_lock(mt);
++	mas_store_gfp(&mas, NULL, GFP_KERNEL);
++	mas_set(&mas, 15);
++	MT_BUG_ON(mt, mas_walk(&mas) !=3D NULL);
++	mtree_unlock(mt);
++	mtree_destroy(mt);
++
++	/* Test spanning store that requires a right sibling rebalance */
++	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
++	for (i =3D 0; i <=3D max; i++)
++		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
++
++	mas_set_range(&mas, 0, 12865);
++	mtree_lock(mt);
++	mas_store_gfp(&mas, NULL, GFP_KERNEL);
++	mas_set(&mas, 15);
++	MT_BUG_ON(mt, mas_walk(&mas) !=3D NULL);
++	mtree_unlock(mt);
++	mtree_destroy(mt);
++
++	/* Test spanning store that requires a left sibling rebalance */
++	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
++	for (i =3D 0; i <=3D max; i++)
++		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
++
++	mas_set_range(&mas, 90, 13665);
++	mtree_lock(mt);
++	mas_store_gfp(&mas, NULL, GFP_KERNEL);
++	mas_set(&mas, 95);
++	MT_BUG_ON(mt, mas_walk(&mas) !=3D NULL);
++	mtree_unlock(mt);
++	mtree_destroy(mt);
++
++	/* Test spanning store that requires a left cousin rebalance */
++	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
++	for (i =3D 0; i <=3D max; i++)
++		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
++
++	mas_set_range(&mas, 46805, 49995);
++	mtree_lock(mt);
++	mas_store_gfp(&mas, NULL, GFP_KERNEL);
++	mas_set(&mas, 46815);
++	MT_BUG_ON(mt, mas_walk(&mas) !=3D NULL);
++	mtree_unlock(mt);
++	mtree_destroy(mt);
++
++	/*
++	 * Test spanning store that requires a left cousin rebalance all the way
++	 * to root
++	 */
++	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
++	for (i =3D 0; i <=3D max; i++)
++		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
++
++	mas_set_range(&mas, 32395, 49995);
++	mtree_lock(mt);
++	mas_store_gfp(&mas, NULL, GFP_KERNEL);
++	mas_set(&mas, 46815);
++	MT_BUG_ON(mt, mas_walk(&mas) !=3D NULL);
++	mtree_unlock(mt);
++	mtree_destroy(mt);
++
++	/*
++	 * Test spanning store that requires a right cousin rebalance all the
++	 * way to root
++	 */
++	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
++	for (i =3D 0; i <=3D max; i++)
++		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
++	mas_set_range(&mas, 38875, 43190);
++	mtree_lock(mt);
++	mas_store_gfp(&mas, NULL, GFP_KERNEL);
++	mas_set(&mas, 38900);
++	MT_BUG_ON(mt, mas_walk(&mas) !=3D NULL);
++	mtree_unlock(mt);
++	mtree_destroy(mt);
++
++	/* Test spanning store ending at full node (depth 2)*/
++	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
++	for (i =3D 0; i <=3D max; i++)
++		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
++	mtree_lock(mt);
++	mas_set(&mas, 47606);
++	mas_store_gfp(&mas, check_spanning_write, GFP_KERNEL);
++	mas_set(&mas, 47607);
++	mas_store_gfp(&mas, check_spanning_write, GFP_KERNEL);
++	mas_set(&mas, 47608);
++	mas_store_gfp(&mas, check_spanning_write, GFP_KERNEL);
++	mas_set(&mas, 47609);
++	mas_store_gfp(&mas, check_spanning_write, GFP_KERNEL);
++	/* Ensure the parent node is full */
++	mas_ascend(&mas);
++	MT_BUG_ON(mt, (mas_data_end(&mas)) !=3D mt_slot_count(mas.node) - 1);
++	mas_set_range(&mas, 11516,48940);
++	mas_store_gfp(&mas, NULL, GFP_KERNEL);
++	mtree_unlock(mt);
++	mtree_destroy(mt);
++
++	/* Test spanning write with many many levels of no siblings */
++	mt_init_flags(mt, MT_FLAGS_ALLOC_RANGE);
++	for (i =3D 0; i <=3D max; i++)
++		mtree_test_store_range(mt, i * 10, i * 10 + 5, &i);
++	mas_set_range(&mas, 43200, 49999);
++	mtree_lock(mt);
++	mas_store_gfp(&mas, NULL, GFP_KERNEL);
++	mas_set(&mas, 43200);
++	MT_BUG_ON(mt, mas_walk(&mas) !=3D NULL);
++	mtree_unlock(mt);
++	mtree_destroy(mt);
++}
++
+ static noinline void check_null_expand(struct maple_tree *mt)
+ {
+ 	unsigned long i, max =3D 100;
+@@ -37678,6 +37947,14 @@ static int maple_tree_seed(void)
+ 	check_new_node(&tree);
+ 	mtree_destroy(&tree);
+=20
++	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
++	check_prealloc(&tree);
++	mtree_destroy(&tree);
++
++	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
++	check_spanning_write(&tree);
++	mtree_destroy(&tree);
++
+ 	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
+ 	check_null_expand(&tree);
+ 	mtree_destroy(&tree);
 --=20
 2.35.1
