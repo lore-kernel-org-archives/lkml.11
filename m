@@ -2,199 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F203C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E984C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348298AbiFOR5W (ORCPT
+        id S1356589AbiFOR5k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:57:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
+        Wed, 15 Jun 2022 13:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346190AbiFOR5P (ORCPT
+        with ESMTP id S232471AbiFOR5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:57:15 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C6E544CC
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:57:14 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2ef5380669cso68907607b3.9
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:57:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=RZ4j6+UZQmxdYRalU5SjpHfrfkE6Udb2BhN1j/8KSKg=;
-        b=KF4FZg8X4Jv4NMEZAKO/4taSUCxS43l1wQWkaiLCXkLec5w4y6eWd9rpbEnxn1j4wx
-         jSL8yRwL+mEoHeNkWi2ky7kVV35/AOjtxxNe6GOQJBFMUZhAAf1vtQThEWkUqYSPEX7k
-         2w+6fdLpUBQFPhuyZSm0R5sj1UjeAUPRQZeSGHrq4R+c+DWRi/mL730vjiVyi9sxqM9i
-         Wl9/JTJXIXwVAt1HWeulmXZRamc07/gX9ZapXpAhFehJEsfZ8a1T5A5VMFeGkVOcYKWE
-         /wQHuyeof+qT42qYRvavigeXQeU8xu8zpdnXRlFhiozyP6CwYG2B8S6JrqnPlgCJFe6u
-         W0Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=RZ4j6+UZQmxdYRalU5SjpHfrfkE6Udb2BhN1j/8KSKg=;
-        b=i3v68+bVFD23dga+4B/wDUCZXqLX9ul4OCuDuMl4Yx4xrGMNZRvJ+ko1NVIOuszx4E
-         fLoApwV77iGDAGlmdTXNJS/PiKXlAxo7cqf+buQxPTeoB8+0dJFiBkodP4TC/WYHzrD0
-         fwKfeKhoRUEkN+vl8RAVSp2w2HnvUwIRIwdDztujnWSV0ODex3wqMAgPWa+JA8IS8jA3
-         HPMMQBhAYYgprxuPQNGTyYotcYbhZ4/HnBzHkEmwdO8r8xfjKxEEyQ+Tzex6Hr5t/aWs
-         rDg6z1Hj0ZbQd4sPhFfS0o4YwH5kakm3gSd4+/FqWnNn4/smRlBFSo/wn/wR42CYcL1N
-         nyYw==
-X-Gm-Message-State: AJIora9S0GZyRAY4DDEqvkjDPe9RBb6H91iXW9YNUwGbLRkPAHB/x/NI
-        Ok8mS22L2EHBd+5fwZhWIUqUSwDTpMvFmaIPEGjH+yxWudhtdS+6
-X-Google-Smtp-Source: AGRyM1uSg4FBVLtypacBG1ovM8+4v+aoJP/1QA/fc/TH2gumJq3Sfr6vgDtYLnuEdjSiVBOr0kL2aB8yLMxpetozh1Y=
-X-Received: by 2002:a05:690c:442:b0:313:fb25:3a6a with SMTP id
- bj2-20020a05690c044200b00313fb253a6amr980054ywb.376.1655315833863; Wed, 15
- Jun 2022 10:57:13 -0700 (PDT)
+        Wed, 15 Jun 2022 13:57:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB6A8544E1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:57:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655315843;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IsV319NZNgDzu9DPo6i72lisoqYXO+k9cCPYQoqn8LA=;
+        b=ie8rU5LqrFcvh0XCli65VHPhDXo/FJPXc8sAQ5tG//OwzbW35OWCbi6d0r+MBUWfRWJPtB
+        mqcdFJtNbd9yrRbj7Jmmk6N6n0jvzuqRQpu8xq042LYjxApHog7EDsajr/X+3gVY2ko6ZF
+        jVNVMJo8dNWVoZSSfeMAzu24GUql8G8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-490-c2Q-mJ0zPsyh09IqDQBOCw-1; Wed, 15 Jun 2022 13:57:20 -0400
+X-MC-Unique: c2Q-mJ0zPsyh09IqDQBOCw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 511AC800971;
+        Wed, 15 Jun 2022 17:57:20 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.18.25.210])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 38C9F18EA9;
+        Wed, 15 Jun 2022 17:57:20 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id E9F252209F9; Wed, 15 Jun 2022 13:57:19 -0400 (EDT)
+Date:   Wed, 15 Jun 2022 13:57:19 -0400
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Deming Wang <wangdeming@inspur.com>
+Cc:     stefanha@redhat.com, miklos@szeredi.hu,
+        virtualization@lists.linux-foundation.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] virtiofs: delete unused parameter for
+ virtio_fs_cleanup_vqs
+Message-ID: <YqodfwS3KSVIaqKD@redhat.com>
+References: <20220610020838.1543-1-wangdeming@inspur.com>
 MIME-Version: 1.0
-References: <20220614183719.878453780@linuxfoundation.org>
-In-Reply-To: <20220614183719.878453780@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 15 Jun 2022 23:27:02 +0530
-Message-ID: <CA+G9fYt_7QO+ZLMxPg-xbYgOtCZ0UPdgrKB4wYM2m_jY3zxRRg@mail.gmail.com>
-Subject: Re: [PATCH 5.10 00/11] 5.10.123-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610020838.1543-1-wangdeming@inspur.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 at 00:15, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.10.123 release.
-> There are 11 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.10.123-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.10.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+On Thu, Jun 09, 2022 at 10:08:38PM -0400, Deming Wang wrote:
+> fs parameter not used. So, it needs to be deleted.
+> 
+> Signed-off-by: Deming Wang <wangdeming@inspur.com>
 
+Thanks Deming Wang for the patch. Good cleanup.
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Reviewed-by: Vivek Goyal <vgoyal@redhat.com>
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Thanks
+Vivek
 
-## Build
-* kernel: 5.10.123-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.10.y
-* git commit: f67ea0f670870facb37c20f19e483ec74a2cba63
-* git describe: v5.10.122-12-gf67ea0f67087
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10=
-.122-12-gf67ea0f67087
+> ---
+>  fs/fuse/virtio_fs.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/fs/fuse/virtio_fs.c b/fs/fuse/virtio_fs.c
+> index 8db53fa67359..0991199d19c1 100644
+> --- a/fs/fuse/virtio_fs.c
+> +++ b/fs/fuse/virtio_fs.c
+> @@ -741,8 +741,7 @@ static int virtio_fs_setup_vqs(struct virtio_device *vdev,
+>  }
+>  
+>  /* Free virtqueues (device must already be reset) */
+> -static void virtio_fs_cleanup_vqs(struct virtio_device *vdev,
+> -				  struct virtio_fs *fs)
+> +static void virtio_fs_cleanup_vqs(struct virtio_device *vdev)
+>  {
+>  	vdev->config->del_vqs(vdev);
+>  }
+> @@ -895,7 +894,7 @@ static int virtio_fs_probe(struct virtio_device *vdev)
+>  
+>  out_vqs:
+>  	virtio_reset_device(vdev);
+> -	virtio_fs_cleanup_vqs(vdev, fs);
+> +	virtio_fs_cleanup_vqs(vdev);
+>  	kfree(fs->vqs);
+>  
+>  out:
+> @@ -927,7 +926,7 @@ static void virtio_fs_remove(struct virtio_device *vdev)
+>  	virtio_fs_stop_all_queues(fs);
+>  	virtio_fs_drain_all_queues_locked(fs);
+>  	virtio_reset_device(vdev);
+> -	virtio_fs_cleanup_vqs(vdev, fs);
+> +	virtio_fs_cleanup_vqs(vdev);
+>  
+>  	vdev->priv = NULL;
+>  	/* Put device reference on virtio_fs object */
+> -- 
+> 2.27.0
+> 
 
-## Test Regressions (compared to v5.10.118)
-No test regressions found.
-
-## Metric Regressions (compared to v5.10.118)
-No metric regressions found.
-
-## Test Fixes (compared to v5.10.118)
-No test fixes found.
-
-## Metric Fixes (compared to v5.10.118)
-No metric fixes found.
-
-## Test result summary
-total: 123351, pass: 110941, fail: 243, skip: 11563, xfail: 604
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 314 total, 314 passed, 0 failed
-* arm64: 58 total, 58 passed, 0 failed
-* i386: 52 total, 49 passed, 3 failed
-* mips: 37 total, 37 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 51 total, 51 passed, 0 failed
-* riscv: 27 total, 27 passed, 0 failed
-* s390: 21 total, 21 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 56 total, 55 passed, 1 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-cap_bounds-tests
-* ltp-commands
-* ltp-commands-tests
-* ltp-containers
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps
-* ltp-filecaps-tests
-* ltp-fs
-* ltp-fs-tests
-* ltp-fs_bind
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple
-* ltp-fs_perms_simple-tests
-* ltp-fsx
-* ltp-fsx-tests
-* ltp-hugetlb
-* ltp-hugetlb-tests
-* ltp-io
-* ltp-io-tests
-* ltp-ipc
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits
-* ltp-securebits-tests
-* ltp-smoke
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
