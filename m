@@ -2,148 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDE8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD522C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245305AbiFOLXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 07:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47276 "EHLO
+        id S1344758AbiFOLX5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 07:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345876AbiFOLXM (ORCPT
+        with ESMTP id S1344555AbiFOLX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 07:23:12 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1732E12D16
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 04:23:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655292192; x=1686828192;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=z/qaylPL9hb8rg1EsTiY14ghn/Lzp4PnqUM82fzgAcs=;
-  b=YYrzXPlBaibu1qdyZWTc25LLI9sf7x8HdT5OjV6c3sPtIPkQySQZdahH
-   R7h0JeT5T+vIWIhU3VZayL0d2vxzU7ghXO6HLQiiTY+CBp2IiUDT8SnUd
-   02tCo3RaealLt7B2aJJwBLCc1R1xHxBkgByypfynU2dTrYwuz6ETWLKL+
-   6PjPaiM7YlHgsaUi4kIFYb7XbEI0RWE4NIcUIQq2LFnv8YQmpBv26bELi
-   +IhrIX9hnTtqS1ngczxvisjruyoAEasVu0DK6RQlvGAlRGTB6ITd0+Ig7
-   rszqxfYQx1L9Hz05fNKrHmY22zjx/KBNPlveWEiacdcs7l+AeYi92Z2Nw
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="279643289"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="279643289"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 04:23:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="830988779"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 15 Jun 2022 04:23:10 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1R77-000Mmj-LU;
-        Wed, 15 Jun 2022 11:23:09 +0000
-Date:   Wed, 15 Jun 2022 19:22:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/fpu] BUILD SUCCESS
- f08ef9057b7b110f44cd364744ba6b5f0115390f
-Message-ID: <62a9c0f9.r8L5Vu7ryqGOLq7X%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 15 Jun 2022 07:23:56 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F9F34663;
+        Wed, 15 Jun 2022 04:23:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=8YSiJRfVSCRx99U4o4ghQCn9P4N6/d/6pd8/bsVzP/w=; b=sJwyns6OubrMfUYLSJE9YUhSxl
+        wFZOMo2Z/Ni92QoRvJWfpTrl50shcYJRQoRf6+xu3smxsaJwBLyoAFl0cIt98vqOX602Z8LieV9vU
+        PsOx1fBdGMxUIke/5Angd2vgYfh+iihFxLe8vQWP5d3PHNJaQvg4czO+2nakqXpuA7V3W31+tAOV7
+        4iA1twudj5/aUk4LbxTfn0JjdZStskGbKVRNtGZBsfyHVV9ZS8Jk162BisR4LCe80i0K8EXhOPYl/
+        b5a9WvpqAwJbFTMk5ZfSXLc+IOYUjvxPIpFal5ts0ytY9peeFpniCR+61OWtXM30YHsnroirYhcmw
+        K4wzjD0w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32876)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1o1R7U-0004QB-Vo; Wed, 15 Jun 2022 12:23:33 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1o1R7J-0008NQ-LM; Wed, 15 Jun 2022 12:23:21 +0100
+Date:   Wed, 15 Jun 2022 12:23:21 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Ong Boon Leong <boon.leong.ong@intel.com>
+Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Emilio Riva <emilio.riva@ericsson.com>
+Subject: Re: [PATCH net-next v5 3/5] net: pcs: xpcs: add CL37 1000BASE-X AN
+ support
+Message-ID: <YqnBKTpbhx+quBIc@shell.armlinux.org.uk>
+References: <20220615083908.1651975-1-boon.leong.ong@intel.com>
+ <20220615083908.1651975-4-boon.leong.ong@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20220615083908.1651975-4-boon.leong.ong@intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/fpu
-branch HEAD: f08ef9057b7b110f44cd364744ba6b5f0115390f  intel_idle: Add a new flag to initialize the AMX state
+On Wed, Jun 15, 2022 at 04:39:06PM +0800, Ong Boon Leong wrote:
+> For CL37 1000BASE-X AN, DW xPCS does not support C22 method but offers
+> C45 vendor-specific MII MMD for programming.
+> 
+> We also add the ability to disable Autoneg (through ethtool for certain
+> network switch that supports 1000BASE-X (1000Mbps and Full-Duplex) but
+> not Autoneg capability.
+> 
+> v4: Fixes to comment from Russell King. Thanks!
+>     https://patchwork.kernel.org/comment/24894239/
+>     Make xpcs_modify_changed() as private, change to use
+>     mdiodev_modify_changed() for cleaner code.
+> 
+> v3: Fixes to issues spotted by Russell King. Thanks!
+>     https://patchwork.kernel.org/comment/24890210/
+>     Use phylink_mii_c22_pcs_decode_state(), remove unnecessary
+>     interrupt clearing and skip speed & duplex setting if AN
+>     is enabled.
+> 
+> v2: Fixes to issues spotted by Russell King in v1. Thanks!
+>     https://patchwork.kernel.org/comment/24826650/
+>     Use phylink_mii_c22_pcs_encode_advertisement() and implement
+>     C45 MII ADV handling since IP only support C45 access.
+> 
+> Tested-by: Emilio Riva <emilio.riva@ericsson.com>
+> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 
-elapsed time: 746m
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-configs tested: 72
-configs skipped: 3
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm                              allmodconfig
-arm                              allyesconfig
-arm64                               defconfig
-arm64                            allyesconfig
-ia64                                defconfig
-ia64                             allmodconfig
-ia64                             allyesconfig
-m68k                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-alpha                               defconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                            allyesconfig
-arc                                 defconfig
-h8300                            allyesconfig
-sh                               allmodconfig
-xtensa                           allyesconfig
-parisc                              defconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-s390                             allyesconfig
-parisc64                            defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-i386                                defconfig
-i386                             allyesconfig
-sparc                               defconfig
-sparc                            allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-powerpc                          allyesconfig
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-arc                  randconfig-r043-20220613
-riscv                randconfig-r042-20220613
-s390                 randconfig-r044-20220613
-riscv                             allnoconfig
-riscv                            allyesconfig
-riscv                            allmodconfig
-riscv                    nommu_k210_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_virt_defconfig
-riscv                               defconfig
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                         rhel-8.3-kunit
-x86_64                    rhel-8.3-kselftests
-x86_64                           rhel-8.3-syz
-x86_64                          rhel-8.3-func
-x86_64                              defconfig
-x86_64                                  kexec
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-
-clang tested configs:
-x86_64               randconfig-a002-20220613
-x86_64               randconfig-a001-20220613
-x86_64               randconfig-a003-20220613
-x86_64               randconfig-a004-20220613
-x86_64               randconfig-a006-20220613
-x86_64               randconfig-a005-20220613
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-hexagon              randconfig-r041-20220613
-hexagon              randconfig-r045-20220613
+Thanks!
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
