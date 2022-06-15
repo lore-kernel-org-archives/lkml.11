@@ -2,181 +2,611 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C3AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F7FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350909AbiFONwl (ORCPT
+        id S1348814AbiFONwr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33916 "EHLO
+        Wed, 15 Jun 2022 09:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239803AbiFONwZ (ORCPT
+        with ESMTP id S1347506AbiFONwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:52:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7A74132C;
-        Wed, 15 Jun 2022 06:52:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 15 Jun 2022 09:52:30 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D753E41989;
+        Wed, 15 Jun 2022 06:52:24 -0700 (PDT)
+Received: from localhost.localdomain (unknown [IPv6:2405:201:10:3153:7fbd:8a7b:29b6:89fb])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5C3761B08;
-        Wed, 15 Jun 2022 13:52:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36874C34115;
-        Wed, 15 Jun 2022 13:52:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655301141;
-        bh=rPKSvmd7L+p6nMIzF7HyUQGUoJkVaku6/eVXg484K3U=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=CSRwLbLuPxbPQ6KNsHxBA0AhbDXzyisNd3eD+KDyjyGnkHdrNi9qXmGFdyJx+GQqM
-         7MI9REOZDNCw2Lrbej0/RlwgseMlhzA/qiJpmclw2VTO0bEnUt/4B9NGYgo9yOYY0K
-         3M0DXT+U9yuE2aVr+4aXc4clfgt+4HcazqVXI+d3ZYJVbv/1dyhy6tOEePral6lSJ+
-         DgaURglSWsX30Z2isX54tOtNFb6jBl7TWkakUBt9aU8ScpT2YEyHiOp250mhNScEZK
-         yrrJ1dFdV5Vbo2787IrWPi9ULtd/LkQS8FREXk8uNtefI1nWKVcAmSRGxijKf6KKIT
-         tts8Lxs+W5C/g==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id BFFD95C0460; Wed, 15 Jun 2022 06:52:20 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 06:52:20 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Zhouyi Zhou <zhouzhouyi@gmail.com>
-Cc:     john.ogness@linutronix.de, pmladek@suse.com, dave@stgolabs.net,
-        Josh Triplett <josh@joshtriplett.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        rcu <rcu@vger.kernel.org>
-Subject: Re: [PATCH linux-next] RFC: torture: add pr_flush to flush the
- results to console
-Message-ID: <20220615135220.GI1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220615003733.16447-1-zhouzhouyi@gmail.com>
- <20220615051521.GH1790663@paulmck-ThinkPad-P17-Gen-1>
- <CAABZP2wCos5xupRQ2LbJtaLVN1a7i0D5kwaVTq9DEov8C46Gkw@mail.gmail.com>
+        (Authenticated sender: shreeya)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 759436601703;
+        Wed, 15 Jun 2022 14:52:20 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655301143;
+        bh=LWXP4fS9fQJT84Mp3BrBTEcOUlzFOG07D2RHofkWBBU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=on53uw0jkuqXtt+901Kt4R/PI1eWffcw2P84sDLLMFLfvyRCS8ckNQroreAhu117s
+         kathg41evSf7vaxZE5Z9IQ/ecc4bvkgMjNY6olctuvOfcOtdi2sKJLMUiSXtEe6kUO
+         1JdPt+zpT3EtEufmvr1sTp6hjmnm3XmnOteYS+vcaeWekcGjUFTWfg1oE79gvkYb5f
+         inlK1/+YhcWLZmI2EGN7yfc6xP5BgOhPOJNilb2hyCiAlFK4h7Z/sBy4IxvTzx6OTW
+         /zx+C7b85Xr+qX0hHFXJr6ex8XHnHnMfLgEiDwUs90y3DZPPUmY511OEzyZX4GHtIK
+         1zBS2iw8bwlJg==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        Zhigang.Shi@liteon.com, krisman@collabora.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        alvaro.soliverez@collabora.com, andy.shevchenko@gmail.com,
+        digetx@gmail.com, Shreeya Patel <shreeya.patel@collabora.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH v6 2/2] iio: light: Add support for ltrf216a sensor
+Date:   Wed, 15 Jun 2022 19:21:30 +0530
+Message-Id: <20220615135130.227236-3-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220615135130.227236-1-shreeya.patel@collabora.com>
+References: <20220615135130.227236-1-shreeya.patel@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAABZP2wCos5xupRQ2LbJtaLVN1a7i0D5kwaVTq9DEov8C46Gkw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 08:36:54PM +0800, Zhouyi Zhou wrote:
-> On Wed, Jun 15, 2022 at 1:15 PM Paul E. McKenney <paulmck@kernel.org> wrote:
-> >
-> > On Wed, Jun 15, 2022 at 08:37:33AM +0800, zhouzhouyi@gmail.com wrote:
-> > > From: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> > >
-> > > currently tools/testing/selftests/rcutorture/bin/torture.sh reports
-> > > false positve because of kthread printing.
-> > >
-> > > Commit "printk: add functions to prefer direct printing" (2bb2b7b57f812)
-> > > have added functions to prefer direct printing activated for the primary
-> > > import messages.
-> > >
-> > > Meanwhile adding printk_prefer_direct_enter/exit to
-> > > torture_cleanup_begin/end still can't eliminate the false positives
-> > > for a hundred percent.
-> > >
-> > > This patch add pr_flush to torture_cleanup_end because the latter
-> > > is sleepable.
-> > >
-> > > Reported-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> > > Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> > > Tested-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> >
-> > Just the one Signed-off-by suffices.  ;-)
-> Thank Paul for your guidance ;-)
-> >
-> > > ---
-> > >  kernel/torture.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/kernel/torture.c b/kernel/torture.c
-> > > index 789aeb0e1159..b51e42463a67 100644
-> > > --- a/kernel/torture.c
-> > > +++ b/kernel/torture.c
-> > > @@ -878,6 +878,7 @@ void torture_cleanup_end(void)
-> > >       mutex_lock(&fullstop_mutex);
-> > >       torture_type = NULL;
-> > >       mutex_unlock(&fullstop_mutex);
-> > > +     pr_flush(1000, true);
-> >
-> > But in this case, the kernel keeps on running, correct?  So won't the
-> > output appear over time?  All of printk()'s kthreads are still running
-> > after all.
-> I am doing research on linux-next following your guidance on my Dell
-> PowerEdge R720 server:
-> #git clone https://kernel.source.codeaurora.cn/pub/scm/linux/kernel/git/next/linux-next.git/
-> #cd linux-next
-> #./tools/testing/selftests/rcutorture/bin/torture.sh
-> after about 14 hours, the test result show that there have been about
-> 17 failures, I examine the corresponding console.log, and find the
-> failures are caused by following reason:
-> before the message output by
-> rcu/lock/scf_torture_print_module_parms(cur_ops, "End of test:
-> SUCCESS") has reached serial console, torture_shutdown invoked
-> kernel_power_off(),
+From: Zhigang Shi <Zhigang.Shi@liteon.com>
 
-Ah, got it!  And good show tracking this down, by the way.
+Add initial support for ltrf216a ambient light sensor.
 
-Does this workaround commit on -rcu do the trick for you?
+Datasheet: https://bit.ly/3MRTYwY
+Reported-by: kernel test robot <lkp@intel.com>
+Co-developed-by: Shreeya Patel <shreeya.patel@collabora.com>
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Signed-off-by: Zhigang Shi <Zhigang.Shi@liteon.com>
+---
 
-704ae8dcda84 ("torture: Flush printk() buffers before powering off")
+Note :-
 
-The printk() guys are looking at fixes within the printk() system
-as well:
+This patch generates the below mentioned warnings due to not documenting
+the 'ltr' string in vendors-prefix.yaml and liteon,ltrf216a.yaml files.
+The thread for the discussion of not documenting 'ltr' as deprecated
+prefix can be found here.
+https://lore.kernel.org/lkml/20220511094024.175994-2-shreeya.patel@collabora.com/
 
-https://lore.kernel.org/all/87tu8pgcj0.fsf@jogness.linutronix.de/
-https://lore.kernel.org/all/YqdSw%2FfJvnkRbjvc@alley/
+There are released devices which uses ltr216a light sensor and exposes the
+vendor prefix name as 'ltr' through ACPI. Hence, we would like to add
+this string under compatible property which would help probe the light sensor
+driver.
 
-> so the message "End of test: SUCCESS" has not chance of reaching
-> console.log of host machine.
-> 
-> Then I add printk_prefer_direct_enter/exit to
-> torture_cleanup_begin/end, again I invoke
-> #./tools/testing/selftests/rcutorture/bin/torture.sh
-> after about 14 hours, the test result show that there have been about
-> 5 failures,
-> 
-> Then I add a debug statement after
-> rcu/lock/scf_torture_print_module_parms(cur_ops, "End of test:
-> SUCCESS") which sends the debug string ("hello world") to
-> uart_console_write directly, again I invoke
-> #./tools/testing/selftests/rcutorture/bin/torture.sh
-> There is "hello world" in console.log but no "End of test" strings.
-> 
-> So I guess even with printk_prefer_direct_enter/exit to
-> torture_cleanup_begin/end,  our main shutdown thread has failed in
-> competition for console lock (printk.c):
-> 2401 if (console_trylock_spinning())
-> 2402     console_unlock();
-> 
-> Then I add pr_flush to torture_cleanup_end
-> #./tools/testing/selftests/rcutorture/bin/torture.sh
-> after 14 hours
-> all 49 tests are success
-> >
-> > Or do you have a use case that requires that the output appear sooner
-> > than it does?  If so, please let me know what that is.
-> Thank Paul for your patience,
-> ./tools/testing/selftests/rcutorture/bin/torture.sh is the only tool
-> that I use.
-> 
-> I am very interested in this topic, and very glad to do further
-> experiments under your guidance ;-)
+WARNING: DT compatible string "ltr,ltrf216a" appears un-documented
+-- check ./Documentation/devicetree/bindings/
+#474: FILE: drivers/iio/light/ltrf216a.c:421:
++       { .compatible = "ltr,ltrf216a", },
 
-Or are you already running with that commit or one of those patches?
-They are working reliably for me (so far, anyway), but maybe more is
-needed in some cases.
+WARNING: DT compatible string vendor "ltr" appears un-documented
+-- check ./Documentation/devicetree/bindings/vendor-prefixes.yaml
+#474: FILE: drivers/iio/light/ltrf216a.c:421:
++       { .compatible = "ltr,ltrf216a", },
 
-							Thanx, Paul
 
-> Sincerely yours
-> Thanks
-> Zhouyi
-> >
-> >                                                         Thanx, Paul
-> >
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(torture_cleanup_end);
-> > >
-> > > --
-> > > 2.25.1
-> > >
+Changes in v6
+  - Fix some errors reported by kernel test robot.
+  - Add protocol details for the datasheet link.
+  - Remove useless assignments.
+  - Add unit details for read data delay macro.
+  - Use pm_sleep_ptr().
+
+Changes in v5
+  - Add power management support.
+  - Add reset functionality.
+  - Use readx_poll_timeout() to get data.
+  - Cleanup some of the redundant code.
+  - Update int_time_fac after I2C write is successful.
+  - Rename mutex to lock.
+  - Use Reverse Xmas tree pattern for all variable definitions.
+  - Improve error handling messages and add error codes.
+  - Add one more MODULE_AUTHOR.
+  - Remove cleardata which was reading data for infrared light.
+
+Changes in v4
+  - Add more descriptive comment for mutex lock
+  - Fix mutex locking in read_raw()
+  - Use i2c_smbus_read_i2c_block_data()
+
+Changes in v3
+  - Use u16 instead of u8 for int_time_fac
+  - Reorder headers in ltrf216a.c file
+  - Remove int_time_mapping table and use int_time_available
+
+Changes in v2
+  - Add support for 25ms and 50ms integration time.
+  - Rename some of the macros as per names given in datasheet
+  - Add a comment for the mutex lock
+  - Use read_avail callback instead of attributes and set the
+    appropriate _available bit.
+  - Use FIELD_PREP() at appropriate places.
+  - Add a constant lookup table for integration time and reg val
+  - Use BIT() macro for magic numbers.
+  - Improve error handling at few places.
+  - Use get_unaligned_le24() and div_u64()
+  - Use probe_new() callback and devm functions
+  - Return errors in probe using dev_err_probe()
+  - Use DEFINE_SIMPLE_DEV_PM_OPS()
+  - Correct the formula for lux to use 0.45 instead of 0.8
+
+ drivers/iio/light/Kconfig    |  10 +
+ drivers/iio/light/Makefile   |   1 +
+ drivers/iio/light/ltrf216a.c | 429 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 440 insertions(+)
+ create mode 100644 drivers/iio/light/ltrf216a.c
+
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index a62c7b4b8678..6c95431d12f6 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -332,6 +332,16 @@ config LTR501
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called ltr501.
+ 
++config LTRF216A
++	tristate "Liteon LTRF216A Light Sensor"
++	depends on I2C
++	help
++	  If you say Y or M here, you get support for Liteon LTRF216A
++	  Ambient Light Sensor.
++
++	  If built as a dynamically linked module, it will be called
++	  ltrf216a.
++
+ config LV0104CS
+ 	tristate "LV0104CS Ambient Light Sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index d10912faf964..6f23817fae6f 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -31,6 +31,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
+ obj-$(CONFIG_JSA1212)		+= jsa1212.o
+ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+ obj-$(CONFIG_LTR501)		+= ltr501.o
++obj-$(CONFIG_LTRF216A)		+= ltrf216a.o
+ obj-$(CONFIG_LV0104CS)		+= lv0104cs.o
+ obj-$(CONFIG_MAX44000)		+= max44000.o
+ obj-$(CONFIG_MAX44009)		+= max44009.o
+diff --git a/drivers/iio/light/ltrf216a.c b/drivers/iio/light/ltrf216a.c
+new file mode 100644
+index 000000000000..67165963dc9a
+--- /dev/null
++++ b/drivers/iio/light/ltrf216a.c
+@@ -0,0 +1,429 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * LTRF216A Ambient Light Sensor
++ *
++ * Copyright (C) 2021 Lite-On Technology Corp (Singapore)
++ * Author: Shi Zhigang <Zhigang.Shi@liteon.com>
++ *
++ * IIO driver for LTRF216A (7-bit I2C slave address 0x53).
++ */
++
++#include <linux/bitfield.h>
++#include <linux/bits.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/init.h>
++#include <linux/iopoll.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/pm.h>
++#include <linux/pm_runtime.h>
++#include <linux/iio/iio.h>
++#include <asm/unaligned.h>
++
++#define LTRF216A_DRV_NAME "ltrf216a"
++
++#define LTRF216A_ALS_RESET_MASK         BIT(4)
++#define LTRF216A_ALS_DATA_STATUS	BIT(3)
++#define LTRF216A_ALS_ENABLE_MASK	BIT(1)
++#define LTRF216A_MAIN_CTRL		0x00
++#define LTRF216A_ALS_MEAS_RES		0x04
++#define LTRF216A_MAIN_STATUS		0x07
++#define LTRF216A_CLEAR_DATA_0		0x0A
++#define LTRF216A_ALS_DATA_0		0x0D
++#define LTRF216A_ALS_READ_DATA_DELAY_US	20000
++
++static const int ltrf216a_int_time_available[][2] = {
++	{0, 400000},
++	{0, 200000},
++	{0, 100000},
++	{0, 50000},
++	{0, 25000},
++};
++
++static const int ltrf216a_int_time_reg[][2] = {
++	{400, 0x03},
++	{200, 0x13},
++	{100, 0x22},
++	{50, 0x31},
++	{25, 0x40},
++};
++
++/*
++ * Window Factor is needed when the device is under Window glass
++ * with coated tinted ink. This is to compensate the light loss
++ * due to the lower transmission rate of the window glass and helps
++ * in calculating lux.
++ */
++#define LTRF216A_WIN_FAC	1
++
++struct ltrf216a_data {
++	struct i2c_client *client;
++	u32 int_time;
++	u16 int_time_fac;
++	u8 als_gain_fac;
++	/*
++	 * Ensure cached value of integration time is consistent
++	 * with hardware setting and remains constant during a
++	 * measurement of Lux.
++	 */
++	struct mutex lock;
++};
++
++static const struct iio_chan_spec ltrf216a_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_PROCESSED) |
++			BIT(IIO_CHAN_INFO_INT_TIME),
++		.info_mask_separate_available =
++			BIT(IIO_CHAN_INFO_INT_TIME),
++	},
++};
++
++static int ltrf216a_init(struct iio_dev *indio_dev)
++{
++	int regval = FIELD_PREP(LTRF216A_ALS_ENABLE_MASK, 1);
++	struct ltrf216a_data *data = iio_priv(indio_dev);
++	struct device *dev = &data->client->dev;
++	int ret;
++
++	/* enable sensor */
++	ret = i2c_smbus_write_byte_data(data->client, LTRF216A_MAIN_CTRL, regval);
++	if (ret < 0)
++		dev_err(dev, "Error writing to LTRF216A_MAIN_CTRL while enabling the sensor: %d\n",
++			ret);
++
++	return ret;
++}
++
++static void ltrf216a_reset(struct iio_dev *indio_dev)
++{
++	int regval = FIELD_PREP(LTRF216A_ALS_RESET_MASK, 1);
++	struct ltrf216a_data *data = iio_priv(indio_dev);
++
++	/* reset sensor, chip fails to respond to this, so ignore any errors */
++	i2c_smbus_write_byte_data(data->client, LTRF216A_MAIN_CTRL, regval);
++
++	/* reset time */
++	usleep_range(1000, 2000);
++}
++
++static int ltrf216a_disable(struct iio_dev *indio_dev)
++{
++	struct ltrf216a_data *data = iio_priv(indio_dev);
++	struct device *dev = &data->client->dev;
++	int ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, LTRF216A_MAIN_CTRL, 0);
++	if (ret < 0)
++		dev_err(dev, "Error writing to LTRF216A_MAIN_CTRL while disabling the sensor: %d\n",
++			ret);
++
++	return ret;
++}
++
++static void als_ltrf216a_disable(void *data)
++{
++	struct iio_dev *indio_dev = data;
++
++	ltrf216a_disable(indio_dev);
++}
++
++static int ltrf216a_set_int_time(struct ltrf216a_data *data, int itime)
++{
++	struct device *dev = &data->client->dev;
++	unsigned int i;
++	u8 reg_val;
++	int ret;
++
++	for (i = 0; i < ARRAY_SIZE(ltrf216a_int_time_available); i++) {
++		if (ltrf216a_int_time_available[i][1] == itime)
++			break;
++	}
++	if (i == ARRAY_SIZE(ltrf216a_int_time_available))
++		return -EINVAL;
++
++	reg_val = ltrf216a_int_time_reg[i][1];
++
++	ret = i2c_smbus_write_byte_data(data->client, LTRF216A_ALS_MEAS_RES, reg_val);
++	if (ret < 0) {
++		dev_err(dev, "Error writing to LTRF216A_ALS_MEAS_RES: %d\n", ret);
++		return ret;
++	}
++
++	data->int_time_fac = ltrf216a_int_time_reg[i][0];
++	data->int_time = itime;
++
++	return 0;
++}
++
++static int ltrf216a_get_int_time(struct ltrf216a_data *data, int *val, int *val2)
++{
++	*val = 0;
++	*val2 = data->int_time;
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
++static int ltrf216a_set_power_state(struct ltrf216a_data *data, bool on)
++{
++	struct device *dev = &data->client->dev;
++	int ret, suspended;
++
++	if (on) {
++		suspended = pm_runtime_suspended(dev);
++		ret = pm_runtime_get_sync(dev);
++
++		/* Allow one integration cycle before allowing a reading */
++		if (suspended)
++			msleep(ltrf216a_int_time_reg[0][0]);
++	} else {
++		pm_runtime_mark_last_busy(dev);
++		ret = pm_runtime_put_autosuspend(dev);
++	}
++
++	return ret;
++}
++
++static int ltrf216a_check_for_data(struct i2c_client *client)
++{
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(client, LTRF216A_MAIN_STATUS);
++	if (ret < 0)
++		dev_err(&client->dev, "Failed to read LTRF216A_MAIN_STATUS register: %d\n", ret);
++
++	return ret;
++}
++
++static int ltrf216a_read_data(struct ltrf216a_data *data, u8 addr)
++{
++	int ret, val;
++	u8 buf[3];
++
++	ret = readx_poll_timeout(ltrf216a_check_for_data, data->client, val,
++				 val & LTRF216A_ALS_DATA_STATUS, LTRF216A_ALS_READ_DATA_DELAY_US,
++				 LTRF216A_ALS_READ_DATA_DELAY_US * 25);
++	if (ret) {
++		dev_err(&data->client->dev, "Timed out waiting for valid data: %d\n", ret);
++		return ret;
++	}
++
++	ret = i2c_smbus_read_i2c_block_data(data->client, addr, sizeof(buf), buf);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading measurement data: %d\n", ret);
++		return ret;
++	}
++
++	return get_unaligned_le24(&buf[0]);
++}
++
++static int ltrf216a_get_lux(struct ltrf216a_data *data)
++{
++	int greendata;
++	u64 lux, div;
++
++	ltrf216a_set_power_state(data, true);
++
++	greendata = ltrf216a_read_data(data, LTRF216A_ALS_DATA_0);
++	if (greendata < 0)
++		return greendata;
++
++	ltrf216a_set_power_state(data, false);
++
++	lux = greendata * 45 * LTRF216A_WIN_FAC * 100;
++	div = data->als_gain_fac * data->int_time_fac * 100;
++
++	return div_u64(lux, div);
++}
++
++static int ltrf216a_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan, int *val,
++			     int *val2, long mask)
++{
++	struct ltrf216a_data *data = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&data->lock);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_PROCESSED:
++		ret = ltrf216a_get_lux(data);
++		if (ret < 0)
++			break;
++		*val = ret;
++		ret = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_INT_TIME:
++		ret = ltrf216a_get_int_time(data, val, val2);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static int ltrf216a_write_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan, int val,
++			      int val2, long mask)
++{
++	struct ltrf216a_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		if (val != 0)
++			return -EINVAL;
++		mutex_lock(&data->lock);
++		ret = ltrf216a_set_int_time(data, val2);
++		mutex_unlock(&data->lock);
++		return ret;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ltrf216a_read_available(struct iio_dev *indio_dev,
++				   struct iio_chan_spec const *chan,
++				   const int **vals, int *type, int *length,
++				   long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		*length = ARRAY_SIZE(ltrf216a_int_time_available) * 2;
++		*vals = (const int *)ltrf216a_int_time_available;
++		*type = IIO_VAL_INT_PLUS_MICRO;
++		return IIO_AVAIL_LIST;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info ltrf216a_info = {
++	.read_raw	= ltrf216a_read_raw,
++	.write_raw	= ltrf216a_write_raw,
++	.read_avail	= ltrf216a_read_available,
++};
++
++static int ltrf216a_probe(struct i2c_client *client)
++{
++	struct ltrf216a_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	mutex_init(&data->lock);
++
++	indio_dev->info = &ltrf216a_info;
++	indio_dev->name = LTRF216A_DRV_NAME;
++	indio_dev->channels = ltrf216a_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ltrf216a_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	/* reset sensor, chip fails to respond to this, so ignore any errors */
++	ltrf216a_reset(indio_dev);
++
++	ret = pm_runtime_set_active(&client->dev);
++	if (ret)
++		goto error_power_down;
++
++	pm_runtime_enable(&client->dev);
++	pm_runtime_set_autosuspend_delay(&client->dev, 5000);
++	pm_runtime_use_autosuspend(&client->dev);
++
++	ltrf216a_set_power_state(data, true);
++
++	ret = ltrf216a_init(indio_dev);
++	if (ret < 0) {
++		dev_err_probe(&client->dev, ret, "ltrf216a chip init failed\n");
++		goto error_power_down;
++	}
++
++	data->int_time = 100000;
++	data->int_time_fac = 100;
++	data->als_gain_fac = 3;
++
++	ret = devm_add_action_or_reset(&client->dev, als_ltrf216a_disable, indio_dev);
++	if (ret < 0)
++		goto error_power_down;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_power_down;
++
++error_power_down:
++	ltrf216a_set_power_state(data, false);
++
++	return ret;
++}
++
++static int ltrf216a_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++	pm_runtime_disable(&client->dev);
++	pm_runtime_set_suspended(&client->dev);
++	ltrf216a_disable(indio_dev);
++
++	return 0;
++}
++
++static int ltrf216a_runtime_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++
++	return ltrf216a_disable(indio_dev);
++}
++
++static int ltrf216a_runtime_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++
++	return ltrf216a_init(indio_dev);
++}
++
++static DEFINE_SIMPLE_DEV_PM_OPS(ltrf216a_pm_ops, ltrf216a_runtime_suspend,
++				ltrf216a_runtime_resume);
++
++static const struct i2c_device_id ltrf216a_id[] = {
++	{ LTRF216A_DRV_NAME, 0 },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, ltrf216a_id);
++
++static const struct of_device_id ltrf216a_of_match[] = {
++	{ .compatible = "liteon,ltrf216a", },
++	{ .compatible = "ltr,ltrf216a", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, ltrf216a_of_match);
++
++static struct i2c_driver ltrf216a_driver = {
++	.driver = {
++		.name = LTRF216A_DRV_NAME,
++		.pm = pm_sleep_ptr(&ltrf216a_pm_ops),
++		.of_match_table = ltrf216a_of_match,
++	},
++	.probe_new	= ltrf216a_probe,
++	.remove         = ltrf216a_remove,
++	.id_table	= ltrf216a_id,
++};
++module_i2c_driver(ltrf216a_driver);
++
++MODULE_AUTHOR("Shi Zhigang <Zhigang.Shi@liteon.com>");
++MODULE_AUTHOR("Shreeya Patel <shreeya.patel@collabora.com>");
++MODULE_DESCRIPTION("LTRF216A ambient light sensor driver");
++MODULE_LICENSE("GPL");
+-- 
+2.30.2
+
