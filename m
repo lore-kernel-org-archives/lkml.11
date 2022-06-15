@@ -2,135 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CC7FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 20:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C8EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:00:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343634AbiFOU6z (ORCPT
+        id S1347010AbiFOVAN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 16:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52898 "EHLO
+        Wed, 15 Jun 2022 17:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349765AbiFOU6P (ORCPT
+        with ESMTP id S236331AbiFOVAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 16:58:15 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111211117C
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 13:58:10 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id s37so9819258pfg.11
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 13:58:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=3DBLU8nISIrYTBK8k6DcAIb8oRhQQh+dzHePuisDgWw=;
-        b=K24g/lp0GAYbpVQo8ffvCiVoK+NofOFqwuVsXiGGu5CBJ4sNRZ8/bce7zFuzF54uu/
-         0i2IjAF0NYQK4gdnJmXxrZi38QR9r8Y86zP27hydPWeIOKd3NFUvqJXA6RpF0O08RRv5
-         nea7yOhOu8VrTW6W+jFQWsMJ9IdLTsIFZFvQ+Y1cnH0KFnarEq4IwnzxG98KdoIkOmp+
-         2xL4pc1WfSSw5NflXAB7KxcGUn+0F/d3P9HS7ttjRi4wr/UERRi1Tb7kFPyGOEYDgLkD
-         yRf8y8q7QGnDz5qxromfsCTalsHFoia4QiMizrBPmLxfyBJubSVyoeXOcC3+dVK7n1p5
-         kIGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3DBLU8nISIrYTBK8k6DcAIb8oRhQQh+dzHePuisDgWw=;
-        b=WBbWOKF+zuOglS/up2bdkhfchG3DYjlaXyGm8KEDaVvQML9HDzP+aXvabQktz27wvZ
-         KohHqR/uxDrboIEDg2BBUO0tkUgmicskPDkbzvMVHVFJdEognvDDIzWqQjoQsomAxSFE
-         UcqXRCh8bOJGZHXLXMolsPsb+Zb1I6qY5jlBOX22i7vTJFIH1eJnE2t++vlcXJfWFbGr
-         GtySz3GaGZdILgKPrPVjMToKYSA9uJeKd56mesGiwt6m2E0GIKpLHqSOjzDEE9iX3Uo0
-         KknWcxyTkaUozsJPZSNdtWkBHKOFcJTo3vlOU1HZ1ME7IFbjeM+DOcHF5XbN+tWijSzo
-         biuw==
-X-Gm-Message-State: AJIora+SkiDJPS6xkKBwmgECW8SfMXYdG8cdKklNzDRe5S54mmZhJgF7
-        ZMLj7dXOs5yPWKhTuZGX+vsmHw==
-X-Google-Smtp-Source: AGRyM1sURT8l4Y+xwDaCXscmfLCsHvqJ63+ufGKTkBJlmbmd+0N7utxS/KDWcHHPQYICiTqtfN5cgg==
-X-Received: by 2002:aa7:82ca:0:b0:51b:cf43:d00a with SMTP id f10-20020aa782ca000000b0051bcf43d00amr1348872pfn.58.1655326688844;
-        Wed, 15 Jun 2022 13:58:08 -0700 (PDT)
-Received: from [172.22.33.138] ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id z9-20020a1709027e8900b0015e8d4eb209sm74146pla.83.2022.06.15.13.58.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 13:58:08 -0700 (PDT)
-Message-ID: <add7aa29-d49d-8d3b-06d1-2275660fc7e7@linaro.org>
-Date:   Wed, 15 Jun 2022 13:58:06 -0700
+        Wed, 15 Jun 2022 17:00:11 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB0255222
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 14:00:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655326810; x=1686862810;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=IRFJBh+zoP1ebZry6XfT/kFqI5RhbjM1nScJRBf3RrE=;
+  b=kErM1cVXR5WCKpBWyOirExR9Xl3qtzKzWZ2ZuG0SlGaekhrtSyGBhoIe
+   ylUzPzRdbASBg/0yajqpkrlfFI52VPe+SUoaFqp5ggsKkZ8VuQw700fDh
+   VcVyCRZl45MylPohnyrEc6jkoiGUR5byKywq5s5KHwSB4e2Ff+UML3BAO
+   txDXKEyWNFS18bEFPFUaj45HG2H2MjasCexqd7h+tE8ihfjyu69dVUi9m
+   DQnuTW3apphh3CghdE0nz+lLsOpRUhVsnCBPIJ+Aor44lAPrnDxZiuvB0
+   HH+vXQs7iyy1Fso++Te01fXJ9+TF8RJjrUb3llg6skP1dzl3TwNn97U4u
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="279152128"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="279152128"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 13:59:50 -0700
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="612910288"
+Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 13:59:50 -0700
+Date:   Wed, 15 Jun 2022 13:59:33 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     Martin Fernandez <martin.fernandez@eclypsium.com>
+Cc:     Daniel Gutson <daniel.gutson@eclypsium.com>,
+        Richard Hughes <hughsient@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alex Bazhaniuk <alex.bazhaniuk@eclypsium.com>
+Subject: Re: [PATCH] x86/cpuinfo: Clear X86_FEATURE_TME if TME/MKTME is
+ disabled by BIOS
+Message-ID: <20220615205933.GA1524841@alison-desk>
+References: <20220614210217.1940563-1-martin.fernandez@eclypsium.com>
+ <20220615190519.GA1524500@alison-desk>
+ <CAD2FfiGxy=9ARK5FT_iaLACZSzR+R4crmGJv7T+v_w3+ktOzCQ@mail.gmail.com>
+ <20220615195425.GA1524649@alison-desk>
+ <CAFmMkTGFpehSFOsnDuQN4aTnwfgYGwTbGBxtvUU_byDcoRVPPA@mail.gmail.com>
+ <CAKgze5aQsh2VY4tjsDco_Wc6CTU+KXZM3bhFR+73AVp3gLWHuA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [v2,2/4] Input: mt-matrix-keypad: Add Bosch mt matrix keypad
- driver
-Content-Language: en-US
-To:     Gireesh.Hiremath@in.bosch.com, krzysztof.kozlowski+dt@linaro.org
-Cc:     m.felsch@pengutronix.de, linux-omap@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-input@vger.kernel.org, bcousson@baylibre.com,
-        tony@atomide.com, robh+dt@kernel.org, dmitry.torokhov@gmail.com,
-        mkorpershoek@baylibre.com, davidgow@google.com,
-        swboyd@chromium.org, fengping.yu@mediatek.com,
-        y.oudjana@protonmail.com, rdunlap@infradead.org,
-        colin.king@intel.com, sjoerd.simons@collabora.co.uk,
-        VinayKumar.Shettar@in.bosch.com,
-        Govindaraji.Sivanantham@in.bosch.com, anaclaudia.dias@de.bosch.com
-References: <20220506072737.1590-2-Gireesh.Hiremath@in.bosch.com>
- <20220613080638.1339-1-Gireesh.Hiremath@in.bosch.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220613080638.1339-1-Gireesh.Hiremath@in.bosch.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKgze5aQsh2VY4tjsDco_Wc6CTU+KXZM3bhFR+73AVp3gLWHuA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/06/2022 01:06, Gireesh.Hiremath@in.bosch.com wrote:
-> From: Gireesh Hiremath <Gireesh.Hiremath@in.bosch.com>
+On Wed, Jun 15, 2022 at 05:48:34PM -0300, Martin Fernandez wrote:
+> On 6/15/22, Daniel Gutson <daniel.gutson@eclypsium.com> wrote:
+> > On Wed, Jun 15, 2022 at 4:54 PM Alison Schofield
+> > <alison.schofield@intel.com> wrote:
+> >>
+> >> On Wed, Jun 15, 2022 at 08:34:58PM +0100, Richard Hughes wrote:
+> >> > On Wed, 15 Jun 2022 at 20:06, Alison Schofield
+> >> > <alison.schofield@intel.com> wrote:
+> >> > > My first reaction is lying about the cpuinfo is not a soln, since
+> >> > > it creates a problem for a users currently relying on cpuinfo to be
+> >> > > the source of truth for TME.
+> >> >
+> >> > I think you have to qualify "source of truth". At the moment the CPU
+> >> > reports "Yes! I support TME!" and then for one reason or another the
+> >> > platform turns it off and actually there's no memory encryption of
+> >> > your secrets at all. There's seemingly no userspace way of telling if
+> >> > TME is actually active. We were told that we shouldn't export the
+> >> > "platform has disabled a CPU feature" in sysfs and just to clear the
+> >> > cpuid flag that gets exported (like AMD is currently doing) which is
+> >> > what Martin proposed here. Programs want to know the true CPU
+> >> > capability can do __get_cpuid_count() like they can for the SME/SEV
+> >> > capabilities.
+> >> >
+> >> Disagree on sending folks to use __get_cpuid_count() when they already
+> >> have cpuinfo.
+> >>
+> >> Why is a sysfs entry TME-enabled 0/1 a bad thing?
+> >
+> > :)))
+> > This was my very first patch, and I got half of the community complaining
+> > It was so long ago that I don't recall everything, maybe Martín does?
+> > or Richard?
 > 
-> Hi Krzysztof,
+> The discussion triggered the fact that checking that TME is active is
+> not enough to tell if memory is being encrypted or not (which we
+> thought it was true by that time), and that triggered a series of patches to
+> address the other checks required, which is currently going nowhere
+> [1].
 > 
->> You wrote pretty long message explaining how the device works, but I
->> still do not see the answer to questions - why it cannot be part of
->> matrix keypad?
+> The sysfs _wasn't_ discarded perse, but since Boris suggested the
+> change in cpuinfo (several times now that I recalled that Daniel patch
+> [2]) I think that is cleaner, besides the backwards compatibility.
 > 
-> Following are the difference between matrix keypad and Bosch keypad
-> make us to add another keypad driver.
+> [1] https://lore.kernel.org/linux-efi/20220429201717.1946178-1-martin.fernandez@eclypsium.com/
 > 
-> matrix keypad:
-> 	- By hardware schematic, a column GPIO line will intersect only
-> 	  with row GPIO lines, not with the other column GPIO lines
-> 	- so, row and column GPIO property are fixed, because of this
-> 	- key scanning work based on interrupt mode
-> 	- and key press is determined based on setting column as output,
-> 	  row GPIO as input and set interrupt to monitor the changes in state,
-> 	  serve the key pressed in ISR
+> [2] https://lkml.iu.edu/hypermail/linux/kernel/2006.2/05231.html
 > 
-> Bosch keypad:
->     - By hardware schematic column GPIO line can intersect with row GPIO line
-> 	  as well as other column GPIO lines
-> 	- so, all GPIO act as row as well as column, because of this
-> 	- key scanning based on polling mode
-> 	- a key pressed is determined by setting one of GPIO line as output and
-> 	  other as input and poll for change in the state of input GPIO lines.
-> 	  Setting one of a GPIO line as output and remaining GPIO lines as input is on
-> 	  round robin bases.
 
-Which is still not the answer "why it cannot be part of matrix keypad?".
-To me looks similar enough, although maybe not exactly superset of the
-other.
-
->>
->> "It looks like this driver has smaller number of features than
->> matrix-keypad, so it should be integrated into the matrix-keypad.
->> matrix-keypad features are superset to this one."
->>
->> "But anyway this should be just merged into matrix-keypad. It's a
->> simpler set of that binding."
-> 
-> This keypad driver specific to Bosch measuring tool or similar devices.
-> Please let me know to send latest patch which resolves build warning
-> and gpiod API support.
-
-That's a poor reason not to merge into existing driver... I am sorry,
-but our entire Linux kernel concept is to integrate, not duplicate. If
-each of vendors wanted their own feature, we would have unmanageable
-monstrosity with millions of drivers doing almost the same...
+Martin,
+The commit message here seemed to assume that we've all been following
+along on this journey with you. Perhaps a commit message that explains
+the need and includes alternatives considered/rejected. Links are good!
+Alison
 
 
-Best regards,
-Krzysztof
+> >> It can be documented
+> >> to have the same meaning as the log message.
+> >>
+> >> You keep referring to AMD. How is their exception documented?
+> >>
+> >> Alison
+> >>
+> >> > > Are we to tell them to go look in the
+> >> > > log now, because fwupd folks didn't want to ;)
+> >> >
+> >> > We're not telling anyone to use the log; grepping megabytes of
+> >> > unformatted kernel logs is a terrible (and slow) way to get one
+> >> > boolean value.
+> >> >
+> >> > Richard.
+> >
