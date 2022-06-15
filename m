@@ -2,83 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74ECAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 02:03:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EEFCC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 02:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238468AbiFOCDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 22:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
+        id S237284AbiFOCFB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 22:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236508AbiFOCDL (ORCPT
+        with ESMTP id S230404AbiFOCE7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 22:03:11 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5090B31370
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 19:03:10 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id v14so13421883wra.5
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 19:03:10 -0700 (PDT)
+        Tue, 14 Jun 2022 22:04:59 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D983CFC2
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 19:04:58 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id o33-20020a17090a0a2400b001ea806e48c6so687828pjo.1
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 19:04:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ipK2xVBLHPOftN34BUGWDsuGecY3n8XAM7hkfiv9VF4=;
-        b=Zen+bt9CQG1jdU1YiXYkeHp9jlh/y0vhgUUgRbxEZorTRPzLh8JTV5pMycsNGdDP0t
-         G68vwkv78mv6nAbqqd/4LrH2Rj0/SQwOT85GtDJ0x8VDpQER+SL2Rk59c0guy3EPYyhN
-         IVeSqTTw/+zH4ykdL7br+qCy0o28w0gxq0L7NS30DUgUw+r3svCpKu9bErunvw8vzQ7N
-         esxy7hKjzLZ+a+bSkOB+oBx5HEV0Upg9iog+2CoxTxAmNeGWWdlvW80OigRUPXn1AFX8
-         eFPOqzBZkoIckGZ9lTPDw2txUnxiuSdEp5poFo61UnLJmpZKZTFHKr5jdYFo5d9wJUk5
-         AgCg==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZTEMzb2kbxmOG0IPL3JzkaKv5Etit65wHTgVH613vdo=;
+        b=fEMFad+WsFNW5s4GCMXNnrGnm51i8mcLj5tEebvYOSSV2mSrZwh71Z+6oKwQ6pP9S0
+         X7blX5ZHMrUUA3V+dpqXCntWfyddlG312G0BGBrl3f4zi4rrYILu3Td8cGEhPe+PeIHz
+         SIy0pgZzazC4YpYJHyH+hjVOJjjDW2gY2vT1c5Aw34yUclx7QoIdavhWV1XF+pInqmTt
+         vX8D057nm1gCKYBXo8xjPhjdvGJJmwD6mrtmgmqXDUp0yxx04dVKuig5ZhvYVSX2+Kub
+         D3YNpIqgIdaNzvEqZCmfrKTfj5U7HpmRK/O2f/gR5aPRXgXuXK7b/lk0Izu2Jnl+hrw/
+         9OHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ipK2xVBLHPOftN34BUGWDsuGecY3n8XAM7hkfiv9VF4=;
-        b=jL8n0oqbO4wfyA7PB05LqAYz61USJsJEQD3q6NgCTUOlWw6wOR2EUYwe55IrUS67qJ
-         pO++89slgLX0rpW1L425sj+uucMJR1/rerRP7d1j6O25b0mHANtvTCty8Mx35UvwE8Rj
-         zDQ8v5D4kff6LidU0Jp0PmRgge1Wgd0Em39K8fEMexbNFMrDhsChZctdEc+7pT8ErCn3
-         E2SJVjROrXW8T5dVvbtuCfYFtGLNa3AgrRUkfp8D+3eC6QrqyLSeXYWDUNyiapizD03B
-         ltnDhh+qSEsv054IMF2gM/S1L+lq4E581XIE3UXl/T0G+aFretOGgljeVFOmib8jXCTu
-         ywdg==
-X-Gm-Message-State: AJIora9k8o/Xb+bChS33LYhBuNyTeDOB3H3CC/4um8fibwHbVYFW8BpG
-        50ceor0P1pOM2ivEg+MDOAfcKZqWulxTAqAGoRxV
-X-Google-Smtp-Source: AGRyM1uENCeZZiPlJ60c8bFL+8XMUT4yEx1bjPhq9c8jfwIxvy/DROo9GfXYu0M9IaIA2YUcX+QZ9K7MdkLEOuwYH0Y=
-X-Received: by 2002:a5d:6348:0:b0:213:3a8e:e75d with SMTP id
- b8-20020a5d6348000000b002133a8ee75dmr7142240wrw.55.1655258588850; Tue, 14 Jun
- 2022 19:03:08 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZTEMzb2kbxmOG0IPL3JzkaKv5Etit65wHTgVH613vdo=;
+        b=JaPp0rLqH1jo4GJnIHkzw0cxs54h364By0GzQN45lwttZqJBvPyHpSMIuAObmC57qx
+         rquwnFfrol5akc1n1+bkXBGdnueibdOu0nz/8cBUrrfCwD5GjwYzjmu/805JYpyIamQR
+         j9XqueQ8r0l5mW10Hf37KEgShQdxBSfL35PrfWG/FVOpFkillTQCe8k4lzdPBi+HBtq5
+         MWQK7gG+rPT2GMnAYstul2VYY+LTx62OvollcqkWoITCNPgcJ4tNvPTekMOoYbusQUK8
+         ve5TCOOIE86AaxcEvWjdYfoDGCjFjkHY09KMEdLWc72bFtNDm1vcLN0haCtc8I0Hf8yS
+         tvdQ==
+X-Gm-Message-State: AJIora8WtsN8ozaj5bxpJoCiP51x27RXJxsDMq2kD5OEcy80dkOWc+PN
+        4Wc8ZtjojAd5wERmpHWJqJcn0QfEuDp84A==
+X-Google-Smtp-Source: AGRyM1uJyUuCwXbIFrRgLXDqQaPfg7gcua0Z8rHf5H2q6M1easfzctdebPrsI2SuOMxgkyUcoVbo7w==
+X-Received: by 2002:a17:902:7806:b0:168:d336:dda9 with SMTP id p6-20020a170902780600b00168d336dda9mr7054423pll.83.1655258698239;
+        Tue, 14 Jun 2022 19:04:58 -0700 (PDT)
+Received: from always-x1.bytedance.net ([61.120.150.70])
+        by smtp.gmail.com with ESMTPSA id f17-20020aa79691000000b00518d06efbc8sm8538290pfk.98.2022.06.14.19.04.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 19:04:57 -0700 (PDT)
+From:   zhenwei pi <pizhenwei@bytedance.com>
+To:     pizhenwei@bytedance.com, naoya.horiguchi@nec.com,
+        akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org, david@redhat.com,
+        linmiaohe@huawei.com, gregkh@linuxfoundation.org
+Subject: [PATCH v5 0/1] mm/memory-failure: don't allow to unpoison hw corrupted page
+Date:   Wed, 15 Jun 2022 10:00:04 +0800
+Message-Id: <20220615020005.246295-1-pizhenwei@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220614132333.143042-1-xiujianfeng@huawei.com>
-In-Reply-To: <20220614132333.143042-1-xiujianfeng@huawei.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 14 Jun 2022 22:02:58 -0400
-Message-ID: <CAHC9VhQdfPBn4kbY0xRPaCvNBJJGdQQe_90A4Hhdsj6gVr6pAQ@mail.gmail.com>
-Subject: Re: [PATCH -next] selinux: Fix memleak in security_read_policy
-To:     Xiu Jianfeng <xiujianfeng@huawei.com>
-Cc:     stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        cgzones@googlemail.com, austin.kim@lge.com, omosnace@redhat.com,
-        michalorzel.eng@gmail.com, selinux@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 9:25 AM Xiu Jianfeng <xiujianfeng@huawei.com> wrote:
->
-> In this function, it directly returns the result of __security_read_policy
-> without freeing the allocated memory in *data, cause memory leak issue,
-> so free the memory if __security_read_policy failed.
->
-> Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
-> ---
->  security/selinux/ss/services.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+v4 -> v5:
+- Add mf_flags 'MF_SW_SIMULATED' to distinguish SW/HW memory failure,
+  and use a global variable to record HW memory failure, once HW
+  memory failure happens, disable unpoison.
 
-This is another case where there is not actually a memory leak as the
-only caller of security_read_policy() is sel_open_policy() which will
-free the buffer it passes to security_read_policy() on error.
+v3 -> v4:
+- Add debug entry "hwpoisoned-pages" to show the number of hwpoisoned
+  pages.
+- Disable unpoison when a read HW memory failure occurs.
 
-If you want you could add a comment to security_read_policy()
-indicating that the caller is responsible for freeing the memory.
+v2 -> v3:
+- David pointed out that virt_to_kpte() is broken(no pmd_large() test
+  on a PMD), so drop this API in this patch, walk kmap instead.
+
+v1 -> v2:
+- this change gets protected by mf_mutex
+- use -EOPNOTSUPP instead of -EPERM 
+
+v1:
+- check KPTE to avoid to unpoison hardware corrupted page
+
+zhenwei pi (1):
+  mm/memory-failure: disable unpoison once hw error happens
+
+ Documentation/vm/hwpoison.rst |  3 ++-
+ drivers/base/memory.c         |  2 +-
+ include/linux/mm.h            |  1 +
+ mm/hwpoison-inject.c          |  2 +-
+ mm/madvise.c                  |  2 +-
+ mm/memory-failure.c           | 12 ++++++++++++
+ 6 files changed, 18 insertions(+), 4 deletions(-)
 
 -- 
-paul-moore.com
+2.20.1
+
