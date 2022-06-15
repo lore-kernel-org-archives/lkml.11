@@ -2,178 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED42CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:45:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD8D8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344392AbiFOIpz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
+        id S243801AbiFOIrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 04:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345598AbiFOIpi (ORCPT
+        with ESMTP id S238908AbiFOIrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 04:45:38 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7958F4F1C9;
-        Wed, 15 Jun 2022 01:45:37 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5FFF966016CE;
-        Wed, 15 Jun 2022 09:45:34 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655282735;
-        bh=ig8964Pis3U0xmrv25bzOpvQC450sNHC3GS2vgea2vE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=NSbZ9O2mvG+kvEwG/FE6u4dUr1wC35qYVWum6oK8RGl+oxZr81kxh2GENXiCCbPPa
-         rYIozjo+Edc8uLzJV6bg1PgSSezGBeBbjxMdlH4Q4zUAHE/U2ifUKrx0rXwpBGnjDL
-         UuK05auuOUhn+ZHUvRoySp/oBkYlt26K4g5W/vt3BUuZTIkwW2h1eHi2bhPSBRZHRE
-         Wo8gFy3YQIKAgsfecFk5dPHM7y5ii6iVMwaU1ARBcLAcBu8kgw2h9NWlSKm5En8kSo
-         FfIiq6UPzpDNiu6PKfRKrqy5npwwAk053WfXFyB7K47/r28yCFZ2tMI5I5D13dviod
-         K69g7f+e/HXvw==
-Message-ID: <28135a2f-bf02-fd0b-e881-0ce9d68bd764@collabora.com>
-Date:   Wed, 15 Jun 2022 10:45:31 +0200
+        Wed, 15 Jun 2022 04:47:10 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06704B1FE;
+        Wed, 15 Jun 2022 01:47:08 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LNJmn4xlvzjY6F;
+        Wed, 15 Jun 2022 16:46:01 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 15 Jun
+ 2022 16:47:06 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <jack@suse.cz>, <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next] ext2: fix fs corruption when trying to remove a non-empty directory with IO error
+Date:   Wed, 15 Jun 2022 17:00:10 +0800
+Message-ID: <20220615090010.1544152-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 6/7] drm/bridge: anx7625: Register Type-C mode switches
-Content-Language: en-US
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        heikki.krogerus@linux.intel.com,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>, Jonas Karlman <jonas@kwiboo.se>,
-        swboyd@chromium.org, Pin-Yen Lin <treapking@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Xin Ji <xji@analogixsemi.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
-References: <20220609181106.3695103-1-pmalani@chromium.org>
- <20220609181106.3695103-7-pmalani@chromium.org>
- <b3b9768d-e0d0-7132-5f50-dd6aa53a68ee@collabora.com>
- <CACeCKaexczFCja_ndndb_A58yZYQ98rTtgY4vHMknENTLxBPPA@mail.gmail.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <CACeCKaexczFCja_ndndb_A58yZYQ98rTtgY4vHMknENTLxBPPA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 14/06/22 18:57, Prashant Malani ha scritto:
-> On Tue, Jun 14, 2022 at 1:18 AM AngeloGioacchino Del Regno
-> <angelogioacchino.delregno@collabora.com> wrote:
->>
->> Il 09/06/22 20:09, Prashant Malani ha scritto:
->>> When the DT node has "switches" available, register a Type-C mode-switch
->>> for each listed "switch". This allows the driver to receive state
->>> information about what operating mode a Type-C port and its connected
->>> peripherals are in, as well as status information (like VDOs) related to
->>> that state.
->>>
->>> The callback function is currently a stub, but subsequent patches will
->>> implement the required functionality.
->>>
->>> Signed-off-by: Prashant Malani <pmalani@chromium.org>
->>> ---
->>>
->>> Changes since v2:
->>> - No changes.
->>>
->>>    drivers/gpu/drm/bridge/analogix/anx7625.c | 73 +++++++++++++++++++++++
->>>    drivers/gpu/drm/bridge/analogix/anx7625.h |  6 ++
->>>    2 files changed, 79 insertions(+)
->>>
->>> diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
->>> index 07ed44c6b839..d41a21103bd3 100644
->>> --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
->>> +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
->>> @@ -15,6 +15,7 @@
->>>    #include <linux/regulator/consumer.h>
->>>    #include <linux/slab.h>
->>>    #include <linux/types.h>
->>> +#include <linux/usb/typec_mux.h>
->>>    #include <linux/workqueue.h>
->>>
->>>    #include <linux/of_gpio.h>
->>> @@ -2581,9 +2582,59 @@ static void anx7625_runtime_disable(void *data)
->>>        pm_runtime_disable(data);
->>>    }
->>>
->>> +static int anx7625_typec_mux_set(struct typec_mux_dev *mux,
->>> +                              struct typec_mux_state *state)
->>> +{
->>> +     return 0;
->>> +}
->>> +
->>> +static int anx7625_register_mode_switch(struct device *dev, struct device_node *node,
->>> +                                     struct anx7625_data *ctx)
->>> +{
->>> +     struct anx7625_port_data *port_data;
->>> +     struct typec_mux_desc mux_desc = {};
->>> +     char name[32];
->>> +     u32 port_num;
->>> +     int ret;
->>> +
->>> +     ret = of_property_read_u32(node, "reg", &port_num);
->>> +     if (ret)
->>> +             return ret;
->>> +
->>> +     if (port_num >= ctx->num_typec_switches) {
->>> +             dev_err(dev, "Invalid port number specified: %d\n", port_num);
->>> +             return -EINVAL;
->>> +     }
->>> +
->>> +     port_data = &ctx->typec_ports[port_num];
->>> +     port_data->ctx = ctx;
->>> +     mux_desc.fwnode = &node->fwnode;
->>> +     mux_desc.drvdata = port_data;
->>> +     snprintf(name, sizeof(name), "%s-%u", node->name, port_num);
->>> +     mux_desc.name = name;
->>> +     mux_desc.set = anx7625_typec_mux_set;
->>> +
->>> +     port_data->typec_mux = typec_mux_register(dev, &mux_desc);
->>> +     if (IS_ERR(port_data->typec_mux)) {
->>> +             ret = PTR_ERR(port_data->typec_mux);
->>> +             dev_err(dev, "Mode switch register for port %d failed: %d", port_num, ret);
->>> +     }
->>
->> Please return 0 at the end of this function.
->>
->>          if (IS_ERR(....)) {
->>                  ......code......
->>                  return ret;
->>          }
->>
->>          return 0;
->> }
-> 
-> May I ask why? We're not missing any return paths. I would rather we
-> keep it as is (which has the valid return value).
-> 
+We got issue as follows:
+[home]# mount  /dev/sdd  test
+[home]# cd test
+[test]# ls
+dir1  lost+found
+[test]# rmdir  dir1
+ext2_empty_dir: inject fault
+[test]# ls
+lost+found
+[test]# cd ..
+[home]# umount test
+[home]# fsck.ext2 -fn  /dev/sdd
+e2fsck 1.42.9 (28-Dec-2013)
+Pass 1: Checking inodes, blocks, and sizes
+Inode 4065, i_size is 0, should be 1024.  Fix? no
 
-I know that you're not missing any return paths.
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Unconnected directory inode 4065 (/???)
+Connect to /lost+found? no
 
-That's only because the proposed one is a common pattern in the kernel
-and it's only for consistency.
+'..' in ... (4065) is / (2), should be <The NULL inode> (0).
+Fix? no
 
-Regards,
-Angelo
+Pass 4: Checking reference counts
+Inode 2 ref count is 3, should be 4.  Fix? no
+
+Inode 4065 ref count is 2, should be 3.  Fix? no
+
+Pass 5: Checking group summary information
+
+/dev/sdd: ********** WARNING: Filesystem still has errors **********
+
+/dev/sdd: 14/128016 files (0.0% non-contiguous), 18477/512000 blocks
+
+Reason is same with commit 7aab5c84a0f6. We can't assume directory
+is empty when read directory entry failed.
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ fs/ext2/dir.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/fs/ext2/dir.c b/fs/ext2/dir.c
+index 3bd5772b401b..8f597753ac12 100644
+--- a/fs/ext2/dir.c
++++ b/fs/ext2/dir.c
+@@ -672,17 +672,14 @@ int ext2_empty_dir (struct inode * inode)
+ 	void *page_addr = NULL;
+ 	struct page *page = NULL;
+ 	unsigned long i, npages = dir_pages(inode);
+-	int dir_has_error = 0;
+ 
+ 	for (i = 0; i < npages; i++) {
+ 		char *kaddr;
+ 		ext2_dirent * de;
+-		page = ext2_get_page(inode, i, dir_has_error, &page_addr);
++		page = ext2_get_page(inode, i, 0, &page_addr);
+ 
+-		if (IS_ERR(page)) {
+-			dir_has_error = 1;
+-			continue;
+-		}
++		if (IS_ERR(page))
++			goto not_empty;
+ 
+ 		kaddr = page_addr;
+ 		de = (ext2_dirent *)kaddr;
+-- 
+2.31.1
 
