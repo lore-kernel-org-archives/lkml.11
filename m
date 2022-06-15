@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D271C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:59:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A3BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:59:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355042AbiFOQ7y (ORCPT
+        id S1356219AbiFOQ75 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34270 "EHLO
+        Wed, 15 Jun 2022 12:59:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352835AbiFOQ7j (ORCPT
+        with ESMTP id S1353898AbiFOQ7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:59:39 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB163818A
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:59:37 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id q140so11916514pgq.6
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:59:37 -0700 (PDT)
+        Wed, 15 Jun 2022 12:59:40 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B9D2E084
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:59:39 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id y196so11978214pfb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:59:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lZ2eXkpiTB+9jl0HokhuJqpkh8lZk8zY1cp/z4xtYvI=;
-        b=l9Mpq1W0KjZEmbKPUv1rBTxHL0HBBVf0Ns4SFqtn+/mkDhfYR3K6V/purrC8pPC9CS
-         mpnA06nBuCh6seBBgPNsh+Qvuqk9NLynCVDJtgyvqsr6sBOR9viD0SiIloyJa/teuDGm
-         ruZ25bQoLZLuy0apE5H9S3KQ+mZQGzUsZ5BM5aDj1u7yC88Uw1BAApBnq7ww8MNuB1Pv
-         PM/n8C4aiZqgKW1Vhlq52Xtpee2XT3iP3GkQWaMmwN7sdNXWChlfTCBmYTIHTNGEECYP
-         Rbe/8p5s2h6K3AtVYTbVYTeNp8nfXX8nksU9uz9A5ZkRPd7dMV4C7yuPpl9Jp+jQJBTL
-         j6Kg==
+        bh=yR38ccdgKnrRjCuDMGRCE5StIBkp839XVZD0RSnVzf0=;
+        b=mZ1yiu1IsEYQaQrG5j1bdIMF5bbDREHPevOeyc9afs1CwmgonhuFmXsEpg4vOeAoSq
+         CrNh0td8hESqycp8HYBKyyngs6nnWGF0S+idzEirlllrqh2xXLt4DQ7femi9mtzOrPjo
+         0nr65KZRfv3gnnycRkG7whM7CXy940pf6ziwUOqCvhUcycJfXl7e5iMzPpycMXE2E4ch
+         7aQibgDpWn0faHZXH8AZ8S/bbqHhI+KQB1PoNwGuZfgVhwRRkaSGiCG4jyDwzFJtcIbL
+         ZnbWlg2aszRV9Fdmj6kerAK78BxXbl/wFX1x8Hprd86ihXM9Lhmyv9a9DFC89fLoqxMb
+         lT1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lZ2eXkpiTB+9jl0HokhuJqpkh8lZk8zY1cp/z4xtYvI=;
-        b=Fau5lU50D6l+siR8IQYOuD840iYihnbP5U/CFKxag5ZF3OdlSaRgS1zmvlgdTCTSz+
-         +K/lSTwOpqE0zx0wZwNS7Q1V+rAhkmUjDLUZbmnFTWfKs0VXla5Y1Q+ONIx+Q6yOYysM
-         DB5BGMrrfvOLUFSWDpUkXE7r7BSUuAqns3lOcgqkpB+horFcrGvijfXqj9qVjRpsBd54
-         9mLH77OD04tI7j8ZyAIGeIiDStQuIH7ivEgLWZ1Pix7VFQlsONrw8xAkzWUzwbR1HL3d
-         hJ2RJU757b+O2FPIWvBP8IriBJBXsx3DhmzoNwPxoVJNsYbaeW8wBYKok3nLK7rKfmQz
-         W8PQ==
-X-Gm-Message-State: AJIora9WkG9wEtr0B4KcZ2aEW6XCBneSJx7qakVucqcSPsU9LxtXDR9i
-        XTDOd1GV6fi3KWStMy/WSgHMPg==
-X-Google-Smtp-Source: AGRyM1scPWmtV+ed1tWRQRcdPCDvfos5dt6Mby8svxYYWHAdYffmpN6MfVa9W5JNzydMdtkhEbHFUg==
-X-Received: by 2002:aa7:85d1:0:b0:51b:f4b5:db7b with SMTP id z17-20020aa785d1000000b0051bf4b5db7bmr512545pfn.41.1655312376492;
-        Wed, 15 Jun 2022 09:59:36 -0700 (PDT)
+        bh=yR38ccdgKnrRjCuDMGRCE5StIBkp839XVZD0RSnVzf0=;
+        b=rY5cl20qVzjkRvzFRPakZUiBdGiFrb0SRmn1SWrRnfgfEZ+KLDFIn7hh0HiTC0L06n
+         RHQ8t+YxTHus8LM4WBB+AVHMDW2UjMShOKsA2Z8+4+kkgDhxITvD5r/7pxKhbhNy4DK2
+         RShWYGeb/Ve4iGVdgE3nWSskOGrttGDgvPMq50nkbF4f3fuopMn9fbIelWzaLj/o9DYL
+         5IDRoQvw3J1Fpbp6mWZ6TKyBvfp9wBte0rXCYe1WiQWk8j1WfQdrMr4GyFnyUrgJYGuS
+         fKNsRfM5kbGE9Jqo8AQcLDxMhqYJAq4Nm8EnlozPG3OAgcrBSloFpyeXvJbCLa7tR5eH
+         6M8w==
+X-Gm-Message-State: AJIora9z8NlAl6iIpe3BVHleGY8mt1pRLXFIHiPkihwWFIhji9VA8Kdx
+        MGQVvZWomN+nV2jR5GjRTT4rdA==
+X-Google-Smtp-Source: AGRyM1tieMSlqX6r3NjvN0HfQkohWMO5hBXzzB79TBsSneWc0a35yqQgGYx+GpFcZK/sqhz8LqrfcQ==
+X-Received: by 2002:aa7:98cd:0:b0:520:5200:1c07 with SMTP id e13-20020aa798cd000000b0052052001c07mr518649pfm.13.1655312378945;
+        Wed, 15 Jun 2022 09:59:38 -0700 (PDT)
 Received: from localhost.localdomain ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id s194-20020a6377cb000000b003fd1111d73csm10618513pgc.4.2022.06.15.09.59.35
+        by smtp.gmail.com with ESMTPSA id s194-20020a6377cb000000b003fd1111d73csm10618513pgc.4.2022.06.15.09.59.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 09:59:36 -0700 (PDT)
+        Wed, 15 Jun 2022 09:59:38 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -57,9 +57,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/5] net: ipa: pass GSI pointer to gsi_evt_ring_rx_update()
-Date:   Wed, 15 Jun 2022 11:59:27 -0500
-Message-Id: <20220615165929.5924-4-elder@linaro.org>
+Subject: [PATCH net-next 5/5] net: ipa: move more code out of gsi_channel_update()
+Date:   Wed, 15 Jun 2022 11:59:29 -0500
+Message-Id: <20220615165929.5924-6-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220615165929.5924-1-elder@linaro.org>
 References: <20220615165929.5924-1-elder@linaro.org>
@@ -69,65 +69,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The only reason the event ring's channel pointer is needed in
-gsi_evt_ring_rx_update() is so we can get at its GSI pointer.
+Move the processing done for TX channels in gsi_channel_update()
+into gsi_evt_ring_rx_update().  The called function is called for
+both RX and TX channels, so rename it to be gsi_evt_ring_update().
+As a result, this code no longer assumes events in an event ring are
+associated with just one channel.
 
-We can pass the GSI pointer as an argument, along with the event
-ring ID, and thereby avoid using the event ring channel pointer.
-This is another step toward no longer assuming an event ring
-services a single channel.
+Because all events in a ring are handled in that function, we can
+move the call to gsi_trans_move_complete() there, and can ring the
+event ring doorbell there as well after all new events in the ring
+have been processed.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/gsi.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/ipa/gsi.c | 34 ++++++++++++++++++++--------------
+ 1 file changed, 20 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index 0e9064c043adf..2c531ba1af2eb 100644
+index d08f3e73d51fc..4e46974a69ecd 100644
 --- a/drivers/net/ipa/gsi.c
 +++ b/drivers/net/ipa/gsi.c
-@@ -1345,8 +1345,9 @@ gsi_event_trans(struct gsi *gsi, struct gsi_event *event)
+@@ -1344,7 +1344,7 @@ gsi_event_trans(struct gsi *gsi, struct gsi_event *event)
+ }
  
  /**
-  * gsi_evt_ring_rx_update() - Record lengths of received data
-- * @evt_ring:	Event ring associated with channel that received packets
-- * @index:	Event index in ring reported by hardware
-+ * @gsi:		GSI pointer
-+ * @evt_ring_id:	Event ring ID
-+ * @index:		Event index in ring reported by hardware
-  *
-  * Events for RX channels contain the actual number of bytes received into
+- * gsi_evt_ring_rx_update() - Record lengths of received data
++ * gsi_evt_ring_update() - Update transaction state from hardware
+  * @gsi:		GSI pointer
+  * @evt_ring_id:	Event ring ID
+  * @index:		Event index in ring reported by hardware
+@@ -1353,6 +1353,10 @@ gsi_event_trans(struct gsi *gsi, struct gsi_event *event)
   * the buffer.  Every event has a transaction associated with it, and here
-@@ -1362,9 +1363,9 @@ gsi_event_trans(struct gsi *gsi, struct gsi_event *event)
+  * we update transactions to record their actual received lengths.
+  *
++ * When an event for a TX channel arrives we use information in the
++ * transaction to report the number of requests and bytes have been
++ * transferred.
++ *
+  * This function is called whenever we learn that the GSI hardware has filled
+  * new events since the last time we checked.  The ring's index field tells
+  * the first entry in need of processing.  The index provided is the
+@@ -1363,7 +1367,7 @@ gsi_event_trans(struct gsi *gsi, struct gsi_event *event)
   *
   * Note that @index always refers to an element *within* the event ring.
   */
--static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
-+static void gsi_evt_ring_rx_update(struct gsi *gsi, u32 evt_ring_id, u32 index)
+-static void gsi_evt_ring_rx_update(struct gsi *gsi, u32 evt_ring_id, u32 index)
++static void gsi_evt_ring_update(struct gsi *gsi, u32 evt_ring_id, u32 index)
  {
--	struct gsi_channel *channel = evt_ring->channel;
-+	struct gsi_evt_ring *evt_ring = &gsi->evt_ring[evt_ring_id];
+ 	struct gsi_evt_ring *evt_ring = &gsi->evt_ring[evt_ring_id];
  	struct gsi_ring *ring = &evt_ring->ring;
- 	struct gsi_event *event_done;
- 	struct gsi_event *event;
-@@ -1387,7 +1388,7 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
- 	do {
- 		struct gsi_trans *trans;
+@@ -1372,10 +1376,12 @@ static void gsi_evt_ring_rx_update(struct gsi *gsi, u32 evt_ring_id, u32 index)
+ 	u32 event_avail;
+ 	u32 old_index;
  
--		trans = gsi_event_trans(channel->gsi, event);
-+		trans = gsi_event_trans(gsi, event);
- 		if (!trans)
- 			return;
+-	/* We'll start with the oldest un-processed event.  RX channels
+-	 * replenish receive buffers in single-TRE transactions, so we
+-	 * can just map that event to its transaction.  Transactions
+-	 * associated with completion events are consecutive.
++	/* Starting with the oldest un-processed event, determine which
++	 * transaction (and which channel) is associated with the event.
++	 * For RX channels, update each completed transaction with the
++	 * number of bytes that were actually received.  For TX channels
++	 * associated with a network device, report to the network stack
++	 * the number of transfers and bytes this completion represents.
+ 	 */
+ 	old_index = ring->index;
+ 	event = gsi_ring_virt(ring, old_index);
+@@ -1394,6 +1400,10 @@ static void gsi_evt_ring_rx_update(struct gsi *gsi, u32 evt_ring_id, u32 index)
  
-@@ -1500,7 +1501,7 @@ static struct gsi_trans *gsi_channel_update(struct gsi_channel *channel)
- 	if (channel->toward_ipa)
- 		gsi_trans_tx_completed(trans);
- 	else
--		gsi_evt_ring_rx_update(evt_ring, index);
-+		gsi_evt_ring_rx_update(gsi, evt_ring_id, index);
+ 		if (trans->direction == DMA_FROM_DEVICE)
+ 			trans->len = __le16_to_cpu(event->len);
++		else
++			gsi_trans_tx_completed(trans);
++
++		gsi_trans_move_complete(trans);
  
- 	gsi_trans_move_complete(trans);
+ 		/* Move on to the next event and transaction */
+ 		if (--event_avail)
+@@ -1401,6 +1411,9 @@ static void gsi_evt_ring_rx_update(struct gsi *gsi, u32 evt_ring_id, u32 index)
+ 		else
+ 			event = gsi_ring_virt(ring, 0);
+ 	} while (event != event_done);
++
++	/* Tell the hardware we've handled these events */
++	gsi_evt_ring_doorbell(gsi, evt_ring_id, index);
+ }
  
+ /* Initialize a ring, including allocating DMA memory for its entries */
+@@ -1499,14 +1512,7 @@ static struct gsi_trans *gsi_channel_update(struct gsi_channel *channel)
+ 	 * the number of transactions and bytes this completion represents
+ 	 * up the network stack.
+ 	 */
+-	if (channel->toward_ipa)
+-		gsi_trans_tx_completed(trans);
+-	gsi_evt_ring_rx_update(gsi, evt_ring_id, index);
+-
+-	gsi_trans_move_complete(trans);
+-
+-	/* Tell the hardware we've handled these events */
+-	gsi_evt_ring_doorbell(gsi, evt_ring_id, index);
++	gsi_evt_ring_update(gsi, evt_ring_id, index);
+ 
+ 	return gsi_channel_trans_complete(channel);
+ }
 -- 
 2.34.1
 
