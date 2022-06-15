@@ -2,178 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34661C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD42BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240825AbiFOKBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45120 "EHLO
+        id S244463AbiFOKCt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 06:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiFOKBQ (ORCPT
+        with ESMTP id S239791AbiFOKCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:01:16 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39563B023;
-        Wed, 15 Jun 2022 03:01:15 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id v14so14649266wra.5;
-        Wed, 15 Jun 2022 03:01:15 -0700 (PDT)
+        Wed, 15 Jun 2022 06:02:47 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC15D140C4;
+        Wed, 15 Jun 2022 03:02:46 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id w21so11042620pfc.0;
+        Wed, 15 Jun 2022 03:02:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+o+NJBHdLQtZQM+UxtBaEFTjpeaUrX4loLW3tV0gO1s=;
-        b=QVeMBRfG3BUToGU1v1XZ7CJ9QLI63+40lCKkSLmLQXfgGTHxyMFt0n7AjX+Pz3N9Wx
-         knxlRQIuqPkudGPlE/XLxxZhB3bi25I2J5P+4dJQzflaD7kiUK3N2R17+TT6B7RGaJSw
-         mMLMOSSviRGDemiKOknuGtP6El5Egxsx1ievkQlfC+/twjNRd96r9BDHhHsCUpdGyM4P
-         1U7iMfi+0HIu8YXy5ouyZ2oH/tL2d8d52ey4CFoBaYHC2EX5p5cCik32mN8d6HlhJx1U
-         XNdgVYmsvHYog0ib8Djdms/nLQ9NFPqvNrtOaT390NEiKeMPJEqN227Vjs0IKnCr6SCV
-         42Zw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nteK1qoCay2RhFt0DlIAYFn4vHPFXwhUd6je8LRTjPE=;
+        b=RLlVrgW4T25qth6/+VgsHVrLCoHQtSoE1jY3pnqi5aE1m9I8k7YeAbHdCF2m2sOMp3
+         23nHvbjazPBH95VFNhZymmmuSSn0a0+BoJ+bL1kIY9BOsFX6XUDR8laQs+1Wu7WBjWSY
+         LHSeBdzi/Y9fqPahnHoHJ5SaCx7QkLkqx3McM7FvaTnTD7Cv4CFB0xwROWVq6POXgW8S
+         3uITF/D/EElMYE9lF30Dr1rXTxDsBvsRqEl+TImPBbi0t6rKiPZo2FS92Tj6NXifYxvZ
+         d1yYAbLeNmlOU1ksh2UsfqYdHiFOAUPlZBnLMLjGSVLKtR0tn3vIaz4duIyw+bUdQ+H8
+         zN0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+o+NJBHdLQtZQM+UxtBaEFTjpeaUrX4loLW3tV0gO1s=;
-        b=jziw+Bw1/3Mu9HTU6XLNOF7h6mF8h4owHDuSdrszGunt9ZwTGU8665wORSuRTuqUOc
-         SxBLvP6RKFj9IEl5T2fjE1a4B0xiLPQvZJqNjrqe8lfjQ1WFyxur2WJMqH0+3OkVvv4J
-         zNwjWHCcs/Qhnt1Oz6hSnRmcIvNrpDZXxZ0zVSwkZ8DQg8rCdw8q8lLyyHRsynqglt0k
-         PjKBfxHTQ55WSS5y7HKqhdHDMdIdJZ1N5VeF4vDRtTB5SVW4+ZhwBCQoEttn25DJRFWU
-         UBlOVRej5+5dv+G5gT8Hh/bOaH0g0Dh7BBYUZkOaQ1a2mKxq/lmaZ1Y++tkLV3jf9A6B
-         OQZg==
-X-Gm-Message-State: AJIora/g7E/8/ppXR34Gm3DA+uRVlm17HMTssoVNDwIJS+GIfjGYVKzO
-        uYaHUMSeJqY6Fuk29AdnbDkhZBIks5o=
-X-Google-Smtp-Source: AGRyM1tQN1gJfHu+PZG/moVgWglZwZbQYl52t6+KVwB4qjaP/q9GL6bkGYVnT877dLBWWwECh55HwA==
-X-Received: by 2002:a05:6000:244:b0:210:cc02:889a with SMTP id m4-20020a056000024400b00210cc02889amr9398786wrz.141.1655287273944;
-        Wed, 15 Jun 2022 03:01:13 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id j20-20020adfa554000000b002100316b126sm14655002wrb.6.2022.06.15.03.01.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 03:01:12 -0700 (PDT)
-Message-ID: <62a9ade8.1c69fb81.76bfd.ae0b@mx.google.com>
-X-Google-Original-Message-ID: <YqmioratM4EzT582@Ansuel-xps.>
-Date:   Wed, 15 Jun 2022 11:13:06 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Chanwoo Choi <cwchoi00@gmail.com>
-Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Sibi Sankar <sibis@codeaurora.org>,
-        Saravana Kannan <skannan@codeaurora.org>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/4] PM / devfreq: Fix cpufreq passive unregister
- erroring on PROBE_DEFER
-References: <20220614230950.426-1-ansuelsmth@gmail.com>
- <20220614230950.426-2-ansuelsmth@gmail.com>
- <17cb21c6-317a-3f70-8c4d-4d8fe20604d4@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nteK1qoCay2RhFt0DlIAYFn4vHPFXwhUd6je8LRTjPE=;
+        b=G83vQO3dXjIvYFuHIRJKCpRDeCTUu5huWfYAwc5VwDWAfOFlS13elhDb3dTok8ShZe
+         auUJ7NvxmEQeth2CnreBBeKGsI3OCdZov5J/ViIZssHxks7/YQCWQY4jhG6V3lGnHfmQ
+         HAzBz5WZDn0VahIOTsWUCDccqBs70Kyyl345wu+Mi/a1pZyZrwuKS9924+65ffg8ZSEy
+         VdpC4ZPfPXLpz3hKrIMMgpQJ1bqU7mPVNUd5ldvxcFrnCGgx+WyHZ0uh5e+QKtypFv2Q
+         5l8BDG6b6sDUjm6ym68D3HtyJFu41fKl+Dcz9y8MwHPbFdCIlSXUhFPfinOaooifOwXT
+         q2sA==
+X-Gm-Message-State: AOAM5307HPSpULsFCRBK8q/XeJFFvomHCrb7p1qJCmguLsHDUlPvi03l
+        Ftt55vWAhXijg6eMm973xhw=
+X-Google-Smtp-Source: AGRyM1uAN5RM+oZ+AAxAzi49nd/seaDjdy/NVDH1i30rF+2qIlAAdW+vdvPJtW1w+Pur1AVTDL6oZQ==
+X-Received: by 2002:a05:6a00:996:b0:50b:76b8:3bb1 with SMTP id u22-20020a056a00099600b0050b76b83bb1mr8902904pfg.9.1655287366226;
+        Wed, 15 Jun 2022 03:02:46 -0700 (PDT)
+Received: from [192.168.43.80] (subs03-180-214-233-70.three.co.id. [180.214.233.70])
+        by smtp.gmail.com with ESMTPSA id h129-20020a636c87000000b004052d642b6dsm8189933pgc.9.2022.06.15.03.02.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 03:02:45 -0700 (PDT)
+Message-ID: <a1479ae5-9f27-f808-95f9-0ce53a662057@gmail.com>
+Date:   Wed, 15 Jun 2022 17:02:41 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <17cb21c6-317a-3f70-8c4d-4d8fe20604d4@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] Documentation: highmem: Use literal block for
+ *kmap_local_folio() example
+Content-Language: en-US
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-doc@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220614123115.522131-1-bagasdotme@gmail.com>
+ <YqiIRONzn5t1v8yq@casper.infradead.org>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <YqiIRONzn5t1v8yq@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 03:48:03PM +0900, Chanwoo Choi wrote:
-> On 22. 6. 15. 08:09, Christian 'Ansuel' Marangi wrote:
-> > With the passive governor, the cpu based scaling can PROBE_DEFER due to
-> > the fact that CPU policy are not ready.
-> > The cpufreq passive unregister notifier is called both from the
-> > GOV_START errors and for the GOV_STOP and assume the notifier is
-> > successfully registred every time. With GOV_START failing it's wrong to
-> > loop over each possible CPU since the register path has failed for
-> > some CPU policy not ready. Change the logic and unregister the notifer
-> > based on the current allocated parent_cpu_data list to correctly handle
-> > errors and the governor unregister path.
-> > 
-> > Fixes: a03dacb0316f ("PM / devfreq: Add cpu based scaling support to passive governor")
-> > Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
-> > ---
-> >  drivers/devfreq/governor_passive.c | 39 +++++++++++++-----------------
-> >  1 file changed, 17 insertions(+), 22 deletions(-)
-> > 
-> > diff --git a/drivers/devfreq/governor_passive.c b/drivers/devfreq/governor_passive.c
-> > index 72c67979ebe1..95de336f20d5 100644
-> > --- a/drivers/devfreq/governor_passive.c
-> > +++ b/drivers/devfreq/governor_passive.c
-> > @@ -34,6 +34,20 @@ get_parent_cpu_data(struct devfreq_passive_data *p_data,
-> >  	return NULL;
-> >  }
-> >  
-> > +static void delete_parent_cpu_data(struct devfreq_passive_data *p_data)
-> > +{
-> > +	struct devfreq_cpu_data *parent_cpu_data, *tmp;
-> > +
+On 6/14/22 20:08, Matthew Wilcox wrote:
+> On Tue, Jun 14, 2022 at 07:31:16PM +0700, Bagas Sanjaya wrote:
+>> These warnings above are due to comments in code example of
+>> *kmap_local_folio() are enclosed by double dash (--) instead of prefixed
+>> with comment symbol (#).
 > 
-> Need to add the validation checking of argument as following:
+> That's clearly the code example for kmap_atomic(), not
+> kmap_local_folio().
 > 
-> 	if (!p_data)
-> 		return;
->
 
-Considering this is called only by cpufreq_passive_unregister_notifier
-and cpufreq_passive_unregister_notifier is called only by devfreq_passive_event_handler
-where the check is already done, isn't that redundant.
-We should never reach delete_parent_cpu_data with no p_data.
-(Unless you want to use that function somewhere else)
-
-> > +	list_for_each_entry_safe(parent_cpu_data, tmp, &p_data->cpu_data_list, node) {
-> > +		list_del(&parent_cpu_data->node);
-> > +
-> > +		if (parent_cpu_data->opp_table)
-> > +			dev_pm_opp_put_opp_table(parent_cpu_data->opp_table);
-> > +
-> > +		kfree(parent_cpu_data);
-> > +	}
-> > +}
-> > +
-> >  static unsigned long get_target_freq_by_required_opp(struct device *p_dev,
-> >  						struct opp_table *p_opp_table,
-> >  						struct opp_table *opp_table,
-> > @@ -222,8 +236,7 @@ static int cpufreq_passive_unregister_notifier(struct devfreq *devfreq)
-> >  {
-> >  	struct devfreq_passive_data *p_data
-> >  			= (struct devfreq_passive_data *)devfreq->data;
-> > -	struct devfreq_cpu_data *parent_cpu_data;
-> > -	int cpu, ret = 0;
-> > +	int ret;
-> >  
-> >  	if (p_data->nb.notifier_call) {
-> >  		ret = cpufreq_unregister_notifier(&p_data->nb,
-> > @@ -232,27 +245,9 @@ static int cpufreq_passive_unregister_notifier(struct devfreq *devfreq)
-> >  			return ret;
-> >  	}
-> >  
-> > -	for_each_possible_cpu(cpu) {
-> > -		struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
-> > -		if (!policy) {
-> > -			ret = -EINVAL;
-> > -			continue;
-> > -		}
-> > -
-> > -		parent_cpu_data = get_parent_cpu_data(p_data, policy);
-> > -		if (!parent_cpu_data) {
-> > -			cpufreq_cpu_put(policy);
-> > -			continue;
-> > -		}
-> > -
-> > -		list_del(&parent_cpu_data->node);
-> > -		if (parent_cpu_data->opp_table)
-> > -			dev_pm_opp_put_opp_table(parent_cpu_data->opp_table);
-> > -		kfree(parent_cpu_data);
-> > -		cpufreq_cpu_put(policy);
-> > -	}
-> > +	delete_parent_cpu_data(p_data);
-> >  
-> > -	return ret;
-> > +	return 0;
-> >  }
-> >  
-> >  static int cpufreq_passive_register_notifier(struct devfreq *devfreq)
-> 
-> 
-> -- 
-> Best Regards,
-> Samsung Electronics
-> Chanwoo Choi
+Ah! I don't see void *vaddr that make use of kmap_atomic(). Thanks
+for reminding.
 
 -- 
-	Ansuel
+An old man doll... just what I always wanted! - Clara
