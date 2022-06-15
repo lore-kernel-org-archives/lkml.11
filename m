@@ -2,93 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E935C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07901C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357624AbiFORrw (ORCPT
+        id S1357842AbiFORtS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
+        Wed, 15 Jun 2022 13:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349899AbiFORrs (ORCPT
+        with ESMTP id S242061AbiFORtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:47:48 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C442F1147F;
-        Wed, 15 Jun 2022 10:47:47 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id m24so16323263wrb.10;
-        Wed, 15 Jun 2022 10:47:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UEplRBRe8Not6/N/87KHMRBTXuTr13tJIbM6hc9f8sQ=;
-        b=Px0sxprY8EaTIf37otn4bHLOMuOiouEYqETuqdXAoedA3jFIrkkKeHZvQZcfi6IDQd
-         +gPo6UtC+5oE4EUy+jA8XQ7k3lqlL722vCj/oANcJfB4eG3pUwsqRPv0uGe/HecIqW06
-         cSNnPJbGMJNoz1TcKBBRCF+5+Gy+Cravzkx4VbGZqli8BcwNbigqDx4TMiTrEehL3wXu
-         /D+jaAoPIZIEEgXk+EJBQxt2H4K1b7kI15klNggExGmPBJhVD7tPrtpUq9FphpwM1H+2
-         rWMXGX3cud6Dblde43mQIlZpBjDyX+LwEaufSxZUdSU0FK7uOYBP2vVcdz9tV4MoyFOx
-         aIxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UEplRBRe8Not6/N/87KHMRBTXuTr13tJIbM6hc9f8sQ=;
-        b=XmkHLc8sQbZFr9+YfpUvC5ZH2Hs730EVQDCJXfaC4BlUx8++x44X979WJ4s0TAJEcf
-         czsDR6qCe9wnUxjxiDdhLWrNGMjlqo679z46Oa7fM9UHwFa3gTww8JQVgm1G6Itwr+M/
-         mdTBlLpMXq8xiCb5BwGgki6EZD1qqzSJhM7JK8V3HrWmZE9H2YLM2bvW/sORDZoc0oig
-         lzq1RJLQB3x87/qwijIk/z2JDOltq8t/LJNm2v6yj9rhMpd4wy4efYQAmjhUJgZ20oxo
-         pQctcnY0ZKJHdJHqVxWy6nI7KqBOCPVe7ddVTtomtBiFWsRmRgbnQ/aP+IO1APnnsscC
-         zddA==
-X-Gm-Message-State: AJIora9mYJz6gINCGfT/pH7z/3rHTopUqOAVwAyowjn4IwH/4UHSDIr8
-        V/LicxDMldimP+JMyy4OCeFowHQaquU=
-X-Google-Smtp-Source: AGRyM1sdCdaiNcC0qqAatgAXTIR/dGxEV0s1FBUtTraV7r7iycMccsJTIVFL8TKmFtDbKNmYjUCrwg==
-X-Received: by 2002:a05:6000:1548:b0:217:6480:e65 with SMTP id 8-20020a056000154800b0021764800e65mr934830wry.381.1655315266192;
-        Wed, 15 Jun 2022 10:47:46 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id l125-20020a1c2583000000b0039c4d9737f3sm3158157wml.34.2022.06.15.10.47.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 10:47:45 -0700 (PDT)
-Message-ID: <62aa1b41.1c69fb81.95632.5b71@mx.google.com>
-X-Google-Original-Message-ID: <YqoOmlGklknRj8Yf@Ansuel-xps.>
-Date:   Wed, 15 Jun 2022 18:53:46 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: clock: add pcm reset for ipq806x lcc
-References: <20220615163408.30154-1-ansuelsmth@gmail.com>
- <a92fe431-a995-4c7f-b90b-8e80298bc71a@linaro.org>
+        Wed, 15 Jun 2022 13:49:16 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B27347060;
+        Wed, 15 Jun 2022 10:49:15 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id F33DE68AFE; Wed, 15 Jun 2022 19:49:10 +0200 (CEST)
+Date:   Wed, 15 Jun 2022 19:49:10 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+Cc:     Christoph Hellwig <hch@lst.de>, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, wefu@redhat.com, guoren@kernel.org,
+        cmuellner@linux.com, philipp.tomsich@vrull.eu, samuel@sholland.org,
+        atishp@atishpatra.org, anup@brainfault.org, mick@ics.forth.gr,
+        robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org,
+        drew@beagleboard.org, Atish Patra <atish.patra@wdc.com>
+Subject: Re: [PATCH 2/3] riscv: Implement Zicbom-based cache management
+ operations
+Message-ID: <20220615174910.GA26607@lst.de>
+References: <20220610004308.1903626-1-heiko@sntech.de> <20220610004308.1903626-3-heiko@sntech.de> <20220610055608.GA24221@lst.de> <110361853.nniJfEyVGO@diego>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <a92fe431-a995-4c7f-b90b-8e80298bc71a@linaro.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <110361853.nniJfEyVGO@diego>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 10:43:10AM -0700, Krzysztof Kozlowski wrote:
-> On 15/06/2022 09:34, Christian 'Ansuel' Marangi wrote:
-> > Add pcm reset define for ipq806x lcc.
-> > 
-> > Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
-> To prevent any confusion about identities (we have strict rules about
-> these), I need to ask - who uses this email address?
-> 
-> https://lore.kernel.org/all/?q=ansuelsmth%40gmail.com
-> 
-> Best regards,
-> Krzysztof
+On Wed, Jun 15, 2022 at 06:56:40PM +0200, Heiko Stübner wrote:
+> If I'm reading things correctly [0], the default for those functions
+> is for those to be empty - but defined in the coherent case.
 
-Same person. Started using extended name, wanted to do this change from
-a long time but all the patch were already pushed so I couldn't change
-it since they were already proposed and on the various mailing list.
+That's not the point.
 
--- 
-	Ansuel
+Zicbom is just an extension that allows the CPU to support managing
+cache state.  Non-coherent DMA is just one of the use cases there
+are others like persistent memory.  And when a CPU core supports
+Zicbom it might or might not have any non-coherent periphals.  Or
+even some coherent and some non-coherent ones, something that
+is pretty common in arm/arm64 CPUs, where PCIe is usually cache
+coherent, but some other cheap periphals might not be.
+
+That is why Linux ports require the plaform (usually through
+DT or ACPI) to mark which devices are coherent and which ones
+are not.
