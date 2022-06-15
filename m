@@ -2,153 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E4EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CED42CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:45:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346523AbiFOIpW (ORCPT
+        id S1344392AbiFOIpz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47808 "EHLO
+        Wed, 15 Jun 2022 04:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244794AbiFOIoT (ORCPT
+        with ESMTP id S1345598AbiFOIpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 04:44:19 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88877443E6;
-        Wed, 15 Jun 2022 01:44:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655282658; x=1686818658;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1ppb5FxYShlXnSIAV6m7rwzN8W1OiV0FA7dnw79u850=;
-  b=VOY48dJ9MhrgSgexS8JPulAJhW17xnnYRISY3I4yul7gjWcEPq/DVtFq
-   R6JhVCb8bWaW4g33mdYN4H907NLbTrRPPPFr+Qoda7nH6HIauis9XRudG
-   pdDlg/wHURXeJqobNgyrHAgpwsgCqMKHJiSqODLH/Yw1Lk9Ka5ndAwX/6
-   4UhkynJlhvQf3/2Mpy0NM0ctCsONZhgTx+Br0suFwd1ceuUplwe/Gqxnq
-   zEfwhqJXtDPF35eqIg7XeC6kGiDZN+gVZZD2/XUykVoRGQDo398nANUAX
-   DxF/pnMLwyspadV+nCpp1/N8w05kqR1sppBSsKNnLh8uxeV6gPBanvY4l
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="258737038"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="258737038"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 01:44:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="712849505"
-Received: from p12hl98bong5.png.intel.com ([10.158.65.178])
-  by orsmga004.jf.intel.com with ESMTP; 15 Jun 2022 01:44:13 -0700
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Emilio Riva <emilio.riva@ericsson.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next v5 5/5] net: stmmac: make mdio register skips PHY scanning for fixed-link
-Date:   Wed, 15 Jun 2022 16:39:08 +0800
-Message-Id: <20220615083908.1651975-6-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220615083908.1651975-1-boon.leong.ong@intel.com>
-References: <20220615083908.1651975-1-boon.leong.ong@intel.com>
+        Wed, 15 Jun 2022 04:45:38 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7958F4F1C9;
+        Wed, 15 Jun 2022 01:45:37 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5FFF966016CE;
+        Wed, 15 Jun 2022 09:45:34 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655282735;
+        bh=ig8964Pis3U0xmrv25bzOpvQC450sNHC3GS2vgea2vE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=NSbZ9O2mvG+kvEwG/FE6u4dUr1wC35qYVWum6oK8RGl+oxZr81kxh2GENXiCCbPPa
+         rYIozjo+Edc8uLzJV6bg1PgSSezGBeBbjxMdlH4Q4zUAHE/U2ifUKrx0rXwpBGnjDL
+         UuK05auuOUhn+ZHUvRoySp/oBkYlt26K4g5W/vt3BUuZTIkwW2h1eHi2bhPSBRZHRE
+         Wo8gFy3YQIKAgsfecFk5dPHM7y5ii6iVMwaU1ARBcLAcBu8kgw2h9NWlSKm5En8kSo
+         FfIiq6UPzpDNiu6PKfRKrqy5npwwAk053WfXFyB7K47/r28yCFZ2tMI5I5D13dviod
+         K69g7f+e/HXvw==
+Message-ID: <28135a2f-bf02-fd0b-e881-0ce9d68bd764@collabora.com>
+Date:   Wed, 15 Jun 2022 10:45:31 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 6/7] drm/bridge: anx7625: Register Type-C mode switches
+Content-Language: en-US
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        heikki.krogerus@linux.intel.com,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        David Airlie <airlied@linux.ie>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Jonas Karlman <jonas@kwiboo.se>,
+        swboyd@chromium.org, Pin-Yen Lin <treapking@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Xin Ji <xji@analogixsemi.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
+References: <20220609181106.3695103-1-pmalani@chromium.org>
+ <20220609181106.3695103-7-pmalani@chromium.org>
+ <b3b9768d-e0d0-7132-5f50-dd6aa53a68ee@collabora.com>
+ <CACeCKaexczFCja_ndndb_A58yZYQ98rTtgY4vHMknENTLxBPPA@mail.gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <CACeCKaexczFCja_ndndb_A58yZYQ98rTtgY4vHMknENTLxBPPA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-stmmac_mdio_register() lacks fixed-link consideration and only skip PHY
-scanning if it has done DT style PHY discovery. So, for DT or ACPI _DSD
-setting of fixed-link, the PHY scanning should not happen.
+Il 14/06/22 18:57, Prashant Malani ha scritto:
+> On Tue, Jun 14, 2022 at 1:18 AM AngeloGioacchino Del Regno
+> <angelogioacchino.delregno@collabora.com> wrote:
+>>
+>> Il 09/06/22 20:09, Prashant Malani ha scritto:
+>>> When the DT node has "switches" available, register a Type-C mode-switch
+>>> for each listed "switch". This allows the driver to receive state
+>>> information about what operating mode a Type-C port and its connected
+>>> peripherals are in, as well as status information (like VDOs) related to
+>>> that state.
+>>>
+>>> The callback function is currently a stub, but subsequent patches will
+>>> implement the required functionality.
+>>>
+>>> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+>>> ---
+>>>
+>>> Changes since v2:
+>>> - No changes.
+>>>
+>>>    drivers/gpu/drm/bridge/analogix/anx7625.c | 73 +++++++++++++++++++++++
+>>>    drivers/gpu/drm/bridge/analogix/anx7625.h |  6 ++
+>>>    2 files changed, 79 insertions(+)
+>>>
+>>> diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+>>> index 07ed44c6b839..d41a21103bd3 100644
+>>> --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
+>>> +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+>>> @@ -15,6 +15,7 @@
+>>>    #include <linux/regulator/consumer.h>
+>>>    #include <linux/slab.h>
+>>>    #include <linux/types.h>
+>>> +#include <linux/usb/typec_mux.h>
+>>>    #include <linux/workqueue.h>
+>>>
+>>>    #include <linux/of_gpio.h>
+>>> @@ -2581,9 +2582,59 @@ static void anx7625_runtime_disable(void *data)
+>>>        pm_runtime_disable(data);
+>>>    }
+>>>
+>>> +static int anx7625_typec_mux_set(struct typec_mux_dev *mux,
+>>> +                              struct typec_mux_state *state)
+>>> +{
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static int anx7625_register_mode_switch(struct device *dev, struct device_node *node,
+>>> +                                     struct anx7625_data *ctx)
+>>> +{
+>>> +     struct anx7625_port_data *port_data;
+>>> +     struct typec_mux_desc mux_desc = {};
+>>> +     char name[32];
+>>> +     u32 port_num;
+>>> +     int ret;
+>>> +
+>>> +     ret = of_property_read_u32(node, "reg", &port_num);
+>>> +     if (ret)
+>>> +             return ret;
+>>> +
+>>> +     if (port_num >= ctx->num_typec_switches) {
+>>> +             dev_err(dev, "Invalid port number specified: %d\n", port_num);
+>>> +             return -EINVAL;
+>>> +     }
+>>> +
+>>> +     port_data = &ctx->typec_ports[port_num];
+>>> +     port_data->ctx = ctx;
+>>> +     mux_desc.fwnode = &node->fwnode;
+>>> +     mux_desc.drvdata = port_data;
+>>> +     snprintf(name, sizeof(name), "%s-%u", node->name, port_num);
+>>> +     mux_desc.name = name;
+>>> +     mux_desc.set = anx7625_typec_mux_set;
+>>> +
+>>> +     port_data->typec_mux = typec_mux_register(dev, &mux_desc);
+>>> +     if (IS_ERR(port_data->typec_mux)) {
+>>> +             ret = PTR_ERR(port_data->typec_mux);
+>>> +             dev_err(dev, "Mode switch register for port %d failed: %d", port_num, ret);
+>>> +     }
+>>
+>> Please return 0 at the end of this function.
+>>
+>>          if (IS_ERR(....)) {
+>>                  ......code......
+>>                  return ret;
+>>          }
+>>
+>>          return 0;
+>> }
+> 
+> May I ask why? We're not missing any return paths. I would rather we
+> keep it as is (which has the valid return value).
+> 
 
-v2: fix incorrect order related to fwnode that is not caught in non-DT
-    platform.
+I know that you're not missing any return paths.
 
-Tested-by: Emilio Riva <emilio.riva@ericsson.com>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 +++++++-----
- drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 14 ++++++++++++++
- 2 files changed, 21 insertions(+), 5 deletions(-)
+That's only because the proposed one is a common pattern in the kernel
+and it's only for consistency.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 73cae2938f6..50867e5d0d9 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1142,18 +1142,20 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
- static int stmmac_init_phy(struct net_device *dev)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
--	struct device_node *node;
-+	struct fwnode_handle *fwnode;
- 	int ret;
- 
--	node = priv->plat->phylink_node;
-+	fwnode = of_fwnode_handle(priv->plat->phylink_node);
-+	if (!fwnode)
-+		fwnode = dev_fwnode(priv->device);
- 
--	if (node)
--		ret = phylink_of_phy_connect(priv->phylink, node, 0);
-+	if (fwnode)
-+		ret = phylink_fwnode_phy_connect(priv->phylink, fwnode, 0);
- 
- 	/* Some DT bindings do not set-up the PHY handle. Let's try to
- 	 * manually parse it
- 	 */
--	if (!node || ret) {
-+	if (!fwnode || ret) {
- 		int addr = priv->plat->phy_addr;
- 		struct phy_device *phydev;
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index 03d3d1f7aa4..5f177ea8072 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -434,9 +434,11 @@ int stmmac_mdio_register(struct net_device *ndev)
- 	int err = 0;
- 	struct mii_bus *new_bus;
- 	struct stmmac_priv *priv = netdev_priv(ndev);
-+	struct fwnode_handle *fwnode = of_fwnode_handle(priv->plat->phylink_node);
- 	struct stmmac_mdio_bus_data *mdio_bus_data = priv->plat->mdio_bus_data;
- 	struct device_node *mdio_node = priv->plat->mdio_node;
- 	struct device *dev = ndev->dev.parent;
-+	struct fwnode_handle *fixed_node;
- 	int addr, found, max_addr;
- 
- 	if (!mdio_bus_data)
-@@ -490,6 +492,18 @@ int stmmac_mdio_register(struct net_device *ndev)
- 	if (priv->plat->has_xgmac)
- 		stmmac_xgmac2_mdio_read(new_bus, 0, MII_ADDR_C45);
- 
-+	/* If fixed-link is set, skip PHY scanning */
-+	if (!fwnode)
-+		fwnode = dev_fwnode(priv->device);
-+
-+	if (fwnode) {
-+		fixed_node = fwnode_get_named_child_node(fwnode, "fixed-link");
-+		if (fixed_node) {
-+			fwnode_handle_put(fixed_node);
-+			goto bus_register_done;
-+		}
-+	}
-+
- 	if (priv->plat->phy_node || mdio_node)
- 		goto bus_register_done;
- 
--- 
-2.25.1
+Regards,
+Angelo
 
