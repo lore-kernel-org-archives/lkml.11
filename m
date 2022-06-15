@@ -2,139 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7140C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E7FCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:12:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244049AbiFOKKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54804 "EHLO
+        id S1345796AbiFOKMp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 06:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237034AbiFOKKu (ORCPT
+        with ESMTP id S1343500AbiFOKMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:10:50 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60F239816;
-        Wed, 15 Jun 2022 03:10:49 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id y19so22200634ejq.6;
-        Wed, 15 Jun 2022 03:10:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jrcxqBgeBMFGKSHBxhc/jF2djg5DMvwK3R7ae1/jdEE=;
-        b=Bb5loLhs9dHlLWivn3H13vmj48GcNUF3s/Qhw4UyARMy4O4zFdtlrwZWENoL0mBex+
-         a7sbgWxYL2JthL9pSsGc6kUdMEktREzyR3DEJzT0YLQ3fpzGySDLS64YVViU8avECten
-         gaYTL07Rx8rcES0WteDJUxQW8diATe61Z71x30CuVv2fAaRjkQGG/LaNDnwLWejzHH1b
-         ULu5Sb++qVF1jasirLtBZ0t1zzbsIV346AnaYdlU5hg5WyMwi4oduj/tBpH1FNbp85/9
-         lppRoufWmWbv6+qnYV+IlmlKeUEdGdUef9MXOi7CAwO+XNe7lIWQIrdH6fGpYm+4vP5Z
-         1oHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jrcxqBgeBMFGKSHBxhc/jF2djg5DMvwK3R7ae1/jdEE=;
-        b=d10bYdOgOVACbnIBnVndOvHooBO913ewNiLsbrUIzZ15RTYoyL4aI9ZfD/BCMuk1K4
-         igh7m5fqpfxxiv7d3609gGGdTT8/6tTYUztBZlLy2PDJGpHlbJe8/QLP46JD8ShZugh8
-         JmHzXpN+HhoDuGKpnkb6eS13zjE64fKN2w99w0Vf/hmHvc7JNyNyPXUVGif+DDUsHNN0
-         4vP/clXueq4z1CaOMvMJrtCFzq5TL1MAtbc8E+q2rW3QMZTIQReTDliX+cUC+y06QwnJ
-         FwNBIs+TVKvZLM4SZU4wGAJRKNzn1I1WHbkw3bAkpKmGO0fkJtw9O5ufO2CFO5ztezXg
-         oWGw==
-X-Gm-Message-State: AJIora8N5q9xiq9BclGzA0YfxwYDDIXwfU5dMctn2txBCnaXaVZ+zxLf
-        MRs25xIpnvEQ2TwMsTHPMhI=
-X-Google-Smtp-Source: ABdhPJysFg7dsulhlBTO2ydYJy4jLt+SJK6uYoJbhEQTvHNo2JeBBcdw98e2Ab2y/j2r5Ku4bg6A+A==
-X-Received: by 2002:a17:907:2d92:b0:711:d229:4b7f with SMTP id gt18-20020a1709072d9200b00711d2294b7fmr8189816ejc.506.1655287848026;
-        Wed, 15 Jun 2022 03:10:48 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id q8-20020a056402518800b0042dd022787esm9175399edd.6.2022.06.15.03.10.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 03:10:47 -0700 (PDT)
-Message-ID: <62a9b027.1c69fb81.5ae2b.4f85@mx.google.com>
-X-Google-Original-Message-ID: <Yqmk4Qv9KeT1T0ko@Ansuel-xps.>
-Date:   Wed, 15 Jun 2022 11:22:41 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Chanwoo Choi <cwchoi00@gmail.com>
-Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Sibi Sankar <sibis@codeaurora.org>,
-        Saravana Kannan <skannan@codeaurora.org>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 4/4] PM / devfreq: Mute warning on governor PROBE_DEFER
-References: <20220614230950.426-1-ansuelsmth@gmail.com>
- <20220614230950.426-5-ansuelsmth@gmail.com>
- <8dd8bfa2-0843-269b-2d55-e3cbdbf6a5e1@gmail.com>
+        Wed, 15 Jun 2022 06:12:36 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A4D64D9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:12:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=k1; bh=gBzDqYJWrP5LrCucQ6rfc9fBg4G
+        DNNOxtb5PIoS5SK4=; b=NLkUnKutjkyQFGS5XvMBusu/V4hO0zLcscNJ/PBhCuO
+        7BhAPkxIgPKFQ6Kg4BDed3bxbLeBiy7IPG3+Mz66t8ZwrV79wPbePVEEhlRU/opa
+        GIlvg7ELguqb0YZhEy8HM6spbhgAfvPZgxOmJULQe8QRKzhbNaOHhtIMVHGKq6II
+        =
+Received: (qmail 2073927 invoked from network); 15 Jun 2022 12:12:32 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 15 Jun 2022 12:12:32 +0200
+X-UD-Smtp-Session: l3s3148p1@NHxkwnnhyydZD+7R
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     linux-renesas-soc@vger.kernel.org
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] clk: renesas: rcar-gen4: implement SDSRC properly
+Date:   Wed, 15 Jun 2022 12:12:26 +0200
+Message-Id: <20220615101227.13463-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8dd8bfa2-0843-269b-2d55-e3cbdbf6a5e1@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 03:56:31PM +0900, Chanwoo Choi wrote:
-> On 22. 6. 15. 08:09, Christian 'Ansuel' Marangi wrote:
-> > Don't print warning when a governor PROBE_DEFER as it's not a real
-> > GOV_START fail.
-> > 
-> > Fixes: a03dacb0316f ("PM / devfreq: Add cpu based scaling support to passive governor")
-> > Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
-> > ---
-> >  drivers/devfreq/devfreq.c | 5 +++--
-> >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/devfreq/devfreq.c b/drivers/devfreq/devfreq.c
-> > index 2e2b3b414d67..6a39638ed064 100644
-> > --- a/drivers/devfreq/devfreq.c
-> > +++ b/drivers/devfreq/devfreq.c
-> > @@ -931,8 +931,9 @@ struct devfreq *devfreq_add_device(struct device *dev,
-> >  	err = devfreq->governor->event_handler(devfreq, DEVFREQ_GOV_START,
-> >  						NULL);
-> >  	if (err) {
-> > -		dev_err(dev, "%s: Unable to start governor for the device\n",
-> > -			__func__);
-> > +		dev_err_probe(dev, err,
-> > +			      "%s: Unable to start governor for the device\n",
-> > +			      __func__);
-> >  		goto err_init;
-> >  	}
-> >  	create_sysfs_files(devfreq, devfreq->governor);
-> 
-> 
-> In order to keep the left-align with above error log
-> when try_then_request_governor() is failed,
-> I recommend to use the tab without space indentation as following:
-> 
-> If you have no objection, I'll merge this change.
-> 
+Depending on the divider setting, SDSRC can have a different parent.
+Implement this when reading the divider, to get a correct clock tree.
+Setting the divider is left to the bootloader for now.
 
-Sure, good for me. Anyway I wonder if we can relax the hard limit for 80
-for error print since we now can use 100, but your choice.
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
 
-> diff --git a/drivers/devfreq/devfreq.c b/drivers/devfreq/devfreq.c
-> index 01474daf4548..80a1235ef8fb 100644
-> --- a/drivers/devfreq/devfreq.c
-> +++ b/drivers/devfreq/devfreq.c
-> @@ -932,8 +932,9 @@ struct devfreq *devfreq_add_device(struct device *dev,
->         err = devfreq->governor->event_handler(devfreq, DEVFREQ_GOV_START,
->                                                 NULL);
->         if (err) {
-> -               dev_err(dev, "%s: Unable to start governor for the device\n",
-> -                       __func__);
-> +               dev_err_probe(dev, err,
-> +                       "%s: Unable to start governor for the device\n",
-> +                        __func__);
->                 goto err_init;
->         }
->         create_sysfs_files(devfreq, devfreq->governor);
-> 
-> 
-> 
-> 
-> 
-> -- 
-> Best Regards,
-> Samsung Electronics
-> Chanwoo Choi
+Tested on my Spider board (r8a779f0). Only build tested for r8a779g0 but
+the docs for the registers are the same.
 
+ drivers/clk/renesas/r8a779f0-cpg-mssr.c |  2 +-
+ drivers/clk/renesas/r8a779g0-cpg-mssr.c |  2 +-
+ drivers/clk/renesas/rcar-gen4-cpg.c     | 10 +++++++++-
+ drivers/clk/renesas/rcar-gen4-cpg.h     |  5 ++++-
+ 4 files changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/clk/renesas/r8a779f0-cpg-mssr.c b/drivers/clk/renesas/r8a779f0-cpg-mssr.c
+index 862b49736bf0..0c3aa529e4fa 100644
+--- a/drivers/clk/renesas/r8a779f0-cpg-mssr.c
++++ b/drivers/clk/renesas/r8a779f0-cpg-mssr.c
+@@ -71,7 +71,7 @@ static const struct cpg_core_clk r8a779f0_core_clks[] __initconst = {
+ 	DEF_FIXED(".pll6_div2",	CLK_PLL6_DIV2,	CLK_PLL6,	2, 1),
+ 	DEF_FIXED(".s0",	CLK_S0,		CLK_PLL1_DIV2,	2, 1),
+ 
+-	DEF_BASE(".sdsrc",	CLK_SDSRC,	CLK_TYPE_GEN4_SDSRC, CLK_PLL5),
++	DEF_GEN4_SDSRC(".sdsrc", CLK_SDSRC,	CLK_PLL5_DIV2,	CLK_PLL5, 0x08a4),
+ 	DEF_RATE(".oco",	CLK_OCO,	32768),
+ 
+ 	DEF_BASE(".rpcsrc",	CLK_RPCSRC,	CLK_TYPE_GEN4_RPCSRC, CLK_PLL5),
+diff --git a/drivers/clk/renesas/r8a779g0-cpg-mssr.c b/drivers/clk/renesas/r8a779g0-cpg-mssr.c
+index 3fc4233b1ead..c8cd32cf4606 100644
+--- a/drivers/clk/renesas/r8a779g0-cpg-mssr.c
++++ b/drivers/clk/renesas/r8a779g0-cpg-mssr.c
+@@ -86,7 +86,7 @@ static const struct cpg_core_clk r8a779g0_core_clks[] __initconst = {
+ 	DEF_FIXED(".s0_hsc",	CLK_S0_HSC,	CLK_PLL1_DIV2,	2, 1),
+ 	DEF_FIXED(".sv_vip",	CLK_SV_VIP,	CLK_PLL1,	5, 1),
+ 	DEF_FIXED(".sv_ir",	CLK_SV_IR,	CLK_PLL1,	5, 1),
+-	DEF_BASE(".sdsrc",	CLK_SDSRC,	CLK_TYPE_GEN4_SDSRC, CLK_PLL5),
++	DEF_GEN4_SDSRC(".sdsrc", CLK_SDSRC,	CLK_PLL5_DIV2,	CLK_PLL5, 0x08a4),
+ 	DEF_RATE(".oco",	CLK_OCO,	32768),
+ 
+ 	DEF_BASE(".rpcsrc",	CLK_RPCSRC,		CLK_TYPE_GEN4_RPCSRC, CLK_PLL5),
+diff --git a/drivers/clk/renesas/rcar-gen4-cpg.c b/drivers/clk/renesas/rcar-gen4-cpg.c
+index c7ed43d6aa67..c6662ec10292 100644
+--- a/drivers/clk/renesas/rcar-gen4-cpg.c
++++ b/drivers/clk/renesas/rcar-gen4-cpg.c
+@@ -240,7 +240,15 @@ struct clk * __init rcar_gen4_cpg_clk_register(struct device *dev,
+ 					  base, core->div, core->offset);
+ 
+ 	case CLK_TYPE_GEN4_SDSRC:
+-		div = ((readl(base + SD0CKCR1) >> 29) & 0x03) + 4;
++		value = (readl(base + core->offset) >> 29) & 3;
++		if (value) {
++			div = value + 4;
++		} else {
++			parent = clks[core->parent >> 16];
++			if (IS_ERR(parent))
++				return ERR_CAST(parent);
++			div = 2;
++		}
+ 		break;
+ 
+ 	case CLK_TYPE_GEN4_SDH:
+diff --git a/drivers/clk/renesas/rcar-gen4-cpg.h b/drivers/clk/renesas/rcar-gen4-cpg.h
+index 0b15dcfdca7b..e5237b2f5205 100644
+--- a/drivers/clk/renesas/rcar-gen4-cpg.h
++++ b/drivers/clk/renesas/rcar-gen4-cpg.h
+@@ -32,6 +32,10 @@ enum rcar_gen4_clk_types {
+ 	CLK_TYPE_GEN4_SOC_BASE,
+ };
+ 
++#define DEF_GEN4_SDSRC(_name, _id, _parent0, _parent1, _offset)	\
++	DEF_BASE(_name, _id, CLK_TYPE_GEN4_SDSRC, \
++		 (_parent0) << 16 | (_parent1), .offset = _offset)
++
+ #define DEF_GEN4_SDH(_name, _id, _parent, _offset)	\
+ 	DEF_BASE(_name, _id, CLK_TYPE_GEN4_SDH, _parent, .offset = _offset)
+ 
+@@ -67,7 +71,6 @@ struct rcar_gen4_cpg_pll_config {
+ };
+ 
+ #define CPG_RPCCKCR	0x874
+-#define SD0CKCR1	0x8a4
+ 
+ struct clk *rcar_gen4_cpg_clk_register(struct device *dev,
+ 	const struct cpg_core_clk *core, const struct cpg_mssr_info *info,
 -- 
-	Ansuel
+2.35.1
+
