@@ -2,102 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B93D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:55:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345730AbiFOOyf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
+        id S240965AbiFOOzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 10:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345953AbiFOOy1 (ORCPT
+        with ESMTP id S232920AbiFOOze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:54:27 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C152FE66
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:54:22 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id h23so19347904lfe.4
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:54:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aoMDtHtTQLo9Hcq1dT+XWeUHhZY2P5SZpdzuA1mTFwI=;
-        b=mZaSSuMapl6ZdG640VcUpFw3YExNCMsY53STmUB0Q4FpEKMAjgqnBpLtkLKXRQtM8O
-         Iazav9Ncviujq+pFGcNdcrTMbBwnfJoZB6QJ2kQNofoTtiNN4fOK6hQPI5tDnHcFiwwx
-         5VGQIdQMn6HSb2HaEiMFnO6nSB1UtLq1BALXqVewg/s9uxIkTbdFpXe3LwEwWVgc90Y9
-         cJ66J/SwV55xg//85NUUjFTFVM6Kwy8X/PGmH0T61WzGj2AhkP2RBbYwXl3ETZCX2O/e
-         DgIt3x6vHILIok+ouydxTujxJORpRehqWxvB7t94SBYrxkXNfaskOQGbY/zfEw3piXe4
-         CPBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aoMDtHtTQLo9Hcq1dT+XWeUHhZY2P5SZpdzuA1mTFwI=;
-        b=XDbK9//KHFPiGPAiMnyL1vCwkUWirebsNTNUDbF1fYBXxnZp1Xh/Q6Nx7lJxmWIYUt
-         hiOsfFSqgFKz3yUadC8SiRY76cW38LbdDWWc1r3twUvdhWFGhPKzScton3FHvC3crWXc
-         6QHwwWaA4+LABZkC/csjWDg5VGDSIGOkueU5ebEV9ZfxicePYaMGzW2VDC9y8SCXfF2B
-         MnCZer1hIixMROQhhVePmT5IGEWOpD00ld9mT67BB4Lq5s7fQcC9GC2SIhRRT1n+ZAIt
-         PfVhLjH5lon9sXqOXi2ocTu5cMDSWYe9bYzMUBFZshHNjaPU/NQNmGEbPXhVdoYAxyOM
-         lvLw==
-X-Gm-Message-State: AJIora/WDLQ24TBPPdv1Lef7iGGHYiLQZAGuHx/P9UrD+KPYndpQTNQU
-        9Rn5Z+ZuszUym47ISx1ymLCD6bByZCJSgByvxv49Cw==
-X-Google-Smtp-Source: ABdhPJwBmMj0bnW0ZsZejTsoolvSYTgfqgbqhXjoDD1fQt6pLLYs8UcZCewi1iLyYw+UvuuGlJDrvN3cG28dwguycXM=
-X-Received: by 2002:a19:5059:0:b0:479:4739:3768 with SMTP id
- z25-20020a195059000000b0047947393768mr6468219lfj.315.1655304860454; Wed, 15
- Jun 2022 07:54:20 -0700 (PDT)
+        Wed, 15 Jun 2022 10:55:34 -0400
+Received: from mail-m964.mail.126.com (mail-m964.mail.126.com [123.126.96.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1EED827CDB
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:55:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=6b1QQ
+        5pX99UVwMZZIVKUN/ej+cHkqQXln4EdGZwejTQ=; b=OwWnoSNG2ajUu4JtqVsVu
+        szWtn92oa4nGIJaW2yXLFRU3R+cThHKz6dzuc5ZRQnhZhSa2b4z4VDPNkaX8ft2U
+        iw8LzzdN3BCC+/agRi3UCDRVAX+s3yGr4z7squvFrwk+S4MJ+A7WTkAIF0tPywPb
+        sR5MMhSwUTcH9DJ6HB4b70=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp9 (Coremail) with SMTP id NeRpCgAHD7S58qli4Y01Ew--.55748S2;
+        Wed, 15 Jun 2022 22:54:50 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     linux@armlinux.org.uk, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        windhl@126.com
+Subject: [PATCH] arm: mach-imx: Add missing of_node_put() in cpu-imx31.c
+Date:   Wed, 15 Jun 2022 22:54:48 +0800
+Message-Id: <20220615145448.3969508-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220614021141.1101486-1-sashal@kernel.org>
-In-Reply-To: <20220614021141.1101486-1-sashal@kernel.org>
-From:   Jann Horn <jannh@google.com>
-Date:   Wed, 15 Jun 2022 16:53:44 +0200
-Message-ID: <CAG48ez1bRMCUzmkP2zpQ_4Jx0sqRw=b9-sDa-0QSqoGHpqZVJA@mail.gmail.com>
-Subject: Re: [PATCH MANUALSEL 5.15 1/4] KVM: x86: do not report a vCPU as
- preempted outside instruction boundaries
-To:     Sasha Levin <sashal@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NeRpCgAHD7S58qli4Y01Ew--.55748S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtF4UXry8JryrKry3trW5ZFb_yoW3Gwc_Ar
+        1Sg3s7JF4rArnYv3yUuw45Wr4Yvw4rWF1rAas2yF1jyw4j9wnrCr9Fyr92qry7Xr43KrW5
+        GrZrCF4Y9w13GjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRMpnQ3UUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizhohF18RPTHCVgAAs0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 4:11 AM Sasha Levin <sashal@kernel.org> wrote:
->
-> From: Paolo Bonzini <pbonzini@redhat.com>
->
-> [ Upstream commit 6cd88243c7e03845a450795e134b488fc2afb736 ]
->
-> If a vCPU is outside guest mode and is scheduled out, it might be in the
-> process of making a memory access.  A problem occurs if another vCPU uses
-> the PV TLB flush feature during the period when the vCPU is scheduled
-> out, and a virtual address has already been translated but has not yet
-> been accessed, because this is equivalent to using a stale TLB entry.
->
-> To avoid this, only report a vCPU as preempted if sure that the guest
-> is at an instruction boundary.  A rescheduling request will be delivered
-> to the host physical CPU as an external interrupt, so for simplicity
-> consider any vmexit *not* instruction boundary except for external
-> interrupts.
->
-> It would in principle be okay to report the vCPU as preempted also
-> if it is sleeping in kvm_vcpu_block(): a TLB flush IPI will incur the
-> vmentry/vmexit overhead unnecessarily, and optimistic spinning is
-> also unlikely to succeed.  However, leave it for later because right
-> now kvm_vcpu_check_block() is doing memory accesses.  Even
-> though the TLB flush issue only applies to virtual memory address,
-> it's very much preferrable to be conservative.
->
-> Reported-by: Jann Horn <jannh@google.com>
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+In mx31_read_cpu_rev(), of_find_compatible_node() will return a
+node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-This feature was introduced in commit f38a7b75267f1f (first in 4.16).
-I think the fix has to be applied all the way back to there (so
-additionally to what you already did, it'd have to be added to 4.19,
-5.4 and 5.10)?
+Signed-off-by: Liang He <windhl@126.com>
+---
+ arch/arm/mach-imx/cpu-imx31.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-But it doesn't seem to apply cleanly to those older branches. Paolo,
-are you going to send stable backports of this?
+diff --git a/arch/arm/mach-imx/cpu-imx31.c b/arch/arm/mach-imx/cpu-imx31.c
+index b9c24b851d1a..cff6be524626 100644
+--- a/arch/arm/mach-imx/cpu-imx31.c
++++ b/arch/arm/mach-imx/cpu-imx31.c
+@@ -39,6 +39,9 @@ static int mx31_read_cpu_rev(void)
+ 
+ 	np = of_find_compatible_node(NULL, NULL, "fsl,imx31-iim");
+ 	iim_base = of_iomap(np, 0);
++	
++	of_node_put(np);
++	
+ 	BUG_ON(!iim_base);
+ 
+ 	/* read SREV register from IIM module */
+-- 
+2.25.1
+
