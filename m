@@ -2,168 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C50C0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:33:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D426AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349265AbiFORdC (ORCPT
+        id S1355195AbiFORdK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:33:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41110 "EHLO
+        Wed, 15 Jun 2022 13:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237257AbiFORcp (ORCPT
+        with ESMTP id S1357384AbiFORcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:32:45 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C5E7627B
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:32:42 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B736C153B;
-        Wed, 15 Jun 2022 10:32:42 -0700 (PDT)
-Received: from e120937-lin (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 661013F73B;
-        Wed, 15 Jun 2022 10:32:41 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 18:32:31 +0100
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        sudeep.holla@arm.com, james.quinlan@broadcom.com,
-        Jonathan.Cameron@huawei.com, etienne.carriere@linaro.org,
-        vincent.guittot@linaro.org, souvik.chakravarty@arm.com
-Subject: Re: [PATCH 11/22] firmware: arm_scmi: Add SCMIv3.1 extended names
- protocols support
-Message-ID: <YqoXgsbg6t46rZeI@e120937-lin>
-References: <20220330150551.2573938-1-cristian.marussi@arm.com>
- <20220330150551.2573938-12-cristian.marussi@arm.com>
- <6f865d7f-fde8-d923-3c7e-d12bfbc370a6@gmail.com>
- <YqmVsMGgxKuIT5rx@e120937-lin>
- <Yqmo/BiIR4gku0Y+@e120937-lin>
- <c787dfe6-9639-8797-d07a-048c5ec69ddf@gmail.com>
- <YqoI5hYa97nZwUjl@e120937-lin>
- <f194f9b6-578d-ae08-16c3-6d464da10452@gmail.com>
+        Wed, 15 Jun 2022 13:32:46 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B9FB46
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:32:45 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id u18so11008522plb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:32:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=W1PQYZC14YMjHxT30YEBNlrtmJ3QC4MXeKQysGRg+Yw=;
+        b=LLceS4Bvp4DhcnnLuCIwqgbqNp6J/l72nMXqhgIjd8/hq1DDLIwDn05fkERjkMyyfz
+         ZB7DSoL5I8hjYPDY+mdw4AXi0E6y7pp62jvbB/EgWuzpZ86hIbhHRp79/DhlHcEyYKsu
+         wpHlwcu8gv9SvSy+A/1bRM4T9CHWtJBuvH4CM9m6g7MhOWK5zN93QKIyMgHeHFGktwGu
+         9gLqJYdlY6dUpcrsC41tPFsu1FljJ0SBFOUn5gbdTXEOwHhJTLE/uqDmbWsGBwwvQkDS
+         90Au78Z+x+AILhvwS9iOa7uK/JiFTYrFOXBQVyDJwDclT0jsah+pifj6C1UnXtvGlgvv
+         ighA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=W1PQYZC14YMjHxT30YEBNlrtmJ3QC4MXeKQysGRg+Yw=;
+        b=z0TUtG+hPm0ZzJozNmrQ2Zki+jR14gJBMIlHKG0By2Rk5u8+qsVmUR0tW57LblqmZI
+         Gvwrwiz+2SGvS+GrSukOzyQUh0NpusqcZGV2CuyZKNPCvsNXUjCby3HF2NGIZnwrFhta
+         YCQpU1mT+YnNAkPurqre5vh7m3SC4TlRLEy/jn74UXkhtG3wVuXHpq9kRdFJRU0/TRWJ
+         mUkTaENTB1BXP4ILORlYRqdCa3SEXpDnYYwJk2Lw+xCQ/yyLpJxDA/GIFmUe8UHegMd8
+         1ugDNJl6i8NnoFZGWkheBKQ8f+JSmWdGxxUWcmLFpm6e5nGgtazdwpik6MZdp+2nEWXq
+         XUTw==
+X-Gm-Message-State: AJIora+SZXOl8nqMNgSbCM/pjtuuoFh64JuP4rpLiL0o1VukXw8nGNRx
+        RM8q+7DQn5FkWH7MyQSaLAltquxL6LNL2Q==
+X-Google-Smtp-Source: AGRyM1t5Bb3byzNK2GCgYIJSoyJJv6PdLq49qYzDb+iYtiJqiqZHZMSFKTIH6YqdgfcSUyPXOQ4snQ==
+X-Received: by 2002:a17:903:408c:b0:163:e526:4397 with SMTP id z12-20020a170903408c00b00163e5264397mr829378plc.80.1655314364597;
+        Wed, 15 Jun 2022 10:32:44 -0700 (PDT)
+Received: from [172.22.33.138] ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id cd6-20020a056a00420600b0050dc7628162sm10075365pfb.60.2022.06.15.10.32.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 10:32:44 -0700 (PDT)
+Message-ID: <acac2ec1-759a-dee0-8f08-df83b63b96f5@linaro.org>
+Date:   Wed, 15 Jun 2022 10:32:43 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f194f9b6-578d-ae08-16c3-6d464da10452@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 3/3] dt-bindings: dsp: mediatek: add mt8186 dsp
+ document
+Content-Language: en-US
+To:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        YC Hung <yc.hung@mediatek.com>,
+        Curtis Malainey <cujomalainey@chromium.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220609083101.24195-1-tinghan.shen@mediatek.com>
+ <20220609083101.24195-4-tinghan.shen@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220609083101.24195-4-tinghan.shen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 10:19:53AM -0700, Florian Fainelli wrote:
-> On 6/15/22 09:29, Cristian Marussi wrote:
-> > On Wed, Jun 15, 2022 at 09:10:03AM -0700, Florian Fainelli wrote:
-> > > On 6/15/22 02:40, Cristian Marussi wrote:
-> > > > On Wed, Jun 15, 2022 at 09:18:03AM +0100, Cristian Marussi wrote:
-> > > > > On Wed, Jun 15, 2022 at 05:45:11AM +0200, Florian Fainelli wrote:
-> > > > > > 
-> > > > > > 
-> > > > > > On 3/30/2022 5:05 PM, Cristian Marussi wrote:
-> > > > > > > Using the common protocol helper implementation add support for all new
-> > > > > > > SCMIv3.1 extended names commands related to all protocols with the
-> > > > > > > exception of SENSOR_AXIS_GET_NAME.
-> > > > > > > 
-> > > > > > > Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-> > > > > > 
-> > > > > > This causes the following splat on a platform where regulators fail to
-> > > > > > initialize:
-> > > > > > 
-> > > > > 
-> > > > > Hi Florian,
-> > > > > 
-> > > > > thanks for the report.
-> > > > > 
-> > > > > It seems a memory error while allocating so it was not meant to be
-> > > > > solved by the fixes, anyway, I've never seen this splat in my testing
-> > > > > and at first sight I cannot see anything wrong in the devm_k* calls
-> > > > > inside scmi_voltage_protocol_init...is there any particular config in
-> > > > > your setup ?
-> > > > > 
-> > > > > Moreover, the WARNING line 5402 seems to match v5.19-rc1 and it has
-> > > > > slightly changed with -rc-1, so I'll try rebasing on that at first and
-> > > > > see if I can reproduce the issue locally.
-> > > > > 
-> > > > 
-> > > > I just re-tested the series rebased on v519-rc1 plus fixes and I cannot
-> > > > reproduce in my setup with a few (~9) good and bad voltage domains.
-> > > > 
-> > > > How many voltage domains are advertised by the platform in your setup ?
-> > > 
-> > > There are 11 voltage regulators on this platform, and of course, now that I
-> > > am trying to reproduce the splat I reported I just cannot anymore... I will
-> > > let you know if there is anything that needs to be done. Thanks for being
-> > > responsive as usual!
-> > 
-> > ... you're welcome...
-> > 
-> > I'm trying to figure out where an abnormal mem request could happen...
+On 09/06/2022 01:31, Tinghan Shen wrote:
+> This patch adds mt8186 dsp document. The dsp is used for Sound Open
+> Firmware driver node. It includes registers, clocks, memory regions,
+> and mailbox for dsp.
 > 
-> I think the problem is/was with the number of voltage domains being reported
-> which was way too big and passed directly, without any clamping to
-> devm_kcalloc() resulting the splat indicating that the allocation was beyond
-> the MAX_ORDER. The specification allows for up to 2^16 domains which would
-> still be way too much to allocate using kmalloc() so we could/should
-> consider vmalloc() here eventually?
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> ---
+>  .../bindings/dsp/mediatek,mt8186-dsp.yaml     | 91 +++++++++++++++++++
+>  1 file changed, 91 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.yaml
 > 
+> diff --git a/Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.yaml b/Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.yaml
+> new file mode 100644
+> index 000000000000..33c78f89d296
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.yaml
+> @@ -0,0 +1,91 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/dsp/mediatek,mt8186-dsp.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek mt8186 DSP core
+> +
+> +maintainers:
+> +  - Tinghan Shen <tinghan.shen@mediatek.com>
+> +
+> +description: |
+> +  MediaTek mt8186 SoC contains a DSP core used for
+> +  advanced pre- and post- audio processing.
+> +
+> +properties:
+> +  compatible:
+> +    const: mediatek,mt8186-dsp
+> +
+> +  reg:
+> +    items:
+> +      - description: Address and size of the DSP config registers
+> +      - description: Address and size of the DSP SRAM
+> +      - description: Address and size of the DSP secure registers
+> +      - description: Address and size of the DSP bus registers
+> +
+> +  reg-names:
+> +    items:
+> +      - const: cfg
+> +      - const: sram
+> +      - const: sec
+> +      - const: bus
+> +
+> +  clocks:
+> +    items:
+> +      - description: mux for audio dsp clock
+> +      - description: mux for audio dsp local bus
+> +
+> +  clock-names:
+> +    items:
+> +      - const: audiodsp
+> +      - const: adsp_bus
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  mboxes:
+> +    items:
+> +      - description: ipc reply between host and audio DSP.
+> +      - description: ipc request between host and audio DSP.
 
-Yes I was suspicious about the same and I was starting to think about vmalloc
-in general across all domain enumerations even if this is may not be the case
-for your splat...
+"IPC request between" does not specify who sends the request. Host or DSP?
 
-> In all likelihood though we probably won't find a system with 65k voltage
-> domains.
-> 
-> > 
-> > can you try adding this (for brutal debugging) when you try ?
-> > (...just to rule out funny fw replies.... :D)
-> 
-> Sure, nothing weird coming out and it succeeded in enumerating all of the
-> regulators, I smell a transient issue with our firmware implementation,
-> maybe...
-> 
-> [    0.560544] arm-scmi brcm_scmi@0: num_returned:1  num_remaining:0
-> [    0.560617] arm-scmi brcm_scmi@0: num_returned:1  num_remaining:0
-> [    0.560673] arm-scmi brcm_scmi@0: num_returned:1  num_remaining:0
-> [    0.560730] arm-scmi brcm_scmi@0: num_returned:1  num_remaining:0
-> [    0.560881] arm-scmi brcm_scmi@0: num_returned:1  num_remaining:0
-> [    0.560940] arm-scmi brcm_scmi@0: num_returned:1  num_remaining:0
-> [    0.560996] arm-scmi brcm_scmi@0: num_returned:1  num_remaining:0
-> [    0.561054] arm-scmi brcm_scmi@0: num_returned:1  num_remaining:0
-> [    0.561110] arm-scmi brcm_scmi@0: num_returned:1  num_remaining:0
-> [    0.561168] arm-scmi brcm_scmi@0: num_returned:1  num_remaining:0
-> [    0.561225] arm-scmi brcm_scmi@0: num_returned:1  num_remaining:0
-> [    0.561652] scmi-regulator scmi_dev.2: Regulator stb_vreg_2 registered
-> for domain [2]
-> [    0.561858] scmi-regulator scmi_dev.2: Regulator stb_vreg_3 registered
-> for domain [3]
-> [    0.562030] scmi-regulator scmi_dev.2: Regulator stb_vreg_4 registered
-> for domain [4]
-> [    0.562190] scmi-regulator scmi_dev.2: Regulator stb_vreg_5 registered
-> for domain [5]
-> [    0.564427] scmi-regulator scmi_dev.2: Regulator stb_vreg_6 registered
-> for domain [6]
-> [    0.564638] scmi-regulator scmi_dev.2: Regulator stb_vreg_7 registered
-> for domain [7]
-> [    0.564817] scmi-regulator scmi_dev.2: Regulator stb_vreg_8 registered
-> for domain [8]
-> [    0.565030] scmi-regulator scmi_dev.2: Regulator stb_vreg_9 registered
-> for domain [9]
-> [    0.565191] scmi-regulator scmi_dev.2: Regulator stb_vreg_10 registered
-> for domain [10]
-> 
+See existing bindings for some better examples, e.g.:
+Documentation/devicetree/bindings/serial/nvidia,tegra194-tcu.yaml
+which clearly states who receives from who.
 
-Ok, this was another place where a reply carrying a consistent number of
-non-segmented entries could trigger an jumbo-request to kmalloc...
+> +
+> +  mbox-names:
+> +    items:
+> +      - const: rep
+> +      - const: req
 
-..maybe this is where a transient fw issue can reply with a dramatic
-numbers of possible (non-segmented) levels (num_returned+num_remaining)
+tx/rx
 
-(I filter out replies carrying descriptors for segmented voltage-levels
-that does not come in triplets (returned:3  remaining:0) since they are out
-of spec...but I just hit today on another fw sending such out of spec
-reply for clocks and I will relax such req probably not to break too
-many out-of-spec blobs out in the wild :P)
 
-So let me know if got new splats...
 
-Thanks,
-Cristian
 
+Best regards,
+Krzysztof
