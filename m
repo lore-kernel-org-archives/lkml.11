@@ -2,94 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B0BFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E45EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355970AbiFORfZ (ORCPT
+        id S1356745AbiFORgF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46828 "EHLO
+        Wed, 15 Jun 2022 13:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357701AbiFORdV (ORCPT
+        with ESMTP id S241015AbiFORgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:33:21 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B122AE3E
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:33:18 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id l18so14050030lje.13
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:33:18 -0700 (PDT)
+        Wed, 15 Jun 2022 13:36:03 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947CF140D4
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:36:02 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id u37so3646645pfg.3
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:36:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=WKNf0k9l6gLrV2AI3VWWdOaW+620gEpiFjUyyJCX0Cs=;
-        b=tlKGen7zMe6cWxtE6Iq+6NS/TFHumGCzRMFTXeyJUE8ztpNiY3hvE1iAKl/OlX9X9O
-         HzsFVwv9ypNae7Z3mFrO0XyV4Y4pj6Iipdr8THGhJaqduTvEbbXSXByop1C7Mds0rAah
-         kGzShX4Mub0mOxuiyIFNvOWa8m4UIpsQUaHfbKJDq5oIQWtC4N7TNdT396lcETQxXcKp
-         AYMOlMAHjYjsA7V5u65u9GxDqq5MOFmy9QYT2YywcsjKOAhn1qsjIZZeSbMX0PpZAiZJ
-         3rCXRaol3umGZRlUj8Y2dD7Hlpy6sN4xAXyW6YHvQjoJxBHMiFJz6N2vJtT77rr+UL19
-         P37g==
+        bh=Mi2I/nBbKUPGwcrimfjZmC5H+6RsJZl43u1D1xw78cY=;
+        b=B66OjH+4Usdm01B88GgTuR/lmUJB0yO00pSelOSh083ZtTXiu1AwQJlTqrIt7iN1o1
+         evsW15/3cKi/CZagQcCEfKXGJumsp1BU+poSvnEn7cudXQmxzKTD3QENL2y2T4976O9j
+         i0ZLhJ0ft2FkpnSj8IzCFrei8kQ9eKB5iSDLexX8j0vcevavvFerz2T3/3rwtxxgqMBm
+         rkj0Kj/vJ19f74xZFOAOJbeuBbmrJmGttzXqv6tyI0TprHd5JAFNP8rbnM7OdJ8RJEQ4
+         EeeHy39WCK+4xcmilNUWY3DRCFHBOtHPpU9yidhLR60eOltc3A8qXrlixHcMO4Mryy3L
+         RGRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=WKNf0k9l6gLrV2AI3VWWdOaW+620gEpiFjUyyJCX0Cs=;
-        b=WvB88SjkCd0LrJndCCzG8jVU5m8L/e3KKfBMHRUHGNxr1A4QmK5aH1mb0vXkHksM1d
-         SQ3RhjXIzH4tlXqdbfWdWFL0Jf3LWQpXEGxQYmgngBVuWOtVamZ9EcRUyfJAp2HfmRj9
-         ZwuAumYCGebagrM06tMF5iQ+B+bpElDROf9uYcnK5A6ATr+LoACTP/mmflmul8kttNDn
-         a2c4yNDMgS6w0qR7ksN+STjhyTMod1em/tmG0FdDhr1C4Fhj/Zq38ZTbyAkDgPPR5gpq
-         JP6fm/wIemIPScw9W/K6Wp0j1p/juS8KqoQFrnopgb151rrk5xdXZcWDWC5UHU82/GsD
-         6i/g==
-X-Gm-Message-State: AJIora+3+aERC4h/NqK6317N/+/l+DhRR44YvY34CCEbJRuXHXPE19SE
-        XtCBD0+AOLjcP+ed44d20TcGka7LRamd2BSvyEg8zpo/Ftc8Ew==
-X-Google-Smtp-Source: AGRyM1tarJ3RmYGZi4Bh/Sn0M/lEpQDAsmJjikNL+iLfDgMeV5j+niJz7+d8G8zHnwmUFIHeOkjT3b9W/eOOBPc6Vxg=
-X-Received: by 2002:a2e:808e:0:b0:255:be23:1372 with SMTP id
- i14-20020a2e808e000000b00255be231372mr454884ljg.4.1655314398304; Wed, 15 Jun
- 2022 10:33:18 -0700 (PDT)
+        bh=Mi2I/nBbKUPGwcrimfjZmC5H+6RsJZl43u1D1xw78cY=;
+        b=MolDZc0fcOWytPj12uhrWIUYhT6h5XyXfSw5fcwolj3p8XfRBgx4hVKwQC3yNzspfL
+         aC60MAcoiuvi6VsO9wRhAz+gNOjIEGKN8CgcMq/JyZ1PRYqEQ0xzY9A5R4c1GlWJF8q/
+         JyO2xsMEuyhfzQOKg2FIreju3S1d/X//H5ii2QINoIQD0yEmRhkgPdyzuLxxEdqUhP3g
+         KAunEU7NloEo328GGfeO5C7FnYaTQaMRglOLEAeAD/vc5zeqb6kr9iX210SG4z2efXre
+         3WjI3sgmIfu9wt46UCfxyeKx6UganJvfTfej54P9rbRhm9VvRoCkli6FMWR/ezKsf65v
+         wnrA==
+X-Gm-Message-State: AJIora+eMpUOsObSigsecPI+fvhDZO6WbHy/bqSiJqb9NdbMcoFlbFR1
+        NMJXST7XN+rms0f2Ad4qKmFtW6LwsyJQ7D6No9s=
+X-Google-Smtp-Source: AGRyM1t1JjCHUP3dw4DmAlpOPQwoeQrKrh+19gynjKHWa0zTJBXh1GqCw/KHHovV3kRQib8Hapf/cxIRD+zNC/JSCDw=
+X-Received: by 2002:a05:6a00:2291:b0:51b:e4c5:627 with SMTP id
+ f17-20020a056a00229100b0051be4c50627mr603454pfe.20.1655314562174; Wed, 15 Jun
+ 2022 10:36:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220608130847.46359-1-wangxiang@cdjrlc.com>
-In-Reply-To: <20220608130847.46359-1-wangxiang@cdjrlc.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 15 Jun 2022 10:32:40 -0700
-Message-ID: <CAPDyKFobyJS-7j7C0x-FwV6zdqR9gOtpr-HWn8zcLkFd-gMAeg@mail.gmail.com>
-Subject: Re: [PATCH] mmc: mmci: Fix typo in comment
-To:     Xiang wangx <wangxiang@cdjrlc.com>
-Cc:     linux@armlinux.org.uk, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220611084731.55155-1-linmiaohe@huawei.com> <20220611084731.55155-2-linmiaohe@huawei.com>
+In-Reply-To: <20220611084731.55155-2-linmiaohe@huawei.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Wed, 15 Jun 2022 10:35:49 -0700
+Message-ID: <CAHbLzkpNKcaa54=2kTBWfzB1VoagkncZV0XEef22tHpfT0fTHw@mail.gmail.com>
+Subject: Re: [PATCH 1/7] mm/khugepaged: remove unneeded shmem_huge_enabled() check
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Howells <dhowells@redhat.com>, NeilBrown <neilb@suse.de>,
+        Alistair Popple <apopple@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Peter Xu <peterx@redhat.com>, Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Jun 2022 at 06:12, Xiang wangx <wangxiang@cdjrlc.com> wrote:
+On Sat, Jun 11, 2022 at 1:47 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
 >
-> Delete the redundant word 'is'.
+> If we reach here, hugepage_vma_check() has already made sure that hugepage
+> is enabled for shmem. Remove this duplicated check.
 >
-> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-Applied for next, thanks!
-
-Kind regards
-Uffe
-
+Reviewed-by: Yang Shi <shy828301@gmail.com>
 
 > ---
->  drivers/mmc/host/mmci.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  mm/khugepaged.c | 2 --
+>  1 file changed, 2 deletions(-)
 >
-> diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
-> index 01159eaf8694..012aa85489d8 100644
-> --- a/drivers/mmc/host/mmci.c
-> +++ b/drivers/mmc/host/mmci.c
-> @@ -762,7 +762,7 @@ int mmci_dmae_setup(struct mmci_host *host)
+> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+> index 476d79360101..73570dfffcec 100644
+> --- a/mm/khugepaged.c
+> +++ b/mm/khugepaged.c
+> @@ -2153,8 +2153,6 @@ static unsigned int khugepaged_scan_mm_slot(unsigned int pages,
+>                 if (khugepaged_scan.address < hstart)
+>                         khugepaged_scan.address = hstart;
+>                 VM_BUG_ON(khugepaged_scan.address & ~HPAGE_PMD_MASK);
+> -               if (shmem_file(vma->vm_file) && !shmem_huge_enabled(vma))
+> -                       goto skip;
 >
->         /*
->          * If only an RX channel is specified, the driver will
-> -        * attempt to use it bidirectionally, however if it is
-> +        * attempt to use it bidirectionally, however if it
->          * is specified but cannot be located, DMA will be disabled.
->          */
->         if (dmae->rx_channel && !dmae->tx_channel)
+>                 while (khugepaged_scan.address < hend) {
+>                         int ret;
 > --
-> 2.36.1
+> 2.23.0
+>
 >
