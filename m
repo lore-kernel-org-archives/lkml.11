@@ -2,139 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C8EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:00:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B52C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347010AbiFOVAN (ORCPT
+        id S1349161AbiFOVAa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 17:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54560 "EHLO
+        Wed, 15 Jun 2022 17:00:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236331AbiFOVAL (ORCPT
+        with ESMTP id S1346052AbiFOVAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 17:00:11 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB0255222
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 14:00:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655326810; x=1686862810;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=IRFJBh+zoP1ebZry6XfT/kFqI5RhbjM1nScJRBf3RrE=;
-  b=kErM1cVXR5WCKpBWyOirExR9Xl3qtzKzWZ2ZuG0SlGaekhrtSyGBhoIe
-   ylUzPzRdbASBg/0yajqpkrlfFI52VPe+SUoaFqp5ggsKkZ8VuQw700fDh
-   VcVyCRZl45MylPohnyrEc6jkoiGUR5byKywq5s5KHwSB4e2Ff+UML3BAO
-   txDXKEyWNFS18bEFPFUaj45HG2H2MjasCexqd7h+tE8ihfjyu69dVUi9m
-   DQnuTW3apphh3CghdE0nz+lLsOpRUhVsnCBPIJ+Aor44lAPrnDxZiuvB0
-   HH+vXQs7iyy1Fso++Te01fXJ9+TF8RJjrUb3llg6skP1dzl3TwNn97U4u
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="279152128"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="279152128"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 13:59:50 -0700
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="612910288"
-Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 13:59:50 -0700
-Date:   Wed, 15 Jun 2022 13:59:33 -0700
-From:   Alison Schofield <alison.schofield@intel.com>
-To:     Martin Fernandez <martin.fernandez@eclypsium.com>
-Cc:     Daniel Gutson <daniel.gutson@eclypsium.com>,
-        Richard Hughes <hughsient@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Alex Bazhaniuk <alex.bazhaniuk@eclypsium.com>
-Subject: Re: [PATCH] x86/cpuinfo: Clear X86_FEATURE_TME if TME/MKTME is
- disabled by BIOS
-Message-ID: <20220615205933.GA1524841@alison-desk>
-References: <20220614210217.1940563-1-martin.fernandez@eclypsium.com>
- <20220615190519.GA1524500@alison-desk>
- <CAD2FfiGxy=9ARK5FT_iaLACZSzR+R4crmGJv7T+v_w3+ktOzCQ@mail.gmail.com>
- <20220615195425.GA1524649@alison-desk>
- <CAFmMkTGFpehSFOsnDuQN4aTnwfgYGwTbGBxtvUU_byDcoRVPPA@mail.gmail.com>
- <CAKgze5aQsh2VY4tjsDco_Wc6CTU+KXZM3bhFR+73AVp3gLWHuA@mail.gmail.com>
+        Wed, 15 Jun 2022 17:00:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91FB5523D;
+        Wed, 15 Jun 2022 14:00:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6194361356;
+        Wed, 15 Jun 2022 21:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F301BC3411E;
+        Wed, 15 Jun 2022 21:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655326814;
+        bh=H/KvdVW+OVA5m+P7Zw9G+q3TtBvXLtLwBl8hRTBS/bA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QxbPbc8tlWgFeYsXMM2ZnM0naobnJYZtq2duTMSpUT095EP3ijtx5nuKABHZdHqcI
+         riEpWjEsb1HpqDB3zhiD8V01PxXhGT7S4o0M2xb+CH4emrPXxw6MDnM4zazkrybu5/
+         A3ZHL/SpqayY9OCkZQ6EC9+gKzel9dVIVleBqXpAbPfnTn3JRWJsjcDlPutNoZsePz
+         BM1soqK1938U73gjJOE5+Pi3Bx2srKZlll0ot6/NupAUIYbxnU6EQ8wHJwHU5ouyKa
+         nQiuiUBRatc9C7gieka7hSvwHqfHU/0d8ckfQOZMvNc99jIu7/WqHyQtvWs5YAh2yK
+         +R731VOOVpxVA==
+Date:   Wed, 15 Jun 2022 22:09:30 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: adc: intel_mrfld_adc: explicitly add proper
+ header files
+Message-ID: <20220615220930.710ed42d@jic23-huawei>
+In-Reply-To: <PH0PR03MB6786A019FB9A1BA810DDE2BC99AD9@PH0PR03MB6786.namprd03.prod.outlook.com>
+References: <20220615120803.41350-1-andriy.shevchenko@linux.intel.com>
+        <PH0PR03MB6786A019FB9A1BA810DDE2BC99AD9@PH0PR03MB6786.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKgze5aQsh2VY4tjsDco_Wc6CTU+KXZM3bhFR+73AVp3gLWHuA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 05:48:34PM -0300, Martin Fernandez wrote:
-> On 6/15/22, Daniel Gutson <daniel.gutson@eclypsium.com> wrote:
-> > On Wed, Jun 15, 2022 at 4:54 PM Alison Schofield
-> > <alison.schofield@intel.com> wrote:
-> >>
-> >> On Wed, Jun 15, 2022 at 08:34:58PM +0100, Richard Hughes wrote:
-> >> > On Wed, 15 Jun 2022 at 20:06, Alison Schofield
-> >> > <alison.schofield@intel.com> wrote:
-> >> > > My first reaction is lying about the cpuinfo is not a soln, since
-> >> > > it creates a problem for a users currently relying on cpuinfo to be
-> >> > > the source of truth for TME.
-> >> >
-> >> > I think you have to qualify "source of truth". At the moment the CPU
-> >> > reports "Yes! I support TME!" and then for one reason or another the
-> >> > platform turns it off and actually there's no memory encryption of
-> >> > your secrets at all. There's seemingly no userspace way of telling if
-> >> > TME is actually active. We were told that we shouldn't export the
-> >> > "platform has disabled a CPU feature" in sysfs and just to clear the
-> >> > cpuid flag that gets exported (like AMD is currently doing) which is
-> >> > what Martin proposed here. Programs want to know the true CPU
-> >> > capability can do __get_cpuid_count() like they can for the SME/SEV
-> >> > capabilities.
-> >> >
-> >> Disagree on sending folks to use __get_cpuid_count() when they already
-> >> have cpuinfo.
-> >>
-> >> Why is a sysfs entry TME-enabled 0/1 a bad thing?
-> >
-> > :)))
-> > This was my very first patch, and I got half of the community complaining
-> > It was so long ago that I don't recall everything, maybe Martín does?
-> > or Richard?
-> 
-> The discussion triggered the fact that checking that TME is active is
-> not enough to tell if memory is being encrypted or not (which we
-> thought it was true by that time), and that triggered a series of patches to
-> address the other checks required, which is currently going nowhere
-> [1].
-> 
-> The sysfs _wasn't_ discarded perse, but since Boris suggested the
-> change in cpuinfo (several times now that I recalled that Daniel patch
-> [2]) I think that is cleaner, besides the backwards compatibility.
-> 
-> [1] https://lore.kernel.org/linux-efi/20220429201717.1946178-1-martin.fernandez@eclypsium.com/
-> 
-> [2] https://lkml.iu.edu/hypermail/linux/kernel/2006.2/05231.html
-> 
+On Wed, 15 Jun 2022 12:15:48 +0000
+"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
 
-Martin,
-The commit message here seemed to assume that we've all been following
-along on this journey with you. Perhaps a commit message that explains
-the need and includes alternatives considered/rejected. Links are good!
-Alison
+> Hi Andy,
+>=20
+> > -----Original Message-----
+> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Sent: Wednesday, June 15, 2022 2:08 PM
+> > To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>;
+> > Alexandru Ardelean <aardelean@deviqon.com>; linux-
+> > iio@vger.kernel.org; linux-kernel@vger.kernel.org
+> > Cc: Jonathan Cameron <jic23@kernel.org>; Lars-Peter Clausen
+> > <lars@metafoo.de>
+> > Subject: [PATCH v1 1/1] iio: adc: intel_mrfld_adc: explicitly add proper
+> > header files
+> >=20
+> > [External]
+> >=20
+> > Do not trust the fact that iio.h includes of.h which in turn includes
+> > all the headers we are relying on.
+> >=20
+> > The ultimate goal is to actually drop of.h from iio.h.
+> >=20
+> > Signed-off-by: Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com>
+> > ---
+> >=20
+> > Jonathan, this should be squeezed before we remove of.h in iio.h
+> > I think Nuno somehow missed this =20
+>=20
+> Yes, I did (compile) tested this on arm and arm64 as I said in the cover.
+> I guess this one won't be enabled on those archs :).
+>=20
+> I was planning to send this on v2 (I did noticed the kernel test bot
+> emails) but yeah, this should actually be included with the other
+> patches before removing of.h from iio. Thanks!
+>=20
+> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 
+Applied.  Oddly didn't show up in my normal x86 build test.
 
-> >> It can be documented
-> >> to have the same meaning as the log message.
-> >>
-> >> You keep referring to AMD. How is their exception documented?
-> >>
-> >> Alison
-> >>
-> >> > > Are we to tell them to go look in the
-> >> > > log now, because fwupd folks didn't want to ;)
-> >> >
-> >> > We're not telling anyone to use the log; grepping megabytes of
-> >> > unformatted kernel logs is a terrible (and slow) way to get one
-> >> > boolean value.
-> >> >
-> >> > Richard.
-> >
+As suggested, slotted in before the of.h removal patch.
+
+Thanks,
+
+Jonathan
+
+>=20
+
