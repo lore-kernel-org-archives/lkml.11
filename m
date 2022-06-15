@@ -2,121 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E72CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9474FCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:01:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355438AbiFORAG (ORCPT
+        id S1345812AbiFORBY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34370 "EHLO
+        Wed, 15 Jun 2022 13:01:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354614AbiFOQ7n (ORCPT
+        with ESMTP id S1355510AbiFORAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:59:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0B52E084;
-        Wed, 15 Jun 2022 09:59:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5270B82064;
-        Wed, 15 Jun 2022 16:59:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FC3EC34115;
-        Wed, 15 Jun 2022 16:59:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655312379;
-        bh=KWnr7zKayHkj/bptj3o4m8ElFwkJYwNaweEzW4q39qc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=r2wTB4JQblWFkfakKnpJ2eoRfcr7H0w7Uu0reDePp/jUvg9kdvPzcr7cxKg7314kE
-         QisQDdxPYHVMQj9JgNvlKt8zWvcV0cLZYMALPwO4DUKC5caWc9+vK172UKZhYkY1kI
-         0SDOP88vmVxt7MqBRihPvYqkUB/vRffM00B0RqrPAHBUBJb+98a9RNjmuU8xdQIJ+4
-         lTi6919QQZdi9ZDJcznHuV8jbouEHE6EnxEEvqwmAtz1sIRBc5wrofGSjofMf1mZcz
-         qru12F3WCV7t4aaM4Ukr5cUGlo+HQ2hD+bpoVDwlaOc/EG4hDrlr8WB8rkB+AxwdEp
-         pgVPT+jQ5zG6A==
-Date:   Wed, 15 Jun 2022 17:59:33 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Li Chen <lchen.firstlove@zohomail.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-gpio <linux-gpio@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        linux-sunxi <linux-sunxi@lists.linux.dev>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH v3 0/4] Add regmap_field helpers for simple bit operations
-Message-ID: <YqoP9TwprnV3QKKT@sirena.org.uk>
-References: <180e702a15f.e737e37e45859.3135149506136486394@zohomail.com>
- <180eef39205.122d47c8260721.2430302798386025245@zohomail.com>
+        Wed, 15 Jun 2022 13:00:53 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C3324EF43
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:00:44 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id u99so21564880ybi.11
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:00:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=EeKp0clsQUA6dW+6qFFUJzrEz+TdOTimew8JgR0bKMA=;
+        b=et/V+90f7nKKr5S5V5II7K0Z18Ceqm9B2OWuHnT5qV224pqU2c6OfRTYEhEYlbJ3cw
+         RnQHWw8DvH4t+NcjNGh9D/zVQcpZCNqTLMmGATmElkNq0TMm0Jwup31R4E/PaofbwfGZ
+         +8Z9iXoKGewQwyULPEwSnqOh7CE25+9MDvy081U1bBdwwC3xfOE3ncIe62F5JtLVICD6
+         28NcVbwUhcmxTg7t0/+iLluLd/DAthY1Ccvkh+7dxVHLMFkonydf6t2mSzJlr/KpMaer
+         5d9Bgwidf0j0IQ6ebNG/o8YQvba9f4hNnmEue1FBwwThM3cZjahvoA8xM7BYyT7zaC+m
+         jMNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=EeKp0clsQUA6dW+6qFFUJzrEz+TdOTimew8JgR0bKMA=;
+        b=nlolHFQLSOY0MP1ITNQC4M/Mu5vRBKsJ3OUNF8f8aQWDyKonWZ0cq1imWfERJa836R
+         WNzDrHDNbx4mxroFIVBlpMRfmL0VrAEP1h6dvGYilB8RU8qS6aVEJ5WPRMi6IrqWMBSK
+         7z0YDa97UtsFH0qi/yZXWglA9rzCQKcwrr4T4Tyh44BnbyQlC8+Yszof1Q7QwYkhyef8
+         IU6IsoXoZJR/TpZYkxLSgznGsLxWw57j/vzeJZhALsYlsnKHJs//vhfEFbm9QUZdbltg
+         k9DPt9nsu5QkzME0CNG6CO7nvsxLANRVas0ro+WvcrHX9ZPP1bydzCCCB/aftw5+L1lv
+         r5bg==
+X-Gm-Message-State: AJIora+QXH4DDW5fyLc3UpQJy4bWVSZLx1LqNV0SSLj83Dqo2ku+aKK2
+        K3CguTkDijT1OCIYJbAn8OoWuPgAxVZNKFT9xfORLg==
+X-Google-Smtp-Source: AGRyM1v2b3hA54fgRS4NKBKo+CNA62mj2BxK70qeaNL2CHESAP83JfajfFeLqwxjrTeSqYQze1aVU28N+x8laK8Zxw8=
+X-Received: by 2002:a25:b51:0:b0:663:4ff1:d20d with SMTP id
+ 78-20020a250b51000000b006634ff1d20dmr851309ybl.608.1655312443024; Wed, 15 Jun
+ 2022 10:00:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="8vCp03ihxJubD2IF"
-Content-Disposition: inline
-In-Reply-To: <180eef39205.122d47c8260721.2430302798386025245@zohomail.com>
-X-Cookie: byob, v:
+References: <20220614183720.512073672@linuxfoundation.org>
+In-Reply-To: <20220614183720.512073672@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 15 Jun 2022 22:30:31 +0530
+Message-ID: <CA+G9fYvfof7stwFYqyy9fFLGB4+MHYWYPVt3XSiT3teHNdR+SQ@mail.gmail.com>
+Subject: Re: [PATCH 5.15 00/11] 5.15.48-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 15 Jun 2022 at 00:15, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.48 release.
+> There are 11 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.15.48-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
---8vCp03ihxJubD2IF
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-On Sun, May 22, 2022 at 08:26:21PM -0700, Li Chen wrote:
-> From: Li Chen <lchen@ambarella.com>
->=20
-> This series proposes to add simple bit operations for setting, clearing
-> and testing specific bits with regmap_field.
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+## Build
+* kernel: 5.15.48-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.15.y
+* git commit: 2e65f63d5e2c817d883c4c8df2010aa23bd07ea4
+* git describe: v5.15.47-12-g2e65f63d5e2c
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
+.47-12-g2e65f63d5e2c
 
-  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
+## Test Regressions (compared to v5.15.40-103-g293cfb310f44)
+No test regressions found.
 
-are available in the Git repository at:
+## Metric Regressions (compared to v5.15.40-103-g293cfb310f44)
+No metric regressions found.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git tags/r=
-egmap-field-bit-helpers
+## Test Fixes (compared to v5.15.40-103-g293cfb310f44)
+No test fixes found.
 
-for you to fetch changes up to f67be8b7ee90c292948c3ec6395673963cccaee6:
+## Metric Fixes (compared to v5.15.40-103-g293cfb310f44)
+No metric fixes found.
 
-  regmap: provide regmap_field helpers for simple bit operations (2022-06-1=
-5 11:17:45 +0100)
+## Test result summary
+total: 127914, pass: 114505, fail: 268, skip: 12412, xfail: 729
 
-----------------------------------------------------------------
-regmap: Add regmap_field helpers for simple bit operations
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 319 total, 316 passed, 3 failed
+* arm64: 64 total, 64 passed, 0 failed
+* i386: 57 total, 50 passed, 7 failed
+* mips: 41 total, 38 passed, 3 failed
+* parisc: 14 total, 14 passed, 0 failed
+* powerpc: 59 total, 56 passed, 3 failed
+* riscv: 27 total, 27 passed, 0 failed
+* s390: 26 total, 23 passed, 3 failed
+* sh: 26 total, 24 passed, 2 failed
+* sparc: 14 total, 14 passed, 0 failed
+* x86_64: 62 total, 61 passed, 1 failed
 
-Add simple bit operations for setting, clearing and testing specific
-bits with regmap_field.
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-cap_bounds-tests
+* ltp-commands
+* ltp-commands-tests
+* ltp-containers
+* ltp-containers-tests
+* ltp-controllers
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps
+* ltp-filecaps-tests
+* ltp-fs
+* ltp-fs-tests
+* ltp-fs_bind
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple
+* ltp-fs_perms_simple-tests
+* ltp-fsx
+* ltp-fsx-tests
+* ltp-hugetlb
+* ltp-hugetlb-tests
+* ltp-io
+* ltp-io-tests
+* ltp-ipc
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits
+* ltp-securebits-tests
+* ltp-smoke
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
 
-----------------------------------------------------------------
-Li Chen (1):
-      regmap: provide regmap_field helpers for simple bit operations
-
- drivers/base/regmap/regmap.c | 22 ++++++++++++++++++++++
- include/linux/regmap.h       | 37 +++++++++++++++++++++++++++++++++++++
- 2 files changed, 59 insertions(+)
-
---8vCp03ihxJubD2IF
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKqD/QACgkQJNaLcl1U
-h9BYTQf7ByrrGDk9xfzsyQSGRgkL7VEe23NCIXLyPoMeg//wswaCgsNiNWEiMoah
-1Xv2W8g0Q8GGxCbdQAd1VdKYfNOUJqoymIp6o/IXUrlYWq5nd4Z5lFLfndUpK/WE
-HhKYQGisytJvsv6CbVzevjwpq1Rhp5jt76BhLW1rUHTrAm9OW2nb5LjaKZTk1sfg
-LJ7HYYdIsYVG+XRmxsONwbTWTi8S5Fpt8cF/mVZ77cPAx2XoD7E79ezUDDL+fxN4
-T/2CTOrZ3UxHvXOScTMe7tWcDLyBQHaQQBk2FmwanrVAObSrQiDRB0kaSzOkIq3g
-GdwousE4cr5Ig/D5jt/wkr8WecpqJA==
-=mt42
------END PGP SIGNATURE-----
-
---8vCp03ihxJubD2IF--
+--
+Linaro LKFT
+https://lkft.linaro.org
