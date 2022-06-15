@@ -2,78 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 530D2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:15:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB87C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:15:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346700AbiFONPs (ORCPT
+        id S1348568AbiFONPu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:15:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
+        Wed, 15 Jun 2022 09:15:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347332AbiFONPq (ORCPT
+        with ESMTP id S1345668AbiFONPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:15:46 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 011702A27B
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:15:39 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DC9BA139F;
-        Wed, 15 Jun 2022 06:15:39 -0700 (PDT)
-Received: from [10.57.82.209] (unknown [10.57.82.209])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EC6C03F66F;
-        Wed, 15 Jun 2022 06:15:38 -0700 (PDT)
-Message-ID: <6e58b50c-cd05-a37b-07e1-10ee24fb972f@arm.com>
-Date:   Wed, 15 Jun 2022 14:15:33 +0100
+        Wed, 15 Jun 2022 09:15:48 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A995E2A969
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:15:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=aCliT9MV6ttW0KpyuydNdYdmYuXW3sKXYsk92n5Vl2s=; b=NK2kDDW+JyCgPSX5zWJuUAb69y
+        hazxvJrhn742/Cdd+2lNelGIwzK1xmXb09uZG15Lo0Ag/DRGt/SIpRZ/uPeSxMCPC6UQMI8VsJ+rc
+        EJpUzTwvx1/RBYGd7fn2cYvNuFp6h9FAHE3Hvc+BPnoPGwoY9U8o+NqlJLCcNs2gzVs2//+SuL65l
+        wrkhOVeKdrpk1jd781OW+mCau0ytcSnWFMNPSb1zVNCpMhEQiUJG5BrtH2IWEYO4fKPwx/vtfSyJW
+        S3UYBFH2A/xmU6bIITUxiIE2JWqseDcKC9Gmram32aDMqUXXjVXrMc9VgzDgPAafcU44HtKngaJ8g
+        XTQi+3bQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o1Ss5-00EeCS-Cu; Wed, 15 Jun 2022 13:15:45 +0000
+Date:   Wed, 15 Jun 2022 06:15:45 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2 0/2] mm/mmap: Drop __SXXX/__PXXX macros from across
+ platforms
+Message-ID: <YqnbgWHmfd9SIp6O@infradead.org>
+References: <20220613053354.553579-1-anshuman.khandual@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: helping with remapping vmem for dma
-Content-Language: en-GB
-To:     Frank Wunderlich <frank-w@public-files.de>,
-        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <trinity-685a668a-2395-45f2-81e5-53f526863a66-1655295061671@3c-app-gmx-bap28>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <trinity-685a668a-2395-45f2-81e5-53f526863a66-1655295061671@3c-app-gmx-bap28>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613053354.553579-1-anshuman.khandual@arm.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-15 13:11, Frank Wunderlich wrote:
-> Hi,
-> 
-> i have upported a wifi-driver (mt6625l for armhf) for some time and fall now (at least 5.18) in the
-> "rejecting DMA map of vmalloc memory" error [1].
-> 
-> maybe anybody here can guide me on how to nail it down and maybe fix it.
-> 
-> as far as i have debugged it, it uses dma_map_single [2] to get dma memory from a previous
-> allocated memory region.
-> 
-> this function "kalDevPortRead" in [2] is used via macro HAL_PORT_RD [3] (used in HAL_READ_RX_PORT
-> and HAL_READ_INTR_STATUS in same hal.h file)
-> 
-> HAL_READ_INTR_STATUS is always called with an empty int array as buf which i guess is not the problem.
-> I think the issue is using the use with an preallocated prSDIOCtrl struct (have not completely traced
-> it back where it is allocated).
+I relaly like this.  The __SXXX/__PXXX are a complete mess, and this
+cleans it up nicely.  So with any remaining issues sorted out I'm
+all for it:
 
-Put simply, if you want to call dma_map_single() on a buffer, then that 
-buffer needs to be allocated with kmalloc() (or technically 
-alloc_pages(), but then dma_map_page() would make more sense when 
-dealing with entire pages.
-
-Robin.
-
-> calls of HAL_PORT_RD/HAL_READ_RX_PORT are in nic{,_rx}.c (with sdio-struct) ([4] as example)
-> 
-> maybe there is a simple way to get an address in preallocated memory as replacement for the dma_map_simple call (and the unmap of course).
-> 
-> regards Frank
-> 
-> [1] https://elixir.bootlin.com/linux/latest/source/include/linux/dma-mapping.h#L327
-> [2] https://github.com/frank-w/BPI-R2-4.14/blob/5.18-main/drivers/misc/mediatek/connectivity/wlan/gen2/os/linux/hif/ahb/ahb.c#L940
-> [3] https://github.com/frank-w/BPI-R2-4.14/blob/5.18-main/drivers/misc/mediatek/connectivity/wlan/gen2/include/nic/hal.h#L176
-> [4] https://github.com/frank-w/BPI-R2-4.14/blob/5.18-main/drivers/misc/mediatek/connectivity/wlan/gen2/nic/nic_rx.c#L3604
+Acked-by: Christoph Hellwig <hch@lst.de>
