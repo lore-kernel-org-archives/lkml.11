@@ -2,193 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11DD1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 623BEC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:25:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346084AbiFORZc (ORCPT
+        id S1344763AbiFORZt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34982 "EHLO
+        Wed, 15 Jun 2022 13:25:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240567AbiFORZ1 (ORCPT
+        with ESMTP id S1347348AbiFORZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:25:27 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9E439145
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:25:26 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id s37so9357514pfg.11
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=n+O4l98CKUL7yv4rRVYlrIx5OvopY+8TSKj5Ikkq3GM=;
-        b=gghcg5nU3xACsIsovR9FpypGdUvez5exCrXgZBOdo7LpwjPJv4H/xILX5Hh5GSy5Vr
-         l8kPxW9GmVc8Ue3y7TtcIORtJWI+zjA9PJn1NSCuqpbQulo3RUP2z0+bPiSRi3JDw73y
-         nnGGTMuH1knVYujxOboX7OYG0H0m+9TaUpjcg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=n+O4l98CKUL7yv4rRVYlrIx5OvopY+8TSKj5Ikkq3GM=;
-        b=clgimSTUJVgIVx5i4f4Y9M0oL+OW3ljBXdwpZAJCOr48eO1ZXbTIhlLVLTPplkFvZL
-         hqBhGSkeHqxtNl5Fx6rxe+M1WvKv6WTy8lxvoGFJqb04NqPL7LSeKLfmhp8Ma4mJGKhV
-         WeLN0qOZv4SlbngBzUIxmHYetPsMjI8+NJ8sRQxbviXawFKWlusDYmbt7h1C5AszeOOL
-         NfgzLXT5//89hmKEu5TIfck3+bo4J18i+E41s/kYFYKOypaWhCkBa8+BeogqTg+3s3vT
-         WrYa847aNnJ8CL4KFLiSrIOZS71KD2oDgxPWbOzgpFU9WQm+mRMxSSJ+hQZcX4faSSvi
-         BB2Q==
-X-Gm-Message-State: AJIora/zfatt9PkDDem4ONi2BR4MOPDrs5mXg3NHXffC/BgBE+2zxN5/
-        LEGsn3NuQl4RXHs6nP0y4xZCTjMO81BbEg==
-X-Google-Smtp-Source: AGRyM1tGCvTtzArk3W0yqf67r0nmmu/yAlWJ8zSXcnyuv01jrd8kkfDlmi9jTJeyYPFVjrKXkwE8LA==
-X-Received: by 2002:a63:ff19:0:b0:403:7c60:ae96 with SMTP id k25-20020a63ff19000000b004037c60ae96mr725428pgi.466.1655313925709;
-        Wed, 15 Jun 2022 10:25:25 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id d10-20020aa7814a000000b005103abd2fdbsm10147433pfn.206.2022.06.15.10.25.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 10:25:24 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
-        <nfraprado@collabora.com>, Andrzej Hajda <andrzej.hajda@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH v4 3/7] dt-bindings: usb: Add Type-C switch binding
-Date:   Wed, 15 Jun 2022 17:20:19 +0000
-Message-Id: <20220615172129.1314056-4-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220615172129.1314056-1-pmalani@chromium.org>
-References: <20220615172129.1314056-1-pmalani@chromium.org>
+        Wed, 15 Jun 2022 13:25:47 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C8C813EA90
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:25:45 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 99245153B;
+        Wed, 15 Jun 2022 10:25:45 -0700 (PDT)
+Received: from [10.57.82.209] (unknown [10.57.82.209])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 927243F73B;
+        Wed, 15 Jun 2022 10:25:43 -0700 (PDT)
+Message-ID: <81b55048-a6f1-660f-95b0-6798aa4efc38@arm.com>
+Date:   Wed, 15 Jun 2022 18:25:41 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v9 3/3] iommu/mediatek: Allow page table PA up to 35bit
+Content-Language: en-GB
+To:     yf.wang@mediatek.com, Yong Wu <yong.wu@mediatek.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "open list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>,
+        "moderated list:MEDIATEK IOMMU DRIVER" 
+        <linux-mediatek@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Cc:     wsd_upstream@mediatek.com, Libo Kang <Libo.Kang@mediatek.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Ning Li <ning.li@mediatek.com>
+References: <20220615161224.6923-1-yf.wang@mediatek.com>
+ <20220615161224.6923-4-yf.wang@mediatek.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220615161224.6923-4-yf.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a binding which represents a component that can control the
-routing of USB Type-C data lines as well as address data line
-orientation (based on CC lines' orientation).
+On 2022-06-15 17:12, yf.wang--- via iommu wrote:
+> From: Yunfei Wang <yf.wang@mediatek.com>
+> 
+> Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA. So add
+> the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT to let level 1 and level 2
+> pgtable support at most 35bit PA.
 
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+I'm not sure how this works in practice, given that you don't seem to be 
+setting the IOMMU's own DMA masks to more than 32 bits, so the DMA 
+mapping in io-pgtable is going to fail if you ever do actually allocate 
+a pagetable page above 4GB :/
 
-Changes since v3:
-- No changes.
+> Signed-off-by: Ning Li <ning.li@mediatek.com>
+> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+> ---
+>   drivers/iommu/mtk_iommu.c | 14 +++++++++-----
+>   1 file changed, 9 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 3d62399e8865..4dbc33758711 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -138,6 +138,7 @@
+>   /* PM and clock always on. e.g. infra iommu */
+>   #define PM_CLK_AO			BIT(15)
+>   #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
+> +#define PGTABLE_PA_35_EN		BIT(17)
+>   
+>   #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+>   				((((pdata)->flags) & (mask)) == (_x))
+> @@ -240,6 +241,7 @@ struct mtk_iommu_data {
+>   struct mtk_iommu_domain {
+>   	struct io_pgtable_cfg		cfg;
+>   	struct io_pgtable_ops		*iop;
+> +	u32				ttbr;
+>   
+>   	struct mtk_iommu_bank_data	*bank;
+>   	struct iommu_domain		domain;
+> @@ -596,6 +598,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
+>   		.iommu_dev = data->dev,
+>   	};
+>   
+> +	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
+> +		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
+> +
+>   	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
+>   		dom->cfg.oas = data->enable_4GB ? 33 : 32;
+>   	else
+> @@ -684,8 +689,8 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+>   			goto err_unlock;
+>   		}
+>   		bank->m4u_dom = dom;
+> -		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+> -		       bank->base + REG_MMU_PT_BASE_ADDR);
+> +		bank->m4u_dom->ttbr = MTK_IOMMU_ADDR(dom->cfg.arm_v7s_cfg.ttbr);
+> +		writel(bank->m4u_dom->ttbr, data->base + REG_MMU_PT_BASE_ADDR);
 
-Changes since v2:
-- Added Reviewed-by and Tested-by tags.
+To add to my comment on patch #1, having to make this change here 
+further indicates that you're using it the wrong way.
 
-Changes since v1:
-- Removed "items" from compatible.
-- Fixed indentation in example.
+Thanks,
+Robin.
 
- .../devicetree/bindings/usb/typec-switch.yaml | 74 +++++++++++++++++++
- 1 file changed, 74 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/usb/typec-switch.yaml
-
-diff --git a/Documentation/devicetree/bindings/usb/typec-switch.yaml b/Documentation/devicetree/bindings/usb/typec-switch.yaml
-new file mode 100644
-index 000000000000..78b0190c8543
---- /dev/null
-+++ b/Documentation/devicetree/bindings/usb/typec-switch.yaml
-@@ -0,0 +1,74 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/usb/typec-switch.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: USB Type-C Switch
-+
-+maintainers:
-+  - Prashant Malani <pmalani@chromium.org>
-+
-+description:
-+  A USB Type-C switch represents a component which routes USB Type-C data
-+  lines to various protocol host controllers (e.g USB, VESA DisplayPort,
-+  Thunderbolt etc.) depending on which mode the Type-C port, port partner
-+  and cable are operating in. It can also modify lane routing based on
-+  the orientation of a connected Type-C peripheral.
-+
-+properties:
-+  compatible:
-+    const: typec-switch
-+
-+  mode-switch:
-+    type: boolean
-+    description: Specify that this switch can handle alternate mode switching.
-+
-+  orientation-switch:
-+    type: boolean
-+    description: Specify that this switch can handle orientation switching.
-+
-+  ports:
-+    $ref: /schemas/graph.yaml#/properties/ports
-+    description: OF graph binding modelling data lines to the Type-C switch.
-+
-+    properties:
-+      port@0:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: Link between the switch and a Type-C connector.
-+
-+    required:
-+      - port@0
-+
-+required:
-+  - compatible
-+  - ports
-+
-+anyOf:
-+  - required:
-+      - mode-switch
-+  - required:
-+      - orientation-switch
-+
-+additionalProperties: true
-+
-+examples:
-+  - |
-+    drm-bridge {
-+        usb-switch {
-+            compatible = "typec-switch";
-+            mode-switch;
-+            orientation-switch;
-+            ports {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                port@0 {
-+                    reg = <0>;
-+                    anx_ep: endpoint {
-+                        remote-endpoint = <&typec_controller>;
-+                    };
-+                };
-+            };
-+        };
-+    };
--- 
-2.36.1.476.g0c4daa206d-goog
-
+>   
+>   		pm_runtime_put(m4udev);
+>   	}
+> @@ -1366,8 +1371,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
+>   		writel_relaxed(reg->int_control[i], base + REG_MMU_INT_CONTROL0);
+>   		writel_relaxed(reg->int_main_control[i], base + REG_MMU_INT_MAIN_CONTROL);
+>   		writel_relaxed(reg->ivrp_paddr[i], base + REG_MMU_IVRP_PADDR);
+> -		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+> -		       base + REG_MMU_PT_BASE_ADDR);
+> +		writel(m4u_dom->ttbr, base + REG_MMU_PT_BASE_ADDR);
+>   	} while (++i < data->plat_data->banks_num);
+>   
+>   	/*
+> @@ -1401,7 +1405,7 @@ static const struct mtk_iommu_plat_data mt2712_data = {
+>   static const struct mtk_iommu_plat_data mt6779_data = {
+>   	.m4u_plat      = M4U_MT6779,
+>   	.flags         = HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN | WR_THROT_EN |
+> -			 MTK_IOMMU_TYPE_MM,
+> +			 MTK_IOMMU_TYPE_MM | PGTABLE_PA_35_EN,
+>   	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
+>   	.banks_num    = 1,
+>   	.banks_enable = {true},
