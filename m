@@ -2,188 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D03CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 19:09:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C78C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 19:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355407AbiFOTJm (ORCPT
+        id S1356899AbiFOTL6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 15:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
+        Wed, 15 Jun 2022 15:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243975AbiFOTJk (ORCPT
+        with ESMTP id S233519AbiFOTL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 15:09:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E869393DC;
-        Wed, 15 Jun 2022 12:09:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E1CDB82168;
-        Wed, 15 Jun 2022 19:09:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6662C34115;
-        Wed, 15 Jun 2022 19:09:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655320176;
-        bh=8J1oUy3Hn+J2l+W/L3+RREE0V/VeAu707W0U1jX7HOs=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=f9BrWPSgmtrFmoinhMd25QuAigfiIZxK9mMMGkFp+TCzbtGrp/BKppf2hpfnyaMdx
-         s11K4I2KNOnx6pywjqEA9SR/P6wfR6AuJyEmSnkrXMDC6nZLwmZdxwLFTCnh4HCzEe
-         sSWgM+cQi1BVv2slbBU32My9L+k6DCWGMFlPr6qZbkFpS4VKOyillaNjVibTrbd7mJ
-         MEY/AV6iNHQVs4Bt/xfIM+85YoidDa7Q3Rtt1Ajfofuuu2Bg/e5ndL4MlC15/z27GE
-         zd2A9wHS3uJnUZBTL0IFBdqh4qHiAqCGYsDR0xUmaXAyyzhEzN2GjAw/f8NQnyREpa
-         Vf+i0Zxkvv9+A==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 251865C014C; Wed, 15 Jun 2022 12:09:36 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 12:09:36 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Zhouyi Zhou <zhouzhouyi@gmail.com>
-Cc:     john.ogness@linutronix.de, pmladek@suse.com, dave@stgolabs.net,
-        Josh Triplett <josh@joshtriplett.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        rcu <rcu@vger.kernel.org>
-Subject: Re: [PATCH linux-next] RFC: torture: add pr_flush to flush the
- results to console
-Message-ID: <20220615190936.GA713726@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220615003733.16447-1-zhouzhouyi@gmail.com>
- <20220615051521.GH1790663@paulmck-ThinkPad-P17-Gen-1>
- <CAABZP2wCos5xupRQ2LbJtaLVN1a7i0D5kwaVTq9DEov8C46Gkw@mail.gmail.com>
- <20220615135220.GI1790663@paulmck-ThinkPad-P17-Gen-1>
+        Wed, 15 Jun 2022 15:11:56 -0400
+Received: from alln-iport-4.cisco.com (alln-iport-4.cisco.com [173.37.142.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49EC41985;
+        Wed, 15 Jun 2022 12:11:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=2629; q=dns/txt; s=iport;
+  t=1655320316; x=1656529916;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Vnvt0MqP5LNDaqxR7L6ZH2qCRCr8hhIb7hMFw1y0Sp0=;
+  b=WjjCodkFJQ2BckZ9hvdPmbAJmQcwgFlpgKlhV1hhFoRocNRM2mkTKZ+K
+   Gurwf/mjZruVVFxGOGvvv9VA9Jegb3dhKid1KXLgg4AqxdQ+unRTFojD9
+   Wtz0ARY2YrWQaHBryZEXj9+GL6+qlMdEzZbrCHA4oLxYoXRsyCh1FsdpW
+   4=;
+X-IronPort-AV: E=Sophos;i="5.91,302,1647302400"; 
+   d="scan'208";a="862238780"
+Received: from alln-core-2.cisco.com ([173.36.13.135])
+  by alln-iport-4.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 15 Jun 2022 19:11:55 +0000
+Received: from sjc-ads-3421.cisco.com (sjc-ads-3421.cisco.com [171.68.249.119])
+        by alln-core-2.cisco.com (8.15.2/8.15.2) with ESMTP id 25FJBrvQ017942;
+        Wed, 15 Jun 2022 19:11:54 GMT
+From:   Oleksandr Ocheretnyi <oocheret@cisco.com>
+To:     mika.westerberg@linux.intel.com, tudor.ambarus@microchip.com,
+        miquel.raynal@bootlin.com, p.yadav@ti.com, michael@walle.cc,
+        richard@nod.at, vigneshr@ti.com, broonie@kernel.org,
+        linux-mtd@lists.infradead.org, linux-spi@vger.kernel.org
+Cc:     mauro.lima@eclypsium.com, lee.jones@linaro.org,
+        linux-kernel@vger.kernel.org, oocheret@cisco.com,
+        xe-linux-external@cisco.com
+Subject: [PATCH v2] mtd: spi-nor: handle unsupported FSR opcodes properly
+Date:   Wed, 15 Jun 2022 12:11:53 -0700
+Message-Id: <20220615191153.3017939-1-oocheret@cisco.com>
+X-Mailer: git-send-email 2.26.2.Cisco
+In-Reply-To: <6A852B9E-D84C-4F80-9C17-62BFBB98CC8A@walle.cc>
+References: <6A852B9E-D84C-4F80-9C17-62BFBB98CC8A@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220615135220.GI1790663@paulmck-ThinkPad-P17-Gen-1>
+Content-Transfer-Encoding: 8bit
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-Outbound-SMTP-Client: 171.68.249.119, sjc-ads-3421.cisco.com
+X-Outbound-Node: alln-core-2.cisco.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 06:52:20AM -0700, Paul E. McKenney wrote:
-> On Wed, Jun 15, 2022 at 08:36:54PM +0800, Zhouyi Zhou wrote:
-> > On Wed, Jun 15, 2022 at 1:15 PM Paul E. McKenney <paulmck@kernel.org> wrote:
-> > >
-> > > On Wed, Jun 15, 2022 at 08:37:33AM +0800, zhouzhouyi@gmail.com wrote:
-> > > > From: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> > > >
-> > > > currently tools/testing/selftests/rcutorture/bin/torture.sh reports
-> > > > false positve because of kthread printing.
-> > > >
-> > > > Commit "printk: add functions to prefer direct printing" (2bb2b7b57f812)
-> > > > have added functions to prefer direct printing activated for the primary
-> > > > import messages.
-> > > >
-> > > > Meanwhile adding printk_prefer_direct_enter/exit to
-> > > > torture_cleanup_begin/end still can't eliminate the false positives
-> > > > for a hundred percent.
-> > > >
-> > > > This patch add pr_flush to torture_cleanup_end because the latter
-> > > > is sleepable.
-> > > >
-> > > > Reported-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> > > > Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> > > > Tested-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> > >
-> > > Just the one Signed-off-by suffices.  ;-)
-> > Thank Paul for your guidance ;-)
-> > >
-> > > > ---
-> > > >  kernel/torture.c | 1 +
-> > > >  1 file changed, 1 insertion(+)
-> > > >
-> > > > diff --git a/kernel/torture.c b/kernel/torture.c
-> > > > index 789aeb0e1159..b51e42463a67 100644
-> > > > --- a/kernel/torture.c
-> > > > +++ b/kernel/torture.c
-> > > > @@ -878,6 +878,7 @@ void torture_cleanup_end(void)
-> > > >       mutex_lock(&fullstop_mutex);
-> > > >       torture_type = NULL;
-> > > >       mutex_unlock(&fullstop_mutex);
-> > > > +     pr_flush(1000, true);
-> > >
-> > > But in this case, the kernel keeps on running, correct?  So won't the
-> > > output appear over time?  All of printk()'s kthreads are still running
-> > > after all.
-> > I am doing research on linux-next following your guidance on my Dell
-> > PowerEdge R720 server:
-> > #git clone https://kernel.source.codeaurora.cn/pub/scm/linux/kernel/git/next/linux-next.git/
-> > #cd linux-next
-> > #./tools/testing/selftests/rcutorture/bin/torture.sh
-> > after about 14 hours, the test result show that there have been about
-> > 17 failures, I examine the corresponding console.log, and find the
-> > failures are caused by following reason:
-> > before the message output by
-> > rcu/lock/scf_torture_print_module_parms(cur_ops, "End of test:
-> > SUCCESS") has reached serial console, torture_shutdown invoked
-> > kernel_power_off(),
-> 
-> Ah, got it!  And good show tracking this down, by the way.
-> 
-> Does this workaround commit on -rcu do the trick for you?
-> 
-> 704ae8dcda84 ("torture: Flush printk() buffers before powering off")
-> 
-> The printk() guys are looking at fixes within the printk() system
-> as well:
-> 
-> https://lore.kernel.org/all/87tu8pgcj0.fsf@jogness.linutronix.de/
-> https://lore.kernel.org/all/YqdSw%2FfJvnkRbjvc@alley/
+Originally commit 094d3b9 ("mtd: spi-nor: Add USE_FSR flag for n25q*
+entries") and following one 8f93826 ("mtd: spi-nor: micron-st: convert
+USE_FSR to a manufacturer flag") enabled SPINOR_OP_RDFSR opcode handling
+ability, however some controller drivers still cannot handle it properly
+in the micron_st_nor_ready() call what breaks some mtd callbacks with
+next error logs:
 
-And Petr has posted a more official fix, which I have queued on -rcu
-for testing at branch pmladek.2022.06.15a.
+mtdblock: erase of region [address1, size1] on "BIOS" failed
+mtdblock: erase of region [address2, size2] on "BIOS" failed
 
-							Thanx, Paul
+The Intel SPI controller does not support low level operations, like
+reading the flag status register (FSR). It only exposes a set of high
+level operations for software to use. For this reason check the return
+value of micron_st_nor_read_fsr() and if the operation was not
+supported, use the status register value only. This allows the chip to
+work even when attached to Intel SPI controller (there are such systems
+out there).
 
-> > so the message "End of test: SUCCESS" has not chance of reaching
-> > console.log of host machine.
-> > 
-> > Then I add printk_prefer_direct_enter/exit to
-> > torture_cleanup_begin/end, again I invoke
-> > #./tools/testing/selftests/rcutorture/bin/torture.sh
-> > after about 14 hours, the test result show that there have been about
-> > 5 failures,
-> > 
-> > Then I add a debug statement after
-> > rcu/lock/scf_torture_print_module_parms(cur_ops, "End of test:
-> > SUCCESS") which sends the debug string ("hello world") to
-> > uart_console_write directly, again I invoke
-> > #./tools/testing/selftests/rcutorture/bin/torture.sh
-> > There is "hello world" in console.log but no "End of test" strings.
-> > 
-> > So I guess even with printk_prefer_direct_enter/exit to
-> > torture_cleanup_begin/end,  our main shutdown thread has failed in
-> > competition for console lock (printk.c):
-> > 2401 if (console_trylock_spinning())
-> > 2402     console_unlock();
-> > 
-> > Then I add pr_flush to torture_cleanup_end
-> > #./tools/testing/selftests/rcutorture/bin/torture.sh
-> > after 14 hours
-> > all 49 tests are success
-> > >
-> > > Or do you have a use case that requires that the output appear sooner
-> > > than it does?  If so, please let me know what that is.
-> > Thank Paul for your patience,
-> > ./tools/testing/selftests/rcutorture/bin/torture.sh is the only tool
-> > that I use.
-> > 
-> > I am very interested in this topic, and very glad to do further
-> > experiments under your guidance ;-)
-> 
-> Or are you already running with that commit or one of those patches?
-> They are working reliably for me (so far, anyway), but maybe more is
-> needed in some cases.
-> 
-> 							Thanx, Paul
-> 
-> > Sincerely yours
-> > Thanks
-> > Zhouyi
-> > >
-> > >                                                         Thanx, Paul
-> > >
-> > > >  }
-> > > >  EXPORT_SYMBOL_GPL(torture_cleanup_end);
-> > > >
-> > > > --
-> > > > 2.25.1
-> > > >
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Oleksandr Ocheretnyi <oocheret@cisco.com>
+Link: https://lore.kernel.org/lkml/YmZUCIE%2FND82BlNh@lahna/
+---
+ drivers/mtd/spi-nor/micron-st.c | 12 ++++++++++--
+ drivers/spi/spi-intel.c         |  3 ++-
+ 2 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
+index a96f74e0f568..fd52e8feea44 100644
+--- a/drivers/mtd/spi-nor/micron-st.c
++++ b/drivers/mtd/spi-nor/micron-st.c
+@@ -399,8 +399,16 @@ static int micron_st_nor_ready(struct spi_nor *nor)
+ 		return sr_ready;
+ 
+ 	ret = micron_st_nor_read_fsr(nor, nor->bouncebuf);
+-	if (ret)
+-		return ret;
++	if (ret < 0) {
++		/*
++		 * Some controllers, such as Intel SPI, do not support low
++		 * level operations such as reading the flag status
++		 * register. They only expose small amount of high level
++		 * operations to the software. If this is the case we use
++		 * only the status register value.
++		 */
++		return (ret == -ENOTSUPP || ret == -EOPNOTSUPP) ? sr_ready : ret;
++	}
+ 
+ 	if (nor->bouncebuf[0] & (FSR_E_ERR | FSR_P_ERR)) {
+ 		if (nor->bouncebuf[0] & FSR_E_ERR)
+diff --git a/drivers/spi/spi-intel.c b/drivers/spi/spi-intel.c
+index 50f42983b950..2659c8337937 100644
+--- a/drivers/spi/spi-intel.c
++++ b/drivers/spi/spi-intel.c
+@@ -352,7 +352,8 @@ static int intel_spi_hw_cycle(struct intel_spi *ispi, u8 opcode, size_t len)
+ 		val |= HSFSTS_CTL_FCYCLE_RDSR;
+ 		break;
+ 	default:
+-		return -EINVAL;
++		dev_dbg(ispi->dev, "%#x not supported\n", opcode);
++		return -EOPNOTSUPP;
+ 	}
+ 
+ 	if (len > INTEL_SPI_FIFO_SZ)
+-- 
+2.26.2.Cisco
+
