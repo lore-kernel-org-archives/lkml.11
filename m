@@ -2,77 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4A0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F10C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244091AbiFOHyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 03:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33942 "EHLO
+        id S244354AbiFOHye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 03:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234338AbiFOHyM (ORCPT
+        with ESMTP id S239892AbiFOHy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 03:54:12 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4481427F8
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:54:11 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 12E6E1E80D27;
-        Wed, 15 Jun 2022 15:52:43 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id V5N6kuqPlSIw; Wed, 15 Jun 2022 15:52:40 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: liqiong@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id A37F11E80CFF;
-        Wed, 15 Jun 2022 15:52:39 +0800 (CST)
-From:   Li Qiong <liqiong@nfschina.com>
-To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        yuzhe@nfschina.com, renyu@nfschina.com,
-        Li Qiong <liqiong@nfschina.com>
-Subject: [PATCH] drm: check for allocation failure of kstrdup_const()
-Date:   Wed, 15 Jun 2022 15:53:09 +0800
-Message-Id: <20220615075309.18955-1-liqiong@nfschina.com>
-X-Mailer: git-send-email 2.11.0
+        Wed, 15 Jun 2022 03:54:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BFBD4339A;
+        Wed, 15 Jun 2022 00:54:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F4EFB81CD1;
+        Wed, 15 Jun 2022 07:54:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84DCFC341C0;
+        Wed, 15 Jun 2022 07:54:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655279666;
+        bh=VM9JsnNuaNSKfXw3/W5PC+ryw2B8xnjrM3+SbaLRwlY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HGl2tA+QFedQio6WLQwpcsHPnnA1J6C5L1sRmDLoeb3aoI8ASmSAQZPpx3dpnJQiI
+         pDOcKbh0vMtfkMxkcx4TlTVvIJUrjr76Cw1solVGw/gRLRYWv3JlY6Lq9MmxVxT5j/
+         bkbcToCwXmrl3xvOw9GSJTg2DmPekpNmHTRPDzapkdq/a3RdN3rabGuDhMuStcQS6x
+         VwlN1I1cwKuDoqdyORjIwz6SNT2g6+KyOxR+MKurRsgXM+YaKexJa5CjJYGmPn3H1V
+         DFahL1shyawETgdZ0mzky2SzjljSvbv90h7cW6JEneyZ1UqvKnIQa24J2Jm+ovL4uY
+         0sx+LrZ32kNwg==
+Date:   Wed, 15 Jun 2022 10:54:10 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Wupeng Ma <mawupeng1@huawei.com>
+Cc:     corbet@lwn.net, will@kernel.org, ardb@kernel.org,
+        catalin.marinas@arm.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, dvhart@infradead.org, andy@infradead.org,
+        akpm@linux-foundation.org, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu, paulmck@kernel.org,
+        keescook@chromium.org, songmuchun@bytedance.com,
+        rdunlap@infradead.org, damien.lemoal@opensource.wdc.com,
+        swboyd@chromium.org, wei.liu@kernel.org, robin.murphy@arm.com,
+        david@redhat.com, anshuman.khandual@arm.com,
+        thunder.leizhen@huawei.com, wangkefeng.wang@huawei.com,
+        gpiccoli@igalia.com, chenhuacai@kernel.org, geert@linux-m68k.org,
+        vijayb@linux.microsoft.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-mm@kvack.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v5 0/5] introduce mirrored memory support for arm64
+Message-ID: <YqmQIpQ8hzxYkMv2@kernel.org>
+References: <20220614092156.1972846-1-mawupeng1@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614092156.1972846-1-mawupeng1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the possible failure of the kstrdup_const(), it should
-be better to check it and handle it.
+On Tue, Jun 14, 2022 at 05:21:51PM +0800, Wupeng Ma wrote:
+> From: Ma Wupeng <mawupeng1@huawei.com>
+> 
+> Patch #1 introduce mirrored memory support form arm64.
+> Patch #2-#4 fix some bugs for arm64 if memory reliable is enabled.
+> Patch #5 disable mirror feature if kernelcore is not specified.
+> 
+> Thanks to Ard Biesheuvel's hard work [1], now kernel will perfer mirrored
+> memory if kaslr is enabled.
+> 
+> [1] https://lore.kernel.org/linux-arm-kernel/CAMj1kXEPVEzMgOM4+Yj6PxHA-jFuDOAUdDJSiSxy_XaP4P7LSw@mail.gmail.com/T/
+> 
+> 
+> Ma Wupeng (5):
+>   efi: arm64: Introduce ability to find mirrored memory ranges
+>   mm: Ratelimited mirrored memory related warning messages
+>   mm: Limit warning message in vmemmap_verify() to once
+>   arm64: mm: Only remove nomap flag for initrd
+>   memblock: Disable mirror feature if kernelcore is not specified
+> 
+>  arch/arm64/mm/init.c            |  2 +-
+>  arch/x86/include/asm/efi.h      |  4 ----
+>  arch/x86/platform/efi/efi.c     | 23 -----------------------
+>  drivers/firmware/efi/efi-init.c |  1 +
+>  drivers/firmware/efi/efi.c      | 23 +++++++++++++++++++++++
+>  include/linux/efi.h             |  3 +++
+>  mm/internal.h                   |  2 ++
+>  mm/memblock.c                   |  7 +++++--
+>  mm/page_alloc.c                 |  2 +-
+>  mm/sparse-vmemmap.c             |  2 +-
+>  10 files changed, 37 insertions(+), 32 deletions(-)
 
-Signed-off-by: Li Qiong <liqiong@nfschina.com>
----
- drivers/gpu/drm/drm_managed.c | 4 ++++
- 1 file changed, 4 insertions(+)
+For the series: Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 
-diff --git a/drivers/gpu/drm/drm_managed.c b/drivers/gpu/drm/drm_managed.c
-index 4cf214de50c4..d9bd4a9da559 100644
---- a/drivers/gpu/drm/drm_managed.c
-+++ b/drivers/gpu/drm/drm_managed.c
-@@ -151,6 +151,8 @@ int __drmm_add_action(struct drm_device *dev,
- 	}
- 
- 	dr->node.name = kstrdup_const(name, GFP_KERNEL);
-+	if (!dr->node.name)
-+		return -ENOMEM;
- 	if (data) {
- 		void_ptr = (void **)&dr->data;
- 		*void_ptr = data;
-@@ -197,6 +199,8 @@ void *drmm_kmalloc(struct drm_device *dev, size_t size, gfp_t gfp)
- 		return NULL;
- 	}
- 	dr->node.name = kstrdup_const("kmalloc", GFP_KERNEL);
-+	if (!dr->node.name)
-+		return NULL;
- 
- 	add_dr(dev, dr);
- 
+> -- 
+> 2.25.1
+> 
+
 -- 
-2.25.1
-
+Sincerely yours,
+Mike.
