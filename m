@@ -2,117 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E42C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:45:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3FAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347064AbiFOKo6 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
+        id S243260AbiFOKpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 06:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233065AbiFOKo4 (ORCPT
+        with ESMTP id S244097AbiFOKpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:44:56 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B2A44ECF7
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:44:55 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-15-KgCYn3nfPo6x7IeS2ioUCw-1; Wed, 15 Jun 2022 11:44:52 +0100
-X-MC-Unique: KgCYn3nfPo6x7IeS2ioUCw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Wed, 15 Jun 2022 11:44:50 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Wed, 15 Jun 2022 11:44:50 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Ian Rogers' <rogers.email@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Arnaldo Carvalho de Melo" <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Alexander Shishkin" <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        "Kan Liang" <kan.liang@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Zhengjun Xing" <zhengjun.xing@linux.intel.com>,
-        Felix Fietkau <nbd@nbd.name>, Qi Liu <liuqi115@huawei.com>,
-        Like Xu <likexu@tencent.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>,
-        "Nick Forrington" <nick.forrington@arm.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        "James Clark" <james.clark@arm.com>,
-        Andrew Kilroy <andrew.kilroy@arm.com>,
-        "Paul A . Clarke" <pc@us.ibm.com>, Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        "ananth.narayan@amd.com" <ananth.narayan@amd.com>,
-        "ravi.bangoria@amd.com" <ravi.bangoria@amd.com>,
-        "santosh.shukla@amd.com" <santosh.shukla@amd.com>,
-        "sandipan.das@amd.com" <sandipan.das@amd.com>,
-        Caleb Biggers <caleb.biggers@intel.com>,
-        Perry Taylor <perry.taylor@intel.com>,
-        Kshipra Bopardikar <kshipra.bopardikar@intel.com>
-CC:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Subject: RE: [PATCH v4 3/4] perf jevents: Switch build to use jevents.py
-Thread-Topic: [PATCH v4 3/4] perf jevents: Switch build to use jevents.py
-Thread-Index: AQHYgGTBf2pcanF4ukiDhmkMwHDNNq1QRgsQ
-Date:   Wed, 15 Jun 2022 10:44:50 +0000
-Message-ID: <9951ad2acd3d4454b39c4862da75d913@AcuMS.aculab.com>
-References: <20220615030438.51477-1-irogers@google.com>
- <20220615030438.51477-4-irogers@google.com>
-In-Reply-To: <20220615030438.51477-4-irogers@google.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Wed, 15 Jun 2022 06:45:38 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED2651585;
+        Wed, 15 Jun 2022 03:45:37 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id v19so15523622edd.4;
+        Wed, 15 Jun 2022 03:45:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0P+2ycIPfEXzSOt85zHiD/ynpCkJhE/8jTCsWqxMHAc=;
+        b=oGswadRGlbzc30T6VkRcMrhIadQFGnUgpO4ULYVZVE3Pi3cEdB8BC8lqmUV1xSXFaK
+         jBTlZJ16YdZuPJuFANZioND+/26KH94L+HbhkXSjPpPtJZ5Bpm3UEOmR4EkbvKQtRjoY
+         NQ0nLGgB5nYRCT4mNqBTgh42rfkaBA6+qhQLC7bfH5Bw9hmhhyUarB5bK8a39cUo4kvW
+         vBVr583L9EsxQYaGDgZ1/JwyFbb8JmTqoLuD2bNs1m6eXW4JhhMwBU72CbkHJgYrl4e8
+         K1l4m2IDxU3zTSkhOZ6kv76DFbQhKmlKDaK9BN50jh0Rv8Ir4mKIY/R9UCr2XfaH8vqp
+         qZBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0P+2ycIPfEXzSOt85zHiD/ynpCkJhE/8jTCsWqxMHAc=;
+        b=houm8Uu+0HZosK4klNJ+vyhMG+6vKGDcJefety2LSKiV6oppAl4Ckq8d4QS8VdnZ/A
+         dHEBlbjzNoGnKehNDWRWJV54y7ZPMCYcEdh2A1zzLWhRFKDDAjlHmz4CiQdy96LJijAS
+         RKKdUIgI3Mzog8zjnN8QMfYtnCm8h1hVHTs4qn1iXvdP6N7/6Um7FOqHYCH4e+iSHJ7B
+         l8VRcoO2SKKbIptJ9hcalkSoGyRbESrFuh7oCrU1JpBuSf951MINfyeuVZmFEl1L+DU2
+         v8jwFB7u7nZHWH3CSRXYuN7+mcYthb6rOjjn4sa9WiOP28F2Ln5jQWNd209HQY4g8i9w
+         XsEQ==
+X-Gm-Message-State: AJIora9uZrZt0B5T/jkTUUE2Zih8ZhuaOaC5E2vuGFWMnondodQ4Uwas
+        6NV2GPaDa7+8d5P5SxNzmuU=
+X-Google-Smtp-Source: ABdhPJwewuxvGqr64410LjSPkD6Wg8bhtB3r3O/8zW6VW3tTXh8h8y3w//Ag/8akFarecarGcrTX2A==
+X-Received: by 2002:a05:6402:2381:b0:42d:c8fe:d7fe with SMTP id j1-20020a056402238100b0042dc8fed7femr11834124eda.248.1655289936134;
+        Wed, 15 Jun 2022 03:45:36 -0700 (PDT)
+Received: from caracal.museclub.art (p200300cf9f1a9e008d6dafec091202b8.dip0.t-ipconnect.de. [2003:cf:9f1a:9e00:8d6d:afec:912:2b8])
+        by smtp.googlemail.com with ESMTPSA id l13-20020a056402254d00b0042617ba637bsm9347393edb.5.2022.06.15.03.45.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 03:45:35 -0700 (PDT)
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+To:     eugene.shalygin@gmail.com
+Cc:     Michael Carns <mike@carns.com>, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] hwmon: (asus-ec-sensors) add missing comma in board name list.
+Date:   Wed, 15 Jun 2022 12:45:20 +0200
+Message-Id: <20220615104520.35687-1-eugene.shalygin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ian Rogers
-> Sent: 15 June 2022 04:05
-> 
-> Generate pmu-events.c using jevents.py rather than the binary built from
-> jevents.c. Add a new config variable NO_JEVENTS that is set when there
-> is no architecture json or an appropriate python interpreter isn't present.
-> When NO_JEVENTS is defined the file pmu-events/empty-pmu-events.c is copied
-> and used as the pmu-events.c file.
-> 
-...
-> +    # jevents.py uses f-strings present in Python 3.6 released in Dec. 2016.
-> +    JEVENTS_PYTHON_GOOD := $(shell $(PYTHON) -c 'import sys;print("1" if(sys.version_info.major >= 3
-> and sys.version_info.minor >= 6) else "0")')
+From: Michael Carns <mike@carns.com>
 
-You probably want a "2>/dev/null" in there.
+This fixes a regression introduced by commit 5b4285c57b6f
+("hwmon: (asus-ec-sensors) fix Formula VIII definition")
+where coma lead to concatenating board names and broke module
+loading for C8H.
 
-I also think I remember seeing a `which python` in one of these patches.
-'which' is a bourne shell script that is trying to emulate a csh builtin.
-It can't actually work, and ISTR one of the distros might be
-trying to remove it.
-In a traditional bourne shell you should use `type python`, the posix
-equivalent (which any shell written in the last 30 years out to get
-right) is `command -V python`.
-Both type and command have to be shell builtins.
-Although I suspect some shells get command -V wrong.
+Signed-off-by: Michael Carns <mike@carns.com>
+Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
+---
+ drivers/hwmon/asus-ec-sensors.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
+index 886a71b4c64e..19d3ca71b360 100644
+--- a/drivers/hwmon/asus-ec-sensors.c
++++ b/drivers/hwmon/asus-ec-sensors.c
+@@ -268,7 +268,7 @@ static const struct ec_board_info board_info[] = {
+ 	},
+ 	{
+ 		.board_names = {
+-			"ROG CROSSHAIR VIII FORMULA"
++			"ROG CROSSHAIR VIII FORMULA",
+ 			"ROG CROSSHAIR VIII HERO",
+ 			"ROG CROSSHAIR VIII HERO (WI-FI)",
+ 		},
+-- 
+2.35.1
 
