@@ -2,115 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C282BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:41:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C995CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350957AbiFOHlU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 03:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48772 "EHLO
+        id S235148AbiFOHmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 03:42:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346821AbiFOHlQ (ORCPT
+        with ESMTP id S1352263AbiFOHlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 03:41:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7463D1E0;
-        Wed, 15 Jun 2022 00:41:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E74E618F2;
-        Wed, 15 Jun 2022 07:41:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 359F6C34115;
-        Wed, 15 Jun 2022 07:41:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655278873;
-        bh=TClqVVWZS+qARbIZDVT07arLZRMj8RLyXZnZNh4jzY4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=w9pZO6vKE9H3Q7I+s9JWjCpI+LgbjrqHoZsWJ4kSMMm58FrfTQuYCYU6/b2g84zwv
-         bC0PnHgOOHiPVLJAb4/u4J9XdwTq1tIJQMvmbzoYJ/MXNOK9WVvScPCQfQGR4gnD4i
-         aoyovgbg1qtqo9x5bIVzm1eO84QNOTA5kMfqpsIE=
-Date:   Wed, 15 Jun 2022 08:33:50 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tony.luck@intel.com, x86@kernel.org,
-        Smita.KoralahalliChannabasappa@amd.com, mpatocka@redhat.com
-Subject: Re: [PATCH] x86/MCE/AMD: Decrement threshold_bank refcount when
- removing threshold blocks
-Message-ID: <Yql9TqFtebd2h9Z9@kroah.com>
-References: <20220614174346.3648305-1-yazen.ghannam@amd.com>
+        Wed, 15 Jun 2022 03:41:53 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F3649CB7
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:41:52 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id g186so10675200pgc.1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:41:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YJ9dbVQWS3muelD2che4m2RkFNGOIFlrl7yE1kJ0cFU=;
+        b=FAT0EaCFsCTaNLOLBSejLQwRxm65I4tTblkI3UpdUWn8LkJheU8IAbeAn0cEdRFv5G
+         HMHwwyWCK03/LG0EK4eQM3EwWRXexrnrJF5oR7Z2FH5XXlhgw5NhRQNAJXCYkVLEVZWG
+         RKZ5n22b7d/tGYnTfUX7jKYrzcFznWrjpvjErE0BWVJor+v66JF4FLBXcF+Ic2BYXVYd
+         YplyLSfrWGnNk9fC4ud0d7jrAsUG9pE41yw1PG8/yM7kwb/ofjT6ZSPer/WG4/xsmqoT
+         hnsdfNQYKw9xopwkfLzim0SOOIsYyzn93dC14/ro8RYkNk7X7+EWP0aIVu97BB24EexL
+         AKrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YJ9dbVQWS3muelD2che4m2RkFNGOIFlrl7yE1kJ0cFU=;
+        b=gkZt33jnMo74zg5Xb/QEAmKyD0tBKUzq/3niVzFYDWINEML7NzgYQ3Fk/gmmVjBbcW
+         D0XMioE3pGlr6W0PEJQlJy2Rx+R1E/oK/7VjdB+s/bXa6xbuhL7JywIIAOv+cTEnRJG+
+         PSdTQWDiK808BE9jY9agI/vqhDv6ZZeV117+PfsBWLRfOWWHlZH0QTN4IhQ06jaUAgZG
+         UkMe9xbr7VeA4cu/DSs7zwy9DGr14o3hiCTItjOWdH8KbzeRuZcnRFmmbwRHxHcgL+Yf
+         pow2faAYSHC8QhoSTWIPeAvXIBuyTsAa2/LsVOB3cqk08ZDzdDTcZH00C2YhvgeXBDR6
+         njXw==
+X-Gm-Message-State: AOAM532PnmVFO/Ua06nb+lmp8aysGLtDeFY5LfWCTBArHe9xvblTJZxq
+        G8VOA2vN4g6/Y1h53wxTUxhPrm3eXvI=
+X-Google-Smtp-Source: ABdhPJwbTKseu/QIW7iTQ2w4314NirUemHlEitpOoFNS2Q1fWMlcyegVNTQB/TiFSFQAYqiWfzFOBQ==
+X-Received: by 2002:a65:67da:0:b0:3fc:6ca7:d58c with SMTP id b26-20020a6567da000000b003fc6ca7d58cmr7913724pgs.562.1655278911579;
+        Wed, 15 Jun 2022 00:41:51 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id ik24-20020a170902ab1800b001664d88aab3sm8553342plb.240.2022.06.15.00.41.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 00:41:51 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     linux@armlinux.org.uk
+Cc:     logang@deltatee.com, martin.oliveira@eideticom.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] ARM: dma-mapping: Use kvzalloc in __iommu_alloc_buffer
+Date:   Wed, 15 Jun 2022 07:41:46 +0000
+Message-Id: <20220615074146.912213-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614174346.3648305-1-yazen.ghannam@amd.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 05:43:46PM +0000, Yazen Ghannam wrote:
-> AMD systems from Family 10h to 16h share MCA bank 4 across multiple CPUs.
-> Therefore, the threshold_bank structure for bank 4, and its threshold_block
-> structures, will be initialized once at boot time. And the kobject for the
-> shared bank will be added to each of the CPUs that share it. Furthermore,
-> the threshold_blocks for the shared bank will be added again to the bank's
-> kobject. These additions will increase the refcount for the bank's kobject.
-> 
-> For example, a shared bank with two blocks and shared across two CPUs will
-> be set up like this:
-> 
-> CPU0 init
->   bank create and add; bank refcount = 1; threshold_create_bank()
->     block 0 init and add; bank refcount = 2; allocate_threshold_blocks()
->     block 1 init and add; bank refcount = 3; allocate_threshold_blocks()
-> CPU1 init
->   bank add; bank refcount = 3; threshold_create_bank()
->     block 0 add; bank refcount = 4; __threshold_add_blocks()
->     block 1 add; bank refcount = 5; __threshold_add_blocks()
-> 
-> Currently in threshold_remove_bank(), if the bank is shared then
-> __threshold_remove_blocks() is called. Here the shared bank's kobject and
-> the bank's blocks' kobjects are deleted. This is done on the first call
-> even while the structures are still shared. Subsequent calls from other
-> CPUs that share the structures will attempt to delete the kobjects.
-> 
-> During kobject_del(), kobject->sd is removed. If the kobject is not part of
-> a kset with default_groups, then subsequent kobject_del() calls seem safe
-> even with kobject->sd == NULL.
-> 
-> Originally, the AMD MCA thresholding structures did not use default_groups.
-> And so the above behavior was not apparent.
-> 
-> However, a recent change implemented default_groups for the thresholding
-> structures. Therefore, kobject_del() will go down the sysfs_remove_groups()
-> code path. In this case, the first kobject_del() may succeed and remove
-> kobject->sd. But subsequent kobject_del() calls will give a WARNing in
-> kernfs_remove_by_name_ns() since kobject->sd == NULL.
-> 
-> Use kobject_put() on the shared bank's kobject when "removing" blocks. This
-> decrements the bank's refcount while keeping kobjects enabled until the
-> bank is no longer shared. At that point, kobject_put() will be called on
-> the blocks which drives their refcount to 0 and deletes them and also
-> decrementing the bank's refcount. And finally kobject_put() will be called
-> on the bank driving its refcount to 0 and deleting it.
-> 
-> With this patch and the example above:
-> 
-> CPU1 shutdown
->   bank is shared; bank refcount = 5; threshold_remove_bank()
->     block 0 put parent bank; bank refcount = 4; __threshold_remove_blocks()
->     block 1 put parent bank; bank refcount = 3; __threshold_remove_blocks()
-> CPU0 shutdown
->   bank is no longer shared; bank refcount = 3; threshold_remove_bank()
->     block 0 put block; bank refcount = 2; deallocate_threshold_blocks()
->     block 1 put block; bank refcount = 1; deallocate_threshold_blocks()
->   put bank; bank refcount = 0; threshold_remove_bank()
-> 
-> Fixes: 7f99cb5e6039 ("x86/CPU/AMD: Use default_groups in kobj_type")
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-This predates this fixup, this commit just exposed the root problem here
-so odds are it should be backported further, right?
+Use kvzalloc() in __iommu_alloc_buffer() instead of open-coding it.
 
-thanks,
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ arch/arm/mm/dma-mapping.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-greg k-h
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 82ffac621854..940819eda182 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1208,10 +1208,7 @@ static struct page **__iommu_alloc_buffer(struct device *dev, size_t size,
+ 	int i = 0;
+ 	int order_idx = 0;
+ 
+-	if (array_size <= PAGE_SIZE)
+-		pages = kzalloc(array_size, GFP_KERNEL);
+-	else
+-		pages = vzalloc(array_size);
++	pages = kvzalloc(array_size, GFP_KERNEL);
+ 	if (!pages)
+ 		return NULL;
+ 
+-- 
+2.25.1
+
+
