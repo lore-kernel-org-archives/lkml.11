@@ -2,154 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37475C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 06:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29082C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 06:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352503AbiFOGdk (ORCPT
+        id S1353320AbiFOGeL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 02:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
+        Wed, 15 Jun 2022 02:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353906AbiFOGd2 (ORCPT
+        with ESMTP id S236258AbiFOGeE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 02:33:28 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2076.outbound.protection.outlook.com [40.107.100.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0262B241
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 23:33:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FGdC0/3RkFf95ePV1tEK/1rfwlooRJTDF0FOAThuZV9e62Sa7bY+7cCZGbQgoumLO/40gknH5FRijM9VWDSwVMtLaHSoHQv4C4oVcwCBhfg/RhY6mBYNSQ2wBucO9uBd0K+7eIXLdMo+tattcxGVbMYmVlni0M3EO53EqP44rwhbVL5BfsBmd/NrOJ1LqoZv2WX8onrVbkm6Cl0/YvtP6Q49eaVWdEDQfSuvUHUMHQuT7GWfCucVstXcwKuXZITpm+XRlxHk1AD6T975eP3xh6NVC0yqkUESYfry7L+acjf1wUd3vlrRdZFzZkxD8YFYbu+hWThij6+XNl7jrHekPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PkCpnN11D0i+VaS5uX5LfjIG9UiDM4zf7cNZMCXhGn8=;
- b=GRDuYzsz8zPV5M+CN5juiJaiw9Xt5vtfgsyh0TpA2NB0fmUYV0DDPfGlDay0w8j+F1fCkhkrQ6VeWsDLi3mHOYVpgOdTt+xrSfQzxbcuXQaFvmaP+SYBrFpHL0aPxnGNXKYAYOPszPf3fJpm349Q7JLhLsw5FzSgi0L7HXoprwplsmbP89tOQ1lXJtsG0MSGxkus5atXTYo+K6RK5KMBP6ynw4qMIPfaLZvfEnem5wDkbFSySv/Ha2ysB7NK4Bz770OxnGyCMEs1YFoRMCWNMOxeGV1nLJdqWxOIhS2pt014WMEnvSVNt3drhFi8TmHk64lwmkdeOrM+trcx6g8/ag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PkCpnN11D0i+VaS5uX5LfjIG9UiDM4zf7cNZMCXhGn8=;
- b=l0ihUiI8z6W4MRShvj7jvSDhOFLqAAT8popiM1owkqtJ7jgTZQfoNtfO37SjdThh8OPVSySXaQ7RQqpHNVadIASMn1XWiX4NTb51RLmM6klp/5xMBJNR5de3PcqEyxfQjp9IOYULdmve6Dh36wPjRQN+sUEJvk9xFitLckRFHsfjgv7Z3NZpmjf24WjMREGBEeZ1LaChY6WIKLCHS8dDkpcuPCeK+n88jXz8m8cg5to1ehGfn0h7YCIVCgo0HxvRhA5yZbOPeYn9ffThaSS/Bi/XeIT7wvyxihvE1H47TvUgWfRvmCPecvXzDM6FhSTBi8twKGAyKtAN830HpguleA==
-Received: from BN6PR2001CA0037.namprd20.prod.outlook.com
- (2603:10b6:405:16::23) by MWHPR12MB1629.namprd12.prod.outlook.com
- (2603:10b6:301:3::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.17; Wed, 15 Jun
- 2022 06:33:21 +0000
-Received: from BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:16:cafe::d3) by BN6PR2001CA0037.outlook.office365.com
- (2603:10b6:405:16::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.19 via Frontend
- Transport; Wed, 15 Jun 2022 06:33:20 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.236) by
- BN8NAM11FT013.mail.protection.outlook.com (10.13.176.182) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5332.12 via Frontend Transport; Wed, 15 Jun 2022 06:33:20 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 15 Jun
- 2022 06:33:19 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 14 Jun
- 2022 23:33:18 -0700
-Received: from sandstorm.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Tue, 14 Jun 2022 23:33:18 -0700
-From:   John Hubbard <jhubbard@nvidia.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-CC:     Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        LKML <linux-kernel@vger.kernel.org>, <llvm@lists.linux.dev>,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: [PATCH] gen_compile_commands: fix overlooked module files
-Date:   Tue, 14 Jun 2022 23:33:15 -0700
-Message-ID: <20220615063315.279489-1-jhubbard@nvidia.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 15 Jun 2022 02:34:04 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FC64249F;
+        Tue, 14 Jun 2022 23:34:01 -0700 (PDT)
+X-UUID: f285dd2dc8094fe7bf166316c1484b75-20220615
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:51cdf9ee-7f9e-4d50-b19e-d66800a15848,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.6,REQID:51cdf9ee-7f9e-4d50-b19e-d66800a15848,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:b14ad71,CLOUDID:88fb48f6-e099-41ba-a32c-13b8bfe63214,C
+        OID:117c08d252f6,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: f285dd2dc8094fe7bf166316c1484b75-20220615
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1588829006; Wed, 15 Jun 2022 14:33:57 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 15 Jun 2022 14:33:55 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Wed, 15 Jun 2022 14:33:55 +0800
+Message-ID: <104478ce5749d7c44015712964142141359057b5.camel@mediatek.com>
+Subject: Re: [PATCH v11 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
+ driver
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-fbdev@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Wed, 15 Jun 2022 14:33:55 +0800
+In-Reply-To: <1cf3e33dfc10e948094f11a7ce439ced1b43f4c9.camel@mediatek.com>
+References: <20220610105522.13449-1-rex-bc.chen@mediatek.com>
+         <20220610105522.13449-6-rex-bc.chen@mediatek.com>
+         <1cf3e33dfc10e948094f11a7ce439ced1b43f4c9.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e7261c02-c64c-4a9d-6b5d-08da4e98f074
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1629:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR12MB162947BBDF068B86681F9435A8AD9@MWHPR12MB1629.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zMHRYXzg5+acTB6e4lYsbS2w6Qk16B3JDiCDeSZuo6p+91Fn2g4IVqrAMwmmpwtf1HjB1iIrzJou3J4uMZwWqr/eyFc2r3/ZrMlpnXTcjFneUGPgVjDQpik4L7QhFx19wBHVioDLMBe3/TVyQlPfMjTP6B4pecKJ65iBVmPCTNB3nTaUCVn0uTU8UmdsmyQnYYyhY4SVdxRR2h1uRIYu0QuLfExTjHdzTA3KDboOFNhEHkUolEeqTM81d1PA2GMMcjEgTvu1borAAkLeu9YLj/kX+C3NJAUhOXr2kWM9PzSlzvEvy6UgIo5NR6GJBy6R3y/A6Yzj38hLHx9uGSmVTN88jWo6Ouyv5KmhJCiryi6YkBXep4XPMtZu7tVREkc/OK+atkmqh7WWg+hfBYBSfHXOyNc2EKF2POIPyviufcupq0lhto6tlKX1+Rd8ySpJGAGpmf8vc0s8OrrY6+McFSPcFZH7xPP/cnFEf3tMZhmi/zN3LejMeFsezNzy7v17ff9toDXiN95ZrvpwR9LLCNJNU5s4fOjGjTBKtbvGdSWBBvteCw4MMh2lieHcUUgoiSs4c/915hYxXQNrhBK0Mb3ugheVLc5g4O7g1aF/gqi0UYof8Y7a6POJP5Ia/qLMEdLDvO6H7nNbBNp/RZ7YYkHNH6mb/aiQ3VMYF9FAFKwBKe6Q2YnszDOo9Q7KWX3tURwwXDLM+ugH2mwv+shqHA==
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(36840700001)(46966006)(40470700004)(6666004)(508600001)(8676002)(2906002)(82310400005)(7696005)(4326008)(86362001)(316002)(36756003)(54906003)(26005)(83380400001)(6916009)(107886003)(81166007)(356005)(47076005)(2616005)(1076003)(40460700003)(186003)(336012)(426003)(70206006)(8936002)(70586007)(5660300002)(36860700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2022 06:33:20.0784
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e7261c02-c64c-4a9d-6b5d-08da4e98f074
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1629
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-scripts/clang-tools/gen_compile_commands.py incorrectly assumes that
-each .mod file only contains one line. In fact, such files contain one
-entry per line, and for some subsystems, there can be many, many lines.
-For example, Nouveau has 762 entries, but only the first entry was being
-processed. This problem causes clangd to fail to provide references and
-definitions for valid files that are part of the current kernel
-configuration.
+Hi, Bo-Chen:
 
-This problem only occurs when using Kbuild to generate, like this:
+On Wed, 2022-06-15 at 13:50 +0800, CK Hu wrote:
+> Hi, Bo-Chen:
+> 
+> On Fri, 2022-06-10 at 18:55 +0800, Bo-Chen Chen wrote:
+> > From: Markus Schneider-Pargmann <msp@baylibre.com>
+> > 
+> > This patch adds a embedded displayport driver for the MediaTek
+> > mt8195
+> > SoC.
+> > 
+> > It supports the MT8195, the embedded DisplayPort units. It offers
+> > DisplayPort 1.4 with up to 4 lanes.
+> > 
+> > The driver creates a child device for the phy. The child device
+> > will
+> > never exist without the parent being active. As they are sharing a
+> > register range, the parent passes a regmap pointer to the child so
+> > that
+> > both can work with the same register range. The phy driver sets
+> > device
+> > data that is read by the parent to get the phy device that can be
+> > used
+> > to control the phy properties.
+> > 
+> > This driver is based on an initial version by
+> > Jitao shi <jitao.shi@mediatek.com>
+> > 
+> > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> > [Bo-Chen: Cleanup the drivers and modify comments from reviewers]
+> > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> > ---
+> 
+> [snip]
+> 
+> > +
+> > +static int mtk_dp_train_flow(struct mtk_dp *mtk_dp, u8
+> > target_link_rate,
+> > +			     u8 target_lane_count)
+> > +{
+> > +	u8 lane_adjust[2] = {};
+> > +	bool pass_tps1 = false;
+> > +	bool pass_tps2_3 = false;
+> > +	int train_retries;
+> > +	int status_control;
+> > +	int iteration_count;
+> > +	int ret;
+> > +	u8 prev_lane_adjust;
+> > +
+> > +	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_LINK_BW_SET,
+> > target_link_rate);
+> > +	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_LANE_COUNT_SET,
+> > +			   target_lane_count |
+> > DP_LANE_COUNT_ENHANCED_FRAME_EN);
+> > +
+> > +	if (mtk_dp->train_info.sink_ssc)
+> > +		drm_dp_dpcd_writeb(&mtk_dp->aux, DP_DOWNSPREAD_CTRL,
+> > +				   DP_SPREAD_AMP_0_5);
+> > +
+> > +	train_retries = 0;
+> > +	status_control = 0;
+> > +	iteration_count = 1;
+> > +	prev_lane_adjust = 0xFF;
+> > +
+> > +	mtk_dp_set_lanes(mtk_dp, target_lane_count / 2);
+> > +	ret = mtk_dp_phy_configure(mtk_dp, target_link_rate,
+> > target_lane_count);
+> > +	if (ret)
+> > +		return -EINVAL;
+> > +
+> > +	dev_dbg(mtk_dp->dev,
+> > +		"Link train target_link_rate = 0x%x, target_lane_count
+> > = 0x%x\n",
+> > +		target_link_rate, target_lane_count);
+> > +
+> > +	do {
+> > +		train_retries++;
+> > +		if (!mtk_dp->train_info.cable_plugged_in ||
+> > +		    mtk_dp->train_info.irq_sta.hpd_disconnect) {
+> > +			return -ENODEV;
+> > +		}
+> > +
+> > +		if (mtk_dp->train_state < MTK_DP_TRAIN_STATE_TRAINING)
+> 
+> This checking would never be true, so remove it.
+> 
+> > +			return -EAGAIN;
+> > +
+> > +		if (!pass_tps1) {
+> > +			ret = mtk_dp_train_tps_1(mtk_dp,
+> > target_lane_count,
+> > +						 &iteration_count,
+> > lane_adjust,
+> > +						 &status_control,
+> > +						 &prev_lane_adjust);
+> > +			if (!ret) {
+> > +				pass_tps1 = true;
+> > +				train_retries = 0;
+> > +			} else if (ret == -EINVAL) {
+> > +				break;
+> > +			}
+> > +		} else {
+> > +			ret = mtk_dp_train_tps_2_3(mtk_dp,
+> > target_link_rate,
+> > +						   target_lane_count,
+> > +						   &iteration_count,
+> > +						   lane_adjust,
+> > &status_control,
+> > +						   &prev_lane_adjust);
+> > +			if (!ret) {
+> > +				pass_tps2_3 = true;
+> > +				break;
+> > +			} else if (ret == -EINVAL) {
+> > +				break;
+> > +			}
+> > +		}
+> > +
+> > +		drm_dp_dpcd_read(&mtk_dp->aux,
+> > DP_ADJUST_REQUEST_LANE0_1,
+> > +				 lane_adjust, sizeof(lane_adjust));
+> > +		mtk_dp_train_update_swing_pre(mtk_dp,
+> > target_lane_count,
+> > +					      lane_adjust);
+> > +	} while (train_retries < MTK_DP_TRAIN_RETRY_LIMIT &&
+> > +		 iteration_count < MTK_DP_TRAIN_MAX_ITERATIONS);
+> 
+> mtk_dp_train_tps_1() & mtk_dp_train_tps_2_3() would only be called
+> once
+> and never be called twice, so remove this loop.
 
-   make CC=clang compile_commands.json
+Sorry, mtk_dp_train_tps_1() & mtk_dp_train_tps_2_3() may return
+-EAGAIN, so keep this loop.
 
-It does not occur if you just run gen_compile_commands.py "bare", like
-this (below):
-
-   scripts/clang-tools/gen_compile_commands.py/gen_compile_commands.py .
-
-Fix this by fully processing each .mod file. This fix causes the number
-of build commands that clangd finds in my kernel build (these numbers
-are heavily dependent upon .config), from 2848 to 5292, which is an 85%
-increase.
-
-Fixes: ecca4fea1ede4 ("gen_compile_commands: support *.o, *.a, modules.order in positional argument")
-Cc: Masahiro Yamada <masahiroy@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: John Hubbard <jhubbard@nvidia.com>
----
- scripts/clang-tools/gen_compile_commands.py | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/scripts/clang-tools/gen_compile_commands.py b/scripts/clang-tools/gen_compile_commands.py
-index 1d1bde1fd45e..53590e886889 100755
---- a/scripts/clang-tools/gen_compile_commands.py
-+++ b/scripts/clang-tools/gen_compile_commands.py
-@@ -157,10 +157,11 @@ def cmdfiles_for_modorder(modorder):
-             if ext != '.ko':
-                 sys.exit('{}: module path must end with .ko'.format(ko))
-             mod = base + '.mod'
--	    # The first line of *.mod lists the objects that compose the module.
-+	    # Read from *.mod, to get a list of objects that compose the module.
-             with open(mod) as m:
--                for obj in m.readline().split():
--                    yield to_cmdfile(obj)
-+                for line in m.readlines():
-+                    for obj in line.split():
-+                        yield to_cmdfile(obj)
- 
- 
- def process_line(root_directory, command_prefix, file_path):
--- 
-2.36.1
+> 
+> Regards,
+> CK
+> 
+> > +
+> > +	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_TRAINING_PATTERN_SET,
+> > +			   DP_TRAINING_PATTERN_DISABLE);
+> > +	ret = mtk_dp_train_set_pattern(mtk_dp, 0);
+> > +	if (ret)
+> > +		return -EINVAL;
+> > +
+> > +	if (!pass_tps2_3)
+> > +		return -ETIMEDOUT;
+> > +
+> > +	mtk_dp->train_info.link_rate = target_link_rate;
+> > +	mtk_dp->train_info.lane_count = target_lane_count;
+> > +
+> > +	mtk_dp_training_set_scramble(mtk_dp, true);
+> > +
+> > +	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_LANE_COUNT_SET,
+> > +			   target_lane_count |
+> > +				   DP_LANE_COUNT_ENHANCED_FRAME_EN);
+> > +	mtk_dp_set_enhanced_frame_mode(mtk_dp, true);
+> > +
+> > +	return ret;
+> > +}
 
