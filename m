@@ -2,133 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4FC5C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B55C5C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245490AbiFONp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54600 "EHLO
+        id S1345932AbiFONqv (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 09:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230055AbiFONpx (ORCPT
+        with ESMTP id S1349094AbiFONqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:45:53 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23692CCB4;
-        Wed, 15 Jun 2022 06:45:52 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LNRPP6xCnzjYF4;
-        Wed, 15 Jun 2022 21:44:41 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 15 Jun
- 2022 21:45:46 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
-        <linux-ext4@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
-        Ye Bin <yebin10@huawei.com>
-Subject: [PATCH -next] ext4: fix bug_on in ext4_iomap_begin as race between bmap and write
-Date:   Wed, 15 Jun 2022 21:58:50 +0800
-Message-ID: <20220615135850.1961759-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 15 Jun 2022 09:46:43 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84B6387A0;
+        Wed, 15 Jun 2022 06:46:40 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 9F87521C5A;
+        Wed, 15 Jun 2022 13:46:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655300799; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iw2jPfqQLlQoX6LpWeZ9/tB9JNb7rzIb1MZz0AVsEEk=;
+        b=JCegLWCPSVTLynsDQtvK8IxzjXkGE5OqKVZrJF/3a6IUIZ81WIkfgeiCkicuka3kRv2FTw
+        1RgcCDku63qj7yMqlF7yEGl0F3xCzqMWo4STyxGQz+YIJTJM4lcGC3aPHvs2u7BKjxMJxH
+        UGgY4eeRYa9wvUN0rFh8TRKg8FKCJ+Q=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655300799;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iw2jPfqQLlQoX6LpWeZ9/tB9JNb7rzIb1MZz0AVsEEk=;
+        b=Vv/oRgxY3qp2fZqDIWLYhONZYJCScD1xArOZxb4ve7qhDavbd74xXEb0U/6jjmFKn5a8o8
+        ipePg5kDnDtP3QDA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6888313A35;
+        Wed, 15 Jun 2022 13:46:39 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id wahiGL/iqWJ/LAAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Wed, 15 Jun 2022 13:46:39 +0000
+Message-ID: <d2a0c8e3-4987-44e9-4abe-99c571738836@suse.de>
+Date:   Wed, 15 Jun 2022 15:46:33 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 1/2] drm: Add DRM_GEM_FOPS
+Content-Language: en-US
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@gmail.com>,
+        dri-devel@lists.freedesktop.org
+Cc:     Rob Clark <robdclark@chromium.org>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>, linux-arm-msm@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        freedreno@lists.freedesktop.org, Chris Healy <cphealy@gmail.com>
+References: <20220609174213.2265938-1-robdclark@gmail.com>
+ <5066e977-52b5-ce18-98e9-44dcfe018127@linaro.org>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <5066e977-52b5-ce18-98e9-44dcfe018127@linaro.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------VRpy50pJeVxwM2suD9NUp0hG"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We got issue as follows:
-------------[ cut here ]------------
-WARNING: CPU: 3 PID: 9310 at fs/ext4/inode.c:3441 ext4_iomap_begin+0x182/0x5d0
-RIP: 0010:ext4_iomap_begin+0x182/0x5d0
-RSP: 0018:ffff88812460fa08 EFLAGS: 00010293
-RAX: ffff88811f168000 RBX: 0000000000000000 RCX: ffffffff97793c12
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: ffff88812c669160 R08: ffff88811f168000 R09: ffffed10258cd20f
-R10: ffff88812c669077 R11: ffffed10258cd20e R12: 0000000000000001
-R13: 00000000000000a4 R14: 000000000000000c R15: ffff88812c6691ee
-FS:  00007fd0d6ff3740(0000) GS:ffff8883af180000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fd0d6dda290 CR3: 0000000104a62000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- iomap_apply+0x119/0x570
- iomap_bmap+0x124/0x150
- ext4_bmap+0x14f/0x250
- bmap+0x55/0x80
- do_vfs_ioctl+0x952/0xbd0
- __x64_sys_ioctl+0xc6/0x170
- do_syscall_64+0x33/0x40
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------VRpy50pJeVxwM2suD9NUp0hG
+Content-Type: multipart/mixed; boundary="------------1S0aSUT3yvbPCdxnHl9OHuKO";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
+Cc: Rob Clark <robdclark@chromium.org>,
+ Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+ David Airlie <airlied@linux.ie>, linux-arm-msm@vger.kernel.org,
+ open list <linux-kernel@vger.kernel.org>, freedreno@lists.freedesktop.org,
+ Chris Healy <cphealy@gmail.com>
+Message-ID: <d2a0c8e3-4987-44e9-4abe-99c571738836@suse.de>
+Subject: Re: [PATCH v3 1/2] drm: Add DRM_GEM_FOPS
+References: <20220609174213.2265938-1-robdclark@gmail.com>
+ <5066e977-52b5-ce18-98e9-44dcfe018127@linaro.org>
+In-Reply-To: <5066e977-52b5-ce18-98e9-44dcfe018127@linaro.org>
 
-Above issue may happen as follows:
-          bmap                    write
-bmap
-  ext4_bmap
-    iomap_bmap
-      ext4_iomap_begin
-                            ext4_file_write_iter
-			      ext4_buffered_write_iter
-			        generic_perform_write
-				  ext4_da_write_begin
-				    ext4_da_write_inline_data_begin
-				      ext4_prepare_inline_data
-				        ext4_create_inline_data
-					  ext4_set_inode_flag(inode,
-						EXT4_INODE_INLINE_DATA);
-      if (WARN_ON_ONCE(ext4_has_inline_data(inode))) ->trigger bug_on
+--------------1S0aSUT3yvbPCdxnHl9OHuKO
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-To solved above issue hold inode lock in ext4_bamp.
+DQoNCkFtIDE1LjA2LjIyIHVtIDE0OjQ1IHNjaHJpZWIgRG1pdHJ5IEJhcnlzaGtvdjoNCj4g
+T24gMDkvMDYvMjAyMiAyMDo0MiwgUm9iIENsYXJrIHdyb3RlOg0KPj4gRnJvbTogUm9iIENs
+YXJrIDxyb2JkY2xhcmtAY2hyb21pdW0ub3JnPg0KPj4NCj4+IFRoZSBERUZJTkVfRFJNX0dF
+TV9GT1BTKCkgaGVscGVyIGlzIGEgYml0IGxpbWl0aW5nIGlmIGEgZHJpdmVyIHdhbnRzIHRv
+DQo+PiBwcm92aWRlIGFkZGl0aW9uYWwgZmlsZSBvcHMsIGxpa2Ugc2hvd19mZGluZm8oKS4N
+Cj4+DQo+PiB2MjogU3BsaXQgb3V0IERSTV9HRU1fRk9QUyBpbnN0ZWFkIG9mIG1ha2luZyBE
+RUZJTkVfRFJNX0dFTV9GT1BTDQo+PiDCoMKgwqDCoCB2YXJhcmRpYw0KPj4gdjM6IG5pdHMN
+Cj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBSb2IgQ2xhcmsgPHJvYmRjbGFya0BjaHJvbWl1bS5v
+cmc+DQo+PiBBY2tlZC1ieTogVGhvbWFzIFppbW1lcm1hbm4gPHR6aW1tZXJtYW5uQHN1c2Uu
+ZGU+DQo+IA0KPiBJIHN1c3BlY3QgdGhhdCB3aXRoIFRvbWFzJ3MgYWNrIHdlIGNhbiBwaWNr
+IHRoaXMgdGhyb3VnaCB0aGUgZHJtL21zbS4gSXMgDQo+IHRoaXMgY29ycmVjdD8gKEknbGwg
+dGhlbiBwaWNrIGl0IGZvciB0aGUgbXNtLWx1bWFnKS4NCg0KU3VyZSwgZ28gYWhlYWQuDQoN
+Cj4gDQo+PiAtLS0NCj4+IMKgIGluY2x1ZGUvZHJtL2RybV9nZW0uaCB8IDI2ICsrKysrKysr
+KysrKysrKysrKy0tLS0tLS0tDQo+PiDCoCAxIGZpbGUgY2hhbmdlZCwgMTggaW5zZXJ0aW9u
+cygrKSwgOCBkZWxldGlvbnMoLSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9kcm0v
+ZHJtX2dlbS5oIGIvaW5jbHVkZS9kcm0vZHJtX2dlbS5oDQo+PiBpbmRleCA5ZDdjNjFhMTIy
+ZGMuLjg3Y2ZmYzllZmE4NSAxMDA2NDQNCj4+IC0tLSBhL2luY2x1ZGUvZHJtL2RybV9nZW0u
+aA0KPj4gKysrIGIvaW5jbHVkZS9kcm0vZHJtX2dlbS5oDQo+PiBAQCAtMzE0LDYgKzMxNCwy
+MyBAQCBzdHJ1Y3QgZHJtX2dlbV9vYmplY3Qgew0KPj4gwqDCoMKgwqDCoCBjb25zdCBzdHJ1
+Y3QgZHJtX2dlbV9vYmplY3RfZnVuY3MgKmZ1bmNzOw0KPj4gwqAgfTsNCj4+ICsvKioNCj4+
+ICsgKiBEUk1fR0VNX0ZPUFMgLSBEZWZhdWx0IGRybSBHRU0gZmlsZSBvcGVyYXRpb25zDQo+
+PiArICoNCj4+ICsgKiBUaGlzIG1hY3JvIHByb3ZpZGVzIGEgc2hvcnRoYW5kIGZvciBzZXR0
+aW5nIHRoZSBHRU0gZmlsZSBvcHMgaW4gdGhlDQo+PiArICogJmZpbGVfb3BlcmF0aW9ucyBz
+dHJ1Y3R1cmUuwqAgSWYgYWxsIHlvdSBuZWVkIGFyZSB0aGUgZGVmYXVsdCBvcHMsIHVzZQ0K
+Pj4gKyAqIERFRklORV9EUk1fR0VNX0ZPUFMgaW5zdGVhZC4NCj4+ICsgKi8NCj4+ICsjZGVm
+aW5lIERSTV9HRU1fRk9QUyBcDQo+PiArwqDCoMKgIC5vcGVuwqDCoMKgwqDCoMKgwqAgPSBk
+cm1fb3BlbixcDQo+PiArwqDCoMKgIC5yZWxlYXNlwqDCoMKgID0gZHJtX3JlbGVhc2UsXA0K
+Pj4gK8KgwqDCoCAudW5sb2NrZWRfaW9jdGzCoMKgwqAgPSBkcm1faW9jdGwsXA0KPj4gK8Kg
+wqDCoCAuY29tcGF0X2lvY3RswqDCoMKgID0gZHJtX2NvbXBhdF9pb2N0bCxcDQo+PiArwqDC
+oMKgIC5wb2xswqDCoMKgwqDCoMKgwqAgPSBkcm1fcG9sbCxcDQo+PiArwqDCoMKgIC5yZWFk
+wqDCoMKgwqDCoMKgwqAgPSBkcm1fcmVhZCxcDQo+PiArwqDCoMKgIC5sbHNlZWvCoMKgwqDC
+oMKgwqDCoCA9IG5vb3BfbGxzZWVrLFwNCj4+ICvCoMKgwqAgLm1tYXDCoMKgwqDCoMKgwqDC
+oCA9IGRybV9nZW1fbW1hcA0KPj4gKw0KPj4gwqAgLyoqDQo+PiDCoMKgICogREVGSU5FX0RS
+TV9HRU1fRk9QUygpIC0gbWFjcm8gdG8gZ2VuZXJhdGUgZmlsZSBvcGVyYXRpb25zIGZvciBH
+RU0gDQo+PiBkcml2ZXJzDQo+PiDCoMKgICogQG5hbWU6IG5hbWUgZm9yIHRoZSBnZW5lcmF0
+ZWQgc3RydWN0dXJlDQo+PiBAQCAtMzMwLDE0ICszNDcsNyBAQCBzdHJ1Y3QgZHJtX2dlbV9v
+YmplY3Qgew0KPj4gwqAgI2RlZmluZSBERUZJTkVfRFJNX0dFTV9GT1BTKG5hbWUpIFwNCj4+
+IMKgwqDCoMKgwqAgc3RhdGljIGNvbnN0IHN0cnVjdCBmaWxlX29wZXJhdGlvbnMgbmFtZSA9
+IHtcDQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgLm93bmVywqDCoMKgwqDCoMKgwqAgPSBUSElT
+X01PRFVMRSxcDQo+PiAtwqDCoMKgwqDCoMKgwqAgLm9wZW7CoMKgwqDCoMKgwqDCoCA9IGRy
+bV9vcGVuLFwNCj4+IC3CoMKgwqDCoMKgwqDCoCAucmVsZWFzZcKgwqDCoCA9IGRybV9yZWxl
+YXNlLFwNCj4+IC3CoMKgwqDCoMKgwqDCoCAudW5sb2NrZWRfaW9jdGzCoMKgwqAgPSBkcm1f
+aW9jdGwsXA0KPj4gLcKgwqDCoMKgwqDCoMKgIC5jb21wYXRfaW9jdGzCoMKgwqAgPSBkcm1f
+Y29tcGF0X2lvY3RsLFwNCj4+IC3CoMKgwqDCoMKgwqDCoCAucG9sbMKgwqDCoMKgwqDCoMKg
+ID0gZHJtX3BvbGwsXA0KPj4gLcKgwqDCoMKgwqDCoMKgIC5yZWFkwqDCoMKgwqDCoMKgwqAg
+PSBkcm1fcmVhZCxcDQo+PiAtwqDCoMKgwqDCoMKgwqAgLmxsc2Vla8KgwqDCoMKgwqDCoMKg
+ID0gbm9vcF9sbHNlZWssXA0KPj4gLcKgwqDCoMKgwqDCoMKgIC5tbWFwwqDCoMKgwqDCoMKg
+wqAgPSBkcm1fZ2VtX21tYXAsXA0KPj4gK8KgwqDCoMKgwqDCoMKgIERSTV9HRU1fRk9QUyxc
+DQo+PiDCoMKgwqDCoMKgIH0NCj4+IMKgIHZvaWQgZHJtX2dlbV9vYmplY3RfcmVsZWFzZShz
+dHJ1Y3QgZHJtX2dlbV9vYmplY3QgKm9iaik7DQo+IA0KPiANCg0KLS0gDQpUaG9tYXMgWmlt
+bWVybWFubg0KR3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBTb2x1
+dGlvbnMgR2VybWFueSBHbWJIDQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcsIEdl
+cm1hbnkNCihIUkIgMzY4MDksIEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNmw7xocmVyOiBJ
+dm8gVG90ZXYNCg==
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- fs/ext4/inode.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+--------------1S0aSUT3yvbPCdxnHl9OHuKO--
 
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 53877ffe3c41..f4a95c80f644 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -3142,13 +3142,15 @@ static sector_t ext4_bmap(struct address_space *mapping, sector_t block)
- {
- 	struct inode *inode = mapping->host;
- 	journal_t *journal;
-+	sector_t ret = 0;
- 	int err;
- 
-+	inode_lock(inode);
- 	/*
- 	 * We can get here for an inline file via the FIBMAP ioctl
- 	 */
- 	if (ext4_has_inline_data(inode))
--		return 0;
-+		goto out;
- 
- 	if (mapping_tagged(mapping, PAGECACHE_TAG_DIRTY) &&
- 			test_opt(inode->i_sb, DELALLOC)) {
-@@ -3187,10 +3189,14 @@ static sector_t ext4_bmap(struct address_space *mapping, sector_t block)
- 		jbd2_journal_unlock_updates(journal);
- 
- 		if (err)
--			return 0;
-+			goto out;
- 	}
- 
--	return iomap_bmap(mapping, block, &ext4_iomap_ops);
-+	ret = iomap_bmap(mapping, block, &ext4_iomap_ops);
-+
-+out:
-+	inode_unlock(inode);
-+	return ret;
- }
- 
- static int ext4_read_folio(struct file *file, struct folio *folio)
--- 
-2.31.1
+--------------VRpy50pJeVxwM2suD9NUp0hG
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmKp4roFAwAAAAAACgkQlh/E3EQov+B/
+jw/9FbZQOVOHCHcSWZW4LrskKH/NSHemiJDUG+aQQYl5hcZyGPD95dolcsXOi19VHc+kw5lxdQxR
+sjm5leaeDIhN8ZkE17VsceY5JkoplxvY6Eq59tDXDYMop6M4SpUfa1Di8VctTTJTn/MFQ+uKe11W
+Lhc2FXhkmUQmUIu6SB9J9ABJX0xwCAysWXNG4l9pkhCJT46IYvusJHC5HXQ6USR7LGf/CFGOPWWQ
+YW82VxcYyNTMMNWjG5b2fM3D+OFYtSdqEgeuHyGM1tIcgTBO1fomvwyqsoxIBuWAxsWlmBr0sT6c
+SefFxAVFKJzXrTRIIRh0ho0lMuxx001LcZXSpUChMGvomvKDgvcmBBf7a7siNkZC6Km4Hsrg+5QL
+uyr6SRt0m/eMszs3ZReiFBzHdXK01UbAzCoejhgBJzBcUSMimtcbL4rTUkih4prTjE2me9O1Mbvq
+REX7ZXctE/e7EjZiMw9jxe/xk38LnK33lGFrvbNK+8ImiaUWft218l7rbtjLCbA6WBvZxnTLWspw
+3TyjUOpOLFPMzW1oQCaiflw7T4WzUqADGVEP1GJuDqEqGd5ew9oaqX9jyg8/UiQa2ulSplsy/fSA
+ftKiOyD6dPt8PBVdRAs6dGbCfG5T6i1u2+GQhb7ZCOt9ymPnbPl4eLXD3PJ49brvEgeZFTLC4SUf
+lLE=
+=4Wsv
+-----END PGP SIGNATURE-----
+
+--------------VRpy50pJeVxwM2suD9NUp0hG--
