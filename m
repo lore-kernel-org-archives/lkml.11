@@ -2,74 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4B7CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27472C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346643AbiFOIlg (ORCPT
+        id S1346532AbiFOIle (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44114 "EHLO
+        Wed, 15 Jun 2022 04:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346570AbiFOIl2 (ORCPT
+        with ESMTP id S1346459AbiFOIlN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 04:41:28 -0400
-X-Greylist: delayed 255 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Jun 2022 01:41:25 PDT
-Received: from m15114.mail.126.com (m15114.mail.126.com [220.181.15.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 04C434A933;
-        Wed, 15 Jun 2022 01:41:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=DmT6U
-        58o0/4r961TrAREaDDktMO1YP/6bcDd0RxPXn0=; b=fzvXfURIk/dujjv3CKxa2
-        HU4GoGzxVlCyXA+Z0M9zL+UCOcY0U9aTSoh0PxGE5HH3/+XljnQoRG1X7iGX8cx5
-        hFhrJscs0gXiEco67561YpeaD/AG7u0sGuD7Hht75+MDkRx8ko7+csBBusP+sXUL
-        q52lvNxIno1FpuQi8/c/Ug=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp7 (Coremail) with SMTP id DsmowAAH1fAam6liw9ddDQ--.37360S2;
-        Wed, 15 Jun 2022 16:41:07 +0800 (CST)
-From:   heliang <windhl@126.com>
-To:     pdeschrijver@nvidia.com, pgaikwad@nvidia.com,
-        mturquette@baylibre.com, sboyd@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com
-Cc:     linux-clk@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org, windhl@126.com
-Subject: [PATCH] clk: tegra: Add missing of_node_put in clk-tegra30.c
-Date:   Wed, 15 Jun 2022 16:40:56 +0800
-Message-Id: <20220615084056.3961029-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 04:41:13 -0400
+Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D013F4A933;
+        Wed, 15 Jun 2022 01:41:10 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id KGF00005;
+        Wed, 15 Jun 2022 16:41:05 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201602.home.langchao.com (10.100.2.2) with Microsoft SMTP Server id
+ 15.1.2308.27; Wed, 15 Jun 2022 16:41:06 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] vhost-vdpa: Remove usage of the deprecated ida_simple_xxx API
+Date:   Wed, 15 Jun 2022 04:40:55 -0400
+Message-ID: <20220615084055.4797-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsmowAAH1fAam6liw9ddDQ--.37360S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrKFW3GryrZFW7Aw18uw1kAFb_yoW3GFb_XF
-        y5XFyxXw4UKFs5CFs8ur13ZryIvF1rWrnYqFWIyw47G3W0vr4UGrs0vrn7C3s7X39FqFW7
-        Gw4kGr48CrZxAjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRA2-n7UUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2gMhF1uwMNQCLAAAsO
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   2022615164105b10b1c60219b480d69d964b77389ea2f
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In tegra30_clock_init, of_find_matching_node() will return a node
-pointer with refcount incremented. We should use of_node_put() when
-the node pointer is not used anymore.
+Use ida_alloc_xxx()/ida_free() instead of
+ida_simple_get()/ida_simple_remove().
+The latter is deprecated and more verbose.
 
-Signed-off-by: heliang <windhl@126.com>
+Signed-off-by: Bo Liu <liubo03@inspur.com>
 ---
- drivers/clk/tegra/clk-tegra30.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/vhost/vdpa.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/tegra/clk-tegra30.c b/drivers/clk/tegra/clk-tegra30.c
-index 04b496123820..168c07d5a5f2 100644
---- a/drivers/clk/tegra/clk-tegra30.c
-+++ b/drivers/clk/tegra/clk-tegra30.c
-@@ -1320,6 +1320,7 @@ static void __init tegra30_clock_init(struct device_node *np)
- 	}
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 5ad2596c6e8a..8fc5c0bbb428 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -1295,7 +1295,7 @@ static void vhost_vdpa_release_dev(struct device *device)
+ 	struct vhost_vdpa *v =
+ 	       container_of(device, struct vhost_vdpa, dev);
  
- 	pmc_base = of_iomap(node, 0);
-+	of_node_put(node);
- 	if (!pmc_base) {
- 		pr_err("Can't map pmc registers\n");
- 		BUG();
+-	ida_simple_remove(&vhost_vdpa_ida, v->minor);
++	ida_free(&vhost_vdpa_ida, v->minor);
+ 	kfree(v->vqs);
+ 	kfree(v);
+ }
+@@ -1318,7 +1318,7 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+ 	if (!v)
+ 		return -ENOMEM;
+ 
+-	minor = ida_simple_get(&vhost_vdpa_ida, 0,
++	minor = ida_alloc_max(&vhost_vdpa_ida,
+ 			       VHOST_VDPA_DEV_MAX, GFP_KERNEL);
+ 	if (minor < 0) {
+ 		kfree(v);
 -- 
-2.25.1
+2.27.0
 
