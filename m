@@ -2,98 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B45DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 893F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243755AbiFOPxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
+        id S242240AbiFOPyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 11:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237952AbiFOPxm (ORCPT
+        with ESMTP id S231167AbiFOPyL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:53:42 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A721D306;
-        Wed, 15 Jun 2022 08:53:40 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id fu3so24090072ejc.7;
-        Wed, 15 Jun 2022 08:53:40 -0700 (PDT)
+        Wed, 15 Jun 2022 11:54:11 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DADE81D302;
+        Wed, 15 Jun 2022 08:54:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eDvK3aBrt95N9QEgQgB/5GPv5tA2EGWou9Hqc2Iu33o=;
-        b=qiGjVR0XEyraV6oGuMUGSEIQLVYoV/LyV8Bfjnx+H1BSCzN4RJIdPI67r33glFbZO3
-         jLet8kq9DZ8ic9339Wsx8huE6yMWk7a8nZqwAVEUZ8p4WeXFI5GdqdthPdhDzEtiqf7h
-         2AexV5b9ntWXG3KnrLPw++rDTtTet0JhGK2X4C+hR5Ex54PgDevowDp5bmJKXMzT3UT5
-         T8tC26xldPIRSih1J7OEs8kBD3MMe0FfiwT/D6OU4xVtQIW8tB015RsqnKmISfJjrYDP
-         3M685qpT+1GYpIJRdWOJ1sn+IWniql3UaQOEMUBl3U30HgocaLNsI8XfCcumkr0A6dS1
-         sCSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eDvK3aBrt95N9QEgQgB/5GPv5tA2EGWou9Hqc2Iu33o=;
-        b=cfS6KAUhR7G06+vIrF8lygzCsoz6Wh0peklX9wpSFpqQv2LhAL56Gbula/TX2PlN72
-         nkyp5o2UWcEoouWNo8zolNpI+lrn7UmFVg1PC9EIj8ezp1PEgAhIpsEFlsSk+0m4RoXD
-         /PGW0VI0j8V0/I6lHXuroQrdI2nlA2ZP1VoqL8OtHgLLzf8A/Rij9kCHi6pFOnA+jyZG
-         Gk10Rpo1zLz4RcdLBhbAUP2KaPvM5s/8SSdWz7xOb8gzj1HZPigGlTtZqizvez9kNFtU
-         tnlvvMJgpIWKi0Zksk0Iy/CzK6pZnw7DHmzxdNXYRhgz2D5xplxi5D10C1Clrxxv2/Lv
-         akPg==
-X-Gm-Message-State: AJIora+EPqhYdvDxi43Q5LTzHmWrOw7eN96+P8cKT73bh6WqvRRgkbRy
-        nV9R+qQ0aIW+xlwhG9HcuUyqYO/kHcwK0CxywZU=
-X-Google-Smtp-Source: AGRyM1u11HA4kMYRmtww2DDb3KC8BU9ZciwZJOd0e+NaqGGtUl2P3dlnAif/o4EVMYlYy4x2+WmSLC6Euag/NRehkz4=
-X-Received: by 2002:a17:906:434f:b0:711:eb76:c320 with SMTP id
- z15-20020a170906434f00b00711eb76c320mr437434ejm.636.1655308418875; Wed, 15
- Jun 2022 08:53:38 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655308449; x=1686844449;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=hQbr63r6g12pXkWSUm16jYJVYXPNC3k9vGnZ4/4C+so=;
+  b=A0hZAtVW8y7mMMM9FwmWYhm2/swaB3W3VndrkMIVi1Z+eZNJy0fXfIbb
+   ORGxwbmbU36M6UcKqTPil/mOiO+D/ioUv95ZWvpf3QyGcrpsJxNI8SN21
+   Fxsl6u1t2JJSblEKyN4apqlptxKTyl0w+Z07cjPtSHq1gYyYc2ujnfPPP
+   w=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 15 Jun 2022 08:54:08 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 08:54:07 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 15 Jun 2022 08:54:07 -0700
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 15 Jun 2022 08:54:06 -0700
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
+        <dianders@chromium.org>, <vkoul@kernel.org>, <daniel@ffwll.ch>,
+        <airlied@linux.ie>, <agross@kernel.org>,
+        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
+        <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v7] drm/msm/dp: force link training for display resolution change
+Date:   Wed, 15 Jun 2022 08:53:57 -0700
+Message-ID: <1655308437-1924-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <20220615154918.521687-1-jjhiblot@traphandler.com> <20220615154918.521687-2-jjhiblot@traphandler.com>
-In-Reply-To: <20220615154918.521687-2-jjhiblot@traphandler.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 15 Jun 2022 17:52:54 +0200
-Message-ID: <CAHp75VfR+mpMp6Q+30dvB=-RMdpdk1V-xsMqCb7=6XW0aT6grQ@mail.gmail.com>
-Subject: Re: [PATCH 1/4] leds: class: simplify the implementation of devm_of_led_get()
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Sven Schwermer <sven.schwermer@disruptive-technologies.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        johan+linaro@kernel.org,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 5:49 PM Jean-Jacques Hiblot
-<jjhiblot@traphandler.com> wrote:
->
-> Use the devm_add_action_or_reset() helper.
+Display resolution change is implemented through drm modeset. Older
+modeset (resolution) has to be disabled first before newer modeset
+(resolution) can be enabled. Display disable will turn off both
+pixel clock and main link clock so that main link have to be
+re-trained during display enable to have new video stream flow
+again. At current implementation, display enable function manually
+kicks up irq_hpd_handle which will read panel link status and start
+link training if link status is not in sync state.
 
-...
+However, there is rare case that a particular panel links status keep
+staying in sync for some period of time after main link had been shut
+down previously at display disabled. In this case, main link retraining
+will not be executed by irq_hdp_handle(). Hence video stream of newer
+display resolution will fail to be transmitted to panel due to main
+link is not in sync between host and panel.
 
-> @@ -20,8 +20,10 @@
->  #include <linux/timer.h>
->  #include <uapi/linux/uleds.h>
->  #include <linux/of.h>
-> +#include <linux/acpi.h>
->  #include "leds.h"
->
-> +
->  static struct class *leds_class;
->
->  static ssize_t brightness_show(struct device *dev,
+This patch will bypass irq_hpd_handle() in favor of directly call
+dp_ctrl_on_stream() to always perform link training in regardless of
+main link status. So that no unexpected exception resolution change
+failure cases will happen. Also this implementation are more efficient
+than manual kicking off irq_hpd_handle function.
 
-Stray changes.
+Changes in v2:
+-- set force_link_train flag on DP only (is_edp == false)
 
-...
+Changes in v3:
+-- revise commit  text
+-- add Fixes tag
 
-> +       led_put((struct led_classdev *) cdev);
+Changes in v4:
+-- revise commit  text
 
-Casting from/to void * is redundant.
+Changes in v5:
+-- fix spelling at commit text
 
+Changes in v6:
+-- split dp_ctrl_on_stream() for phy test case
+-- revise commit text for modeset
+
+Changes in v7:
+-- drop 0 assignment at local variable (ret = 0)
+
+Fixes: 62671d2ef24b ("drm/msm/dp: fixes wrong connection state caused by failure of link train")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+---
+ drivers/gpu/drm/msm/dp/dp_ctrl.c    | 31 +++++++++++++++++++++++--------
+ drivers/gpu/drm/msm/dp/dp_ctrl.h    |  3 ++-
+ drivers/gpu/drm/msm/dp/dp_display.c | 13 ++++++-------
+ 3 files changed, 31 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index af7a80c..01028b5 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1551,7 +1551,7 @@ static int dp_ctrl_process_phy_test_request(struct dp_ctrl_private *ctrl)
+ 
+ 	ret = dp_ctrl_on_link(&ctrl->dp_ctrl);
+ 	if (!ret)
+-		ret = dp_ctrl_on_stream(&ctrl->dp_ctrl);
++		ret = dp_ctrl_on_stream_phy_test_report(&ctrl->dp_ctrl);
+ 	else
+ 		DRM_ERROR("failed to enable DP link controller\n");
+ 
+@@ -1807,7 +1807,27 @@ static int dp_ctrl_link_retrain(struct dp_ctrl_private *ctrl)
+ 	return dp_ctrl_setup_main_link(ctrl, &training_step);
+ }
+ 
+-int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
++int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl)
++{
++	int ret;
++	struct dp_ctrl_private *ctrl;
++
++	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
++
++	ctrl->dp_ctrl.pixel_rate = ctrl->panel->dp_mode.drm_mode.clock;
++
++	ret = dp_ctrl_enable_stream_clocks(ctrl);
++	if (ret) {
++		DRM_ERROR("Failed to start pixel clocks. ret=%d\n", ret);
++		return ret;
++	}
++
++	dp_ctrl_send_phy_test_pattern(ctrl);
++
++	return 0;
++}
++
++int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train)
+ {
+ 	int ret = 0;
+ 	bool mainlink_ready = false;
+@@ -1843,12 +1863,7 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
+ 		goto end;
+ 	}
+ 
+-	if (ctrl->link->sink_request & DP_TEST_LINK_PHY_TEST_PATTERN) {
+-		dp_ctrl_send_phy_test_pattern(ctrl);
+-		return 0;
+-	}
+-
+-	if (!dp_ctrl_channel_eq_ok(ctrl))
++	if (force_link_train || !dp_ctrl_channel_eq_ok(ctrl))
+ 		dp_ctrl_link_retrain(ctrl);
+ 
+ 	/* stop txing train pattern to end link training */
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.h b/drivers/gpu/drm/msm/dp/dp_ctrl.h
+index 0745fde..9a39b00 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.h
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.h
+@@ -21,7 +21,8 @@ struct dp_ctrl {
+ };
+ 
+ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl);
+-int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl);
++int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train);
++int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl);
+ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl);
+ int dp_ctrl_off_link(struct dp_ctrl *dp_ctrl);
+ int dp_ctrl_off(struct dp_ctrl *dp_ctrl);
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index c388323..b6d25ab 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -872,7 +872,7 @@ static int dp_display_enable(struct dp_display_private *dp, u32 data)
+ 		return 0;
+ 	}
+ 
+-	rc = dp_ctrl_on_stream(dp->ctrl);
++	rc = dp_ctrl_on_stream(dp->ctrl, data);
+ 	if (!rc)
+ 		dp_display->power_on = true;
+ 
+@@ -1654,6 +1654,7 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
+ 	int rc = 0;
+ 	struct dp_display_private *dp_display;
+ 	u32 state;
++	bool force_link_train = false;
+ 
+ 	dp_display = container_of(dp, struct dp_display_private, dp_display);
+ 	if (!dp_display->dp_mode.drm_mode.clock) {
+@@ -1688,10 +1689,12 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
+ 
+ 	state =  dp_display->hpd_state;
+ 
+-	if (state == ST_DISPLAY_OFF)
++	if (state == ST_DISPLAY_OFF) {
+ 		dp_display_host_phy_init(dp_display);
++		force_link_train = true;
++	}
+ 
+-	dp_display_enable(dp_display, 0);
++	dp_display_enable(dp_display, force_link_train);
+ 
+ 	rc = dp_display_post_enable(dp);
+ 	if (rc) {
+@@ -1700,10 +1703,6 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
+ 		dp_display_unprepare(dp);
+ 	}
+ 
+-	/* manual kick off plug event to train link */
+-	if (state == ST_DISPLAY_OFF)
+-		dp_add_event(dp_display, EV_IRQ_HPD_INT, 0, 0);
+-
+ 	/* completed connection */
+ 	dp_display->hpd_state = ST_CONNECTED;
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
