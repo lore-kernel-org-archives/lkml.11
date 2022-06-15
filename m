@@ -2,156 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF61C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F42C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242448AbiFOJRw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
+        id S1348037AbiFOJSq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 05:18:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347968AbiFOJRp (ORCPT
+        with ESMTP id S1347862AbiFOJSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:17:45 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBD45FB7
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:17:41 -0700 (PDT)
-Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LNKR13Wbhz1KB4G;
-        Wed, 15 Jun 2022 17:15:41 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500016.china.huawei.com
- (7.221.188.220) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 15 Jun
- 2022 17:17:38 +0800
-From:   Zhou Guanghui <zhouguanghui1@huawei.com>
-To:     <akpm@linux-foundation.org>, <rppt@kernel.org>, <will@kernel.org>,
-        <anshuman.khandual@arm.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-arm-kernel@lists.infradead.org>, <xuqiang36@huawei.com>,
-        <zhouguanghui1@huawei.com>
-Subject: [PATCH v4] memblock,arm64: Expand the static memblock memory table
-Date:   Wed, 15 Jun 2022 09:12:01 +0000
-Message-ID: <20220615091201.88256-1-zhouguanghui1@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 15 Jun 2022 05:18:43 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9630D1BE9D;
+        Wed, 15 Jun 2022 02:18:42 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id s1so14474453wra.9;
+        Wed, 15 Jun 2022 02:18:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hfPRWz/6+mbBhg3uMrSTa4uQzlgE7HRjEzmSGZBqwzs=;
+        b=a10ya2bR9Hw+5B9wfwSOtWz8++8Qx1+QGcHA1qacaBV8T7nepPaZ7OxLwOXcW6XriI
+         jw8ZxaoUOn2b8MEPGGD5b1gF9X2o0ZJtHE20aQtz5isJQ6IUzTA6L8SK7nllEX6Yxr//
+         3fidAfAn8cWZL5mE492WnvOwDuCrSb6M5HPZtiryTb51gTYPEDjGhnQcT12zGP/xjtXO
+         L/xXmwn+frIZEOLyAm2SAEKVNhRIFaQ78snLX/aB/OugUJSOkBkBKCe1M2OHWZ+IaBPD
+         +BgagbRQ94BAv60nmIfqeziQmnQ0IphEG+MsNNmF2rj/DENZVqqmoZAk3L8CA6jG5LJl
+         m87w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hfPRWz/6+mbBhg3uMrSTa4uQzlgE7HRjEzmSGZBqwzs=;
+        b=gg1Kh+zQyvUW0MmVPt2chWV3gs6jVnKtnzqjqUDZnQyDyDbUHa1wJWjNEAv0aBIxtC
+         OzykW7SRzluc9YLelbLHfZEXeoY5T8uLR3xoCcCJEQ+y3OLajb77PO7bMXjMsEFbEYK7
+         cPkdb1nEG9w/GsPThzmj6GnOoKWH/xw+gXONmaqB2pNPOhCg3tBC5MhPLhI0YOo6ZsCt
+         Qqq7RqJb+mgcVN7WPFtl1W+DnPkSExOo2dQMZV+xzK77Fv9zERAde6IpdL+SRUofkPhE
+         Kb6dD66SPTQ/PsL4ox/VE878lEqE3RwV5+yyAt8tOFPVEevub9l3AkEsiUj+Iy6MDSbu
+         wbwA==
+X-Gm-Message-State: AJIora/hyyLp8jDqVNEmnw4qWisCirek5J5nr+/iObfiHySis++E9eHW
+        elNUzgAwXT4cimsOzxeyeFFO+qSUAq8=
+X-Google-Smtp-Source: AGRyM1vpPjOc3KjZW/5OI41y3qgwBQeqaa/Mw5VXqkAVDPSQURuVyyZjJn1b4MmJszzJo+MAGeRR5A==
+X-Received: by 2002:a5d:4fc5:0:b0:211:c8fd:3d0f with SMTP id h5-20020a5d4fc5000000b00211c8fd3d0fmr9046485wrw.10.1655284721042;
+        Wed, 15 Jun 2022 02:18:41 -0700 (PDT)
+Received: from debian ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id l8-20020a1ced08000000b0039744bd664esm1705440wmh.13.2022.06.15.02.18.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 02:18:40 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 10:18:38 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 00/11] 5.15.48-rc1 review
+Message-ID: <Yqmj7kkdooFqIv+V@debian>
+References: <20220614183720.512073672@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500016.china.huawei.com (7.221.188.220)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614183720.512073672@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In a system(Huawei Ascend ARM64 SoC) using HBM, a multi-bit ECC error
-occurs, and the BIOS will mark the corresponding area (for example, 2 MB)
-as unusable. When the system restarts next time, these areas are not
-reported or reported as EFI_UNUSABLE_MEMORY. Both cases lead to an
-increase in the number of memblocks, whereas EFI_UNUSABLE_MEMORY
-leads to a larger number of memblocks.
+Hi Greg,
 
-For example, if the EFI_UNUSABLE_MEMORY type is reported:
-...
-memory[0x92]    [0x0000200834a00000-0x0000200835bfffff], 0x0000000001200000 bytes on node 7 flags: 0x0
-memory[0x93]    [0x0000200835c00000-0x0000200835dfffff], 0x0000000000200000 bytes on node 7 flags: 0x4
-memory[0x94]    [0x0000200835e00000-0x00002008367fffff], 0x0000000000a00000 bytes on node 7 flags: 0x0
-memory[0x95]    [0x0000200836800000-0x00002008369fffff], 0x0000000000200000 bytes on node 7 flags: 0x4
-memory[0x96]    [0x0000200836a00000-0x0000200837bfffff], 0x0000000001200000 bytes on node 7 flags: 0x0
-memory[0x97]    [0x0000200837c00000-0x0000200837dfffff], 0x0000000000200000 bytes on node 7 flags: 0x4
-memory[0x98]    [0x0000200837e00000-0x000020087fffffff], 0x0000000048200000 bytes on node 7 flags: 0x0
-memory[0x99]    [0x0000200880000000-0x0000200bcfffffff], 0x0000000350000000 bytes on node 6 flags: 0x0
-memory[0x9a]    [0x0000200bd0000000-0x0000200bd01fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
-memory[0x9b]    [0x0000200bd0200000-0x0000200bd07fffff], 0x0000000000600000 bytes on node 6 flags: 0x0
-memory[0x9c]    [0x0000200bd0800000-0x0000200bd09fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
-memory[0x9d]    [0x0000200bd0a00000-0x0000200fcfffffff], 0x00000003ff600000 bytes on node 6 flags: 0x0
-memory[0x9e]    [0x0000200fd0000000-0x0000200fd01fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
-memory[0x9f]    [0x0000200fd0200000-0x0000200fffffffff], 0x000000002fe00000 bytes on node 6 flags: 0x0
-...
+On Tue, Jun 14, 2022 at 08:40:29PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.48 release.
+> There are 11 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+> Anything received after that time might be too late.
 
-The EFI memory map is parsed to construct the memblock arrays before
-the memblock arrays can be resized. As the result, memory regions
-beyond INIT_MEMBLOCK_REGIONS are lost.
+Build test (gcc version 11.3.1 20220612):
+mips: 62 configs -> no failure
+arm: 99 configs -> no failure
+arm64: 3 configs -> no failure
+x86_64: 4 configs -> no failure
+alpha allmodconfig -> no failure
+csky allmodconfig -> no failure
+powerpc allmodconfig -> no failure
+riscv allmodconfig -> no failure
+s390 allmodconfig -> no failure
+xtensa allmodconfig -> no failure
 
-Add a new macro INIT_MEMBLOCK_MEMORY_REGTIONS to replace
-INIT_MEMBLOCK_REGTIONS to define the size of the static memblock.memory
-array.
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+arm64: Booted on rpi4b (4GB model). No regression. [2]
+mips: Booted on ci20 board. No regression. [3]
 
-Allow overriding memblock.memory array size with architecture defined
-INIT_MEMBLOCK_MEMORY_REGIONS and make arm64 to set
-INIT_MEMBLOCK_MEMORY_REGIONS to 1024 when CONFIG_EFI is enabled.
+[1]. https://openqa.qa.codethink.co.uk/tests/1334
+[2]. https://openqa.qa.codethink.co.uk/tests/1342
+[3]. https://openqa.qa.codethink.co.uk/tests/1341
 
-Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
----
- arch/arm64/include/asm/memory.h |  9 +++++++++
- mm/memblock.c                   | 14 +++++++++-----
- 2 files changed, 18 insertions(+), 5 deletions(-)
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 
-diff --git a/arch/arm64/include/asm/memory.h b/arch/arm64/include/asm/memory.h
-index 0af70d9abede..ce8614fa376a 100644
---- a/arch/arm64/include/asm/memory.h
-+++ b/arch/arm64/include/asm/memory.h
-@@ -364,6 +364,15 @@ void dump_mem_limit(void);
- # define INIT_MEMBLOCK_RESERVED_REGIONS	(INIT_MEMBLOCK_REGIONS + NR_CPUS + 1)
- #endif
- 
-+/*
-+ * memory regions which marked with flag MEMBLOCK_NOMAP(for example, the memory
-+ * of the EFI_UNUSABLE_MEMORY type) may divide a continuous memory block into
-+ * multiple parts. As a result, the number of memory regions is large.
-+ */
-+#ifdef CONFIG_EFI
-+#define INIT_MEMBLOCK_MEMORY_REGIONS	(INIT_MEMBLOCK_REGIONS * 8)
-+#endif
-+
- #include <asm-generic/memory_model.h>
- 
- #endif /* __ASM_MEMORY_H */
-diff --git a/mm/memblock.c b/mm/memblock.c
-index e4f03a6e8e56..7c63571a69d7 100644
---- a/mm/memblock.c
-+++ b/mm/memblock.c
-@@ -29,6 +29,10 @@
- # define INIT_MEMBLOCK_RESERVED_REGIONS		INIT_MEMBLOCK_REGIONS
- #endif
- 
-+#ifndef INIT_MEMBLOCK_MEMORY_REGIONS
-+#define INIT_MEMBLOCK_MEMORY_REGIONS		INIT_MEMBLOCK_REGIONS
-+#endif
-+
- /**
-  * DOC: memblock overview
-  *
-@@ -55,9 +59,9 @@
-  * the allocator metadata. The "memory" and "reserved" types are nicely
-  * wrapped with struct memblock. This structure is statically
-  * initialized at build time. The region arrays are initially sized to
-- * %INIT_MEMBLOCK_REGIONS for "memory" and %INIT_MEMBLOCK_RESERVED_REGIONS
-- * for "reserved". The region array for "physmem" is initially sized to
-- * %INIT_PHYSMEM_REGIONS.
-+ * %INIT_MEMBLOCK_MEMORY_REGIONS for "memory" and
-+ * %INIT_MEMBLOCK_RESERVED_REGIONS for "reserved". The region array
-+ * for "physmem" is initially sized to %INIT_PHYSMEM_REGIONS.
-  * The memblock_allow_resize() enables automatic resizing of the region
-  * arrays during addition of new regions. This feature should be used
-  * with care so that memory allocated for the region array will not
-@@ -102,7 +106,7 @@ unsigned long min_low_pfn;
- unsigned long max_pfn;
- unsigned long long max_possible_pfn;
- 
--static struct memblock_region memblock_memory_init_regions[INIT_MEMBLOCK_REGIONS] __initdata_memblock;
-+static struct memblock_region memblock_memory_init_regions[INIT_MEMBLOCK_MEMORY_REGIONS] __initdata_memblock;
- static struct memblock_region memblock_reserved_init_regions[INIT_MEMBLOCK_RESERVED_REGIONS] __initdata_memblock;
- #ifdef CONFIG_HAVE_MEMBLOCK_PHYS_MAP
- static struct memblock_region memblock_physmem_init_regions[INIT_PHYSMEM_REGIONS];
-@@ -111,7 +115,7 @@ static struct memblock_region memblock_physmem_init_regions[INIT_PHYSMEM_REGIONS
- struct memblock memblock __initdata_memblock = {
- 	.memory.regions		= memblock_memory_init_regions,
- 	.memory.cnt		= 1,	/* empty dummy entry */
--	.memory.max		= INIT_MEMBLOCK_REGIONS,
-+	.memory.max		= INIT_MEMBLOCK_MEMORY_REGIONS,
- 	.memory.name		= "memory",
- 
- 	.reserved.regions	= memblock_reserved_init_regions,
--- 
-2.17.1
+--
+Regards
+Sudip
 
