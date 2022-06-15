@@ -2,90 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E75DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5949EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:22:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344844AbiFOLWW (ORCPT
+        id S1345278AbiFOLW2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 07:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
+        Wed, 15 Jun 2022 07:22:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344316AbiFOLWN (ORCPT
+        with ESMTP id S1344353AbiFOLWN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 15 Jun 2022 07:22:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD1F50E1A;
-        Wed, 15 Jun 2022 04:22:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4945861741;
-        Wed, 15 Jun 2022 11:22:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12076C34115;
-        Wed, 15 Jun 2022 11:22:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655292129;
-        bh=9KBmkpVrjLKF7VZsEwiMYlvXT5Md1t15jLSCYpzbFyA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=md6gTN8T4TdKWQ6dK4cyQmbLe0XH8UxrZXNCdrR2d6/kbTAHsiYR1rqdSmdehYhVF
-         Pk+92WukPEoub1POvGR7ax8c2Jfc4Aw4rdPS8BavA1wSsfK5ob7w1uUPI5Z7Edg9Gi
-         qNpgY0XowRScd26YotgbQI/mP6CVcpPkKoJYiXwAR2cnapmy6MDKVHGY1CqH0JGPZr
-         Y4N9QD2BZg+qtvcPQhqdSwcQ/n7IEL0MPpHWyCGeA3cKTyP6U7qOmYK/RyKEFsmjKP
-         teUnP9Hq9wuRYU6cQ0GYAk+/E6jLC4UbmVDveYinpxgsXqvPwLu3ODvCOK9yPv7isl
-         grDiJbf+3HVSQ==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCHv3 bpf 4/4] selftest/bpf: Fix kprobe_multi bench test
-Date:   Wed, 15 Jun 2022 13:21:18 +0200
-Message-Id: <20220615112118.497303-5-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220615112118.497303-1-jolsa@kernel.org>
-References: <20220615112118.497303-1-jolsa@kernel.org>
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DEC353B49
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 04:22:11 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id m39-20020a05600c3b2700b0039c511ebbacso945258wms.3
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 04:22:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=xbDVWYZHwV1Fe0JhlnA6KA0AqbAr0+yv5JqJonTlKqg=;
+        b=qYwRUCbx8byMPhQP+iyJDx+xZ9InHykYY5U2itS9jxsMMy4aSpXv7tamWwfCRZRtYP
+         EkhLa+/7km4kOd5FG9HLYe3QCM03WryVFFP+GJWOrISKO1onbAuNzNwRQv2lmvsrr3bW
+         tqQDqcTHrlRj4Tr0UZtybVpkkRadANm58A2OfAvQLSBBl4J5C7+oduBxaIyFIgYar22R
+         44OMYSXQ73cCCZeY2TAtGQFPS6FsmA7M1rgaCHnGusTSTSMSc2g69p6Idc8YgitsHwvD
+         ZLKCe50I1PHa3W8N82QvspCCFNhyLj6/t6cwfcMQMAlwDd34q8TGJMeu2Y8+ktp8RDup
+         J+mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=xbDVWYZHwV1Fe0JhlnA6KA0AqbAr0+yv5JqJonTlKqg=;
+        b=z98Yl50GsTKX8n3SKDuNwazAkr63nPxBcu2gD57E4Z2UuDalSTfC09Vpo0F6+DBF/m
+         q06ZGdQ1f2wAdvvoyICTjU/NqPe7EmIraqsi2PloNYIstwycR9m0A54JxO3skjjQH90N
+         KCVT/udL9chTusZve/ztV70LSEket6X7PmIO/yRnWyu9IWWGxrukD0LZht5Wai7Z2yv8
+         a+PMUhSF8aD99KC0t5JHGHqkwYVT+rWJtL2n4/X3y2OWEcTUdS5DqkPuA8hwotNTmGRJ
+         8mVNo78cO9GCVDSJLwcUxI76JvdU/YalTbOQgsN8ftBVR8x6HncQ/j1X2QtAkYmQA+fV
+         VTdw==
+X-Gm-Message-State: AOAM533tklY7zqoyspdbqtGx+CS4QIKIcr12/EoRii4yZhA/kuT2/nWD
+        wY1acZAEEi0ZH0MVmB+asG/uyNuwdMno
+X-Google-Smtp-Source: ABdhPJzhepACrJJ5YrdoTUCZr+R1BL1xPK5J6FF51anuoh9GBBzuutyPZLbUeJ0bAEQqxTRBXPFXVA==
+X-Received: by 2002:a05:600c:19c9:b0:39c:72fc:9530 with SMTP id u9-20020a05600c19c900b0039c72fc9530mr9312999wmq.88.1655292129549;
+        Wed, 15 Jun 2022 04:22:09 -0700 (PDT)
+Received: from localhost.localdomain ([46.53.253.10])
+        by smtp.gmail.com with ESMTPSA id g10-20020a5d698a000000b0021020517639sm14104353wru.102.2022.06.15.04.22.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 04:22:08 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 14:22:06 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] proc: delete unused <linux/uaccess.h> includes
+Message-ID: <YqnA3mS7KBt8Z4If@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With [1] the available_filter_functions file contains records
-starting with __ftrace_invalid_address___ and marking disabled
-entries.
+Those aren't necessary after seq files won.
 
-We need to filter them out for the bench test to pass only
-resolvable symbols to kernel.
-
-[1] commit b39181f7c690 ("ftrace: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding weak function")
-
-Fixes: b39181f7c690 ("ftrace: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding weak function")
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
 ---
- tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-index 586dc52d6fb9..5b93d5d0bd93 100644
---- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -364,6 +364,9 @@ static int get_syms(char ***symsp, size_t *cntp)
- 			continue;
- 		if (!strncmp(name, "rcu_", 4))
- 			continue;
-+		if (!strncmp(name, "__ftrace_invalid_address__",
-+			     sizeof("__ftrace_invalid_address__") - 1))
-+			continue;
- 		err = hashmap__add(map, name, NULL);
- 		if (err) {
- 			free(name);
--- 
-2.35.3
+ fs/proc/array.c    |    1 -
+ fs/proc/inode.c    |    2 --
+ fs/proc/kmsg.c     |    1 -
+ fs/proc/nommu.c    |    1 -
+ fs/proc/proc_net.c |    3 ---
+ fs/proc/proc_tty.c |    2 --
+ fs/proc/root.c     |    3 ---
+ fs/proc/vmcore.c   |    1 -
+ 8 files changed, 14 deletions(-)
 
+--- a/fs/proc/array.c
++++ b/fs/proc/array.c
+@@ -69,7 +69,6 @@
+ #include <linux/sched/cputime.h>
+ #include <linux/proc_fs.h>
+ #include <linux/ioport.h>
+-#include <linux/uaccess.h>
+ #include <linux/io.h>
+ #include <linux/mm.h>
+ #include <linux/hugetlb.h>
+--- a/fs/proc/inode.c
++++ b/fs/proc/inode.c
+@@ -26,8 +26,6 @@
+ #include <linux/mount.h>
+ #include <linux/bug.h>
+ 
+-#include <linux/uaccess.h>
+-
+ #include "internal.h"
+ 
+ static void proc_evict_inode(struct inode *inode)
+--- a/fs/proc/kmsg.c
++++ b/fs/proc/kmsg.c
+@@ -15,7 +15,6 @@
+ #include <linux/fs.h>
+ #include <linux/syslog.h>
+ 
+-#include <linux/uaccess.h>
+ #include <asm/io.h>
+ 
+ extern wait_queue_head_t log_wait;
+--- a/fs/proc/nommu.c
++++ b/fs/proc/nommu.c
+@@ -21,7 +21,6 @@
+ #include <linux/seq_file.h>
+ #include <linux/hugetlb.h>
+ #include <linux/vmalloc.h>
+-#include <linux/uaccess.h>
+ #include <asm/tlb.h>
+ #include <asm/div64.h>
+ #include "internal.h"
+--- a/fs/proc/proc_net.c
++++ b/fs/proc/proc_net.c
+@@ -8,9 +8,6 @@
+  *
+  *  proc net directory handling functions
+  */
+-
+-#include <linux/uaccess.h>
+-
+ #include <linux/errno.h>
+ #include <linux/time.h>
+ #include <linux/proc_fs.h>
+--- a/fs/proc/proc_tty.c
++++ b/fs/proc/proc_tty.c
+@@ -4,8 +4,6 @@
+  *
+  * Copyright 1997, Theodore Ts'o
+  */
+-
+-#include <linux/uaccess.h>
+ #include <linux/module.h>
+ #include <linux/init.h>
+ #include <linux/errno.h>
+--- a/fs/proc/root.c
++++ b/fs/proc/root.c
+@@ -6,9 +6,6 @@
+  *
+  *  proc root directory handling functions
+  */
+-
+-#include <linux/uaccess.h>
+-
+ #include <linux/errno.h>
+ #include <linux/time.h>
+ #include <linux/proc_fs.h>
+--- a/fs/proc/vmcore.c
++++ b/fs/proc/vmcore.c
+@@ -25,7 +25,6 @@
+ #include <linux/mutex.h>
+ #include <linux/vmalloc.h>
+ #include <linux/pagemap.h>
+-#include <linux/uaccess.h>
+ #include <linux/uio.h>
+ #include <linux/cc_platform.h>
+ #include <asm/io.h>
