@@ -2,268 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4575C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:31:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237465AbiFORaj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41112 "EHLO
+        id S1357642AbiFORbV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 13:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239638AbiFORa0 (ORCPT
+        with ESMTP id S1356209AbiFORa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:30:26 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5FED50E34
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:30:11 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id w21so12101146pfc.0
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:30:11 -0700 (PDT)
+        Wed, 15 Jun 2022 13:30:59 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D03517D8
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:30:41 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id y196so12050237pfb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:30:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6culLu8Dk3rzyJWu55f+Mr5Uwb5J3lBiEPJ8LAzaeEU=;
-        b=efkj7DkT5itHUuSWTimca6V8Dl8BYgPcpa2YZNDQrmu3cIf6RC9eQVwsvgiC5s/Cj+
-         Voz2aMekulQK0r89/sXT5fB8sfP+nMa4Kh56MgJ9o0kJTn9ch85lyVVTTDucSKFZ47pW
-         oN75nop1FrxRtYmRt7+0gL5ZqE3X1kSpab7rA=
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=B7cbRCNg26UF8ivWTlzn2A7fgILQXWbzOIRhYJWq/FA=;
+        b=supFxk6DUuphqiJojFl2H/H6UyNMffk7/gM9r72T4tQJooyDKuCJsbpMCf2eQPJBBi
+         v5iY9l6cmhbAPuVM00qdGipMMDv1s3kJKf8Eimwj4CYElenmWpCzyUupdZac+rPTy6u/
+         mXlk6dy2Kn/NVOvdBFZmLDhJW+Y6xnvsfExrXtX1qZIQQ5S6krDEMeKqGSW44w4YaIRS
+         U85ylBHqi5abPMOLD0rhNIfcm0vydLlag3hWi4t3oEFTgH4/eg8LhI5x5o/x7N4sADiy
+         jBE3Gyb7ZcWMvKebE6J2veK3U+hWIOXyyyz/gixScaVNvDi6oEhVKNknjc6biEJSDm2D
+         Qehw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6culLu8Dk3rzyJWu55f+Mr5Uwb5J3lBiEPJ8LAzaeEU=;
-        b=56sZdi4CredUa0OPlVdez1Bx6pNNaqFmqgTG9bivUkh1m5zuotfVC2Y2OhANMP7xQL
-         U/GqaDfZiSsQyvfPXuP74azxuWEFpmmU0vnfNVnVqFInmtzSeYrozeYGHYgeBO32XBZu
-         JWX+IN4QZTfcAdZKPN5MohawPgmR28X6UBEu8zV3CLD77Ne7mIXmKj3r1e4JckwFlTHv
-         GJ9RcO54+tGKjLQvyhXNAs/pFZVL2oX9+mcFAMG8pLW8DbYPSsx9U/XWLTRFX5Ma6j1n
-         gr6n7owYO6GEfVWaL9WbF3JzOHVmNjWC8eTlnEGLDUNAV/QXrVr74GFhmQ7cIMhEe+b5
-         ORUw==
-X-Gm-Message-State: AJIora/B0MjHtN1hUmXuE5czJzmOgHVBT5uKPPivzUAIXWpBe1atLn/X
-        fTu8Ds9XTVZC3ws+XgK0Ar+kLq7XS/ya9g==
-X-Google-Smtp-Source: AGRyM1uyYuXv/zNVaSknswcFjiqrPpyY+9txa301mMTCpJQJ2mWo3Mt58qohGEwgUKir1yneBQXd+w==
-X-Received: by 2002:a63:234f:0:b0:405:3981:be7 with SMTP id u15-20020a63234f000000b0040539810be7mr744099pgm.15.1655314210872;
-        Wed, 15 Jun 2022 10:30:10 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id d10-20020aa7814a000000b005103abd2fdbsm10147433pfn.206.2022.06.15.10.30.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 10:30:10 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
-        <nfraprado@collabora.com>, Andrzej Hajda <andrzej.hajda@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH v4 6/7] drm/bridge: anx7625: Register Type-C mode switches
-Date:   Wed, 15 Jun 2022 17:20:22 +0000
-Message-Id: <20220615172129.1314056-7-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220615172129.1314056-1-pmalani@chromium.org>
-References: <20220615172129.1314056-1-pmalani@chromium.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=B7cbRCNg26UF8ivWTlzn2A7fgILQXWbzOIRhYJWq/FA=;
+        b=SrtXPKvjRYy5S7WUVeuVE4+lKM2ZTLahCxpbY0JYW6e/T38FWGPU/g18y92VWj1/uD
+         jKtXuxLCD4EC7ZhYVPNqPd+zchB8dazsoJqTsQF27OiTneZ1Khpfosj1wVok6zDRtfl4
+         x+eHYvGeDPLZwI4CUV2hreDCROtlprFWw34d4AG8fzkmBVhp8/Wq8jOJ0FywQ3U8+lbB
+         6PcP0FSI6OiA4D0H0IcQG8TkiQ8YRd1v7wp5LpJHCox/KhY/QiheFU20YVOU8gdhbYYN
+         r60av/D6WaFkJVUY4eMealhO7g/WVTTmzP4JGPXk9B0sxiB3mp3MKxBoI08mvKZqmnAo
+         LxJw==
+X-Gm-Message-State: AJIora/yhJ1fagSN7qFvziqrR+7Fw0rcHq09AP5NQt5rVG/xj62erD7Y
+        R2/K69Koctokp1vwLokPGBkDcA==
+X-Google-Smtp-Source: AGRyM1vF1fpZCiYd10o5djR4cMTz3jxdy9U8gdmikmzDuQcqp0xKZtHSrVJLo09rh1zFFSO0GO4H/A==
+X-Received: by 2002:a63:3fcc:0:b0:408:c856:dd6d with SMTP id m195-20020a633fcc000000b00408c856dd6dmr770211pga.354.1655314241467;
+        Wed, 15 Jun 2022 10:30:41 -0700 (PDT)
+Received: from [172.22.33.138] ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id t8-20020a1709028c8800b001677d4a9665sm9501331plo.267.2022.06.15.10.30.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 10:30:41 -0700 (PDT)
+Message-ID: <cb89dd3d-18d8-38ef-bb0f-00b6688bd54e@linaro.org>
+Date:   Wed, 15 Jun 2022 10:30:39 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/3] dt-bindings: dsp: mediatek: Use meaningful names
+ for mbox
+Content-Language: en-US
+To:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        YC Hung <yc.hung@mediatek.com>,
+        Curtis Malainey <cujomalainey@chromium.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220609083101.24195-1-tinghan.shen@mediatek.com>
+ <20220609083101.24195-2-tinghan.shen@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220609083101.24195-2-tinghan.shen@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the DT node has "switches" available, register a Type-C mode-switch
-for each listed "switch". This allows the driver to receive state
-information about what operating mode a Type-C port and its connected
-peripherals are in, as well as status information (like VDOs) related to
-that state.
+On 09/06/2022 01:30, Tinghan Shen wrote:
+> Rename mbox according to action instead of 'mbox0' and 'mbox1'.
+> 
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> ---
+>  .../devicetree/bindings/dsp/mediatek,mt8195-dsp.yaml        | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/dsp/mediatek,mt8195-dsp.yaml b/Documentation/devicetree/bindings/dsp/mediatek,mt8195-dsp.yaml
+> index b7e68b0dfa13..6cedd6868cc5 100644
+> --- a/Documentation/devicetree/bindings/dsp/mediatek,mt8195-dsp.yaml
+> +++ b/Documentation/devicetree/bindings/dsp/mediatek,mt8195-dsp.yaml
+> @@ -55,8 +55,8 @@ properties:
+>  
+>    mbox-names:
+>      items:
+> -      - const: mbox0
+> -      - const: mbox1
+> +      - const: rep
+> +      - const: req
+>  
 
-The callback function is currently a stub, but subsequent patches will
-implement the required functionality.
+More common is rx/tx, which I proposed last time.
 
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
 
-Changes since v3:
-- No changes.
-
-Changes since v2:
-- Updated dev_info() to dev_warn() print, but added a check to ensure it
-  only triggers on non -ENODEV errors.
-- Made conflict resolutions resulting from changes introduced in
-  Patch v3 5/7 (add ret variable here instead of in Patch v3 5/7).
-- Added Reviewed-by and Tested-by tags.
-
-Changes since v1:
-- No changes.
-
- drivers/gpu/drm/bridge/analogix/anx7625.c | 82 +++++++++++++++++++++--
- drivers/gpu/drm/bridge/analogix/anx7625.h |  6 ++
- 2 files changed, 84 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index e3d4c2738b8c..bd21f159b973 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -15,6 +15,7 @@
- #include <linux/regulator/consumer.h>
- #include <linux/slab.h>
- #include <linux/types.h>
-+#include <linux/usb/typec_mux.h>
- #include <linux/workqueue.h>
- 
- #include <linux/of_gpio.h>
-@@ -2581,10 +2582,61 @@ static void anx7625_runtime_disable(void *data)
- 	pm_runtime_disable(data);
- }
- 
-+static int anx7625_typec_mux_set(struct typec_mux_dev *mux,
-+				 struct typec_mux_state *state)
-+{
-+	return 0;
-+}
-+
-+static int anx7625_register_mode_switch(struct device *dev, struct device_node *node,
-+					struct anx7625_data *ctx)
-+{
-+	struct anx7625_port_data *port_data;
-+	struct typec_mux_desc mux_desc = {};
-+	char name[32];
-+	u32 port_num;
-+	int ret;
-+
-+	ret = of_property_read_u32(node, "reg", &port_num);
-+	if (ret)
-+		return ret;
-+
-+	if (port_num >= ctx->num_typec_switches) {
-+		dev_err(dev, "Invalid port number specified: %d\n", port_num);
-+		return -EINVAL;
-+	}
-+
-+	port_data = &ctx->typec_ports[port_num];
-+	port_data->ctx = ctx;
-+	mux_desc.fwnode = &node->fwnode;
-+	mux_desc.drvdata = port_data;
-+	snprintf(name, sizeof(name), "%s-%u", node->name, port_num);
-+	mux_desc.name = name;
-+	mux_desc.set = anx7625_typec_mux_set;
-+
-+	port_data->typec_mux = typec_mux_register(dev, &mux_desc);
-+	if (IS_ERR(port_data->typec_mux)) {
-+		ret = PTR_ERR(port_data->typec_mux);
-+		dev_err(dev, "Mode switch register for port %d failed: %d", port_num, ret);
-+	}
-+
-+	return ret;
-+}
-+
-+static void anx7625_unregister_typec_switches(struct anx7625_data *ctx)
-+{
-+	int i;
-+
-+	for (i = 0; i < ctx->num_typec_switches; i++)
-+		typec_mux_unregister(ctx->typec_ports[i].typec_mux);
-+}
-+
- static int anx7625_register_typec_switches(struct device *device, struct anx7625_data *ctx)
- {
--	struct device_node *of = of_get_child_by_name(device->of_node, "switches");
-+	struct device_node *of, *sw;
-+	int ret = 0;
- 
-+	of = of_get_child_by_name(device->of_node, "switches");
- 	if (!of)
- 		return -ENODEV;
- 
-@@ -2592,7 +2644,27 @@ static int anx7625_register_typec_switches(struct device *device, struct anx7625
- 	if (ctx->num_typec_switches <= 0)
- 		return -ENODEV;
- 
--	return 0;
-+	ctx->typec_ports = devm_kzalloc(device,
-+					ctx->num_typec_switches * sizeof(struct anx7625_port_data),
-+					GFP_KERNEL);
-+	if (!ctx->typec_ports)
-+		return -ENOMEM;
-+
-+	/* Register switches for each connector. */
-+	for_each_available_child_of_node(of, sw) {
-+		if (!of_property_read_bool(sw, "mode-switch"))
-+			continue;
-+		ret = anx7625_register_mode_switch(device, sw, ctx);
-+		if (ret) {
-+			dev_err(device, "Failed to register mode switch: %d\n", ret);
-+			break;
-+		}
-+	}
-+
-+	if (ret)
-+		anx7625_unregister_typec_switches(ctx);
-+
-+	return ret;
- }
- 
- static int anx7625_i2c_probe(struct i2c_client *client,
-@@ -2701,8 +2773,8 @@ static int anx7625_i2c_probe(struct i2c_client *client,
- 		queue_work(platform->workqueue, &platform->work);
- 
- 	ret = anx7625_register_typec_switches(dev, platform);
--	if (ret)
--		dev_dbg(dev, "Didn't register Type C switches, err: %d\n", ret);
-+	if (ret && ret != -ENODEV)
-+		dev_warn(dev, "Didn't register Type C switches, err: %d\n", ret);
- 
- 	platform->bridge.funcs = &anx7625_bridge_funcs;
- 	platform->bridge.of_node = client->dev.of_node;
-@@ -2757,6 +2829,8 @@ static int anx7625_i2c_remove(struct i2c_client *client)
- 
- 	drm_bridge_remove(&platform->bridge);
- 
-+	anx7625_unregister_typec_switches(platform);
-+
- 	if (platform->pdata.intp_irq)
- 		destroy_workqueue(platform->workqueue);
- 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
-index d5cbca708842..76cfc64f7574 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.h
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
-@@ -443,6 +443,11 @@ struct anx7625_i2c_client {
- 	struct i2c_client *tcpc_client;
- };
- 
-+struct anx7625_port_data {
-+	struct typec_mux_dev *typec_mux;
-+	struct anx7625_data *ctx;
-+};
-+
- struct anx7625_data {
- 	struct anx7625_platform_data pdata;
- 	struct platform_device *audio_pdev;
-@@ -474,6 +479,7 @@ struct anx7625_data {
- 	struct mipi_dsi_device *dsi;
- 	struct drm_dp_aux aux;
- 	int num_typec_switches;
-+	struct anx7625_port_data *typec_ports;
- };
- 
- #endif  /* __ANX7625_H__ */
--- 
-2.36.1.476.g0c4daa206d-goog
-
+Best regards,
+Krzysztof
