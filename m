@@ -2,101 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36EC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:34:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A07B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:35:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352231AbiFONd6 (ORCPT
+        id S1352421AbiFONfo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41770 "EHLO
+        Wed, 15 Jun 2022 09:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351648AbiFONdu (ORCPT
+        with ESMTP id S234457AbiFONfk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:33:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61AD36326;
-        Wed, 15 Jun 2022 06:33:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44C0461A88;
-        Wed, 15 Jun 2022 13:33:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A97C5C3411C;
-        Wed, 15 Jun 2022 13:33:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655300028;
-        bh=GS3xnpuX97rLUj8LjHZuszylSXQMHB8JheJV7wdxaEA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=rsTfFz33tQEQiFCWsk+brsU8JETQeKOuqDYdhaqxsKFO5Z6TUOv7tKJTcqHPLck3l
-         SHQZj1cASBnSPeAc455Suy7V8dAafEvj9jC4P5vpgeRhfeRUCHGDUvjXmuamc78MbK
-         tuj2aQhArDpeH7lTVGj5CjaaffmfqxwXj/25Bb9yBq+zirO+rwkGJ9WGLlWylko7T2
-         EUtoF1nFceGrKxMW9wMjkQwm7si+P+xEuQn4+rkST0Atb50vlo4oXHhAhxgXOGKzqU
-         W7jDla0U9yTzmd1g/N5VkKEICs+KxWnYHnuYpmgAMqlrcCvgA9Gi2rrNG9iPCfQS1F
-         7gSLRWBOYBe5Q==
-Received: by mail-ua1-f45.google.com with SMTP id m10so4366191uao.11;
-        Wed, 15 Jun 2022 06:33:48 -0700 (PDT)
-X-Gm-Message-State: AJIora/lJvyVlw04hTl229w20iO5ZkW/scIp2kziuXDH+y9LjYkEXVpP
-        A0VvXnOtgRXUFt7Aq36ma4Ul5J8nRjim+F+IYA==
-X-Google-Smtp-Source: AGRyM1vl3rEMhCWrfabx4G8UW4agh58YWTqSIPnh7S7BgbjlFbw06IsA0c518VcVDpVFsYVBWjK1QQBn9lCsfe9pDjc=
-X-Received: by 2002:ab0:3407:0:b0:379:65f3:a39b with SMTP id
- z7-20020ab03407000000b0037965f3a39bmr4898428uap.63.1655300027658; Wed, 15 Jun
- 2022 06:33:47 -0700 (PDT)
+        Wed, 15 Jun 2022 09:35:40 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C50235DEC;
+        Wed, 15 Jun 2022 06:35:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=k/zQupm933CmyzuMuKQ5Pb2iFZ/vMndU5RNv3Bx/QGM=; b=NfisZ+MxgdT+zEE6yIaknzVni+
+        jt+9MUhobgv4PyvKmYyaTJxghnZ0x1NsR3giqBCBVoPrlrchsaNvcDHJk/sHrTIROPyCDT5AINmPv
+        33oq3m4K187tXCtZUIb3t7+Oby4Q3aOrVeb7eZRRByGjxJNsvUtsHcNSzcWW82l6P15mr6KElEPWS
+        bCJ+4z+OM4vkUGjjqPArkFAsk0TLdgKGraAmH152H7g0jFXZ1pSmHf2SgtFIdBu0B/FDyeDcklTD9
+        uruJBQdpPiybTdDyvZr5w0krSXXMVJBm21iJ+Yp92fZSXO9iUKq5RFUP/bEuU0ZtXxThyxN4CMu1k
+        OjJBMAxQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o1TBI-00EjsX-Bw; Wed, 15 Jun 2022 13:35:36 +0000
+Date:   Wed, 15 Jun 2022 06:35:36 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Chao Yu <chao@kernel.org>
+Cc:     jejb@linux.ibm.com, martin.petersen@oracle.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] scsi: support packing multi-segment in UNMAP command
+Message-ID: <YqngKHnfVIzq7Pgr@infradead.org>
+References: <20220615132846.2232920-1-chao@kernel.org>
 MIME-Version: 1.0
-References: <20220615071410.12499-1-piyush.mehta@xilinx.com>
-In-Reply-To: <20220615071410.12499-1-piyush.mehta@xilinx.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 15 Jun 2022 07:33:36 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+3oS=SB-TVH3JA7Jb8KDgQ8ek_KPJSQhL0mgiq4sjmyQ@mail.gmail.com>
-Message-ID: <CAL_Jsq+3oS=SB-TVH3JA7Jb8KDgQ8ek_KPJSQhL0mgiq4sjmyQ@mail.gmail.com>
-Subject: Re: [PATCH V4] dt-bindings: ata: ahci-ceva: convert to yaml
-To:     Piyush Mehta <piyush.mehta@xilinx.com>
-Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>, git <git@xilinx.com>,
-        Siva Durga Prasad Paladugu <sivadur@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615132846.2232920-1-chao@kernel.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 1:14 AM Piyush Mehta <piyush.mehta@xilinx.com> wrote:
->
-> Convert the ahci-ceva doc to yaml.
->
-> Signed-off-by: Piyush Mehta <piyush.mehta@xilinx.com>
-> ---
-> Changes for V2:
-> - Corrected the patch --prefix V3 to V2.
-> - Added Required properties.
->
-> Changes for V3:
-> - Skip patch --prefix [PATCH V3] as already sent.
->
-> Changes for V4:
-> - Addressed Rob review comments:-
->  - Update params description
->  - Removed description from common properties.
->  - Deleted deprecated property.
-> - Warning generated from: 'make dtbs_check'
->  - Thanks Rob: We are aware of these warnings,
->    but they are unrelated to this patch.
+On Wed, Jun 15, 2022 at 09:28:46PM +0800, Chao Yu wrote:
+> As SPEC describes that it can support unmapping one or more LBA range
 
-Huh? You are saying the dts files are wrong and should not have
-'iommus' or 'phy-names' properties? That doesn't seem likely for
-'iommus'. If the old binding was wrong, it is fine to add the
-properties in the conversion. Just note that in the commit message.
+s/SPEC/<insert SPC reference here>/
 
+>  {
+>  	struct scsi_device *sdp = cmd->device;
+>  	struct request *rq = scsi_cmd_to_rq(cmd);
+> +	struct bio *bio;
+>  	struct scsi_disk *sdkp = scsi_disk(rq->q->disk);
+> +	unsigned short segments = blk_rq_nr_discard_segments(rq);
+> +	unsigned int data_len = 8 + 16 * segments, i = 0;
+>  	char *buf;
 
-> ---
->  .../devicetree/bindings/ata/ahci-ceva.txt     |  63 ------
->  .../devicetree/bindings/ata/ahci-ceva.yaml    | 182 ++++++++++++++++++
->  2 files changed, 182 insertions(+), 63 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/ata/ahci-ceva.txt
->  create mode 100644 Documentation/devicetree/bindings/ata/ahci-ceva.yaml
+Nit: for readability I'd move the bio declaration just above the buf
+line.
 
-Also, rename to ceva,ahci-1v84.yaml for the filename.
+> +
+> +	__rq_for_each_bio(bio, rq) {
+> +		u64 lba = sectors_to_logical(sdp, bio->bi_iter.bi_sector);
+> +		u32 nr_blocks = sectors_to_logical(sdp, bio_sectors(bio));
+> +
+> +		put_unaligned_be64(lba, &buf[8 + 16 * i]);
+> +		put_unaligned_be32(nr_blocks, &buf[8 + 16 * i + 8]);
 
-Rob
+Can we have a local variable here?
+
+	unsigned int data_offset = 8;
+
+	....
+
+		put_unaligned_be64(lba, &buf[data_offset]);
+		put_unaligned_be64(lba, &buf[data_offset + 8]);
+		data_offset += 16;
+	}
+
