@@ -2,107 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E753FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:47:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0887C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243983AbiFOLr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 07:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46914 "EHLO
+        id S245226AbiFOLth (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 07:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237723AbiFOLru (ORCPT
+        with ESMTP id S237723AbiFOLtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 07:47:50 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9171E25EAE;
-        Wed, 15 Jun 2022 04:47:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655293668; x=1686829668;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=QbIkcyUw/L14+nIayRRYoRVuzlGbZsXJBtcZC1EJL9o=;
-  b=YHpKRDPJyQnqZEzFRFYRevwBwirC+xV1rwYc/00wzqiDanFyrfqTGsAt
-   jAH+vGLh9+k3GCaXCRiC7EC4i+Znw9ZliCeDoHR9SDF3F5jDhpm4TB3Zm
-   vWEvhwfo37rakcc3FSR6aUkzBQTrNBnVXsOGZYH9A2+fA9LEGT/g+EHr1
-   uJ162YbkdAcHdhZxZWcGcNzboxZMG7iCsGu5Juv0gJef6s7Jss0jv1omv
-   T+q/wFrJ/dFftRzQYI6Kx9zcUxzSxYSYNSvnPTCyiHgmhv2dlSsR1rIUB
-   10iPxytcw90NMfcw8hSve7jomOLKCa4x9G2zswbklWCbYu4VTIbyBfqmQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="267621696"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="267621696"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 04:47:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="618424942"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 15 Jun 2022 04:47:46 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3C8BA18F; Wed, 15 Jun 2022 14:47:50 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 1/2] iio: proximity: sx_common: Don't use IIO device for properties
-Date:   Wed, 15 Jun 2022 14:47:45 +0300
-Message-Id: <20220615114746.2767-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 15 Jun 2022 07:49:36 -0400
+Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C10D948331
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 04:49:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ugEks
+        OHdiqvTpGzXbyzi14a59i2iFby4bXf0fShIeO4=; b=YXELok+h712YtIVfbzt2k
+        FULzizJuNaCE7rrbV/kz+tdoMqz0YJL5h+F8YEJ8lrzIqBcmXaZGkPLgIQA6jwe9
+        cG+vc5cHyy+rRWEfXtUxM27+7ZRwIjHr2Yk9XGVLZWQQcbR+eeYM3svZDfYn4cFs
+        tT4i4eI/JPm4YOAvxHjlK4=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp8 (Coremail) with SMTP id NORpCgCHU0gdx6liftSeFg--.49947S2;
+        Wed, 15 Jun 2022 19:48:45 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     daniel@zonque.org, haojian.zhuang@gmail.com,
+        robert.jarzmik@free.fr, linux@armlinux.org.uk
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        windhl@126.com
+Subject: [PATCH v3] arch: arm: mach-pxa: Add missing of_node_put in irq.c
+Date:   Wed, 15 Jun 2022 19:48:44 +0800
+Message-Id: <20220615114844.3964639-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NORpCgCHU0gdx6liftSeFg--.49947S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7CF45XFW5WFWDuF18trWkWFg_yoW8Xrykpr
+        Wj934Yyr18JF109ayqyay8Z390yFs7XF4jkFW0k3W7Jw4rA3yjya18K34fZ3W5GFW8Aa95
+        AF1Fya48uayDAaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zR3Ef7UUUUU=
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizh0hF18RPTDM4wAAsJ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's not correct to use artificial device created by IIO core to
-retrieve device properties. Even ->get_default_reg() callback
-takes a simple struct device pointer which suggests it wants to
-operate on the real device.
+In pxa_dt_irq_init(), of_find_matching_node() will return a node
+pointer with refcount incremented. We should use of_node_put in
+fail path or when it is not used anymore. This goto-label patch
+style is advised by Daniel.
 
-Correct this by replacing pointer to IIO device by a real device
-pointer in the caller of ->get_default_reg().
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Liang He <windhl@126.com>
 ---
-v2: new patch (necessary prerequisite for the following change)
- drivers/iio/proximity/sx_common.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+  changelog:
+    v3: (1) use formal name (2) use -v N for format-patch (3) add
+this changelog
+    v2: use goto-label patch style advised by Daniel
+    v1: add of_node_put in each fail path
 
-diff --git a/drivers/iio/proximity/sx_common.c b/drivers/iio/proximity/sx_common.c
-index 8ad814d96b7e..9f2e47385198 100644
---- a/drivers/iio/proximity/sx_common.c
-+++ b/drivers/iio/proximity/sx_common.c
-@@ -434,7 +434,7 @@ static void sx_common_regulator_disable(void *_data)
+ arch/arm/mach-pxa/irq.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/mach-pxa/irq.c b/arch/arm/mach-pxa/irq.c
+index 96f33ef1d9ea..5d7dd307013e 100644
+--- a/arch/arm/mach-pxa/irq.c
++++ b/arch/arm/mach-pxa/irq.c
+@@ -247,13 +247,13 @@ void __init pxa_dt_irq_init(int (*fn)(struct irq_data *, unsigned int))
+ 				   &pxa_internal_irq_nr);
+ 	if (ret) {
+ 		pr_err("Not found marvell,intc-nr-irqs property\n");
+-		return;
++		goto out_put;
+ 	}
  
- #define SX_COMMON_SOFT_RESET				0xde
+ 	ret = of_address_to_resource(node, 0, &res);
+ 	if (ret < 0) {
+ 		pr_err("No registers defined for node\n");
+-		return;
++		goto out_put;
+ 	}
+ 	pxa_irq_base = io_p2v(res.start);
  
--static int sx_common_init_device(struct iio_dev *indio_dev)
-+static int sx_common_init_device(struct device *dev, struct iio_dev *indio_dev)
- {
- 	struct sx_common_data *data = iio_priv(indio_dev);
- 	struct sx_common_reg_default tmp;
-@@ -456,8 +456,7 @@ static int sx_common_init_device(struct iio_dev *indio_dev)
+@@ -263,9 +263,12 @@ void __init pxa_dt_irq_init(int (*fn)(struct irq_data *, unsigned int))
+ 	ret = irq_alloc_descs(-1, 0, pxa_internal_irq_nr, 0);
+ 	if (ret < 0) {
+ 		pr_err("Failed to allocate IRQ numbers\n");
+-		return;
++		goto out_put;
+ 	}
  
- 	/* Program defaults from constant or BIOS. */
- 	for (i = 0; i < data->chip_info->num_default_regs; i++) {
--		initval = data->chip_info->ops.get_default_reg(&indio_dev->dev,
--							       i, &tmp);
-+		initval = data->chip_info->ops.get_default_reg(dev, i, &tmp);
- 		ret = regmap_write(data->regmap, initval->reg, initval->def);
- 		if (ret)
- 			return ret;
-@@ -530,7 +529,7 @@ int sx_common_probe(struct i2c_client *client,
- 
- 	i2c_set_clientdata(client, indio_dev);
- 
--	ret = sx_common_init_device(indio_dev);
-+	ret = sx_common_init_device(dev, indio_dev);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Unable to initialize sensor\n");
- 
+ 	pxa_init_irq_common(node, pxa_internal_irq_nr, fn);
++	
++out_put:
++	of_node_put(node);
+ }
+ #endif /* CONFIG_OF */
 -- 
-2.35.1
+2.25.1
 
