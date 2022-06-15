@@ -2,168 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7551CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD19EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345876AbiFOPFa (ORCPT
+        id S1344788AbiFOPGZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:05:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54516 "EHLO
+        Wed, 15 Jun 2022 11:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243887AbiFOPF2 (ORCPT
+        with ESMTP id S1345955AbiFOPGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:05:28 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95183A18C
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:05:25 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id q1-20020a056830018100b0060c2bfb668eso9023990ota.8
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:05:25 -0700 (PDT)
+        Wed, 15 Jun 2022 11:06:20 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226CD3B016
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:06:18 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id p1so8948422ilj.9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:06:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XrsUat+o9/LJuOTX2aEo1c6UCKiQykIvhRb0gI34RDo=;
-        b=lq//UHgItHTiby3bJtgdK8d+4WxPCraeTpovO73wwG18S0SWKqgaf5as3Z40hgAc7p
-         OfJvf1rf++IpjBKJ6CSBDk0x++Wp++fwX/WgMrQL3mfxGxiEArH1po8nbf68T+n3kkDg
-         g8uM7EvtiK/Pho/NXMNUHkp5cH8noXrsDaRaefhYoTXKEj0EbGCOqJXveNjIKEcnY5vt
-         QECeu52Mjnia3clU+aBgrWbyXI3jFZZOnFdUp8si3aeFMos98OMEHPojeV1jdSNZjmhT
-         eHcrMdC0fCGrT+1BM7uU1hJk/pPpmye9PTHCrJShXEsYiD2XnqJDmsYmZhh0rePZp+AQ
-         0jcA==
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=j6yW8cSNxyHcKGLBH/RzzZpKDGH+HEQvUp5OHLJ1vSg=;
+        b=nHFIWSpabtnN+Um1pljyrhwwDAfJjxUkuJ6rvWuwYZgQx3aHiUVOzZBoQ315+IY0IK
+         y9sYTVz0n6GHUXTI1hng+qIVv9i00u8NOVnfVbThgFFOBxMJPVRnOoLGZMJaolcOFg0W
+         l4S0cC3C+ob82bPzHmurYZcuzY3FwqJYYvn3E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XrsUat+o9/LJuOTX2aEo1c6UCKiQykIvhRb0gI34RDo=;
-        b=P4LzYy4ag2WP8iyJzzUb9YFb0SRym6W249V6gPd/XvFNjCMkblkEZYciEDMg3O2Frq
-         PlleVuasQ/uROAZUmL6Fruo1X0euQ+5te0SMdjs5tbhOOSim7Jhc+1MCjp+gRsR3GDkm
-         jZcszMysrJLhpl5fsXo+dUfAIrRjp/CFyV9EJgARZntjAmxBUWlWkuSlgH8HJ5QmQatF
-         Giuzi+EAj82Rrpm7kxvOXPqFy955aZV0Xyh9/0NOTh5+YMRka4l/ahIzOIo0UzwlIU6U
-         fcncfP/dkZE4d5d9M6b12VRU9JNliUHQ6BYK0SB8YB9Jw7Bng8c8JiPW5uz6lS7LFkoY
-         6eUw==
-X-Gm-Message-State: AJIora/+wLKGqp9ULvFfViDH4qDbj5KmCyt5eO32GugEr5MT6ffyTkNW
-        XkvowqW2GzqEgTRlCL+CBwjovA==
-X-Google-Smtp-Source: AGRyM1sKk0ZQraqiQaBpBMqcrxQIwxmHAc5xtgCpvjOe9O5wXFYZY7caP6JDQm51urqSb6qWA+JhJw==
-X-Received: by 2002:a05:6830:2647:b0:60c:6678:d7cc with SMTP id f7-20020a056830264700b0060c6678d7ccmr109130otu.237.1655305524933;
-        Wed, 15 Jun 2022 08:05:24 -0700 (PDT)
-Received: from ?IPV6:2804:14d:8084:84c6:fe26:c42d:aab9:fa8a? ([2804:14d:8084:84c6:fe26:c42d:aab9:fa8a])
-        by smtp.gmail.com with ESMTPSA id a18-20020a544e12000000b0032f51af1999sm3447022oiy.42.2022.06.15.08.05.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 08:05:24 -0700 (PDT)
-Message-ID: <4296546a-67db-0e54-c75c-cc2b5b203197@usp.br>
-Date:   Wed, 15 Jun 2022 12:05:17 -0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=j6yW8cSNxyHcKGLBH/RzzZpKDGH+HEQvUp5OHLJ1vSg=;
+        b=JSoVwsQ3laiKLcA5M/xgR2kPftLFZGoNurPuSP17bvOqUL8RC/3TTXQOsv5AQ3jkD+
+         ARqkMloipCQaPE4fI4xY2PzAh3MG9W91wyk+NBuK39WMovpq3j6WPD1J46+m3GXHnNBc
+         BwuV1Nuw0Pete0YXc74hr27sl03kpYt1g7qVzSC/NngjizjDGjaji4QCpZrP5ufSGY12
+         0U3jEvfmDlHeonfMCT2Jc8A0O7PPAxrXIjFyZB+8+NCPh6Bn3Q9zteiRpXlXZc3gp48L
+         WxjGL9vbISSv0G1FsJCTm0Yc3GTKNXiwbmhvXgIXyw4+3nT0CzD1dcW8hQ7TnRXqtRHL
+         S8iw==
+X-Gm-Message-State: AJIora/G42aY9jV2AtDvcosIpmeCWNQN8QGdVc+/pnWUMklKVlDO7cFX
+        iw+T7wL61iSAqk9l4nKMbXpfkVtIwjPultrXUCI2Ag==
+X-Google-Smtp-Source: AGRyM1vl6hb3B14OhbZ5pyrW5E0uvZJEWyTkyieVnvYbDV9l4KSiSfWp3W3NzE6bbMlKOpxyW1c3ccvo1VZk+jYZkps=
+X-Received: by 2002:a05:6e02:1747:b0:2d3:e571:5058 with SMTP id
+ y7-20020a056e02174700b002d3e5715058mr142461ill.309.1655305577283; Wed, 15 Jun
+ 2022 08:06:17 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [RFC 1/3] drm/amd/display: Introduce KUnit to DML
-Content-Language: en-US
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        christian.koenig@amd.com,
-        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
-        Jun Lei <jun.lei@amd.com>,
-        Nicholas Choi <Nicholas.Choi@amd.com>,
-        Harrison Chiu <harrison.chiu@amd.com>,
-        Mark Yacoub <markyacoub@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
-        David Gow <davidgow@google.com>, brendanhiggins@google.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com
-References: <20220608010709.272962-1-maira.canal@usp.br>
- <20220608010709.272962-2-maira.canal@usp.br>
- <CAGS_qxpiBOJ5OnQREo33LCtgROSuvTNWgwgkKN4P7TF1+4kcSQ@mail.gmail.com>
-From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <maira.canal@usp.br>
-In-Reply-To: <CAGS_qxpiBOJ5OnQREo33LCtgROSuvTNWgwgkKN4P7TF1+4kcSQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220608150942.776446-1-fred@cloudflare.com> <87tu8oze94.fsf@email.froward.int.ebiederm.org>
+ <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com> <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
+ <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com> <87o7yvxl4x.fsf@email.froward.int.ebiederm.org>
+ <9ed91f15-420c-3db6-8b3b-85438b02bf97@cloudflare.com> <20220615103031.qkzae4xr34wysj4b@wittgenstein>
+ <CAHC9VhR8yPHZb2sCu4JGgXOSs7rudm=9opB+-LsG6_Lta9466A@mail.gmail.com>
+In-Reply-To: <CAHC9VhR8yPHZb2sCu4JGgXOSs7rudm=9opB+-LsG6_Lta9466A@mail.gmail.com>
+From:   Ignat Korchagin <ignat@cloudflare.com>
+Date:   Wed, 15 Jun 2022 16:06:06 +0100
+Message-ID: <CALrw=nGZtrNYn+CV+Q_w-2=Va_9m3C8PDvvPtd01d0tS=2NMWQ@mail.gmail.com>
+Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
+To:     Paul Moore <paul@paul-moore.com>,
+        Christian Brauner <brauner@kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Frederick Lawler <fred@cloudflare.com>, linux-doc@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-cachefs@redhat.com,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
+        linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
+        selinux@vger.kernel.org, serge@hallyn.com, amir73il@gmail.com,
+        kernel-team <kernel-team@cloudflare.com>,
+        Jeff Moyer <jmoyer@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel
+On Wed, Jun 15, 2022 at 3:14 PM Paul Moore <paul@paul-moore.com> wrote:
+>
+> On Wed, Jun 15, 2022 at 6:30 AM Christian Brauner <brauner@kernel.org> wrote:
+> >
+> > On Tue, Jun 14, 2022 at 01:59:08PM -0500, Frederick Lawler wrote:
+> > > On 6/14/22 11:30 AM, Eric W. Biederman wrote:
+> > > > Frederick Lawler <fred@cloudflare.com> writes:
+> > > >
+> > > > > On 6/13/22 11:44 PM, Eric W. Biederman wrote:
+> > > > > > Frederick Lawler <fred@cloudflare.com> writes:
+> > > > > >
+> > > > > > > Hi Eric,
+> > > > > > >
+> > > > > > > On 6/13/22 12:04 PM, Eric W. Biederman wrote:
+> > > > > > > > Frederick Lawler <fred@cloudflare.com> writes:
+> > > > > > > >
+> > > > > > > > > While experimenting with the security_prepare_creds() LSM hook, we
+> > > > > > > > > noticed that our EPERM error code was not propagated up the callstack.
+> > > > > > > > > Instead ENOMEM is always returned.  As a result, some tools may send a
+> > > > > > > > > confusing error message to the user:
+> > > > > > > > >
+> > > > > > > > > $ unshare -rU
+> > > > > > > > > unshare: unshare failed: Cannot allocate memory
+> > > > > > > > >
+> > > > > > > > > A user would think that the system didn't have enough memory, when
+> > > > > > > > > instead the action was denied.
+> > > > > > > > >
+> > > > > > > > > This problem occurs because prepare_creds() and prepare_kernel_cred()
+> > > > > > > > > return NULL when security_prepare_creds() returns an error code. Later,
+> > > > > > > > > functions calling prepare_creds() and prepare_kernel_cred() return
+> > > > > > > > > ENOMEM because they assume that a NULL meant there was no memory
+> > > > > > > > > allocated.
+> > > > > > > > >
+> > > > > > > > > Fix this by propagating an error code from security_prepare_creds() up
+> > > > > > > > > the callstack.
+> > > > > > > > Why would it make sense for security_prepare_creds to return an error
+> > > > > > > > code other than ENOMEM?
+> > > > > > > >    > That seems a bit of a violation of what that function is supposed to do
+> > > > > > > >
+> > > > > > >
+> > > > > > > The API allows LSM authors to decide what error code is returned from the
+> > > > > > > cred_prepare hook. security_task_alloc() is a similar hook, and has its return
+> > > > > > > code propagated.
+> > > > > > It is not an api.  It is an implementation detail of the linux kernel.
+> > > > > > It is a set of convenient functions that do a job.
+> > > > > > The general rule is we don't support cases without an in-tree user.  I
+> > > > > > don't see an in-tree user.
+> > > > > >
+> > > > > > > I'm proposing we follow security_task_allocs() pattern, and add visibility for
+> > > > > > > failure cases in prepare_creds().
+> > > > > > I am asking why we would want to.  Especially as it is not an API, and I
+> > > > > > don't see any good reason for anything but an -ENOMEM failure to be
+> > > > > > supported.
+> > > > > >
+> > > > > We're writing a LSM BPF policy, and not a new LSM. Our policy aims to solve
+> > > > > unprivileged unshare, similar to Debian's patch [1]. We're in a position such
+> > > > > that we can't use that patch because we can't block _all_ of our applications
+> > > > > from performing an unshare. We prefer a granular approach. LSM BPF seems like a
+> > > > > good choice.
+> > > >
+> > > > I am quite puzzled why doesn't /proc/sys/user/max_user_namespaces work
+> > > > for you?
+> > > >
+> > >
+> > > We have the following requirements:
+> > >
+> > > 1. Allow list criteria
+> > > 2. root user must be able to create namespaces whenever
+> > > 3. Everything else not in 1 & 2 must be denied
+> > >
+> > > We use per task attributes to determine whether or not we allow/deny the
+> > > current call to unshare().
+> > >
+> > > /proc/sys/user/max_user_namespaces limits are a bit broad for this level of
+> > > detail.
+> > >
+> > > > > Because LSM BPF exposes these hooks, we should probably treat them as an
+> > > > > API. From that perspective, userspace expects unshare to return a EPERM
+> > > > > when the call is denied permissions.
+> > > >
+> > > > The BPF code gets to be treated as a out of tree kernel module.
+> > > >
+> > > > > > Without an in-tree user that cares it is probably better to go the
+> > > > > > opposite direction and remove the possibility of return anything but
+> > > > > > memory allocation failure.  That will make it clearer to implementors
+> > > > > > that a general error code is not supported and this is not a location
+> > > > > > to implement policy, this is only a hook to allocate state for the LSM.
+> > > > > >
+> > > > >
+> > > > > That's a good point, and it's possible we're using the wrong hook for the
+> > > > > policy. Do you know of other hooks we can look into?
+> >
+> > Fwiw, from this commit it wasn't very clear what you wanted to achieve
+> > with this. It might be worth considering adding a new security hook for
+> > this. Within msft it recently came up SELinux might have an interest in
+> > something like this as well.
+>
+> Just to clarify things a bit, I believe SELinux would have an interest
+> in a LSM hook capable of implementing an access control point for user
+> namespaces regardless of Microsoft's current needs.  I suspect due to
+> the security relevant nature of user namespaces most other LSMs would
+> be interested as well; it seems like a well crafted hook would be
+> welcome by most folks I think.
+>
+> --
+> paul-moore.com
 
-Thank you for your feedback! We are working on the comments you pointed out.
+Just to get the full picture: is there actually a good reason not to
+make this hook support this scenario? I understand it was not
+originally intended for this, but it is well positioned in the code,
+covers multiple subsystems (not only user namespaces), doesn't require
+changing the LSM interface and it already does the job - just the
+kernel internals need to respect the error code better. What bad
+things can happen if we extend its use case to not only allocate
+resources in LSMs?
 
-On 6/7/22 23:36, Daniel Latypov wrote:
-> On Tue, Jun 7, 2022 at 6:09 PM Maíra Canal <maira.canal@usp.br> wrote:
->> diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/tests/display_mode_lib_test.c b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/display_mode_lib_test.c
->> new file mode 100644
->> index 000000000000..3ea0e7fb13e3
->> --- /dev/null
->> +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/tests/display_mode_lib_test.c
->> @@ -0,0 +1,83 @@
->> +// SPDX-License-Identifier: MIT
->> +/*
->> + * KUnit tests for dml/display_mode_lib.h
->> + *
->> + * Copyright (C) 2022, Maíra Canal <mairacanal@riseup.net>
->> + */
->> +
->> +#include <kunit/test.h>
->> +#include "../../dc/dml/display_mode_lib.h"
->> +#include "../../dc/dml/display_mode_enums.h"
->> +#include "dml_test.h"
->> +
->> +/**
->> + * DOC: Unit tests for AMDGPU DML display_mode_lib.h
->> + *
->> + * The display_mode_lib.h holds the functions responsible for the instantiation
->> + * and logging of the Display Mode Library (DML).
->> + *
->> + * These KUnit tests were implemented with the intention of assuring the proper
->> + * logging of the DML.
->> + *
->> + */
->> +
->> +static void dml_get_status_message_test(struct kunit *test)
->> +{
-> 
-> I think this is a case where an exhaustive test might not be warranted.
-> The function under test is entirely just a switch statement with
-> return statements, so the chances of things going wrong is minimal.
-> But that's just my personal preference.
+After all, the original Linus email introducing Linux stated that
+Linux was not intended to be a great OS, but here we are :)
 
-Maybe we left out some explanation on this unit test. This RFC was more of an introduction to our project. We wanted to show you the test structure we plan to develop the unit tests during this summer. Initially, we were thinking of using the typical kunit_test_suites structure, but we end up checking out that it wasn't possible, due to the need to insert the tests inside the AMDGPU stack.
-
-We also agree with you that this test is trivial and it will probably be removed from the final version. We plan to have more functional tests that explore the inner workings of the DML and especially the corner cases as you said.
-
-We apologize if we didn't make it clear in the Cover Letter that this RFC is more of an introduction to the project we pretend to develop in the summer.
-
-If you have suggestions on how we can improve the use of KUnit, it is welcome.
-
->>
->> +int display_mode_lib_test_init(void)
->> +{
->> +       pr_info("===> Running display_mode_lib KUnit Tests");
->> +       pr_info("**********************************************************");
->> +       pr_info("**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **");
->> +       pr_info("**                                                      **");
->> +       pr_info("** display_mode_lib KUnit Tests are being run. This     **");
->> +       pr_info("** means that this is a TEST kernel and should not be   **");
->> +       pr_info("** used for production.                                 **");
->> +       pr_info("**                                                      **");
->> +       pr_info("** If you see this message and you are not debugging    **");
->> +       pr_info("** the kernel, report this immediately to your vendor!  **");
->> +       pr_info("**                                                      **");
->> +       pr_info("**********************************************************");
-> 
-> David Gow proposed tainting the kernel if we ever try to run a KUnit
-> test suite here:
-> https://lore.kernel.org/linux-kselftest/20220513083212.3537869-2-davidgow@google.com/
-> 
-> If that goes in, then this logging might not be as necessary.
-> I'm not sure what the status of that change is, but we're at least
-> waiting on a v4, I think.
-
-This is going to be great! We will keep an eye on this proposal.
-
-- Maíra Canal
-
-
+Ignat
