@@ -2,115 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71423C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE723CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349949AbiFOVRt (ORCPT
+        id S1348750AbiFOVWS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 17:17:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43190 "EHLO
+        Wed, 15 Jun 2022 17:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349938AbiFOVRr (ORCPT
+        with ESMTP id S237525AbiFOVWR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 17:17:47 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10743193D
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 14:17:45 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id m20so25615137ejj.10
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 14:17:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=onSkWvejAT9Ncx0zMHpsFmQrSb1YaP70TEFWtoKzsRU=;
-        b=jwSQCLch9+e9jFkZSvrwVY6Tamk5VhPqTaqby4t4uzm+gChifoKKoKF0eMu3A3W88M
-         tEmh0RCKWGUF9ntIGTDq+fG9ZubzF0RmXm3ExZc3coGAeAukuOmVe/tkxdji5VlTkTfD
-         Fmpdz632wGxbT7Ma6+Z3XQw/8h25phlffHbRk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=onSkWvejAT9Ncx0zMHpsFmQrSb1YaP70TEFWtoKzsRU=;
-        b=rvUIG+NaNQNcXnKDXgIxVriNgwzJrsgGa2DXS6gx+bd/K0eZ5n3gLexAvH6/rdv4oK
-         W4DJBLESwbdZ8DksDTnxuj6PfXNGXEkj7NIre7aj56qili9VFybN0zlDDZ0ovuYiH0+I
-         66z7TSD4b1Xy66G838PAcy+xPwmuUbAHkHCLtIeOzTwRslmoD0RpIO1j+DEl1G5cxyuT
-         9MQ/ZCJwNhHLkO77qgL97K3DBrojYCzAC28Fk+4Uf8q6Slyo+TjPYhBWHIn5no5hssR5
-         T8g/EvVSlilkbmq5JEJEgRJape3iMWbpU6vusLInw9tHnhu51JC4JA6FwZlBfLU0gRsW
-         Yo7A==
-X-Gm-Message-State: AJIora9akriRz7+9W+H1iZ/nN3Pd2g8TwO1j0TDd5wn243ibItVftvOy
-        6jJUegvEbRLmOImbfyvjriqoTCbTiNOv+EhquSM=
-X-Google-Smtp-Source: AGRyM1sxfqRuZc5q6aURA/W/4jV/oV3TaVkdwfni70WFd3aYKz+p8AqC5gLC1xrm8ws+xA5SCzZWBQ==
-X-Received: by 2002:a17:907:7f06:b0:6fe:b81f:f885 with SMTP id qf6-20020a1709077f0600b006feb81ff885mr1596890ejc.621.1655327863779;
-        Wed, 15 Jun 2022 14:17:43 -0700 (PDT)
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com. [209.85.128.49])
-        by smtp.gmail.com with ESMTPSA id ce5-20020a170906b24500b006fee98045cdsm6825934ejb.10.2022.06.15.14.17.43
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 14:17:43 -0700 (PDT)
-Received: by mail-wm1-f49.google.com with SMTP id z9so6952271wmf.3
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 14:17:43 -0700 (PDT)
-X-Received: by 2002:a05:600c:2054:b0:39c:3f73:3552 with SMTP id
- p20-20020a05600c205400b0039c3f733552mr1430873wmg.15.1655327439836; Wed, 15
- Jun 2022 14:10:39 -0700 (PDT)
+        Wed, 15 Jun 2022 17:22:17 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA22554AD;
+        Wed, 15 Jun 2022 14:22:16 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 8F44F21C6E;
+        Wed, 15 Jun 2022 21:22:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655328134; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ju/eMyqeUm0258jtPSiVQvMQ8S4DYh43JQypxX85LS0=;
+        b=tvVjQT8j7Nmk1o3lDboMNvBg/d58f0nHcA05n6KlqtgBjXBOcsJG00KwcFTTsR7kIDmG5p
+        A1qF9bTlDtwhVxNCBhDObW322UmFGab0DmUbcgys7P4Via4ueoW9d86kJy4tl93aC7hIqB
+        9JhNYUchoKWpTU3j6aWkKYqyK5MvsAI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655328134;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ju/eMyqeUm0258jtPSiVQvMQ8S4DYh43JQypxX85LS0=;
+        b=rCczZZYy/8WlrQcEdPQqcld6RCBVFh79F6WeQJj7Qw8LSKrchYNFdkTaWHZm7CHQm5uJR4
+        MDy+K223NdiyghCg==
+Received: from quack3.suse.cz (unknown [10.163.28.18])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 77AF82C141;
+        Wed, 15 Jun 2022 21:22:12 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 9E410A062E; Wed, 15 Jun 2022 23:22:06 +0200 (CEST)
+Date:   Wed, 15 Jun 2022 23:22:06 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Alexandru Elisei <alexandru.elisei@arm.com>
+Cc:     Jan Kara <jack@suse.cz>, Petr Mladek <pmladek@suse.com>,
+        sunjunchao2870@gmail.com, viro@zeniv.linux.org.uk,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        senozhatsky@chromium.org, rostedt@goodmis.org,
+        john.ogness@linutronix.de, keescook@chromium.org, anton@enomsg.org,
+        ccross@android.com, tony.luck@intel.com, heiko@sntech.de,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, maco@android.com, hch@lst.de,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Subject: Re: [BUG] rockpro64 board hangs in console_init() after commit
+ 10e14073107d
+Message-ID: <20220615212206.ykqvui4tthpfme2u@quack3.lan>
+References: <Yqdry+IghSWnJ6pe@monolith.localdoman>
+ <Yqh9xIwBVcabpSLe@alley>
+ <YqiJH1phG/LWu9bs@monolith.localdoman>
+ <YqiidNPMUZQPRIvy@alley>
+ <YqnVWCYx0L2RlckB@monolith.localdoman>
+ <20220615163949.z22puioui322ktla@quack3.lan>
+ <YqoNtvyZA2s4cSgW@monolith.localdoman>
 MIME-Version: 1.0
-References: <20220609192000.990763-1-mka@chromium.org> <20220609121838.v22.3.Ic9dd36078f9d803de82ca01a6700c58b8e4de27e@changeid>
-In-Reply-To: <20220609121838.v22.3.Ic9dd36078f9d803de82ca01a6700c58b8e4de27e@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 15 Jun 2022 14:10:27 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VF8u=7f7ak5vmvFCSGtjQ3A7V52MfAu+qMsbGrFYz_LA@mail.gmail.com>
-Message-ID: <CAD=FV=VF8u=7f7ak5vmvFCSGtjQ3A7V52MfAu+qMsbGrFYz_LA@mail.gmail.com>
-Subject: Re: [PATCH v22 3/3] usb: core: hub: Create platform devices for
- onboard hubs in hub_probe()
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Bastien Nocera <hadess@hadess.net>,
-        Peter Chen <peter.chen@kernel.org>,
-        Ravi Chandra Sadineni <ravisadineni@chromium.org>,
-        Roger Quadros <rogerq@kernel.org>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Bhuvanesh Surachari <Bhuvanesh_Surachari@mentor.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqoNtvyZA2s4cSgW@monolith.localdoman>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed 15-06-22 17:49:58, Alexandru Elisei wrote:
+> Hi,
+> 
+> On Wed, Jun 15, 2022 at 06:39:49PM +0200, Jan Kara wrote:
+> > Hi Alexandru!
+> > 
+> > On Wed 15-06-22 13:50:24, Alexandru Elisei wrote:
+> > > On Tue, Jun 14, 2022 at 05:00:04PM +0200, Petr Mladek wrote:
+> > > > > > > I've booted a kernel compiled with CONFIG_PROVE_LOCKING=y, as the offending
+> > > > > > > commit fiddles with locks, but no splat was produced that would explain the
+> > > > > > > hang. I've also tried to boot a v5,19-rc2 kernel on my odroid-c4, the board
+> > > > > > > is booting just fine, so I'm guessing it only affects of subset of arm64
+> > > > > > > boards.
+> > > > > > 
+> > > > > > You might try to switch the order of console_init() and lockdep_init()
+> > > > > > in start_kernel() in init/main.c
+> > > > > 
+> > > > > Did so above.
+> > > > 
+> > > > Unfortunately, it did not print anything :-(
+> > > 
+> > > With this patch [1] I was able to succefully boot the board. So I guess
+> > > problem should be fixed.
+> > > 
+> > > [1] https://lore.kernel.org/all/20220614124618.2830569-1-suzuki.poulose@arm.com/
+> > 
+> > Can you please try booting with the patch I've posted at [2]? After some
+> > discussion with Linus that would be a preferable fix... Thanks!
+> > 
+> > [2] https://lore.kernel.org/all/20220615133845.o2lzfe5s4dzdfvtg@quack3.lan
+> 
+> The patch works for me, thank you!
 
-On Thu, Jun 9, 2022 at 12:20 PM Matthias Kaehlcke <mka@chromium.org> wrote:
->
-> Call onboard_hub_create/destroy_pdevs() from hub_probe/disconnect()
-> to create/destroy platform devices for onboard USB hubs that may be
-> connected to the hub. The onboard hubs must have nodes in the
-> device tree.
->
-> onboard_hub_create/destroy_pdevs() are NOPs unless
-> CONFIG_USB_ONBOARD_HUB=y/m.
->
-> Also add a field to struct usb_hub to keep track of the onboard hub
-> platform devices that are owned by the hub.
->
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> ---
->
-> Changes in v22:
-> - patch added to the series (moved creation/deletion from HCD)
->
->  drivers/usb/core/hub.c | 9 ++++++++-
->  drivers/usb/core/hub.h | 1 +
->  2 files changed, 9 insertions(+), 1 deletion(-)
+Thanks for testing!
+ 
+> Do you also need me to reply to the discussion?
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+No, I don't need that.
+
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
