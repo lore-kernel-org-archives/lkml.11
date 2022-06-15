@@ -2,84 +2,335 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C163C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 899BAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349887AbiFORLV (ORCPT
+        id S1351013AbiFORLj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:11:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
+        Wed, 15 Jun 2022 13:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349893AbiFORLP (ORCPT
+        with ESMTP id S1356695AbiFORLf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:11:15 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865ED37030;
-        Wed, 15 Jun 2022 10:11:13 -0700 (PDT)
-Received: from mail-yw1-f182.google.com ([209.85.128.182]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mq1GE-1nNWpB25qM-00n9gs; Wed, 15 Jun 2022 19:11:11 +0200
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-30c2f288f13so67861787b3.7;
-        Wed, 15 Jun 2022 10:11:11 -0700 (PDT)
-X-Gm-Message-State: AJIora/rlb+NWD306CsbyXaTrpEm2MaSjjPlTW9SJHgaVl0e+n1O3JJO
-        viV+fllMntEFmER03N3ucaPsRsD27AY3SmienWE=
-X-Google-Smtp-Source: AGRyM1s3W6+RTfK/zAiliPN7FcciReD9VjO+i3WcmGbp18cByfoPRqrc8ENsSK2P9DenDeE70xoIIb/pLq9Mty4V7yU=
-X-Received: by 2002:a81:ad7:0:b0:2e6:84de:3223 with SMTP id
- 206-20020a810ad7000000b002e684de3223mr716680ywk.209.1655313070150; Wed, 15
- Jun 2022 10:11:10 -0700 (PDT)
+        Wed, 15 Jun 2022 13:11:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08FA5005B;
+        Wed, 15 Jun 2022 10:11:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3131A61A21;
+        Wed, 15 Jun 2022 17:11:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30837C34115;
+        Wed, 15 Jun 2022 17:11:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655313093;
+        bh=2QTNhmLA5hWHCcKhZRTumnrveKImZcwK8CtdtQayAoE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pItRVJvXT15nVht43ZGZHiEklBwD3Dvjt2Adm2xDW4d9yp44MRNlmnHiHjI166/w/
+         hRl9XV3mOLBAyiAszzUq5o/b9vPFyJLLChpGM4RrxBbkBZLUE+mtiGuLt+k3Fq3ayi
+         3cZHD50b4hrMk5vZ5JAGloUAD1I4QWoArrwzYACVlkUmmMYdfb96ce5rBJBD7rJTNn
+         EC3DO9LkVd8pUEbTyWav9RIdXmd3neATi9gp5u80F/ShD+NQDQ7snNZVGm2JvNdxrQ
+         7RHir6gCRUGGp6T+yv2E59dw/SQnSmHFLDJgqlVmxRAnCfnTpLrORnJqz6cKgY4NdZ
+         zQb7oIxHiZjfg==
+Date:   Wed, 15 Jun 2022 22:41:32 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 1/3] mtd: nand: raw: qcom_nandc: reorder
+ qcom_nand_host struct
+Message-ID: <20220615171132.GA3606@thinkpad>
+References: <20220615000612.3119-1-ansuelsmth@gmail.com>
+ <20220615000612.3119-2-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-References: <20220615160116.528c324b@canb.auug.org.au> <1f8095db-a08f-7b6b-2cee-f530d914b9f8@infradead.org>
-In-Reply-To: <1f8095db-a08f-7b6b-2cee-f530d914b9f8@infradead.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 15 Jun 2022 19:10:53 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2mQiWKyVux+bfAJiRH=72q76UTLZnBbPCLVFVoXpGfaw@mail.gmail.com>
-Message-ID: <CAK8P3a2mQiWKyVux+bfAJiRH=72q76UTLZnBbPCLVFVoXpGfaw@mail.gmail.com>
-Subject: Re: linux-next: Tree for Jun 15 (drivers/dma/apple-admac.c)
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        dmaengine@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:8pIB+MQNRZ+Q+hBsItMZ6JT391yz+hteDwMFY5EW6ObxEnIFl5O
- 6oRtSJ2yI4hxs4jw2fOm29S6PqLmXIuHbQ6VKPK7+7NaEjZnVPzghnB9HN4QRrwE2LyCmHX
- 0JJ2JEGvp6xjRukwnJRrwsH8kA6jTjl12N1X06uaIjXSkF54KTB15GIPYwTxTv+ABpd48cH
- A36gBReuikMbgyvA67H3Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:0fpu8GE+MPk=:PZKUHxggVN+/QafZ5AT864
- 4q79TtdYpTSElim4NShpZtJEe6BYE5gw14hlH2UjblVTY+UvkuBffVwIH1jV7ofxSC74xGf7b
- uNm42q+yf8nMEqiRqLzwYHCD8e2dheJ9AaGbxbrNQLIyEu44vYh7pOgBUAcvn+ulcJhDv3cA8
- m01Xonz+b0ct4IeMciV9Q7Ow5iTDhRXhg1sjSNRnTp4t+6zNnitnOKKkAdwxlTZWUe+Y7KbFH
- ed6ihFWtZBzbFRFeDEbMy8cHzvMIbgzAW7KwuZKp5WBCfpx89vREq3AXn+I162HZAwxT15nEP
- N4b2WMFC9t+O2eMWSDIY65SVPvUmfT48+rIXkmEfoU6KsdHhv/hpydZXJXkWbivSBjlpYUxkc
- p5Y3+BOW4BrSUSKFEewAnTuihANeR7jYluv3adrqKXp9P1+iADFy7VjRSUITyUl3R08IJmxP6
- CWeSEocVRKnIb5W7fR8c6Gj9kRJwUHdB4ecXsdRzkUxsxJTxSAdu4cMyx65v3S6QeZruopgCt
- iSvog88cmk/xV0EUrD32MKwxcrvfmOiUbMse3g5KoQ1OGdR7KCMwbtTpjTuf8Zy6aHKhG6vMe
- f60ZOPZZF1XUpEPzYqnqV5NspFtTk/3bzSTu9S7uy3XTKaVeqr3r+t2i5dKl+kRMNxy1z8bVQ
- Pca46HycgkvWl9+XQD49TmF3yHSQpEkGedXw7MSK1o9OoUY35cww3mxjxzqAf0XN5aHTtM6XE
- m0pPFYLejrBbUlKBFTju7ixiJJoFA1spIyRtXA==
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220615000612.3119-2-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 6:28 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
->
->
-> On 6/14/22 23:01, Stephen Rothwell wrote:
-> > Hi all,
-> >
-> > Changes since 20220614:
-> >
->
-> on i386:
->
-> ../drivers/dma/apple-admac.c: In function 'admac_cyclic_write_one_desc':
-> ../drivers/dma/apple-admac.c:213:22: warning: right shift count >= width of type [-Wshift-count-overflow]
->   writel_relaxed(addr >> 32,       ad->base + REG_DESC_WRITE(channo));
->                       ^
+On Wed, Jun 15, 2022 at 02:06:10AM +0200, Ansuel Smith wrote:
+> Reorder structs in nandc driver to save holes.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 
-This should probably use lower_32_bits()/upper_32_bits() then.
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
 
-       Arnd
+Thanks,
+Mani
+
+> ---
+>  drivers/mtd/nand/raw/qcom_nandc.c | 107 +++++++++++++++++-------------
+>  1 file changed, 62 insertions(+), 45 deletions(-)
+> 
+> diff --git a/drivers/mtd/nand/raw/qcom_nandc.c b/drivers/mtd/nand/raw/qcom_nandc.c
+> index 1a77542c6d67..f2990d721733 100644
+> --- a/drivers/mtd/nand/raw/qcom_nandc.c
+> +++ b/drivers/mtd/nand/raw/qcom_nandc.c
+> @@ -238,6 +238,9 @@ nandc_set_reg(chip, reg,			\
+>   * @bam_ce - the array of BAM command elements
+>   * @cmd_sgl - sgl for NAND BAM command pipe
+>   * @data_sgl - sgl for NAND BAM consumer/producer pipe
+> + * @last_data_desc - last DMA desc in data channel (tx/rx).
+> + * @last_cmd_desc - last DMA desc in command channel.
+> + * @txn_done - completion for NAND transfer.
+>   * @bam_ce_pos - the index in bam_ce which is available for next sgl
+>   * @bam_ce_start - the index in bam_ce which marks the start position ce
+>   *		   for current sgl. It will be used for size calculation
+> @@ -250,14 +253,14 @@ nandc_set_reg(chip, reg,			\
+>   * @rx_sgl_start - start index in data sgl for rx.
+>   * @wait_second_completion - wait for second DMA desc completion before making
+>   *			     the NAND transfer completion.
+> - * @txn_done - completion for NAND transfer.
+> - * @last_data_desc - last DMA desc in data channel (tx/rx).
+> - * @last_cmd_desc - last DMA desc in command channel.
+>   */
+>  struct bam_transaction {
+>  	struct bam_cmd_element *bam_ce;
+>  	struct scatterlist *cmd_sgl;
+>  	struct scatterlist *data_sgl;
+> +	struct dma_async_tx_descriptor *last_data_desc;
+> +	struct dma_async_tx_descriptor *last_cmd_desc;
+> +	struct completion txn_done;
+>  	u32 bam_ce_pos;
+>  	u32 bam_ce_start;
+>  	u32 cmd_sgl_pos;
+> @@ -267,25 +270,23 @@ struct bam_transaction {
+>  	u32 rx_sgl_pos;
+>  	u32 rx_sgl_start;
+>  	bool wait_second_completion;
+> -	struct completion txn_done;
+> -	struct dma_async_tx_descriptor *last_data_desc;
+> -	struct dma_async_tx_descriptor *last_cmd_desc;
+>  };
+>  
+>  /*
+>   * This data type corresponds to the nand dma descriptor
+> + * @dma_desc - low level DMA engine descriptor
+>   * @list - list for desc_info
+> - * @dir - DMA transfer direction
+> + *
+>   * @adm_sgl - sgl which will be used for single sgl dma descriptor. Only used by
+>   *	      ADM
+>   * @bam_sgl - sgl which will be used for dma descriptor. Only used by BAM
+>   * @sgl_cnt - number of SGL in bam_sgl. Only used by BAM
+> - * @dma_desc - low level DMA engine descriptor
+> + * @dir - DMA transfer direction
+>   */
+>  struct desc_info {
+> +	struct dma_async_tx_descriptor *dma_desc;
+>  	struct list_head node;
+>  
+> -	enum dma_data_direction dir;
+>  	union {
+>  		struct scatterlist adm_sgl;
+>  		struct {
+> @@ -293,7 +294,7 @@ struct desc_info {
+>  			int sgl_cnt;
+>  		};
+>  	};
+> -	struct dma_async_tx_descriptor *dma_desc;
+> +	enum dma_data_direction dir;
+>  };
+>  
+>  /*
+> @@ -337,52 +338,64 @@ struct nandc_regs {
+>  /*
+>   * NAND controller data struct
+>   *
+> - * @controller:			base controller structure
+> - * @host_list:			list containing all the chips attached to the
+> - *				controller
+>   * @dev:			parent device
+> + *
+>   * @base:			MMIO base
+> - * @base_phys:			physical base address of controller registers
+> - * @base_dma:			dma base address of controller registers
+> + *
+>   * @core_clk:			controller clock
+>   * @aon_clk:			another controller clock
+>   *
+> + * @regs:			a contiguous chunk of memory for DMA register
+> + *				writes. contains the register values to be
+> + *				written to controller
+> + *
+> + * @props:			properties of current NAND controller,
+> + *				initialized via DT match data
+> + *
+> + * @controller:			base controller structure
+> + * @host_list:			list containing all the chips attached to the
+> + *				controller
+> + *
+>   * @chan:			dma channel
+>   * @cmd_crci:			ADM DMA CRCI for command flow control
+>   * @data_crci:			ADM DMA CRCI for data flow control
+> + *
+>   * @desc_list:			DMA descriptor list (list of desc_infos)
+>   *
+>   * @data_buffer:		our local DMA buffer for page read/writes,
+>   *				used when we can't use the buffer provided
+>   *				by upper layers directly
+> - * @buf_size/count/start:	markers for chip->legacy.read_buf/write_buf
+> - *				functions
+>   * @reg_read_buf:		local buffer for reading back registers via DMA
+> + *
+> + * @base_phys:			physical base address of controller registers
+> + * @base_dma:			dma base address of controller registers
+>   * @reg_read_dma:		contains dma address for register read buffer
+> - * @reg_read_pos:		marker for data read in reg_read_buf
+>   *
+> - * @regs:			a contiguous chunk of memory for DMA register
+> - *				writes. contains the register values to be
+> - *				written to controller
+> - * @cmd1/vld:			some fixed controller register values
+> - * @props:			properties of current NAND controller,
+> - *				initialized via DT match data
+> + * @buf_size/count/start:	markers for chip->legacy.read_buf/write_buf
+> + *				functions
+>   * @max_cwperpage:		maximum QPIC codewords required. calculated
+>   *				from all connected NAND devices pagesize
+> + *
+> + * @reg_read_pos:		marker for data read in reg_read_buf
+> + *
+> + * @cmd1/vld:			some fixed controller register values
+>   */
+>  struct qcom_nand_controller {
+> -	struct nand_controller controller;
+> -	struct list_head host_list;
+> -
+>  	struct device *dev;
+>  
+>  	void __iomem *base;
+> -	phys_addr_t base_phys;
+> -	dma_addr_t base_dma;
+>  
+>  	struct clk *core_clk;
+>  	struct clk *aon_clk;
+>  
+> +	struct nandc_regs *regs;
+> +	struct bam_transaction *bam_txn;
+> +
+> +	const struct qcom_nandc_props *props;
+> +
+> +	struct nand_controller controller;
+> +	struct list_head host_list;
+> +
+>  	union {
+>  		/* will be used only by QPIC for BAM DMA */
+>  		struct {
+> @@ -400,22 +413,22 @@ struct qcom_nand_controller {
+>  	};
+>  
+>  	struct list_head desc_list;
+> -	struct bam_transaction *bam_txn;
+>  
+>  	u8		*data_buffer;
+> +	__le32		*reg_read_buf;
+> +
+> +	phys_addr_t base_phys;
+> +	dma_addr_t base_dma;
+> +	dma_addr_t reg_read_dma;
+> +
+>  	int		buf_size;
+>  	int		buf_count;
+>  	int		buf_start;
+>  	unsigned int	max_cwperpage;
+>  
+> -	__le32 *reg_read_buf;
+> -	dma_addr_t reg_read_dma;
+>  	int reg_read_pos;
+>  
+> -	struct nandc_regs *regs;
+> -
+>  	u32 cmd1, vld;
+> -	const struct qcom_nandc_props *props;
+>  };
+>  
+>  /*
+> @@ -431,19 +444,21 @@ struct qcom_nand_controller {
+>   *				and reserved bytes
+>   * @cw_data:			the number of bytes within a codeword protected
+>   *				by ECC
+> - * @use_ecc:			request the controller to use ECC for the
+> - *				upcoming read/write
+> - * @bch_enabled:		flag to tell whether BCH ECC mode is used
+>   * @ecc_bytes_hw:		ECC bytes used by controller hardware for this
+>   *				chip
+> - * @status:			value to be returned if NAND_CMD_STATUS command
+> - *				is executed
+> + *
+>   * @last_command:		keeps track of last command on this chip. used
+>   *				for reading correct status
+>   *
+>   * @cfg0, cfg1, cfg0_raw..:	NANDc register configurations needed for
+>   *				ecc/non-ecc mode for the current nand flash
+>   *				device
+> + *
+> + * @status:			value to be returned if NAND_CMD_STATUS command
+> + *				is executed
+> + * @use_ecc:			request the controller to use ECC for the
+> + *				upcoming read/write
+> + * @bch_enabled:		flag to tell whether BCH ECC mode is used
+>   */
+>  struct qcom_nand_host {
+>  	struct nand_chip chip;
+> @@ -452,12 +467,10 @@ struct qcom_nand_host {
+>  	int cs;
+>  	int cw_size;
+>  	int cw_data;
+> -	bool use_ecc;
+> -	bool bch_enabled;
+>  	int ecc_bytes_hw;
+>  	int spare_bytes;
+>  	int bbm_size;
+> -	u8 status;
+> +
+>  	int last_command;
+>  
+>  	u32 cfg0, cfg1;
+> @@ -466,23 +479,27 @@ struct qcom_nand_host {
+>  	u32 ecc_bch_cfg;
+>  	u32 clrflashstatus;
+>  	u32 clrreadstatus;
+> +
+> +	u8 status;
+> +	bool use_ecc;
+> +	bool bch_enabled;
+>  };
+>  
+>  /*
+>   * This data type corresponds to the NAND controller properties which varies
+>   * among different NAND controllers.
+>   * @ecc_modes - ecc mode for NAND
+> + * @dev_cmd_reg_start - NAND_DEV_CMD_* registers starting offset
+>   * @is_bam - whether NAND controller is using BAM
+>   * @is_qpic - whether NAND CTRL is part of qpic IP
+>   * @qpic_v2 - flag to indicate QPIC IP version 2
+> - * @dev_cmd_reg_start - NAND_DEV_CMD_* registers starting offset
+>   */
+>  struct qcom_nandc_props {
+>  	u32 ecc_modes;
+> +	u32 dev_cmd_reg_start;
+>  	bool is_bam;
+>  	bool is_qpic;
+>  	bool qpic_v2;
+> -	u32 dev_cmd_reg_start;
+>  };
+>  
+>  /* Frees the BAM transaction memory */
+> -- 
+> 2.36.1
+> 
+
+-- 
+மணிவண்ணன் சதாசிவம்
