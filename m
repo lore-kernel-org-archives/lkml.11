@@ -2,134 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC697C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 05:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F66C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 05:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345288AbiFOFkY (ORCPT
+        id S1345852AbiFOFlN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 01:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
+        Wed, 15 Jun 2022 01:41:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiFOFkV (ORCPT
+        with ESMTP id S229595AbiFOFlE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 01:40:21 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31ACE4A3C3;
-        Tue, 14 Jun 2022 22:40:20 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id E30811E80D27;
-        Wed, 15 Jun 2022 13:38:51 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id J5ZCcSn-ymiE; Wed, 15 Jun 2022 13:38:49 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: yuzhe@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 6322C1E80CFF;
-        Wed, 15 Jun 2022 13:38:48 +0800 (CST)
-From:   Yu ZHe <yuzhe@nfschina.com>
-To:     trond.myklebust@hammerspace.com, anna@kernel.org
-Cc:     linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liqiong@nfschina.com, yuzhe <yuzhe@nfschina.com>
-Subject: [PATCH] nfs: remove unnecessary (void*) conversions.
-Date:   Wed, 15 Jun 2022 13:39:24 +0800
-Message-Id: <20220615053924.829-1-yuzhe@nfschina.com>
-X-Mailer: git-send-email 2.11.0
+        Wed, 15 Jun 2022 01:41:04 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C2254A3C6
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 22:41:03 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id s12so21053479ejx.3
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 22:41:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=KN6L6DSfmYA7zey+PA8UdHfC7OKq4MhMKhks1KAMEAg=;
+        b=L3zfvBwLfy7iqj6moUpIh1oiBrytFQZB4Qy1wiNw+7PcHuc2a31ik3n0S8a0nr9QEz
+         QE3pJywAC7SeAYBaJj5O4JjNFs13Z/hn/LlT94gKj3CsxLQOYHqr77dOpyiQl4MsbrW1
+         /Q/P5xSTzy5S/aK+0XRU/1dLfiCUFfd3MGTFJaRU+luWVJ3LyUyiFgJbgytG1MX3yCjy
+         nBIsMmsdFNa4s8Tdnp6t7HfvzOamwtObZFtz83quin59fvz+sVJHRBxLT7yZzhX45W3G
+         mpLL0rUxJtV4SfMkyt8jgOLf7j9EJw526vhkSOjBO1OqzwRg9nmFjOulpXQSDiochjO2
+         sbLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=KN6L6DSfmYA7zey+PA8UdHfC7OKq4MhMKhks1KAMEAg=;
+        b=yay8e6rTL4oDZzAj6rac/u4EpY/BvyqaEHSofOrmpBOADkVZKaM6IeT6cwnfi9a5W6
+         F6jCW21SZ5q7P1ng5B2hlYAvxIY/Rdcv/nhQzA3mf9bVZ3350CajPMxhnQrRzMl60zPZ
+         ZSMMtFj0yyYLSY2gFNJZXSQTds5rHdFSKjrtlx7RXdVcIAVdAyTTFxwpbuAp2lvZD3n1
+         mgOjVrzJOSXcV/LGFAo6s1u96GPSSMeHOfSGCbhqg2dIcWAp5aO+qGItcRnDgb32p2b/
+         8msP+gqwn7BNAFwOOIEDexXQQ2LDSUXxFFEFcaUW+g/gs2o0l6vYNWXgdEhtm+EwMgBF
+         HgSA==
+X-Gm-Message-State: AOAM532zM1U2x/ntWTMxgGqDQxaMqXiAK+U7vOq2q/n8vHoONiccNo/8
+        UAB/OxcfCjLxb+1drlrorOQ=
+X-Google-Smtp-Source: ABdhPJz42ifUMTtTBIP/J5etLko/VUugoJm7LdMTQAEPt0csXC8FQ7rx0rr9t/wGn4W/xm60KLI19A==
+X-Received: by 2002:a17:907:6d0d:b0:711:c940:7f1c with SMTP id sa13-20020a1709076d0d00b00711c9407f1cmr7178230ejc.399.1655271661492;
+        Tue, 14 Jun 2022 22:41:01 -0700 (PDT)
+Received: from opensuse.localnet (host-87-16-96-199.retail.telecomitalia.it. [87.16.96.199])
+        by smtp.gmail.com with ESMTPSA id i27-20020a50871b000000b0042dcbc3f302sm8483870edb.36.2022.06.14.22.40.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 22:41:00 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        David Sterba <dsterba@suse.cz>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Kees Cook <keescook@chromium.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Ira Weiny <ira.weiny@intel.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] highmem: Make kunmap_{local,atomic}() take pointers to const void
+Date:   Wed, 15 Jun 2022 07:40:59 +0200
+Message-ID: <5276974.Sb9uPGUboI@opensuse>
+In-Reply-To: <20220615051256.31466-1-fmdefrancesco@gmail.com>
+References: <20220615051256.31466-1-fmdefrancesco@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: yuzhe <yuzhe@nfschina.com>
+On mercoled=C3=AC 15 giugno 2022 07:12:56 CEST Fabio M. De Francesco wrote:
+> kunmap_{local,atomic}() currently take pointers to void. However, this
+> is semantically incorrect, since these functions do not change the memory
+> their arguments point to.
+>=20
+> Therefore, make this semantics explicit by modifying the
+> kunmap_{local,atomic}() prototypes to take pointers to const void.
+>=20
+> As side effects, compilers will likely produce more efficient code and
+> they won't any longer need casts to pointers to void where these
+> functions take arguments of type pointer to const void.
+>=20
+> Suggested-by: David Sterba <dsterba@suse.cz>
+> Suggested-by: Ira Weiny <ira.weiny@intel.com>
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> ---
+>=20
+> v1->v2: Change the commit message to clearly explain why these functions
+> should require pointers to const void. The fundamental argument behind
+> the commit message changes is semantic correctness. Other bonuses come as=
+=20
+> side effects. Obviously there are no changes to the code.=20
+>=20
+> Many thanks to David Sterba and Ira Weiny for suggestions and reviews.
+>=20
+>  include/linux/highmem-internal.h | 10 +++++-----
+>  mm/highmem.c                     |  2 +-
+>  2 files changed, 6 insertions(+), 6 deletions(-)
+>=20
+As said in another email, this is the second version of "[PATCH] highmem:=20
+Make __kunmap_{local,atomic}() take "const void *"". You see that I changed=
+=20
+subject (involuntarily, that was just a mistake when formatting).
 
-remove unnecessary void* type castings.
+This is why I'm writing: make Maintainers find easily which patch this is=20
+the second version of.
 
-Signed-off-by: yuzhe <yuzhe@nfschina.com>
----
- fs/nfs/inode.c      | 6 +++---
- fs/nfs/nfs42xattr.c | 2 +-
- fs/nfs/nfs4idmap.c  | 2 +-
- fs/nfs/nfs4proc.c   | 4 ++--
- 4 files changed, 7 insertions(+), 7 deletions(-)
+Sorry for that unwanted change to the subject.
 
-diff --git a/fs/nfs/inode.c b/fs/nfs/inode.c
-index b4e46b0ffa2d..a3a88fd09809 100644
---- a/fs/nfs/inode.c
-+++ b/fs/nfs/inode.c
-@@ -318,7 +318,7 @@ struct nfs_find_desc {
- static int
- nfs_find_actor(struct inode *inode, void *opaque)
- {
--	struct nfs_find_desc	*desc = (struct nfs_find_desc *)opaque;
-+	struct nfs_find_desc	*desc = opaque;
- 	struct nfs_fh		*fh = desc->fh;
- 	struct nfs_fattr	*fattr = desc->fattr;
- 
-@@ -336,7 +336,7 @@ nfs_find_actor(struct inode *inode, void *opaque)
- static int
- nfs_init_locked(struct inode *inode, void *opaque)
- {
--	struct nfs_find_desc	*desc = (struct nfs_find_desc *)opaque;
-+	struct nfs_find_desc	*desc = opaque;
- 	struct nfs_fattr	*fattr = desc->fattr;
- 
- 	set_nfs_fileid(inode, fattr->fileid);
-@@ -2270,7 +2270,7 @@ static inline void nfs4_init_once(struct nfs_inode *nfsi)
- 
- static void init_once(void *foo)
- {
--	struct nfs_inode *nfsi = (struct nfs_inode *) foo;
-+	struct nfs_inode *nfsi = foo;
- 
- 	inode_init_once(&nfsi->vfs_inode);
- 	INIT_LIST_HEAD(&nfsi->open_files);
-diff --git a/fs/nfs/nfs42xattr.c b/fs/nfs/nfs42xattr.c
-index e7b34f7e0614..f10ea5652037 100644
---- a/fs/nfs/nfs42xattr.c
-+++ b/fs/nfs/nfs42xattr.c
-@@ -981,7 +981,7 @@ nfs4_xattr_entry_count(struct shrinker *shrink, struct shrink_control *sc)
- 
- static void nfs4_xattr_cache_init_once(void *p)
- {
--	struct nfs4_xattr_cache *cache = (struct nfs4_xattr_cache *)p;
-+	struct nfs4_xattr_cache *cache = p;
- 
- 	spin_lock_init(&cache->listxattr_lock);
- 	atomic_long_set(&cache->nent, 0);
-diff --git a/fs/nfs/nfs4idmap.c b/fs/nfs/nfs4idmap.c
-index f331866dd418..01e54dd9301c 100644
---- a/fs/nfs/nfs4idmap.c
-+++ b/fs/nfs/nfs4idmap.c
-@@ -585,7 +585,7 @@ static int nfs_idmap_legacy_upcall(struct key *authkey, void *aux)
- 	struct request_key_auth *rka = get_request_key_auth(authkey);
- 	struct rpc_pipe_msg *msg;
- 	struct idmap_msg *im;
--	struct idmap *idmap = (struct idmap *)aux;
-+	struct idmap *idmap = aux;
- 	struct key *key = rka->target_key;
- 	int ret = -ENOKEY;
- 
-diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index c0fdcf8c0032..937e379c9906 100644
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -6601,7 +6601,7 @@ static void nfs4_delegreturn_prepare(struct rpc_task *task, void *data)
- 	struct nfs4_delegreturndata *d_data;
- 	struct pnfs_layout_hdr *lo;
- 
--	d_data = (struct nfs4_delegreturndata *)data;
-+	d_data = data;
- 
- 	if (!d_data->lr.roc && nfs4_wait_on_layoutreturn(d_data->inode, task)) {
- 		nfs4_sequence_done(task, &d_data->res.seq_res);
-@@ -8894,7 +8894,7 @@ int nfs4_proc_exchange_id(struct nfs_client *clp, const struct cred *cred)
- void nfs4_test_session_trunk(struct rpc_clnt *clnt, struct rpc_xprt *xprt,
- 			    void *data)
- {
--	struct nfs4_add_xprt_data *adata = (struct nfs4_add_xprt_data *)data;
-+	struct nfs4_add_xprt_data *adata = data;
- 	struct rpc_task *task;
- 	int status;
- 
--- 
-2.11.0
+Thanks,
+
+=46abio
+
 
