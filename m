@@ -2,160 +2,790 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81232C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:59:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 580FACCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:00:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349461AbiFOM7V (ORCPT
+        id S1344251AbiFONAv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 08:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38798 "EHLO
+        Wed, 15 Jun 2022 09:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352069AbiFOM6i (ORCPT
+        with ESMTP id S237898AbiFONAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 08:58:38 -0400
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130045.outbound.protection.outlook.com [40.107.13.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF6142A3C;
-        Wed, 15 Jun 2022 05:58:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=je5PvaIrqo2ELARlSbWXGA9wGHylW6laQ1FOgaxTuOB5/LotSU7/D5Om4LhAke8GlKqx2nYfxkV8KCdYO8c1pl3G3v4aJyvZ0zFpiEls9ybjV2Z1AeKURCbAtpq3AbwG+PKT0Qi11lR8fl6xq72unMrXP0aBFoNdd1kqPmhK9I3P9jun8lP/gbn+3OgIHXufgA1W9yMH6R8aE0DYHPXzT2Pj5AmcgbBSi8BKxjne46eovvbH2n18nxmMN4NVJ5pdptMgp7MfMTCc8Hg+Ze+XAQOtzCA73LMX8Y3x0mjFxsYB2PQ1rbGqSFDjSys/Jaw70EGY69rxx5REldASUYZlEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2258pDEOBc1J1Pfbty7dNPY3PvfuuY3Nz4aaDuJLFtU=;
- b=mQ4x7s3Uv/gbWzuzzSspjrs0Bg4puFJXUysBIexYhMIGy1pWTHFz2R+Js49rLMZKyzakliCoJVMec0MDioKZ3YfAFCPhElitha/Z1BNqBeWoSHlIjEXDj1Bj5PgvLsJEK7u0PrRaILDiAhmiRN5B8bf/NCF1Gq0LmdmDJK3Z0KspB2esbEjDe376kN40iJpA/jlJBnOPY/EUB1eCAXlQrjO8aMfUNNjRRER1ytE4kpU9Z77EaxkdxK0EmGansoysq7R/NYHKWpD8OZeGyv3tpQSjLscoRQQqLvUvOywAo1MxeNe9BuN7qaiNVbtcPTmk8enf7kFRSCvyXffhVfHnPg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2258pDEOBc1J1Pfbty7dNPY3PvfuuY3Nz4aaDuJLFtU=;
- b=fNjQSMgZ0F8YOnjzfTUvF5D4Twz+dRL0ffE8zYCrSniW3FXzzW4VMaJMjK8rXy6eT3+oYMZH/y0CzZ8IZZIBK47qbrSUYpXMzQLsQz475zJ+3f3mUfw1dtZC56CbixsigRosN4h1Zlw6BHU90S26f1pJbOP9Fz6vmEPHnPQD3V4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DB8PR04MB7004.eurprd04.prod.outlook.com (2603:10a6:10:11c::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14; Wed, 15 Jun
- 2022 12:58:35 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::a892:e4a9:4769:13a5]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::a892:e4a9:4769:13a5%7]) with mapi id 15.20.5353.014; Wed, 15 Jun 2022
- 12:58:35 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        jassisinghbrar@gmail.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de
-Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH V2 1/2] dt-bindings: mailbox: imx-mu: add RST channel
-Date:   Wed, 15 Jun 2022 21:00:08 +0800
-Message-Id: <20220615130009.1457986-2-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220615130009.1457986-1-peng.fan@oss.nxp.com>
-References: <20220615130009.1457986-1-peng.fan@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR01CA0013.apcprd01.prod.exchangelabs.com
- (2603:1096:4:191::9) To DU0PR04MB9417.eurprd04.prod.outlook.com
- (2603:10a6:10:358::11)
+        Wed, 15 Jun 2022 09:00:49 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246E04578D;
+        Wed, 15 Jun 2022 06:00:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=f/7zStaTh0e1IBoH7eMD8Zfcf6K0/TQvpv+C520Guhs=; b=ChwcVpRUr4vY2ZhIIG5ajwEfBB
+        rPtDvxBtVZRIlBG/SujbAdwBKkmz41Ol8LdWEv8Hj8Ee/ZQjbcZ5os+lUJu3MEHI0rKooRYW8Lds8
+        1HGRb4YMK0aoFPZ7BnothSWDxn8Gp9uDzuuTnoZ3U4fRAze74K29VjnLhfXOrimZ4OPCqLLNTUnp9
+        yp0FhZY16HzYTxhklymrewMSggIFDpQ1LKzfQ2xQglHw/P7CCED7G5jIY4AhmIyEi4i+oMnlM4HSh
+        YPUblTRCB3xM9Ud8KoTUWlMZcpU+W2xDJEpFRgTIv7gK2A7fKd7oxMFlP1zoxjqIJ+8zUEB89kCW7
+        SmR2flld/PifKFmh2zDrUQCq5NWJnImlNjzEfE4AoZlOzaQCPFfcfwQDrpMoPk/pQ7SOXzrQBbXxU
+        edXiexSYufpCfVZO7RM2lhZcDHW1csvOo0LSJDAz3oMi7TpNHMrxEa+0vfVW0zpgvI1tDJeT7Xe8l
+        41iMOAun4zTTtFZMk/8B+6aNy8vFClQw5drmQWBMsZo/BQR+JprioG7lYpuOPSXyYOIR7bafL5k3A
+        b/hLnaW6wQfT8CPaxi6EAxj4fyOz3LuaNXKPyRDf85V/RVk8Gqv0K3BFLdCcXDbpIuf02DWhIeCG1
+        VqridMqqjlDGS+TJfeijvh6UiLVc420JPt8mh7woQ=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>
+Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 04/06] 9p fid refcount: add p9_fid_get/put wrappers
+Date:   Wed, 15 Jun 2022 15:00:19 +0200
+Message-ID: <21498866.auqpVWlHDa@silver>
+In-Reply-To: <20220615031647.1764797-1-asmadeus@codewreck.org>
+References: <7044959.MN0D2SvuAq@silver> <20220615031647.1764797-1-asmadeus@codewreck.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 04567955-096c-459b-fe12-08da4ecec1b8
-X-MS-TrafficTypeDiagnostic: DB8PR04MB7004:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <DB8PR04MB7004A9B1BB9655D2D68CE1B3C9AD9@DB8PR04MB7004.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zJU6YpZuZn9DsDOawKWbrgQS3XG9xHade+eftbMbVyruH2xWiychZ7r2i3TGug7DLXCPUR4oD7CunuaHubuS7bGomFbWmCNXNn+6ttcgjaIBRHQ5gu+9X+BW4neoXxEy1IsKUrai8kdiQxjpBqhQrWwV5O/kXtIjrQCRnkb8GQcdPRmsN+yMh8+84jaYtrzFNN5/1a0oA0E1bSmu8rYxsF4/xBYEjSQjAHndedZFFCSvkRMXxvDqXFiQ/kRM+tlYm6uDM7soBO5fWAd0ZhAiUUu7rAJ1GYXGSaAP6huRCQzTmlhf6a79RipXocaITJLLOwRpQAUh57tKhY4ehtE7RHSFN1G0wcOltEGftuy1VUbpz+nyAergU2/9gj6Psik5HmUfLyp+MFviAwS5R8/IXxNynjVWM8oBx+1QfzMzkoUt6CNPXstifDkRz1cEiSBp8MCBbhqe7CMCqSt09UM8TucmT/PMScKyFFY4szZWBWxczzPtOASDDmtstm7pmIUMW2ERSIAEW/FmVTpQci17f9HkiRgI8Ata+4/RWvUTn42Ahkrx505ibLD9fS/m8gd41P7xlHf0cabqbFaIkngKSUsPOxIb4DV+Z5nAeqfAUL2IdMc1OlaDQaGFtyVxZrNk+bKe/vNXmv8g8ki5SsyO5AQwlOWBP3WoGbjFMLJ+x7SksJiutSuaMYOsYxFmRV0lzkx6InvPFOYBDyh6WXm7AQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(7416002)(15650500001)(2906002)(186003)(83380400001)(316002)(508600001)(6666004)(6486002)(54906003)(1076003)(2616005)(66946007)(8676002)(66476007)(6506007)(4326008)(52116002)(6512007)(26005)(5660300002)(86362001)(66556008)(38100700002)(8936002)(38350700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tO1wnK9hc83G3vmwdshIVhjSjhclL81ajz8kfQcZM0wLjKdmGeGuX0ZJ3YaT?=
- =?us-ascii?Q?ie/QwRhX/jW6vcC6CBGx+MHKoBZhpDyOverayTEg7s7iOkDtocMvuRVY8eow?=
- =?us-ascii?Q?aSErgZ9d6zU6BqJmSz9O9TFJpP8Ov/VnSTNUSX7ZEEsEfravQfnuNgLoWYIg?=
- =?us-ascii?Q?NHCUp/fkatCMGRVH+FvB4P1ePirpGR1PS2zxeLXj53zQXfYlIYSVkfMuKEjo?=
- =?us-ascii?Q?PpW+i6yeHMCwsQhhPeTPQ3WUPLzGMjfuhJVq8ihvqIqRe905JPcYkLdyRO7u?=
- =?us-ascii?Q?22u13/6K6GPPy+BltcFzEIIzGYgPvzH4NwP+DQTaLZkTNEYSZqy3caFO3Dzb?=
- =?us-ascii?Q?T4a9CKZP3qRO/WPkEJcW6Mmp2qD5gLgu9E4GJiptsvhhTdnhXHXKYqKz5Fd1?=
- =?us-ascii?Q?YNvURJlkjunahNyWvkL5z5dIrDoUYuSJPp/RKzHkwapOhaheb3j9NQTbglJl?=
- =?us-ascii?Q?lqIME+wlFL+j+AsXG4w3/wpggFMg0tfO9X9ZhEDIprWuJQr5z0tTHfCiNPl8?=
- =?us-ascii?Q?33pBJnCY5IRj5Xnm4AaiSBv5JIjwBdVhRUz3ViWq4wpFEHA955iq/AY7s2FK?=
- =?us-ascii?Q?XrornH0DxFKZjzGkCjQd7LjVaPQHStM19avmLCggQlQAHI4jy6Q0eBRbLvPk?=
- =?us-ascii?Q?mPNa88o6HgBbJhG/Amt2ta19SCSXPhH+dThiQ3+qJLdL641kkM2879iTNtXW?=
- =?us-ascii?Q?ad3CngVXxTXNx81iO291gy3vUpQBRr5hAW8TDWDZI+8ph61gnye2TGPMbSHU?=
- =?us-ascii?Q?Fs5DIVmddaDNC3NZnHIMNm/HGatb0rSjKQ4Ab1mgWcECCKi55F5JdnJDtbKi?=
- =?us-ascii?Q?VJIzmdDNpF7t7Jl+se7TOVnVWnD+ozPznmr0ZgDnvk0GeSZ0NFbltIoK7+o4?=
- =?us-ascii?Q?LSDtg/UfUMuhw6VwgJiAT6RWzPSi2Xi8fAWVzi3yJ2tvvkAVfZ59poJLFvAL?=
- =?us-ascii?Q?/v7v5TViCjkOREy2SRRT7sORsLNFjhb2gTrohR79FzoA2s5f24eIUNzEomd+?=
- =?us-ascii?Q?hw6feBy/PYH29ceUE3aKg2QP0892boNyJcZEzkw28UY79W6wx/A/G+mKFiaX?=
- =?us-ascii?Q?kUQR25qNLXrGaGCa2z4KuFxPJlJfKLzhJ6rULPOUUmrVjYYGkHK1MdF2UgAq?=
- =?us-ascii?Q?ceQZdy20cOWYYUOK42aNxN7+RtAVMuIiurMqMiHu/yUyzCUS3OeHvvWOLppN?=
- =?us-ascii?Q?Q5jb1FK8XN/WiFfKxGFp9HQKSRmHVO2j9eWSHjNlV9oePLj2ZsUxFYOKYYbj?=
- =?us-ascii?Q?sHA90o6jBm+CsjVox6C+SwjaK8GfKavL5xYFebNn0nkcKRXF2ycy1L4TNSZW?=
- =?us-ascii?Q?/o8BtW0t1OekbI81nJ3sAb99VYQG69VD/BmVFptFUtky8gq6C4AU2B+BmE48?=
- =?us-ascii?Q?icNMf4TSHiHipDUnLribWRCI0s6cgXEAg2bV21Q04UztMleEXTNCBaiG2fyZ?=
- =?us-ascii?Q?gQMwwQST7CsT8G/RR/UJ/9+YnReKdu3F4yp+Jmzya6ZJ6n2F5QdFl+NvIKDJ?=
- =?us-ascii?Q?Zb4GOZm6wrHDQkVG66Y3o9jh6HsZlviH73wDKDP1DpfwwZFXtlBYEgFl+rGI?=
- =?us-ascii?Q?gecx21LJW9LkHFGYJub06lj7KtNspJqSSh7q+OZQaR4cAywNx9lbIzKNmj4x?=
- =?us-ascii?Q?BR3L+Ui4vHc9Txuy/6VPcvPr8KODG2euUvNKVUfF5xXsxLDTgIVGxOa6tBw3?=
- =?us-ascii?Q?3lFvEd5/pGd8UjrD+V0mxhCLfD67yE7097gqorABfWqZHUN453rTl6dA9xc/?=
- =?us-ascii?Q?2W1iPeUVTQ=3D=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 04567955-096c-459b-fe12-08da4ecec1b8
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2022 12:58:34.9045
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BBQJuaD5fUYa3KyP94VT4GL/E+/YoTEo/vu6rSHATLICWoab6qFmI3bTVKltFo2cuB256rI7IEzY5UpoOhkGEQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7004
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+On Mittwoch, 15. Juni 2022 05:16:45 CEST Dominique Martinet wrote:
+> I was recently reminded that it is not clear that p9_client_clunk()
+> was actually just decrementing refcount and clunking only when that
+> reaches zero: make it clear through a set of helpers.
+> 
+> This will also allow instrumenting refcounting better for debugging
+> next patch
+> 
+> Link:
+> https://lkml.kernel.org/r/20220612085330.1451496-5-asmadeus@codewreck.org
+> Reviewed-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+> ---
+> v1 -> v2: p9_fid_get/put are now static inline in .h
+> v2 -> v3: fix commit message and add comment to helpers
+> 
+>  fs/9p/fid.c             | 18 ++++++++--------
+>  fs/9p/fid.h             |  2 +-
+>  fs/9p/vfs_addr.c        |  4 ++--
+>  fs/9p/vfs_dentry.c      |  4 ++--
+>  fs/9p/vfs_dir.c         |  2 +-
+>  fs/9p/vfs_file.c        |  4 ++--
+>  fs/9p/vfs_inode.c       | 48 ++++++++++++++++++++---------------------
+>  fs/9p/vfs_inode_dotl.c  | 42 ++++++++++++++++++------------------
+>  fs/9p/vfs_super.c       |  6 +++---
+>  fs/9p/xattr.c           |  8 +++----
+>  include/net/9p/client.h | 28 ++++++++++++++++++++++++
+>  net/9p/client.c         | 15 +++----------
+>  12 files changed, 100 insertions(+), 81 deletions(-)
+> 
+> diff --git a/fs/9p/fid.c b/fs/9p/fid.c
+> index e8fad28fc5bd..d792499349c4 100644
+> --- a/fs/9p/fid.c
+> +++ b/fs/9p/fid.c
+> @@ -56,7 +56,7 @@ static struct p9_fid *v9fs_fid_find_inode(struct inode
+> *inode, kuid_t uid) h = (struct hlist_head *)&inode->i_private;
+>  	hlist_for_each_entry(fid, h, ilist) {
+>  		if (uid_eq(fid->uid, uid)) {
+> -			refcount_inc(&fid->count);
+> +			p9_fid_get(fid);
+>  			ret = fid;
+>  			break;
+>  		}
+> @@ -104,7 +104,7 @@ static struct p9_fid *v9fs_fid_find(struct dentry
+> *dentry, kuid_t uid, int any) hlist_for_each_entry(fid, h, dlist) {
+>  			if (any || uid_eq(fid->uid, uid)) {
+>  				ret = fid;
+> -				refcount_inc(&ret->count);
+> +				p9_fid_get(ret);
+>  				break;
+>  			}
+>  		}
+> @@ -172,7 +172,7 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct
+> dentry *dentry, old_fid = fid;
+> 
+>  		fid = p9_client_walk(old_fid, 1, &dentry->d_name.name, 1);
+> -		p9_client_clunk(old_fid);
+> +		p9_fid_put(old_fid);
+>  		goto fid_out;
+>  	}
+>  	up_read(&v9ses->rename_sem);
+> @@ -194,7 +194,7 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct
+> dentry *dentry, if (IS_ERR(root_fid))
+>  			return root_fid;
+> 
+> -		refcount_inc(&root_fid->count);
+> +		p9_fid_get(root_fid);
+>  		v9fs_fid_add(dentry->d_sb->s_root, root_fid);
+>  	}
+>  	/* If we are root ourself just return that */
+> @@ -225,7 +225,7 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct
+> dentry *dentry, old_fid == root_fid /* clone */);
+>  		/* non-cloning walk will return the same fid */
+>  		if (fid != old_fid) {
+> -			p9_client_clunk(old_fid);
+> +			p9_fid_put(old_fid);
+>  			old_fid = fid;
+>  		}
+>  		if (IS_ERR(fid)) {
+> @@ -240,11 +240,11 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct
+> dentry *dentry, spin_lock(&dentry->d_lock);
+>  		if (d_unhashed(dentry)) {
+>  			spin_unlock(&dentry->d_lock);
+> -			p9_client_clunk(fid);
+> +			p9_fid_put(fid);
+>  			fid = ERR_PTR(-ENOENT);
+>  		} else {
+>  			__add_fid(dentry, fid);
+> -			refcount_inc(&fid->count);
+> +			p9_fid_get(fid);
+>  			spin_unlock(&dentry->d_lock);
+>  		}
+>  	}
+> @@ -301,7 +301,7 @@ struct p9_fid *v9fs_writeback_fid(struct dentry *dentry)
+> fid = clone_fid(ofid);
+>  	if (IS_ERR(fid))
+>  		goto error_out;
+> -	p9_client_clunk(ofid);
+> +	p9_fid_put(ofid);
+>  	/*
+>  	 * writeback fid will only be used to write back the
+>  	 * dirty pages. We always request for the open fid in read-write
+> @@ -310,7 +310,7 @@ struct p9_fid *v9fs_writeback_fid(struct dentry *dentry)
+> */
+>  	err = p9_client_open(fid, O_RDWR);
+>  	if (err < 0) {
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+>  		fid = ERR_PTR(err);
+>  		goto error_out;
+>  	}
+> diff --git a/fs/9p/fid.h b/fs/9p/fid.h
+> index f7f33509e169..3168dfad510e 100644
+> --- a/fs/9p/fid.h
+> +++ b/fs/9p/fid.h
+> @@ -29,7 +29,7 @@ static inline struct p9_fid *v9fs_fid_clone(struct dentry
+> *dentry) return fid;
+> 
+>  	nfid = clone_fid(fid);
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  	return nfid;
+>  }
+>  #endif
+> diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
+> index 7f924e671e3e..c5f71eeb28b6 100644
+> --- a/fs/9p/vfs_addr.c
+> +++ b/fs/9p/vfs_addr.c
+> @@ -70,7 +70,7 @@ static int v9fs_init_request(struct netfs_io_request
+> *rreq, struct file *file)
+> 
+>  	BUG_ON(!fid);
+> 
+> -	refcount_inc(&fid->count);
+> +	p9_fid_get(fid);
+>  	rreq->netfs_priv = fid;
+>  	return 0;
+>  }
+> @@ -83,7 +83,7 @@ static void v9fs_free_request(struct netfs_io_request
+> *rreq) {
+>  	struct p9_fid *fid = rreq->netfs_priv;
+> 
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  }
+> 
+>  /**
+> diff --git a/fs/9p/vfs_dentry.c b/fs/9p/vfs_dentry.c
+> index 1c609e99d280..f89f01734587 100644
+> --- a/fs/9p/vfs_dentry.c
+> +++ b/fs/9p/vfs_dentry.c
+> @@ -54,7 +54,7 @@ static void v9fs_dentry_release(struct dentry *dentry)
+>  	p9_debug(P9_DEBUG_VFS, " dentry: %pd (%p)\n",
+>  		 dentry, dentry);
+>  	hlist_for_each_safe(p, n, (struct hlist_head *)&dentry->d_fsdata)
+> -		p9_client_clunk(hlist_entry(p, struct p9_fid, dlist));
+> +		p9_fid_put(hlist_entry(p, struct p9_fid, dlist));
+>  	dentry->d_fsdata = NULL;
+>  }
+> 
+> @@ -85,7 +85,7 @@ static int v9fs_lookup_revalidate(struct dentry *dentry,
+> unsigned int flags) retval = v9fs_refresh_inode_dotl(fid, inode);
+>  		else
+>  			retval = v9fs_refresh_inode(fid, inode);
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+> 
+>  		if (retval == -ENOENT)
+>  			return 0;
+> diff --git a/fs/9p/vfs_dir.c b/fs/9p/vfs_dir.c
+> index 958680f7f23e..000fbaae9b18 100644
+> --- a/fs/9p/vfs_dir.c
+> +++ b/fs/9p/vfs_dir.c
+> @@ -218,7 +218,7 @@ int v9fs_dir_release(struct inode *inode, struct file
+> *filp) spin_lock(&inode->i_lock);
+>  		hlist_del(&fid->ilist);
+>  		spin_unlock(&inode->i_lock);
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+>  	}
+> 
+>  	if ((filp->f_mode & FMODE_WRITE)) {
+> diff --git a/fs/9p/vfs_file.c b/fs/9p/vfs_file.c
+> index 2573c08f335c..8276f3af35d7 100644
+> --- a/fs/9p/vfs_file.c
+> +++ b/fs/9p/vfs_file.c
+> @@ -63,7 +63,7 @@ int v9fs_file_open(struct inode *inode, struct file *file)
+> 
+>  		err = p9_client_open(fid, omode);
+>  		if (err < 0) {
+> -			p9_client_clunk(fid);
+> +			p9_fid_put(fid);
+>  			return err;
+>  		}
+>  		if ((file->f_flags & O_APPEND) &&
+> @@ -98,7 +98,7 @@ int v9fs_file_open(struct inode *inode, struct file *file)
+> v9fs_open_fid_add(inode, fid);
+>  	return 0;
+>  out_error:
+> -	p9_client_clunk(file->private_data);
+> +	p9_fid_put(file->private_data);
+>  	file->private_data = NULL;
+>  	return err;
+>  }
+> diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
+> index 3d8297714772..bde18776f0c7 100644
+> --- a/fs/9p/vfs_inode.c
+> +++ b/fs/9p/vfs_inode.c
+> @@ -400,7 +400,7 @@ void v9fs_evict_inode(struct inode *inode)
+>  	fscache_relinquish_cookie(v9fs_inode_cookie(v9inode), false);
+>  	/* clunk the fid stashed in writeback_fid */
+>  	if (v9inode->writeback_fid) {
+> -		p9_client_clunk(v9inode->writeback_fid);
+> +		p9_fid_put(v9inode->writeback_fid);
+>  		v9inode->writeback_fid = NULL;
+>  	}
+>  }
+> @@ -569,7 +569,7 @@ static int v9fs_remove(struct inode *dir, struct dentry
+> *dentry, int flags) if (v9fs_proto_dotl(v9ses))
+>  		retval = p9_client_unlinkat(dfid, dentry->d_name.name,
+>  					    
+v9fs_at_to_dotl_flags(flags));
+> -	p9_client_clunk(dfid);
+> +	p9_fid_put(dfid);
+>  	if (retval == -EOPNOTSUPP) {
+>  		/* Try the one based on path */
+>  		v9fid = v9fs_fid_clone(dentry);
+> @@ -633,14 +633,14 @@ v9fs_create(struct v9fs_session_info *v9ses, struct
+> inode *dir, if (IS_ERR(ofid)) {
+>  		err = PTR_ERR(ofid);
+>  		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
+> -		p9_client_clunk(dfid);
+> +		p9_fid_put(dfid);
+>  		return ERR_PTR(err);
+>  	}
+> 
+>  	err = p9_client_fcreate(ofid, name, perm, mode, extension);
+>  	if (err < 0) {
+>  		p9_debug(P9_DEBUG_VFS, "p9_client_fcreate failed %d\n", 
+err);
+> -		p9_client_clunk(dfid);
+> +		p9_fid_put(dfid);
+>  		goto error;
+>  	}
+> 
+> @@ -652,7 +652,7 @@ v9fs_create(struct v9fs_session_info *v9ses, struct
+> inode *dir, p9_debug(P9_DEBUG_VFS,
+>  				   "p9_client_walk failed %d\n", err);
+>  			fid = NULL;
+> -			p9_client_clunk(dfid);
+> +			p9_fid_put(dfid);
+>  			goto error;
+>  		}
+>  		/*
+> @@ -663,20 +663,20 @@ v9fs_create(struct v9fs_session_info *v9ses, struct
+> inode *dir, err = PTR_ERR(inode);
+>  			p9_debug(P9_DEBUG_VFS,
+>  				   "inode creation failed %d\n", err);
+> -			p9_client_clunk(dfid);
+> +			p9_fid_put(dfid);
+>  			goto error;
+>  		}
+>  		v9fs_fid_add(dentry, fid);
+>  		d_instantiate(dentry, inode);
+>  	}
+> -	p9_client_clunk(dfid);
+> +	p9_fid_put(dfid);
+>  	return ofid;
+>  error:
+>  	if (ofid)
+> -		p9_client_clunk(ofid);
+> +		p9_fid_put(ofid);
+> 
+>  	if (fid)
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+> 
+>  	return ERR_PTR(err);
+>  }
+> @@ -708,7 +708,7 @@ v9fs_vfs_create(struct user_namespace *mnt_userns,
+> struct inode *dir, return PTR_ERR(fid);
+> 
+>  	v9fs_invalidate_inode_attr(dir);
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+> 
+>  	return 0;
+>  }
+> @@ -744,7 +744,7 @@ static int v9fs_vfs_mkdir(struct user_namespace
+> *mnt_userns, struct inode *dir, }
+> 
+>  	if (fid)
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+> 
+>  	return err;
+>  }
+> @@ -785,7 +785,7 @@ struct dentry *v9fs_vfs_lookup(struct inode *dir, struct
+> dentry *dentry, */
+>  	name = dentry->d_name.name;
+>  	fid = p9_client_walk(dfid, 1, &name, 1);
+> -	p9_client_clunk(dfid);
+> +	p9_fid_put(dfid);
+>  	if (fid == ERR_PTR(-ENOENT))
+>  		inode = NULL;
+>  	else if (IS_ERR(fid))
+> @@ -808,7 +808,7 @@ struct dentry *v9fs_vfs_lookup(struct inode *dir, struct
+> dentry *dentry, else if (!IS_ERR(res))
+>  			v9fs_fid_add(res, fid);
+>  		else
+> -			p9_client_clunk(fid);
+> +			p9_fid_put(fid);
+>  	}
+>  	return res;
+>  }
+> @@ -891,7 +891,7 @@ v9fs_vfs_atomic_open(struct inode *dir, struct dentry
+> *dentry,
+> 
+>  error:
+>  	if (fid)
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+>  	goto out;
+>  }
+> 
+> @@ -959,7 +959,7 @@ v9fs_vfs_rename(struct user_namespace *mnt_userns,
+> struct inode *old_dir, dfid = v9fs_parent_fid(old_dentry);
+>  	olddirfid = clone_fid(dfid);
+>  	if (dfid && !IS_ERR(dfid))
+> -		p9_client_clunk(dfid);
+> +		p9_fid_put(dfid);
+> 
+>  	if (IS_ERR(olddirfid)) {
+>  		retval = PTR_ERR(olddirfid);
+> @@ -968,7 +968,7 @@ v9fs_vfs_rename(struct user_namespace *mnt_userns,
+> struct inode *old_dir,
+> 
+>  	dfid = v9fs_parent_fid(new_dentry);
+>  	newdirfid = clone_fid(dfid);
+> -	p9_client_clunk(dfid);
+> +	p9_fid_put(dfid);
+> 
+>  	if (IS_ERR(newdirfid)) {
+>  		retval = PTR_ERR(newdirfid);
+> @@ -1020,13 +1020,13 @@ v9fs_vfs_rename(struct user_namespace *mnt_userns,
+> struct inode *old_dir, d_move(old_dentry, new_dentry);
+>  	}
+>  	up_write(&v9ses->rename_sem);
+> -	p9_client_clunk(newdirfid);
+> +	p9_fid_put(newdirfid);
+> 
+>  clunk_olddir:
+> -	p9_client_clunk(olddirfid);
+> +	p9_fid_put(olddirfid);
+> 
+>  done:
+> -	p9_client_clunk(oldfid);
+> +	p9_fid_put(oldfid);
+>  	return retval;
+>  }
+> 
+> @@ -1060,7 +1060,7 @@ v9fs_vfs_getattr(struct user_namespace *mnt_userns,
+> const struct path *path, return PTR_ERR(fid);
+> 
+>  	st = p9_client_stat(fid);
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  	if (IS_ERR(st))
+>  		return PTR_ERR(st);
+> 
+> @@ -1136,7 +1136,7 @@ static int v9fs_vfs_setattr(struct user_namespace
+> *mnt_userns, retval = p9_client_wstat(fid, &wstat);
+> 
+>  	if (use_dentry)
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+> 
+>  	if (retval < 0)
+>  		return retval;
+> @@ -1261,7 +1261,7 @@ static const char *v9fs_vfs_get_link(struct dentry
+> *dentry, return ERR_CAST(fid);
+> 
+>  	st = p9_client_stat(fid);
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  	if (IS_ERR(st))
+>  		return ERR_CAST(st);
+> 
+> @@ -1308,7 +1308,7 @@ static int v9fs_vfs_mkspecial(struct inode *dir,
+> struct dentry *dentry, return PTR_ERR(fid);
+> 
+>  	v9fs_invalidate_inode_attr(dir);
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  	return 0;
+>  }
+> 
+> @@ -1364,7 +1364,7 @@ v9fs_vfs_link(struct dentry *old_dentry, struct inode
+> *dir, v9fs_refresh_inode(oldfid, d_inode(old_dentry));
+>  		v9fs_invalidate_inode_attr(dir);
+>  	}
+> -	p9_client_clunk(oldfid);
+> +	p9_fid_put(oldfid);
+>  	return retval;
+>  }
+> 
+> diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
+> index b6eb1160296c..09b124fe349c 100644
+> --- a/fs/9p/vfs_inode_dotl.c
+> +++ b/fs/9p/vfs_inode_dotl.c
+> @@ -274,7 +274,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct
+> dentry *dentry, if (IS_ERR(ofid)) {
+>  		err = PTR_ERR(ofid);
+>  		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
+> -		p9_client_clunk(dfid);
+> +		p9_fid_put(dfid);
+>  		goto out;
+>  	}
+> 
+> @@ -286,7 +286,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct
+> dentry *dentry, if (err) {
+>  		p9_debug(P9_DEBUG_VFS, "Failed to get acl values in creat 
+%d\n",
+>  			 err);
+> -		p9_client_clunk(dfid);
+> +		p9_fid_put(dfid);
+>  		goto error;
+>  	}
+>  	err = p9_client_create_dotl(ofid, name, 
+v9fs_open_to_dotl_flags(flags),
+> @@ -294,14 +294,14 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct
+> dentry *dentry, if (err < 0) {
+>  		p9_debug(P9_DEBUG_VFS, "p9_client_open_dotl failed in 
+creat %d\n",
+>  			 err);
+> -		p9_client_clunk(dfid);
+> +		p9_fid_put(dfid);
+>  		goto error;
+>  	}
+>  	v9fs_invalidate_inode_attr(dir);
+> 
+>  	/* instantiate inode and assign the unopened fid to the dentry */
+>  	fid = p9_client_walk(dfid, 1, &name, 1);
+> -	p9_client_clunk(dfid);
+> +	p9_fid_put(dfid);
+>  	if (IS_ERR(fid)) {
+>  		err = PTR_ERR(fid);
+>  		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
+> @@ -358,10 +358,10 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct
+> dentry *dentry,
+> 
+>  error:
+>  	if (fid)
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+>  err_clunk_old_fid:
+>  	if (ofid)
+> -		p9_client_clunk(ofid);
+> +		p9_fid_put(ofid);
+>  	goto out;
+>  }
+> 
+> @@ -458,9 +458,9 @@ static int v9fs_vfs_mkdir_dotl(struct user_namespace
+> *mnt_userns, v9fs_invalidate_inode_attr(dir);
+>  error:
+>  	if (fid)
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+>  	v9fs_put_acl(dacl, pacl);
+> -	p9_client_clunk(dfid);
+> +	p9_fid_put(dfid);
+>  	return err;
+>  }
+> 
+> @@ -489,7 +489,7 @@ v9fs_vfs_getattr_dotl(struct user_namespace *mnt_userns,
+> */
+> 
+>  	st = p9_client_getattr_dotl(fid, P9_STATS_ALL);
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  	if (IS_ERR(st))
+>  		return PTR_ERR(st);
+> 
+> @@ -603,7 +603,7 @@ int v9fs_vfs_setattr_dotl(struct user_namespace
+> *mnt_userns, retval = p9_client_setattr(fid, &p9attr);
+>  	if (retval < 0) {
+>  		if (use_dentry)
+> -			p9_client_clunk(fid);
+> +			p9_fid_put(fid);
+>  		return retval;
+>  	}
+> 
+> @@ -619,12 +619,12 @@ int v9fs_vfs_setattr_dotl(struct user_namespace
+> *mnt_userns, retval = v9fs_acl_chmod(inode, fid);
+>  		if (retval < 0) {
+>  			if (use_dentry)
+> -				p9_client_clunk(fid);
+> +				p9_fid_put(fid);
+>  			return retval;
+>  		}
+>  	}
+>  	if (use_dentry)
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+> 
+>  	return 0;
+>  }
+> @@ -771,9 +771,9 @@ v9fs_vfs_symlink_dotl(struct user_namespace *mnt_userns,
+> struct inode *dir,
+> 
+>  error:
+>  	if (fid)
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+> 
+> -	p9_client_clunk(dfid);
+> +	p9_fid_put(dfid);
+>  	return err;
+>  }
+> 
+> @@ -803,14 +803,14 @@ v9fs_vfs_link_dotl(struct dentry *old_dentry, struct
+> inode *dir,
+> 
+>  	oldfid = v9fs_fid_lookup(old_dentry);
+>  	if (IS_ERR(oldfid)) {
+> -		p9_client_clunk(dfid);
+> +		p9_fid_put(dfid);
+>  		return PTR_ERR(oldfid);
+>  	}
+> 
+>  	err = p9_client_link(dfid, oldfid, dentry->d_name.name);
+> 
+> -	p9_client_clunk(dfid);
+> -	p9_client_clunk(oldfid);
+> +	p9_fid_put(dfid);
+> +	p9_fid_put(oldfid);
+>  	if (err < 0) {
+>  		p9_debug(P9_DEBUG_VFS, "p9_client_link failed %d\n", err);
+>  		return err;
+> @@ -826,7 +826,7 @@ v9fs_vfs_link_dotl(struct dentry *old_dentry, struct
+> inode *dir, return PTR_ERR(fid);
+> 
+>  		v9fs_refresh_inode_dotl(fid, d_inode(old_dentry));
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+>  	}
+>  	ihold(d_inode(old_dentry));
+>  	d_instantiate(dentry, d_inode(old_dentry));
+> @@ -924,9 +924,9 @@ v9fs_vfs_mknod_dotl(struct user_namespace *mnt_userns,
+> struct inode *dir, }
+>  error:
+>  	if (fid)
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+>  	v9fs_put_acl(dacl, pacl);
+> -	p9_client_clunk(dfid);
+> +	p9_fid_put(dfid);
+> 
+>  	return err;
+>  }
+> @@ -956,7 +956,7 @@ v9fs_vfs_get_link_dotl(struct dentry *dentry,
+>  	if (IS_ERR(fid))
+>  		return ERR_CAST(fid);
+>  	retval = p9_client_readlink(fid, &target);
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  	if (retval)
+>  		return ERR_PTR(retval);
+>  	set_delayed_call(done, kfree_link, target);
+> diff --git a/fs/9p/vfs_super.c b/fs/9p/vfs_super.c
+> index 97e23b4e6982..bf350fad9500 100644
+> --- a/fs/9p/vfs_super.c
+> +++ b/fs/9p/vfs_super.c
+> @@ -190,7 +190,7 @@ static struct dentry *v9fs_mount(struct file_system_type
+> *fs_type, int flags, return dget(sb->s_root);
+> 
+>  clunk_fid:
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  	v9fs_session_close(v9ses);
+>  free_session:
+>  	kfree(v9ses);
+> @@ -203,7 +203,7 @@ static struct dentry *v9fs_mount(struct file_system_type
+> *fs_type, int flags, * attached the fid to dentry so it won't get clunked
+>  	 * automatically.
+>  	 */
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  	deactivate_locked_super(sb);
+>  	return ERR_PTR(retval);
+>  }
+> @@ -270,7 +270,7 @@ static int v9fs_statfs(struct dentry *dentry, struct
+> kstatfs *buf) }
+>  	res = simple_statfs(dentry, buf);
+>  done:
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  	return res;
+>  }
+> 
+> diff --git a/fs/9p/xattr.c b/fs/9p/xattr.c
+> index a824441b95a2..1f9298a4bd42 100644
+> --- a/fs/9p/xattr.c
+> +++ b/fs/9p/xattr.c
+> @@ -44,7 +44,7 @@ ssize_t v9fs_fid_xattr_get(struct p9_fid *fid, const char
+> *name, if (err)
+>  			retval = err;
+>  	}
+> -	p9_client_clunk(attr_fid);
+> +	p9_fid_put(attr_fid);
+>  	return retval;
+>  }
+> 
+> @@ -71,7 +71,7 @@ ssize_t v9fs_xattr_get(struct dentry *dentry, const char
+> *name, if (IS_ERR(fid))
+>  		return PTR_ERR(fid);
+>  	ret = v9fs_fid_xattr_get(fid, name, buffer, buffer_size);
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+> 
+>  	return ret;
+>  }
+> @@ -98,7 +98,7 @@ int v9fs_xattr_set(struct dentry *dentry, const char
+> *name, if (IS_ERR(fid))
+>  		return PTR_ERR(fid);
+>  	ret = v9fs_fid_xattr_set(fid, name, value, value_len, flags);
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  	return ret;
+>  }
+> 
+> @@ -128,7 +128,7 @@ int v9fs_fid_xattr_set(struct p9_fid *fid, const char
+> *name, retval);
+>  	else
+>  		p9_client_write(fid, 0, &from, &retval);
+> -	err = p9_client_clunk(fid);
+> +	err = p9_fid_put(fid);
+>  	if (!retval && err)
+>  		retval = err;
+>  	return retval;
+> diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+> index ec1d1706f43c..eabb53992350 100644
+> --- a/include/net/9p/client.h
+> +++ b/include/net/9p/client.h
+> @@ -237,6 +237,34 @@ static inline int p9_req_try_get(struct p9_req_t *r)
+> 
+>  int p9_req_put(struct p9_req_t *r);
+> 
+> +/* fid reference counting helpers:
+> + *  - fids used for any length of time should always be referenced through
+> + *    p9_fid_get(), and released with p9_fid_put()
+> + *  - v9fs_fid_lookup() or similar will automatically call get for you
+> + *    and also require a put
+> + *  - the *_fid_add() helpers will stash the fid in the inode,
+> + *    at which point it is the responsibility of evict_inode()
+> + *    to call the put
+> + *  - the last put will automatically send a clunk to the server
+> + */
+> +static inline struct p9_fid *p9_fid_get(struct p9_fid *fid)
+> +{
+> +	refcount_inc(&fid->count);
+> +
+> +	return fid;
+> +}
+> +
+> +static inline int p9_fid_put(struct p9_fid *fid)
+> +{
+> +	if (!fid || IS_ERR(fid))
+> +		return 0;
+> +
+> +	if (!refcount_dec_and_test(&fid->count))
+> +		return 0;
+> +
+> +	return p9_client_clunk(fid);
+> +}
+> +
+>  void p9_client_cb(struct p9_client *c, struct p9_req_t *req, int status);
+> 
+>  int p9_parse_header(struct p9_fcall *pdu, int32_t *size, int8_t *type,
+> diff --git a/net/9p/client.c b/net/9p/client.c
+> index 8bba0d9cf975..f3eb280c7d9d 100644
+> --- a/net/9p/client.c
+> +++ b/net/9p/client.c
+> @@ -1228,7 +1228,7 @@ struct p9_fid *p9_client_walk(struct p9_fid *oldfid,
+> uint16_t nwname,
+> 
+>  clunk_fid:
+>  	kfree(wqids);
+> -	p9_client_clunk(fid);
+> +	p9_fid_put(fid);
+>  	fid = NULL;
+> 
+>  error:
+> @@ -1459,15 +1459,6 @@ int p9_client_clunk(struct p9_fid *fid)
+>  	struct p9_req_t *req;
+>  	int retries = 0;
+> 
+> -	if (!fid || IS_ERR(fid)) {
+> -		pr_warn("%s (%d): Trying to clunk with invalid fid\n",
+> -			__func__, task_pid_nr(current));
+> -		dump_stack();
+> -		return 0;
+> -	}
+> -	if (!refcount_dec_and_test(&fid->count))
+> -		return 0;
+> -
 
-i.MX MU has a MUR bit which is to reset both the Processor B and the
-Processor A sides of the MU module, forcing all control and status
-registers to return to their default values (except the BHR bit in the ACR
-register and BHRM bit in BCR register), and all internal states to be
-cleared.
+I probably would have moved (and that way preserved) that sanity warning to 
+p9_fid_put(), but anyway LGTM.
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/mailbox/fsl,mu.yaml | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 
-diff --git a/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml b/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
-index 7a86e7926dd2..191c1ce15009 100644
---- a/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
-+++ b/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
-@@ -72,14 +72,16 @@ properties:
-       type      : Channel type
-       channel   : Channel number
- 
--      This MU support 4 type of unidirectional channels, each type
--      has 4 channels. A total of 16 channels. Following types are
-+      This MU support 5 type of unidirectional channels, each type
-+      has 4 channels except RST channel which only has 1 channel.
-+      A total of 17 channels.  Following types are
-       supported:
-       0 - TX channel with 32bit transmit register and IRQ transmit
-           acknowledgment support.
-       1 - RX channel with 32bit receive register and IRQ support
-       2 - TX doorbell channel. Without own register and no ACK support.
-       3 - RX doorbell channel.
-+      4 - RST channel
-     const: 2
- 
-   clocks:
--- 
-2.25.1
+>  again:
+>  	p9_debug(P9_DEBUG_9P, ">>> TCLUNK fid %d (try %d)\n",
+>  		 fid->fid, retries);
+> @@ -1519,7 +1510,7 @@ int p9_client_remove(struct p9_fid *fid)
+>  	p9_tag_remove(clnt, req);
+>  error:
+>  	if (err == -ERESTARTSYS)
+> -		p9_client_clunk(fid);
+> +		p9_fid_put(fid);
+>  	else
+>  		p9_fid_destroy(fid);
+>  	return err;
+> @@ -2042,7 +2033,7 @@ struct p9_fid *p9_client_xattrwalk(struct p9_fid
+> *file_fid, attr_fid->fid, *attr_size);
+>  	return attr_fid;
+>  clunk_fid:
+> -	p9_client_clunk(attr_fid);
+> +	p9_fid_put(attr_fid);
+>  	attr_fid = NULL;
+>  error:
+>  	if (attr_fid && attr_fid != file_fid)
+
+
+
 
