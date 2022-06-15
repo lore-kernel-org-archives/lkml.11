@@ -2,82 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3D71C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 19:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5858ACCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 19:06:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348943AbiFOTBg (ORCPT
+        id S1347983AbiFOTGC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 15:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38200 "EHLO
+        Wed, 15 Jun 2022 15:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239945AbiFOTB2 (ORCPT
+        with ESMTP id S229737AbiFOTF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 15:01:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E2A5003C;
-        Wed, 15 Jun 2022 12:01:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 719D4B81D81;
-        Wed, 15 Jun 2022 19:01:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DD46C34115;
-        Wed, 15 Jun 2022 19:01:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655319685;
-        bh=Qy3C78QNyFeJXZqCKviEM5fZjl3ArDFvWJxIFv9WMmc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=p93f1K/23X5iAmwtne1iGvfX+uBZTya3MQCvxjhSUx4Mkv9s1RO0h23hv8ky52TMP
-         nYw8uPPZ9m1E7C8P9Jju3eUcALOL9OBbmVR7LzdFk+mYb062/vTiSoGLPp87tP6MH0
-         7/IC70HJX5GNLc/+TZzBhSjEogUyFdlrSTvfFlRM1122VgNeftbEc152Buo86BrvBM
-         4W4R+rvD41wjQf25Smm8MQTP+7N1GuoT6ShttHTq4ciMvnsC2/COijRUs/NqN37ocN
-         TBSftnGvXsR2+Y8liZHcVAdpH4LxSf9Rb1jFDERxGigJq1ZYcqcIrxtEf6zQy4XDuo
-         OUMofXLpgEevA==
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [GIT PULL] tpmdd updates for v5.19-rc3
-Date:   Wed, 15 Jun 2022 21:59:12 +0300
-Message-Id: <20220615185912.40987-1-jarkko@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        Wed, 15 Jun 2022 15:05:59 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193A82316A
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 12:05:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655319959; x=1686855959;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OuM7gkbOg0MzPEJgys5x7ZlalSiOHpnlfvZma3wKoiY=;
+  b=elPnCCBN4Nqe9h6k3uthwzZJqqdPQHKy/trzNpZ9kb/VqWjFTYv2O0eE
+   on/XDmK+Nk9VU+C9KEsWb+tJMl7F8iQxwRB0Iy4sA0dH6NC8VbDJoNV+1
+   xKDhfFg3syL71//tm432QkwEs89as4sX8TawV43/7cB+w9fKxT+dGmty8
+   ktv2KINRzb/4W8k1jdaT0UhQgQZv+2qcIvdZiVSdN2jOJD74Pm33QYqO8
+   8se0RjQI0ISdVMYvigvEDTlQQmJW7dmDvgLts+GrSqkIpadjRWDAD/SHr
+   cncF/GXi0tukMv2TsOVCvbEs4gjeZE+4/VVwYyTOTjbghhGXEMYmlWehp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="276653042"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="276653042"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 12:05:37 -0700
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="762603318"
+Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 12:05:37 -0700
+Date:   Wed, 15 Jun 2022 12:05:19 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     Martin Fernandez <martin.fernandez@eclypsium.com>
+Cc:     linux-kernel@vger.kernel.org, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, mingo@redhat.com,
+        tglx@linutronix.de, daniel.gutson@eclypsium.com,
+        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com
+Subject: Re: [PATCH] x86/cpuinfo: Clear X86_FEATURE_TME if TME/MKTME is
+ disabled by BIOS
+Message-ID: <20220615190519.GA1524500@alison-desk>
+References: <20220614210217.1940563-1-martin.fernandez@eclypsium.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614210217.1940563-1-martin.fernandez@eclypsium.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 979086f5e0066b4eff66e1eee123da228489985c:
+On Tue, Jun 14, 2022 at 06:02:17PM -0300, Martin Fernandez wrote:
+> Right now the only way to check this is by greping the kernel logs,
+> which is inconvinient. This is currently checked for fwupd for
+> example.
+> 
+> I understand that cpuinfo is supposed to report every feature in the
+> cpu but since AMD is doing the same for sme/sev I think is good to
+> have this for Intel too.
 
-  Merge tag 'fs.fixes.v5.19-rc3' of git://git.kernel.org/pub/scm/linux/kernel/git/brauner/linux (2022-06-15 09:04:55 -0700)
+Martin,
 
-are available in the Git repository at:
+Can you tell, or point me to, more info about your use case?
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git tags/tpmdd-next-v5.19-rc3
+My first reaction is lying about the cpuinfo is not a soln, since
+it creates a problem for a users currently relying on cpuinfo to be
+the source of truth for TME. Are we to tell them to go look in the
+log now, because fwupd folks didn't want to ;)
 
-for you to fetch changes up to 27b5b22d252c6d71a2a37a4bdf18d0be6d25ee5a:
+What were your other options?
 
-  certs: fix and refactor CONFIG_SYSTEM_BLACKLIST_HASH_LIST build (2022-06-15 21:52:32 +0300)
+Alison
 
-----------------------------------------------------------------
-Hi,
-
-Two fixes for rc1 PR.
-
-BR, Jarkko
-
-----------------------------------------------------------------
-Masahiro Yamada (2):
-      certs/blacklist_hashes.c: fix const confusion in certs blacklist
-      certs: fix and refactor CONFIG_SYSTEM_BLACKLIST_HASH_LIST build
-
- certs/.gitignore         |  2 +-
- certs/Makefile           | 20 ++++++++++----------
- certs/blacklist_hashes.c |  4 ++--
- 3 files changed, 13 insertions(+), 13 deletions(-)
+> 
+> Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
+> ---
+>  arch/x86/kernel/cpu/intel.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+> index fd5dead8371c..7311172aceaf 100644
+> --- a/arch/x86/kernel/cpu/intel.c
+> +++ b/arch/x86/kernel/cpu/intel.c
+> @@ -570,6 +570,8 @@ static void detect_tme(struct cpuinfo_x86 *c)
+> 
+>  	if (!TME_ACTIVATE_LOCKED(tme_activate) || !TME_ACTIVATE_ENABLED(tme_activate)) {
+>  		pr_info_once("x86/tme: not enabled by BIOS\n");
+> +		if (mktme_status == MKTME_UNINITIALIZED)
+> +			clear_cpu_cap(c, X86_FEATURE_TME);
+>  		mktme_status = MKTME_DISABLED;
+>  		return;
+>  	}
+> --
+> 2.30.2
+> 
