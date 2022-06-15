@@ -2,95 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F76CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E49C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:38:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345163AbiFOSiN (ORCPT
+        id S1346427AbiFOSiz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:38:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47458 "EHLO
+        Wed, 15 Jun 2022 14:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245372AbiFOSiK (ORCPT
+        with ESMTP id S231737AbiFOSix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:38:10 -0400
-Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886C627B3A
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:38:09 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id 1Xu2oIs6ogNxB1Xu2o39DQ; Wed, 15 Jun 2022 20:38:07 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Wed, 15 Jun 2022 20:38:07 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <a1f3152a-6102-f5d9-0f27-a6e6f43705a7@wanadoo.fr>
-Date:   Wed, 15 Jun 2022 20:38:06 +0200
+        Wed, 15 Jun 2022 14:38:53 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACFE2B24E
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:38:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655318333; x=1686854333;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=42G8vZDc4ZHYS75nOGwaWESZ7FvKXE+QO9Erz/QcALA=;
+  b=E5ckm/JsL9Fv6ylE9OjGR7LBM2Z/Vi28UfZ8UoJFz9qBlq8ASHwSxbus
+   aWsIaHRBQUJ184LJRVE8Gci2xaPfoURG47PeMBtuHMaEgSXwzYDuBOH3N
+   G1jQ+WIU5diLrevDDrM2OqdIWcmpVZH26pYnCZKHypH+j0gTnoBfhRMDf
+   BVpdjH2Ea5cVdfIZvfl9pYCs6CJm5AHgg/YPGG6iZqTjemcX/FvZkMsAE
+   +eo6IOSXlDzC8YyohQ1DrpO3jcniu+K8SoZNm1c3MbzOwgjkjutPVQ6Zl
+   8Jl5lJiwt/HdPjhkJlS81gD1EWOqf1LQ+jsUAEgN1keAIu+oskduvDd2c
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="280102116"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="280102116"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 11:12:35 -0700
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="559273984"
+Received: from mjortiz-mobl.amr.corp.intel.com (HELO [10.212.185.241]) ([10.212.185.241])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 11:12:35 -0700
+Message-ID: <2a6e0dbb-89e3-9735-de20-132992d699b4@intel.com>
+Date:   Wed, 15 Jun 2022 11:12:35 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH] block: Directly use ida_alloc()/free()
-Content-Language: fr
-To:     Bo Liu <liubo03@inspur.com>, axboe@kernel.dk
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220615081816.4342-1-liubo03@inspur.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220615081816.4342-1-liubo03@inspur.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv4 3/3] x86/tdx: Handle load_unaligned_zeropad() page-cross
+ to a shared page
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org
+Cc:     ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, linux-kernel@vger.kernel.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, seanjc@google.com,
+        thomas.lendacky@amd.com, x86@kernel.org
+References: <20220614120135.14812-1-kirill.shutemov@linux.intel.com>
+ <20220614120135.14812-4-kirill.shutemov@linux.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220614120135.14812-4-kirill.shutemov@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 15/06/2022 à 10:18, Bo Liu a écrit :
-> Use ida_alloc()/ida_free() instead of
-> ida_simple_get()/ida_simple_remove().
-> The latter is deprecated and more verbose.
+On 6/14/22 05:01, Kirill A. Shutemov wrote:
+> load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
+> The unwanted loads are typically harmless. But, they might be made to
+> totally unrelated or even unmapped memory. load_unaligned_zeropad()
+> relies on exception fixup (#PF, #GP and now #VE) to recover from these
+> unwanted loads.
 > 
-> Signed-off-by: Bo Liu <liubo03@inspur.com>
-
-Hi,
-for what it's worth:
-
-Reviewed-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-
+> In TDX guests, the second page can be shared page and VMM may configure
+> it to trigger #VE.
+> 
+> Kernel assumes that #VE on a shared page is MMIO access and tries to
+> decode instruction to handle it. In case of load_unaligned_zeropad() it
+> may result in confusion as it is not MMIO access.
+> 
+> Fix it by detecting split page MMIO accesses and fail them.
+> load_unaligned_zeropad() will recover using exception fixups.
+> 
+> The issue was discovered by analysis. It was not triggered during the
+> testing.
+> 
+> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 > ---
->   block/blk-core.c  | 4 ++--
->   block/blk-sysfs.c | 2 +-
->   2 files changed, 3 insertions(+), 3 deletions(-)
+>  arch/x86/coco/tdx/tdx.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
 > 
-> diff --git a/block/blk-core.c b/block/blk-core.c
-> index 06ff5bbfe8f6..eb86c756a7fd 100644
-> --- a/block/blk-core.c
-> +++ b/block/blk-core.c
-> @@ -448,7 +448,7 @@ struct request_queue *blk_alloc_queue(int node_id, bool alloc_srcu)
->   
->   	q->last_merge = NULL;
->   
-> -	q->id = ida_simple_get(&blk_queue_ida, 0, 0, GFP_KERNEL);
-> +	q->id = ida_alloc(&blk_queue_ida, GFP_KERNEL);
->   	if (q->id < 0)
->   		goto fail_srcu;
->   
-> @@ -498,7 +498,7 @@ struct request_queue *blk_alloc_queue(int node_id, bool alloc_srcu)
->   fail_split:
->   	bioset_exit(&q->bio_split);
->   fail_id:
-> -	ida_simple_remove(&blk_queue_ida, q->id);
-> +	ida_free(&blk_queue_ida, q->id);
->   fail_srcu:
->   	if (alloc_srcu)
->   		cleanup_srcu_struct(q->srcu);
-> diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
-> index 14607565d781..2ed9e7d52b47 100644
-> --- a/block/blk-sysfs.c
-> +++ b/block/blk-sysfs.c
-> @@ -799,7 +799,7 @@ static void blk_release_queue(struct kobject *kobj)
->   	if (blk_queue_has_srcu(q))
->   		cleanup_srcu_struct(q->srcu);
->   
-> -	ida_simple_remove(&blk_queue_ida, q->id);
-> +	ida_free(&blk_queue_ida, q->id);
->   	call_rcu(&q->rcu_head, blk_free_queue_rcu);
->   }
->   
+> diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+> index 7d6d484a6d28..3bcaf2170ede 100644
+> --- a/arch/x86/coco/tdx/tdx.c
+> +++ b/arch/x86/coco/tdx/tdx.c
+> @@ -333,8 +333,8 @@ static bool mmio_write(int size, unsigned long addr, unsigned long val)
+>  
+>  static int handle_mmio(struct pt_regs *regs, struct ve_info *ve)
+>  {
+> +	unsigned long *reg, val, vaddr;
+>  	char buffer[MAX_INSN_SIZE];
+> -	unsigned long *reg, val;
+>  	struct insn insn = {};
+>  	enum mmio_type mmio;
+>  	int size, extend_size;
+> @@ -360,6 +360,19 @@ static int handle_mmio(struct pt_regs *regs, struct ve_info *ve)
+>  			return -EINVAL;
+>  	}
+>  
+> +	/*
+> +	 * Reject EPT violation #VEs that split pages.
+> +	 *
+> +	 * MMIO accesses suppose to be naturally aligned and therefore never
+> +	 * cross a page boundary. Seeing split page accesses indicates a bug
+> +	 * or load_unaligned_zeropad() that steps into unmapped shared page.
+
+Isn't this "unmapped" thing a rather superfluous implementation detail?
+
+For the guest, it just needs to know that it *CAN* #VE on access to MMIO
+and that it needs to be prepared.  The fact that MMIO is implemented
+with TDX shared memory *AND* that "unmapped shared pages" can cause
+#VE's seems like too much detail.
+
+Also, is this all precise?  Are literal unmapped shared pages the *ONLY*
+thing that a hypervisor can do do case a #VE?  What about, say, reserved
+bits being set in a shared EPT entry?
+
+I was thinking a comment like this might be better:
+
+>         /*
+>          * Reject EPT violation #VEs that split pages.
+>          *
+>          * MMIO accesses are supposed to be naturally aligned and therefore
+>          * never cross page boundaries. Seeing split page accesses indicates
+>          * a bug or a load_unaligned_zeropad() that stepped into an MMIO page.
+>          *
+>          * load_unaligned_zeropad() will recover using exception fixups.
+>          */
+
 
