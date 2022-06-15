@@ -2,85 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF58C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B651C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349095AbiFOQvS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54132 "EHLO
+        id S244353AbiFOQyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 12:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348943AbiFOQvQ (ORCPT
+        with ESMTP id S229553AbiFOQyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:51:16 -0400
-Received: from m1550.mail.126.com (m1550.mail.126.com [220.181.15.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9E713FD8E
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:51:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=tGRkU
-        DKjq6HJmp5eOv3l/7ThtDQMpkNYLD2KIN1UUMA=; b=ADq1oJ35FqWmxH2xgTPz6
-        M02uMmPNRlKPWrouWXdsiYWGKILMRugPB2B/ynKhwV5uQBlFtDDracwdnfDrjmFZ
-        5nGpWKa9Yy2tKv0LCQTOib9XKgGCtwkyzMG/oaxTNLO6aPZDtIH4G3oHH0rmUFEg
-        LIoUWV5IJMCRD6g1M82jAE=
-Received: from windhl$126.com ( [123.112.70.164] ) by ajax-webmail-wmsvr50
- (Coremail) ; Thu, 16 Jun 2022 00:50:16 +0800 (CST)
-X-Originating-IP: [123.112.70.164]
-Date:   Thu, 16 Jun 2022 00:50:16 +0800 (CST)
-From:   =?GBK?B?us3BwQ==?= <windhl@126.com>
-To:     "Rob Herring" <robh@kernel.org>
-Cc:     "Thomas Gleixner" <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "X86 ML" <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        "Frank Rowand" <frank.rowand@sony.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re:Re: [PATCH] arch: x86: kernel: Add missing of_node_put() in
- devicetree.c
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <CAL_JsqLfzz=Pxk=GaOyLpDf1u5WaMGE=UYSVf4MCp+7RRQSBeg@mail.gmail.com>
-References: <20220615150325.3969911-1-windhl@126.com>
- <CAL_JsqLfzz=Pxk=GaOyLpDf1u5WaMGE=UYSVf4MCp+7RRQSBeg@mail.gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
-MIME-Version: 1.0
-Message-ID: <525fcb48.8d90.1816845d84e.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: MsqowAAnffHIDapi1i03AA--.50013W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbiuAghF2JVj4Rz2gAAsT
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+        Wed, 15 Jun 2022 12:54:12 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 065B936158;
+        Wed, 15 Jun 2022 09:54:10 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 25FGkua9031580;
+        Wed, 15 Jun 2022 11:46:56 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 25FGktYk031577;
+        Wed, 15 Jun 2022 11:46:55 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Wed, 15 Jun 2022 11:46:55 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vitaly Buka <vitalybuka@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
+Message-ID: <20220615164655.GC25951@gate.crashing.org>
+References: <20220614144853.3693273-1-glider@google.com> <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com> <CAG_fn=WEed5NJ8hdrrP_N8aQ_1Ad11VoJgdVxQheo3VfT_xyXQ@mail.gmail.com> <CAHk-=whjz3wO8zD+itoerphWem+JZz4uS3myf6u1Wd6epGRgmQ@mail.gmail.com> <CAG_fn=UPoM3bafwu6inGPMjg1bPw3HSFM_KrE_hen_MN3fu2vA@mail.gmail.com> <20220614214039.GA25951@gate.crashing.org> <CAG_fn=UPyoySbzbLQnJkgbfcSkyCD11M=e+W4-T_WoQCXEPFGA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAG_fn=UPyoySbzbLQnJkgbfcSkyCD11M=e+W4-T_WoQCXEPFGA@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgpIaSwgcm9iLCB0aGFua3MgZm9yIHlvdXIgcmVwbHkuCgpUaGUgb2ZfZmluZF94eCB3aWxsIGlu
-Y3JlYXNlIHRoZSByZWZjb3VudGVyIGZvciB0aGUgbG9jYWwgcmVmZXJlbmNlLCBzbyB3aGVuIAp0
-aGUgZnVuY3Rpb24gcmV0dXJuLCB3ZSBuZWVkIGEgZGVjcmVhc2UgZm9yIHRoZSBkZXN0cm95IG9m
-IHRoZSBsb2NhbCByZWZlcmVuY2UuClRoZSBkZXZpY2Ugd2lsbCBub3QgYmUgZnJlZWQgYXMgaXRz
-IHJlZmNvdW50ZXIgd2lsbCBiZSBzdXJlIGxhcmdlciB0aGFuIDAgd2hlbiAKdGhlIGZ1bmN0aW9u
-IHJldHVybnMuCgpBbGwgd2UgbmVlZCBpcyB0byBrZWVwIHRoZSByZWZjb3VudGluZyBiYWxhbmNl
-LCByaWdodD8KCgoKCkF0IDIwMjItMDYtMTYgMDA6MjY6MTYsICJSb2IgSGVycmluZyIgPHJvYmhA
-a2VybmVsLm9yZz4gd3JvdGU6Cj5PbiBXZWQsIEp1biAxNSwgMjAyMiBhdCA5OjAzIEFNIExpYW5n
-IEhlIDx3aW5kaGxAMTI2LmNvbT4gd3JvdGU6Cj4+Cj4+IEluIGR0Yl9zZXR1cF9ocGV0KCksIG9m
-X2ZpbmRfY29tcGF0aWJsZV9ub2RlKCkgd2lsbCByZXR1cm4gYSBub2RlCj4+IHBvaW50ZXIgd2l0
-aCByZWZjb3VudCBpbmNyZW1lbnRlZC4gV2Ugc2hvdWxkIHVzZSBvZl9ub2RlX3B1dCgpIHdoZW4g
-aXQKPj4gaXMgbm90IHVzZWQgYW55bW9yZS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogTGlhbmcgSGUg
-PHdpbmRobEAxMjYuY29tPgo+PiAtLS0KPj4gIGFyY2gveDg2L2tlcm5lbC9kZXZpY2V0cmVlLmMg
-fCAzICsrKwo+PiAgMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKQo+Pgo+PiBkaWZmIC0t
-Z2l0IGEvYXJjaC94ODYva2VybmVsL2RldmljZXRyZWUuYyBiL2FyY2gveDg2L2tlcm5lbC9kZXZp
-Y2V0cmVlLmMKPj4gaW5kZXggNWNkNTFmMjVmNDQ2Li42YTM4NjQyNGRkZjcgMTAwNjQ0Cj4+IC0t
-LSBhL2FyY2gveDg2L2tlcm5lbC9kZXZpY2V0cmVlLmMKPj4gKysrIGIvYXJjaC94ODYva2VybmVs
-L2RldmljZXRyZWUuYwo+PiBAQCAtMTIwLDYgKzEyMCw5IEBAIHN0YXRpYyB2b2lkIF9faW5pdCBk
-dGJfc2V0dXBfaHBldCh2b2lkKQo+PiAgICAgICAgIGlmICghZG4pCj4+ICAgICAgICAgICAgICAg
-ICByZXR1cm47Cj4+ICAgICAgICAgcmV0ID0gb2ZfYWRkcmVzc190b19yZXNvdXJjZShkbiwgMCwg
-JnIpOwo+PiArCj4+ICsgICAgICAgb2Zfbm9kZV9wdXQoZG4pOwo+PiArCj4KPllvdSBkb24ndCB3
-YW50IGEgcHV0IG9uIHN1Y2Nlc3MuIElmIHlvdSBhcmUgdXNpbmcgdGhlIGRldmljZSwgdGhlbiB5
-b3UKPndhbnQgdG8gaG9sZCBhIHJlZmVyZW5jZSB0byBpdC4KPgo+SSB3b3VsZCBndWVzcyB0aGF0
-IGlmIHlvdSBoYXZlIGFuIGVycm9yIGhlcmUgYW5kIGRvbid0IGhhdmUgeW91cgo+dGltZXIsIHlv
-dSdyZSBub3QgZ29pbmcgdG8gZmluaXNoIGJvb3RpbmcgYW55d2F5cy4KPgo+RmluYWxseSwgd291
-bGRuJ3QgZHRiX2xhcGljX3NldHVwKCkgYW5kIGR0Yl9hZGRfaW9hcGljKCkgYWxzbyBuZWVkIGEK
-PnNpbWlsYXIgY2hhbmdlPyBCdXQgYWdhaW4sIGlmIHRob3NlIGFyZW4ndCBpbml0aWFsaXplZCwg
-eW91IHByb2JhYmx5Cj5hcmVuJ3QgZ2V0dGluZyB2ZXJ5IGZhci4KPgo+Cj4+ICAgICAgICAgaWYg
-KHJldCkgewo+PiAgICAgICAgICAgICAgICAgV0FSTl9PTigxKTsKPj4gICAgICAgICAgICAgICAg
-IHJldHVybjsKPj4gLS0KPj4gMi4yNS4xCj4+Cg==
+Hi!
+
+On Wed, Jun 15, 2022 at 10:30:17AM +0200, Alexander Potapenko wrote:
+> On Tue, Jun 14, 2022 at 11:45 PM Segher Boessenkool
+> <segher@kernel.crashing.org> wrote:
+> > Since C11, lvalue conversion of an automatic variable that does not have
+> > its address taken is explicitly undefined behaviour (6.3.2.1/2).  So in
+> > function "p", both where "c" and where "size" are passed causes UB (so
+> > that executing "p" always causes UB btw).
+> 
+> Thanks for this reference to the standard. I've received another one
+> off-list, which lets the variables be address-taken:
+> 
+> 6.2.4/6: "If an initialization is specified for the object, it is
+> performed each time the declaration or compound literal is reached in
+> the execution of the block; otherwise, the value becomes indeterminate
+> each time the declaration is reached."
+> 3.19.2/1: "indeterminate value: either an unspecified value or a trap
+> representation"
+> 6.2.6.1/5: "Certain object representations need not represent a value
+> of the object type. If the stored value of an object has such a
+> representation and is read by an lvalue expression that does not have
+> character type, the behavior is undefined. If such a representation is
+> produced by a side effect that modifies all or any part of the object
+> by an lvalue expression that does not have character type, the
+> behavior is undefined. [Footnote: Thus, an automatic variable can be
+> initialized to a trap representation without causing undefined
+> behavior, but the value of the variable cannot be used until a proper
+> value is stored in it.] Such a representation is called a trap
+> representation."
+
+That only affects types that have trap representations though, which
+importantly explicitly does not include unsigned types without padding
+bits, and unsigned char always.
+
+Some people (on the standards committee) think all uninitialised uses
+should be UB.  And some think not.  But since C11 we have this new
+explicit UB for automatic variables that don't have their address taken.
+
+(The background of that is the Itanium NaT (not-a-thing) bit in its
+registers; without this new clause compilers for Itanium needed to
+initialise many things that they now do not, with some readings of the
+standard anyway :-) )
+
+> > GCC does not warn, it has already optimised the code to what you expect
+> > by the time this warning is done.  If you use -fno-inline it does warn
+> > for both "c" and "size" (via -Wmaybe-uninitialized).
+> >
+> > But it is still UB!  All bets are off, no compiler can do any correct
+> > translation of your program, since there *is none*.
+> 
+> Then it makes sense for us to report non-trivial cases where
+> uninitialized values are actually passed to functions.
+
+Yes, and IMO it makes sense to report this to compilers as well, if they
+do not yet warn for some simple cases.
+
+Cheers,
+
+
+Segher
