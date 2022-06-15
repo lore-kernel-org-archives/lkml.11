@@ -2,82 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF076C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F47CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349966AbiFOVam (ORCPT
+        id S1350117AbiFOVbb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 17:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54036 "EHLO
+        Wed, 15 Jun 2022 17:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346367AbiFOVaf (ORCPT
+        with ESMTP id S239542AbiFOVb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 17:30:35 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140AA562CF
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 14:30:34 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id 129so12547993pgc.2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 14:30:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:in-reply-to:references:subject:message-id:date
-         :mime-version:content-transfer-encoding;
-        bh=gj8zUzDSKIR2PtxM/UZSWlhmSPN0w/aiFm/JeXggx3M=;
-        b=weZbBbUSK+6ocvp/YzFFHERgkjbmlZTADEbrz1GAxTVzxSC0U49PCdEOH6oQqf7vPz
-         nnHfHtXXNUDmyBx+yThH5CR4nybHplJAsV0CqFWV/6gMaSaL4qy+qeUGgvujL9s2yaWK
-         4F6Uc981Rii/LasC0DFpKRLwmglkSD+vTqFfpdHMk+CQ7Lth+H7DzmI4llkqjDALQutO
-         g/FQ6ChGc1D71hkvXTzI8me3/McOdQExjqL6ujqiWcUPZDRGGn4hoZO8oXDvSXwEU3L2
-         6iKQkcF2xrS7xqRwL/WHHo3p0pIG/NlpMPnXukfcAG2XpyKd61H/Pi8VXAduwxBymBg5
-         OGQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
-         :message-id:date:mime-version:content-transfer-encoding;
-        bh=gj8zUzDSKIR2PtxM/UZSWlhmSPN0w/aiFm/JeXggx3M=;
-        b=JLTUi2pJO3E3wIt67uVhztWHKNkYYxEazMhuSKWdtEdpVwjevawMjNTEOqn6AEm1Px
-         Jrnp9mc93a3HCZTOpGf+5iF+HlEytU6UheyM7G8hm3uhM+reDctusmZvnknxPBHPh3CP
-         mqyXtOEDKf1W9bMvWGGTUco2Fw5Tdz0Q6NKCZqMeZUq51t8JPFx+OuqiV5oE8S2a4UcK
-         SUQCnL0OpbrL3XOL/mSJK9LIlpTZOJWwisqV2TuDtsU/XwJi3nQsT7slwqUlko/LAoGF
-         1DHhnNyuZEOGPgigjOlxqO1C/7Y8CfL/tK29Y+ivBjQhZGLh9Isp87o/IKC9LxrLvsZu
-         rKAg==
-X-Gm-Message-State: AJIora85Kij7kpB50aJ27e1yoDu21MeX7ySCfdYYuc5GSbxJERDq65zB
-        phkBsN3cqnsaksPvswwPPuCH9tnwFe4aQQ==
-X-Google-Smtp-Source: AGRyM1v0IMTmN8GOvRn4uNva8PDhOEex3sAELCaW2rWI3VxM7LPVY+4GwPMUV/TKADCMwWmQqaUbnA==
-X-Received: by 2002:a63:194c:0:b0:408:a9d1:400c with SMTP id 12-20020a63194c000000b00408a9d1400cmr1544266pgz.559.1655328633528;
-        Wed, 15 Jun 2022 14:30:33 -0700 (PDT)
-Received: from [127.0.1.1] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id js12-20020a17090b148c00b001e86be34c98sm2313057pjb.13.2022.06.15.14.30.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 14:30:33 -0700 (PDT)
-From:   Jens Axboe <axboe@kernel.dk>
-To:     liubo03@inspur.com
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220615081816.4342-1-liubo03@inspur.com>
-References: <20220615081816.4342-1-liubo03@inspur.com>
-Subject: Re: [PATCH] block: Directly use ida_alloc()/free()
-Message-Id: <165532863283.858456.2064903368423247771.b4-ty@kernel.dk>
-Date:   Wed, 15 Jun 2022 15:30:32 -0600
+        Wed, 15 Jun 2022 17:31:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902744924D;
+        Wed, 15 Jun 2022 14:31:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 268F6617C1;
+        Wed, 15 Jun 2022 21:31:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA8F8C3411A;
+        Wed, 15 Jun 2022 21:31:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655328687;
+        bh=h/A3iOsL+jSiXeun+GclseG7VDKI7T9E6iC83VBXQmc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jRcv7OdG8w6WZvKDmpHu4ZTNDPKNmUeNwkF/5kyOU3kogbTfbnziKBi4Jemy89mPK
+         VB9ZLSW8Ef+8WhlhpERgKh3C4AwlLVT0YSGP+NZY7Y8aQQnRCCTfxkla/ct4P4xzOS
+         m384ySKBIIAd638YYDqCOcxaXX3uj/4hJTyxkYvLHgkuIFRDDkI8+xZ2gKK6GJvocM
+         p6WIsw8yQJAavGl0gEUO2R8b7panqmJ9rBrYblYA0mmSsjYt6gOUgcj3KHSNIx9Iq4
+         CevdQYGBbuq+VVg9ZAfGZt1g9BYutIbzx1PyMaX9HpjQg/PQYxJc+gN2u0EeJbcuw0
+         5w3ycwJy5spww==
+Date:   Thu, 16 Jun 2022 00:29:18 +0300
+From:   "jarkko@kernel.org" <jarkko@kernel.org>
+To:     "hch@lst.de" <hch@lst.de>
+Cc:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        "christophe.leroy@csgroup.eu" <christophe.leroy@csgroup.eu>,
+        "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "svens@linux.ibm.com" <svens@linux.ibm.com>,
+        "palmer@dabbelt.com" <palmer@dabbelt.com>,
+        "jpoimboe@kernel.org" <jpoimboe@kernel.org>,
+        "paulus@samba.org" <paulus@samba.org>,
+        "zepan@sipeed.com" <zepan@sipeed.com>,
+        "iii@linux.ibm.com" <iii@linux.ibm.com>,
+        "deller@gmx.de" <deller@gmx.de>,
+        "aou@eecs.berkeley.edu" <aou@eecs.berkeley.edu>,
+        "joey.gouly@arm.com" <joey.gouly@arm.com>,
+        "anemo@mba.ocn.ne.jp" <anemo@mba.ocn.ne.jp>,
+        "egorenar@linux.ibm.com" <egorenar@linux.ibm.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "npiggin@gmail.com" <npiggin@gmail.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "luis.machado@linaro.org" <luis.machado@linaro.org>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "jniethe5@gmail.com" <jniethe5@gmail.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "paul.walmsley@sifive.com" <paul.walmsley@sifive.com>,
+        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
+        "dja@axtens.net" <dja@axtens.net>,
+        "liaochang1@huawei.com" <liaochang1@huawei.com>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        "huschle@linux.ibm.com" <huschle@linux.ibm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "James.Bottomley@hansenpartnership.com" 
+        <James.Bottomley@hansenpartnership.com>,
+        "song@kernel.org" <song@kernel.org>,
+        "guoren@kernel.org" <guoren@kernel.org>,
+        "nathan@kernel.org" <nathan@kernel.org>,
+        "dave.anglin@bell.net" <dave.anglin@bell.net>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "atomlin@redhat.com" <atomlin@redhat.com>,
+        "bristot@redhat.com" <bristot@redhat.com>,
+        "naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
+        "anup@brainfault.org" <anup@brainfault.org>,
+        "javierm@redhat.com" <javierm@redhat.com>,
+        "linux@roeck-us.net" <linux@roeck-us.net>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "philipp.tomsich@vrull.eu" <philipp.tomsich@vrull.eu>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "ndesaulniers@google.com" <ndesaulniers@google.com>,
+        "samitolvanen@google.com" <samitolvanen@google.com>,
+        "yangtiezhu@loongson.cn" <yangtiezhu@loongson.cn>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "heiko@sntech.de" <heiko@sntech.de>,
+        "nathaniel@profian.com" <nathaniel@profian.com>,
+        "michael.roth@amd.com" <michael.roth@amd.com>,
+        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>,
+        "Sakkinen, Jarkko" <jarkko@profian.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "borntraeger@linux.ibm.com" <borntraeger@linux.ibm.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "wangkefeng.wang@huawei.com" <wangkefeng.wang@huawei.com>,
+        "tmricht@linux.ibm.com" <tmricht@linux.ibm.com>,
+        "hca@linux.ibm.com" <hca@linux.ibm.com>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "gor@linux.ibm.com" <gor@linux.ibm.com>,
+        "atishp@atishpatra.org" <atishp@atishpatra.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>,
+        "nico@fluxnic.net" <nico@fluxnic.net>,
+        "masahiroy@kernel.org" <masahiroy@kernel.org>,
+        "agordeev@linux.ibm.com" <agordeev@linux.ibm.com>,
+        "kernel@esmil.dk" <kernel@esmil.dk>,
+        "ashimida@linux.alibaba.com" <ashimida@linux.alibaba.com>,
+        "elver@google.com" <elver@google.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>,
+        "Keshavamurthy, Anil S" <anil.s.keshavamurthy@intel.com>,
+        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+        "chenzhongjin@huawei.com" <chenzhongjin@huawei.com>,
+        "andrealmeid@igalia.com" <andrealmeid@igalia.com>,
+        "changbin.du@intel.com" <changbin.du@intel.com>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>
+Subject: Re: [PATCH] kprobes: Enable tracing for mololithic kernel images
+Message-ID: <YqpPLqW6/AWEQhGr@iki.fi>
+References: <YqAy0qjI4Lktk/uJ@iki.fi>
+ <20220608232115.ccd4399f4a1d133e9b65c2a9@kernel.org>
+ <CAPhsuW6iUieQvA6KqzSLgtxmjkVSWCuVwNA338DATb_myHxo7w@mail.gmail.com>
+ <CAPhsuW6BzUtqnjvaGJScXRpghs0_V_phpdyd4_oAKhvmkX-GFw@mail.gmail.com>
+ <YqEF6+YKqCHsWZJW@bombadil.infradead.org>
+ <20220609034852.GA30873@lst.de>
+ <YqH0iEgsi6+bwS3x@bombadil.infradead.org>
+ <e7dedb9086193ca7682edc10fabc4195894e5146.camel@intel.com>
+ <Yqh/5nn0AhdwaCm8@iki.fi>
+ <20220615063707.GA22930@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615063707.GA22930@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 04:18:16 -0400, Bo Liu wrote:
-> Use ida_alloc()/ida_free() instead of
-> ida_simple_get()/ida_simple_remove().
-> The latter is deprecated and more verbose.
+On Wed, Jun 15, 2022 at 08:37:07AM +0200, hch@lst.de wrote:
+> On Tue, Jun 14, 2022 at 03:32:38PM +0300, jarkko@kernel.org wrote:
+> > > Like say for a next step we moved prog pack out of bpf into core code,
+> > > gave it it's own copy of module_alloc(), and then made kprobes use it.
+> > > Then we would have something with improved W^X guard rails, and kprobes
+> > > would not depend on modules anymore. I think maybe it's a step in the
+> > > right direction, even if it's not perfect.
+> > 
+> > So you're saying that I should (as a first step) basically clone
+> > module_alloc() implementation for kprobes, and future for BPF 
+> > use, in order to get a clean starting point?
 > 
+> I don't think cloning the code helps anyone.  The fact that except
+> for the eBPF mess everyone uses module_alloc and the related
+> infrastructure is a feature and not a bug.  The interface should
+> become better than what we have right now, but there is few enough
+> users that this can be done in one go.
 > 
+> So assuming we really care deeply enough about fancy tracing without
+> modules (and I'm not sure we do, even if you don't use modules it
+> doesn't hurt to just build the modules code, I do that all the time
+> for my test machines), the general approach in your series is the
+> right one.
 
-Applied, thanks!
+OK, thanks for the elaboration!
 
-[1/1] block: Directly use ida_alloc()/free()
-      commit: c13794dbe936a62a9b509ece1423a59287b9c80f
+However I bake it, I doubt that next version is going to be the final
+version, given all the angles. Therefore, I mostly Christophe's
+suggestions on compilation flags, and also split this into per-arch
+patches.
 
-Best regards,
--- 
-Jens Axboe
+That should be at least to the right direction.
 
-
+BR, Jarkko
