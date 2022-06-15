@@ -2,89 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE745C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2415C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244633AbiFOJH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
+        id S1346785AbiFOJIH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 05:08:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345951AbiFOJHq (ORCPT
+        with ESMTP id S1344115AbiFOJHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:07:46 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D813EF0B
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:07:15 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id me5so21944757ejb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:07:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ES8ASp7atEPV2ulQuffz5wC8BUs7nXi4Sw5qO8jhvkg=;
-        b=AcdJ49b0Bi29z4k9WIs/umbQSn3hzG3IsZWY5xWa1HzJ5MxJX9T3aaatXtRE9W7K0v
-         M5EnWr6tivapFjV/mHmCvTkriyYlxDO4JwpyPIb1OPPZLQgthj/OIqM3pvGw+6nLQ7FF
-         uHA6JoRaL9Y4X1TKkHWHFBPbQGmhzvHvqgt7CtEhnq+ZDtqoGlfbJnfwtS7g4vJgPkqH
-         8m9VYik8RGygFcbAGu9uhrG3A+DNsfcuBpVTE1gMM1lPw0G45wegt0LWCndnvoAGsqWY
-         T1j5+HZZxJeLf7rZI2DM9ulnWVKD3CiYaMIA9PHEV91j+VAEg6ZagNQhgJ7s918qxTiz
-         +Z7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ES8ASp7atEPV2ulQuffz5wC8BUs7nXi4Sw5qO8jhvkg=;
-        b=K0Hm0ns5686nlGAiWwSliWrS4xNCrMkTTjvsyyrlvEME0e4+thu38d6z1gUk0MEevj
-         zqpUIAZ+lL0wTrWqBLlfwUKW8B+rmqSJTvYipm0JW59qQpIlcbRS3Zs3wugscTTxFDVM
-         XNpNS5tREaXQ+cOZtoRRufxaTHAF5oFmcqQBGPw7rUcY+ux1skWoaHK4MtenrvpRyh4v
-         QfJeU/NcgWGsr5exuQRH2sdmfPXR9mm41vSSKB7t7x2O7N8k+DKUpWUF/jCFTlBTnIlw
-         pTVE41+v5DwZp2VuGM3uQHmdRsTyCcY4GHxmEpmhzEGLe7Gqrc5BIC1aFAQlfCNOwvzJ
-         RE1A==
-X-Gm-Message-State: AOAM533vPWgBMFwUBnR3KDJzuRy7jRjZBxLQzlFs+1Whi/RU6CdhvdvI
-        yLMLfcdefhHZlV2pRJ88bhqQ+p2M4oRjPKBu
-X-Google-Smtp-Source: ABdhPJy1F3MwoqOMBRMVhok5B3EpdVQ/7BYT8NMJ1xgK7RnqhIkziS7hSSA8KuSUyhhETgfadL47bg==
-X-Received: by 2002:a17:907:dab:b0:711:d56b:4eb5 with SMTP id go43-20020a1709070dab00b00711d56b4eb5mr7720308ejc.93.1655284033514;
-        Wed, 15 Jun 2022 02:07:13 -0700 (PDT)
-Received: from stroh80.sec.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
-        by smtp.gmail.com with ESMTPSA id z22-20020a50e696000000b0042e032164a4sm9085602edm.61.2022.06.15.02.07.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 02:07:13 -0700 (PDT)
-From:   Naresh Solanki <naresh.solanki@9elements.com>
-X-Google-Original-From: Naresh Solanki <Naresh.Solanki@9elements.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Naresh Solanki <Naresh.Solanki@9elements.com>
-Subject: [PATCH v2 0/2] regulator: userspace consumer DT support
-Date:   Wed, 15 Jun 2022 11:07:08 +0200
-Message-Id: <20220615090710.1697151-1-Naresh.Solanki@9elements.com>
-X-Mailer: git-send-email 2.35.3
+        Wed, 15 Jun 2022 05:07:48 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D61318;
+        Wed, 15 Jun 2022 02:07:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655284045; x=1686820045;
+  h=from:to:subject:date:message-id:in-reply-to:references:
+   mime-version:content-transfer-encoding;
+  bh=HAnzpIYqjQ6/BJ8qJrY4ssrEeQWRAxVZqY91Bj00quk=;
+  b=UbyCqL0kst1AJK10Ey8C94DyQUx9HHEr3s2j6v31SS2FlH9zf8Rh3z/s
+   S19f6FpFr/4jm/BHYBrL+i2kRW/n+0pWMO89SssTv1XAxGzCRhTLnwKXG
+   jNxwJfxt2KBeJydwHM7qTyxrq2jq55WDkNf046WrUxwfuex6QborXl1sT
+   8KkPS+qyxisBEIOH3/+oqEy3aXa5SmsYZEquauILJk8tGBDJsMMrAVB7T
+   QIHxhk283Qe0lRaMXzLAwqVeaPKme3kA1cYIuTzQsievj8xju8IFAYDO0
+   Q5bJK165t/4sNb9DT+GoQSUGBL86VwDmgQET3jhWJnOyKy1xlMhVZYdAE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="276464684"
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="276464684"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 02:07:25 -0700
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="830934154"
+Received: from mgrymel-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.41.34])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 02:07:23 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] serial: 8250: Fix __stop_tx() & DMA Tx restart races
+Date:   Wed, 15 Jun 2022 12:06:49 +0300
+Message-Id: <20220615090651.15340-2-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220615090651.15340-1-ilpo.jarvinen@linux.intel.com>
+References: <20220615090651.15340-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devicetree support of the regulator driver userspace-consumer.
-The supply names for this driver is provided through DT properties
-so that proper regulator handle can be acquired.
-Also add support for notification to userspace of regulator events.
+Commit e8ffbb71f783 ("serial: 8250: use THRE & __stop_tx also with
+DMA") changed __dma_tx_complete() to enable THRI that is cleared in
+__stop_tx() once THRE is asserted as UART runs out bits to transmit. It
+is possible, however, that more data arrives in between in which case
+serial8250_tx_dma() resumes Tx. THRI is not supposed to be on during
+DMA Tx because DMA is based on completion handler, therefore THRI must
+be cleared unconditionally in serial8250_tx_dma().
 
-This is useful to interact with regulator from userspace.
-Also use sysfs notify to catch regulator events into userspace
-application.
-This enables userspace application to monitor events in regulator &
-handle them appropriately.
+When Tx is about to start, another race window exists with
+serial8250_handle_irq() leading to a call into __stop_tx() while the
+Tx has already been resumed:
 
-Laxman Dewangan (1):
-  regulator: userspace-consumer: Add devicetree support
+__tx_complete():
+  -> spin_lock(port->lock)
+  -> dma->tx_running = 0
+  -> serial8250_set_THRI()
+  -> spin_unlock(port->lock)
 
-Patrick Rudolph (1):
-  regulator: userspace consumer: Add Notification support
+uart_start():
+				serial8250_handle_irq():
+  -> spin_lock(port->lock)
+  -> serial8250_tx_dma():
+    -> dma->tx_running = 1
+  -> spin_unlock(port->lock)
+				  -> spin_lock(port->lock)
+				  -> __stop_tx()
 
- drivers/regulator/userspace-consumer.c       | 100 ++++++++++++++++++-
- include/linux/regulator/userspace-consumer.h |   1 +
- 2 files changed, 99 insertions(+), 2 deletions(-)
+Close this race by checking !dma->tx_running before calling into
+__stop_tx().
 
+Fixes: e8ffbb71f783 ("serial: 8250: use THRE & __stop_tx also with DMA")
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_dma.c  | 6 +++---
+ drivers/tty/serial/8250/8250_port.c | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-base-commit: 018ab4fabddd94f1c96f3b59e180691b9e88d5d8
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 7133fceed35e..a8dba4a0a8fb 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -106,10 +106,10 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+ 				   UART_XMIT_SIZE, DMA_TO_DEVICE);
+ 
+ 	dma_async_issue_pending(dma->txchan);
+-	if (dma->tx_err) {
++	serial8250_clear_THRI(p);
++	if (dma->tx_err)
+ 		dma->tx_err = 0;
+-		serial8250_clear_THRI(p);
+-	}
++
+ 	return 0;
+ err:
+ 	dma->tx_err = 1;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 953b0fadfd4c..684a1f1fd686 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1936,7 +1936,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+ 	if ((status & UART_LSR_THRE) && (up->ier & UART_IER_THRI)) {
+ 		if (!up->dma || up->dma->tx_err)
+ 			serial8250_tx_chars(up);
+-		else
++		else if (!up->dma->tx_running)
+ 			__stop_tx(up);
+ 	}
+ 
 -- 
-2.35.3
+2.30.2
 
