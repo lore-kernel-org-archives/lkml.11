@@ -2,88 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F508C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:24:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 301FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350141AbiFOWYa (ORCPT
+        id S1345493AbiFOWZJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 18:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44054 "EHLO
+        Wed, 15 Jun 2022 18:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243581AbiFOWY2 (ORCPT
+        with ESMTP id S236639AbiFOWZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 18:24:28 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA6D2F027
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:24:28 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id o17so11574443pla.6
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:24:28 -0700 (PDT)
+        Wed, 15 Jun 2022 18:25:07 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49BE62F027
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:25:06 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id z7so18124125edm.13
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:25:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=uLEDL+G7aX3Y4fRU26LLhNvvGtvMvsrcMGTR1rtP7yw=;
-        b=DTJF3smWA3fB95jgkWeMgAeL3z2fFHk8fPHUNEallNDdQff3BPuIcBZS65ZbGBPUXE
-         K6BOf3/c2HA+EFOtIuA+4DajkWGkAzMQmZeFz2jKNsM4hfaGAPiXCWlPadUXuzDTRnoI
-         5Jt7riLi+7en25sCaSe8ZlYJ4cSXRdC1Vyxf7RUHS8uGg2SzfkxnsOr9+1jAnQEIk7TL
-         1pkdH0HOOKTr1NWiSFW3u7QG+uol9RhSdTluUF1Cj6vP5+yL/pDTlqwaBjjoyWk5zd8u
-         evUfILLDx8rbTd29hitOx5f87S0CYWd3ZPpYWIVzsTuXC34ir4vWVGv0pfGro8jz7KmU
-         XOJw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=8znYIfEaEVt09OzYM/EQpid5mF6s7TkBS4JSqx18ajs=;
+        b=Rxs3FHAFio23LDCBA4IeD8l+fcHd66FCnBOrPLfNSi2dVhM8fu8Y1ngMRzF7u1v+sy
+         hlefXfMtku384wVo/5W0u2f2rJnSv4ag6unfliQwBOUB7HrMcYzKuWswjVzoYYsYyFPq
+         f2z/a5nF+rv77KTWfTQ/RCbq8qmA6URiHF8va2BmYDZ9iEQYi6VDJeDb2Q/mNPt9ozqU
+         RKGn00XbxP6+fKacZeDftwoFWJa9vwmOVg9VdThDZ1LTMWbdvvf1TwgRXCnV9H2hpD2O
+         4zMy8y6NoKDhwt7X+DjGX3BFUwJr6DPdqvEKyLpN+yZc+SueKKD7pBpbS9/4jAEZ5A7G
+         KvHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=uLEDL+G7aX3Y4fRU26LLhNvvGtvMvsrcMGTR1rtP7yw=;
-        b=nF7IoZkNPe581LbqZGaJOR0V9Mh/Fc46hCmKtFFYISFfckrhFGTcxJVy9Z3fd2r9vs
-         vQ4KLcszqpcUGsDCT8cBiQ0p7brJVO9PXg0OxwWqeaJb8/M9MUNBiAHMVAAjyx4HZ0KH
-         /QONlrS0mOXfZpirUVqsek4eR0p6tQt9yieYfQjcwOB7cXz7q9VKBKNX6AjLxQU2Z+y3
-         wGo5pE6gNHNtN03+6znIYPdXqVBkCtChKM/nEHjniwmC8tlDwAFM8VGn4RNP/TzasIIy
-         GC1+khBQmnLW6Henay+3sfxJ9KE/uUgQJqBtI67zBLJynWxfDQQulov+m51ydVSs8rwv
-         yTaA==
-X-Gm-Message-State: AJIora8+kz4GvspAspIE3giYyhtUllCL+d5uFN1y651Sn7TlJqL8r8Il
-        TRQODL1fOmKe9Z1799e0L6UD4w==
-X-Google-Smtp-Source: AGRyM1twcw/WY5Xe4Nnxhw4M0Mco1frKQyTuE637zz53WB/TZIzLMkuT2IwpfthyharuE1mZ8MJLtg==
-X-Received: by 2002:a17:90b:11c5:b0:1ea:9747:28ba with SMTP id gv5-20020a17090b11c500b001ea974728bamr12696060pjb.22.1655331867581;
-        Wed, 15 Jun 2022 15:24:27 -0700 (PDT)
-Received: from google.com ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id p9-20020a62b809000000b0051c79bd5047sm128311pfe.139.2022.06.15.15.24.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 15:24:27 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 23:24:24 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Fabien Parent <fparent@baylibre.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/7] dt-bindings: mfd: mt6397: add binding for MT6357
-Message-ID: <YqpcGLIhD2FsPLdi@google.com>
-References: <20220531124959.202787-1-fparent@baylibre.com>
- <20220531124959.202787-2-fparent@baylibre.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220531124959.202787-2-fparent@baylibre.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=8znYIfEaEVt09OzYM/EQpid5mF6s7TkBS4JSqx18ajs=;
+        b=DxKf8Et7lgKW6oTvnjYwf93W2wseH561gp5LRIqybFbxSkhYv6kwytvr6LwopVw6dP
+         Ihi65UTyfRQRR3gFP3/09zxtnN7OcAX4ygUKY6KWbAlGOMlUYJf7PeL+ud9EsQ8o9UNB
+         u6QfSzvVV8hERxd1be62eWqnqaMDEf5xc/7lbhPXzngn/qSBLcd+X/SFD0KWeElmyCom
+         7mpVHeZvfNUGdssUUV089GAlNBSjkL3d8zkV8uC9ECllnAbaCksDxfHx4ig1oKFNJhEB
+         QsGlT7zUs5J6HYbXn3BejtSDj4h2raN6+JQRSc/53ISEYlZlw3tsIdqN0m0U3+tu8mlE
+         bpGg==
+X-Gm-Message-State: AJIora8CygeljalxElpu2/cnH5TuSkCLHXToxIwLuxtszyRgXVlD8zAy
+        GMHPsuvl48VIrYPYom+OFKc=
+X-Google-Smtp-Source: AGRyM1u7nc9AWz6dTB7DXAlxJkR+1iKtO5UNs2icGj0/pfNLt9KsQsQMsb4LGENkZGk8827Dahz3yw==
+X-Received: by 2002:a05:6402:f:b0:42e:561:a1c0 with SMTP id d15-20020a056402000f00b0042e0561a1c0mr2533963edu.309.1655331904913;
+        Wed, 15 Jun 2022 15:25:04 -0700 (PDT)
+Received: from debian.home (90-180-208-18.rcn.o2.cz. [90.180.208.18])
+        by smtp.gmail.com with ESMTPSA id y3-20020a056402358300b0042dc25fdf5bsm350427edc.29.2022.06.15.15.25.03
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 15 Jun 2022 15:25:04 -0700 (PDT)
+From:   Jiri Vanek <jirivanek1@gmail.com>
+To:     Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>
+Cc:     Vinay Simha B N <simhavcs@gmail.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Jiri Vanek <jirivanek1@gmail.com>
+Subject: [PATCH 0/2] Fixes for TC358775 DSI to LVDS bridge
+Date:   Thu, 16 Jun 2022 00:22:19 +0200
+Message-Id: <20220615222221.1501-1-jirivanek1@gmail.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 31 May 2022, Fabien Parent wrote:
+This patchset fixes two bugs in the driver for TC358775 DSI to LVDS bridge.
 
-> Add binding documentation for the MT6357 PMIC.
-> 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> ---
->  Documentation/devicetree/bindings/mfd/mt6397.txt | 1 +
->  1 file changed, 1 insertion(+)
+Jiri Vanek (2):
+  drm/bridge/tc358775: Return before displaying inappropriate error
+    message
+  drm/bridge/tc358775: Fix DSI clock division for vsync delay
+    calculation
 
-Doesn't seem to apply.
+ drivers/gpu/drm/bridge/tc358775.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.30.2
+
