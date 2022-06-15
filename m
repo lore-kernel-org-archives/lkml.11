@@ -2,108 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5392CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17805CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347055AbiFOOnV (ORCPT
+        id S1347088AbiFOOok (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:43:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58390 "EHLO
+        Wed, 15 Jun 2022 10:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241863AbiFOOnT (ORCPT
+        with ESMTP id S1344443AbiFOOoh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:43:19 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F1033A09;
-        Wed, 15 Jun 2022 07:43:17 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25FEZlfH027682;
-        Wed, 15 Jun 2022 16:42:37 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=vmIbzfHV8QCPsylH3acjPZckKaAd10y9kHOAHMRBN/8=;
- b=4YZX6vcGkbt5oKxM3eDdiEOpqgR4bfflwlSbNgAhOUezMeq4j9I6I6l2jrPS+7F31BY3
- GsyDMTLTfLySB4h+/6qMfUo+Bdg4nsDEzJZcM+BRKgkhT6M6on9apaiSRd+JD3330L8O
- oLtOiUV/AKL4Ib9vDctwTq5sI3IzCWqV1NYQIFgqnhbfKp6zZusCWGOI0/R2S3YOO5fg
- PdowHfVZMEiWp2ykKT/jIs+OqxonoyhPlVz77WwTRW4iFJqzs5Q3lEO8H/r7+QzUbDQz
- YfpF+1cwZHMuBKoYw98qF8Ap1KUSG2K400Pa+cPxbsasMvQkz3yW2W1TKe9Vz5FVEGDB GA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gqd17sua1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 15 Jun 2022 16:42:37 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 54F9510002A;
-        Wed, 15 Jun 2022 16:42:36 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 123652278B2;
-        Wed, 15 Jun 2022 16:42:36 +0200 (CEST)
-Received: from [10.211.13.69] (10.211.13.69) by SHFDAG1NODE2.st.com
- (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Wed, 15 Jun
- 2022 16:42:35 +0200
-Message-ID: <6e1f0081-5f1c-4865-cb66-dd2cf9a5c868@foss.st.com>
-Date:   Wed, 15 Jun 2022 16:42:34 +0200
+        Wed, 15 Jun 2022 10:44:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA92E35853
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:44:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655304275;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=p8aqxPrbwUikaFJ7h1+NENmyUaL55DhysfxWhHj/6PQ=;
+        b=g/A/wrknztBNs5GJNcmhNLLuUkiHVSk33e0GwkNl07Hr6E/IOp3SJLvqK64GbYgYo++tiy
+        Dh3uAVO6BbxKUSdev755ck/XwYWX7WCwAyzaNSdMqCiOWWVPHfmc/1iVPJtCiTElNEhSmA
+        Bts45UiM4xs7xniiEm1yKqoce3+dcTg=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-612-uouhi8hlNfm5bDEnHHKwZw-1; Wed, 15 Jun 2022 10:44:34 -0400
+X-MC-Unique: uouhi8hlNfm5bDEnHHKwZw-1
+Received: by mail-qv1-f70.google.com with SMTP id da12-20020a05621408cc00b0046448be0e98so8304586qvb.9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:44:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=p8aqxPrbwUikaFJ7h1+NENmyUaL55DhysfxWhHj/6PQ=;
+        b=OibtMG5k6b+C20YNkPm3qOr23PBT/QHRIWXWCi96HqsmRQH5cq+EQry73DIpURAcCC
+         y7l+NZPOBjj1AXF/hZQtcZ80Rg9uDOWQ0npiJ5A+DBTt8xfLRu3wDMftghARTmdKp0W2
+         8vjl1VKNgbSjOnJNSC+uPNza7b63zbAXzic6VX0QuPxWz561ORBp4uq7bO1hJgWDRKQP
+         +qyjUusy41LMHo5JIEiMQnCgPgqdrsMBU3++XeqlmTcQCZT0wrCV5euADf5un9Xv0TwX
+         d+REAdRTUOqwLq+YyL7UiluArgcVN1Dlod2o0J7OBw7ndO3/iQPLGRXQapJ2iMtK8mGr
+         nCuQ==
+X-Gm-Message-State: AOAM533xjhOC+5QJY9sayBysVvJX12gbBn1OJJ/R0VAptC4OOiF7LOs2
+        YBEzw0OAuzTV1mPlITb05hv7ZEi0eMW8dGbzDBanRETDSmtzzwpBEBxL/WjDeQPSHc7iElzSuAg
+        eOO13zbECQOuAEPjcdP7934Qq
+X-Received: by 2002:a37:614a:0:b0:6a6:af3b:e9cb with SMTP id v71-20020a37614a000000b006a6af3be9cbmr8416948qkb.744.1655304273708;
+        Wed, 15 Jun 2022 07:44:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzge1omPQUkCEWKDlYeyMLUAmi8/M6QqFRpZ0n4Yr0pF8Uy9by/Z6/gkL92sGQ+BicczDrrvw==
+X-Received: by 2002:a37:614a:0:b0:6a6:af3b:e9cb with SMTP id v71-20020a37614a000000b006a6af3be9cbmr8416920qkb.744.1655304273284;
+        Wed, 15 Jun 2022 07:44:33 -0700 (PDT)
+Received: from bfoster (c-24-61-119-116.hsd1.ma.comcast.net. [24.61.119.116])
+        by smtp.gmail.com with ESMTPSA id t37-20020a05622a182500b003051ce7812asm10124816qtc.5.2022.06.15.07.44.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 07:44:32 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 10:44:31 -0400
+From:   Brian Foster <bfoster@redhat.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ikent@redhat.com, onestero@redhat.com
+Subject: Re: [PATCH 3/3] proc: use idr tgid tag hint to iterate pids in
+ readdir
+Message-ID: <YqnwT2SafZcVaFNO@bfoster>
+References: <20220614180949.102914-1-bfoster@redhat.com>
+ <20220614180949.102914-4-bfoster@redhat.com>
+ <YqniOxl4ACKVp9hM@casper.infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] dmaengine: stm32-mdma: Remove dead code in
- stm32_mdma_irq_handler()
-Content-Language: en-US
-To:     Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Vinod Koul <vkoul@kernel.org>,
-        Amelie Delaunay <amelie.delaunay@st.com>
-CC:     <dmaengine@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-kernel@vger.kernel.org>, <ldv-project@linuxtesting.org>
-References: <1655072638-9103-1-git-send-email-khoroshilov@ispras.ru>
-From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
-In-Reply-To: <1655072638-9103-1-git-send-email-khoroshilov@ispras.ru>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.211.13.69]
-X-ClientProxiedBy: SHFCAS1NODE1.st.com (10.75.129.72) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-15_13,2022-06-15_01,2022-02-23_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqniOxl4ACKVp9hM@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alexey,
-
-On 6/13/22 00:23, Alexey Khoroshilov wrote:
-> Local variable chan is initialized by an address of element of chan array
-> that is part of stm32_mdma_device struct, so it does not make sense to
-> compare chan with NULL.
+On Wed, Jun 15, 2022 at 02:44:27PM +0100, Matthew Wilcox wrote:
+> On Tue, Jun 14, 2022 at 02:09:49PM -0400, Brian Foster wrote:
+> > +++ b/include/linux/idr.h
+> > @@ -185,6 +185,20 @@ static inline bool idr_is_group_lead(struct idr *idr, unsigned long id)
+> >  	return radix_tree_tag_get(&idr->idr_rt, id, IDR_TGID);
+> >  }
+> >  
+> > +/*
+> > + * Find the next id with a potentially associated TGID task using the internal
+> > + * tag. Task association is not guaranteed and must be checked explicitly.
+> > + */
+> > +static inline struct pid *find_tgid_pid(struct idr *idr, unsigned long id)
+> > +{
+> > +	struct pid *pid;
+> > +
+> > +	if (radix_tree_gang_lookup_tag(&idr->idr_rt, (void **) &pid, id, 1,
+> > +				       IDR_TGID) != 1)
+> > +		return NULL;
+> > +	return pid;
+> > +}
 > 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+> The IDR is a generic data structure, and shouldn't know anything about
+> PIDs, TGIDs or tasks.
 > 
-> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-> Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
-> ---
->   drivers/dma/stm32-mdma.c | 5 -----
->   1 file changed, 5 deletions(-)
-> 
-> diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
-> index caf0cce8f528..b11927ed4367 100644
-> --- a/drivers/dma/stm32-mdma.c
-> +++ b/drivers/dma/stm32-mdma.c
-> @@ -1328,12 +1328,7 @@ static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
->   		return IRQ_NONE;
->   	}
->   	id = __ffs(status);
-> -
->   	chan = &dmadev->chan[id];
-> -	if (!chan) {
-> -		dev_warn(mdma2dev(dmadev), "MDMA channel not initialized\n");
-> -		return IRQ_NONE;
-> -	}
->   
->   	/* Handle interrupt for the channel */
->   	spin_lock(&chan->vchan.lock);
 
-Thanks for your patch,
+Hm, Ok. So I suppose this interface should probably be split up a bit
+more. The idr wrappers can be more generic along the lines of
+idr_set_tag(), idr_is_tagged(), idr_get_next_tagged(), etc. This would
+use something like an IDR_TAG1 internally (instead of IDR_TGID) to
+basically expose support for a single, generic, idr-iternal (but
+external radix-tree) tag for idr consumers. (Presumably this would map
+directly over to xarray marks per your reply to patch 1). Then, the
+find_tgid_pid() bits can be lifted into the pid code along the lines of
+find_ge_pid() (along with perhaps some other simple "tgid" wrappers over
+the idr tag mechanism).
 
-Reviewed-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+If that sounds generally reasonable, I'll wait for any feedback on the
+functional approach and follow up with something like that in v2..
+
+Brian
+
