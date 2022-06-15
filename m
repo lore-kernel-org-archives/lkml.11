@@ -2,135 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F908C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC4DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243324AbiFODbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 23:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
+        id S1345642AbiFODiH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 23:38:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242442AbiFODbF (ORCPT
+        with ESMTP id S236508AbiFODiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 23:31:05 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EC74EDC5
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 20:31:04 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id l204so18302371ybf.10
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 20:31:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Vigeld65CL0SN6yz+TUV7phZIEBTM594whgcU4O9Tq0=;
-        b=cbh5N9vZrOzrArx1r7lElQ6dOfbHyzkcC+XKhe05J8yj7B42NshNOzN3+5K/gPNxWa
-         hio9scvKQ78f8X9UuvuPGO3mAh5YtXgArVHFjoqdEHuytZFdMil8WkUpAJlyFN8HxGOG
-         xFYCRdyGpbS/I9UueW9t4ojGax/8ucR5kkDm+4S6nxaFevTny6TYtkhLn7hYrX9S6pCc
-         GG5au9XN1cyamsjsIn/8aMOTu6qNAj77XMYGKBipPanpcXvDaP8UgZVKTBJpMcIba6dw
-         aBzgI9SX88OBzcIm4eiGFPStVecT4SlH9z/mvwSvDsLogCSYx3gGaG+chxucS72nhNTH
-         k1gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Vigeld65CL0SN6yz+TUV7phZIEBTM594whgcU4O9Tq0=;
-        b=FFpyJdH/2Kt1bdD2J26TpZ9/T+VKcBVo9Mh9v/lDxuu1x2Vhg5C9yjXk8dlaZkZ3NT
-         K0Y9M3soHO6SUCckAFtChpEkzjYYDfahm1d3ZFRDq613cY5kmY3Rhup6lfn3jsCZrxXH
-         +UrE2PxoKYv1u6lKfKzYb69dtxKLNvxhn69HGXdXQmZN/U0z5gxi9oowubL8qi6aoPHy
-         8/WvUP7xhR7pJrfc54u6qLtXbfuWDm9+vZKoXAlslNnxiJgt0IeOVSHithqCwSXINYB9
-         C4Gu1OEYXdLSC12QhQ2m4NXaowBiseo2DcWqLdAHWB0KLu/WEyVZJ1kCb0w1TVzH5n3K
-         Rh5g==
-X-Gm-Message-State: AJIora9A82nENrSFJEZVbHdx9LaqX1KSN769i6TIn4fboRb3uTLlWAhm
-        2BldGt3kZ5Rs6j0z4F0jKc8cXJF4i87eqxlqk9k=
-X-Google-Smtp-Source: AGRyM1tz4e9RDBI7VVrR7qNP1lsk+P8mmG3Hd6lz28U3OXQ9cKA2rhHX9XYQV3pc6cP0V2rBDkNfLbNaX22mlkCDkIM=
-X-Received: by 2002:a05:6902:28c:b0:664:85df:5f31 with SMTP id
- v12-20020a056902028c00b0066485df5f31mr8253009ybh.38.1655263863497; Tue, 14
- Jun 2022 20:31:03 -0700 (PDT)
+        Tue, 14 Jun 2022 23:38:05 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED8E4D9CB;
+        Tue, 14 Jun 2022 20:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=lsrUjjkep0NIk/RaiU0ydFTVhZTu6GbkH8h9icB/mZo=; b=wpBbpHFPbowTv9BFpVZtgpy50b
+        8rxx7MmritivOZbz1xS6bbDZFevf3XIcE3gSM/tScbgJC96tXUCi5HB4H8nsV+j3h+Sou/qF4d2me
+        6Id55Bwo0gddSpx7C7I1hUdxd1K2y5JF3S2Gttm28uQVCvZ16GS34zX/YZ8gOLNMUKHM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o1Jqk-006xbQ-9w; Wed, 15 Jun 2022 05:37:46 +0200
+Date:   Wed, 15 Jun 2022 05:37:46 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
+Message-ID: <YqlUCtJhR1Iw3o3F@lunn.ch>
+References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
+ <YqS+zYHf6eHMWJlD@lunn.ch>
+ <20220613125552.GA4536@pengutronix.de>
+ <YqdQJepq3Klvr5n5@lunn.ch>
+ <20220614185221.79983e9b@kernel.org>
 MIME-Version: 1.0
-References: <20220614144443.6566-1-wuchi.zero@gmail.com> <YqiiC+4xES0DoV7X@kroah.com>
-In-Reply-To: <YqiiC+4xES0DoV7X@kroah.com>
-From:   chi wu <wuchi.zero@gmail.com>
-Date:   Wed, 15 Jun 2022 11:30:51 +0800
-Message-ID: <CA+tQmHAJbqDenRE47OacSurF5HZ-XWHu6dRBf+A=UqbhiLomAA@mail.gmail.com>
-Subject: Re: [PATCH] lib/klist: Remove mb() before wake_up_process
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     alexios.zavras@intel.com, allison@lohutok.net, armijn@tjaldur.nl,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614185221.79983e9b@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greg KH <gregkh@linuxfoundation.org> =E4=BA=8E2022=E5=B9=B46=E6=9C=8814=E6=
-=97=A5=E5=91=A8=E4=BA=8C 22:58=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Tue, Jun 14, 2022 at 10:44:43PM +0800, wuchi wrote:
-> > Function wake_up_process always executes a general memory barrier,
-> > so remove the mb() before it.
->
-> Really?  On all systems?  I do not see that, where does it happen?
->
-As I understand it, it is on all systems.  Please help correct the
-mistake, thanks.
+On Tue, Jun 14, 2022 at 06:52:21PM -0700, Jakub Kicinski wrote:
+> On Mon, 13 Jun 2022 16:56:37 +0200 Andrew Lunn wrote:
+> > That would suggest we
+> > want a ETHTOOL_LINK_MODE_REMOTE_FAULT_BIT, which we can set in
+> > supported and maybe see in lpa?
+> 
+> Does this dovetail well with ETHTOOL_A_LINKSTATE_EXT_STATE /
+> ETHTOOL_A_LINKSTATE_EXT_SUBSTATE ?
+> 
+> That's where people who read extended link state out of FW put it
+> (and therefore it's read only now).
 
-1. Follow  Documentation/memory-barriers.txt  line 2128 ~ 2278,
-especially line 2187 ~ 2202 snippet:
-        A general memory barrier is executed by wake_up() if it wakes
-something up.
-        If it doesn't wake anything up then a memory barrier may or may not=
- be
-        executed; you must not rely on it. The barrier occurs before
-the task state
-        is accessed, in particular, it sits between the STORE to
-indicate the event
-        and the STORE to set TASK_RUNNING:
-         CPU 1 (Sleeper)                                       CPU 2 (Waker=
-)
-        =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-        set_current_state();                                   STORE
-event_indicated
-            smp_store_mb();                                   wake_up();
-                STORE current->state                           ...
-                <general barrier>
-<general barrier>
-[*1-1*]
-         LOAD event_indicated                                  if
-((LOAD task->state) & TASK_NORMAL)
+I did wonder about that. But this is to do with autoneg which is part
+of ksetting. Firmware hindered MAC drivers also support ksetting
+set/get.  This patchset is also opening the door to more information
+which is passed via autoneg. It can also contain the ID the link peer
+PHY, etc. This is all part of 802.3, where as
+ETHTOOL_A_LINKSTATE_EXT_STATE tends to be whatever the firmware
+offers, not something covered by a standard.
 
-            STORE task->state
-        where "task" is the thread being woken up and it equals CPU
-1's "current".
-
-2. Follow code wake_up_process in kernel/sched/core.c
-    wake_up_process
-        try_to_wake_up
-            ....
-            raw_spin_lock_irqsave                   [*2-1*]
-            smp_mb__after_spinlock                [*2-2*]
-            ....
-
-[*2-1*] and [*2-2*] will match [*1-1*], though smp_mb__after_spinlock
-does nothing on most architectures,
-but the architectures implement ACQUIRE with an smp_mb() after the
-LL/SC loop, Following include/linux/spinlock.h
-line 172 ~ 178.
-
-3. Following lib/klist.c
-klist_release and klist_remove conform to model "SLEEP AND WAKE-UP
-FUNCTIONS" in  Documentation/memory-barriers.txt,
-so we do as the patch show.
-
-> > Signed-off-by: wuchi <wuchi.zero@gmail.com>
->
-> We need a "real name" for commits.
->
-> How did you test this patch?
-
-Sorry, I didn't. Just found the mb before wake_up_process could be
-remove when reading the code,
-Maybe you can view this as a question I asked.
-
-thanks for your time
+	Andrew
