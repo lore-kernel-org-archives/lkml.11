@@ -2,96 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B6DCCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 19:44:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2057C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 19:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350292AbiFOTov (ORCPT
+        id S1350306AbiFOTqv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 15:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46618 "EHLO
+        Wed, 15 Jun 2022 15:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244636AbiFOTos (ORCPT
+        with ESMTP id S244636AbiFOTqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 15:44:48 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874773CFF2;
-        Wed, 15 Jun 2022 12:44:46 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id y19so25255434ejq.6;
-        Wed, 15 Jun 2022 12:44:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=767OJrCK8HUadii808hVEy3GxcnvixklGPCO6V3YD5M=;
-        b=jFT/VeSc63iFgMPMb2xRcBbUCqXUnEZl1E1MVx1Yd2xAmk3ax4Uy65On/y29eZkoe2
-         EPvPLMkZIFEBJbO/DrmTsslXpsOfH14CWV/xGigqff7/K3B/BKmC5+61MIvtfT+WZpjS
-         RMqvC0cMMqe3uUD7OFBaas6cXGWaO+EzMk6KMymXcRzGsE2Ww5xjysjW4+PrZDjsV9tO
-         FyodoLXWhR4ioUoNG6krEdVinHpphmZO+IZVKrD8eX7Le1gfbzgMifUy58g6drBSSZ2S
-         x61qQcs/hRho1FhiO1lqm+d0Zm+1hEgLk1/ro/pRLJUSHwdfNL+b8dGXulEQO0kLlMeF
-         JTgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=767OJrCK8HUadii808hVEy3GxcnvixklGPCO6V3YD5M=;
-        b=JTmCa6eiGmslLdPSH13yTsPqBSFxejnZGs3LDQDP3lvNlwQRvKZD8JoqpjIUKIyJ8J
-         TWjP/KiVMvIg6At1lFJqBaUDf5p20iIOL7X9Dk0j0V/YIuZfLP+fDz8s0WBg1SN//UQ4
-         RoHYxwUkbSEu+1WM/ofEtW+sbYvm9cUspjsYPhQ0k6RwcLWRwFnP8Luo1HEKyu+JhKwD
-         fCelDcnl91ljatE7WsSJqTgjeDIImEp8sa92eONoriTRBXfXFuDvTpJVE/8ZfeIdNhpu
-         sdEo+xgchPj8CcYoj3sCBzkmi660gxESY7boB6n6PjhMomHWorrI5jn86Hfm8MFVhauJ
-         D3zQ==
-X-Gm-Message-State: AJIora/XOIE4tDxeWB68p3NvAKJRl4H7Ug64vRw9SP6rcvKMx6TAX2pf
-        gwk5FlB+xIOWQCNMgF4lmzomSot8muE=
-X-Google-Smtp-Source: AGRyM1sgGqJHUeVw3u3W7rE3sqf5Kp8zpWdfvFHOMgDNOhP8CojDYKciFvgC5O7XXJFBkGcWqg0OLw==
-X-Received: by 2002:a17:907:c71b:b0:718:d0a2:a447 with SMTP id ty27-20020a170907c71b00b00718d0a2a447mr1266043ejc.157.1655322284933;
-        Wed, 15 Jun 2022 12:44:44 -0700 (PDT)
-Received: from felia.fritz.box (200116b826878200b4eabc3163d51ca4.dip.versatel-1u1.de. [2001:16b8:2687:8200:b4ea:bc31:63d5:1ca4])
-        by smtp.gmail.com with ESMTPSA id i24-20020a05640200d800b0042dcac2afc6sm29565edu.72.2022.06.15.12.44.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 12:44:44 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Neal Liu <neal_liu@aspeedtech.com>, linux-aspeed@lists.ozlabs.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: Repair file entry in ASPEED USB UDC DRIVER
-Date:   Wed, 15 Jun 2022 21:44:09 +0200
-Message-Id: <20220615194409.11875-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 15 Jun 2022 15:46:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE8F54BE9;
+        Wed, 15 Jun 2022 12:46:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5461C60C32;
+        Wed, 15 Jun 2022 19:46:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4532C341C0;
+        Wed, 15 Jun 2022 19:46:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655322407;
+        bh=nOopfbmMyE0zFSTGtfblVa/zt6IbMPT2M5vyvVqxC5U=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=nkWj9LfdIx6JvO6oHl690f+EQlTF17ydQgfzXPAWXAo0DSHZlOK+Kqs+8WYA8mq3f
+         7gX46Xr0YGAUjYyWIlFcQgWnSb/u4L7BVMrAFUYOd/I1oZpO65eoRM6I5FR71JY4vl
+         XPySLRD+shq5NFDfeyTP2stBiEv3h2ESeq9l24LsRZYu0zewefobGoeMPNNkvYP2wo
+         hKcZ82b5JaYW10RdqEbMSgrMkvh1wiWn1EeOd5v+862g2qgAQ8xXtDcg7s1AYFX+84
+         TIFLlC5tbvCuWUznULVZNfpwS6KCfSHKnZHipgPT8T3rmtmZhSsXDm7/iOynAzpXJU
+         ATUES8wzHzJoA==
+Received: by mail-vk1-f174.google.com with SMTP id c11so4647773vkn.5;
+        Wed, 15 Jun 2022 12:46:47 -0700 (PDT)
+X-Gm-Message-State: AJIora8os1VPqroVHgUKnySi3/wRxJ6EAkUqbQ6EbB+u2nLNTOUaPBsL
+        nM1RbqHRKoi8FtThKVXsX2pL4Z8TnpuJdkNrGQ==
+X-Google-Smtp-Source: AGRyM1spP8wpUv515CCMbtNvuylDnX5ozPVOexUvJfKJpfu+CcNlYJMF+vd1Acbtc6mwAep1k0kVJcWbjEQpD/ZgXDg=
+X-Received: by 2002:a1f:a1c6:0:b0:35e:3f6a:b8b8 with SMTP id
+ k189-20020a1fa1c6000000b0035e3f6ab8b8mr898915vke.26.1655322406702; Wed, 15
+ Jun 2022 12:46:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <30d95df2-c3b-b3e3-d65e-c6be0355fb1@maine.edu>
+In-Reply-To: <30d95df2-c3b-b3e3-d65e-c6be0355fb1@maine.edu>
+From:   Rob Herring <robh@kernel.org>
+Date:   Wed, 15 Jun 2022 13:46:35 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqL+0z1vc+T+9m-faoM-4W=x=7-UBu5=S-QGjTwU2biGNw@mail.gmail.com>
+Message-ID: <CAL_JsqL+0z1vc+T+9m-faoM-4W=x=7-UBu5=S-QGjTwU2biGNw@mail.gmail.com>
+Subject: Re: [perf] why is /proc/sys/kernel/perf_user_access ARM64 only?
+To:     Vince Weaver <vincent.weaver@maine.edu>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 055276c13205 ("usb: gadget: add Aspeed ast2600 udc driver") adds
-the section ASPEED USB UDC DRIVER with a file entry to aspeed,udc.yaml,
-but then, commit 0dde9a46a2cf ("dt-bindings: usb: add documentation for
-aspeed udc") actually adds a device tree binding aspeed,ast2600-udc.yaml.
+On Wed, Jun 15, 2022 at 11:57 AM Vince Weaver <vincent.weaver@maine.edu> wrote:
+>
+>
+> Just wasted a lot of time tracking down why rdpmc() event reading wasn't
+> working on an ARM64 machine.
+>
+> It turns out ARM64 has added a custom
+>         "/proc/sys/kernel/perf_user_access"
+> to control rdpmc access, but only on ARM64.
+>         e2012600810c9ded81f6f63a8d04781be3c300ad
+>
+> Why is this ARM64-only?  Why isn't this generic perf infrastructure?
 
-Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-broken reference.
+Adding it on x86 would break users at least if default off.
 
-Repair the reference to the actually added file in ASPEED USB UDC DRIVER.
+> How is this different from the existing
+>         /sys/bus/event_source/devices/cpu/rdpmc
+> tooling?
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-Neal, please ack.
-Greg, please pick this minor non-urgent clean-up patch in your usb-next tree.
+big.LITTLE
 
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+We need a single point of control. Otherwise, there's dealing with
+mismatched state of multiple PMUs.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d9c3576b082f..8830d1adb23b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3144,7 +3144,7 @@ ASPEED USB UDC DRIVER
- M:	Neal Liu <neal_liu@aspeedtech.com>
- L:	linux-aspeed@lists.ozlabs.org (moderated for non-subscribers)
- S:	Maintained
--F:	Documentation/devicetree/bindings/usb/aspeed,udc.yaml
-+F:	Documentation/devicetree/bindings/usb/aspeed,ast2600-udc.yaml
- F:	drivers/usb/gadget/udc/aspeed_udc.c
- 
- ASUS NOTEBOOKS AND EEEPC ACPI/WMI EXTRAS DRIVERS
--- 
-2.17.1
+> Also, when user events are disabled, why is the ARMv8 PMU not disabling
+> the cap_user_rdpmc bit in the perf mmap() page?
 
+Humm, maybe that should be changed. The current behavior of
+cap_user_rdpmc is static for the event and set means user access may
+be enabled at some point. Several factors can still prevent userspace
+from getting an event index. A counter couldn't be allocated or
+perf_user_access is disabled.
+
+Should the event open fail if perf_user_access is disabled? Current
+operation is it isn't considered and perf_user_access can change while
+the event is opened.
+
+> rdpmc was trouble before, but now it's an even bigger
+> architecture-dependent mess just trying to figure out if the feature is
+> enabled or not.
+
+The thing is that x86 started with access being wide open and has
+since been trying to lock things down without breaking userspace. It
+still has questionable uses enabled which complicates the
+implementation. For arm, we're starting with access being an explicit
+request on open and only for task bound events. If there's a real need
+for other scenarios, then we can revisit that.
+
+Rob
