@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69242CCA473
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3A5CCA47E
 	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348646AbiFOPNo (ORCPT
+        id S1348486AbiFOPNl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34042 "EHLO
+        Wed, 15 Jun 2022 11:13:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243483AbiFOPNK (ORCPT
+        with ESMTP id S243755AbiFOPNK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 15 Jun 2022 11:13:10 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3215113D2F
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:13:07 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id d14so16591355eda.12
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:13:07 -0700 (PDT)
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9C111C0F
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:13:06 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id o10so16643719edi.1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:13:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wxtahHXOWJVeicX7Htkco0Z9aLUkbZ4bBYqOrbr4kgY=;
-        b=ac8fhPaBRGVnr257grX8uK3ekiOqJIkGDta1C+nj//jcnScvYPdaxYU8z6KX+Rn3pC
-         +3h2/6Dee3G5k3dwdr4jpt5u8VMm/Jc1Ds9Exnkfz+IR6qjV0JeqBoILKPWd3GQl216a
-         z3hhjfBSKypNvW5byZHSOaYEB/J4/hu5G0F8U=
+        bh=nxHwUwUuK5U+dFx9/GDrIMCnRWc/PWyIrdKraztqqMs=;
+        b=UMiZL2PeR/D3H8SwhhqZ4ytFyghgutCbWGDxabeKT5Pm8/GW4sl6qy6InBRoS7G2cZ
+         jbLOrURxYH+P9z5NdFThCSRDxpMDieDme9bUoQShOJpcAFlLygHolUyf+rbOofF5O8z/
+         J1JU79NDxthQ6K1rH4WHLJNdbvUC7LUoISJr0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wxtahHXOWJVeicX7Htkco0Z9aLUkbZ4bBYqOrbr4kgY=;
-        b=BSkgYVp27bF9YagcaoaBinoMy9bjLxAT1Ose34lKlGdEa5VI48tQjiRB/gIJBBn6qw
-         caiJ4nR1BWQbgEvJ75BdSFquIu1xRT7sLHEVFAHU2JiXGNuFhRJxIpWJ7xeBMq9lYqzV
-         l0sALQl2vs6cSXf0/GJVcRueDTBBjVUtdyw1aJzbSj9D7ZscANCUoHPqdiHssfV3f8T/
-         9Ze9l3QfF4AX65xWOeRaX4KrThzapYApSfGZXyc//eXHd64eoJxI78cB/i3NhPElek6O
-         QO9o5wDZP5DAgr+waRfv+gAdHRwqnY410lyG2VYUwlzJackRlE7DkQc00m1yYPAihat2
-         0Zrw==
-X-Gm-Message-State: AJIora/ZUKfGKvMk3inFrpOkLRbWmGbuN77BlioBtpnUeFbY2q5E9MZn
-        mq5mrVh90BxqY2KpqHEyE2yuvQ==
-X-Google-Smtp-Source: AGRyM1uqd5Zxzd4NBf1VHPqSDSSkQht1WSR3B+8/nBUe/91Pz6KcVohW5gi4QhLU3YknkFN6OH6FJw==
-X-Received: by 2002:a05:6402:703:b0:42d:d347:a586 with SMTP id w3-20020a056402070300b0042dd347a586mr267353edx.316.1655305985737;
-        Wed, 15 Jun 2022 08:13:05 -0700 (PDT)
+        bh=nxHwUwUuK5U+dFx9/GDrIMCnRWc/PWyIrdKraztqqMs=;
+        b=Ie3aFLz49RoXN08uW/XWSvwMZqb4WO1WZJSG2Y47BBEcuz6qROvu1hnTQH11PkYo+f
+         Cz4+x3oBv95U8dsYOGyGSFFr2ZEenEelq2MKbRRiN1zL2Abz/FTURfd3z8OkfJ3zPkSP
+         rFOO0gQ5DAtogujlmABeHNc0p6iR/8uuaS1Cfg7u4Dfnim0WcMOqEvOtk9Gb5AZiK4k8
+         GRiOTlm2Xf1GNIG5azjRTBO1Z6JZXIPLh6WhisPtVlxdnEFPDwsKKT/gW0r6WHp0hC5Q
+         1PvVKQg6azo5pqLiQLpeaqjEqg+zQajXJ6FAzE+wZG9eCtC4OkwsWecH5S+50HuF4+I2
+         dLhA==
+X-Gm-Message-State: AJIora+Mt4xqB5y8TsBcazCpXZ5ExYzw2ZziNq8uV/GLi009EpJHzl3+
+        4PeYgKPhiEEv4yhZyw3xQ+4ODw==
+X-Google-Smtp-Source: AGRyM1uF6P0Cu+GigGU7J7pjEn7/Y2CjwsZUdT2jVDX0jzUiOMMUgQ916T46X5GHrLJCyeRKmIzuuQ==
+X-Received: by 2002:a05:6402:84c:b0:430:aae2:6dd8 with SMTP id b12-20020a056402084c00b00430aae26dd8mr249911edz.31.1655305984987;
+        Wed, 15 Jun 2022 08:13:04 -0700 (PDT)
 Received: from alco.lan (80.71.134.83.ipv4.parknet.dk. [80.71.134.83])
-        by smtp.gmail.com with ESMTPSA id b25-20020aa7cd19000000b0042bd2012196sm9610264edw.85.2022.06.15.08.13.05
+        by smtp.gmail.com with ESMTPSA id b25-20020aa7cd19000000b0042bd2012196sm9610264edw.85.2022.06.15.08.13.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 08:13:05 -0700 (PDT)
+        Wed, 15 Jun 2022 08:13:04 -0700 (PDT)
 From:   Ricardo Ribalda <ribalda@chromium.org>
 To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
         tfiga@chromium.org, senozhatsky@chromium.org, yunkec@google.com
 Cc:     Ricardo Ribalda <ribalda@chromium.org>
-Subject: [PATCH v6 5/8] media: uvcvideo: Limit power line control for Chicony Easycamera
-Date:   Wed, 15 Jun 2022 17:12:56 +0200
-Message-Id: <20220615151259.77825-6-ribalda@chromium.org>
+Subject: [PATCH v6 4/8] media: uvcvideo: Limit power line control for Quanta UVC Webcam
+Date:   Wed, 15 Jun 2022 17:12:55 +0200
+Message-Id: <20220615151259.77825-5-ribalda@chromium.org>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
 In-Reply-To: <20220615151259.77825-1-ribalda@chromium.org>
 References: <20220615151259.77825-1-ribalda@chromium.org>
@@ -64,10 +64,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Two different Easycamera devices do not implement the power line control
-correctly. Add a corresponding control mapping override.
+The device does not implement the power line control correctly. Add a
+corresponding control mapping override.
 
-Bus 001 Device 003: ID 04f2:b6ba Chicony Electronics Co., Ltd EasyCamera
+Bus 001 Device 003: ID 0408:3090 Quanta Computer, Inc. USB2.0 HD UVC WebCam
 Device Descriptor:
   bLength                18
   bDescriptorType         1
@@ -76,64 +76,71 @@ Device Descriptor:
   bDeviceSubClass         2
   bDeviceProtocol         1 Interface Association
   bMaxPacketSize0        64
-  idVendor           0x04f2 Chicony Electronics Co., Ltd
-  idProduct          0xb6ba
-  bcdDevice           10.70
-  iManufacturer           3 Chicony Electronics Co.,Ltd.
-  iProduct                1 EasyCamera
-  iSerial                 2 0001
-  bNumConfigurations      1
-
-Bus 001 Device 003: ID 04f2:b746 Chicony Electronics Co., Ltd EasyCamera
-Device Descriptor:
-  bLength                18
-  bDescriptorType         1
-  bcdUSB               2.00
-  bDeviceClass          239 Miscellaneous Device
-  bDeviceSubClass         2
-  bDeviceProtocol         1 Interface Association
-  bMaxPacketSize0        64
-  idVendor           0x04f2 Chicony Electronics Co., Ltd
-  idProduct          0xb746
-  bcdDevice           97.57
-  iManufacturer           3 Chicony Electronics Co.,Ltd.
-  iProduct                1 EasyCamera
-  iSerial                 2 0001
+  idVendor           0x0408 Quanta Computer, Inc.
+  idProduct          0x3090
+  bcdDevice            0.04
+  iManufacturer           3 Quanta
+  iProduct                1 USB2.0 HD UVC WebCam
+  iSerial                 2 0x0001
   bNumConfigurations      1
 
 Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
 Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 ---
- drivers/media/usb/uvc/uvc_driver.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/media/usb/uvc/uvc_driver.c | 35 ++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
 diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
-index 4fb07084f1c0..5b8a71a9edfb 100644
+index 6c86faecbea2..4fb07084f1c0 100644
 --- a/drivers/media/usb/uvc/uvc_driver.c
 +++ b/drivers/media/usb/uvc/uvc_driver.c
-@@ -2819,6 +2819,24 @@ static const struct usb_device_id uvc_ids[] = {
- 	  .bInterfaceSubClass	= 1,
- 	  .bInterfaceProtocol	= 0,
- 	  .driver_info		= UVC_INFO_QUIRK(UVC_QUIRK_RESTRICT_FRAME_RATE) },
-+	/* Chicony EasyCamera */
+@@ -2643,6 +2643,32 @@ MODULE_PARM_DESC(timeout, "Streaming control requests timeout");
+  * Driver initialization and cleanup
+  */
+ 
++static const struct uvc_menu_info power_line_frequency_controls_limited[] = {
++	{ 0, "Invalid" },
++	{ 1, "50 Hz" },
++	{ 2, "60 Hz" },
++};
++
++static const struct uvc_control_mapping uvc_ctrl_power_line_mapping_limited = {
++	.id		= V4L2_CID_POWER_LINE_FREQUENCY,
++	.entity		= UVC_GUID_UVC_PROCESSING,
++	.selector	= UVC_PU_POWER_LINE_FREQUENCY_CONTROL,
++	.size		= 2,
++	.offset		= 0,
++	.v4l2_type	= V4L2_CTRL_TYPE_MENU,
++	.data_type	= UVC_CTRL_DATA_TYPE_ENUM,
++	.menu_info	= power_line_frequency_controls_limited,
++	.menu_min	= 1,
++	.menu_count	= ARRAY_SIZE(power_line_frequency_controls_limited),
++};
++
++static const struct uvc_device_info uvc_ctrl_power_line_limited = {
++	.mappings = (const struct uvc_control_mapping *[]) {
++		&uvc_ctrl_power_line_mapping_limited,
++		NULL, /* Sentinel */
++	},
++};
++
+ static const struct uvc_device_info uvc_quirk_probe_minmax = {
+ 	.quirks = UVC_QUIRK_PROBE_MINMAX,
+ };
+@@ -2673,6 +2699,15 @@ static const struct uvc_device_info uvc_quirk_force_y8 = {
+  * though they are compliant.
+  */
+ static const struct usb_device_id uvc_ids[] = {
++	/* Quanta USB2.0 HD UVC Webcam */
 +	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
 +				| USB_DEVICE_ID_MATCH_INT_INFO,
-+	  .idVendor		= 0x04f2,
-+	  .idProduct		= 0xb6ba,
++	  .idVendor		= 0x0408,
++	  .idProduct		= 0x3090,
 +	  .bInterfaceClass	= USB_CLASS_VIDEO,
 +	  .bInterfaceSubClass	= 1,
 +	  .bInterfaceProtocol	= 0,
 +	  .driver_info		= (kernel_ulong_t)&uvc_ctrl_power_line_limited },
-+	/* Chicony EasyCamera */
-+	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
-+				| USB_DEVICE_ID_MATCH_INT_INFO,
-+	  .idVendor		= 0x04f2,
-+	  .idProduct		= 0xb746,
-+	  .bInterfaceClass	= USB_CLASS_VIDEO,
-+	  .bInterfaceSubClass	= 1,
-+	  .bInterfaceProtocol	= 0,
-+	  .driver_info		= (kernel_ulong_t)&uvc_ctrl_power_line_limited },
- 	/* Alcor Micro AU3820 (Future Boy PC USB Webcam) */
+ 	/* LogiLink Wireless Webcam */
  	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
  				| USB_DEVICE_ID_MATCH_INT_INFO,
 -- 
