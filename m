@@ -2,84 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 329CCC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 20:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D84B1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 20:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346198AbiFOUko (ORCPT
+        id S1346978AbiFOUo6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 16:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
+        Wed, 15 Jun 2022 16:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233389AbiFOUkl (ORCPT
+        with ESMTP id S1346887AbiFOUo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 16:40:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D268F3FDA7
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 13:40:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CE916174B
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 20:40:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD047C3411A;
-        Wed, 15 Jun 2022 20:40:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655325639;
-        bh=50wAXgcb120WidSlklAEzrlS+8SKZSfHsTb1U3TbtwI=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=RW+wGycZ34+c7dEtmDGeMht6ISXHuN02fwykFVweVFzgwSXqVUjoF/LR26svds6aL
-         OiJblpkzpGy4IGSswBQq4oGACEnEUfs8/NkIpsgzK3ALMhfYnYkd+DsSCOjU/I7Bij
-         5sPPfLQec1gOtjUPrzyaMPSJbWV+2GYXzHqSZwVrjf7I3Lt8y7oojdWrJ8IcECHkDG
-         yiR8nekC4QbPJ/UZOoXLinRZWkPu+57pETytdf7Q1E9egpS5hgG2XQIIC25bdLtH2k
-         gT0M5u4norycp1ldN8TOTtyEU5OEbvams2qbgfjKAjxeWhKGZsTULvplpvAaKzGjpy
-         xjPmV+esk+dkg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 4766D5C027A; Wed, 15 Jun 2022 13:40:39 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 13:40:39 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Frederic Weisbecker <frederic@kernel.org>, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [ammarfaizi2-block:paulmck/linux-rcu/pmladek.2022.06.15a
- 133/140] vmlinux.o: warning: objtool: __ct_user_exit+0x41: call to
- __kasan_check_read() leaves .noinstr.text section
-Message-ID: <20220615204039.GI1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <202206160411.v3iL3YC0-lkp@intel.com>
+        Wed, 15 Jun 2022 16:44:57 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DB52CE18
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 13:44:56 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id t3-20020a17090a510300b001ea87ef9a3dso3098559pjh.4
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 13:44:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kUDf/u910LysDJrcuyN3NJQ4Y4LOo/h3/JlYMs8xcZ0=;
+        b=BYtnYUDPQJ6Ixf9avcgIP+uzYG2NSxrzhfAlFyFdBGU7HSA+GgX4kkNkROqTmtTsBL
+         2ukaFFvDBNzmeSiR6n0FADy/sMIgVhPu2yVwy6vXtvUIQv956luWNaJfQbFsQDBVprN1
+         YircoRmAjfAqEQJDmuYwqWOPs5VwhzCYfBKnxcy+5J5SSoVx7rHvGsY6c1bxUpStiJz1
+         idvIcPfmHg3XUaK9RI0UUlJUuodU9MkQkDAC1DWc/B7maRpZCErn/NDM3TawV5n5ilqv
+         4DYY1ZslF/Cpgd/qjXBEV0jh1HIOwvtmclCb5nd9+OczNvDKZzXq5riP8/F6DqANEndR
+         D9Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kUDf/u910LysDJrcuyN3NJQ4Y4LOo/h3/JlYMs8xcZ0=;
+        b=YL+KcyQSVeqSGXWpM9e3TIC5Xl41857Psgs0MMkgH/6EtayAIjv46A6vSa78je4Tgx
+         TTEAbriCjAlYTb9paZRqbGZ3HA31Cbytss29mf280fjb+6iUQWPUq7UvhVWAQYwIkLEd
+         udvSDQxlBV0CJStmdoM8UDZo1hlGGPDHqPCgPJiS6CFmy4fYf27QRdXL8j/GADlvy5ba
+         t/w2kxaNcfKRbOM3Umi2O2XcyVLhnhv0mbdr4GJ484fCml0cQKR7HB0vPx3FDr/9ZZYN
+         1LwAMa7GAMYHQvuRLRs0ZF5a/80rVkEMxvTni7dEiBnv6NQ80OABjlJ/0FVAgs8C0nLM
+         nYLQ==
+X-Gm-Message-State: AJIora/ccgVPHJ/KGqWJ65Ydo6hLdmdeTVkd6zXU3Th8JDqw58T27MIm
+        oS0gA0ecwFu7bYaE1l+uPrgKrw==
+X-Google-Smtp-Source: AGRyM1uNSTnvyeg3GEiWLHsF6PC5peshAuHFTefZHQqF/RDMTJXk0VYlwYjbhT6liUB6gFJmFKAgCQ==
+X-Received: by 2002:a17:902:aa0c:b0:168:faa0:50a1 with SMTP id be12-20020a170902aa0c00b00168faa050a1mr1513563plb.57.1655325895802;
+        Wed, 15 Jun 2022 13:44:55 -0700 (PDT)
+Received: from p14s ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id c11-20020a17090a1d0b00b001e6a230c2f5sm2259207pjd.34.2022.06.15.13.44.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 13:44:54 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 14:44:50 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Peng Fan <peng.fan@nxp.com>
+Cc:     "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH V3 0/6] remoteproc: imx_rproc: support i.MX8QM/QXP
+Message-ID: <20220615204450.GA1257609@p14s>
+References: <20220517064937.4033441-1-peng.fan@oss.nxp.com>
+ <DU0PR04MB941740BC9C2C5B205985CAB588AD9@DU0PR04MB9417.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202206160411.v3iL3YC0-lkp@intel.com>
+In-Reply-To: <DU0PR04MB941740BC9C2C5B205985CAB588AD9@DU0PR04MB9417.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 04:26:16AM +0800, kernel test robot wrote:
-> tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/pmladek.2022.06.15a
-> head:   0ba7324b44282870af740a5a121add62c7f5f730
-> commit: db21b02f8044e812f8a5e3811f602409290e3ede [133/140] context_tracking: Convert state to atomic_t
-> config: x86_64-randconfig-r003-20220516 (https://download.01.org/0day-ci/archive/20220616/202206160411.v3iL3YC0-lkp@intel.com/config)
-> compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-> reproduce (this is a W=1 build):
->         # https://github.com/ammarfaizi2/linux-block/commit/db21b02f8044e812f8a5e3811f602409290e3ede
->         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
->         git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/pmladek.2022.06.15a
->         git checkout db21b02f8044e812f8a5e3811f602409290e3ede
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Wed, Jun 15, 2022 at 03:24:03AM +0000, Peng Fan wrote:
+> Bjorn, Mathieu
 > 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
+> > Subject: [PATCH V3 0/6] remoteproc: imx_rproc: support i.MX8QM/QXP
 > 
-> All warnings (new ones prefixed by >>):
-> 
-> >> vmlinux.o: warning: objtool: __ct_user_exit+0x41: call to __kasan_check_read() leaves .noinstr.text section
-> >> vmlinux.o: warning: objtool: __ct_user_enter+0x7f: call to __kasan_check_read() leaves .noinstr.text section
+> Please give a look on this patchset if possible.
 
-Marco, Dmitry, my guess is that this is due to the ct->active check in
-both functions.  Are we supposed to do something to make this sort of
-thing safe for KASAN?
+Your pathset is currently 3rd from the top in my queue.  As such I will likely
+get to it in the next couple of weeks but as usual, I can't make any guarantees
+on that front.
 
-							Thanx, Paul
+Thanks,
+Mathieu
+
+> 
+> Thanks,
+> Peng.
+> 
+> > 
+> > From: Peng Fan <peng.fan@nxp.com>
+> > 
+> > V3:
+> >  Drop the dependency in V2.
+> >  Tested on i.MX8QM/8MM
+> >  Use 'fsl,resource-id' and 'fsl,entry-address' Per dt maintainer  Drop 'reg'
+> > property Per remoteproc maintainer  Drop mcore self recovery, until we land
+> > in common framework support.
+> > 
+> > V2:
+> > 
+> > https://patchwork.kernel.org/project/linux-remoteproc/cover/202203091021
+> > 18.8131-1-peng.fan@oss.nxp.com/
+> >  Depends on
+> > https://patchwork.kernel.org/project/linux-remoteproc/list/?series=621311
+> >  Tested on i.MX8QXP/QM/8MP
+> >  Addressed Mathieu's comments
+> >  Drop V1 patch 5/9, patch 3/9 is replaced with upper dependency patchset
+> > Move V1 patch 4/9 out to
+> > https://patchwork.kernel.org/project/linux-remoteproc/patch/202203080657
+> > 54.3355-1-peng.fan@oss.nxp.com/
+> >  Update commit log
+> >  Drop magic number to get entry address from device tree in patch 4/6
+> > 
+> > The V1 patchset:
+> > https://patchwork.kernel.org/project/linux-remoteproc/patch/202201110333
+> > 33.403448-4-peng.fan@oss.nxp.com/
+> > 
+> > Peng Fan (6):
+> >   dt-bindings: remoteproc: imx_rproc: support i.MX8QXP
+> >   dt-bindings: remoteproc: imx_rproc: support i.MX8QM
+> >   remoteproc: imx_rproc: support attaching to i.MX8QXP M4
+> >   remoteproc: imx_rproc: support kicking Mcore from Linux for i.MX8QXP
+> >   remoteproc: imx_rproc: support i.MX8QM
+> >   remoteproc: imx_rproc: request mbox channel later
+> > 
+> >  .../bindings/remoteproc/fsl,imx-rproc.yaml    |  16 ++
+> >  drivers/remoteproc/imx_rproc.c                | 222
+> > +++++++++++++++++-
+> >  2 files changed, 231 insertions(+), 7 deletions(-)
+> > 
+> > --
+> > 2.25.1
+> 
