@@ -2,82 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A32C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA2EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347152AbiFONoU (ORCPT
+        id S1354243AbiFONo0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
+        Wed, 15 Jun 2022 09:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346552AbiFONoP (ORCPT
+        with ESMTP id S1347084AbiFONoR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:44:15 -0400
-Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 11DE326122
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:44:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=tXHj9
-        XWBCa1d5K2tDQrGXu94LvSsJCP4E0y+hhaLTRw=; b=pr5XAKehJ1AaisOiQW5Qz
-        NNyxd1cP4ArhdLQps6SfZ0MhwFsN09hpz2gyNYAADguYaeKEk2xPgbEyfQ9b5TzN
-        WK1nlYPUKpok2qDSNwzEM06o+2fbnBTp5L2hqfDdeAAJMkorKPP1XuW+5mceOP6Z
-        QhnoYCly93n64Wt/CurLfA=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp8 (Coremail) with SMTP id NORpCgBn5XHt4ali432nFg--.53770S2;
-        Wed, 15 Jun 2022 21:43:11 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     linux@armlinux.org.uk, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        mark.rutland@arm.com, maz@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        windhl@126.com
-Subject: [PATCH] arch: arm: mach-imx: Add missing of_node_put() in avic.c
-Date:   Wed, 15 Jun 2022 21:43:08 +0800
-Message-Id: <20220615134308.3967616-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 09:44:17 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE71E2CC9E
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:44:16 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id l204so20536936ybf.10
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:44:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hp1aAAlFAq4/A1NH4phA+P7Vi5cvcSnxaSA1EwmzOjs=;
+        b=lVfAk6c7MPyRfXkCYOWdVQURkSp+OBByvpe056Tgq9IMl2OauUoGqFUnhviTFb2AA7
+         tXjeTRjUn04Ib4a9agWf/BW6v1+t9bnOMpPlIk5o5CFJmoXlocEzwCkrP+0K5pj/nEPH
+         aDv8LKc+BLj2jMBaKCSoMqp253iGg+GgWOMTUrh92DiDz2nN3xzGtbNEigp2bT+lUZwW
+         myZ/G45CpWEsSYjoHFTMDx2qQGWMl0eg3K0p86rOSedi3yBGeh1pOi7P0mhvV/S4b3sG
+         U4p5XmESE0mUSpPZZhUtNh3JDlRWOYlEHyn8IXpD9Jk95y29uBi8BBDPzbsRgbpO+vip
+         xiiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hp1aAAlFAq4/A1NH4phA+P7Vi5cvcSnxaSA1EwmzOjs=;
+        b=xTR9b8VMvIQHTKOEDEKMUF6TAWeECGSD0kjvZZ/LVMc395eVScRxiU3sm7MKFGxg8z
+         CyA9z3qE69PyEMmL6S4xmfm3bSjCK3haNfShlFPjqLq4Y5boEVJwtVZtlcRIZgqedWEM
+         FIVwnCuuNuiSLCItFw5DEQdTT/YlWY9SmK02MO8OKZQBQ6dS//IyMYhHWzQr95cTDsVK
+         VCQew4fqjWI0kHo3oWmu8Ql2kn8dKPUeeBLzP8LOO5IB9CD4FfbcqcUOrhq/UqRwULW9
+         uCz+ukmW2N2gQGJjVSsZCfp8y+XkAjLu/b0stgJVoSxXqIQsCg2WMyc+BfCD47jc33U5
+         4F0w==
+X-Gm-Message-State: AJIora8TxSeb+oBWMApSBXV/A5LDmFQ34omVcAuRmURZpNT1No279afx
+        JutAODkQQ+m2qzKvzpjC5370vTBngZkAfGgpI2Jv4w==
+X-Google-Smtp-Source: AGRyM1vwXQw90on1sHsRQC4/H0k1Bofmho0MnG9UWhioWNDMZYti404KFNThV3NhBXgLu5NZbUKp/nAL98zAv6yclsA=
+X-Received: by 2002:a25:1256:0:b0:65d:6433:7993 with SMTP id
+ 83-20020a251256000000b0065d64337993mr10084424ybs.626.1655300656100; Wed, 15
+ Jun 2022 06:44:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NORpCgBn5XHt4ali432nFg--.53770S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7JrWkWFyUWF4fZw4kJr1UWrg_yoWkGFX_Zr
-        1Sgwnrur1rAF4vvr4v9anxWrnru395Wr48tr4qvF1Ygw4avr4UArnayF97XryUWrWakFW7
-        Cws3ZrW3tw47CjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREQJ5DUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2g8hF1uwMNWzBAAAsa
+References: <20220603135714.12007-1-aidanmacdonald.0x0@gmail.com> <20220603135714.12007-11-aidanmacdonald.0x0@gmail.com>
+In-Reply-To: <20220603135714.12007-11-aidanmacdonald.0x0@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 15 Jun 2022 15:44:04 +0200
+Message-ID: <CACRpkdbObQ5WrzVC_xYobJPSBVSMyaz0HHXesLP+g1HCzCGJtQ@mail.gmail.com>
+Subject: Re: [PATCH 10/10] pinctrl: Add AXP192 pin control driver
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        Michael Walle <michael@walle.cc>
+Cc:     brgl@bgdev.pl, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
+        lee.jones@linaro.org, sre@kernel.org, broonie@kernel.org,
+        gregkh@linuxfoundation.org, lgirdwood@gmail.com, lars@metafoo.de,
+        rafael@kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In mxc_init_irq(), we need to use two of_node_put() for two
-of_find_compatible_node() functions which return node pointers
-with refcount incremented.
+On Fri, Jun 3, 2022 at 3:56 PM Aidan MacDonald
+<aidanmacdonald.0x0@gmail.com> wrote:
 
-Signed-off-by: Liang He <windhl@126.com>
----
- arch/arm/mach-imx/avic.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> The AXP192 PMIC's GPIO registers are much different from the GPIO
+> registers of the AXP20x and AXP813 PMICs supported by the existing
+> pinctrl-axp209 driver. It makes more sense to add a new driver for
+> the AXP192, rather than add support in the existing axp20x driver.
+>
+> The pinctrl-axp192 driver is considerably more flexible in terms of
+> register layout and should be able to support other X-Powers PMICs.
+> Interrupts and pull down resistor configuration are supported too.
+>
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-diff --git a/arch/arm/mach-imx/avic.c b/arch/arm/mach-imx/avic.c
-index cf6546ddc7a3..1c9af0092a07 100644
---- a/arch/arm/mach-imx/avic.c
-+++ b/arch/arm/mach-imx/avic.c
-@@ -173,7 +173,7 @@ static void __init mxc_init_irq(void __iomem *irqbase)
- 
- 	np = of_find_compatible_node(NULL, NULL, "fsl,imx25-ccm");
- 	mx25_ccm_base = of_iomap(np, 0);
--
-+	of_node_put(np);
- 	if (mx25_ccm_base) {
- 		/*
- 		 * By default, we mask all interrupts. We set the actual mask
-@@ -203,6 +203,7 @@ static void __init mxc_init_irq(void __iomem *irqbase)
- 	np = of_find_compatible_node(NULL, NULL, "fsl,avic");
- 	domain = irq_domain_add_legacy(np, AVIC_NUM_IRQS, irq_base, 0,
- 				       &irq_domain_simple_ops, NULL);
-+	of_node_put(np);					   
- 	WARN_ON(!domain);
- 
- 	for (i = 0; i < AVIC_NUM_IRQS / 32; i++, irq_base += 32)
--- 
-2.25.1
+Looks good to me (TM) but I'd like Michael Walle to take a look
+to check if this is one of those drivers that could make use of
+gpio-regmap.c CONFIG_GPIO_REGMAP to make it even
+simpler.
 
+Yours,
+Linus Walleij
