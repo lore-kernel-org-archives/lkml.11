@@ -2,131 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 268EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B99C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347162AbiFOJE5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44066 "EHLO
+        id S239117AbiFOJFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 05:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345535AbiFOJE4 (ORCPT
+        with ESMTP id S230240AbiFOJFX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:04:56 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B53939B9F;
-        Wed, 15 Jun 2022 02:04:53 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5CE3E66016CC;
-        Wed, 15 Jun 2022 10:04:51 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655283892;
-        bh=k6NEoZsjEYGP1QQyFCr7lIgY0FTshdoki5vnhmBsqGI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=X0Td8BpR6RVk71SDXY9PoAXRf/ZBNcH1Q3hSZtgI5enUId9VyYxt0lARaZWnl3F/8
-         KxIoDrrg14aNl0vmKrfPQn6J6kBypZ3w9eBKoXZuQ3LFZfQnuzow6202twCiBNdpca
-         AnVFtBrJI52x2O3ke8KdW+1kTVEXXtBj6ECTvRLs4tLX1pLF0aOIeL1WR8rQiP0pLa
-         UKCaFzCjmP8amAZj/B9MooWbr6QLbeKetNZesO0da5DWehXjNt3lR/iyUejhZhZhwa
-         BXkPC98coyDIYxxxLc7rcu1kVjMDJ2A+rstkYH7zVksrW/a9xTnEzLryRU+y/yNo76
-         YBc58jHBInDyQ==
-Message-ID: <c025dd3d-00ce-d0a4-b7cb-540901c71f4e@collabora.com>
-Date:   Wed, 15 Jun 2022 11:04:48 +0200
+        Wed, 15 Jun 2022 05:05:23 -0400
+Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0FB3980F;
+        Wed, 15 Jun 2022 02:05:22 -0700 (PDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1655283921; bh=mZJkc3EtpYZjHnwrFglpnwJJ1Hj8zbOLiuV4Bh+jD24=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=rTztdNLj2oECJXYk09U7wcYFzV90dyQIpL+L/VaZhamY54SGd3n4uQL2C/WlNctWU
+         6ZXx0QFdfMO1/NTh4MN/MnQKB+Ijwx83f6Zqx9dXS7FMxjgJ+6AzP1bcNmn4gNmyOz
+         AK7rP5M/PhBdHWEsNZdk69NrWn741jrwF+2RnSx53RBlZg4CYsnoHWu11V78zOARY5
+         uPMKw4cxbDj5LOiB+BJ0aTFwOPpNFN1p2uOKQFKCdbZ994eIdIXWG2qqjVVey2JnYS
+         JYH2N9qa8D0uC4748Rfzkq74mox10F2ONbrWza91LMwlJfprFJw90ljJmdU1toN2jp
+         pQZRQ4eCMDhwA==
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Pavel Skripkin <paskripkin@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
+        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+Subject: Re: [PATCH v6 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+In-Reply-To: <87k09ipfl9.fsf@kernel.org>
+References: <d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com>
+ <87o7yvzf33.fsf@toke.dk> <87k09ipfl9.fsf@kernel.org>
+Date:   Wed, 15 Jun 2022 11:05:20 +0200
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87tu8mxpnz.fsf@toke.dk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 2/2] clocksource/drivers/timer-mediatek: Implement
- CPUXGPT timers
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     tglx@linutronix.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, konrad.dybcio@somainline.org,
-        marijn.suijten@somainline.org, martin.botka@somainline.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        paul.bouchara@somainline.org
-References: <20220613133819.35318-1-angelogioacchino.delregno@collabora.com>
- <20220613133819.35318-3-angelogioacchino.delregno@collabora.com>
- <277ec646-b709-4a4a-8216-49d528d0e43e@linaro.org>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <277ec646-b709-4a4a-8216-49d528d0e43e@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 14/06/22 20:35, Daniel Lezcano ha scritto:
-> On 13/06/2022 15:38, AngeloGioacchino Del Regno wrote:
->> Some MediaTek platforms with a buggy TrustZone ATF firmware will not
->> initialize the AArch64 System Timer correctly: in these cases, the
->> System Timer address is correctly programmed, as well as the CNTFRQ_EL0
->> register (reading 13MHz, as it should be), but the assigned hardware
->> timers are never started before (or after) booting Linux.
->>
->> In this condition, any call to function get_cycles() will be returning
->> zero, as CNTVCT_EL0 will always read zero.
->>
->> One common critical symptom of that is trying to use the udelay()
->> function (calling __delay()), which executes the following loop:
->>
->>              start = get_cycles();
->>              while ((get_cycles() - start) < cycles)
->>                      cpu_relax();
->>
->> which, when CNTVCT_EL0 always reads zero, translates to:
->>
->>              while((0 - 0) < 0)  ==> while(0 < 0)
->>
->> ... generating an infinite loop, even though zero is never less
->> than zero, but always equal to it (this has to be researched,
->> but it's out of the scope of this commit).
->>
->> To fix this issue on the affected MediaTek platforms, the solution
->> is to simply start the timers that are designed to be System Timer(s).
->> These timers, downstream, are called "CPUXGPT" and there is one
->> timer per CPU core; luckily, it is not necessary to set a start bit
->> on each CPUX General Purpose Timer, but it's conveniently enough to:
->>   - Set the clock divider (input = 26MHz, divider = 2, output = 13MHz);
->>   - Set the ENABLE bit on a global register (starts all CPUX timers).
->>
->> The only small hurdle with this setup is that it's all done through
->> the MCUSYS wrapper, where it is needed, for each read or write, to
->> select a register address (by writing it to an index register) and
->> then to perform any R/W on a "CON" register.
->>
->> For example, writing "0x1" to the CPUXGPT register offset 0x4:
->> - Write 0x4 to mcusys INDEX register
->> - Write 0x1 to mcusys CON register
->>
->> Reading from CPUXGPT register offset 0x4:
->> - Write 0x4 to mcusys INDEX register
->> - Read mcusys CON register.
->>
->> Finally, starting this timer makes platforms affected by this issue
->> to work correctly.
-> 
-> Why not fix the ATF ?
-> 
-> 
+Kalle Valo <kvalo@kernel.org> writes:
 
-Hello Daniel,
+> Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk> writes:
+>
+>> Pavel Skripkin <paskripkin@gmail.com> writes:
+>>
+>>> Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb() [0]. The
+>>> problem was in incorrect htc_handle->drv_priv initialization.
+>>>
+>>> Probable call trace which can trigger use-after-free:
+>>>
+>>> ath9k_htc_probe_device()
+>>>   /* htc_handle->drv_priv =3D priv; */
+>>>   ath9k_htc_wait_for_target()      <--- Failed
+>>>   ieee80211_free_hw()		   <--- priv pointer is freed
+>>>
+>>> <IRQ>
+>>> ...
+>>> ath9k_hif_usb_rx_cb()
+>>>   ath9k_hif_usb_rx_stream()
+>>>    RX_STAT_INC()		<--- htc_handle->drv_priv access
+>>>
+>>> In order to not add fancy protection for drv_priv we can move
+>>> htc_handle->drv_priv initialization at the end of the
+>>> ath9k_htc_probe_device() and add helper macro to make
+>>> all *_STAT_* macros NULL safe, since syzbot has reported related NULL
+>>> deref in that macros [1]
+>>>
+>>> Link: https://syzkaller.appspot.com/bug?id=3D6ead44e37afb6866ac0c7dd121=
+b4ce07cb665f60 [0]
+>>> Link: https://syzkaller.appspot.com/bug?id=3Db8101ffcec107c0567a0cd8acb=
+bacec91e9ee8de [1]
+>>> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+>>> Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotma=
+il.com
+>>> Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotma=
+il.com
+>>> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+>>
+>> Alright, since we've heard no more objections and the status quo is
+>> definitely broken, let's get this merged and we can follow up with any
+>> other fixes as necessary...
+>>
+>> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
+>
+> I'm wondering should these go to -rc or -next? Has anyone actually
+> tested these with real hardware? (syzbot testing does not count) With
+> the past bad experience with syzbot fixes I'm leaning towards -next to
+> have more time to fix any regressions.
 
-that's not the first time this question gets asked, and I've already
-provided an explanation for that, please look at [1] for the long answer.
+Hmm, good question. From Takashi's comment on v5, it seems like distros
+are going to backport it anyway, so in that sense it probably doesn't
+matter that much?
 
-As for the shorter answer: OEM/ODM signatures, you can't just compile and
-flash a new ATF on your own (and some ODMs don't even exist anymore).
-There's no way other than this.
+In any case I think it has a fairly low probability of breaking real
+users' setup (how often is that error path on setup even hit?), but I'm
+OK with it going to -next to be doubleplus-sure :)
 
-[1]: 
-https://patchwork.kernel.org/project/linux-mediatek/patch/20220509210741.12020-3-angelogioacchino.delregno@collabora.com/#24863077
-
-Regards,
-Angelo
+-Toke
