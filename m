@@ -2,79 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9AAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 01:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64FDDC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 01:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345531AbiFOBzA (ORCPT
+        id S1345599AbiFOB4N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 21:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52900 "EHLO
+        Tue, 14 Jun 2022 21:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344884AbiFOBy6 (ORCPT
+        with ESMTP id S1344884AbiFOB4M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 21:54:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1B04B86D;
-        Tue, 14 Jun 2022 18:54:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAF53619B9;
-        Wed, 15 Jun 2022 01:54:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEE55C3411B;
-        Wed, 15 Jun 2022 01:54:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655258096;
-        bh=k+6sBNtX1U4+e4xzO0B87S0HSLGSaDJ+a98Z2JJx7U0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=X1QygX4pnbaZ3ILyVXehataxlp8GmGLAnkCBjDPIz6xpuy48GczclkfV3KuBes3kv
-         hOp/xPAlvwIHmgunbLNgrBMfboQaFrY3+VtG+Wu+vRwyLWn+etQjVMZyGkuUz/cXHc
-         62Rga45X/rGPiAEJ4eNxF4Aoi/L98QoJRcMqki/2vF6ZZppGw/fEoXsMdOle2hVT5z
-         TkDiNhlsCDnZ9DUx1/MwpACsRQVxZi0waUbFZQoKB4UZhraw7Zvnw/mKR20Uvc5VpZ
-         4JlkARzx/YrzbvzEDHVscyWpB3GxgYVQvDjkQ/Wle0wnfHp8hyS0ZHMTlDsDAJHIk1
-         USm4mfc7oClTg==
-Date:   Tue, 14 Jun 2022 18:54:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "Katakam, Harini" <harini.katakam@amd.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "git (AMD-Xilinx)" <git@amd.com>
-Subject: Re: [PATCH v2 net-next] dt-bindings: net: xilinx: document xilinx
- emaclite driver binding
-Message-ID: <20220614185454.7479405c@kernel.org>
-In-Reply-To: <1ae6dce1-0c5c-64f0-c6a4-b0f11a82f315@linaro.org>
-References: <1654793615-21290-1-git-send-email-radhey.shyam.pandey@amd.com>
-        <5e5580c4d3f84b9e9ae43e1e4ae43ac0a2162a75.camel@redhat.com>
-        <MN0PR12MB5953590F8098E46C02943AFEB7AA9@MN0PR12MB5953.namprd12.prod.outlook.com>
-        <1ae6dce1-0c5c-64f0-c6a4-b0f11a82f315@linaro.org>
+        Tue, 14 Jun 2022 21:56:12 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D654C43C
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 18:56:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655258172; x=1686794172;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=OdaunfrBMsujmaZ6H6qOl81nb/1ETmeU93c4cCunUgA=;
+  b=aV4AcHM/s4TZGpZIOXMCy4JXXdLq871rYmvNdJCv3TEd0gMy0dlJwkxI
+   Yx8ArXtk9rcj1UZ7dFYvHvB6lLe2aVvcEF0L9nSVb1JF98sRDp38oZ8FL
+   hzOs9HfYDc2CEDOyWQCjJ9MmFyvYzXC1wQCXx08UzWbvtYQCxlStAqYxe
+   Pf/xgFj2YtNAmPDLmZT5EIHeamSVSJbtuICB+mgnPyaoTIhXBqL8y/t5p
+   3Pnpr0O9V4BZRb64+kMFYQz/zj3W2rM/zoFq0N6MOxzlJZdV+R5O3lK09
+   D2g53RXF+HPX0lXD2t4J3eL0iDNrKK/wcws0gVfdVX+dzT3dHqtUkLLrH
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="267488604"
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="267488604"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 18:56:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="712726930"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 14 Jun 2022 18:55:58 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o1IGD-000MTr-BL;
+        Wed, 15 Jun 2022 01:55:57 +0000
+Date:   Wed, 15 Jun 2022 09:55:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>, Borislav Petkov <bp@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [linux-stable-rc:queue/5.18 10/11] vmlinux.o: warning: objtool:
+ vmx_vcpu_enter_exit()+0x183: call to wrmsrl.constprop.0() leaves
+ .noinstr.text section
+Message-ID: <202206150927.aBwTdEW8-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 14 Jun 2022 15:48:43 -0700 Krzysztof Kozlowski wrote:
-> > I have seen a mixed set of the convention for dts patches. They are following
-> > both routes i.e device tree or subsystem repos provided acked from device
-> > tree maintainer.  If there is preference for device tree repo then I can drop
-> > net-next from subject prefix and resend it for the dt repo.  
-> 
-> If you got Ack from Devicetree bindings maintainer (Rob Herring or me),
-> then feel free to take it via net-next. I think, it is actually
-> preferred, unless this is some fix which needs to go via DT (Rob's) tree.
-> 
-> If you don't have these acks, then better don't take it :) unless it's
-> really waiting too long on the lists. I hope it's not that case.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/5.18
+head:   8017603a918a3337089ebc456406d7309f866994
+commit: 95678f288dd161892be7b211cbf45529d6dd538d [10/11] KVM: x86/speculation: Disable Fill buffer clear within guests
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220615/202206150927.aBwTdEW8-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=95678f288dd161892be7b211cbf45529d6dd538d
+        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+        git fetch --no-tags linux-stable-rc queue/5.18
+        git checkout 95678f288dd161892be7b211cbf45529d6dd538d
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-GTK, thanks. I'm also often confused by the correct tree for DT patches.
-I'll revive the patch in PW and apply it later today.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> vmlinux.o: warning: objtool: vmx_vcpu_enter_exit()+0x183: call to wrmsrl.constprop.0() leaves .noinstr.text section
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
