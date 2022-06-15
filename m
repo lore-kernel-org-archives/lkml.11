@@ -2,289 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F350C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED16C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349546AbiFOR3V (ORCPT
+        id S1349631AbiFOR3b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:29:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38632 "EHLO
+        Wed, 15 Jun 2022 13:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350965AbiFOR2R (ORCPT
+        with ESMTP id S242586AbiFOR3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:28:17 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F984DF0F;
-        Wed, 15 Jun 2022 10:28:16 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id w17so8781650wrg.7;
-        Wed, 15 Jun 2022 10:28:16 -0700 (PDT)
+        Wed, 15 Jun 2022 13:29:24 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8FE34BB3
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:29:22 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id u18so11001080plb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:29:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1TZ31csmugUEo+8MzdBW071qYG5n2pSsL9G37UaQECs=;
-        b=B+5/Pezt8eLSv0wjjxExytBprcVBO9M3ZM+p6YScshCE+vP6bMAbtfHO/ZuZBOVuPC
-         rywxag2H23qIn9zVhAhXBcPcqDyfHCCdFrWSblLlUZ8kRXEE+vDKmIzem0LuVsMZsnB9
-         0M8R9LkJv5Wg7IqBytud4ASU4oq2n1rKTcKs4odfxu4V3+NOIyYWcOMOguqJE63Yim/O
-         2yAe5D7fjdF2oZmQaHGBRBpvYku0RG5c1CKrTKGFlOD8oh0/zem4XpmXiKTBihsnCjHO
-         OU2loXqBMEFApObadp2t3ZhKrFpPObZkNvrhLcvCnS7q90dKUcgZ5iF+UbiXhHgxGGc2
-         i2dA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=il/KBps6ii6Gd5FHFi9j3ZFy5kAtbrCy1Dgg4+ftDI4=;
+        b=nGG3zeC3ujp1Lyr79SQNyz3Yei5eS80xvtngKVpw/5YXlWoG5FFrAxwd8qnLOVoDPS
+         SIaZg0HNQMFqJ/TRcM4ZVL9bkTGfLuu9eUAPFm41Xl9FQLgRlRlMO5MR7y10uklFmE+u
+         PipgW0PTjhJ1/PPY6CMmEFkVkCl9GbkCXKKPs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1TZ31csmugUEo+8MzdBW071qYG5n2pSsL9G37UaQECs=;
-        b=lmmmXdGlK7Wf131MpDvMD8x7C64JIibuaF5LY8FLjHhVlXD+y4iuc0IqNmWrBIv9el
-         51y+WWsppoKwwbTV60Sqk0NqXjSJqmUI45NKxdDPT/T3/S5/GMBAMOOArHAh7pwq2sHa
-         EmTj27GQi/UL/PTrNdzY56PXUXWkNPMkYv9wkJDq5Si84B5YsguUN/vrfP/5NnE4CuX8
-         7ac1J2j/J8dSb6Hv3sFiI0/EldWqWJEYWmOKJ+MpP1diaTdmvsK1xtYs550Dif9qPfwM
-         HZyXZVBpy+qva15TlC4A4TSTwKRUH2DX/kuvofNzcgSvXQ8D722g1F1xZ0hyaYXw1G6/
-         zmJg==
-X-Gm-Message-State: AJIora8AcEmMEfdL5e7qJKuEDTcnh2yvjiZDolKAnd07tEhsnNMzyYRu
-        okDHNh+H8RG40Zwl4m6h0NY=
-X-Google-Smtp-Source: AGRyM1s0YzUg7ZRzt5khe5CvyMl8gMYVZEMf5KMuoIvul92VVB9vLTphosQ0HwDXvD8gsVix+FxAcg==
-X-Received: by 2002:adf:fc0c:0:b0:210:2e87:9d3a with SMTP id i12-20020adffc0c000000b002102e879d3amr859955wrr.556.1655314094213;
-        Wed, 15 Jun 2022 10:28:14 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id w3-20020a7bc103000000b003976fbfbf00sm3023792wmi.30.2022.06.15.10.28.13
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=il/KBps6ii6Gd5FHFi9j3ZFy5kAtbrCy1Dgg4+ftDI4=;
+        b=tgVyyAd3vyWEScRVXaQjbK9ovje6iwAq5vSy6KYHicdTUywvmJ6GqwJNvmn+j1fcEJ
+         WuAQO+vSleO3N6/c/4jO4xsTAHUzkIMtNjtlCI2i8R2Segktkhf55lLynpKrZFABbrOI
+         BmcS8cEWWd9vi2V3zRxo3a40O9jfCeOea81+qY/6Qemt+CtTCEbNqcAgFIlsmrvurwCU
+         OSBIrTc7ohZ5eW8UoizTW4tIvzODnsd3f3eEfga7qut9uJMQKUvsM+72CNQH288dDdzI
+         ysHvZpV0jQW9odYB+OfDhe4ek0tHpcYgdKJ/AAsfy80ti3rwSUTJJAUxY1MlMdWWTAgC
+         N05Q==
+X-Gm-Message-State: AJIora99VJQcqyuuwe+QjdCavQMUSp1SgX/dotKmA8WflTLP44GWwU7h
+        e3+TsHV6P8MSKTRwUkIAKy/ouw==
+X-Google-Smtp-Source: AGRyM1sYHET89749fDt5TDoEPXQeflY6qeT3IV7HNP/7XVyGqeBNCkZrte/HBbD0kJf4G/g2FjkDMQ==
+X-Received: by 2002:a17:90a:6444:b0:1ea:b662:c12e with SMTP id y4-20020a17090a644400b001eab662c12emr506120pjm.199.1655314162312;
+        Wed, 15 Jun 2022 10:29:22 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:342:e7bd:5391:5d5b])
+        by smtp.gmail.com with ESMTPSA id g3-20020a636b03000000b003fcfdc9946dsm10402512pgc.51.2022.06.15.10.29.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 10:28:13 -0700 (PDT)
-From:   Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
-Subject: [PATCH 3/3] clk: qcom: lcc-ipq806x: convert to parent data
-Date:   Wed, 15 Jun 2022 18:34:08 +0200
-Message-Id: <20220615163408.30154-3-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220615163408.30154-1-ansuelsmth@gmail.com>
-References: <20220615163408.30154-1-ansuelsmth@gmail.com>
+        Wed, 15 Jun 2022 10:29:21 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 10:29:19 -0700
+From:   Brian Norris <briannorris@chromium.org>
+To:     Judy Hsiao <judyhsiao@chromium.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+        Douglas Anderson <dianders@chromium.org>,
+        Guenter Roeck <groeck@google.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [v1] arm64: dts: rk3399: i2s: switch BCLK to GPIO
+Message-ID: <YqoW7+6iL/SHGaAY@google.com>
+References: <20220615045146.3134420-1-judyhsiao@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615045146.3134420-1-judyhsiao@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert lcc-ipq806x driver to parent_data API.
+Hi,
 
-Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
----
- drivers/clk/qcom/lcc-ipq806x.c | 79 +++++++++++++++++++---------------
- 1 file changed, 44 insertions(+), 35 deletions(-)
+Normally the subject should look like "[PATCH v1] ...", not just "[v1]
+...".
 
-diff --git a/drivers/clk/qcom/lcc-ipq806x.c b/drivers/clk/qcom/lcc-ipq806x.c
-index ba90bebba597..c07ca8dc6e3a 100644
---- a/drivers/clk/qcom/lcc-ipq806x.c
-+++ b/drivers/clk/qcom/lcc-ipq806x.c
-@@ -24,6 +24,10 @@
- #include "clk-regmap-mux.h"
- #include "reset.h"
- 
-+static const struct clk_parent_data gcc_pxo[] = {
-+	{ .fw_name = "pxo", .name = "pxo" },
-+};
-+
- static struct clk_pll pll4 = {
- 	.l_reg = 0x4,
- 	.m_reg = 0x8,
-@@ -34,7 +38,7 @@ static struct clk_pll pll4 = {
- 	.status_bit = 16,
- 	.clkr.hw.init = &(struct clk_init_data){
- 		.name = "pll4",
--		.parent_names = (const char *[]){ "pxo" },
-+		.parent_data = gcc_pxo,
- 		.num_parents = 1,
- 		.ops = &clk_pll_ops,
- 	},
-@@ -64,9 +68,9 @@ static const struct parent_map lcc_pxo_pll4_map[] = {
- 	{ P_PLL4, 2 }
- };
- 
--static const char * const lcc_pxo_pll4[] = {
--	"pxo",
--	"pll4_vote",
-+static const struct clk_parent_data lcc_pxo_pll4[] = {
-+	{ .fw_name = "pxo", .name = "pxo" },
-+	{ .fw_name = "pll4_vote", .name = "pll4_vote" },
- };
- 
- static struct freq_tbl clk_tbl_aif_mi2s[] = {
-@@ -131,18 +135,14 @@ static struct clk_rcg mi2s_osr_src = {
- 		.enable_mask = BIT(9),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "mi2s_osr_src",
--			.parent_names = lcc_pxo_pll4,
--			.num_parents = 2,
-+			.parent_data = lcc_pxo_pll4,
-+			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
- 			.ops = &clk_rcg_ops,
- 			.flags = CLK_SET_RATE_GATE,
- 		},
- 	},
- };
- 
--static const char * const lcc_mi2s_parents[] = {
--	"mi2s_osr_src",
--};
--
- static struct clk_branch mi2s_osr_clk = {
- 	.halt_reg = 0x50,
- 	.halt_bit = 1,
-@@ -152,7 +152,9 @@ static struct clk_branch mi2s_osr_clk = {
- 		.enable_mask = BIT(17),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "mi2s_osr_clk",
--			.parent_names = lcc_mi2s_parents,
-+			.parent_hws = (const struct clk_hw*[]){
-+				&mi2s_osr_src.clkr.hw,
-+			},
- 			.num_parents = 1,
- 			.ops = &clk_branch_ops,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -167,7 +169,9 @@ static struct clk_regmap_div mi2s_div_clk = {
- 	.clkr = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "mi2s_div_clk",
--			.parent_names = lcc_mi2s_parents,
-+			.parent_hws = (const struct clk_hw*[]){
-+				&mi2s_osr_src.clkr.hw,
-+			},
- 			.num_parents = 1,
- 			.ops = &clk_regmap_div_ops,
- 		},
-@@ -183,7 +187,9 @@ static struct clk_branch mi2s_bit_div_clk = {
- 		.enable_mask = BIT(15),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "mi2s_bit_div_clk",
--			.parent_names = (const char *[]){ "mi2s_div_clk" },
-+			.parent_hws = (const struct clk_hw*[]){
-+				&mi2s_div_clk.clkr.hw,
-+			},
- 			.num_parents = 1,
- 			.ops = &clk_branch_ops,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -191,6 +197,10 @@ static struct clk_branch mi2s_bit_div_clk = {
- 	},
- };
- 
-+static const struct clk_parent_data lcc_mi2s_bit_div_codec_clk[] = {
-+	{ .hw = &mi2s_bit_div_clk.clkr.hw, },
-+	{ .fw_name = "mi2s_codec_clk", .name = "mi2s_codec_clk" },
-+};
- 
- static struct clk_regmap_mux mi2s_bit_clk = {
- 	.reg = 0x48,
-@@ -199,11 +209,8 @@ static struct clk_regmap_mux mi2s_bit_clk = {
- 	.clkr = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "mi2s_bit_clk",
--			.parent_names = (const char *[]){
--				"mi2s_bit_div_clk",
--				"mi2s_codec_clk",
--			},
--			.num_parents = 2,
-+			.parent_data = lcc_mi2s_bit_div_codec_clk,
-+			.num_parents = ARRAY_SIZE(lcc_mi2s_bit_div_codec_clk),
- 			.ops = &clk_regmap_mux_closest_ops,
- 			.flags = CLK_SET_RATE_PARENT,
- 		},
-@@ -245,8 +252,8 @@ static struct clk_rcg pcm_src = {
- 		.enable_mask = BIT(9),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "pcm_src",
--			.parent_names = lcc_pxo_pll4,
--			.num_parents = 2,
-+			.parent_data = lcc_pxo_pll4,
-+			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
- 			.ops = &clk_rcg_ops,
- 			.flags = CLK_SET_RATE_GATE,
- 		},
-@@ -262,7 +269,9 @@ static struct clk_branch pcm_clk_out = {
- 		.enable_mask = BIT(11),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "pcm_clk_out",
--			.parent_names = (const char *[]){ "pcm_src" },
-+			.parent_hws = (const struct clk_hw*[]){
-+				&pcm_src.clkr.hw,
-+			},
- 			.num_parents = 1,
- 			.ops = &clk_branch_ops,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -270,6 +279,11 @@ static struct clk_branch pcm_clk_out = {
- 	},
- };
- 
-+static const struct clk_parent_data lcc_pcm_clk_out_codec_clk[] = {
-+	{ .hw = &pcm_clk_out.clkr.hw, },
-+	{ .fw_name = "pcm_codec_clk", .name = "pcm_codec_clk" },
-+};
-+
- static struct clk_regmap_mux pcm_clk = {
- 	.reg = 0x54,
- 	.shift = 10,
-@@ -277,11 +291,8 @@ static struct clk_regmap_mux pcm_clk = {
- 	.clkr = {
- 		.hw.init = &(struct clk_init_data){
- 			.name = "pcm_clk",
--			.parent_names = (const char *[]){
--				"pcm_clk_out",
--				"pcm_codec_clk",
--			},
--			.num_parents = 2,
-+			.parent_data = lcc_pcm_clk_out_codec_clk,
-+			.num_parents = ARRAY_SIZE(lcc_pcm_clk_out_codec_clk),
- 			.ops = &clk_regmap_mux_closest_ops,
- 			.flags = CLK_SET_RATE_PARENT,
- 		},
-@@ -325,18 +336,14 @@ static struct clk_rcg spdif_src = {
- 		.enable_mask = BIT(9),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "spdif_src",
--			.parent_names = lcc_pxo_pll4,
--			.num_parents = 2,
-+			.parent_data = lcc_pxo_pll4,
-+			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
- 			.ops = &clk_rcg_ops,
- 			.flags = CLK_SET_RATE_GATE,
- 		},
- 	},
- };
- 
--static const char * const lcc_spdif_parents[] = {
--	"spdif_src",
--};
--
- static struct clk_branch spdif_clk = {
- 	.halt_reg = 0xd4,
- 	.halt_bit = 1,
-@@ -346,7 +353,9 @@ static struct clk_branch spdif_clk = {
- 		.enable_mask = BIT(12),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "spdif_clk",
--			.parent_names = lcc_spdif_parents,
-+			.parent_hws = (const struct clk_hw*[]){
-+				&spdif_src.clkr.hw,
-+			},
- 			.num_parents = 1,
- 			.ops = &clk_branch_ops,
- 			.flags = CLK_SET_RATE_PARENT,
-@@ -384,8 +393,8 @@ static struct clk_rcg ahbix_clk = {
- 		.enable_mask = BIT(11),
- 		.hw.init = &(struct clk_init_data){
- 			.name = "ahbix",
--			.parent_names = lcc_pxo_pll4,
--			.num_parents = 2,
-+			.parent_data = lcc_pxo_pll4,
-+			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
- 			.ops = &clk_rcg_lcc_ops,
- 		},
- 	},
--- 
-2.36.1
+On Wed, Jun 15, 2022 at 04:51:46AM +0000, Judy Hsiao wrote:
+> We discoverd that the state of BCLK on, LRCLK off and SD_MODE on
+> may cause the speaker melting issue. Removing LRCLK while BCLK
+> is present can cause unexpected output behavior including a large
+> DC output voltage as described in the Max98357a datasheet.
+> 
+> In order to:
+>   1. prevent BCLK from turning on by other component.
+>   2. keep BCLK and LRCLK being present at the same time
+> 
+> This patch adjusts the device tree to allow BCLK to switch
+> to GPIO func before LRCLK output, and switch back during
+> LRCLK is output.
 
+I get how this "allows" switching, but it seems like this would make
+more sense in a patch series that implements the switching.
+
+I'm also not certain, but it might be worth adding this to the DT
+binding, so we set the 'pinctrl-names' piece (which presumably you need
+to use in a driver) in stone.
+
+> --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+> +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+
+...
+
+> @@ -2225,6 +2226,8 @@ pcfg_input_pull_down: pcfg-input-pull-down {
+>  			input-enable;
+>  			bias-pull-down;
+>  			drive-strength = <2>;
+> +		pcfg_pull_none_hiz: pcfg-pull-none-hiz {
+> +			bias-disable;
+>  		};
+
+This isn't valid syntax. You probably didn't resolve conflicts correctly
+when rebasing a patch? You need an extra brace somewhere.
+
+Also, this definition seems like it belongs next to 'pcfg_pull_none'
+(around line 2138), or at least somewhere near the other 'pcfg_pull_*'
+handles.
+
+Brian
+
+>  
+>  		clock {
+ 
