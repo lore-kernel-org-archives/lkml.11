@@ -2,203 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F6DCCCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 411E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:03:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347014AbiFOJDt (ORCPT
+        id S1347050AbiFOJDu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41786 "EHLO
+        Wed, 15 Jun 2022 05:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238912AbiFOJDl (ORCPT
+        with ESMTP id S1346973AbiFOJDp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:03:41 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2135.outbound.protection.outlook.com [40.107.101.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 450E5369DF;
-        Wed, 15 Jun 2022 02:03:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BsXi5Ga6KRp/VtFG7UzBz/g3wyBM+qnLTpKZ3lfH/HUXdlWjwuG+wAAZa5A5s4r7ZzE+8mHhcgLXCe+IP65ncu3CISir3Br2+ZtCKZLicXw7p1DIMFfhq6mi67dy2nOKWl3azQ19RqYwqyblavsgj7EN5mXxzXm1PqVjJhk47q/cI80z2R9C1/VtS9d+Oenn5YmhS1a9WSr1D9hdaA7V7lgYOYvfCPig17cMvmXazow5NhfbniY94ntmLJwWo/VGaG0vTOt9VF1rEODccPdALPeDcdaqkoQTXVRQ0ZUm8l3Od6pqxnReGCNuIMCgTyUy/LKm3vgEyhiWqB/ZtHitCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wkjq0qshKkkEnrp6tWg9ZoVy1g9YcPkZ/ZuHSoon950=;
- b=QPAgaxb+bufbzgr/PgVGkmg/BWbZyEKJC4DHCm/Sy0GilRoLojYNx1dJdnLhgHkWCX0LLaA7xcLXT6FsNKTfmjFWMlz8JFnq6vvlQVoFoyTkoewgf1Rz4l5jl8NF4a+1o2joifNjKNtycdzLoMmXEznOS9nthGMf4GSl41NwSQao8L5+K+q9HrJLp1KAyAOBY5Um2uJ0jHFU40Ymoy1bExA3lteRiyiSlbw3tGeczHeRdF9ySw047bCMm+mywp/oVcPgFug9KTS1c2fd1bnNG+Y5UNYrDvhR01+FLk18OFYvtAlNFlzbEIrhDyoaAVnVHcLZcH6h8ppC9tPcCk3KJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
- header.from=os.amperecomputing.com; dkim=pass
- header.d=os.amperecomputing.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=os.amperecomputing.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wkjq0qshKkkEnrp6tWg9ZoVy1g9YcPkZ/ZuHSoon950=;
- b=h/QI2OXRlMa4XRgQ3oUi6qE5GkBLXpt0ysS9/7VU6O3a7cPxo85oPgvEET3txsZgED1BdbIi6jHmcDdXOPN8Y+oVucWbDJvU+2WU3+AUttFFTZG7oaiNwvwCCb15aOIRSqJLEmjTFGGJCQNxPFGGk8YA0NpN4g5LUWFcVCkeVOs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
-Received: from SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24) by
- BN0PR01MB6909.prod.exchangelabs.com (2603:10b6:408:166::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5332.13; Wed, 15 Jun 2022 09:03:36 +0000
-Received: from SJ0PR01MB7282.prod.exchangelabs.com
- ([fe80::7535:773:f979:893e]) by SJ0PR01MB7282.prod.exchangelabs.com
- ([fe80::7535:773:f979:893e%7]) with mapi id 15.20.5332.020; Wed, 15 Jun 2022
- 09:03:36 +0000
-From:   Quan Nguyen <quan@os.amperecomputing.com>
-To:     Quan Nguyen <quan@os.amperecomputing.com>,
-        Corey Minyard <minyard@acm.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Wolfram Sang <wsa@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, openbmc@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
-Cc:     Open Source Submission <patches@amperecomputing.com>,
-        Phong Vo <phong@os.amperecomputing.com>,
-        "Thang Q . Nguyen" <thang@os.amperecomputing.com>
-Subject: [PATCH v8 2/3] bindings: ipmi: Add binding for SSIF BMC driver
-Date:   Wed, 15 Jun 2022 16:02:58 +0700
-Message-Id: <20220615090259.1121405-3-quan@os.amperecomputing.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220615090259.1121405-1-quan@os.amperecomputing.com>
-References: <20220615090259.1121405-1-quan@os.amperecomputing.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR06CA0189.apcprd06.prod.outlook.com (2603:1096:4:1::21)
- To SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24)
+        Wed, 15 Jun 2022 05:03:45 -0400
+Received: from out203-205-221-202.mail.qq.com (out203-205-221-202.mail.qq.com [203.205.221.202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888EF377DD;
+        Wed, 15 Jun 2022 02:03:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1655283819;
+        bh=yGIqFbDVhQfi98uNwz2qN9S7Yz1LlnTD2FVmVtOJuoc=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=xOxEubHg2PIyspkaCjgtnDtkQEp1jiPp+bjp+4cpdpkBjCMkLhAJjl/fyj/uKOtR4
+         61nRMwNpwROhep+rbDT9X89rkt2eZTwAGqYhf88tZ3J3GIhmAe1qzzWFH82oXsAMCI
+         FFGMqZ3VDyB6+sRdb1K1WDjLbANiOspSYkjbSDLk=
+Received: from [IPv6:240e:45a:40b:32d5:40d9:41b7:4f55:3d8c] ([240e:45a:40b:32d5:40d9:41b7:4f55:3d8c])
+        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
+        id E23AAD9; Wed, 15 Jun 2022 17:03:34 +0800
+X-QQ-mid: xmsmtpt1655283814t564lhbpz
+Message-ID: <tencent_DFF5A6C9352C76C00C7E46E06F2BA945350A@qq.com>
+X-QQ-XMAILINFO: NRN3UPsLzYKVaynmbzMu4xCIrguRMpEbttgHReiCH60WykTo9hEpBjRwxhmIbj
+         T8pZ24gNhkEKV57Zuw8HWDrADwR8sZBaDfpcf8+jOe0P25Mapb2wSBPHBt9HzYUw+AA/+k0DHtFF
+         xOFyHKPqwkve/1mAmYM3Uk25STpggNGuiBIhgtL2TzwFwwaxEAxw++OyH71DuWneAXkZ9P+OsgC1
+         +QVKEWsC3heif3Oa4ZagQtsQVKvCxxqtdajg4uyNTSSpBAtb87qSC4grg2Gu72jVY68HXMuOwJbn
+         e7Nqd98FRvrnTyvxqjGiRI0YMzF3FBrN2PiMGo/0lSIBxEMpVN47pSMYQfpJzD26wes3Ya+AEMoq
+         SZR0Su4gMZf5L0ZXw1OtCRuA4XO5mJVJYY6husaGS1I2hLTEw1iV1UGs6u9YtRDvdEYmMPBR+zI+
+         uimGIHlNecjHrnc9yoldrSj0iqSjKMWLswj/U+C4fpwEhzCqYbr590FHyqnj7OJp+ClVFWMMOXS9
+         Ng9abCvxKkgZRw/+2I3AsJrdXcKUL6uoZXzeGULJLdT4/3eyDsatGStHH0VQkNxhWFJHjhJ+rWc8
+         tL1K4J0krxxNgXKIHfFkLIdVIVZjT5CAvBkC0JTzTk5n58xXoTnhB4wNXzY5iHozUY4WXXcM3aEV
+         0iqj3SF3l4JDAMkKv3oXfXpuudJNrc5m3PojbwjcBHHjVsUK3tVUJP+haqkIhAl0/5sga2Y3tX3T
+         Zrrbt1P+W5BQZIgcFJYT2ZSDWibMyg2x8N+nBTfw65ns71AmehiNpSjEf7/+rJJBYGR3l7noSCkP
+         7SHii7tg+Eyx38/m/+mcOfzVg/OhL+ceEw0Dzo6YV/Lzew9qR0EjvshuWlzfOBJZmlvameNRgVVp
+         K3BKxwhfLmMoCmpXc9Psy2bTkdPzIsm+p5brTct57eg/qwLDT+U1FYxlCJR0eJ6k/MXqAGs4HvsO
+         TvcPfIjXTXFp+cruBO62nr28RUXpVmpukTKQq3gcQ=
+Subject: Re: Commit 282d8998e997 (srcu: Prevent expedited GPs and blocking
+ readers from consuming CPU) cause qemu boot slow
+To:     paulmck@kernel.org, zhangfei <zhangfei.gao@linaro.org>
+Cc:     Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "mtosatti@redhat.com" <mtosatti@redhat.com>,
+        Auger Eric <eric.auger@redhat.com>,
+        "chenxiang (M)" <chenxiang66@hisilicon.com>
+References: <tencent_E306F58EAEC1D188ED6D5F358A269F34C707@qq.com>
+ <20220613035711.GY1790663@paulmck-ThinkPad-P17-Gen-1>
+ <20220613041652.GA3976000@paulmck-ThinkPad-P17-Gen-1>
+ <tencent_F82250B6E3D51A9AC0D2BE1AE43A4E060909@qq.com>
+ <20220613121831.GA1790663@paulmck-ThinkPad-P17-Gen-1>
+ <tencent_65C7D0A04984EDB6A79A5E5379DA7E835206@qq.com>
+ <20220613145900.GC1790663@paulmck-ThinkPad-P17-Gen-1>
+ <7b6c983b21d44119b61716a66de397ed@huawei.com>
+ <f9684a69-5467-a440-abd1-7cf5ad3a81f7@quicinc.com>
+ <tencent_8FD344DA7FC376C7D1204604DA7689DA4906@qq.com>
+ <20220614141712.GR1790663@paulmck-ThinkPad-P17-Gen-1>
+From:   "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
+X-OQ-MSGID: <bc281849-bc1e-54f2-2526-1df294cde6e0@foxmail.com>
+Date:   Wed, 15 Jun 2022 17:03:33 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e3ba8358-1e2f-4efb-1335-08da4eadee42
-X-MS-TrafficTypeDiagnostic: BN0PR01MB6909:EE_
-X-Microsoft-Antispam-PRVS: <BN0PR01MB69095F7A9E0D3920B3D744FDF2AD9@BN0PR01MB6909.prod.exchangelabs.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YjdQnxq8ml3RVcqgdJAyMuI9VbtNl9TcaFSU8NqJRYGn/VZPh8vxF8WilAfBFsbrpk0/6VQn84mDYdgovrjMCnhDsDvJzBOoZnihGlqO9MnWQxWWzqCFRQTevJaEqDJkH9UGawRN7l0xiDCAw67Uz4GuSJxtaGF+7gYYE6YyVW+C8Z4IPpOlTYiLL0Pr0OR+6ryiHt4G+PKAEazvBDthKe6AEvKgUs7VbiTDilFNYbkJFmUPVuQKSsLup+sdhdfOLWN3Tjj2/cIWKD5H5jMKseOq6gj7NEV7qRDQI5WK7vwZe+7aJF8QVuKT8MPXHmnoHwrNYWo37tPxc/LeLJrVhy74lnWycmBtz8PyRUhTu+amIeLqIQBIZhqVyZI3RLWLtCzh/0vfHFEpJhkP5lMduGCqabifaYnXoe67vZnlbeEQ7BSjFfQ0muVezc/ur2GDrzq9Afyeg8/P2uhe+X7OYYR66pY5GZ9erMC2gitgNza1kIh8GL7fWVeKQnxO+woVQNB+R+HyTV25G43oa5ezth4p/SBt17E15rqwkbWCEnyBJ17RQmR6w7owQW+L36ZUQWZV+jJPo3+mUURGw9KOp7Y9p/p9QlRPygFWrymr/KEu0UjVfSlaMDsBtG4qQ1wN3XGX4Yxccc1T5bSzt8uIz2GKvM2HqLtxBrxTua3TaL4DTFswGwnWonJCj72ikdUIYnUoct3rkzy+I00qpSvwjkQlbnWvLlNNf2OjcVjf0CM9HmgIbGIDX5WCri5cZEeGjVzgC25fWziSNPhIscaTxjCm1knlY3577MaMfI/lqpY9gITHqHnWVBdAYDDPMPqfDvtnE27VfygC4N4FJpzEMqIk11EftWyfcF9E7k0VX2Y=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR01MB7282.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(110136005)(6486002)(966005)(508600001)(2906002)(7416002)(6666004)(8936002)(186003)(316002)(54906003)(4326008)(5660300002)(66946007)(66556008)(66476007)(8676002)(38100700002)(52116002)(86362001)(6512007)(921005)(1076003)(107886003)(6506007)(2616005)(38350700002)(26005)(83380400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?diS24eXfVXIBHORkMT761Ix6uXIQ8+RyNaDUV9m7v3vnb89dmX1KwxenBiDX?=
- =?us-ascii?Q?ZG/SOsVRBtcAyI6rd/RXJPIzI/8XCxNVI8CwSAEYrAP/5ESTnEb7WHsSda6Z?=
- =?us-ascii?Q?N2ttTMDmHQwmOZ+8UDRuXbtaqq2GOyCLzXWsGm+BtsYhcBfD3OV+5tk78gtA?=
- =?us-ascii?Q?iDWGkI4AB+u12GZg9a1PdF5fPk520DtRQdmyYCpLyu0+IUATJNvN2xSofCwE?=
- =?us-ascii?Q?656S3DbpjjlQkvtavpgiHivb/WDoCVz2LJOzzoFzfrN2Y4pSqNt9JyQbkoXa?=
- =?us-ascii?Q?DbSsHceurHTr29f6pYu4zMoWKF3VEbbxxJAPrRGmBwjTlCYBRAVuPD2c5n6B?=
- =?us-ascii?Q?iTuqkBkRiknIetGabp7NHYuVdzOJUxecigDzoRiO/Sxu1uM6I0+QHZCTAn+B?=
- =?us-ascii?Q?Gp2/odMx6kVKiTVSzUjvHul8tlt6juCdmo9XqlKkHtVXo8hSFSX3xNxJCPwr?=
- =?us-ascii?Q?JXQHBTZZupUc9nXUHb54gqUrgh8vyrjQQS0cc8ombeU6qFHt3URio2nIfZjb?=
- =?us-ascii?Q?YSa2QXYQqxii/7yKpp02Y/VLWcf5OGeIIKVbaih6FiqydtZa2qIHj24zFg+W?=
- =?us-ascii?Q?vKSngGwU8Cj0QUlRzTJjsoxkcvqcjIypQ5mUj+sS5DEtTgjpfgfCtc6I4tXo?=
- =?us-ascii?Q?kvIZk6Mrj9focb2DaDYQwxSNQTVN7xSqcdx1GkACkvARB0frdJQqvwXWDDe9?=
- =?us-ascii?Q?QAXmYKWZYcNX6zW86n8Hf8bI0m/CA4WSe0PuN3F3w4qHu7LhHFOQIM4NsuWU?=
- =?us-ascii?Q?r9aWJAM09OCoXc+8ujlX69KPzHqj7mwzoSUdegNqJ4gretdTIWzdg29K6ACC?=
- =?us-ascii?Q?e+1DZxzXblfdUWcJSNM2C79FXsXPZAft+JNjxN1ZUO3sanuaKphjzRMzucB+?=
- =?us-ascii?Q?FX5PxXHc9IFHGsDetR476iY3rjzSA7vVpTWHZtLE1bw78xiKT3a2QmytRgpQ?=
- =?us-ascii?Q?vV17p3HHzKaX2xSVzYtxedGqana/5nWF3rzcHhWi6PKG2MfokEgKEHjUPrXm?=
- =?us-ascii?Q?in/dXr2OV30dJUDlV8GtDCMFCQEmG/ruV6CKUYdf3dlRzf+l3Qsd/5n9k7qD?=
- =?us-ascii?Q?z7UxusTZqDqzmBcEuJ81px23rcpGap5gyH/CWPhLm7ufPqAvrHuo50uxfXk2?=
- =?us-ascii?Q?JFoBluBKE7rvk1JPTLz1ugXgYW4t4+mtez3FD7vAyL0t4vu4+PQ+ZasnJx0S?=
- =?us-ascii?Q?Z/oAx4p2bgGty3LcQIvkzc9XSZj4iwe3U07q5I/xKjcQcvxiUoAWEOUK6PLw?=
- =?us-ascii?Q?KryXn6WUtEb2tgeztRAA8VeFNTxxxRIVPtC8DsyvGP3/Oww3eG/9EmxGt2Og?=
- =?us-ascii?Q?N8itMdiYVpTbKFX9wBPgt9paqcJwm+p0rupLrkFF5/sJhH/gbGMNc4h48vxh?=
- =?us-ascii?Q?Umv+0aNb0X46L7w3vaKIcc1WChLiad4y5nCecQs1cG//uZijy6dXR6VLqus5?=
- =?us-ascii?Q?gOru4GS1FDDGiQKucuvtHUCz9pXvVbqr7GR/6cHRR1jzKABWHdW93orQ3GqS?=
- =?us-ascii?Q?TGVC6tyn8Oh/iE3Q2CVyJm9TaoDmTz7I4Ugo7wvH1/+FoI6mCWHr6AQKzUGu?=
- =?us-ascii?Q?qEmebCKITCkxl0h1+JbZ5yBHZOwz9DVWYhR4r6VAsuUCRGwCnLFOJkd/XWg6?=
- =?us-ascii?Q?YGrr7stKrcAYEapa7ypDW8J/EV/fy65/DQBvTJo3g0QOTDBrLkyJwPC5kQYk?=
- =?us-ascii?Q?WalMWmNqmEug0ORzs5erzYz7UQwoxx5eNrca7re7Vl7a3U4PQPkKz8uYdCfJ?=
- =?us-ascii?Q?M7nFem1Zj8ZqBHB/nv4n9GMszKL7kfzfw7EyLIneRkaRsH5Gu8pM?=
-X-OriginatorOrg: os.amperecomputing.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3ba8358-1e2f-4efb-1335-08da4eadee42
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR01MB7282.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2022 09:03:36.4024
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ycb8JCP8vX7wh0RVKQxLqoV0BbHom2mraQn0vripKwxHhD4CLqUCEYyeVL1YUoZszT0OxvVSJ/uFEBJ5xmVRfob39UPLgyEehWYbs9YK9ZM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR01MB6909
+In-Reply-To: <20220614141712.GR1790663@paulmck-ThinkPad-P17-Gen-1>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree binding document for the SSIF BMC driver.
 
-Signed-off-by: Quan Nguyen <quan@os.amperecomputing.com>
----
-v8:
-  + None
 
-v7:
-  + Change compatible string from "ampere,ssif-bmc" to "ssif-bmc"  [Jae]
+On 2022/6/14 下午10:17, Paul E. McKenney wrote:
+> On Tue, Jun 14, 2022 at 10:03:35PM +0800, zhangfei.gao@foxmail.com wrote:
+>>
+>> On 2022/6/14 下午8:19, Neeraj Upadhyay wrote:
+>>>> 5.18-rc4 based               ~8sec
+>>>>
+>>>> 5.19-rc1                     ~2m43sec
+>>>>
+>>>> 5.19-rc1+fix1                 ~19sec
+>>>>
+>>>> 5.19-rc1-fix2                 ~19sec
+>>>>
+>>> If you try below diff on top of either 5.19-rc1+fix1 or 5.19-rc1-fix2 ;
+>>> does it show any difference in boot time?
+>>>
+>>> --- a/kernel/rcu/srcutree.c
+>>> +++ b/kernel/rcu/srcutree.c
+>>> @@ -706,7 +706,7 @@ static void srcu_schedule_cbs_snp(struct srcu_struct
+>>> *ssp, struct srcu_node *snp
+>>>    */
+>>>   static void srcu_gp_end(struct srcu_struct *ssp)
+>>>   {
+>>> -       unsigned long cbdelay;
+>>> +       unsigned long cbdelay = 1;
+>>>          bool cbs;
+>>>          bool last_lvl;
+>>>          int cpu;
+>>> @@ -726,7 +726,9 @@ static void srcu_gp_end(struct srcu_struct *ssp)
+>>>          spin_lock_irq_rcu_node(ssp);
+>>>          idx = rcu_seq_state(ssp->srcu_gp_seq);
+>>>          WARN_ON_ONCE(idx != SRCU_STATE_SCAN2);
+>>> -       cbdelay = !!srcu_get_delay(ssp);
+>>> +       if (ULONG_CMP_LT(READ_ONCE(ssp->srcu_gp_seq),
+>>> READ_ONCE(ssp->srcu_gp_seq_needed_exp)))
+>>> +               cbdelay = 0;
+>>> +
+>>>          WRITE_ONCE(ssp->srcu_last_gp_end, ktime_get_mono_fast_ns());
+> Thank you both for the testing and the proposed fix!
+>
+>> Test here:
+>> qemu: https://github.com/qemu/qemu/tree/stable-6.1
+>> kernel:
+>> https://github.com/Linaro/linux-kernel-uadk/tree/uacce-devel-5.19-srcu-test
+>> (in case test patch not clear, push in git tree)
+>>
+>> Hardware: aarch64
+>>
+>> 1. 5.18-rc6
+>> real    0m8.402s
+>> user    0m3.015s
+>> sys     0m1.102s
+>>
+>> 2. 5.19-rc1
+>> real    2m41.433s
+>> user    0m3.097s
+>> sys     0m1.177s
+>>
+>> 3. 5.19-rc1 + fix1 from Paul
+>> real    2m43.404s
+>> user    0m2.880s
+>> sys     0m1.214s
+>>
+>> 4. 5.19-rc1 + fix2: fix1 + Remove "if (!jbase)" block
+>> real    0m15.262s
+>> user    0m3.003s
+>> sys     0m1.033s
+>>
+>> When build kernel in the meantime, load time become longer.
+>>
+>> 5. 5.19-rc1 + fix3: fix1 + SRCU_MAX_NODELAY_PHASE 1000000
+>> real    0m15.215s
+>> user    0m2.942s
+>> sys    0m1.172s
+>>
+>> 6. 5.19-rc1 + fix4: fix1 + Neeraj's change of srcu_gp_end　
+>> real    1m23.936s
+>> user    0m2.969s
+>> sys    0m1.181s
+> And thank you for the testing!
+>
+> Could you please try fix3 + Neeraj's change of srcu_gp_end?
+>
+> That is, fix1 + SRCU_MAX_NODELAY_PHASE 1000000 + Neeraj's change of
+> srcu_gp_end.
+>
+> Also, at what value of SRCU_MAX_NODELAY_PHASE do the boot
+> times start rising?  This is probably best done by starting with
+> SRCU_MAX_NODELAY_PHASE=100000 and dividing by (say) ten on each run
+> until boot time becomes slow, followed by a binary search between the
+> last two values.  (The idea is to bias the search so that fast boot
+> times are the common case.)
 
-v6:
-  + None
+SRCU_MAX_NODELAY_PHASE 100 becomes slower.
 
-v5:
-  + None
 
-v4:
-  + Fix warning with dt_binding_check [Rob]
-  + Change aspeed-ssif-bmc.yaml to ssif-bmc.yaml [Quan]
+8. 5.19-rc1 + fix6: fix4 + SRCU_MAX_NODELAY_PHASE 1000000
 
-v3:
-  + Switched to use DT schema format [Rob]
+real 0m11.154s ~12s
 
-v2:
-  + None
+user 0m2.919s
 
- .../devicetree/bindings/ipmi/ssif-bmc.yaml    | 38 +++++++++++++++++++
- 1 file changed, 38 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/ipmi/ssif-bmc.yaml
+sys 0m1.064s
 
-diff --git a/Documentation/devicetree/bindings/ipmi/ssif-bmc.yaml b/Documentation/devicetree/bindings/ipmi/ssif-bmc.yaml
-new file mode 100644
-index 000000000000..02b662d780bb
---- /dev/null
-+++ b/Documentation/devicetree/bindings/ipmi/ssif-bmc.yaml
-@@ -0,0 +1,38 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/ipmi/ssif-bmc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: SSIF IPMI BMC interface
-+
-+description: SSIF IPMI BMC device bindings
-+
-+maintainers:
-+  - Quan Nguyen <quan@os.amperecomputing.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ssif-bmc
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        ssif-bmc@10 {
-+            compatible = "ssif-bmc";
-+            reg = <0x10>;
-+        };
-+    };
--- 
-2.35.1
+
+
+9. 5.19-rc1 + fix7: fix4 + SRCU_MAX_NODELAY_PHASE 10000
+
+real 0m11.258s
+
+user 0m3.113s
+
+sys 0m1.073s
+
+
+
+10. 5.19-rc1 + fix8: fix4 + SRCU_MAX_NODELAY_PHASE 100
+
+real 0m30.053s ~ 32s
+
+user 0m2.827s
+
+sys 0m1.161s
+
+
+
+By the way, if build kernel on the board in the meantime (using memory), 
+time become much longer.
+
+real 1m2.763s
+
+
+
+11. 5.19-rc1 + fix9: fix4 + SRCU_MAX_NODELAY_PHASE 1000
+
+real 0m11.443s
+
+user 0m3.022s
+
+sys 0m1.052s
+
+
+Thanks
+
+>
+>> More test details: https://docs.qq.com/doc/DRXdKalFPTVlUbFN5
+> And thank you for these details.
+>
+> 							Thanx, Paul
 
