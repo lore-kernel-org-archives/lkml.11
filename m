@@ -2,227 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF31CCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:16:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDBDC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:19:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235081AbiFOOQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:16:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60602 "EHLO
+        id S1345249AbiFOOTD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 10:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232345AbiFOOQU (ORCPT
+        with ESMTP id S238011AbiFOOTA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:16:20 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 7705B36312
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:16:19 -0700 (PDT)
-Received: (qmail 674306 invoked by uid 1000); 15 Jun 2022 10:16:18 -0400
-Date:   Wed, 15 Jun 2022 10:16:18 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Paul =?iso-8859-1?Q?Heidekr=FCger?= <paul.heidekrueger@in.tum.de>
-Cc:     llvm@lists.linux.dev, linux-toolchains@vger.kernel.org,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        Marco Elver <elver@google.com>,
-        Charalampos Mainas <charalampos.mainas@gmail.com>,
-        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
-        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
-        Martin Fink <martin.fink@in.tum.de>
-Subject: Re: [PATCH RFC] tools/memory-model: Adjust ctrl dependency definition
-Message-ID: <YqnpshlsAHg7Uf9G@rowland.harvard.edu>
-References: <20220615114330.2573952-1-paul.heidekrueger@in.tum.de>
+        Wed, 15 Jun 2022 10:19:00 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE3334B96;
+        Wed, 15 Jun 2022 07:18:58 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 5763F21C19;
+        Wed, 15 Jun 2022 14:18:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655302737; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YgLkMI9DqFt3ydqQoLdZQvEZhwQFjz0PcIyBz6Ee8W4=;
+        b=nDOj/JDX8TbIMSSCX9jxqeAFJq6ogVecA5wHTgsxD7utIae/P3JoJhTtcM9PbWUqSkvu7X
+        VhktLnitWXSk/sYRqqLhBykJRXeKcOMU0+xTmzGcz8+w3f5gEbqNE8OQ0jNzz5+i466NKH
+        /BPSV6WBrE35QKroSbZCSQMmVEBkhzI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655302737;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YgLkMI9DqFt3ydqQoLdZQvEZhwQFjz0PcIyBz6Ee8W4=;
+        b=jy0EeX2/SF5zOktPUxdwIMjY1FnFiF1wsT7P7NYhzEtUwuhzdtZNMHAxFUW8GR6yTKXE+f
+        0bF6ZMfHne3UfWCg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 397D0139F3;
+        Wed, 15 Jun 2022 14:18:57 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id kwO7DVHqqWKEOgAAMHmgww
+        (envelope-from <iivanov@suse.de>); Wed, 15 Jun 2022 14:18:57 +0000
+Date:   Wed, 15 Jun 2022 17:18:56 +0300
+From:   "Ivan T. Ivanov" <iivanov@suse.de>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     madvenka@linux.microsoft.com, jpoimboe@redhat.com,
+        peterz@infradead.org, chenzhongjin@huawei.com, broonie@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 00/20] arm64: livepatch: Use ORC for dynamic frame
+ pointer validation
+Message-ID: <20220615141856.t6jfuuk4loevahi5@suse>
+References: <e81e773678f88f7c2ff7480e2eb096973ec198db>
+ <20220524001637.1707472-1-madvenka@linux.microsoft.com>
+ <20220615121844.34v7cos5kcz2hufk@suse>
+ <YqngltNLQJl67yu0@FVFF77S0Q05N>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220615114330.2573952-1-paul.heidekrueger@in.tum.de>
+In-Reply-To: <YqngltNLQJl67yu0@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 11:43:29AM +0000, Paul Heidekrüger wrote:
-> Hi all,
-> 
-> I have been confused by explanation.txt's definition of control
-> dependencies:
-> 
-> > Finally, a read event and another memory access event are linked by a
-> > control dependency if the value obtained by the read affects whether
-> > the second event is executed at all.
-> 
-> I'll go into the following:
-> 
-> ====
-> 1. "At all", to me, is misleading
->   1.1 The code which confused me
->   1.2 The traditional definition via post-dominance doesn't work either
-> 2. Solution
-> ====
-> 
-> 1. "At all", to me, is misleading:
-> 
-> "At all" to me suggests a question for which we require a definitive
-> "yes" or "no" answer: given a programme and an input, can a certain
-> piece of code be executed? Can we always answer this this question?
-> Doesn't this sound similar to the halting problem?
+Hi,
 
-No.  You're not thinking about this the right way.
+On 06-15 14:37, Mark Rutland wrote:
+> 
+> On Wed, Jun 15, 2022 at 03:18:44PM +0300, Ivan T. Ivanov wrote:
+> > I have run following [1] livepatch tests on kernel build from your repository.
+> > Overall results looks good, but when I run klp_tc_13.shI there is something which
+> > I still can not understand completely. It is because of kaslr.
+> > 
+> > [   36.817617] livepatch: enabling patch 'klp_tc_13_livepatch'
+> > [   36.819602] branch_imm_common: offset out of range
+> > [   36.820113] branch_imm_common: offset out of range
+> > [   36.820643] ------------[ ftrace bug ]------------
+> > [   36.821172] ftrace failed to modify
+> > [   36.821173] [<ffffdde931176804>] orig_do_read_active_livepatch_id+0x4/0xa8 [klp_test_support_mod]
+> > [   36.822465]  actual:   e4:01:00:94
+> > [   36.822821] Updating ftrace call site to call a different ftrace function
+> > [   36.823537] ftrace record flags: e4000002
+> > [   36.823953]  (2) R
+> > [   36.823953]  expected tramp: ffffdde96882e224
+> > [   36.824619] ------------[ cut here ]------------
+> > [   36.825125] WARNING: CPU: 0 PID: 950 at kernel/trace/ftrace.c:2085 ftrace_bug+0x98/0x280
+> > [   36.826027] Modules linked in: klp_tc_13_livepatch(OK+) klp_test_support_mod(O) crct10dif_ce
+> > [   36.826943] CPU: 0 PID: 950 Comm: insmod Tainted: G           O  K   5.18.0-rc1-00020-g1ffee6fdcfda #39
+> > [   36.827987] Hardware name: linux,dummy-virt (DT)
+> > [   36.828546] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> > [   36.829348] pc : ftrace_bug+0x98/0x280
+> > [   36.829790] lr : ftrace_bug+0x228/0x280
+> > [   36.830224] sp : ffff8000084038e0
+> > [   36.830620] x29: ffff8000084038e0 x28: ffff00000485a920 x27: ffffdde931176804
+> > [   36.831419] x26: ffffdde93117d1a0 x25: ffff00000485a900 x24: ffffdde96aea1000
+> > [   36.832226] x23: 0000000000000000 x22: 0000000000000001 x21: ffffdde96a124da0
+> > [   36.833024] x20: ffff0000045620f0 x19: ffffdde96b54a358 x18: ffffffffffffffff
+> > [   36.833818] x17: 5b20386178302f34 x16: 78302b64695f6863 x15: ffffdde96a3078f8
+> > [   36.834621] x14: 0000000000000000 x13: 3432326532383836 x12: ffffdde96ae9b3d8
+> > [   36.835425] x11: 0000000000000001 x10: 0000000000000001 x9 : ffffdde96891305c
+> > [   36.836221] x8 : c0000000ffffefff x7 : 0000000000017fe8 x6 : ffffdde96ae83398
+> > [   36.837023] x5 : 0000000000057fa8 x4 : 0000000000000000 x3 : 00000000ffffefff
+> > [   36.837836] x2 : e32439832ffb9700 x1 : 0000000000000000 x0 : 0000000000000022
+> > [   36.838635] Call trace:
+> > [   36.838923]  ftrace_bug+0x98/0x280
+> > [   36.839319]  ftrace_replace_code+0xa0/0xb8
+> > [   36.839768]  ftrace_modify_all_code+0xc0/0x160
+> > [   36.840273]  arch_ftrace_update_code+0x14/0x20
+> > [   36.840780]  ftrace_run_update_code+0x24/0x78
+> > [   36.841283]  ftrace_startup_enable+0x50/0x60
+> > [   36.841781]  ftrace_startup+0xb4/0x178
+> > [   36.842214]  register_ftrace_function+0x68/0x88
+> > [   36.842738]  klp_patch_object+0x1c8/0x330
+> > [   36.843196]  klp_enable_patch+0x468/0x828
+> 
+> IIUC that splat specifically is due to ftrace_modify_call() missing module PLT lookups.
+> 
+> That should be fixed by:
+> 
+>   https://lore.kernel.org/all/20220614080944.1349146-3-mark.rutland@arm.com/
+> 
 
-The point of view we take in this document and in the LKMM is not like 
-the view in a static analysis of a program.  It is a dynamic analysis of 
-one particular execution of a program.  The halting problem does not 
-apply.  Note for instance that explanation.txt talks about "events" 
-rather than instructions or pieces of code.
+Yes, this is it. Thanks!
 
-(The single-execution-at-a-time point of view has its own limitations, 
-which do have some adverse affects on the LKMM.  But we don't want to 
-exceed the capabilities of the herd7 tool.)
+Regards,
+Ivan
 
-> 1.1 The Example which confused me:
-> 
-> For the dependency checker project [1], I've been thinking about
-> tracking dependency chains in code, and I stumbled upon the following
-> edge case, which made me question the "at all" part of the current
-> definition. The below C-code is derived from some optimised kernel code
-> in LLVM intermediate representation (IR) I encountered:
-> 
-> > int *x, *y;
-> >
-> > int foo()
-> > {
-> > /* More code */
-> >
-> > 	 loop:
-> > 		/* More code */
-> >
-> > 	 	if(READ_ONCE(x)) {
-> > 	 		WRITE_ONCE(y, 42);
-> > 	 		return 0;
-> > 	 	}
-> >
-> > 		/* More code */
-> >
-> > 	 	goto loop;
-> >
-> >       /* More code */
-> > }
-> 
-> Assuming that foo() will return, the READ_ONCE() does not determine
-> whether the WRITE_ONCE() will be executed __at all__, as it will be
-> executed exactly when the function returns, instead, it determines
-> __when__ the WRITE_ONCE() will be executed.
-
-But what if your assumption is wrong?
-
-In any case, your question displays an incorrect viewpoint.  For 
-instance, the READ_ONCE() does not count as a single event.  Rather, 
-each iteration through the loop executes a separate instance of the 
-READ_ONCE(), and each instance counts as its own event.  Think of events 
-not as static entities in the program source but instead as the items in 
-the queue that gets fed into the CPU's execution unit at run time.
-
-Strictly speaking, one could say there is a control dependency from each 
-of these READ_ONCE() events to the final WRITE_ONCE().  However the LKMM 
-takes a more limited viewpoint, saying that a dependency from a load to 
-the controlling expression of an "if" statement only affects the 
-execution of the events corresponding to statements lying statically in 
-the two arms of the "if".  In your example the "if" has a single arm, 
-and so only the access in that arm is considered to have a control 
-dependency from the preceding instance of the READ_ONCE().  And it 
-doesn't have a control dependency from any of the earlier iterations of 
-the READ_ONCE(), because it doesn't lie in any of the arms of the 
-earlier iterations of the "if".
-
-> 1.2. The definition via post-dominance doesn't work either:
-> 
-> I have seen control dependencies being defined in terms of the first
-> basic block that post-dominates the basic block of the if-condition,
-> that is the first basic block control flow must take to reach the
-> function return regardless of what the if condition returned.
-> 
-> E.g. [2] defines control dependencies as follows:
-> 
-> > A statement y is said to be control dependent on another statement x
-> > if (1) there exists a nontrivial path from x to y such that every
-> > statement z != x in the path is post-dominated by y, and (2) x is not
-> > post-dominated by y.
-> 
-> Again, this definition doesn't work for the example above. As the basic
-> block of the if branch trivially post-dominates any other basic block,
-> because it contains the function return.
-
-Again, not applicable as basic blocks, multiple paths, and so on belong 
-to static analysis.
-
-> 2. Solution:
-> 
-> The definition I came up with instead is the following:
-> 
-> > A basic block B is control-dependent on a basic block A if
-> > B is reachable from A, but control flow can take a path through A
-> > which avoids B. The scope of a control dependency ends at the first
-> > basic block where all control flow paths running through A meet.
-> 
-> Note that this allows control dependencies to remain "unresolved".
-> 
-> I'm happy to submit a patch which covers more of what I mentioned above
-> as part of explanation.txt, but figured that in the spirit of keeping
-> things simple, leaving out "at all" might be enough?
-> 
-> What do you think?
-
-Not so good.  A better description would be that there is a control 
-dependency from a read event X to a memory access event Y if there is a 
-dependency (data or address) from X to the conditional branch event of 
-an "if" statement which contains Y in one of its arms.  And similarly 
-for "switch" statements.
-
-Alan
-
-> Many thanks,
-> Paul
-> 
-> [1]: https://lore.kernel.org/all/Yk7%2FT8BJITwz+Og1@Pauls-MacBook-Pro.local/T/#u
-> [2]: Optimizing Compilers for Modern Architectures: A Dependence-Based
-> Approach, Randy Allen, Ken Kennedy, 2002, p. 350
-> 
-> Signed-off-by: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
-> Cc: Marco Elver <elver@google.com>
-> Cc: Charalampos Mainas <charalampos.mainas@gmail.com>
-> Cc: Pramod Bhatotia <pramod.bhatotia@in.tum.de>
-> Cc: Soham Chakraborty <s.s.chakraborty@tudelft.nl>
-> Cc: Martin Fink <martin.fink@in.tum.de>
-> ---
->  tools/memory-model/Documentation/explanation.txt | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/memory-model/Documentation/explanation.txt b/tools/memory-model/Documentation/explanation.txt
-> index ee819a402b69..42af7ed91313 100644
-> --- a/tools/memory-model/Documentation/explanation.txt
-> +++ b/tools/memory-model/Documentation/explanation.txt
-> @@ -466,7 +466,7 @@ pointer.
->  
->  Finally, a read event and another memory access event are linked by a
->  control dependency if the value obtained by the read affects whether
-> -the second event is executed at all.  Simple example:
-> +the second event is executed.  Simple example:
->  
->  	int x, y;
->  
-> -- 
-> 2.35.1
-> 
