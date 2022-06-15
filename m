@@ -2,96 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:14:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F28C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:14:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353908AbiFOROJ (ORCPT
+        id S1356957AbiFOROM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
+        Wed, 15 Jun 2022 13:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357676AbiFORNr (ORCPT
+        with ESMTP id S1357979AbiFOROB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:13:47 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A0F1AF04
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:13:46 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id x4so11993352pfj.10
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:13:46 -0700 (PDT)
+        Wed, 15 Jun 2022 13:14:01 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC5D1A828
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:14:00 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so2741527pjm.2
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:14:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=2hy2Qkd4xSuW4p+5Dl7PR+SUIjoj02p8RkTpyxOOHqo=;
-        b=MIBH7WuXuo8XsYajlXRYGYomRcjkj6nPW/WNdlCyCciKwmkvzYPIwiUtu3Qe629RgZ
-         cuZ+zyqFYzWMeEFMfJdGt0BHvJjKgqniKy+bjOBj6jDlMyWtrs3W0Kv7ICDIf+bPGVQu
-         YKSqWlun8uCo52RezaVUDBTIzQJ0dRW3jXZr/cRhhFeI3XTfNXAi5Fm4tPE/WNES69zR
-         z81w78Yli3gGEzD34bUQx0paNeHz/lAx8+6t53Y0vstuIrX5MZl1i1yT+KyK+JNu2m9q
-         JCaaGDzWFoBHOjvizAqml7ahRmwIaspthWws+j4MfxDyF8u7+zgD9rKYNV1mLWk2GK6i
-         xkmw==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NpbkGIIAT9U+dUlMWmDOrmdJZkG9VKb6160l0wJULSU=;
+        b=IM78OQJNArX9cZ/L3qOPxd2HTvfuMrK0kXUFCb1vzwMzpsuFbJEfuerjHEhXIjdou/
+         VLRZ+81OdjXf65hLqU2yr0HqMMRDEbiwhvpaOeRqErjLr9JOtY6RLyv39G81IXL03DS2
+         OxmAHvbzanywYIaY9S/SQ9Rn9m1qFKN17n00KGmg3FrqQ+8xRp5MThDZSZHUsghju+p3
+         SdPlLfMxnE8Jt/6rNKnO1GfW4WfFlZR6++e1JDYbNckLusfl2INx/7C4DLTail+GYf13
+         mfxzeOjfN2GIp644lw4s5z0Tv90iwcGpXCUZF8og+YDWEcG2Obnc9uXZLgNAVK7rZzoX
+         JNVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=2hy2Qkd4xSuW4p+5Dl7PR+SUIjoj02p8RkTpyxOOHqo=;
-        b=hXZRjZ6AYqPFE9lkS3l4wuxtDiNWysHJvh1AgapIfYW9TJzqx1X1OU8guqbmgoO2Z4
-         7lnim/cUQgiQNAujr0jIPG5V26MoWUsih2dd5RiEQUfuiKBxx/CZQ6Mw90KyYLEvAFkS
-         c0miS2eQj1SgmYNxubxf3jLL095pow4hRwReenKAE61aCRKb2k/jzghAQPkfqSyVgXrP
-         PL/d8BvHL3ta5ZdTl86TVQ0X0jbgm/NIQ4/R+V03dFjskKJ/q1+HK3N9Gsw2JSfa6MZr
-         hdIzWRevNIKMTOS7+LQFS9hLGw3KrGXclvO0tk1CQFyAjpxfixueuAc9SueXsvw0SXwN
-         Wrjw==
-X-Gm-Message-State: AJIora82Egi4H3cUs7Wz5barlv9Qfghiv+6y42CxdRFaMvUpnof7aker
-        /DNVFpxxVSXs32waQWsGGzremS9tUayOdvhfX7DlPw==
-X-Google-Smtp-Source: AGRyM1uDSl1WVzfzUp2fssJ9HirywV+QKxtYdrezojo5TjTmtib/dvB0jLtBLE0xMnYmMStriT3vSKgQ4Fy4j6rlNt0=
-X-Received: by 2002:a62:7c14:0:b0:51b:9d03:a4c7 with SMTP id
- x20-20020a627c14000000b0051b9d03a4c7mr395031pfc.74.1655313225618; Wed, 15 Jun
- 2022 10:13:45 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NpbkGIIAT9U+dUlMWmDOrmdJZkG9VKb6160l0wJULSU=;
+        b=an4ELncynPsQUypG3TvjM5Rym5ow5aV33qR/B62OK0C14VSPKLyuY4Ek1IjI2W3L3Q
+         CzL6niJwDsAJB79vw9GzjOCq1FCtLbBDJGHONjS3k8RcD2JZ3PSRJUEuC3NqlGHJS9mL
+         VioJXGMjrcs4HZFbFLXozkmOyUBsNG2h2VN+reBO4ysPGfuZsYrzbd3IR5eRuAGzHq0S
+         HCCVP7Q4G5zB9pJbwJ9gZjVXrM2wPtofCjLUETaaF9f9hAwhDwTR/SdOH36jbbAlZlsj
+         QTDfdpC8BkK+t8pS9zbWMAHXIMCnuYMKYpvC/V0BU6v80W2694H1UxepJF2u3S9Qy7nH
+         adDw==
+X-Gm-Message-State: AJIora+oKV3jSWWul6xLd9IJD0ervcKHgxCX8HPxC4ZQ97ObuxD5BODc
+        3XY/Hz3Nt6SdG5ODWn7UdO2a0g==
+X-Google-Smtp-Source: AGRyM1vyYhE47wnJ4w8exikqpAv43fy9wiWJLEqNdCJVP7Gs0YisdsJCe8kE464+tKvoj30lI4wFzw==
+X-Received: by 2002:a17:903:234a:b0:167:997f:bc4c with SMTP id c10-20020a170903234a00b00167997fbc4cmr382877plh.120.1655313239421;
+        Wed, 15 Jun 2022 10:13:59 -0700 (PDT)
+Received: from google.com (55.212.185.35.bc.googleusercontent.com. [35.185.212.55])
+        by smtp.gmail.com with ESMTPSA id o10-20020a170902778a00b0015e8d4eb282sm9565242pll.204.2022.06.15.10.13.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 10:13:58 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 10:13:55 -0700
+From:   Zach O'Keefe <zokeefe@google.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, aarcange@redhat.com,
+        willy@infradead.org, vbabka@suse.cz, dhowells@redhat.com,
+        neilb@suse.de, apopple@nvidia.com, david@redhat.com,
+        surenb@google.com, peterx@redhat.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 7/7] mm/khugepaged: try to free transhuge swapcache when
+ possible
+Message-ID: <YqoTU7SNM7d3MlNs@google.com>
+References: <20220611084731.55155-1-linmiaohe@huawei.com>
+ <20220611084731.55155-8-linmiaohe@huawei.com>
 MIME-Version: 1.0
-References: <20220522162802.208275-1-luca@z3ntu.xyz> <20220522162802.208275-11-luca@z3ntu.xyz>
- <Yqjti8s06LIfTE52@shikoro>
-In-Reply-To: <Yqjti8s06LIfTE52@shikoro>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Wed, 15 Jun 2022 19:13:09 +0200
-Message-ID: <CAMZdPi_c931ejPA2Nkim1cwBS9sdcTNnfUEvUOvFSsfrdN18AQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 10/14] i2c: qcom-cci: add msm8974 compatible
-To:     Wolfram Sang <wsa@kernel.org>, Luca Weiss <luca@z3ntu.xyz>,
-        linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Todor Tomov <todor.too@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        matti.lehtimaki@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220611084731.55155-8-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 14 Jun 2022 at 22:20, Wolfram Sang <wsa@kernel.org> wrote:
->
-> On Sun, May 22, 2022 at 06:27:58PM +0200, Luca Weiss wrote:
-> > From: Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com>
-> >
-> > MSM8974 CCI is the same as MSM8916 except it has two masters.
-> >
-> > Signed-off-by: Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com>
-> > Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> > ---
-> > To note, the cci_v1_5_data variable name is just a bit arbitrary and
-> > isn't meant to reflect IP version "1.5". I'd be happy to change the
-> > variable name to something else.
->
-> Loic, Robert: I know this series is marked RFC, but the I2C patches
-> adding a new SoC to the driver are maybe interesting already?
+On 11 Jun 16:47, Miaohe Lin wrote:
+> Transhuge swapcaches won't be freed in __collapse_huge_page_copy().
+> It's because release_pte_page() is not called for these pages and
+> thus free_page_and_swap_cache can't grab the page lock. These pages
+> won't be freed from swap cache even if we are the only user until
+> next time reclaim. It shouldn't hurt indeed, but we could try to
+> free these pages to save more memory for system.
+> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  include/linux/swap.h | 5 +++++
+>  mm/khugepaged.c      | 1 +
+>  mm/swap.h            | 5 -----
+>  3 files changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/linux/swap.h b/include/linux/swap.h
+> index 8672a7123ccd..ccb83b12b724 100644
+> --- a/include/linux/swap.h
+> +++ b/include/linux/swap.h
+> @@ -456,6 +456,7 @@ static inline unsigned long total_swapcache_pages(void)
+>  	return global_node_page_state(NR_SWAPCACHE);
+>  }
+>  
+> +extern void free_swap_cache(struct page *page);
+>  extern void free_page_and_swap_cache(struct page *);
+>  extern void free_pages_and_swap_cache(struct page **, int);
+>  /* linux/mm/swapfile.c */
+> @@ -540,6 +541,10 @@ static inline void put_swap_device(struct swap_info_struct *si)
+>  /* used to sanity check ptes in zap_pte_range when CONFIG_SWAP=0 */
+>  #define free_swap_and_cache(e) is_pfn_swap_entry(e)
+>  
+> +static inline void free_swap_cache(struct page *page)
+> +{
+> +}
+> +
+>  static inline int add_swap_count_continuation(swp_entry_t swp, gfp_t gfp_mask)
+>  {
+>  	return 0;
+> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+> index ee0a719c8be9..52109ad13f78 100644
+> --- a/mm/khugepaged.c
+> +++ b/mm/khugepaged.c
+> @@ -756,6 +756,7 @@ static void __collapse_huge_page_copy(pte_t *pte, struct page *page,
+>  	list_for_each_entry_safe(src_page, tmp, compound_pagelist, lru) {
+>  		list_del(&src_page->lru);
+>  		release_pte_page(src_page);
+> +		free_swap_cache(src_page);
+>  	}
+>  }
 
-Yes I agree, no objection to get them.
+Aside: in __collapse_huge_page_isolate() (and also here) why can't we just check
+PageCompound(page) && page == compound_head(page) to only act on compound pages
+once? AFAIK this would alleviate this compound_pagelist business..
 
-Regards,
-Loic
+Anyways, as-is, free_page_and_swap_cache() won't be able to do
+try_to_free_swap(), since it can't grab page lock, put it will call put_page().
+I think (?) the last page ref might be dropped in release_pte_page(), so should
+free_swap_cache() come before it?
+
+>  
+> diff --git a/mm/swap.h b/mm/swap.h
+> index 0193797b0c92..863f6086c916 100644
+> --- a/mm/swap.h
+> +++ b/mm/swap.h
+> @@ -41,7 +41,6 @@ void __delete_from_swap_cache(struct page *page,
+>  void delete_from_swap_cache(struct page *page);
+>  void clear_shadow_from_swap_cache(int type, unsigned long begin,
+>  				  unsigned long end);
+> -void free_swap_cache(struct page *page);
+>  struct page *lookup_swap_cache(swp_entry_t entry,
+>  			       struct vm_area_struct *vma,
+>  			       unsigned long addr);
+> @@ -81,10 +80,6 @@ static inline struct address_space *swap_address_space(swp_entry_t entry)
+>  	return NULL;
+>  }
+>  
+> -static inline void free_swap_cache(struct page *page)
+> -{
+> -}
+> -
+>  static inline void show_swap_cache_info(void)
+>  {
+>  }
+> -- 
+> 2.23.0
+> 
+> 
