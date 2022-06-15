@@ -2,151 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E415C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:15:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2ACC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:16:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346974AbiFOPNZ (ORCPT
+        id S1346983AbiFOPQ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
+        Wed, 15 Jun 2022 11:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242574AbiFOPNJ (ORCPT
+        with ESMTP id S1346960AbiFOPQX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:13:09 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA29FDFFD
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:13:04 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id o10so16643607edi.1
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:13:04 -0700 (PDT)
+        Wed, 15 Jun 2022 11:16:23 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9CF13C732
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:16:21 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id 129so11673431pgc.2
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:16:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WEnoe5l63wIa1jNma1QDgL58B8nnhb1HJqhp7b+Nz/Q=;
-        b=FH7EXpJoAkW3xkPL4zmOwg5JDBAmgGMx7bZjVJv8Krq1NYGjUbKI5Uf6uLb+ddzIO1
-         fEc6cv6G+rdgItSTPGQYTZRNbGx62/NnxTrZVe47JqArS8MAa/xOQof9kJjPWt0LSS0D
-         wLdm1yWSUh2u681JQNrKbvPIr+3iYK7TVwBJI=
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BJkUO3GXhAK6vs3h7aitXkeoHE4cFMbO6OuVCc2qRmw=;
+        b=fgFvn3rbGElk2+5zmHS6Cg5hNBfxNnbBqn6Vf7tSMigefMBZ9OBCRSh5WNO8VXs2mf
+         3glxS0E5ikGGq8+DggbsX6e2szIfkLqeZqFXNF7U3rSqfCOdMo9KJCs+3++g5qbDXpWj
+         +0PX8gp4AAbQFu2e4ZNKHSOdiYArWBJs5loFiknl4cTH6xY0+Kd3LWXdJ+ZS4M/115Bk
+         UEGknDTs+meTmliE2MRwSm9+XBNS/RwFm0pHPrheToemxIJ1J43uBRPbwW78vPff4oIK
+         n9cnuhPxsVs2o7Z6RUG7BvVoyoBdgHy5dg40ez71JI/NjnuHS4uRJ7emeG/AhW8DgX8U
+         4OYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WEnoe5l63wIa1jNma1QDgL58B8nnhb1HJqhp7b+Nz/Q=;
-        b=gbRSwkurz9I4Q3cwwYc2xL7jJhkTMt7GT2uHXpvgajBAytUNQWRm1ruAAPe/rLb6S1
-         7P9RRquaTMi3rpsYX8tABwlcZsz08SzHvxw+sj0rKul/OiX2x6bPJT/h+ZluGd9k8W/T
-         EMaERnVJCEbMY6OY5ACBYAHFvojgGoIRaWSLOXVqfya326eA3ro1e3WrYg3+NiTEjXOu
-         cunD9RmQBsjxc5FSnjrB8FVhfySaZt24b1ohyfGRq4JWGWUhOLZ1ujQNCdJfK6IXyfSu
-         ZaZUkw7kZNu8gvim7xKmFptWhE7NUgcUDQTFElLB+xn9YYxYJqFu7EKCbgnhe9onXFpp
-         ZxpA==
-X-Gm-Message-State: AJIora884LMA8D1YdHjE2QHzEjuF3o0AD+xgJOm9HYGi3hDOh5b1Z9vY
-        gXu80iStwR93oU9jmkzMqFUY6g==
-X-Google-Smtp-Source: AGRyM1vXd7iSlTwXt1ax5Vt5GgolUdeDzGGen+bDhzvrnuHbocP+DgUF6Iq+5fzTC2HlseE+KJifjQ==
-X-Received: by 2002:a05:6402:3592:b0:42d:fb03:319c with SMTP id y18-20020a056402359200b0042dfb03319cmr226511edc.137.1655305983493;
-        Wed, 15 Jun 2022 08:13:03 -0700 (PDT)
-Received: from alco.lan (80.71.134.83.ipv4.parknet.dk. [80.71.134.83])
-        by smtp.gmail.com with ESMTPSA id b25-20020aa7cd19000000b0042bd2012196sm9610264edw.85.2022.06.15.08.13.02
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BJkUO3GXhAK6vs3h7aitXkeoHE4cFMbO6OuVCc2qRmw=;
+        b=PWJlxhK5zf2+Bxcy3bIGzp6TKjUJ56KUEKOqlJpRTpa5ahvT0+oaEJCFqBh3T156jo
+         WtiaSGkyyyBx1kIo+HVOg9zOV+An9nDsREFcgswij9NgvssPhzgaC1YHdnTzq1URMf4F
+         U4WuRGytaQ7gLHS+YeUv0yCR8OOniuuGWM+ZqwwXcA2L2GXYxKEJ0ViKxR9hjjfVeClb
+         oRlCbP+5EH8hwF4PlOmEa5OG7VPITv4+BBFFbUZAgifFi2JGIprUpjKEB9oikzWesHjq
+         xMn2NcxU50VG3pur6pLbU4Cna2lCYYJo2BY6fc/m30Op6j7IRNjQ14PTEO2wX/53J666
+         CGFQ==
+X-Gm-Message-State: AOAM533wM+fYMJT+MskL0e0jKoJb3lCiZf5pD9n0YHii8hN+lijvXeyD
+        8mACjQtrE7kNAemhrYHdrFLWUo1GZwZNaQ==
+X-Google-Smtp-Source: ABdhPJwTxjZMGlZEp6weHwt0cXG/LPz2n3tcXELBw+GZCHQBoZPtiXeBxjbNW93/Z6C1eOV0RizFug==
+X-Received: by 2002:a05:6a00:84e:b0:51c:43a4:f351 with SMTP id q14-20020a056a00084e00b0051c43a4f351mr10320807pfk.86.1655306181276;
+        Wed, 15 Jun 2022 08:16:21 -0700 (PDT)
+Received: from n131-251-240.byted.org ([121.30.179.156])
+        by smtp.gmail.com with ESMTPSA id t6-20020a17090ad50600b001e2d4ef6160sm1963523pju.27.2022.06.15.08.16.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 08:13:03 -0700 (PDT)
-From:   Ricardo Ribalda <ribalda@chromium.org>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tfiga@chromium.org, senozhatsky@chromium.org, yunkec@google.com
-Cc:     Ricardo Ribalda <ribalda@chromium.org>
-Subject: [PATCH v6 2/8] media: uvcvideo: Add support for per-device control mapping overrides
-Date:   Wed, 15 Jun 2022 17:12:53 +0200
-Message-Id: <20220615151259.77825-3-ribalda@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220615151259.77825-1-ribalda@chromium.org>
-References: <20220615151259.77825-1-ribalda@chromium.org>
+        Wed, 15 Jun 2022 08:16:20 -0700 (PDT)
+From:   Zhi Song <zhi.song@bytedance.com>
+To:     vilhelm.gray@gmail.com, gregkh@linuxfoundation.org,
+        rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org, Zhi Song <zhi.song@bytedance.com>
+Subject: [PATCH v3] isa: put_device after failing to device_register
+Date:   Wed, 15 Jun 2022 23:15:58 +0800
+Message-Id: <20220615151558.1766067-1-zhi.song@bytedance.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some devices do not implement all their controls in a way that complies
-with the UVC specification. This is for instance the case for several
-devices that do not support the disabled mode for the power line
-frequency control. Add a mechanism to allow per-device control mapping
-overrides to avoid errors when accessing non-compliant controls.
+device_register() is used to register a device with the system.
+We need to call put_device() to give up the reference initialized
+in device_register() when it returns an error and this will clean
+up correctly.
 
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Fixes: a5117ba7da37 ("Driver model: add ISA bus")
+Signed-off-by: Zhi Song <zhi.song@bytedance.com>
 ---
- drivers/media/usb/uvc/uvc_ctrl.c | 35 ++++++++++++++++++++++++++------
- drivers/media/usb/uvc/uvcvideo.h |  1 +
- 2 files changed, 30 insertions(+), 6 deletions(-)
+V1 -> V2: Fix up the changelog text correct.
+V2 -> V3: Add a fixes tag line specifying the commit where this bug was
+introduced.
+---
+ drivers/base/isa.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/usb/uvc/uvc_ctrl.c b/drivers/media/usb/uvc/uvc_ctrl.c
-index a709ebbb4d69..092decfdaa62 100644
---- a/drivers/media/usb/uvc/uvc_ctrl.c
-+++ b/drivers/media/usb/uvc/uvc_ctrl.c
-@@ -2403,9 +2403,8 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
- {
- 	const struct uvc_control_info *info = uvc_ctrls;
- 	const struct uvc_control_info *iend = info + ARRAY_SIZE(uvc_ctrls);
--	const struct uvc_control_mapping *mapping = uvc_ctrl_mappings;
--	const struct uvc_control_mapping *mend =
--		mapping + ARRAY_SIZE(uvc_ctrl_mappings);
-+	const struct uvc_control_mapping *mapping;
-+	const struct uvc_control_mapping *mend;
- 
- 	/* XU controls initialization requires querying the device for control
- 	 * information. As some buggy UVC devices will crash when queried
-@@ -2433,14 +2432,38 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
- 	if (!ctrl->initialized)
- 		return;
- 
--	/* Process common mappings first. */
--	for (; mapping < mend; ++mapping) {
-+	/*
-+	 * First check if the device provides a custom mapping for this control,
-+	 * used to override standard mappings for non-conformant devices. Don't
-+	 * process standard mappings if a custom mapping is found. This
-+	 * mechanism doesn't support combining standard and custom mappings for
-+	 * a single control.
-+	 */
-+	if (chain->dev->info->mappings) {
-+		bool custom = false;
-+		unsigned int i;
-+
-+		for (i = 0; (mapping = chain->dev->info->mappings[i]); ++i) {
-+			if (uvc_entity_match_guid(ctrl->entity, mapping->entity) &&
-+			    ctrl->info.selector == mapping->selector) {
-+				__uvc_ctrl_add_mapping(chain, ctrl, mapping);
-+				custom = true;
-+			}
+diff --git a/drivers/base/isa.c b/drivers/base/isa.c
+index 55e3ee2da98f..cf88f3d77b7d 100644
+--- a/drivers/base/isa.c
++++ b/drivers/base/isa.c
+@@ -173,8 +173,10 @@ static int __init isa_bus_init(void)
+ 	error = bus_register(&isa_bus_type);
+ 	if (!error) {
+ 		error = device_register(&isa_bus);
+-		if (error)
++		if (error) {
++			put_device(&isa_bus);
+ 			bus_unregister(&isa_bus_type);
 +		}
-+
-+		if (custom)
-+			return;
-+	}
-+
-+	/* Process common mappings next. */
-+	mend = mapping + ARRAY_SIZE(uvc_ctrl_mappings);
-+	for (mapping = uvc_ctrl_mappings; mapping < mend; ++mapping) {
- 		if (uvc_entity_match_guid(ctrl->entity, mapping->entity) &&
- 		    ctrl->info.selector == mapping->selector)
- 			__uvc_ctrl_add_mapping(chain, ctrl, mapping);
  	}
- 
--	/* And then version-specific mappings. */
-+	/* Finally process version-specific mappings. */
- 	if (chain->dev->uvc_version < 0x0150) {
- 		mapping = uvc_ctrl_mappings_uvc11;
- 		mend = mapping + ARRAY_SIZE(uvc_ctrl_mappings_uvc11);
-diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
-index c5b4febd2d94..fff5c5c99a3d 100644
---- a/drivers/media/usb/uvc/uvcvideo.h
-+++ b/drivers/media/usb/uvc/uvcvideo.h
-@@ -667,6 +667,7 @@ struct uvc_device_info {
- 	u32	quirks;
- 	u32	meta_format;
- 	u16	uvc_version;
-+	const struct uvc_control_mapping **mappings;
- };
- 
- struct uvc_device {
+ 	return error;
+ }
 -- 
-2.36.1.476.g0c4daa206d-goog
+2.30.2
 
