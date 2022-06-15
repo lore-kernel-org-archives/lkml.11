@@ -2,155 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1463C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5598EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348419AbiFOKdo (ORCPT
+        id S1348698AbiFOKdt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
+        Wed, 15 Jun 2022 06:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348455AbiFOKdU (ORCPT
+        with ESMTP id S1348678AbiFOKdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:33:20 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4548C13E07
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:33:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655289191; x=1686825191;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=bflE+Fv+Ds9bdZj5+reorqos9CZfN0WoIAkHwsI8br4=;
-  b=Ox1MvFyGRblfwTdfmjoO6XzRYM6qCUt6f/TTW1RQUKil8UAqn1FEuS5T
-   StVVIQRwEErb0icUq+td4RI3yD5wSAZlp9lMLGwLTBJXFMJkho+2g/7wN
-   GkqvH4WStk1QqQKPa1hfxLxYdTB+6geThC4oMq2L7Fz+Os6tMtJ7e4R1A
-   /7eYsgJLwWsbdHCyCOR4LNuvW+wHzms9akuGqzirA+jJuEWJqILj0GPvh
-   X62z3A7sX0SKtAJX6WM40VnlNxDdqlry9lAWwLKMoQUjYmQRaQRE5FxAG
-   h/Q9KuGmc9MhnD7g3Dw2e4DgouR+083tTHpzTtHXplhFKvpFU4B/YmvW0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="267600073"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="267600073"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 03:33:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="687231131"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 15 Jun 2022 03:33:09 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1QKi-000Mkx-Im;
-        Wed, 15 Jun 2022 10:33:08 +0000
-Date:   Wed, 15 Jun 2022 18:33:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: kernel/time/hrtimer.c:650:19: warning: unused function
- 'hrtimer_hres_active'
-Message-ID: <202206151820.2UttbZpK-lkp@intel.com>
+        Wed, 15 Jun 2022 06:33:33 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BED54ECF7
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:33:22 -0700 (PDT)
+Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LNM862vtmzDrDr;
+        Wed, 15 Jun 2022 18:32:54 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by kwepemi500016.china.huawei.com
+ (7.221.188.220) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 15 Jun
+ 2022 18:33:19 +0800
+From:   Zhou Guanghui <zhouguanghui1@huawei.com>
+To:     <akpm@linux-foundation.org>, <rppt@kernel.org>, <will@kernel.org>,
+        <anshuman.khandual@arm.com>, <darren@os.amperecomputing.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>, <xuqiang36@huawei.com>,
+        <zhouguanghui1@huawei.com>
+Subject: [PATCH v5] memblock,arm64: Expand the static memblock memory table
+Date:   Wed, 15 Jun 2022 10:27:42 +0000
+Message-ID: <20220615102742.96450-1-zhouguanghui1@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500016.china.huawei.com (7.221.188.220)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+In a system(Huawei Ascend ARM64 SoC) using HBM, a multi-bit ECC error
+occurs, and the BIOS will mark the corresponding area (for example, 2 MB)
+as unusable. When the system restarts next time, these areas are not
+reported or reported as EFI_UNUSABLE_MEMORY. Both cases lead to an
+increase in the number of memblocks, whereas EFI_UNUSABLE_MEMORY
+leads to a larger number of memblocks.
 
-FYI, the error/warning still remains.
+For example, if the EFI_UNUSABLE_MEMORY type is reported:
+...
+memory[0x92]    [0x0000200834a00000-0x0000200835bfffff], 0x0000000001200000 bytes on node 7 flags: 0x0
+memory[0x93]    [0x0000200835c00000-0x0000200835dfffff], 0x0000000000200000 bytes on node 7 flags: 0x4
+memory[0x94]    [0x0000200835e00000-0x00002008367fffff], 0x0000000000a00000 bytes on node 7 flags: 0x0
+memory[0x95]    [0x0000200836800000-0x00002008369fffff], 0x0000000000200000 bytes on node 7 flags: 0x4
+memory[0x96]    [0x0000200836a00000-0x0000200837bfffff], 0x0000000001200000 bytes on node 7 flags: 0x0
+memory[0x97]    [0x0000200837c00000-0x0000200837dfffff], 0x0000000000200000 bytes on node 7 flags: 0x4
+memory[0x98]    [0x0000200837e00000-0x000020087fffffff], 0x0000000048200000 bytes on node 7 flags: 0x0
+memory[0x99]    [0x0000200880000000-0x0000200bcfffffff], 0x0000000350000000 bytes on node 6 flags: 0x0
+memory[0x9a]    [0x0000200bd0000000-0x0000200bd01fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
+memory[0x9b]    [0x0000200bd0200000-0x0000200bd07fffff], 0x0000000000600000 bytes on node 6 flags: 0x0
+memory[0x9c]    [0x0000200bd0800000-0x0000200bd09fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
+memory[0x9d]    [0x0000200bd0a00000-0x0000200fcfffffff], 0x00000003ff600000 bytes on node 6 flags: 0x0
+memory[0x9e]    [0x0000200fd0000000-0x0000200fd01fffff], 0x0000000000200000 bytes on node 6 flags: 0x4
+memory[0x9f]    [0x0000200fd0200000-0x0000200fffffffff], 0x000000002fe00000 bytes on node 6 flags: 0x0
+...
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   018ab4fabddd94f1c96f3b59e180691b9e88d5d8
-commit: 9482fd71dbb8f0d1a61821a83e467dc0a9d7b429 hrtimer: Use raw_cpu_ptr() in clock_was_set()
-date:   10 months ago
-config: mips-randconfig-r022-20220615 (https://download.01.org/0day-ci/archive/20220615/202206151820.2UttbZpK-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b0b00432093be9680ed833af642bcafc3ca11586)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips64el-linux-gnuabi64
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9482fd71dbb8f0d1a61821a83e467dc0a9d7b429
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 9482fd71dbb8f0d1a61821a83e467dc0a9d7b429
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/dma/dw-edma/ drivers/irqchip/ kernel/time/ mm/
+The EFI memory map is parsed to construct the memblock arrays before
+the memblock arrays can be resized. As the result, memory regions
+beyond INIT_MEMBLOCK_REGIONS are lost.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Add a new macro INIT_MEMBLOCK_MEMORY_REGTIONS to replace
+INIT_MEMBLOCK_REGTIONS to define the size of the static memblock.memory
+array.
 
-All warnings (new ones prefixed by >>):
+Allow overriding memblock.memory array size with architecture defined
+INIT_MEMBLOCK_MEMORY_REGIONS and make arm64 to set
+INIT_MEMBLOCK_MEMORY_REGIONS to 1024 when CONFIG_EFI is enabled.
 
-   kernel/time/hrtimer.c:120:21: warning: initializer overrides prior initialization of this subobject
-   = HRTIMER_BASE_REALTIME,
-   ^~~~~~~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:118:27: note: previous initialization is here
-   [0 ... MAX_CLOCKS - 1] = HRTIMER_MAX_CLOCK_BASES,
-   ^~~~~~~~~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:121:22: warning: initializer overrides prior initialization of this subobject
-   = HRTIMER_BASE_MONOTONIC,
-   ^~~~~~~~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:118:27: note: previous initialization is here
-   [0 ... MAX_CLOCKS - 1] = HRTIMER_MAX_CLOCK_BASES,
-   ^~~~~~~~~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:122:21: warning: initializer overrides prior initialization of this subobject
-   = HRTIMER_BASE_BOOTTIME,
-   ^~~~~~~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:118:27: note: previous initialization is here
-   [0 ... MAX_CLOCKS - 1] = HRTIMER_MAX_CLOCK_BASES,
-   ^~~~~~~~~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:123:17: warning: initializer overrides prior initialization of this subobject
-   = HRTIMER_BASE_TAI,
-   ^~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:118:27: note: previous initialization is here
-   [0 ... MAX_CLOCKS - 1] = HRTIMER_MAX_CLOCK_BASES,
-   ^~~~~~~~~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:276:20: warning: unused function 'is_migration_base'
-   static inline bool is_migration_base(struct hrtimer_clock_base
-   ^
->> kernel/time/hrtimer.c:650:19: warning: unused function 'hrtimer_hres_active'
-   static inline int hrtimer_hres_active(void)
-   ^
-   kernel/time/hrtimer.c:1887:20: warning: unused function '__hrtimer_peek_ahead_timers'
-   static inline void __hrtimer_peek_ahead_timers(void) { }
-   ^
-   fatal error: error in backend: Nested variants found in inline asm string: ' .set push
-   .set mips64r2
-   .if ( 0x00 ) != -1)) 0x00 ) != -1)) : ($( static struct ftrace_branch_data __attribute__((__aligned__(4))) __attribute__((__section__("_ftrace_branch"))) __if_trace = $( .func = __func__, .file = "arch/mips/include/asm/bitops.h", .line = 105, $); 0x00 ) != -1)) : $))) ) && ( (1 << 31) ); .set push; .set mips64r2; .rept 1; sync 0x00; .endr; .set pop; .else; ; .endif
-   1: lld $0, $1
-   or $0, $2
-   scd $0, $1
-   beqz $0, 1b
-   .set pop
-   '
-   clang-15: error: clang frontend command failed with exit code 70 (use -v to see invocation)
-   clang version 15.0.0 (git://gitmirror/llvm_project b0b00432093be9680ed833af642bcafc3ca11586)
-   Target: mips64el-unknown-linux
-   Thread model: posix
-   InstalledDir: /opt/cross/clang-b0b0043209/bin
-   clang-15: note: diagnostic msg:
-   Makefile arch drivers include kernel mm nr_bisected scripts sound source usr
+Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
+Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+Tested-by: Darren Hart <darren@os.amperecomputing.com>
+---
+ arch/arm64/include/asm/memory.h |  9 +++++++++
+ mm/memblock.c                   | 14 +++++++++-----
+ 2 files changed, 18 insertions(+), 5 deletions(-)
 
-
-vim +/hrtimer_hres_active +650 kernel/time/hrtimer.c
-
-28bfd18bf3daa5 Anna-Maria Gleixner 2017-12-21  649  
-28bfd18bf3daa5 Anna-Maria Gleixner 2017-12-21 @650  static inline int hrtimer_hres_active(void)
-28bfd18bf3daa5 Anna-Maria Gleixner 2017-12-21  651  {
-28bfd18bf3daa5 Anna-Maria Gleixner 2017-12-21  652  	return __hrtimer_hres_active(this_cpu_ptr(&hrtimer_bases));
-28bfd18bf3daa5 Anna-Maria Gleixner 2017-12-21  653  }
-28bfd18bf3daa5 Anna-Maria Gleixner 2017-12-21  654  
-
-:::::: The code at line 650 was first introduced by commit
-:::::: 28bfd18bf3daa5db8bb3422ea7138c8b7d2444ac hrtimer: Make the hrtimer_cpu_base::hres_active field unconditional, to simplify the code
-
-:::::: TO: Anna-Maria Gleixner <anna-maria@linutronix.de>
-:::::: CC: Ingo Molnar <mingo@kernel.org>
-
+diff --git a/arch/arm64/include/asm/memory.h b/arch/arm64/include/asm/memory.h
+index 0af70d9abede..ce8614fa376a 100644
+--- a/arch/arm64/include/asm/memory.h
++++ b/arch/arm64/include/asm/memory.h
+@@ -364,6 +364,15 @@ void dump_mem_limit(void);
+ # define INIT_MEMBLOCK_RESERVED_REGIONS	(INIT_MEMBLOCK_REGIONS + NR_CPUS + 1)
+ #endif
+ 
++/*
++ * memory regions which marked with flag MEMBLOCK_NOMAP(for example, the memory
++ * of the EFI_UNUSABLE_MEMORY type) may divide a continuous memory block into
++ * multiple parts. As a result, the number of memory regions is large.
++ */
++#ifdef CONFIG_EFI
++#define INIT_MEMBLOCK_MEMORY_REGIONS	(INIT_MEMBLOCK_REGIONS * 8)
++#endif
++
+ #include <asm-generic/memory_model.h>
+ 
+ #endif /* __ASM_MEMORY_H */
+diff --git a/mm/memblock.c b/mm/memblock.c
+index e4f03a6e8e56..7c63571a69d7 100644
+--- a/mm/memblock.c
++++ b/mm/memblock.c
+@@ -29,6 +29,10 @@
+ # define INIT_MEMBLOCK_RESERVED_REGIONS		INIT_MEMBLOCK_REGIONS
+ #endif
+ 
++#ifndef INIT_MEMBLOCK_MEMORY_REGIONS
++#define INIT_MEMBLOCK_MEMORY_REGIONS		INIT_MEMBLOCK_REGIONS
++#endif
++
+ /**
+  * DOC: memblock overview
+  *
+@@ -55,9 +59,9 @@
+  * the allocator metadata. The "memory" and "reserved" types are nicely
+  * wrapped with struct memblock. This structure is statically
+  * initialized at build time. The region arrays are initially sized to
+- * %INIT_MEMBLOCK_REGIONS for "memory" and %INIT_MEMBLOCK_RESERVED_REGIONS
+- * for "reserved". The region array for "physmem" is initially sized to
+- * %INIT_PHYSMEM_REGIONS.
++ * %INIT_MEMBLOCK_MEMORY_REGIONS for "memory" and
++ * %INIT_MEMBLOCK_RESERVED_REGIONS for "reserved". The region array
++ * for "physmem" is initially sized to %INIT_PHYSMEM_REGIONS.
+  * The memblock_allow_resize() enables automatic resizing of the region
+  * arrays during addition of new regions. This feature should be used
+  * with care so that memory allocated for the region array will not
+@@ -102,7 +106,7 @@ unsigned long min_low_pfn;
+ unsigned long max_pfn;
+ unsigned long long max_possible_pfn;
+ 
+-static struct memblock_region memblock_memory_init_regions[INIT_MEMBLOCK_REGIONS] __initdata_memblock;
++static struct memblock_region memblock_memory_init_regions[INIT_MEMBLOCK_MEMORY_REGIONS] __initdata_memblock;
+ static struct memblock_region memblock_reserved_init_regions[INIT_MEMBLOCK_RESERVED_REGIONS] __initdata_memblock;
+ #ifdef CONFIG_HAVE_MEMBLOCK_PHYS_MAP
+ static struct memblock_region memblock_physmem_init_regions[INIT_PHYSMEM_REGIONS];
+@@ -111,7 +115,7 @@ static struct memblock_region memblock_physmem_init_regions[INIT_PHYSMEM_REGIONS
+ struct memblock memblock __initdata_memblock = {
+ 	.memory.regions		= memblock_memory_init_regions,
+ 	.memory.cnt		= 1,	/* empty dummy entry */
+-	.memory.max		= INIT_MEMBLOCK_REGIONS,
++	.memory.max		= INIT_MEMBLOCK_MEMORY_REGIONS,
+ 	.memory.name		= "memory",
+ 
+ 	.reserved.regions	= memblock_reserved_init_regions,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
