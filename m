@@ -2,158 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA339C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDF63C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357482AbiFOSXx (ORCPT
+        id S1358258AbiFOSYZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36064 "EHLO
+        Wed, 15 Jun 2022 14:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346397AbiFOSXs (ORCPT
+        with ESMTP id S245078AbiFOSYX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:23:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9E425294;
-        Wed, 15 Jun 2022 11:23:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2D41B82130;
-        Wed, 15 Jun 2022 18:23:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E5D4C36AF2;
-        Wed, 15 Jun 2022 18:23:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655317424;
-        bh=zObHqLUh2Rncs2EFcgmp5EbS5j6sE7FLEKEpqYw7Hfc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QsaiN+I9lB+w/4rklbNVmHf5zAK8JOiTSNF8/RnIJtGn9TQ1HS1k56Yx/XpAbHiKN
-         tFf2HYsMP4lTjsDkZhVhPD2p04kEo7swymPhPnHMgLX6kDSR7GzIo2xdEM/DKN/vAP
-         0Q4Z1dogGiwlnM1I2d9S+9wHhVAnDiIBdAehKM+YN6kM+8BAM24aIVoUk9zg3E9Tei
-         MvYyNiymrmLpmZkg6pRA3ooUK1OJ7EoACOvc6lC+Ov0XefhLdXhzI/MJsVrddfjv5G
-         4Ke6J1h6uUNEDirIwdpuIGCed7W7+uLWDnr2RUlj8rWDjP42AdJcFc+N4jjrYT6xen
-         /1gJfXcEWV5Uw==
-Date:   Wed, 15 Jun 2022 21:21:34 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     LinoSanfilippo@gmx.de
-Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
-        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com,
-        lukas@wunner.de, p.rosenberger@kunbus.com
-Subject: Re: [PATCH v5 06/10] tpm, tpm_tis: Only handle supported interrupts
- in wait_for_tpm_stat()
-Message-ID: <YqojLqfoy2NXTTGV@iki.fi>
-References: <20220610110846.8307-1-LinoSanfilippo@gmx.de>
- <20220610110846.8307-7-LinoSanfilippo@gmx.de>
+        Wed, 15 Jun 2022 14:24:23 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3CF5A252AC;
+        Wed, 15 Jun 2022 11:24:22 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B2EF0153B;
+        Wed, 15 Jun 2022 11:24:21 -0700 (PDT)
+Received: from e120937-lin (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B39013F73B;
+        Wed, 15 Jun 2022 11:24:18 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 19:24:08 +0100
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        linux-s390@vger.kernel.org, conghui.chen@intel.com,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        netdev <netdev@vger.kernel.org>, pankaj.gupta.linux@gmail.com,
+        sudeep.holla@arm.com, Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+Subject: Re: [PATCH V6 8/9] virtio: harden vring IRQ
+Message-ID: <YqojyHuocSoZ0v/Y@e120937-lin>
+References: <CACGkMEs05ZisiPW+7H6Omp80MzmZWZCpc1mf5Vd99C3H-KUtgA@mail.gmail.com>
+ <20220613041416-mutt-send-email-mst@kernel.org>
+ <CACGkMEsT_fWdPxN1cTWOX=vu-ntp3Xo4j46-ZKALeSXr7DmJFQ@mail.gmail.com>
+ <20220613045606-mutt-send-email-mst@kernel.org>
+ <CACGkMEtAQck7Nr6SP_pD0MGT3njnwZSyT=xPyYzUU3c5GNNM_w@mail.gmail.com>
+ <CACGkMEvUFJkC=mnvL2PSH6-3RMcJUk84f-9X46JVcj2vTAr4SQ@mail.gmail.com>
+ <20220613052644-mutt-send-email-mst@kernel.org>
+ <CACGkMEstGvhETXThuwO+tLVBuRgQb8uC_6DdAM8ZxOi5UKBRbg@mail.gmail.com>
+ <Yqi7UhasBDPKCpuV@e120937-lin>
+ <CACGkMEv2A7ZHQTrdg9H=xZScAf2DE=Dguaz60ykd4KQGNLrn2Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220610110846.8307-7-LinoSanfilippo@gmx.de>
+In-Reply-To: <CACGkMEv2A7ZHQTrdg9H=xZScAf2DE=Dguaz60ykd4KQGNLrn2Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 01:08:42PM +0200, LinoSanfilippo@gmx.de wrote:
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> 
-> According to the TPM Interface Specification (TIS) interrupts for
-> "stsValid" and "commandReady" might not be supported.
-> 
-> Take this into account and only wait for interrupts which are actually in
-> use in wait_for_tpm_stat(). After that process all the remaining status
-> changes by polling the status register.
-> 
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> ---
->  drivers/char/tpm/tpm_tis_core.c | 46 ++++++++++++++++++++++++---------
->  1 file changed, 34 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
-> index 2f03fefa1706..028bec44362d 100644
-> --- a/drivers/char/tpm/tpm_tis_core.c
-> +++ b/drivers/char/tpm/tpm_tis_core.c
-> @@ -53,41 +53,63 @@ static int wait_for_tpm_stat(struct tpm_chip *chip, u8 mask,
->  	long rc;
->  	u8 status;
->  	bool canceled = false;
-> +	u8 active_irqs = 0;
+On Wed, Jun 15, 2022 at 09:41:18AM +0800, Jason Wang wrote:
+> On Wed, Jun 15, 2022 at 12:46 AM Cristian Marussi
+> <cristian.marussi@arm.com> wrote:
 
-Something like sts_mask would be a better name. Calling it
-'active_irqs' is a bit confusing.
+Hi Jason,
 
-> +	int ret = 0;
->  
->  	/* check current status */
->  	status = chip->ops->status(chip);
->  	if ((status & mask) == mask)
->  		return 0;
->  
-> -	stop = jiffies + timeout;
-> +	/* check what status changes can be handled by irqs */
-> +	if (priv->irqs_in_use & TPM_INTF_STS_VALID_INT)
-> +		active_irqs |= TPM_STS_VALID;
->  
-> -	if (chip->flags & TPM_CHIP_FLAG_IRQ) {
-> +	if (priv->irqs_in_use & TPM_INTF_DATA_AVAIL_INT)
-> +		active_irqs |= TPM_STS_DATA_AVAIL;
-> +
-> +	if (priv->irqs_in_use & TPM_INTF_CMD_READY_INT)
-> +		active_irqs |= TPM_STS_COMMAND_READY;
-> +
-> +	active_irqs &= mask;
-> +
-> +	stop = jiffies + timeout;
-> +	/* process status changes with irq support */
-> +	if (active_irqs) {
-> +		ret = -ETIME;
->  again:
->  		timeout = stop - jiffies;
->  		if ((long)timeout <= 0)
->  			return -ETIME;
->  		rc = wait_event_interruptible_timeout(*queue,
-> -			wait_for_tpm_stat_cond(chip, mask, check_cancel,
-> +			wait_for_tpm_stat_cond(chip, active_irqs, check_cancel,
->  					       &canceled),
->  			timeout);
->  		if (rc > 0) {
->  			if (canceled)
->  				return -ECANCELED;
-> -			return 0;
-> +			ret = 0;
->  		}
->  		if (rc == -ERESTARTSYS && freezing(current)) {
->  			clear_thread_flag(TIF_SIGPENDING);
->  			goto again;
->  		}
-> -	} else {
-> -		do {
-> -			usleep_range(priv->timeout_min,
-> -				     priv->timeout_max);
-> -			status = chip->ops->status(chip);
-> -			if ((status & mask) == mask)
-> -				return 0;
-> -		} while (time_before(jiffies, stop));
->  	}
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	mask &= ~active_irqs;
-> +	if (!mask) /* all done */
-> +		return 0;
-> +	/* process status changes without irq support */
-> +	do {
-> +		status = chip->ops->status(chip);
-> +		if ((status & mask) == mask)
-> +			return 0;
-> +		usleep_range(priv->timeout_min,
-> +			     priv->timeout_max);
-> +	} while (time_before(jiffies, stop));
->  	return -ETIME;
->  }
->  
-> -- 
-> 2.36.1
+> >
+> > On Tue, Jun 14, 2022 at 03:40:21PM +0800, Jason Wang wrote:
+> > > On Mon, Jun 13, 2022 at 5:28 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > >
+> >
+
+[snip]
+
+> > >
+> > > >  arm_scmi
+> > >
+> > > It looks to me the singleton device could be used by SCMI immediately after
+> > >
+> > >         /* Ensure initialized scmi_vdev is visible */
+> > >         smp_store_mb(scmi_vdev, vdev);
+> > >
+> > > So we probably need to do virtio_device_ready() before that. It has an
+> > > optional rx queue but the filling is done after the above assignment,
+> > > so it's safe. And the callback looks safe is a callback is triggered
+> > > after virtio_device_ready() buy before the above assignment.
+> > >
+> >
+> > I wanted to give it a go at this series testing it on the context of
+> > SCMI but it does not apply
+> >
+> > - not on a v5.18:
+> >
+> > 17:33 $ git rebase -i v5.18
+> > 17:33 $ git am ./v6_20220527_jasowang_rework_on_the_irq_hardening_of_virtio.mbx
+> > Applying: virtio: use virtio_device_ready() in virtio_device_restore()
+> > Applying: virtio: use virtio_reset_device() when possible
+> > Applying: virtio: introduce config op to synchronize vring callbacks
+> > Applying: virtio-pci: implement synchronize_cbs()
+> > Applying: virtio-mmio: implement synchronize_cbs()
+> > error: patch failed: drivers/virtio/virtio_mmio.c:345
+> > error: drivers/virtio/virtio_mmio.c: patch does not apply
+> > Patch failed at 0005 virtio-mmio: implement synchronize_cbs()
+> >
+> > - neither on a v5.19-rc2:
+> >
+> > 17:33 $ git rebase -i v5.19-rc2
+> > 17:35 $ git am ./v6_20220527_jasowang_rework_on_the_irq_hardening_of_virtio.mbx
+> > Applying: virtio: use virtio_device_ready() in virtio_device_restore()
+> > error: patch failed: drivers/virtio/virtio.c:526
+> > error: drivers/virtio/virtio.c: patch does not apply
+> > Patch failed at 0001 virtio: use virtio_device_ready() in
+> > virtio_device_restore()
+> > hint: Use 'git am --show-current-patch=diff' to see the failed patch
+> > When you have resolved this problem, run "git am --continue".
+> >
+> > ... what I should take as base ?
+> 
+> It should have already been included in rc2, so there's no need to
+> apply patch manually.
 > 
 
-BR, Jarkko
+I tested this series as included in v5.19-rc2 (WITHOUT adding a virtio_device_ready
+in SCMI virtio as you mentioned above ... if I got it right) and I have NOT seen any
+issue around SCMI virtio using my usual test setup (using both SCMI vqueues).
+
+No anomalies even when using SCMI virtio in atomic/polling mode.
+
+Adding a virtio_device_ready() at the end of the SCMI virtio probe()
+works fine either, it does not make any difference in my setup.
+(both using QEMU and kvmtool with this latter NOT supporting
+ virtio_V1...not sure if it makes a difference but I thought was worth
+ mentioning)
+
+Thanks,
+Cristian
+
