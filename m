@@ -2,93 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E49DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F53C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:08:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343974AbiFOKHy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52084 "EHLO
+        id S244351AbiFOKIj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 06:08:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244130AbiFOKHu (ORCPT
+        with ESMTP id S244130AbiFOKIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:07:50 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28BE81573A
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:07:48 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id x5so15391825edi.2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:07:48 -0700 (PDT)
+        Wed, 15 Jun 2022 06:08:18 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5FB1EAD4;
+        Wed, 15 Jun 2022 03:08:17 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id m24so14635365wrb.10;
+        Wed, 15 Jun 2022 03:08:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LNaRZAAN8AQp34o+sHE3iUIn/YiSWmS1n1lw97oIgFA=;
-        b=A0X/bur5kYMMgmug+4K7M5IpnQh7ai6WzFGP4oGeu/nE9QPqxcIJXTNIdeiIDJKVZc
-         fKgNik1or3ZzwzV3qCjmGpOYeDb5iGtin+1pszNMqlx8Mg46++M/lkahFPwiYM7udSVO
-         aUedJxbOsVLjsBGIb4pHF7pWJZBEVYk/9IlPKlMxVvVpuET/2Fy/bCELSMaYTwq4bVdp
-         02BgG1NaeRhoRYeGx1KMsb0LUQ6DM28BQWayLpg6g9PK0bgW+lhrNz/OY988BTcs5SKS
-         KaW+9sMjKfLZPDRp1lmCbktDhgWdlduqaSoYdOLBUaRGI5xxjNERMIqT5tComS5WKP28
-         LyWQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=QLLYtowXNn5Kd+fYfaW0L3yaND/8MmGwC9nsF1e9Zds=;
+        b=ZrhqiSBSUuoikbNsL9nbZZdr4JVTXFZfEwlWWGpqR+vLoL803NPaeKYPNdYiGUR+VW
+         E/yubTLSJ3OLEQg13EUmlpayNiOsKUFu7moSrEgtmDEO6xbkydBxfycqGSTaFCFOj5+f
+         WcZaOrgV9BAEpUf9TeYBFAbxVwABik1DZit0Y0ScMPjbrnLrkPQIPithzbGCNpgJ8cjr
+         uNqgp4LBOQyV9ao5OZqoJ08XiavtLPdcxNyJ7kwH0yHFJgZz4QKylHV0OtddBYVgWpFe
+         CUd0EVsabfTgB+CQvF0CT9EtTFTBFoQdy3eONd0BMtjl1ioi9TZykOll/bG40OsdDYaG
+         d20w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LNaRZAAN8AQp34o+sHE3iUIn/YiSWmS1n1lw97oIgFA=;
-        b=eKRdyqkjmOWecLszTmSyganz2KIeIjUQKGqASq+DxmVd5GWsLlmGQPWw1hxbw+auvo
-         vluJU56YHxr8xM2XCiHVOweV/7cSXtHSzkYeIH63Yt68iecSvK8kuC+MRgAuRgIDU2cj
-         CfIBWCdnlXiNUGpfbyPE0RsU2AP/kbWFq18J5lejUrjHc90gqLwaJKnoAQe7qlJuKu+A
-         MbdhCRtnzokzKHQ5+6wk+UAqrREPemGdPbp1gbpNspvAx/S64DstC4/lXKrNROZjLQXn
-         r535QtRzsOPBN2J6gcIH1NX52+OM3FtP2yi0E57t6JAxdSFllRhP+S6rX6SatkE4LBoo
-         GA1A==
-X-Gm-Message-State: AOAM5318szOTUebxwiXmsTBcCQmVkIZ6ZkpOL4NO5UBLtWBROThEpwGk
-        0Jz3606HgMUYBG0rDruxHuWaW4W3uA2MIZsH
-X-Google-Smtp-Source: ABdhPJxcuuXNOG//lHLsVT8puGu/dXgDiLnOzHFWkvfJ4bfo01U7ywzMRT8kI9C780uGj0k+zExLTg==
-X-Received: by 2002:a05:6402:51d4:b0:42f:b38d:dbb9 with SMTP id r20-20020a05640251d400b0042fb38ddbb9mr11701287edd.255.1655287666543;
-        Wed, 15 Jun 2022 03:07:46 -0700 (PDT)
-Received: from stroh80.sec.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
-        by smtp.gmail.com with ESMTPSA id fd8-20020a1709072a0800b00718e4e64b7bsm1049801ejc.79.2022.06.15.03.07.45
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QLLYtowXNn5Kd+fYfaW0L3yaND/8MmGwC9nsF1e9Zds=;
+        b=fh8MKlEOHbFm0tjgrgeC+Y8Gl/z6IwIgjf1F/9zGy2OsJuGHivPIRJbZeE3sqmJvc5
+         o9zMXWeqT0nFWLfj315kJG7vTc4wI+ReFiPs+pejzI64m91vy5rof39NNS2eNYUxPnR8
+         wAArMP++Il/vnw6QGALLZ0icASB4dt0FfKvhYaqDw6J2w359uXv+Ve2E132lS6J2YlPd
+         ZggdyZBcr7ZGboVhD5mLD8EtEAZ2AAUEEXZ1uJpKSnAMQWY165kn9NTCFTLKTOrBJ4ar
+         av9dDakE443lk70W6Zxethu29rrEs3xEFlNJiGZG9vzFGb03TNSDNnrJ4Y7QmJOpOYJn
+         4MTA==
+X-Gm-Message-State: AJIora/aTC4wbmJCfWrc/fmagJl4XcvtJYX+Ktvznu2KdLIRnV1YhSX9
+        Bl78mm9Vq5yi/Y2EKW6JeXk=
+X-Google-Smtp-Source: AGRyM1veOOcXFyre8aA9E4f9aFZ1JFCSCoVMvrjz5AD34wSDdUViDxX9/yOAgEh44W5GnjoZ7SOejg==
+X-Received: by 2002:adf:e5d0:0:b0:210:313a:e4dc with SMTP id a16-20020adfe5d0000000b00210313ae4dcmr9045259wrn.152.1655287695717;
+        Wed, 15 Jun 2022 03:08:15 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id v1-20020a7bcb41000000b0039c7c4a542csm1788790wmj.47.2022.06.15.03.08.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 03:07:46 -0700 (PDT)
-From:   Naresh Solanki <naresh.solanki@9elements.com>
-X-Google-Original-From: Naresh Solanki <Naresh.Solanki@9elements.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Naresh Solanki <Naresh.Solanki@9elements.com>
-Subject: [PATCH v3 0/3] regulator: userspace consumer DT support
-Date:   Wed, 15 Jun 2022 12:07:40 +0200
-Message-Id: <20220615100743.1706968-1-Naresh.Solanki@9elements.com>
-X-Mailer: git-send-email 2.35.3
+        Wed, 15 Jun 2022 03:08:15 -0700 (PDT)
+Message-ID: <62a9af8f.1c69fb81.56ead.2c48@mx.google.com>
+X-Google-Original-Message-ID: <YqmkSdXGUo1mM63X@Ansuel-xps.>
+Date:   Wed, 15 Jun 2022 11:20:09 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Chanwoo Choi <cwchoi00@gmail.com>
+Cc:     MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sibi Sankar <sibis@codeaurora.org>,
+        Saravana Kannan <skannan@codeaurora.org>,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/4] PM / devfreq: Fix kernel warning with cpufreq
+ passive register fail
+References: <20220614230950.426-1-ansuelsmth@gmail.com>
+ <20220614230950.426-3-ansuelsmth@gmail.com>
+ <5848a10e-e5bf-108f-3e3e-15e16332922d@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5848a10e-e5bf-108f-3e3e-15e16332922d@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devicetree support of the userspace consumer driver.
-The supply names for this driver is provided through DT regulator-names
-& regulator handle can be acquired.
-Driver events can be received from sysfs.
+On Wed, Jun 15, 2022 at 04:11:13PM +0900, Chanwoo Choi wrote:
+> On 22. 6. 15. 08:09, Christian 'Ansuel' Marangi wrote:
+> > When the cpufreq passive register path from the passive governor fails,
+> > the cpufreq_passive_unregister is called and a kernel WARNING is always
+> > reported.
+> > This is caused by the fact that the devfreq driver already call the
+> > governor unregister with the GOV_STOP, for this reason the second
+> > cpufreq_passive_unregister always return error and a WARN is printed
+> > from the WARN_ON function.
+> > Remove the unregister call from the error handling of the cpufreq register
+> > notifier as it's fundamentally wrong and already handled by the devfreq
+> > core code.
+> > 
+> > Fixes: a03dacb0316f ("PM / devfreq: Add cpu based scaling support to passive governor")
+> > Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+> > ---
+> >  drivers/devfreq/governor_passive.c | 1 -
+> >  1 file changed, 1 deletion(-)
+> > 
+> > diff --git a/drivers/devfreq/governor_passive.c b/drivers/devfreq/governor_passive.c
+> > index 95de336f20d5..dcc9dd518197 100644
+> > --- a/drivers/devfreq/governor_passive.c
+> > +++ b/drivers/devfreq/governor_passive.c
+> > @@ -331,7 +331,6 @@ static int cpufreq_passive_register_notifier(struct devfreq *devfreq)
+> >  err_put_policy:
+> >  	cpufreq_cpu_put(policy);
+> >  err:
+> > -	WARN_ON(cpufreq_passive_unregister_notifier(devfreq));
+> >  
+> >  	return ret;
+> >  }
+> 
+> I think that it is necessary to free the resource when error happen.
 
-Optionally use sysfs notify to catch driver events into userspace application.
-This enables userspace application to monitor events & handle them
-appropriately.
+Thing is that it should not be done in the register. Following the flow
+of the devfreq core code, if a gov fails to START, the gov STOP is
+called and we correctly free our resources. In the current
+implementation we call the free 2 times and the second time will always
+print error as the notifier is already unregistered.
 
-Laxman Dewangan (1):
-  regulator: userspace-consumer: Add devicetree support
+> Also, after merging the your patch1, I think that cpufreq_passive_unregister_notifier(devfreq)
+> will not return error. Instead, just 0 for success.
 
-Naresh Solanki (1):
-  dt-bindings: regulator: add bindings for userspace-consumer
+With path1 we removed the error with the parent_cpu_data deletion but
+the unregister error is still there.
 
-Patrick Rudolph (1):
-  regulator: userspace consumer: Add Notification support
+> 
+> Instead, 'err_free_cpu_data' and 'err_put_policy' goto statement are wrong exception
+> handling. If fix the exception handling code in cpufreq_passive_register_notifier
+> as following and with your patch1, I'll handle the resource for free/un-registration
+> when error happen during cpufreq_passive_register_notifier.
+> 
 
- .../regulator/userspace-consumer.yaml         |  66 ++++++++++++
- drivers/regulator/userspace-consumer.c        | 100 +++++++++++++++++-
- include/linux/regulator/userspace-consumer.h  |   1 +
- 3 files changed, 165 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/regulator/userspace-consumer.yaml
+Don't know the main problem here is calling unregister 2 times.
 
+> 
+> diff --git a/drivers/devfreq/governor_passive.c b/drivers/devfreq/governor_passive.c
+> index a35b39ac656c..0246e0731fc0 100644
+> --- a/drivers/devfreq/governor_passive.c
+> +++ b/drivers/devfreq/governor_passive.c
+> @@ -289,22 +289,23 @@ static int cpufreq_passive_register_notifier(struct devfreq *devfreq)
+>                 parent_cpu_data = kzalloc(sizeof(*parent_cpu_data),
+>                                                 GFP_KERNEL);
+>                 if (!parent_cpu_data) {
+> +                       cpufreq_cpu_put(policy);
+>                         ret = -ENOMEM;
+> -                       goto err_put_policy;
+> +                       goto err;
+>                 }
+>  
+>                 cpu_dev = get_cpu_device(cpu);
+>                 if (!cpu_dev) {
+>                         dev_err(dev, "failed to get cpu device\n");
+>                         ret = -ENODEV;
+> -                       goto err_free_cpu_data;
+> +                       goto err;
+>                 }
+>  
+>                 opp_table = dev_pm_opp_get_opp_table(cpu_dev);
+>                 if (IS_ERR(opp_table)) {
+>                         dev_err(dev, "failed to get opp_table of cpu%d\n", cpu);
+>                         ret = PTR_ERR(opp_table);
+> -                       goto err_free_cpu_data;
+> +                       goto err;
+>                 }
+>  
+>                 parent_cpu_data->dev = cpu_dev;
+> @@ -326,10 +327,6 @@ static int cpufreq_passive_register_notifier(struct devfreq *devfreq)
+>  
+>         return ret;
+>  
+> -err_free_cpu_data:
+> -       kfree(parent_cpu_data);
+> -err_put_policy:
+> -       cpufreq_cpu_put(policy);
+>  err:
+>         WARN_ON(cpufreq_passive_unregister_notifier(devfreq));
+>  
+> 
+> 
+> 
+> -- 
+> Best Regards,
+> Samsung Electronics
+> Chanwoo Choi
 
-base-commit: 018ab4fabddd94f1c96f3b59e180691b9e88d5d8
 -- 
-2.35.3
-
+	Ansuel
