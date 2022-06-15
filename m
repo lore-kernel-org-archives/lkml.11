@@ -2,141 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D9D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:25:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE05ECCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:26:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243716AbiFOHZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 03:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35334 "EHLO
+        id S244336AbiFOH0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 03:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232467AbiFOHZL (ORCPT
+        with ESMTP id S231258AbiFOH0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 03:25:11 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D4746B0C
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:25:10 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id a10so5808368wmj.5
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:25:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=NGo4rRV+VZvdT0hcJzW6pnymtoNuY20VyL3BfwK+vsQ=;
-        b=PPDREC5zr0fQXQ7G6MaJZgrNi8eSCMpiZLg0TLXmzGOZkcQ5lnGffm023x8RCrxWnm
-         0RHnRsCqEQzwRyNVN+EB6znWpMbNwxPeK4kIENpN1ToeaJOJtChy43E4gtApGwIt1YuI
-         xISMw3GYeul6bBNJp0m8wvNTxY8bjsBTz6OHqjPv0UGy1Y/r/Xzp1XCeOuE8k5LlY2XI
-         GBC3UFDN9aI+z1txwK0jrMlSQnOLOJUJqbTHRgybPZKzFfSI/ygaSlIhzbi4y4+NLHfV
-         YxvcwyVon3TauHB+J6R0ejkDHVM7UNHoeQR1Jat8mgf7qHjLK5BzGB4rs9X4dkDbQZm+
-         bK5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NGo4rRV+VZvdT0hcJzW6pnymtoNuY20VyL3BfwK+vsQ=;
-        b=qOQg4vzVdfxfs6zhPMw/ENI56Ej4bP+7V01x3KFd1q/ktJufiEatTYFqIiKgm91qQl
-         cqnA0RX9F5SCt6RQOS4GyYb4Z6/nqFRgAQe25676zMiHCdGXOfg24ROAUub42n6eT0XM
-         7RJ4qEP1dR6aAjU1s22/GrToIRYvLLyxfHPECd6NWIxVH0Yzv0UT4DFqioZajZlTDAW1
-         QHuxoYNJEyXhy7ClfJZoU7XRxmn1l0CrMb3HbbTtOCu7Hxkyj8423+025OZ1GAt/si0j
-         15BU7kCPcvmOh3dzEa5m79JSMXMT9XTwiL/osTf8weIliAIKZAuFPy4Ef2EW4TMRMPh2
-         LFGQ==
-X-Gm-Message-State: AOAM530HkVyhSN7JJhkCO3/P9Uj8w7XUZTFKLnnolFNh41UVZe6AFXvG
-        wnPm+KIxG3Z7vVPXeLr6KKgHAA==
-X-Google-Smtp-Source: ABdhPJwYNKUeEBAZ4RUybATyRa6XP/R3ueVtMBVOx8BZh7j60wFKsSS2DRvlG4SBSF0xBFk6Exup1A==
-X-Received: by 2002:a7b:ce85:0:b0:39c:4b2e:fd26 with SMTP id q5-20020a7bce85000000b0039c4b2efd26mr8388758wmj.114.1655277908515;
-        Wed, 15 Jun 2022 00:25:08 -0700 (PDT)
-Received: from [10.205.160.53] ([95.83.233.54])
-        by smtp.gmail.com with ESMTPSA id k11-20020a056000004b00b0020d02262664sm13919956wrx.25.2022.06.15.00.25.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 00:25:07 -0700 (PDT)
-Message-ID: <8293b455-1150-edb5-9005-fda4f2d2971b@conchuod.ie>
-Date:   Wed, 15 Jun 2022 08:23:34 +0100
+        Wed, 15 Jun 2022 03:26:16 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CDA4738C
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:26:15 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2A6651F899;
+        Wed, 15 Jun 2022 07:26:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655277974; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k3JeAaNVMF2xcanrQW/ZU6P2wx6xjXOxRPoxu/fL7xo=;
+        b=CWENStBe3S+ypC1pbgUlWdhbv5lC2N5znwoBetrptGqdKk7kSpc+w8CdeyLvR7YHb11yoM
+        Zd6mIxtcoPkiDRbgXiXkDFD1n8UvbefsP0nRUr1G6Qd0MhpHeg7vytyU8mC/7FRr2oC9Un
+        qgW5XRpqXMhL4+ssYJCTPPHrQXcMHVU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655277974;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k3JeAaNVMF2xcanrQW/ZU6P2wx6xjXOxRPoxu/fL7xo=;
+        b=qWPFWW7LTMeR+CrzetQcyDIjcVJ+5V4M6S69lSahvkWBEpBTHup1JvscXvpLzG4xhcDT13
+        bavSiyvbQdHEa+Cg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 043FE139F3;
+        Wed, 15 Jun 2022 07:26:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id S0AkAJaJqWICBQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 15 Jun 2022 07:26:14 +0000
+Message-ID: <3c899066-d85d-3bd7-5b13-d5228b7aeb93@suse.cz>
+Date:   Wed, 15 Jun 2022 09:26:13 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/5] dt-bindings: pwm: Add Mstar MSC313e PWM devicetree
- bindings documentation
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] mm/slub: Simplify __kmem_cache_alias()
 Content-Language: en-US
-To:     Romain Perier <romain.perier@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Palmer <daniel@0x0f.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220615070813.7720-1-romain.perier@gmail.com>
- <20220615070813.7720-2-romain.perier@gmail.com>
-From:   Conor Dooley <mail@conchuod.ie>
-In-Reply-To: <20220615070813.7720-2-romain.perier@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     sxwjean@me.com, cl@linux.com, penberg@kernel.org,
+        rientjes@google.com, iamjoonsoo.kim@lge.com,
+        akpm@linux-foundation.org, roman.gushchin@linux.dev,
+        42.hyeyoo@gmail.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Xiongwei Song <xiongwei.song@windriver.com>
+References: <20220531005550.10613-1-sxwjean@me.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220531005550.10613-1-sxwjean@me.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/06/2022 08:08, Romain Perier wrote:
-> This adds the documentation for the devicetree bindings of the Mstar
-> MSC313e RTC driver, it includes MSC313e SoCs and SSD20xd.
-
-I figure the RTC is a copy paste error?
-
+On 5/31/22 02:55, sxwjean@me.com wrote:
+> From: Xiongwei Song <xiongwei.song@windriver.com>
 > 
-> Signed-off-by: Romain Perier <romain.perier@gmail.com>
+> There is no need to do anything if sysfs_slab_alias() return nonzero
+> value after getting a mergeable cache.
+> 
+> Signed-off-by: Xiongwei Song <xiongwei.song@windriver.com>
+
+Thanks, added to slab/for-5.20/cleanup
+
 > ---
->   .../bindings/pwm/mstar,msc313e-pwm.yaml       | 47 +++++++++++++++++++
->   1 file changed, 47 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml
+>  mm/slub.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml b/Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml
-> new file mode 100644
-> index 000000000000..82f2357db085
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml
-> @@ -0,0 +1,47 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pwm/mstar,msc313e-pwm.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> diff --git a/mm/slub.c b/mm/slub.c
+> index d8d5abf49f5f..9444277d669a 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -4861,6 +4861,9 @@ __kmem_cache_alias(const char *name, unsigned int size, unsigned int align,
+>  
+>  	s = find_mergeable(size, align, flags, name, ctor);
+>  	if (s) {
+> +		if (sysfs_slab_alias(s, name))
+> +			return NULL;
 > +
-> +title: Mstar MSC313e PWM controller
-> +
-> +allOf:
-> +  - $ref: "pwm.yaml#"
-> +
-> +maintainers:
-> +  - Daniel Palmer <daniel@0x0f.com>
-> +  - Romain Perier <romain.perier@gmail.com>
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - items:
-> +        - enum:
-> +          - mstar,msc313e-pwm
-> +          - mstar,ssd20xd-pwm
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  "#pwm-cells":
-> +    const: 2
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    pwm: pwm@3400 {
-> +      compatible = "mstar,msc313e-pwm";
-> +      reg = <0x3400 0x400>;
-> +      #pwm-cells = <2>;
-> +      clocks = <&xtal_div2>;
-> +    };
+>  		s->refcount++;
+>  
+>  		/*
+> @@ -4869,11 +4872,6 @@ __kmem_cache_alias(const char *name, unsigned int size, unsigned int align,
+>  		 */
+>  		s->object_size = max(s->object_size, size);
+>  		s->inuse = max(s->inuse, ALIGN(size, sizeof(void *)));
+> -
+> -		if (sysfs_slab_alias(s, name)) {
+> -			s->refcount--;
+> -			s = NULL;
+> -		}
+>  	}
+>  
+>  	return s;
+
