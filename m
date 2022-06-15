@@ -2,98 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BD96C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15ABBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237387AbiFOIzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
+        id S1343630AbiFOIzp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 04:55:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232993AbiFOIzM (ORCPT
+        with ESMTP id S1343637AbiFOIzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 04:55:12 -0400
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660332CDCF
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 01:55:10 -0700 (PDT)
-Received: from mse-fl2.zte.com.cn (unknown [10.30.14.239])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4LNJzJ618wz4xVnK;
-        Wed, 15 Jun 2022 16:55:08 +0800 (CST)
-Received: from szxlzmapp05.zte.com.cn ([10.5.230.85])
-        by mse-fl2.zte.com.cn with SMTP id 25F8sl4a001444;
-        Wed, 15 Jun 2022 16:54:47 +0800 (GMT-8)
-        (envelope-from wang.yi59@zte.com.cn)
-Received: from mapi (szxlzmapp05[null])
-        by mapi (Zmail) with MAPI id mid14;
-        Wed, 15 Jun 2022 16:54:47 +0800 (CST)
-Date:   Wed, 15 Jun 2022 16:54:47 +0800 (CST)
-X-Zmail-TransId: 2b0762a99e57ffffffffef800a0c
-X-Mailer: Zmail v1.0
-Message-ID: <202206151654471905256@zte.com.cn>
-In-Reply-To: <CAAH8bW_GCviYSadmf5CUxgJixkXbq+SfL63ZJt7Lsm9OAmPjVQ@mail.gmail.com>
-References: CAAH8bW8wD_hsOqtWa-g_1SNWNi7GHzsu9RvL8feY069JPKFWBA@mail.gmail.com,202206141145339651323@zte.com.cn,CAAH8bW_GCviYSadmf5CUxgJixkXbq+SfL63ZJt7Lsm9OAmPjVQ@mail.gmail.com
-Mime-Version: 1.0
-From:   <wang.yi59@zte.com.cn>
-To:     <yury.norov@gmail.com>
-Cc:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
-        <andriy.shevchenko@linux.intel.com>, <linux@rasmusvillemoes.dk>,
-        <linux-kernel@vger.kernel.org>, <xue.zhihong@zte.com.cn>,
-        <wang.liang82@zte.com.cn>, <Liu.Jianjun3@zte.com.cn>,
-        <yury.norov@gmail.com>
-Subject: =?UTF-8?B?UmU6W1BBVENIXSBiaXRtYXA6IGZpeCBhIHVucHJvcGVyIHJlbWFwIHdoZW4gbXBvbF9yZWJpbmRfbm9kZW1hc2soKQ==?=
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl2.zte.com.cn 25F8sl4a001444
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.250.138.novalocal with ID 62A99E6C.000 by FangMail milter!
-X-FangMail-Envelope: 1655283308/4LNJzJ618wz4xVnK/62A99E6C.000/10.30.14.239/[10.30.14.239]/mse-fl2.zte.com.cn/<wang.yi59@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 62A99E6C.000/4LNJzJ618wz4xVnK
+        Wed, 15 Jun 2022 04:55:38 -0400
+Received: from mail-m964.mail.126.com (mail-m964.mail.126.com [123.126.96.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 636BC3D1EA
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 01:55:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=FoyvE
+        K5+1pRTQLkW/X2jHCeq//YHVhfHZeoFpXlqC70=; b=DXsrAcd8CxV3E3fiHvBps
+        7rgQktf3PyXCdjGAVDn7xU4wTWmO1bp889/baGnPZbDevFiCL82MI7GIBOyD0Lb8
+        wg/J8NMAB+mLKY68Xh+4ZPpylpCjz1ScVKEHwSYwRsNR9dc159Vvw/klBCLQeaZd
+        CCZ0MVrJRJcBUyY+DRtemg=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp9 (Coremail) with SMTP id NeRpCgCXNXt+nqliOj0dEw--.42832S2;
+        Wed, 15 Jun 2022 16:55:27 +0800 (CST)
+From:   heliang <windhl@126.com>
+To:     krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        windhl@126.com
+Subject: [PATCH] soc: samsung: Add missing of_node_put in exynos-pmu.c
+Date:   Wed, 15 Jun 2022 16:55:25 +0800
+Message-Id: <20220615085525.3961330-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NeRpCgCXNXt+nqliOj0dEw--.42832S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZry8Xry3Gw17uw1kZr13Arb_yoWDKrb_G3
+        W8urW7XF4jqw4xXw4DCF9xu3s09F1fWasaqFWIqF9xAw4DZr4UJFWvvrnxA34xXrWUZFyD
+        Ar4DZr4xCr47tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_znQ7UUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizgMhF18RPS+3oQABsw
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Mon, Jun 13, 2022 at 8:45 PM <wang.yi59@zte.com.cn> wrote:
-> >
-> >
-> > - change the bitmap_remap() as this patch did, but this changed the
-> > behavior of this routine which looks does the right thing. One good
-> > news is this function is only called by mpol_rebind_nodemask().
-> 
-> There are users of bitmap_remap() in drivers/gpio/gpio-xilinx.c
-> 
-> > - don't change the bitmap_remap(), to be honest, I didn't figure out
-> > a way. Any suggestions?
-> 
-> I haven't had a chance to play with it (because of my dayjob), but I
-> have a strong feeling that the proper solution should come from
-> existing functionality.
-> 
-> Did you experiment with MPOL_F_{STATIC,RELATIVE}_NODES?
-> Those flags enable nodes_and() and mpol_relative_nodemask()
-> paths correspondingly.
-> 
+In exynos_get_pmu_regmap(), of_find_matching_node() will return a
+node pointer with refcount incremented. We should use of_node_put()
+for that node pointer. We need a similar code logic in the function
+syscon_regmap_lookup_by_compatible().
 
-You are right, adding MPOL_F_STATIC_NODES can fix this situation. So it
-seems that we don't need to do anything in kernel now.
-
-Many thanks for your time :)
-
-
-> What I suggested is:
-> 
->  328                 node_clear(1, pol->w.cpuset_mems_allowed);
->  329                 node_clear(3, pol->w.cpuset_mems_allowed);
->  330                 nodes_remap(tmp, pol->nodes, pol->w.cpuset_mems_allowed,
->  331                                                                 *nodes);
->  332                 pol->w.cpuset_mems_allowed = *nodes;
-> 
-> > In the example above, if set cpuset.mems to 0,2 firstly, the nodes
-> > binds will change from 1 to 2. And then set cpuset.mems to 1,3, it will
-> > change from 2 to 3 again.
-
-
+Signed-off-by: heliang <windhl@126.com>
 ---
-Best wishes
-Yi Wang
+ drivers/soc/samsung/exynos-pmu.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/soc/samsung/exynos-pmu.c b/drivers/soc/samsung/exynos-pmu.c
+index 732c86ce2be8..a44862c405a4 100644
+--- a/drivers/soc/samsung/exynos-pmu.c
++++ b/drivers/soc/samsung/exynos-pmu.c
+@@ -108,9 +108,13 @@ struct regmap *exynos_get_pmu_regmap(void)
+ {
+ 	struct device_node *np = of_find_matching_node(NULL,
+ 						      exynos_pmu_of_device_ids);
+-	if (np)
+-		return syscon_node_to_regmap(np);
+-	return ERR_PTR(-ENODEV);
++	struct regmap *regmap;
++	if (!np)
++		return ERR_PTR(-ENODEV);
++	
++	regmap = syscon_node_to_regmap(np);
++	of_node_put(np);
++	return regmap;
+ }
+ EXPORT_SYMBOL_GPL(exynos_get_pmu_regmap);
+ 
+-- 
+2.25.1
+
