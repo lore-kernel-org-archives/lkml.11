@@ -2,72 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3DDCCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39563C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:43:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230355AbiFOOm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:42:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55706 "EHLO
+        id S1346806AbiFOOnH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 10:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348322AbiFOOmX (ORCPT
+        with ESMTP id S241863AbiFOOnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:42:23 -0400
-X-Greylist: delayed 1831 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Jun 2022 07:42:17 PDT
-Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E8AD3EF2C;
-        Wed, 15 Jun 2022 07:42:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=N3/Mt
-        kLzXrLRD+UKVMKP7QbmD7HARa8p9A8cQM7O1rk=; b=KytgcgfcwQxB1VKVIWE3A
-        83u2c2boVT7iSyFC6gR81619FEAfaEReROb5zWnFLAvRlZOoLY42QhEUlLi1knP5
-        jawTuBkryMBvOHNRmhnUVaulu7mJr5pd1L3ryr3AYWyXeL1ppZcR1adj+8obogtw
-        aw4CDuDaTE4YU/6vlF4bfM=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp8 (Coremail) with SMTP id NORpCgBnO1CM6KliFz2oFg--.54359S2;
-        Wed, 15 Jun 2022 22:11:25 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     miodrag.dinic@mips.com, paulburton@kernel.org,
-        tsbogend@alpha.franken.de
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        windhl@126.com
-Subject: [PATCH] arch: mips: generic: Add missing of_node_put() in board-ranchu.c
-Date:   Wed, 15 Jun 2022 22:11:23 +0800
-Message-Id: <20220615141123.3968401-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 10:43:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDB727CED;
+        Wed, 15 Jun 2022 07:43:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4869FB81D92;
+        Wed, 15 Jun 2022 14:43:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2355C34115;
+        Wed, 15 Jun 2022 14:43:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655304181;
+        bh=vSgsfL4uwzG+LlRaLz2YdEgdogcehd06El7raMuvZlY=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=UlPvWKIBeJqT/Z3qtQwquwATm19OY7sYFZbH2ku8aJ/GvXC8aadsC6Ynuf2m5bf7h
+         l4uGCi5iGbcR03jzUhcXD0pb/EeDAw3YEeCh6s2GJ500R7kbhALf6qFjRsY997uUoG
+         row+fGz3HN8tumlvoVH2drjW7K9FV4ODqOWxbDE2uT+iePK6CCFcPmWgkxhugbrKwM
+         sw50rQd92Bip2nlOq5VWElIa2WUJpBPgjNg0bB3b4NhfkTZUfKq66g6BldgAeY35zH
+         3UM5FQw+5YGXgM073SJrQrx6g86yTg1OlcA8pAfPNkKZSpViISYA1Ps480OAthO6o0
+         RTexGIdqIyBnA==
+Date:   Wed, 15 Jun 2022 16:42:58 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Thomas Schneider <qsx@chaotikum.eu>
+cc:     "Daniel J. Ogorchock" <djogorchock@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] HID: nintendo: Set phys property of input device based
+ on HID phys
+In-Reply-To: <20220611010359.115555-1-qsx@chaotikum.eu>
+Message-ID: <nycvar.YFH.7.76.2206151642510.14340@cbobk.fhfr.pm>
+References: <20220611010359.115555-1-qsx@chaotikum.eu>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NORpCgBnO1CM6KliFz2oFg--.54359S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtF1kKw4UWFy7Ar1UZw43Wrg_yoW3XwbEga
-        n7Z3ykWr1rXr4q9ay3ua13CwnIkwn3WrZ5Jr92q3WjyrWF9F47Wan7KrnrAw4IqrsIkrW5
-        GaykJrW8ArsF9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRtRRRJUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbiuA0hF2JVj4CirAAAs1
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In ranchu_measure_hpt_freq(), of_find_compatible_node() will return
-a node pointer with refcount incremented. We should use of_put_node()
-when it is not used anymore.
+On Sat, 11 Jun 2022, Thomas Schneider wrote:
 
-Signed-off-by: Liang He <windhl@126.com>
----
- arch/mips/generic/board-ranchu.c | 1 +
- 1 file changed, 1 insertion(+)
+> While the MAC address the uniq identifier is set to (cf. commit
+> 1425247383c5 ("HID: nintendo: set controller uniq to MAC")) is certainly
+> unique, the physical location can be more helpful in user interfaces.  The
+> underlying hid_device already provides a suitable value, so we can simply
+> reuse this here.
+> 
+> Signed-off-by: Thomas Schneider <qsx@chaotikum.eu>
 
-diff --git a/arch/mips/generic/board-ranchu.c b/arch/mips/generic/board-ranchu.c
-index a89aaad59cb1..930c45041882 100644
---- a/arch/mips/generic/board-ranchu.c
-+++ b/arch/mips/generic/board-ranchu.c
-@@ -44,6 +44,7 @@ static __init unsigned int ranchu_measure_hpt_freq(void)
- 		      __func__);
- 
- 	rtc_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	if (!rtc_base)
- 		panic("%s(): Failed to ioremap Goldfish RTC base!", __func__);
- 
+Applied, thanks.
+
 -- 
-2.25.1
+Jiri Kosina
+SUSE Labs
 
