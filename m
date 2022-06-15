@@ -2,121 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C805C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3110C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:34:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348689AbiFOPd4 (ORCPT
+        id S1349437AbiFOPeR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:33:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
+        Wed, 15 Jun 2022 11:34:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346834AbiFOPdx (ORCPT
+        with ESMTP id S1348953AbiFOPeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:33:53 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DA02251F
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:33:50 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id i17-20020a7bc951000000b0039c4760ec3fso2384191wml.0
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:33:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J5eKPAN5lqKWqHRVMFEt8bECLi2YfU3n/Xvj8y2gEBE=;
-        b=Zv2JhKlV+WgmpireahD92+ZSg2KnCdRZZvKLhjp5oxI5lNh/Plc3RXY+mQgK5+7Vg0
-         YcEbwmKcYO+eUdZVm8cnx1XTn3jFZkr+/y958BJAt6RHw6tO4gb/qGpriKZF4237xYW8
-         XdcUnlcVAybauV76RUaKKOU+9Jk1HAP8Ybq8jFsO4UP/QfChfQnRT6ZMjB1JSUkSG5A+
-         eeKIxvMjnfgD/uvv36ColBnfjqbtL+d7YJ45Q6RgQZkCXiULCPAF4BJO7j+EvyygfMPL
-         eLCZ6VWgFpV+KubW52X0faomk4hEuBQnOj14ASkrNV4X772O83FKpX8IgKteHTah4Jpx
-         0t5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J5eKPAN5lqKWqHRVMFEt8bECLi2YfU3n/Xvj8y2gEBE=;
-        b=mstMSBu8VpitBWyaUb0lxaAlJqbcjzJnIdMcafx4gWXErpgZCDSemkcwAx3iRDke87
-         rrj3w5EHizDdeZZMC1R76MsOELuqV/2t8wqVN84eI1V1i63E2BfSX5TrxzH3n4b8ZEZc
-         NUATh8e3xAHFZOx1bXrTgyQdaGEPgngl8mR32UmUHWYcrDAscd/VzOZeg2lwoLUXQ/ez
-         /cmimkJZzm4JiaaCWXMV0RvR7C8QsuRxCbpYvkTscreaz5byA6IAOEo9Sj5cpC64vPrz
-         KL+G4rISSji8XM5xJaT7xGYSb8meoZWj2QeQjoWjXcmSogSlF+4BbZTquk0nnbSM5RrV
-         DKJA==
-X-Gm-Message-State: AJIora/oY5AHInhGCwHUWiy58+LAfmwXlahm2M2p6ppINyPXXwuAkTL/
-        5pbCccKXy/SRo+qvUw/3uO/MHISedHekMYW6mggQ
-X-Google-Smtp-Source: AGRyM1tbSXhyojX0sdqJuy36Y8CiIJerDEBwNNO0en1/SGp4CFCRbzqu86TVD3k4/Lh2/5SBr3CWSXHz2TZ3Gh292cQ=
-X-Received: by 2002:a05:600c:1d91:b0:39c:544b:abdd with SMTP id
- p17-20020a05600c1d9100b0039c544babddmr20003wms.70.1655307229181; Wed, 15 Jun
- 2022 08:33:49 -0700 (PDT)
+        Wed, 15 Jun 2022 11:34:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F166F240AC;
+        Wed, 15 Jun 2022 08:34:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 897066177F;
+        Wed, 15 Jun 2022 15:34:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85DDDC3411E;
+        Wed, 15 Jun 2022 15:34:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655307248;
+        bh=z9LrTbvvJ5Eymb0jlmwcsw1/gttmexAT5SOlw8klJDw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=demf7YwIokMBz2NXpw3lFImGtf9FPJzSCkzAcSCXdo9Z/7iQXDqTj130sUHFvTU4Q
+         c51lA0GBaIamuWSSKuAECiRfIDrEv0+PRYZfOXdFteAf+HAGN8qypyhJSt3gq/bXai
+         dsKWZN5Nn8QbOwT8pJ05xPIsJggeyP3jM386Hom+mBXuuY4y4ESlIORfbIarsEji1m
+         3GLQjLKMqFaDe0eBtE/HCkO0t3GFyy/D2SjSEWswv+2izGkJIz2jTMjs2A4SQ77313
+         UXK81SYPRWVEDFTJQb6oZx4qeMSV89YtZY741hRlbhQ2CvyyFoO+HjKNlw+aTCgUz1
+         sEJPeDoTJm7OA==
+From:   Chao Yu <chao@kernel.org>
+To:     jejb@linux.ibm.com, martin.petersen@oracle.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        chao@kernel.org
+Subject: [PATCH v3] scsi: support packing multi-segment in UNMAP command
+Date:   Wed, 15 Jun 2022 23:34:02 +0800
+Message-Id: <20220615153402.2233825-1-chao@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220608150942.776446-1-fred@cloudflare.com> <87tu8oze94.fsf@email.froward.int.ebiederm.org>
- <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com> <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
- <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com> <87o7yvxl4x.fsf@email.froward.int.ebiederm.org>
- <9ed91f15-420c-3db6-8b3b-85438b02bf97@cloudflare.com> <20220615103031.qkzae4xr34wysj4b@wittgenstein>
- <CAHC9VhR8yPHZb2sCu4JGgXOSs7rudm=9opB+-LsG6_Lta9466A@mail.gmail.com> <CALrw=nGZtrNYn+CV+Q_w-2=Va_9m3C8PDvvPtd01d0tS=2NMWQ@mail.gmail.com>
-In-Reply-To: <CALrw=nGZtrNYn+CV+Q_w-2=Va_9m3C8PDvvPtd01d0tS=2NMWQ@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 15 Jun 2022 11:33:38 -0400
-Message-ID: <CAHC9VhRSzXeAZmBdNSAFEh=6XR57ecO7Ov+6BV9b0xVN1YR_Qw@mail.gmail.com>
-Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
-To:     Ignat Korchagin <ignat@cloudflare.com>
-Cc:     Christian Brauner <brauner@kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Frederick Lawler <fred@cloudflare.com>,
-        linux-doc@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-cachefs@redhat.com,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
-        linux-unionfs@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
-        selinux@vger.kernel.org, serge@hallyn.com, amir73il@gmail.com,
-        kernel-team <kernel-team@cloudflare.com>,
-        Jeff Moyer <jmoyer@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 11:06 AM Ignat Korchagin <ignat@cloudflare.com> wrote:
-> On Wed, Jun 15, 2022 at 3:14 PM Paul Moore <paul@paul-moore.com> wrote:
-> > On Wed, Jun 15, 2022 at 6:30 AM Christian Brauner <brauner@kernel.org> wrote:
+As SCSI SBC4 specification section 5.30.2 describes that it can
+support unmapping one or more LBA range in single UNMAP command,
+however, previously we only pack one LBA range in UNMAP command
+by default no matter device gives the block limits that says it
+can support in-batch UNMAP.
 
-...
+This patch tries to set max_discard_segments config according to
+block limits of device, and supports in-batch UNMAP.
 
-> > > Fwiw, from this commit it wasn't very clear what you wanted to achieve
-> > > with this. It might be worth considering adding a new security hook for
-> > > this. Within msft it recently came up SELinux might have an interest in
-> > > something like this as well.
-> >
-> > Just to clarify things a bit, I believe SELinux would have an interest
-> > in a LSM hook capable of implementing an access control point for user
-> > namespaces regardless of Microsoft's current needs.  I suspect due to
-> > the security relevant nature of user namespaces most other LSMs would
-> > be interested as well; it seems like a well crafted hook would be
-> > welcome by most folks I think.
->
-> Just to get the full picture: is there actually a good reason not to
-> make this hook support this scenario? I understand it was not
-> originally intended for this, but it is well positioned in the code,
-> covers multiple subsystems (not only user namespaces), doesn't require
-> changing the LSM interface and it already does the job - just the
-> kernel internals need to respect the error code better. What bad
-> things can happen if we extend its use case to not only allocate
-> resources in LSMs?
+Signed-off-by: Chao Yu <chao@kernel.org>
+---
+v3:
+- update commit message.
+- clean up codes.
+ drivers/scsi/sd.c | 31 ++++++++++++++++++++-----------
+ drivers/scsi/sd.h |  1 +
+ 2 files changed, 21 insertions(+), 11 deletions(-)
 
-My concern is that the security_prepare_creds() hook, while only
-called from two different functions, ends up being called for a
-variety of different uses (look at the prepare_creds() and
-perpare_kernel_cred() callers) and I think it would be a challenge to
-identify the proper calling context in the LSM hook implementation
-given the current hook parameters.  One might be able to modify the
-hook to pass the necessary information, but I don't think that would
-be any cleaner than adding a userns specific hook.  I'm also guessing
-that the modified security_prepare_creds() hook implementations would
-also be more likely to encounter future maintenance issues as
-overriding credentials in the kernel seems only to be increasing, and
-each future caller would risk using the modified hook wrong by passing
-the wrong context and triggering the wrong behavior in the LSM.
-
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index 895b56c8f25e..ab543f027640 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -790,6 +790,7 @@ static void sd_config_discard(struct scsi_disk *sdkp, unsigned int mode)
+ 	q->limits.discard_granularity =
+ 		max(sdkp->physical_block_size,
+ 		    sdkp->unmap_granularity * logical_block_size);
++	blk_queue_max_discard_segments(q, sdkp->max_block_desc_count);
+ 	sdkp->provisioning_mode = mode;
+ 
+ 	switch (mode) {
+@@ -836,9 +837,10 @@ static blk_status_t sd_setup_unmap_cmnd(struct scsi_cmnd *cmd)
+ 	struct scsi_device *sdp = cmd->device;
+ 	struct request *rq = scsi_cmd_to_rq(cmd);
+ 	struct scsi_disk *sdkp = scsi_disk(rq->q->disk);
+-	u64 lba = sectors_to_logical(sdp, blk_rq_pos(rq));
+-	u32 nr_blocks = sectors_to_logical(sdp, blk_rq_sectors(rq));
+-	unsigned int data_len = 24;
++	unsigned short segments = blk_rq_nr_discard_segments(rq);
++	unsigned int data_len = 8 + 16 * segments;
++	unsigned int data_offset = 8;
++	struct bio *bio;
+ 	char *buf;
+ 
+ 	rq->special_vec.bv_page = mempool_alloc(sd_page_pool, GFP_ATOMIC);
+@@ -851,13 +853,20 @@ static blk_status_t sd_setup_unmap_cmnd(struct scsi_cmnd *cmd)
+ 
+ 	cmd->cmd_len = 10;
+ 	cmd->cmnd[0] = UNMAP;
+-	cmd->cmnd[8] = 24;
++	cmd->cmnd[8] = data_len;
+ 
+ 	buf = bvec_virt(&rq->special_vec);
+-	put_unaligned_be16(6 + 16, &buf[0]);
+-	put_unaligned_be16(16, &buf[2]);
+-	put_unaligned_be64(lba, &buf[8]);
+-	put_unaligned_be32(nr_blocks, &buf[16]);
++	put_unaligned_be16(6 + 16 * segments, &buf[0]);
++	put_unaligned_be16(16 * segments, &buf[2]);
++
++	__rq_for_each_bio(bio, rq) {
++		u64 lba = sectors_to_logical(sdp, bio->bi_iter.bi_sector);
++		u32 nr_blocks = sectors_to_logical(sdp, bio_sectors(bio));
++
++		put_unaligned_be64(lba, &buf[data_offset]);
++		put_unaligned_be32(nr_blocks, &buf[data_offset + 8]);
++		data_offset += 16;
++	}
+ 
+ 	cmd->allowed = sdkp->max_retries;
+ 	cmd->transfersize = data_len;
+@@ -2862,7 +2871,7 @@ static void sd_read_block_limits(struct scsi_disk *sdkp)
+ 	sdkp->opt_xfer_blocks = get_unaligned_be32(&vpd->data[12]);
+ 
+ 	if (vpd->len >= 64) {
+-		unsigned int lba_count, desc_count;
++		unsigned int lba_count;
+ 
+ 		sdkp->max_ws_blocks = (u32)get_unaligned_be64(&vpd->data[36]);
+ 
+@@ -2870,9 +2879,9 @@ static void sd_read_block_limits(struct scsi_disk *sdkp)
+ 			goto out;
+ 
+ 		lba_count = get_unaligned_be32(&vpd->data[20]);
+-		desc_count = get_unaligned_be32(&vpd->data[24]);
++		sdkp->max_block_desc_count = get_unaligned_be32(&vpd->data[24]);
+ 
+-		if (lba_count && desc_count)
++		if (lba_count && sdkp->max_block_desc_count)
+ 			sdkp->max_unmap_blocks = lba_count;
+ 
+ 		sdkp->unmap_granularity = get_unaligned_be32(&vpd->data[28]);
+diff --git a/drivers/scsi/sd.h b/drivers/scsi/sd.h
+index 5eea762f84d1..bda9db5e2322 100644
+--- a/drivers/scsi/sd.h
++++ b/drivers/scsi/sd.h
+@@ -119,6 +119,7 @@ struct scsi_disk {
+ 	u32		opt_xfer_blocks;
+ 	u32		max_ws_blocks;
+ 	u32		max_unmap_blocks;
++	u32		max_block_desc_count;
+ 	u32		unmap_granularity;
+ 	u32		unmap_alignment;
+ 	u32		index;
 -- 
-paul-moore.com
+2.25.1
+
