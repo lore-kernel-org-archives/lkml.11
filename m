@@ -2,208 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37ACCC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE260C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:47:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347399AbiFOLn6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 07:43:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44782 "EHLO
+        id S243494AbiFOLrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 07:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347117AbiFOLno (ORCPT
+        with ESMTP id S234129AbiFOLru (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 07:43:44 -0400
-Received: from mailout3.rbg.tum.de (mailout3.rbg.tum.de [131.159.0.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB5927CF6;
-        Wed, 15 Jun 2022 04:43:43 -0700 (PDT)
-Received: from mailrelay1.rbg.tum.de (mailrelay1.in.tum.de [131.159.254.14])
-        by mailout3.rbg.tum.de (Postfix) with ESMTPS id 3D867100241;
-        Wed, 15 Jun 2022 13:43:41 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=in.tum.de;
-        s=20220209; t=1655293421;
-        bh=2kjF4oxVy3r0fd0SR9Tiy0/qNbtSE87Bz7BjdDbE1WQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=NQ3JEMN2ZHuNO/jk9Av7B/H/0KpYlcVLlKXKDbQyjFUGHSs9eA9lMK8Lb5Slu6MdY
-         HcTOP24C86scrmcGGk01sFNf5waZuYfo0K92v+lEx6j2EFBxU6rqq3RmGOzrcfu0m3
-         hA/W9Q7JcCktMgWsoA4AP/p4CRaZz1jgznKU8IAd6uN9NTQwaHKiKLXZAoGFXruKg+
-         7vbzwsy69l+TbNglfkS+nBbSJPe2tw3NYT13otO1+Ca4Dn6otyByXM0zhnI1rqfS4W
-         kWyMb7r4EliCIh4QwQdEJS00rR1dWRg/4hM1staWVoKKc2EAFsRIF1x0aygVIyunKK
-         pX9cOhuqMCCtw==
-Received: by mailrelay1.rbg.tum.de (Postfix, from userid 112)
-        id 3D0B1DD; Wed, 15 Jun 2022 13:43:41 +0200 (CEST)
-Received: from mailrelay1.rbg.tum.de (localhost [127.0.0.1])
-        by mailrelay1.rbg.tum.de (Postfix) with ESMTP id 198DED6;
-        Wed, 15 Jun 2022 13:43:41 +0200 (CEST)
-Received: from mail.in.tum.de (vmrbg426.in.tum.de [131.159.0.73])
-        by mailrelay1.rbg.tum.de (Postfix) with ESMTPS id 14250CE;
-        Wed, 15 Jun 2022 13:43:41 +0200 (CEST)
-Received: by mail.in.tum.de (Postfix, from userid 112)
-        id 087424A0220; Wed, 15 Jun 2022 13:43:41 +0200 (CEST)
-Received: (Authenticated sender: heidekrp)
-        by mail.in.tum.de (Postfix) with ESMTPSA id A477F4A01E7;
-        Wed, 15 Jun 2022 13:43:40 +0200 (CEST)
-        (Extended-Queue-bit xtech_ko@fff.in.tum.de)
-From:   =?UTF-8?q?Paul=20Heidekr=C3=BCger?= <paul.heidekrueger@in.tum.de>
-To:     llvm@lists.linux.dev, linux-toolchains@vger.kernel.org,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        =?UTF-8?q?Paul=20Heidekr=C3=BCger?= <paul.heidekrueger@in.tum.de>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
-Cc:     Marco Elver <elver@google.com>,
-        Charalampos Mainas <charalampos.mainas@gmail.com>,
-        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
-        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
-        Martin Fink <martin.fink@in.tum.de>
-Subject: [PATCH RFC] tools/memory-model: Adjust ctrl dependency definition
-Date:   Wed, 15 Jun 2022 11:43:29 +0000
-Message-Id: <20220615114330.2573952-1-paul.heidekrueger@in.tum.de>
+        Wed, 15 Jun 2022 07:47:50 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35A12610F;
+        Wed, 15 Jun 2022 04:47:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655293668; x=1686829668;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ROUuMUroMsslJq/9ZSReRN0oM6mJ1TOrX9bCNwvFXL0=;
+  b=NGl873l7fkf1rKR1gAWEI5pd5uONg39M11Py1NDY0TMYxu7IjL3mnsCS
+   /0p5uPGyVe19NZwhRWdD8h3F9qpCdaH57NYcX9pSwdfatRytfCOoWHEOt
+   Jx2CWkuw8tjy/XrZi+tBVIDRoOBhHdwl8KWv5FH8dpPyiGrPb/3bcxrVh
+   YKhAsqeN/v9l6L4zglNeUyvWmFeHLugqg9Qo2Om4XIy1Uz9e4l8iebOMY
+   RLAuYgdyzfCm696MmGZIA77HFImR11nIEzjtVrdRqeEz6HFqVQTljLZ2Q
+   hF5JhNLrCczyKXRGE0p/6ip611H8A9BN4jxuF9Z4aGboh7dttILflZgBS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="342894651"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="342894651"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 04:47:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="571788930"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 15 Jun 2022 04:47:46 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 4B8FA103; Wed, 15 Jun 2022 14:47:50 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 2/2] iio: proximity: sx_common: Allow IIO core to take care of firmware node
+Date:   Wed, 15 Jun 2022 14:47:46 +0300
+Message-Id: <20220615114746.2767-2-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220615114746.2767-1-andriy.shevchenko@linux.intel.com>
+References: <20220615114746.2767-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+IIO core correctly will take care of firmware node if it's not set in
+the driver. Drop ACPI and OF specifics from the driver and allow IIO
+core to handle this.
 
-I have been confused by explanation.txt's definition of control
-dependencies:
-
-> Finally, a read event and another memory access event are linked by a
-> control dependency if the value obtained by the read affects whether
-> the second event is executed at all.
-
-I'll go into the following:
-
-====
-1. "At all", to me, is misleading
-  1.1 The code which confused me
-  1.2 The traditional definition via post-dominance doesn't work either
-2. Solution
-====
-
-1. "At all", to me, is misleading:
-
-"At all" to me suggests a question for which we require a definitive
-"yes" or "no" answer: given a programme and an input, can a certain
-piece of code be executed? Can we always answer this this question?
-Doesn't this sound similar to the halting problem?
-
-1.1 The Example which confused me:
-
-For the dependency checker project [1], I've been thinking about
-tracking dependency chains in code, and I stumbled upon the following
-edge case, which made me question the "at all" part of the current
-definition. The below C-code is derived from some optimised kernel code
-in LLVM intermediate representation (IR) I encountered:
-
-> int *x, *y;
->
-> int foo()
-> {
-> /* More code */
->
-> 	 loop:
-> 		/* More code */
->
-> 	 	if(READ_ONCE(x)) {
-> 	 		WRITE_ONCE(y, 42);
-> 	 		return 0;
-> 	 	}
->
-> 		/* More code */
->
-> 	 	goto loop;
->
->       /* More code */
-> }
-
-Assuming that foo() will return, the READ_ONCE() does not determine
-whether the WRITE_ONCE() will be executed __at all__, as it will be
-executed exactly when the function returns, instead, it determines
-__when__ the WRITE_ONCE() will be executed.
-
-1.2. The definition via post-dominance doesn't work either:
-
-I have seen control dependencies being defined in terms of the first
-basic block that post-dominates the basic block of the if-condition,
-that is the first basic block control flow must take to reach the
-function return regardless of what the if condition returned.
-
-E.g. [2] defines control dependencies as follows:
-
-> A statement y is said to be control dependent on another statement x
-> if (1) there exists a nontrivial path from x to y such that every
-> statement z != x in the path is post-dominated by y, and (2) x is not
-> post-dominated by y.
-
-Again, this definition doesn't work for the example above. As the basic
-block of the if branch trivially post-dominates any other basic block,
-because it contains the function return.
-
-2. Solution:
-
-The definition I came up with instead is the following:
-
-> A basic block B is control-dependent on a basic block A if
-> B is reachable from A, but control flow can take a path through A
-> which avoids B. The scope of a control dependency ends at the first
-> basic block where all control flow paths running through A meet.
-
-Note that this allows control dependencies to remain "unresolved".
-
-I'm happy to submit a patch which covers more of what I mentioned above
-as part of explanation.txt, but figured that in the spirit of keeping
-things simple, leaving out "at all" might be enough?
-
-What do you think?
-
-Many thanks,
-Paul
-
-[1]: https://lore.kernel.org/all/Yk7%2FT8BJITwz+Og1@Pauls-MacBook-Pro.local/T/#u
-[2]: Optimizing Compilers for Modern Architectures: A Dependence-Based
-Approach, Randy Allen, Ken Kennedy, 2002, p. 350
-
-Signed-off-by: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
-Cc: Marco Elver <elver@google.com>
-Cc: Charalampos Mainas <charalampos.mainas@gmail.com>
-Cc: Pramod Bhatotia <pramod.bhatotia@in.tum.de>
-Cc: Soham Chakraborty <s.s.chakraborty@tudelft.nl>
-Cc: Martin Fink <martin.fink@in.tum.de>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- tools/memory-model/Documentation/explanation.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v2: no changes
+ drivers/iio/proximity/sx_common.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/tools/memory-model/Documentation/explanation.txt b/tools/memory-model/Documentation/explanation.txt
-index ee819a402b69..42af7ed91313 100644
---- a/tools/memory-model/Documentation/explanation.txt
-+++ b/tools/memory-model/Documentation/explanation.txt
-@@ -466,7 +466,7 @@ pointer.
+diff --git a/drivers/iio/proximity/sx_common.c b/drivers/iio/proximity/sx_common.c
+index 9f2e47385198..d70a6b4f0bf8 100644
+--- a/drivers/iio/proximity/sx_common.c
++++ b/drivers/iio/proximity/sx_common.c
+@@ -5,7 +5,6 @@
+  * Common part of most Semtech SAR sensor.
+  */
  
- Finally, a read event and another memory access event are linked by a
- control dependency if the value obtained by the read affects whether
--the second event is executed at all.  Simple example:
-+the second event is executed.  Simple example:
+-#include <linux/acpi.h>
+ #include <linux/bitops.h>
+ #include <linux/byteorder/generic.h>
+ #include <linux/delay.h>
+@@ -519,8 +518,6 @@ int sx_common_probe(struct i2c_client *client,
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "error reading WHOAMI\n");
  
- 	int x, y;
+-	ACPI_COMPANION_SET(&indio_dev->dev, ACPI_COMPANION(dev));
+-	indio_dev->dev.of_node = client->dev.of_node;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
  
+ 	indio_dev->channels =  data->chip_info->iio_channels;
 -- 
 2.35.1
 
