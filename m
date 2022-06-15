@@ -2,123 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6167C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 607B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348273AbiFOJhF (ORCPT
+        id S1348310AbiFOJhM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:37:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46932 "EHLO
+        Wed, 15 Jun 2022 05:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348204AbiFOJhC (ORCPT
+        with ESMTP id S1347380AbiFOJhG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:37:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1B2003A181
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:37:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655285821;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dNw/R51TWM4Lx/vPA0cEiIg3iaOBbrHMuRKSdvNKOs8=;
-        b=GT5zZUWvkDKUg4mSLKbpi41KUtNhp+iFWiIG4fLYLjH28y90wUY3Ui+prPylaFPPVKl+L0
-        wXRa1TS2i5mc/7FQgg+jYYDOD8kBUxbjEqXqm6yC/HHHD3uN03+MEqZD8UQ2J7AvRWdHK6
-        aOyVTPsxvrRTBKjRm6bGpPmMa64mmA8=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-10-IXrBLdLpMyWYS5AV6sqTVA-1; Wed, 15 Jun 2022 05:36:59 -0400
-X-MC-Unique: IXrBLdLpMyWYS5AV6sqTVA-1
-Received: by mail-wr1-f72.google.com with SMTP id m18-20020adff392000000b0021848a78a53so1685344wro.19
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:36:59 -0700 (PDT)
+        Wed, 15 Jun 2022 05:37:06 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A682396B9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:37:05 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id o17so9940356pla.6
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:37:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zuRmpPaeBZ7RBBqgxGgYuakVG6WXJwz6SE2K0j0jSFQ=;
+        b=UUL4/SFUMTUlunbbqmiz6/p44WMrg6Ru6WUECHtcygNpzcDAKuWBa+BjbeH5ibVwuF
+         n5y56xYDc2Bl05iU1/7dzgdyxRVX0AK/gm+vP80Kf7N3RbjE8GXPROJWWHdvj4uJhsoP
+         YoSEE2khu/r96vc8bxc8rgHUMdAJMzRJFLd8vJD71cP63CuO0zvma5EagqP1f7R7DRyf
+         5Ksv8k7IwEnClBHeZELhMUVN2BwtQGmcNIJJsiUHW8I+zEooaPyEy0McW+I9iODVHPDp
+         jr3XjFd5eKE+JNZh2e0QrAaAKXEnG8MJ4PqznnM4oz8pJ+ScLvLz/5ezIiEGb+jSZ4oE
+         vyKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=dNw/R51TWM4Lx/vPA0cEiIg3iaOBbrHMuRKSdvNKOs8=;
-        b=c1wGKQdmu4AZG4jj6bI2magj3SO4WtE1rJYLBnrFMyRyb4MkkVzfa4xBDN6kmEWoFX
-         2sqVqlpp42i0NNZIArhKo776zwkrjTzUDnxTE3GMETgrY/F231oxBAH39CHprAfYlflc
-         sBYNHQF27YjiYvmiIxSFFh9TeXj2kSe6z459cTbtjSxEukJzjSaaQwzwef5B4vN9KSrs
-         cMYFzIOrrM+cxN/5CTey2EC3/fQ7Gq/FrY+DMNBxeMLWy3/HFmREqHyMom+imwALkQ6I
-         ySG5LTiTlEH4VeaiiGpqXQCioJFmzrYd9YfQC6tIBvYCScp3zuyU4J2ORUe/deHjZ4zG
-         Rb1g==
-X-Gm-Message-State: AJIora+gIXvlZ4U8CXujgMODX9DFrGy9LLdCxCUfyHSouw9MnFFgPd+k
-        56lvo1sDEpBb+NCHrB9ujRdHsa5fv1x4MGF0MnocB4VjYYbAwrydSpadeU0yquxWQx6uj8DuyZc
-        S7y6UWHIR/FXZnRfczXK1HoIX
-X-Received: by 2002:a05:6000:156c:b0:218:5f5d:9c61 with SMTP id 12-20020a056000156c00b002185f5d9c61mr9197821wrz.134.1655285818373;
-        Wed, 15 Jun 2022 02:36:58 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1ssl/jJYq81qq2KZOEAIQfXCR1k7dMbwfxJo3LlKFMzxbwAQ8XqzUsy+dnHpmNnbov1a/rtAQ==
-X-Received: by 2002:a05:6000:156c:b0:218:5f5d:9c61 with SMTP id 12-20020a056000156c00b002185f5d9c61mr9197809wrz.134.1655285818176;
-        Wed, 15 Jun 2022 02:36:58 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id c7-20020a05600c0a4700b003942a244f51sm1682638wmq.42.2022.06.15.02.36.56
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zuRmpPaeBZ7RBBqgxGgYuakVG6WXJwz6SE2K0j0jSFQ=;
+        b=sP8Sn2dzDWHNAVEbDOCBAHezCCSepyirKJHDJ3OuGFdp2aoiCoXqYPQv7Uh84+s3d7
+         O8wsub3jyHV1zx3cYvQi0GNAsYnigUdcVB4kctTstyiHomuw+Ut/mEiyJ9Ag5yCi0KWN
+         Ekei/Zs0KOe7QCc9y2jczpvifoYmwnEtFMgOa8o7lf9cv+/Qra6jenfCpPnTVwGT0xYH
+         SHiCClKOaxydmQ8gcmwDamp42Wqg6VspLoy5jR/0S6kODjUO0ZyjFtqnoPdw0ZXyx5D8
+         yg/E6rZnfvHTDNjghjiikZy0ChSxo0DGiCJbtOcylR/ImbMNb/Yk/CbwG1n5jInn1Z95
+         CnxQ==
+X-Gm-Message-State: AJIora+MX8+OsphFSKCFmY02+5ROjtNkzRfxHyns4Awlj8jmqhTetjNX
+        eIdgq0bEuC21R2FHuAGVy8dg8w==
+X-Google-Smtp-Source: AGRyM1vKtdJrvtMLM/4RuIoUjWyRHYdfOw1nyGNeFOmGQrKBBM2xFQw6FTyW0zpa+Mx8uNkEAiYFJg==
+X-Received: by 2002:a17:90b:1e0e:b0:1ea:89a5:87d9 with SMTP id pg14-20020a17090b1e0e00b001ea89a587d9mr9253119pjb.81.1655285824779;
+        Wed, 15 Jun 2022 02:37:04 -0700 (PDT)
+Received: from always-x1.bytedance.net ([61.120.150.70])
+        by smtp.gmail.com with ESMTPSA id jj1-20020a170903048100b00163247b64bfsm8859205plb.115.2022.06.15.02.37.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 02:36:57 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     mail@anirudhrb.com, kumarpraveen@linux.microsoft.com,
-        wei.liu@kernel.org, robert.bradford@intel.com, liuwe@microsoft.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Ilias Stamatis <ilstam@amazon.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Subject: Re: [PATCH] KVM: nVMX: Don't expose TSC scaling to L1 when on Hyper-V
-In-Reply-To: <Yqmf5UGbNKyGz3dD@anrayabh-desk>
-References: <20220613161611.3567556-1-anrayabh@linux.microsoft.com>
- <87sfo7igis.fsf@redhat.com>
- <eaefdea0-0ca3-93f1-a815-03900055fdcd@redhat.com>
- <Yqmf5UGbNKyGz3dD@anrayabh-desk>
-Date:   Wed, 15 Jun 2022 11:36:56 +0200
-Message-ID: <87mteei7yf.fsf@redhat.com>
+        Wed, 15 Jun 2022 02:37:03 -0700 (PDT)
+From:   zhenwei pi <pizhenwei@bytedance.com>
+To:     pizhenwei@bytedance.com, naoya.horiguchi@nec.com,
+        akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org, david@redhat.com,
+        linmiaohe@huawei.com, gregkh@linuxfoundation.org,
+        Oscar Salvador <osalvador@suse.de>
+Subject: [PATCH v6 1/1] mm/memory-failure: disable unpoison once hw error happens
+Date:   Wed, 15 Jun 2022 17:32:09 +0800
+Message-Id: <20220615093209.259374-2-pizhenwei@bytedance.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220615093209.259374-1-pizhenwei@bytedance.com>
+References: <20220615093209.259374-1-pizhenwei@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Anirudh Rayabharam <anrayabh@linux.microsoft.com> writes:
+Currently unpoison_memory(unsigned long pfn) is designed for soft
+poison(hwpoison-inject) only. Since 17fae1294ad9d, the KPTE gets
+cleared on a x86 platform once hardware memory corrupts.
 
-> On Tue, Jun 14, 2022 at 07:20:34PM +0200, Paolo Bonzini wrote:
->> On 6/14/22 14:19, Vitaly Kuznetsov wrote:
->> > The latest version:
->> > https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/datatypes/hv_vmx_enlightened_vmcs
->> > 
->> > has it, actually. It was missing before (compare with e.g. 6.0b version
->> > here:
->> > https://github.com/MicrosoftDocs/Virtualization-Documentation/raw/live/tlfs/Hypervisor%20Top%20Level%20Functional%20Specification%20v6.0b.pdf)
->> > 
->> > but AFAIR TSC scaling wasn't advertised by genuine Hyper-V either.
->> > Interestingly enough, eVMCS version didn't change when these fields were
->> > added, it is still '1'.
->> > 
->> > I even have a patch in my stash (attached). I didn't send it out because
->> > it wasn't properly tested with different Hyper-V versions.
->> > 
->> > -- Vitaly
->> 
->> Anirudh, can you check if Vitaly's patches work for you?
->
-> I will check it. But I wonder if they fit the criteria for inclusion in
-> stable trees...
->
-> It is important for the fix to land in the stable trees since this issue
-> is a regression that was introduced _after_ 5.13. (I probably should've
-> mentioned this in the changelog.)
->
+Unpoisoning a hardware corrupted page puts page back buddy only,
+the kernel has a chance to access the page with *NOT PRESENT* KPTE.
+This leads BUG during accessing on the corrupted KPTE.
 
-Personally, I see no problem with splitting off TscMultiplier part from
-my patch and marking it for stable@ fixing d041b5ea93352. I'm going to
-run some tests too.
+Suggested by David&Naoya, disable unpoison mechanism when a real HW error
+happens to avoid BUG like this:
 
+ Unpoison: Software-unpoisoned page 0x61234
+ BUG: unable to handle page fault for address: ffff888061234000
+ #PF: supervisor write access in kernel mode
+ #PF: error_code(0x0002) - not-present page
+ PGD 2c01067 P4D 2c01067 PUD 107267063 PMD 10382b063 PTE 800fffff9edcb062
+ Oops: 0002 [#1] PREEMPT SMP NOPTI
+ CPU: 4 PID: 26551 Comm: stress Kdump: loaded Tainted: G   M       OE     5.18.0.bm.1-amd64 #7
+ Hardware name: QEMU Standard PC (i440FX + PIIX, 1996) ...
+ RIP: 0010:clear_page_erms+0x7/0x10
+ Code: ...
+ RSP: 0000:ffffc90001107bc8 EFLAGS: 00010246
+ RAX: 0000000000000000 RBX: 0000000000000901 RCX: 0000000000001000
+ RDX: ffffea0001848d00 RSI: ffffea0001848d40 RDI: ffff888061234000
+ RBP: ffffea0001848d00 R08: 0000000000000901 R09: 0000000000001276
+ R10: 0000000000000003 R11: 0000000000000000 R12: 0000000000000001
+ R13: 0000000000000000 R14: 0000000000140dca R15: 0000000000000001
+ FS:  00007fd8b2333740(0000) GS:ffff88813fd00000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: ffff888061234000 CR3: 00000001023d2005 CR4: 0000000000770ee0
+ DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ PKRU: 55555554
+ Call Trace:
+  <TASK>
+  prep_new_page+0x151/0x170
+  get_page_from_freelist+0xca0/0xe20
+  ? sysvec_apic_timer_interrupt+0xab/0xc0
+  ? asm_sysvec_apic_timer_interrupt+0x1b/0x20
+  __alloc_pages+0x17e/0x340
+  __folio_alloc+0x17/0x40
+  vma_alloc_folio+0x84/0x280
+  __handle_mm_fault+0x8d4/0xeb0
+  handle_mm_fault+0xd5/0x2a0
+  do_user_addr_fault+0x1d0/0x680
+  ? kvm_read_and_reset_apf_flags+0x3b/0x50
+  exc_page_fault+0x78/0x170
+  asm_exc_page_fault+0x27/0x30
+
+Fixes: 847ce401df392 ("HWPOISON: Add unpoisoning support")
+Fixes: 17fae1294ad9d ("x86/{mce,mm}: Unmap the entire page if the whole page is affected and poisoned")
+Cc: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: Oscar Salvador <osalvador@suse.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: David Hildenbrand <david@redhat.com>
+Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
+---
+ Documentation/vm/hwpoison.rst |  3 ++-
+ drivers/base/memory.c         |  2 +-
+ include/linux/mm.h            |  1 +
+ mm/hwpoison-inject.c          |  2 +-
+ mm/madvise.c                  |  2 +-
+ mm/memory-failure.c           | 12 ++++++++++++
+ 6 files changed, 18 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/vm/hwpoison.rst b/Documentation/vm/hwpoison.rst
+index c742de1769d1..b9d5253c1305 100644
+--- a/Documentation/vm/hwpoison.rst
++++ b/Documentation/vm/hwpoison.rst
+@@ -120,7 +120,8 @@ Testing
+   unpoison-pfn
+ 	Software-unpoison page at PFN echoed into this file. This way
+ 	a page can be reused again.  This only works for Linux
+-	injected failures, not for real memory failures.
++	injected failures, not for real memory failures. Once any hardware
++	memory failure happens, this feature is disabled.
+ 
+   Note these injection interfaces are not stable and might change between
+   kernel versions
+diff --git a/drivers/base/memory.c b/drivers/base/memory.c
+index 084d67fd55cc..bc60c9cd3230 100644
+--- a/drivers/base/memory.c
++++ b/drivers/base/memory.c
+@@ -558,7 +558,7 @@ static ssize_t hard_offline_page_store(struct device *dev,
+ 	if (kstrtoull(buf, 0, &pfn) < 0)
+ 		return -EINVAL;
+ 	pfn >>= PAGE_SHIFT;
+-	ret = memory_failure(pfn, 0);
++	ret = memory_failure(pfn, MF_SW_SIMULATED);
+ 	if (ret == -EOPNOTSUPP)
+ 		ret = 0;
+ 	return ret ? ret : count;
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index bc8f326be0ce..4346e51484ba 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3232,6 +3232,7 @@ enum mf_flags {
+ 	MF_MUST_KILL = 1 << 2,
+ 	MF_SOFT_OFFLINE = 1 << 3,
+ 	MF_UNPOISON = 1 << 4,
++	MF_SW_SIMULATED = 1 << 5,
+ };
+ extern int memory_failure(unsigned long pfn, int flags);
+ extern void memory_failure_queue(unsigned long pfn, int flags);
+diff --git a/mm/hwpoison-inject.c b/mm/hwpoison-inject.c
+index 5c0cddd81505..65e242b5a432 100644
+--- a/mm/hwpoison-inject.c
++++ b/mm/hwpoison-inject.c
+@@ -48,7 +48,7 @@ static int hwpoison_inject(void *data, u64 val)
+ 
+ inject:
+ 	pr_info("Injecting memory failure at pfn %#lx\n", pfn);
+-	err = memory_failure(pfn, 0);
++	err = memory_failure(pfn, MF_SW_SIMULATED);
+ 	return (err == -EOPNOTSUPP) ? 0 : err;
+ }
+ 
+diff --git a/mm/madvise.c b/mm/madvise.c
+index d7b4f2602949..0316bbc6441b 100644
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -1112,7 +1112,7 @@ static int madvise_inject_error(int behavior,
+ 		} else {
+ 			pr_info("Injecting memory failure for pfn %#lx at process virtual address %#lx\n",
+ 				 pfn, start);
+-			ret = memory_failure(pfn, MF_COUNT_INCREASED);
++			ret = memory_failure(pfn, MF_COUNT_INCREASED | MF_SW_SIMULATED);
+ 			if (ret == -EOPNOTSUPP)
+ 				ret = 0;
+ 		}
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index b85661cbdc4a..da39ec8afca8 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -69,6 +69,8 @@ int sysctl_memory_failure_recovery __read_mostly = 1;
+ 
+ atomic_long_t num_poisoned_pages __read_mostly = ATOMIC_LONG_INIT(0);
+ 
++static bool hw_memory_failure __read_mostly = false;
++
+ static bool __page_handle_poison(struct page *page)
+ {
+ 	int ret;
+@@ -1768,6 +1770,9 @@ int memory_failure(unsigned long pfn, int flags)
+ 
+ 	mutex_lock(&mf_mutex);
+ 
++	if (!(flags & MF_SW_SIMULATED))
++		hw_memory_failure = true;
++
+ 	p = pfn_to_online_page(pfn);
+ 	if (!p) {
+ 		res = arch_memory_failure(pfn, flags);
+@@ -2103,6 +2108,13 @@ int unpoison_memory(unsigned long pfn)
+ 
+ 	mutex_lock(&mf_mutex);
+ 
++	if (hw_memory_failure) {
++		unpoison_pr_info("Unpoison: Disabled after HW memory failure %#lx\n",
++				 pfn, &unpoison_rs);
++		ret = -EOPNOTSUPP;
++		goto unlock_mutex;
++	}
++
+ 	if (!PageHWPoison(p)) {
+ 		unpoison_pr_info("Unpoison: Page was already unpoisoned %#lx\n",
+ 				 pfn, &unpoison_rs);
 -- 
-Vitaly
+2.20.1
 
