@@ -2,427 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F7C1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B0AAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346067AbiFODkq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 23:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53604 "EHLO
+        id S237323AbiFODpV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 23:45:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiFODkn (ORCPT
+        with ESMTP id S229924AbiFODpP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 23:40:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B82BE4EF79
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 20:40:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655264440;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LfegYrIN8OlfIZz5kfKBxrw296wmSe2NUDXIex6E4og=;
-        b=aS1kek+srQF1PnBY539AG+pZHKEwu6dSJ8IrzZkPNG3myyjcxmX7F0PzBUcJAbYdPYUAfA
-        Wekv5chfoa7X8O0AELoWFA9hAuDhHA7kGvHJNoyAUJuCY40mpEtyJmkp0wBL8RAY3XY/H+
-        aFCm+TpWreG0mOW1SwJID8+8iMlrRyM=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-428-_M7X3v01OhOFXWb7N3-vSg-1; Tue, 14 Jun 2022 23:40:31 -0400
-X-MC-Unique: _M7X3v01OhOFXWb7N3-vSg-1
-Received: by mail-lf1-f70.google.com with SMTP id g40-20020a0565123ba800b004791450e602so5438986lfv.17
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 20:40:31 -0700 (PDT)
+        Tue, 14 Jun 2022 23:45:15 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDE0483B0
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 20:45:14 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so862522pjl.5
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 20:45:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qTZ8ABJgEFJoCnGKxpfy9Q/YCSgArcV1xo2v8WGT7bM=;
+        b=N3DQJMwi+RR2V6NEN+fm4PMC4Hw7ZEN/1OP2cVr7SNUgziO0ONmCWspCG6QgzbaCET
+         Ey3IyROfu8arKotjgniYSoS8vP6dnmopvoUa1HScW6LZkGGmOBEIlBSwyyWho8CtGwqU
+         Hic0xdzYJcA9S6y0Yy2BxqUl5ixwS1o6tgbir5pOf15ljb/KTy/LE9EAybUPKIDvYhh/
+         xymLKn+PsTFsgrEzGx0gPHunRiLuxlctfTJJLD4siKIeIOgb6LPnowmJC6FccVgAKaNl
+         Pq8Z91mOg47joC4m9Ii7m95PwL8BmUao6/yIKs2Z8E0vTcDnpqy2NeM1i/voC2Ka/Z11
+         VDmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LfegYrIN8OlfIZz5kfKBxrw296wmSe2NUDXIex6E4og=;
-        b=Dk3KtOosT8fs/f7xu6hZssxXu6FNi9IMGpljd4t3v9AovnNWHRikOKaXg7gawzbBXE
-         07tJt0fVJtWClm9qxMke8W6C6rKN7EsGKnMPJPl0x8XENJs564cPyvy9nQJsMGHTT/wI
-         Ck267Qe1o+U1vOkky67wS9TZmxujgY57rAPeNRXDSffFAuvEXoJHeFJSt4wzTYGhsYNI
-         iAkknh9EfmvUdtUBcM55uLbB2bJgXEWoDF1sVeXnkBIviCQGwHPST0MbqIEz+hBSMN9H
-         bFDZCeFH7qR1x24leduaZQmEbQobnJzYfVMw5VUcNmfvJTzBQKE1oSWyq6QmltfdVTsT
-         yxHg==
-X-Gm-Message-State: AJIora9mzfDrGQg1gsEsBTLOrZ0/UGm+ZaSxEgriiNRsiiy57zGvFSp8
-        dHCOhkCPQSJCwA2iJtGWrCQmM9H/H/oxMb7OXfjclvjfIlw2pijQSluf6vsrUEdtQsPzLzwzI4C
-        XDzK++K2DdgccnWJQrr4h+WNUU+Olgcvn8d8JFFgg
-X-Received: by 2002:a05:6512:13a5:b0:47d:c1d9:dea8 with SMTP id p37-20020a05651213a500b0047dc1d9dea8mr5014725lfa.442.1655264429725;
-        Tue, 14 Jun 2022 20:40:29 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uMqDQKh5jR/R8azb60Tm/WY4bFPwDvjsnUv6Z0DkjAu3IUwrkcSVYcUBZZZvmWiJhiXaun0NnAQDZmFPVnekI=
-X-Received: by 2002:a05:6512:13a5:b0:47d:c1d9:dea8 with SMTP id
- p37-20020a05651213a500b0047dc1d9dea8mr5014715lfa.442.1655264429456; Tue, 14
- Jun 2022 20:40:29 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qTZ8ABJgEFJoCnGKxpfy9Q/YCSgArcV1xo2v8WGT7bM=;
+        b=vHGdJT0dynzusfttvGr4ENRzmAX+lo+86sG4MzFnQ3unGBZT7vgdPZvTtxZ1l0zPPY
+         ZlrXa2HTmS4f0PXS4TWPzJOO9QwsRkLQ/cshmhSqlKkNH0VQxyBQYyHr9wDSkobX4UhE
+         A/WZZwNqpuuWWr7LUSBdCKIIZwwkVj+eDD/z8MLSySt1pxi2ohEWQz/haI9bqvJfUi+/
+         VOiCoJpeKG3YRnzsDHoBtxxqb0FGNcb4ow61qN9RGFW5L657KxjPG2cxsFgK49XP//u+
+         l2lv2ia0HL4uk693tukyTmqYNtRi+pFepDpIKLTvcpnSfD/Lxh3AqwQc+xkJ2ONOgPs5
+         bL3w==
+X-Gm-Message-State: AJIora+EhFBL8HWJxRD2NJjUnANIU0Ga5w4QG3CMWH6eZudo71STNxc5
+        ZbGuZKeCrODVolAC8Omw2DQ=
+X-Google-Smtp-Source: AGRyM1vKSFpSn/yCX3P0y3wvcsbVAw1zZxHlKiRpOWBNU6Hrl6d+XMg7n2Ti/RUA6FysOCQxo9i64w==
+X-Received: by 2002:a17:90a:66c1:b0:1e8:43ae:f7c0 with SMTP id z1-20020a17090a66c100b001e843aef7c0mr7894335pjl.245.1655264714367;
+        Tue, 14 Jun 2022 20:45:14 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id u64-20020a638543000000b003fd7e217686sm8732667pgd.57.2022.06.14.20.45.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 20:45:13 -0700 (PDT)
+Message-ID: <6f865d7f-fde8-d923-3c7e-d12bfbc370a6@gmail.com>
+Date:   Wed, 15 Jun 2022 05:45:11 +0200
 MIME-Version: 1.0
-References: <20220613100433-mutt-send-email-mst@kernel.org>
- <20220614053737.82453-1-huangjie.albert@bytedance.com> <CACGkMEsnvj3MR8oRu-M2D9gTD2sDUJSWkMdjdm6GPum_KUY47w@mail.gmail.com>
- <CABKxMyMMQhbLCu8QN4ZD42802ZQdbGC+YvkQiWz_voecfM1jqw@mail.gmail.com>
- <CACGkMEv5=WzgJiO4QdReCLu3xSnV=r+DaL4FZB1aAqT1OmgrWA@mail.gmail.com> <CABKxMyPAGZeENzjw2EP6N5_Fb2FNFSdLKEv4kyn+RwqNcq+iLw@mail.gmail.com>
-In-Reply-To: <CABKxMyPAGZeENzjw2EP6N5_Fb2FNFSdLKEv4kyn+RwqNcq+iLw@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 15 Jun 2022 11:40:18 +0800
-Message-ID: <CACGkMEtz-1=3=+zUZvc+CX4LrufZZfZO=_zONo5GuAUX+BrpAQ@mail.gmail.com>
-Subject: Re: [PATCH] virtio_ring : keep used_wrap_counter in vq->last_used_idx
-To:     =?UTF-8?B?6buE5p2w?= <huangjie.albert@bytedance.com>
-Cc:     mst <mst@redhat.com>, yuanzhu@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 11/22] firmware: arm_scmi: Add SCMIv3.1 extended names
+ protocols support
+Content-Language: en-US
+To:     Cristian Marussi <cristian.marussi@arm.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
+        Jonathan.Cameron@Huawei.com, etienne.carriere@linaro.org,
+        vincent.guittot@linaro.org, souvik.chakravarty@arm.com
+References: <20220330150551.2573938-1-cristian.marussi@arm.com>
+ <20220330150551.2573938-12-cristian.marussi@arm.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220330150551.2573938-12-cristian.marussi@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 11:25 AM =E9=BB=84=E6=9D=B0 <huangjie.albert@byteda=
-nce.com> wrote:
->
-> Jason Wang <jasowang@redhat.com> =E4=BA=8E2022=E5=B9=B46=E6=9C=8814=E6=97=
-=A5=E5=91=A8=E4=BA=8C 16:21=E5=86=99=E9=81=93=EF=BC=9A
-> >
-> > On Tue, Jun 14, 2022 at 4:17 PM =E9=BB=84=E6=9D=B0 <huangjie.albert@byt=
-edance.com> wrote:
-> > >
-> > > Jason Wang <jasowang@redhat.com> =E4=BA=8E2022=E5=B9=B46=E6=9C=8814=
-=E6=97=A5=E5=91=A8=E4=BA=8C 15:45=E5=86=99=E9=81=93=EF=BC=9A
-> > > >
-> > > > On Tue, Jun 14, 2022 at 1:38 PM Albert Huang
-> > > > <huangjie.albert@bytedance.com> wrote:
-> > > > >
-> > > > > From: "huangjie.albert" <huangjie.albert@bytedance.com>
-> > > > >
-> > > > > the used_wrap_counter and the vq->last_used_idx may get
-> > > > > out of sync if they are separate assignment=EF=BC=8Cand interrupt
-> > > > > might use an incorrect value to check for the used index.
-> > > > >
-> > > > > for example:OOB access
-> > > > > ksoftirqd may consume the packet and it will call:
-> > > > > virtnet_poll
-> > > > >         -->virtnet_receive
-> > > > >                 -->virtqueue_get_buf_ctx
-> > > > >                         -->virtqueue_get_buf_ctx_packed
-> > > > > and in virtqueue_get_buf_ctx_packed:
-> > > > >
-> > > > > vq->last_used_idx +=3D vq->packed.desc_state[id].num;
-> > > > > if (unlikely(vq->last_used_idx >=3D vq->packed.vring.num)) {
-> > > > >          vq->last_used_idx -=3D vq->packed.vring.num;
-> > > > >          vq->packed.used_wrap_counter ^=3D 1;
-> > > > > }
-> > > > >
-> > > > > if at the same time, there comes a vring interrupt=EF=BC=8Cin vri=
-ng_interrupt:
-> > > > > we will call:
-> > > > > vring_interrupt
-> > > > >         -->more_used
-> > > > >                 -->more_used_packed
-> > > > >                         -->is_used_desc_packed
-> > > > > in is_used_desc_packed, the last_used_idx maybe >=3D vq->packed.v=
-ring.num.
-> > > > > so this could case a memory out of bounds bug.
-> > > > >
-> > > > > this patch is to keep the used_wrap_counter in vq->last_used_idx
-> > > > > so we can get the correct value to check for used index in interr=
-upt.
-> > > > >
-> > > > > Signed-off-by: huangjie.albert <huangjie.albert@bytedance.com>
-> > > > > ---
-> > > > >  drivers/virtio/virtio_ring.c     | 60 ++++++++++++++++++--------=
-------
-> > > > >  include/uapi/linux/virtio_ring.h |  6 ++++
-> > > > >  2 files changed, 40 insertions(+), 26 deletions(-)
-> > > > >
-> > > > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio=
-_ring.c
-> > > > > index 13a7348cedff..35c3750e89e1 100644
-> > > > > --- a/drivers/virtio/virtio_ring.c
-> > > > > +++ b/drivers/virtio/virtio_ring.c
-> > > > > @@ -111,7 +111,12 @@ struct vring_virtqueue {
-> > > > >         /* Number we've added since last sync. */
-> > > > >         unsigned int num_added;
-> > > > >
-> > > > > -       /* Last used index we've seen. */
-> > > > > +       /* Last used index  we've seen.
-> > > > > +        * for split ring, it just contains last used index
-> > > > > +        * for packed ring, it not only contains last used index,=
- but also
-> > > > > +        * used_wrap_counter, the VRING_PACKED_USED_INDEX_F_WRAP_=
-CTR is
-> > > > > +        * the bit shift in last_used_idx
-> > > > > +        */
-> > > > >         u16 last_used_idx;
-> > > > >
-> > > > >         /* Hint for event idx: already triggered no need to disab=
-le. */
-> > > > > @@ -154,9 +159,6 @@ struct vring_virtqueue {
-> > > > >                         /* Driver ring wrap counter. */
-> > > > >                         bool avail_wrap_counter;
-> > > > >
-> > > > > -                       /* Device ring wrap counter. */
-> > > > > -                       bool used_wrap_counter;
-> > > > > -
-> > > > >                         /* Avail used flags. */
-> > > > >                         u16 avail_used_flags;
-> > > > >
-> > > > > @@ -1397,6 +1399,9 @@ static inline bool is_used_desc_packed(cons=
-t struct vring_virtqueue *vq,
-> > > > >         bool avail, used;
-> > > > >         u16 flags;
-> > > > >
-> > > > > +       if (idx >=3D vq->packed.vring.num)
-> > > > > +               return false;
-> > > >
-> > > > I wonder if we can avoid this trick, more below.
-> > >
-> > > Yes, the idx pass to the is_used_desc_packed can never  >=3D
-> > > vq->packed.vring.num since we
-> > > tweak the math here :
-> > > >+       last_used +=3D vq->packed.desc_state[id].num;
-> > > >+       if (unlikely(last_used >=3D vq->packed.vring.num)) {
-> > > >+               last_used -=3D vq->packed.vring.num;
-> > > >+               used_wrap_counter ^=3D 1;
-> > > >         }
-> > > >+       last_used =3D (last_used | (used_wrap_counter << VRING_PACKE=
-D_DESC_F_USED));
-> > > >+       vq->last_used_idx =3D last_used;
-> > >
-> > > >
-> > > > > +
-> > > > >         flags =3D le16_to_cpu(vq->packed.vring.desc[idx].flags);
-> > > > >         avail =3D !!(flags & (1 << VRING_PACKED_DESC_F_AVAIL));
-> > > > >         used =3D !!(flags & (1 << VRING_PACKED_DESC_F_USED));
-> > > > > @@ -1406,8 +1411,12 @@ static inline bool is_used_desc_packed(con=
-st struct vring_virtqueue *vq,
-> > > > >
-> > > > >  static inline bool more_used_packed(const struct vring_virtqueue=
- *vq)
-> > > > >  {
-> > > > > -       return is_used_desc_packed(vq, vq->last_used_idx,
-> > > > > -                       vq->packed.used_wrap_counter);
-> > > > > +       u16 last_used;
-> > > > > +       bool used_wrap_counter;
-> > > > > +
-> > > > > +       last_used =3D vq->last_used_idx & ~(1 << VRING_PACKED_USE=
-D_INDEX_F_WRAP_CTR);
-> > > > > +       used_wrap_counter =3D !!((vq->last_used_idx) >> VRING_PAC=
-KED_USED_INDEX_F_WRAP_CTR);
-> > > > > +       return is_used_desc_packed(vq, last_used, used_wrap_count=
-er);
-> > > > >  }
-> > > > >
-> > > > >  static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
-> > > > > @@ -1416,6 +1425,7 @@ static void *virtqueue_get_buf_ctx_packed(s=
-truct virtqueue *_vq,
-> > > > >  {
-> > > > >         struct vring_virtqueue *vq =3D to_vvq(_vq);
-> > > > >         u16 last_used, id;
-> > > > > +       bool used_wrap_counter;
-> > > > >         void *ret;
-> > > > >
-> > > > >         START_USE(vq);
-> > > > > @@ -1434,7 +1444,8 @@ static void *virtqueue_get_buf_ctx_packed(s=
-truct virtqueue *_vq,
-> > > > >         /* Only get used elements after they have been exposed by=
- host. */
-> > > > >         virtio_rmb(vq->weak_barriers);
-> > > > >
-> > > > > -       last_used =3D vq->last_used_idx;
-> > > > > +       used_wrap_counter =3D !!((vq->last_used_idx >> VRING_PACK=
-ED_USED_INDEX_F_WRAP_CTR));
-> > > > > +       last_used =3D (vq->last_used_idx) & (~(1 << VRING_PACKED_=
-USED_INDEX_F_WRAP_CTR));
-> > > > >         id =3D le16_to_cpu(vq->packed.vring.desc[last_used].id);
-> > > > >         *len =3D le32_to_cpu(vq->packed.vring.desc[last_used].len=
-);
-> > > > >
-> > > > > @@ -1451,12 +1462,15 @@ static void *virtqueue_get_buf_ctx_packed=
-(struct virtqueue *_vq,
-> > > > >         ret =3D vq->packed.desc_state[id].data;
-> > > > >         detach_buf_packed(vq, id, ctx);
-> > > > >
-> > > > > -       vq->last_used_idx +=3D vq->packed.desc_state[id].num;
-> > > > > -       if (unlikely(vq->last_used_idx >=3D vq->packed.vring.num)=
-) {
-> > > > > -               vq->last_used_idx -=3D vq->packed.vring.num;
-> > > > > -               vq->packed.used_wrap_counter ^=3D 1;
-> > > > > +       last_used +=3D vq->packed.desc_state[id].num;
-> > > > > +       if (unlikely(last_used >=3D vq->packed.vring.num)) {
-> > > >
-> > > > Can we tweak the math here to avoid the out of bound result?
-> > >
-> > >    Yes, this can avoid the out of bound result. because of  We just
-> > > assign last_used_idx in the following code=EF=BC=9A
-> > >   vq->last_used_idx =3D last_used;
-> > >   and it is a 16bit/32bit operations,and are guaranteed to be atomic
-> > >
-> > > >
-> > > > > +               last_used -=3D vq->packed.vring.num;
-> > > > > +               used_wrap_counter ^=3D 1;
-> > > > >         }
-> > > > >
-> > > > > +       last_used =3D (last_used | (used_wrap_counter << VRING_PA=
-CKED_DESC_F_USED));
-> > > > > +       vq->last_used_idx =3D last_used;
-> > > > > +
-> > > > >         /*
-> > > > >          * If we expect an interrupt for the next entry, tell hos=
-t
-> > > > >          * by writing event index and flush out the write before
-> > > > > @@ -1465,9 +1479,7 @@ static void *virtqueue_get_buf_ctx_packed(s=
-truct virtqueue *_vq,
-> > > > >         if (vq->packed.event_flags_shadow =3D=3D VRING_PACKED_EVE=
-NT_FLAG_DESC)
-> > > > >                 virtio_store_mb(vq->weak_barriers,
-> > > > >                                 &vq->packed.vring.driver->off_wra=
-p,
-> > > > > -                               cpu_to_le16(vq->last_used_idx |
-> > > > > -                                       (vq->packed.used_wrap_cou=
-nter <<
-> > > > > -                                        VRING_PACKED_EVENT_F_WRA=
-P_CTR)));
-> > > > > +                               cpu_to_le16(vq->last_used_idx));
-> > > > >
-> > > > >         LAST_ADD_TIME_INVALID(vq);
-> > > > >
-> > > > > @@ -1499,9 +1511,7 @@ static unsigned int virtqueue_enable_cb_pre=
-pare_packed(struct virtqueue *_vq)
-> > > > >
-> > > > >         if (vq->event) {
-> > > > >                 vq->packed.vring.driver->off_wrap =3D
-> > > > > -                       cpu_to_le16(vq->last_used_idx |
-> > > > > -                               (vq->packed.used_wrap_counter <<
-> > > > > -                                VRING_PACKED_EVENT_F_WRAP_CTR));
-> > > > > +                       cpu_to_le16(vq->last_used_idx);
-> > > > >                 /*
-> > > > >                  * We need to update event offset and event wrap
-> > > > >                  * counter first before updating event flags.
-> > > > > @@ -1518,8 +1528,7 @@ static unsigned int virtqueue_enable_cb_pre=
-pare_packed(struct virtqueue *_vq)
-> > > > >         }
-> > > > >
-> > > > >         END_USE(vq);
-> > > > > -       return vq->last_used_idx | ((u16)vq->packed.used_wrap_cou=
-nter <<
-> > > > > -                       VRING_PACKED_EVENT_F_WRAP_CTR);
-> > > > > +       return vq->last_used_idx;
-> > > > >  }
-> > > > >
-> > > > >  static bool virtqueue_poll_packed(struct virtqueue *_vq, u16 off=
-_wrap)
-> > > > > @@ -1550,9 +1559,9 @@ static bool virtqueue_enable_cb_delayed_pac=
-ked(struct virtqueue *_vq)
-> > > > >         if (vq->event) {
-> > > > >                 /* TODO: tune this threshold */
-> > > > >                 bufs =3D (vq->packed.vring.num - vq->vq.num_free)=
- * 3 / 4;
-> > > > > -               wrap_counter =3D vq->packed.used_wrap_counter;
-> > > > > +               wrap_counter =3D !!(vq->last_used_idx >> VRING_PA=
-CKED_USED_INDEX_F_WRAP_CTR);
-> > > > >
-> > > > > -               used_idx =3D vq->last_used_idx + bufs;
-> > > > > +               used_idx =3D (vq->last_used_idx & ~(1 << VRING_PA=
-CKED_USED_INDEX_F_WRAP_CTR)) + bufs;
-> > > > >                 if (used_idx >=3D vq->packed.vring.num) {
-> > > > >                         used_idx -=3D vq->packed.vring.num;
-> > > > >                         wrap_counter ^=3D 1;
-> > > > > @@ -1582,9 +1591,9 @@ static bool virtqueue_enable_cb_delayed_pac=
-ked(struct virtqueue *_vq)
-> > > > >          */
-> > > > >         virtio_mb(vq->weak_barriers);
-> > > > >
-> > > > > -       if (is_used_desc_packed(vq,
-> > > > > -                               vq->last_used_idx,
-> > > > > -                               vq->packed.used_wrap_counter)) {
-> > > > > +       wrap_counter =3D !!(vq->last_used_idx >> VRING_PACKED_USE=
-D_INDEX_F_WRAP_CTR);
-> > > > > +       used_idx =3D (vq->last_used_idx & ~(1 << VRING_PACKED_USE=
-D_INDEX_F_WRAP_CTR));
-> > > > > +       if (is_used_desc_packed(vq, used_idx, wrap_counter)) {
-> > > > >                 END_USE(vq);
-> > > > >                 return false;
-> > > > >         }
-> > > > > @@ -1689,7 +1698,7 @@ static struct virtqueue *vring_create_virtq=
-ueue_packed(
-> > > > >         vq->notify =3D notify;
-> > > > >         vq->weak_barriers =3D weak_barriers;
-> > > > >         vq->broken =3D true;
-> > > > > -       vq->last_used_idx =3D 0;
-> > > > > +       vq->last_used_idx =3D 0 | (1 << VRING_PACKED_USED_INDEX_F=
-_WRAP_CTR);
-> > > > >         vq->event_triggered =3D false;
-> > > > >         vq->num_added =3D 0;
-> > > > >         vq->packed_ring =3D true;
-> > > > > @@ -1720,7 +1729,6 @@ static struct virtqueue *vring_create_virtq=
-ueue_packed(
-> > > > >
-> > > > >         vq->packed.next_avail_idx =3D 0;
-> > > > >         vq->packed.avail_wrap_counter =3D 1;
-> > > > > -       vq->packed.used_wrap_counter =3D 1;
-> > > > >         vq->packed.event_flags_shadow =3D 0;
-> > > > >         vq->packed.avail_used_flags =3D 1 << VRING_PACKED_DESC_F_=
-AVAIL;
-> > > > >
-> > > > > diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linu=
-x/virtio_ring.h
-> > > > > index 476d3e5c0fe7..96bcc4d52fce 100644
-> > > > > --- a/include/uapi/linux/virtio_ring.h
-> > > > > +++ b/include/uapi/linux/virtio_ring.h
-> > > > > @@ -77,6 +77,12 @@
-> > > > >   */
-> > > > >  #define VRING_PACKED_EVENT_F_WRAP_CTR  15
-> > > > >
-> > > > > +
-> > > > > +/*
-> > > > > + * used wrap Counter bit shift in vq->last_used_idx for packed r=
-ing
-> > > > > + */
-> > > > > +#define VRING_PACKED_USED_INDEX_F_WRAP_CTR  15
-> > > >
-> > > > Let's simply reuse VRING_PACKED_EVENT_F_WRAP_CTR ?
-> > > >
-> > > > Thanks
-> > >
-> > > Although the two values are the same, I see the meanings are differen=
-t,
-> > > so I redefine one. Is it possible to rename
-> > > VRING_PACKED_EVENT_F_WRAP_CTR to VRING_PACKED_F_WRAP_CTR?
-> > >
-> > > Jason, what is your take?
-> >
-> > That looks even worse. So I'm fine to define a new macro as 15.
-> >
-> > Thanks
-> >
-> > >
-> > > >
-> > > > > +
-> > > > >  /* We support indirect buffer descriptors */
-> > > > >  #define VIRTIO_RING_F_INDIRECT_DESC    28
-> > > > >
-> > > > > --
-> > > > > 2.31.1
-> > > > >
-> > > >
-> > >
-> >
-> hello,  Jason
->
-> Any other suggestions?
 
-Looking at the current code again, it seems we've already used
-VRING_PACKED_EVENT_F_WRAP_CTR for packing information. see
-virtqueue_enable_cb_prepare_packed():
 
-        return vq->last_used_idx | ((u16)vq->packed.used_wrap_counter <<
-        VRING_PACKED_EVENT_F_WRAP_CTR);
+On 3/30/2022 5:05 PM, Cristian Marussi wrote:
+> Using the common protocol helper implementation add support for all new
+> SCMIv3.1 extended names commands related to all protocols with the
+> exception of SENSOR_AXIS_GET_NAME.
+> 
+> Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 
-So I still prefer to simply use VRING_PACKED_EVENT_F_WRAP_CTR.
+This causes the following splat on a platform where regulators fail to 
+initialize:
 
-Others should be fine.
-
-Thanks
-
->  I will do some stability and functional
-> testing before remaking a patch for patch v2.
->
-> Thanks
->
-
+[    0.603737] ------------[ cut here ]------------
+[    0.603752] WARNING: CPU: 1 PID: 1 at mm/page_alloc.c:5402 
+__alloc_pages+0x6c/0x184
+[    0.603797] Modules linked in:
+[    0.603809] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 
+5.19.0-rc1-g44dbdf3bb3f4 #42
+[    0.603818] Hardware name: BCX972160SV (DT)
+[    0.603825] pstate: 20000005 (nzCv daif -PAN -UAO -TCO -DIT -SSBS 
+BTYPE=--)
+[    0.603834] pc : __alloc_pages+0x6c/0x184
+[    0.603841] lr : kmalloc_order+0x40/0x88
+[    0.603851] sp : ffffffc00a40b850
+[    0.603856] x29: ffffffc00a40b850 x28: 0000000000000000 x27: 
+ffffffc008d60404
+[    0.603867] x26: ffffff80c1e3e1a8 x25: ffffffc00877bd78 x24: 
+0000000000000058
+[    0.603878] x23: ffffffc0081921a8 x22: ffffffc008cb04b0 x21: 
+0000000000000000
+[    0.603889] x20: 000000000000000b x19: 000000000000000b x18: 
+0000000000000000
+[    0.603900] x17: 0000000000000001 x16: 0000000100000000 x15: 
+000000000000000a
+[    0.603911] x14: 0000000000000000 x13: ffffff80c1e3c20a x12: 
+ffffffffffffffff
+[    0.603922] x11: 0000000000000020 x10: 0000000000000880 x9 : 
+ffffffc008159dac
+[    0.603932] x8 : ffffff80c02708e0 x7 : 0000000000000004 x6 : 
+000000000041a880
+[    0.603943] x5 : 0000000000000001 x4 : ffffff8000000000 x3 : 
+0000000000000000
+[    0.603954] x2 : 0000000000000000 x1 : 0000000000000001 x0 : 
+ffffffc00a32d3f2
+[    0.603965] Call trace:
+[    0.603970]  __alloc_pages+0x6c/0x184
+[    0.603977]  kmalloc_order+0x40/0x88
+[    0.603984]  kmalloc_order_trace+0x30/0xd0
+[    0.603992]  __kmalloc_track_caller+0x64/0x19c
+[    0.603999]  devm_kmalloc+0x5c/0xe0
+[    0.604009]  scmi_voltage_protocol_init+0x14c/0x2f4
+[    0.604020]  scmi_get_protocol_instance+0x128/0x1f4
+[    0.604030]  scmi_devm_protocol_get+0x64/0xc8
+[    0.604037]  scmi_regulator_probe+0x5c/0x42c
+[    0.604049]  scmi_dev_probe+0x28/0x38
+[    0.604056]  really_probe+0x1b8/0x380
+[    0.604065]  __driver_probe_device+0x14c/0x164
+[    0.604073]  driver_probe_device+0x48/0xe0
+[    0.604080]  __driver_attach+0x160/0x170
+[    0.604087]  bus_for_each_dev+0x78/0xb8
+[    0.604095]  driver_attach+0x28/0x30
+[    0.604101]  bus_add_driver+0xf4/0x208
+[    0.604108]  driver_register+0xb4/0xf0
+[    0.604116]  scmi_driver_register+0x5c/0xa4
+[    0.604123]  scmi_drv_init+0x28/0x30
+[    0.604132]  do_one_initcall+0x80/0x1a4
+[    0.604141]  kernel_init_freeable+0x220/0x23c
+[    0.604149]  kernel_init+0x28/0x128
+[    0.604158]  ret_from_fork+0x10/0x20
+[    0.604166] ---[ end trace 0000000000000000 ]---
+[    0.604194] scmi-regulator: probe of scmi_dev.2 failed with error -12
+[    0.604792] arm-scmi brcm_scmi@0: Failed. SCMI protocol 22 not active.
+-- 
+Florian
