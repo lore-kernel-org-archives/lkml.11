@@ -2,106 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EB8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F673C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350479AbiFOWjQ (ORCPT
+        id S1347927AbiFOWnF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 18:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56170 "EHLO
+        Wed, 15 Jun 2022 18:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347129AbiFOWjO (ORCPT
+        with ESMTP id S237675AbiFOWnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 18:39:14 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D095622C
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:39:14 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso80372pjk.0
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:39:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=pQRp5BbVCSaGqSGvHgou5E1UOEOB+Lu4226kkcHBKjQ=;
-        b=SmO8RUCdAKrU8HxVNrjzigPN5g3nj1qi7AgFeu+aH5ylRMy+iVMsJbyYEj0gifQdr7
-         ivlTb3vkoiOa3FQSUBGPicwQozc2l2w8X7bfJPldjl44UiSxCA7lOJm9cYrkURoXcPRj
-         xT9G37IpdFV559hJaYFxj4oWkmItOR4YetU6JNbFJMDIGITjj1oGVkk2C4Icj21Db7LY
-         OUu1xoayMARu1qTH4Uq+r3kRuD9bNOHKlRd52frz5TUPJsSmLSz5DluyJHf2buHQDMzy
-         xcioe9gghR3xnWNJN7r3JxVXiAgzGlL+QWyIMNMu7yARtkB7gt2ZKk6/eD0M2MNOk79C
-         mM7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=pQRp5BbVCSaGqSGvHgou5E1UOEOB+Lu4226kkcHBKjQ=;
-        b=poXYk6DrwVLguFvBq+sBftzyoPZQyKZHcRkJ6Q0EdY2Nfxnur5Wgy7acdL52wt0XQX
-         bPES+vimMFldJ5Ut+GkXvUSY1JiInTYo4TMBKM7gNxtZwbmXZ8KaH+VMkYxMUIXu1vcr
-         06kEeU5j5RkEXudFqri0XnhQ5byUZqeapAkGvzQmeRAIozeyZ3xWHTJH09CVW78gXNTw
-         beOd61aMDpbKwki14tFXwkr4lXmEaugbQIHntsiiR9dUmB8IgSGXTEpeOsan8lpeEJR5
-         6n0BxIwpyHsWTD2BnAU2bUvOaxEqLfZmLL0a1dg+DdWwQs5Zxi2ql7tcLLr/4amhN8F0
-         /3SA==
-X-Gm-Message-State: AJIora8qlfFZKDTZFecRFeoIk2m3tMKsA0hoYe9QcyV3mm0GKUPL2qSe
-        ZI0BqwMX2bLK6r04xnf9CksiiA==
-X-Google-Smtp-Source: AGRyM1sUtBxy5UXGXtiSfpqIU7Oj2qBS1pFqD+1ojgUDG8KQX5Eejr5QcaW/by/2AEa9YdVboyKTEA==
-X-Received: by 2002:a17:902:c7d1:b0:163:bb03:d5f0 with SMTP id r17-20020a170902c7d100b00163bb03d5f0mr1717420pla.167.1655332753533;
-        Wed, 15 Jun 2022 15:39:13 -0700 (PDT)
-Received: from google.com ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id bj24-20020a056a00319800b0050dc76281ddsm128207pfb.183.2022.06.15.15.39.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 15:39:13 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 23:39:11 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>
-Subject: Re: [PATCH v2 13/16] mfd: core: Use acpi_dev_for_each_child()
-Message-ID: <Yqpfj5sa3x/gmZmM@google.com>
-References: <1843211.tdWV9SEqCh@kreacher>
- <2653857.mvXUDI8C0e@kreacher>
- <2726954.BEx9A2HvPv@kreacher>
+        Wed, 15 Jun 2022 18:43:04 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7DC3B3E3
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:43:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655332983; x=1686868983;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=GOkKIF1zj4v3HvWCe1Wl62pksKaDezBETS9z2NLNPsw=;
+  b=dpSO5bwBCez9tzCVvujrP//3OAFBjTUB7739GI0erLcboqdmjLlnwmBD
+   +0o4+XUjAdCtpv1WtxddWv9erwP9MI+IerP/UAhYAdFlMQ4ls4iSGDqgz
+   Zgskd/s8BXRF13MDxenibpN1tmDfVDVkh3CuekCI2MPOhRybDjKicHcc0
+   AV3IScUZDcSXrCLMjsGBzeZifJTr35aWZs0KJeCt+ooq4qxdeeJeKWEyK
+   uabsyn3UpzGm8N3g/3XGi8YHiKv0316j4XwPKJt8c0i99D4UfBHur8ex4
+   u7mDni0GLXgsD89BTTeb/6Udn/9Qx/HpUoS2q+kKohBPT2Vxt+T3VJBLO
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="304554766"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="304554766"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 15:43:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="618667193"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 15 Jun 2022 15:42:59 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id BA860109; Thu, 16 Jun 2022 01:43:03 +0300 (EEST)
+Date:   Thu, 16 Jun 2022 01:43:03 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org, ak@linux.intel.com,
+        dan.j.williams@intel.com, david@redhat.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, seanjc@google.com,
+        thomas.lendacky@amd.com, x86@kernel.org
+Subject: Re: [PATCHv4 3/3] x86/tdx: Handle load_unaligned_zeropad()
+ page-cross to a shared page
+Message-ID: <20220615224303.el4qtowheu2rgpdn@black.fi.intel.com>
+References: <20220614120135.14812-1-kirill.shutemov@linux.intel.com>
+ <20220614120135.14812-4-kirill.shutemov@linux.intel.com>
+ <051fd468-11e6-308b-66c8-4de16ff80deb@intel.com>
+ <20220615171042.oeumb3vs3ttu4rvd@black.fi.intel.com>
+ <1d190555-2bb1-e483-2405-e28ddabead07@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2726954.BEx9A2HvPv@kreacher>
+In-Reply-To: <1d190555-2bb1-e483-2405-e28ddabead07@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 13 Jun 2022, Rafael J. Wysocki wrote:
+On Wed, Jun 15, 2022 at 02:55:13PM -0700, Dave Hansen wrote:
+> On 6/15/22 10:10, Kirill A. Shutemov wrote:
+> >> I thought this whole exercise was kicked off by hitting this in testing.
+> >>  Am I remembering this wrong?
+> >>
+> >>> https://lore.kernel.org/all/20220517153444.11195-10-kirill.shutemov@linux.intel.com/
+> >> Says:
+> >>
+> >>> This is an actual, real-world problem which was discovered during TDX
+> >>> testing.
+> >> Or were you considering this a different problem somehow?
+> > They are different.
+> > 
+> > The patch by the link addresses issue of load_unaligned_zeropad() stepping
+> > onto unaccepted memory. This was triggered in practice.
+> 
+> OK, so we've got two problems both triggered by
+> load_unaligned_zeropad(), but where the fixes are different.  We
+> actually hit the "unaccepted memory one" in testing, but that made us
+> think about other problems in the area and that's where this one came up.
 
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> 
-> Instead of walking the list of children of an ACPI device directly,
-> use acpi_dev_for_each_child() to carry out an action for all of
-> the given ACPI device's children.
-> 
-> This will help to eliminate the children list head from struct
-> acpi_device as it is redundant and it is used in questionable ways
-> in some places (in particular, locking is needed for walking the
-> list pointed to it safely, but it is often missing).
-> 
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
-> 
-> v1 -> v2:
->    * Add R-by from Andy.
-> 
-> ---
->  drivers/mfd/mfd-core.c |   31 ++++++++++++++++++++++++-------
->  1 file changed, 24 insertions(+), 7 deletions(-)
+I will reword it like this:
 
-Applied, thanks.
+	The issue was discovered by analysis after triggering other issue with
+	load_unaligned_zeropad().
+
+Works for you?
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+ Kirill A. Shutemov
