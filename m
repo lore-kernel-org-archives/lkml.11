@@ -2,70 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7072FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:05:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C9FCCA481
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230240AbiFOJFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
+        id S238908AbiFOJGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 05:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233761AbiFOJFr (ORCPT
+        with ESMTP id S233761AbiFOJGo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:05:47 -0400
-Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DEF1C3A734
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:05:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=m3QcT
-        W/lZeAJnaksoHMUlocc+Y9Uw/FS+TMacmhO/3E=; b=UiNo61SD8RKmWL2GiBMrk
-        ZIXdsDgyhjkCuktOBDp8bb3E+dG1aavOuZU+P1MuKZ9aRMPiSPR95244O1tUz+Lu
-        p6RTNviBzKinR0GF8fxlmq+TjPd8QMdZDykMlb31njKvvvPSk0VpFU0L0HF4gaSx
-        26w5PG5TN+CrYkdiHq+dSU=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp8 (Coremail) with SMTP id NORpCgA3JGnPoKli0ReSFg--.42622S2;
-        Wed, 15 Jun 2022 17:05:19 +0800 (CST)
-From:   heliang <windhl@126.com>
-To:     linus.walleij@linaro.org, linux@armlinux.org.uk
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        windhl@126.com
-Subject: [PATCH] arch: arm: mach-versatile: Add missing of_node_put in integrator.c
-Date:   Wed, 15 Jun 2022 17:05:17 +0800
-Message-Id: <20220615090517.3961621-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 05:06:44 -0400
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA563A1BA;
+        Wed, 15 Jun 2022 02:06:43 -0700 (PDT)
+Received: by mail-qk1-f178.google.com with SMTP id d128so8259579qkg.8;
+        Wed, 15 Jun 2022 02:06:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=O9DSawQVbU2xPshFF9LAgHn6cTfBWg4lJqDboKl63Hg=;
+        b=oxqXk1GPotv4YU4ONPmbtUoj3arBsFCU6pwpeZOcM4t43ARLZhv+hyPkZeJApQCjlh
+         vkxlG3GQj/a/WhWPMf92sPpMxin5CtIZ2sV5M0T7TBw5kakL8qNZlEIVurzkmyRDsboi
+         9JCqMSy6yEMxq3MuuPwqgwNDdjzTm6WAKJYwGHrXJWzhhR2tPfRSBAMOWWvjYYj1O50q
+         NKestzrZpfv+O8Irfi1a+FJarpVMwtursyFBffZbwNrhDQnMnPplcFpzeLH58W5eiTSL
+         LHqneS4awccgqn9eyiQGK2ETvrNpAx5QfQdwOLj0TiRWswbb+TDNLY556Vm8Z3iA7bCJ
+         O3jw==
+X-Gm-Message-State: AOAM531iNRLFNoaT2syP8mSHX7OgpT5kSXPDPRs37fE9Y8YglVKyRqp0
+        M2WTKek+1jmfrtn67KI52/u86xi/VJ0uMA==
+X-Google-Smtp-Source: ABdhPJzARmoMsvzNGtBILu67fu7FgK8+hvxemVQRuhqjVg/UAEqojxgNKy0AkUS1zhV/ikrNHtb1yQ==
+X-Received: by 2002:a05:620a:1324:b0:6a6:bc8e:e3cb with SMTP id p4-20020a05620a132400b006a6bc8ee3cbmr7500121qkj.130.1655284002612;
+        Wed, 15 Jun 2022 02:06:42 -0700 (PDT)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id s22-20020a05620a0bd600b006a73ad95d40sm11984019qki.55.2022.06.15.02.06.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 02:06:42 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-30fa61b1a83so55137797b3.0;
+        Wed, 15 Jun 2022 02:06:41 -0700 (PDT)
+X-Received: by 2002:a81:6c46:0:b0:315:bb1:6a21 with SMTP id
+ h67-20020a816c46000000b003150bb16a21mr5651903ywc.283.1655284001657; Wed, 15
+ Jun 2022 02:06:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NORpCgA3JGnPoKli0ReSFg--.42622S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7JFyUCr15GrW3ZryfKr47XFb_yoWxtwc_t3
-        Z2g3ykJrn5Ja1IvryDCr4akry7Zwn7GrsYgry8Ar17G34aqr17Cr4vqryIk348uwnrKrW7
-        X397Ar1av3Wa9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_znQ7UUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi7Q8hF1pEAM8zhAAAsy
+References: <20220613131033.10053-1-wsa+renesas@sang-engineering.com> <20220613131033.10053-2-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20220613131033.10053-2-wsa+renesas@sang-engineering.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 15 Jun 2022 11:06:30 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX-56GZmZJ-JvkFvZ6NsozsamtoKURPzsS-3+AYtZBhFQ@mail.gmail.com>
+Message-ID: <CAMuHMdX-56GZmZJ-JvkFvZ6NsozsamtoKURPzsS-3+AYtZBhFQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] arm64: dts: renesas: spider-cpu: Switch from SCIF3 to HSCIF0
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In cm_init(), of_find_matching_node() will return a node pointer with
-refcount incremented. We should use of_node_put() when the pointer is
-not used anymore.
+Hi Wolfram,
 
-Signed-off-by: heliang <windhl@126.com>
----
- arch/arm/mach-versatile/integrator.c | 1 +
- 1 file changed, 1 insertion(+)
+Thanks for your patch!
 
-diff --git a/arch/arm/mach-versatile/integrator.c b/arch/arm/mach-versatile/integrator.c
-index fdf9c4db08a7..fba19357171a 100644
---- a/arch/arm/mach-versatile/integrator.c
-+++ b/arch/arm/mach-versatile/integrator.c
-@@ -76,6 +76,7 @@ void cm_init(void)
- 		return;
- 	}
- 	cm_base = of_iomap(cm, 0);
-+	of_node_put(cm);
- 	if (!cm_base) {
- 		pr_crit("could not remap core module\n");
- 		return;
--- 
-2.25.1
+On Mon, Jun 13, 2022 at 3:10 PM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> Every loader before Linux utilizes HSCIF0 with a speed of 1843200bps.
+> Make Linux behave the same.
 
+Is that true for all boards? Was there a firmware flag day?
+I.e. the U-Boot on the Spider in Magnus' lab has "baudrate=115200"
+in its environment, while I can read the output from ICUMXA Loader
+to U-Boot, and Linux just fine.
+
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
