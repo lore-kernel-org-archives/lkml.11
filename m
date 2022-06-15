@@ -2,70 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B2EBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:25:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C169C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245500AbiFOJZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:25:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38020 "EHLO
+        id S1344118AbiFOJ0x (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 05:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241256AbiFOJZg (ORCPT
+        with ESMTP id S238242AbiFOJ0v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:25:36 -0400
-Received: from mail-m964.mail.126.com (mail-m964.mail.126.com [123.126.96.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B98E315A2D
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:25:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=HZLPZ
-        kq0CUwiq/ms7aqKgr3One1GE6Q1hovUYq8crzw=; b=IqQGItwxR76BqII9u8szo
-        LTlcLA8bPW6ShusoL6Zr+n2UGpk/ruqUeiq4ptsjsIm+A8g7gJMog2T7UAPamOla
-        ozognHgogHpvLl3+GSitQNHlsRxkbZLazXqld7ULK55PjaneDBdiLQ1aFeKgy+dX
-        0LRUm+uwJ6BFnTdkxf+GOk=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp9 (Coremail) with SMTP id NeRpCgD3moB+palikCIfEw--.43577S2;
-        Wed, 15 Jun 2022 17:25:20 +0800 (CST)
-From:   heliang <windhl@126.com>
-To:     linus.walleij@linaro.org, linux@armlinux.org.uk
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        windhl@126.com
-Subject: [PATCH] arch: arm: mach-versatile: Add missing of_node_put()
-Date:   Wed, 15 Jun 2022 17:25:17 +0800
-Message-Id: <20220615092517.3962075-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 05:26:51 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00BD215828;
+        Wed, 15 Jun 2022 02:26:49 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id z9so5962932wmf.3;
+        Wed, 15 Jun 2022 02:26:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UWQhQKyh7LCFwndabc/wa7U3fjetUDKPUrL6qA9/OOQ=;
+        b=bQdgh6MXU2h9dubnJPuRMAEdgWGuEtu84HbWVqZH7J1BE6/Jo7SD5kY3kaL10aGT1z
+         +2eLyASFKlAribFeMES1yGj1E4xX3B/eMt0vQSkoerPofZyl4utHmCavgjk4Dwc8rCA0
+         QXK1LK1/wDH+rs+p3t5320XqKXVc1BjgIpA8qeRUzSusFYip3igcgpKe+MHwuJctYXyb
+         YI5wxeze3B5dSXglaU46PU6MZpThsF6B2XhGXP3fugUL8uMWPwR/LE1jNXdW8quQ9t0F
+         sNfDnsWLb4Bt8BMV8BPoPzt1PV4oZSqSnWqAYXlDcksYbEdv55OYMQK/mW5fcZozvbDr
+         03eQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UWQhQKyh7LCFwndabc/wa7U3fjetUDKPUrL6qA9/OOQ=;
+        b=EsIzqvFn0NlMbwbTfgUeKBJeWehmxyLeeSo9CVGKoQZQCWKRu9B/ZgRVyyNHig/KBG
+         Snm5Dry40A0QgLxQHtyIhVzVy9tvSMTM8eXEDlbuB2c4j41sf7AVzD31kAHXroc59lpu
+         Ysx3U0sEZNVj7vVAsBnvMGTqerMGPfmeLcy7bwUl3byLUyywClzPnNq5WO6SMF9kXray
+         qo0rHUds/f5lCJ+Gptjlh6z3zQLqnrPkyADmNuR02nTHxM/9gNPatW16z4xyDqLzmpb2
+         OXk6ERIV9iQoll2oVs1hG335f3gI3Icwgzp+193gzk0PVAAjB2O3LPokeTGux+nAPiii
+         ywVg==
+X-Gm-Message-State: AOAM532OWPWgyZKkaG6jqTJL8BnjB2IZvf4IAKIS/4pqNFRLcQ4dpdbA
+        +SEuu6p36iOpN2PvlIE16/A=
+X-Google-Smtp-Source: ABdhPJzosdotAY4JQkY3kVQH6a1ROLp7+In78qTkc3vRbVzm21IULNVo7ozzV40+UmQTKNE6hM6bIg==
+X-Received: by 2002:a7b:c4d4:0:b0:39c:5bb7:2210 with SMTP id g20-20020a7bc4d4000000b0039c5bb72210mr8756289wmk.99.1655285208475;
+        Wed, 15 Jun 2022 02:26:48 -0700 (PDT)
+Received: from debian ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id bh4-20020a05600005c400b002103bd9c5acsm14775782wrb.105.2022.06.15.02.26.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 02:26:48 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 10:26:46 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 00/16] 4.19.248-rc1 review
+Message-ID: <Yqml1qX4/LcNV1o2@debian>
+References: <20220614183720.928818645@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NeRpCgD3moB+palikCIfEw--.43577S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWruw4DuFWUKFW5XrWfJr4fZrb_yoW3ZFbEqF
-        1xX3y7Ww1rJ392qrZ5uF43GrZrAw18Crn8Gry8AFy3C3W5XFnrCrsYq3saq3yFvrWfKrW3
-        Xr4xXr4Yka17ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_znQ7UUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi7QAhF1pEAM9VfQAAsi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614183720.928818645@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In realview_smp_prepare_cpus(), the second of_find_matching_node()
-has no corresponding of_node_put() when the node pointer is not
-used anymore.
+Hi Greg,
 
-Signed-off-by: heliang <windhl@126.com>
----
- arch/arm/mach-versatile/platsmp-realview.c | 1 +
- 1 file changed, 1 insertion(+)
+On Tue, Jun 14, 2022 at 08:40:01PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.19.248 release.
+> There are 16 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+> Anything received after that time might be too late.
 
-diff --git a/arch/arm/mach-versatile/platsmp-realview.c b/arch/arm/mach-versatile/platsmp-realview.c
-index 5d363385c801..059d796b26bc 100644
---- a/arch/arm/mach-versatile/platsmp-realview.c
-+++ b/arch/arm/mach-versatile/platsmp-realview.c
-@@ -66,6 +66,7 @@ static void __init realview_smp_prepare_cpus(unsigned int max_cpus)
- 		return;
- 	}
- 	map = syscon_node_to_regmap(np);
-+	of_node_put(np);
- 	if (IS_ERR(map)) {
- 		pr_err("PLATSMP: No syscon regmap\n");
- 		return;
--- 
-2.25.1
+Build test (gcc version 11.3.1 20220612):
+mips: 63 configs -> no  failure
+arm: 115 configs -> no failure
+arm64: 2 configs -> no failure
+x86_64: 4 configs -> no failure
+alpha allmodconfig -> no failure
+s390 allmodconfig -> no failure
+xtensa allmodconfig -> no failure
 
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+
+[1]. https://openqa.qa.codethink.co.uk/tests/1338
+
+
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
