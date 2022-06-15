@@ -2,116 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D32CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0CD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:10:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358398AbiFOSIt (ORCPT
+        id S1345638AbiFOSKe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50748 "EHLO
+        Wed, 15 Jun 2022 14:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357824AbiFOSIZ (ORCPT
+        with ESMTP id S231737AbiFOSKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:08:25 -0400
-X-Greylist: delayed 392 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Jun 2022 11:08:20 PDT
-Received: from rere.qmqm.pl (rere.qmqm.pl [91.227.64.183])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41C22CDDF;
-        Wed, 15 Jun 2022 11:08:20 -0700 (PDT)
-Received: from remote.user (localhost [127.0.0.1])
-        by rere.qmqm.pl (Postfix) with ESMTPSA id 4LNY612pVczB6;
-        Wed, 15 Jun 2022 20:01:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
-        t=1655316105; bh=Qlj8vZLxK6jMlUOlp+k6Y3l54kWTL/nElyfzEw7brv8=;
-        h=Date:From:To:Subject:References:In-Reply-To:From;
-        b=VvFyJEA/pCKMQ4hK9Fktm+97n7S48+Diqj/v6IpTq00nWkdEOw6mfdyKnlecsJD6j
-         jYzFD8s3vVEUihEuGVsw4fqrNGF9KaYemSmRRLFK2ztQsUM6q0IRiO6se0QeBLPYBJ
-         q4c01+aztUsDRFBUa/RBMZxf0mOPddVbIix9X3E7iqa/oO7s1DV2s9Bg5Qb0jFsDUU
-         dqJfRfnkrPczbTdavLgGS+EV2XIQGaEO7AH459cels2qnfovIdtPVWKDCupYDiC6uu
-         gCx/xZvAiIDjL58PNXgWAoG2zHj+vbuRRlRrXcntbT4s1L1rlIsdM9+SlE5VstLMuW
-         c2qkRaYfcSQNA==
-X-Virus-Status: Clean
-X-Virus-Scanned: clamav-milter 0.103.6 at mail
-Date:   Wed, 15 Jun 2022 20:01:41 +0200
-From:   =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
-To:     Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] i2c: core: fix potential use-after-free on adapter
- removal
-Message-ID: <YqoehVjd5qgEYSen@qmqm.qmqm.pl>
-References: <a9dc272e4e06db661125b7b4c330821b532afc4d.1642209079.git.mirq-linux@rere.qmqm.pl>
- <YqjlZuFGl0dAUZyd@shikoro>
+        Wed, 15 Jun 2022 14:10:31 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85A84B403;
+        Wed, 15 Jun 2022 11:10:30 -0700 (PDT)
+Received: from [127.0.0.1] (nyx.walle.cc [158.255.213.36])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 73E5B22249;
+        Wed, 15 Jun 2022 20:10:19 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1655316627;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TS3jYFS6YTAvU3pgkMvxRJI/YD6CxfyrTdrG5rg9tDU=;
+        b=OlchZqjIeXpxF5LKa+OEpi2uZeC6CUN/XH0rxxwQ/x/J6nLbOgm5MbIm2Z9R9PJXpyqyWh
+        ITd9PIHV0TBR+EcsaFzL0mjm/aMwRtzQ1p1ctjGfEYFVgvSbeoDaUZi2Gr+pYPueUu74xN
+        GK5/IzzwgjecRTSUsCYOo2rolRVGf+4=
+Date:   Wed, 15 Jun 2022 20:10:13 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "Oleksandr Ocheretnyi -X (oocheret - GLOBALLOGIC INC at Cisco)" 
+        <oocheret@cisco.com>
+CC:     "tudor.ambarus@microchip.com" <tudor.ambarus@microchip.com>,
+        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
+        "p.yadav@ti.com" <p.yadav@ti.com>,
+        "richard@nod.at" <richard@nod.at>,
+        "vigneshr@ti.com" <vigneshr@ti.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
+        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
+        "mauro.lima@eclypsium.com" <mauro.lima@eclypsium.com>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>
+Subject: Re: [PATCH] mtd: spi-nor: handle unsupported FSR opcodes properly
+User-Agent: K-9 Mail for Android
+In-Reply-To: <YqmrIsOEsFoKTwEK@lahna>
+References: <YmZUCIE/ND82BlNh@lahna> <20220610191548.3626218-1-oocheret@cisco.com> <YqbWt9f3of+7Z76e@lahna> <BYAPR11MB27570F2863F7BCDFE629B3DFCDAA9@BYAPR11MB2757.namprd11.prod.outlook.com> <YqmrIsOEsFoKTwEK@lahna>
+Message-ID: <6A852B9E-D84C-4F80-9C17-62BFBB98CC8A@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YqjlZuFGl0dAUZyd@shikoro>
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 09:45:42PM +0200, Wolfram Sang wrote:
-> Hi Micha³,
-> 
-> I finally had a look at your patch...
-> 
-> > put_device(&adap->dev) might free the memory pointed to by `adap`,
-> > so we shouldn't read adap->owner after that.
-> > 
-> > Fix by saving module pointer before calling put_device().
-> 
-> ... and found a different approach for this problem from 2019:
-> 
-> http://patchwork.ozlabs.org/project/linux-i2c/patch/1577439272-10362-1-git-send-email-vulab@iscas.ac.cn/
-> 
-> I think this is also proper. I found other subsystems in the kernel
-> first putting the module, then the device. Do you see problems with the
-> above patch?
-> 
-> Thanks for looking into the issue!
+Am 15=2E Juni 2022 11:49:22 OEZ schrieb Mika Westerberg <mika=2Ewesterberg@=
+linux=2Eintel=2Ecom>:
+>Hi,
+>
+>On Tue, Jun 14, 2022 at 05:56:54PM +0000, Oleksandr Ocheretnyi -X (oocher=
+et - GLOBALLOGIC INC at Cisco) wrote:
+>>    Hello Mika,
+>>=20
+>>    in my case (I work with memory chip n25q128a13 for recent kernels) I=
+'m
+>>    getting return value -ENOTSUPP from spi_mem_exec_op() call in the
+>>    micron_st_nor_read_fsr() method
+>>    [[1]https://elixir=2Ebootlin=2Ecom/linux/v5=2E19-rc2/source/drivers/=
+spi/spi-m
+>>    em=2Ec#L326]=2E So I decided to provide the same errorcode to
+>>    intel_spi_hw_cycle() method because older kernel versions throw the
+>>    error there=2E It is fine to use -EOPNOTSUPP return value instead=2E
+>>=20
+>>    I suspect we need to cover both cases to check -ENOTSUPP as well as
+>>    -EOPNOTSUPP to let the driver work properly=2E
+>>=20
+>>    if (ret =3D=3D -ENOTSUPP || ret =3D=3D -EOPNOTSUPP)
+>
+>I think we should follow the same in the Intel driver and return
+>-ENOTSUPP too=2E
 
-Hi!
+AFAIK ENOTSUPP is for nfs and shouldn't be used=2E
 
-I looked briefly at the kobject machinery and it seems to ignore module
-dependencies. So while both approaches might work, I'd usually reverse
-the order the init code is using: in this case module_get+device_get,
-so on release: device_put+module_put. I don't know what keeps the kernel
-from unloading the module after module_put() and before the function
-returns, but I assume that would blow up for both patches.
-
-Best Regards
-Micha³ Miros³aw
-
-> > 
-> > Signed-off-by: Micha³ Miros³aw <mirq-linux@rere.qmqm.pl>
-> > ---
-> >  drivers/i2c/i2c-core-base.c | 5 ++++-
-> >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
-> > index 2c59dd748a49..5d694f8ce9ef 100644
-> > --- a/drivers/i2c/i2c-core-base.c
-> > +++ b/drivers/i2c/i2c-core-base.c
-> > @@ -2464,11 +2464,14 @@ EXPORT_SYMBOL(i2c_get_adapter);
-> >  
-> >  void i2c_put_adapter(struct i2c_adapter *adap)
-> >  {
-> > +	struct module *owner;
-> > +
-> >  	if (!adap)
-> >  		return;
-> >  
-> > +	owner = adap->owner;
-> >  	put_device(&adap->dev);
-> > -	module_put(adap->owner);
-> > +	module_put(owner);
-> >  }
-> >  EXPORT_SYMBOL(i2c_put_adapter);
-> >  
-> > -- 
-> > 2.30.2
-> > 
-
-
-
--- 
-Micha³ Miros³aw
+-michael
