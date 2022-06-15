@@ -2,191 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 235F1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348503AbiFOM1e (ORCPT
+        id S1348459AbiFOM2w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 08:27:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58710 "EHLO
+        Wed, 15 Jun 2022 08:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242577AbiFOM12 (ORCPT
+        with ESMTP id S242459AbiFOM22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 08:27:28 -0400
-X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Jun 2022 05:27:23 PDT
-Received: from qq.com (smtpbg414.qq.com [113.96.223.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC123F8AF
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:27:23 -0700 (PDT)
-X-QQ-mid: bizesmtp66t1655295961tobfeji8
-Received: from localhost.localdomain ( [113.57.152.160])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 15 Jun 2022 20:25:54 +0800 (CST)
-X-QQ-SSF: 01400000002000D0M000000A0000000
-X-QQ-FEAT: W6nSwEQQYT+hxqlHfPaxc8+z7KqaIPzWVaNsD/EviunI59BwYzcY9hB079ysz
-        X3ZZdEBmYN7YwoDsFnWOph7OQrlfbXeTb/zVa0j+I0svnN/dKdwmV78U03dingiuHN6S/Ei
-        eRIkg7vfQNpKN9lV8aT/41L63LJdip52S13yqmqGV7HtBuE5tqaN2Mpb4GkDrs8h5+gcb6C
-        e5xTzBDCXXFecnYaN1pepTxqCQIdHFMi7jgAub8lkrio3pMgAKuENzfhuHlviz8iyQ3ne8+
-        R7TplT45LQseDwrxkn1NGMXbL1Z74yA4rhoOssePRCicZYcgV82xlvPJmMdrlG4b9b/idG5
-        raCxwNNcoPNzPkHDtVqkFYx3SZYVw==
-X-QQ-GoodBg: 1
-From:   hongao <hongao@uniontech.com>
-To:     alexander.deucher@amd.com, christian.koenig@amd.com,
-        inhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, hongao <hongao@uniontech.com>
-Subject: [PATCH] drm/radeon: Replace drm_detect_hdmi_monitor() with drm_display_info.is_hdmi
-Date:   Wed, 15 Jun 2022 20:24:58 +0800
-Message-Id: <20220615122458.20145-1-hongao@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Wed, 15 Jun 2022 08:28:28 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BA3393FE;
+        Wed, 15 Jun 2022 05:28:26 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id C559266016CB;
+        Wed, 15 Jun 2022 13:28:24 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655296105;
+        bh=4nU9NX8b9cZ1xmaDRmhjERV+Ti0iFHjk5ZJ4I5OHFKg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=e5N5JyBggQ4zs0Fz6xkG5P2lTO0eO/wPkxz+z/OFofBarb38HNedfhq9yqtAGVf9l
+         0PUw9XO54LL0vF86XTinY+iAdtn0vk4Cog3WIh1GyrpJhL0kBf4f/JrH+vE8vJMuri
+         pL/55G3lZaHGC1ajx5gZtMmsLmHpwR2on5Znu0b6mjMQfw8tJamf5lPTj/n2ixxjGk
+         hVpxxfdyYxchxSCViNHYe/Kqhx1sSLwsAkfZyrJXGAGPpd5IG6TM/0O7yeZPiVNgvA
+         ms0JorOxWEy7yJA9A1FBIPkfTl/hfpPIPWev17eGOBt0zC3COek5AMRUVVVWrKGXb3
+         W0fO4VBtVmmyA==
+Message-ID: <e4a2c56e-8e38-b44c-04b4-fd792fbf2f74@collabora.com>
+Date:   Wed, 15 Jun 2022 14:28:22 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 6/6] iommu: mtk_iommu: Lookup phandle to retrieve
+ syscon to pericfg
+Content-Language: en-US
+To:     Matthias Brugger <matthias.bgg@gmail.com>, yong.wu@mediatek.com
+Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        krzysztof.kozlowski@linaro.org
+References: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
+ <20220609100802.54513-7-angelogioacchino.delregno@collabora.com>
+ <8b31b1d2-4ed7-11a1-2124-4641c8f3abcd@gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <8b31b1d2-4ed7-11a1-2124-4641c8f3abcd@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign3
-X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace drm_detect_hdmi_monitor() with drm_display_info.is_hdmi for more
-efficiency
+Il 15/06/22 14:09, Matthias Brugger ha scritto:
+> 
+> 
+> On 09/06/2022 12:08, AngeloGioacchino Del Regno wrote:
+>> On some SoCs (of which only MT8195 is supported at the time of writing),
+>> the "R" and "W" (I/O) enable bits for the IOMMUs are in the pericfg_ao
+>> register space and not in the IOMMU space: as it happened already with
+>> infracfg, it is expected that this list will grow.
+>>
+>> Instead of specifying pericfg compatibles on a per-SoC basis, following
+>> what was done with infracfg, let's lookup the syscon by phandle instead.
+>>
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>> ---
+>>   drivers/iommu/mtk_iommu.c | 23 +++++++++++++----------
+>>   1 file changed, 13 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+>> index 90685946fcbe..0ea0848581e9 100644
+>> --- a/drivers/iommu/mtk_iommu.c
+>> +++ b/drivers/iommu/mtk_iommu.c
+>> @@ -138,6 +138,8 @@
+>>   /* PM and clock always on. e.g. infra iommu */
+>>   #define PM_CLK_AO            BIT(15)
+>>   #define IFA_IOMMU_PCIE_SUPPORT        BIT(16)
+>> +/* IOMMU I/O (r/w) is enabled using PERICFG_IOMMU_1 register */
+>> +#define HAS_PERI_IOMMU1_REG        BIT(17)
+> 
+>  From what I can see MTK_IOMMU_TYPE_INFRA is only set in MT8195 which uses pericfg. 
+> So we don't need a new flag here. For me the flag name MTK_IOMMU_TYPE_INFRA was 
+> confusing as it has nothing to do with the use of infracfg. I'll hijack this patch 
+> to provide some feedback on the actual code, please see below.
+> 
+>>   #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)    \
+>>                   ((((pdata)->flags) & (mask)) == (_x))
+>> @@ -187,7 +189,6 @@ struct mtk_iommu_plat_data {
+>>       u32            flags;
+>>       u32            inv_sel_reg;
+>> -    char            *pericfg_comp_str;
+>>       struct list_head    *hw_list;
+>>       unsigned int        iova_region_nr;
+>>       const struct mtk_iommu_iova_region    *iova_region;
+>> @@ -1218,14 +1219,16 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>>               goto out_runtime_disable;
+>>           }
+>>       } else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) &&
+>> -           data->plat_data->pericfg_comp_str) {
+> 
+> Check for pericfg_comp_str is not needed, we only have one platform that uses 
+> MTK_IOMMU_TYPE_INFRA.
+> 
 
-Tested on "Oland [Radeon HD 8570 / R7 240/340 OEM]" & "Caicos [R5 230]"
+Fair enough. I agree.
 
-Signed-off-by: hongao <hongao@uniontech.com>
----
- drivers/gpu/drm/radeon/atombios_encoders.c |  6 +++---
- drivers/gpu/drm/radeon/radeon_connectors.c | 12 ++++++------
- drivers/gpu/drm/radeon/radeon_display.c    |  2 +-
- drivers/gpu/drm/radeon/radeon_encoders.c   |  4 ++--
- 4 files changed, 12 insertions(+), 12 deletions(-)
+>> -        infracfg = 
+>> syscon_regmap_lookup_by_compatible(data->plat_data->pericfg_comp_str);
+> 
+> We can do something like this to make the code clearer:
+> data->pericfg = syscon_regmap_lookup_by_compatible(data->plat_data->pericfg_comp_str);
+>          if (IS_ERR(data->pericfg)) {
+> 
+> Using infracfg variable here is confusing as it has nothing to do with infracfg 
+> used with HAS_4GB_MODE flag.
 
-diff --git a/drivers/gpu/drm/radeon/atombios_encoders.c b/drivers/gpu/drm/radeon/atombios_encoders.c
-index 70bd84b7ef2b..393d471ba396 100644
---- a/drivers/gpu/drm/radeon/atombios_encoders.c
-+++ b/drivers/gpu/drm/radeon/atombios_encoders.c
-@@ -714,7 +714,7 @@ atombios_get_encoder_mode(struct drm_encoder *encoder)
- 			if (radeon_connector->use_digital &&
- 			    (radeon_connector->audio == RADEON_AUDIO_ENABLE))
- 				return ATOM_ENCODER_MODE_HDMI;
--			else if (drm_detect_hdmi_monitor(radeon_connector_edid(connector)) &&
-+			else if (connector->display_info.is_hdmi &&
- 				 (radeon_connector->audio == RADEON_AUDIO_AUTO))
- 				return ATOM_ENCODER_MODE_HDMI;
- 			else if (radeon_connector->use_digital)
-@@ -733,7 +733,7 @@ atombios_get_encoder_mode(struct drm_encoder *encoder)
- 		if (radeon_audio != 0) {
- 			if (radeon_connector->audio == RADEON_AUDIO_ENABLE)
- 				return ATOM_ENCODER_MODE_HDMI;
--			else if (drm_detect_hdmi_monitor(radeon_connector_edid(connector)) &&
-+			else if (connector->display_info.is_hdmi &&
- 				 (radeon_connector->audio == RADEON_AUDIO_AUTO))
- 				return ATOM_ENCODER_MODE_HDMI;
- 			else
-@@ -757,7 +757,7 @@ atombios_get_encoder_mode(struct drm_encoder *encoder)
- 		} else if (radeon_audio != 0) {
- 			if (radeon_connector->audio == RADEON_AUDIO_ENABLE)
- 				return ATOM_ENCODER_MODE_HDMI;
--			else if (drm_detect_hdmi_monitor(radeon_connector_edid(connector)) &&
-+			else if (connector->display_info.is_hdmi &&
- 				 (radeon_connector->audio == RADEON_AUDIO_AUTO))
- 				return ATOM_ENCODER_MODE_HDMI;
- 			else
-diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
-index 58db79921cd3..2fbec7bdd56b 100644
---- a/drivers/gpu/drm/radeon/radeon_connectors.c
-+++ b/drivers/gpu/drm/radeon/radeon_connectors.c
-@@ -130,7 +130,7 @@ int radeon_get_monitor_bpc(struct drm_connector *connector)
- 	case DRM_MODE_CONNECTOR_DVII:
- 	case DRM_MODE_CONNECTOR_HDMIB:
- 		if (radeon_connector->use_digital) {
--			if (drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
-+			if (connector->display_info.is_hdmi) {
- 				if (connector->display_info.bpc)
- 					bpc = connector->display_info.bpc;
- 			}
-@@ -138,7 +138,7 @@ int radeon_get_monitor_bpc(struct drm_connector *connector)
- 		break;
- 	case DRM_MODE_CONNECTOR_DVID:
- 	case DRM_MODE_CONNECTOR_HDMIA:
--		if (drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
-+		if (connector->display_info.is_hdmi) {
- 			if (connector->display_info.bpc)
- 				bpc = connector->display_info.bpc;
- 		}
-@@ -147,7 +147,7 @@ int radeon_get_monitor_bpc(struct drm_connector *connector)
- 		dig_connector = radeon_connector->con_priv;
- 		if ((dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_DISPLAYPORT) ||
- 		    (dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_eDP) ||
--		    drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
-+		    connector->display_info.is_hdmi) {
- 			if (connector->display_info.bpc)
- 				bpc = connector->display_info.bpc;
- 		}
-@@ -171,7 +171,7 @@ int radeon_get_monitor_bpc(struct drm_connector *connector)
- 		break;
- 	}
- 
--	if (drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
-+	if (connector->display_info.is_hdmi) {
- 		/* hdmi deep color only implemented on DCE4+ */
- 		if ((bpc > 8) && !ASIC_IS_DCE4(rdev)) {
- 			DRM_DEBUG("%s: HDMI deep color %d bpc unsupported. Using 8 bpc.\n",
-@@ -1500,7 +1500,7 @@ static enum drm_mode_status radeon_dvi_mode_valid(struct drm_connector *connecto
- 		    (radeon_connector->connector_object_id == CONNECTOR_OBJECT_ID_DUAL_LINK_DVI_D) ||
- 		    (radeon_connector->connector_object_id == CONNECTOR_OBJECT_ID_HDMI_TYPE_B))
- 			return MODE_OK;
--		else if (ASIC_IS_DCE6(rdev) && drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
-+		else if (ASIC_IS_DCE6(rdev) && connector->display_info.is_hdmi) {
- 			/* HDMI 1.3+ supports max clock of 340 Mhz */
- 			if (mode->clock > 340000)
- 				return MODE_CLOCK_HIGH;
-@@ -1808,7 +1808,7 @@ static enum drm_mode_status radeon_dp_mode_valid(struct drm_connector *connector
- 		    (radeon_dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_eDP)) {
- 			return radeon_dp_mode_valid_helper(connector, mode);
- 		} else {
--			if (ASIC_IS_DCE6(rdev) && drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
-+			if (ASIC_IS_DCE6(rdev) && connector->display_info.is_hdmi) {
- 				/* HDMI 1.3+ supports max clock of 340 Mhz */
- 				if (mode->clock > 340000)
- 					return MODE_CLOCK_HIGH;
-diff --git a/drivers/gpu/drm/radeon/radeon_display.c b/drivers/gpu/drm/radeon/radeon_display.c
-index 57ff2b723c87..c7a1e3af55cf 100644
---- a/drivers/gpu/drm/radeon/radeon_display.c
-+++ b/drivers/gpu/drm/radeon/radeon_display.c
-@@ -1728,7 +1728,7 @@ bool radeon_crtc_scaling_mode_fixup(struct drm_crtc *crtc,
- 			    (!(mode->flags & DRM_MODE_FLAG_INTERLACE)) &&
- 			    ((radeon_encoder->underscan_type == UNDERSCAN_ON) ||
- 			     ((radeon_encoder->underscan_type == UNDERSCAN_AUTO) &&
--			      drm_detect_hdmi_monitor(radeon_connector_edid(connector)) &&
-+			      connector->display_info.is_hdmi &&
- 			      is_hdtv_mode(mode)))) {
- 				if (radeon_encoder->underscan_hborder != 0)
- 					radeon_crtc->h_border = radeon_encoder->underscan_hborder;
-diff --git a/drivers/gpu/drm/radeon/radeon_encoders.c b/drivers/gpu/drm/radeon/radeon_encoders.c
-index 46549d5179ee..b999464f213a 100644
---- a/drivers/gpu/drm/radeon/radeon_encoders.c
-+++ b/drivers/gpu/drm/radeon/radeon_encoders.c
-@@ -383,7 +383,7 @@ bool radeon_dig_monitor_is_duallink(struct drm_encoder *encoder,
- 	case DRM_MODE_CONNECTOR_HDMIB:
- 		if (radeon_connector->use_digital) {
- 			/* HDMI 1.3 supports up to 340 Mhz over single link */
--			if (ASIC_IS_DCE6(rdev) && drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
-+			if (ASIC_IS_DCE6(rdev) && connector->display_info.is_hdmi) {
- 				if (pixel_clock > 340000)
- 					return true;
- 				else
-@@ -408,7 +408,7 @@ bool radeon_dig_monitor_is_duallink(struct drm_encoder *encoder,
- 			return false;
- 		else {
- 			/* HDMI 1.3 supports up to 340 Mhz over single link */
--			if (ASIC_IS_DCE6(rdev) && drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
-+			if (ASIC_IS_DCE6(rdev) && connector->display_info.is_hdmi) {
- 				if (pixel_clock > 340000)
- 					return true;
- 				else
--- 
-2.20.1
+Yes Matthias, using the infracfg variable is confusing - that's why I changed that
+already....
+
+> 
+> Regards,
+> Matthias
+> 
+>> -        if (IS_ERR(infracfg)) {
+>> -            ret = PTR_ERR(infracfg);
+>> -            goto out_runtime_disable;
+>> +           MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_PERI_IOMMU1_REG)) {
 
 
 
+>> +        data->pericfg = syscon_regmap_lookup_by_phandle(dev->of_node, 
+>> "mediatek,pericfg");
+
+....Here, where I'm assigning directly to data->pericfg :-P
+
+By the way, since it was only about one platform, my intention was to remove the
+pericfg_comp_str from struct iommu_plat_data (as you can see), but then, with the
+current code, I had to assign .....
+
+
+>> +        if (IS_ERR(data->pericfg)) {
+>> +            p = "mediatek,mt8195-pericfg_ao";
+
+...the string to 'p', because otherwise it would go over 100 columns.
+
+In any case, I just checked and, apparently, MT8195 is really the one and only SoC
+that needs this pericfg register to be managed by Linux... even the latest and
+greatest smartphone chip (Dimensity 9000, MT6983) doesn't need this (at least,
+from what I can read on a downstream kernel).
+
+On an afterthought, perhaps the best idea is to just leave this as it is and, as
+you proposed, avoid using that confusing infracfg variable, without adding the
+pericfg handle at all.
+
+After all, it's just one single SoC.
+
+I'll send a new version soon!
+
+Cheers,
+Angelo
 
