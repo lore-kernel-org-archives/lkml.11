@@ -2,72 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1013EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA30C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346055AbiFOIjZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:39:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42820 "EHLO
+        id S232101AbiFOIke (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 04:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344209AbiFOIjX (ORCPT
+        with ESMTP id S243967AbiFOIk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 04:39:23 -0400
-X-Greylist: delayed 1818 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Jun 2022 01:39:22 PDT
-Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7002E49FBB
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 01:39:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=8Ns5g
-        EvAuYDLgBXJtS39BSCUULDUrj3lCfWZde535H0=; b=hiLSDZZ4hjxsiAobnepTn
-        C85dzbrrR9y7nxXfbvMui9qnhjleTGNyk6M3LO7DxGWDZP/K+JltmgUrC9N57LR4
-        HX718EYg1wv9xxfwhSZjMY0KJIDI18mxOn2TOq/Yp62UP4KXBPAzTChiEnU4rf/Z
-        j2m40D32QKtqKJInLg2Uik=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp10 (Coremail) with SMTP id NuRpCgDX1UmQk6liKTWxEg--.34720S2;
-        Wed, 15 Jun 2022 16:08:49 +0800 (CST)
-From:   heliang <windhl@126.com>
-To:     linux@armlinux.org.uk
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        windhl@126.com
-Subject: [PATCH] arm: mm: Add missing of_node_put()
-Date:   Wed, 15 Jun 2022 16:08:46 +0800
-Message-Id: <20220615080846.3960101-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 04:40:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35CF24A908
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 01:40:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655282426;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MqlUuq6oOctC8KD1R2eZd0GMgzvzvS5A75XzekWYOhU=;
+        b=RGYuxvpQy1swqI1i8eGMV8AMANUllKUe/1hlYUqmZcb/yhOiQgl9/0j8/hl2Rmn+j45iRm
+        xoqVW8A3sZh7OYlKEDKtdF93PaPeSvEaGG8+NwKZ24njjXOw0t7m9ePXOOZDhVGsgfFi2X
+        pr2x7yY7DzH26oJD4seI0lVa2+iDdOw=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-619-DLiF25J4OEmEVqLmiL1YFw-1; Wed, 15 Jun 2022 04:40:20 -0400
+X-MC-Unique: DLiF25J4OEmEVqLmiL1YFw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5305F185A7BA;
+        Wed, 15 Jun 2022 08:40:20 +0000 (UTC)
+Received: from fedora (unknown [10.40.194.133])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5308A492CA6;
+        Wed, 15 Jun 2022 08:40:19 +0000 (UTC)
+Date:   Wed, 15 Jun 2022 10:40:17 +0200
+From:   Lukas Czerner <lczerner@redhat.com>
+To:     Jinke Han <hanjinke.666@bytedance.com>
+Cc:     tytso@mit.edu, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ext4: fix trim range leak
+Message-ID: <20220615084017.xwexup5ckrrpevhe@fedora>
+References: <20220614044647.21846-1-hanjinke.666@bytedance.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NuRpCgDX1UmQk6liKTWxEg--.34720S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWruw4DJFyrZr45tFyxZFW7XFb_yoW3AwcEvF
-        1Iq3W3JrWrGF1xXF4kuF43CF1DCws8Cr1fXr1fZr17Gr1UZrWUXrZ8trn7tr1qgrWj9rW3
-        JrZ5Xr42vw4agjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRuHq73UUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/xtbBGgEhF1-HZTUE4wAAsC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614044647.21846-1-hanjinke.666@bytedance.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In feroceon_of_init, we use of_find_matching_node() to get a node
-pointer with refcount incremented. We should use of_node_put() when
-it is not used anymore.
+On Tue, Jun 14, 2022 at 12:46:47PM +0800, Jinke Han wrote:
+> From: hanjinke <hanjinke.666@bytedance.com>
+> 
+> When release group lock, a large number of blocks may be alloc from
+> the group(e.g. not from the rest of target trim range). This may
+> lead end of the loop and leave the rest of trim range unprocessed.
 
-Signed-off-by: heliang <windhl@126.com>
----
- arch/arm/mm/cache-feroceon-l2.c | 1 +
- 1 file changed, 1 insertion(+)
+Hi,
 
-diff --git a/arch/arm/mm/cache-feroceon-l2.c b/arch/arm/mm/cache-feroceon-l2.c
-index 5c1b7a7b9af6..a10c4be14087 100644
---- a/arch/arm/mm/cache-feroceon-l2.c
-+++ b/arch/arm/mm/cache-feroceon-l2.c
-@@ -376,6 +376,7 @@ int __init feroceon_of_init(void)
- 	node = of_find_matching_node(NULL, feroceon_ids);
- 	if (node && of_device_is_compatible(node, "marvell,kirkwood-cache")) {
- 		base = of_iomap(node, 0);
-+		of_node_put(node);
- 		if (!base)
- 			return -ENOMEM;
- 
--- 
-2.25.1
+you're correct. Indeed it's possible to miss some of the blocks this
+way.
+
+But I wonder how much of a problem this actually is? I'd think that the
+optimization you just took out is very usefull, especially with larger
+minlen and more fragmented free space it'll save us a lot of cycles.
+Do you have any performance numbers for this change?
+
+Perhaps we don't have to remove it completely, rather zero the
+free_count every time bb_free changes? Would that be worth it?
+
+-Lukas
+
+> 
+> Signed-off-by: hanjinke <hanjinke.666@bytedance.com>
+> ---
+>  fs/ext4/mballoc.c | 6 +-----
+>  1 file changed, 1 insertion(+), 5 deletions(-)
+> 
+> diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+> index 9f12f29bc346..45eb9ee20947 100644
+> --- a/fs/ext4/mballoc.c
+> +++ b/fs/ext4/mballoc.c
+> @@ -6345,14 +6345,13 @@ static int ext4_try_to_trim_range(struct super_block *sb,
+>  __acquires(ext4_group_lock_ptr(sb, e4b->bd_group))
+>  __releases(ext4_group_lock_ptr(sb, e4b->bd_group))
+>  {
+> -	ext4_grpblk_t next, count, free_count;
+> +	ext4_grpblk_t next, count;
+>  	void *bitmap;
+>  
+>  	bitmap = e4b->bd_bitmap;
+>  	start = (e4b->bd_info->bb_first_free > start) ?
+>  		e4b->bd_info->bb_first_free : start;
+>  	count = 0;
+> -	free_count = 0;
+>  
+>  	while (start <= max) {
+>  		start = mb_find_next_zero_bit(bitmap, max + 1, start);
+> @@ -6367,7 +6366,6 @@ __releases(ext4_group_lock_ptr(sb, e4b->bd_group))
+>  				break;
+>  			count += next - start;
+>  		}
+> -		free_count += next - start;
+>  		start = next + 1;
+>  
+>  		if (fatal_signal_pending(current)) {
+> @@ -6381,8 +6379,6 @@ __releases(ext4_group_lock_ptr(sb, e4b->bd_group))
+>  			ext4_lock_group(sb, e4b->bd_group);
+>  		}
+>  
+> -		if ((e4b->bd_info->bb_free - free_count) < minblocks)
+> -			break;
+>  	}
+>  
+>  	return count;
+> -- 
+> 2.20.1
+> 
 
