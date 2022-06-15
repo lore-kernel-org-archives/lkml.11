@@ -2,72 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AE2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA72C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348181AbiFOJgq (ORCPT
+        id S1348237AbiFOJhD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46736 "EHLO
+        Wed, 15 Jun 2022 05:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiFOJgp (ORCPT
+        with ESMTP id S231876AbiFOJhB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:36:45 -0400
-Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F350F344C9
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:36:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=CUmGd
-        INgk1+n0K54dy4qu6cl1KlOEQmgr2vCPmeguoU=; b=gqGeP1f+cb/gMViYHs/8R
-        DNLaw23Z9akbAXpfyAAf56FGdCDAk1AdwwoYoK0F+laIYWdub0Ol6Za5Hk7blQyE
-        Ifq0bC42hQuozyvx0rh4nA0IFuI1fczxG42fJCA2u3NunX40DlFfQmet8th2JRq8
-        ZkJ+fM9FXMRqFxyFbxbEQA=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp8 (Coremail) with SMTP id NORpCgCXLosSqKliPEuUFg--.44350S2;
-        Wed, 15 Jun 2022 17:36:19 +0800 (CST)
-From:   heliang <windhl@126.com>
-To:     nm@ti.com, ssantosh@kernel.org, linux@armlinux.org.uk
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        windhl@126.com
-Subject: [PATCH] arch: arm: mach-keystone: Add missing of_node_put() in pm_domain.c
-Date:   Wed, 15 Jun 2022 17:36:17 +0800
-Message-Id: <20220615093617.3962482-1-windhl@126.com>
+        Wed, 15 Jun 2022 05:37:01 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDAF3A181
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:37:00 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id n18so9941950plg.5
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:37:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=toOnIScwFyw6W7OXDthcOn14+v/kWcf4sWlmNX4vbyw=;
+        b=wAiX39cIni2xV0gs+Aw3x+cqGcmhOg44meG1GgATN4rGOZMTRucugQttdsPTVLCPgd
+         lzGVyUPuSgofxRCMzipQtvxYsU74K+kfcsgyw+JroN1p0LsIwpFR1+8h1eEkFAAzFgMn
+         QtzlRavMa0womDUiHqAPMnCEpiIK5kCOcNoEvbpI9QLZt98sVZ0vzczrpcpgM7f1oDMl
+         BNm/O3cjCiITG5mvpbSyJwF7l0kdkhwxFkbNxP1mPKDOlB/9wu/A86mH48bh/6L4USG2
+         AD6wMV04G7O2UKviV0REy+Q6Qh+UrDH8ohQYrbvYnwzYkX6v0zWLR2bIJkT5AbiY1WsW
+         E9WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=toOnIScwFyw6W7OXDthcOn14+v/kWcf4sWlmNX4vbyw=;
+        b=pDvEc8POF4dWcqJHVrhG5csMwgAkM2yr2c0HBvySWVonWpBn00EZZl2uOuhvuhQrqH
+         tKvQZUajyAi6JL/MXsuZfZThHI8ZowhQTNryzC1A7QqBXb+Gw+/N11rSQzDivoRCKCQN
+         EEkK99NXcVJga7h6scPjqlP4HcGn8h61e9YyVTTaV9YEaOK7POiR5CD1dpv88U1vy1Om
+         89ZCkeoo23juN8G2Ltlt5OAt3SsXzVJChocly1v/VlWRJnrbrnq+LKqUoLtIN+mEwbvt
+         VmXmAPUWhzKY0sG7mh0hIHs0wljyWYnnWUVk0rvzxIgHx6PYTMkWp4oKmFgFyZh2FpGJ
+         4sgQ==
+X-Gm-Message-State: AJIora9o0UMYDUTkvWO53JKWqI4eQ6Fb66P4bF02zNTzTnS5ShpnlcHp
+        zVnPRZ5IN1iRKcqjfZ+lt0LcVoYw4zzzvA==
+X-Google-Smtp-Source: AGRyM1uDSjpYzuR/0hLrdYfbzcHDQTf58H3ocD0LXbnal15KuuFX07Jp9SuP/fNMasxYOqlgrk+/5A==
+X-Received: by 2002:a17:902:d5c3:b0:168:f037:98d7 with SMTP id g3-20020a170902d5c300b00168f03798d7mr6063522plh.117.1655285820263;
+        Wed, 15 Jun 2022 02:37:00 -0700 (PDT)
+Received: from always-x1.bytedance.net ([61.120.150.70])
+        by smtp.gmail.com with ESMTPSA id jj1-20020a170903048100b00163247b64bfsm8859205plb.115.2022.06.15.02.36.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 02:36:59 -0700 (PDT)
+From:   zhenwei pi <pizhenwei@bytedance.com>
+To:     pizhenwei@bytedance.com, naoya.horiguchi@nec.com,
+        akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org, david@redhat.com,
+        linmiaohe@huawei.com, gregkh@linuxfoundation.org
+Subject: [PATCH v6 0/1] mm/memory-failure: don't allow to unpoison hw corrupted page
+Date:   Wed, 15 Jun 2022 17:32:08 +0800
+Message-Id: <20220615093209.259374-1-pizhenwei@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NORpCgCXLosSqKliPEuUFg--.44350S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7JFyUCr15GrW3ZryDJw4DCFg_yoW3GFb_J3
-        4xXa1fWF1xJF1kWrW8Aw43Wr9rXw1UGrsFq34a9w4agF48Jw17ZFZrtrnavrW8WrWIkrW3
-        JayDAr1aywn29jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_5l1JUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbiuBMhF2JVj34a4gAAsj
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In keystone_pm_runtime_init(), of_find_matching_node() will return a
-node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+v5 -> v6:
+- Suggested by Naoya, declare 'hw_memory_failure' with initial value
+  explicitly, also add __read_mostly. Thanks to Naoya&David!
+  Leave 'Cc stable' or not to Andrew to decide.
 
-Signed-off-by: heliang <windhl@126.com>
----
- arch/arm/mach-keystone/pm_domain.c | 2 ++
- 1 file changed, 2 insertions(+)
+v4 -> v5:
+- Add mf_flags 'MF_SW_SIMULATED' to distinguish SW/HW memory failure,
+  and use a global variable to record HW memory failure, once HW
+  memory failure happens, disable unpoison.
 
-diff --git a/arch/arm/mach-keystone/pm_domain.c b/arch/arm/mach-keystone/pm_domain.c
-index 5eea01cbecf0..50a08721a8d8 100644
---- a/arch/arm/mach-keystone/pm_domain.c
-+++ b/arch/arm/mach-keystone/pm_domain.c
-@@ -44,6 +44,8 @@ int __init keystone_pm_runtime_init(void)
- 	if (!np)
- 		return 0;
- 
-+	of_node_put(np);
-+
- 	pm_clk_add_notifier(&platform_bus_type, &platform_domain_notifier);
- 
- 	return 0;
+v3 -> v4:
+- Add debug entry "hwpoisoned-pages" to show the number of hwpoisoned
+  pages.
+- Disable unpoison when a read HW memory failure occurs.
+
+v2 -> v3:
+- David pointed out that virt_to_kpte() is broken(no pmd_large() test
+  on a PMD), so drop this API in this patch, walk kmap instead.
+
+v1 -> v2:
+- this change gets protected by mf_mutex
+- use -EOPNOTSUPP instead of -EPERM 
+
+v1:
+- check KPTE to avoid to unpoison hardware corrupted page
+
+zhenwei pi (1):
+  mm/memory-failure: disable unpoison once hw error happens
+
+ Documentation/vm/hwpoison.rst |  3 ++-
+ drivers/base/memory.c         |  2 +-
+ include/linux/mm.h            |  1 +
+ mm/hwpoison-inject.c          |  2 +-
+ mm/madvise.c                  |  2 +-
+ mm/memory-failure.c           | 12 ++++++++++++
+ 6 files changed, 18 insertions(+), 4 deletions(-)
+
 -- 
-2.25.1
+2.20.1
 
