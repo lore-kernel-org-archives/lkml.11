@@ -2,73 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E09C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:54:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 063E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348941AbiFONyu (ORCPT
+        id S1349133AbiFONzg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37418 "EHLO
+        Wed, 15 Jun 2022 09:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347675AbiFONyn (ORCPT
+        with ESMTP id S238853AbiFONze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:54:43 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D71213D63
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:54:43 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E29CE153B;
-        Wed, 15 Jun 2022 06:54:42 -0700 (PDT)
-Received: from wubuntu (FVFF764EQ05P.cambridge.arm.com [10.1.32.43])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2B6433F73B;
-        Wed, 15 Jun 2022 06:54:41 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 14:54:39 +0100
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     Xuewen Yan <xuewen.yan94@gmail.com>
-Cc:     Lukasz Luba <lukasz.luba@arm.com>,
-        Xuewen Yan <xuewen.yan@unisoc.com>, dietmar.eggemann@arm.com,
-        rafael@kernel.org, viresh.kumar@linaro.org, mingo@redhat.com,
-        peterz@infradead.org, vincent.guittot@linaro.org,
-        rostedt@goodmis.org, linux-kernel@vger.kernel.org,
-        di.shen@unisoc.com,
-        =?utf-8?B?546L56eRIChLZSBXYW5nKQ==?= <Ke.Wang@unisoc.com>
-Subject: Re: [PATCH] sched: Take thermal pressure into account when determine
- rt fits capacity
-Message-ID: <20220615135439.cmdc5kw5dihonphy@wubuntu>
-References: <20220503144352.lxduzhl6jq6xdhw2@airbuntu>
- <CAB8ipk--Y8HxetcmUhBmtWq6Mmd726QmDbcbibGLERJw_PUqkQ@mail.gmail.com>
- <20220510145625.t5py7atlhgojsfyf@wubuntu>
- <37357c86-bab7-d0c7-88d0-ace63ccdb6c8@arm.com>
- <20220510184436.fdgzzcfqqevinx5p@wubuntu>
- <0505936e-3746-4623-a967-103a0158bfbd@arm.com>
- <CAB8ipk8RUsxYs6JdeMeUPADQRNqT=Jqz15ecwbzbf0RHUDqOXg@mail.gmail.com>
- <20220514235513.jm7ul2y6uddj6eh2@airbuntu>
- <20220615101316.tzexnp3dl2cqfbrj@wubuntu>
- <CAB8ipk8tgKDeESzKGjts=8MVvb=bWr6WYN6xetczRRYp4sYWSA@mail.gmail.com>
+        Wed, 15 Jun 2022 09:55:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3ECF255AF;
+        Wed, 15 Jun 2022 06:55:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FBA561B23;
+        Wed, 15 Jun 2022 13:55:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC44BC34115;
+        Wed, 15 Jun 2022 13:55:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655301332;
+        bh=d+8lzxk/kDyn5dLFABLSgfNZYo8yluhEL/UrzIgZfGc=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=SoEi8z37HGLzRUqHBB4XEH+zLh5P/4QAvyOGu8fUwndms7aDNIFFo1q+RAlO8xnYc
+         GMdjId1hrnNUeViOfGIofs8q6efgByPCv9y8AvQiOc/rQIHS1dQG4JuBE9JCMHOG9S
+         iQzfVnlhYWwAE8foN7LemIfR0xUEb4LPL/SYOOHZKvglCXJYGUZS/hEp+GTQ/H110L
+         ysaF4Ao0bbgh6w3ESBC//iGk0FGhpVLY2Q98vEhxMdtJFr4udkrhl0FSLjKRq9ek5G
+         gwtkhq7cpj+vt8arGTa5rme0NTGjGq256pvXM8i6mT7lP1raC39IwxI99+uiV3Uu7C
+         ZxWuug4jwR4UQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 7CE3C5C00D9; Wed, 15 Jun 2022 06:55:32 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 06:55:32 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the rcu tree
+Message-ID: <20220615135532.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220615153802.49eeb827@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAB8ipk8tgKDeESzKGjts=8MVvb=bWr6WYN6xetczRRYp4sYWSA@mail.gmail.com>
+In-Reply-To: <20220615153802.49eeb827@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/15/22 19:17, Xuewen Yan wrote:
-> Hi Qais
+On Wed, Jun 15, 2022 at 03:38:02PM +1000, Stephen Rothwell wrote:
+> Hi all,
 > 
-> Sorry for the late action.
-> I've had higher priority work lately and haven't had more energy to
-> work on the patch for a while.
+> After merging the rcu tree, today's linux-next build (htmldocs) produced
+> this warning:
+> 
+> Documentation/RCU/Design/Requirements/Requirements.rst:2220: WARNING: Malformed table.
+> 
+> +-----------------------------------------------------------------------+
+> | **Quick Quiz**:                                                       |
+> +-----------------------------------------------------------------------+
+> | But what if my driver has a hardware interrupt handler that can run   |
+> | for many seconds? I cannot invoke schedule() from an hardware         |
+> | interrupt handler, after all!                                         |
+> +-----------------------------------------------------------------------+
+> | **Answer**:                                                           |
+> +-----------------------------------------------------------------------+
+> | One approach is to do ``ct_irq_exit();ct_irq_enter();`` every so    |
+> | often. But given that long-running interrupt handlers can cause other |
+> | problems, not least for response time, shouldn't you work to keep     |
+> | your interrupt handler's runtime within reasonable bounds?            |
+> +-----------------------------------------------------------------------+
+> 
+> Introduced by commit
+> 
+>   6c5218715286 ("context_tracking: Take IRQ eqs entrypoints over RCU")
 
-No problem.
+Apologies and thank you, will fix.
 
-> Could you test the patch? I will also work on this patch asap.
-
-I did run some tests on the patch. I wanted a confirmation it fixes your
-problem though before taking this any further.
-
-
-Thanks
-
---
-Qais Yousef
+							Thanx, Paul
