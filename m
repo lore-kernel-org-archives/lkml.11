@@ -2,123 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 956D0CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 642EECCA486
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348378AbiFOQL2 (ORCPT
+        id S1348852AbiFOQMz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:11:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37848 "EHLO
+        Wed, 15 Jun 2022 12:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348390AbiFOQLY (ORCPT
+        with ESMTP id S235498AbiFOQMw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:11:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECCC136321
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:11:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655309482;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SYwgKkQjGzy4vjuONVP2nbTWiQ6a3KB6AbIHQDB6eZ4=;
-        b=T8WvCSkzj5R+hWzsgqFYyRDJp25HS/U0Hn/fqbutfv5linOTmI7VnaFD2+hZGJWQBQwa7f
-        t2NhdZfcSNZMEX/TYNMkSHPtqZwV7f/S4nF701Tif1QlM6QnM3NhSPPvkXLGGwpQwQn+J3
-        Jh97/bhJAU1s9HohURjqIKG8qt6lv80=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-444-RtfK8PZwOLW7ypdWD0KvXw-1; Wed, 15 Jun 2022 12:11:20 -0400
-X-MC-Unique: RtfK8PZwOLW7ypdWD0KvXw-1
-Received: by mail-ed1-f72.google.com with SMTP id f9-20020a056402354900b0042ded146259so8925771edd.20
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:11:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SYwgKkQjGzy4vjuONVP2nbTWiQ6a3KB6AbIHQDB6eZ4=;
-        b=KFgrDqbb7OhNbw6/m//GBPD3aaV4/ayaXJCrQbKc2pH+1f9WIXKHJPlxG6rfSGXY5r
-         JCOlaaXNxY3ahDfjgIQ5g16esX6l6mFcBXPS/czWkQ9fgHyaqWRMTm8wtYXTAM6pg2uY
-         t8guGm1YHAwmbIekQ2C+g5/2o+hcHrwBRh+C4OBKNZxsvaWvYzQuybEHHCPGDY6wF4zz
-         RVRmeW8wGwdGL8mtTgPQBk2OKs9LXNaIXrnR/qgIsDQ7no4/RMttQM7d4ibrJyPBbvoI
-         Wyf/D/hfIJLLyQWqaPgxpqE0wyyOVZDSN8L+OICGFJj3KlsbzepfYjL3969J70qNmKsh
-         tD0g==
-X-Gm-Message-State: AJIora8PSWzcddZdPi1qFyrmA6+gqs8exk5SdKAvcWzIQ5V8X+s0mpwf
-        ZUWQfvBVlQgo2pLey0Y7PMGpGh8UT+LyP0XpMTfjhcsJzdBURxF7DYdAkjDDVgtQCppd3C+rPlP
-        2xJlaCja0crWbyvzau6ANcRju
-X-Received: by 2002:a05:6402:1c91:b0:42d:c9b6:506b with SMTP id cy17-20020a0564021c9100b0042dc9b6506bmr632079edb.166.1655309479619;
-        Wed, 15 Jun 2022 09:11:19 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tAtdJfLowzWrTXaHYr/672zwCo8kH9O7E4MnmuGCakvRsxz/A0LCNz5NAEZ4eNEwjazTGy8w==
-X-Received: by 2002:a05:6402:1c91:b0:42d:c9b6:506b with SMTP id cy17-20020a0564021c9100b0042dc9b6506bmr632068edb.166.1655309479499;
-        Wed, 15 Jun 2022 09:11:19 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id bq15-20020a056402214f00b0042ab2127051sm9677479edb.64.2022.06.15.09.11.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 09:11:18 -0700 (PDT)
-Message-ID: <402d2059-d0ab-2229-870c-f511cd6f29ee@redhat.com>
-Date:   Wed, 15 Jun 2022 18:11:18 +0200
+        Wed, 15 Jun 2022 12:12:52 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D8B2181C;
+        Wed, 15 Jun 2022 09:12:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=OqVljjCs7GJPfFJtCSMELP7hz7tpfnVYUqS/KYMT6cE=; b=D4xQJkI4XeiyHus7VGwGco9/eT
+        CWBRfM3M9mPI7KhaQok5aaace5jsJ66GPHd0+bjL351TCnWoppTHSeVyW6ItHXgJGDaRJ7hd2IjiM
+        F+kw1tcTRsPYrcDQzs2AykzCRimr2Zvwz2+TG3Yj8eCSUTt7BF3j2IR7Sq5QbQB0NBLtsSoXiMJpa
+        dL7PRG248B15XgI06t6MosY+U92Q+v/iTv48RWM+JfmN+UMx2ilS1x342uwJrz5aoLn/s5TTg1Ggk
+        H0HOUX/IOvALtFUR5mtAWvXlY6k08p6E637EzSv1gougvqbFBVszN6lMOnaLAfpvvZyeF3giITm3y
+        oEzjQ+9g==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1o1VdP-0084iR-O3; Wed, 15 Jun 2022 10:12:48 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1o1VdJ-0004aw-Gi; Wed, 15 Jun 2022 10:12:41 -0600
+From:   Logan Gunthorpe <logang@deltatee.com>
+To:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-mm@kvack.org, iommu@lists.linux-foundation.org
+Cc:     Stephen Bates <sbates@raithlin.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Don Dutile <ddutile@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Minturn Dave B <dave.b.minturn@intel.com>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Xiong Jianxin <jianxin.xiong@intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Martin Oliveira <martin.oliveira@eideticom.com>,
+        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Logan Gunthorpe <logang@deltatee.com>
+Date:   Wed, 15 Jun 2022 10:12:31 -0600
+Message-Id: <20220615161233.17527-20-logang@deltatee.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220615161233.17527-1-logang@deltatee.com>
+References: <20220615161233.17527-1-logang@deltatee.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v1 1/1] phy: ti: tusb1210: Don't check for write errors
- when powering on
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Vinod Koul <vkoul@kernel.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Ferry Toth <ftoth@exalondelft.nl>
-References: <20220613160848.82746-1-andriy.shevchenko@linux.intel.com>
- <bd21d5c6-ed5f-dd8c-f0bf-73f54ca8ee58@redhat.com>
- <YqiGocQ+vr9KjUHK@smile.fi.intel.com>
- <390cf16c-f07c-ebfc-08ad-25b242548953@redhat.com>
- <YqnHpXvZJEfhX21/@smile.fi.intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <YqnHpXvZJEfhX21/@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com, logang@deltatee.com
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+Subject: [PATCH v7 19/21] block: set FOLL_PCI_P2PDMA in bio_map_user_iov()
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+When a bio's queue supports PCI P2PDMA, set FOLL_PCI_P2PDMA for
+iov_iter_get_pages_flags(). This allows PCI P2PDMA pages to be
+passed from userspace and enables the NVMe passthru requests to
+use P2PDMA pages.
 
-On 6/15/22 13:51, Andy Shevchenko wrote:
-> On Tue, Jun 14, 2022 at 05:49:22PM +0200, Hans de Goede wrote:
->> On 6/14/22 15:01, Andy Shevchenko wrote:
->>> On Tue, Jun 14, 2022 at 01:23:21PM +0200, Hans de Goede wrote:
->>>> On 6/13/22 18:08, Andy Shevchenko wrote:
-> 
-> ...
-> 
->>> [   35.126397] tusb1210 dwc3.0.auto.ulpi: GPIO lookup for consumer reset
->>> [   35.126418] tusb1210 dwc3.0.auto.ulpi: using ACPI for GPIO lookup
->>> [   35.126455] tusb1210 dwc3.0.auto.ulpi: using lookup tables for GPIO lookup
->>> [   35.126465] tusb1210 dwc3.0.auto.ulpi: No GPIO consumer reset found
->>> [   35.126476] tusb1210 dwc3.0.auto.ulpi: GPIO lookup for consumer cs
->>> [   35.126485] tusb1210 dwc3.0.auto.ulpi: using ACPI for GPIO lookup
->>> [   35.126538] tusb1210 dwc3.0.auto.ulpi: using lookup tables for GPIO lookup
->>> [   35.126548] tusb1210 dwc3.0.auto.ulpi: No GPIO consumer cs found
->>> [   40.534107] tusb1210 dwc3.0.auto.ulpi: error -110 writing val 0x41 to reg 0x80
->>>
->>> (I put 5000 ms there to be sure)
->>>
->>>> I'm fine with going with this workaround patch to fix things.
->>
->> Ok, so I guess we should just apply this workaround patch to make
->> the error non fatal. Still would be good to dig a little deeper one
->> of these days and see what is going on here...
-> 
-> Can you give a formal tag?
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+---
+ block/blk-map.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Sure:
-
-Acked-by: Hans de Goede <hdegoede@redhat.com>
-
-Regards,
-
-Hans
+diff --git a/block/blk-map.c b/block/blk-map.c
+index df8b066cd548..1d6bcf193a42 100644
+--- a/block/blk-map.c
++++ b/block/blk-map.c
+@@ -236,6 +236,7 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
+ {
+ 	unsigned int max_sectors = queue_max_hw_sectors(rq->q);
+ 	unsigned int nr_vecs = iov_iter_npages(iter, BIO_MAX_VECS);
++	unsigned int flags = 0;
+ 	struct bio *bio;
+ 	int ret;
+ 	int j;
+@@ -248,13 +249,17 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
+ 		return -ENOMEM;
+ 	bio_init(bio, NULL, bio->bi_inline_vecs, nr_vecs, req_op(rq));
+ 
++	if (blk_queue_pci_p2pdma(rq->q))
++		flags |= FOLL_PCI_P2PDMA;
++
+ 	while (iov_iter_count(iter)) {
+ 		struct page **pages;
+ 		ssize_t bytes;
+ 		size_t offs, added = 0;
+ 		int npages;
+ 
+-		bytes = iov_iter_get_pages_alloc(iter, &pages, LONG_MAX, &offs);
++		bytes = iov_iter_get_pages_alloc_flags(iter, &pages, LONG_MAX,
++						       &offs, flags);
+ 		if (unlikely(bytes <= 0)) {
+ 			ret = bytes ? bytes : -EFAULT;
+ 			goto out_unmap;
+-- 
+2.30.2
 
