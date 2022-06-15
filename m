@@ -2,98 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1288C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:32:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346705AbiFOHaL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 03:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
+        id S241586AbiFOHcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 03:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbiFOHaH (ORCPT
+        with ESMTP id S231258AbiFOHcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 03:30:07 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D139E35ABD
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:30:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655278206; x=1686814206;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=oJhwgduglW2gSNuC/lHAqS10Yt1YgHiV4JJ04xDXpvY=;
-  b=Hp50Jjf+PjnJbGpmu4b49nwpbm2d/jX5SXvaCnUqN9xySOv35+BqoxhD
-   eMfsyEQ+DhscgdmqMWeTkzFREAgGpwUGFYuD1+bklx3reouAi7tsAJW0H
-   B78RcBiYOlhFn6C2pbkn0511UoR8p+NFtEWUTwLfnFV1PBfnwBKpP6bRT
-   KPijBEw8wsU8EnKPw7iYrclXQiO/sKqYV312MBFPlcYom75K18P04z+cz
-   Roibv25BG1gBR6XWQO/8rx7QI7WY9IqStvj2YzK3Rz3nzFuNTTz1H/VdI
-   L5pHQoUGLKz8MMv7T319hpVwBDqxfUnamqvjFGtHjRnBPVSYR6kRrnXsY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="258719096"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="258719096"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 00:30:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="687151244"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 15 Jun 2022 00:30:05 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1NTY-000MfN-MI;
-        Wed, 15 Jun 2022 07:30:04 +0000
-Date:   Wed, 15 Jun 2022 15:29:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alexey Kardashevskiy <aik@ozlabs.ru>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: arch/powerpc/kvm/book3s_hv_rm_xics.c:482:15: warning: no previous
- prototype for 'xics_rm_h_xirr_x'
-Message-ID: <202206151538.1X8LPqy9-lkp@intel.com>
+        Wed, 15 Jun 2022 03:32:00 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2E2473A0;
+        Wed, 15 Jun 2022 00:31:58 -0700 (PDT)
+Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LNH7B4jvmz6GD9p;
+        Wed, 15 Jun 2022 15:31:50 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 15 Jun 2022 09:31:55 +0200
+Received: from [10.195.33.253] (10.195.33.253) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 15 Jun 2022 08:31:54 +0100
+Message-ID: <3a27b6ff-e495-8f11-6925-1487c9d14fa9@huawei.com>
+Date:   Wed, 15 Jun 2022 08:35:02 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH RFC v2 03/18] scsi: core: Implement reserved command
+ handling
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Bart Van Assche <bvanassche@acm.org>, <axboe@kernel.dk>,
+        <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <brking@us.ibm.com>, <hare@suse.de>, <hch@lst.de>
+CC:     <linux-block@vger.kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <chenxiang66@hisilicon.com>
+References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
+ <1654770559-101375-4-git-send-email-john.garry@huawei.com>
+ <b4a0ede5-95a3-4388-e808-7627b5484d01@opensource.wdc.com>
+ <9e89360d-3325-92af-0436-b34df748f3e2@acm.org>
+ <e36bba7e-d78d-27b4-a0e2-9d921bc82f5d@opensource.wdc.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <e36bba7e-d78d-27b4-a0e2-9d921bc82f5d@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.195.33.253]
+X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   018ab4fabddd94f1c96f3b59e180691b9e88d5d8
-commit: b22af9041927075b82bcaf4b6c7a354688198d47 KVM: PPC: Book3s: Remove real mode interrupt controller hcalls handlers
-date:   4 weeks ago
-config: powerpc64-randconfig-r021-20220615 (https://download.01.org/0day-ci/archive/20220615/202206151538.1X8LPqy9-lkp@intel.com/config)
-compiler: powerpc64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b22af9041927075b82bcaf4b6c7a354688198d47
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout b22af9041927075b82bcaf4b6c7a354688198d47
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/kvm/
+On 15/06/2022 00:43, Damien Le Moal wrote:
+> On 6/15/22 03:20, Bart Van Assche wrote:
+>> On 6/13/22 00:01, Damien Le Moal wrote:
+>>> On 6/9/22 19:29, John Garry wrote:
+>>>> +	/*
+>>>> +	 * This determines how many commands the HBA will set aside
+>>>> +	 * for internal commands. This number will be added to
+>>>> +	 * @can_queue to calcumate the maximum number of simultaneous
+>>>
+>>> s/calcumate/calculate
+>>>
+>>> But this is weird. For SATA, can_queue is 32. Having reserved commands,
+>>> that number needs to stay the same. We cannot have more than 32 tags.
+>>> I think keeping can_queue as the max queue depth with at most
+>>> nr_reserved_cmds tags reserved is better.
+>>>
+>>>> +	 * commands sent to the host.
+>>>> +	 */
+>>>> +	int nr_reserved_cmds;
+>>
+>> +1 for Damien's request. I also prefer to keep can_queue as the maximum
+>> queue depth, whether or not nr_reserved_cmds has been set.
+> 
+> For non SATA drives, I still think that is a good idea. However, for SATA,
+> we always have the internal tag command that is special. With John's
+> change, it would have to be reserved but that means we are down to 31 max
+> QD,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+My intention is to keep regular tag depth at 32 for SATA. We add an 
+extra tag as a reserved tag. Indeed, this is called a 'tag', but it's 
+just really the placeholder for what will be the ATA_TAG_INTERNAL request.
 
-All warnings (new ones prefixed by >>):
+About how we set scsi_host.can_queue, in this series we set .can_queue 
+as max regular tags, and the handling is as follows:
 
->> arch/powerpc/kvm/book3s_hv_rm_xics.c:482:15: warning: no previous prototype for 'xics_rm_h_xirr_x' [-Wmissing-prototypes]
-     482 | unsigned long xics_rm_h_xirr_x(struct kvm_vcpu *vcpu)
-         |               ^~~~~~~~~~~~~~~~
+scsi_mq_setup_tags():
+tag_set->queue_depth = shost->can_queue + shost->nr_reserved_cmds
+tag_set->reserved_tags = shost->nr_reserved_cmds
 
+So we honour the rule that blk_mq_tag_set.queue_depth is the total tag 
+depth, including reserved.
 
-vim +/xics_rm_h_xirr_x +482 arch/powerpc/kvm/book3s_hv_rm_xics.c
+Incidentally I think Christoph prefers to keep .can_queue at total max 
+tags including reserved:
+https://lore.kernel.org/linux-scsi/337339b7-6f4a-a25c-f11c-7f701b42d6a8@suse.de/
 
-   481	
- > 482	unsigned long xics_rm_h_xirr_x(struct kvm_vcpu *vcpu)
-   483	{
-   484		vcpu->arch.regs.gpr[5] = get_tb();
-   485		return xics_rm_h_xirr(vcpu);
-   486	}
-   487	
+> so going backward several years... That internal tag for ATA does not
+> need to be reserved since this command is always used when the drive is
+> idle and no other NCQ commands are on-going.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+So do you mean that ATA_TAG_INTERNAL qc is used for other commands apart 
+from internal commands?
+
+> 
+> So the solution to all this is a likely a little more complicated if we
+> want to keep ATA max QD to 32.
+> 
+
+thanks,
+John
