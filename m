@@ -2,123 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFD18C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 429C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349902AbiFORyX (ORCPT
+        id S1355730AbiFORzt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
+        Wed, 15 Jun 2022 13:55:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235028AbiFORyV (ORCPT
+        with ESMTP id S235028AbiFORzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:54:21 -0400
-Received: from hi1smtp01.de.adit-jv.com (smtp1.de.adit-jv.com [93.241.18.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6634E26117;
-        Wed, 15 Jun 2022 10:54:20 -0700 (PDT)
-Received: from hi2exch02.adit-jv.com (hi2exch02.adit-jv.com [10.72.92.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by hi1smtp01.de.adit-jv.com (Postfix) with ESMTPS id 33E96520291;
-        Wed, 15 Jun 2022 19:54:18 +0200 (CEST)
-Received: from lxhi-065 (10.72.94.5) by hi2exch02.adit-jv.com (10.72.92.28)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Wed, 15 Jun
- 2022 19:54:17 +0200
-Date:   Wed, 15 Jun 2022 19:54:12 +0200
-From:   Eugeniu Rosca <erosca@de.adit-jv.com>
-To:     Roberto Sassu <roberto.sassu@huawei.com>,
-        Mimi Zohar <zohar@linux.vnet.ibm.com>
-CC:     <viro@zeniv.linux.org.uk>, <linux-security-module@vger.kernel.org>,
-        <linux-integrity@vger.kernel.org>, <initramfs@vger.kernel.org>,
-        <linux-api@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bug-cpio@gnu.org>,
-        <silviu.vlasceanu@huawei.com>, <dmitry.kasatkin@huawei.com>,
-        <takondra@cisco.com>, <kamensky@cisco.com>, <hpa@zytor.com>,
-        <arnd@arndb.de>, <rob@landley.net>, <james.w.mcmechan@gmail.com>,
-        <niveditas98@gmail.com>, Dirk Behme <dirk.behme@de.bosch.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-Subject: Re: [PATCH v4 1/3] initramfs: add file metadata
-Message-ID: <20220615175412.GA7029@lxhi-065>
-References: <20190523121803.21638-1-roberto.sassu@huawei.com>
- <20190523121803.21638-2-roberto.sassu@huawei.com>
+        Wed, 15 Jun 2022 13:55:47 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670FD44766
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:55:46 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id r24so1956763ljn.2
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7N8FxBu6DA6O7mEvFYXStFEfAYN9n61bDy3OwBXjJ0o=;
+        b=JHdk1N03ADEWzySRt7KcxOBPuZaGFXA/8Xyn6d2SSlY9ihVTM6DTBbu1drTtrmQ+M1
+         8RPbl/vwMUwgaM0Na3DeW4R1DvZyVGTsvcipdrdnr6LbuwHnx+DPjFA6rx07XSw0xDHv
+         KK/3LfmRBtp3+hX2z93IpwI50ZnSgl482NCGQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7N8FxBu6DA6O7mEvFYXStFEfAYN9n61bDy3OwBXjJ0o=;
+        b=fqigjnnn1LqGWasd6PRLzgbO+MoZfEJJye76RODrmSDe76ftkWXYBKDnGqoxeSQwvc
+         p0T1hRWPbyjo3Cw24ZGqXvT77zWCkRcKtwQ64gnU6NaAObp9aOp7v1DBa0BI1kcvPqXI
+         ee9fV+yozhbY5CRG/5uX8ed0jtCKgJE4HRP50hyOtCxXzjxnSL7lw+ExgcpCyFC0ItjV
+         N6bh4o9rX8tVsBSwE29tv8ciO8bzdmG3xCcBKTJX0Fu7jSXkNZdBnN9S0AOHgDn9GpCU
+         JQDas4mh7xcvRyTJggAi/qdEVsbnsvcPCxE6jMxkcJzE9wvFFlKD9Bo9Z7WxN1jeWO5T
+         54Fg==
+X-Gm-Message-State: AJIora9Vi4otNgLJpbALmtuvDVH2Q7g2Cuy1OIS7FKQsEyaS4HP5vtr4
+        ofdEOJcYLKHqqIPxURkZvakPvOT48Ubx2R7v46c=
+X-Google-Smtp-Source: AGRyM1usq6rOnpKVnohX3RfJzcFbjacxYyo1QSxQi8IxyaWhI3JVOuBe+zfnFh1b5GZqxodmV+BC1w==
+X-Received: by 2002:a2e:9a8b:0:b0:255:5c14:a90 with SMTP id p11-20020a2e9a8b000000b002555c140a90mr512828lji.137.1655315744482;
+        Wed, 15 Jun 2022 10:55:44 -0700 (PDT)
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com. [209.85.208.171])
+        by smtp.gmail.com with ESMTPSA id u24-20020ac25198000000b00477cab33759sm1880398lfi.256.2022.06.15.10.55.44
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 10:55:44 -0700 (PDT)
+Received: by mail-lj1-f171.google.com with SMTP id c30so14118935ljr.9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:55:44 -0700 (PDT)
+X-Received: by 2002:a5d:414d:0:b0:213:be00:a35 with SMTP id
+ c13-20020a5d414d000000b00213be000a35mr875787wrq.97.1655315251112; Wed, 15 Jun
+ 2022 10:47:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20190523121803.21638-2-roberto.sassu@huawei.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.72.94.5]
-X-ClientProxiedBy: hi2exch02.adit-jv.com (10.72.92.28) To
- hi2exch02.adit-jv.com (10.72.92.28)
+References: <20220615162805.27962-1-pmladek@suse.com> <20220615162805.27962-2-pmladek@suse.com>
+In-Reply-To: <20220615162805.27962-2-pmladek@suse.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 15 Jun 2022 10:47:14 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgs38ZrfPvy=nOwVkVzjpM3VFU1zobP37Fwd_h9iAD5JQ@mail.gmail.com>
+Message-ID: <CAHk-=wgs38ZrfPvy=nOwVkVzjpM3VFU1zobP37Fwd_h9iAD5JQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] printk: Block console kthreads when direct printing
+ will be required
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Peter Geis <pgwipeout@gmail.com>, zhouzhouyi@gmail.com,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Josh Triplett <josh@joshtriplett.org>,
+        rcu <rcu@vger.kernel.org>, linux-rockchip@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Roberto,
-Hello Mimi,
+On Wed, Jun 15, 2022 at 9:28 AM Petr Mladek <pmladek@suse.com> wrote:
+>
+> BugLink: https://lore.kernel.org/r/20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1
+> BugLink: https://lore.kernel.org/r/CAMdYzYpF4FNTBPZsEFeWRuEwSies36QM_As8osPWZSr2q-viEA@mail.gmail.com
 
-On Thu, May 23, 2019 at 02:18:01PM +0200, Roberto Sassu wrote:
-> From: Mimi Zohar <zohar@linux.vnet.ibm.com>
-> 
-> This patch adds metadata to a file from a supplied buffer. The buffer might
-> contains multiple metadata records. The format of each record is:
-> 
-> <metadata len (ASCII, 8 chars)><version><type><metadata>
-> 
-> For now, only the TYPE_XATTR metadata type is supported. The specific
-> format of this metadata type is:
-> 
-> <xattr #N name>\0<xattr #N value>
-> 
-> [kamensky: fixed restoring of xattrs for symbolic links by using
->            sys_lsetxattr() instead of sys_setxattr()]
-> 
-> [sassu: removed state management, kept only do_setxattrs(), added support
->         for generic file metadata, replaced sys_lsetxattr() with
->         vfs_setxattr(), added check for entry_size, added check for
->         hdr->c_size, replaced strlen() with strnlen(); moved do_setxattrs()
->         before do_name()]
-> 
-> Signed-off-by: Mimi Zohar <zohar@linux.vnet.ibm.com>
-> Signed-off-by: Victor Kamensky <kamensky@cisco.com>
-> Signed-off-by: Taras Kondratiuk <takondra@cisco.com>
-> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> ---
->  include/linux/initramfs.h | 21 ++++++++++
->  init/initramfs.c          | 88 ++++++++++++++++++++++++++++++++++++++-
->  2 files changed, 107 insertions(+), 2 deletions(-)
->  create mode 100644 include/linux/initramfs.h
+Other thread discussion about this exact thing:
 
-[..]
+   https://lore.kernel.org/all/CAHk-=wgzRUT1fBpuz3xcN+YdsX0SxqOzHWRtj0ReHpUBb5TKbA@mail.gmail.com/
 
-> +static int __init do_setxattrs(char *pathname, char *buf, size_t size)
-> +{
-> +	struct path path;
-> +	char *xattr_name, *xattr_value;
-> +	size_t xattr_name_size, xattr_value_size;
-> +	int ret;
-> +
-> +	xattr_name = buf;
-> +	xattr_name_size = strnlen(xattr_name, size);
-> +	if (xattr_name_size == size) {
-> +		error("malformed xattrs");
-> +		return -EINVAL;
-> +	}
-> +
+please stop making up random tags that make no sense.
 
-[..]
+Just use "Link:"
 
-> +
-> +		switch (hdr->c_type) {
-> +		case TYPE_XATTR:
-> +			do_setxattrs(pathname, buf + sizeof(*hdr),
-> +				     entry_size - sizeof(*hdr));
+Look at that first one (I didn't even bother following the second
+one). The "bug" part is not even the most important part.
 
-Is it on purpose not to check the return value of do_setxattrs?
+The reason to follow that link is all the discussion, the test-patch,
+and the confirmation from Paul that "yup, that patch solves the
+problem for me".
 
-I think I would have more comfort and piece of mind if I knew
-the return value is properly checked and acted upon. Otherwise,
-why returning an int from within do_setxattrs() at all?
+It's extra context to the commit, in case somebody wants to know the
+history. The "bug" part is (and always should be) already explained in
+the commit message, there's absolutely no point in adding soem extra
+noise to the "Link:" tag.
 
-BR, Eugeniu
+And if the only reason for "BugLink:" to exist is to show "look, this
+tag actually contains relevant and interesting information", then the
+solution to THAT problem is to not have the links that are useless and
+pointless in the first place.
+
+Put another way: if you want to distinguish useless links from useful
+ones, just do it by not including the useless ones.
+
+Ok?
+
+                   Linus
