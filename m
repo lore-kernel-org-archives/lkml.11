@@ -2,197 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 546E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A886C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233791AbiFOPCt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:02:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
+        id S1345027AbiFOPDl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 11:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232744AbiFOPCr (ORCPT
+        with ESMTP id S234402AbiFOPDg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:02:47 -0400
-Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5F16330
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:02:45 -0700 (PDT)
-Received: from pps.filterd (m0134425.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25FBKN1B022318;
-        Wed, 15 Jun 2022 15:02:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pps0720; bh=cHQwY0TBfVoKvBJS9TNkSXSdr+qqw1/qtAJdlPPaAac=;
- b=XzJ/QBHMxSirnTig0V9hw3PEhTJA0RsjtsM+Qy7nCyG0iHwJZda++zvgovsJtzZVGZXc
- hh1qNtPATcwrf9ACnkS1UvY31QMEMqUhFLOujr71L0qoEW8J97PrXUQrOwtf0dF2ZXfE
- HcffMYiuI/GMNXDcF67gBVYzC+UBzc3Y/Rj7vaih67KgLdHCO1iQhXdLgL9TFwyL05ZG
- 0M6U94mAE38tpDzQX4+ZXbqr9KRYKNjBj9pESK7MPApD3s0O3NhUydwW3bDbWpgz2VAr
- Vy9L1IUo6QhigrugVD+TwonhBzl3GhgYAS/2/3aALMMJshuGqaVXIek3h8+A/mTOaKzc oQ== 
-Received: from p1lg14879.it.hpe.com (p1lg14879.it.hpe.com [16.230.97.200])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3gqef8t2w8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 15 Jun 2022 15:02:21 +0000
-Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by p1lg14879.it.hpe.com (Postfix) with ESMTPS id EE0BC1478F;
-        Wed, 15 Jun 2022 15:02:19 +0000 (UTC)
-Received: from swahl-home.5wahls.com (unknown [16.231.227.36])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTPS id A149283870C;
-        Wed, 15 Jun 2022 15:02:16 +0000 (UTC)
-Date:   Wed, 15 Jun 2022 10:02:14 -0500
-From:   Steve Wahl <steve.wahl@hpe.com>
-To:     Baolu Lu <baolu.lu@linux.intel.com>
-Cc:     Steve Wahl <steve.wahl@hpe.com>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
+        Wed, 15 Jun 2022 11:03:36 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F26B3190B
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:03:28 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id h23so13605520ljl.3
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:03:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+ZUiH7xUjYjG63QUOQNlcHltjn5KoG/fwg1/o9vk8ew=;
+        b=gmM5PYGKhtiKN/GQbdXDENmVjVligh9DIPiQkG8g9EDUaaAsjjHXs85qVkWWbbgi+B
+         nszrQbXgZRqTwAgSVchLmIr1m8NPS9bv1EsKB+/xz7kNOjgnEcOt3TRr3ysREOzDAeRh
+         bEnhDJ1ESjIS6/vP+qs+svbNVimu+a8X1ilLtTXxAt2+7vonJ+je4mAzwOZe0I5DBayV
+         LaifTuCEM8AsEcmaD0lCMRhjg/POC/AoBLOb1N+6qWIrQl+g55UKPUvA0EgFMmu7yl4S
+         ygVcSI0g+8rzQy4hxPbmjMblUCycMgOwWgGfW7dOebiG5auWZDOu0mAq02s1hm6IBcs3
+         ipIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+ZUiH7xUjYjG63QUOQNlcHltjn5KoG/fwg1/o9vk8ew=;
+        b=3azCEnq367rtRmyfMaHIzyfGSpKwdbjTQxnkpY17wJilooF5KVnbYOKq0Y4YeOWAou
+         Mg7GLFcovSuZe72i+Ev+wPBtGLrBaJGxTSLycEFzhAQyn5fkhm82YIYGc0zWxQW2qdR0
+         RJPhbRzKz7wt3HWhvgtWuCMmt1JkkLxj523SaizF1PL9mkfLBbPhh8zZfqnGcJW+Ur/5
+         oXb6qaREtZ1WjUvd6FGzsPg1/2FjbS9UFEDugF07soxKwRrWZCA/RXp+pz4tbQb/hPIU
+         JeK+ibTuQepNctaeDspW07ctxZnvsr1deRO37CighFM2hYE2ANiUrVirD6lt+zM401JY
+         tGLw==
+X-Gm-Message-State: AJIora/7I9Tv7wTAlXatdcyJFqukEEgW8s7HQMWffoMHQ4LMHuUPj2El
+        QL4EjuhQaYLhQT9kiYtQ/7R9vQ==
+X-Google-Smtp-Source: AGRyM1uaqkfz9EUjbtFXt3ETq72/vRGrVuX/XEUXnzqPAo5EoI+iVXmhnWWWeIjIy+Gowg+91p1KrQ==
+X-Received: by 2002:a2e:22c6:0:b0:258:fd28:b253 with SMTP id i189-20020a2e22c6000000b00258fd28b253mr85119lji.418.1655305406697;
+        Wed, 15 Jun 2022 08:03:26 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id k13-20020a2e92cd000000b002556e77236dsm1670253ljh.62.2022.06.15.08.03.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 08:03:25 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id EFD7A103B9F; Wed, 15 Jun 2022 18:05:34 +0300 (+03)
+Date:   Wed, 15 Jun 2022 18:05:34 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Joerg Roedel <jroedel@suse.de>,
-        Kyung Min Park <kyung.min.park@intel.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <sivanich@hpe.com>,
-        Russ Anderson <russ.anderson@hpe.com>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
-Message-ID: <Yqn0dqulfz/Crwia@swahl-home.5wahls.com>
-References: <20220613205734.3x7i46bnsofzerr4@cantor>
- <673eb011-94f4-46b0-f1b4-24a02a269f4e@linux.intel.com>
- <CALzcddsXciFgKOLSkXxx4Rv_rwh21qe8hkyiEET280D8orP6Vw@mail.gmail.com>
- <9c943703-0c2f-b654-a28b-f594bf90bec9@linux.intel.com>
- <CALzcdduU-baVF9VV-NnYD2rKn0YC5hzS_F9udExRE7guvMqXWg@mail.gmail.com>
- <616dc81c-dfc6-d6c6-1eab-de0e9ba4411f@linux.intel.com>
- <Yqi7L9A/ADXpIvN6@swahl-home.5wahls.com>
- <20220614190145.dkdwjnqnd7lv6y4n@cantor>
- <Yqj5q1Yps9JVlyyH@swahl-home.5wahls.com>
- <9d6177ac-802f-eb11-4307-b0e49d8126b5@linux.intel.com>
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv7 05/14] x86/boot: Add infrastructure required for
+ unaccepted memory support
+Message-ID: <20220615150534.ylkref3runa4kmyj@box.shutemov.name>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <20220614120231.48165-6-kirill.shutemov@linux.intel.com>
+ <YqmyQZa4CTHkH3gT@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9d6177ac-802f-eb11-4307-b0e49d8126b5@linux.intel.com>
-X-Proofpoint-GUID: bB2PVBc_8EbJ9irlOMT9z_iBCh4EmkNy
-X-Proofpoint-ORIG-GUID: bB2PVBc_8EbJ9irlOMT9z_iBCh4EmkNy
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-15_14,2022-06-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- spamscore=0 priorityscore=1501 malwarescore=0 adultscore=0 suspectscore=0
- clxscore=1015 impostorscore=0 mlxlogscore=999 bulkscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206150058
+In-Reply-To: <YqmyQZa4CTHkH3gT@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 09:38:35AM +0800, Baolu Lu wrote:
-> On 2022/6/15 05:12, Steve Wahl wrote:
-> > On Tue, Jun 14, 2022 at 12:01:45PM -0700, Jerry Snitselaar wrote:
-> > > On Tue, Jun 14, 2022 at 11:45:35AM -0500, Steve Wahl wrote:
-> > > > On Tue, Jun 14, 2022 at 10:21:29AM +0800, Baolu Lu wrote:
-> > > > > On 2022/6/14 09:54, Jerry Snitselaar wrote:
-> > > > > > On Mon, Jun 13, 2022 at 6:51 PM Baolu Lu <baolu.lu@linux.intel.com> wrote:
-> > > > > > > 
-> > > > > > > On 2022/6/14 09:44, Jerry Snitselaar wrote:
-> > > > > > > > On Mon, Jun 13, 2022 at 6:36 PM Baolu Lu<baolu.lu@linux.intel.com>  wrote:
-> > > > > > > > > On 2022/6/14 04:57, Jerry Snitselaar wrote:
-> > > > > > > > > > On Thu, May 12, 2022 at 10:13:09AM -0500, Steve Wahl wrote:
-> > > > > > > > > > > To support up to 64 sockets with 10 DMAR units each (640), make the
-> > > > > > > > > > > value of DMAR_UNITS_SUPPORTED adjustable by a config variable,
-> > > > > > > > > > > CONFIG_DMAR_UNITS_SUPPORTED, and make it's default 1024 when MAXSMP is
-> > > > > > > > > > > set.
-> > > > > > > > > > > 
-> > > > > > > > > > > If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
-> > > > > > > > > > > to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
-> > > > > > > > > > > allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
-> > > > > > > > > > > remapping doesn't support X2APIC mode x2apic disabled"; and the system
-> > > > > > > > > > > fails to boot properly.
-> > > > > > > > > > > 
-> > > > > > > > > > > Signed-off-by: Steve Wahl<steve.wahl@hpe.com>
-> > > > > > > > > > > ---
-> > > > > > > > > > > 
-> > > > > > > > > > > Note that we could not find a reason for connecting
-> > > > > > > > > > > DMAR_UNITS_SUPPORTED to MAX_IO_APICS as was done previously.  Perhaps
-> > > > > > > > > > > it seemed like the two would continue to match on earlier processors.
-> > > > > > > > > > > There doesn't appear to be kernel code that assumes that the value of
-> > > > > > > > > > > one is related to the other.
-> > > > > > > > > > > 
-> > > > > > > > > > > v2: Make this value a config option, rather than a fixed constant.  The default
-> > > > > > > > > > > values should match previous configuration except in the MAXSMP case.  Keeping the
-> > > > > > > > > > > value at a power of two was requested by Kevin Tian.
-> > > > > > > > > > > 
-> > > > > > > > > > >      drivers/iommu/intel/Kconfig | 6 ++++++
-> > > > > > > > > > >      include/linux/dmar.h        | 6 +-----
-> > > > > > > > > > >      2 files changed, 7 insertions(+), 5 deletions(-)
-> > > > > > > > > > > 
-> > > > > > > > > > > diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-> > > > > > > > > > > index 247d0f2d5fdf..fdbda77ac21e 100644
-> > > > > > > > > > > --- a/drivers/iommu/intel/Kconfig
-> > > > > > > > > > > +++ b/drivers/iommu/intel/Kconfig
-> > > > > > > > > > > @@ -9,6 +9,12 @@ config DMAR_PERF
-> > > > > > > > > > >      config DMAR_DEBUG
-> > > > > > > > > > >         bool
-> > > > > > > > > > > 
-> > > > > > > > > > > +config DMAR_UNITS_SUPPORTED
-> > > > > > > > > > > +    int "Number of DMA Remapping Units supported"
-> > > > > > > > > > Also, should there be a "depends on (X86 || IA64)" here?
-> > > > > > > > > Do you have any compilation errors or warnings?
-> > > > > > > > > 
-> > > > > > > > > Best regards,
-> > > > > > > > > baolu
-> > > > > > > > > 
-> > > > > > > > I think it is probably harmless since it doesn't get used elsewhere,
-> > > > > > > > but our tooling was complaining to me because DMAR_UNITS_SUPPORTED was
-> > > > > > > > being autogenerated into the configs for the non-x86 architectures we
-> > > > > > > > build (aarch64, s390x, ppcle64).
-> > > > > > > > We have files corresponding to the config options that it looks at,
-> > > > > > > > and I had one for x86 and not the others so it noticed the
-> > > > > > > > discrepancy.
-> > > > > > > 
-> > > > > > > So with "depends on (X86 || IA64)", that tool doesn't complain anymore,
-> > > > > > > right?
-> > > > > > > 
-> > > > > > > Best regards,
-> > > > > > > baolu
-> > > > > > > 
-> > > > > > 
-> > > > > > Yes, with the depends it no longer happens.
-> > > > > 
-> > > > > The dmar code only exists on X86 and IA64 arch's. Adding this depending
-> > > > > makes sense to me. I will add it if no objections.
-> > > > 
-> > > > I think that works after Baolu's patchset that makes intel-iommu.h
-> > > > private.  I'm pretty sure it wouldn't have worked before that.
-> > > > 
-> > > > No objections.
-> > > > 
-> > > 
-> > > Yes, I think applying it with the depends prior to Baolu's change would
-> > > still run into the issue from the KTR report if someone compiled without
-> > > INTEL_IOMMU enabled.
-> > > 
-> > > This was dealing with being able to do something like:
-> > > 
-> > > make allmodconfig ARCH=arm64 ; grep DMAR_UNITS .config
-> > > 
-> > > and finding CONFIG_DMAR_UNITS_SUPPORTED=64.
-> > > 
-> > > Thinking some more though, instead of the depends being on the arch
-> > > would depending on DMAR_TABLE or INTEL_IOMMU be more appropriate?
+On Wed, Jun 15, 2022 at 12:19:45PM +0200, Peter Zijlstra wrote:
+> On Tue, Jun 14, 2022 at 03:02:22PM +0300, Kirill A. Shutemov wrote:
+> > Pull functionality from the main kernel headers and lib/ that is
+> > required for unaccepted memory support.
 > > 
-> > At least in my limited exploration, depending on INTEL_IOMMU yields
-> > compile errors, but depending upon DMAR_TABLE appears to work fine.
+> > This is preparatory patch. The users for the functionality will come in
+> > following patches.
+> > 
+> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> > ---
+> >  arch/x86/boot/bitops.h                   | 40 ++++++++++++
+> >  arch/x86/boot/compressed/align.h         | 14 +++++
+> >  arch/x86/boot/compressed/bitmap.c        | 43 +++++++++++++
+> >  arch/x86/boot/compressed/bitmap.h        | 49 +++++++++++++++
+> >  arch/x86/boot/compressed/bits.h          | 36 +++++++++++
+> >  arch/x86/boot/compressed/compiler.h      |  9 +++
+> >  arch/x86/boot/compressed/find.c          | 54 ++++++++++++++++
+> >  arch/x86/boot/compressed/find.h          | 80 ++++++++++++++++++++++++
+> >  arch/x86/boot/compressed/math.h          | 37 +++++++++++
+> >  arch/x86/boot/compressed/minmax.h        | 61 ++++++++++++++++++
+> >  arch/x86/boot/compressed/pgtable_types.h | 25 ++++++++
 > 
-> DMAR_TABLE is used beyond INTEL_IOMMU, so depending on DMAR_TABLE seems
-> better.
-> 
-> Steve, do you mind posting a v3 with this fixed?
+> That's quite a lot of duplicated code; is there really no way so share
+> this?
 
-I can do that. Expect it shortly.
+Code duplication also make me uncomfortable. But that what Borislav wanted
+to see. efi.h in the boot stub which copies bulk of <linux/efi.h> also
+sets the trend in the direction.
 
---> Steve
+Alternative is creating a subset of headers that can be used in both in
+main kernel and boot stub. It is more complex and doesn't allow for short
+cuts that can be made on copy if you know the context it is used in.
+
+It also sounds painfully similar to uapi/ project. I'm not sure we want to
+go this path.
 
 -- 
-Steve Wahl, Hewlett Packard Enterprise
+ Kirill A. Shutemov
