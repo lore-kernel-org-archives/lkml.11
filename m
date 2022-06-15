@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 765A2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:15:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1D1CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241012AbiFOQOQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:14:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39808 "EHLO
+        id S243286AbiFOQOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 12:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348940AbiFOQMz (ORCPT
+        with ESMTP id S1348785AbiFOQMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:12:55 -0400
+        Wed, 15 Jun 2022 12:12:54 -0400
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA2D721268;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C02B21813;
         Wed, 15 Jun 2022 09:12:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Cc:To:From:content-disposition;
-        bh=qwHhhptcjs675dAW5wV9iUf/ZWGXFcOtu4sOGzEzFjs=; b=YmHHnpHXs1wVWqcPzTDFNBWVuK
-        Ufuk1/bP6jiv6cicN1+HWISek74RNoL6XDVXgD7MfiZHGSYeMFU1VMkaI3HdZvcSSTBlpEk975Xet
-        lM/pDCalBifWIevWRcadscS84nE643nE1GCU6X2f1+CZXXJji+nzCGP+8WVgEXEXkQvOK3IIGXXtx
-        3weJ0ks+ru8GXZrthAQyc6RkGCl0P/w2PaCX0ZfOx+CCLOOuMC0RnH41/aJ+0ioIpS0vJoBDZxxr1
-        bWVy1Hbv4a7Yb3N5PcrE8KcO4tvJf4kt4PJqPiPl8lBLKgA/ER3s3R9j0Y92JXvdG9PRIgDrYaSu/
-        0ccdiREQ==;
+        bh=DdZTvd3yBCTOLfdH85j+eUYcuinHr6KLhT1SRgVQVD0=; b=HIHDMfL5brPKgsuHPyRaaOLIQG
+        Re/GuSfaJP+xJ8dav+q+G6pnRKbJ3UUU56fV8zFqNSNQIf5mSZ5s3GNtGQKSZk0Es4MbL8pPjMTfi
+        DBL5pXyKNE/AbsOV6KZB02bJay7RCSe8ImtccTN0aoZG0rYmSDxUZ2L0GzDQuizWJNbBBRiBCWSay
+        0Fb5+WuBsVf1w7qupINs5imSr+fBwB66tuFbwF/lhDT2zjFY7b+Nfo6CfbtJTjP4nuujpoP4fY6xG
+        L0BIrMURi6lyD1m87JeM+HqTB1aazkonUzXWq92MsaAZ3cJ4kL/eLh22mHgCsADJ/Pgig5PIiAaNU
+        jrcBTAIA==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
         by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1o1VdS-0084iR-Tu; Wed, 15 Jun 2022 10:12:52 -0600
+        id 1o1VdR-0084iP-SZ; Wed, 15 Jun 2022 10:12:51 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1o1VdH-0004a3-92; Wed, 15 Jun 2022 10:12:39 -0600
+        id 1o1VdH-0004aC-K7; Wed, 15 Jun 2022 10:12:39 -0600
 From:   Logan Gunthorpe <logang@deltatee.com>
 To:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
         linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
@@ -57,8 +57,8 @@ Cc:     Stephen Bates <sbates@raithlin.com>,
         Ralph Campbell <rcampbell@nvidia.com>,
         Logan Gunthorpe <logang@deltatee.com>,
         Jason Gunthorpe <jgg@nvidia.com>
-Date:   Wed, 15 Jun 2022 10:12:17 -0600
-Message-Id: <20220615161233.17527-6-logang@deltatee.com>
+Date:   Wed, 15 Jun 2022 10:12:20 -0600
+Message-Id: <20220615161233.17527-9-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220615161233.17527-1-logang@deltatee.com>
 References: <20220615161233.17527-1-logang@deltatee.com>
@@ -67,45 +67,177 @@ Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 172.16.1.31
 X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com, jhubbard@nvidia.com, rcampbell@nvidia.com, jgg@nvidia.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v7 05/21] dma-mapping: allow EREMOTEIO return code for P2PDMA transfers
+Subject: [PATCH v7 08/21] iommu/dma: support PCI P2PDMA pages in dma-iommu map_sg
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add EREMOTEIO error return to dma_map_sgtable() which will be used
-by .map_sg() implementations that detect P2PDMA pages that the
-underlying DMA device cannot access.
+When a PCI P2PDMA page is seen, set the IOVA length of the segment
+to zero so that it is not mapped into the IOVA. Then, in finalise_sg(),
+apply the appropriate bus address to the segment. The IOVA is not
+created if the scatterlist only consists of P2PDMA pages.
+
+A P2PDMA page may have three possible outcomes when being mapped:
+  1) If the data path between the two devices doesn't go through
+     the root port, then it should be mapped with a PCI bus address
+  2) If the data path goes through the host bridge, it should be mapped
+     normally with an IOMMU IOVA.
+  3) It is not possible for the two devices to communicate and thus
+     the mapping operation should fail (and it will return -EREMOTEIO).
+
+Similar to dma-direct, the sg_dma_mark_pci_p2pdma() flag is used to
+indicate bus address segments. On unmap, P2PDMA segments are skipped
+over when determining the start and end IOVA addresses.
+
+With this change, the flags variable in the dma_map_ops is set to
+DMA_F_PCI_P2PDMA_SUPPORTED to indicate support for P2PDMA pages.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- kernel/dma/mapping.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iommu/dma-iommu.c | 68 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 61 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index db7244291b74..9f65d1041638 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -197,7 +197,7 @@ static int __dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
- 	if (ents > 0)
- 		debug_dma_map_sg(dev, sg, nents, ents, dir, attrs);
- 	else if (WARN_ON_ONCE(ents != -EINVAL && ents != -ENOMEM &&
--			      ents != -EIO))
-+			      ents != -EIO && ents != -EREMOTEIO))
- 		return -EIO;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index f90251572a5d..b01ca0c6a7ab 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -21,6 +21,7 @@
+ #include <linux/iova.h>
+ #include <linux/irq.h>
+ #include <linux/list_sort.h>
++#include <linux/memremap.h>
+ #include <linux/mm.h>
+ #include <linux/mutex.h>
+ #include <linux/pci.h>
+@@ -1062,6 +1063,16 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
+ 		sg_dma_address(s) = DMA_MAPPING_ERROR;
+ 		sg_dma_len(s) = 0;
  
- 	return ents;
-@@ -255,6 +255,8 @@ EXPORT_SYMBOL(dma_map_sg_attrs);
-  *		complete the mapping. Should succeed if retried later.
-  *   -EIO	Legacy error code with an unknown meaning. eg. this is
-  *		returned if a lower level call returned DMA_MAPPING_ERROR.
-+ *   -EREMOTEIO	The DMA device cannot access P2PDMA memory specified in
-+ *		the sg_table. This will not succeed if retried.
-  */
- int dma_map_sgtable(struct device *dev, struct sg_table *sgt,
- 		    enum dma_data_direction dir, unsigned long attrs)
++		if (is_pci_p2pdma_page(sg_page(s)) && !s_iova_len) {
++			if (i > 0)
++				cur = sg_next(cur);
++
++			pci_p2pdma_map_bus_segment(s, cur);
++			count++;
++			cur_len = 0;
++			continue;
++		}
++
+ 		/*
+ 		 * Now fill in the real DMA data. If...
+ 		 * - there is a valid output segment to append to
+@@ -1158,6 +1169,8 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	struct iova_domain *iovad = &cookie->iovad;
+ 	struct scatterlist *s, *prev = NULL;
+ 	int prot = dma_info_to_prot(dir, dev_is_dma_coherent(dev), attrs);
++	struct dev_pagemap *pgmap = NULL;
++	enum pci_p2pdma_map_type map_type;
+ 	dma_addr_t iova;
+ 	size_t iova_len = 0;
+ 	unsigned long mask = dma_get_seg_boundary(dev);
+@@ -1193,6 +1206,35 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 		s_length = iova_align(iovad, s_length + s_iova_off);
+ 		s->length = s_length;
+ 
++		if (is_pci_p2pdma_page(sg_page(s))) {
++			if (sg_page(s)->pgmap != pgmap) {
++				pgmap = sg_page(s)->pgmap;
++				map_type = pci_p2pdma_map_type(pgmap, dev);
++			}
++
++			switch (map_type) {
++			case PCI_P2PDMA_MAP_BUS_ADDR:
++				/*
++				 * A zero length will be ignored by
++				 * iommu_map_sg() and then can be detected
++				 * in __finalise_sg() to actually map the
++				 * bus address.
++				 */
++				s->length = 0;
++				continue;
++			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
++				/*
++				 * Mapping through host bridge should be
++				 * mapped with regular IOVAs, thus we
++				 * do nothing here and continue below.
++				 */
++				break;
++			default:
++				ret = -EREMOTEIO;
++				goto out_restore_sg;
++			}
++		}
++
+ 		/*
+ 		 * Due to the alignment of our single IOVA allocation, we can
+ 		 * depend on these assumptions about the segment boundary mask:
+@@ -1215,6 +1257,9 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 		prev = s;
+ 	}
+ 
++	if (!iova_len)
++		return __finalise_sg(dev, sg, nents, 0);
++
+ 	iova = iommu_dma_alloc_iova(domain, iova_len, dma_get_mask(dev), dev);
+ 	if (!iova) {
+ 		ret = -ENOMEM;
+@@ -1236,7 +1281,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ out_restore_sg:
+ 	__invalidate_sg(sg, nents);
+ out:
+-	if (ret != -ENOMEM)
++	if (ret != -ENOMEM && ret != -EREMOTEIO)
+ 		return -EINVAL;
+ 	return ret;
+ }
+@@ -1244,7 +1289,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+ 		int nents, enum dma_data_direction dir, unsigned long attrs)
+ {
+-	dma_addr_t start, end;
++	dma_addr_t end, start = DMA_MAPPING_ERROR;
+ 	struct scatterlist *tmp;
+ 	int i;
+ 
+@@ -1260,14 +1305,22 @@ static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+ 	 * The scatterlist segments are mapped into a single
+ 	 * contiguous IOVA allocation, so this is incredibly easy.
+ 	 */
+-	start = sg_dma_address(sg);
+-	for_each_sg(sg_next(sg), tmp, nents - 1, i) {
++	for_each_sg(sg, tmp, nents, i) {
++		if (sg_is_dma_bus_address(tmp)) {
++			sg_dma_unmark_bus_address(tmp);
++			continue;
++		}
+ 		if (sg_dma_len(tmp) == 0)
+ 			break;
+-		sg = tmp;
++
++		if (start == DMA_MAPPING_ERROR)
++			start = sg_dma_address(tmp);
++
++		end = sg_dma_address(tmp) + sg_dma_len(tmp);
+ 	}
+-	end = sg_dma_address(sg) + sg_dma_len(sg);
+-	__iommu_dma_unmap(dev, start, end - start);
++
++	if (start != DMA_MAPPING_ERROR)
++		__iommu_dma_unmap(dev, start, end - start);
+ }
+ 
+ static dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
+@@ -1460,6 +1513,7 @@ static unsigned long iommu_dma_get_merge_boundary(struct device *dev)
+ }
+ 
+ static const struct dma_map_ops iommu_dma_ops = {
++	.flags			= DMA_F_PCI_P2PDMA_SUPPORTED,
+ 	.alloc			= iommu_dma_alloc,
+ 	.free			= iommu_dma_free,
+ 	.alloc_pages		= dma_common_alloc_pages,
 -- 
 2.30.2
 
