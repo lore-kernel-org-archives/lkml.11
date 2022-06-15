@@ -2,89 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E75F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:04:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33802C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356018AbiFOOEJ (ORCPT
+        id S1346815AbiFOOEj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
+        Wed, 15 Jun 2022 10:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356195AbiFOOEA (ORCPT
+        with ESMTP id S1355971AbiFOOEh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:04:00 -0400
-Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61FA814020
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:03:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=xGjqN
-        1CzFGgxxXJufcBxFeGfgDwPCWB316shxSNIbJs=; b=JVHxeNujKk5t7no8ctG1Q
-        xSBB2a0rzeK6LpMG1MP7z2IcKj8wzgC8R/tMRRAbUPk14+EZTngtMMnb7ES9AfpX
-        ACciMZcwt021YJhkv6pYS/wgRzd3ZxE8wER2KbbNjjPCh36ARQ1eKeoMLewvDNte
-        tIV5FyITVMya3u22tGtURU=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp10 (Coremail) with SMTP id NuRpCgDHFmt45qliXpPJEg--.48216S2;
-        Wed, 15 Jun 2022 22:02:33 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        windhl@126.com
-Subject: [PATCH] drivers: soc: bcm: brcmstb: Add missing of_node_put() in biuctrl.c
-Date:   Wed, 15 Jun 2022 22:02:31 +0800
-Message-Id: <20220615140231.3968187-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 10:04:37 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB6323BCB
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:04:36 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-30ec2aa3b6cso61814727b3.11
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:04:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TKNmlelPMUUwEhyo/oW2GfDg9fGO0GWkAQdbd+usNG0=;
+        b=Hhk5ooKmiw/m4i7aPxBot9kGRRD4QfdArggzSzM1SVYadr1ayhHvdo0Lf2/Twv4K3v
+         jYq2sbCVcfkaursJKcvjxYIOAOWgCibUIArbV5dqqKvm2HU1zksAyPgEsqoxpEr1dFxF
+         TJS7ncF98C5hZIDPDc5Q0ao/FWu2b51fJxaOZS+7j3wdLgyARfPd21tN1FAjd37XByP1
+         tMxMNMaoRie1uKHl3QFXUlm4wqmLoRGmmCjvDpXCxP83wB9cgXLIhfqiQppMC76e8JNL
+         xui5hyqZ4b8F2FsfjmoaZNDc3fuo8nDZrviLYt+kiNM7UaALnCXM5F053RXiWxk71KoG
+         hpjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TKNmlelPMUUwEhyo/oW2GfDg9fGO0GWkAQdbd+usNG0=;
+        b=ePI5wj5v3OjtmhY2KscQU5jaGc3YyAWPTG0kNN7mMP62XZgl+EnTYVG5zsTfM3fAV7
+         fqjkzRMyU7SfEsZX16eHVZCHOG5BwM/uQSE1PB3CBC69y89ILDLHtK0L5FgbmzRfBSnu
+         3LB/ei5H7BUR+GE6sOTlJj6l+2qjaScSltqzugbYS2TfPx4BiW2u0b8jNqMlcLgPBm/f
+         ZHGid4cx6bC62ptodEf5hEgU3d+oUL/Ii4k4RYOAEUmBlE1h8uWLNqR+m93V1sOpE1Ei
+         HrD3OQydkmk88G2WZPbpZq0gKgYmlAfKPste/z8NhVJ2tA4vkgMTCXXVNaR6I4sq3sP1
+         SnzA==
+X-Gm-Message-State: AJIora9Nl2lNdO+Q03rhg2SCFXTL/TDyIetpVVhultAndv9k+2Q4Mjuy
+        Cpo9HVPW6ybPRnpW7nhUnwjRJq9Tpkkoy8UcjEWeSQ==
+X-Google-Smtp-Source: AGRyM1tcOWzYDj+vzN+BPLmjJWB+4BtKrK1yhKwTxn7O9wjxBMPpl/2kQCMvVMBdo4eZwYOsbLHoIiNtVTcY6D3IZpY=
+X-Received: by 2002:a81:830f:0:b0:313:3918:5cf with SMTP id
+ t15-20020a81830f000000b00313391805cfmr11990562ywf.126.1655301875869; Wed, 15
+ Jun 2022 07:04:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NuRpCgDHFmt45qliXpPJEg--.48216S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZr1rCry8Gw15XFykWr18uFg_yoWkZwcEgF
-        93Xr9rXr4UZw48XFyDCw4fZas7uFs8XFs7ZFyIqa43CF92qw1DJrWkZr9xCw4kWrWvkFy7
-        Cw4qgrW0vr1UGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_znQ7UUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizhkhF18RPTF-wQAAsd
+References: <20220607111602.57355-1-linmq006@gmail.com>
+In-Reply-To: <20220607111602.57355-1-linmq006@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 15 Jun 2022 16:04:24 +0200
+Message-ID: <CACRpkdYBHniSSb1Och=P_YNcuSvRxXYJM0KtCuLSeETxMtnAdQ@mail.gmail.com>
+Subject: Re: [PATCH] pinctrl: nomadik: Fix refcount leak in nmk_pinctrl_dt_subnode_to_map
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In brcmstb_biuctrl_init(), of_find_compatible_node() will return a
-node pointer with refcount incremented. We should use of_node_put()
-in each fail path or when it is not used anymore.
+On Tue, Jun 7, 2022 at 1:16 PM Miaoqian Lin <linmq006@gmail.com> wrote:
 
-Signed-off-by: Liang He <windhl@126.com>
----
- drivers/soc/bcm/brcmstb/biuctrl.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+> of_parse_phandle() returns a node pointer with refcount
+> incremented, we should use of_node_put() on it when not need anymore.
+> Add missing of_node_put() to avoid refcount leak."
+>
+> Fixes: c2f6d059abfc ("pinctrl: nomadik: refactor DT parser to take two paths")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 
-diff --git a/drivers/soc/bcm/brcmstb/biuctrl.c b/drivers/soc/bcm/brcmstb/biuctrl.c
-index 2c975d79fe8e..1467bbd59690 100644
---- a/drivers/soc/bcm/brcmstb/biuctrl.c
-+++ b/drivers/soc/bcm/brcmstb/biuctrl.c
-@@ -340,12 +340,12 @@ static int __init brcmstb_biuctrl_init(void)
- 
- 	ret = setup_hifcpubiuctrl_regs(np);
- 	if (ret)
--		return ret;
-+		goto out_put;
- 
- 	ret = mcp_write_pairing_set();
- 	if (ret) {
- 		pr_err("MCP: Unable to disable write pairing!\n");
--		return ret;
-+		goto out_put;
- 	}
- 
- 	a72_b53_rac_enable_all(np);
-@@ -353,6 +353,9 @@ static int __init brcmstb_biuctrl_init(void)
- #ifdef CONFIG_PM_SLEEP
- 	register_syscore_ops(&brcmstb_cpu_credit_syscore_ops);
- #endif
--	return 0;
-+	ret = 0;
-+out_put:
-+	of_node_put(np);
-+	return ret;
- }
- early_initcall(brcmstb_biuctrl_init);
--- 
-2.25.1
+Patch applied!
 
+Yours,
+Linus Walleij
