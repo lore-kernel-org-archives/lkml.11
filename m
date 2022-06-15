@@ -2,210 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA98C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B043FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239779AbiFOKtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:49:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
+        id S1344465AbiFOKuY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 06:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231751AbiFOKs7 (ORCPT
+        with ESMTP id S243605AbiFOKuW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:48:59 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 020B82A70C;
-        Wed, 15 Jun 2022 03:48:57 -0700 (PDT)
-Received: from mail-yb1-f179.google.com ([209.85.219.179]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MGxYh-1nxFil0Gzj-00E60P; Wed, 15 Jun 2022 12:48:56 +0200
-Received: by mail-yb1-f179.google.com with SMTP id v22so19819945ybd.5;
-        Wed, 15 Jun 2022 03:48:55 -0700 (PDT)
-X-Gm-Message-State: AJIora/iITwL+uF19vruls4Ek9yJDMJfC/zgF+RI+5bouyNNY7OVUj15
-        RGdSEPSW3iCwrgX3OthdLbpA3Pp8H0sdjTHMAHA=
-X-Google-Smtp-Source: AGRyM1uLqkPKf59kwWCfljCBm5ZT7yCtwMl287dtrHSeVzKGWx3HCjXOif/E5TiMEJFGlLgyI6MBZ9ti+zoKUOOst6I=
-X-Received: by 2002:a05:6902:1023:b0:665:12c1:b44d with SMTP id
- x3-20020a056902102300b0066512c1b44dmr9891763ybt.472.1655290134824; Wed, 15
- Jun 2022 03:48:54 -0700 (PDT)
+        Wed, 15 Jun 2022 06:50:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57F4637A20
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:50:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655290220;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uHh98GFud1PPMa8LMkyMEyW14ccPkBQOH1hhbDcKaMg=;
+        b=eWa94p5GQyrGndI+0cPT/M6x5R5KSKzRjQJQrXXnqT4LColROrpTRyVVy1tFIFZMo4X0xR
+        uj0G5utEbBL8DY6/8o9Kx+nwsrusJmxPpC7MMHZJ8KcTC/Ada2M9uSk8mvrt5tG+tOV8ca
+        YU4vFu9cNMQxG3MrT3qxpaCWAjOjNi8=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-591-s4VAArG8M7y3nyNdKF4rqQ-1; Wed, 15 Jun 2022 06:50:19 -0400
+X-MC-Unique: s4VAArG8M7y3nyNdKF4rqQ-1
+Received: by mail-wm1-f69.google.com with SMTP id be12-20020a05600c1e8c00b0039c506b52a4so1427000wmb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:50:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uHh98GFud1PPMa8LMkyMEyW14ccPkBQOH1hhbDcKaMg=;
+        b=Kk78iTTFiyq5vs/QcvbN6yFpQoCT4gCt2OwoeR4ePytnL4UX39Jtte2mqHm1UM3XRE
+         M8URPGlcoD7FKK5RzMg8PHRm7tw+FTGTP/CUiw7uiVwGedVMQWItrSnUrwhBrQqVtJHL
+         I8/01VF20NvBoHTlTBNZvTaEt8Lm1iV4KkP6FIMT9bbeHfnDEGRhfC98XxArL1+ClaK5
+         NEUqa3GaN+Plnv73eR5yB7DeErTEjShTMLJn9UxrUK4PZEjitKFBH78kXV94qtszyzS7
+         jgYE0ZG+GtN+qRck71OfXZ1Z7lLxnhSXxbEFk5l0MGnplfnaNRGiOrQZ2y5BIuTbKOwy
+         Odhg==
+X-Gm-Message-State: AJIora9OTQBCnMqiHGHAM6nB2atQRwjOoR0kXqrg5Ol8y8FYsDmnDvuf
+        6pC/hk5QMnoizdFtA9qzaZ/UjU72EP6GemscBbhJLXODoMaSIilFl25jYXvZZcFV2pjFV3yHKiT
+        y5sLcOOpC9WD76MnlXrQ2agrM
+X-Received: by 2002:a05:6000:1861:b0:216:4519:18a1 with SMTP id d1-20020a056000186100b00216451918a1mr9255319wri.293.1655290218120;
+        Wed, 15 Jun 2022 03:50:18 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1ujJGQ91NoFzb7pWEePHMU1Lak91ztKOlNz2p9lEbfC2Vj6Sv1ENCei3nz6jG854BqJTQtsEA==
+X-Received: by 2002:a05:6000:1861:b0:216:4519:18a1 with SMTP id d1-20020a056000186100b00216451918a1mr9255298wri.293.1655290217900;
+        Wed, 15 Jun 2022 03:50:17 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id m6-20020a05600c3b0600b00397402ae674sm2044200wms.11.2022.06.15.03.50.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 03:50:16 -0700 (PDT)
+Message-ID: <7f6d9360-9254-88d6-fb34-13f248d2e542@redhat.com>
+Date:   Wed, 15 Jun 2022 12:50:14 +0200
 MIME-Version: 1.0
-References: <CA+G9fYtE0FmFgocYChrJrJc1Pcw+fc5yt8nHwTW7JPcZT=qH+w@mail.gmail.com>
-In-Reply-To: <CA+G9fYtE0FmFgocYChrJrJc1Pcw+fc5yt8nHwTW7JPcZT=qH+w@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 15 Jun 2022 12:48:38 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1h6wmoaw_tLiTMGsurPnHjsNvghSe_bppmscr7+04RmA@mail.gmail.com>
-Message-ID: <CAK8P3a1h6wmoaw_tLiTMGsurPnHjsNvghSe_bppmscr7+04RmA@mail.gmail.com>
-Subject: Re: [next] arm64: db410c: Internal error: Oops: 96000004 - pc : sysfs_kf_seq_show
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        regressions@lists.linux.dev,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Tejun Heo <tj@kernel.org>, Hao Luo <haoluo@google.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: Commit 282d8998e997 (srcu: Prevent expedited GPs and blocking
+ readers from consuming CPU) cause qemu boot slow
+Content-Language: en-US
+To:     Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>,
+        paulmck@kernel.org, zhangfei <zhangfei.gao@linaro.org>
+Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
         Matthew Wilcox <willy@infradead.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Nicolas Dechesne <nicolas.dechesne@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:WR/zOe2camCiQ/MEbHVScBABNnFWSi/ah7Zc+8D8RFgz6h6Vizr
- knX7qMJp+Aq65mYNWOyOMlxLm97hhsALZz8oQ0B0C2GvkTcUtqCVJ7+YfXBlK4jd8FSZnun
- SW89BEJoXwA9c6sD1aSG6yzxoqHTtImrBlMe0Ke5+vkFKOrdvdT0k6q0uO+TIu/qhosoAE5
- YVhjUC0mOCYIH5x3w9/4Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:n4oOLRuN4U8=:BanP6d97XxKbyd2k183s7Q
- tSLwmrAiU8Wo+2kIAyN4Ezoawo01xngKaBCTEq6W9uRpowNxREfhpURyxpMRhybLGdqbKpoAt
- A7iEEQKzxpHPJYd1pmQLDwmUr+tA0ibkKGGW5j3YlMjn33vGYZt3m35TNo0wMD5miEG3294CI
- Ee5gEE4iHn3UYOkI7rHRfHQu+m9oN3K2GluVyugTBK5iKcQ/Q5zeJGQqa6o1DJfmrVUvqykvB
- N+rYmZ4FvWizXSI6mtNbutyz54Z+y+nnsJmQ7oN9jpvtgf9OoSw88fAC4aFHD+VStoA1zrDeb
- hJYdaD1vxM5xi1AN1VJ4DUzq3fiSCPHBlVU1RSufsCVQVJM8e7qOlAbjUi5E3AxK0FolWbR+r
- lmLYhO0bJRkXfZu5PSlS+ikJWGL05POZ3l+CVqmj3FMGXr90UNHpRRNeVFCiv8M4UVAiWvcsd
- oLHQWoB1iodDGIkMdA7Sw/oQT02weQct1GWiq+NDxc86SKiDxnLWy2HhPswMkhCrkAUaG4fDg
- PfKFXlwrkY5ENHMgtFIZgFf3Bz6OZ2+DyNCLvlmNQ6PSbyzSyveAnD3b7KEcWn2lsPFNg6V3r
- 0fiPIfBaBAQFBKPuq3CdAwEXRcGiMpJqHx2bWmKdW88l2aZxNqTr8H89QYL1sArEVIizu3e8N
- B4ie8fvPUIP6e6zZUA57ypvqXsnSfVsGYGI9XyFpeVOZH6ETqRRX6x7KlVVu7qoK5AkHHUSdv
- ePq87qT7MZHVOJfc90wy6RPdIle69Bsu++/S2S8FWowE/knxz9dp+HXk8xEu0YNpjm/a6MV1E
- o0akesXFE9v/FoPiqTcTlZHyjCf8OC7q3j3rNzicj3fN2dpxgXGIXP1dybD0vyLizL+YQgDnF
- Tanui0avuD3AL21+YtFA==
+        "mtosatti@redhat.com" <mtosatti@redhat.com>,
+        Auger Eric <eric.auger@redhat.com>,
+        "chenxiang (M)" <chenxiang66@hisilicon.com>
+References: <tencent_E306F58EAEC1D188ED6D5F358A269F34C707@qq.com>
+ <20220613035711.GY1790663@paulmck-ThinkPad-P17-Gen-1>
+ <20220613041652.GA3976000@paulmck-ThinkPad-P17-Gen-1>
+ <tencent_F82250B6E3D51A9AC0D2BE1AE43A4E060909@qq.com>
+ <20220613121831.GA1790663@paulmck-ThinkPad-P17-Gen-1>
+ <tencent_65C7D0A04984EDB6A79A5E5379DA7E835206@qq.com>
+ <20220613145900.GC1790663@paulmck-ThinkPad-P17-Gen-1>
+ <7b6c983b21d44119b61716a66de397ed@huawei.com>
+ <f9684a69-5467-a440-abd1-7cf5ad3a81f7@quicinc.com>
+ <tencent_8FD344DA7FC376C7D1204604DA7689DA4906@qq.com>
+ <20220614141712.GR1790663@paulmck-ThinkPad-P17-Gen-1>
+ <tencent_DFF5A6C9352C76C00C7E46E06F2BA945350A@qq.com>
+ <042142db-aab2-fc4a-c1a5-371223c80440@quicinc.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <042142db-aab2-fc4a-c1a5-371223c80440@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 10:57 PM Naresh Kamboju
-<naresh.kamboju@linaro.org> wrote:
->
-> Following kernel crash reported while booting arm64 db410c board with
-> Linux next-20220614 [1] kfence enabled on this kernel.
->
-> CONFIG_KFENCE=y
->
->
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+On 6/15/22 12:40, Neeraj Upadhyay wrote:
+> 
+> This is useful data, thanks! Did you get chance to check between 100 and 
+> 1000, to narrow down further, from which point (does need to be exact 
+> value) between 100 and 1000,  you start seeing degradation at, for ex. 
+> 250, 500 , ...?
+> 
+> Is it also possible to try experiment 10 and 11 with below diff.
+> What I have done in below diff is, call srcu_get_delay() only once
+> in try_check_zero() (and not for every loop iteration); also
+> retry with a different delay for the extra iteration which is done
+> when srcu_get_delay(ssp) returns 0.
+> 
+> Once we have this data, can you also try by changing 
+> SRCU_RETRY_CHECK_LONG_DELAY   to 100, on top of below diff.
+> 
+> #define SRCU_RETRY_CHECK_LONG_DELAY  100
 
-Did it work on older linux-next kernels with KFENCE enabled, or did you
-just start enabling it?
+Is there any data that you would like me to gather from the KVM side, 
+for example with respect to how much it takes to do synchronize_srcu() 
+on an unpatched kernel, or the duration of the read-sides?
 
->
-> Boot log:
-> ---------
-> [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd030]
-> [    0.000000] Linux version 5.19.0-rc2-next-20220614
-> (tuxmake@tuxmake) (aarch64-linux-gnu-gcc (Debian 11.3.0-3) 11.3.0, GNU
-> ld (GNU Binutils for Debian) 2.38) #1 SMP PREEMPT @1655189659
-> [    0.000000] Machine model: Qualcomm Technologies, Inc. APQ 8016 SBC
-> [    0.000000] efi: UEFI not found.
-> [    0.000000] [Firmware Bug]: Kernel image misaligned at boot, please
-> fix your bootloader!
+Thanks,
 
-This is probably unrelated, but try updating your boot loader to get rid of
-this warning.
+Paolo
 
-> <trim>
-> [    0.000000] kfence: initialized - using 2097152 bytes for 255
-> objects at 0x(____ptrval____)-0x(____ptrval____)
-> <trim>
-> [   11.317288] Unable to handle kernel NULL pointer dereference at
-> virtual address 0000000000000000
-> [   11.317361] Mem abort info:
-> [   11.317906] Unable to handle kernel paging request at virtual
-> address 0000000029f63007
-> [   11.328825] Unable to handle kernel NULL pointer dereference at
-> virtual address 0000000000000009
-> [   11.334704]   ESR = 0x0000000096000004
-> [   11.343115] Unable to handle kernel NULL pointer dereference at
-> virtual address 0000000000000000
-> [   11.357163] Mem abort info:
-> [   11.357217]   ESR = 0x0000000096000004
-> [   11.359935] Mem abort info:
-> [   11.369085] Mem abort info:
-> [   11.369138]   ESR = 0x0000000096000004
-> [   11.373564]   EC = 0x25: DABT (current EL), IL = 32 bits
-> [   11.374530]   SET = 0, FnV = 0
-> [   11.382591]   EC = 0x25: DABT (current EL), IL = 32 bits
-> [   11.382864]   SET = 0, FnV = 0
-> [   11.400484]   ESR = 0x0000000096000004
-> [   11.411713]   EC = 0x25: DABT (current EL), IL = 32 bits
-> [   11.411776]   SET = 0, FnV = 0
-> [   11.422177]   EA = 0, S1PTW = 0
-> [   11.422234]   FSC = 0x04: level 0 translation fault
-> [   11.422724]   EC = 0x25: DABT (current EL), IL = 32 bits
-> [   11.424129] Data abort info:
-> [   11.428397]   EA = 0, S1PTW = 0
-> [   11.428416]   FSC = 0x04: level 0 translation fault
-> [   11.428427] Data abort info:
-> [   11.428434]   ISV = 0, ISS = 0x00000004
-> [   11.428442]   CM = 0, WnR = 0
-> [   11.428451] user pgtable: 4k pages, 48-bit VAs, pgdp=00000000854b8000
-> [   11.428464] [0000000029f63007] pgd=0000000000000000, p4d=0000000000000000
-> [   11.428494] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> [   11.428503] Modules linked in: venus_enc venus_dec
-> videobuf2_dma_contig crct10dif_ce adv7511(+) cec qcom_wcnss_pil
-> snd_soc_msm8916_analog qcom_pon qcom_spmi_temp_alarm rtc_pm8xxx
-> qcom_spmi_vadc snd_soc_lpass_apq8016 qcom_vadc_common
-> snd_soc_msm8916_digital snd_soc_lpass_cpu snd_soc_apq8016_sbc
-> snd_soc_lpass_platform qcom_q6v5_mss snd_soc_qcom_common qcom_pil_info
-> msm qcom_camss qcom_q6v5 gpu_sched qcom_sysmon drm_dp_aux_bus
-> venus_core qcom_common videobuf2_dma_sg v4l2_mem2mem v4l2_fwnode
-> qcom_glink_smem v4l2_async videobuf2_memops qmi_helpers videobuf2_v4l2
-> mdt_loader qnoc_msm8916 drm_display_helper videobuf2_common
-> i2c_qcom_cci qcom_rng qcom_stats icc_smd_rpm rfkill display_connector
-> drm_kms_helper drm socinfo rmtfs_mem qrtr fuse
-> [   11.428683] CPU: 3 PID: 312 Comm: systemd-udevd Tainted: G        W
->         5.19.0-rc2-next-20220614 #1
-> [   11.428694] Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC (DT)
-> [   11.428699] pstate: 00000005 (nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [   11.428709] pc : sysfs_kf_seq_show+0x3c/0x130
-> [   11.428724] lr : kernfs_seq_show+0x38/0x44
-> [   11.428735] sp : ffff80000b7ebbf0
-> [   11.428739] x29: ffff80000b7ebbf0 x28: 0000000000000001 x27: 0000000000400cc0
-> [   11.428753] x26: 000000007ffff000 x25: ffff000005581290 x24: ffff000005581280
-> [   11.428767] x23: 0000000000000000 x22: ffff0000056dd520 x21: ffff000004413d00
-> [   11.428780] x20: 0000000029f62fff x19: ffff000005581258 x18: 0000000000000000
-> [   11.428793] x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000000
-> [   11.428806] x14: 0000000000000000 x13: 0000000000000000 x12: 0000000000000000
-> [   11.428819] x11: 0000000000000000 x10: 0000000000000000 x9 : ffff8000084b0ca8
-> [   11.428832] x8 : 0000000000000000 x7 : 0000000000000200 x6 : 0000000000000000
-> [   11.428845] x5 : 0000000000000000 x4 : 0000000000000001 x3 : ffff000004413d00
-> [   11.428857] x2 : ffff8000084b2e64 x1 : 0000000000000001 x0 : ffff000002368a00
-
-It appears that kobj->ktype is x20 here, which is a user space address
-(0x29f62fff),
-reading ->sysfs_ops at offset 8 from that causes a trap.
-
-static const struct sysfs_ops *sysfs_file_ops(struct kernfs_node *kn)
-{
-        struct kobject *kobj = kn->parent->priv;
-
-        if (kn->flags & KERNFS_LOCKDEP)
-                lockdep_assert_held(kn);
-        return kobj->ktype ? kobj->ktype->sysfs_ops : NULL;
-}
-static int sysfs_kf_seq_show(struct seq_file *sf, void *v)
-{
-        struct kernfs_open_file *of = sf->private;
-        struct kobject *kobj = of->kn->parent->priv;
-        const struct sysfs_ops *ops = sysfs_file_ops(of->kn);
-...
-
-ffff800008432e64 <sysfs_kf_seq_show>:
-ffff800008432e64:       d503245f        bti     c
-ffff800008432e68:       d503201f        nop
-ffff800008432e6c:       d503201f        nop
-ffff800008432e70:       d503233f        paciasp
-ffff800008432e74:       a9bd7bfd        stp     x29, x30, [sp, #-48]!
-ffff800008432e78:       910003fd        mov     x29, sp
-ffff800008432e7c:       a90153f3        stp     x19, x20, [sp, #16]
-ffff800008432e80:       aa0003f3        mov     x19, x0
-ffff800008432e84:       a9025bf5        stp     x21, x22, [sp, #32]
-ffff800008432e88:       f9403815        ldr     x21, [x0, #112]  # of
-= sf->private
-ffff800008432e8c:       f94002a0        ldr     x0, [x21] # of->kn
-ffff800008432e90:       f9400400        ldr     x0, [x0, #8]  # kn->parent
-ffff800008432e94:       f9403016        ldr     x22, [x0, #96] # kobj
-= parent->priv
-ffff800008432e98:       f94016d4        ldr     x20, [x22, #40] # kobj-> ktype
-ffff800008432e9c:       b4000054        cbz     x20, ffff800008432ea4
-<sysfs_kf_seq_show+0x40>
-ffff800008432ea0:       f9400694        ldr     x20, [x20, #8] #
-ktype->sysfs_ops, traps
-...
-
-        Arnd
