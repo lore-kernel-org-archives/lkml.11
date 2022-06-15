@@ -2,114 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 429C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:55:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B579EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355730AbiFORzt (ORCPT
+        id S1347069AbiFOR5T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39394 "EHLO
+        Wed, 15 Jun 2022 13:57:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235028AbiFORzr (ORCPT
+        with ESMTP id S243685AbiFOR5M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:55:47 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670FD44766
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:55:46 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id r24so1956763ljn.2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:55:46 -0700 (PDT)
+        Wed, 15 Jun 2022 13:57:12 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2FD544CC
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:57:11 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id d23so9357023qke.0
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:57:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7N8FxBu6DA6O7mEvFYXStFEfAYN9n61bDy3OwBXjJ0o=;
-        b=JHdk1N03ADEWzySRt7KcxOBPuZaGFXA/8Xyn6d2SSlY9ihVTM6DTBbu1drTtrmQ+M1
-         8RPbl/vwMUwgaM0Na3DeW4R1DvZyVGTsvcipdrdnr6LbuwHnx+DPjFA6rx07XSw0xDHv
-         KK/3LfmRBtp3+hX2z93IpwI50ZnSgl482NCGQ=
+        d=maine.edu; s=google;
+        h=from:date:to:cc:subject:message-id:mime-version;
+        bh=lUE1wMAUhn3kDY9KTIDAYl8As1JumgEjfydHKTXBoMA=;
+        b=UWiV+IKLfovZ0BMALPQiVyjiWYDSwQjf/lH3EyiJcqf1sGrFa9gWqv1UgYKIEotxDK
+         9pfzIcBtAQoovKOvqxNUaBKSI1Fg5CEL0GGtA8Tpq3gqQt4haQyD0qeeDfzPxSlzcX9Q
+         rv6g+VqLqiM0sbc03LRWTiXOe5rhouubMjflU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7N8FxBu6DA6O7mEvFYXStFEfAYN9n61bDy3OwBXjJ0o=;
-        b=fqigjnnn1LqGWasd6PRLzgbO+MoZfEJJye76RODrmSDe76ftkWXYBKDnGqoxeSQwvc
-         p0T1hRWPbyjo3Cw24ZGqXvT77zWCkRcKtwQ64gnU6NaAObp9aOp7v1DBa0BI1kcvPqXI
-         ee9fV+yozhbY5CRG/5uX8ed0jtCKgJE4HRP50hyOtCxXzjxnSL7lw+ExgcpCyFC0ItjV
-         N6bh4o9rX8tVsBSwE29tv8ciO8bzdmG3xCcBKTJX0Fu7jSXkNZdBnN9S0AOHgDn9GpCU
-         JQDas4mh7xcvRyTJggAi/qdEVsbnsvcPCxE6jMxkcJzE9wvFFlKD9Bo9Z7WxN1jeWO5T
-         54Fg==
-X-Gm-Message-State: AJIora9Vi4otNgLJpbALmtuvDVH2Q7g2Cuy1OIS7FKQsEyaS4HP5vtr4
-        ofdEOJcYLKHqqIPxURkZvakPvOT48Ubx2R7v46c=
-X-Google-Smtp-Source: AGRyM1usq6rOnpKVnohX3RfJzcFbjacxYyo1QSxQi8IxyaWhI3JVOuBe+zfnFh1b5GZqxodmV+BC1w==
-X-Received: by 2002:a2e:9a8b:0:b0:255:5c14:a90 with SMTP id p11-20020a2e9a8b000000b002555c140a90mr512828lji.137.1655315744482;
-        Wed, 15 Jun 2022 10:55:44 -0700 (PDT)
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com. [209.85.208.171])
-        by smtp.gmail.com with ESMTPSA id u24-20020ac25198000000b00477cab33759sm1880398lfi.256.2022.06.15.10.55.44
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 10:55:44 -0700 (PDT)
-Received: by mail-lj1-f171.google.com with SMTP id c30so14118935ljr.9
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:55:44 -0700 (PDT)
-X-Received: by 2002:a5d:414d:0:b0:213:be00:a35 with SMTP id
- c13-20020a5d414d000000b00213be000a35mr875787wrq.97.1655315251112; Wed, 15 Jun
- 2022 10:47:31 -0700 (PDT)
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:mime-version;
+        bh=lUE1wMAUhn3kDY9KTIDAYl8As1JumgEjfydHKTXBoMA=;
+        b=392jmihUFiJWrOcmJmgpLnDQkmuCkR7y+l2LLKU3OJSvtOz46sdB0gNv6vqTJGLH39
+         TI2SqVDlyRpYDk5CDib1G2THwV9959NkHXxXqdJQ763QhDsZqEOxA7mhbSYWmsxQtsY3
+         0SSunC63LkEa+np+iK45prI4t5a/uEeIEZh3Kje5PxEafL60qKXEwROTsp9vd+UsOH4l
+         fq9hmsuDZcPl5Dd2eD9bnQ+zQJKgqzspYg/ubAjQhTRn0olFMxkAN6j+rmIa9NMS/gFz
+         b7k8Geyj0SZFXeEEu3pnACiObIj/sxc705ZoZdiG9EdbcpYHYayIlxpJly7chc8ZD1F+
+         Itlg==
+X-Gm-Message-State: AJIora+nw56z2/Kk3dNtam/L1V/7GnrsRx66lkrlj5KzhYL1wjRbcnAt
+        X1DZOY42A2jgYpyKgK3vUzRMAkoIH28hsg==
+X-Google-Smtp-Source: AGRyM1vMLNv5LCOOU21DkgjrnWPbkBrClGJuiXoZyFYP/yNZz3BJ/0L0FVWKnHb/Puwp1Jk0RvbucQ==
+X-Received: by 2002:a37:6b47:0:b0:6a7:48d:e64a with SMTP id g68-20020a376b47000000b006a7048de64amr729185qkc.112.1655315830505;
+        Wed, 15 Jun 2022 10:57:10 -0700 (PDT)
+Received: from macbook-air.local (weaver.eece.maine.edu. [130.111.218.23])
+        by smtp.gmail.com with ESMTPSA id cc23-20020a05622a411700b00304f98ad3c1sm9327430qtb.29.2022.06.15.10.57.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 10:57:09 -0700 (PDT)
+From:   Vince Weaver <vincent.weaver@maine.edu>
+X-Google-Original-From: Vince Weaver <vince@maine.edu>
+Date:   Wed, 15 Jun 2022 13:57:03 -0400 (EDT)
+To:     linux-kernel@vger.kernel.org
+cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [perf] why is /proc/sys/kernel/perf_user_access ARM64 only?
+Message-ID: <30d95df2-c3b-b3e3-d65e-c6be0355fb1@maine.edu>
 MIME-Version: 1.0
-References: <20220615162805.27962-1-pmladek@suse.com> <20220615162805.27962-2-pmladek@suse.com>
-In-Reply-To: <20220615162805.27962-2-pmladek@suse.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 15 Jun 2022 10:47:14 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgs38ZrfPvy=nOwVkVzjpM3VFU1zobP37Fwd_h9iAD5JQ@mail.gmail.com>
-Message-ID: <CAHk-=wgs38ZrfPvy=nOwVkVzjpM3VFU1zobP37Fwd_h9iAD5JQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] printk: Block console kthreads when direct printing
- will be required
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Peter Geis <pgwipeout@gmail.com>, zhouzhouyi@gmail.com,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Josh Triplett <josh@joshtriplett.org>,
-        rcu <rcu@vger.kernel.org>, linux-rockchip@lists.infradead.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 9:28 AM Petr Mladek <pmladek@suse.com> wrote:
->
-> BugLink: https://lore.kernel.org/r/20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1
-> BugLink: https://lore.kernel.org/r/CAMdYzYpF4FNTBPZsEFeWRuEwSies36QM_As8osPWZSr2q-viEA@mail.gmail.com
 
-Other thread discussion about this exact thing:
+Just wasted a lot of time tracking down why rdpmc() event reading wasn't 
+working on an ARM64 machine.
 
-   https://lore.kernel.org/all/CAHk-=wgzRUT1fBpuz3xcN+YdsX0SxqOzHWRtj0ReHpUBb5TKbA@mail.gmail.com/
+It turns out ARM64 has added a custom
+	"/proc/sys/kernel/perf_user_access"
+to control rdpmc access, but only on ARM64.
+	e2012600810c9ded81f6f63a8d04781be3c300ad
 
-please stop making up random tags that make no sense.
+Why is this ARM64-only?  Why isn't this generic perf infrastructure?
+How is this different from the existing
+	/sys/bus/event_source/devices/cpu/rdpmc
+tooling?
 
-Just use "Link:"
+Also, when user events are disabled, why is the ARMv8 PMU not disabling
+the cap_user_rdpmc bit in the perf mmap() page?
 
-Look at that first one (I didn't even bother following the second
-one). The "bug" part is not even the most important part.
+rdpmc was trouble before, but now it's an even bigger 
+architecture-dependent mess just trying to figure out if the feature is 
+enabled or not.
 
-The reason to follow that link is all the discussion, the test-patch,
-and the confirmation from Paul that "yup, that patch solves the
-problem for me".
-
-It's extra context to the commit, in case somebody wants to know the
-history. The "bug" part is (and always should be) already explained in
-the commit message, there's absolutely no point in adding soem extra
-noise to the "Link:" tag.
-
-And if the only reason for "BugLink:" to exist is to show "look, this
-tag actually contains relevant and interesting information", then the
-solution to THAT problem is to not have the links that are useless and
-pointless in the first place.
-
-Put another way: if you want to distinguish useless links from useful
-ones, just do it by not including the useless ones.
-
-Ok?
-
-                   Linus
+Vince
