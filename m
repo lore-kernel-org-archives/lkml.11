@@ -2,103 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E1DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349275AbiFOQbS (ORCPT
+        id S1355717AbiFOQbw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
+        Wed, 15 Jun 2022 12:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233196AbiFOQbP (ORCPT
+        with ESMTP id S233196AbiFOQbu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:31:15 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7FA3E5ED
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:31:15 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id o33-20020a17090a0a2400b001ea806e48c6so2543724pjo.1
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:31:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YdNSDdpF28pADLYgfkDW0JNGk35ddAn9s2Wtj0NQQ2Q=;
-        b=Ra3/gzgHLMvhMwLdQQySr/AEsKgTQMBRhU6/8HG3JugrGp53TKxO0j9eEm7MGgognn
-         fx5xOfjJ6rcI23PbqmaP9MCfc/xgt5WF6pl46Cqk3RVVe5FcIjhkGzEPHOmswY03z/WK
-         9BzK10ikXKviG0ZqWns1DxWiDTGgWkobEIeiBqHTDEklBELLFGkYqUrZJBm/KkHpLJph
-         C4wWwQe8pf3La5DBg+t6Q6pI+/RXGKnMKNRhvgLM6C2KCfQ6yrSFRY9vd4iRR5e/klWj
-         L9hV51sHMf3BoA2/pP9k8/BO1if/8OFkX+GFKKBMTs2bt3oxfMOMoWcTBw3uLAvUqn2l
-         fmXA==
+        Wed, 15 Jun 2022 12:31:50 -0400
+Received: from mail-il1-f174.google.com (mail-il1-f174.google.com [209.85.166.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 092403EAA5;
+        Wed, 15 Jun 2022 09:31:50 -0700 (PDT)
+Received: by mail-il1-f174.google.com with SMTP id h18so9144596ilj.7;
+        Wed, 15 Jun 2022 09:31:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YdNSDdpF28pADLYgfkDW0JNGk35ddAn9s2Wtj0NQQ2Q=;
-        b=KvIUoUj3MRvUGOgWpGJhV3IAaSFgSoh8GCn1dEZxcV7a9JW54tOJ7oQUc7tI2lHGNi
-         w9B1qAA0U5u4vl6wJeB54VG53UkTuBhiCFDCeMJ2FNhVHwJO3dnMh2UDfHllDeSTCDbd
-         UvHLfHkAXrEP0IA94sjrirTh7IBomREgAcwcFzcVW8JqCKT80DfH37OkB2wglEV0zhMz
-         xOjfO5kGtHwyZlrQ04vysDBi8H3JmtS7rtsuCHCqgOVMhjW2X4jf7mNbQx9dnKGDkS3L
-         r/YZSsAKPucsjan3PIg+4/gTT4dPfOeS6ONPeCBMJSNllZKFttkXC3c/+8FFo4ZQ7XXw
-         vXAA==
-X-Gm-Message-State: AJIora9gUS3An0O3MtAYSPNBmkAk4OSNMCzJNAVGWUgGmBd6DB7j3a/o
-        ObwXnmkkmkWF0VkZ/Vhk41o5lyueO3L73eW34b0NbQ==
-X-Google-Smtp-Source: AGRyM1tVeSFJ9MDUV4QfDSYCsyFBWbtC+ASjHQDphSfhT/CWvCSk9MOpeXGJRW96EvLtaQncLlpGenrTxVdGQtgFTzQ=
-X-Received: by 2002:a17:902:f353:b0:167:7bc1:b1b9 with SMTP id
- q19-20020a170902f35300b001677bc1b1b9mr192047ple.117.1655310674625; Wed, 15
- Jun 2022 09:31:14 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wAnv749H8T5jbgH7qOtJ76bsDPHMzd3UB3aMwPjk12I=;
+        b=q8wrLHhwN5wy9cGGq/sT7DUMJd3ZZgImJ2mAZ/DAKce5IxSeM5SplnespFqTQaBn8K
+         UZryVJa/iJQdtoKJRU3gDHsbSAdquwIgz3bCFqjHigILqxG67y93waz7JenIIxeMJKS+
+         RJ4O5rdWpEp02cqr+X90qvJ2ixzmqb9aLh5wH5qFJcL6Gw4WA4F0koePWHNQZx6vRyaZ
+         vlpaVntku9lqP2/o5wludVGX8JkFV6QcJvMvQ0nBH0mKJY9HR4y/bc+aQJHKKOmcJT6S
+         wtBPu6xa8DFwOGNr4Z5xzLdUHvvsOKlu1/B9czEMhRZy1mwI8hoSl1AWKyTGoVD1Mtyh
+         MwxA==
+X-Gm-Message-State: AJIora/y0b/yQAKqbwzyzJbVXBvGzeqqQ6xRJB17pIbE6GZqnI65Xbxi
+        b5Zudx0QAodD8650spDDXw==
+X-Google-Smtp-Source: AGRyM1vzB7iayUo66rT+mIDKxHVKw6WWE4SKTSL/ca1B+1u0IkIJbRPbu2EvntupG1m67X40ESjgtA==
+X-Received: by 2002:a05:6e02:b41:b0:2d1:c5a7:19ed with SMTP id f1-20020a056e020b4100b002d1c5a719edmr364805ilu.281.1655310709315;
+        Wed, 15 Jun 2022 09:31:49 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id a10-20020a92d10a000000b002d6d8398e88sm6990521ilb.70.2022.06.15.09.31.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 09:31:49 -0700 (PDT)
+Received: (nullmailer pid 1397129 invoked by uid 1000);
+        Wed, 15 Jun 2022 16:31:46 -0000
+Date:   Wed, 15 Jun 2022 10:31:46 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     devicetree@vger.kernel.org,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        linux-kernel@vger.kernel.org,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Jingoo Han <jingoohan1@gmail.com>, linux-pci@vger.kernel.org
+Subject: Re: [PATCH v3 06/17] dt-bindings: PCI: dwc: Add max-functions EP
+ property
+Message-ID: <20220615163146.GA1397011-robh@kernel.org>
+References: <20220610085706.15741-1-Sergey.Semin@baikalelectronics.ru>
+ <20220610085706.15741-7-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-References: <20220613150653.1310029-1-zhengbin13@huawei.com>
-In-Reply-To: <20220613150653.1310029-1-zhengbin13@huawei.com>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Wed, 15 Jun 2022 18:31:02 +0200
-Message-ID: <CAG3jFysx_sS2QAdh2G9xivD8OjNXRPn1H0zVq=1V4P7yi7UoOw@mail.gmail.com>
-Subject: Re: [PATCH -next] drm/bridge: it6505: Add missing CRYPTO_HASH dependency
-To:     Zheng Bin <zhengbin13@huawei.com>
-Cc:     andrzej.hajda@intel.com, narmstrong@baylibre.com,
-        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
-        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
-        angelogioacchino.delregno@collabora.com,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        gaochao49@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610085706.15741-7-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 13 Jun 2022 at 16:54, Zheng Bin <zhengbin13@huawei.com> wrote:
->
-> The driver uses crypto hash functions so it needs to select CRYPTO_HASH.
-> This fixes build errors:
->
-> drivers/gpu/drm/bridge/ite-it6505.o: in function `it6505_hdcp_wait_ksv_list':
-> ite-it6505.c:(.text+0x4c26): undefined reference to `crypto_alloc_shash'
-> ite-it6505.c:(.text+0x4c6d): undefined reference to `crypto_shash_digest'
-> ite-it6505.c:(.text+0x4c7d): undefined reference to `crypto_destroy_tfm'
-> ite-it6505.c:(.text+0x4d69): undefined reference to `crypto_destroy_tfm'
->
-> Fixes: b5c84a9edcd4 ("drm/bridge: add it6505 driver")
-> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+On Fri, 10 Jun 2022 11:56:54 +0300, Serge Semin wrote:
+> In accordance with [1] the CX_NFUNC IP-core synthesize parameter is
+> responsible for the number of physical functions to support in the EP
+> mode. Its upper limit is 32. Let's use it to constrain the number of
+> PCIe functions the DW PCIe EP DT-nodes can advertise.
+> 
+> [1] Synopsys DesignWare Cores PCI Express Controller Databook - DWC PCIe
+> Endpoint, Version 5.40a, March 2019, p. 887.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> 
 > ---
->  drivers/gpu/drm/bridge/Kconfig | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
-> index 8ffd601e68f9..1afe99dac0ff 100644
-> --- a/drivers/gpu/drm/bridge/Kconfig
-> +++ b/drivers/gpu/drm/bridge/Kconfig
-> @@ -94,6 +94,8 @@ config DRM_ITE_IT6505
->          select DRM_KMS_HELPER
->          select DRM_DP_HELPER
->          select EXTCON
-> +        select CRYPTO
-> +        select CRYPTO_HASH
->          help
->            ITE IT6505 DisplayPort bridge chip driver.
->
-> --
-> 2.31.1
->
+> 
+> Changelog v3:
+> - This is a new patch unpinned from the next one:
+>   https://lore.kernel.org/linux-pci/20220503214638.1895-2-Sergey.Semin@baikalelectronics.ru/
+>   by the Rob' request. (@Rob)
+> ---
+>  Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
 
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-
-Applied to drm-misc-next
+Reviewed-by: Rob Herring <robh@kernel.org>
