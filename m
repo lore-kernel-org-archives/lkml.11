@@ -2,147 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0192CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349429AbiFOVZj (ORCPT
+        id S1349562AbiFOV0S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 17:25:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
+        Wed, 15 Jun 2022 17:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236639AbiFOVZg (ORCPT
+        with ESMTP id S1346775AbiFOV0P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 17:25:36 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B115156200;
-        Wed, 15 Jun 2022 14:25:35 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id c4so20803913lfj.12;
-        Wed, 15 Jun 2022 14:25:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pyTQQlNbGPEuJO15lTuPZ7DQfEn06e9frSoizvFwKWw=;
-        b=oTZQqk2F8TVXVFGVypiZ5kqvrzYjclRj/aSnxyTIM6hQJnbMveHh8CN5NSKdEjXmrT
-         xnw04YfUTHUA41scTdZ/ihwYtqlZNJ9sUR0uy9FJ1xPpQgOZvvs4lW4nToN3lIemtsoJ
-         kxboW1x3I1bnf4Kq6p6QHgo6/qu6mbpOjgHIQPMjvOS77A6H3dVySOFH9pN377hOv0zY
-         ue1Cr1ZBlam4ytR7Ko6On/O1zB9BOiLb+JehNpP6MKeyhGYMYY+GsyW+/StTuZPDXhQK
-         20RA9vj8+odsXy1OjpAVHocdS9L+G9ETirfDVa8V52HKPFVLpnzz0eGA5ueD8WlYeHD8
-         TcGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pyTQQlNbGPEuJO15lTuPZ7DQfEn06e9frSoizvFwKWw=;
-        b=i5SIFNeaLxI/O95l+vVoTP4agizPWv3URQEJL4a7D/u/BnNU10AKaot9WybfYeVzAO
-         jYqfa2UDLRfFok7ilkhdV9eWeZRB32Ger7030uCCkYCY1rAA/kAr5h/UF5vIbgzNmMa1
-         /d9i6ImW2vM8B+gxXG0pjiNcBgn4neIwdoIFGRXcXQ48UGehx8EndZBCyiDiz2HVNb6A
-         4StRP2FPzoEiiMRmXs9orUcY0Kr8CobFUR4F/2BgbQ1ajQmZUlrOBKVpaIyCNCQn7Kb5
-         9lXIOQ6hII3fw3+1gDVabHCyqxKYFI4DHFmnGd4f1hcLhiXt7MU64luyJHNKCh9Atk94
-         e7lQ==
-X-Gm-Message-State: AJIora/phkDpkeekJR6hLUtKV9Hp8O/jCmJ+4agx0AaICwpo0xZgagwA
-        U9rCb4qCFAq4lV8EUu+CeoQ=
-X-Google-Smtp-Source: AGRyM1tNfm48SgxJ6bhN8fJEPsmy+wX9TOkullLnS11iK/m9CjlKWH6IosEJU9UKnbB9kyNUpONeSg==
-X-Received: by 2002:a05:6512:6c1:b0:478:e288:1c39 with SMTP id u1-20020a05651206c100b00478e2881c39mr840800lff.58.1655328334096;
-        Wed, 15 Jun 2022 14:25:34 -0700 (PDT)
-Received: from mobilestation ([95.79.189.214])
-        by smtp.gmail.com with ESMTPSA id r30-20020ac25c1e000000b004791f9ea46esm1924017lfp.231.2022.06.15.14.25.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 14:25:33 -0700 (PDT)
-Date:   Thu, 16 Jun 2022 00:25:31 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 15/23] ata: ahci: Convert __ahci_port_base to
- accepting hpriv as arguments
-Message-ID: <20220615212531.gmyfxjwdmeukmnzz@mobilestation>
-References: <20220610081801.11854-1-Sergey.Semin@baikalelectronics.ru>
- <20220610081801.11854-16-Sergey.Semin@baikalelectronics.ru>
- <707c18cb-d499-a499-db9a-db5d73f0f3b4@opensource.wdc.com>
+        Wed, 15 Jun 2022 17:26:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856445621C;
+        Wed, 15 Jun 2022 14:26:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2155361778;
+        Wed, 15 Jun 2022 21:26:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0651C3411A;
+        Wed, 15 Jun 2022 21:26:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655328373;
+        bh=C7SBMi7ghKBLQo7MHmIHsy7eWtSdXq8eTAqAwVvVPfw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rcYBdB9v2iJolM6fd27OAYzgDAh4Cy36Z7LWBpda/a/SgPCwn9xHu/xsTl0o0PoAY
+         SDWwvGa6oWW820UDU6Jc02SuNLbRnkJFOQVwHgARir+e+zZY2YYmSygPZks1a6y3Ds
+         URcIAW8dSzvf2PvwOefgZcSyVjUseugdFY03G/WaZrjHpsue9BMdMgV/6QSVfrrb8T
+         HBYs8Z1/kOPfZU6aIUJtdFd1gH4nSJbil/mnEhsnjRnWKGFlJqJnnCZ5QjEvuHpB9f
+         WFwZw2bJeWIQ2/RB+5zvSIptEsCuVnGlMNxUSbksXDmUo/nUflwAwou4zwqCvuobWa
+         8/YxoqDiXQD1Q==
+Date:   Thu, 16 Jun 2022 00:24:04 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Luis Chamberlain <mcgrof@kernel.org>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jarkko Sakkinen <jarkko@profian.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Nathaniel McCallum <nathaniel@profian.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Marco Elver <elver@google.com>,
+        Dan Li <ashimida@linux.alibaba.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Song Liu <song@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Chen Zhongjin <chenzhongjin@huawei.com>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Mark Brown <broonie@kernel.org>,
+        Luis Machado <luis.machado@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Atsushi Nemoto <anemo@mba.ocn.ne.jp>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dave Anglin <dave.anglin@bell.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Daniel Axtens <dja@axtens.net>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jordan Niethe <jniethe5@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Changbin Du <changbin.du@intel.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Liao Chang <liaochang1@huawei.com>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>,
+        Wu Caize <zepan@sipeed.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Tobias Huschle <huschle@linux.ibm.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Michael Roth <michael.roth@amd.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@igalia.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>
+Subject: Re: [PATCH] kprobes: Enable tracing for mololithic kernel images
+Message-ID: <YqpN9NAkAKhgiunQ@iki.fi>
+References: <20220608000014.3054333-1-jarkko@profian.com>
+ <YqGlmpbx8HTrWmpF@shell.armlinux.org.uk>
+ <YqH5TfN9w35kHFLU@bombadil.infradead.org>
+ <Yqh+k7Udth0IOBrd@iki.fi>
+ <144b7e90-5d75-7e2c-4e54-8a73f914dfdf@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <707c18cb-d499-a499-db9a-db5d73f0f3b4@opensource.wdc.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <144b7e90-5d75-7e2c-4e54-8a73f914dfdf@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 05:38:14PM +0900, Damien Le Moal wrote:
-> On 6/10/22 17:17, Serge Semin wrote:
-> > It may get required to retrieve the port-base address even before the
+On Tue, Jun 14, 2022 at 12:36:25PM +0000, Christophe Leroy wrote:
 > 
-> The port base address may be required even before the...
 > 
-> > ata_host instance is initialized and activated, for instance in the
-> > ahci_save_initial_config() method which we about to update (consider this
-> 
-> s/we/we are
-
-Got it. will be fixed in v5.
-
--Sergey
-
-> 
-> > modification as a preparation for that one). Seeing the __ahci_port_base()
-> > function isn't used much it's the best candidate to provide the required
-> > functionality. So let's convert it to accepting the ahci_host_priv
-> > structure pointer.
+> Le 14/06/2022 à 14:26, Jarkko Sakkinen a écrit :
+> > On Thu, Jun 09, 2022 at 06:44:45AM -0700, Luis Chamberlain wrote:
+> >> On Thu, Jun 09, 2022 at 08:47:38AM +0100, Russell King (Oracle) wrote:
+> >>> On Wed, Jun 08, 2022 at 02:59:27AM +0300, Jarkko Sakkinen wrote:
+> >>>> diff --git a/arch/arm/kernel/Makefile b/arch/arm/kernel/Makefile
+> >>>> index 553866751e1a..d2bb954cd54f 100644
+> >>>> --- a/arch/arm/kernel/Makefile
+> >>>> +++ b/arch/arm/kernel/Makefile
+> >>>> @@ -44,6 +44,11 @@ obj-$(CONFIG_CPU_IDLE)		+= cpuidle.o
+> >>>>   obj-$(CONFIG_ISA_DMA_API)	+= dma.o
+> >>>>   obj-$(CONFIG_FIQ)		+= fiq.o fiqasm.o
+> >>>>   obj-$(CONFIG_MODULES)		+= armksyms.o module.o
+> >>>> +ifeq ($(CONFIG_MODULES),y)
+> >>>> +obj-y				+= module_alloc.o
+> >>>> +else
+> >>>> +obj-$(CONFIG_KPROBES)		+= module_alloc.o
+> >>>> +endif
+> >>>
+> >>> Doesn't:
+> >>>
+> >>> obj-$(CONFIG_MODULES)		+= module_alloc.o
+> >>> obj-$(CONFIG_KPROBES)		+= module_alloc.o
+> >>
+> >> That just begs for a new kconfig symbol for the object, and for
+> >> the object then to be built with it.
+> >>
+> >> The archs which override the default can use ARCH_HAS_VM_ALLOC_EXEC.
+> >> Please note that the respective free is important as well and its
+> >> not clear if we need an another define for the free. Someone has
+> >> to do that work. We want to ensure to noexec the code on free and
+> >> this can vary on each arch.
 > > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > Reviewed-by: Hannes Reinecke <hare@suse.de>
-> > ---
-> >  drivers/ata/ahci.c | 2 +-
-> >  drivers/ata/ahci.h | 7 ++++---
-> >  2 files changed, 5 insertions(+), 4 deletions(-)
+> > Let me check if I understand this (not 100% sure).
 > > 
-> > diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-> > index 9bc8fa77e92f..d14d74649e0e 100644
-> > --- a/drivers/ata/ahci.c
-> > +++ b/drivers/ata/ahci.c
-> > @@ -689,7 +689,7 @@ static void ahci_pci_init_controller(struct ata_host *host)
-> >  			mv = 2;
-> >  		else
-> >  			mv = 4;
-> > -		port_mmio = __ahci_port_base(host, mv);
-> > +		port_mmio = __ahci_port_base(hpriv, mv);
-> >  
-> >  		writel(0, port_mmio + PORT_IRQ_MASK);
-> >  
-> > diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
-> > index 0e66446a5883..8b9826533ae5 100644
-> > --- a/drivers/ata/ahci.h
-> > +++ b/drivers/ata/ahci.h
-> > @@ -431,10 +431,9 @@ int ahci_host_activate(struct ata_host *host, struct scsi_host_template *sht);
-> >  void ahci_error_handler(struct ata_port *ap);
-> >  u32 ahci_handle_port_intr(struct ata_host *host, u32 irq_masked);
-> >  
-> > -static inline void __iomem *__ahci_port_base(struct ata_host *host,
-> > +static inline void __iomem *__ahci_port_base(struct ahci_host_priv *hpriv,
-> >  					     unsigned int port_no)
-> >  {
-> > -	struct ahci_host_priv *hpriv = host->private_data;
-> >  	void __iomem *mmio = hpriv->mmio;
-> >  
-> >  	return mmio + 0x100 + (port_no * 0x80);
-> > @@ -442,7 +441,9 @@ static inline void __iomem *__ahci_port_base(struct ata_host *host,
-> >  
-> >  static inline void __iomem *ahci_port_base(struct ata_port *ap)
-> >  {
-> > -	return __ahci_port_base(ap->host, ap->port_no);
-> > +	struct ahci_host_priv *hpriv = ap->host->private_data;
-> > +
-> > +	return __ahci_port_base(hpriv, ap->port_no);
-> >  }
-> >  
-> >  static inline int ahci_nr_ports(u32 cap)
+> > So if arch define ARCH_HAS_VMALLOC_EXEC, then this would set
+> > config flag CONFIG_VMALLOC_EXEC, which would be used to include
+> > the compilation unit?
+> > 
 > 
+> I guess you have two possible approaches.
 > 
-> -- 
-> Damien Le Moal
-> Western Digital Research
+> Either architectures select CONFIG_ARCH_HAS_VMALLOC_EXEC at all time and 
+> then you add a CONFIG_VMALLOC_EXEC which depends on 
+> CONFIG_ARCH_HAS_VMALLOC_EXEC and CONFIG_MODULES or CONFIG_KPROBES,
+> 
+> Or architectures select CONFIG_ARCH_HAS_VMALLOC_EXEC only when either 
+> CONFIG_MODULES or CONFIG_KPROBES is selected, in that case there is no 
+> need for a CONFIG_VMALLOC_EXEC.
+
+Right, got it now. Thanks for the elaboration.
+
+> Christophe
+
+BR, Jarkko
