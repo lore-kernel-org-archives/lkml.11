@@ -2,123 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C075CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:22:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F508C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:24:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346231AbiFOWWb (ORCPT
+        id S1350141AbiFOWYa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 18:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
+        Wed, 15 Jun 2022 18:24:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236639AbiFOWW3 (ORCPT
+        with ESMTP id S243581AbiFOWY2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 18:22:29 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81612B8;
-        Wed, 15 Jun 2022 15:22:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655331733;
-        bh=7Nz3pQkBpBxV+DkrOjcNVQfPVA5p4xkVtV9V6hPRVM8=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=NYJ1SEnZz+enh6MvRSRIj+TS9Esvz6eKEiD63SPVr2FTZjBYKj4G8ySaa0aCXCkjE
-         Bi4ij6O2iCJ7gt5xgc1Fd4RtZ17knq8XdjaHlI8y5Qblmgl6nyhtAZh2/LMIOyLKF5
-         uBYD1J22I7Ud5ccF7JNMBfSCQytI8nFT2sZK2Jjw=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.33] ([46.223.2.17]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MPGRp-1oMgWG1zYr-00Pgxa; Thu, 16
- Jun 2022 00:22:13 +0200
-Subject: Re: [PATCH v5 07/10] tmp, tmp_tis: Implement usage counter for
- locality
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
-        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com,
-        lukas@wunner.de, p.rosenberger@kunbus.com
-References: <20220610110846.8307-1-LinoSanfilippo@gmx.de>
- <20220610110846.8307-8-LinoSanfilippo@gmx.de> <Yqojlh5J0660gfaT@iki.fi>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <2b9e9b38-5ed7-aff1-9ead-534e9d857eda@gmx.de>
-Date:   Thu, 16 Jun 2022 00:22:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Wed, 15 Jun 2022 18:24:28 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA6D2F027
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:24:28 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id o17so11574443pla.6
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:24:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=uLEDL+G7aX3Y4fRU26LLhNvvGtvMvsrcMGTR1rtP7yw=;
+        b=DTJF3smWA3fB95jgkWeMgAeL3z2fFHk8fPHUNEallNDdQff3BPuIcBZS65ZbGBPUXE
+         K6BOf3/c2HA+EFOtIuA+4DajkWGkAzMQmZeFz2jKNsM4hfaGAPiXCWlPadUXuzDTRnoI
+         5Jt7riLi+7en25sCaSe8ZlYJ4cSXRdC1Vyxf7RUHS8uGg2SzfkxnsOr9+1jAnQEIk7TL
+         1pkdH0HOOKTr1NWiSFW3u7QG+uol9RhSdTluUF1Cj6vP5+yL/pDTlqwaBjjoyWk5zd8u
+         evUfILLDx8rbTd29hitOx5f87S0CYWd3ZPpYWIVzsTuXC34ir4vWVGv0pfGro8jz7KmU
+         XOJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=uLEDL+G7aX3Y4fRU26LLhNvvGtvMvsrcMGTR1rtP7yw=;
+        b=nF7IoZkNPe581LbqZGaJOR0V9Mh/Fc46hCmKtFFYISFfckrhFGTcxJVy9Z3fd2r9vs
+         vQ4KLcszqpcUGsDCT8cBiQ0p7brJVO9PXg0OxwWqeaJb8/M9MUNBiAHMVAAjyx4HZ0KH
+         /QONlrS0mOXfZpirUVqsek4eR0p6tQt9yieYfQjcwOB7cXz7q9VKBKNX6AjLxQU2Z+y3
+         wGo5pE6gNHNtN03+6znIYPdXqVBkCtChKM/nEHjniwmC8tlDwAFM8VGn4RNP/TzasIIy
+         GC1+khBQmnLW6Henay+3sfxJ9KE/uUgQJqBtI67zBLJynWxfDQQulov+m51ydVSs8rwv
+         yTaA==
+X-Gm-Message-State: AJIora8+kz4GvspAspIE3giYyhtUllCL+d5uFN1y651Sn7TlJqL8r8Il
+        TRQODL1fOmKe9Z1799e0L6UD4w==
+X-Google-Smtp-Source: AGRyM1twcw/WY5Xe4Nnxhw4M0Mco1frKQyTuE637zz53WB/TZIzLMkuT2IwpfthyharuE1mZ8MJLtg==
+X-Received: by 2002:a17:90b:11c5:b0:1ea:9747:28ba with SMTP id gv5-20020a17090b11c500b001ea974728bamr12696060pjb.22.1655331867581;
+        Wed, 15 Jun 2022 15:24:27 -0700 (PDT)
+Received: from google.com ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id p9-20020a62b809000000b0051c79bd5047sm128311pfe.139.2022.06.15.15.24.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 15:24:27 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 23:24:24 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Fabien Parent <fparent@baylibre.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/7] dt-bindings: mfd: mt6397: add binding for MT6357
+Message-ID: <YqpcGLIhD2FsPLdi@google.com>
+References: <20220531124959.202787-1-fparent@baylibre.com>
+ <20220531124959.202787-2-fparent@baylibre.com>
 MIME-Version: 1.0
-In-Reply-To: <Yqojlh5J0660gfaT@iki.fi>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:VhHTR5MUWapQwJwyqqOUTn/M2J7ABp8kLCBSIPYlwZTW/h4SvTX
- cxqQCuPX6ayPrM8lK9eAYLAs9fQDLROLQrDhu2oRNZrxgk7lk+yY84YPGJ8Ru0XmLk337TJ
- r8slzKD11LrMTYgbt0Jc7rO2zVLeCSz7D0pevFZxdHMK3pb0bwzwrj/T4as//8mptcZQX0p
- /rWetRDASyCFLkhfVZ0GQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MMWC7xhLkC4=:ocooFn7ROfYkQVdr8qBxB4
- 2JAtU0VAkIhIePC7svNAA7tccTlvc4Xq6ce2ITB84Au4KvyAmwMX4+SgcMGqkRzgjDdY3UM2x
- Y0flyFtVvvsINoM+EKhefU/j0ydEforH4r3yWjtOg+gdpVpw3Iu/cO95gsUrYkrSn51kkLgiD
- 2IXIh5zxAxmdxZtFOs56QrnSBewb5rLoQ0QiZ7CPKRqolqS+2JIrLn7+M3ClK8z1ALQONyuG1
- r3dL21THnffWYsxf1F9MCqsw3off2mbh3bnxA9cjNN0Ifb89Yz2G5IP+p/mjDKEnibXMR/7Lx
- p5585N2C4niolx6Y9ON8PaMszMwWdpKv24FHJA4rTCWolhL0eEPIxsTQhbkQdMrUCQlfRMQMW
- 583ln+uNgSn7Uo4nlLMqfIgXUvvO5M6/oJyd+DjJMyoVAw0Dfl+knpBZYY8QWDvXvMjghnDw3
- 73P37Qrymy+hn26otcby6s0B2b1a7LGxVoaMAhZkQJVrbOqUfsgr+N7g1iapWO21Z6Jy5y4HO
- 7Vd3ckNIgsvjR9PjnkKhMpnnX+oPqlQSseM3ieQgTTIyUOnYhiHaJHz/9cTpe0xbMwERzN/fP
- V/ces7f0/bWD3lKCrTGPNP1+fJvL0OMWMsHqI6aLQ0BkVwQebSG78uYP6vg+kEs57p+6QuH9v
- MnhJpGOCR4s0780ia9ohe2yCncNLKBr/0p03RoTuLo8reH4r9iL94kau+V8JtlHR2CK8/ccBW
- gF/CYdYnC0ucfHRvKzuriRhI/3ClhQFmHqnxLiSyyRZ70vZcGzFzd/+szzXIKaqXPTBLY5xuK
- zy/FWTOiN2WCVy2hHKOOGcnm0lgkeF/WSQVnho909w7Mg1XnNvfPQe5AhMWdAQjbAj4e1hkXR
- OpNKAPgXC+FL4TB1GDJBCRXyLV2LTI4xPM/37zbP8AqAnysoJXyxy1+3Ryy6gs1yohwI8wCAt
- qFXivYjcgbG+ag3th1Ct0CW/FuIPZj8hdwQjb7PBOzaHxMr3ohiHf7wa/Ykpudlz/JKLcFzTc
- agCJHPS7uh00oroGr/TC0vxUky6RA86wOJWkEihahHER/s8ZnA6svonfTquLRdwhUJkyznUaL
- eYjz4jFvt9icflX7S0uvyF+1LE9jWCv+mwdNoSrjCblmERFXbKgQxj+jA==
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220531124959.202787-2-fparent@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15.06.22 at 20:23, Jarkko Sakkinen wrote:
-> On Fri, Jun 10, 2022 at 01:08:43PM +0200, LinoSanfilippo@gmx.de wrote:
->> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->>
->> Implement a usage counter for the (default) locality used by the TPM TI=
-S
->> driver:
->> Request the locality from the TPM if it has not been claimed yet, other=
-wise
->> only increment the counter. Also release the locality if the counter is=
- 0
->> otherwise only decrement the counter. Ensure thread-safety by protectin=
-g
->> the counter with a mutex.
->>
->> This allows to request and release the locality from a thread and the
->> interrupt handler at the same time without the danger to interfere with
->> each other.
->>
->> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->> ---
->>  drivers/char/tpm/tpm_tis_core.c | 30 ++++++++++++++++++++++++++++--
->>  drivers/char/tpm/tpm_tis_core.h |  2 ++
->>  2 files changed, 30 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis=
-_core.c
->> index 028bec44362d..0ef74979bc2c 100644
->> --- a/drivers/char/tpm/tpm_tis_core.c
->> +++ b/drivers/char/tpm/tpm_tis_core.c
->> @@ -158,16 +158,26 @@ static bool check_locality(struct tpm_chip *chip,=
- int l)
->>  	return false;
->>  }
->>
->> +static int release_locality_locked(struct tpm_tis_data *priv, int l)
->> +{
->> +	tpm_tis_write8(priv, TPM_ACCESS(l), TPM_ACCESS_ACTIVE_LOCALITY);
->
-> nit: empty line here
->
-> Also it would not hurt to prefix it with tpm_tis.
->
-> This is for simple and practical reasons, like grepping. I don't
-> mind if you do that also for other functions (if you want to).
->
+On Tue, 31 May 2022, Fabien Parent wrote:
 
-Ok, will do so.
+> Add binding documentation for the MT6357 PMIC.
+> 
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> ---
+>  Documentation/devicetree/bindings/mfd/mt6397.txt | 1 +
+>  1 file changed, 1 insertion(+)
 
-Regards,
-Lino
+Doesn't seem to apply.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
