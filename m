@@ -2,113 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24574CCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:15:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11289C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:16:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237107AbiFOJPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54410 "EHLO
+        id S243934AbiFOJQF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 05:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347204AbiFOJNt (ORCPT
+        with ESMTP id S1345533AbiFOJPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:13:49 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526B4396B2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:13:48 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id h192so10845808pgc.4
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:13:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cApAEWtZBNz7UY2lzjb00JFgiaDz9EH6nqt1F0MvTwA=;
-        b=11Ue/j2OxtkuGufH5THsd7RTX2PhW44eGxiMlp4kuhaX8NAQdxItmm+qVby1yX9/8f
-         xZMPptt1Jr6zbWnucp4Fo7rNYJ/L7h2w+wae2kSxNgcmRS8AttRSRZ8lyU83JMK/B102
-         4VMGvf4jL/ArVxVb4jzUp6zWQg9guosQo+RzXFMu66qJbDYLSHnkEH+W5jt7Y4Myw8LO
-         CbtaMOCJ+K3tv4nmU4qqVHBGP3q1/+9KQWB/ZpbY5TZ2W16kTxACGsGFhX3PEfUlfSas
-         EKF5JkwCrW7uo7ia/Ttgm3fVHUYaUxeDAQH/fwz9aqMjEJmMEGeGnph4MLnjfiD1OHng
-         Tstg==
+        Wed, 15 Jun 2022 05:15:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F79B3FBEF
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:15:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655284535;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3ihw/tQZ7dDGm/WIN83Xbht+igW1FpV/t8X/MIkfZfY=;
+        b=IrrPBtXNe+3Qo08DOrwWmBxiyO6rigF0uSvDffdV/rnqsR/F8Axy/51ijQlVlwrZHWBkSz
+        ocmlGK7UW8CIaKxH+nb857QXhgo7gafUYZpVvLtuIV6YNamKfOsV2rNGiAjyoeJr1/2qjN
+        PN+UuDZ9FJSOOMeApTJfS4NrgCVLj7c=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-271-g2AZKlJIM5OvI36s9-eqFA-1; Wed, 15 Jun 2022 05:15:33 -0400
+X-MC-Unique: g2AZKlJIM5OvI36s9-eqFA-1
+Received: by mail-wm1-f72.google.com with SMTP id j31-20020a05600c1c1f00b0039c481c4664so4834672wms.7
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:15:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
          :content-transfer-encoding;
-        bh=cApAEWtZBNz7UY2lzjb00JFgiaDz9EH6nqt1F0MvTwA=;
-        b=6VzcGXpotgQDr/ZW3BPgnGgKi+LUt6pg7xO6hyff+aJsBG4cYHY5zt0OEhR5NC3MX2
-         3/qZhqs5A1pSRjrcuAltMfMOlMqg4AaeTbC3YAaev+emWaIqHEu5k9uxcLdDdi5bFEjl
-         AqPqcatB0umneNaosIu4nNzDI4D7RWpjwxypj7vlij2yGdmFP6hgQ7tyELTQzCQOvVAf
-         iUF1lhJ+dr9+dfhs8dWMMxBNqy/RDfwbjnidg8V3pFNv6kOZU6EepuPM8DPuUJT/pCa6
-         +XJvfzt38J940nC+U1XyCYlT7/sNOZnU557mTVu0EfcCkZxLEqf9nOGvBtVbqdoFxyrm
-         mpkw==
-X-Gm-Message-State: AOAM532829kwLiROSgtOQ0hi9RpZBE1WX+aBHtTvyOqpW/+gnho2d5xJ
-        aDpBEqNsOpui9OAywJJ1b3uFjQ==
-X-Google-Smtp-Source: ABdhPJyXl/iDCJSUxoekdovzpxElEeTc1BQ8vIzuFNVfDzaNgyjhQF6dUsiLz4DbC7uBma8Unp9R6g==
-X-Received: by 2002:a63:cf51:0:b0:408:85f4:fb33 with SMTP id b17-20020a63cf51000000b0040885f4fb33mr8084169pgj.589.1655284427786;
-        Wed, 15 Jun 2022 02:13:47 -0700 (PDT)
-Received: from FVFDK26JP3YV.bytedance.net ([139.177.225.234])
-        by smtp.gmail.com with ESMTPSA id l3-20020a17090aaa8300b001e08461ceaesm1188414pjq.37.2022.06.15.02.13.44
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 15 Jun 2022 02:13:47 -0700 (PDT)
-From:   Lei He <helei.sig11@bytedance.com>
-To:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     helei.sig11@bytedance.com, pizhenwei@bytedance.com
-Subject: [PATCH] crypto: testmgr - fix version number of RSA tests
-Date:   Wed, 15 Jun 2022 17:13:17 +0800
-Message-Id: <20220615091317.36995-1-helei.sig11@bytedance.com>
-X-Mailer: git-send-email 2.29.2
+        bh=3ihw/tQZ7dDGm/WIN83Xbht+igW1FpV/t8X/MIkfZfY=;
+        b=Lo6U+YCiqxwoK/L4lp2Qang84EakxvVuxr9W0KsOl0kMXyoQJnMb73Si5ejGj5emfq
+         M9GURgCyyhsygQ5emWpIvlvfs2onvi81t+9MIg8p3ql791888+i6YABeBiFItu66pH+8
+         McxmkuBgv1Z4SRXg+M/nuzHBSri3bsec6+pi0idsBCkplAnHDhzZnsj0D2IfDieXwah7
+         Mc1Y7Aaq3X4Sifr2dqVFSqc9nr8Fc2wkO1yPvCMw4W98gokINrSgO6qpg3IbrHhI+nYf
+         tdq8ec8mr0CNYSzSg9Ebr/yqPK4wuuDz2tD2JHpLBoyUDpgZVautEaG596LV7YRkZrsT
+         XbCA==
+X-Gm-Message-State: AJIora8AXtpe6UE55t2dR6yy51xYNyenqWG+rkfDLqV1jMMUGK28JlNl
+        Json7MQkJYgvNSFnG9aBLt6C2Ihs2983A/CzKLSW8FWCDzF1hUJfluxtpDGYYuEd6gvxc9ent5w
+        B06xKBahUMFW781fHrgAOppC/
+X-Received: by 2002:a05:6000:1a88:b0:218:4e7f:279d with SMTP id f8-20020a0560001a8800b002184e7f279dmr8860289wry.670.1655284532499;
+        Wed, 15 Jun 2022 02:15:32 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vsqXPRk9u33dyg66eh75muPwVuzV7/fWeHx+RGAoDtTJtfdtO8XKyNHzp5Sstm9f26pEFS3g==
+X-Received: by 2002:a05:6000:1a88:b0:218:4e7f:279d with SMTP id f8-20020a0560001a8800b002184e7f279dmr8860267wry.670.1655284532176;
+        Wed, 15 Jun 2022 02:15:32 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c70a:2700:1d28:26c3:b272:fcc6? (p200300cbc70a27001d2826c3b272fcc6.dip0.t-ipconnect.de. [2003:cb:c70a:2700:1d28:26c3:b272:fcc6])
+        by smtp.gmail.com with ESMTPSA id b2-20020a056000054200b0020c5253d8dcsm14055748wrf.40.2022.06.15.02.15.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 02:15:31 -0700 (PDT)
+Message-ID: <16297304-82d9-f62b-b87f-cc8d8fde9bd4@redhat.com>
+Date:   Wed, 15 Jun 2022 11:15:30 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v1] MAINTAINERS: add MEMORY HOT(UN)PLUG section and add
+ myself as reviewer
+Content-Language: en-US
+To:     Oscar Salvador <osalvador@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20220610101258.75738-1-david@redhat.com>
+ <72194595-a177-088d-28a9-0a24d4192777@redhat.com>
+ <20220614103842.af0c9a5434e3099cf9060cf5@linux-foundation.org>
+ <YqlaE/LYHwB0gpaW@localhost.localdomain>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YqlaE/LYHwB0gpaW@localhost.localdomain>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lei he <helei.sig11@bytedance.com>
+On 15.06.22 06:03, Oscar Salvador wrote:
+> On Tue, Jun 14, 2022 at 10:38:42AM -0700, Andrew Morton wrote:
+>> On Tue, 14 Jun 2022 08:58:55 +0200 David Hildenbrand <david@redhat.com> wrote:
+>> um, fine, no opinion really.  I think the main thing is to make
+>> get_maintainer.pl spit out all the suitable email addresses.
+> 
+> As already pointed out, David and I have already kind of acted as maintainers of
+> this aready already for quite some time, reviewing and contributing the most, so
+> it might make sense to just spell that out, so, without willing to step on
+> anyone's toes, what about this:
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 1fc9ead83d2a..f5a746624a9f 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -12857,6 +12857,18 @@ F:     include/linux/vmalloc.h
+>  F:     mm/
+>  F:     tools/testing/selftests/vm/
+>  
+> +MEMORY HOT(UN)PLUG
+> +M:     David Hildenbrand <david@redhat.com>
+> +M:     Oscar Salvador <osalvador@suse.de>
+> +L:     linux-mm@kvack.org
+> +S:     Maintained
+> +F:     Documentation/admin-guide/mm/memory-hotplug.rst
+> +F:     Documentation/core-api/memory-hotplug.rst
+> +F:     drivers/base/memory.c
+> +F:     include/linux/memory_hotplug.h
+> +F:     mm/memory_hotplug.c
+> +F:     tools/testing/selftests/memory-hotplug/
 
-According to PKCS#1 standard, the 'otherPrimeInfos' field contains
-the information for the additional primes r_3, ..., r_u, in order.
-It shall be omitted if the version is 0 and shall contain at least
-one instance of OtherPrimeInfo if the version is 1, see:
-	https://www.rfc-editor.org/rfc/rfc3447#page-44
+Fine with me to remove Andrew from that list because he's implicitly
+covering most stuff via the "MEMORY MANAGEMENT" section.
 
-Replace the version number '1' with 0, otherwise, some drivers may
-not pass the run-time tests.
+@Andrew, whatever you prefer.
 
-Signed-off-by: lei he <helei.sig11@bytedance.com>
----
- crypto/testmgr.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Acked-by: David Hildenbrand <david@redhat.com>
 
-diff --git a/crypto/testmgr.h b/crypto/testmgr.h
-index 4d7449fc6a65..d57f24b906f1 100644
---- a/crypto/testmgr.h
-+++ b/crypto/testmgr.h
-@@ -186,7 +186,7 @@ static const struct akcipher_testvec rsa_tv_template[] = {
- #ifndef CONFIG_CRYPTO_FIPS
- 	.key =
- 	"\x30\x81\x9A" /* sequence of 154 bytes */
--	"\x02\x01\x01" /* version - integer of 1 byte */
-+	"\x02\x01\x00" /* version - integer of 1 byte */
- 	"\x02\x41" /* modulus - integer of 65 bytes */
- 	"\x00\xAA\x36\xAB\xCE\x88\xAC\xFD\xFF\x55\x52\x3C\x7F\xC4\x52\x3F"
- 	"\x90\xEF\xA0\x0D\xF3\x77\x4A\x25\x9F\x2E\x62\xB4\xC5\xD9\x9C\xB5"
-@@ -216,7 +216,7 @@ static const struct akcipher_testvec rsa_tv_template[] = {
- 	}, {
- 	.key =
- 	"\x30\x82\x01\x1D" /* sequence of 285 bytes */
--	"\x02\x01\x01" /* version - integer of 1 byte */
-+	"\x02\x01\x00" /* version - integer of 1 byte */
- 	"\x02\x81\x81" /* modulus - integer of 129 bytes */
- 	"\x00\xBB\xF8\x2F\x09\x06\x82\xCE\x9C\x23\x38\xAC\x2B\x9D\xA8\x71"
- 	"\xF7\x36\x8D\x07\xEE\xD4\x10\x43\xA4\x40\xD6\xB6\xF0\x74\x54\xF5"
-@@ -260,7 +260,7 @@ static const struct akcipher_testvec rsa_tv_template[] = {
- #endif
- 	.key =
- 	"\x30\x82\x02\x20" /* sequence of 544 bytes */
--	"\x02\x01\x01" /* version - integer of 1 byte */
-+	"\x02\x01\x00" /* version - integer of 1 byte */
- 	"\x02\x82\x01\x01\x00" /* modulus - integer of 256 bytes */
- 	"\xDB\x10\x1A\xC2\xA3\xF1\xDC\xFF\x13\x6B\xED\x44\xDF\xF0\x02\x6D"
- 	"\x13\xC7\x88\xDA\x70\x6B\x54\xF1\xE8\x27\xDC\xC3\x0F\x99\x6A\xFA"
+
+@Andrew, would it make sense to update the git tree in the "MEMORY
+MANAGEMENT" section now that mm-stable etc. resides on git.kernel.org ?
+
+
 -- 
-2.20.1
+Thanks,
+
+David / dhildenb
 
