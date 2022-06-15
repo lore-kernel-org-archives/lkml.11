@@ -2,148 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA21C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C75C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355892AbiFOOCJ (ORCPT
+        id S1356068AbiFOODD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:02:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46018 "EHLO
+        Wed, 15 Jun 2022 10:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355813AbiFOOCD (ORCPT
+        with ESMTP id S1355945AbiFOOCq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:02:03 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7C34839C;
-        Wed, 15 Jun 2022 07:01:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655301699; x=1686837699;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=qgHM8XmLxIPsBfIw5yleLnkXDEbC8DohJ794buDpozg=;
-  b=ZqWFS4P2r1VHIlexrh7WQZ6f18JhglbGCuUNibVkW/x3VdgyyYg+mVgj
-   AgD65vYZL4rb83IhlWQbao8/6wpiKMJv8RlYYx3ol8ih6bIlyzWY2SGQk
-   MmAN2CUDtub99CXIil7wMwMBr33YWue+18My6QtOolkz27+JeidR5w/Fm
-   JbsIJ0z2xgjpyn2LFfI7ZW2E0NFBOfl+AAVMMVpufCyAiOJAydSfAqN1m
-   cB1bZ7R2DSMzrO8kEy3XhQym5NkURf/OKfrdBbSemQb8zABCihoZx5IBk
-   ffKTgXihVBcJTGVrs7CAmP3wbCG6YBbI1h0q2HfDPtabaXaYdfzwf3UNy
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="261991712"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="261991712"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 07:01:38 -0700
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="536048530"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 07:01:36 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o1TaO-000dU9-Rm;
-        Wed, 15 Jun 2022 17:01:32 +0300
-Date:   Wed, 15 Jun 2022 17:01:32 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: Re: [PATCH v7 2/6] serial: 8250: create lsr_save_mask
-Message-ID: <YqnmPHB8qBXIBou+@smile.fi.intel.com>
-References: <20220615124829.34516-1-ilpo.jarvinen@linux.intel.com>
- <20220615124829.34516-3-ilpo.jarvinen@linux.intel.com>
+        Wed, 15 Jun 2022 10:02:46 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA045101D;
+        Wed, 15 Jun 2022 07:02:38 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net [192.222.136.102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: nicolas)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id DF66B6601701;
+        Wed, 15 Jun 2022 15:02:15 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655301738;
+        bh=A/jvOxm1ICij5K0mIG7oqF5iy6HOnMoo/iFg2qWHY+o=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=Xp91NeW7/5pDED1maKh/hv/BrO3shNGUFb2jaEdMzphcwtcjlNybZ+ct8f3IwhDac
+         ZI/OWfjBpJZKrBoklAeASR8Tu7mCBjc99sYoSIPJ0Urj/ds4at6R0RGAq8X/YdOc9q
+         l8yW8bym5tB5LXyiaqIv4I/Cs1Ws8rhasaPXmj4yTo0/cc2I73wnpxAeUhobtyvtLD
+         jbRIWok6C3Y3BMSDsNsenU06cBgVOzTqVuBEsv0HUmYc2S++fOMctZZZKa+JFWCIpr
+         6zUxp6Q2kTv52QxFTODST5w3r1d0nHz3uRuPUXCICLdGey89ewVi2W6DwOfbxVW3VS
+         no6sEAK760B8w==
+Message-ID: <a64aa50e843967d691300af3cda27b85b8353f96.camel@collabora.com>
+Subject: Re: [V9,4/7] mtk-jpegenc: add jpegenc timeout func interface
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Irui Wang <irui.wang@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        angelogioacchino.delregno@collabora.com, wenst@chromium.org
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Tomasz Figa <tfiga@chromium.org>, xia.jiang@mediatek.com,
+        maoguang.meng@mediatek.com, kyrie wu <kyrie.wu@mediatek.com>,
+        srv_heupstream@mediatek.com
+Date:   Wed, 15 Jun 2022 10:02:07 -0400
+In-Reply-To: <20220613032306.23237-5-irui.wang@mediatek.com>
+References: <20220613032306.23237-1-irui.wang@mediatek.com>
+         <20220613032306.23237-5-irui.wang@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220615124829.34516-3-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 03:48:25PM +0300, Ilpo Järvinen wrote:
-> Allow drivers to alter LSR save mask.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Le lundi 13 juin 2022 =C3=A0 11:23 +0800, Irui Wang a =C3=A9crit=C2=A0:
+> From: kyrie wu <kyrie.wu@mediatek.com>
+>=20
+> Generalizes jpegenc timeout func interfaces to handle HW timeout.
+>=20
+> Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
 > ---
->  drivers/tty/serial/8250/8250.h      | 2 +-
->  drivers/tty/serial/8250/8250_core.c | 4 ++++
->  drivers/tty/serial/8250/8250_dw.c   | 2 +-
->  include/linux/serial_8250.h         | 1 +
->  4 files changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-> index 0ff5688ba90c..5cc967fe3b59 100644
-> --- a/drivers/tty/serial/8250/8250.h
-> +++ b/drivers/tty/serial/8250/8250.h
-> @@ -138,7 +138,7 @@ static inline u16 serial_lsr_in(struct uart_8250_port *up)
->  	u16 lsr = up->lsr_saved_flags;
->  
->  	lsr |= serial_in(up, UART_LSR);
-> -	up->lsr_saved_flags = lsr & LSR_SAVE_FLAGS;
-> +	up->lsr_saved_flags = lsr & up->lsr_save_mask;
->  
->  	return lsr;
->  }
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 90ddc8924811..57e86133af4f 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -1007,6 +1007,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
->  		uart->port.rs485	= up->port.rs485;
->  		uart->rs485_start_tx	= up->rs485_start_tx;
->  		uart->rs485_stop_tx	= up->rs485_stop_tx;
-> +		uart->lsr_save_mask	= up->lsr_save_mask;
->  		uart->dma		= up->dma;
->  
->  		/* Take tx_loadsz from fifosize if it wasn't set separately */
-> @@ -1094,6 +1095,9 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
->  			ret = 0;
->  		}
->  
-> +		if (!uart->lsr_save_mask)
-> +			uart->lsr_save_mask = LSR_SAVE_FLAGS;	/* Use default LSR mask */
+>  .../platform/mediatek/jpeg/mtk_jpeg_core.h    |  8 ++++++
+>  .../platform/mediatek/jpeg/mtk_jpeg_enc_hw.c  | 25 +++++++++++++++++++
+>  2 files changed, 33 insertions(+)
+>=20
+> diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.h b/drive=
+rs/media/platform/mediatek/jpeg/mtk_jpeg_core.h
+> index f6e980fde4ef..0683d80fcea5 100644
+> --- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.h
+> +++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.h
+> @@ -76,6 +76,12 @@ struct mtk_jpeg_variant {
+>  	u32 cap_q_default_fourcc;
+>  };
+> =20
+> +struct mtk_jpeg_hw_param {
+> +	struct vb2_v4l2_buffer *src_buffer;
+> +	struct vb2_v4l2_buffer *dst_buffer;
+> +	struct mtk_jpeg_ctx *curr_ctx;
+> +};
 > +
->  		/* Initialise interrupt backoff work if required */
->  		if (up->overrun_backoff_time_ms > 0) {
->  			uart->overrun_backoff_time_ms =
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index 4cc69bb612ab..167a691c7b19 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -129,7 +129,7 @@ static void dw8250_tx_wait_empty(struct uart_port *p)
->  
->  	while (tries--) {
->  		lsr = readb (p->membase + (UART_LSR << p->regshift));
-> -		up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
-> +		up->lsr_saved_flags |= lsr & up->lsr_save_mask;
->  
->  		if (lsr & UART_LSR_TEMT)
->  			break;
-> diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-> index 4565f25ba9a2..8c7b793aa4d7 100644
-> --- a/include/linux/serial_8250.h
-> +++ b/include/linux/serial_8250.h
-> @@ -120,6 +120,7 @@ struct uart_8250_port {
->  	 */
->  #define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
->  	u16			lsr_saved_flags;
-> +	u16			lsr_save_mask;
->  #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
->  	unsigned char		msr_saved_flags;
->  
-> -- 
-> 2.30.2
-> 
+>  enum mtk_jpegenc_hw_id {
+>  	MTK_JPEGENC_HW0,
+>  	MTK_JPEGENC_HW1,
+> @@ -107,6 +113,8 @@ struct mtk_jpegenc_comp_dev {
+>  	struct mtk_jpegenc_clk venc_clk;
+>  	int jpegenc_irq;
+>  	int hw_id;
+> +	struct delayed_work job_timeout_work;
+> +	struct mtk_jpeg_hw_param hw_param;
+>  };
+> =20
+>  /**
+> diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c b/dri=
+vers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c
+> index 8ac6b031dcd4..99f3db2a393a 100644
+> --- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c
+> +++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c
+> @@ -185,6 +185,26 @@ void mtk_jpeg_set_enc_params(struct mtk_jpeg_ctx *ct=
+x,  void __iomem *base)
+>  }
+>  EXPORT_SYMBOL_GPL(mtk_jpeg_set_enc_params);
+> =20
+> +static void mtk_jpegenc_timeout_work(struct work_struct *work)
+> +{
+> +	struct delayed_work *dly_work =3D to_delayed_work(work);
+> +	struct mtk_jpegenc_comp_dev *cjpeg =3D
+> +		container_of(dly_work,
+> +			     struct mtk_jpegenc_comp_dev,
+> +			     job_timeout_work);
+> +	enum vb2_buffer_state buf_state =3D VB2_BUF_STATE_ERROR;
+> +	struct vb2_v4l2_buffer *src_buf, *dst_buf;
+> +
+> +	src_buf =3D cjpeg->hw_param.src_buffer;
+> +	dst_buf =3D cjpeg->hw_param.dst_buffer;
+> +	dst_buf->vb2_buf.timestamp =3D src_buf->vb2_buf.timestamp;
 
--- 
-With Best Regards,
-Andy Shevchenko
+Another case for v4l2_m2m_buf_copy_metadata? As you know early the dst_buf,=
+ you
+could do that once before you start the encoding, this could possibly remov=
+e the
+duplication.
 
+> +
+> +	mtk_jpeg_enc_reset(cjpeg->reg_base);
+> +	clk_disable_unprepare(cjpeg->venc_clk.clks->clk);
+> +	pm_runtime_put(cjpeg->dev);
+> +	v4l2_m2m_buf_done(src_buf, buf_state);
+> +}
+> +
+>  static irqreturn_t mtk_jpegenc_hw_irq_handler(int irq, void *priv)
+>  {
+>  	struct vb2_v4l2_buffer *src_buf, *dst_buf;
+> @@ -196,6 +216,8 @@ static irqreturn_t mtk_jpegenc_hw_irq_handler(int irq=
+, void *priv)
+>  	struct mtk_jpegenc_comp_dev *jpeg =3D priv;
+>  	struct mtk_jpeg_dev *master_jpeg =3D jpeg->master_dev;
+> =20
+> +	cancel_delayed_work(&jpeg->job_timeout_work);
+> +
+>  	irq_status =3D readl(jpeg->reg_base + JPEG_ENC_INT_STS) &
+>  		JPEG_ENC_INT_STATUS_MASK_ALLIRQ;
+>  	if (irq_status)
+> @@ -272,6 +294,9 @@ static int mtk_jpegenc_hw_probe(struct platform_devic=
+e *pdev)
+>  	dev->plat_dev =3D pdev;
+>  	dev->dev =3D &pdev->dev;
+> =20
+> +	INIT_DELAYED_WORK(&dev->job_timeout_work,
+> +			  mtk_jpegenc_timeout_work);
+> +
+>  	jpegenc_clk =3D &dev->venc_clk;
+> =20
+>  	jpegenc_clk->clk_num =3D devm_clk_bulk_get_all(&pdev->dev,
 
