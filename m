@@ -2,109 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B651C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E68DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244353AbiFOQyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:54:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
+        id S1345426AbiFOQyq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 12:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiFOQyM (ORCPT
+        with ESMTP id S235833AbiFOQyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:54:12 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 065B936158;
-        Wed, 15 Jun 2022 09:54:10 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 25FGkua9031580;
-        Wed, 15 Jun 2022 11:46:56 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 25FGktYk031577;
-        Wed, 15 Jun 2022 11:46:55 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Wed, 15 Jun 2022 11:46:55 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Buka <vitalybuka@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-toolchains <linux-toolchains@vger.kernel.org>
-Subject: Re: [PATCH] [RFC] Initialization of unused function parameters
-Message-ID: <20220615164655.GC25951@gate.crashing.org>
-References: <20220614144853.3693273-1-glider@google.com> <CAHk-=whaWnwB8guceg8V=bA1adv74GNaMk2FEu+YQkBKUqxVoA@mail.gmail.com> <CAG_fn=WEed5NJ8hdrrP_N8aQ_1Ad11VoJgdVxQheo3VfT_xyXQ@mail.gmail.com> <CAHk-=whjz3wO8zD+itoerphWem+JZz4uS3myf6u1Wd6epGRgmQ@mail.gmail.com> <CAG_fn=UPoM3bafwu6inGPMjg1bPw3HSFM_KrE_hen_MN3fu2vA@mail.gmail.com> <20220614214039.GA25951@gate.crashing.org> <CAG_fn=UPyoySbzbLQnJkgbfcSkyCD11M=e+W4-T_WoQCXEPFGA@mail.gmail.com>
-Mime-Version: 1.0
+        Wed, 15 Jun 2022 12:54:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0907545511
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:54:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1B3E9CE21D2
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 16:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2972C34115;
+        Wed, 15 Jun 2022 16:54:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655312079;
+        bh=qigodSyMpeM2qgbpnbxrP+CBwYu821HecBtHR6HbIjg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hRPkT2S4uVm3NNJNzHPYdKgpPnfMac/5SqGkLr5WDeitqfmBKfdNlPWhyykH9ukok
+         hQAp+46CROGXu+ze7gVks7gLWuMbLYyfenqlPpwQ0lWxylNy6qnwkpZ5pp6gV99QBf
+         MxqTq7mQAleB1279I6VbqkgfQxzWj0dMm1bA2oGFUP/MWpY5PWfyFB893xQlVjNTv2
+         CQs89IRahCcpSn2AtOy6XPJ65GewLluvThhzSIgWWonejWMIGOqYm9kvncLvpUfOVa
+         cTksbBN8X388BAQCHWzXdJu3vqUZxyEQQPxG0qFBIE7QVdiXa6JaRgeFSmKgqbAk9M
+         xUXzNFh2zpFUQ==
+Date:   Wed, 15 Jun 2022 09:54:37 -0700
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     Chao Yu <chao@kernel.org>
+Cc:     Daeho Jeong <daeho43@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, kernel-team@android.com,
+        Daeho Jeong <daehojeong@google.com>
+Subject: Re: [f2fs-dev] [PATCH] f2fs: fix iostat related lock protection
+Message-ID: <YqoOzdxeG78RniEK@google.com>
+References: <20220610183240.2269085-1-daeho43@gmail.com>
+ <1815f3c2-0802-5b3f-7e98-9f89c5b9e07d@kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAG_fn=UPyoySbzbLQnJkgbfcSkyCD11M=e+W4-T_WoQCXEPFGA@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+In-Reply-To: <1815f3c2-0802-5b3f-7e98-9f89c5b9e07d@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
-
-On Wed, Jun 15, 2022 at 10:30:17AM +0200, Alexander Potapenko wrote:
-> On Tue, Jun 14, 2022 at 11:45 PM Segher Boessenkool
-> <segher@kernel.crashing.org> wrote:
-> > Since C11, lvalue conversion of an automatic variable that does not have
-> > its address taken is explicitly undefined behaviour (6.3.2.1/2).  So in
-> > function "p", both where "c" and where "size" are passed causes UB (so
-> > that executing "p" always causes UB btw).
+On 06/15, Chao Yu wrote:
+> On 2022/6/11 2:32, Daeho Jeong wrote:
+> > From: Daeho Jeong <daehojeong@google.com>
+> > 
+> > Made iostat related locks safe to be called from irq context again.
+> > 
 > 
-> Thanks for this reference to the standard. I've received another one
-> off-list, which lets the variables be address-taken:
+> Will be better to add a 'Fixes' line?
+
+Added some tags. Thanks,
+
+https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs.git/commit/?h=dev&id=f8ed39ad779fbc5d37d08e83643384fc06e4bae4
+
+
 > 
-> 6.2.4/6: "If an initialization is specified for the object, it is
-> performed each time the declaration or compound literal is reached in
-> the execution of the block; otherwise, the value becomes indeterminate
-> each time the declaration is reached."
-> 3.19.2/1: "indeterminate value: either an unspecified value or a trap
-> representation"
-> 6.2.6.1/5: "Certain object representations need not represent a value
-> of the object type. If the stored value of an object has such a
-> representation and is read by an lvalue expression that does not have
-> character type, the behavior is undefined. If such a representation is
-> produced by a side effect that modifies all or any part of the object
-> by an lvalue expression that does not have character type, the
-> behavior is undefined. [Footnote: Thus, an automatic variable can be
-> initialized to a trap representation without causing undefined
-> behavior, but the value of the variable cannot be used until a proper
-> value is stored in it.] Such a representation is called a trap
-> representation."
-
-That only affects types that have trap representations though, which
-importantly explicitly does not include unsigned types without padding
-bits, and unsigned char always.
-
-Some people (on the standards committee) think all uninitialised uses
-should be UB.  And some think not.  But since C11 we have this new
-explicit UB for automatic variables that don't have their address taken.
-
-(The background of that is the Itanium NaT (not-a-thing) bit in its
-registers; without this new clause compilers for Itanium needed to
-initialise many things that they now do not, with some readings of the
-standard anyway :-) )
-
-> > GCC does not warn, it has already optimised the code to what you expect
-> > by the time this warning is done.  If you use -fno-inline it does warn
-> > for both "c" and "size" (via -Wmaybe-uninitialized).
-> >
-> > But it is still UB!  All bets are off, no compiler can do any correct
-> > translation of your program, since there *is none*.
+> Thanks,
 > 
-> Then it makes sense for us to report non-trivial cases where
-> uninitialized values are actually passed to functions.
-
-Yes, and IMO it makes sense to report this to compilers as well, if they
-do not yet warn for some simple cases.
-
-Cheers,
-
-
-Segher
+> > Signed-off-by: Daeho Jeong <daehojeong@google.com>
+> > ---
+> >   fs/f2fs/iostat.c | 31 ++++++++++++++++++-------------
+> >   1 file changed, 18 insertions(+), 13 deletions(-)
+> > 
+> > diff --git a/fs/f2fs/iostat.c b/fs/f2fs/iostat.c
+> > index be599f31d3c4..d84c5f6cc09d 100644
+> > --- a/fs/f2fs/iostat.c
+> > +++ b/fs/f2fs/iostat.c
+> > @@ -91,8 +91,9 @@ static inline void __record_iostat_latency(struct f2fs_sb_info *sbi)
+> >   	unsigned int cnt;
+> >   	struct f2fs_iostat_latency iostat_lat[MAX_IO_TYPE][NR_PAGE_TYPE];
+> >   	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
+> > +	unsigned long flags;
+> > -	spin_lock_bh(&sbi->iostat_lat_lock);
+> > +	spin_lock_irqsave(&sbi->iostat_lat_lock, flags);
+> >   	for (idx = 0; idx < MAX_IO_TYPE; idx++) {
+> >   		for (io = 0; io < NR_PAGE_TYPE; io++) {
+> >   			cnt = io_lat->bio_cnt[idx][io];
+> > @@ -106,7 +107,7 @@ static inline void __record_iostat_latency(struct f2fs_sb_info *sbi)
+> >   			io_lat->bio_cnt[idx][io] = 0;
+> >   		}
+> >   	}
+> > -	spin_unlock_bh(&sbi->iostat_lat_lock);
+> > +	spin_unlock_irqrestore(&sbi->iostat_lat_lock, flags);
+> >   	trace_f2fs_iostat_latency(sbi, iostat_lat);
+> >   }
+> > @@ -115,14 +116,15 @@ static inline void f2fs_record_iostat(struct f2fs_sb_info *sbi)
+> >   {
+> >   	unsigned long long iostat_diff[NR_IO_TYPE];
+> >   	int i;
+> > +	unsigned long flags;
+> >   	if (time_is_after_jiffies(sbi->iostat_next_period))
+> >   		return;
+> >   	/* Need double check under the lock */
+> > -	spin_lock_bh(&sbi->iostat_lock);
+> > +	spin_lock_irqsave(&sbi->iostat_lock, flags);
+> >   	if (time_is_after_jiffies(sbi->iostat_next_period)) {
+> > -		spin_unlock_bh(&sbi->iostat_lock);
+> > +		spin_unlock_irqrestore(&sbi->iostat_lock, flags);
+> >   		return;
+> >   	}
+> >   	sbi->iostat_next_period = jiffies +
+> > @@ -133,7 +135,7 @@ static inline void f2fs_record_iostat(struct f2fs_sb_info *sbi)
+> >   				sbi->prev_rw_iostat[i];
+> >   		sbi->prev_rw_iostat[i] = sbi->rw_iostat[i];
+> >   	}
+> > -	spin_unlock_bh(&sbi->iostat_lock);
+> > +	spin_unlock_irqrestore(&sbi->iostat_lock, flags);
+> >   	trace_f2fs_iostat(sbi, iostat_diff);
+> > @@ -145,25 +147,27 @@ void f2fs_reset_iostat(struct f2fs_sb_info *sbi)
+> >   	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
+> >   	int i;
+> > -	spin_lock_bh(&sbi->iostat_lock);
+> > +	spin_lock_irq(&sbi->iostat_lock);
+> >   	for (i = 0; i < NR_IO_TYPE; i++) {
+> >   		sbi->rw_iostat[i] = 0;
+> >   		sbi->prev_rw_iostat[i] = 0;
+> >   	}
+> > -	spin_unlock_bh(&sbi->iostat_lock);
+> > +	spin_unlock_irq(&sbi->iostat_lock);
+> > -	spin_lock_bh(&sbi->iostat_lat_lock);
+> > +	spin_lock_irq(&sbi->iostat_lat_lock);
+> >   	memset(io_lat, 0, sizeof(struct iostat_lat_info));
+> > -	spin_unlock_bh(&sbi->iostat_lat_lock);
+> > +	spin_unlock_irq(&sbi->iostat_lat_lock);
+> >   }
+> >   void f2fs_update_iostat(struct f2fs_sb_info *sbi,
+> >   			enum iostat_type type, unsigned long long io_bytes)
+> >   {
+> > +	unsigned long flags;
+> > +
+> >   	if (!sbi->iostat_enable)
+> >   		return;
+> > -	spin_lock_bh(&sbi->iostat_lock);
+> > +	spin_lock_irqsave(&sbi->iostat_lock, flags);
+> >   	sbi->rw_iostat[type] += io_bytes;
+> >   	if (type == APP_BUFFERED_IO || type == APP_DIRECT_IO)
+> > @@ -172,7 +176,7 @@ void f2fs_update_iostat(struct f2fs_sb_info *sbi,
+> >   	if (type == APP_BUFFERED_READ_IO || type == APP_DIRECT_READ_IO)
+> >   		sbi->rw_iostat[APP_READ_IO] += io_bytes;
+> > -	spin_unlock_bh(&sbi->iostat_lock);
+> > +	spin_unlock_irqrestore(&sbi->iostat_lock, flags);
+> >   	f2fs_record_iostat(sbi);
+> >   }
+> > @@ -185,6 +189,7 @@ static inline void __update_iostat_latency(struct bio_iostat_ctx *iostat_ctx,
+> >   	struct f2fs_sb_info *sbi = iostat_ctx->sbi;
+> >   	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
+> >   	int idx;
+> > +	unsigned long flags;
+> >   	if (!sbi->iostat_enable)
+> >   		return;
+> > @@ -202,12 +207,12 @@ static inline void __update_iostat_latency(struct bio_iostat_ctx *iostat_ctx,
+> >   			idx = WRITE_ASYNC_IO;
+> >   	}
+> > -	spin_lock_bh(&sbi->iostat_lat_lock);
+> > +	spin_lock_irqsave(&sbi->iostat_lat_lock, flags);
+> >   	io_lat->sum_lat[idx][iotype] += ts_diff;
+> >   	io_lat->bio_cnt[idx][iotype]++;
+> >   	if (ts_diff > io_lat->peak_lat[idx][iotype])
+> >   		io_lat->peak_lat[idx][iotype] = ts_diff;
+> > -	spin_unlock_bh(&sbi->iostat_lat_lock);
+> > +	spin_unlock_irqrestore(&sbi->iostat_lat_lock, flags);
+> >   }
+> >   void iostat_update_and_unbind_ctx(struct bio *bio, int rw)
+> 
+> 
+> _______________________________________________
+> Linux-f2fs-devel mailing list
+> Linux-f2fs-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/linux-f2fs-devel
