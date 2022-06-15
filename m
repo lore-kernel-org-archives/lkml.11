@@ -2,93 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB464C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:17:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 632E3CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350345AbiFOSRv (ORCPT
+        id S1357287AbiFOSSu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
+        Wed, 15 Jun 2022 14:18:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241258AbiFOSRt (ORCPT
+        with ESMTP id S243664AbiFOSSs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:17:49 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850AC13F40;
-        Wed, 15 Jun 2022 11:17:48 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id i25so3527900oii.7;
-        Wed, 15 Jun 2022 11:17:48 -0700 (PDT)
+        Wed, 15 Jun 2022 14:18:48 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 228054EF40
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:18:48 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id i15so11112774plr.1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:18:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VfW4+MFPGYeBUUr9P3m8Mr/ICDd1RbPLolMwpeyHPXw=;
-        b=LLXs0L+hC2JKEo/iJb6wyEmAI4PvVxBlb4jdgsUbSFsLQyIxiT5rdaa7Or4WLWzzy6
-         oa/AQSOsQvMayo/+fttKFCsn0oIII9lUTBvF3K30555B1FJKxN2x0+G/IE3z0A55ET8J
-         UaVLLh86CUGGDO0leJax6pH3QcjdR7xX+3hJBLHav2XAeKAVSwq1x59hmuuEYSZwcbbQ
-         aebNjE0CfRLWa9VX7dqAiqTfPe5XXZGZ0pNRzjf0Gou7c6Rq730MSqmnT9+sl9aD5f6y
-         yC9yAuZrxwm4V1BkSJxw+fq8GIgdoC3EfYRD5tZPkouZYpFI2wwiwiMkgGxRgygO26im
-         pOWA==
+        bh=vJXdLmcQUyrb4VKNR1Dojq9lVpq1SvOPdHlcqg6WF3s=;
+        b=DuaOiTeN5VpIwVKopMWgQ+RG1ALSGpah21F52G7gtoz7YAIQMdyC5z3gPT+/a7n73B
+         5OYry0sjeIEa39VjtdjfY2UAouGqK+B9/PpSodnJ8kuId6t3feBc6yDVXDrZsQayJ3iW
+         pXjsZW6adkWX/mxICwRjX/NkD/R3mf7SCJmKJ7hWP3+5BzaCkzPqXeyQl9zJPDjWL55L
+         aclzC6udevrjJsjfSLm3QeavXQr3xaxFcts5rxPxJKbjyLqhmtEqNb42jUMTP2qyB/vc
+         NJhYd7urPQ/nP/b8MewpNtLzeuB3cqwXu5XIll351C7LKGXLxPNti8EfUUTf0maD1FdM
+         rGpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VfW4+MFPGYeBUUr9P3m8Mr/ICDd1RbPLolMwpeyHPXw=;
-        b=DH2HgkCeAbzmjsXCKBxmL/0iMaYO08wNUCNsSs51c3VDCD6tNQx7/UPUgnKGjWlKXg
-         IEb3jKPzO0coXLSl7jR+yaSMj3UCswm0FOzHO9+QEstyXzd633SraiR41uRs/SpsdpTW
-         E9UibThX56YZabjoJZcmkABW9eEB7w42sakU4SWxIKZao04jyjovkD9h+xxdChfc+d40
-         UZ+M+cIeAo/Cc0xltDG5fXDZuVqXfI3XjAScwoWhv4tpIrLingwsP26jiGEXyWX+mP+A
-         MoHJ4A/hjfpxHLoHvS/ofXY7DYHf4U7amQF6vGgYw2oXwWKZh9dN0AZMnTkhO8eTEtcX
-         +uVA==
-X-Gm-Message-State: AJIora90HSnv76B4pnpzPx/cJi8fJEOvbYVg7vo6vQ+v8dtAUlhxzcn2
-        pTBVWuR/a6ITdurONG8TBwGFv7kNhdIvzpiu5vg=
-X-Google-Smtp-Source: AGRyM1traN0gacOxob9SpEeyGEaRItKOhsSsdeU9jcXCJziZD7bVNJHk7waH6kB659qzEWw3GHyGSXrCQGdpzLdsPmU=
-X-Received: by 2002:a05:6808:23c6:b0:331:3ab2:6fb9 with SMTP id
- bq6-20020a05680823c600b003313ab26fb9mr436913oib.200.1655317067646; Wed, 15
- Jun 2022 11:17:47 -0700 (PDT)
+        bh=vJXdLmcQUyrb4VKNR1Dojq9lVpq1SvOPdHlcqg6WF3s=;
+        b=2k043YrLjTmkiprTYVdVGWxXiu5bZ8mf4u7V1KXDzrHjnSNYIpQOSMSjsZgLRMyCd8
+         RHlRm7HJsbfj9TZz6d/nS4cvBfez9b+KRTp30lgnsZ8V1mGiv6Me7VQUKBhGVtV9bBqP
+         oyurzlBjUJ7QFv5QtdBZ0wobKMUPPq1UVAulbPf1DsjeWFZiLPluObI2Z1mC+f8wxmA6
+         HdnJAhrI+IKujSAz8WMXmglALbX0dOy5iVdNi+OVW4wJzcRhpPrxkHZ60hyAL//OvGMA
+         dVKFCJ2RRJVE4DXEWjjrt6wKG4Rrqde8tFqXWUJTYB+mcBnoWi4RjTi82auqYBRORedN
+         JIUw==
+X-Gm-Message-State: AJIora9Wag3siZaONT8LiRLnMuw0PjWEMmT2TAsX21TTwktSaoOA4CbH
+        NKdvSaQAbPEfD9XahQiCboNhO6dIS8E6kmW+3QQ=
+X-Google-Smtp-Source: AGRyM1v5ye0uTYtqCuLoFNVZPFwTYyyNDqLVKrIuaEj0efPlh+dQdAbu4BJK0lTk0wdZiHUK+yEGvVn91sga2c0Tpss=
+X-Received: by 2002:a17:90a:ce84:b0:1e4:d803:fad with SMTP id
+ g4-20020a17090ace8400b001e4d8030fadmr11878546pju.99.1655317127677; Wed, 15
+ Jun 2022 11:18:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220615143758.6139959f@canb.auug.org.au>
-In-Reply-To: <20220615143758.6139959f@canb.auug.org.au>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Wed, 15 Jun 2022 14:17:36 -0400
-Message-ID: <CADnq5_OXYpzdWk+x3SsKDVF1rFNJ2UWXwA+cLQSjX1L3zeP=cw@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the amdgpu tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Harry Wentland <harry.wentland@amd.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220611084731.55155-1-linmiaohe@huawei.com> <20220611084731.55155-5-linmiaohe@huawei.com>
+ <YqoAydWk/IcMp5d2@google.com>
+In-Reply-To: <YqoAydWk/IcMp5d2@google.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Wed, 15 Jun 2022 11:18:35 -0700
+Message-ID: <CAHbLzkr6AFy_b2SzG0DoLQZt8JAckEhLR_v7SkC=O-4LecaYFQ@mail.gmail.com>
+Subject: Re: [PATCH 4/7] mm/khugepaged: minor cleanup for collapse_file
+To:     "Zach O'Keefe" <zokeefe@google.com>
+Cc:     Miaohe Lin <linmiaohe@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Howells <dhowells@redhat.com>, NeilBrown <neilb@suse.de>,
+        Alistair Popple <apopple@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Peter Xu <peterx@redhat.com>, Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 12:38 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+On Wed, Jun 15, 2022 at 8:55 AM Zach O'Keefe <zokeefe@google.com> wrote:
 >
-> Hi all,
+> On 11 Jun 16:47, Miaohe Lin wrote:
+> > nr_none is always 0 for non-shmem case because the page can be read from
+> > the backend store. So when nr_none ! = 0, it must be in is_shmem case.
+> > Also only adjust the nrpages and uncharge shmem when nr_none != 0 to save
+> > cpu cycles.
+> >
+> > Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> > ---
+> >  mm/khugepaged.c | 9 ++++-----
+> >  1 file changed, 4 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+> > index 1b5dd3820eac..8e6fad7c7bd9 100644
+> > --- a/mm/khugepaged.c
+> > +++ b/mm/khugepaged.c
+> > @@ -1885,8 +1885,7 @@ static void collapse_file(struct mm_struct *mm,
+> >
+> >       if (nr_none) {
+> >               __mod_lruvec_page_state(new_page, NR_FILE_PAGES, nr_none);
+> > -             if (is_shmem)
+> > -                     __mod_lruvec_page_state(new_page, NR_SHMEM, nr_none);
+> > +             __mod_lruvec_page_state(new_page, NR_SHMEM, nr_none);
+> >       }
 >
-> After merging the amdgpu tree, today's linux-next build (x86_64
-> allmodconfig) failed like this:
 >
-> drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_resource.c:1835:13: error: 'remove_hpo_dp_link_enc_from_ctx' defined but not used [-Werror=unused-function]
->  1835 | static void remove_hpo_dp_link_enc_from_ctx(struct resource_context *res_ctx,
->       |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> cc1: all warnings being treated as errors
->
-> Caused by commit
->
->   4e1db0119c64 ("Revert "drm/amdgpu/display: Protect some functions with CONFIG_DRM_AMD_DC_DCN"")
->
-> That function is only used when CONFIG_DRM_AMD_DC_DCN is set.
+> Might be worth a small comment here - even though folks can see in above code
+> that this is only incremented in shmem path, might be nice to say why it's
+> always 0 for non-shmem (or conversely, why it's only possible to be non 0 on
+> shmem).
 
-Sorry, I had the fix in my tree, but forgot to push it.  It's there now.
-
-Alex
+Agreed, better to have some comments in the code.
 
 >
-> I have reverted that commit for today.
+> >
+> >       /* Join all the small entries into a single multi-index entry */
+> > @@ -1950,10 +1949,10 @@ static void collapse_file(struct mm_struct *mm,
+> >
+> >               /* Something went wrong: roll back page cache changes */
+> >               xas_lock_irq(&xas);
+> > -             mapping->nrpages -= nr_none;
+> > -
+> > -             if (is_shmem)
+> > +             if (nr_none) {
+> > +                     mapping->nrpages -= nr_none;
+> >                       shmem_uncharge(mapping->host, nr_none);
+> > +             }
+> >
+> >               xas_set(&xas, start);
+> >               xas_for_each(&xas, page, end - 1) {
+> > --
+> > 2.23.0
+> >
+> >
 >
-> Could you please add an x86_64 allmodconfig build to your CI?
+> Otherwise,
 >
-> --
-> Cheers,
-> Stephen Rothwell
+> Reviewed-by: Zach O'Keefe <zokeefe@google.com>
+>
