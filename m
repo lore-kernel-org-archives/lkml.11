@@ -2,192 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B931AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:02:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B93C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357265AbiFORCG (ORCPT
+        id S1357242AbiFORDf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:02:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37138 "EHLO
+        Wed, 15 Jun 2022 13:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357291AbiFORBs (ORCPT
+        with ESMTP id S1356968AbiFORDc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:01:48 -0400
+        Wed, 15 Jun 2022 13:03:32 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0339650058
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:01:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60947344D8
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:03:29 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D3C80153B;
-        Wed, 15 Jun 2022 10:01:46 -0700 (PDT)
-Received: from bogus (unknown [10.57.11.43])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1FC1D3F73B;
-        Wed, 15 Jun 2022 10:01:43 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 18:00:33 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        linux-kernel@vger.kernel.org, Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v3 15/16] arch_topology: Set cluster identifier in each
- core/thread from /cpu-map
-Message-ID: <20220615170033.q4og4pnmpwdg3l2g@bogus>
-References: <20220525081416.3306043-12-sudeep.holla@arm.com>
- <20220525081416.3306043-13-sudeep.holla@arm.com>
- <20220525081416.3306043-14-sudeep.holla@arm.com>
- <20220525081416.3306043-15-sudeep.holla@arm.com>
- <20220525081416.3306043-16-sudeep.holla@arm.com>
- <947470ba-35fc-3c72-d01b-c0a7337216a2@arm.com>
- <20220606102159.dduxmvq4m2fm6gks@bogus>
- <CAKfTPtB8iPzEXipsJqNtd9-aJMKx-FAaiGMzOg58HgRQuo39iA@mail.gmail.com>
- <20220610102753.virkx47uyfsojol6@bogus>
- <CAKfTPtD==UMjbSGHvKxT_z=LyvsJt=UCHsqkbgVnagbn5Aqpcw@mail.gmail.com>
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 43A99153B;
+        Wed, 15 Jun 2022 10:03:29 -0700 (PDT)
+Received: from [10.57.82.209] (unknown [10.57.82.209])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 82F6C3F73B;
+        Wed, 15 Jun 2022 10:03:26 -0700 (PDT)
+Message-ID: <5083aed9-fa31-b91c-6ca6-29dbc4d0807a@arm.com>
+Date:   Wed, 15 Jun 2022 18:03:21 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKfTPtD==UMjbSGHvKxT_z=LyvsJt=UCHsqkbgVnagbn5Aqpcw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v9 1/3] iommu/io-pgtable-arm-v7s: Add a quirk to allow
+ pgtable PA up to 35bit
+Content-Language: en-GB
+To:     yf.wang@mediatek.com, Will Deacon <will@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Georgi Djakov <quic_c_gdjako@quicinc.com>,
+        "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+        Ning Li <ning.li@mediatek.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        "moderated list:ARM SMMU DRIVERS" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Cc:     wsd_upstream@mediatek.com, Libo Kang <Libo.Kang@mediatek.com>,
+        Yong Wu <Yong.Wu@mediatek.com>,
+        Miles Chen <miles.chen@mediatek.com>
+References: <20220615161224.6923-1-yf.wang@mediatek.com>
+ <20220615161224.6923-2-yf.wang@mediatek.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220615161224.6923-2-yf.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Please note until we agree on unified view for hardware topology, I will
-temporarily ignore any scheduler domain related issues/concerns as this
-thread/discussion is mixing up too much IMO. I am not ignoring sched_domain
-concerns, but deferring it until we agree on the hardware topology view
-which is user visible and how that impacts sched domain topology can be
-considered soon following that.
-
-On Tue, Jun 14, 2022 at 07:59:23PM +0200, Vincent Guittot wrote:
-> On Fri, 10 Jun 2022 at 12:27, Sudeep Holla <sudeep.holla@arm.com> wrote:
-> >
-> > On Fri, Jun 10, 2022 at 12:08:44PM +0200, Vincent Guittot wrote:
-> > > On Mon, 6 Jun 2022 at 12:22, Sudeep Holla <sudeep.holla@arm.com> wrote:
-> > > >
-> >
-> > [...]
-> >
-> > > > Why ? Are you suggesting that we shouldn't present the hardware cluster
-> > > > to the topology because of the above reason ? If so, sorry that is not a
-> > > > valid reason. We could add login to return NULL or appropriate value
-> > > > needed in cpu_clustergroup_mask id it matches MC level mask if we can't
-> > > > deal that in generic scheduler code. But the topology code can't be
-> > > > compromised for that reason as it is user visible.
-> > >
-> > > I tend to agree with Dietmar. The legacy use of cluster node in DT
-> > > refers to the dynamiQ or legacy b.L cluster which is also aligned to
-> > > the LLC and the MC scheduling level. The new cluster level that has
-> > > been introduced recently does not target this level but some
-> > > intermediate levels either inside like for the kupeng920 or the v9
-> > > complex or outside like for the ampere altra. So I would say that
-> > > there is one cluster node level in DT that refers to the same MC/LLC
-> > > level and only an additional child/parent cluster node should be used
-> > > to fill the clustergroup_mask.
-> > >
-> >
-> > Again I completely disagree. Let us look at the problems separately.
-> > The hardware topology that some of the tools like lscpu and lstopo expects
-> > what the hardware looks like and not the scheduler's view of the hardware.
-> > So the topology masks that gets exposed to the user-space needs fixing
-> > even today. I have reports from various tooling people about the same.
-> > E.g. Juno getting exposed as dual socket system is utter non-sense.
-> >
-> > Yes scheduler uses most of the topology masks as is but that is not a must.
-> > There are these *group_mask functions that can implement what scheduler
-> > needs to be fed.
-> >
-> > I am not sure why the 2 issues are getting mixed up and that is the main
-> > reason why I jumped into this to make sure the topology masks are
-> > not tampered based on the way it needs to be used for scheduler.
-> >
-> > Both ACPI and DT on a platform must present exact same hardware topology
-> > to the user-space, there is no space for argument there.
->
-> But that's exactly my point there:
-> ACPI doesn't show the dynamiQ level anywhere but only the llc which
-> are the same and your patch makes the dynamiQ level visible for DT in
-> addition to llc
->
-
-Sorry if I am missing something obvious here, but both ACPI and DT has no
-special representation for dynamiQ clusters and hence it is impossible to
-deduce the same from either DT or ACPI. Can you provide some details
-or example as what you are referring as dynamiQ. Also what you mean by
-dynamiQ not shown on ACPI while shown with DT systems. If there is any
-discrepancies, we need to fix.
-
-Now, what I refer as discrepancy for example on Juno is below:
-(value read from a subset of per cpu sysfs files)
-cpu                     0       1       2       3       4       5
-cluster_id              -1      -1      -1      -1      -1      -1
-physical_package_id     1       0       0       1       1       1
-cluster_cpus_list       0       1       2       3       4       5
-package_cpus_list       0,3-5   1-2     1-2     0,3-5   0,3-5   0,3-5
-
-The above one is for DT which is wrong in all the 4 entries above.
-The below one is on ACPI and after applying my series on Juno.
-
-cpu                     0       1       2       3       4       5
-cluster_id              1       0       0       1       1       1
-physical_package_id     0       0       0       0       0       0
-cluster_cpus_list       0,3-5   1-2     1-2     0,3-5   0,3-5   0,3-5
-package_cpus_list       0-5     0-5     0-5     0-5     0-5     0-5
-
-This matches the expectation from the various userspace tools like lscpu,
-lstopo,..etc.
-
-> >
-> > > IIUC, we don't describe the dynamiQ level in ACPI which  uses cache
-> > > topology instead to define cpu_coregroup_mask whereas DT described the
-> > > dynamiQ instead of using cache topology. If you use cache topology
-> > > now, then you should skip the dynamiQ
-> > >
-> >
-> > Yes, unless someone can work out a binding to represent that and convince
-> > DT maintainers ;).
-> >
-> > > Finally, even if CLS and MC have the same scheduling behavior for now,
-> > > they might ends up with different scheduling properties which would
-> > > mean that replacing MC level by CLS one for current SoC would become
-> > > wrong
-> > >
-> >
-> > Again as I mentioned to Dietmar, that is something we can and must deal with
-> > in those *group_mask and not expect topology mask to be altered to meet
-> > CLS/MC or whatever sched domains needs. Sorry, that is my strong opinion
-> > as the topology is already user-space visible and (tooling) people are
-> > complaining that DT systems are broken and doesn't match ACPI systems.
+On 2022-06-15 17:12, yf.wang@mediatek.com wrote:
+> From: Yunfei Wang <yf.wang@mediatek.com>
 > 
-> again, your proposal doesn't help here because the DT will show a
-> level that doesn't appears in ACPI
->
-
-Which level exactly ? It matches exactly for Juno, the sysfs files are
-exact match after my changes. Again don't mix the scheduler domains for
-arguments here.
-
-> >
-> > So unless someone gives me non-scheduler and topology specific reasons
-> > to change that, sorry but my opinion on this matter is not going to change ;).
-> >
-> > You will get this view of topology, find a way to manage with all those
-> > *group_mask functions. By the way it is already handled for ACPI systems,
+> Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA and
+> cause pgtable PA size larger than 32bit.
 > 
-> AFAICT, no it's not, the cluster described in ACPI is not the dynamiQ
-> level that you make now visible to DT
+> Since Mediatek IOMMU hardware support at most 35bit PA in pgtable,
+> so add a quirk to allow the PA of pgtables support up to bit35.
+> 
+> Signed-off-by: Ning Li <ning.li@mediatek.com>
+> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+> ---
+>   drivers/iommu/io-pgtable-arm-v7s.c | 58 +++++++++++++++++++++++-------
+>   include/linux/io-pgtable.h         | 17 +++++----
+>   2 files changed, 56 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+> index be066c1503d3..39e5503ac75a 100644
+> --- a/drivers/iommu/io-pgtable-arm-v7s.c
+> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
+> @@ -182,14 +182,8 @@ static bool arm_v7s_is_mtk_enabled(struct io_pgtable_cfg *cfg)
+>   		(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT);
+>   }
+>   
+> -static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+> -				    struct io_pgtable_cfg *cfg)
+> +static arm_v7s_iopte to_mtk_iopte(phys_addr_t paddr, arm_v7s_iopte pte)
+>   {
+> -	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+> -
+> -	if (!arm_v7s_is_mtk_enabled(cfg))
+> -		return pte;
+> -
+>   	if (paddr & BIT_ULL(32))
+>   		pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
+>   	if (paddr & BIT_ULL(33))
+> @@ -199,6 +193,17 @@ static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+>   	return pte;
+>   }
+>   
+> +static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+> +				    struct io_pgtable_cfg *cfg)
+> +{
+> +	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+> +
+> +	if (arm_v7s_is_mtk_enabled(cfg))
+> +		return to_mtk_iopte(paddr, pte);
+> +
+> +	return pte;
+> +}
+> +
+>   static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+>   				  struct io_pgtable_cfg *cfg)
+>   {
+> @@ -240,10 +245,17 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+>   	dma_addr_t dma;
+>   	size_t size = ARM_V7S_TABLE_SIZE(lvl, cfg);
+>   	void *table = NULL;
+> +	gfp_t gfp_l1;
+> +
+> +	/*
+> +	 * ARM_MTK_TTBR_EXT extend the translation table base support all
+> +	 * memory address.
+> +	 */
+> +	gfp_l1 = cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
+> +		 GFP_KERNEL : ARM_V7S_TABLE_GFP_DMA;
+>   
+>   	if (lvl == 1)
+> -		table = (void *)__get_free_pages(
+> -			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
+> +		table = (void *)__get_free_pages(gfp_l1 | __GFP_ZERO, get_order(size));
+>   	else if (lvl == 2)
+>   		table = kmem_cache_zalloc(data->l2_tables, gfp);
+>   
+> @@ -251,7 +263,8 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+>   		return NULL;
+>   
+>   	phys = virt_to_phys(table);
+> -	if (phys != (arm_v7s_iopte)phys) {
+> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
+> +	    phys >= (1ULL << cfg->oas) : phys != (arm_v7s_iopte)phys) {
 
-Again, no. There is no binding for dynamiQ level either in DT or ACPI and
-hence there is no way it can become visible on DT. So I have no idea why
-there is a thought process or assumption about existence of dynamiQ level
-in the DT. It doesn't exist. If that is wrong, can you point me to the
-bindings as well as existing device tree ? If you are referring to the
-phantom domains Dietmar mentioned in earlier threads, then they don't exist.
-It is made up and one need to get the bindings pushed before we can address
-such a system.
+Given that the comment above says it supports all of memory, how would 
+phys >= (1ULL << cfg->oas) ever be true?
 
--- 
-Regards,
-Sudeep
+>   		/* Doesn't fit in PTE */
+>   		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
+>   		goto out_free;
+> @@ -457,9 +470,14 @@ static arm_v7s_iopte arm_v7s_install_table(arm_v7s_iopte *table,
+>   					   arm_v7s_iopte curr,
+>   					   struct io_pgtable_cfg *cfg)
+>   {
+> +	phys_addr_t phys = virt_to_phys(table);
+>   	arm_v7s_iopte old, new;
+>   
+> -	new = virt_to_phys(table) | ARM_V7S_PTE_TYPE_TABLE;
+> +	new = phys | ARM_V7S_PTE_TYPE_TABLE;
+> +
+> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
+> +		new = to_mtk_iopte(phys, new);
+> +
+>   	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+>   		new |= ARM_V7S_ATTR_NS_TABLE;
+>   
+> @@ -779,6 +797,7 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+>   						void *cookie)
+>   {
+>   	struct arm_v7s_io_pgtable *data;
+> +	slab_flags_t slab_flag;
+>   
+>   	if (cfg->ias > (arm_v7s_is_mtk_enabled(cfg) ? 34 : ARM_V7S_ADDR_BITS))
+>   		return NULL;
+> @@ -788,7 +807,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+>   
+>   	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+>   			    IO_PGTABLE_QUIRK_NO_PERMS |
+> -			    IO_PGTABLE_QUIRK_ARM_MTK_EXT))
+> +			    IO_PGTABLE_QUIRK_ARM_MTK_EXT |
+> +			    IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT))
+>   		return NULL;
+>   
+>   	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
+> @@ -796,15 +816,27 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+>   	    !(cfg->quirks & IO_PGTABLE_QUIRK_NO_PERMS))
+>   			return NULL;
+>   
+> +	if ((cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT) &&
+> +	    !arm_v7s_is_mtk_enabled(cfg))
+> +		return NULL;
+> +
+>   	data = kmalloc(sizeof(*data), GFP_KERNEL);
+>   	if (!data)
+>   		return NULL;
+>   
+>   	spin_lock_init(&data->split_lock);
+> +
+> +	/*
+> +	 * ARM_MTK_TTBR_EXT extend the translation table base support all
+> +	 * memory address.
+> +	 */
+> +	slab_flag = cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
+> +		    0 : ARM_V7S_TABLE_SLAB_FLAGS;
+> +
+>   	data->l2_tables = kmem_cache_create("io-pgtable_armv7s_l2",
+>   					    ARM_V7S_TABLE_SIZE(2, cfg),
+>   					    ARM_V7S_TABLE_SIZE(2, cfg),
+> -					    ARM_V7S_TABLE_SLAB_FLAGS, NULL);
+> +					    slab_flag, NULL);
+>   	if (!data->l2_tables)
+>   		goto out_free_data;
+>   
+> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+> index 86af6f0a00a2..c9189716f6bd 100644
+> --- a/include/linux/io-pgtable.h
+> +++ b/include/linux/io-pgtable.h
+> @@ -74,17 +74,22 @@ struct io_pgtable_cfg {
+>   	 *	to support up to 35 bits PA where the bit32, bit33 and bit34 are
+>   	 *	encoded in the bit9, bit4 and bit5 of the PTE respectively.
+>   	 *
+> +	 * IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT: (ARM v7s format) MediaTek IOMMUs
+> +	 *	extend the translation table base support up to 35 bits PA, the
+> +	 *	encoding format is same with IO_PGTABLE_QUIRK_ARM_MTK_EXT.
+> +	 *
+>   	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
+>   	 *	for use in the upper half of a split address space.
+>   	 *
+>   	 * IO_PGTABLE_QUIRK_ARM_OUTER_WBWA: Override the outer-cacheability
+>   	 *	attributes set in the TCR for a non-coherent page-table walker.
+>   	 */
+> -	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+> -	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+> -	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
+> -	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
+> -	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA	BIT(6)
+> +	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
+> +	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
+> +	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT		BIT(3)
+> +	#define IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT	BIT(4)
+> +	#define IO_PGTABLE_QUIRK_ARM_TTBR1		BIT(5)
+> +	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
+>   	unsigned long			quirks;
+>   	unsigned long			pgsize_bitmap;
+>   	unsigned int			ias;
+> @@ -122,7 +127,7 @@ struct io_pgtable_cfg {
+>   		} arm_lpae_s2_cfg;
+>   
+>   		struct {
+> -			u32	ttbr;
+> +			u64	ttbr;
+
+The point of this is to return an encoded TTBR register value, not a raw 
+base address. I see from the other patches that your register is still 
+32 bits, so I'd prefer to follow the standard pattern and not need this 
+change.
+
+Thanks,
+Robin.
+
+>   			u32	tcr;
+>   			u32	nmrr;
+>   			u32	prrr;
