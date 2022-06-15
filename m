@@ -2,72 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25CDAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:12:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72069C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:14:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345070AbiFONMM (ORCPT
+        id S1349158AbiFONOf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:12:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48624 "EHLO
+        Wed, 15 Jun 2022 09:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233309AbiFONMI (ORCPT
+        with ESMTP id S240965AbiFONOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:12:08 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B528A24581;
-        Wed, 15 Jun 2022 06:12:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=FHOVdTg6NKnoEjJkArBOs1GnjsYN72M8SV5hUzpqtrM=; b=2XD3XMBMNnkMfNTbWofuI16L1y
-        ibePJHi5dvh74MnJpzG/u7S4aY3orURjcbZttxdDGEus2CPnup5s5KOGh1tezdDut2pv1x+NGhPuQ
-        X+3q7hkUy7zDSvVK2F4TppQrdIPlffoCN0T5tf11PK7u3/D8dclNIN8z91X7ihwHu8RuY3cc7wDnT
-        d43ZIT49HPtGxdcjxsIboQvMIdqXM3LrRBtzzeyXMjMyX991d/c4srAjBj5WAi/1DhB92Ucde0Xdx
-        naUR1vNfJj/V/p7q3PNpvUcCQ6o6WE2NrGm2l1MnAHXJhZcTWN19ICW2w0WfNwRcn01j35hhvNYIv
-        H6BuzbSQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1SoW-00EdqR-Tk; Wed, 15 Jun 2022 13:12:04 +0000
-Date:   Wed, 15 Jun 2022 06:12:04 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     Dave Chinner <david@fromorbit.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-fscrypt@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Keith Busch <kbusch@kernel.org>
-Subject: Re: [RFC PATCH v2 1/7] statx: add I/O alignment information
-Message-ID: <YqnapOLvHDmX/3py@infradead.org>
-References: <20220518235011.153058-1-ebiggers@kernel.org>
- <20220518235011.153058-2-ebiggers@kernel.org>
- <YobNXbYnhBiqniTH@magnolia>
- <20220520032739.GB1098723@dread.disaster.area>
- <YqgbuDbdH2OLcbC7@sol.localdomain>
+        Wed, 15 Jun 2022 09:14:30 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604482A943;
+        Wed, 15 Jun 2022 06:14:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655298868; x=1686834868;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=37JFSAJb+yBqLEcxkMyXiMXO+ToiIUZywb5Saztiwu4=;
+  b=zW51S3AJsNwfIHyOl4/MqGjNSHNVqSFPfNRhksDyoYPtW1UauTODvq2X
+   DCTOklkOsIN6csdpm9InhJPBZx83oZWPARSISmVa5TLouXNyKq8FGN7k7
+   eUcPCsqMcKZOXclg1VmSLy0pFAqaYExK1fYAVyjbVN6Nk0DG1iWhhiGOR
+   E=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 15 Jun 2022 06:14:28 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 06:14:27 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 15 Jun 2022 06:14:27 -0700
+Received: from [10.216.37.111] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 15 Jun
+ 2022 06:14:22 -0700
+Message-ID: <1e92745e-6fa4-a3bd-d0cb-5c1f78efbead@quicinc.com>
+Date:   Wed, 15 Jun 2022 18:44:19 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqgbuDbdH2OLcbC7@sol.localdomain>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v1] PCI: qcom: Allow L1 and its sub states on qcom dwc
+ wrapper
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>, <helgaas@kernel.org>
+CC:     <linux-pci@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_vbadigan@quicinc.com>,
+        <quic_hemantk@quicinc.com>, <quic_ramkri@quicinc.com>,
+        <manivannan.sadhasivam@linaro.org>, Andy Gross <agross@kernel.org>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        "Rob Herring" <robh@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+References: <1654240730-31322-1-git-send-email-quic_krichai@quicinc.com>
+ <CAE-0n52hpKxMG=gq1rPGx0cM2VKNRo+WHVW+ExCScJ8UwZKgGA@mail.gmail.com>
+From:   Krishna Chaitanya Chundru <quic_krichai@quicinc.com>
+In-Reply-To: <CAE-0n52hpKxMG=gq1rPGx0cM2VKNRo+WHVW+ExCScJ8UwZKgGA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 10:25:12PM -0700, Eric Biggers wrote:
-> While working on the man-pages update, I'm having second thoughts about the
-> stx_offset_align_optimal field.  Does any filesystem other than XFS actually
-> want stx_offset_align_optimal, when st[x]_blksize already exists?  Many network
-> filesystems, as well as tmpfs when hugepages are enabled, already report large
-> (megabytes) sizes in st[x]_blksize.  And all documentation I looked at (man
-> pages for Linux, POSIX, FreeBSD, NetBSD, macOS) documents st_blksize as
-> something like "the preferred blocksize for efficient I/O".  It's never
-> documented as being limited to PAGE_SIZE, which makes sense because it's not.
 
-Yes.  While st_blksize is utterly misnamed, it has always aways been
-the optimal I/O size.
+On 6/9/2022 3:47 AM, Stephen Boyd wrote:
+> Quoting Krishna chaitanya chundru (2022-06-03 00:18:50)
+>> Allow L1 and its sub-states in the qcom dwc pcie wrapper.
+>> By default its disabled. So enable it explicitly.
+>>
+> Would be good to add some more details about why it's disabled by
+> default. I guess it's disabled by default in the hardware and enabling
+> it is OK to do unconditionally for all qcom dwc pcie devices?
 
-> Perhaps for now we should just add STATX_DIOALIGN instead of STATX_IOALIGN,
-> leaving out the stx_offset_align_optimal field?  What do people think?
+This is disabled by default in the hardware. We can enable this for all 
+qcom devices unconditionally because
 
-Yes, this sounds like a good plan.
+Adding this patch alone will not allow aspm transitions we need to 
+enable aspm configs. If particular devices doesn't want aspm
+
+they can disable using aspm configs.
+
