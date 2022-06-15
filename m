@@ -2,123 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEB88C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 08:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243611AbiFOIZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 04:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
+        id S1345045AbiFOI3q (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 04:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232000AbiFOIZj (ORCPT
+        with ESMTP id S1345028AbiFOI3T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 04:25:39 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A6E220E0
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 01:25:37 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id m20so21659958ejj.10
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 01:25:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=42THmoY9ZwUf7E9pXMyKG0cEp/ni0i9p0WfpREB2n10=;
-        b=IzXbdm+MSDrAUM/lNjl81RFo6yj1cN4/UWpTi2VyoC8cuXokTBY/XslJ6f8EgwlHHR
-         Nqv+vLJCcvriZm89d5qLtZ9vWefp92+txsJV3xA0TJKJRWaBC0X0xB7n8kwB+ZjvEjFd
-         UwuD1M6X9yi0TmtYRspTDQSK/ydvBdHIkBXUA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=42THmoY9ZwUf7E9pXMyKG0cEp/ni0i9p0WfpREB2n10=;
-        b=mX6bmkgzpQHyGiIYBJ8OfDnI95VsRQvJ5y/cHV7CWRas4WkB//rlQrs8tFlUzLN+gM
-         6jiYNfnigvp96EHkT8o0pOi2SGvWkcL9h+FUTUKPyBnaNGMyUUXIK/9mgUWHTL2uHFl7
-         1Is9EDyzzx8An7cKs4xBGExctMeGQmhbqPmHz/8nao8robln+43yzMMmek4oGZeyfGOY
-         ge/zK2UKaRmEfYT+rQmTZJOhTjwzNgzgghJvLl4I++ngoAQLjI9Rb0QCQQ31uvmP5DGC
-         3neSlYzm58fc3nS03YLyNw0frXvPwStt4ALzLUY4F0QN05p5Ohv9hxifj1i+PmRvedbc
-         vbIw==
-X-Gm-Message-State: AJIora95Z+s9BDcB8gPMSm6c9e6382elXvbt+kYTn9/EU88NARpv0RZp
-        w/Di0PeE6favdt/8Ahug3vnn9bdvSfLEMVUJEJV7YQ==
-X-Google-Smtp-Source: ABdhPJzwhpiEvPHgnYKirBM5dhwCXY18u70ilKxIbysLJLQFgRqgBSktW8XVTVC7cX35FBuWGfmGK84g72VBIQQ80rQ=
-X-Received: by 2002:a17:906:a10e:b0:6f3:e70b:b572 with SMTP id
- t14-20020a170906a10e00b006f3e70bb572mr7595326ejy.546.1655281536262; Wed, 15
- Jun 2022 01:25:36 -0700 (PDT)
+        Wed, 15 Jun 2022 04:29:19 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB6133E10;
+        Wed, 15 Jun 2022 01:29:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655281758; x=1686817758;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=zOK8QFqvftAZi3/z0cv6PPWHLAU9HWQJ53pRU+8Ya2w=;
+  b=Agrd8VYS71SLQi9NvbiBi3gg19fOd6FwTV2zTs5frQWZgETKkX4G/pK+
+   +dFNi44+tQdE00RFW+bvq1V/InZ7/xi0E1lVGGnNjKpY/h4C4V//u46SM
+   HkjC6Wn7JZ1PXyHp/Cy+dhbl/iRlmsSbeAd8wnjINf6KmDcDoGIfGe/In
+   uMRvWRt18yy365wrSPyVNO/N6Pekl6deiZwWkN9iiFbzFkmjlzPc8Hz6b
+   9NtQWRmV4BY8Wfr3Gkcn1Qkb6uq79Yhj5vJ40KHv1U2WZA8kEv5SirP1S
+   M5y8XU84JCjsHMWpPysbzKZMNGGsrAo63Sox21rqVLoXBCqB98dpQe+xA
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="178025144"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jun 2022 01:29:18 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 15 Jun 2022 01:29:18 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 15 Jun 2022 01:29:15 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <patrice.chotard@foss.st.com>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v2 0/4] serial: atmel: cleanup code
+Date:   Wed, 15 Jun 2022 11:31:40 +0300
+Message-ID: <20220615083144.1882142-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Wed, 15 Jun 2022 16:25:25 +0800
-Message-ID: <CAGXv+5G9j_XVhuH2XO8g0YQn=NT3Typ0OYkKtr7qHkZM9XKpwQ@mail.gmail.com>
-Subject: Dealing with temporary clock parents for PLL consumers?
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        matthias.bgg@kernel.org
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        LAKML <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi everyone,
+Hi,
 
-As part of getting Panfrost to support devfreq on MediaTek SoCs, we've
-been trying to internalize PLL consumer reparenting during PLL
-reconfiguration into the clock drivers. This was previously done by
-the individual clock consumer hardware drivers, Panfrost in this case.
+The following patches does some cleanup for atmel_serial driver by
+switching to dev_pm_ops and improving clock management code. Along with
+it I took the chance and introduced a patch for st-asc which removes the
+include of pm_runtime.h.
 
-I posted some patches for temporarily reparenting PLL consumers while the
-PLL is reconfigured on MediaTek platforms [1]. This is based on a similar
-mechanism in the Allwinner sunxi-ng clock driver. This works OK for the
-MT8183, but as Angelo recently discovered, there are complications for
-MT8192 and MT8195 due to how the clock tree is.
+Thank you,
+Claudiu Beznea
 
-On MT8183, the clock tree for the GPU looks like this:
+Changes in v2:
+- split patch 2/3 from v1 in patch 2/4 and patch 3/4 in this
+  series
+- collected tags
 
-  <XTAL>     ----------------\
-  <GPU PLL>  ------- <gate>--\\ <mux> --> GPU
-  <stable PLL 1>  -- <gate>--//
-  <stable PLL 2>  -- <gate>--/
+Claudiu Beznea (4):
+  tty: serial: atmel: stop using legacy pm ops
+  tty: serial: atmel: use devm_clk_get()
+  tty: serial: atmel: remove enable/disable clock due to
+    atmel_console_setup()
+  serial: st-asc: remove include of pm_runtime.h
 
-Since we temporarily reparent the GPU to the XTAL, everything is OK.
+ drivers/tty/serial/atmel_serial.c | 93 +++++++++----------------------
+ drivers/tty/serial/st-asc.c       |  1 -
+ 2 files changed, 26 insertions(+), 68 deletions(-)
 
-On MT8192 / MT8195, the clock tree is more complicated with a fast mux:
-(same parent with different dividers omitted)
+-- 
+2.34.1
 
-  <GPU PLL>  <gate> ----------------------------\
-                                                 \
-  <XTAL>     ---------------\                     <fast mux> --> GPU
-  <stable PLL 1> -- <gate> --- <mux> -- <gate> --/
-  <stable PLL 2> -- <gate> -/
-
-As shown, we now have a gate in the temporary clock parent (the other side
-of the fast mux) that needs to be ungated. The question is how do we deal
-with this, since the temporary muxing away from the GPU PLL is done without
-updating the clk core's view of the clock tree.
-
-Angelo and I discussed various solutions:
-
-a) We could mark it as a critical clock so that it's always ungated,
-   but that seems a bit heavy handed.
-
-b) (by me) Add clk_prepare_enable() / clk_disable_unprepare() calls in
-   the clk notifier that handles the temporary muxing. This might trip
-   up the clk core in unexpected ways.
-
-c) (by Angelo) Tie the temporary clock parent to the GPU's power domain.
-   This means the clock is only enabled when the GPU is in use. I think
-   this is a bit hackish though.
-
-d) Add support for such a mechanism to the clock core. I assume this is
-   a common requirement across platforms, as PLLs tend to overshoot when
-   being reconfigured on the fly, and can cause glitches in their consumers.
-
-We'd like to get opinions from folks about:
-
-1. Whether (b) is acceptable from the clk subsystem's perspective.
-2. Whether (c) is acceptable in the platform maintainer's view.
-3. Whether there is interest in (d), assuming it is doable.
-
-
-Thanks
-ChenYu
-
-[1] https://lore.kernel.org/linux-mediatek/20220523085923.1430470-1-wenst@chromium.org/
