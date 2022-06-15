@@ -2,105 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA72C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6167C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348237AbiFOJhD (ORCPT
+        id S1348273AbiFOJhF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:37:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46920 "EHLO
+        Wed, 15 Jun 2022 05:37:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiFOJhB (ORCPT
+        with ESMTP id S1348204AbiFOJhC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:37:01 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDAF3A181
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:37:00 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id n18so9941950plg.5
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:37:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=toOnIScwFyw6W7OXDthcOn14+v/kWcf4sWlmNX4vbyw=;
-        b=wAiX39cIni2xV0gs+Aw3x+cqGcmhOg44meG1GgATN4rGOZMTRucugQttdsPTVLCPgd
-         lzGVyUPuSgofxRCMzipQtvxYsU74K+kfcsgyw+JroN1p0LsIwpFR1+8h1eEkFAAzFgMn
-         QtzlRavMa0womDUiHqAPMnCEpiIK5kCOcNoEvbpI9QLZt98sVZ0vzczrpcpgM7f1oDMl
-         BNm/O3cjCiITG5mvpbSyJwF7l0kdkhwxFkbNxP1mPKDOlB/9wu/A86mH48bh/6L4USG2
-         AD6wMV04G7O2UKviV0REy+Q6Qh+UrDH8ohQYrbvYnwzYkX6v0zWLR2bIJkT5AbiY1WsW
-         E9WQ==
+        Wed, 15 Jun 2022 05:37:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1B2003A181
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:37:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655285821;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dNw/R51TWM4Lx/vPA0cEiIg3iaOBbrHMuRKSdvNKOs8=;
+        b=GT5zZUWvkDKUg4mSLKbpi41KUtNhp+iFWiIG4fLYLjH28y90wUY3Ui+prPylaFPPVKl+L0
+        wXRa1TS2i5mc/7FQgg+jYYDOD8kBUxbjEqXqm6yC/HHHD3uN03+MEqZD8UQ2J7AvRWdHK6
+        aOyVTPsxvrRTBKjRm6bGpPmMa64mmA8=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-10-IXrBLdLpMyWYS5AV6sqTVA-1; Wed, 15 Jun 2022 05:36:59 -0400
+X-MC-Unique: IXrBLdLpMyWYS5AV6sqTVA-1
+Received: by mail-wr1-f72.google.com with SMTP id m18-20020adff392000000b0021848a78a53so1685344wro.19
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:36:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=toOnIScwFyw6W7OXDthcOn14+v/kWcf4sWlmNX4vbyw=;
-        b=pDvEc8POF4dWcqJHVrhG5csMwgAkM2yr2c0HBvySWVonWpBn00EZZl2uOuhvuhQrqH
-         tKvQZUajyAi6JL/MXsuZfZThHI8ZowhQTNryzC1A7QqBXb+Gw+/N11rSQzDivoRCKCQN
-         EEkK99NXcVJga7h6scPjqlP4HcGn8h61e9YyVTTaV9YEaOK7POiR5CD1dpv88U1vy1Om
-         89ZCkeoo23juN8G2Ltlt5OAt3SsXzVJChocly1v/VlWRJnrbrnq+LKqUoLtIN+mEwbvt
-         VmXmAPUWhzKY0sG7mh0hIHs0wljyWYnnWUVk0rvzxIgHx6PYTMkWp4oKmFgFyZh2FpGJ
-         4sgQ==
-X-Gm-Message-State: AJIora9o0UMYDUTkvWO53JKWqI4eQ6Fb66P4bF02zNTzTnS5ShpnlcHp
-        zVnPRZ5IN1iRKcqjfZ+lt0LcVoYw4zzzvA==
-X-Google-Smtp-Source: AGRyM1uDSjpYzuR/0hLrdYfbzcHDQTf58H3ocD0LXbnal15KuuFX07Jp9SuP/fNMasxYOqlgrk+/5A==
-X-Received: by 2002:a17:902:d5c3:b0:168:f037:98d7 with SMTP id g3-20020a170902d5c300b00168f03798d7mr6063522plh.117.1655285820263;
-        Wed, 15 Jun 2022 02:37:00 -0700 (PDT)
-Received: from always-x1.bytedance.net ([61.120.150.70])
-        by smtp.gmail.com with ESMTPSA id jj1-20020a170903048100b00163247b64bfsm8859205plb.115.2022.06.15.02.36.55
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=dNw/R51TWM4Lx/vPA0cEiIg3iaOBbrHMuRKSdvNKOs8=;
+        b=c1wGKQdmu4AZG4jj6bI2magj3SO4WtE1rJYLBnrFMyRyb4MkkVzfa4xBDN6kmEWoFX
+         2sqVqlpp42i0NNZIArhKo776zwkrjTzUDnxTE3GMETgrY/F231oxBAH39CHprAfYlflc
+         sBYNHQF27YjiYvmiIxSFFh9TeXj2kSe6z459cTbtjSxEukJzjSaaQwzwef5B4vN9KSrs
+         cMYFzIOrrM+cxN/5CTey2EC3/fQ7Gq/FrY+DMNBxeMLWy3/HFmREqHyMom+imwALkQ6I
+         ySG5LTiTlEH4VeaiiGpqXQCioJFmzrYd9YfQC6tIBvYCScp3zuyU4J2ORUe/deHjZ4zG
+         Rb1g==
+X-Gm-Message-State: AJIora+gIXvlZ4U8CXujgMODX9DFrGy9LLdCxCUfyHSouw9MnFFgPd+k
+        56lvo1sDEpBb+NCHrB9ujRdHsa5fv1x4MGF0MnocB4VjYYbAwrydSpadeU0yquxWQx6uj8DuyZc
+        S7y6UWHIR/FXZnRfczXK1HoIX
+X-Received: by 2002:a05:6000:156c:b0:218:5f5d:9c61 with SMTP id 12-20020a056000156c00b002185f5d9c61mr9197821wrz.134.1655285818373;
+        Wed, 15 Jun 2022 02:36:58 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1ssl/jJYq81qq2KZOEAIQfXCR1k7dMbwfxJo3LlKFMzxbwAQ8XqzUsy+dnHpmNnbov1a/rtAQ==
+X-Received: by 2002:a05:6000:156c:b0:218:5f5d:9c61 with SMTP id 12-20020a056000156c00b002185f5d9c61mr9197809wrz.134.1655285818176;
+        Wed, 15 Jun 2022 02:36:58 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id c7-20020a05600c0a4700b003942a244f51sm1682638wmq.42.2022.06.15.02.36.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 02:36:59 -0700 (PDT)
-From:   zhenwei pi <pizhenwei@bytedance.com>
-To:     pizhenwei@bytedance.com, naoya.horiguchi@nec.com,
-        akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org, david@redhat.com,
-        linmiaohe@huawei.com, gregkh@linuxfoundation.org
-Subject: [PATCH v6 0/1] mm/memory-failure: don't allow to unpoison hw corrupted page
-Date:   Wed, 15 Jun 2022 17:32:08 +0800
-Message-Id: <20220615093209.259374-1-pizhenwei@bytedance.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 02:36:57 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     mail@anirudhrb.com, kumarpraveen@linux.microsoft.com,
+        wei.liu@kernel.org, robert.bradford@intel.com, liuwe@microsoft.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Ilias Stamatis <ilstam@amazon.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [PATCH] KVM: nVMX: Don't expose TSC scaling to L1 when on Hyper-V
+In-Reply-To: <Yqmf5UGbNKyGz3dD@anrayabh-desk>
+References: <20220613161611.3567556-1-anrayabh@linux.microsoft.com>
+ <87sfo7igis.fsf@redhat.com>
+ <eaefdea0-0ca3-93f1-a815-03900055fdcd@redhat.com>
+ <Yqmf5UGbNKyGz3dD@anrayabh-desk>
+Date:   Wed, 15 Jun 2022 11:36:56 +0200
+Message-ID: <87mteei7yf.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v5 -> v6:
-- Suggested by Naoya, declare 'hw_memory_failure' with initial value
-  explicitly, also add __read_mostly. Thanks to Naoya&David!
-  Leave 'Cc stable' or not to Andrew to decide.
+Anirudh Rayabharam <anrayabh@linux.microsoft.com> writes:
 
-v4 -> v5:
-- Add mf_flags 'MF_SW_SIMULATED' to distinguish SW/HW memory failure,
-  and use a global variable to record HW memory failure, once HW
-  memory failure happens, disable unpoison.
+> On Tue, Jun 14, 2022 at 07:20:34PM +0200, Paolo Bonzini wrote:
+>> On 6/14/22 14:19, Vitaly Kuznetsov wrote:
+>> > The latest version:
+>> > https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/datatypes/hv_vmx_enlightened_vmcs
+>> > 
+>> > has it, actually. It was missing before (compare with e.g. 6.0b version
+>> > here:
+>> > https://github.com/MicrosoftDocs/Virtualization-Documentation/raw/live/tlfs/Hypervisor%20Top%20Level%20Functional%20Specification%20v6.0b.pdf)
+>> > 
+>> > but AFAIR TSC scaling wasn't advertised by genuine Hyper-V either.
+>> > Interestingly enough, eVMCS version didn't change when these fields were
+>> > added, it is still '1'.
+>> > 
+>> > I even have a patch in my stash (attached). I didn't send it out because
+>> > it wasn't properly tested with different Hyper-V versions.
+>> > 
+>> > -- Vitaly
+>> 
+>> Anirudh, can you check if Vitaly's patches work for you?
+>
+> I will check it. But I wonder if they fit the criteria for inclusion in
+> stable trees...
+>
+> It is important for the fix to land in the stable trees since this issue
+> is a regression that was introduced _after_ 5.13. (I probably should've
+> mentioned this in the changelog.)
+>
 
-v3 -> v4:
-- Add debug entry "hwpoisoned-pages" to show the number of hwpoisoned
-  pages.
-- Disable unpoison when a read HW memory failure occurs.
-
-v2 -> v3:
-- David pointed out that virt_to_kpte() is broken(no pmd_large() test
-  on a PMD), so drop this API in this patch, walk kmap instead.
-
-v1 -> v2:
-- this change gets protected by mf_mutex
-- use -EOPNOTSUPP instead of -EPERM 
-
-v1:
-- check KPTE to avoid to unpoison hardware corrupted page
-
-zhenwei pi (1):
-  mm/memory-failure: disable unpoison once hw error happens
-
- Documentation/vm/hwpoison.rst |  3 ++-
- drivers/base/memory.c         |  2 +-
- include/linux/mm.h            |  1 +
- mm/hwpoison-inject.c          |  2 +-
- mm/madvise.c                  |  2 +-
- mm/memory-failure.c           | 12 ++++++++++++
- 6 files changed, 18 insertions(+), 4 deletions(-)
+Personally, I see no problem with splitting off TscMultiplier part from
+my patch and marking it for stable@ fixing d041b5ea93352. I'm going to
+run some tests too.
 
 -- 
-2.20.1
+Vitaly
 
