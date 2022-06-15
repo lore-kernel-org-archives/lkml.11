@@ -2,279 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83360C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 444D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 07:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243132AbiFOHCk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 03:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47140 "EHLO
+        id S244042AbiFOHGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 03:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230083AbiFOHCi (ORCPT
+        with ESMTP id S230083AbiFOHGC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 03:02:38 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A129B41
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:02:37 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LNGPd4dyZzSgsZ;
-        Wed, 15 Jun 2022 14:59:17 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+        Wed, 15 Jun 2022 03:06:02 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B027A1582E
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 00:06:01 -0700 (PDT)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LNGX653pSzjYB2;
+        Wed, 15 Jun 2022 15:04:54 +0800 (CST)
+Received: from dggpeml500008.china.huawei.com (7.185.36.147) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 15 Jun 2022 15:02:16 +0800
-Received: from huawei.com (10.175.124.27) by kwepemm600016.china.huawei.com
- (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
+ 15.1.2375.24; Wed, 15 Jun 2022 15:05:59 +0800
+Received: from huawei.com (10.67.175.34) by dggpeml500008.china.huawei.com
+ (7.185.36.147) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 15 Jun
- 2022 15:02:15 +0800
-From:   liubo <liubo254@huawei.com>
-To:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ying.huang@intel.com>, <willy@infradead.org>, <vbabka@suse.cz>,
-        <surenb@google.com>, <peterx@redhat.com>, <neilb@suse.de>,
-        <naoya.horiguchi@nec.com>, <minchan@kernel.org>,
-        <linmiaohe@huawei.com>, <louhongxiang@huawei.com>,
-        <linfeilong@huawei.com>, <liubo254@huawei.com>
-Subject: [PATCH v2 1/2] mm/swapfile: Extract operations of resource release in the swapoff process
-Date:   Wed, 15 Jun 2022 15:02:27 +0800
-Message-ID: <20220615070228.2858170-2-liubo254@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220615070228.2858170-1-liubo254@huawei.com>
-References: <20220615070228.2858170-1-liubo254@huawei.com>
+ 2022 15:05:59 +0800
+From:   Ren Zhijie <renzhijie2@huawei.com>
+To:     <jaegeuk@kernel.org>, <chao@kernel.org>, <daehojeong@google.com>
+CC:     <linux-f2fs-devel@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, Ren Zhijie <renzhijie2@huawei.com>
+Subject: [PATCH -next] f2fs: fix build error too many arguments to functions
+Date:   Wed, 15 Jun 2022 15:04:22 +0800
+Message-ID: <20220615070422.214106-1-renzhijie2@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.175.34]
 X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600016.china.huawei.com (7.193.23.20)
+ dggpeml500008.china.huawei.com (7.185.36.147)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to realize the interface reuse in the swapoff resource
-release process, some of the operations are abstracted
-into separate interfaces.
+If CONFIG_F2FS_FS_COMPRESSION is not set.
 
-Only code movement, no functional modifications and changes.
+make ARCH=x86_64 CROSS_COMPILE=x86_64-linux-gnu-, will be failed, like this:
+fs/f2fs/data.c: In function ‘f2fs_finish_read_bio’:
+fs/f2fs/data.c:136:5: error: too many arguments to function ‘f2fs_end_read_compressed_page’
+     f2fs_end_read_compressed_page(page, true, 0,
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from fs/f2fs/data.c:25:0:
+fs/f2fs/f2fs.h:4228:20: note: declared here
+ static inline void f2fs_end_read_compressed_page(struct page *page,
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fs/f2fs/data.c:138:4: error: too many arguments to function ‘f2fs_put_page_dic’
+    f2fs_put_page_dic(page, in_softirq);
+    ^~~~~~~~~~~~~~~~~
+In file included from fs/f2fs/data.c:25:0:
+fs/f2fs/f2fs.h:4233:20: note: declared here
+ static inline void f2fs_put_page_dic(struct page *page)
+                    ^~~~~~~~~~~~~~~~~
+fs/f2fs/data.c: In function ‘f2fs_handle_step_decompress’:
+fs/f2fs/data.c:241:4: error: too many arguments to function ‘f2fs_end_read_compressed_page’
+    f2fs_end_read_compressed_page(page, PageError(page),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from fs/f2fs/data.c:25:0:
+fs/f2fs/f2fs.h:4228:20: note: declared here
+ static inline void f2fs_end_read_compressed_page(struct page *page,
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+make[2]: *** [fs/f2fs/data.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [fs/f2fs] Error 2
 
-del_useless_swap_info():
-Remove specific swap_info_struct from swap_active_head and
-update total_swap_pages.
+Since commit 1b565702dffe ("f2fs: handle decompress only post processing in softirq") 
+had changed the definition of function "f2fs_end_read_compressed_page()" and "f2fs_put_page_dic()",
+but forgot the other definitions in f2fs.h warpped by #else /* CONFIG_F2FS_FS_COMPRESSION */.
 
-release_swap_info_memory():
-Clear the corresponding resources of swap_info_struct.
-
-Signed-off-by: liubo <liubo254@huawei.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: 1b565702dffe("f2fs: handle decompress only post processing in softirq")
+Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
 ---
-v2:
-Only code movement, no functional modifications and changes.
-Former: https://lore.kernel.org/linux-mm/20220528084941.28391-1-liubo254@huawei.com/
----
- mm/swapfile.c | 168 +++++++++++++++++++++++++++-----------------------
- 1 file changed, 91 insertions(+), 77 deletions(-)
+ fs/f2fs/f2fs.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/mm/swapfile.c b/mm/swapfile.c
-index 3fa26f6971e9..2ef5e7b4918e 100644
---- a/mm/swapfile.c
-+++ b/mm/swapfile.c
-@@ -2386,18 +2386,103 @@ bool has_usable_swap(void)
- 	return ret;
- }
- 
--SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
-+static void release_swap_info_memory(struct swap_info_struct *p)
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index b42fcca030e2..0811a9335dde 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -4225,12 +4225,12 @@ static inline struct page *f2fs_compress_control_page(struct page *page)
+ static inline int f2fs_init_compress_mempool(void) { return 0; }
+ static inline void f2fs_destroy_compress_mempool(void) { }
+ static inline void f2fs_decompress_cluster(struct decompress_io_ctx *dic) { }
+-static inline void f2fs_end_read_compressed_page(struct page *page,
+-						bool failed, block_t blkaddr)
++static inline void f2fs_end_read_compressed_page(struct page *page, bool failed,
++				block_t blkaddr, bool in_softirq)
  {
--	struct swap_info_struct *p = NULL;
- 	unsigned char *swap_map;
- 	struct swap_cluster_info *cluster_info;
- 	unsigned long *frontswap_map;
--	struct file *swap_file, *victim;
-+	struct file *swap_file;
- 	struct address_space *mapping;
- 	struct inode *inode;
-+	unsigned int old_block_size;
-+
-+	mutex_lock(&swapon_mutex);
-+	spin_lock(&swap_lock);
-+	spin_lock(&p->lock);
-+	drain_mmlist();
-+
-+	/* wait for anyone still in scan_swap_map */
-+	p->highest_bit = 0;		/* cuts scans short */
-+	while (p->flags >= SWP_SCANNING) {
-+		spin_unlock(&p->lock);
-+		spin_unlock(&swap_lock);
-+		schedule_timeout_uninterruptible(1);
-+		spin_lock(&swap_lock);
-+		spin_lock(&p->lock);
-+	}
-+
-+	swap_file = p->swap_file;
-+	mapping = p->swap_file->f_mapping;
-+	old_block_size = p->old_block_size;
-+	p->swap_file = NULL;
-+	p->max = 0;
-+	swap_map = p->swap_map;
-+	p->swap_map = NULL;
-+	cluster_info = p->cluster_info;
-+	p->cluster_info = NULL;
-+	frontswap_map = frontswap_map_get(p);
-+	spin_unlock(&p->lock);
-+	spin_unlock(&swap_lock);
-+	arch_swap_invalidate_area(p->type);
-+	frontswap_invalidate_area(p->type);
-+	frontswap_map_set(p, NULL);
-+	mutex_unlock(&swapon_mutex);
-+	free_percpu(p->percpu_cluster);
-+	p->percpu_cluster = NULL;
-+	free_percpu(p->cluster_next_cpu);
-+	p->cluster_next_cpu = NULL;
-+	vfree(swap_map);
-+	kvfree(cluster_info);
-+	kvfree(frontswap_map);
-+	/* Destroy swap account information */
-+	swap_cgroup_swapoff(p->type);
-+	exit_swap_address_space(p->type);
-+
-+	inode = mapping->host;
-+	if (S_ISBLK(inode->i_mode)) {
-+		struct block_device *bdev = I_BDEV(inode);
-+
-+		set_blocksize(bdev, old_block_size);
-+		blkdev_put(bdev, FMODE_READ | FMODE_WRITE | FMODE_EXCL);
-+	}
-+
-+	inode_lock(inode);
-+	inode->i_flags &= ~S_SWAPFILE;
-+	inode_unlock(inode);
-+	filp_close(swap_file, NULL);
-+}
-+
-+static void del_useless_swap_info(struct swap_info_struct *p)
-+{
-+	del_from_avail_list(p);
-+	spin_lock(&p->lock);
-+	if (p->prio < 0) {
-+		struct swap_info_struct *si = p;
-+		int nid;
-+
-+		plist_for_each_entry_continue(si, &swap_active_head, list) {
-+			si->prio++;
-+			si->list.prio--;
-+			for_each_node(nid) {
-+				if (si->avail_lists[nid].prio != 1)
-+					si->avail_lists[nid].prio--;
-+			}
-+		}
-+		least_priority++;
-+	}
-+	plist_del(&p->list, &swap_active_head);
-+	atomic_long_sub(p->pages, &nr_swap_pages);
-+	p->flags &= ~SWP_WRITEOK;
-+	spin_unlock(&p->lock);
-+}
-+
-+SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
-+{
-+	struct swap_info_struct *p = NULL;
-+	struct file *victim;
-+	struct address_space *mapping;
- 	struct filename *pathname;
- 	int err, found = 0;
--	unsigned int old_block_size;
- 	unsigned int inuse_pages;
- 
- 	if (!capable(CAP_SYS_ADMIN))
-@@ -2440,26 +2525,8 @@ SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
- 		spin_unlock(&swap_lock);
- 		goto out_dput;
- 	}
--	del_from_avail_list(p);
--	spin_lock(&p->lock);
--	if (p->prio < 0) {
--		struct swap_info_struct *si = p;
--		int nid;
- 
--		plist_for_each_entry_continue(si, &swap_active_head, list) {
--			si->prio++;
--			si->list.prio--;
--			for_each_node(nid) {
--				if (si->avail_lists[nid].prio != 1)
--					si->avail_lists[nid].prio--;
--			}
--		}
--		least_priority++;
--	}
--	plist_del(&p->list, &swap_active_head);
--	atomic_long_sub(p->pages, &nr_swap_pages);
--	p->flags &= ~SWP_WRITEOK;
--	spin_unlock(&p->lock);
-+	del_useless_swap_info(p);
- 	spin_unlock(&swap_lock);
- 
- 	disable_swap_slots_cache_lock();
-@@ -2497,60 +2564,7 @@ SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
- 	if (!p->bdev || !bdev_nonrot(p->bdev))
- 		atomic_dec(&nr_rotate_swap);
- 
--	mutex_lock(&swapon_mutex);
--	spin_lock(&swap_lock);
--	spin_lock(&p->lock);
--	drain_mmlist();
--
--	/* wait for anyone still in scan_swap_map_slots */
--	p->highest_bit = 0;		/* cuts scans short */
--	while (p->flags >= SWP_SCANNING) {
--		spin_unlock(&p->lock);
--		spin_unlock(&swap_lock);
--		schedule_timeout_uninterruptible(1);
--		spin_lock(&swap_lock);
--		spin_lock(&p->lock);
--	}
--
--	swap_file = p->swap_file;
--	old_block_size = p->old_block_size;
--	p->swap_file = NULL;
--	p->max = 0;
--	swap_map = p->swap_map;
--	p->swap_map = NULL;
--	cluster_info = p->cluster_info;
--	p->cluster_info = NULL;
--	frontswap_map = frontswap_map_get(p);
--	spin_unlock(&p->lock);
--	spin_unlock(&swap_lock);
--	arch_swap_invalidate_area(p->type);
--	frontswap_invalidate_area(p->type);
--	frontswap_map_set(p, NULL);
--	mutex_unlock(&swapon_mutex);
--	free_percpu(p->percpu_cluster);
--	p->percpu_cluster = NULL;
--	free_percpu(p->cluster_next_cpu);
--	p->cluster_next_cpu = NULL;
--	vfree(swap_map);
--	kvfree(cluster_info);
--	kvfree(frontswap_map);
--	/* Destroy swap account information */
--	swap_cgroup_swapoff(p->type);
--	exit_swap_address_space(p->type);
--
--	inode = mapping->host;
--	if (S_ISBLK(inode->i_mode)) {
--		struct block_device *bdev = I_BDEV(inode);
--
--		set_blocksize(bdev, old_block_size);
--		blkdev_put(bdev, FMODE_READ | FMODE_WRITE | FMODE_EXCL);
--	}
--
--	inode_lock(inode);
--	inode->i_flags &= ~S_SWAPFILE;
--	inode_unlock(inode);
--	filp_close(swap_file, NULL);
--
-+	release_swap_info_memory(p);
- 	/*
- 	 * Clear the SWP_USED flag after all resources are freed so that swapon
- 	 * can reuse this swap_info in alloc_swap_info() safely.  It is ok to
+ 	WARN_ON_ONCE(1);
+ }
+-static inline void f2fs_put_page_dic(struct page *page)
++static inline void f2fs_put_page_dic(struct page *page, bool in_softirq)
+ {
+ 	WARN_ON_ONCE(1);
+ }
 -- 
-2.27.0
+2.17.1
 
