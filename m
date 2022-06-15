@@ -2,89 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:04:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC26C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344621AbiFOWEV (ORCPT
+        id S1346743AbiFOWGw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 18:04:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56360 "EHLO
+        Wed, 15 Jun 2022 18:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242770AbiFOWEQ (ORCPT
+        with ESMTP id S238652AbiFOWGt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 18:04:16 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E6A5639E;
-        Wed, 15 Jun 2022 15:04:12 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id t3-20020a17090a510300b001ea87ef9a3dso23244pjh.4;
-        Wed, 15 Jun 2022 15:04:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=B/lcBT2zvh9WH/SWJfT0cjMqf3IsmHgiP49j/MJgSQw=;
-        b=Y+XeMqiwcoCfW0R+mi7lzArSd2bf0V48ufIARR2I+vKwQp8IlJ0Vw6QwlOxSkDrk3J
-         djHgvjiNNrENZ5qof4vLgJag7T6nFwwPXwZub6Txansde63YVs9DtKrUWwJd3Mh0RoEP
-         pHF1v6BoHEgnSaXspMC7XotRM191gSPjlVgWzvDiU1VTkZS/qk5c/N0Vltg3KL8ZX6bm
-         rvjRDsKRWovSVUjPLks0ZU8BckoF3cg1Na/LvTfL/EjB+xlDKquSvZpSJvswDHbC5suo
-         z0bPXuObocdaHNa533FPnmW1VUgJggrwFLFRJnMToEkrq3kbaxrSuCyRb5Zn90k1xVjv
-         PjhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=B/lcBT2zvh9WH/SWJfT0cjMqf3IsmHgiP49j/MJgSQw=;
-        b=p1m9Mp3q6Gcz+PNslh4N1ycd5rFQXbki8VK3n5Li6igbF4qpIYxx0+Dcc9byQ7N5qJ
-         YiwtMwvMaoBBNpNYY5wJge2R4+FhYuQjGNxHo5uQtwGUe+T5/K9/+5hN2Yd1fSrjRsMl
-         KP5xtku6/+SleCw6ygW2l79lYpgDu+E9L4XZxiplUIs8ivg59WgkW9w/r2qE6cxyzEm9
-         yTaGV85NpD1rrfl0mPawlgie2KeW77u+9WBoJbZT+SPjhkqOVZsvJQMIVWgHWF2ynfDr
-         jd6nucw9WCQxTYcS3SAp+M4qeh8aKPjXEHG2nG9lZNzDkYzjwtGyLzh+11t2Y9COZX3G
-         XItA==
-X-Gm-Message-State: AJIora8lO7EbLQ3ysbXQxE/8WKrhEcw7+3rsdH/eZ6neRpX79/cNRJjx
-        Oz6Ib6iwAcggyNEtpsFWlQ4=
-X-Google-Smtp-Source: AGRyM1vA76/F9uVYj1UN9pwyypo3U+tX9PWxxkFENMXnlDieKnUsQGYdIvpPByWeqf2nYc/Z0w5G7Q==
-X-Received: by 2002:a17:902:f606:b0:168:ecca:44e with SMTP id n6-20020a170902f60600b00168ecca044emr1396112plg.144.1655330652392;
-        Wed, 15 Jun 2022 15:04:12 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id v125-20020a626183000000b0051bed79a5e6sm131249pfb.90.2022.06.15.15.04.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 15:04:11 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 15 Jun 2022 15:04:10 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.18 00/11] 5.18.5-rc1 review
-Message-ID: <20220615220410.GG1229939@roeck-us.net>
-References: <20220614183720.861582392@linuxfoundation.org>
+        Wed, 15 Jun 2022 18:06:49 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B23C563A5;
+        Wed, 15 Jun 2022 15:06:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655330808; x=1686866808;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1F3Ip+Ag85q874qUWiUpOUFx42ubled3GFsealoyUEY=;
+  b=jLUJsN6ZtepAXju18mabDHtlsOTrwJKoAAW2mOQN2BTvL6sUwJEBtQoK
+   VwUfv8n0XgmCPfVidAcYfvTeksy0A+wSwMeWhYpTnpZEpG0rH3tEiMtLD
+   /h/5V4UBSgnWoJWBcFUirJv4EGakYOpqAlzRU1sxeIloqmR+r+JoxWrmP
+   bCdNhFfIdttJSeXN2L70hUhnV395ufuwuKcHVeTxB67eagtVpFPHsOw7E
+   TB7QDdd0S2sbyWa+cVg7Lqj/9Ui1fkeIbz7BEY8t0qu2xu6Ue/QnFuG5D
+   93wBHdZIpT/mrnkxzwXjUbzgJqzRKqfcR7JegijcfjouYpmfF+3z8OYex
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259573532"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="259573532"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 15:06:48 -0700
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="583398809"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 15:06:47 -0700
+Date:   Wed, 15 Jun 2022 15:06:46 -0700
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Darren Hart <darren@os.amperecomputing.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>, James Morse <james.morse@arm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Doug Rady <dcrady@os.amperecomputing.com>
+Subject: Re: [PATCH] ACPI/APEI: Limit printable size of BERT table data
+Message-ID: <YqpX9npa/wR7mafR@agluck-desk3.sc.intel.com>
+References: <43dfaba0646d498fe94c1a8479b812346133f438.1646765290.git.darren@os.amperecomputing.com>
+ <CAJZ5v0gMh2ed+ZWOnd-t_uTrZtm=AUfxOAkAKWT7WQK3=gf+7w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220614183720.861582392@linuxfoundation.org>
+In-Reply-To: <CAJZ5v0gMh2ed+ZWOnd-t_uTrZtm=AUfxOAkAKWT7WQK3=gf+7w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 08:40:37PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.5 release.
-> There are 11 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Wed, Mar 09, 2022 at 07:42:26PM +0100, Rafael J. Wysocki wrote:
+> On Tue, Mar 8, 2022 at 7:51 PM Darren Hart
+
+> Not that I have a particularly strong opinion here, but this looks
+> reasonable to me, so I've queued it up for 5.18.
 > 
-> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
-> Anything received after that time might be too late.
-> 
+> APEI reviewers, please chime in if you disagree with the above.
 
-Build results:
-	total: 154 pass: 154 fail: 0
-Qemu test results:
-	total: 489 pass: 489 fail: 0
+It looked reasonable to me when I skimmed it in March. But the
+reality check now needs cashing because some validation team
+here is complaining that they don't see any errors printed from
+their BERT tests. :-(
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+So I looked again. This test inside the loop seems bogus:
 
-Guenter
+	if (region_len < ACPI_BERT_PRINT_MAX_LEN) {
+
+because "region_len" isn't updated inside the loop. If it is too big
+then it will prevent Linux from printing any/all of the records in the
+BERT table (and the test could have been done before the loop).
+
+Maybe below patch is better? It avoids printing individual CPER
+records that are too large (checking estatus_len instead of region_len).
+
+I also added a limit to how many records to print (I randomly picked "5" as
+the limit ... the specific failing test only want to print one).
+
+-Tony
+
+[I will write up a proper commit message and add a Signed-off-by if
+this looks to be a reasonable direction]
+
+diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
+index 598fd19b65fa..4e894a728c02 100644
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -29,6 +29,8 @@
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt) "BERT: " fmt
++
++#define ACPI_BERT_PRINT_MAX_RECORDS 5
+ #define ACPI_BERT_PRINT_MAX_LEN 1024
+ 
+ static int bert_disable;
+@@ -39,6 +41,7 @@ static void __init bert_print_all(struct acpi_bert_region *region,
+ 	struct acpi_hest_generic_status *estatus =
+ 		(struct acpi_hest_generic_status *)region;
+ 	int remain = region_len;
++	int ncper = 0, skipped = 0;
+ 	u32 estatus_len;
+ 
+ 	while (remain >= sizeof(struct acpi_bert_region)) {
+@@ -46,24 +49,23 @@ static void __init bert_print_all(struct acpi_bert_region *region,
+ 		if (remain < estatus_len) {
+ 			pr_err(FW_BUG "Truncated status block (length: %u).\n",
+ 			       estatus_len);
+-			return;
++			break;
+ 		}
+ 
+ 		/* No more error records. */
+ 		if (!estatus->block_status)
+-			return;
++			break;
+ 
+ 		if (cper_estatus_check(estatus)) {
+ 			pr_err(FW_BUG "Invalid error record.\n");
+-			return;
++			break;
+ 		}
+ 
+ 		pr_info_once("Error records from previous boot:\n");
+-		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
++		if (ncper++ < ACPI_BERT_PRINT_MAX_RECORDS && estatus_len < ACPI_BERT_PRINT_MAX_LEN)
+ 			cper_estatus_print(KERN_INFO HW_ERR, estatus);
+ 		else
+-			pr_info_once("Max print length exceeded, table data is available at:\n"
+-				     "/sys/firmware/acpi/tables/data/BERT");
++			skipped++;
+ 
+ 		/*
+ 		 * Because the boot error source is "one-time polled" type,
+@@ -75,6 +77,9 @@ static void __init bert_print_all(struct acpi_bert_region *region,
+ 		estatus = (void *)estatus + estatus_len;
+ 		remain -= estatus_len;
+ 	}
++	if (skipped)
++		pr_info("Skipped %d error records, full table data is available at:\n"
++			"/sys/firmware/acpi/tables/data/BERT", skipped);
+ }
+ 
+ static int __init setup_bert_disable(char *str)
