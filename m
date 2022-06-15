@@ -2,127 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF78EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C97AEC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:10:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244694AbiFORKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46276 "EHLO
+        id S1348390AbiFORKq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 13:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbiFORKQ (ORCPT
+        with ESMTP id S229866AbiFORKn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:10:16 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D6C33A33;
-        Wed, 15 Jun 2022 10:10:15 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id o7so24540204eja.1;
-        Wed, 15 Jun 2022 10:10:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=vY67WMB2Agt8pyrPhfTXeIIIQFi2KT2b5ifqCXgqTGk=;
-        b=dsBlgJahY582AAuGOeZC9sw97KW5Ea0ZlJ6v0H+ha5ozYOrCq32CuUEfuntuMgCOvP
-         T3aV/bVnyOHt03HrUECwBufspZdyyNfQAGaxphguo6Zqc712QDFjXBRNrXwS7HKP1G2n
-         e0Ps31jm5W70quEOpIFTINUcFwLSFFYWRNq2Mvkp16xrTiegBlkGNXz0VT2R2hSKrSN2
-         IoNXVP+CKhQm99tmeuva0edqFLZBoB8e0CmLaiOa/ICfB2ycHOpmzVgatWWZTdjBb0Pi
-         J0yGILitm1t5tqUYlpCpRhc43SFh43IDbpMSFi8xrzntsjwX3sqCJRouRd2gm7DNwgFw
-         ITqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=vY67WMB2Agt8pyrPhfTXeIIIQFi2KT2b5ifqCXgqTGk=;
-        b=IngQu+JIpvAs1EYPRAT8vsjBgs/5/h1jBRzWfo8PIf1jE0DnOZDekpNZnz+sd6QAH2
-         WaL9xKIATrjO68ZvHqZ1QwwDRWl3vIFJsRFl1EcUMZv4TmdZb/fjkGLuoct+yvBx/FM2
-         xVSwLwt8Qw0oNNRjpJhUHXvhZOAsF/JBVSFnl7033mUrPvknhNdOP4+k1/3rIyhuzGC/
-         Tb16aZiVIuG4kKSOje9Vo/karUSRnUM/9Ew3U/bwBmuin3pxSFbYAaJOT7/eq0DaSBr0
-         x2px9/Y87qJSm9LCHhUqmFqvldQwEvSs2+T7qL1KKytLPaYIZvEqJfZ9U3fMTq2zDfsS
-         910Q==
-X-Gm-Message-State: AJIora8XZUvbboxA9U1b2zycKjsBk5SLVjfFwLdZLk2t1tZEG6mefUzk
-        ZD7T/YlJi/P2kgcf8EoYxqPGGgPUvnQ6YA==
-X-Google-Smtp-Source: AGRyM1sZeBSTelg+26G4wbFPs6/9pqx6I0eJb7g0zhPvt6MuSLzJILwPZWyhoJVRjgTyRPpZQM9zTg==
-X-Received: by 2002:a17:906:2245:b0:715:7c81:e39d with SMTP id 5-20020a170906224500b007157c81e39dmr758896ejr.262.1655313013990;
-        Wed, 15 Jun 2022 10:10:13 -0700 (PDT)
-Received: from [192.168.200.12] (p3ee2b977.dip0.t-ipconnect.de. [62.226.185.119])
-        by smtp.gmail.com with ESMTPSA id v20-20020a1709060b5400b0070662b3b792sm6433336ejg.222.2022.06.15.10.10.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 10:10:13 -0700 (PDT)
-Message-ID: <d80789bc-a8fc-de5f-164a-75adf7097311@message-id.googlemail.com>
-Date:   Wed, 15 Jun 2022 19:10:12 +0200
+        Wed, 15 Jun 2022 13:10:43 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D806533A33
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:10:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655313042; x=1686849042;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=M06CL0NiYygtoYrGmEwC5NcF30mFpzKbxgEsg1xGaiw=;
+  b=jR3AvSbgISNTou1KvVCETE/5YdXdxB/0Fv4f34m0HKLXGpWVT46VNoGQ
+   HkXViRka+v0cT0qPffYsNdIN8DLsqPs2gAy6R+2qNkMjnnKbdH8lYVMwH
+   AIxj3EXigT5wgMEW+aqIRO021TsoFoIhgRFC+4HHWAV3a8ReHrdUFfu2q
+   DIEnRaDduViu4TdBJQ/BqyqFCxsyuGJU0L+OSsy6+fMJSsK1xXV7lzGqP
+   BzNu1HlQ5tBtfjJSudPlrTfFBXqn+RGX97sKoKXT02md2dtipHR5zXja0
+   sg5CeOWt9pK8CJzb9lYQa48+7c2IOsbUUqjfKDFTkELeaIGSM3eucL0x/
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="365390601"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="365390601"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 10:10:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="559240820"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga006.jf.intel.com with ESMTP; 15 Jun 2022 10:10:38 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 65C02109; Wed, 15 Jun 2022 20:10:42 +0300 (EEST)
+Date:   Wed, 15 Jun 2022 20:10:42 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org, ak@linux.intel.com,
+        dan.j.williams@intel.com, david@redhat.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, seanjc@google.com,
+        thomas.lendacky@amd.com, x86@kernel.org
+Subject: Re: [PATCHv4 3/3] x86/tdx: Handle load_unaligned_zeropad()
+ page-cross to a shared page
+Message-ID: <20220615171042.oeumb3vs3ttu4rvd@black.fi.intel.com>
+References: <20220614120135.14812-1-kirill.shutemov@linux.intel.com>
+ <20220614120135.14812-4-kirill.shutemov@linux.intel.com>
+ <051fd468-11e6-308b-66c8-4de16ff80deb@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Kenneth Chan <kenneth.t.chan@gmail.com>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Stefan Seyfried <seife+kernel@b1-systems.com>
-References: <20200821181433.17653-8-kenneth.t.chan@gmail.com>
- <20220612090507.20648-1-stefan.seyfried@googlemail.com>
- <20220612090507.20648-3-stefan.seyfried@googlemail.com>
- <CAHp75Ve+vrfSu6pD+AKe-eCVA2pC5o520y4gVwLNg9Dtk0U5bw@mail.gmail.com>
- <CAHp75VdFPUHTeDBY5ukFgVqJJn7BbTHxrxKUGOLB6P1UX-utAg@mail.gmail.com>
-From:   Stefan Seyfried <stefan.seyfried@googlemail.com>
-Subject: Re: [PATCH 2/2] platform/x86: panasonic-laptop: allow to use all
- hotkeys
-In-Reply-To: <CAHp75VdFPUHTeDBY5ukFgVqJJn7BbTHxrxKUGOLB6P1UX-utAg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <051fd468-11e6-308b-66c8-4de16ff80deb@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
-
-On 15.06.22 13:24, Andy Shevchenko wrote:
-> On Wed, Jun 15, 2022 at 1:21 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
->> On Sun, Jun 12, 2022 at 3:54 PM <stefan.seyfried@googlemail.com> wrote:
+On Wed, Jun 15, 2022 at 08:27:52AM -0700, Dave Hansen wrote:
+> On 6/14/22 05:01, Kirill A. Shutemov wrote:
+> > load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
+> > The unwanted loads are typically harmless. But, they might be made to
+> > totally unrelated or even unmapped memory. load_unaligned_zeropad()
+> > relies on exception fixup (#PF, #GP and now #VE) to recover from these
+> > unwanted loads.
+> > 
+> > In TDX guests, the second page can be shared page and VMM may configure
+> > it to trigger #VE.
+> > 
+> > Kernel assumes that #VE on a shared page is MMIO access and tries to
+> > decode instruction to handle it. In case of load_unaligned_zeropad() it
+> > may result in confusion as it is not MMIO access.
+> > 
+> > Fix it by detecting split page MMIO accesses and fail them.
+> > load_unaligned_zeropad() will recover using exception fixups.
+> > 
+> > The issue was discovered by analysis. It was not triggered during the
+> > testing.
 > 
->> We usually add module options in very bad cases where it's very useful
->> for debugging or when some devices require the opposite settings while
->> can't be distinguished automatically. Here I do not see either of such
->> cases. Hence, I would prefer to see a DMI based quirk as it's done a
->> lot in the PDx86 drivers. Can you do that?
+> I thought this whole exercise was kicked off by hitting this in testing.
+>  Am I remembering this wrong?
+> 
+> > https://lore.kernel.org/all/20220517153444.11195-10-kirill.shutemov@linux.intel.com/
+> 
+> Says:
+> 
+> > This is an actual, real-world problem which was discovered during TDX
+> > testing.
+> 
+> Or were you considering this a different problem somehow?
 
-I can do that, but... below ;-)
+They are different.
 
-> Looking into the code of the culprit patch, have you tried to add a
-> debug pr_info() and see what value is in the result? Perhaps you may
-> just sort out by correcting that.
+The patch by the link addresses issue of load_unaligned_zeropad() stepping
+onto unaccepted memory. This was triggered in practice.
 
-The driver is working fine, it's just that Kenneth's machine is getting 
-most of the hotkey events (I'd guess all but sleep, hibernate, battery) 
-twice. That's why he disabled the key generation from the panasonic_acpi 
-driver for them. (My guess is that on his CF-W5, they are also coming in 
-via normal keyboard input path). My CF-51 does only generate them via 
-acpi, so if they are not generated, I get nothing.
-Hence the module parameter so that the two known users of this module 
-(Kenneth and me) can adjust this to their needs.
+This patch address stepping onto MMIO shared memory. I had to force the
+situation manually as MMIO memory mapped with ioremap() and it is not next
+to normally allocated memory used by load_unaligned_zeropad() (such as
+dentry cache).
 
-Now about the DMI match: I can do that.
-But let's face it: the panasonic laptops are pretty rare in the wild, so 
-even if I'm "whitelisting" the CF-51, then probably other models will 
-need the same treatment and we have no real way of finding out which 
-ones, unless people complain. (For example my CF-51 is about 17 years 
-old now and I just pulled it out and updated it to the latest and 
-greatest "because I can". That's also why it has taken me so long to 
-even notice the driver was broken for me. So people not complaining will 
-not mean "nothing is broken" but rather "this code has not many users").
-So even if I add the DMI match (which is a good idea anyhow because then 
-"my" model will work out of the box, while right now I need to add a 
-module parameter or switch it on later), I'd still vote for having a 
-possibility for overriding the DMI results.
-Would that be OK?
+Although any shared memory (SWIOTLB buffer for instance) can generate EPT
+violation #VE if the VMM is malicious enough.
 
-Best regards,
-
-	Stefan
 -- 
-Stefan Seyfried
-
-"For a successful technology, reality must take precedence over
-  public relations, for nature cannot be fooled." -- Richard Feynman
+ Kirill A. Shutemov
