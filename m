@@ -2,77 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FB86C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F922C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354192AbiFOR2S (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38404 "EHLO
+        id S239010AbiFOR2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 13:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349646AbiFOR2M (ORCPT
+        with ESMTP id S1349653AbiFOR2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:28:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8DD959D
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:28:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B057EB820C5
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 17:28:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 017E1C3411E;
-        Wed, 15 Jun 2022 17:28:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655314087;
-        bh=NGsPa22nNEnE5x5vS8yssNlYfYxkSRU3+UAJVehVMag=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UiR3VvUJ39a+BVuIQoT3c+3dtQ/zKJLQT2LfcTYRqtvX68wX0kE3cNoGHW3Wx8mq5
-         ekxzcWi/PdCSeLBai+XbqoWqwki3dCDMn6E/YQzZRdVQP4X2u278m2XUzoafRt/QG4
-         6BDn/HLl+9f+D61T5p7BlpMtqaK1gKZgbKe9hCCyYC1cvLe9y9XCG7jVfGEWebb/Xk
-         YXHq+ggIgpGCa/IWZKb6te4iWZL4ecm4NgZV2XVq0IgiU+JBC9iiB82qRYUZRsvqbI
-         ihMGNUx/XpiorzvatHyo2ztg/xX2iv4iRN1G192Uv5ml7qtkaXiRUQos3cXHf/F2/h
-         8m13vAmKFo2NA==
-Date:   Wed, 15 Jun 2022 10:28:06 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Intel Wired LAN <intel-wired-lan@lists.osuosl.org>
-Subject: Re: drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h:1174:29:
- error: enumerator value for
- 'i40e_static_assert_i40e_aqc_cloud_filters_element_data' is not an integer
- constant
-Message-ID: <20220615102806.1224d227@kernel.org>
-In-Reply-To: <CAK8P3a1s-jKfDFo7CXjpM4B6JJS-bV901yCfOxr9qikV7AO_LQ@mail.gmail.com>
-References: <202206091828.eNkyL2EI-lkp@intel.com>
-        <CAK8P3a3Mu0MDRJU=he=gVxGKQYwzr1wePLKdgN37yLPSqm1iuQ@mail.gmail.com>
-        <20220615085128.026f1c56@kernel.org>
-        <CAK8P3a1s-jKfDFo7CXjpM4B6JJS-bV901yCfOxr9qikV7AO_LQ@mail.gmail.com>
+        Wed, 15 Jun 2022 13:28:14 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931C3959D;
+        Wed, 15 Jun 2022 10:28:13 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id a15so16313082wrh.2;
+        Wed, 15 Jun 2022 10:28:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zPJh0+5QxVl9IcfIvjsxlZmZC8UvoEwLLOJqypTZHXc=;
+        b=Qbx/WYWJfRWvXbO5/QYUstaVAaNakVAkD1orizUvn5sG9T4r/X03Reo8/rpPxcrAyx
+         HAE0zYdcvw/0AliGuzyAUDHkr+MscMeJ0x7oLhQ/IKgbpQbhUDdFeIOSg2BDi8ipMk4k
+         Nxk2lWYs5MkzL8wOKY9tQsCaAz+KvM4sFXXgCkSBo+m/UJWJUZ0DZD9n40tuNB8mbL06
+         DzNwVGfk0CAytBpJCbf75vndA+8RFz76ekoKAE3r9jBN31I/M04u+ZTdzTHu6Kgpdv0x
+         7MhmgUdAJcIXDK2/MKjHAEeIKk/to+UZNRZa/Mrcwq+0rkNzhh+xJAL6ns+UWn+HVmHg
+         ZlaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zPJh0+5QxVl9IcfIvjsxlZmZC8UvoEwLLOJqypTZHXc=;
+        b=1IlB8UJFpyf7eRGoyGUucW8LClCh2hCkgiSNGE4rFX1aI/3YqhhiIZvdo0llo/x/td
+         B7LLLfS8SFIBRxaLOqd+9WxIwj5N8QKA+A/2JiLyjie1BJ/nhc5YsAR65IwBHqJ18EKW
+         kbG6qha1ihdGWVvAHFd0Fdow2nh+04KiLR8aygMvhShgubnp/XTt+lu1NNB9sVHPiRXZ
+         RawFG7Ghrz/mcyHc/DY6LauTSuUnIs5S1/du+FdvUtATOGhufsPqviFHSCp/TwfIF4pG
+         mAv8+IdkBkcvmN/QdJLHFDDvqin+8zCu/9Ajbbtiz5/5AJKyvvjkjUqrV22c2qi/WE0h
+         NGSg==
+X-Gm-Message-State: AJIora9jxQLZxTYQYvlGbImodMCYtbAvAMgB+6sWdqpuzIZ/zuHtahKV
+        2ocyT/xECj1WjkCmhJ87vbg=
+X-Google-Smtp-Source: AGRyM1uiE7j+UMgU29QN0t5gfsp+6EyQLQ4EmGOgoJfFhX57n4p9IxIHkwjyLW2f9A2DvLre7XJmqg==
+X-Received: by 2002:a05:6000:1c02:b0:218:42ab:281f with SMTP id ba2-20020a0560001c0200b0021842ab281fmr810768wrb.607.1655314091949;
+        Wed, 15 Jun 2022 10:28:11 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id w3-20020a7bc103000000b003976fbfbf00sm3023792wmi.30.2022.06.15.10.28.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 10:28:11 -0700 (PDT)
+From:   Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH 1/3] dt-bindings: clock: add pcm reset for ipq806x lcc
+Date:   Wed, 15 Jun 2022 18:34:06 +0200
+Message-Id: <20220615163408.30154-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 17:56:24 +0200 Arnd Bergmann wrote:
-> On Wed, Jun 15, 2022 at 5:51 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Wed, 15 Jun 2022 16:11:17 +0200 Arnd Bergmann wrote:  
-> > > The bug is that 'i40e_aqc_cloud_filters_element_data' and some other
-> > > structures in the
-> > > same file are broken when building an ARM kernel without CONFIG_AEABI, which has
-> > > unusual struct packing rules and triggers the static assertion.  
-> >
-> > What are those packing rules, out of curiosity?  
-> 
-> On the old OABI, each struct member is on a 32-bit boundary.
+Add pcm reset define for ipq806x lcc.
 
-Oh. GTK!
+Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+---
+ include/dt-bindings/clock/qcom,lcc-ipq806x.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/dt-bindings/clock/qcom,lcc-ipq806x.h b/include/dt-bindings/clock/qcom,lcc-ipq806x.h
+index 25b92bbf0ab4..e0fb4acf4ba8 100644
+--- a/include/dt-bindings/clock/qcom,lcc-ipq806x.h
++++ b/include/dt-bindings/clock/qcom,lcc-ipq806x.h
+@@ -19,4 +19,6 @@
+ #define SPDIF_CLK			10
+ #define AHBIX_CLK			11
+ 
++#define LCC_PCM_RESET			0
++
+ #endif
+-- 
+2.36.1
+
