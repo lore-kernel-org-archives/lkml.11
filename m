@@ -2,142 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D84B1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 20:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD984CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 20:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346978AbiFOUo6 (ORCPT
+        id S1347067AbiFOUpB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 16:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
+        Wed, 15 Jun 2022 16:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346887AbiFOUo5 (ORCPT
+        with ESMTP id S1346906AbiFOUo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 15 Jun 2022 16:44:57 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DB52CE18
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 13:44:56 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id t3-20020a17090a510300b001ea87ef9a3dso3098559pjh.4
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 13:44:56 -0700 (PDT)
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25302E69A;
+        Wed, 15 Jun 2022 13:44:56 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id v19so17897388edd.4;
+        Wed, 15 Jun 2022 13:44:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kUDf/u910LysDJrcuyN3NJQ4Y4LOo/h3/JlYMs8xcZ0=;
-        b=BYtnYUDPQJ6Ixf9avcgIP+uzYG2NSxrzhfAlFyFdBGU7HSA+GgX4kkNkROqTmtTsBL
-         2ukaFFvDBNzmeSiR6n0FADy/sMIgVhPu2yVwy6vXtvUIQv956luWNaJfQbFsQDBVprN1
-         YircoRmAjfAqEQJDmuYwqWOPs5VwhzCYfBKnxcy+5J5SSoVx7rHvGsY6c1bxUpStiJz1
-         idvIcPfmHg3XUaK9RI0UUlJUuodU9MkQkDAC1DWc/B7maRpZCErn/NDM3TawV5n5ilqv
-         4DYY1ZslF/Cpgd/qjXBEV0jh1HIOwvtmclCb5nd9+OczNvDKZzXq5riP8/F6DqANEndR
-         D9Gg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Tp4oIh2zYtBi2+RpvWEIz+CScSVPRmmdz9pJqOF/be0=;
+        b=frLOPTAHpOW6WM+y8qwoZMCwMS51iwCN9CSULQFC+7vgTcnCxnQHN9Xby4N7qbkAdo
+         LGs8h+xgkrkDVPqB7yJTZgIDNimJ6khTRoo5I3kER5tqQRN5I0wvjkU9wzFoNEoQz5eV
+         dg+yMeWxL5qd97o6PEsS9YeeV5pkWyIAfP2B5ChFUC0wvfX1H+j/8BPMYmSUiEg0IBAM
+         Bfhd7JN8oO7Q/TSmcUVQtBCfupH0MYL2QQnTyjlFtYiYlynHBzLA2J4cD0TOFtI3tKcb
+         07QmU1885KJnriYYcPA1mn58jFG8K1ZdEzpq4dJTCy4CZmP9LAZWxPzLt9B2GETu7oOE
+         cVtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kUDf/u910LysDJrcuyN3NJQ4Y4LOo/h3/JlYMs8xcZ0=;
-        b=YL+KcyQSVeqSGXWpM9e3TIC5Xl41857Psgs0MMkgH/6EtayAIjv46A6vSa78je4Tgx
-         TTEAbriCjAlYTb9paZRqbGZ3HA31Cbytss29mf280fjb+6iUQWPUq7UvhVWAQYwIkLEd
-         udvSDQxlBV0CJStmdoM8UDZo1hlGGPDHqPCgPJiS6CFmy4fYf27QRdXL8j/GADlvy5ba
-         t/w2kxaNcfKRbOM3Umi2O2XcyVLhnhv0mbdr4GJ484fCml0cQKR7HB0vPx3FDr/9ZZYN
-         1LwAMa7GAMYHQvuRLRs0ZF5a/80rVkEMxvTni7dEiBnv6NQ80OABjlJ/0FVAgs8C0nLM
-         nYLQ==
-X-Gm-Message-State: AJIora/ccgVPHJ/KGqWJ65Ydo6hLdmdeTVkd6zXU3Th8JDqw58T27MIm
-        oS0gA0ecwFu7bYaE1l+uPrgKrw==
-X-Google-Smtp-Source: AGRyM1uNSTnvyeg3GEiWLHsF6PC5peshAuHFTefZHQqF/RDMTJXk0VYlwYjbhT6liUB6gFJmFKAgCQ==
-X-Received: by 2002:a17:902:aa0c:b0:168:faa0:50a1 with SMTP id be12-20020a170902aa0c00b00168faa050a1mr1513563plb.57.1655325895802;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Tp4oIh2zYtBi2+RpvWEIz+CScSVPRmmdz9pJqOF/be0=;
+        b=uDln9VdyR3PfOvfX/J7pJQYHsd21B8WS+Gm+6gVSnHgEG99VVf3WX6nbCjmDyu8ee4
+         VI7hIvi7KTJr6MOIi5lfXUyGJOUtn+3Ez59QmdiddV92bQ3i3JN19RaO37WRdes58GE0
+         po2VbEqUBB1Qz2GA6F5BAtfyC6uVW8pjp4BreZ5qyzB5HdCeInPscYKZh/xTuKaLl8ha
+         6c5/AC4vJHFFmhnbg4Lo7ikhqXIYemd5UnNqQRQ7MKYVlBmjONUJbmrAyVYbwiKXs0rq
+         ZxDyy+2G3NxZZ8T1+HHxjM4aQFYcrL8gv3Uac3wn/v6teaPWkOxF3L6bchlKb8gvQ6S4
+         qJ2w==
+X-Gm-Message-State: AJIora/In7A5Ipr7Ypjj7Hr2nLv7MJIisc+6EeDNQ7yR00VI2CCNBvrC
+        70upIAI7FyXJkxwIxv+hb8g=
+X-Google-Smtp-Source: AGRyM1uQSv1o4AubDZMBfsKjQPuH2QynVWB1oxR/lAPoCnd7YAvz8HbUwnIEOBUBdtfG4T0zFOerdA==
+X-Received: by 2002:aa7:c457:0:b0:42d:bd18:4ef with SMTP id n23-20020aa7c457000000b0042dbd1804efmr2116460edr.112.1655325895465;
         Wed, 15 Jun 2022 13:44:55 -0700 (PDT)
-Received: from p14s ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id c11-20020a17090a1d0b00b001e6a230c2f5sm2259207pjd.34.2022.06.15.13.44.52
+Received: from kista.localdomain (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
+        by smtp.gmail.com with ESMTPSA id h16-20020a1709060f5000b00711d0b41bcfsm6777291ejj.0.2022.06.15.13.44.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 13:44:54 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 14:44:50 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Peng Fan <peng.fan@nxp.com>
-Cc:     "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH V3 0/6] remoteproc: imx_rproc: support i.MX8QM/QXP
-Message-ID: <20220615204450.GA1257609@p14s>
-References: <20220517064937.4033441-1-peng.fan@oss.nxp.com>
- <DU0PR04MB941740BC9C2C5B205985CAB588AD9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+        Wed, 15 Jun 2022 13:44:55 -0700 (PDT)
+From:   Jernej Skrabec <jernej.skrabec@gmail.com>
+To:     mripard@kernel.org, paul.kocialkowski@bootlin.com
+Cc:     mchehab@kernel.org, wens@csie.org, jernej.skrabec@gmail.com,
+        samuel@sholland.org, hverkuil-cisco@xs4all.nl,
+        benjamin.gaignard@collabora.com, nicolas.dufresne@collabora.com,
+        gregkh@linuxfoundation.org, linux-media@vger.kernel.org,
+        linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] media: cedrus: fix HEVC decoding
+Date:   Wed, 15 Jun 2022 22:44:34 +0200
+Message-Id: <20220615204436.137377-1-jernej.skrabec@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DU0PR04MB941740BC9C2C5B205985CAB588AD9@DU0PR04MB9417.eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 03:24:03AM +0000, Peng Fan wrote:
-> Bjorn, Mathieu
-> 
-> > Subject: [PATCH V3 0/6] remoteproc: imx_rproc: support i.MX8QM/QXP
-> 
-> Please give a look on this patchset if possible.
+After detailed comparison of register names to vendor library I noticed
+that one register has completely different name. After some testing I
+discovered that it was misnamed and used incorrectly. This patch series
+fixes it. With that, 3 more reference bitstreams are now correctly
+decoded. It is also possible that this fixes instability issue I had
+after decoding such bitstreams. Running Fluster test suite very often
+locked up my board, but after applying this fix, I never experienced it
+again. It might still be completely coincidental, but I doubt this is
+the case.
 
-Your pathset is currently 3rd from the top in my queue.  As such I will likely
-get to it in the next couple of weeks but as usual, I can't make any guarantees
-on that front.
+Note: Patch 2 clashes with HEVC uAPI destaging. In current form, it can
+be easily backported. However, there are few users of Cedrus HEVC and
+skipping this fix wouldn't be that bad.
 
-Thanks,
-Mathieu
+Please let me know which way to go:
+1) wait for destaging, send rebased v2 and not care about backporting
+2) merge before destaging, but v9 of HEVC uAPI destaging would need to
+   be rebased.
+3) something else?
 
-> 
-> Thanks,
-> Peng.
-> 
-> > 
-> > From: Peng Fan <peng.fan@nxp.com>
-> > 
-> > V3:
-> >  Drop the dependency in V2.
-> >  Tested on i.MX8QM/8MM
-> >  Use 'fsl,resource-id' and 'fsl,entry-address' Per dt maintainer  Drop 'reg'
-> > property Per remoteproc maintainer  Drop mcore self recovery, until we land
-> > in common framework support.
-> > 
-> > V2:
-> > 
-> > https://patchwork.kernel.org/project/linux-remoteproc/cover/202203091021
-> > 18.8131-1-peng.fan@oss.nxp.com/
-> >  Depends on
-> > https://patchwork.kernel.org/project/linux-remoteproc/list/?series=621311
-> >  Tested on i.MX8QXP/QM/8MP
-> >  Addressed Mathieu's comments
-> >  Drop V1 patch 5/9, patch 3/9 is replaced with upper dependency patchset
-> > Move V1 patch 4/9 out to
-> > https://patchwork.kernel.org/project/linux-remoteproc/patch/202203080657
-> > 54.3355-1-peng.fan@oss.nxp.com/
-> >  Update commit log
-> >  Drop magic number to get entry address from device tree in patch 4/6
-> > 
-> > The V1 patchset:
-> > https://patchwork.kernel.org/project/linux-remoteproc/patch/202201110333
-> > 33.403448-4-peng.fan@oss.nxp.com/
-> > 
-> > Peng Fan (6):
-> >   dt-bindings: remoteproc: imx_rproc: support i.MX8QXP
-> >   dt-bindings: remoteproc: imx_rproc: support i.MX8QM
-> >   remoteproc: imx_rproc: support attaching to i.MX8QXP M4
-> >   remoteproc: imx_rproc: support kicking Mcore from Linux for i.MX8QXP
-> >   remoteproc: imx_rproc: support i.MX8QM
-> >   remoteproc: imx_rproc: request mbox channel later
-> > 
-> >  .../bindings/remoteproc/fsl,imx-rproc.yaml    |  16 ++
-> >  drivers/remoteproc/imx_rproc.c                | 222
-> > +++++++++++++++++-
-> >  2 files changed, 231 insertions(+), 7 deletions(-)
-> > 
-> > --
-> > 2.25.1
-> 
+Best regards,
+Jernej
+
+Jernej Skrabec (2):
+  media: cedrus: h265: Fix flag name
+  media: cedrus: h265: Fix logic for not low delay flag
+
+ .../staging/media/sunxi/cedrus/cedrus_h265.c  | 29 ++++++++++++++++++-
+ .../staging/media/sunxi/cedrus/cedrus_regs.h  |  3 +-
+ 2 files changed, 29 insertions(+), 3 deletions(-)
+
+-- 
+2.36.1
+
