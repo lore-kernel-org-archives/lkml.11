@@ -2,93 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85FF0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE27C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:29:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243327AbiFOK2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:28:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47778 "EHLO
+        id S244845AbiFOK3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 06:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343591AbiFOK2G (ORCPT
+        with ESMTP id S1348534AbiFOK2n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:28:06 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AE3101FE
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:28:01 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id y13-20020a17090a154d00b001eaaa3b9b8dso1614231pja.2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:28:01 -0700 (PDT)
+        Wed, 15 Jun 2022 06:28:43 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DEB38DA1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:28:39 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id l3so6490566qtp.1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:28:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=znEIzE4EgTWOiFZf5Cm3kxNmUH6IPbVNQv1UUuyV/Hc=;
-        b=qV9h/UpNmydq91H3mP6CVU6NclHsJYkwfhKtoANC/6Tu2zBT/yPUPmiRQaF/d90inO
-         tLv2mruFsa6BwzQwqBzSb2nHAcMM6DnbKRwhwxKDO7XOk7s6jDF5FQCSFAz3pJTuJYEl
-         p2TF12/VNwu5xzgYtkfUEeoSclxn2LgsBLG7z+Rp6npZcXpPOUXF9pjLz4NSabazZOe+
-         2wDQv+4nzLsoXymU0D+hO3piw8G3YSlQbtdeFRfSvTR/V4Hady+iSnrLrgyJxXL4sPPD
-         T+9JSIndQ/pgJqevcyDY0DpGxLlZyJNy2NOiPEZ151KZXZSntI6fZMjO2fYbx554bdOz
-         iwAg==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5AvCzV/qAuI7bWpBXxG/Nqj5ArEGXpfhZRBeCyeuUgQ=;
+        b=B7T3jGhOh96+HQqjFaBvXx5Qblxeyq2/IWkCavhwANY5BJ082XVB/INkKlWXB2CWjM
+         +wlATX9xcmkvr9bgTz9LIjzi1KhAnGxma+tTljwi/THilaWMX8L/THptViEqmg7swLtl
+         fAHBVQTt/eqdmjZBVO25k3eDG9BIisH5JsrbFucnPeNMpkXhaPwfwGnLmOVrFXl+8Ax+
+         cvcidu0blDozQMvNgEYs/+lcWAc5fKXjB8iIhNAELyHTGRCRP0+LSghteu5x6XPWQu2C
+         rqEm8E0t9Z+niFwJvrgoQ5UHrViJRpmS2fEaSLFFWaAL5id2aEXRu/DxAO+EfAcYGtmV
+         hdrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=znEIzE4EgTWOiFZf5Cm3kxNmUH6IPbVNQv1UUuyV/Hc=;
-        b=dMtDpMYrAPf7p3inR1vO8rRqcBSPpA0EsVmhurkbcxRiZV7UR1tG0ajSdGub1JLLex
-         Hdyd+zQeOzbndlai4WDbi2aPFog0ef8g5m7ZpZ/rWhog0afgAPZ3C0OXv0H3MuVr8MPf
-         sjlvJJUqpcWNazwDumn5iBSdFHeSsU6z5rX9eH1f88al0MGQqIBhC7QjbYMFRPaQmAzA
-         IM37dC6+ebxvov6aGBtyEsninEvn6KagPbtNpNLZzptrbHUFjuYIVUUAulrLAfe59ksK
-         miD8vs5G8b2dz8b4AxblNNJN2/HAUS8FzuVw3ZNoUtsqfdbIMlvQbRWUYpNSfVz/8ip3
-         vbuA==
-X-Gm-Message-State: AJIora8PPXs2InI16a9uS7VSpVTmVS/s25tjJ/wMvOsKzRQizK67KBlO
-        lyJuJ1rnfNOMJHaCQiGZK+I=
-X-Google-Smtp-Source: AGRyM1uylrZN/TnBR+RkyEvlG9LSFkRtn1a0pXgqvgeKkHmp20cQHxemz9ZiU5FVzwHH9jENOzszIw==
-X-Received: by 2002:a17:903:41c6:b0:164:1050:49ac with SMTP id u6-20020a17090341c600b00164105049acmr8762042ple.138.1655288881189;
-        Wed, 15 Jun 2022 03:28:01 -0700 (PDT)
-Received: from localhost ([122.183.153.161])
-        by smtp.gmail.com with ESMTPSA id g2-20020aa78182000000b0051bf246ca2bsm9407279pfi.100.2022.06.15.03.27.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 03:28:00 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 12:27:57 +0200
-From:   Pankaj Raghav <pankydev8@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        "R, Monish Kumar" <monish.kumar.r@intel.com>,
-        "open list:NVM EXPRESS DRIVER" <linux-nvme@lists.infradead.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        "alan.adamson@oracle.com" <alan.adamson@oracle.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Yi Zhang <yi.zhang@redhat.com>,
-        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
-        "Rao, Abhijeet" <abhijeet.rao@intel.com>
-Subject: Re: 2 second nvme initialization delay regression in 5.18 [Was: Re:
- [bug report]nvme0: Admin Cmd(0x6), I/O Error (sct 0x0 / sc 0x2) MORE DNR
- observed during blktests]
-Message-ID: <20220615102757.ugvs6vdxf66nrmyn@quentin>
-References: <CAHj4cs_iC+FE8ZAXXZPeia1V3ZX7zRbeASdOP_8c7DLiFozNfA@mail.gmail.com>
- <Ykyf5Zuz1W8yHhNY@zx2c4.com>
- <CAHmME9pwz4q0m-pSUy7ReWu4nNzxySNcYZrqyDZiTuGxHN=1NQ@mail.gmail.com>
- <CAHmME9o-orF52HzkT80054e3Op5fLOcTHb-KHpvvU7H3FpAJ7A@mail.gmail.com>
- <SA2PR11MB5115DCE45778910C96813CA1C3A79@SA2PR11MB5115.namprd11.prod.outlook.com>
- <YqG/pybFg0P5yQ9a@zx2c4.com>
- <20220610061449.GD24331@lst.de>
- <YqMMo2Dv9SZRtR7B@zx2c4.com>
- <20220613135549.GA1714@lst.de>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5AvCzV/qAuI7bWpBXxG/Nqj5ArEGXpfhZRBeCyeuUgQ=;
+        b=dWou3GrgjYeBxwvzGxw1Isx2hi4ciP9pL71k90dhqBwVa3kXcGcOvIiNPTEHXWeZEb
+         OSZ9o58Ksb01AsQYGROlXAgnbD0HtpQmFgEBpSJacga0o77XpsffvaapMFE2x59mKlc7
+         MXrDMRupZlT1ZQir+md/PRsKw6raJJXEI6KwmctEF7rRQPlV6R2v/CZ5AMbvQsbSI124
+         RvDHVNPmlA64JKr4eO9ECRa9iq3wm76ANtwcWronZIcW/+3vlNowI/EhYKWqAf8MnITB
+         C6tXucuq0OmylqhColRL3myx/gOlEfL/DU67ouV+iC4FsMh59gKtAUB3qq+T49H8n7/+
+         wrSw==
+X-Gm-Message-State: AOAM532XnUEr8mZ4XgVxjykf+vIewn+rOJ4iE5SvJPgZoltIzEQCtgwt
+        Al4wARTRVRRP3v76tXtajcDchSNIN8nX0JoA4o6aXA==
+X-Google-Smtp-Source: ABdhPJwt4UdjNNMt5RFrBj0SVHw/NJX+pbEHJb1fSV0Rp+uVukRrCUveQlDV6O8j1EkY3e+RuatpMex07QktOP5CpMg=
+X-Received: by 2002:ac8:598f:0:b0:305:8f8:2069 with SMTP id
+ e15-20020ac8598f000000b0030508f82069mr8202247qte.370.1655288918492; Wed, 15
+ Jun 2022 03:28:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613135549.GA1714@lst.de>
+References: <20220614230136.3726047-1-emma@anholt.net>
+In-Reply-To: <20220614230136.3726047-1-emma@anholt.net>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Wed, 15 Jun 2022 13:28:27 +0300
+Message-ID: <CAA8EJpqs8ooZL43gCV=+rR7TdRJhOLrPSBrUfStkZkH4igCL7A@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iommu: arm-smmu-impl: Add 8250 display compatible to
+ the client list.
+To:     Emma Anholt <emma@anholt.net>
+Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, Rob Clark <robdclark@gmail.com>,
+        Jordan Crouse <jcrouse@codeaurora.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
+        iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christoph,
-On Mon, Jun 13, 2022 at 03:55:49PM +0200, Christoph Hellwig wrote:
-> It all appears as PCIe, but the pci_dev has an is_thunderbolt flag.
-> 
-> Thanks to both of you for the information.  I'd like to wait until the
-> end of the week or so if we can hear something from Samsung, and if we
-> don't we'll have to quirk based on the model number.
-Our FW team has started looking into the issue. They said they will try
-to come up with a solution before 5.20. If not, we can add this quirk
-based on the FW ver. and a proper solution can be added by 5.21.
-> 
+On Wed, 15 Jun 2022 at 02:01, Emma Anholt <emma@anholt.net> wrote:
+>
+> Required for turning on per-process page tables for the GPU.
+>
+> Signed-off-by: Emma Anholt <emma@anholt.net>
+
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+
+> ---
+>
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index d8e1ef83c01b..bb9220937068 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -233,6 +233,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+>         { .compatible = "qcom,sc7280-mdss" },
+>         { .compatible = "qcom,sc7280-mss-pil" },
+>         { .compatible = "qcom,sc8180x-mdss" },
+> +       { .compatible = "qcom,sm8250-mdss" },
+>         { .compatible = "qcom,sdm845-mdss" },
+>         { .compatible = "qcom,sdm845-mss-pil" },
+>         { }
+> --
+> 2.36.1
+>
+
+
+-- 
+With best wishes
+Dmitry
