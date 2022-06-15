@@ -2,239 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 607B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 742CFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348310AbiFOJhM (ORCPT
+        id S1348373AbiFOJhT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
+        Wed, 15 Jun 2022 05:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347380AbiFOJhG (ORCPT
+        with ESMTP id S1347380AbiFOJhS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:37:06 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A682396B9
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:37:05 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id o17so9940356pla.6
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:37:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zuRmpPaeBZ7RBBqgxGgYuakVG6WXJwz6SE2K0j0jSFQ=;
-        b=UUL4/SFUMTUlunbbqmiz6/p44WMrg6Ru6WUECHtcygNpzcDAKuWBa+BjbeH5ibVwuF
-         n5y56xYDc2Bl05iU1/7dzgdyxRVX0AK/gm+vP80Kf7N3RbjE8GXPROJWWHdvj4uJhsoP
-         YoSEE2khu/r96vc8bxc8rgHUMdAJMzRJFLd8vJD71cP63CuO0zvma5EagqP1f7R7DRyf
-         5Ksv8k7IwEnClBHeZELhMUVN2BwtQGmcNIJJsiUHW8I+zEooaPyEy0McW+I9iODVHPDp
-         jr3XjFd5eKE+JNZh2e0QrAaAKXEnG8MJ4PqznnM4oz8pJ+ScLvLz/5ezIiEGb+jSZ4oE
-         vyKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zuRmpPaeBZ7RBBqgxGgYuakVG6WXJwz6SE2K0j0jSFQ=;
-        b=sP8Sn2dzDWHNAVEbDOCBAHezCCSepyirKJHDJ3OuGFdp2aoiCoXqYPQv7Uh84+s3d7
-         O8wsub3jyHV1zx3cYvQi0GNAsYnigUdcVB4kctTstyiHomuw+Ut/mEiyJ9Ag5yCi0KWN
-         Ekei/Zs0KOe7QCc9y2jczpvifoYmwnEtFMgOa8o7lf9cv+/Qra6jenfCpPnTVwGT0xYH
-         SHiCClKOaxydmQ8gcmwDamp42Wqg6VspLoy5jR/0S6kODjUO0ZyjFtqnoPdw0ZXyx5D8
-         yg/E6rZnfvHTDNjghjiikZy0ChSxo0DGiCJbtOcylR/ImbMNb/Yk/CbwG1n5jInn1Z95
-         CnxQ==
-X-Gm-Message-State: AJIora+MX8+OsphFSKCFmY02+5ROjtNkzRfxHyns4Awlj8jmqhTetjNX
-        eIdgq0bEuC21R2FHuAGVy8dg8w==
-X-Google-Smtp-Source: AGRyM1vKtdJrvtMLM/4RuIoUjWyRHYdfOw1nyGNeFOmGQrKBBM2xFQw6FTyW0zpa+Mx8uNkEAiYFJg==
-X-Received: by 2002:a17:90b:1e0e:b0:1ea:89a5:87d9 with SMTP id pg14-20020a17090b1e0e00b001ea89a587d9mr9253119pjb.81.1655285824779;
-        Wed, 15 Jun 2022 02:37:04 -0700 (PDT)
-Received: from always-x1.bytedance.net ([61.120.150.70])
-        by smtp.gmail.com with ESMTPSA id jj1-20020a170903048100b00163247b64bfsm8859205plb.115.2022.06.15.02.37.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 02:37:03 -0700 (PDT)
-From:   zhenwei pi <pizhenwei@bytedance.com>
-To:     pizhenwei@bytedance.com, naoya.horiguchi@nec.com,
-        akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org, david@redhat.com,
-        linmiaohe@huawei.com, gregkh@linuxfoundation.org,
-        Oscar Salvador <osalvador@suse.de>
-Subject: [PATCH v6 1/1] mm/memory-failure: disable unpoison once hw error happens
-Date:   Wed, 15 Jun 2022 17:32:09 +0800
-Message-Id: <20220615093209.259374-2-pizhenwei@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220615093209.259374-1-pizhenwei@bytedance.com>
-References: <20220615093209.259374-1-pizhenwei@bytedance.com>
+        Wed, 15 Jun 2022 05:37:18 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA92D3BA61;
+        Wed, 15 Jun 2022 02:37:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655285834; x=1686821834;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sXjo+CBZcLczWq1l68m95bjBeMb9Ku4hb9i+j3EAZTw=;
+  b=1H+4jVag5mIvJpt1OG0/HQ6o7rkKheWxuMKohdKIX0kM+itDL8CVuRMA
+   YOlBfks/h/Gfio4Nw/AY4Dxbg/63jIt3YUU3jJGKDpvrOLoawuJErunxD
+   4H5l7z8GdFyeGuqxWt+sXZ2BgWEqVUQnUn2RftI3tQUdndjPnEpr/0isK
+   yc5Oje+NvaHVjFs7GxJBrDiFfz3VATQswKnimAPU4tW2NdzGrd0FWJEZm
+   BrFPBv13sLm0/hJHm+2YmcUW3IK34iMKAyqVlzX5/GT6cECnyBNoblK92
+   b0nLgX34m1GtV9+6oTsdqHeJFx0sSdRmEB7xFNQXq36z3PQYgLpPc9I04
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="160408543"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jun 2022 02:37:13 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 15 Jun 2022 02:36:58 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 15 Jun 2022 02:36:58 -0700
+Date:   Wed, 15 Jun 2022 15:06:56 +0530
+From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
+        <lxu@maxlinear.com>, <richardcochran@gmail.com>,
+        <UNGLinuxDriver@microchip.com>, <Ian.Saturley@microchip.com>
+Subject: Re: [PATCH net-next 3/5] net: lan743x: Add support to SGMII block
+ access functions
+Message-ID: <20220615093656.tahj3ncojeh6slmq@microsemi.com>
+References: <20220614103424.58971-1-Raju.Lakkaraju@microchip.com>
+ <20220614103424.58971-4-Raju.Lakkaraju@microchip.com>
+ <Yqj3qpq5Ew+JT+28@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <Yqj3qpq5Ew+JT+28@lunn.ch>
+User-Agent: NeoMutt/20180716-255-141487
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently unpoison_memory(unsigned long pfn) is designed for soft
-poison(hwpoison-inject) only. Since 17fae1294ad9d, the KPTE gets
-cleared on a x86 platform once hardware memory corrupts.
+Hi Andrew,
 
-Unpoisoning a hardware corrupted page puts page back buddy only,
-the kernel has a chance to access the page with *NOT PRESENT* KPTE.
-This leads BUG during accessing on the corrupted KPTE.
+Thank you for review comments.
 
-Suggested by David&Naoya, disable unpoison mechanism when a real HW error
-happens to avoid BUG like this:
+The 06/14/2022 23:03, Andrew Lunn wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On Tue, Jun 14, 2022 at 04:04:22PM +0530, Raju Lakkaraju wrote:
+> > Add SGMII access read and write functions
+> >
+> > Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+> > ---
+> >  drivers/net/ethernet/microchip/lan743x_main.c | 69 +++++++++++++++++++
+> >  drivers/net/ethernet/microchip/lan743x_main.h | 12 ++++
+> >  2 files changed, 81 insertions(+)
+> >
+> > diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+> > index 6352cba19691..e496769efb54 100644
+> > --- a/drivers/net/ethernet/microchip/lan743x_main.c
+> > +++ b/drivers/net/ethernet/microchip/lan743x_main.c
+> > @@ -909,6 +909,74 @@ static int lan743x_mdiobus_c45_write(struct mii_bus *bus,
+> >       return ret;
+> >  }
+> >
+> > +static int lan743x_sgmii_wait_till_not_busy(struct lan743x_adapter *adapter)
+> > +{
+> > +     u32 data;
+> > +     int ret;
+> > +
+> > +     ret = readx_poll_timeout(LAN743X_CSR_READ_OP, SGMII_ACC, data,
+> > +                              !(data & SGMII_ACC_SGMII_BZY_), 100, 1000000);
+> > +     if (unlikely(ret < 0))
+> 
+> unlikely() seems pointless here. You have just done a blocking poll,
+> so you don't care about high performance, this is not the fast path.
+> 
+>    Andrew
 
- Unpoison: Software-unpoisoned page 0x61234
- BUG: unable to handle page fault for address: ffff888061234000
- #PF: supervisor write access in kernel mode
- #PF: error_code(0x0002) - not-present page
- PGD 2c01067 P4D 2c01067 PUD 107267063 PMD 10382b063 PTE 800fffff9edcb062
- Oops: 0002 [#1] PREEMPT SMP NOPTI
- CPU: 4 PID: 26551 Comm: stress Kdump: loaded Tainted: G   M       OE     5.18.0.bm.1-amd64 #7
- Hardware name: QEMU Standard PC (i440FX + PIIX, 1996) ...
- RIP: 0010:clear_page_erms+0x7/0x10
- Code: ...
- RSP: 0000:ffffc90001107bc8 EFLAGS: 00010246
- RAX: 0000000000000000 RBX: 0000000000000901 RCX: 0000000000001000
- RDX: ffffea0001848d00 RSI: ffffea0001848d40 RDI: ffff888061234000
- RBP: ffffea0001848d00 R08: 0000000000000901 R09: 0000000000001276
- R10: 0000000000000003 R11: 0000000000000000 R12: 0000000000000001
- R13: 0000000000000000 R14: 0000000000140dca R15: 0000000000000001
- FS:  00007fd8b2333740(0000) GS:ffff88813fd00000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: ffff888061234000 CR3: 00000001023d2005 CR4: 0000000000770ee0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- PKRU: 55555554
- Call Trace:
-  <TASK>
-  prep_new_page+0x151/0x170
-  get_page_from_freelist+0xca0/0xe20
-  ? sysvec_apic_timer_interrupt+0xab/0xc0
-  ? asm_sysvec_apic_timer_interrupt+0x1b/0x20
-  __alloc_pages+0x17e/0x340
-  __folio_alloc+0x17/0x40
-  vma_alloc_folio+0x84/0x280
-  __handle_mm_fault+0x8d4/0xeb0
-  handle_mm_fault+0xd5/0x2a0
-  do_user_addr_fault+0x1d0/0x680
-  ? kvm_read_and_reset_apf_flags+0x3b/0x50
-  exc_page_fault+0x78/0x170
-  asm_exc_page_fault+0x27/0x30
+Accepted. 
+I will remove the unlinkely().
 
-Fixes: 847ce401df392 ("HWPOISON: Add unpoisoning support")
-Fixes: 17fae1294ad9d ("x86/{mce,mm}: Unmap the entire page if the whole page is affected and poisoned")
-Cc: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Acked-by: David Hildenbrand <david@redhat.com>
-Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
----
- Documentation/vm/hwpoison.rst |  3 ++-
- drivers/base/memory.c         |  2 +-
- include/linux/mm.h            |  1 +
- mm/hwpoison-inject.c          |  2 +-
- mm/madvise.c                  |  2 +-
- mm/memory-failure.c           | 12 ++++++++++++
- 6 files changed, 18 insertions(+), 4 deletions(-)
-
-diff --git a/Documentation/vm/hwpoison.rst b/Documentation/vm/hwpoison.rst
-index c742de1769d1..b9d5253c1305 100644
---- a/Documentation/vm/hwpoison.rst
-+++ b/Documentation/vm/hwpoison.rst
-@@ -120,7 +120,8 @@ Testing
-   unpoison-pfn
- 	Software-unpoison page at PFN echoed into this file. This way
- 	a page can be reused again.  This only works for Linux
--	injected failures, not for real memory failures.
-+	injected failures, not for real memory failures. Once any hardware
-+	memory failure happens, this feature is disabled.
- 
-   Note these injection interfaces are not stable and might change between
-   kernel versions
-diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-index 084d67fd55cc..bc60c9cd3230 100644
---- a/drivers/base/memory.c
-+++ b/drivers/base/memory.c
-@@ -558,7 +558,7 @@ static ssize_t hard_offline_page_store(struct device *dev,
- 	if (kstrtoull(buf, 0, &pfn) < 0)
- 		return -EINVAL;
- 	pfn >>= PAGE_SHIFT;
--	ret = memory_failure(pfn, 0);
-+	ret = memory_failure(pfn, MF_SW_SIMULATED);
- 	if (ret == -EOPNOTSUPP)
- 		ret = 0;
- 	return ret ? ret : count;
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index bc8f326be0ce..4346e51484ba 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3232,6 +3232,7 @@ enum mf_flags {
- 	MF_MUST_KILL = 1 << 2,
- 	MF_SOFT_OFFLINE = 1 << 3,
- 	MF_UNPOISON = 1 << 4,
-+	MF_SW_SIMULATED = 1 << 5,
- };
- extern int memory_failure(unsigned long pfn, int flags);
- extern void memory_failure_queue(unsigned long pfn, int flags);
-diff --git a/mm/hwpoison-inject.c b/mm/hwpoison-inject.c
-index 5c0cddd81505..65e242b5a432 100644
---- a/mm/hwpoison-inject.c
-+++ b/mm/hwpoison-inject.c
-@@ -48,7 +48,7 @@ static int hwpoison_inject(void *data, u64 val)
- 
- inject:
- 	pr_info("Injecting memory failure at pfn %#lx\n", pfn);
--	err = memory_failure(pfn, 0);
-+	err = memory_failure(pfn, MF_SW_SIMULATED);
- 	return (err == -EOPNOTSUPP) ? 0 : err;
- }
- 
-diff --git a/mm/madvise.c b/mm/madvise.c
-index d7b4f2602949..0316bbc6441b 100644
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -1112,7 +1112,7 @@ static int madvise_inject_error(int behavior,
- 		} else {
- 			pr_info("Injecting memory failure for pfn %#lx at process virtual address %#lx\n",
- 				 pfn, start);
--			ret = memory_failure(pfn, MF_COUNT_INCREASED);
-+			ret = memory_failure(pfn, MF_COUNT_INCREASED | MF_SW_SIMULATED);
- 			if (ret == -EOPNOTSUPP)
- 				ret = 0;
- 		}
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index b85661cbdc4a..da39ec8afca8 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -69,6 +69,8 @@ int sysctl_memory_failure_recovery __read_mostly = 1;
- 
- atomic_long_t num_poisoned_pages __read_mostly = ATOMIC_LONG_INIT(0);
- 
-+static bool hw_memory_failure __read_mostly = false;
-+
- static bool __page_handle_poison(struct page *page)
- {
- 	int ret;
-@@ -1768,6 +1770,9 @@ int memory_failure(unsigned long pfn, int flags)
- 
- 	mutex_lock(&mf_mutex);
- 
-+	if (!(flags & MF_SW_SIMULATED))
-+		hw_memory_failure = true;
-+
- 	p = pfn_to_online_page(pfn);
- 	if (!p) {
- 		res = arch_memory_failure(pfn, flags);
-@@ -2103,6 +2108,13 @@ int unpoison_memory(unsigned long pfn)
- 
- 	mutex_lock(&mf_mutex);
- 
-+	if (hw_memory_failure) {
-+		unpoison_pr_info("Unpoison: Disabled after HW memory failure %#lx\n",
-+				 pfn, &unpoison_rs);
-+		ret = -EOPNOTSUPP;
-+		goto unlock_mutex;
-+	}
-+
- 	if (!PageHWPoison(p)) {
- 		unpoison_pr_info("Unpoison: Page was already unpoisoned %#lx\n",
- 				 pfn, &unpoison_rs);
 -- 
-2.20.1
+
+Thanks,
+Raju
 
