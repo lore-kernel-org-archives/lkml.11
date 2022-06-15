@@ -2,127 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:29:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48ED6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348206AbiFOK3w (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:29:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49618 "EHLO
+        id S244504AbiFOKaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 06:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347564AbiFOK3i (ORCPT
+        with ESMTP id S1347582AbiFOK3j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:29:38 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B71C3F8B6;
-        Wed, 15 Jun 2022 03:29:37 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3616B200CD9;
-        Wed, 15 Jun 2022 12:29:36 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id F3FF2200CD6;
-        Wed, 15 Jun 2022 12:29:35 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id E87271820F57;
-        Wed, 15 Jun 2022 18:29:34 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     shengjiu.wang@gmail.com
-Subject: [PATCH 2/3] arm64: dts: imx8mq-evk: add bt-sco sound card support
-Date:   Wed, 15 Jun 2022 18:15:33 +0800
-Message-Id: <1655288134-14083-3-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1655288134-14083-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1655288134-14083-1-git-send-email-shengjiu.wang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Wed, 15 Jun 2022 06:29:39 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 109974BFDE
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:29:36 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxr9+NtKliy5VDAA--.20939S2;
+        Wed, 15 Jun 2022 18:29:33 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Huacai Chen <chenhuacai@kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>,
+        Jianmin Lv <lvjianmin@loongson.cn>, Jun Yi <yijun@loongson.cn>,
+        Rui Wang <wangrui@loongson.cn>, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH v3 0/3] LoongArch: Modify handle_syscall
+Date:   Wed, 15 Jun 2022 18:29:30 +0800
+Message-Id: <1655288973-6066-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9Dxr9+NtKliy5VDAA--.20939S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYO7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E
+        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
+        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8I
+        cVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2js
+        IEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE
+        5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeV
+        CFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l
+        c2xSY4AK67AK6r4DMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I
+        0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWU
+        AVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcV
+        CY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280
+        aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43
+        ZEXa7VUb8hL5UUUUU==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bt-sco sound card, which supports wb profile as default
+Tiezhu Yang (3):
+  LoongArch: Add TI_SYSCALL in output_thread_info_defines()
+  LoongArch: Only clone and clone3 need to call SAVE_STATIC
+  LoongArch: No need to call RESTORE_ALL_AND_RET for all syscalls
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- arch/arm64/boot/dts/freescale/imx8mq-evk.dts | 43 ++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+ arch/loongarch/include/asm/stackframe.h | 17 ++++++++++++++++
+ arch/loongarch/kernel/asm-offsets.c     |  1 +
+ arch/loongarch/kernel/entry.S           | 35 ++++++++++++++++++++++++++++++++-
+ 3 files changed, 52 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mq-evk.dts b/arch/arm64/boot/dts/freescale/imx8mq-evk.dts
-index 99fed35168eb..c4375c95facb 100644
---- a/arch/arm64/boot/dts/freescale/imx8mq-evk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mq-evk.dts
-@@ -71,12 +71,36 @@
- 		linux,autosuspend-period = <125>;
- 	};
- 
-+	bt_sco_codec: bt_sco_codec {
-+		#sound-dai-cells = <1>;
-+		compatible = "linux,bt-sco";
-+	};
-+
- 	wm8524: audio-codec {
- 		#sound-dai-cells = <0>;
- 		compatible = "wlf,wm8524";
- 		wlf,mute-gpios = <&gpio1 8 GPIO_ACTIVE_LOW>;
- 	};
- 
-+	sound-bt-sco {
-+		compatible = "simple-audio-card";
-+		simple-audio-card,name = "bt-sco-audio";
-+		simple-audio-card,format = "dsp_a";
-+		simple-audio-card,bitclock-inversion;
-+		simple-audio-card,frame-master = <&btcpu>;
-+		simple-audio-card,bitclock-master = <&btcpu>;
-+
-+		btcpu: simple-audio-card,cpu {
-+			sound-dai = <&sai3>;
-+			dai-tdm-slot-num = <2>;
-+			dai-tdm-slot-width = <16>;
-+		};
-+
-+		simple-audio-card,codec {
-+			sound-dai = <&bt_sco_codec 1>;
-+		};
-+	};
-+
- 	sound-wm8524 {
- 		compatible = "simple-audio-card";
- 		simple-audio-card,name = "wm8524-audio";
-@@ -386,6 +410,16 @@
- 	status = "okay";
- };
- 
-+&sai3 {
-+	#sound-dai-cells = <0>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_sai3>;
-+	assigned-clocks = <&clk IMX8MQ_CLK_SAI3>;
-+	assigned-clock-parents = <&clk IMX8MQ_AUDIO_PLL1_OUT>;
-+	assigned-clock-rates = <24576000>;
-+	status = "okay";
-+};
-+
- &snvs_pwrkey {
- 	status = "okay";
- };
-@@ -548,6 +582,15 @@
- 		>;
- 	};
- 
-+	pinctrl_sai3: sai3grp {
-+		fsl,pins = <
-+			MX8MQ_IOMUXC_SAI3_TXFS_SAI3_TX_SYNC     0xd6
-+			MX8MQ_IOMUXC_SAI3_TXC_SAI3_TX_BCLK      0xd6
-+			MX8MQ_IOMUXC_SAI3_TXD_SAI3_TX_DATA0     0xd6
-+			MX8MQ_IOMUXC_SAI3_RXD_SAI3_RX_DATA0     0xd6
-+		>;
-+	};
-+
- 	pinctrl_spdif1: spdif1grp {
- 		fsl,pins = <
- 			MX8MQ_IOMUXC_SPDIF_TX_SPDIF1_OUT	0xd6
 -- 
-2.17.1
+2.1.0
 
