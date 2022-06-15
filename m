@@ -2,116 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17805CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAACACCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:44:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347088AbiFOOok (ORCPT
+        id S1352889AbiFOOov (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:44:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
+        Wed, 15 Jun 2022 10:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344443AbiFOOoh (ORCPT
+        with ESMTP id S1344443AbiFOOos (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:44:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA92E35853
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:44:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655304275;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=p8aqxPrbwUikaFJ7h1+NENmyUaL55DhysfxWhHj/6PQ=;
-        b=g/A/wrknztBNs5GJNcmhNLLuUkiHVSk33e0GwkNl07Hr6E/IOp3SJLvqK64GbYgYo++tiy
-        Dh3uAVO6BbxKUSdev755ck/XwYWX7WCwAyzaNSdMqCiOWWVPHfmc/1iVPJtCiTElNEhSmA
-        Bts45UiM4xs7xniiEm1yKqoce3+dcTg=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-612-uouhi8hlNfm5bDEnHHKwZw-1; Wed, 15 Jun 2022 10:44:34 -0400
-X-MC-Unique: uouhi8hlNfm5bDEnHHKwZw-1
-Received: by mail-qv1-f70.google.com with SMTP id da12-20020a05621408cc00b0046448be0e98so8304586qvb.9
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:44:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=p8aqxPrbwUikaFJ7h1+NENmyUaL55DhysfxWhHj/6PQ=;
-        b=OibtMG5k6b+C20YNkPm3qOr23PBT/QHRIWXWCi96HqsmRQH5cq+EQry73DIpURAcCC
-         y7l+NZPOBjj1AXF/hZQtcZ80Rg9uDOWQ0npiJ5A+DBTt8xfLRu3wDMftghARTmdKp0W2
-         8vjl1VKNgbSjOnJNSC+uPNza7b63zbAXzic6VX0QuPxWz561ORBp4uq7bO1hJgWDRKQP
-         +qyjUusy41LMHo5JIEiMQnCgPgqdrsMBU3++XeqlmTcQCZT0wrCV5euADf5un9Xv0TwX
-         d+REAdRTUOqwLq+YyL7UiluArgcVN1Dlod2o0J7OBw7ndO3/iQPLGRXQapJ2iMtK8mGr
-         nCuQ==
-X-Gm-Message-State: AOAM533xjhOC+5QJY9sayBysVvJX12gbBn1OJJ/R0VAptC4OOiF7LOs2
-        YBEzw0OAuzTV1mPlITb05hv7ZEi0eMW8dGbzDBanRETDSmtzzwpBEBxL/WjDeQPSHc7iElzSuAg
-        eOO13zbECQOuAEPjcdP7934Qq
-X-Received: by 2002:a37:614a:0:b0:6a6:af3b:e9cb with SMTP id v71-20020a37614a000000b006a6af3be9cbmr8416948qkb.744.1655304273708;
-        Wed, 15 Jun 2022 07:44:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzge1omPQUkCEWKDlYeyMLUAmi8/M6QqFRpZ0n4Yr0pF8Uy9by/Z6/gkL92sGQ+BicczDrrvw==
-X-Received: by 2002:a37:614a:0:b0:6a6:af3b:e9cb with SMTP id v71-20020a37614a000000b006a6af3be9cbmr8416920qkb.744.1655304273284;
-        Wed, 15 Jun 2022 07:44:33 -0700 (PDT)
-Received: from bfoster (c-24-61-119-116.hsd1.ma.comcast.net. [24.61.119.116])
-        by smtp.gmail.com with ESMTPSA id t37-20020a05622a182500b003051ce7812asm10124816qtc.5.2022.06.15.07.44.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 07:44:32 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 10:44:31 -0400
-From:   Brian Foster <bfoster@redhat.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ikent@redhat.com, onestero@redhat.com
-Subject: Re: [PATCH 3/3] proc: use idr tgid tag hint to iterate pids in
- readdir
-Message-ID: <YqnwT2SafZcVaFNO@bfoster>
-References: <20220614180949.102914-1-bfoster@redhat.com>
- <20220614180949.102914-4-bfoster@redhat.com>
- <YqniOxl4ACKVp9hM@casper.infradead.org>
+        Wed, 15 Jun 2022 10:44:48 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E5F035A97;
+        Wed, 15 Jun 2022 07:44:47 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EC056153B;
+        Wed, 15 Jun 2022 07:44:46 -0700 (PDT)
+Received: from pierre123.arm.com (unknown [10.57.5.38])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C21203F73B;
+        Wed, 15 Jun 2022 07:44:43 -0700 (PDT)
+From:   Pierre Gondois <pierre.gondois@arm.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ionela.Voinescu@arm.com, Lukasz.Luba@arm.com,
+        Dietmar.Eggemann@arm.com, Pierre Gondois <pierre.gondois@arm.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
+        linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH 0/4] cpufreq: qcom-hw: LMH irq/hotplug interractions
+Date:   Wed, 15 Jun 2022 16:43:17 +0200
+Message-Id: <20220615144321.262773-1-pierre.gondois@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqniOxl4ACKVp9hM@casper.infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 02:44:27PM +0100, Matthew Wilcox wrote:
-> On Tue, Jun 14, 2022 at 02:09:49PM -0400, Brian Foster wrote:
-> > +++ b/include/linux/idr.h
-> > @@ -185,6 +185,20 @@ static inline bool idr_is_group_lead(struct idr *idr, unsigned long id)
-> >  	return radix_tree_tag_get(&idr->idr_rt, id, IDR_TGID);
-> >  }
-> >  
-> > +/*
-> > + * Find the next id with a potentially associated TGID task using the internal
-> > + * tag. Task association is not guaranteed and must be checked explicitly.
-> > + */
-> > +static inline struct pid *find_tgid_pid(struct idr *idr, unsigned long id)
-> > +{
-> > +	struct pid *pid;
-> > +
-> > +	if (radix_tree_gang_lookup_tag(&idr->idr_rt, (void **) &pid, id, 1,
-> > +				       IDR_TGID) != 1)
-> > +		return NULL;
-> > +	return pid;
-> > +}
-> 
-> The IDR is a generic data structure, and shouldn't know anything about
-> PIDs, TGIDs or tasks.
-> 
+This patch-set provides fixes for the qcom-cpufreq-hw driver regarding
+LMH irqs configurations and (un)plugging CPUs.
+commit ffd6cc92ab9c ("arm64: dts: qcom: sm8250: add description of dcvsh interrupts")
+enables DCVS (Dynamic Clock and Voltage Scaling) for sm8250 chips
+(so rb5 included). As no LMH (Limits Management Hardware) interrupts
+were seen, the firmware used for testing should not be able support
+them.
 
-Hm, Ok. So I suppose this interface should probably be split up a bit
-more. The idr wrappers can be more generic along the lines of
-idr_set_tag(), idr_is_tagged(), idr_get_next_tagged(), etc. This would
-use something like an IDR_TAG1 internally (instead of IDR_TGID) to
-basically expose support for a single, generic, idr-iternal (but
-external radix-tree) tag for idr consumers. (Presumably this would map
-directly over to xarray marks per your reply to patch 1). Then, the
-find_tgid_pid() bits can be lifted into the pid code along the lines of
-find_ge_pid() (along with perhaps some other simple "tgid" wrappers over
-the idr tag mechanism).
+The patch-set was tested on a rb5 with an old firmware version:
+UEFI Ver    : 5.0.210817.BOOT.XF.3.2-00354-SM8250-1
+Build Info  : 64b Aug 17 2021 23:35:39
 
-If that sounds generally reasonable, I'll wait for any feedback on the
-functional approach and follow up with something like that in v2..
+This patch-set should still contain relevant modifications regarding
+LMH interrupts and CPU hotplug. Still, it would be good to test
+it on a platform which actually uses LMH interrupts.
 
-Brian
+LMH irqs can be identified with:
+  cat /proc/interrupts | grep "dcvsh\-irq"
+and their configuration can be seen at:
+  /proc/irqs/XXX/*
+
+Pierre Gondois (4):
+  cpufreq: qcom-hw: Reset cancel_throttle when policy is re-enabled
+  cpufreq: qcom-hw: Disable LMH irq when disabling policy
+  cpufreq: qcom-hw: Remove deprecated irq_set_affinity_hint() call
+  cpufreq: Change order of online() CB and policy->cpus modification
+
+ drivers/cpufreq/cpufreq.c         |  6 +++---
+ drivers/cpufreq/qcom-cpufreq-hw.c | 16 ++++++++++++----
+ 2 files changed, 15 insertions(+), 7 deletions(-)
+
+-- 
+2.25.1
 
