@@ -2,72 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12069C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:19:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B15AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346498AbiFOKTI (ORCPT
+        id S1346436AbiFOKTb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
+        Wed, 15 Jun 2022 06:19:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbiFOKTF (ORCPT
+        with ESMTP id S237034AbiFOKT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:19:05 -0400
-X-Greylist: delayed 1841 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Jun 2022 03:19:03 PDT
-Received: from mail-m964.mail.126.com (mail-m964.mail.126.com [123.126.96.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DECE53C72D;
-        Wed, 15 Jun 2022 03:19:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=5F7kf
-        wbdaKQzAx1CeFIWQhfk0x5hvs0Zur6uvxwjE1g=; b=CpMMRuH4+q/UCuKjyMMQS
-        W9tDJ3ONBTARgU8mYo9e40Rr63yd41yhI6HIPu5wOABnC9fsQ7UjuKxLmy23GUR2
-        xU/9cZNxbRdBL+BvSmO8EhfHlg2eIqCKux2HKgx5g3xm7ahGVD17M4ged01IDEWG
-        168lpIyAZNaVvm4Q01eInc=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp9 (Coremail) with SMTP id NeRpCgCHdZrZqqliYE4hEw--.44531S2;
-        Wed, 15 Jun 2022 17:48:10 +0800 (CST)
-From:   heliang <windhl@126.com>
-To:     rafael@kernel.org, viresh.kumar@linaro.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        windhl@126.com
-Subject: [PATCH] drivers: cpufreq: Add missing of_node_put() in qoriq-cpufreq.c
-Date:   Wed, 15 Jun 2022 17:48:07 +0800
-Message-Id: <20220615094807.3962918-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 06:19:29 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD8BF427F1;
+        Wed, 15 Jun 2022 03:19:26 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25F8Bx8Z020509;
+        Wed, 15 Jun 2022 10:19:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Ysak+bOxf2WK1p19LI1YGYc6xtN+QIwFGyYHHce1LNw=;
+ b=fl/as7pRKi3oyNScMPATmNbfNK0YO0fx4MY8Nmx1KOKF45ra5zOxC46BcuDxhAgmdwGK
+ 8lpqil8DUVLtYPtuBo3s/WrMiboehDAE0U/MUvsUqtvXpF1BL52bO891dH1n0IbDYo+x
+ hGpL4Vh6U73FJEjLhUIn2R0jCQgPGTaqu0L8aPUqriUYr9UZtt0kdBrc8nDjtdVBtKn4
+ XZQA/Kqa39MSQkedDiHf4IZi487So2B+yR1jIrzx4Sz5BamJE/ARFacj7/VxP8Sx0KEF
+ ADQVS/obYxeom9+IYE3vZVps/emG0sH2ULTbDPKr8pQaPEmeAnWadTVVgG2TdHMmFKzy xw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gq8e4raju-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Jun 2022 10:19:25 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25F8Rclr016427;
+        Wed, 15 Jun 2022 10:19:25 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gq8e4raj6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Jun 2022 10:19:25 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25FA6TT1018252;
+        Wed, 15 Jun 2022 10:19:23 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3gmjp94c9b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Jun 2022 10:19:23 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25FAJNmS25493976
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 15 Jun 2022 10:19:24 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3648411C04A;
+        Wed, 15 Jun 2022 10:19:20 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5D63411C050;
+        Wed, 15 Jun 2022 10:19:19 +0000 (GMT)
+Received: from p-imbrenda (unknown [9.145.1.67])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 15 Jun 2022 10:19:19 +0000 (GMT)
+Date:   Wed, 15 Jun 2022 12:19:16 +0200
+From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
+To:     Janosch Frank <frankja@linux.ibm.com>
+Cc:     kvm@vger.kernel.org, borntraeger@de.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
+        mimu@linux.ibm.com, nrb@linux.ibm.com
+Subject: Re: [PATCH v11 14/19] KVM: s390: pv: cleanup leftover protected VMs
+ if needed
+Message-ID: <20220615121916.77b039af@p-imbrenda>
+In-Reply-To: <0a13397a-86e0-7c25-0044-7a5733f61730@linux.ibm.com>
+References: <20220603065645.10019-1-imbrenda@linux.ibm.com>
+        <20220603065645.10019-15-imbrenda@linux.ibm.com>
+        <0a13397a-86e0-7c25-0044-7a5733f61730@linux.ibm.com>
+Organization: IBM
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NeRpCgCHdZrZqqliYE4hEw--.44531S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtFy3Gr1kAr47CFWDXw43Wrg_yoW3Crc_ur
-        y3WrW7Wr4UC3ZFqw13Cr1Sy34Svw13WFsYqF18t398J34UAryYg3yvqr9rZ3yruw4UGFZx
-        A3WqgF47ur4UJjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRtRRRJUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi3BohF1pEDuW8kAAAsp
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: YMSFfob9GrASPT3jG10CkjicSGUSQwCW
+X-Proofpoint-GUID: n1uBPQq9KFPwu3vX7eKS_Wchr_NSB4Rq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-15_03,2022-06-13_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ priorityscore=1501 malwarescore=0 mlxlogscore=999 spamscore=0 adultscore=0
+ impostorscore=0 phishscore=0 clxscore=1015 mlxscore=0 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206150039
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In qoriq_cpufreq_probe(), of_find_matching_node() will return a
-node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+On Wed, 15 Jun 2022 11:59:36 +0200
+Janosch Frank <frankja@linux.ibm.com> wrote:
 
-Signed-off-by: heliang <windhl@126.com>
----
- drivers/cpufreq/qoriq-cpufreq.c | 1 +
- 1 file changed, 1 insertion(+)
+> On 6/3/22 08:56, Claudio Imbrenda wrote:
+> > In upcoming patches it will be possible to start tearing down a
+> > protected VM, and finish the teardown concurrently in a different
+> > thread.  
+> 
+> s/,/
+> s/the/its/
 
-diff --git a/drivers/cpufreq/qoriq-cpufreq.c b/drivers/cpufreq/qoriq-cpufreq.c
-index 6b6b20da2bcf..573b417e1483 100644
---- a/drivers/cpufreq/qoriq-cpufreq.c
-+++ b/drivers/cpufreq/qoriq-cpufreq.c
-@@ -275,6 +275,7 @@ static int qoriq_cpufreq_probe(struct platform_device *pdev)
- 
- 	np = of_find_matching_node(NULL, qoriq_cpufreq_blacklist);
- 	if (np) {
-+		of_node_put(np);
- 		dev_info(&pdev->dev, "Disabling due to erratum A-008083");
- 		return -ENODEV;
- 	}
--- 
-2.25.1
+will fix
+
+> 
+> > 
+> > Protected VMs that are pending for tear down ("leftover") need to be
+> > cleaned properly when the userspace process (e.g. qemu) terminates.
+> > 
+> > This patch makes sure that all "leftover" protected VMs are always
+> > properly torn down.  
+> 
+> So we're handling the kvm_arch_destroy_vm() case here, right?
+
+yes
+
+> Maybe add that in a more prominent way and rework the subject:
+> 
+> KVM: s390: pv: cleanup leftover PV VM shells on VM shutdown
+
+ok, I'll change the description and rework the subject
+
+> 
+> > 
+> > Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+> > ---
+> >   arch/s390/include/asm/kvm_host.h |   2 +
+> >   arch/s390/kvm/kvm-s390.c         |   2 +
+> >   arch/s390/kvm/pv.c               | 109 ++++++++++++++++++++++++++++---
+> >   3 files changed, 104 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
+> > index 5824efe5fc9d..cca8e05e0a71 100644
+> > --- a/arch/s390/include/asm/kvm_host.h
+> > +++ b/arch/s390/include/asm/kvm_host.h
+> > @@ -924,6 +924,8 @@ struct kvm_s390_pv {
+> >   	u64 guest_len;
+> >   	unsigned long stor_base;
+> >   	void *stor_var;
+> > +	void *prepared_for_async_deinit;
+> > +	struct list_head need_cleanup;
+> >   	struct mmu_notifier mmu_notifier;
+> >   };
+> >   
+> > diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> > index fe1fa896def7..369de8377116 100644
+> > --- a/arch/s390/kvm/kvm-s390.c
+> > +++ b/arch/s390/kvm/kvm-s390.c
+> > @@ -2890,6 +2890,8 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
+> >   	kvm_s390_vsie_init(kvm);
+> >   	if (use_gisa)
+> >   		kvm_s390_gisa_init(kvm);
+> > +	INIT_LIST_HEAD(&kvm->arch.pv.need_cleanup);
+> > +	kvm->arch.pv.prepared_for_async_deinit = NULL;
+> >   	KVM_EVENT(3, "vm 0x%pK created by pid %u", kvm, current->pid);
+> >   
+> >   	return 0;
+> > diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
+> > index 6cffea26c47f..8471c17d538c 100644
+> > --- a/arch/s390/kvm/pv.c
+> > +++ b/arch/s390/kvm/pv.c
+> > @@ -17,6 +17,19 @@
+> >   #include <linux/mmu_notifier.h>
+> >   #include "kvm-s390.h"
+> >   
+> > +/**
+> > + * @struct leftover_pv_vm  
+> 
+> Any other ideas on naming these VMs?
+
+not really
+
+> Also I'd turn that around: pv_vm_leftover
+
+I mean, it's a leftover protected VM, it felt more natural to name it
+that way
+
+> 
+> > + * Represents a "leftover" protected VM that is still registered with the
+> > + * Ultravisor, but which does not correspond any longer to an active KVM VM.
+> > + */
+> > +struct leftover_pv_vm {
+> > +	struct list_head list;
+> > +	unsigned long old_gmap_table;
+> > +	u64 handle;
+> > +	void *stor_var;
+> > +	unsigned long stor_base;
+> > +};
+> > +  
+> 
+> I think we should switch this patch and the next one and add this struct 
+> to the next patch. The list work below makes more sense once the next 
+> patch has been read.
+
+but the next patch will leave leftovers in some circumstances, and
+those won't be cleaned up without this patch.
+
+having this patch first means that when the next patch is applied, the
+leftovers are already taken care of
+
+> >   static void kvm_s390_clear_pv_state(struct kvm *kvm)
+> >   {
+> >   	kvm->arch.pv.handle = 0;
+> > @@ -158,23 +171,88 @@ static int kvm_s390_pv_alloc_vm(struct kvm *kvm)
+> >   	return -ENOMEM;
+> >   }
+> >     
+> 
+> >     
+> 
 
