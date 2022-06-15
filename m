@@ -2,378 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B792C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A43C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234911AbiFOSdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43338 "EHLO
+        id S244630AbiFOShP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 14:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235304AbiFOSdM (ORCPT
+        with ESMTP id S231737AbiFOShO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:33:12 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AADC27B16
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:33:10 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-1016409cf0bso6478692fac.12
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:33:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=aWKaXSLWKPIvF4nDPs1tK0g22deYF1UOZd2IUW9ult8=;
-        b=bKixCO8itzAaNNdwH7+56A/CBEkxIykziaj92C/4BqNQDu/IcGShAn2n9sCa8AHzA0
-         9NCPrb0k/Ku/UBcAM9UfG/F8mkrC4wTQ2LWHvC1AfMlWCJm8rWLVKfjr2WdYkIR4A6TF
-         7LWoO/I8toC0M34VlntvWVIjGbXUb9Ph9I/4s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=aWKaXSLWKPIvF4nDPs1tK0g22deYF1UOZd2IUW9ult8=;
-        b=oyNN6feHrrisZHhzIs8t+0L9cSTXzzTefDhifhZ0ITpT08iXjyzKmoRPdd5bcvbd3P
-         jglATDD8HlH4yA0pTJMYyE1WOASgSptykTInqWN+pdASlvq2kvDt3ioIGtbywvQi1blO
-         2i79jkN+TwKE1fT9x8559ETkKKx8tIykFdNwrt/9wMu7fMuv0tmPgv1YrXcSBNwWW4uQ
-         w7yKFAySrndl4mo+4x48I4OZvxa1IFiYoi6x5W0ORJObXN2+zbccIwIx7NbjsfwVcF5i
-         LM5TDZHYyVld58b6nE7ZHFqHiq6uusrQnBqdsoCu6gHlmecER1W67YRU8EmZWKGjwBC3
-         EBgw==
-X-Gm-Message-State: AJIora9TN0mh7JB9URz26yagvLAeVn8c4H4F7+dBfYNIfzwkXt/Ch64B
-        qF5cjX3SyF3yfihs5143t4GWOIimHo3eO4oMvggxRA==
-X-Google-Smtp-Source: AGRyM1tz5d3FGiz7wFv9EZkuA7xwgsBkSvXb1D/6vHI6sLHMxvW5JwkZhJPFGUfYwN6w+x6rm2kuaIKppceOCkZk1nY=
-X-Received: by 2002:a05:6870:e98b:b0:fe:219a:2449 with SMTP id
- r11-20020a056870e98b00b000fe219a2449mr6461605oao.228.1655317989542; Wed, 15
- Jun 2022 11:33:09 -0700 (PDT)
+        Wed, 15 Jun 2022 14:37:14 -0400
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8413151F
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:37:13 -0700 (PDT)
+Received: from pps.filterd (m0134424.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25FHGlT9017477;
+        Wed, 15 Jun 2022 18:36:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pps0720;
+ bh=d8XMAARgmnvj7xzWvqVtF6dIUJY16r1BmnSQrSMGTqQ=;
+ b=iJW9MxtP5ygLHuflc+Z3XqBWp9H4XpEKXScXERkUYnwYMmAY+HE1XAvb41ITd56pXXA3
+ V5na3ku1JfXv574YmKGC/M/7mhiWfpc2DBjUKKKqc0wj+juEBqwjKQf1C0hVZ1OexvMJ
+ UhW71beZa99rXAHxzfDfIV7j2AIr6Y2vzrywNmuELHxca+PZzGNRHPkXSYS4zfnYNTnh
+ PY42uVWWU2XEY8giMLw8NGpPDDAgjVDnhpXnXulwk8nQWdN93PuIlHdPOE0yRKLKOVIb
+ QN6d8R1hnBo8oeAA+JvZq0qP9NKn15D6FeZ8kKIGEbNt1k166dqT+2+ZFlnxgWGelNa1 cQ== 
+Received: from p1lg14881.it.hpe.com (p1lg14881.it.hpe.com [16.230.97.202])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3gqh1ftb8h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 15 Jun 2022 18:36:53 +0000
+Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by p1lg14881.it.hpe.com (Postfix) with ESMTPS id 58A038058C1;
+        Wed, 15 Jun 2022 18:36:51 +0000 (UTC)
+Received: from dog.eag.rdlabs.hpecorp.net (unknown [16.231.227.36])
+        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTP id AAB04803D8C;
+        Wed, 15 Jun 2022 18:36:50 +0000 (UTC)
+Received: by dog.eag.rdlabs.hpecorp.net (Postfix, from userid 200934)
+        id 42142302F481D; Wed, 15 Jun 2022 13:36:50 -0500 (CDT)
+From:   Steve Wahl <steve.wahl@hpe.com>
+To:     Joerg Roedel <jroedel@suse.de>,
+        Kyung Min Park <kyung.min.park@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        iommu@lists.linux-foundation.org,
+        Kevin Tian <kevin.tian@intel.com>,
+        Jerry Snitselaar <jsnitsel@redhat.com>
+Cc:     Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <sivanich@hpe.com>,
+        Steve Wahl <steve.wahl@hpe.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
+Date:   Wed, 15 Jun 2022 13:36:50 -0500
+Message-Id: <20220615183650.32075-1-steve.wahl@hpe.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <9d6177ac-802f-eb11-4307-b0e49d8126b5@linux.intel.com>
+References: <9d6177ac-802f-eb11-4307-b0e49d8126b5@linux.intel.com>
 MIME-Version: 1.0
-References: <20220516171315.2400578-1-tjmercier@google.com>
- <175c5af3-9224-9c8e-0784-349dad9a2954@amd.com> <CABdmKX2GcgCs1xANYPBp8OEtk9qqH7AvCzpdppj9rHXvMqWSAw@mail.gmail.com>
- <0875fa95-3a25-a354-1433-201fca81ed3e@amd.com> <CABdmKX1+VYfdzyVYOS5MCsr4ptGTygmuUP9ikyh-vW6DgKk2kg@mail.gmail.com>
- <YoM9BAwybcjG7K/H@kroah.com> <Yo4/XhWQkACWaPIh@phenom.ffwll.local>
- <CABdmKX2dC0fkFrCedjhzmheYiDVP4PnKBMeGkX3_bgrLjOiYOg@mail.gmail.com>
- <38da6dcd-b395-f32f-5a47-6a8f2c6a4331@amd.com> <YpdeLrJzmCA7OozT@phenom.ffwll.local>
- <CABdmKX0EWhHsrbVdYkpR0=RYuqUteq45QWzytUw7f2NXQtJEWw@mail.gmail.com>
-In-Reply-To: <CABdmKX0EWhHsrbVdYkpR0=RYuqUteq45QWzytUw7f2NXQtJEWw@mail.gmail.com>
-From:   Daniel Vetter <daniel.vetter@ffwll.ch>
-Date:   Wed, 15 Jun 2022 20:32:58 +0200
-Message-ID: <CAKMK7uEBGFGpDu+Kt=cuiCtAjopOBuZKSWDj5uWOO8eLyHcy9A@mail.gmail.com>
-Subject: Re: [PATCH v2] dma-buf: Move sysfs work out of DMA-BUF export path
-To:     "T.J. Mercier" <tjmercier@google.com>
-Cc:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Kalesh Singh <kaleshsingh@google.com>,
-        Minchan Kim <minchan@google.com>,
-        Greg Kroah-Hartman <gregkh@google.com>,
-        John Stultz <jstultz@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Hridya Valsaraju <hridya@google.com>, kernel-team@android.com,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: 8YzfRBAg7HrDz3A532e43JIerEl_zZPJ
+X-Proofpoint-ORIG-GUID: 8YzfRBAg7HrDz3A532e43JIerEl_zZPJ
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-15_15,2022-06-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ lowpriorityscore=0 adultscore=0 bulkscore=0 phishscore=0 spamscore=0
+ impostorscore=0 clxscore=1015 mlxlogscore=999 suspectscore=0 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206150069
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 at 19:43, T.J. Mercier <tjmercier@google.com> wrote:
->
-> On Wed, Jun 1, 2022 at 5:40 AM Daniel Vetter <daniel@ffwll.ch> wrote:
-> >
-> > On Mon, May 30, 2022 at 08:12:16AM +0200, Christian K=C3=B6nig wrote:
-> > > Am 25.05.22 um 23:05 schrieb T.J. Mercier:
-> > > > On Wed, May 25, 2022 at 7:38 AM Daniel Vetter <daniel@ffwll.ch> wro=
-te:
-> > > > > On Tue, May 17, 2022 at 08:13:24AM +0200, Greg Kroah-Hartman wrot=
-e:
-> > > > > > On Mon, May 16, 2022 at 05:08:05PM -0700, T.J. Mercier wrote:
-> > > > > > > On Mon, May 16, 2022 at 12:21 PM Christian K=C3=B6nig
-> > > > > > > <christian.koenig@amd.com> wrote:
-> > > > > > > > Am 16.05.22 um 20:08 schrieb T.J. Mercier:
-> > > > > > > > > On Mon, May 16, 2022 at 10:20 AM Christian K=C3=B6nig
-> > > > > > > > > <christian.koenig@amd.com> wrote:
-> > > > > > > > > > Am 16.05.22 um 19:13 schrieb T.J. Mercier:
-> > > > > > > > > > > Recently, we noticed an issue where a process went in=
-to direct reclaim
-> > > > > > > > > > > while holding the kernfs rw semaphore for sysfs in wr=
-ite (exclusive)
-> > > > > > > > > > > mode. This caused processes who were doing DMA-BUF ex=
-ports and releases
-> > > > > > > > > > > to go into uninterruptible sleep since they needed to=
- acquire the same
-> > > > > > > > > > > semaphore for the DMA-BUF sysfs entry creation/deleti=
-on. In order to avoid
-> > > > > > > > > > > blocking DMA-BUF export for an indeterminate amount o=
-f time while
-> > > > > > > > > > > another process is holding the sysfs rw semaphore in =
-exclusive mode,
-> > > > > > > > > > > this patch moves the per-buffer sysfs file creation t=
-o the default work
-> > > > > > > > > > > queue. Note that this can lead to a short-term inaccu=
-racy in the dmabuf
-> > > > > > > > > > > sysfs statistics, but this is a tradeoff to prevent t=
-he hot path from
-> > > > > > > > > > > being blocked. A work_struct is added to dma_buf to a=
-chieve this, but as
-> > > > > > > > > > > it is unioned with the kobject in the sysfs_entry, dm=
-a_buf does not
-> > > > > > > > > > > increase in size.
-> > > > > > > > > > I'm still not very keen of this approach as it strongly=
- feels like we
-> > > > > > > > > > are working around shortcoming somewhere else.
-> > > > > > > > > >
-> > > > > > > > > My read of the thread for the last version is that we're =
-running into
-> > > > > > > > > a situation where sysfs is getting used for something it =
-wasn't
-> > > > > > > > > originally intended for, but we're also stuck with this s=
-ysfs
-> > > > > > > > > functionality for dmabufs.
-> > > > > > > > >
-> > > > > > > > > > > Fixes: bdb8d06dfefd ("dmabuf: Add the capability to e=
-xpose DMA-BUF stats in sysfs")
-> > > > > > > > > > > Originally-by: Hridya Valsaraju <hridya@google.com>
-> > > > > > > > > > > Signed-off-by: T.J. Mercier <tjmercier@google.com>
-> > > > > > > > > > >
-> > > > > > > > > > > ---
-> > > > > > > > > > > See the originally submitted patch by Hridya Valsaraj=
-u here:
-> > > > > > > > > > > https://nam11.safelinks.protection.outlook.com/?url=
-=3Dhttps%3A%2F%2Flkml.org%2Flkml%2F2022%2F1%2F4%2F1066&amp;data=3D05%7C01%7=
-Cchristian.koenig%40amd.com%7C8f00afd44b9744c45f5708da3e926503%7C3dd8961fe4=
-884e608e11a82d994e183d%7C0%7C0%7C637891095771223650%7CUnknown%7CTWFpbGZsb3d=
-8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%=
-7C%7C%7C&amp;sdata=3DpubWqUyqhCWpXHhJHsoqarc3GLtB6IFB1rhgfsL4a1M%3D&amp;res=
-erved=3D0
-> > > > > > > > > > >
-> > > > > > > > > > > v2 changes:
-> > > > > > > > > > > - Defer only sysfs creation instead of creation and t=
-eardown per
-> > > > > > > > > > > Christian K=C3=B6nig
-> > > > > > > > > > >
-> > > > > > > > > > > - Use a work queue instead of a kthread for deferred =
-work per
-> > > > > > > > > > > Christian K=C3=B6nig
-> > > > > > > > > > > ---
-> > > > > > > > > > >     drivers/dma-buf/dma-buf-sysfs-stats.c | 56 ++++++=
-++++++++++++++-------
-> > > > > > > > > > >     include/linux/dma-buf.h               | 14 ++++++=
--
-> > > > > > > > > > >     2 files changed, 54 insertions(+), 16 deletions(-=
-)
-> > > > > > > > > > >
-> > > > > > > > > > > diff --git a/drivers/dma-buf/dma-buf-sysfs-stats.c b/=
-drivers/dma-buf/dma-buf-sysfs-stats.c
-> > > > > > > > > > > index 2bba0babcb62..67b0a298291c 100644
-> > > > > > > > > > > --- a/drivers/dma-buf/dma-buf-sysfs-stats.c
-> > > > > > > > > > > +++ b/drivers/dma-buf/dma-buf-sysfs-stats.c
-> > > > > > > > > > > @@ -11,6 +11,7 @@
-> > > > > > > > > > >     #include <linux/printk.h>
-> > > > > > > > > > >     #include <linux/slab.h>
-> > > > > > > > > > >     #include <linux/sysfs.h>
-> > > > > > > > > > > +#include <linux/workqueue.h>
-> > > > > > > > > > >
-> > > > > > > > > > >     #include "dma-buf-sysfs-stats.h"
-> > > > > > > > > > >
-> > > > > > > > > > > @@ -168,10 +169,46 @@ void dma_buf_uninit_sysfs_stati=
-stics(void)
-> > > > > > > > > > >         kset_unregister(dma_buf_stats_kset);
-> > > > > > > > > > >     }
-> > > > > > > > > > >
-> > > > > > > > > > > +static void sysfs_add_workfn(struct work_struct *wor=
-k)
-> > > > > > > > > > > +{
-> > > > > > > > > > > +     struct dma_buf_sysfs_entry *sysfs_entry =3D
-> > > > > > > > > > > +             container_of(work, struct dma_buf_sysfs=
-_entry, sysfs_add_work);
-> > > > > > > > > > > +     struct dma_buf *dmabuf =3D sysfs_entry->dmabuf;
-> > > > > > > > > > > +
-> > > > > > > > > > > +     /*
-> > > > > > > > > > > +      * A dmabuf is ref-counted via its file member.=
- If this handler holds the only
-> > > > > > > > > > > +      * reference to the dmabuf, there is no need fo=
-r sysfs kobject creation. This is an
-> > > > > > > > > > > +      * optimization and a race; when the reference =
-count drops to 1 immediately after
-> > > > > > > > > > > +      * this check it is not harmful as the sysfs en=
-try will still get cleaned up in
-> > > > > > > > > > > +      * dma_buf_stats_teardown, which won't get call=
-ed until the final dmabuf reference
-> > > > > > > > > > > +      * is released, and that can't happen until the=
- end of this function.
-> > > > > > > > > > > +      */
-> > > > > > > > > > > +     if (file_count(dmabuf->file) > 1) {
-> > > > > > > > > > Please completely drop that. I see absolutely no justif=
-ication for this
-> > > > > > > > > > additional complexity.
-> > > > > > > > > >
-> > > > > > > > > This case gets hit around 5% of the time in my testing so=
- the else is
-> > > > > > > > > not a completely unused branch.
-> > > > > > > > Well I can only repeat myself: This means that your userspa=
-ce is
-> > > > > > > > severely broken!
-> > > > > > > >
-> > > > > > > > DMA-buf are meant to be long living objects
-> > > > > > > This patch addresses export *latency* regardless of how long-=
-lived the
-> > > > > > > object is. Even a single, long-lived export will benefit from=
- this
-> > > > > > > change if it would otherwise be blocked on adding an object t=
-o sysfs.
-> > > > > > > I think attempting to improve this latency still has merit.
-> > > > > > Fixing the latency is nice, but as it's just pushing the needed=
- work off
-> > > > > > to another code path, it will take longer overall for the sysfs=
- stuff to
-> > > > > > be ready for userspace to see.
-> > > > > >
-> > > > > > Perhaps we need to step back and understand what this code is s=
-upposed
-> > > > > > to be doing.  As I recall, it was created because some systems =
-do not
-> > > > > > allow debugfs anymore, and they wanted the debugging informatio=
-n that
-> > > > > > the dmabuf code was exposing to debugfs on a "normal" system.  =
-Moving
-> > > > > > that logic to sysfs made sense, but now I am wondering why we d=
-idn't see
-> > > > > > these issues in the debugfs code previously?
-> > > > > >
-> > > > > > Perhaps we should go just one step further and make a misc devi=
-ce node
-> > > > > > for dmabug debugging information to be in and just have userspa=
-ce
-> > > > > > poll/read on the device node and we spit the info that used to =
-be in
-> > > > > > debugfs out through that?  That way this only affects systems w=
-hen they
-> > > > > > want to read the information and not normal code paths?  Yeah t=
-hat's a
-> > > > > > hack, but this whole thing feels overly complex now.
-> > > > > A bit late on this discussion, but just wanted to add my +1 that =
-we should
-> > > > > either redesign the uapi, or fix the underlying latency issue in =
-sysfs, or
-> > > > > whatever else is deemed the proper fix.
-> > > > >
-> > > > > Making uapi interfaces async in ways that userspace can't discove=
-r is a
-> > > > > hack that we really shouldn't consider, at least for upstream. Al=
-l kinds
-> > > > > of hilarious things might start to happen when an object exists, =
-but not
-> > > > > consistently in all the places where it should be visible. There'=
-s a
-> > > > > reason sysfs has all these neat property groups so that absolutel=
-y
-> > > > > everything is added atomically. Doing stuff later on just because=
- usually
-> > > > > no one notices that the illusion falls apart isn't great.
-> > > > >
-> > > > > Unfortunately I don't have a clear idea here what would be the ri=
-ght
-> > > > > solution :-/ One idea perhaps: Should we dynamically enumerate th=
-e objects
-> > > > > when userspace does a readdir()? That's absolutely not how sysfs =
-works,
-> > > > > but procfs works like that and there's discussions going around a=
-bout
-> > > > > moving these optimizations to other kernfs implementations. At le=
-ast there
-> > > > > was a recent lwn article on this:
-> > > > >
-> > > > > https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F=
-%2Flwn.net%2FArticles%2F895111%2F&amp;data=3D05%7C01%7Cchristian.koenig%40a=
-md.com%7C8f00afd44b9744c45f5708da3e926503%7C3dd8961fe4884e608e11a82d994e183=
-d%7C0%7C0%7C637891095771223650%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAi=
-LCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3D=
-Q58OZi79vmKMCZLL0pY7NniIW6hmSqyWjlEaZgqzYtM%3D&amp;reserved=3D0
-> > > > >
-> > > > > But that would be serious amounts of work I guess.
-> > > > > -Daniel
-> > > > > --
-> > > > > Daniel Vetter"
-> > > > > Software Engineer, Intel Corporation
-> > > > > https://nam11.safelinks.protection.outlook.com/?url=3Dhttp%3A%2F%=
-2Fblog.ffwll.ch%2F&amp;data=3D05%7C01%7Cchristian.koenig%40amd.com%7C8f00af=
-d44b9744c45f5708da3e926503%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637=
-891095771223650%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzI=
-iLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3DpOIl5yszzak4TPq=
-jBYyL0mHjj%2F1nYRfNJbNPQTXBhbA%3D&amp;reserved=3D0
-> > > > Hi Daniel,
-> > > >
-> > > > My team has been discussing this, and I think we're approaching a
-> > > > consensus on a way forward that involves deprecating the existing
-> > > > uapi.
-> > > >
-> > > > I actually proposed a similar (but less elegant) idea to the readdi=
-r()
-> > > > one. A new "dump_dmabuf_data" sysfs file that a user would write to=
-,
-> > > > which would cause a one-time creation of the per-buffer files. Thes=
-e
-> > > > could be left around to become stale, or get cleaned up after first
-> > > > read. However to me it seems impossible to correctly deal with
-> > > > multiple simultaneous users with this technique. We're not currentl=
-y
-> > > > planning to pursue this.
-> > > >
-> > > > Thanks for the link to the article. That on-demand creation sounds
-> > > > like it would allow us to keep the existing structure and files for
-> > > > DMA-buf, assuming there is not a similar lock contention issue when
-> > > > adding a new node to the virtual tree. :)
-> > >
-> > > I think that this on demand creation is even worse than the existing =
-ideas,
-> > > but if you can get Greg to accept the required sysfs changes than tha=
-t's at
-> > > least outside of my maintenance domain any more :)
-> >
-> > I think doing it cleanly in sysfs without changing the current uapi sou=
-nds
-> > pretty good. The hand-rolled "touch a magic file to force update all th=
-e
-> > files into existence" sounds like a horror show to me :-) Plus I don't =
-see
-> > how you can actually avoid the locking pain with that since once the fi=
-les
-> > are created, you have to remove them synchronously again, plus you get =
-to
-> > deal with races on top (and likely some locking inversion fun on top).
-> > -Daniel
->
-> Yes, lots of reasons not to pursue that angle. :)
->
-> So I asked Greg about modifying sysfs for this purpose, and he's quite
-> convincing that it's not the right way to approach this problem. So
-> that leaves deprecating the per-buffer statistics. It looks like we
-> can maintain the userspace functionality that depended on this by
-> replacing it with a single sysfs node for "dmabuf_total_size" along
-> with adding exporter information to procfs (via Kalesh's path patch
-> [1]). However there is a separate effort to account dmabufs from heaps
-> with cgroups [2], so if I'm able to make that work then we would not
-> need the new "dmabuf_total_size" file since this same information
-> could be obtained from the root cgroup instead. So I'd like to try
-> that first before falling back to adding a new dmabuf_total_size file.
+To support up to 64 sockets with 10 DMAR units each (640), make the
+value of DMAR_UNITS_SUPPORTED adjustable by a config variable,
+CONFIG_DMAR_UNITS_SUPPORTED, and make it's default 1024 when MAXSMP is
+set.
 
-Sounds like a plan.
--Daniel
+If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
+to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
+allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
+remapping doesn't support X2APIC mode x2apic disabled"; and the system
+fails to boot properly.
 
->
-> [1] https://lore.kernel.org/lkml/875yll1fp1.fsf@stepbren-lnx.us.oracle.co=
-m/T/#m43a3d345f821a02babd4ebb1f4257982d027c9e4
-> [2] https://lore.kernel.org/lkml/CABdmKX1xvm87WMEDkMc9Aye46E4zv1-scenwgaR=
-xHesrOCsaYg@mail.gmail.com/T/#mb82eca5438a4ea7ab157ab9cd7f044cbcfeb5509
->
->
->
->
-> > --
-> > Daniel Vetter
-> > Software Engineer, Intel Corporation
-> > http://blog.ffwll.ch
+Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+---
 
+Note that we could not find a reason for connecting
+DMAR_UNITS_SUPPORTED to MAX_IO_APICS as was done previously.  Perhaps
+it seemed like the two would continue to match on earlier processors.
+There doesn't appear to be kernel code that assumes that the value of
+one is related to the other.
 
+v2: Make this value a config option, rather than a fixed constant.  The default
+values should match previous configuration except in the MAXSMP case.  Keeping the
+value at a power of two was requested by Kevin Tian.
 
---=20
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+v3: Make the config option dependent upon DMAR_TABLE, as it is not used without this.
+
+ drivers/iommu/intel/Kconfig | 7 +++++++
+ include/linux/dmar.h        | 6 +-----
+ 2 files changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+index 39a06d245f12..07aaebcb581d 100644
+--- a/drivers/iommu/intel/Kconfig
++++ b/drivers/iommu/intel/Kconfig
+@@ -9,6 +9,13 @@ config DMAR_PERF
+ config DMAR_DEBUG
+ 	bool
+ 
++config DMAR_UNITS_SUPPORTED
++	int "Number of DMA Remapping Units supported"
++	depends on DMAR_TABLE
++	default 1024 if MAXSMP
++	default 128  if X86_64
++	default 64
++
+ config INTEL_IOMMU
+ 	bool "Support for Intel IOMMU using DMA Remapping Devices"
+ 	depends on PCI_MSI && ACPI && (X86 || IA64)
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 45e903d84733..0c03c1845c23 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -18,11 +18,7 @@
+ 
+ struct acpi_dmar_header;
+ 
+-#ifdef	CONFIG_X86
+-# define	DMAR_UNITS_SUPPORTED	MAX_IO_APICS
+-#else
+-# define	DMAR_UNITS_SUPPORTED	64
+-#endif
++#define	DMAR_UNITS_SUPPORTED	CONFIG_DMAR_UNITS_SUPPORTED
+ 
+ /* DMAR Flags */
+ #define DMAR_INTR_REMAP		0x1
+-- 
+2.26.2
+
