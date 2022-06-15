@@ -2,214 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B15AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3CC6CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:19:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346436AbiFOKTb (ORCPT
+        id S1346946AbiFOKTl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37038 "EHLO
+        Wed, 15 Jun 2022 06:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237034AbiFOKT3 (ORCPT
+        with ESMTP id S237034AbiFOKTg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:19:29 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD8BF427F1;
-        Wed, 15 Jun 2022 03:19:26 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25F8Bx8Z020509;
-        Wed, 15 Jun 2022 10:19:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=Ysak+bOxf2WK1p19LI1YGYc6xtN+QIwFGyYHHce1LNw=;
- b=fl/as7pRKi3oyNScMPATmNbfNK0YO0fx4MY8Nmx1KOKF45ra5zOxC46BcuDxhAgmdwGK
- 8lpqil8DUVLtYPtuBo3s/WrMiboehDAE0U/MUvsUqtvXpF1BL52bO891dH1n0IbDYo+x
- hGpL4Vh6U73FJEjLhUIn2R0jCQgPGTaqu0L8aPUqriUYr9UZtt0kdBrc8nDjtdVBtKn4
- XZQA/Kqa39MSQkedDiHf4IZi487So2B+yR1jIrzx4Sz5BamJE/ARFacj7/VxP8Sx0KEF
- ADQVS/obYxeom9+IYE3vZVps/emG0sH2ULTbDPKr8pQaPEmeAnWadTVVgG2TdHMmFKzy xw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gq8e4raju-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 15 Jun 2022 10:19:25 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25F8Rclr016427;
-        Wed, 15 Jun 2022 10:19:25 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gq8e4raj6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 15 Jun 2022 10:19:25 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25FA6TT1018252;
-        Wed, 15 Jun 2022 10:19:23 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma05fra.de.ibm.com with ESMTP id 3gmjp94c9b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 15 Jun 2022 10:19:23 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25FAJNmS25493976
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Jun 2022 10:19:24 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3648411C04A;
-        Wed, 15 Jun 2022 10:19:20 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5D63411C050;
-        Wed, 15 Jun 2022 10:19:19 +0000 (GMT)
-Received: from p-imbrenda (unknown [9.145.1.67])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 15 Jun 2022 10:19:19 +0000 (GMT)
-Date:   Wed, 15 Jun 2022 12:19:16 +0200
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     Janosch Frank <frankja@linux.ibm.com>
-Cc:     kvm@vger.kernel.org, borntraeger@de.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
-        mimu@linux.ibm.com, nrb@linux.ibm.com
-Subject: Re: [PATCH v11 14/19] KVM: s390: pv: cleanup leftover protected VMs
- if needed
-Message-ID: <20220615121916.77b039af@p-imbrenda>
-In-Reply-To: <0a13397a-86e0-7c25-0044-7a5733f61730@linux.ibm.com>
-References: <20220603065645.10019-1-imbrenda@linux.ibm.com>
-        <20220603065645.10019-15-imbrenda@linux.ibm.com>
-        <0a13397a-86e0-7c25-0044-7a5733f61730@linux.ibm.com>
-Organization: IBM
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        Wed, 15 Jun 2022 06:19:36 -0400
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128B33E5E6
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:19:30 -0700 (PDT)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220615101926euoutp01e9461380e479ba205deb09be9d65a30a~4w--ZUUH72281922819euoutp01b
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:19:26 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220615101926euoutp01e9461380e479ba205deb09be9d65a30a~4w--ZUUH72281922819euoutp01b
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1655288366;
+        bh=eLOiJUoNbnfsZUov2EVpzTumu23358MNUI2L+v8Fc7o=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=YpwQGT76Q0wQvEJX2Wp9LDWZxNQNknBArbyn439kxXelV9jvaK322lenTodx9Ei00
+         xCJcO2zwv3dBs00VQFQQbdHB8h367Uj9l0NeavqcNf4ggB6svcbsZAYtEcz2maeOb7
+         xQ9zV2bgdEeDi7d8dzsnVo7qsytNZcjRlzethaLI=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20220615101924eucas1p2bfd985105dbde7d99937b28ba581d0cc~4w-9aNVFB1911219112eucas1p2d;
+        Wed, 15 Jun 2022 10:19:24 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 51.69.09580.C22B9A26; Wed, 15
+        Jun 2022 11:19:24 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220615101924eucas1p27fbce623c0e1b3097169bf23dd6266d8~4w-8-ROYS1347713477eucas1p2y;
+        Wed, 15 Jun 2022 10:19:24 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220615101924eusmtrp21deac3323e9ad9a545214ba29eb80c7c~4w-8_QOZ40308003080eusmtrp2L;
+        Wed, 15 Jun 2022 10:19:24 +0000 (GMT)
+X-AuditID: cbfec7f5-1bfc7a800000256c-ed-62a9b22c1929
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 90.45.09095.B22B9A26; Wed, 15
+        Jun 2022 11:19:24 +0100 (BST)
+Received: from localhost (unknown [106.210.248.244]) by eusmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220615101922eusmtip2de5ad9ee81cfad14bcb36acabf49fde2~4w-7j7FbM0785907859eusmtip2D;
+        Wed, 15 Jun 2022 10:19:22 +0000 (GMT)
+From:   Pankaj Raghav <p.raghav@samsung.com>
+To:     hch@lst.de, snitzer@redhat.com, damien.lemoal@opensource.wdc.com,
+        axboe@kernel.dk
+Cc:     bvanassche@acm.org, linux-kernel@vger.kernel.org,
+        jiangbo.365@bytedance.com, hare@suse.de, pankydev8@gmail.com,
+        dm-devel@redhat.com, jonathan.derrick@linux.dev,
+        gost.dev@samsung.com, dsterba@suse.com, jaegeuk@kernel.org,
+        linux-nvme@lists.infradead.org, Johannes.Thumshirn@wdc.com,
+        linux-block@vger.kernel.org, Pankaj Raghav <p.raghav@samsung.com>
+Subject: [PATCH v7 00/13] support non power of 2 zoned device
+Date:   Wed, 15 Jun 2022 12:19:07 +0200
+Message-Id: <20220615101920.329421-1-p.raghav@samsung.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: YMSFfob9GrASPT3jG10CkjicSGUSQwCW
-X-Proofpoint-GUID: n1uBPQq9KFPwu3vX7eKS_Wchr_NSB4Rq
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-15_03,2022-06-13_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- priorityscore=1501 malwarescore=0 mlxlogscore=999 spamscore=0 adultscore=0
- impostorscore=0 phishscore=0 clxscore=1015 mlxscore=0 bulkscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206150039
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrEKsWRmVeSWpSXmKPExsWy7djP87o6m1YmGZw5Lmex+m4/m8W0Dz+Z
+        LX6fPc9ssffdbFaLCz8amSxuHtjJZLFn0SQmi5WrjzJZPFk/i9mi58AHFou/XfeAYi0PgYpv
+        aVtc3jWHzWL+sqfsFp+XtrBbrLn5lMWibeNXRgchj8tXvD3+nVjD5rFz1l12j8tnSz02repk
+        81jYMJXZY/OSeo/dNxuAcq33WT3e77vK5tG3ZRWjx/otV1k8Np+u9vi8Sc6j/UA3UwB/FJdN
+        SmpOZllqkb5dAlfGxe1/mQq+GlVcm3OTqYFxlUYXIyeHhICJxMaeX0xdjFwcQgIrGCVudN2A
+        cr4wSuxduYcVwvnMKNF8cTIbTMvUhcdYIBLLGSV2vN3BDOG8ZJRY8eMZUAsHB5uAlkRjJztI
+        g4hAuMTRPffAxjILvGCSWHx7LitIQljAVuLXvv/sIPUsAqoSM1v4QExeASuJze06ELvkJWZe
+        +g42hldAUOLkzCcsIDYzULx562ywtRIC+zklZvatgjrOReJ27wooW1ji1fEt7BC2jMT/nfOZ
+        IOxqiac3fkM1tzBK9O9czwayWELAWqLvTA6IySygKbF+lz5E1FHi/dlsCJNP4sZbQYgL+CQm
+        bZvODBHmlehoE4KYrSSx8+cTqJ0SEpeb5rBA2B4SPx88BrtLSCBW4vzUL8wTGBVmIflrFpK/
+        ZiGcsICReRWjeGppcW56arFxXmq5XnFibnFpXrpecn7uJkZgsjz97/jXHYwrXn3UO8TIxMF4
+        iFGCg1lJhNcseGWSEG9KYmVValF+fFFpTmrxIUZpDhYlcd7kzA2JQgLpiSWp2ampBalFMFkm
+        Dk6pBqaSxw/dslUj+nU10/M8nT5Zbd3MvUlpvn9Nyfe2bdt2bm+t2lNRZMevmXtFOvfBg5On
+        jlwsuBnaYegQlH5ryoT2LVnlZxJe+O1gcthrt/dP/KZS+RIOIX2/ZUUzt9RHFm0su+DGGKzy
+        VK1TTUa20XGN/Z9fuz43Pbg8QXPqkpDKWLn2kjm/grfPrmffl73nxYFlS5vvi6+xce/QSmHT
+        mdBV/0PKLd3KgHtLOvMhreo/1qlflk+a8nWXpGPlnBMn9yWr2NhaS2rWf1x6XvqhpcHJTc8v
+        SpnXpcZ+4kpepL/xVQejZdHbW8un6mqtF2CZ8N1qZaOSadbh5U478x7HH04628h0SnSjxPWa
+        pv/5W5RYijMSDbWYi4oTATFKlk0FBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrAIsWRmVeSWpSXmKPExsVy+t/xe7o6m1YmGfTsYLRYfbefzWLah5/M
+        Fr/Pnme22PtuNqvFhR+NTBY3D+xkstizaBKTxcrVR5ksnqyfxWzRc+ADi8XfrntAsZaHQMW3
+        tC0u75rDZjF/2VN2i89LW9gt1tx8ymLRtvEro4OQx+Ur3h7/Tqxh89g56y67x+WzpR6bVnWy
+        eSxsmMrssXlJvcfumw1Audb7rB7v911l8+jbsorRY/2Wqywem09Xe3zeJOfRfqCbKYA/Ss+m
+        KL+0JFUhI7+4xFYp2tDCSM/Q0kLPyMRSz9DYPNbKyFRJ384mJTUnsyy1SN8uQS/j4va/TAVf
+        jSquzbnJ1MC4SqOLkZNDQsBEYurCYyxdjFwcQgJLGSXOPVvLBpGQkLi9sIkRwhaW+HOtiw2i
+        6DmjxNtbc1i7GDk42AS0JBo72UFqRASiJTpvvgerYRb4wSQxYdFasISwgK3Er33/2UHqWQRU
+        JWa28IGYvAJWEpvbdSDGy0vMvPQdrIJZQFNi/S59kDCvgKDEyZlPWEBsZqCS5q2zmScw8s9C
+        qJqFpGoWkqoFjMyrGEVSS4tz03OLDfWKE3OLS/PS9ZLzczcxAqN627Gfm3cwznv1Ue8QIxMH
+        4yFGCQ5mJRFes+CVSUK8KYmVValF+fFFpTmpxYcYTYFunsgsJZqcD0wreSXxhmYGpoYmZpYG
+        ppZmxkrivJ4FHYlCAumJJanZqakFqUUwfUwcnFINTP2PrylJNAvLWv5hPrPjq3HjxLgMX36n
+        G4YG6x5cmOp/98bNS3OCPnLPvMp3ROnkx0mhK05Wv+jJ2vL+p657idASR67LDndTpOzLzPPj
+        VQ18uYX8HybcWXfpsth8+2/maf7Wvg/0Fe72zhWc4KEp/jXvskjqUmbdZYfOv53dO/Vmss+F
+        uHOzle+ZK33WVT0zxT+r8V3Kb9XKyPTbZjsYpjOoS24Od7NJsL/9Keba2oqyw67lW167bo3w
+        et/+ZVuGyukNmerJS5f4/2jL1s4yTav9zf1i0goepqPR3+Wf/sz+kLPgqLH7f7+yB90PmFL/
+        nFSoX8fI4Be51urMzWTlPb8/r2v8G74/av2HNCmFl0osxRmJhlrMRcWJADNa+FZzAwAA
+X-CMS-MailID: 20220615101924eucas1p27fbce623c0e1b3097169bf23dd6266d8
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220615101924eucas1p27fbce623c0e1b3097169bf23dd6266d8
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220615101924eucas1p27fbce623c0e1b3097169bf23dd6266d8
+References: <CGME20220615101924eucas1p27fbce623c0e1b3097169bf23dd6266d8@eucas1p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 11:59:36 +0200
-Janosch Frank <frankja@linux.ibm.com> wrote:
+- Background and Motivation:
 
-> On 6/3/22 08:56, Claudio Imbrenda wrote:
-> > In upcoming patches it will be possible to start tearing down a
-> > protected VM, and finish the teardown concurrently in a different
-> > thread.  
-> 
-> s/,/
-> s/the/its/
+The zone storage implementation in Linux, introduced since v4.10, first
+targetted SMR drives which have a power of 2 (po2) zone size alignment
+requirement. The po2 zone size was further imposed implicitly by the
+block layer's blk_queue_chunk_sectors(), used to prevent IO merging
+across chunks beyond the specified size, since v3.16 through commit
+762380ad9322 ("block: add notion of a chunk size for request merging").
+But this same general block layer po2 requirement for blk_queue_chunk_sectors()
+was removed on v5.10 through commit 07d098e6bbad ("block: allow 'chunk_sectors'
+to be non-power-of-2").
 
-will fix
+NAND, which is the media used in newer zoned storage devices, does not
+naturally align to po2. In these devices, zone cap is not the same as the
+po2 zone size. When the zone cap != zone size, then unmapped LBAs are
+introduced to cover the space between the zone cap and zone size. po2
+requirement does not make sense for these type of zone storage devices.
+This patch series aims to remove these unmapped LBAs for zoned devices when
+zone cap is npo2. This is done by relaxing the po2 zone size constraint
+in the kernel and allowing zoned device with npo2 zone sizes if zone cap
+== zone size.
 
-> 
-> > 
-> > Protected VMs that are pending for tear down ("leftover") need to be
-> > cleaned properly when the userspace process (e.g. qemu) terminates.
-> > 
-> > This patch makes sure that all "leftover" protected VMs are always
-> > properly torn down.  
-> 
-> So we're handling the kvm_arch_destroy_vm() case here, right?
+Removing the po2 requirement from zone storage should be possible
+now provided that no userspace regression and no performance regressions are
+introduced. Stop-gap patches have been already merged into f2fs-tools to
+proactively not allow npo2 zone sizes until proper support is added [1].
 
-yes
+There were two efforts previously to add support to npo2 devices: 1) via
+device level emulation [2] but that was rejected with a final conclusion
+to add support for non po2 zoned device in the complete stack[3] 2)
+adding support to the complete stack by removing the constraint in the
+block layer and NVMe layer with support to btrfs, zonefs, etc which was
+rejected with a conclusion to add a dm target for FS support [0]
+to reduce the regression impact.
 
-> Maybe add that in a more prominent way and rework the subject:
-> 
-> KVM: s390: pv: cleanup leftover PV VM shells on VM shutdown
+This series adds support to npo2 zoned devices in the block and nvme
+layer and a new dm target is added: dm-zoned-npo2-target. This new
+target will be initially used for filesystems such as btrfs and
+f2fs that does not have native npo2 zone support.
 
-ok, I'll change the description and rework the subject
+- Patchset description:
+Patches 1-2 deals with removing the po2 constraint from the
+block layer.
 
-> 
-> > 
-> > Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-> > ---
-> >   arch/s390/include/asm/kvm_host.h |   2 +
-> >   arch/s390/kvm/kvm-s390.c         |   2 +
-> >   arch/s390/kvm/pv.c               | 109 ++++++++++++++++++++++++++++---
-> >   3 files changed, 104 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
-> > index 5824efe5fc9d..cca8e05e0a71 100644
-> > --- a/arch/s390/include/asm/kvm_host.h
-> > +++ b/arch/s390/include/asm/kvm_host.h
-> > @@ -924,6 +924,8 @@ struct kvm_s390_pv {
-> >   	u64 guest_len;
-> >   	unsigned long stor_base;
-> >   	void *stor_var;
-> > +	void *prepared_for_async_deinit;
-> > +	struct list_head need_cleanup;
-> >   	struct mmu_notifier mmu_notifier;
-> >   };
-> >   
-> > diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-> > index fe1fa896def7..369de8377116 100644
-> > --- a/arch/s390/kvm/kvm-s390.c
-> > +++ b/arch/s390/kvm/kvm-s390.c
-> > @@ -2890,6 +2890,8 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
-> >   	kvm_s390_vsie_init(kvm);
-> >   	if (use_gisa)
-> >   		kvm_s390_gisa_init(kvm);
-> > +	INIT_LIST_HEAD(&kvm->arch.pv.need_cleanup);
-> > +	kvm->arch.pv.prepared_for_async_deinit = NULL;
-> >   	KVM_EVENT(3, "vm 0x%pK created by pid %u", kvm, current->pid);
-> >   
-> >   	return 0;
-> > diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-> > index 6cffea26c47f..8471c17d538c 100644
-> > --- a/arch/s390/kvm/pv.c
-> > +++ b/arch/s390/kvm/pv.c
-> > @@ -17,6 +17,19 @@
-> >   #include <linux/mmu_notifier.h>
-> >   #include "kvm-s390.h"
-> >   
-> > +/**
-> > + * @struct leftover_pv_vm  
-> 
-> Any other ideas on naming these VMs?
+Patches 3-4 deals with removing the constraint from nvme zns.
 
-not really
+Patch 5-6 removes the po2 contraint in null blk
 
-> Also I'd turn that around: pv_vm_leftover
+Patch 7 adds npo2 support to zonefs
 
-I mean, it's a leftover protected VM, it felt more natural to name it
-that way
+Patches 8-13 adds support for npo2 zoned devices in the DM layer and
+adds a new target dm-zoned-npo2-target
 
-> 
-> > + * Represents a "leftover" protected VM that is still registered with the
-> > + * Ultravisor, but which does not correspond any longer to an active KVM VM.
-> > + */
-> > +struct leftover_pv_vm {
-> > +	struct list_head list;
-> > +	unsigned long old_gmap_table;
-> > +	u64 handle;
-> > +	void *stor_var;
-> > +	unsigned long stor_base;
-> > +};
-> > +  
-> 
-> I think we should switch this patch and the next one and add this struct 
-> to the next patch. The list work below makes more sense once the next 
-> patch has been read.
+The patch series is based on linux-next tag: next-20220615
 
-but the next patch will leave leftovers in some circumstances, and
-those won't be cleaned up without this patch.
+Testing:
+The new target was tested with fio, xfstests with btrfs and zonefs test
+suite. No new regression was found during the testing.
 
-having this patch first means that when the next patch is applied, the
-leftovers are already taken care of
+[0] https://lore.kernel.org/lkml/PH0PR04MB74166C87F694B150A5AE0F009BD09@PH0PR04MB7416.namprd04.prod.outlook.com/
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs-tools.git/commit/?h=dev-test&id=6afcf6493578e77528abe65ab8b12f3e1c16749f
+[2] https://lore.kernel.org/all/20220310094725.GA28499@lst.de/T/
+[3] https://lore.kernel.org/all/20220315135245.eqf4tqngxxb7ymqa@unifi/
 
-> >   static void kvm_s390_clear_pv_state(struct kvm *kvm)
-> >   {
-> >   	kvm->arch.pv.handle = 0;
-> > @@ -158,23 +171,88 @@ static int kvm_s390_pv_alloc_vm(struct kvm *kvm)
-> >   	return -ENOMEM;
-> >   }
-> >     
-> 
-> >     
-> 
+Changes since v1:
+- Put the function declaration and its usage in the same commit (Bart)
+- Remove bdev_zone_aligned function (Bart)
+- Change the name from blk_queue_zone_aligned to blk_queue_is_zone_start
+  (Damien)
+- q is never null in from bdev_get_queue (Damien)
+- Add condition during bringup and check for zsze == zcap for npo2
+  drives (Damien)
+- Rounddown operation should be made generic to work in 32 bits arch
+  (bart)
+- Add comments where generic calculation is directly used instead having
+  special handling for po2 zone sizes (Hannes)
+- Make the minimum zone size alignment requirement for btrfs to be 1M
+  instead of BTRFS_STRIPE_LEN(David)
+
+Changes since v2:
+- Minor formatting changes
+
+Changes since v3:
+- Make superblock mirror align with the existing superblock log offsets
+  (David)
+- DM change return value and remove extra newline
+- Optimize null blk zone index lookup with shift for po2 zone size
+
+Changes since v4:
+- Remove direct filesystems support for npo2 devices (Johannes, Hannes,
+  Damien)
+
+Changes since v5:
+- Use DIV_ROUND_UP* helper instead of round_up as it breaks 32bit arch
+  build in null blk(kernel-test-robot, Nathan)
+- Use DIV_ROUND_UP_SECTOR_T also in blkdev_nr_zones function instead of
+  open coding it with div64_u64
+- Added extra condition in dm-zoned and in dm to reject non power of 2
+  zone sizes.
+
+Changes since v6:
+- Added a new dm target for non power of 2 devices
+- Added support for non power of 2 devices in the DM layer.
+
+Luis Chamberlain (1):
+  dm-zoned: ensure only power of 2 zone sizes are allowed
+
+Pankaj Raghav (12):
+  block: make blkdev_nr_zones and blk_queue_zone_no generic for npo2
+    zsze
+  block: allow blk-zoned devices to have non-power-of-2 zone size
+  nvme: zns: Allow ZNS drives that have non-power_of_2 zone size
+  nvmet: Allow ZNS target to support non-power_of_2 zone sizes
+  null_blk: allow non power of 2 zoned devices
+  null_blk: use zone_size_sects_shift for power of 2 zoned devices
+  zonefs: allow non power of 2 zoned devices
+  dm-zone: use generic helpers to calculate offset from zone start
+  dm-table: use bdev_is_zone_start helper in device_area_is_invalid()
+  dm-table: allow non po2 zoned devices
+  dm: call dm_zone_endio after the target endio callback for zoned
+    devices
+  dm: add non power of 2 zoned target
+
+ block/blk-core.c                  |   3 +-
+ block/blk-zoned.c                 |  37 ++++-
+ drivers/block/null_blk/main.c     |   5 +-
+ drivers/block/null_blk/null_blk.h |   6 +
+ drivers/block/null_blk/zoned.c    |  18 +-
+ drivers/md/Kconfig                |   9 +
+ drivers/md/Makefile               |   2 +
+ drivers/md/dm-table.c             |   6 +-
+ drivers/md/dm-zone.c              |  16 +-
+ drivers/md/dm-zoned-npo2-target.c | 268 ++++++++++++++++++++++++++++++
+ drivers/md/dm-zoned-target.c      |   8 +
+ drivers/md/dm.c                   |   8 +-
+ drivers/nvme/host/zns.c           |  21 ++-
+ drivers/nvme/target/zns.c         |   2 +-
+ fs/zonefs/super.c                 |   6 +-
+ fs/zonefs/zonefs.h                |   1 -
+ include/linux/blkdev.h            |  48 +++++-
+ 17 files changed, 416 insertions(+), 48 deletions(-)
+ create mode 100644 drivers/md/dm-zoned-npo2-target.c
+
+-- 
+2.25.1
 
