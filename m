@@ -2,171 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 035FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96BF2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351314AbiFOD1H (ORCPT
+        id S1351428AbiFOD1j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 23:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42722 "EHLO
+        Tue, 14 Jun 2022 23:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242825AbiFOD1A (ORCPT
+        with ESMTP id S1351586AbiFOD13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 23:27:00 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BCF3C483;
-        Tue, 14 Jun 2022 20:26:56 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id k18so7512000qtm.9;
-        Tue, 14 Jun 2022 20:26:56 -0700 (PDT)
+        Tue, 14 Jun 2022 23:27:29 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFA94B1F0;
+        Tue, 14 Jun 2022 20:27:21 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id h192so10236258pgc.4;
+        Tue, 14 Jun 2022 20:27:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Q2BMd5PQI/AN3W5kxMglFR7hp5GiYxPCuJsRFhG3zU0=;
-        b=NrbTIj9uosp/fBmWwEhojKx49KKtr/6VlileB+SXfC0XY9lv7WwMdRcn1I5aVe3RGK
-         gAQ0iuYC5bbbg4b/hH0sxr/MGzujxQVNhV95YeupbmAHDJbTdhJ32sR/jqLzx0agtx8U
-         aewJifOXqdx8EMaDoN0W3fDFSltOtXmH51jePLoIPjx2+65IO15qNBGRLnT2GtU9Frsf
-         2t/SGUNsUbqEdHPREitJ/RGJ2Nr4o8hnTBn9EeloM1gR65GNF2ZaTLq1aBGWtKVIJtjL
-         NPuDrE90hwtb5AM8LI6bV9w7PjIPnDYbOTddZk24Hm6V7v/v4bgH0LybLN6nQXLXqdJ9
-         tH4g==
+        h=from:to:cc:subject:date:message-id;
+        bh=+vZnS8Jw84zF/TVL4AsTQVpMK63h4KtHF4A6QNX+nwo=;
+        b=MmisO9JwawCFfanLdvjRHkmOchm/G7BSBUyHcpZ/IRasg5PygTAY031pKfKyWixEHT
+         uBA8MhUFcPJT/gSPIc8ZHfhYep3ceccGNxwcmUtiVsny/64m6+SDxlp4YX0yWGyC50hX
+         0a05L8t9zBGHjmA06sRXhAFYpmNDNSYURz/xyYS98NZWxOI1JKgVWSWlBJKqWQyDPMQx
+         c99PiQ4BkL3B/YiHQR44uLXeho+lfxsYKYgUswZvz17/GCyW3jz6bGjCt3AoOS9Hd7xH
+         AL+Q2YGpQFbpurH2n77JV5ASvZZRinu/k9rwtrfCuoHZ1+7qI3fnFGJCI7PhRQvKuqkL
+         +m6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Q2BMd5PQI/AN3W5kxMglFR7hp5GiYxPCuJsRFhG3zU0=;
-        b=eRG4Ur+pSFi/9EZOViEpZACbi/cXyI6ZSyMFZLLzuWtGbboWZcMUqA2yZKV09364XO
-         RK80s5qu/FsdUHh4OJKPT2fQr8YQMoXcjJgA2I1kcUFQafPwNyeh1pWT1NezWaCVm6xN
-         ZZ875XGy9EKsEh9rFj8WEUjiicC1TDsTmW0mHyaDJ+yVONPioNLYB9kb+TOFETV9JN2j
-         vWF5hXRq7UJcdeagKbVhHCJ4xrUQBVPBLGxj9Fxe7oWcFs8C2Rz5aZOXLNfqg6kWfJ33
-         BAKeYpMO5JUdq3G7nNTihK8gnBLkv4tU4Ffr8kZ5hx5zTjYex1McDsJWJq1JMdu/Ur6c
-         JZiQ==
-X-Gm-Message-State: AOAM532lrFCgmoX+DJyC1pzixNZm/D/9bU0LL+/MT68oPzyY6rCkMMYH
-        3Sv5nbAqeRs39JNVoe6Snro=
-X-Google-Smtp-Source: ABdhPJzV0mHnB4jH1W9MDP6SaV/TVsZlCcXhe7YLdHSDXFUJdxPer0qWeEW1SiIyIyuPLut0Lz7xVg==
-X-Received: by 2002:ac8:5a50:0:b0:305:20c4:791d with SMTP id o16-20020ac85a50000000b0030520c4791dmr7221901qta.437.1655263615762;
-        Tue, 14 Jun 2022 20:26:55 -0700 (PDT)
-Received: from localhost ([2601:4c1:c100:1230:6d39:b768:5789:ec2a])
-        by smtp.gmail.com with ESMTPSA id j5-20020a05620a410500b006a787380a5csm7875637qko.67.2022.06.14.20.26.54
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+vZnS8Jw84zF/TVL4AsTQVpMK63h4KtHF4A6QNX+nwo=;
+        b=rossS+OF3VVahX4MIjBis7qJ3JN/3yfCqJU/DryvaxwraV/L/DaLtOxOfvpZg25AOR
+         YMn115wepk4ZZDj6w6xWa+DgEWZ4EJ3anV4Tr4MzAXlllCpfEbMD1AR4MZOxyCxjpd/r
+         4RE6GI42psbP9NI8Kz6gwBNYz8FbRpmoknL6YIFNlz57eJ6P0roJz1ipxnvF87RMuvl3
+         H+VkwSwAZh5n1YcglT2ykUewyjHTgBlHKWvqBOuf5Au7dJWb+73Yii2nsfJ6nMwH06T1
+         ZGl0MCMIKnDnzZtbBsJLtCiSUWtMbLDeR3VeYFxe3/28mqKAJxBjHmPbm1uuva4Oz+go
+         +4Vg==
+X-Gm-Message-State: AOAM530hLdKOtCjOkSMn4WIHXXtFGC0nIW2GQWjt6hcZVxZBVxoOWqNo
+        BO87AVMfgWN1/boFNaoyso0=
+X-Google-Smtp-Source: ABdhPJxA7ono5ovOa3M/nqLYt0HqcvcKG1CEcZ0naf4MTyFvwH8OMJ3Q8Nw0azb8vhqJRleTVofuxQ==
+X-Received: by 2002:a62:e116:0:b0:51b:c452:47e6 with SMTP id q22-20020a62e116000000b0051bc45247e6mr7800417pfh.25.1655263640660;
+        Tue, 14 Jun 2022 20:27:20 -0700 (PDT)
+Received: from DESKTOP-8REGVGF.localdomain ([211.25.125.254])
+        by smtp.gmail.com with ESMTPSA id z19-20020aa79593000000b0050dc76281ddsm8371447pfj.183.2022.06.14.20.27.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 20:26:55 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 20:26:54 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 6/6] bitops: let optimize out non-atomic bitops on
- compile-time constants
-Message-ID: <YqlRfoB5+VBIw8gJ@yury-laptop>
-References: <20220610113427.908751-1-alexandr.lobakin@intel.com>
- <20220610113427.908751-7-alexandr.lobakin@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610113427.908751-7-alexandr.lobakin@intel.com>
+        Tue, 14 Jun 2022 20:27:20 -0700 (PDT)
+From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
+Subject: [PATCH] net: don't check skb_count twice
+Date:   Wed, 15 Jun 2022 11:24:26 +0800
+Message-Id: <20220615032426.17214-1-liew.s.piaw@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alexander,
+NAPI cache skb_count is being checked twice without condition. Change to
+checking the second time only if the first check is run.
 
-On Fri, Jun 10, 2022 at 01:34:27PM +0200, Alexander Lobakin wrote:
-> Currently, many architecture-specific non-atomic bitop
-> implementations use inline asm or other hacks which are faster or
-> more robust when working with "real" variables (i.e. fields from
-> the structures etc.), but the compilers have no clue how to optimize
-> them out when called on compile-time constants. That said, the
-> following code:
-> 
-> 	DECLARE_BITMAP(foo, BITS_PER_LONG) = { }; // -> unsigned long foo[1];
-> 	unsigned long bar = BIT(BAR_BIT);
-> 	unsigned long baz = 0;
-> 
-> 	__set_bit(FOO_BIT, foo);
-> 	baz |= BIT(BAZ_BIT);
-> 
-> 	BUILD_BUG_ON(!__builtin_constant_p(test_bit(FOO_BIT, foo));
-> 	BUILD_BUG_ON(!__builtin_constant_p(bar & BAR_BIT));
-> 	BUILD_BUG_ON(!__builtin_constant_p(baz & BAZ_BIT));
+Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
+---
+ net/core/skbuff.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-Can you put this snippet into lib/test_bitops.c?
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 5b3559cb1d82..c426adff6d96 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -172,13 +172,14 @@ static struct sk_buff *napi_skb_cache_get(void)
+ 	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
+ 	struct sk_buff *skb;
+ 
+-	if (unlikely(!nc->skb_count))
++	if (unlikely(!nc->skb_count)) {
+ 		nc->skb_count = kmem_cache_alloc_bulk(skbuff_head_cache,
+ 						      GFP_ATOMIC,
+ 						      NAPI_SKB_CACHE_BULK,
+ 						      nc->skb_cache);
+-	if (unlikely(!nc->skb_count))
+-		return NULL;
++		if (unlikely(!nc->skb_count))
++			return NULL;
++	}
+ 
+ 	skb = nc->skb_cache[--nc->skb_count];
+ 	kasan_unpoison_object_data(skbuff_head_cache, skb);
+-- 
+2.17.1
 
-Thanks,
-Yury
-
-> triggers the first assertion on x86_64, which means that the
-> compiler is unable to evaluate it to a compile-time initializer
-> when the architecture-specific bitop is used even if it's obvious.
-> In order to let the compiler optimize out such cases, expand the
-> bitop() macro to use the "constant" C non-atomic bitop
-> implementations when all of the arguments passed are compile-time
-> constants, which means that the result will be a compile-time
-> constant as well, so that it produces more efficient and simple
-> code in 100% cases, comparing to the architecture-specific
-> counterparts.
-> 
-> The savings are architecture, compiler and compiler flags dependent,
-> for example, on x86_64 -O2:
-> 
-> GCC 12: add/remove: 78/29 grow/shrink: 332/525 up/down: 31325/-61560 (-30235)
-> LLVM 13: add/remove: 79/76 grow/shrink: 184/537 up/down: 55076/-141892 (-86816)
-> LLVM 14: add/remove: 10/3 grow/shrink: 93/138 up/down: 3705/-6992 (-3287)
-> 
-> and ARM64 (courtesy of Mark):
-> 
-> GCC 11: add/remove: 92/29 grow/shrink: 933/2766 up/down: 39340/-82580 (-43240)
-> LLVM 14: add/remove: 21/11 grow/shrink: 620/651 up/down: 12060/-15824 (-3764)
-> 
-> Cc: Mark Rutland <mark.rutland@arm.com>
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> ---
->  include/linux/bitops.h | 18 +++++++++++++++++-
->  1 file changed, 17 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/bitops.h b/include/linux/bitops.h
-> index 753f98e0dcf5..364bdc3606b4 100644
-> --- a/include/linux/bitops.h
-> +++ b/include/linux/bitops.h
-> @@ -33,8 +33,24 @@ extern unsigned long __sw_hweight64(__u64 w);
->  
->  #include <asm-generic/bitops/generic-non-atomic.h>
->  
-> +/*
-> + * Many architecture-specific non-atomic bitops contain inline asm code and due
-> + * to that the compiler can't optimize them to compile-time expressions or
-> + * constants. In contrary, gen_*() helpers are defined in pure C and compilers
-> + * optimize them just well.
-> + * Therefore, to make `unsigned long foo = 0; __set_bit(BAR, &foo)` effectively
-> + * equal to `unsigned long foo = BIT(BAR)`, pick the generic C alternative when
-> + * the arguments can be resolved at compile time. That expression itself is a
-> + * constant and doesn't bring any functional changes to the rest of cases.
-> + * The casts to `uintptr_t` are needed to mitigate `-Waddress` warnings when
-> + * passing a bitmap from .bss or .data (-> `!!addr` is always true).
-> + */
->  #define bitop(op, nr, addr)						\
-> -	op(nr, addr)
-> +	((__builtin_constant_p(nr) &&					\
-> +	  __builtin_constant_p((uintptr_t)(addr) != (uintptr_t)NULL) &&	\
-> +	  (uintptr_t)(addr) != (uintptr_t)NULL &&			\
-> +	  __builtin_constant_p(*(const unsigned long *)(addr))) ?	\
-> +	 const##op(nr, addr) : op(nr, addr))
->  
->  #define __set_bit(nr, addr)		bitop(___set_bit, nr, addr)
->  #define __clear_bit(nr, addr)		bitop(___clear_bit, nr, addr)
-> -- 
-> 2.36.1
