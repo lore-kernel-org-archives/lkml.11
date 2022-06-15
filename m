@@ -2,94 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8652C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:03:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E45BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355846AbiFOLDc (ORCPT
+        id S1348509AbiFOLEK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 07:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52570 "EHLO
+        Wed, 15 Jun 2022 07:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349180AbiFOLA2 (ORCPT
+        with ESMTP id S1347416AbiFOLDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 07:00:28 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B373527EB;
-        Wed, 15 Jun 2022 04:00:24 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 4B5871F385;
-        Wed, 15 Jun 2022 11:00:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655290823; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=r4Xgkiz28fr7+QgqidS11r+u0JdfTJrBzbaVks+Q0jM=;
-        b=zg/rOjLLT2fpOGRhWYY2YGBT979qo85Ocm1hqui8j5X4gOs7RjAckvWGBLOY+SV4Mjjo4s
-        D2+xY3C1Bys8xpXIbAMrhKzIrxhHtI/WTJCojuxaOcDPA7jrsknnFuO9qDfbxYjaOB6KMx
-        Qe/BCbHo5XMDXLGBB9/+qLe1+hu36XA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655290823;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=r4Xgkiz28fr7+QgqidS11r+u0JdfTJrBzbaVks+Q0jM=;
-        b=PzX0gwI6ZxCo8Mip8nRs3IhgpusPyUyUhWNDs1rXPD1M9Sbwyub346IboU1/K/10EW8vvS
-        uUh1OQYXh7gG9GBQ==
-Received: from quack3.suse.cz (unknown [10.163.28.18])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 223792C141;
-        Wed, 15 Jun 2022 11:00:23 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id B3F52A062E; Wed, 15 Jun 2022 13:00:22 +0200 (CEST)
-Date:   Wed, 15 Jun 2022 13:00:22 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Thomas Backlund <tmb@tmb.nu>, Jan Kara <jack@suse.cz>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Slade Watkins <slade@sladewatkins.com>
-Subject: Re: [PATCH 5.15 000/251] 5.15.47-rc2 review
-Message-ID: <20220615110022.yifrsvzxjsz2wky5@quack3.lan>
-References: <bd80cd0d-a364-4ebd-2a89-933f79eaf4c7@tmb.nu>
- <CAHk-=wix7+mGzS-hANyk7DZsZ1NgGMHjPzSQKggEomYrRCrP_Q@mail.gmail.com>
- <CAHk-=wgfFhwMP0=QQY_iZvf0kveR5=VGK919Ayn+ZSUADs9mag@mail.gmail.com>
+        Wed, 15 Jun 2022 07:03:55 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62562544C3;
+        Wed, 15 Jun 2022 04:03:06 -0700 (PDT)
+Received: (Authenticated sender: foss@0leil.net)
+        by mail.gandi.net (Postfix) with ESMTPSA id B456840006;
+        Wed, 15 Jun 2022 11:03:04 +0000 (UTC)
+From:   Quentin Schulz <foss+kernel@0leil.net>
+To:     jic23@kernel.org
+Cc:     foss+kernel@0leil.net, lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Subject: [PATCH] iio: accel: mxc4005: report orientation of accelerometer
+Date:   Wed, 15 Jun 2022 13:02:40 +0200
+Message-Id: <20220615110240.684744-1-foss+kernel@0leil.net>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgfFhwMP0=QQY_iZvf0kveR5=VGK919Ayn+ZSUADs9mag@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 14-06-22 12:00:22, Linus Torvalds wrote:
-> On Tue, Jun 14, 2022 at 11:51 AM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > Or just make sure that noop_backing_dev_info is fully initialized
-> > before it's used.
-> 
-> I don't see any real reason why that
-> 
->     err = bdi_init(&noop_backing_dev_info);
-> 
-> couldn't just be done very early. Maybe as the first call in
-> driver_init(), before the whole devtmpfs_init() etc.
+From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
-I've checked the dependencies and cgroups (which are the only non-trivial
-dependency besides per-CPU infrastructure) are initialized early enough so
-it should work fine. So let's try that.
+The accelerometer can report precise values for x, y and z accelerations
+but it can also simply report its orientation on XY plane and Z axis.
 
-								Honza
+Since the orientation of the device may be enough information for
+userspace and allows to avoid expensive fusion algorithms, let's add
+support for it.
+
+The orientation register stores a 2b value for XY plane orientation:
+between 225° and 315°, returns 0, between 315° and 45°, 1, between 45°
+and 135°, 2 and between 135° and 225°, 3. We "round" those to 270°,
+0°, 90° and 180° degrees.
+
+For Z axis, the register bit returns 0 if facing the user, 1 otherwise,
+which the driver translates to 0° and 180° respectively.
+
+Those values are proper if the accelerometer is mounted such that the
+XYZ axes are as follows when the device is facing the user in portrait
+mode (respecting the right-hand rule):
+
+     y
+     ^
+     |
+     |
+     |
+     +----------> x
+    /
+   /
+  /
+ L
+z
+
+Since this information is very basic, imprecise (only 4 values for XY
+plane and 2 for Z axis) and can be extrapolated from the actual,
+precise, x, y and z acceleration values, it is not made available
+through buffers.
+
+A change in XY plane or Z axis orientation can also trigger an interrupt
+but this feature is not added in this commit.
+
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+---
+ drivers/iio/accel/mxc4005.c | 39 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
+
+diff --git a/drivers/iio/accel/mxc4005.c b/drivers/iio/accel/mxc4005.c
+index b3afbf064915..61f24058d239 100644
+--- a/drivers/iio/accel/mxc4005.c
++++ b/drivers/iio/accel/mxc4005.c
+@@ -20,6 +20,11 @@
+ #define MXC4005_IRQ_NAME		"mxc4005_event"
+ #define MXC4005_REGMAP_NAME		"mxc4005_regmap"
+ 
++#define MXC4005_REG_TILT_ORIENT		0x01
++#define MXC4005_REG_TILT_ORIENT_Z_MASK		BIT(6)
++#define MXC4005_REG_TILT_ORIENT_XY_MASK		GENMASK(5, 4)
++#define MXC4005_REG_TILT_ORIENT_XY_SHIFT	4
++
+ #define MXC4005_REG_XOUT_UPPER		0x03
+ #define MXC4005_REG_XOUT_LOWER		0x04
+ #define MXC4005_REG_YOUT_UPPER		0x05
+@@ -96,6 +101,7 @@ static const struct attribute_group mxc4005_attrs_group = {
+ static bool mxc4005_is_readable_reg(struct device *dev, unsigned int reg)
+ {
+ 	switch (reg) {
++	case MXC4005_REG_TILT_ORIENT:
+ 	case MXC4005_REG_XOUT_UPPER:
+ 	case MXC4005_REG_XOUT_LOWER:
+ 	case MXC4005_REG_YOUT_UPPER:
+@@ -214,6 +220,28 @@ static int mxc4005_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 
+ 	switch (mask) {
++	case IIO_CHAN_INFO_PROCESSED:
++		switch (chan->type) {
++		case IIO_ROT:
++			ret = regmap_read(data->regmap, chan->address, val);
++			if (ret < 0) {
++				dev_err(data->dev, "failed to read rotation\n");
++				return ret;
++			}
++
++			if (chan->channel2 == IIO_MOD_X_AND_Y) {
++				*val &= MXC4005_REG_TILT_ORIENT_XY_MASK;
++				*val >>= MXC4005_REG_TILT_ORIENT_XY_SHIFT;
++				/* 00 = 270°; 01 = 0°; 10 = 90°; 11 = 180° */
++				*val = (360 + (*val - 1) * 90) % 360;
++			} else {
++				*val &= MXC4005_REG_TILT_ORIENT_Z_MASK;
++				*val = *val ? 180 : 0;
++			}
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
+ 	case IIO_CHAN_INFO_RAW:
+ 		switch (chan->type) {
+ 		case IIO_ACCEL:
+@@ -287,11 +315,22 @@ static const unsigned long mxc4005_scan_masks[] = {
+ 	},							\
+ }
+ 
++#define MXC4005_CHANNEL_ORIENTATION(_axis) {			\
++	.type = IIO_ROT,					\
++	.modified = 1,						\
++	.channel2 = IIO_MOD_##_axis,				\
++	.address = MXC4005_REG_TILT_ORIENT,			\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
++	.scan_index = -1,					\
++}
++
+ static const struct iio_chan_spec mxc4005_channels[] = {
+ 	MXC4005_CHANNEL(X, MXC4005_REG_XOUT_UPPER),
+ 	MXC4005_CHANNEL(Y, MXC4005_REG_YOUT_UPPER),
+ 	MXC4005_CHANNEL(Z, MXC4005_REG_ZOUT_UPPER),
+ 	IIO_CHAN_SOFT_TIMESTAMP(3),
++	MXC4005_CHANNEL_ORIENTATION(X_AND_Y),
++	MXC4005_CHANNEL_ORIENTATION(Z),
+ };
+ 
+ static irqreturn_t mxc4005_trigger_handler(int irq, void *private)
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.36.1
+
