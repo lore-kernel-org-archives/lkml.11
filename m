@@ -2,145 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06777CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 348C7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358353AbiFOSZE (ORCPT
+        id S1358419AbiFOSZe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36948 "EHLO
+        Wed, 15 Jun 2022 14:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241899AbiFOSZB (ORCPT
+        with ESMTP id S245336AbiFOSZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:25:01 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88A4725588;
-        Wed, 15 Jun 2022 11:25:00 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6638D153B;
-        Wed, 15 Jun 2022 11:25:00 -0700 (PDT)
-Received: from [10.57.82.209] (unknown [10.57.82.209])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D9B243F73B;
-        Wed, 15 Jun 2022 11:24:55 -0700 (PDT)
-Message-ID: <dacd4a2d-a2b9-d2c2-4d47-f030dd01ee25@arm.com>
-Date:   Wed, 15 Jun 2022 19:24:50 +0100
+        Wed, 15 Jun 2022 14:25:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0748936694;
+        Wed, 15 Jun 2022 11:25:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D4BB61C36;
+        Wed, 15 Jun 2022 18:25:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39DD5C3411C;
+        Wed, 15 Jun 2022 18:25:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655317527;
+        bh=TKz+MoBx361FqhpuLU25ZFeB5xn7vox/KsAYOW8gYoM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RuS+3FA3y9QBVx67brxIF+rQqLzjj5xYhKIcjRZbyeLJIP8d2GU3goxuaJSPtV4RN
+         I1Z2hekRseMXkqOSGpCG4PXfmS3LnEGmK8RLyGDJto+TtU0i2m3uzYqYSuqcmIgPiC
+         toZopFtQ/LYS50vjwzFDrGv4gI+QgvwrpApDwMSlBpDe3KH2fouUWi6notXtZXqYne
+         Wn5RbsX28aM5t4vmuq8U0tRr12mJg4kA0SECJ3iB+fd9lVjlG0xgE5rqp3o+sQfeO7
+         Mbj/9j8Vxasuuu7uojzDfcBakdbNbqInV+i6dS3Rl7KyBuXZu+4yYtdRM8/H0wY680
+         wN8am1Z2u0NbQ==
+Date:   Wed, 15 Jun 2022 21:23:18 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     LinoSanfilippo@gmx.de
+Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
+        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com,
+        lukas@wunner.de, p.rosenberger@kunbus.com
+Subject: Re: [PATCH v5 07/10] tmp, tmp_tis: Implement usage counter for
+ locality
+Message-ID: <Yqojlh5J0660gfaT@iki.fi>
+References: <20220610110846.8307-1-LinoSanfilippo@gmx.de>
+ <20220610110846.8307-8-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v1 0/5] power: domain: Add driver for a PM domain provider
- which controls
-Content-Language: en-GB
-To:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        "max.oss.09@gmail.com" <max.oss.09@gmail.com>,
-        "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
-        "geert@linux-m68k.org" <geert@linux-m68k.org>
-Cc:     "linux-imx@nxp.com" <linux-imx@nxp.com>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        "robh@kernel.org" <robh@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
-        "biju.das.jz@bp.renesas.com" <biju.das.jz@bp.renesas.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "geert+renesas@glider.be" <geert+renesas@glider.be>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "khilman@kernel.org" <khilman@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        Andrejs Cainikovs <andrejs.cainikovs@toradex.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        "broonie@kernel.org" <broonie@kernel.org>
-References: <20220609150851.23084-1-max.oss.09@gmail.com>
- <20220613191549.GA4092455-robh@kernel.org>
- <CAMuHMdU+aOw_D3SR6714U_i5WhE8S-FCLdPJaf_+Fncz4aH8VA@mail.gmail.com>
- <CAEHkU3VVM0zUsaKMUGeSzfbLmVJW6rqXGLv7TqaLTEQeXEVkUA@mail.gmail.com>
- <12e3bb72-af2d-653f-b342-c6b4d6a1f292@linaro.org>
- <ddbeba186bf662348e8594f322f750cf89326a66.camel@toradex.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ddbeba186bf662348e8594f322f750cf89326a66.camel@toradex.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610110846.8307-8-LinoSanfilippo@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-15 18:31, Marcel Ziswiler wrote:
-> Hi
+On Fri, Jun 10, 2022 at 01:08:43PM +0200, LinoSanfilippo@gmx.de wrote:
+> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 > 
-> On Wed, 2022-06-15 at 10:15 -0700, Krzysztof Kozlowski wrote:
->> On 15/06/2022 09:10, Max Krummenacher wrote:
->>> Hi
->>>
->>> On Tue, Jun 14, 2022 at 9:22 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->>>>
->>>> Hi Rob,
->>>>
->>>> On Mon, Jun 13, 2022 at 9:15 PM Rob Herring <robh@kernel.org> wrote:
->>>>> On Thu, Jun 09, 2022 at 05:08:46PM +0200, Max Krummenacher wrote:
->>>>>> From: Max Krummenacher <max.krummenacher@toradex.com>
->>>>>>
->>>>>> its power enable by using a regulator.
->>>>>>
->>>>>> The currently implemented PM domain providers are all specific to
->>>>>> a particular system on chip.
->>>>>
->>>>> Yes, power domains tend to be specific to an SoC... 'power-domains' is
->>>>> supposed to be power islands in a chip. Linux 'PM domains' can be
->>>>> anything...
->>>
->>> I don't see why such power islands should be restricted to a SoC. You can
->>> build the exact same idea on a PCB or even more modular designs.
->>
->> In the SoC these power islands are more-or-less defined. These are real
->> regions gated by some control knob.
->>
->> Calling few devices on a board "power domain" does not make it a power
->> domain. There is no grouping, there is no control knob.
->>
->> Aren't you now re-implementing regulator supplies? How is this different
->> than existing supplies?
+> Implement a usage counter for the (default) locality used by the TPM TIS
+> driver:
+> Request the locality from the TPM if it has not been claimed yet, otherwise
+> only increment the counter. Also release the locality if the counter is 0
+> otherwise only decrement the counter. Ensure thread-safety by protecting
+> the counter with a mutex.
 > 
-> I believe the biggest difference between power-domains and regulator-supplies lays in the former being driver
-> agnostic while the later is driver specific. Meaning with power-domains one can just add such arbitrary
-> structure to the device tree without any further driver specific changes/handling required. While with
-> regulator-supplies each and every driver actually needs to have driver specific handling thereof added. Or do I
-> miss anything?
+> This allows to request and release the locality from a thread and the
+> interrupt handler at the same time without the danger to interfere with
+> each other.
 > 
-> We are really trying to model something where a single GPIO pin (via a GPIO regulator or whatever) can control
-> power to a variety of on-board peripherals. And, of course, we envision runtime PM actually making use of it
-> e.g. when doing suspend/resume.
+> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> ---
+>  drivers/char/tpm/tpm_tis_core.c | 30 ++++++++++++++++++++++++++++--
+>  drivers/char/tpm/tpm_tis_core.h |  2 ++
+>  2 files changed, 30 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
+> index 028bec44362d..0ef74979bc2c 100644
+> --- a/drivers/char/tpm/tpm_tis_core.c
+> +++ b/drivers/char/tpm/tpm_tis_core.c
+> @@ -158,16 +158,26 @@ static bool check_locality(struct tpm_chip *chip, int l)
+>  	return false;
+>  }
+>  
+> +static int release_locality_locked(struct tpm_tis_data *priv, int l)
+> +{
+> +	tpm_tis_write8(priv, TPM_ACCESS(l), TPM_ACCESS_ACTIVE_LOCALITY);
 
-FWIW, this really seems to beg the question of PM support in the drivers 
-for those peripherals. If they'll need to be modified to add 
-suspend/resume routines anyway, then adding a handful more lines to 
-control a supply regulator at the same time shouldn't be too big a deal. 
-Conversely, I'd be surprised if they *did* have PM support if there 
-wasn't already some way to make use of it.
+nit: empty line here
 
-Multiple consumers sharing a voltage rail provided by a single regulator 
-is so standard and well-supported that it barely seems worth pointing 
-out, but for the avoidance of doubt I shall. Adding a new non-standard 
-way to hide a specific subset of regulator functionality behind behind a 
-magic driver because it seems like slightly less work than handling it 
-the well-known established way sounds like a great recipe for technical 
-debt and future compatibility headaches. What if down the line you end 
-up with a situation where if device A is suspended, devices B and C are 
-happy to save some power by running the "domain" at a lower voltage? Do 
-we stubbornly start duplicating more of the regulator framework in the 
-magic power domain driver, or is that the point where we have to switch 
-all the consumers to explicit supplies, and get to regret having "saved" 
-that effort in the first place...
+Also it would not hurt to prefix it with tpm_tis.
 
-Cheers,
-Robin.
+This is for simple and practical reasons, like grepping. I don't
+mind if you do that also for other functions (if you want to).
+
+> +	return 0;
+> +}
+> +
+>  static int release_locality(struct tpm_chip *chip, int l)
+>  {
+>  	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
+>  
+> -	tpm_tis_write8(priv, TPM_ACCESS(l), TPM_ACCESS_ACTIVE_LOCALITY);
+> +	mutex_lock(&priv->locality_count_mutex);
+> +	priv->locality_count--;
+> +	if (priv->locality_count == 0)
+> +		release_locality_locked(priv, l);
+> +	mutex_unlock(&priv->locality_count_mutex);
+>  
+>  	return 0;
+>  }
+>  
+> -static int request_locality(struct tpm_chip *chip, int l)
+> +static int request_locality_locked(struct tpm_chip *chip, int l)
+>  {
+>  	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
+>  	unsigned long stop, timeout;
+> @@ -208,6 +218,20 @@ static int request_locality(struct tpm_chip *chip, int l)
+>  	return -1;
+>  }
+>  
+> +static int request_locality(struct tpm_chip *chip, int l)
+> +{
+> +	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
+> +	int ret = 0;
+> +
+> +	mutex_lock(&priv->locality_count_mutex);
+> +	if (priv->locality_count == 0)
+> +		ret = request_locality_locked(chip, l);
+> +	if (!ret)
+> +		priv->locality_count++;
+> +	mutex_unlock(&priv->locality_count_mutex);
+> +	return ret;
+> +}
+> +
+>  static u8 tpm_tis_status(struct tpm_chip *chip)
+>  {
+>  	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
+> @@ -987,6 +1011,8 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+>  	priv->timeout_min = TPM_TIMEOUT_USECS_MIN;
+>  	priv->timeout_max = TPM_TIMEOUT_USECS_MAX;
+>  	priv->phy_ops = phy_ops;
+> +	priv->locality_count = 0;
+> +	mutex_init(&priv->locality_count_mutex);
+>  
+>  	dev_set_drvdata(&chip->dev, priv);
+>  
+> diff --git a/drivers/char/tpm/tpm_tis_core.h b/drivers/char/tpm/tpm_tis_core.h
+> index 8e02faa4079d..e1871c482da2 100644
+> --- a/drivers/char/tpm/tpm_tis_core.h
+> +++ b/drivers/char/tpm/tpm_tis_core.h
+> @@ -94,6 +94,8 @@ enum tpm_tis_irqtest_flags {
+>  
+>  struct tpm_tis_data {
+>  	u16 manufacturer_id;
+> +	struct mutex locality_count_mutex;
+> +	unsigned int locality_count;
+>  	int locality;
+>  	int irq;
+>  	unsigned int irqs_in_use;
+> -- 
+> 2.36.1
+> 
+
+BR, Jarkko
