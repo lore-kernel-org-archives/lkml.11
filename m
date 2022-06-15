@@ -2,113 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69531CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 19:55:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8387CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 19:55:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350230AbiFOTzm (ORCPT
+        id S1350320AbiFOTzz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 15:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55434 "EHLO
+        Wed, 15 Jun 2022 15:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243859AbiFOTzk (ORCPT
+        with ESMTP id S1350213AbiFOTzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 15:55:40 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8232229345;
-        Wed, 15 Jun 2022 12:55:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=8/XljWZrmcL2YdcuWDBrkYF7wQr7RHmdlPcVPREXheY=; b=Smg02axWWFOzSLkQ1MAheC7JEP
-        SJ/CKjft9dSD4tgHQ/prrWKSi+UjVmSJukWNZvgcLeZ/4NRVD8QwO2fI5+rqTGoVNHHl7MMcIFhTk
-        dz/zDpWCjZ0e1FaJLuJqP1ulojg090QLnCsRWhfPkBlUFFzQXA+8eb0P8fIbDIIXo+G6zIsXoGemo
-        WKfbIpKoBvMosBfiHcZxiVbHhLd6ObgW6JD27G+xQCaZ3LFBCollqX4w7j7tBIy0gVmCLEyaW1DZr
-        bW8e7xcWBrjUAPUnlP/bI3E2i3CGj3pak2Bvy1I3Q1YsOwF9mQEMr4Cf+rWPDsmiw86SrXTzsf+Lo
-        ENCq9NQw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1Z6S-008D8F-P3; Wed, 15 Jun 2022 19:55:03 +0000
-Message-ID: <0480d917-94e5-20ab-514c-bb1374a8d9c4@infradead.org>
-Date:   Wed, 15 Jun 2022 12:54:53 -0700
+        Wed, 15 Jun 2022 15:55:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FDD2983E;
+        Wed, 15 Jun 2022 12:55:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2973D612FD;
+        Wed, 15 Jun 2022 19:55:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7994AC34115;
+        Wed, 15 Jun 2022 19:55:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655322952;
+        bh=L1IfRrjwmFboG0YuyIVj9iLYd93QBE3lTZ/YkDGWoHM=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=gGSKM7O2QDGx3l7MGUBs7sH+l1deXBKuVQOwbrTI36exqbP+0u6XN3C3yzIbDK19/
+         rXbCjb41RjrPlXiKaq/PMIww7PA0AxkrO/kCCycuiZNlnAdiHM4t6Xi+UOzyuI8b21
+         mIOZj184g/JjdISYgt0SP0TkF53esvQrkyuHjz8V9yA/aplB6kHSebs99Npyrp7jG0
+         mtqxlrJ+/iFMrfPazFr6z+g5PZfWl+lDYtgj0U9krvYxhisC7A41hDuwRUc9razSLI
+         jV/kPcO+FeJnPYwBOAGZSqNvqN2/yUi7UZecEreQmYvnwaWvDsDLltHsLa+9bHqTWp
+         IhIbyqoCjDw9w==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v7 13/13] dm: add non power of 2 zoned target
-Content-Language: en-US
-To:     Pankaj Raghav <p.raghav@samsung.com>, hch@lst.de,
-        snitzer@redhat.com, damien.lemoal@opensource.wdc.com,
-        axboe@kernel.dk
-Cc:     bvanassche@acm.org, linux-kernel@vger.kernel.org,
-        jiangbo.365@bytedance.com, hare@suse.de, pankydev8@gmail.com,
-        dm-devel@redhat.com, jonathan.derrick@linux.dev,
-        gost.dev@samsung.com, dsterba@suse.com, jaegeuk@kernel.org,
-        linux-nvme@lists.infradead.org, Johannes.Thumshirn@wdc.com,
-        linux-block@vger.kernel.org, Damien Le Moal <damien.lemoal@wdc.com>
-References: <20220615101920.329421-1-p.raghav@samsung.com>
- <CGME20220615102011eucas1p220368db4a186181b1927dea50a79e5d4@eucas1p2.samsung.com>
- <20220615101920.329421-14-p.raghav@samsung.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220615101920.329421-14-p.raghav@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220614153306.29339-4-quic_tdas@quicinc.com>
+References: <20220614153306.29339-1-quic_tdas@quicinc.com> <20220614153306.29339-4-quic_tdas@quicinc.com>
+Subject: Re: [PATCH v5 3/3] clk: qcom: lpass: Add support for resets & external mclk for SC7280
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh@kernel.org, robh+dt@kernel.org,
+        Taniya Das <quic_tdas@quicinc.com>, mka@chromium.org
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Taniya Das <quic_tdas@quicinc.com>
+Date:   Wed, 15 Jun 2022 12:55:50 -0700
+User-Agent: alot/0.10
+Message-Id: <20220615195552.7994AC34115@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
+Quoting Taniya Das (2022-06-14 08:33:06)
+> The clock gating control for TX/RX/WSA core bus clocks would be required
+> to be reset(moved from hardware control) from audio core driver. Thus
+> add the support for the reset clocks.
 
-On 6/15/22 03:19, Pankaj Raghav wrote:
-
-> ---
->  drivers/md/Kconfig                |   9 +
->  drivers/md/Makefile               |   2 +
->  drivers/md/dm-zone.c              |   9 +
->  drivers/md/dm-zoned-npo2-target.c | 268 ++++++++++++++++++++++++++++++
->  4 files changed, 288 insertions(+)
->  create mode 100644 drivers/md/dm-zoned-npo2-target.c
-> 
-> diff --git a/drivers/md/Kconfig b/drivers/md/Kconfig
-> index 998a5cfdb..773314536 100644
-> --- a/drivers/md/Kconfig
-> +++ b/drivers/md/Kconfig
-> @@ -518,6 +518,15 @@ config DM_FLAKEY
->  	help
->  	 A target that intermittently fails I/O for debugging purposes.
->  
-> +config DM_ZONED_NPO2
-> +	tristate "Zoned non power of 2 target"
-
-	         "Zoned non-power-of-2 target"
-
-> +	depends on BLK_DEV_DM
-> +	depends on BLK_DEV_ZONED
-> +	help
-> +	A target that converts a zoned device with non power of 2 zone size to
-
-	                                           non-power-of-2 zone size to
-
-> +	be power of 2. This is done by introducing gaps in between the zone
-> +	capacity and the power of 2 zone size.
-
-All help text should be indented with one tab and 2 spaces
-according to Documentation/process/coding-style.rst.
-
-> +
->  config DM_VERITY
->  	tristate "Verity target support"
->  	depends on BLK_DEV_DM
-
-[snip]
-
-> +
-> +MODULE_DESCRIPTION(DM_NAME " non power 2 zoned target");
-
-                                non-power-of-2
-
-> +MODULE_AUTHOR("Pankaj Raghav <p.raghav@samsung.com>");
-> +MODULE_LICENSE("GPL");
-> +
-
--- 
-~Randy
+Why can't this driver remove the clks from hardware control when it
+probes? Does something put the clks into hardware control mode at
+runtime?
