@@ -2,70 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A69C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B7DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:30:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353958AbiFOP34 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50624 "EHLO
+        id S244793AbiFOPaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 11:30:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355496AbiFOP2j (ORCPT
+        with ESMTP id S1355419AbiFOP2i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:28:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01A342A06;
-        Wed, 15 Jun 2022 08:27:48 -0700 (PDT)
+        Wed, 15 Jun 2022 11:28:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BC929379
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:27:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6061BB81F0E;
-        Wed, 15 Jun 2022 15:27:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02093C385A5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 466D96172D
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:27:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AC96C3411E;
         Wed, 15 Jun 2022 15:27:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1655306866;
-        bh=7pc/xKe4ZdwnskrQCRUD+TTNRE6A+ErRUxrsSCmYE1E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qaq1+tBx1+bt4SshGdEjpnAntGkki8cqcHlFENHDJujz41uB5g3hWZyTnPexsguLs
-         IH68RjS9AS+BlNt1b5VYGzSm7Q4RPHbtjNFW2heHi2/37cayJje7Vrmd8/Zhr1fxGZ
-         XOvEXtxq81DyZaok2AIhQUEXMGlUv0DJ6t3oYpM6Psf/PocxKX47EctWpGmx4xEFnb
-         Oy6nHDBgLSzWgDNbHOMsIIlK3ho5hrnNtl/Yaz3TwniC4u4VIA7qBxqDZ/YM4gGRYS
-         6btexI/QV2/Knts39rsqhcwp4L4SI1D8XFHaEVlk2foWx+I8XlNcYIxp3STyq98n95
-         Hv5kWhYH6N68w==
+        bh=za6XXTXlSO5nrJLYy1rtvLJPylpkekf8kTgLIY5cAts=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cARUWPwSj3OREgsOA5jp6Q6lZIrXQOTUxGJKDSiCSwiW3GZNOyb8zjF0o1L+83oWA
+         O+h8HaQxKFQezSv6vLQedS41KF+H0o+YLTFl78wlbzXnHfRkF0QCKGvK8N//LROjtU
+         dQb2+swSxqDdQ0d2xDqlahKFVR6TUvfk9+/6PbSb4WyvsFX3NnIxXL+H2i+x7eYJcA
+         Imv01jXfonh8Xda27c5WVi0malHtrOcYWW94sA8y8piLFIJvEMsZKoH7hwESd8qQY8
+         JcT6ziT2UQdBfkiNRauRdngekgfilwuqyIHzYy3NoXTq88KZjByvBzljCEs8Dw4184
+         izBQuxjI8S3LA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o1Uvm-00A4Js-Gn;
+        id 1o1Uvm-00A4Ja-AR;
         Wed, 15 Jun 2022 16:27:42 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Chris Wilson <chris.p.wilson@intel.com>,
-        "Fei Yang" <fei.yang@intel.com>,
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chris Wilson <chris.p.wilson@intel.com>,
+        tvrtko.ursulin@linux.intel.com, Fei Yang <fei.yang@intel.com>,
+        Thomas Hellstrom <thomas.hellstrom@intel.com>,
+        mauro.chehab@linux.intel.com,
         =?UTF-8?q?Micha=C5=82=20Winiarski?= <michal.winiarski@intel.com>,
-        "Thomas Hellstrom" <thomas.hellstrom@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>,
         Andi Shyti <andi.shyti@linux.intel.com>,
+        Bruce Chang <yu.bruce.chang@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
         Dave Airlie <airlied@redhat.com>,
         David Airlie <airlied@linux.ie>,
         Jani Nikula <jani.nikula@linux.intel.com>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        John Harrison <John.C.Harrison@Intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
         Lucas De Marchi <lucas.demarchi@intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
         Matt Roper <matthew.d.roper@intel.com>,
         Matthew Auld <matthew.auld@intel.com>,
+        Matthew Brost <matthew.brost@intel.com>,
+        Ramalingam C <ramalingam.c@intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>,
+        Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, mauro.chehab@linux.intel.com,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        stable@vger.kernel.org
-Subject: [PATCH 6/6] drm/i915/gt: Serialize TLB invalidates with GT resets
-Date:   Wed, 15 Jun 2022 16:27:40 +0100
-Message-Id: <cd5696e3800fd29114ddf0cebc950b57a17bc1b8.1655306128.git.mchehab@kernel.org>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/6] Fix TLB invalidate issues with Broadwell
+Date:   Wed, 15 Jun 2022 16:27:34 +0100
+Message-Id: <cover.1655306128.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1655306128.git.mchehab@kernel.org>
-References: <cover.1655306128.git.mchehab@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -74,56 +78,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Wilson <chris.p.wilson@intel.com>
+i915 selftest hangcheck is causing the i915 driver timeouts, as reported
+by Intel CI bot:
 
-Avoid trying to invalidate the TLB in the middle of performing an
-engine reset, as this may result in the reset timing out. Currently,
-the TLB invalidate is only serialised by its own mutex, forgoing the
-uncore lock, but we can take the uncore->lock as well to serialise
-the mmio access, thereby serialising with the GDRST.
+	http://gfx-ci.fi.intel.com/cibuglog-ng/issuefilterassoc/24297?query_key=42a999f48fa6ecce068bc8126c069be7c31153b4
 
-Tested on a NUC5i7RYB, BIOS RYBDWi35.86A.0380.2019.0517.1530 with
-i915 selftest/hangcheck.
+When such test runs, the only output is:
 
-Fixes: 7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
+	[   68.811639] i915: Performing live selftests with st_random_seed=0xe138eac7 st_timeout=500
+	[   68.811792] i915: Running hangcheck
+	[   68.811859] i915: Running intel_hangcheck_live_selftests/igt_hang_sanitycheck
+	[   68.816910] i915 0000:00:02.0: [drm] Cannot find any crtc or sizes
+	[   68.841597] i915: Running intel_hangcheck_live_selftests/igt_reset_nop
+	[   69.346347] igt_reset_nop: 80 resets
+	[   69.362695] i915: Running intel_hangcheck_live_selftests/igt_reset_nop_engine
+	[   69.863559] igt_reset_nop_engine(rcs0): 709 resets
+	[   70.364924] igt_reset_nop_engine(bcs0): 903 resets
+	[   70.866005] igt_reset_nop_engine(vcs0): 659 resets
+	[   71.367934] igt_reset_nop_engine(vcs1): 549 resets
+	[   71.869259] igt_reset_nop_engine(vecs0): 553 resets
+	[   71.882592] i915: Running intel_hangcheck_live_selftests/igt_reset_idle_engine
+	[   72.383554] rcs0: Completed 16605 idle resets
+	[   72.884599] bcs0: Completed 18641 idle resets
+	[   73.385592] vcs0: Completed 17517 idle resets
+	[   73.886658] vcs1: Completed 15474 idle resets
+	[   74.387600] vecs0: Completed 17983 idle resets
+	[   74.387667] i915: Running intel_hangcheck_live_selftests/igt_reset_active_engine
+	[   74.889017] rcs0: Completed 747 active resets
+	[   75.174240] intel_engine_reset(bcs0) failed, err:-110
+	[   75.174301] bcs0: Completed 525 active resets
 
-Reported-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Tested-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Chris Wilson <chris.p.wilson@intel.com>
-Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc: stable@vger.kernel.org
-Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
----
+After that, the machine just silently hangs.
 
-See [PATCH 0/6] at: https://lore.kernel.org/all/cover.1655306128.git.mchehab@kernel.org/
+Bisecting the issue, the patch that introduced the regression is:
 
- drivers/gpu/drm/i915/gt/intel_gt.c | 4 ++++
- 1 file changed, 4 insertions(+)
+    7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
 
-diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
-index fb4fd5273ca4..33eb93586858 100644
---- a/drivers/gpu/drm/i915/gt/intel_gt.c
-+++ b/drivers/gpu/drm/i915/gt/intel_gt.c
-@@ -1248,6 +1248,8 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
- 	mutex_lock(&gt->tlb_invalidate_lock);
- 	intel_uncore_forcewake_get(uncore, FORCEWAKE_ALL);
- 
-+	spin_lock_irq(&uncore->lock); /* seralise invalidate with GT reset */
-+
- 	awake = 0;
- 	for_each_engine(engine, gt, id) {
- 		struct reg_and_bit rb;
-@@ -1272,6 +1274,8 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
- 	     IS_ALDERLAKE_P(i915)))
- 		intel_uncore_write_fw(uncore, GEN12_OA_TLB_INV_CR, 1);
- 
-+	spin_unlock_irq(&uncore->lock);
-+
- 	for_each_engine_masked(engine, gt, awake, tmp) {
- 		struct reg_and_bit rb;
- 
+Reverting it fix the issues, but introduce other problems, as TLB
+won't be invalidated anymore. So, instead, let's fix the root cause.
+
+It turns that the TLB flush logic ends conflicting with i915 reset,
+which is called during selftest hangcheck. So, the TLB cache should
+be serialized, but other TLB fix patches are required for this one
+to work.
+
+Tested on an Intel NUC5i7RYB with an i7-5557U Broadwell CPU.
+
+Chris Wilson (6):
+  drm/i915/gt: Ignore TLB invalidations on idle engines
+  drm/i915/gt: Invalidate TLB of the OA unit at TLB invalidations
+  drm/i915/gt: Skip TLB invalidations once wedged
+  drm/i915/gt: Only invalidate TLBs exposed to user manipulation
+  drm/i915/gt: Serialize GRDOM access between multiple engine resets
+  drm/i915/gt: Serialize TLB invalidates with GT resets
+
+ drivers/gpu/drm/i915/gem/i915_gem_pages.c | 10 +++---
+ drivers/gpu/drm/i915/gt/intel_gt.c        | 43 +++++++++++++++++++----
+ drivers/gpu/drm/i915/gt/intel_gt_pm.h     |  3 ++
+ drivers/gpu/drm/i915/gt/intel_reset.c     | 37 ++++++++++++++-----
+ drivers/gpu/drm/i915/i915_vma.c           |  3 +-
+ 5 files changed, 75 insertions(+), 21 deletions(-)
+
 -- 
 2.36.1
+
 
