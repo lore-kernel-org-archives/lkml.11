@@ -2,98 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37DFBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B16C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346869AbiFOJ4S (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38944 "EHLO
+        id S240043AbiFOJ6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 05:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237420AbiFOJ4Q (ORCPT
+        with ESMTP id S232786AbiFOJ55 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:56:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FEBF49B59;
-        Wed, 15 Jun 2022 02:56:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE8D6B81C62;
-        Wed, 15 Jun 2022 09:56:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DB5FC34115;
-        Wed, 15 Jun 2022 09:56:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655286973;
-        bh=ZhDBRgQU7ZcI9kZgJu86+5uy/cAyHPmmrrm4MdoMzic=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UZ18s2nlPinYpFsreuxH/N3n6o1GGraB0CtE35X727U/GrkcexK1hPokbY41+Eudm
-         6EGsZKNg2YawcQPZMa6AclhI1nTS4+X2MsBG4XLI1yW2KqU9kReFbYu6ZX07MuFymB
-         GwTIP1vawNFSEb+H4t4lHhNh+LsEmBmdecOGnieT5gZUnDX1p+xc89bapP2/w6ECKb
-         9p5L28unvjqlcQ5TXO0ATnPLJFqdWA06mHUbzqGbdWXVXfcZFN8EDwcq2oM3UvlQYc
-         211BuFbgvLu22KO9zNuYjMN1oah0N0epuNjAzOzdI20QnKhGTJ/2LfC8GjqyaoFPnp
-         iUWiyf3nhc57Q==
-Date:   Wed, 15 Jun 2022 17:56:07 +0800
-From:   Zorro Lang <zlang@kernel.org>
-To:     Ojaswin Mujoo <ojaswin@linux.ibm.com>
-Cc:     fstests@vger.kernel.org, zlang@redhat.com, riteshh@linux.ibm.com,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] common/rc: Modify _require_batched_discard to improve
- test coverage
-Message-ID: <20220615095607.zkvq2vnh4ebue3qi@zlang-mailbox>
-References: <20220516084505.97655-1-ojaswin@linux.ibm.com>
- <Yqb21hTVUvob/sgc@li-bb2b2a4c-3307-11b2-a85c-8fa5c3a69313.ibm.com>
+        Wed, 15 Jun 2022 05:57:57 -0400
+X-Greylist: delayed 460 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Jun 2022 02:57:55 PDT
+Received: from mail.bugwerft.de (mail.bugwerft.de [46.23.86.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8AE9713D15
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:57:53 -0700 (PDT)
+Received: from [10.10.0.82] (unknown [194.162.236.226])
+        by mail.bugwerft.de (Postfix) with ESMTPSA id 82BA7282FB6;
+        Wed, 15 Jun 2022 09:49:41 +0000 (UTC)
+Message-ID: <2dbaed8b-1a19-6bed-5b5b-bebff4b0648e@zonque.org>
+Date:   Wed, 15 Jun 2022 11:49:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yqb21hTVUvob/sgc@li-bb2b2a4c-3307-11b2-a85c-8fa5c3a69313.ibm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] arch: arm: mach-pxa: Add missing of_node_put in irq.c
+Content-Language: en-US
+To:     heliang <windhl@126.com>, haojian.zhuang@gmail.com,
+        robert.jarzmik@free.fr, linux@armlinux.org.uk
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220615091240.3961831-1-windhl@126.com>
+From:   Daniel Mack <daniel@zonque.org>
+In-Reply-To: <20220615091240.3961831-1-windhl@126.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 02:05:34PM +0530, Ojaswin Mujoo wrote:
-> Greetings,
+Hi,
+
+On 6/15/22 11:12, heliang wrote:
+> In pxa_dt_irq_init(), of_find_matching_node() will return a node
+> pointer with refcount incremented. We should use of_node_put in
+> fail path or when it is not used anymore.
 > 
-> Please let me know if there are any reviews/suggestions on this
-> patch.
-
-This patch has been merged in fstests v2022.05.22, as below
-
-  ee264b3f common/rc: Modify _require_batched_discard to improve test coverage
-
-Is there anything wrong with that?
-
-Thanks,
-Zorro
-
+> Signed-off-by: heliang <windhl@126.com>
+> ---
+>  arch/arm/mach-pxa/irq.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> Thank you!
-> 
-> On Mon, May 16, 2022 at 02:15:05PM +0530, Ojaswin Mujoo wrote:
-> > A recent ext4 patch discussed [1] that some devices (eg LVMs) can
-> > have a discard granularity as big as 42MB which makes it larger
-> > than the group size of ext4 FS with 1k BS.  This causes the FITRIM
-> > IOCTL to fail.
-> > 
-> > This case was not correctly handled by this test since
-> > "_require_batched_discard" incorrectly interpreted the FITRIM
-> > failure as SCRATCH_DEV not supporting the IOCTL. This caused the test
-> > to report "not run" instead of "failed" in case of large discard granularity.
-> > 
-> > Fix "_require_batched_discard" to use a more accurate method
-> > to determine if discard is supported.
-> > 
-> > [1] commit 173b6e383d2
-> >     ext4: avoid trim error on fs with small groups
-> > 
-> > Signed-off-by: Ojaswin Mujoo <ojaswin@linux.ibm.com>
-> > Reviewed-by: Ritesh Harjani <riteshh@linux.ibm.com>
-> > ---
-> > 
-> > Changes since v2 [1] 
-> > 
-> > *  Eliminated redundant $ret variable
-> > 
-> > [1]
-> > https://lore.kernel.org/all/20220516063951.87838-1-ojaswin@linux.ibm.com/
-> 
+> diff --git a/arch/arm/mach-pxa/irq.c b/arch/arm/mach-pxa/irq.c
+> index 96f33ef1d9ea..a81e9ffb77af 100644
+> --- a/arch/arm/mach-pxa/irq.c
+> +++ b/arch/arm/mach-pxa/irq.c
+> @@ -246,12 +246,14 @@ void __init pxa_dt_irq_init(int (*fn)(struct irq_data *, unsigned int))
+>  	ret = of_property_read_u32(node, "marvell,intc-nr-irqs",
+>  				   &pxa_internal_irq_nr);
+>  	if (ret) {
+> +		of_node_put(node);
+>  		pr_err("Not found marvell,intc-nr-irqs property\n");
+>  		return;
+
+How about jumping to a label here instead of a plain "return"?
+
+>  	}
+>  
+>  	ret = of_address_to_resource(node, 0, &res);
+>  	if (ret < 0) {
+> +		of_node_put(node);
+>  		pr_err("No registers defined for node\n");
+>  		return;
+
+Same here.
+
+>  	}
+> @@ -262,10 +264,12 @@ void __init pxa_dt_irq_init(int (*fn)(struct irq_data *, unsigned int))
+>  
+>  	ret = irq_alloc_descs(-1, 0, pxa_internal_irq_nr, 0);
+>  	if (ret < 0) {
+> +		of_node_put(node);
+>  		pr_err("Failed to allocate IRQ numbers\n");
+>  		return;
+
+And here.
+
+>  	}
+>  
+>  	pxa_init_irq_common(node, pxa_internal_irq_nr, fn);
+
+Jump target would go here.
+
+> +	of_node_put(node);
+>  }
+>  #endif /* CONFIG_OF */
+
