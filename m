@@ -2,73 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3550EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:15:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A6BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239896AbiFOKPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
+        id S243740AbiFOKPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 06:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231751AbiFOKPN (ORCPT
+        with ESMTP id S1346891AbiFOKNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:15:13 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5EC369FD
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:15:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=efPkYx0LzlhjjUyT3vFU9yA2v1wLteeYMERKQZflVEo=; b=AP0O+2dynyHhSJtSjsHdfYol10
-        VWEThjUOrFFbAPdPZcWGdJ/dFqj3uu1wbiBSNBwHX3y5Dd9gjJdgVNa7TmipD2GDvTW/25CwA4zWD
-        V+/gFF5aF9zZy5SvG8FX6fuhlekCOTwZh/0nkTPhIncMkJhSwZ22L/2z0rUlqq4Xjxg3hc1o8GwT2
-        n0Kgs6ms/NkxczdnBnZ9PcHRKsYJOMg1dpnujZ97w62DqJn6PHG8THPo/FDLIE4X3U8PWctH6vWI2
-        Oy1kahEXjcIHzjbnu60rEwmzWyvB879tIpjyG9JXnrEXCcf9xd+wDEkHRumLDvcwOdmhEIRuY5SFA
-        h9NiPhfg==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1Q3H-000y4v-HI; Wed, 15 Jun 2022 10:15:07 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2516530023F;
-        Wed, 15 Jun 2022 12:15:07 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id EFAC9201A4F6D; Wed, 15 Jun 2022 12:15:06 +0200 (CEST)
-Date:   Wed, 15 Jun 2022 12:15:06 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     Michael Jeanson <mjeanson@efficios.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Subject: Re: [PATCH 0/3] selftests/rseq: fixes for RISC-V and Glibc 2.35
-Message-ID: <YqmxKvckF2P14nKu@hirez.programming.kicks-ass.net>
-References: <20220614154830.1367382-1-mjeanson@efficios.com>
- <581392317.60476.1655227129623.JavaMail.zimbra@efficios.com>
+        Wed, 15 Jun 2022 06:13:34 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B67A25C6D
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:13:31 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id z17so11004909pff.7
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:13:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=u65QQc2UhosWLMahxlQMn59AukfWR4oEL4oKp6IP8R4=;
+        b=p6mwc20X/Q1hFeLzxCcgv78Ie6ePALgDnjKy0f6FJRwbFLlEtcyClUGIdIrRdeQuXG
+         S/APdh60P9Vj8ZWvK21slVtmWATXSGVi+5VECU1WfwLJvu2C/wmcawnZDXRiot0hlSHm
+         Rj7uCUvqbhfhVQA2GJoevnDtzp3l7dads+GM0V7twfGct+XRmzBvtEqdoi5foez5H8Tl
+         y+0lXd+AX5G7s1qiOthMz582qdHInuCvPvzrWtGgxndpyZsnunHSHy2OoTApYkKzSehV
+         bDdojCchjZBnfLQaL4EpQdwXR+4O+F/a96TGh2BXnAkuyMFutgthOpv/gugFEo+C2bE3
+         9Itg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=u65QQc2UhosWLMahxlQMn59AukfWR4oEL4oKp6IP8R4=;
+        b=gVhw1OICK/eMsx8mFUdDJkT65iU+r+QXu4HG5IAcLiRrVxomrjh4/TWsSmKjlN7Jv/
+         xXEplAWKAGhfvTdbY0SK7dIpajFETpEysDe5xrvEnk6cE/dfNNnp++626UijlYWVaCcp
+         Ex9NspYZhU8VB0or5xOfRcX8X+ByYSCAq1oDaqPW38hP/z/MtkI40J4FZV18TgxzqlLz
+         DXVC2mofEq4ksIXqnfM3mUFDGJWmGp5/DhQRPxvKglgj4teLUnBhRR6RW5++dzfJxCTr
+         NXeI3hqPc+JNcZDhT6tmA4ivYuvdmCaCQ++WQRwUAIHvfHulHYUcSAs8rWsmmfY9eAKL
+         orkg==
+X-Gm-Message-State: AOAM533PSpyXvo9SC+jh6j7E5pAztI+avs9iTOrfKBul3UIBHLE+R4kX
+        bksRvSB4wtdFIb9UO7N1pA9OfA==
+X-Google-Smtp-Source: ABdhPJyRk1EuvqaSy5Q9Ox2cFgvalWMPQnJzgUhcIvPfkO5QikvHoHYqXNW1DdxHoCrhz1YsvIMCUg==
+X-Received: by 2002:a63:81c3:0:b0:3fc:c510:1a3 with SMTP id t186-20020a6381c3000000b003fcc51001a3mr8220683pgd.581.1655288010235;
+        Wed, 15 Jun 2022 03:13:30 -0700 (PDT)
+Received: from [10.255.194.85] ([139.177.225.252])
+        by smtp.gmail.com with ESMTPSA id jd13-20020a170903260d00b0016184e7b013sm8885181plb.36.2022.06.15.03.13.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 03:13:27 -0700 (PDT)
+Message-ID: <0e27425e-1fb6-bc7c-9845-71dc805897c3@bytedance.com>
+Date:   Wed, 15 Jun 2022 18:13:12 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <581392317.60476.1655227129623.JavaMail.zimbra@efficios.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: Re: [PATCH 0/5 v1] mm, oom: Introduce per numa node oom for
+ CONSTRAINT_MEMORY_POLICY
+Content-Language: en-US
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     akpm@linux-foundation.org, songmuchun@bytedance.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        ebiederm@xmission.com, keescook@chromium.org,
+        viro@zeniv.linux.org.uk, rostedt@goodmis.org, mingo@redhat.com,
+        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, david@redhat.com, imbrenda@linux.ibm.com,
+        apopple@nvidia.com, adobriyan@gmail.com,
+        stephen.s.brennan@oracle.com, ohoono.kwon@samsung.com,
+        haolee.swjtu@gmail.com, kaleshsingh@google.com,
+        zhengqi.arch@bytedance.com, peterx@redhat.com, shy828301@gmail.com,
+        surenb@google.com, ccross@google.com, vincent.whitchurch@axis.com,
+        tglx@linutronix.de, bigeasy@linutronix.de, fenghua.yu@intel.com,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org
+References: <20220512044634.63586-1-ligang.bdlg@bytedance.com>
+ <YoJ/ioXwGTdCywUE@dhcp22.suse.cz>
+From:   Gang Li <ligang.bdlg@bytedance.com>
+In-Reply-To: <YoJ/ioXwGTdCywUE@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 01:18:49PM -0400, Mathieu Desnoyers wrote:
-> ----- On Jun 14, 2022, at 11:48 AM, Michael Jeanson mjeanson@efficios.com wrote:
-> 
-> > The patch series allows running the rseq selftests on a Glibc 2.35
-> > system which has rseq support but no RSEQ_SIG defined for the RISC-V
-> > architecture.
-> > 
-> > The patches were tested on both Glibc 2.33 and 2.35.
-> 
-> For the whole series:
-> 
-> Reviewed-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> 
-> Peter, can you pick them up through your tree ?
+Hi, I've done some benchmarking in the last few days.
 
-Sure, thanks!
+On 2022/5/17 00:44, Michal Hocko wrote:
+> Sorry, I have only now found this email thread. The limitation of the
+> NUMA constrained oom is well known and long standing. Basically the
+> whole thing is a best effort as we are lacking per numa node memory
+> stats. I can see that you are trying to fill up that gap but this is
+> not really free. Have you measured the runtime overhead? Accounting is
+> done in a very performance sensitive paths and it would be rather
+> unfortunate to make everybody pay the overhead while binding to a
+> specific node or sets of nodes is not the most common usecase.
+
+## CPU consumption
+
+According to the result of Unixbench. There is less than one percent 
+performance loss in most cases.
+
+On 40c512g machine.
+
+40 parallel copies of tests:
++----------+----------+-----+----------+---------+---------+---------+
+| numastat | FileCopy | ... |   Pipe   |  Fork   | syscall |  total  |
++----------+----------+-----+----------+---------+---------+---------+
+| off      | 2920.24  | ... | 35926.58 | 6980.14 | 2617.18 | 8484.52 |
+| on       | 2919.15  | ... | 36066.07 | 6835.01 | 2724.82 | 8461.24 |
+| overhead | 0.04%    | ... | -0.39%   | 2.12%   | -3.95%  | 0.28%   |
++----------+----------+-----+----------+---------+---------+---------+
+
+1 parallel copy of tests:
++----------+----------+-----+---------+--------+---------+---------+
+| numastat | FileCopy | ... |  Pipe   |  Fork  | syscall |  total  |
++----------+----------+-----+---------+--------+---------+---------+
+| off      | 1515.37  | ... | 1473.97 | 546.88 | 1152.37 | 1671.2  |
+| on       | 1508.09  | ... | 1473.75 | 532.61 | 1148.83 | 1662.72 |
+| overhead | 0.48%    | ... | 0.01%   | 2.68%  | 0.31%   | 0.51%   |
++----------+----------+-----+---------+--------+---------+---------+
+
+## MEM consumption
+
+per task_struct:
+sizeof(int) * num_possible_nodes() + sizeof(int*)
+typically 4 * 2 + 8 bytes
+
+per mm_struct:
+sizeof(atomic_long_t) * num_possible_nodes() + sizeof(atomic_long_t*)
+typically 8 * 2 + 8 bytes
+
+zap_pte_range:
+sizeof(int) * num_possible_nodes() + sizeof(int*)
+typically 4 * 2 + 8 bytes
+
+> Also have you tried to have a look at cpusets? Those should be easier to
+> make a proper selection as it should be possible to iterate over tasks
+> belonging to a specific cpuset much more easier - essentialy something
+> similar to memcg oom killer. We do not do that right now and by a very
+> brief look at the CONSTRAINT_CPUSET it seems that this code is not
+> really doing much these days. Maybe that would be a more appropriate way
+> to deal with more precise node aware oom killing?
+
+Looks like both CONSTRAINT_MEMORY_POLICY and CONSTRAINT_CPUSET can
+be uesd to deal with node aware oom killing.
+
+I think we can calculate badness in this way:
+    If constraint=CONSTRAINT_MEMORY_POLICY, get badness by `nodemask`.
+    If constraint=CONSTRAINT_CPUSET, get badness by `mems_allowed`.
+
+example code:
+```
+long oom_badness(struct task_struct *p, struct oom_control *oc)
+	long points;
+
+	...
+
+	if (unlikely(oc->constraint == CONSTRAINT_MEMORY_POLICY)) {
+		for_each_node_mask(nid, oc->nodemask)
+			points += get_mm_counter(p->mm, -1, nid)
+	} else if (unlikely(oc->constraint == CONSTRAINT_CPUSET)) {
+		for_each_node_mask(nid, cpuset_current_mems_allowed)
+			points += get_mm_counter(p->mm, -1, nid)
+	} else {
+		points = get_mm_rss(p->mm);
+	}
+	points += get_mm_counter(p->mm, MM_SWAPENTS, NUMA_NO_NODE) \
+		+ mm_pgtables_bytes(p->mm) / PAGE_SIZE;
+
+	...
+
+}
+```
+
+> 
+> [...]
+>>   21 files changed, 317 insertions(+), 111 deletions(-)
+> 
+> The code footprint is not free either. And more importantnly does this
+> even work much more reliably? I can see quite some NUMA_NO_NODE
+> accounting (e.g. copy_pte_range!).Is this somehow fixable?
+
+> Also how do those numbers add up. Let's say you increase the counter as
+> NUMA_NO_NODE but later on during the clean up you decrease based on the
+> page node?
+ > Last but not least I am really not following MM_NO_TYPE concept. I can
+ > only see add_mm_counter users without any decrements. What is going on
+ > there?
+
+There are two usage scenarios of NUMA_NO_NODE in this patch.
+
+1. placeholder when swap pages in and out of swapfile.
+```
+	// mem to swapfile
+	dec_mm_counter(vma->vm_mm, MM_ANONPAGES, page_to_nid(page));
+	inc_mm_counter(vma->vm_mm, MM_SWAPENTS, NUMA_NO_NODE);
+
+	// swapfile to mem
+	inc_mm_counter(vma->vm_mm, MM_ANONPAGES, page_to_nid(page));
+	dec_mm_counter(vma->vm_mm, MM_SWAPENTS, NUMA_NO_NODE);
+```
+
+In *_mm_counter(vma->vm_mm, MM_SWAPENTS, NUMA_NO_NODE),
+NUMA_NO_NODE is a placeholder. It means this page does not exist in any
+node anymore.
+
+2. placeholder in `add_mm_rss_vec` and `sync_mm_rss` for per process mm 
+counter synchronization with SPLIT_RSS_COUNTING enabled.
+
+
+MM_NO_TYPE is also a placeholder in `*_mm_counter`, `add_mm_rss_vec` and 
+`sync_mm_rss`.
+
+These placeholders are very strange. Maybe I should introduce a helper
+function for mm->rss_stat.numa_count counting instead of using
+placeholder.
+
+
