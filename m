@@ -2,52 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB87C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348568AbiFONPu (ORCPT
+        id S1348846AbiFONQM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52144 "EHLO
+        Wed, 15 Jun 2022 09:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345668AbiFONPs (ORCPT
+        with ESMTP id S1348856AbiFONQH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:15:48 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A995E2A969
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:15:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=aCliT9MV6ttW0KpyuydNdYdmYuXW3sKXYsk92n5Vl2s=; b=NK2kDDW+JyCgPSX5zWJuUAb69y
-        hazxvJrhn742/Cdd+2lNelGIwzK1xmXb09uZG15Lo0Ag/DRGt/SIpRZ/uPeSxMCPC6UQMI8VsJ+rc
-        EJpUzTwvx1/RBYGd7fn2cYvNuFp6h9FAHE3Hvc+BPnoPGwoY9U8o+NqlJLCcNs2gzVs2//+SuL65l
-        wrkhOVeKdrpk1jd781OW+mCau0ytcSnWFMNPSb1zVNCpMhEQiUJG5BrtH2IWEYO4fKPwx/vtfSyJW
-        S3UYBFH2A/xmU6bIITUxiIE2JWqseDcKC9Gmram32aDMqUXXjVXrMc9VgzDgPAafcU44HtKngaJ8g
-        XTQi+3bQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1Ss5-00EeCS-Cu; Wed, 15 Jun 2022 13:15:45 +0000
-Date:   Wed, 15 Jun 2022 06:15:45 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2 0/2] mm/mmap: Drop __SXXX/__PXXX macros from across
- platforms
-Message-ID: <YqnbgWHmfd9SIp6O@infradead.org>
-References: <20220613053354.553579-1-anshuman.khandual@arm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613053354.553579-1-anshuman.khandual@arm.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        Wed, 15 Jun 2022 09:16:07 -0400
+Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB78B2E096;
+        Wed, 15 Jun 2022 06:16:04 -0700 (PDT)
+Received: by mail-il1-f178.google.com with SMTP id d6so8728417ilm.4;
+        Wed, 15 Jun 2022 06:16:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=8C80sIX/zds/z0xyweVsBMgV7P8Pift98ShjLgz5ZwQ=;
+        b=0iO9xBfkS60awmBiiU63PXTb86zX0eTAEBWBPpXsTeofnnaYPumY1x+xyl78Nr2pBT
+         e12mYeRqVfnOYtWh1YtuwYtckIObiEk2zZWrOFNF1RKjj7kviTn5ee5dqgzgi7YvELup
+         6SdCemA2W6PANsAJ2E8egUoXFl1yNOoa9a0k2pJvNrIijRbCrVR5jDhInUWWY5tCEzIV
+         fIXJhNOH/HnpOegF+Wvp2Fg4byBPVDUubeaFisEjEGZXuCtNsod6t3ipVJgi//rradiz
+         yvsMi10lSrlVkL9L4FVDDivXNVZw1T/WqFKquONI63DVhwJlniAQTXw56chHZ55KJA+F
+         jsLA==
+X-Gm-Message-State: AJIora9CWAD4r7Hpaww1Ri1rWcbVwg+s4Vj5cACdpui5cIqI9DviJkw1
+        EWDtLq6+w7YiussBYtNcCv22ufCmuA==
+X-Google-Smtp-Source: AGRyM1uZ9utNL5h2kFhjalsMtkLLXkoWdL+p72Vo2Z4lpjk/ny0uIeL/R8e97UqCCB1L4EDdFORe3A==
+X-Received: by 2002:a05:6e02:1c02:b0:2d3:ccfe:6551 with SMTP id l2-20020a056e021c0200b002d3ccfe6551mr6203007ilh.134.1655298964054;
+        Wed, 15 Jun 2022 06:16:04 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id z6-20020a023446000000b0033214fb0061sm6121054jaz.23.2022.06.15.06.16.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 06:16:03 -0700 (PDT)
+Received: (nullmailer pid 662450 invoked by uid 1000);
+        Wed, 15 Jun 2022 13:16:02 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Romain Perier <romain.perier@gmail.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Lee Jones <lee.jones@linaro.org>, linux-kernel@vger.kernel.org,
+        Daniel Palmer <daniel@0x0f.com>
+In-Reply-To: <20220615070813.7720-2-romain.perier@gmail.com>
+References: <20220615070813.7720-1-romain.perier@gmail.com> <20220615070813.7720-2-romain.perier@gmail.com>
+Subject: Re: [PATCH 1/5] dt-bindings: pwm: Add Mstar MSC313e PWM devicetree bindings documentation
+Date:   Wed, 15 Jun 2022 07:16:02 -0600
+Message-Id: <1655298962.395709.662448.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I relaly like this.  The __SXXX/__PXXX are a complete mess, and this
-cleans it up nicely.  So with any remaining issues sorted out I'm
-all for it:
+On Wed, 15 Jun 2022 09:08:09 +0200, Romain Perier wrote:
+> This adds the documentation for the devicetree bindings of the Mstar
+> MSC313e RTC driver, it includes MSC313e SoCs and SSD20xd.
+> 
+> Signed-off-by: Romain Perier <romain.perier@gmail.com>
+> ---
+>  .../bindings/pwm/mstar,msc313e-pwm.yaml       | 47 +++++++++++++++++++
+>  1 file changed, 47 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml
+> 
 
-Acked-by: Christoph Hellwig <hch@lst.de>
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml:20:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
+./Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml:21:11: [warning] wrong indentation: expected 12 but found 10 (indentation)
+
+dtschema/dtc warnings/errors:
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
