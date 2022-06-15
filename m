@@ -2,160 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EECADCCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:51:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D00EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:52:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353025AbiFOSvG (ORCPT
+        id S1349926AbiFOSwg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58414 "EHLO
+        Wed, 15 Jun 2022 14:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345773AbiFOSvF (ORCPT
+        with ESMTP id S1345773AbiFOSwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:51:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B9E4B41B;
-        Wed, 15 Jun 2022 11:51:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D750461C18;
-        Wed, 15 Jun 2022 18:51:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80696C34115;
-        Wed, 15 Jun 2022 18:50:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655319063;
-        bh=GnZfgvOrH9mrrcvvYQgPANHs5nDHlMsLFHFAYJcrIC0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=memS1VJJiclI8dsM+WxYbHq2xPW3MTby9Gf6CQVDi2okhI52Ly9A3MqBXoNIVsw3v
-         wSpwd6C41jKMUfFEq9ROkjNjB9xpHk5ywPJJyLcLV1fl+7FN/KN0rye6Vg99E4Hby6
-         8kIi89VLR0uhac/XUlK9Gqduk+Lx32gXt/5L5cc99VHUIo35iM3B51LnZKxrUuGMI0
-         X55JfneWAIWuADLBl7QjAXgSUl0uBxCsGuFKmbH2wsSpseFsjTyKMafmLKmSzLCM4q
-         2Ecdv4eFnZiWCoZ86I0/1TvcA8Rw5WgPQ7YShJxAlbVKUnWE/qY+rsyYsTOD2H0iGk
-         pN1ujoG9RyyPw==
-Date:   Wed, 15 Jun 2022 21:48:41 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>
-Subject: Re: [PATCH 2/4] certs: fix and refactor
- CONFIG_SYSTEM_BLACKLIST_HASH_LIST build
-Message-ID: <YqopiZgC8vNSKYPt@iki.fi>
-References: <20220611172233.1494073-1-masahiroy@kernel.org>
- <20220611172233.1494073-2-masahiroy@kernel.org>
- <58a20890-557e-f31c-ed59-7e256445a26c@digikod.net>
+        Wed, 15 Jun 2022 14:52:31 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8788FB7D4
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:52:28 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id v17-20020a17090a899100b001ead067eaf9so3008211pjn.0
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:52:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ip6O/g5R03OCVltlbCtU+5cNEdXFPPe5H228MiaYA54=;
+        b=lOk5DXWpZ/5yg/QJeC1fv4OQ+BlA5jw4LoBTEhsvILo+7JcOiIR9HM4x8sIlgpwGgq
+         Ov4JFYoP/vAK2N5ObPEQsaXgKv52yMz8RjdnJGXTqfNKFiwSCXhzGAJPpVxanddGWhDK
+         H9DgpK242qy6TXGFZtQ0cIQWQawJ6FdP5cJoihcYmpxivo3cmDOqrREg817DgxnspZfF
+         EuKR0Kja2TEHOL+nLbcdDumqSjLW3eUTSCRL2c6bH4fEDABBQviTt4zTyBaSCVSToFJ5
+         3fUAlQaXuybCF8/E9JxFJWTZ+IGL6ZavRwa4NT1uyWM6YqSDD88vMTlPMfYPlVsCl1Oz
+         7u4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ip6O/g5R03OCVltlbCtU+5cNEdXFPPe5H228MiaYA54=;
+        b=qozOa7tyPGn0odrR6qLIiJGtMNTqGMh7qy+ngp1kTRiNvvpdZr3m1GLlqj9kaXPLf6
+         2z7Fl0WxPPD7ZslpkAGkFaXkS6sFx4ImjPeXfNsSoo7LENuXNi/e5NRcs/FEAYrYjb2q
+         klJpJWTyQOumgt1F982P2J+nU98TZe8/B/VXy2OD7tqbI6DJ8QN+n8kRWuBOsHzfR0Nv
+         WbvaSGN7vkLZYQIRaV5NkYyt9wnuszVFpREOO3GK7otvnpjbicr79igPzRZskt1rCIWh
+         gUZQw8PRWmWwaDBzxq77cZ6mpgvRwZVHX9m73fMHiz6Cv1q4y6hN0JQkvSKKIRq/FVRS
+         2mTQ==
+X-Gm-Message-State: AJIora9P+QJhkWIc3JmCgjaZtfteO5N6WVOAhP0fMP1bAe5Hf6kfFDD1
+        Oew2RKUV4aFRjEeZvVyW9HXBzM0xL4NC0g==
+X-Google-Smtp-Source: AGRyM1utEtd0UqhSJPN62EAFwSGgD1yGz0iJFyjfshJNTVSgJkkmGTW9enltsodEoMPCbOR6dbx+ww==
+X-Received: by 2002:a17:902:ed53:b0:166:3e43:7522 with SMTP id y19-20020a170902ed5300b001663e437522mr1145403plb.170.1655319147675;
+        Wed, 15 Jun 2022 11:52:27 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id q6-20020a170902a3c600b00163f7935772sm9707823plb.46.2022.06.15.11.52.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 11:52:27 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 18:52:22 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH 1/2] KVM: vmx, pmu: accept 0 for absent MSRs when
+ host-initiated
+Message-ID: <YqoqZjH+yjYJTxmT@google.com>
+References: <20220531175450.295552-1-pbonzini@redhat.com>
+ <20220531175450.295552-2-pbonzini@redhat.com>
+ <YpZgU+vfjkRuHZZR@google.com>
+ <ce2b4fed-3d9e-a179-a907-5b8e09511b7d@gmail.com>
+ <YpeWPAHNhQQ/lRKF@google.com>
+ <cbb9a8b5-f31f-dd3b-3278-01f12d935ebe@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <58a20890-557e-f31c-ed59-7e256445a26c@digikod.net>
+In-Reply-To: <cbb9a8b5-f31f-dd3b-3278-01f12d935ebe@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 02:34:36PM +0200, Mickaël Salaün wrote:
+On Thu, Jun 02, 2022, Like Xu wrote:
+> Thanks for your sincerity, always.
 > 
+> On 2/6/2022 12:39 am, Sean Christopherson wrote:
+> > On Wed, Jun 01, 2022, Like Xu wrote:
+> > > On 1/6/2022 2:37 am, Sean Christopherson wrote:
+> > > > Can we just punt this out of kvm/queue until its been properly reviewed?  At the
+> > > > barest of glances, there are multiple flaws that should block this from being
+> > > 
+> > > TBH, our reviewers' attention could not be focused on these patches until the
+> > > day it was ready to be ravaged. "Try to accept" is a good thing, and things need
+> > > to move forward, not simply be abandoned to the side.
+> > 
+> > I strongly disagree, to put it mildly.  Accepting flawed, buggy code because
+> > reviewers and maintainers are overloaded does not solve anything, it only makes
+> > the problem worse.  More than likely, the submitter(s) has moved on to writing
+> > the next pile of patches, while the same set of people that are trying to review
+> > submissions are left to pick up the pieces.  There are numerous examples of
+> > accepting code without (IMO) proper review and tests costing us dearly in the
+> > long run.
 > 
-> On 11/06/2022 19:22, Masahiro Yamada wrote:
-> > Commit addf466389d9 ("certs: Check that builtin blacklist hashes are
-> > valid") was applied 8 months after the submission.
-> > 
-> > In the meantime, the base code had been removed by commit b8c96a6b466c
-> > ("certs: simplify $(srctree)/ handling and remove config_filename
-> > macro").
-> > 
-> > Fix the Makefile.
-> > 
-> > Create a local copy of $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST). It is
-> > included from certs/blacklist_hashes.c and also works as a timestamp.
-> > 
-> > Send error messages from check-blacklist-hashes.awk to stderr instead
-> > of stdout.
-> > 
-> > Fixes: addf466389d9 ("certs: Check that builtin blacklist hashes are valid")
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> I actually agree and understand the situation of maintainers/reviewers.
+> No one wants to maintain flawed code, especially in this community
+> where the majority of previous contributors disappeared after the code
+> was merged in. The existing heavy maintenance burden is already visible.
 > 
-> Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
-> 
-> As a side note, it may let an orphan certs/blacklist_hashes_checked file but
-> we can't really do something about that and it's OK.
-> 
-> Thanks!
-> 
-> > ---
-> > 
-> >   certs/.gitignore         |  2 +-
-> >   certs/Makefile           | 20 ++++++++++----------
-> >   certs/blacklist_hashes.c |  2 +-
-> >   3 files changed, 12 insertions(+), 12 deletions(-)
-> > 
-> > diff --git a/certs/.gitignore b/certs/.gitignore
-> > index 56637aceaf81..cec5465f31c1 100644
-> > --- a/certs/.gitignore
-> > +++ b/certs/.gitignore
-> > @@ -1,5 +1,5 @@
-> >   # SPDX-License-Identifier: GPL-2.0-only
-> > -/blacklist_hashes_checked
-> > +/blacklist_hash_list
-> >   /extract-cert
-> >   /x509_certificate_list
-> >   /x509_revocation_list
-> > diff --git a/certs/Makefile b/certs/Makefile
-> > index cb1a9da3fc58..a8d628fd5f7b 100644
-> > --- a/certs/Makefile
-> > +++ b/certs/Makefile
-> > @@ -7,22 +7,22 @@ obj-$(CONFIG_SYSTEM_TRUSTED_KEYRING) += system_keyring.o system_certificates.o c
-> >   obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist.o common.o
-> >   obj-$(CONFIG_SYSTEM_REVOCATION_LIST) += revocation_certificates.o
-> >   ifneq ($(CONFIG_SYSTEM_BLACKLIST_HASH_LIST),)
-> > -quiet_cmd_check_blacklist_hashes = CHECK   $(patsubst "%",%,$(2))
-> > -      cmd_check_blacklist_hashes = $(AWK) -f $(srctree)/scripts/check-blacklist-hashes.awk $(2); touch $@
-> > -$(eval $(call config_filename,SYSTEM_BLACKLIST_HASH_LIST))
-> > +$(obj)/blacklist_hashes.o: $(obj)/blacklist_hash_list
-> > +CFLAGS_blacklist_hashes.o := -I $(obj)
-> > -$(obj)/blacklist_hashes.o: $(obj)/blacklist_hashes_checked
-> > +quiet_cmd_check_and_copy_blacklist_hash_list = GEN     $@
-> > +      cmd_check_and_copy_blacklist_hash_list = \
-> > +	$(AWK) -f $(srctree)/scripts/check-blacklist-hashes.awk $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) >&2; \
-> > +	cat $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) > $@
-> > -CFLAGS_blacklist_hashes.o += -I$(srctree)
-> > -
-> > -targets += blacklist_hashes_checked
-> > -$(obj)/blacklist_hashes_checked: $(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)$(SYSTEM_BLACKLIST_HASH_LIST_FILENAME) scripts/check-blacklist-hashes.awk FORCE
-> > -	$(call if_changed,check_blacklist_hashes,$(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)$(CONFIG_SYSTEM_BLACKLIST_HASH_LIST))
-> > +$(obj)/blacklist_hash_list: $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) FORCE
-> > +	$(call if_changed,check_and_copy_blacklist_hash_list)
-> >   obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_hashes.o
-> >   else
-> >   obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_nohashes.o
-> >   endif
-> > +targets += blacklist_hash_list
-> >   quiet_cmd_extract_certs  = CERT    $@
-> >         cmd_extract_certs  = $(obj)/extract-cert $(extract-cert-in) $@
-> > @@ -33,7 +33,7 @@ $(obj)/system_certificates.o: $(obj)/x509_certificate_list
-> >   $(obj)/x509_certificate_list: $(CONFIG_SYSTEM_TRUSTED_KEYS) $(obj)/extract-cert FORCE
-> >   	$(call if_changed,extract_certs)
-> > -targets += x509_certificate_list blacklist_hashes_checked
-> > +targets += x509_certificate_list
-> >   # If module signing is requested, say by allyesconfig, but a key has not been
-> >   # supplied, then one will need to be generated to make sure the build does not
-> > diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
-> > index d5961aa3d338..86d66fe11348 100644
-> > --- a/certs/blacklist_hashes.c
-> > +++ b/certs/blacklist_hashes.c
-> > @@ -2,6 +2,6 @@
-> >   #include "blacklist.h"
-> >   const char __initconst *const blacklist_hashes[] = {
-> > -#include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
-> > +#include "blacklist_hash_list"
-> >   	, NULL
-> >   };
+> Thus we may have a maintainer/reviewers scalability issue. Due to missing
+> trust, competence or mastery of rules, most of the patches sent to the list
+> have no one to point out their flaws.
 
-I'll make a PR for 1/4 and 2/4 so that they get into 5.19.
+Then write tests and run the ones that already exist.  Relying purely on reviewers
+to detect flaws does not and cannot scale.  I agree that we currently have a
+scalability issue, but I have different views on how to improve things.
 
-BR, Jarkko
+> I have privately received many complaints about the indifference of our
+> community, which is distressing.
+> 
+> To improve that, I propose to add "let's try to accept" before "queued, thanks".
+> 
+> Obviously, "try to accept" is not a 100% commitment and it will fail with high
+> probability, but such a stance (along with standard clarifications and requirements)
+> from reviewers and maintainers will make the contributors more concerned,
+> attract potential volunteers, and focus the efforts of our nominated reviewers.
+> 
+> Such moves include explicit acceptance or rejection, a "try to accept" response
+> from some key persons (even if it ends up being a failure), or a separate
+> git branch,
+> but please, don't leave a lasting silence, especially for those big series.
+
+I completely agree on needing better transparency for the lifecycle of patches  
+going through the KVM tree.  First and foremost, there need to be formal, documented 
+rules for the "official" kvm/* branches, e.g. everything in kvm/queue passes ABC
+tests, everything in kvm/next also passes XYZ tests.  That would also be a good 
+place to document expectations, how things works, etc...
+
+At that point, I think we could add e.g. kvm/pending to hold patches that have  
+gotten the "queued, thanks" but haven't yet passed testing to get all the way to
+kvm/queue.  In theory, that would eliminate, or at least significantly reduce, the
+non-trivial time gap between applying them locally and actually pushing to kvm/queue.
+
+I'll work on writing rules+documentation and getting buy-in from Paolo.
+
+That said, I'm still opposed to pivoting to a "let's try to accept" approach.
+IMO, a major part of the problem is lack of testcases and lack of _running_ what
+tests we do have.  To be blunt, it's beyond frustrating infuriating that a series
+that's at v12 breaks _existing_ KVM-Unit-Tests on any AMD host.  And that same
+series wasn't accompanied by any new testcases.
+
+Yes, a kvm/pending or whatever would help mitigate such issues, but that doesn't
+fundamentally reduce the burden put on maintainers/reviewers.  Basic issues such
+as breaking KUT should be caught before a series is posted.  I realize there are
+exceptions, e.g. folks from Intel and AMD may not have access to the right
+hardware, but given that you're also posting AMD specific patches, I don't think
+that exception applies here.  And yes, mistakes will happen, I've certainly been
+guilty of my share, but I fully expect any such mistakes to be caught well before
+getting to v12.
+
+The other way to reduce maintainer/reviewer burden is by writing thorough testcases.
+A thorough, well-documented test not only proves that the code works, it also shows
+to reviewiers that the developer actually considered edge cases and helps expedite
+the process of thinking through such edge cases.  E.g. taking arch LBRs as an
+example, a test that actually visited every edge in KVM's state machine for enabling
+and disabling MSR intercepts would improve confidence that the code is correct and
+would greatly help reviewers understand the various combinations and transitions.
+
+I fully realize that writing tests is not glamorous, and that some of KVM's tooling
+and infrastructure is lacking, but IMO having contributors truly buy-in to writing
+tests for testing's sake instead of viewing writing tests as a necessary evil to get
+accepted upstream would go a long, long way to helping improve the overall velocity
+of KVM development.
+
+> Similar moves will increase transparency in decision making to reward and
+> attract a steady stream of high quality trusted contributors to do more and more
+> for our community and their employers (if any).
+> 
+> > 
+> > If people want their code to be merged more quickly, then they can do so by
+> > helping address the underlying problems, e.g. write tests that actually try to
+> > break their feature instead of doing the bare minimum, review each others code,
+> > clean up the existing code (and tests!), etc...  There's a reason vPMU features
+> > tend to not get a lot of reviews; KVM doesn't even get the basics right, so there's
+> > not a lot of interest in trying to enable fancy, complex features.
+> 
+> I'd like know more about "KVM doesn't even get the basics right" on vPMU. :D
+
+https://lore.kernel.org/all/CABOYuvbPL0DeEgV4gsC+v786xfBAo3T6+7XQr7cVVzbaoFoEAg@mail.gmail.com
+https://lore.kernel.org/all/YofCfNsl6O45hYr0@google.com
