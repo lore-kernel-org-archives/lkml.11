@@ -2,232 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC471C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:29:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27397C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349614AbiFOR3k (ORCPT
+        id S1355519AbiFOR3n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40372 "EHLO
+        Wed, 15 Jun 2022 13:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352759AbiFOR3a (ORCPT
+        with ESMTP id S1349861AbiFOR3g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:29:30 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5512434BB3;
-        Wed, 15 Jun 2022 10:29:28 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id l126-20020a1c2584000000b0039c1a10507fso1502450wml.1;
-        Wed, 15 Jun 2022 10:29:28 -0700 (PDT)
+        Wed, 15 Jun 2022 13:29:36 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B68393E1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:29:33 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id d129so11979410pgc.9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:29:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=0mmtAiGES9hy6GbZr6mj1I/9d7FHTjal/1dcnEoMib4=;
-        b=d/ZM+qkibzc1FPpQIVKOPEDkTrF02xlafmgh2XMchXaJDbGefaV7FPRiq9MMt1jujY
-         6nuFUGuuXLbLBgp76pCx/O2r4cIN+CtcNgwKZwpVdzekFdRFqDd7O32A7p8UVj/A62n2
-         Xs6cMKvcbN5gyfoMnqEqagWnM3EnMXZvedk5xE7YpROhUtP/QqXRbL8czsAjvcFJvXuX
-         QANMtQIxUbMg9ZIuPF5DMRMVZ1WQzcr+DX0meZ2TE8KHPIMPWE1d0RQxcFL/aheiGAh7
-         jGGq9WheLGjRcC8FMRMWntkV4+X+jwEX9ITHj/a+kk694HVt/sU0fLCfSXmpuPfrVLhf
-         7FLg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tmRjS93QbcER/KipISqrMEyiblmHFSxAPW8kxLpmooc=;
+        b=KLnFQA3N/38Ci7xwD7pYPH26rby8f9RxbUZsJlp4Rjy0tHdZ3jSJfljdl52oM0yyQf
+         pZ0BKyece6woQWlaxf8di5Fs4iUquUgur2ybWVuQ1PgB1qljENG8+0mjyzFvbhGr5pez
+         PP0QD2BqwiyczlfPE/I5vBtc9cknjBPMF3mfK4xMUiYXw9vEeWNEa2jixr4HkGI5qNEI
+         Hb8N3sH3cSFfoO2rnjEadjbeLiKH8pDooEw2UF6ZGoxA6PxT7ScQZAkteg235WyIsYhF
+         E16bpRQRTBlYrACebvj1ySVcN48JioVMdN0EnlOB8DPoClKkhHcfEtYcIPtDVPQabEcI
+         N1JQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=0mmtAiGES9hy6GbZr6mj1I/9d7FHTjal/1dcnEoMib4=;
-        b=nwHdYC9/mIhD8FirHKHPj4c4nnd0+B559Q/4QxUD3ssj3nZnA31QB02jbujUemqvcD
-         ULfVZYORrLdeXf2C+VHDGOOCd8Ga18XNPMlct5u8yU9I62v5hDNTyHNe8U5KTPT/64aH
-         +TcrLCq1AQXiKKm+eXA+O1Pa6RPiQiyJdb0srQJxWLEX5a0/fB9CFbS0u6Y3chnIJBFJ
-         wzElidQzFGwDxuAOAX1+AM1/qfFZFeCl87cknVMT1g1lQTTkD2UdlMZG73HnT5UyYnU6
-         mQ31hiH0hXpN2fIwyknlGSQjBDHaPxp1nkw9k5HRTJYZ2AZM8eYOxO3MZXsaVjZdL4L5
-         qLTw==
-X-Gm-Message-State: AJIora81U/mcQVvemJKY+BrB54JzsIMGORzf1zzRALDsi/bxQfNlCOhJ
-        9cqlXgbhuOwEMg9OCXuXfEa44yix9yk=
-X-Google-Smtp-Source: AGRyM1u6SrzeH7qCFw4qlFWwaZs3p9N6OsL/H2wxtO516NhvYU71hXSl0/p2IYSj34r7su/3P5K8qA==
-X-Received: by 2002:a05:600c:4e51:b0:39c:4f18:4c29 with SMTP id e17-20020a05600c4e5100b0039c4f184c29mr537734wmq.101.1655314166756;
-        Wed, 15 Jun 2022 10:29:26 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id t1-20020a5d6a41000000b00218468314d7sm15298550wrw.62.2022.06.15.10.29.25
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tmRjS93QbcER/KipISqrMEyiblmHFSxAPW8kxLpmooc=;
+        b=vA8NJ3kSTxhyuFr1E4tttajWrPYRjFFKHB0uECvLrUdQzep/phP/edatRq1gUAiMwz
+         BTvnowc6ROuKVispavYvj0dvjPhE8yYDrIANwrknPVda6KvLzRsexHAjRZiQREJixvgG
+         /TlEQoKS7PlUEfJN6/xLAAWNdepCxdJg7pjsE8XKenvld/8MFHtU9QK3HkZQyr10PxjH
+         nRyIe5l00QzbPs6A2mvWlK7L//LwdXHBdFYu+bDrQ1j8v1c5c+Otsz500nyhBnJk2BOX
+         1ZOLCcJgWts6a9LBHFweIGPYk9xB7cv1+E4wfKeSttsP9gSVxTjlF3eO58WtIiYFUKdN
+         YblQ==
+X-Gm-Message-State: AJIora8RTsshjUw1uLDnEYXbWQcWHVZqIXEiHSpoNfpFl9M9im5A1dq9
+        +V0InB3BlZ6VNybIYz75T6Y=
+X-Google-Smtp-Source: AGRyM1u3+RNW/fGgr0Vv/LcOX4rr7kXu8Qk4YW6i5WFssxnq8oeBhwm8lUVHdPTJqr/7goTW6817/g==
+X-Received: by 2002:a63:ee54:0:b0:3fe:30cc:899f with SMTP id n20-20020a63ee54000000b003fe30cc899fmr799999pgk.234.1655314172863;
+        Wed, 15 Jun 2022 10:29:32 -0700 (PDT)
+Received: from localhost.localdomain (c-67-174-241-145.hsd1.ca.comcast.net. [67.174.241.145])
+        by smtp.gmail.com with ESMTPSA id w14-20020a1709029a8e00b001676f87473fsm9552244plp.302.2022.06.15.10.29.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 10:29:26 -0700 (PDT)
-Message-ID: <62aa16f6.1c69fb81.816fc.be7a@mx.google.com>
-X-Google-Original-Message-ID: <YqoKTt3G5+hXj2ET@Ansuel-xps.>
-Date:   Wed, 15 Jun 2022 18:35:26 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Manivannan Sadhasivam <mani@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 2/3] mtd: nand: raw: qcom_nandc: add support for
- unprotected spare data pages
-References: <20220615000612.3119-1-ansuelsmth@gmail.com>
- <20220615000612.3119-3-ansuelsmth@gmail.com>
- <20220615172802.GB3606@thinkpad>
+        Wed, 15 Jun 2022 10:29:32 -0700 (PDT)
+From:   Yang Shi <shy828301@gmail.com>
+To:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
+        willy@infradead.org, zokeefe@google.com, linmiaohe@huawei.com,
+        akpm@linux-foundation.org
+Cc:     shy828301@gmail.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [mm-unstable v4 PATCH 0/7] Cleanup transhuge_xxx helpers
+Date:   Wed, 15 Jun 2022 10:29:19 -0700
+Message-Id: <20220615172926.546974-1-shy828301@gmail.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220615172802.GB3606@thinkpad>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 10:58:02PM +0530, Manivannan Sadhasivam wrote:
-> On Wed, Jun 15, 2022 at 02:06:11AM +0200, Ansuel Smith wrote:
-> > IPQ8064 nand have special pages where a different layout scheme is used.
-> > These special page are used by boot partition and on reading them
-> > lots of warning are reported about wrong ECC data and if written to
-> > results in broken data and not bootable device.
-> > 
-> > The layout scheme used by these special page consist in using 512 bytes
-> > as the codeword size (even for the last codeword) while writing to CFG0
-> > register. This forces the NAND controller to unprotect the 4 bytes of
-> > spare data.
-> > 
-> > Since the kernel is unaware of this different layout for these special
-> > page, it does try to protect the spare data too during read/write and
-> > warn about CRC errors.
-> > 
-> > Add support for this by permitting the user to declare these special
-> > pages in dts by declaring offset and size of the partition. The driver
-> > internally will convert these value to nand pages.
-> > 
-> > On user read/write the page is checked and if it's a boot page the
-> > correct layout is used.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> 
-> Just a few nitpicks below. With those fixed,
-> 
-> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-> 
-> Thanks,
-> Mani
->
 
-Sure! Thanks a lot for the various review. Will send v8 that should be
-the final version.
+v4: * Consolidated the transhuge_vma_size_ok() helper proposed in the
+      earlier versions into transhuge_vma_suitable(), per Zach.
+    * Fixed the regression introduced by patch 3/7, per Zach and Miaohe.
+    * Reworded the comment for transhuge_vma_suitable(), per Zach.
+    * Removed khugepaged_enter() per Miaohe.
+    * More comments for hugepage_vma_check(), per Zach.
+    * Squashed patch 4/7 (mm: khugepaged: use transhuge_vma_suitable replace open-code)
+      in the earlier version into patch 2/7 of this version.
+    * Minor correction to the doc about THPeligible (patch 7/7), so the
+      total number of patches is kept 7. 
+v3: * Fixed the comment from Willy
+v2: * Rebased to the latest mm-unstable
+    * Fixed potential regression for smaps's THPeligible
 
-> > ---
-> >  drivers/mtd/nand/raw/qcom_nandc.c | 203 +++++++++++++++++++++++++++++-
-> >  1 file changed, 198 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/mtd/nand/raw/qcom_nandc.c b/drivers/mtd/nand/raw/qcom_nandc.c
-> > index f2990d721733..0dbfe32888ff 100644
-> > --- a/drivers/mtd/nand/raw/qcom_nandc.c
-> > +++ b/drivers/mtd/nand/raw/qcom_nandc.c
-> 
-> [...]
-> 
-> > +static bool qcom_nandc_is_boot_partition(struct qcom_nand_host *host, int page)
-> > +{
-> > +	struct qcom_nand_boot_partition *boot_partition;
-> > +	u32 start, end;
-> > +	int i;
-> > +
-> > +	/*
-> > +	 * Since the frequent access will be to the non-boot partitions like rootfs,
-> > +	 * optimize the page check by:
-> > +
-> 
-> Missing "*"
-> 
-> > +	 * 1. Checking if the page lies after the last boot partition.
-> > +	 * 2. Checking from the boot partition end.
-> > +	 */
-> > +
-> > +	/* First check the last boot partition */
-> > +	boot_partition = &host->boot_partitions[host->nr_boot_partitions - 1];
-> > +	start = boot_partition->page_offset;
-> > +	end = start + boot_partition->page_size;
-> > +
-> > +	/* Page is after the last boot partition end. This is NOT a boot partition */
-> > +	if (page > end)
-> > +		return false;
-> > +
-> > +	/* Actually check if it's a boot partition */
-> > +	if (page < end && page >= start)
-> > +		return true;
-> > +
-> > +	/* Check the other boot partition starting from the second-last partition */
-> 
-> s/boot partition/boot partitions
-> 
-> > +	for (i = host->nr_boot_partitions - 2; i >= 0; i--) {
-> > +		boot_partition = &host->boot_partitions[i];
-> > +		start = boot_partition->page_offset;
-> > +		end = start + boot_partition->page_size;
-> > +
-> > +		if (page < end && page >= start)
-> > +			return true;
-> > +	}
-> > +
-> > +	return false;
-> > +}
-> > +
-> > +static void
-> > +qcom_nandc_codeword_fixup(struct qcom_nand_host *host, int page)
-> 
-> As like other functions, please align the function on the same line
-> 
-> > +{
-> > +	bool codeword_fixup = qcom_nandc_is_boot_partition(host, page);
-> > +
-> > +	/* Skip conf write if we are already in the correct mode */
-> > +	if (codeword_fixup == host->codeword_fixup)
-> > +		return;
-> > +
-> > +	host->codeword_fixup = codeword_fixup;
-> > +
-> > +	host->cw_data = codeword_fixup ? 512 : 516;
-> > +	host->spare_bytes = host->cw_size - host->ecc_bytes_hw -
-> > +			    host->bbm_size - host->cw_data;
-> > +
-> > +	host->cfg0 &= ~(SPARE_SIZE_BYTES_MASK | UD_SIZE_BYTES_MASK);
-> > +	host->cfg0 |= host->spare_bytes << SPARE_SIZE_BYTES |
-> > +		      host->cw_data << UD_SIZE_BYTES;
-> > +
-> > +	host->ecc_bch_cfg &= ~ECC_NUM_DATA_BYTES_MASK;
-> > +	host->ecc_bch_cfg |= host->cw_data << ECC_NUM_DATA_BYTES;
-> > +	host->ecc_buf_cfg = (host->cw_data - 1) << NUM_STEPS;
-> > +}
-> 
-> [...]
-> 
-> > +static int qcom_nand_host_parse_boot_partitions(struct qcom_nand_controller *nandc,
-> > +						struct qcom_nand_host *host,
-> > +						struct device_node *dn)
-> > +{
-> > +	struct nand_chip *chip = &host->chip;
-> > +	struct mtd_info *mtd = nand_to_mtd(chip);
-> > +	struct qcom_nand_boot_partition *boot_partition;
-> > +	struct device *dev = nandc->dev;
-> > +	int partitions_count, i, j, ret;
-> > +
-> > +	if (!of_find_property(dn, "qcom,boot-partitions", NULL))
-> > +		return 0;
-> > +
-> > +	partitions_count = of_property_count_u32_elems(dn, "qcom,boot-partitions");
-> > +	if (partitions_count <= 0) {
-> > +		dev_err(dev, "Error parsing boot partition\n");
-> > +		if (partitions_count == 0)
-> > +			return -EINVAL;
-> > +		else
-> > +			return partitions_count;
-> 
-> 		return partitions_count ? partitions_count : -EINVAL;
-> 
-> Thanks,
-> Mani
-> 
-> -- 
-> மணிவண்ணன் சதாசிவம்
+This series is the follow-up of the discussion about cleaning up transhuge_xxx
+helpers at https://lore.kernel.org/linux-mm/627a71f8-e879-69a5-ceb3-fc8d29d2f7f1@suse.cz/.
 
--- 
-	Ansuel
+THP has a bunch of helpers that do VMA sanity check for different paths, they
+do the similar checks for the most callsites and have a lot duplicate codes.
+And it is confusing what helpers should be used at what conditions.
+
+This series reorganized and cleaned up the code so that we could consolidate
+all the checks into hugepage_vma_check().
+
+The transhuge_vma_enabled(), transparent_hugepage_active() and
+__transparent_hugepage_enabled() are killed by this series.
+
+
+Yang Shi (7):
+      mm: khugepaged: check THP flag in hugepage_vma_check()
+      mm: thp: consolidate vma size check to transhuge_vma_suitable
+      mm: khugepaged: better comments for anon vma check in hugepage_vma_revalidate
+      mm: thp: kill transparent_hugepage_active()
+      mm: thp: kill __transhuge_page_enabled()
+      mm: khugepaged: reorg some khugepaged helpers
+      doc: proc: fix the description to THPeligible
+
+ Documentation/filesystems/proc.rst |  4 ++-
+ fs/proc/task_mmu.c                 |  2 +-
+ include/linux/huge_mm.h            | 75 +++++++++++++++++++------------------------------------
+ include/linux/khugepaged.h         | 30 ----------------------
+ mm/huge_memory.c                   | 81 +++++++++++++++++++++++++++++++++++++++++++++++++++--------
+ mm/khugepaged.c                    | 84 +++++++++++++++++++-------------------------------------------
+ mm/memory.c                        |  7 ++++--
+ 7 files changed, 130 insertions(+), 153 deletions(-)
+
