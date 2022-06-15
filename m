@@ -2,122 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EC5AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:44:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D99C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:45:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349308AbiFOSog (ORCPT
+        id S1349914AbiFOSpW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52656 "EHLO
+        Wed, 15 Jun 2022 14:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231737AbiFOSoe (ORCPT
+        with ESMTP id S244809AbiFOSpT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:44:34 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D6C340F4
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:44:33 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id p63so9391276qkd.10
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:44:33 -0700 (PDT)
+        Wed, 15 Jun 2022 14:45:19 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949D035DDA;
+        Wed, 15 Jun 2022 11:45:15 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id c130-20020a1c3588000000b0039c6fd897b4so1635693wma.4;
+        Wed, 15 Jun 2022 11:45:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=F+DGM8o8Zn45hSbzSY35HzK/vbjQGnTANH1Bt8EkX5w=;
-        b=JEZN7GvNEzufQhnj5M+09pKzIE1oQV4hsoD9Q8IZAl54fxgEVjh1hp0CfGrjF3DVR3
-         8kqcANUupPT/K9orIaIv8uo6J4MqQairMRK1KNpeNik7if/ULSDeW2Fir8lhPWA2Zqli
-         Lce3nMmDV+cng9OOHfrObILhRAE6H21/hHx0R90Kr3ibi+v340MK1A9HXFM9XzKnH8lW
-         lURmYabQWMg707cDfSjfMuw7WeWDYFyLJ3jUGhlr0l5sPNj3xtqCB/8jW6a57VjlxMm9
-         mOBA/vI+9iKIGbJfSJroSixFrV5PRm8wDHAfZYn+AKHibVyz3MZ1uqhdRZ7jadRSy2TI
-         YztQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Tr3miiyF7BVRw2aPmWuoc4u2d/PlTJcxehRwtRTtco4=;
+        b=VvngoXmOhycMICB54rdUiaFNcA9rYu4zGRxNqv6KqzdAtdVppDJ12C1dFJwssBoArJ
+         5S1HO1sD/WYml+OJB2w9jjV+Y5b+owbmW5YCxX+lrkpLovNv3gYd64cJe2d7/ZADSexi
+         AfjrfdpdIfRCrUwTiu8H+NUgfrSWxYWkjDeI+40Eu94fDCiZQ7Q/bjlhxfkEA4PefOIT
+         Dl9MMNvhg9dgawxD5AScB6wy2G/UEartKm+V/C7eYi6LWs1rYgB59QedeKAnnsjc0ATv
+         OCr4Lw7IGPE6kSM13Bn8/8csVt6UgIf1LuSoStkqpUjagtHbQtus9tNn7WzJjiWYYg9Q
+         d2rQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=F+DGM8o8Zn45hSbzSY35HzK/vbjQGnTANH1Bt8EkX5w=;
-        b=lxYngk5VBQIyVXPsuB66nwpUfBtPYiC6Wpd0kE8nQYI8A8TQIP7PU0wLNYvcnNoLyF
-         q2QHp9VlJdLQ84hmCThiSkLQ7O9QZI4jDpds37+rUdbSj8L0kNd5DiJeWzc8IBJyKuM5
-         H76m4w4HHeKgy7ZAm44Jv6dvUmXgoc9T+YE2tcanISHSt3aT9qeThCx3QQwHdvmVKw7m
-         zSNRdKazcJ/NjXIJiNoSsyjjfVxsDwaiXxl1Ly7mhTkwIJE24FBU06w3+Uw3P6NlItPM
-         5F6EaFpOP7peYdaTtWmiajyC8bSr1kdbgFeSQJYamrBAPsRUOtfsADtAs+IhGj+rlXFS
-         +gxg==
-X-Gm-Message-State: AJIora/fQx1tHPeDPrcfIC0bp9yfw41hJh6oFc7q1soJeHGkpvJwt7J8
-        9jJObr5QjR1K2iRGY1ON8vGPQ2nIsTSH2Ug=
-X-Google-Smtp-Source: AGRyM1tH7FIgSf4reVX9Qu761+qXfkvrSe/8PWdSMT/APzVL28xuK/8uWeL5V5DBQ4tXR2wVSPHitg==
-X-Received: by 2002:a37:454:0:b0:6a7:7eb1:7c65 with SMTP id 81-20020a370454000000b006a77eb17c65mr899777qke.474.1655318671155;
-        Wed, 15 Jun 2022 11:44:31 -0700 (PDT)
-Received: from [192.168.1.210] (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id u16-20020a05620a455000b006a6ce613c7csm13676842qkp.89.2022.06.15.11.44.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 11:44:30 -0700 (PDT)
-Message-ID: <ba8d21b8-7aae-6bfb-3553-3baba2bbeee1@gmail.com>
-Date:   Wed, 15 Jun 2022 14:44:29 -0400
+        bh=Tr3miiyF7BVRw2aPmWuoc4u2d/PlTJcxehRwtRTtco4=;
+        b=73JhWDgzB+TVOBhuylkGv9oKc2W2hzoqPpEUGEae62zGnAswQEZ/oSMq0fhWLW0VTn
+         yEgF2tLOJPyfey2ZaMNyvKSMxcIOjrJB7zM3uDTD5+i6szrZl88Y7uds5Kjgnn5Dw5WB
+         Y3CSvv+J0A1Fgydyiq0koeFAcOyKOevQSgIgYP7mpahEiXLsy9o8tL+1cPbF93GSihhd
+         Hgu5bZwVPKhyuzm8X/xQR68qerH14+JEXiCoSo6mkb7sLzsHAFevKio/ksvKj+l3penK
+         utghzJAPWIv855bByFEzkWnseRwsHDYcK2AwqhMvLIWRa+RaHPb3piXy0Xm+G2U5QEV9
+         7gSA==
+X-Gm-Message-State: AJIora96OOrJV2Z8RkGfpB7W2rsvLEmuz0fM9WmBaxWTBG4TkORj0e9V
+        6B4XCuDOY1ttridrUhnY+X8=
+X-Google-Smtp-Source: AGRyM1vm0S2iwoYbhKv+pgYBIyLJnj+T7nEM3h+BBn+rr2Ueupjw/Q9ScOYIrIbpml+Zke1u7tKZFQ==
+X-Received: by 2002:a05:600c:3655:b0:39c:6745:ec53 with SMTP id y21-20020a05600c365500b0039c6745ec53mr846583wmq.186.1655318713982;
+        Wed, 15 Jun 2022 11:45:13 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id j13-20020a5d618d000000b002167efdd549sm3393095wru.38.2022.06.15.11.45.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 11:45:13 -0700 (PDT)
+From:   Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH] dt-bindings: dma: rework qcom,adm Documentation to yaml schema
+Date:   Wed, 15 Jun 2022 19:50:43 +0200
+Message-Id: <20220615175043.20166-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 03/33] vsprintf: Convert to printbuf
-Content-Language: en-US
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org
-Cc:     pmladek@suse.com, rostedt@goodmis.org
-References: <20220604193042.1674951-1-kent.overstreet@gmail.com>
- <20220604193042.1674951-4-kent.overstreet@gmail.com>
- <bc5daffb-e144-2a43-4657-eaf663e94750@rasmusvillemoes.dk>
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-In-Reply-To: <bc5daffb-e144-2a43-4657-eaf663e94750@rasmusvillemoes.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/15/22 05:09, Rasmus Villemoes wrote:
-> On 04/06/2022 21.30, Kent Overstreet wrote:
->> This converts vsnprintf() to printbufs: instead of passing around raw
->> char * pointers for current buf position and end of buf, we have a real
->> type!
->>
->> This makes the calling convention for our existing pretty printers a lot
->> saner and less error prone, plus printbufs add some new helpers that
->> make the code smaller and more readable, with a lot less crazy pointer
->> arithmetic.
->>
->> There are a lot more refactorings to be done: this patch tries to stick
->> to just converting the calling conventions, as that needs to be done all
->> at once in order to avoid introducing a ton of wrappers that will just
->> be deleted.
->>
->> Thankfully we have good unit tests for printf, and they have been run
->> and are all passing with this patch.
-> 
-> So, as the primary author of those tests, a somewhat active contributor
-> to vsprintf.c and being listed as R: for both files, why wasn't I cc'ed
-> on this?
+Rework the qcom,adm Documentation to yaml schema.
+This is not a pure conversion since originally the driver has changed
+implementation for the #dma-cells and was wrong from the start.
+Also the driver now handles the common DMA clients implementation with
+the first cell that denotes the channel number and nothing else since
+the client will have to provide the crci information via other means.
 
-Apologies for the oversight.
+Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+---
+ .../devicetree/bindings/dma/qcom,adm.yaml     | 95 +++++++++++++++++++
+ .../devicetree/bindings/dma/qcom_adm.txt      | 61 ------------
+ 2 files changed, 95 insertions(+), 61 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/dma/qcom,adm.yaml
+ delete mode 100644 Documentation/devicetree/bindings/dma/qcom_adm.txt
 
-> Anyway, my main concern with this is that performance goes down the
-> drain and the generated code will be awful. Have you done any
-> measurements and/or looked at disassembly? Thanks to
-> -fno-strict-aliasing (or perhaps just because we're writing through a
-> char* pointer which IIRC may alias anything), I think the compiler will
-> be forced to reload prt->pos and prt->size over and over and over. I may
-> be wrong, of course, that happens often. Perhaps __restrict could help, IDK.
+diff --git a/Documentation/devicetree/bindings/dma/qcom,adm.yaml b/Documentation/devicetree/bindings/dma/qcom,adm.yaml
+new file mode 100644
+index 000000000000..77096a7c9405
+--- /dev/null
++++ b/Documentation/devicetree/bindings/dma/qcom,adm.yaml
+@@ -0,0 +1,95 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/dma/qcom,adm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm ADM DMA Controller
++
++maintainers:
++  - Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
++
++description: |
++  QCOM ADM DMA controller provides DMA capabilities for
++  peripheral buses such as NAND and SPI.
++
++properties:
++  compatible:
++    const: qcom,adm
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  "#dma-cells":
++    const: 1
++
++  clocks:
++    items:
++      - description: phandle to the core clock
++      - description: phandle to the iface clock
++
++  clock-names:
++    items:
++      - const: core
++      - const: iface
++
++  resets:
++    items:
++      - description: phandle to the clk reset
++      - description: phandle to the c0 reset
++      - description: phandle to the c1 reset
++      - description: phandle to the c2 reset
++
++  reset-names:
++    items:
++      - const: clk
++      - const: c0
++      - const: c1
++      - const: c2
++
++  qcom,ee:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: indicates the security domain identifier used in the secure world.
++    minimum: 0
++    maximum: 255
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - "#dma-cells"
++  - clocks
++  - clock-names
++  - resets
++  - reset-names
++  - qcom,ee
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,gcc-ipq806x.h>
++    #include <dt-bindings/reset/qcom,gcc-ipq806x.h>
++
++    adm_dma: dma-controller@18300000 {
++        compatible = "qcom,adm";
++        reg = <0x18300000 0x100000>;
++        interrupts = <0 170 0>;
++        #dma-cells = <1>;
++
++        clocks = <&gcc ADM0_CLK>,
++                  <&gcc ADM0_PBUS_CLK>;
++        clock-names = "core", "iface";
++
++        resets = <&gcc ADM0_RESET>,
++                  <&gcc ADM0_C0_RESET>,
++                  <&gcc ADM0_C1_RESET>,
++                  <&gcc ADM0_C2_RESET>;
++        reset-names = "clk", "c0", "c1", "c2";
++        qcom,ee = <0>;
++    };
++
++...
+diff --git a/Documentation/devicetree/bindings/dma/qcom_adm.txt b/Documentation/devicetree/bindings/dma/qcom_adm.txt
+deleted file mode 100644
+index 9d3b2f917b7b..000000000000
+--- a/Documentation/devicetree/bindings/dma/qcom_adm.txt
++++ /dev/null
+@@ -1,61 +0,0 @@
+-QCOM ADM DMA Controller
+-
+-Required properties:
+-- compatible: must contain "qcom,adm" for IPQ/APQ8064 and MSM8960
+-- reg: Address range for DMA registers
+-- interrupts: Should contain one interrupt shared by all channels
+-- #dma-cells: must be <2>.  First cell denotes the channel number.  Second cell
+-  denotes CRCI (client rate control interface) flow control assignment.
+-- clocks: Should contain the core clock and interface clock.
+-- clock-names: Must contain "core" for the core clock and "iface" for the
+-  interface clock.
+-- resets: Must contain an entry for each entry in reset names.
+-- reset-names: Must include the following entries:
+-  - clk
+-  - c0
+-  - c1
+-  - c2
+-- qcom,ee: indicates the security domain identifier used in the secure world.
+-
+-Example:
+-		adm_dma: dma@18300000 {
+-			compatible = "qcom,adm";
+-			reg = <0x18300000 0x100000>;
+-			interrupts = <0 170 0>;
+-			#dma-cells = <2>;
+-
+-			clocks = <&gcc ADM0_CLK>, <&gcc ADM0_PBUS_CLK>;
+-			clock-names = "core", "iface";
+-
+-			resets = <&gcc ADM0_RESET>,
+-				<&gcc ADM0_C0_RESET>,
+-				<&gcc ADM0_C1_RESET>,
+-				<&gcc ADM0_C2_RESET>;
+-			reset-names = "clk", "c0", "c1", "c2";
+-			qcom,ee = <0>;
+-		};
+-
+-DMA clients must use the format descripted in the dma.txt file, using a three
+-cell specifier for each channel.
+-
+-Each dmas request consists of 3 cells:
+- 1. phandle pointing to the DMA controller
+- 2. channel number
+- 3. CRCI assignment, if applicable.  If no CRCI flow control is required, use 0.
+-    The CRCI is used for flow control.  It identifies the peripheral device that
+-    is the source/destination for the transferred data.
+-
+-Example:
+-
+-	spi4: spi@1a280000 {
+-		spi-max-frequency = <50000000>;
+-
+-		pinctrl-0 = <&spi_pins>;
+-		pinctrl-names = "default";
+-
+-		cs-gpios = <&qcom_pinmux 20 0>;
+-
+-		dmas = <&adm_dma 6 9>,
+-			<&adm_dma 5 10>;
+-		dma-names = "rx", "tx";
+-	};
+-- 
+2.36.1
 
-If we care that much about sprintf performance we must have some 
-benchmarks somewhere - could you point me at them?
-
-
->> ---
->>   include/linux/kernel.h |    4 +
-> 
-> Please don't expand that dumping ground. Please, if printbufs will
-> become a thing (whether or not vsprintf internally will be refactored to
-> use them), add a new linux/printf.h where these things can go, and the
-> declarations of vsprintf() and close friends can eventually be moved.
-
-kernel.h is indeed a dumping ground that needs to be reorganized, but 
-this patch series is about printbufs, not reorganizing header files (and 
-my doctor tells me I need to be taking my blood pressure meds more 
-regularly before taking something like that on). For now, prt_printf() 
-goes with the other printf() functions.
