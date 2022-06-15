@@ -2,404 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A050C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:10:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0BAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:11:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353542AbiFOOKv (ORCPT
+        id S1357412AbiFOOLl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:10:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
+        Wed, 15 Jun 2022 10:11:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232920AbiFOOKq (ORCPT
+        with ESMTP id S232920AbiFOOLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:10:46 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 322D1443C6
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:10:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655302245; x=1686838245;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sEDJ0OMV+LdMlTGSurlp2v82NpIT0qPCJR7vqwow24s=;
-  b=XQ9vmmcHDCRMzx1jctvyonW2SAwIHDMxCQAQ7BLaoEkvBoJ6Wtn1IEQ8
-   rVcwXGKuzGNfqaqGKAVlkKwKjU/6CHUH17Qhdpnm1UUG9Gq0Hd/IOXr08
-   sw9FF7gx9mS5M3qCn19qD6Q0MwEcQnB0T1NkLeSGlJnqaXW+yRLoJN4cD
-   JG6pwbv5ltZMjMxGW3AyQ5CiF73zOvJwhOWZU1DmEriHMXuonI4w61Cuu
-   t2BtMav+nXIK7UTF3Mqm7HkHDw6IhR4vDIyPcEbyaWmNFL4SxWi7jzwPK
-   6i1n1nbLX2Mn0ExOlnA+xS8WgR/ogdWsrqlgk5jIARCTG47ZEgAaJRaEr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="279019812"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="279019812"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 07:09:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="572037608"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 15 Jun 2022 07:09:18 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1Tht-000Muf-Dt;
-        Wed, 15 Jun 2022 14:09:17 +0000
-Date:   Wed, 15 Jun 2022 22:08:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kees Cook <keescook@chromium.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Ira Weiny <ira.weiny@intel.com>, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        David Sterba <dsterba@suse.cz>
-Subject: Re: [PATCH] highmem: Make __kunmap_{local,atomic}() take "const void
- *"
-Message-ID: <202206152120.ql9qAwG5-lkp@intel.com>
-References: <20220614142531.16478-1-fmdefrancesco@gmail.com>
+        Wed, 15 Jun 2022 10:11:40 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08312443C6
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:11:38 -0700 (PDT)
+Received: from mail-yw1-f174.google.com ([209.85.128.174]) by
+ mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MMGZS-1oKfK30jEk-00JH7d for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022
+ 16:11:37 +0200
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-30fdbe7467cso62674057b3.1
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:11:37 -0700 (PDT)
+X-Gm-Message-State: AJIora+wgUSE+WDb4UV56O/0IqKH/Q5pdi/0ik3gz5O7QWz15RDxCucD
+        EtnIvo9A+vI+S/HANSZh3RLBcc/BW7spifolA20=
+X-Google-Smtp-Source: AGRyM1vBDQKdEDubvQV9wU9Cy5NzYrd8xTnJ7sc9hg2rSEm1jso9QJej+BNPIXwj6f44jZiRi5f1Syb9OZoTJxIJ5Ug=
+X-Received: by 2002:a81:ad7:0:b0:2e6:84de:3223 with SMTP id
+ 206-20020a810ad7000000b002e684de3223mr12139024ywk.209.1655302296016; Wed, 15
+ Jun 2022 07:11:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614142531.16478-1-fmdefrancesco@gmail.com>
+References: <202206091828.eNkyL2EI-lkp@intel.com>
+In-Reply-To: <202206091828.eNkyL2EI-lkp@intel.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 15 Jun 2022 16:11:17 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3Mu0MDRJU=he=gVxGKQYwzr1wePLKdgN37yLPSqm1iuQ@mail.gmail.com>
+Message-ID: <CAK8P3a3Mu0MDRJU=he=gVxGKQYwzr1wePLKdgN37yLPSqm1iuQ@mail.gmail.com>
+Subject: Re: drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h:1174:29: error:
+ enumerator value for 'i40e_static_assert_i40e_aqc_cloud_filters_element_data'
+ is not an integer constant
+To:     kernel test robot <lkp@intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Intel Wired LAN <intel-wired-lan@lists.osuosl.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:Td4hP1DQsiifmGM3t9Pt5wjjk+EeEqvLvS9jTJWucIVcmJRJF32
+ ZttJQLTc13ga0ZAQEeqtk1au2gj6G4sz/HrlyaJguQLpRp5hlMNEeeP9IL5iNXyK6YY8KDg
+ 8Dcb9XGxzwr6zuk5ewVEnpDqY5ocHQmvq5zKH/zW/DCul43cvnfd+jTephTmFOi0csgQ01C
+ U4bhEKXFLICmHpaX7B2CA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:PDoA5K7rNV8=:sqcOuZD3LUxJnXMGWxKjqg
+ Cb/NK59A6ewY/yt59IsOvJhOG0c/YdA02XbqNVdqgVeInLEPdQ2zTz7Q1b9tKIieZfFQ19VV5
+ 1FwvUTJwAaaywLVy8UyqEINm0BhnDDheQVbbLXBqR214aulFzZUJynjKjoBVPtjIt8knhyerw
+ 8fDrRXaji3YNe/JE0BseDBHPG343jPBU6d/4Wvk/M2TU1Q2OBCImqhINqj3gBEry0eWxTxURX
+ NLqqqUS/t02j6NyLkpOMQrmouFZpoI35z9LyZm8jzIELe00sL9pNVIEtTJyOwDmW8cV+zfNVc
+ 2siCpJxDUFxhKZHsuuGzli5Ebv1YINEBm2yZQuIwGp1v5CdxQ10M7TbGVL5W4/EI5sROcb6Co
+ 0KjFcaahTMr9Akjqn0NmM2yPHf8Dq47DtgrmFetRi7VA9YhtARF4tYDBRegdXWq/blqq3IsJF
+ N1Rwp1rrTMOIgIXO35YlJb9cMogdgIyCJOg41Fk8M84UExbw4xZBRfi3J2+4aI27oChnJjqle
+ brnAYFx8A7c6ODAmYAHXupjNmjrtxwK+iLQBPtq/xjwrp921f/QsW4HyTUjtTv/eawRxfzSP7
+ bP2uf1g7yN3qEyxdIR0vN8gsBDP2F4I4/RnlCyFQ0Xc2Lr0ZN1lcqRi7i9knFl0a6dB//l1T1
+ HQCcyUOjKBXPpzb2GSSdPa4al4gkJ7xKmPG841n2gqkefTtgUrgYDP7Q5CY4Knn9ui4UQ7uDT
+ f9oPogrDUgN8H8eGN/rrVs7R/iiR0OBoD7wGm2yAeb/ShFAJARGnEtyrb45gzN6+z+aPtIdVf
+ DUWSHNVrYOX3U1l/H8ZKaGc9qtGetFLxtSjTkfuCbzJ34Ipns6ksPmZitJ2fV5mW23+4hYK9g
+ KME8v01nfFGwizTnQmQQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Fabio,
+On Thu, Jun 9, 2022 at 12:25 PM kernel test robot <lkp@intel.com> wrote:
+>
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   6bfb56e93bcef41859c2d5ab234ffd80b691be35
+> commit: 250c1a694ff304e5d69e74ab32755eddcc2b8f65 ARM: pxa: convert to multiplatform
 
-Thank you for the patch! Perhaps something to improve:
+This is not really related to my commit but it does disappear before
+this one when bisecting.
 
-[auto build test WARNING on akpm-mm/mm-everything]
-[also build test WARNING on linus/master v5.19-rc2 next-20220615]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+>    In file included from drivers/net/ethernet/intel/i40e/i40e_adminq.h:9,
+>                     from drivers/net/ethernet/intel/i40e/i40e_type.h:10,
+>                     from drivers/net/ethernet/intel/i40e/i40e.h:40,
+>                     from drivers/net/ethernet/intel/i40e/i40e_main.c:12:
+> >> drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h:301:39: warning: division by zero [-Wdiv-by-zero]
+>      301 |         { i40e_static_assert_##X = (n)/((sizeof(struct X) == (n)) ? 1 : 0) }
+>          |                                       ^
+>    drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h:1174:1: note: in expansion of macro 'I40E_CHECK_STRUCT_LEN'
+>     1174 | I40E_CHECK_STRUCT_LEN(0x40, i40e_aqc_cloud_filters_element_data);
+>          | ^~~~~~~~~~~~~~~~~~~~~
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Fabio-M-De-Francesco/highmem-Make-__kunmap_-local-atomic-take-const-void/20220614-222749
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: parisc-defconfig (https://download.01.org/0day-ci/archive/20220615/202206152120.ql9qAwG5-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/558ba1aeb12cc7940165f07160e51afb0bc1a64b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Fabio-M-De-Francesco/highmem-Make-__kunmap_-local-atomic-take-const-void/20220614-222749
-        git checkout 558ba1aeb12cc7940165f07160e51afb0bc1a64b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash fs/
+The bug is that 'i40e_aqc_cloud_filters_element_data' and some other
+structures in the
+same file are broken when building an ARM kernel without CONFIG_AEABI, which has
+unusual struct packing rules and triggers the static assertion.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+It's clearly a bug, but nobody is going to run this driver on an OABI
+kernel, so I think
+the options are:
 
-All warnings (new ones prefixed by >>):
+- add "__packed __aligned(4)" to each of these structure definitions
+- make the driver depend on !(ARM && AEABI) in Kconfig
+- ask lkp to stop testing CONFIG_AEABI=n kernels in randconfig builds
+  and ignore the problem along with others like it
 
-   In file included from include/linux/highmem.h:13,
-                    from include/linux/bvec.h:10,
-                    from include/linux/blk_types.h:10,
-                    from include/linux/writeback.h:13,
-                    from include/linux/backing-dev.h:16,
-                    from fs/open.c:16:
-   include/linux/highmem-internal.h: In function '__kunmap_local':
->> include/linux/highmem-internal.h:203:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     203 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/blk_types.h:10,
-                    from include/linux/writeback.h:13,
-                    from include/linux/backing-dev.h:16,
-                    from fs/open.c:16:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
-   In file included from include/linux/highmem.h:13,
-                    from include/linux/bvec.h:10,
-                    from include/linux/blk_types.h:10,
-                    from include/linux/writeback.h:13,
-                    from include/linux/backing-dev.h:16,
-                    from fs/open.c:16:
-   include/linux/highmem-internal.h: In function '__kunmap_atomic':
-   include/linux/highmem-internal.h:230:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     230 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/blk_types.h:10,
-                    from include/linux/writeback.h:13,
-                    from include/linux/backing-dev.h:16,
-                    from fs/open.c:16:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
---
-   In file included from include/linux/highmem.h:13,
-                    from fs/pipe.c:21:
-   include/linux/highmem-internal.h: In function '__kunmap_local':
->> include/linux/highmem-internal.h:203:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     203 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from fs/pipe.c:21:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
-   In file included from include/linux/highmem.h:13,
-                    from fs/pipe.c:21:
-   include/linux/highmem-internal.h: In function '__kunmap_atomic':
-   include/linux/highmem-internal.h:230:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     230 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from fs/pipe.c:21:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
-   fs/pipe.c: At top level:
-   fs/pipe.c:757:15: warning: no previous prototype for 'account_pipe_buffers' [-Wmissing-prototypes]
-     757 | unsigned long account_pipe_buffers(struct user_struct *user,
-         |               ^~~~~~~~~~~~~~~~~~~~
-   fs/pipe.c:763:6: warning: no previous prototype for 'too_many_pipe_buffers_soft' [-Wmissing-prototypes]
-     763 | bool too_many_pipe_buffers_soft(unsigned long user_bufs)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/pipe.c:770:6: warning: no previous prototype for 'too_many_pipe_buffers_hard' [-Wmissing-prototypes]
-     770 | bool too_many_pipe_buffers_hard(unsigned long user_bufs)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/pipe.c:777:6: warning: no previous prototype for 'pipe_is_unprivileged_user' [-Wmissing-prototypes]
-     777 | bool pipe_is_unprivileged_user(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/pipe.c:1253:5: warning: no previous prototype for 'pipe_resize_ring' [-Wmissing-prototypes]
-    1253 | int pipe_resize_ring(struct pipe_inode_info *pipe, unsigned int nr_slots)
-         |     ^~~~~~~~~~~~~~~~
---
-   In file included from include/linux/highmem.h:13,
-                    from include/linux/bvec.h:10,
-                    from include/linux/blk_types.h:10,
-                    from include/linux/blkdev.h:9,
-                    from include/linux/blk-mq.h:5,
-                    from fs/io_uring.c:60:
-   include/linux/highmem-internal.h: In function '__kunmap_local':
->> include/linux/highmem-internal.h:203:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     203 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/blk_types.h:10,
-                    from include/linux/blkdev.h:9,
-                    from include/linux/blk-mq.h:5,
-                    from fs/io_uring.c:60:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
-   In file included from include/linux/highmem.h:13,
-                    from include/linux/bvec.h:10,
-                    from include/linux/blk_types.h:10,
-                    from include/linux/blkdev.h:9,
-                    from include/linux/blk-mq.h:5,
-                    from fs/io_uring.c:60:
-   include/linux/highmem-internal.h: In function '__kunmap_atomic':
-   include/linux/highmem-internal.h:230:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     230 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/blk_types.h:10,
-                    from include/linux/blkdev.h:9,
-                    from include/linux/blk-mq.h:5,
-                    from fs/io_uring.c:60:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
-   fs/io_uring.c: In function '__io_submit_flush_completions':
-   fs/io_uring.c:3196:40: warning: variable 'prev' set but not used [-Wunused-but-set-variable]
-    3196 |         struct io_wq_work_node *node, *prev;
-         |                                        ^~~~
---
-   In file included from include/linux/highmem.h:13,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/net/net_namespace.h:40,
-                    from include/linux/inet.h:42,
-                    from include/linux/sunrpc/msg_prot.h:200,
-                    from include/linux/sunrpc/auth.h:14,
-                    from include/linux/sunrpc/svc.h:18,
-                    from include/linux/sunrpc/svc_xprt.h:11,
-                    from fs/nfsd/export.c:19:
-   include/linux/highmem-internal.h: In function '__kunmap_local':
->> include/linux/highmem-internal.h:203:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     203 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/net/net_namespace.h:40,
-                    from include/linux/inet.h:42,
-                    from include/linux/sunrpc/msg_prot.h:200,
-                    from include/linux/sunrpc/auth.h:14,
-                    from include/linux/sunrpc/svc.h:18,
-                    from include/linux/sunrpc/svc_xprt.h:11,
-                    from fs/nfsd/export.c:19:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
-   In file included from include/linux/highmem.h:13,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/net/net_namespace.h:40,
-                    from include/linux/inet.h:42,
-                    from include/linux/sunrpc/msg_prot.h:200,
-                    from include/linux/sunrpc/auth.h:14,
-                    from include/linux/sunrpc/svc.h:18,
-                    from include/linux/sunrpc/svc_xprt.h:11,
-                    from fs/nfsd/export.c:19:
-   include/linux/highmem-internal.h: In function '__kunmap_atomic':
-   include/linux/highmem-internal.h:230:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     230 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/net/net_namespace.h:40,
-                    from include/linux/inet.h:42,
-                    from include/linux/sunrpc/msg_prot.h:200,
-                    from include/linux/sunrpc/auth.h:14,
-                    from include/linux/sunrpc/svc.h:18,
-                    from include/linux/sunrpc/svc_xprt.h:11,
-                    from fs/nfsd/export.c:19:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
-   fs/nfsd/export.c: In function 'exp_rootfh':
-   fs/nfsd/export.c:979:34: warning: variable 'inode' set but not used [-Wunused-but-set-variable]
-     979 |         struct inode            *inode;
-         |                                  ^~~~~
---
-   In file included from include/linux/highmem.h:13,
-                    from include/linux/pagemap.h:11,
-                    from include/linux/nfs_fs.h:24,
-                    from fs/nfs/nfstrace.c:5:
-   include/linux/highmem-internal.h: In function '__kunmap_local':
->> include/linux/highmem-internal.h:203:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     203 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/pagemap.h:11,
-                    from include/linux/nfs_fs.h:24,
-                    from fs/nfs/nfstrace.c:5:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
-   In file included from include/linux/highmem.h:13,
-                    from include/linux/pagemap.h:11,
-                    from include/linux/nfs_fs.h:24,
-                    from fs/nfs/nfstrace.c:5:
-   include/linux/highmem-internal.h: In function '__kunmap_atomic':
-   include/linux/highmem-internal.h:230:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     230 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/pagemap.h:11,
-                    from include/linux/nfs_fs.h:24,
-                    from fs/nfs/nfstrace.c:5:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
-   In file included from fs/nfs/nfstrace.h:1670,
-                    from fs/nfs/nfstrace.c:10:
-   include/trace/define_trace.h: At top level:
-   include/trace/define_trace.h:95:42: fatal error: ./nfstrace.h: No such file or directory
-      95 | #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
-         |                                          ^
-   compilation terminated.
---
-   In file included from include/linux/highmem.h:13,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/net/net_namespace.h:40,
-                    from include/linux/inet.h:42,
-                    from include/linux/sunrpc/msg_prot.h:200,
-                    from include/linux/nfs4.h:19,
-                    from fs/nfsd/export.h:11,
-                    from fs/nfsd/trace.h:13,
-                    from fs/nfsd/trace.c:4:
-   include/linux/highmem-internal.h: In function '__kunmap_local':
->> include/linux/highmem-internal.h:203:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     203 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/net/net_namespace.h:40,
-                    from include/linux/inet.h:42,
-                    from include/linux/sunrpc/msg_prot.h:200,
-                    from include/linux/nfs4.h:19,
-                    from fs/nfsd/export.h:11,
-                    from fs/nfsd/trace.h:13,
-                    from fs/nfsd/trace.c:4:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
-   In file included from include/linux/highmem.h:13,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/net/net_namespace.h:40,
-                    from include/linux/inet.h:42,
-                    from include/linux/sunrpc/msg_prot.h:200,
-                    from include/linux/nfs4.h:19,
-                    from fs/nfsd/export.h:11,
-                    from fs/nfsd/trace.h:13,
-                    from fs/nfsd/trace.c:4:
-   include/linux/highmem-internal.h: In function '__kunmap_atomic':
-   include/linux/highmem-internal.h:230:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     230 |         kunmap_flush_on_unmap(addr);
-         |                               ^~~~
-   In file included from include/linux/cacheflush.h:5,
-                    from include/linux/highmem.h:8,
-                    from include/linux/bvec.h:10,
-                    from include/linux/skbuff.h:17,
-                    from include/net/net_namespace.h:40,
-                    from include/linux/inet.h:42,
-                    from include/linux/sunrpc/msg_prot.h:200,
-                    from include/linux/nfs4.h:19,
-                    from fs/nfsd/export.h:11,
-                    from fs/nfsd/trace.h:13,
-                    from fs/nfsd/trace.c:4:
-   arch/parisc/include/asm/cacheflush.h:78:48: note: expected 'void *' but argument is of type 'const void *'
-      78 | static inline void kunmap_flush_on_unmap(void *addr)
-         |                                          ~~~~~~^~~~
-   In file included from fs/nfsd/trace.h:1152,
-                    from fs/nfsd/trace.c:4:
-   include/trace/define_trace.h: At top level:
-   include/trace/define_trace.h:95:42: fatal error: ./trace.h: No such file or directory
-      95 | #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
-         |                                          ^
-   compilation terminated.
-
-
-vim +203 include/linux/highmem-internal.h
-
-f3ba3c710ac5a3 Thomas Gleixner       2020-11-18  199  
-558ba1aeb12cc7 Fabio M. De Francesco 2022-06-14  200  static inline void __kunmap_local(const void *addr)
-f3ba3c710ac5a3 Thomas Gleixner       2020-11-18  201  {
-f3ba3c710ac5a3 Thomas Gleixner       2020-11-18  202  #ifdef ARCH_HAS_FLUSH_ON_KUNMAP
-f3ba3c710ac5a3 Thomas Gleixner       2020-11-18 @203  	kunmap_flush_on_unmap(addr);
-f3ba3c710ac5a3 Thomas Gleixner       2020-11-18  204  #endif
-f3ba3c710ac5a3 Thomas Gleixner       2020-11-18  205  }
-f3ba3c710ac5a3 Thomas Gleixner       2020-11-18  206  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+         Arnd
