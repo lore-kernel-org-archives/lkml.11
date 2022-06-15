@@ -2,123 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7683AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C8B8CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245344AbiFOOhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51390 "EHLO
+        id S1344878AbiFOOh5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 10:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbiFOOhJ (ORCPT
+        with ESMTP id S230160AbiFOOhz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:37:09 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615113B567;
-        Wed, 15 Jun 2022 07:37:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=saG5sDrVw9Zr0xvtzKbdVeuNnQ3Z6A05xiDq4AzD6dg=; b=bj1K2vKmeUI35w3WQw2RkLX1ip
-        QCEaDPfkJlTI0mlAWH5qdVUCTCBvOh2OgJPA/Qa2CT7CPAj1Q5XMiFlSSiWVG14WOOF8TBkW9C8DB
-        smp0xoEry+r3xyzto66f5nl3HyiSHbc0k8xZYj5h3FUvwCfsfaTk7bkzWV7D47207xO7HNu5g4FiG
-        R0fNxeFhwAmmLmrKbEPXG5brlpPDUOBQfVgtPTNRYEV2l21il8F42ETOfD+HoC/5qjClPhEbDsQSM
-        7I8v8lhqeRHkRZEvifGEzh3KJY4kpRdBL11eBdkZnqmC/4L86Lt6dmyhY2QRPhCjV60mCS/pK7EVK
-        pqDqcbCA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1U8j-0017Zi-CF; Wed, 15 Jun 2022 14:37:01 +0000
-Date:   Wed, 15 Jun 2022 15:37:01 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     linux-doc@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] Documentation: highmem: Use literal block for
- *kmap_local_folio() example
-Message-ID: <YqnujWdTA+QSdMHJ@casper.infradead.org>
-References: <20220615101509.516520-1-bagasdotme@gmail.com>
+        Wed, 15 Jun 2022 10:37:55 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4708D13CE1;
+        Wed, 15 Jun 2022 07:37:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=75kgVCcqOPOLeu4JBiLLFab/dM4uNZ1dcLuvpDx9ZCg=; b=kAIWl67VuUe8cBDkmFOZTh4b+J
+        Uy6PgE2+CwIEzhFEfsXCTAadcMkk5TefuTIBHvgzxNrjmUz+/r/f3fMBR5i8mMC7UweLMh9MkeJoD
+        97gkOJRUGibA77qDy9s4vL7NkQkS1Sv+TX4WpruLFHmbGvImVgE9LeYadgdIraA8AGxMlB+PxaWy/
+        1adKvJuvvpCbTsZosCqi5SMDlMupfKEgEY7JpKMS8HhvbF7gyowCTheRqW0YX0S9D05qpW9G1fKLt
+        DJUWQ6k8Tz/HxaHb6kuJRSWnDBXrsJA/DQco3hh/lFSm8XLWvSeNFNfH2bKr+ugXM0hH/Gw2zl2s+
+        laFslj7w==;
+Received: from 179.red-81-39-194.dynamicip.rima-tde.net ([81.39.194.179] helo=[192.168.15.167])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1o1U8m-002LYs-SW; Wed, 15 Jun 2022 16:37:04 +0200
+Message-ID: <362f6520-8209-1721-823c-11928338f57d@igalia.com>
+Date:   Wed, 15 Jun 2022 11:36:39 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220615101509.516520-1-bagasdotme@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 24/30] panic: Refactor the panic path
+Content-Language: en-US
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     bhe@redhat.com, d.hatayama@jp.fujitsu.com,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Mark Rutland <mark.rutland@arm.com>, mikelley@microsoft.com,
+        vkuznets@redhat.com, akpm@linux-foundation.org,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        hidehiro.kawai.ez@hitachi.com, jgross@suse.com,
+        john.ogness@linutronix.de, keescook@chromium.org, luto@kernel.org,
+        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
+        peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, will@kernel.org
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-25-gpiccoli@igalia.com>
+ <87fskzuh11.fsf@email.froward.int.ebiederm.org>
+ <0d084eed-4781-c815-29c7-ac62c498e216@igalia.com> <Yqic0R8/UFqTbbMD@alley>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <Yqic0R8/UFqTbbMD@alley>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 05:15:10PM +0700, Bagas Sanjaya wrote:
-> These warnings above are due to comments in code example of
-> kmap_atomic() inside kernel-doc comment of *kmap_local_folio() are enclosed
+Perfect Petr, thanks for your feedback!
 
-You still seem to think this has something to do with kmap_local_folio().
-It has nothing to do with kmap_local_folio().  Your next version of this
-patch should not mention kmap_local_folio() anywhere.
+I'll be out for some weeks, but after that what I'm doing is to split
+the series in 2 parts:
 
-> by double dash (--) instead of prefixed with C comment symbol (//).
-> 
-> Fix these warnings by indenting the code example with literal block
-> indentation and prefixing comments inside the example with C comment
-> symbol.
-> 
-> Fixes: 85a85e7601263f ("Documentation/vm: move "Using kmap-atomic" to highmem.h")
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Ira Weiny <ira.weiny@intel.com>
-> Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-> Cc: "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Cc: linux-mm@kvack.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> ---
->  Changes since v1 [1]:
->    - Point that the code example is for kmap_atomic() (suggested by
->      Matthew Wilcox)
->    - Use C comments instead of Unix shell comments prefix (suggested by
->      Ira Weiny)
-> 
->  [1]: https://lore.kernel.org/linux-doc/20220614123115.522131-1-bagasdotme@gmail.com/
->  
->  include/linux/highmem.h | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
-> 
-> diff --git a/include/linux/highmem.h b/include/linux/highmem.h
-> index 3af34de54330cb..56d6a019653489 100644
-> --- a/include/linux/highmem.h
-> +++ b/include/linux/highmem.h
-> @@ -149,19 +149,19 @@ static inline void *kmap_local_folio(struct folio *folio, size_t offset);
->   * It is used in atomic context when code wants to access the contents of a
->   * page that might be allocated from high memory (see __GFP_HIGHMEM), for
->   * example a page in the pagecache.  The API has two functions, and they
-> - * can be used in a manner similar to the following:
-> + * can be used in a manner similar to the following::
->   *
-> - * -- Find the page of interest. --
-> - * struct page *page = find_get_page(mapping, offset);
-> + *   // Find the page of interest.
-> + *   struct page *page = find_get_page(mapping, offset);
->   *
-> - * -- Gain access to the contents of that page. --
-> - * void *vaddr = kmap_atomic(page);
-> + *   // Gain access to the contents of that page.
-> + *   void *vaddr = kmap_atomic(page);
->   *
-> - * -- Do something to the contents of that page. --
-> - * memset(vaddr, 0, PAGE_SIZE);
-> + *   // Do something to the contents of that page.
-> + *   memset(vaddr, 0, PAGE_SIZE);
->   *
-> - * -- Unmap that page. --
-> - * kunmap_atomic(vaddr);
-> + *   // Unmap that page.
-> + *   kunmap_atomic(vaddr);
->   *
->   * Note that the kunmap_atomic() call takes the result of the kmap_atomic()
->   * call, not the argument.
-> 
-> base-commit: 018ab4fabddd94f1c96f3b59e180691b9e88d5d8
-> -- 
-> An old man doll... just what I always wanted! - Clara
-> 
-> 
+(a) The general fixes, which should be reviewed by subsystem maintainers
+and even merged individually by them.
+
+(b) The proper panic refactor, which includes the notifiers list split,
+etc. I'll think about what I consider the best solution for the
+crash_dump required ones, and will try to split in very simple patches
+to make it easier to review.
+
+Cheers,
+
+
+Guilherme
