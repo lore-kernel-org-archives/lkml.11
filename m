@@ -2,141 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 897E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344084AbiFOOz5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44564 "EHLO
+        id S234184AbiFOO66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 10:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237373AbiFOOzx (ORCPT
+        with ESMTP id S234162AbiFOO6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:55:53 -0400
-Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EFB34B97;
-        Wed, 15 Jun 2022 07:55:53 -0700 (PDT)
-Received: by mail-il1-f175.google.com with SMTP id u2so8956898iln.2;
-        Wed, 15 Jun 2022 07:55:53 -0700 (PDT)
+        Wed, 15 Jun 2022 10:58:42 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA553326CD
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:58:40 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id c4so19319059lfj.12
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:58:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p5WjwBxoG8hcN2wNzdX82aRVBrLb67GAEmI1dQxMZy0=;
+        b=r4gnFG1k9OgfmQ7EP/1Y+kdN2g5zJ3GOyFpW2D2CfDDrt/w87w3TdP8K++zTRXmZ1O
+         BUsJ3h/tq/C3iprUij5d3WqyvOGMw/I5Nw2LzaFWW8Kk0jJmwkKplMI+l41JN3y5PSh4
+         fnlFCyTAhS1yp+NaBsuAeFVDg+5EuG0LyQq5/dUn8T7aUi5OZPsYHQCp1xCWXpUZPDXd
+         rJIptAm7vdcpJ/0G+qLHiC/f1LoLW2Sc6al5aQ3TJyiMG5BWUbqQ6aJ5ktnFyy06b9xI
+         vu0WMbDHRbaiTdW1pIt4zXGO7csAzT3AsR+uTXqQIKxq3R7RPeMvVGoqtPSHqpYKJYto
+         cxjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6pQnGfDjQoVp1rvU8e66nOIjBm74uZi19jZ+eXE+30s=;
-        b=hx0f080zKcMVwRqLouxWGSBra8ogU2IRzWSq2FiGKaQcfKt2n3ojnEV7piiUY6F2e5
-         dm3cmLr/GoBRkaWiFbY7+OS1uF+wYPPZcMum3pYnN+jf/WgBonp8Cjj3V5HIAfq39I+h
-         gNE+tLiaNNohHSxfyusl0hDXnHXP2BPUynpWF5owhBq8GWJoT788Ij++Q4wwzC90Tyus
-         mVrSMYS3LOAcPqhO95c6s0e+EssVIZCxokrPCNWgCiBtd0KUSrHFNLpkOMAgCFcn5xo/
-         CXxiph8ybZU4r6YPdX+QlyiPDyPmTs36FprFRqBYV9dz3pNLdRgA+uE0adnNcqa8oxWf
-         SJ4Q==
-X-Gm-Message-State: AJIora8qzWTbJkc0k7NNtdR0mT2siblX85F2V6d6gvry88hNnTjXFFs2
-        Ngt3I30QHg64YPn+YZGd3ps5kvL2Sw==
-X-Google-Smtp-Source: AGRyM1v9D2xwxPLO3fWw6MLNBK1h8w8DrYTqErV5QnXKIatPBOp5wzKqusY55yPT3X8yHzscU6+Q/A==
-X-Received: by 2002:a92:c54a:0:b0:2d3:b2ac:eb with SMTP id a10-20020a92c54a000000b002d3b2ac00ebmr113927ilj.323.1655304952460;
-        Wed, 15 Jun 2022 07:55:52 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id 126-20020a6b1484000000b00665714766a2sm6882497iou.47.2022.06.15.07.55.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 07:55:52 -0700 (PDT)
-Received: (nullmailer pid 1139633 invoked by uid 1000);
-        Wed, 15 Jun 2022 14:55:50 -0000
-Date:   Wed, 15 Jun 2022 08:55:50 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 04/17] dt-bindings: PCI: dwc: Add max-link-speed
- common property
-Message-ID: <20220615145550.GA1069883-robh@kernel.org>
-References: <20220610085706.15741-1-Sergey.Semin@baikalelectronics.ru>
- <20220610085706.15741-5-Sergey.Semin@baikalelectronics.ru>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p5WjwBxoG8hcN2wNzdX82aRVBrLb67GAEmI1dQxMZy0=;
+        b=lecthBgUnPhwEh0kGvwzrn+thZ9/IwNFEBE5kl4a+e6H6Bw1rWhVVKwMWQhOv/PxP+
+         iy79x30oM5zlzo75/9TcxpVIgaJc8eX8hFnJVO1JeSVh41EiH4Iq2/flflPYdHsCroBL
+         HbKp5F7s6qc5m6w0VZWc98xy0V9ZxNzX5ABWlFjpQ+Kz/KNbNScbIMEsNXUCZ2T2McTa
+         xc2Ytr2augxfrp0qbjux0QEisbExms+rSaOqSIh7njXDVzEu1HOzTRn4dYZCraFX+JjT
+         4JGxYc/Dizbd190pZSCIlvECFQLr0m5mI+8oLWfSXKPMGGLLnaVFprzlbH3E8zOk+gN/
+         tuEg==
+X-Gm-Message-State: AJIora/PSAWpmeLWTTpeR4moEg5lfU764ULTo5xjGXbBF/YSWLc6n4t0
+        IpCIAAmGEcxqw5f5f6iKB/ox+yBJjES27fK/MnistYBHJ8194w==
+X-Google-Smtp-Source: AGRyM1tsa7MGR5pQIMXjpltWXkrdU447D/S/FlKYW140feHY76B0SAzLsFd6ea6D8NUxYt63ZdD7D4DNCzgzKnVlH+0=
+X-Received: by 2002:a05:6512:ba6:b0:47d:a6e3:ab37 with SMTP id
+ b38-20020a0565120ba600b0047da6e3ab37mr6168253lfv.157.1655305118992; Wed, 15
+ Jun 2022 07:58:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610085706.15741-5-Sergey.Semin@baikalelectronics.ru>
+References: <20220614021141.1101486-1-sashal@kernel.org> <CAG48ez1bRMCUzmkP2zpQ_4Jx0sqRw=b9-sDa-0QSqoGHpqZVJA@mail.gmail.com>
+In-Reply-To: <CAG48ez1bRMCUzmkP2zpQ_4Jx0sqRw=b9-sDa-0QSqoGHpqZVJA@mail.gmail.com>
+From:   Jann Horn <jannh@google.com>
+Date:   Wed, 15 Jun 2022 16:58:02 +0200
+Message-ID: <CAG48ez3nxe32Hv3dXO27_rK3qrSGZUW8Pp1sxLDxwKWkL1BaoQ@mail.gmail.com>
+Subject: Re: [PATCH MANUALSEL 5.15 1/4] KVM: x86: do not report a vCPU as
+ preempted outside instruction boundaries
+To:     Sasha Levin <sashal@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 11:56:52AM +0300, Serge Semin wrote:
-> In accordance with [1] DW PCIe controllers support up to Gen5 link speed.
-> Let's add the max-link-speed property upper bound to 5 then. The DT
-> bindings of the particular devices are expected to setup more strict
-> constraint on that parameter.
-> 
-> [1] Synopsys DesignWare Cores PCI Express Controller Databook, Version
-> 5.40a, March 2019, p. 27
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> 
-> ---
-> 
-> Changelog v3:
-> - This is a new patch unpinned from the next one:
->   https://lore.kernel.org/linux-pci/20220503214638.1895-2-Sergey.Semin@baikalelectronics.ru/
->   by the Rob' request. (@Rob)
-> ---
->  Documentation/devicetree/bindings/pci/snps,dw-pcie-common.yaml | 3 +++
->  Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml     | 2 ++
->  Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml        | 1 +
->  3 files changed, 6 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie-common.yaml b/Documentation/devicetree/bindings/pci/snps,dw-pcie-common.yaml
-> index 627a5d6625ba..b2fbe886981b 100644
-> --- a/Documentation/devicetree/bindings/pci/snps,dw-pcie-common.yaml
-> +++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie-common.yaml
-> @@ -45,6 +45,9 @@ properties:
->        the peripheral devices available on the PCIe bus.
->      maxItems: 1
->  
-> +  max-link-speed:
-> +    maximum: 5
+On Wed, Jun 15, 2022 at 4:53 PM Jann Horn <jannh@google.com> wrote:
+>
+> On Tue, Jun 14, 2022 at 4:11 AM Sasha Levin <sashal@kernel.org> wrote:
+> >
+> > From: Paolo Bonzini <pbonzini@redhat.com>
+> >
+> > [ Upstream commit 6cd88243c7e03845a450795e134b488fc2afb736 ]
+> >
+> > If a vCPU is outside guest mode and is scheduled out, it might be in the
+> > process of making a memory access.  A problem occurs if another vCPU uses
+> > the PV TLB flush feature during the period when the vCPU is scheduled
+> > out, and a virtual address has already been translated but has not yet
+> > been accessed, because this is equivalent to using a stale TLB entry.
+> >
+> > To avoid this, only report a vCPU as preempted if sure that the guest
+> > is at an instruction boundary.  A rescheduling request will be delivered
+> > to the host physical CPU as an external interrupt, so for simplicity
+> > consider any vmexit *not* instruction boundary except for external
+> > interrupts.
+> >
+> > It would in principle be okay to report the vCPU as preempted also
+> > if it is sleeping in kvm_vcpu_block(): a TLB flush IPI will incur the
+> > vmentry/vmexit overhead unnecessarily, and optimistic spinning is
+> > also unlikely to succeed.  However, leave it for later because right
+> > now kvm_vcpu_check_block() is doing memory accesses.  Even
+> > though the TLB flush issue only applies to virtual memory address,
+> > it's very much preferrable to be conservative.
+> >
+> > Reported-by: Jann Horn <jannh@google.com>
+> > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> > Signed-off-by: Sasha Levin <sashal@kernel.org>
+>
+> This feature was introduced in commit f38a7b75267f1f (first in 4.16).
+> I think the fix has to be applied all the way back to there (so
+> additionally to what you already did, it'd have to be added to 4.19,
+> 5.4 and 5.10)?
+>
+> But it doesn't seem to apply cleanly to those older branches. Paolo,
+> are you going to send stable backports of this?
 
-Unless the default is less than the max, shouldn't the max here be 1 
-less than the h/w max?
-
-> +
->    num-lanes:
->      description:
->        Number of PCIe link lanes to use. Can be omitted should the already
-> diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
-> index dcd521aed213..fc3b5d4ac245 100644
-> --- a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
-> +++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
-> @@ -55,4 +55,6 @@ examples:
->  
->        phys = <&pcie_phy0>, <&pcie_phy1>, <&pcie_phy2>, <&pcie_phy3>;
->        phy-names = "pcie0", "pcie1", "pcie2", "pcie3";
-> +
-> +      max-link-speed = <3>;
->      };
-> diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml b/Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml
-> index 4a5c8b933b52..01cedf51e0f8 100644
-> --- a/Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml
-> +++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml
-> @@ -74,4 +74,5 @@ examples:
->        phy-names = "pcie";
->  
->        num-lanes = <1>;
-> +      max-link-speed = <3>;
-
-This should give you an error because pci-bus.yaml only goes up to 4. 
-
-I'm not really sure that limiting it in the common schema is too useful. 
-We're going to be updating it one step at a time. Limiting it is really 
-only helpful for specific implementations.
-
-Patch 1 didn't apply for me, so none of the checks ran.
-
-Rob
+Also, I think the same thing applies for "KVM: x86: do not set
+st->preempted when going back to user space"?
