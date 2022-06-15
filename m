@@ -2,112 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D32CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:08:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358377AbiFOSIr (ORCPT
+        id S1358398AbiFOSIt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:08:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50906 "EHLO
+        Wed, 15 Jun 2022 14:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358174AbiFOSIc (ORCPT
+        with ESMTP id S1357824AbiFOSIZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:08:32 -0400
-Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC722CDDF
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:08:30 -0700 (PDT)
-Received: by mail-vs1-xe2a.google.com with SMTP id i186so12503347vsc.9
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:08:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bifXozJGbo2KT995FRrx29MncDAj30k/nMYRikNI7Us=;
-        b=k67Cqug/KGcfDfJvUGzGpDoRMkM0wQGv3NOMJFcL85FnMSa/n+LmSaJrbs8kgHdf/+
-         0AhX+ZANP6ffNUhunuMIwTOc0dHv9naqexOTZFgK7Gmbgjvo1Oe7KoaiPAqPoZdfwAIM
-         SdKZNTFvMfU9hqOlDyKaCAUaawN2yJjBYfQowfwnsZ30l6I6IzRyUB5QJGx1qCb/w7yx
-         kUaSet8RG8bneb51mfOK8eEUq7HDBM5l4TwNBU2IWwkPs80mgMwQZPx26uKoHWQVUfqV
-         ka9aYYCNP5aqGB1zHAdqhuetl5szBdwsuiwefa/98RZ/uoq43Mm1VzzXpfi3zSc4Mut5
-         /+8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bifXozJGbo2KT995FRrx29MncDAj30k/nMYRikNI7Us=;
-        b=xou/4PduOhbZtY1FyuXNf+vc9xVYoJU3lclb/4tL0Pf//uaStWWRXnLxWwC+H0T5+X
-         dRZ2nAIcZVfv495u4yqJUkuIUH1J5TSpjM2aES1cOcdQyIepfEWsekrbqZfZti1ZI2Zu
-         M2PEiueiW6BHRnJekziyQLAW2G3kGAsYd9Qd2j3pnhT9g0T2g0n8S48f1FFjc2t9wRaZ
-         ovGqilCCWk6r+VO53iGJcPlL5vvR77TVqiorusvVCbL/CdXU+F67D8OvmKyqb4TgU1K1
-         xcBAasN50g1T5iSJSHXh2lpCfGp51bkSrZATjD87hB2Iwg0GvvD67CQABcE3ucIE7qWB
-         1qzQ==
-X-Gm-Message-State: AJIora/dVhHJlGIbm+XNzpAfeTvr3d/CqFNhHmQxwOhBfXlYXhEuwVXo
-        2Qu6S1Aze5fbLHgskUQeETpfL2HRbzXI1HTjjBTabg==
-X-Google-Smtp-Source: AGRyM1vm4MUmXMdIsm7m17iINrr4Dp60T17s5/so7x4+sgCh08nPSiYN7VN7nJSpqFOJcZkWGdPRZwQ/W1Hg5KzJEWA=
-X-Received: by 2002:a67:f3d0:0:b0:34b:b52d:d676 with SMTP id
- j16-20020a67f3d0000000b0034bb52dd676mr520254vsn.6.1655316509460; Wed, 15 Jun
- 2022 11:08:29 -0700 (PDT)
+        Wed, 15 Jun 2022 14:08:25 -0400
+X-Greylist: delayed 392 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Jun 2022 11:08:20 PDT
+Received: from rere.qmqm.pl (rere.qmqm.pl [91.227.64.183])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41C22CDDF;
+        Wed, 15 Jun 2022 11:08:20 -0700 (PDT)
+Received: from remote.user (localhost [127.0.0.1])
+        by rere.qmqm.pl (Postfix) with ESMTPSA id 4LNY612pVczB6;
+        Wed, 15 Jun 2022 20:01:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
+        t=1655316105; bh=Qlj8vZLxK6jMlUOlp+k6Y3l54kWTL/nElyfzEw7brv8=;
+        h=Date:From:To:Subject:References:In-Reply-To:From;
+        b=VvFyJEA/pCKMQ4hK9Fktm+97n7S48+Diqj/v6IpTq00nWkdEOw6mfdyKnlecsJD6j
+         jYzFD8s3vVEUihEuGVsw4fqrNGF9KaYemSmRRLFK2ztQsUM6q0IRiO6se0QeBLPYBJ
+         q4c01+aztUsDRFBUa/RBMZxf0mOPddVbIix9X3E7iqa/oO7s1DV2s9Bg5Qb0jFsDUU
+         dqJfRfnkrPczbTdavLgGS+EV2XIQGaEO7AH459cels2qnfovIdtPVWKDCupYDiC6uu
+         gCx/xZvAiIDjL58PNXgWAoG2zHj+vbuRRlRrXcntbT4s1L1rlIsdM9+SlE5VstLMuW
+         c2qkRaYfcSQNA==
+X-Virus-Status: Clean
+X-Virus-Scanned: clamav-milter 0.103.6 at mail
+Date:   Wed, 15 Jun 2022 20:01:41 +0200
+From:   =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
+To:     Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] i2c: core: fix potential use-after-free on adapter
+ removal
+Message-ID: <YqoehVjd5qgEYSen@qmqm.qmqm.pl>
+References: <a9dc272e4e06db661125b7b4c330821b532afc4d.1642209079.git.mirq-linux@rere.qmqm.pl>
+ <YqjlZuFGl0dAUZyd@shikoro>
 MIME-Version: 1.0
-References: <20220504002554.654642-1-Liam.Howlett@oracle.com>
- <20220504011345.662299-1-Liam.Howlett@oracle.com> <20220504011345.662299-13-Liam.Howlett@oracle.com>
- <Yp3udPy0vuDK8khc@qian> <20220606161940.fh5edq5nyz4jru2u@revolver>
- <Yp4uD8uWB3rit/Ee@qian> <CAOUHufZk+3xCqK38CuVdWg_ZiWaLyke+Y+=CYJpraET6nKQ=yQ@mail.gmail.com>
- <CAOUHufbOz66HPebrCuJXfnfapY0qxu42-1Ppbti86Yii-GYsAQ@mail.gmail.com> <20220615142508.mtp65w6tdiurtvcn@revolver>
-In-Reply-To: <20220615142508.mtp65w6tdiurtvcn@revolver>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Wed, 15 Jun 2022 12:07:53 -0600
-Message-ID: <CAOUHufaoZ99qkBfsRWwCAx6fspL5KJYgCGe=nOVR07_2dF6URQ@mail.gmail.com>
-Subject: Re: [PATCH v9 28/69] mm/mmap: reorganize munmap to use maple states
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     Qian Cai <quic_qiancai@quicinc.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-2
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YqjlZuFGl0dAUZyd@shikoro>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 8:25 AM Liam Howlett <liam.howlett@oracle.com> wrote:
->
-> * Yu Zhao <yuzhao@google.com> [220611 17:50]:
-> > On Sat, Jun 11, 2022 at 2:11 PM Yu Zhao <yuzhao@google.com> wrote:
-> > >
-> > > On Mon, Jun 6, 2022 at 10:40 AM Qian Cai <quic_qiancai@quicinc.com> wrote:
-> > > >
-> > > > On Mon, Jun 06, 2022 at 04:19:52PM +0000, Liam Howlett wrote:
-> > > > > Does your syscall fuzzer create a reproducer?  This looks like arm64
-> > > > > and says 5.18.0-next-20220603 again.  Was this bisected to the patch
-> > > > > above?
-> > > >
-> > > > This was triggered by running the fuzzer over the weekend.
-> > > >
-> > > > $ trinity -C 160
-> > > >
-> > > > No bisection was done. It was only brought up here because the trace
-> > > > pointed to do_mas_munmap() which was introduced here.
-> > >
-> > > Liam,
-> > >
-> > > I'm getting a similar crash on arm64 -- the allocator is madvise(),
-> > > not mprotect(). Please take a look.
-> >
-> > Another crash on x86_64, which seems different:
->
-> Thanks for this.  I was able to reproduce the other crashes that you and
-> Qian reported.  I've sent out a patch set to Andrew to apply to the
-> branch which includes the fix for them and an unrelated issue discovered
-> when I wrote the testcases to cover what was going on here.
+On Tue, Jun 14, 2022 at 09:45:42PM +0200, Wolfram Sang wrote:
+> Hi Micha³,
+> 
+> I finally had a look at your patch...
+> 
+> > put_device(&adap->dev) might free the memory pointed to by `adap`,
+> > so we shouldn't read adap->owner after that.
+> > 
+> > Fix by saving module pointer before calling put_device().
+> 
+> ... and found a different approach for this problem from 2019:
+> 
+> http://patchwork.ozlabs.org/project/linux-i2c/patch/1577439272-10362-1-git-send-email-vulab@iscas.ac.cn/
+> 
+> I think this is also proper. I found other subsystems in the kernel
+> first putting the module, then the device. Do you see problems with the
+> above patch?
+> 
+> Thanks for looking into the issue!
 
-Thanks. I'm restarting the test and will report the results in a few hours.
+Hi!
 
-> > BUG: KASAN: slab-out-of-bounds in mab_mas_cp+0x2d9/0x6c0
-> > Write of size 136 at addr ffff88c5a2319c80 by task stress-ng/18461
-                                                       ^^^^^^^^^
+I looked briefly at the kobject machinery and it seems to ignore module
+dependencies. So while both approaches might work, I'd usually reverse
+the order the init code is using: in this case module_get+device_get,
+so on release: device_put+module_put. I don't know what keeps the kernel
+from unloading the module after module_put() and before the function
+returns, but I assume that would blow up for both patches.
 
-> As for this crash, I was unable to reproduce and the code I just sent
-> out changes this code a lot.  Was this running with "trinity -c madvise"
-> or another use case/fuzzer?
+Best Regards
+Micha³ Miros³aw
 
-This is also stress-ng (same as the one on arm64). The test stopped
-before it could try syzkaller (fuzzer).
+> > 
+> > Signed-off-by: Micha³ Miros³aw <mirq-linux@rere.qmqm.pl>
+> > ---
+> >  drivers/i2c/i2c-core-base.c | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+> > index 2c59dd748a49..5d694f8ce9ef 100644
+> > --- a/drivers/i2c/i2c-core-base.c
+> > +++ b/drivers/i2c/i2c-core-base.c
+> > @@ -2464,11 +2464,14 @@ EXPORT_SYMBOL(i2c_get_adapter);
+> >  
+> >  void i2c_put_adapter(struct i2c_adapter *adap)
+> >  {
+> > +	struct module *owner;
+> > +
+> >  	if (!adap)
+> >  		return;
+> >  
+> > +	owner = adap->owner;
+> >  	put_device(&adap->dev);
+> > -	module_put(adap->owner);
+> > +	module_put(owner);
+> >  }
+> >  EXPORT_SYMBOL(i2c_put_adapter);
+> >  
+> > -- 
+> > 2.30.2
+> > 
+
+
+
+-- 
+Micha³ Miros³aw
