@@ -2,126 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E62FFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A349BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349731AbiFORrQ (ORCPT
+        id S1357385AbiFORrb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
+        Wed, 15 Jun 2022 13:47:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243182AbiFORrN (ORCPT
+        with ESMTP id S245041AbiFORr2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:47:13 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C59C54037
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:47:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655315232; x=1686851232;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9HiCA51SRONvHgM/bRjjatEdWaF6sXtZEEtO7ayhDgs=;
-  b=IxRxdE2WoGwsNDIxGwjeIHsPaWhzjLjBYgEbC0SRKZTiTtTrS22CQ0Fc
-   OyL/tgkzBqheaWxM8wXTt/LhIXCH3HeMSl0gkIjpS/xWhXk+qSHl6G+/B
-   8DfAyCucHDEjsQianide3ujfkvppGdV86+P5fYm0L4VIEpK6HqID0U1XP
-   AaOTZsVyCZafdNy5I1rTjtR0nNgtegOkStqrIyRKYWBbSqy3CMo9RjPT3
-   MZceYf3tNZNz3haC723eHnYen1YgVKqZujYi5uhn4DRadyM5rQvpmKrdo
-   k9wQbHSZPH0VObSHoMbOcFdbjZcT7Dtmd1+hTvIH9fSBmMcdE65yuR2id
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="280085794"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="280085794"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 10:47:11 -0700
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="536143684"
-Received: from schen9-mobl.amr.corp.intel.com ([10.209.78.147])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 10:47:11 -0700
-Message-ID: <64e3e50508b0bf27ed5d6957161e2b3631c1164b.camel@linux.intel.com>
-Subject: Re: [RFC PATCH 0/3] Cgroup accounting of memory tier usage
-From:   Tim Chen <tim.c.chen@linux.intel.com>
-To:     Ying Huang <ying.huang@intel.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>,
-        Shakeel Butt <shakeelb@google.com>
-Date:   Wed, 15 Jun 2022 10:47:11 -0700
-In-Reply-To: <68b6a7e92d48a3285a5707378459bb9ae805f333.camel@intel.com>
-References: <cover.1655242024.git.tim.c.chen@linux.intel.com>
-         <68b6a7e92d48a3285a5707378459bb9ae805f333.camel@intel.com>
+        Wed, 15 Jun 2022 13:47:28 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899F6229;
+        Wed, 15 Jun 2022 10:47:26 -0700 (PDT)
+Received: from [IPv6:2003:f8:3f08:ad00:4f10:e432:a44c:8e65] (p200300f83f08ad004f10e432a44c8e65.dip0.t-ipconnect.de [IPv6:2003:f8:3f08:ad00:4f10:e432:a44c:8e65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: jluebbe@lasnet.de)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id C6C94C0747;
+        Wed, 15 Jun 2022 19:47:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lasnet.de; s=2021;
+        t=1655315241;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9bz2STt3kmdDn2VeVPZgDH8qBkZlDCUWWkMWbxg3vV8=;
+        b=JXvpMPg5zJiUlnfeUG5vuPjKWS3deA/7wOON1oCwrC4EhjLjeBDdi1/RAN5Z4lj3VdNER9
+        p2Z6zB+JpIcMlMug3EuqosgSrBISYDBhUn2objvZiF5OifzA7AjN//b4DQGoBjzakkXEOs
+        /8A5itR9sR1UU8GumA5llZC2F2ga2URSMCuNT7ML7qtDuztN1ZSeVoW6s2YBw7osS+WNVe
+        aWEAoxLmOBlIgqBzz/HPuuDhDYqcl0t+yCTT5pzT2RQBS0cG8pQ1x1GjnjEMvo2RFtzFwb
+        OeD+zD0cF/n7Nri2QsFd7h094QFkDXbTvkX1FG1eTkcL/GBTojkn3xHDgY5Oaw==
+Message-ID: <3d0991cf30d6429e8dd059f7e0d1c54a2200c5a0.camel@lasnet.de>
+Subject: Re: [REGRESSION] connection timeout with routes to VRF
+From:   Jan Luebbe <jluebbe@lasnet.de>
+To:     David Ahern <dsahern@kernel.org>,
+        Robert Shearman <robertshearman@gmail.com>,
+        Andy Roulin <aroulin@nvidia.com>
+Cc:     Mike Manning <mvrmanning@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        regressions@lists.linux.dev,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Date:   Wed, 15 Jun 2022 19:47:44 +0200
+In-Reply-To: <6410890e-333d-5f0e-52f2-1041667c80f8@kernel.org>
+References: <a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de>
+         <6410890e-333d-5f0e-52f2-1041667c80f8@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-15 at 12:58 +0800, Ying Huang wrote:
-> On Tue, 2022-06-14 at 15:25 -0700, Tim Chen wrote:
-> > For controlling usage of a top tiered memory by a cgroup, accounting
-> > of top tier memory usage is needed.  This patch set implements the
-> > following:
+On Sat, 2022-06-11 at 10:44 -0600, David Ahern wrote:
+> On 6/11/22 5:14 AM, Jan Luebbe wrote:
+> > Hi,
 > > 
-> > Patch 1 introduces interface and simple implementation to retrieve
-> > 	cgroup tiered memory usage
-> > Patch 2 introduces more efficient accounting with top tier memory page counter 
-> > Patch 3 provides a sysfs interface to repot the the top tiered memory
-> > 	usage.
+> > TL;DR: We think we have found a regression in the handling of VRF route
+> > leaking
+> > caused by "net: allow binding socket in a VRF when there's an unbound
+> > socket"
+> > (3c82a21f4320).
+> 
+> This is the 3rd report in the past few months about this commit.
+> 
+> ...
+
+Hmm, I've not been able to find other reports. Could you point me to them?
+
 > > 
-> > The patchset works with Aneesh's v6 memory-tiering implementation [1].
-> > It is a preparatory patch set before introducing features to
-> > control top tiered memory in cgroups.
+> > Our minimized test case looks like this:
+> >  ip rule add pref 32765 from all lookup local
+> >  ip rule del pref 0 from all lookup local
+> >  ip link add red type vrf table 1000
+> >  ip link set red up
+> >  ip route add vrf red unreachable default metric 8192
+> >  ip addr add dev red 172.16.0.1/24
+> >  ip route add 172.16.0.0/24 dev red
+> >  ip vrf exec red socat -dd TCP-LISTEN:1234,reuseaddr,fork SYSTEM:"echo
+> > connected" &
+> >  sleep 1
+> >  nc 172.16.0.1 1234 < /dev/null
 > > 
-> > I'll like to first get feedback to see if 
-> > (1) Controllng the topmost tiered memory is enough 
-> > or
-> > (2) Multiple tiers at the top levels need to be grouped into "toptier"
-> > or
 > 
-> If we combine top-N tiers, I think the better name could be "fast-tier",
-> in contrast to "slow-tier".
+> ...
+> Thanks for the detailed analysis and reproducer.
 > 
-
-I can see use cases for grouping tiers. For example, it makese sense for HBM and 
-DRAM tiers be grouped together into a "fast-tier-group".
-
-To make things simple, we can define any tiers above or equal
-to the rank of DRAM will belong to this fast-tier-group.
-
-An implication for page promotion/demotion is it needs
-to take tier grouping into consideration.  You want to demote
-pages away from current tier-group.  For example,
-you want to demote HBM (fast-tier-group) into PMEM (slow-tier-group)
-instead of into DRAM (fast-tier-group).  
-
-The question is whether fast/slow tier groups are sufficient.
-Or you need fast/slow/slower groups?
-
-> > (3) There are use cases not covered by (1) and (2). 
+> > 
+> > The partial revert
+> > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> > index 98e1ec1a14f0..41e7f20d7e51 100644
+> > --- a/include/net/inet_hashtables.h
+> > +++ b/include/net/inet_hashtables.h
+> > @@ -310,8 +310,9 @@ static inline struct sock *inet_lookup_listener(struct
+> > net *net,
+> >  #define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif,
+> > __sdif) \
+> >         (((__sk)->sk_portpair == (__ports))                     &&      \
+> >          ((__sk)->sk_addrpair == (__cookie))                    &&      \
+> > -        (((__sk)->sk_bound_dev_if == (__dif))                  ||      \
+> > -         ((__sk)->sk_bound_dev_if == (__sdif)))                &&      \
+> > +        (!(__sk)->sk_bound_dev_if      ||                              \
+> > +          ((__sk)->sk_bound_dev_if == (__dif))                 ||      \
+> > +          ((__sk)->sk_bound_dev_if == (__sdif)))               &&      \
+> >          net_eq(sock_net(__sk), (__net)))
+> >  #else /* 32-bit arch */
+> >  #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
+> > @@ -321,8 +322,9 @@ static inline struct sock *inet_lookup_listener(struct
+> > net *net,
+> >         (((__sk)->sk_portpair == (__ports))             &&              \
+> >          ((__sk)->sk_daddr      == (__saddr))           &&              \
+> >          ((__sk)->sk_rcv_saddr  == (__daddr))           &&              \
+> > -        (((__sk)->sk_bound_dev_if == (__dif))          ||              \
+> > -         ((__sk)->sk_bound_dev_if == (__sdif)))        &&              \
+> > +        (!(__sk)->sk_bound_dev_if      ||                              \
+> > +          ((__sk)->sk_bound_dev_if == (__dif))         ||              \
+> > +          ((__sk)->sk_bound_dev_if == (__sdif)))       &&              \
+> >          net_eq(sock_net(__sk), (__net)))
+> >  #endif /* 64-bit arch */
+> > 
+> > restores the original behavior when applied on v5.18. This doesn't apply
+> > directly on master, as the macro was replaced by an inline function in
+> > "inet:
+> > add READ_ONCE(sk->sk_bound_dev_if) in INET_MATCH()" (4915d50e300e).
+> > 
+> > I have to admit I don't quite understand 3c82a21f4320, so I'm not sure how
+> > to proceed. What would be broken by the partial revert above? Are there
+> > better ways to configure routing into the VRF than simply "ip route add
+> > 172.16.0.0/24 dev red" that still work?
+> > 
+> > Thanks,
+> > Jan
+> > 
+> > #regzbot introduced: 3c82a21f4320
+> > 
+> > 
+> > 
 > 
-> Is it necessary to control memory usage of each tier (except the
-> lowest/slowest)?  I am not the right person to answer the question, but
-> I want to ask it.
-> 
+> Andy Roulin suggested the same fix to the same problem a few weeks back.
+> Let's do it along with a test case in fcnl-test.sh which covers all of
+> these vrf permutations.
 
-I have the same question.
+Thanks! I'd be happy to test any patch in our real setup.
 
-Tim
+Regards,
+Jan
 
 
