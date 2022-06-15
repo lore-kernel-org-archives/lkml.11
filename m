@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1849ACCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 05:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50427C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 05:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345959AbiFOFN2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 01:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37214 "EHLO
+        id S243490AbiFOFNl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 01:13:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245729AbiFOFNM (ORCPT
+        with ESMTP id S1345236AbiFOFNQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 01:13:12 -0400
+        Wed, 15 Jun 2022 01:13:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E0D27B0A
-        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 22:13:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76DE27FD5
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 22:13:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1D0C6164D
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:13:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 424DDC3411B;
-        Wed, 15 Jun 2022 05:13:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73AD061690
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:13:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00E4FC3411F;
+        Wed, 15 Jun 2022 05:13:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655269991;
-        bh=5SLS/K/WO5NPoG6nosQIx5zbsicGDMXiC+LrsQiUdaE=;
+        s=k20201202; t=1655269994;
+        bh=pMu/iPTPt+7snGnGf7n7Le6i011YyhLzHZlK+Kum9iQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f5sOmv6FSap7n32AGDTO3VcIvuGYBym1VQoFHYYEymvyDUZcEuoWozMtlHsxNhvQD
-         TFAYl9kmtOsBiBeRS6quY6woXPiFPrrrs45zEYpVlqdYI8KeCrCkeyUxbUiCVvePzn
-         IrO/9psvEMHZJmzpNAEwGG04INLPyAlBZPbOOdTROG4ZNgaDOt1r9+PiI+YZca+mlS
-         eL+g8emG9HtHD/YKONkbQSrl5bRWF70qD3m6AHhQr/VXOtdEjLFfWYyx2S24gEeI7n
-         9OvLw0YxluuK5cvfasF2dDzI7KnSos6vlHTCsPDLt/tshK8f3eIt66R8nq9QFAxLA8
-         r/7rddHzXC0Gw==
+        b=ZO+PAazBmnEIlX9gNI2US1eLAX8sqXpT/ZmgnrbiUqf1/pyOYuMI6je9Do44OAJvl
+         hGpQjFUkew4YHj1PLHCpjzfQ7/QM+hBJCqulx8xQZAkoMPgVK7d/eKizqyqZMFGAiN
+         NvnPtg8lCpESXJM+Q7gXjmJ3WTAS35imI3vhlQOz/NuT1AaIZuiBgTaGB7wdjTylQf
+         gF1J+RJ+DjMgDCHYMAAEf097ZkqHAD8oE2y0GV9Q4u+UE/8buMj814xlGYVu7CD3oo
+         sAcL10+o8t1VxmZx3/6/5AoQ7Pq6J702HGi0Z1J7imfSZ80Rx0leQaw2Sfn15XfcIl
+         iMLhWcdV//tIA==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 06/11] platform/chrome: cros_ec_proto: change Kunit expectation when timed out
-Date:   Wed, 15 Jun 2022 05:12:43 +0000
-Message-Id: <20220615051248.1628156-7-tzungbi@kernel.org>
+Subject: [PATCH 09/11] platform/chrome: cros_ec_proto: return standard error codes for EC errors
+Date:   Wed, 15 Jun 2022 05:12:46 +0000
+Message-Id: <20220615051248.1628156-10-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
 In-Reply-To: <20220615051248.1628156-1-tzungbi@kernel.org>
 References: <20220615051248.1628156-1-tzungbi@kernel.org>
@@ -49,32 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While EC_COMMS_STATUS_PROCESSING flag is still on after it tries
-EC_COMMAND_RETRIES times for sending EC_CMD_GET_COMMS_STATUS,
-cros_ec_wait_until_complete() doesn't return an error code.
+cros_ec_wait_until_complete() checks `msg->result` for
+EC_CMD_GET_COMMS_STATUS.  However, it doesn't return standard error codes
+like most of others.
 
-Change the expectation to an error code.
+Use cros_ec_map_error() to align them.
 
 Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 ---
- drivers/platform/chrome/cros_ec_proto_test.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/platform/chrome/cros_ec_proto.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
-index 64100fd81c6a..fbb872040711 100644
---- a/drivers/platform/chrome/cros_ec_proto_test.c
-+++ b/drivers/platform/chrome/cros_ec_proto_test.c
-@@ -1870,9 +1870,7 @@ static void cros_ec_proto_test_cmd_xfer_in_progress_retries_status_processing(st
- 	}
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index 49772a4c5353..5323edddb540 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -138,7 +138,7 @@ static int cros_ec_wait_until_complete(struct cros_ec_device *ec_dev, uint32_t *
+ {
+ 	struct cros_ec_command *msg;
+ 	struct ec_response_get_comms_status *status;
+-	int ret = 0, i;
++	int ret = 0, i, mapped;
  
- 	ret = cros_ec_cmd_xfer(ec_dev, &msg);
--	KUNIT_EXPECT_EQ(test, ret, sizeof(struct ec_response_get_comms_status));
--
--	KUNIT_EXPECT_EQ(test, msg.result, EC_RES_SUCCESS);
-+	KUNIT_EXPECT_EQ(test, ret, -EAGAIN);
+ 	msg = kzalloc(sizeof(*msg) + sizeof(*status), GFP_KERNEL);
+ 	if (!msg)
+@@ -160,8 +160,11 @@ static int cros_ec_wait_until_complete(struct cros_ec_device *ec_dev, uint32_t *
+ 			break;
  
- 	/* For EC_CMD_GET_COMMS_STATUS EC_COMMAND_RETRIES times. */
- 	KUNIT_EXPECT_EQ(test, cros_kunit_ec_pkt_xfer_mock_called, 51);
+ 		*result = msg->result;
+-		if (msg->result != EC_RES_SUCCESS)
++		mapped = cros_ec_map_error(msg->result);
++		if (mapped) {
++			ret = mapped;
+ 			break;
++		}
+ 
+ 		if (!(status->flags & EC_COMMS_STATUS_PROCESSING))
+ 			break;
 -- 
 2.36.1.476.g0c4daa206d-goog
 
