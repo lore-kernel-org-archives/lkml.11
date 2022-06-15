@@ -2,239 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ACDDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79663C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349915AbiFONrG (ORCPT
+        id S1348537AbiFONrL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55454 "EHLO
+        Wed, 15 Jun 2022 09:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347236AbiFONq4 (ORCPT
+        with ESMTP id S1349094AbiFONrC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:46:56 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1500036177
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:46:52 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id x5so16255756edi.2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:46:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dneg.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yEvIXRPucn+6BeLmS4BVfzZdrrJJq6QW6xPZWAKt890=;
-        b=TXvEcZJ6ukZF/jYGwYFRRsN7SSyIAITCDv6vV7w6T62/Sst+VBOlstW+1l9SjzNkee
-         iIPsLded/ZzOmM6pzdrksIWaVV3rO5ytVyiD9RnaENYVCROlCY7iuV+k/PfbBIhJm6dM
-         JAjCL6lO3TJHOWbm/8qNlZ/kCqjDLCj/MteoPaGcgG5cUZpwEdDDszdlokoPkUNtrX1h
-         K7oVdOfABXhFKkieeowcFzgPMjXnaoI1nPuRFJh5vTyHQhdoWlp81L5y2tQhtw32eUaj
-         MIgEsi9zxdqBuMsnvAiQ6OhQRtmlCQvzonbRdTwow7+I9auMZB5udDp1vdvRKHwUoQJv
-         oukA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yEvIXRPucn+6BeLmS4BVfzZdrrJJq6QW6xPZWAKt890=;
-        b=Ql7/TXto7Y5KyaH2dxFIWeZtDm7u7aXTiPZZwddEhoEN6Q68OvWHBVMLvo2Vd2mgMz
-         eg093/XMY1R8uoAnxuDc5m0evKxAzLanHDZwngJviKbu9HP8VJMC6kfRI4ZUwUyyNY6e
-         uoKF8DXwt6dbeTBGNIlo/CLjz/cuof+UF+wBZFDFebqYUikLi0ZxBt2Q1wTilietmU0g
-         A8ESVC/WDe9ZjPwz15FpkhouUc6AcJ+gp5GLbjdnSeYlx5+APyrgH+eMGNxqWZyya26x
-         fP7GI+wwGvA4QRQqS7J0D4O1sxIQVwaYwGUyL+sFsvawrF6JM58r8Tn+CPWBhH/SEcpP
-         zMcQ==
-X-Gm-Message-State: AOAM531FKG7gpUThlKrjm69FnmFU6TxqE8MuqFAecwIOpEACxedeZu4P
-        lF+GyK4ecpm/BNGDmTWWETDux6cXv7WeDiGNePd43A==
-X-Google-Smtp-Source: AGRyM1s8Cf0Mj8Z/SnwwdeplHCi9y7diCjvcjZeMNKYhT4Tcd2GK0VSRetUi9ShVrGPYME0EWDocAtyOZ3tSiSV9oJE=
-X-Received: by 2002:a50:9f88:0:b0:42d:f7d2:1b7b with SMTP id
- c8-20020a509f88000000b0042df7d21b7bmr12938702edf.139.1655300811013; Wed, 15
- Jun 2022 06:46:51 -0700 (PDT)
+        Wed, 15 Jun 2022 09:47:02 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE1038BFA;
+        Wed, 15 Jun 2022 06:47:01 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id E105D21C44;
+        Wed, 15 Jun 2022 13:46:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1655300819; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=t8c6ISAdYWh/3XpBO9dSTJ2YoEerDJCxg3v6Cg36NWI=;
+        b=ebBHbnYZMWGRp7C4ce9eYigmVRAlcjPIk/98LGdgKWQfvlsNZyq4CezBMmipkcMDDO5CgT
+        p3yD8OzAhioZsuL+R09saUbA0FGzYil8/TgufQFqDDJ23uE6T8SBE1ULe6pDaZSuOVm2a9
+        LDZDTV90P2TZOZe0xECHv56qnT+juCQ=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A890113A35;
+        Wed, 15 Jun 2022 13:46:59 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id VmCWJ9PiqWKiLAAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 15 Jun 2022 13:46:59 +0000
+Message-ID: <0a1501fc-e03f-8a1d-76a1-c115606c6278@suse.com>
+Date:   Wed, 15 Jun 2022 15:46:59 +0200
 MIME-Version: 1.0
-References: <165516173293.21248.14587048046993234326.stgit@noble.brown>
-In-Reply-To: <165516173293.21248.14587048046993234326.stgit@noble.brown>
-From:   Daire Byrne <daire@dneg.com>
-Date:   Wed, 15 Jun 2022 14:46:14 +0100
-Message-ID: <CAPt2mGNjWXad6e7nSUTu=0ez1qU1wBNegrntgHKm5hOeBs5gQA@mail.gmail.com>
-Subject: Re: [PATCH RFC 00/12] Allow concurrent directory updates.
-To:     NeilBrown <neilb@suse.de>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] xen: don't require virtio with grants for non-PV guests
+Content-Language: en-US
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     xen-devel@lists.xenproject.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+References: <20220615084835.27113-1-jgross@suse.com>
+ <YqnBZhiLOHnoalbC@infradead.org>
+ <9b9785f5-085b-0882-177f-d8418c366beb@suse.com>
+ <YqnCZ+EKZeZ5AEnr@infradead.org>
+ <c5a521e0-26b1-b1d6-7f7d-00aa9b4b1e0e@suse.com>
+ <YqnIWCXxsGzkfQp7@infradead.org>
+ <ab0653bc-7728-e24c-5d83-78cee135528c@suse.com>
+ <Yqnh7vjO8iT4/fiK@infradead.org>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <Yqnh7vjO8iT4/fiK@infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------ag0QxufSzrrpFlmYdFmtHaa1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Neil,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------ag0QxufSzrrpFlmYdFmtHaa1
+Content-Type: multipart/mixed; boundary="------------0baxSOydh0hsGx0Put4W0HVi";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Christoph Hellwig <hch@infradead.org>
+Cc: xen-devel@lists.xenproject.org, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Message-ID: <0a1501fc-e03f-8a1d-76a1-c115606c6278@suse.com>
+Subject: Re: [PATCH] xen: don't require virtio with grants for non-PV guests
+References: <20220615084835.27113-1-jgross@suse.com>
+ <YqnBZhiLOHnoalbC@infradead.org>
+ <9b9785f5-085b-0882-177f-d8418c366beb@suse.com>
+ <YqnCZ+EKZeZ5AEnr@infradead.org>
+ <c5a521e0-26b1-b1d6-7f7d-00aa9b4b1e0e@suse.com>
+ <YqnIWCXxsGzkfQp7@infradead.org>
+ <ab0653bc-7728-e24c-5d83-78cee135528c@suse.com>
+ <Yqnh7vjO8iT4/fiK@infradead.org>
+In-Reply-To: <Yqnh7vjO8iT4/fiK@infradead.org>
 
-Firstly, thank you for your work on this. I'm probably the main
-beneficiary of this (NFSD) effort atm so I feel extra special and
-lucky!
+--------------0baxSOydh0hsGx0Put4W0HVi
+Content-Type: multipart/mixed; boundary="------------yO30fh0Q0Jn02q3nM59fph43"
 
-I have done some quick artificial tests similar to before where I am
-using a NFS server and client separated by an (extreme) 200ms of
-latency (great for testing parallelism). I am only using NFSv3 due to
-the NFSD_CACHE_SIZE_SLOTS_PER_SESSION parallelism limitations for
-NFSv4.
+--------------yO30fh0Q0Jn02q3nM59fph43
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Firstly, a client direct to server (VFS) with 10 simultaneous create
-processes hitting the same directory:
+T24gMTUuMDYuMjIgMTU6NDMsIENocmlzdG9waCBIZWxsd2lnIHdyb3RlOg0KPiBPbiBXZWQs
+IEp1biAxNSwgMjAyMiBhdCAwMjo1Mzo1NFBNICswMjAwLCBKdWVyZ2VuIEdyb3NzIHdyb3Rl
+Og0KPj4gT24gMTUuMDYuMjIgMTM6NTQsIENocmlzdG9waCBIZWxsd2lnIHdyb3RlOg0KPj4+
+IE9uIFdlZCwgSnVuIDE1LCAyMDIyIGF0IDAxOjM5OjAxUE0gKzAyMDAsIEp1ZXJnZW4gR3Jv
+c3Mgd3JvdGU6DQo+Pj4+IE5vLCBpdCBkb2Vzbid0LiBJJ20gd29ya2luZyBvbiBhIHFlbXUg
+cGF0Y2ggc2VyaWVzIGVuYWJsaW5nIHRoZSBxZW11DQo+Pj4+IGJhc2VkIGJhY2tlbmRzIHRv
+IHN1cHBvcnQgZ3JhbnRzIHdpdGggdmlydGlvLiBUaGUgY29kZSBpcyB3b3JraW5nIGZpbmUN
+Cj4+Pj4gb24geDg2LCB0b28gKGFwYXJ0IGZyb20gdGhlIGZhY3QgdGhhdCB0aGUgYmFja2Vu
+ZHMgYXJlbid0IHJlYWR5IHlldCkuDQo+Pj4NCj4+PiBUaGUgY29kZSByaWdodCBub3cgaW4g
+bWFpbmxpbmUgb25seSBldmVyIHNldHMgdGhlIG9wcyBmb3IgRE1BLiAgU28NCj4+PiBJIGNh
+bid0IHNlZSBob3cgeW91IGNvdWxkIG1ha2UgaXQgd29yay4NCj4+DQo+PiBBaCwgeW91IGFy
+ZSByaWdodC4gSSB3YXMgdXNpbmcgYSBndWVzdCB3aXRoIGFuIG9sZGVyIHZlcnNpb24gb2Yg
+dGhlIHNlcmllcy4NCj4+IFNvcnJ5IGZvciB0aGUgbm9pc2UuDQo+IA0KPiBObyBwcm9ibGVt
+LiAgQnV0IHdoYXRldmVyIHlvdSBlbmQgdXAgdXNpbmcgdG8gZW5hYmxlIHRoZSBncmFudCBE
+TUENCj4gb3BzIG4geDg2IHNob3VsZCBhbHNvIHJlcXVpcmUgdGhlIHBsYXRmb3JtIGFjY2Vz
+cyBmZWF0dXJlLiAgV2UgYWxyZWFkeQ0KPiBoYXZlIHRoYXQgaW5mb3JtYXRpb24gc28gd2Ug
+Y2FuIG1ha2UgdXNlIG9mIGl0Lg0KDQpZZXMsIG9mIGNvdXJzZS4NCg0KDQpKdWVyZ2VuDQo=
 
-client1 # for x in {1..1000}; do
-    echo /srv/server1/data/touch.$x
-done | xargs -n1 -P 10 -iX -t touch X 2>&1 | pv -l -a >|/dev/null
+--------------yO30fh0Q0Jn02q3nM59fph43
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
-Without the patch ( on the client), this reaches a steady state of 2.4
-creates/s and increasing the number of parallel create processes does
-not change this aggregate performance.
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
-With the patch, the creation rate increases to 15 creates/s and with
-100 processes, it further scales up to 121 creates/s.
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
 
-Now for the re-export case (NFSD) where an intermediary server
-re-exports the originating server (200ms away) to clients on it's
-local LAN, there is no noticeable improvement for a single (not
-patched) client. But we do see an aggregate improvement when we use
-multiple clients at once.
+--------------yO30fh0Q0Jn02q3nM59fph43--
 
-# pdsh -Rssh -w 'client[1-10]' 'for x in {1..1000}; do echo
-/srv/reexport1/data/$(hostname -s).$x; done | xargs -n1 -P 10 -iX -t
-touch X 2>&1' | pv -l -a >|/dev/null
+--------------0baxSOydh0hsGx0Put4W0HVi--
 
-Without the patch applied to the reexport server, the aggregate is
-around 2.2 create/s which is similar to doing it directly to the
-originating server from a single client (above).
+--------------ag0QxufSzrrpFlmYdFmtHaa1
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-With the patch, the aggregate increases to 15 creates/s for 10 clients
-which again matches the results of a single patched client. Not quite
-a x10 increase but a healthy improvement nonetheless.
+-----BEGIN PGP SIGNATURE-----
 
-However, it is at this point that I started to experience some
-stability issues with the re-export server that are not present with
-the vanilla unpatched v5.19-rc2 kernel. In particular the knfsd
-threads start to lock up with stack traces like this:
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmKp4tMFAwAAAAAACgkQsN6d1ii/Ey9o
+ZQf/bERS+itpRsVc5LubFWQpXz+QtHmp7xtjzZR9SBcdwrciAvH05Tjkabht1CobtWXS/qJwT6RP
+GpMmfNa8JTdkNTTuDai4B4d5SNOEaDdOrI4rDPlFVBUU1zny2ZdAagAGZoNXJY34m2iw74y12BIL
+42JHw3AnqXVAA/sgVMwYYGjQIccTDT2UUCqPDGL03662ZwGRV1YFPy0t4EebQx6QrrpWv4R3ixqg
+3qMhwYlsH7S2BVs2yFDc8psGlPn5uBFsayJcuiL15OLvrmKoCn16mrbLhZpDkpQBYKuym31Iduo8
+3olWAUdMp+Zn1Gc4vBKe5BP4Borm144RUhDNZURRrA==
+=VSIN
+-----END PGP SIGNATURE-----
 
-[ 1234.460696] INFO: task nfsd:5514 blocked for more than 123 seconds.
-[ 1234.461481]       Tainted: G        W   E     5.19.0-1.dneg.x86_64 #1
-[ 1234.462289] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
-disables this message.
-[ 1234.463227] task:nfsd            state:D stack:    0 pid: 5514
-ppid:     2 flags:0x00004000
-[ 1234.464212] Call Trace:
-[ 1234.464677]  <TASK>
-[ 1234.465104]  __schedule+0x2a9/0x8a0
-[ 1234.465663]  schedule+0x55/0xc0
-[ 1234.466183]  ? nfs_lookup_revalidate_dentry+0x3a0/0x3a0 [nfs]
-[ 1234.466995]  __nfs_lookup_revalidate+0xdf/0x120 [nfs]
-[ 1234.467732]  ? put_prev_task_stop+0x170/0x170
-[ 1234.468374]  nfs_lookup_revalidate+0x15/0x20 [nfs]
-[ 1234.469073]  lookup_dcache+0x5a/0x80
-[ 1234.469639]  lookup_one_unlocked+0x59/0xa0
-[ 1234.470244]  lookup_one_len_unlocked+0x1d/0x20
-[ 1234.470951]  nfsd_lookup_dentry+0x190/0x470 [nfsd]
-[ 1234.471663]  nfsd_lookup+0x88/0x1b0 [nfsd]
-[ 1234.472294]  nfsd3_proc_lookup+0xb4/0x100 [nfsd]
-[ 1234.473012]  nfsd_dispatch+0x161/0x290 [nfsd]
-[ 1234.473689]  svc_process_common+0x48a/0x620 [sunrpc]
-[ 1234.474402]  ? nfsd_svc+0x330/0x330 [nfsd]
-[ 1234.475038]  ? nfsd_shutdown_threads+0xa0/0xa0 [nfsd]
-[ 1234.475772]  svc_process+0xbc/0xf0 [sunrpc]
-[ 1234.476408]  nfsd+0xda/0x190 [nfsd]
-[ 1234.477011]  kthread+0xf0/0x120
-[ 1234.477522]  ? kthread_complete_and_exit+0x20/0x20
-[ 1234.478199]  ret_from_fork+0x22/0x30
-[ 1234.478755]  </TASK>
-
-For whatever reason, they seem to affect our Netapp mounts and
-re-exports rather than our originating Linux NFS servers (against
-which all tests were done). This may be related to the fact that those
-Netapps serve our home directories so there could be some unique
-locking patterns going on there.
-
-This issue made things a bit too unstable to test at larger scales or
-with our production workloads.
-
-So all in all, the performance improvements in the knfsd re-export
-case is looking great and we have real world use cases that this helps
-with (batch processing workloads with latencies >10ms). If we can
-figure out the hanging knfsd threads, then I can test it more heavily.
-
-Many thanks,
-
-Daire
-
-On Tue, 14 Jun 2022 at 00:19, NeilBrown <neilb@suse.de> wrote:
->
-> VFS currently holds an exclusive lock on a directory during create,
-> unlink, rename.  This imposes serialisation on all filesystems though
-> some may not benefit from it, and some may be able to provide finer
-> grained locking internally, thus reducing contention.
->
-> This series allows the filesystem to request that the inode lock be
-> shared rather than exclusive.  In that case an exclusive lock will be
-> held on the dentry instead, much as is done for parallel lookup.
->
-> The NFS filesystem can easily support concurrent updates (server does
-> any needed serialiation) so it is converted.
->
-> This series also converts nfsd to use the new interfaces so concurrent
-> incoming NFS requests in the one directory can be handled concurrently.
->
-> As a net result, if an NFS mounted filesystem is reexported over NFS,
-> then multiple clients can create files in a single directory and all
-> synchronisation will be handled on the final server.  This helps hid
-> latency on link from client to server.
->
-> I include a few nfsd patches that aren't strictly needed for this work,
-> but seem to be a logical consequence of the changes that I did have to
-> make.
->
-> I have only tested this lightly.  In particular the rename support is
-> quite new and I haven't tried to break it yet.
->
-> I post this for general review, and hopefully extra testing...  Daire
-> Byrne has expressed interest in the NFS re-export parallelism.
->
-> NeilBrown
->
->
-> ---
->
-> NeilBrown (12):
->       VFS: support parallel updates in the one directory.
->       VFS: move EEXIST and ENOENT tests into lookup_hash_update()
->       VFS: move want_write checks into lookup_hash_update()
->       VFS: move dput() and mnt_drop_write() into done_path_update()
->       VFS: export done_path_update()
->       VFS: support concurrent renames.
->       NFS: support parallel updates in the one directory.
->       nfsd: allow parallel creates from nfsd
->       nfsd: support concurrent renames.
->       nfsd: reduce locking in nfsd_lookup()
->       nfsd: use (un)lock_inode instead of fh_(un)lock
->       nfsd: discard fh_locked flag and fh_lock/fh_unlock
->
->
->  fs/dcache.c            |  59 ++++-
->  fs/namei.c             | 578 ++++++++++++++++++++++++++++++++---------
->  fs/nfs/dir.c           |  29 ++-
->  fs/nfs/inode.c         |   2 +
->  fs/nfs/unlink.c        |   5 +-
->  fs/nfsd/nfs2acl.c      |   6 +-
->  fs/nfsd/nfs3acl.c      |   4 +-
->  fs/nfsd/nfs3proc.c     |  37 +--
->  fs/nfsd/nfs4acl.c      |   7 +-
->  fs/nfsd/nfs4proc.c     |  61 ++---
->  fs/nfsd/nfs4state.c    |   8 +-
->  fs/nfsd/nfsfh.c        |  10 +-
->  fs/nfsd/nfsfh.h        |  58 +----
->  fs/nfsd/nfsproc.c      |  31 +--
->  fs/nfsd/vfs.c          | 243 ++++++++---------
->  fs/nfsd/vfs.h          |   8 +-
->  include/linux/dcache.h |  27 ++
->  include/linux/fs.h     |   1 +
->  include/linux/namei.h  |  30 ++-
->  19 files changed, 791 insertions(+), 413 deletions(-)
->
-> --
-> Signature
->
+--------------ag0QxufSzrrpFlmYdFmtHaa1--
