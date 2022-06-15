@@ -2,140 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD8ECCA47B
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85FF0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 10:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347513AbiFOKYD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 06:24:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44474 "EHLO
+        id S243327AbiFOK2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 06:28:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347519AbiFOKYA (ORCPT
+        with ESMTP id S1343591AbiFOK2G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 06:24:00 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE761129;
-        Wed, 15 Jun 2022 03:23:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655288639; x=1686824639;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HquhvexWsP/f5gyfcKiimGA3mEzHOd3dzsAoIQLW4hk=;
-  b=MhAG4ihaQAWOQCsXGwEim98sVcWMtqzvTdE1Ge+g4gCLUKvp6pDBntTg
-   tX29IKV6H6wCXtyM6ZYd08JgOHWv4K1iN7Zl9p1neX1bADudh4zXcuOQO
-   ebEovQtJbfbN2+Qrztmvv3pLOLUyWDGZnoNEcGIZGFNnFqDhjXz0AJq3O
-   CfAtFJ1DOF4WvixThaEnIZaeloQuiRfSBlVchuFAKanla43CTavdmckFL
-   JYtNgjCnHJUukonTNm6DjqqjFpA1hXC7wVEqe1zMb4iEUacH7L6V2V9Xc
-   s2etVTyUiRM1myt4CKBD7IAqr0WxaA4roOQ5vusJuYBv9al0Id/T/j262
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="261937221"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="261937221"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 03:23:58 -0700
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="674421180"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 03:23:56 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o1QBl-000dIK-SV;
-        Wed, 15 Jun 2022 13:23:53 +0300
-Date:   Wed, 15 Jun 2022 13:23:53 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Dinh Nguyen <dinguyen@kernel.org>
-Cc:     jarkko.nikula@linux.intel.com, mika.westerberg@linux.intel.com,
-        robh+dt@kernel.org, krzk+dt@kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCHv3 1/2] i2c: designware: introduce a custom scl recovery
- for SoCFPGA platforms
-Message-ID: <YqmzOT7wyCzj1mtw@smile.fi.intel.com>
-References: <20220613210032.773826-1-dinguyen@kernel.org>
- <YqmyD2w5iriUYpQf@smile.fi.intel.com>
+        Wed, 15 Jun 2022 06:28:06 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AE3101FE
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:28:01 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id y13-20020a17090a154d00b001eaaa3b9b8dso1614231pja.2
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 03:28:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=znEIzE4EgTWOiFZf5Cm3kxNmUH6IPbVNQv1UUuyV/Hc=;
+        b=qV9h/UpNmydq91H3mP6CVU6NclHsJYkwfhKtoANC/6Tu2zBT/yPUPmiRQaF/d90inO
+         tLv2mruFsa6BwzQwqBzSb2nHAcMM6DnbKRwhwxKDO7XOk7s6jDF5FQCSFAz3pJTuJYEl
+         p2TF12/VNwu5xzgYtkfUEeoSclxn2LgsBLG7z+Rp6npZcXpPOUXF9pjLz4NSabazZOe+
+         2wDQv+4nzLsoXymU0D+hO3piw8G3YSlQbtdeFRfSvTR/V4Hady+iSnrLrgyJxXL4sPPD
+         T+9JSIndQ/pgJqevcyDY0DpGxLlZyJNy2NOiPEZ151KZXZSntI6fZMjO2fYbx554bdOz
+         iwAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=znEIzE4EgTWOiFZf5Cm3kxNmUH6IPbVNQv1UUuyV/Hc=;
+        b=dMtDpMYrAPf7p3inR1vO8rRqcBSPpA0EsVmhurkbcxRiZV7UR1tG0ajSdGub1JLLex
+         Hdyd+zQeOzbndlai4WDbi2aPFog0ef8g5m7ZpZ/rWhog0afgAPZ3C0OXv0H3MuVr8MPf
+         sjlvJJUqpcWNazwDumn5iBSdFHeSsU6z5rX9eH1f88al0MGQqIBhC7QjbYMFRPaQmAzA
+         IM37dC6+ebxvov6aGBtyEsninEvn6KagPbtNpNLZzptrbHUFjuYIVUUAulrLAfe59ksK
+         miD8vs5G8b2dz8b4AxblNNJN2/HAUS8FzuVw3ZNoUtsqfdbIMlvQbRWUYpNSfVz/8ip3
+         vbuA==
+X-Gm-Message-State: AJIora8PPXs2InI16a9uS7VSpVTmVS/s25tjJ/wMvOsKzRQizK67KBlO
+        lyJuJ1rnfNOMJHaCQiGZK+I=
+X-Google-Smtp-Source: AGRyM1uylrZN/TnBR+RkyEvlG9LSFkRtn1a0pXgqvgeKkHmp20cQHxemz9ZiU5FVzwHH9jENOzszIw==
+X-Received: by 2002:a17:903:41c6:b0:164:1050:49ac with SMTP id u6-20020a17090341c600b00164105049acmr8762042ple.138.1655288881189;
+        Wed, 15 Jun 2022 03:28:01 -0700 (PDT)
+Received: from localhost ([122.183.153.161])
+        by smtp.gmail.com with ESMTPSA id g2-20020aa78182000000b0051bf246ca2bsm9407279pfi.100.2022.06.15.03.27.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 03:28:00 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 12:27:57 +0200
+From:   Pankaj Raghav <pankydev8@gmail.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "R, Monish Kumar" <monish.kumar.r@intel.com>,
+        "open list:NVM EXPRESS DRIVER" <linux-nvme@lists.infradead.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        "alan.adamson@oracle.com" <alan.adamson@oracle.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Yi Zhang <yi.zhang@redhat.com>,
+        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
+        "Rao, Abhijeet" <abhijeet.rao@intel.com>
+Subject: Re: 2 second nvme initialization delay regression in 5.18 [Was: Re:
+ [bug report]nvme0: Admin Cmd(0x6), I/O Error (sct 0x0 / sc 0x2) MORE DNR
+ observed during blktests]
+Message-ID: <20220615102757.ugvs6vdxf66nrmyn@quentin>
+References: <CAHj4cs_iC+FE8ZAXXZPeia1V3ZX7zRbeASdOP_8c7DLiFozNfA@mail.gmail.com>
+ <Ykyf5Zuz1W8yHhNY@zx2c4.com>
+ <CAHmME9pwz4q0m-pSUy7ReWu4nNzxySNcYZrqyDZiTuGxHN=1NQ@mail.gmail.com>
+ <CAHmME9o-orF52HzkT80054e3Op5fLOcTHb-KHpvvU7H3FpAJ7A@mail.gmail.com>
+ <SA2PR11MB5115DCE45778910C96813CA1C3A79@SA2PR11MB5115.namprd11.prod.outlook.com>
+ <YqG/pybFg0P5yQ9a@zx2c4.com>
+ <20220610061449.GD24331@lst.de>
+ <YqMMo2Dv9SZRtR7B@zx2c4.com>
+ <20220613135549.GA1714@lst.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YqmyD2w5iriUYpQf@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220613135549.GA1714@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 01:18:55PM +0300, Andy Shevchenko wrote:
-> On Mon, Jun 13, 2022 at 04:00:31PM -0500, Dinh Nguyen wrote:
-
-
-The below won't fly, see my corrections below.
-
-> static int i2c_dw_init_socfpga_recovery_info(struct dw_i2c_dev *dev,
-> 					     struct i2c_bus_recovery_info *rinfo)
-> {
-> 	rinfo->recover_bus = i2c_socfpga_scl_recovery;
-> 	return 0;
-
-	return 1;
-
-> }
+Hi Christoph,
+On Mon, Jun 13, 2022 at 03:55:49PM +0200, Christoph Hellwig wrote:
+> It all appears as PCIe, but the pci_dev has an is_thunderbolt flag.
 > 
-> static int i2c_dw_init_generic_recovery_info(struct dw_i2c_dev *dev,
-> 					     struct i2c_bus_recovery_info *rinfo)
-> {
-> 	struct i2c_adapter *adap = &dev->adapter;
-> 	struct gpio_desc *gpio;
+> Thanks to both of you for the information.  I'd like to wait until the
+> end of the week or so if we can hear something from Samsung, and if we
+> don't we'll have to quirk based on the model number.
+Our FW team has started looking into the issue. They said they will try
+to come up with a solution before 5.20. If not, we can add this quirk
+based on the FW ver. and a proper solution can be added by 5.21.
 > 
-> 	gpio = devm_gpiod_get_optional(dev->dev, "scl", GPIOD_OUT_HIGH);
-> 	if (IS_ERR_OR_NULL(gpio))
-> 		return PTR_ERR_OR_ZERO(gpio);
-> 
-> 	rinfo->scl_gpiod = gpio;
-> 
-> 	gpio = devm_gpiod_get_optional(dev->dev, "sda", GPIOD_IN);
-> 	if (IS_ERR(gpio))
-> 		return PTR_ERR(gpio);
-> 	rinfo->sda_gpiod = gpio;
-> 
-> 	rinfo->recover_bus = i2c_generic_scl_recovery;
-> 
-> 	dev_info(dev->dev, "running with gpio recovery mode! scl%s",
-> 		 rinfo->sda_gpiod ? ",sda" : "");
-> 
-> 	return 0;
-
-	return 1;
-
-> }
-> 
-> static int i2c_dw_init_recovery_info(struct dw_i2c_dev *dev)
-> {
-> 	struct i2c_bus_recovery_info *rinfo = &dev->rinfo;
-> 	struct i2c_adapter *adap = &dev->adapter;
-> 	int ret;
-> 
-> 	switch (dev->flags & MODEL_MASK) {
-> 	case MODEL_SOCFPGA:
-> 		ret = i2c_dw_init_socfpga_recovery_info(dev, rinfo);
-> 		break;
-> 	default:
-> 		ret = i2c_dw_init_generic_recovery_info(dev, rinfo);
-> 		break;
-> 	}
-> 	if (ret)
-
-	/* The recovery is optional, that's why 0 should be returned to the caller */
-	if (ret <= 0)
-
-> 		return ret;
-> 
-> 	rinfo->prepare_recovery = i2c_dw_prepare_recovery;
-> 	rinfo->unprepare_recovery = i2c_dw_unprepare_recovery;
-> 	adap->bus_recovery_info = rinfo;
-> 
-> 	return 0;
-> }
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
