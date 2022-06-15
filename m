@@ -2,56 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4114DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4BB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348737AbiFOMYY (ORCPT
+        id S1345889AbiFOMY5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 08:24:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56170 "EHLO
+        Wed, 15 Jun 2022 08:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345559AbiFOMYW (ORCPT
+        with ESMTP id S1347202AbiFOMYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 08:24:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F06123A5D7
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:24:21 -0700 (PDT)
+        Wed, 15 Jun 2022 08:24:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D67753A70F
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 05:24:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655295861;
+        s=mimecast20190719; t=1655295894;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
         bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
-        b=aHtyuZqKQLjiXCjUGEgwwziQBK4XbbkpG1tpMmhVrNcBXjkomsvofuhRznr32xVm4jGfy7
-        Qyuqa81dn8ZpXRrlog9ZmJDeehxczo4zqF3otgK9z/dd1WlpwTlLVslsXaD6KnhaI2Pj9I
-        tVz0tqoZ3Mp/Bj8kQXowhMRDvl/ggvQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        b=R/gCfE1BAzRmQmbMOUg++mBUgq0cxxbOZ7zbTpdqZUMVYsNOmDh01o9IsxELd+7YQobGBP
+        pAE2qSJT0/lPEmxzuxm3fYQrCaK/GGMm+MRXuAfzZetXzFK/lFCoTqxMOg8G22FaguO6rY
+        B5fy8Fb02zr5ecCNpYepbbJ9kRWA8ns=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-662-VkQrQLSLMi-2zNEgUK3Qbg-1; Wed, 15 Jun 2022 08:24:15 -0400
-X-MC-Unique: VkQrQLSLMi-2zNEgUK3Qbg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+ us-mta-211-nXeN3bm4NRutoVUJfLdH5A-1; Wed, 15 Jun 2022 08:24:49 -0400
+X-MC-Unique: nXeN3bm4NRutoVUJfLdH5A-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 451EC8339A8;
-        Wed, 15 Jun 2022 12:24:15 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 09F643C10153;
+        Wed, 15 Jun 2022 12:24:48 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1AC451678F;
-        Wed, 15 Jun 2022 12:24:15 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 130612026D64;
+        Wed, 15 Jun 2022 12:24:45 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     Dmitry Klochkov <kdmitry556@gmail.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-Subject: Re: [PATCH RESEND] tools/kvm_stat: fix display of error when multiple processes are found
-Date:   Wed, 15 Jun 2022 08:14:27 -0400
-Message-Id: <20220615121427.1662350-1-pbonzini@redhat.com>
-In-Reply-To: <20220614121141.160689-1-kdmitry556@gmail.com>
+To:     Dongliang Mu <dzm91@hust.edu.cn>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        mudongliang <mudongliangabcd@gmail.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] x86: kvm: remove NULL check before kfree
+Date:   Wed, 15 Jun 2022 08:24:43 -0400
+Message-Id: <20220615122443.1663001-1-pbonzini@redhat.com>
+In-Reply-To: <20220614133458.147314-1-dzm91@hust.edu.cn>
 References: 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
