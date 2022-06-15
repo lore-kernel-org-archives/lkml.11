@@ -2,165 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0956EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60181C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346614AbiFOR3J (ORCPT
+        id S1346942AbiFOR2X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39762 "EHLO
+        Wed, 15 Jun 2022 13:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242586AbiFOR3E (ORCPT
+        with ESMTP id S1349688AbiFOR2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:29:04 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA3B396B7
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:29:01 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id e9so11830261pju.5
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:29:01 -0700 (PDT)
+        Wed, 15 Jun 2022 13:28:15 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A293511170;
+        Wed, 15 Jun 2022 10:28:14 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id o8so16311010wro.3;
+        Wed, 15 Jun 2022 10:28:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yU1gCwo/vpUxCIc57VV4IsZishi0TSmAXrvBQIGpe2U=;
-        b=R48f0TErt8niv/gv0d0lSVb6ITUrGLs9Pd30o8jOJZHXeD52Fzw4OHBJ7lzPtQ1FLu
-         wTXzhTC2c8lGmQ/HkwHyMOyoDwMv8eMS97KPLg62tAJyPlPdqaPPN9e5lywZaCofvNb/
-         2stqabdAEpTT7j5KWGiwE2SbZRUUlEodPRwkk=
+        bh=5p+/GSuDH7DU+haokwep++BzNF1uaX8KwEE3l/bKixQ=;
+        b=aoeX2dNtldafqudyp1FrCTKKgQbkpuQlpIhYY13LI6ik7SdeEddlaVFDny6FaC+TyH
+         uZhCQVUxV2HSzdWJDGMl5JQhG2vksAl3aBKTPqbYen3Bs6qSA6LkGEhbvuxAHTyT8Drj
+         h674Qf5J/BHZMU/lSlE90CR61vmSBEC988o/Cq0is7coTfhVzJrr1QiOKnzFTdRO64wW
+         9J8ows5yx0JZJ2JHEXwU1Uu7agBjQ+BS6RORhRgGdHPEWuqgtvkBJNJQmKVzi1ykXxR0
+         9rW53ODeXV/rRSgFBNMLS+DZWbU9Zgns5L6HjWpVGkyhyddOrb/+OIaGsB+fP4BqTos5
+         5kOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yU1gCwo/vpUxCIc57VV4IsZishi0TSmAXrvBQIGpe2U=;
-        b=e11g8cNzfieBuWCcev0qAxf9lCIwUt3J17wqkh9zjCfoW3Tl2bvUN70dYEBg+j28Wm
-         wWHq7ro4b/0sw5lPk9bd57zEH2A7XlphG6uNAzUGk42r/FEiwkS8V6KUasRSAm6rxlCs
-         fU0KDF1lCDtmA12gVujdQtOokh0XzIaoGw/9TnmKdR47i8uFlZsKsT5fhZexxtkqHLjC
-         VTgWa8AM7sW4H7qK2cKoESg8UXkTDBoOb3Bx7LgBND69kAEEe+/74GCXojAUyh2o6KFi
-         l47CEILLT5HbU0IulB6nI7UkosK2usuJGLDZlNuXLfR8hcfzGy5uRu/fATsyuFR2vK1F
-         fsAg==
-X-Gm-Message-State: AJIora8r0weP99tbLNMCxAtM1ClMXJvzH3sBMlkxH1YgjBTjmyN8QpfC
-        Wdc1+TIRSjsiETzAY90bl/puXxKJGY9aYw==
-X-Google-Smtp-Source: AGRyM1vwzPqUpHG5Lx/pI9IZTeCHB9Koz2dOT5UMwKL1uJ93y7aUKTlLKD5db94RZYOrNopuHiJliQ==
-X-Received: by 2002:a17:903:1cd:b0:168:e97b:54be with SMTP id e13-20020a17090301cd00b00168e97b54bemr782149plh.163.1655314140495;
-        Wed, 15 Jun 2022 10:29:00 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id d10-20020aa7814a000000b005103abd2fdbsm10147433pfn.206.2022.06.15.10.29.00
+        bh=5p+/GSuDH7DU+haokwep++BzNF1uaX8KwEE3l/bKixQ=;
+        b=YFhI5ulgWJ6RR0eQvN0ylIkowXkqO35K7ViAJSaUwAAlE2JpsE/TfNo04yR9zLQ8VC
+         B038R/VSDzvoBZue8xE5nBg+jwP4jrww7Le9YIqkyXPh+kqODpB1qd1tc9H60KoTVWDm
+         5p2FmmUj7tY/cuBBzH2UbRErKYwhbNu9popj1IxB7n+xBePccsFMp4nu/XsyPp+YoTQZ
+         nhduNFXYqOM7Q7bplKTTAwr0PdPtXTBE8qcm1clFP1RwXyMl6tXaU93Wa+i3BZjoCKpJ
+         He2nMopm+yTxxp7/sBUe/EVkYJFEy6jUuMiFfexHe4z7mhn/uR6Cg41Ig4B5KRTJ/R2V
+         vcPQ==
+X-Gm-Message-State: AJIora9uGRJBkI5FDN4PAUYrWC/GcmJYB407Oo+LO6HA9MqGi2tYm+74
+        txEMqJ5WbdwA+13qv/okb2k=
+X-Google-Smtp-Source: AGRyM1sZY/XiigSVJpzOXfqHHCYA+5h9Sh028/tS//A8GVFGo2Q+rjcAV9XvIX+FLKzGZ/CGvKsgBw==
+X-Received: by 2002:a05:6000:1a87:b0:218:52c5:a59a with SMTP id f7-20020a0560001a8700b0021852c5a59amr825550wry.686.1655314093027;
+        Wed, 15 Jun 2022 10:28:13 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id w3-20020a7bc103000000b003976fbfbf00sm3023792wmi.30.2022.06.15.10.28.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 10:29:00 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
-        <nfraprado@collabora.com>, Andrzej Hajda <andrzej.hajda@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
+        Wed, 15 Jun 2022 10:28:12 -0700 (PDT)
+From:   Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH v4 5/7] drm/bridge: anx7625: Register number of Type C switches
-Date:   Wed, 15 Jun 2022 17:20:21 +0000
-Message-Id: <20220615172129.1314056-6-pmalani@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220615172129.1314056-1-pmalani@chromium.org>
-References: <20220615172129.1314056-1-pmalani@chromium.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH 2/3] clk: qcom: lcc-ipq806x: add reset definition
+Date:   Wed, 15 Jun 2022 18:34:07 +0200
+Message-Id: <20220615163408.30154-2-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220615163408.30154-1-ansuelsmth@gmail.com>
+References: <20220615163408.30154-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Parse the "switches" node, if available, and count and store the number
-of Type-C switches within it. Since we currently don't do anything with
-this info, no functional changes are expected from this change.
+Add reset definition for lcc-ipq806x.
 
-This patch sets a foundation for the actual registering of Type-C
-switches with the Type-C connector class framework.
-
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
+Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
 ---
+ drivers/clk/qcom/lcc-ipq806x.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Changes since v3:
-- No changes.
-
-Changes since v2:
-- Move ret variable to Patch v3 6/7.
-- Make error print a dev_dbg, since it is noisy.
-- Added Reviewed-by and Tested-by tags.
-
-Changes since v1:
-- No changes.
-
- drivers/gpu/drm/bridge/analogix/anx7625.c | 18 ++++++++++++++++++
- drivers/gpu/drm/bridge/analogix/anx7625.h |  1 +
- 2 files changed, 19 insertions(+)
-
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 53a5da6c49dd..e3d4c2738b8c 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -2581,6 +2581,20 @@ static void anx7625_runtime_disable(void *data)
- 	pm_runtime_disable(data);
- }
+diff --git a/drivers/clk/qcom/lcc-ipq806x.c b/drivers/clk/qcom/lcc-ipq806x.c
+index 1a2be4aeb31d..ba90bebba597 100644
+--- a/drivers/clk/qcom/lcc-ipq806x.c
++++ b/drivers/clk/qcom/lcc-ipq806x.c
+@@ -22,6 +22,7 @@
+ #include "clk-branch.h"
+ #include "clk-regmap-divider.h"
+ #include "clk-regmap-mux.h"
++#include "reset.h"
  
-+static int anx7625_register_typec_switches(struct device *device, struct anx7625_data *ctx)
-+{
-+	struct device_node *of = of_get_child_by_name(device->of_node, "switches");
-+
-+	if (!of)
-+		return -ENODEV;
-+
-+	ctx->num_typec_switches = of_get_child_count(of);
-+	if (ctx->num_typec_switches <= 0)
-+		return -ENODEV;
-+
-+	return 0;
-+}
-+
- static int anx7625_i2c_probe(struct i2c_client *client,
- 			     const struct i2c_device_id *id)
- {
-@@ -2686,6 +2700,10 @@ static int anx7625_i2c_probe(struct i2c_client *client,
- 	if (platform->pdata.intp_irq)
- 		queue_work(platform->workqueue, &platform->work);
- 
-+	ret = anx7625_register_typec_switches(dev, platform);
-+	if (ret)
-+		dev_dbg(dev, "Didn't register Type C switches, err: %d\n", ret);
-+
- 	platform->bridge.funcs = &anx7625_bridge_funcs;
- 	platform->bridge.of_node = client->dev.of_node;
- 	if (!anx7625_of_panel_on_aux_bus(&client->dev))
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
-index e257a84db962..d5cbca708842 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.h
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
-@@ -473,6 +473,7 @@ struct anx7625_data {
- 	struct drm_connector *connector;
- 	struct mipi_dsi_device *dsi;
- 	struct drm_dp_aux aux;
-+	int num_typec_switches;
+ static struct clk_pll pll4 = {
+ 	.l_reg = 0x4,
+@@ -405,6 +406,10 @@ static struct clk_regmap *lcc_ipq806x_clks[] = {
+ 	[AHBIX_CLK] = &ahbix_clk.clkr,
  };
  
- #endif  /* __ANX7625_H__ */
++static const struct qcom_reset_map lcc_ipq806x_resets[] = {
++	[LCC_PCM_RESET] = { 0x54, 13 },
++};
++
+ static const struct regmap_config lcc_ipq806x_regmap_config = {
+ 	.reg_bits	= 32,
+ 	.reg_stride	= 4,
+@@ -417,6 +422,8 @@ static const struct qcom_cc_desc lcc_ipq806x_desc = {
+ 	.config = &lcc_ipq806x_regmap_config,
+ 	.clks = lcc_ipq806x_clks,
+ 	.num_clks = ARRAY_SIZE(lcc_ipq806x_clks),
++	.resets = lcc_ipq806x_resets,
++	.num_resets = ARRAY_SIZE(lcc_ipq806x_resets),
+ };
+ 
+ static const struct of_device_id lcc_ipq806x_match_table[] = {
 -- 
-2.36.1.476.g0c4daa206d-goog
+2.36.1
 
