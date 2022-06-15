@@ -2,114 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AAEBCCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F07EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:00:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357701AbiFOR7T (ORCPT
+        id S1345592AbiFOSAa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
+        Wed, 15 Jun 2022 14:00:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357888AbiFOR6O (ORCPT
+        with ESMTP id S236325AbiFOSA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:58:14 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B9F2A413;
-        Wed, 15 Jun 2022 10:57:52 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so2823618pjl.5;
-        Wed, 15 Jun 2022 10:57:52 -0700 (PDT)
+        Wed, 15 Jun 2022 14:00:29 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DF02A718;
+        Wed, 15 Jun 2022 11:00:28 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id w21so12169579pfc.0;
+        Wed, 15 Jun 2022 11:00:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=Pdm0v/eHuTn8EFkDzG/jFCh8QYUQn580u0Hjxv+TmSs=;
-        b=O6gq5i4RqzsvkWTYJsuMFS8kKcm670FI0T+LsWRMSujkkRhttepRtBbCuuV3sdBHxN
-         ZkKf9wTiZH+763xUbde92AiQDVe8Rkf4d/gLKDxvlYd0Uxi68FfSA5rHgmyJJSX26up8
-         uuQk//BHaJJJULhr8k+0pnWJTy4DAA4b66GUVVCAC9kbEJwzyBj/XsDcbRnZzy49agjI
-         mPKoDUTSTjacxo8afX8af66SfRrc1La9rhayTXyDofnCPzDCKIVLxFcjN1QeOImSTLAS
-         4d5otv6SXN9r5HnnYp1EzNpnAe4fM4/Ii7YdbbN8xeOr7bA2HBIJwf8meWNLqGce+jDS
-         VO1A==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qMYjlX/UBpwrjGqKKro02HBfwEFDYsK2XO45mdFo3rc=;
+        b=iWL6biHGhBZeoAug+7fTwhF5Z8oRPErcQ4qaaKocRXNdOEVfGRaDcnV7jYQW9IEYTc
+         J0TWgdDXdbgGuW4xxy1+AGRhWWuacHBD6yw73HBcyGBJk173czqkY4NdE9aj5/yu2ynt
+         NFn9TLNSeUYpuO/AgFOKym3dn0ls/qzUnA3fUU8MeXtP9PFHWstAdePV0a/9pCcnpMKw
+         nJpcLnP8AfxVDHLjl9KgCwBboOnYXbC25kiNPzskKdm2lzHtAXHZPJ3b1iFFnyMH0uHP
+         35ah/WzMPy7Suq7zlC+uR46IW58giQharwLIRdr3r7AR3PHXrTNSubXUCJWeH4UnwS8N
+         LsVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=Pdm0v/eHuTn8EFkDzG/jFCh8QYUQn580u0Hjxv+TmSs=;
-        b=ykaqRWSSoTdhkDT7EdKVELiP917YlABZkdL3jnOraWJftSXye39adoHRO89okbhA4p
-         7ff8oFsEm8lH930X+jmRNvJ8HW9igVl3VaUn3B2H1L0KA3RSH2dACH0iVf0sw9FCgrCk
-         +iivZiIMmTw4k+loe45N+DJHjApBX5W+1Mn40ZtTkjwSyQe8kudkH9z+U5Zy1WRiW+Nr
-         thiX9Dl0apza57FiB3OuEuQGB93itnW48VbuFs+craSfAjAZfHIFBZ4xWf8sqoW/QlCh
-         caZXbGihq2I+9nrCa7FxRR4OoBws0J/gwib/XT73ofkq5IS9eoOr6j4FwmygY3hSejmT
-         p79Q==
-X-Gm-Message-State: AJIora9IytRHVlA8PDUGaYX6cTq6J4drYovVzMpuoTYlixGfsXFEdPId
-        QS680cu5MjGutd1ZiWzF9XI=
-X-Google-Smtp-Source: AGRyM1tYNZ3eEVpA869lUoIGayFw5Kmo3S5lbWkKwlKXn5LAschra1zSpqfs75aKZ+F5PiYuACDC8Q==
-X-Received: by 2002:a17:90b:4f4a:b0:1e3:49c9:aab0 with SMTP id pj10-20020a17090b4f4a00b001e349c9aab0mr11518167pjb.223.1655315871910;
-        Wed, 15 Jun 2022 10:57:51 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id p5-20020a170903248500b0015e8d4eb1c8sm5961816plw.18.2022.06.15.10.57.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 10:57:51 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=qMYjlX/UBpwrjGqKKro02HBfwEFDYsK2XO45mdFo3rc=;
+        b=cfJ0M2osXn8jcGBnuppK0G8PMfIJ0yU01KpTVQbjh9rfNz4iVp5miW39dKoQqzu3mt
+         tElOM57xphkh5oy3GrfeGlN41my1S8rkvXOv081QCYOvvH2caRyIBM0wbUXwaUlwDEi5
+         bJ/K0017ngbwaouXikYjQQNLMaNX+0TtynEJ+nYqw1Jgti1bwtbCdyGUTfQE+xQvSsOZ
+         35Z0qSnRBnpqWEGCjYbIEgLPc7oHN/CiRw7Ohn96Yhj0dDr1zYjfhfCb75JMIxI/k4Mk
+         UemnHJ333AsKRB6loEMQQuHVpvN4Uy4TqVKALfCMVJ9iHtY8nMKaDxUhQgY77p2MbHid
+         w/SA==
+X-Gm-Message-State: AJIora+u6c2BNrRDiPw3H4XuuPzA1OmXtWggzi9fXBVnu1kSliNPDYCk
+        fTDvJjOE2/4QxaCZxSxFlKFni+tMrTg=
+X-Google-Smtp-Source: AGRyM1s/f3aI6ssGuwvM1/e5X3UzRfBKmv9Krzu4r8jYIO/OY3lPSWmIxHHmAHSAkD7bBd/YaWUIkw==
+X-Received: by 2002:a63:6f8c:0:b0:408:bdc6:7726 with SMTP id k134-20020a636f8c000000b00408bdc67726mr916000pgc.110.1655316028285;
+        Wed, 15 Jun 2022 11:00:28 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id m24-20020a170902bb9800b0016203a92865sm9605090pls.107.2022.06.15.11.00.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 11:00:27 -0700 (PDT)
 Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <01243e3e-f4d2-c1ba-98f5-db7bc0c62adc@roeck-us.net>
-Date:   Wed, 15 Jun 2022 10:57:49 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     Liang He <windhl@126.com>, tharvey@gateworks.com,
-        rjones@gateworks.com, jdelvare@suse.com
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220615151856.3970186-1-windhl@126.com>
+Date:   Wed, 15 Jun 2022 11:00:26 -0700
 From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] drivers: hwmon: Add missing of_node_put() in gsc-hwmon.c
-In-Reply-To: <20220615151856.3970186-1-windhl@126.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     Jan Kara <jack@suse.cz>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Thomas Backlund <tmb@tmb.nu>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Slade Watkins <slade@sladewatkins.com>
+Subject: Re: [PATCH 5.15 000/251] 5.15.47-rc2 review
+Message-ID: <20220615180026.GA2146974@roeck-us.net>
+References: <bd80cd0d-a364-4ebd-2a89-933f79eaf4c7@tmb.nu>
+ <CAHk-=wix7+mGzS-hANyk7DZsZ1NgGMHjPzSQKggEomYrRCrP_Q@mail.gmail.com>
+ <CAHk-=wgfFhwMP0=QQY_iZvf0kveR5=VGK919Ayn+ZSUADs9mag@mail.gmail.com>
+ <20220615110022.yifrsvzxjsz2wky5@quack3.lan>
+ <20220615133845.o2lzfe5s4dzdfvtg@quack3.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615133845.o2lzfe5s4dzdfvtg@quack3.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/15/22 08:18, Liang He wrote:
-> In gsc_hwmon_get_devtree_pdata(), of_find_compatible_node() will return
-> a node pointer with refcount incremented. We should use of_node_put() in
-> fail path or when it is not used anymore.
->  > Signed-off-by: Liang He <windhl@126.com>
-> ---
-
-Please use proper subject lines. Here it should have been
-
-hwmon: (gsc-hwmon) Add missing of_node_put()
-
->   drivers/hwmon/gsc-hwmon.c | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
+On Wed, Jun 15, 2022 at 03:38:45PM +0200, Jan Kara wrote:
+> On Wed 15-06-22 13:00:22, Jan Kara wrote:
+> > On Tue 14-06-22 12:00:22, Linus Torvalds wrote:
+> > > On Tue, Jun 14, 2022 at 11:51 AM Linus Torvalds
+> > > <torvalds@linux-foundation.org> wrote:
+> > > >
+> > > > Or just make sure that noop_backing_dev_info is fully initialized
+> > > > before it's used.
+> > > 
+> > > I don't see any real reason why that
+> > > 
+> > >     err = bdi_init(&noop_backing_dev_info);
+> > > 
+> > > couldn't just be done very early. Maybe as the first call in
+> > > driver_init(), before the whole devtmpfs_init() etc.
+> > 
+> > I've checked the dependencies and cgroups (which are the only non-trivial
+> > dependency besides per-CPU infrastructure) are initialized early enough so
+> > it should work fine. So let's try that.
 > 
-> diff --git a/drivers/hwmon/gsc-hwmon.c b/drivers/hwmon/gsc-hwmon.c
-> index 1fe37418ff46..34c20d13627a 100644
-> --- a/drivers/hwmon/gsc-hwmon.c
-> +++ b/drivers/hwmon/gsc-hwmon.c
-> @@ -268,10 +268,14 @@ gsc_hwmon_get_devtree_pdata(struct device *dev)
->   
->   	/* fan controller base address */
->   	fan = of_find_compatible_node(dev->parent->of_node, NULL, "gw,gsc-fan");
+> Attached patch boots for me. Guys, who was able to reproduce the failure: Can
+> you please confirm this patch fixes your problem?
+> 
 
-A single of_node_put(fan) here would have been be sufficient.
+It does for me.
 
-> -	if (fan && of_property_read_u32(fan, "reg", &pdata->fan_base)) {
-> +	if (fan && of_property_read_u32(fan, "reg", &pdata->fan_base)) {		
-> +		of_node_put(fan);
->   		dev_err(dev, "fan node without base\n");
->   		return ERR_PTR(-EINVAL);
->   	}
-> +	
-> +	/* if fan&&!of_property_read_u32 fail */
+> 								Honza
+> -- 
+> Jan Kara <jack@suse.com>
+> SUSE Labs, CR
 
-This comment only adds confusion and does not add any value.
+> From 8f998b182be7563fc92aa8914cc7d21f75a3c20e Mon Sep 17 00:00:00 2001
+> From: Jan Kara <jack@suse.cz>
+> Date: Wed, 15 Jun 2022 15:22:29 +0200
+> Subject: [PATCH] init: Initialized noop_backing_dev_info early
+> 
+> noop_backing_dev_info is used by superblocks of various
+> pseudofilesystems such as kdevtmpfs. Initialize it before the
+> filesystems get mounted.
+> 
+> Signed-off-by: Jan Kara <jack@suse.cz>
+
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
 Guenter
-
-> +	of_node_put(fan);
->   
->   	/* allocate structures for channels and count instances of each type */
->   	device_for_each_child_node(dev, child) {
-
