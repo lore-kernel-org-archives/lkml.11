@@ -2,115 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7664FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B0BFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:35:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354809AbiFOReJ (ORCPT
+        id S1355970AbiFORfZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
+        Wed, 15 Jun 2022 13:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357939AbiFORdm (ORCPT
+        with ESMTP id S1357701AbiFORdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:33:42 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F7152517
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:33:34 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id w20so19973032lfa.11
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:33:34 -0700 (PDT)
+        Wed, 15 Jun 2022 13:33:21 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B122AE3E
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:33:18 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id l18so14050030lje.13
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:33:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rEBSyXeCbmBUBcCDVrlaJF/sb3hQ6cDD+mTYpXhaT5Y=;
-        b=NHk1jGKwkU2BrG33SfVEnhC0RF9ehEMIxRspkW9YY0bIyXGTIr7Wd9t+5XEZncbb2w
-         Po2euByjQ9qiAh3cOvXZ68Z2NYJEsgK/cqwcuqgjLpcaF/M4EI7uKed+Qz2XwjSRWnK5
-         A7FAIGoMw8pseVV+w6+VmsmAGl/+hCeCipcX0MSWeWCHimBHaA70MKvO04pr5zfmw5HG
-         +3wlOonEgbO/H9EimUhVVT1Ihcd822/7PbCDjOxC7tsls2izvotRwFP2A51p90v/77Rz
-         xV99fIS+FSqF5r0jujwn2gdxaaprTDad65FSN63dEagRi1nTFBBt/2vscajcg9aZv8u4
-         CHtg==
+         :cc;
+        bh=WKNf0k9l6gLrV2AI3VWWdOaW+620gEpiFjUyyJCX0Cs=;
+        b=tlKGen7zMe6cWxtE6Iq+6NS/TFHumGCzRMFTXeyJUE8ztpNiY3hvE1iAKl/OlX9X9O
+         HzsFVwv9ypNae7Z3mFrO0XyV4Y4pj6Iipdr8THGhJaqduTvEbbXSXByop1C7Mds0rAah
+         kGzShX4Mub0mOxuiyIFNvOWa8m4UIpsQUaHfbKJDq5oIQWtC4N7TNdT396lcETQxXcKp
+         AYMOlMAHjYjsA7V5u65u9GxDqq5MOFmy9QYT2YywcsjKOAhn1qsjIZZeSbMX0PpZAiZJ
+         3rCXRaol3umGZRlUj8Y2dD7Hlpy6sN4xAXyW6YHvQjoJxBHMiFJz6N2vJtT77rr+UL19
+         P37g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rEBSyXeCbmBUBcCDVrlaJF/sb3hQ6cDD+mTYpXhaT5Y=;
-        b=eeaV7q0XC3YtgiSdu6WDasKak+W8/QWBltMWL/54efjpl8COvapLQdnGuahw4vY9fW
-         6kn5Sff9v9zMzD6xUNTT3ro1/HFw9d3ZXb/uI5VvfQQBULvKX3d+OfNHrXTKNh0kKn6U
-         9MPqwx1JAFCA7vR3dLX5FtmGHezqiQlqGwy+0blgu+0km6q9Z/YNfbj299oGKmjfdur/
-         +TsTcvNexK5GhIKvCqDq4C+vtFKU77xBxGvireDoNpfD5RJEjNwqh6lAErnX7NlT1F5M
-         5REZt4Dby/WRKA0povsH7lF8O13Og+//bJidtE40AfwbTy/OdHjEAb77JMnE20CtHKeE
-         pP5w==
-X-Gm-Message-State: AJIora+8vatA/NjSk/jDQy4n+gRXk8tz1EjPjdPC/V89ipCJgMx3KMb1
-        QZqUBz+Cvz6PXtSG548xhZ+2nS4yv8nJXWBwoET2JQ==
-X-Google-Smtp-Source: AGRyM1sWRqYe+A4qepiU6K08Gk2UDWKSsUHbIH4KwHmf8+CbMzbiIK6O9l48yMlOhTn4bi5DWqmSSxXBKjEklcsVy0U=
-X-Received: by 2002:a05:6512:403:b0:479:1627:a9b7 with SMTP id
- u3-20020a056512040300b004791627a9b7mr343348lfk.233.1655314413654; Wed, 15 Jun
- 2022 10:33:33 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=WKNf0k9l6gLrV2AI3VWWdOaW+620gEpiFjUyyJCX0Cs=;
+        b=WvB88SjkCd0LrJndCCzG8jVU5m8L/e3KKfBMHRUHGNxr1A4QmK5aH1mb0vXkHksM1d
+         SQ3RhjXIzH4tlXqdbfWdWFL0Jf3LWQpXEGxQYmgngBVuWOtVamZ9EcRUyfJAp2HfmRj9
+         ZwuAumYCGebagrM06tMF5iQ+B+bpElDROf9uYcnK5A6ATr+LoACTP/mmflmul8kttNDn
+         a2c4yNDMgS6w0qR7ksN+STjhyTMod1em/tmG0FdDhr1C4Fhj/Zq38ZTbyAkDgPPR5gpq
+         JP6fm/wIemIPScw9W/K6Wp0j1p/juS8KqoQFrnopgb151rrk5xdXZcWDWC5UHU82/GsD
+         6i/g==
+X-Gm-Message-State: AJIora+3+aERC4h/NqK6317N/+/l+DhRR44YvY34CCEbJRuXHXPE19SE
+        XtCBD0+AOLjcP+ed44d20TcGka7LRamd2BSvyEg8zpo/Ftc8Ew==
+X-Google-Smtp-Source: AGRyM1tarJ3RmYGZi4Bh/Sn0M/lEpQDAsmJjikNL+iLfDgMeV5j+niJz7+d8G8zHnwmUFIHeOkjT3b9W/eOOBPc6Vxg=
+X-Received: by 2002:a2e:808e:0:b0:255:be23:1372 with SMTP id
+ i14-20020a2e808e000000b00255be231372mr454884ljg.4.1655314398304; Wed, 15 Jun
+ 2022 10:33:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220610211257.102071-1-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20220610211257.102071-1-u.kleine-koenig@pengutronix.de>
+References: <20220608130847.46359-1-wangxiang@cdjrlc.com>
+In-Reply-To: <20220608130847.46359-1-wangxiang@cdjrlc.com>
 From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 15 Jun 2022 10:32:57 -0700
-Message-ID: <CAPDyKFr35sr7RFpv4S0eosY4BT1r0te083rdan_tRq0T+7agJA@mail.gmail.com>
-Subject: Re: [PATCH 1/5] mmc: dw_mmc: exynos: Obviously always return success
- in remove callback
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Jaehoon Chung <jh80.chung@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        kernel@pengutronix.de, Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 15 Jun 2022 10:32:40 -0700
+Message-ID: <CAPDyKFobyJS-7j7C0x-FwV6zdqR9gOtpr-HWn8zcLkFd-gMAeg@mail.gmail.com>
+Subject: Re: [PATCH] mmc: mmci: Fix typo in comment
+To:     Xiang wangx <wangxiang@cdjrlc.com>
+Cc:     linux@armlinux.org.uk, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 10 Jun 2022 at 14:13, Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
+On Wed, 8 Jun 2022 at 06:12, Xiang wangx <wangxiang@cdjrlc.com> wrote:
 >
-> dw_mci_pltfm_remove() returns 0 unconditionally and returning an error
-> in a platform remove callback isn't very sensible. (The only effect of
-> the latter is that the device core emits a generic warning and then
-> removes the device anyhow.)
+> Delete the redundant word 'is'.
 >
-> So return 0 unconditionally to make it obvious there is no error
-> forwarded to the upper layers.
->
-> This is a preparation for making platform remove callbacks return void.
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
 
-This one and the other 4 patches in the series, applied for next. Thanks!
+Applied for next, thanks!
 
 Kind regards
 Uffe
 
 
 > ---
->  drivers/mmc/host/dw_mmc-exynos.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>  drivers/mmc/host/mmci.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/drivers/mmc/host/dw_mmc-exynos.c b/drivers/mmc/host/dw_mmc-e=
-xynos.c
-> index ca5be4445ae0..9f20ac524c8b 100644
-> --- a/drivers/mmc/host/dw_mmc-exynos.c
-> +++ b/drivers/mmc/host/dw_mmc-exynos.c
-> @@ -670,7 +670,9 @@ static int dw_mci_exynos_remove(struct platform_devic=
-e *pdev)
->         pm_runtime_set_suspended(&pdev->dev);
->         pm_runtime_put_noidle(&pdev->dev);
+> diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
+> index 01159eaf8694..012aa85489d8 100644
+> --- a/drivers/mmc/host/mmci.c
+> +++ b/drivers/mmc/host/mmci.c
+> @@ -762,7 +762,7 @@ int mmci_dmae_setup(struct mmci_host *host)
 >
-> -       return dw_mci_pltfm_remove(pdev);
-> +       dw_mci_pltfm_remove(pdev);
-> +
-> +       return 0;
->  }
->
->  static const struct dev_pm_ops dw_mci_exynos_pmops =3D {
->
-> base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+>         /*
+>          * If only an RX channel is specified, the driver will
+> -        * attempt to use it bidirectionally, however if it is
+> +        * attempt to use it bidirectionally, however if it
+>          * is specified but cannot be located, DMA will be disabled.
+>          */
+>         if (dmae->rx_channel && !dmae->tx_channel)
 > --
 > 2.36.1
 >
