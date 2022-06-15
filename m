@@ -2,112 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B366C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C56C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 11:51:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347863AbiFOLvn (ORCPT
+        id S1348111AbiFOLvr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 07:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49698 "EHLO
+        Wed, 15 Jun 2022 07:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347204AbiFOLvG (ORCPT
+        with ESMTP id S1346857AbiFOLvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 07:51:06 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9663F4EDF8;
-        Wed, 15 Jun 2022 04:50:58 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id x5so15761191edi.2;
-        Wed, 15 Jun 2022 04:50:58 -0700 (PDT)
+        Wed, 15 Jun 2022 07:51:08 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716654F1D3
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 04:51:00 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id w20so18474376lfa.11
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 04:51:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cl1dcczO96rBtCg5ygEOypyWeJ90Qx/W0l9Ehf8BH4M=;
-        b=QCoS3wSh7xzDJh42Kjkbhg2/y1eEQ+j+Zb72WzIpKlKJZbMiMdQXiVm52iPgs4hBg1
-         uhzvAhjaseNimjJUAdncHPTEsYFVb/D2bn5Va4fbtN3LSn7J07MuYD/UwHC6yvJmEvpe
-         Bf3pbUA2CIPb988FRhaVXILig2m8/ZbhKp85bEmtNA6tRRoOpqjnOGN1desIoGiTO5OG
-         ERrR50qwYHQhTD85fEjWG5H0R2NtAVexwy9azQQSnAnDRpL/2Od54PxH4GzZl3zG+mM4
-         mNP2EtvTD7915qmEYOLaVJBX5FgqITRf7crxWaPGkcolEBB/anzB8SlFt1Wm0y9KCpx0
-         ZsYw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=WO0nwIuovSMeFOh147VxfsRiP5jPmKwXeiabGncRUA4=;
+        b=uCL41/ysCSOyXoQAz1ufqI209ZJM4qxeQjipG4DG7UySSHPWw0AsYR4vrWSlngpCB2
+         dz5L61Ar4irJAUus4KHWAT7uZWuRv1WpsVHybi2/yefeHrORC6pi0+QMdGjyo7je/+ax
+         LnpzkTi399ciawKc2eMYFSZt45O9u5vKQVjBqJcXCp4y0Z3ljAQPK8qGXBc301lMNVB1
+         mX6UzLrW6X7dTWPx16KvcchRUnr+38U/jcnaIjgh6DNGkM5yEq8d8wPFMz6aQtxGjAAm
+         ShTLjb3hUSkNaU7l+CuYvIJfKAlPYlwy+ezUiPC3cWYZ2neZfzx6uyglFfSWgQM78xvd
+         p3IQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cl1dcczO96rBtCg5ygEOypyWeJ90Qx/W0l9Ehf8BH4M=;
-        b=D+4uEyXwEQIymVwkXnqlVcs5wr6IvxLpyTn7PjWySpZHkiHw+CE/KhWdhgHYNRh59k
-         6vemQf7277yXgyON1QLrq/MSXf3WUblc0qPDSAFL0yxyQRE3xh+nBoG/Cgl7VqhPBode
-         xLox/LNzo8OsTKD7kpXD+E4x/WteixMDHeOV1vNtJfjozyf2IeAyl4sag51III1Br4Ir
-         wX/X8XFuRjNP5z3Ul7jOTCpq0hUVmP1nHHfPtmsW0pQQFi9i/L8qWY6RD8050IO/sNyz
-         J3su46PFJNGsge324io1WgUPLHO2GqREZaCpYRvHmI72xzMTV3UyELLN98XftvRBFPWs
-         TqwA==
-X-Gm-Message-State: AOAM533x0m5jHo41QKOQGKmd3Bc7JUDppAQtfmWhjOUv1C91I+l3utan
-        J2eW+XaQyQdUKFaFRUuDHlY=
-X-Google-Smtp-Source: ABdhPJwtUg/5+Cq6iOM/mEbJDKECBlI5ltgZntMeaKelklR1yr8vyLEtxsPhjovrN8Dbxg+8xZkN5w==
-X-Received: by 2002:a05:6402:249c:b0:431:3883:967a with SMTP id q28-20020a056402249c00b004313883967amr12490255eda.264.1655293857158;
-        Wed, 15 Jun 2022 04:50:57 -0700 (PDT)
-Received: from linuxdev2.toradex.int (31-10-206-125.static.upc.ch. [31.10.206.125])
-        by smtp.gmail.com with ESMTPSA id t6-20020a17090616c600b00715a02874acsm4561158ejd.35.2022.06.15.04.50.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 04:50:56 -0700 (PDT)
-From:   Max Krummenacher <max.oss.09@gmail.com>
-To:     max.krummenacher@toradex.com
-Cc:     Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 11/18] ARM: dts: imx6q-apalis: Disable stmpe touchscreen
-Date:   Wed, 15 Jun 2022 13:49:59 +0200
-Message-Id: <20220615115006.45672-12-max.oss.09@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220615115006.45672-1-max.oss.09@gmail.com>
-References: <20220615115006.45672-1-max.oss.09@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WO0nwIuovSMeFOh147VxfsRiP5jPmKwXeiabGncRUA4=;
+        b=4uNe7ZQO6+R/0gOVA+HekLZU0hi6CXKpw8//G8+IK4w5ygVzliGh07aPFZ0KXU4FHz
+         7tSLpC4AOWw3bMsuhIT8fBlqnQiBwxwqt6ZEpTi40nC7cYJD6mYSBjB8cpjC4t0TFjlz
+         hfL/7ltrvI/8iFiP/ymIP+bS/fhD7RDJVoxvSa6j1T6QmrMSlwnJ8l/UcJyX+AVo46Bm
+         DkBCohq+btbsi23iO9/1T7B/Vh2hBYag0fnC2ZdUPhUgCzjxV/YngnPkVIrr0dJCQFyI
+         uUi5dhIj3QjID5ZjUBG3I7Xof/VxI6WoeZEY7I7E+eScIFw3CVYscfXBwtS+pp/zFgCg
+         nV1A==
+X-Gm-Message-State: AJIora+kaOZ6iQVTRQTvm68Kx8gdDXXwFh6bk5Drw+RrpiqnSvALfz4Q
+        uj71o7aubtcHweQ/l+77jRqDlw==
+X-Google-Smtp-Source: AGRyM1swwvjJTFIH/fHV1BdTuQ04yWwfcyDf1MvWtGNhk/I3H1OLQsh1eJj6aqcsEoVFyStGWhM5Vg==
+X-Received: by 2002:ac2:48ab:0:b0:47d:af82:65e9 with SMTP id u11-20020ac248ab000000b0047daf8265e9mr5660443lfg.673.1655293858825;
+        Wed, 15 Jun 2022 04:50:58 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id 27-20020ac24d5b000000b00478ee191091sm1767031lfp.153.2022.06.15.04.50.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 04:50:58 -0700 (PDT)
+Message-ID: <576379dd-e5b0-3363-07a1-c623aeea6fee@linaro.org>
+Date:   Wed, 15 Jun 2022 14:50:56 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 3/4] drm/msm/disp/dpu1: use atomic enable/disable
+ callbacks for encoder functions
+Content-Language: en-GB
+To:     Vinod Polimera <quic_vpolimer@quicinc.com>,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        robdclark@gmail.com, seanpaul@chromium.org, swboyd@chromium.org,
+        dianders@chromium.org, krzysztof.kozlowski@canonical.com,
+        thierry.reding@gmail.com, sam@ravnborg.org, airlied@linux.ie,
+        daniel@ffwll.ch
+Cc:     quic_kalyant@quicinc.com, quic_sbillaka@quicinc.com,
+        quic_vproddut@quicinc.com
+References: <1645455086-9359-1-git-send-email-quic_vpolimer@quicinc.com>
+ <1645455086-9359-4-git-send-email-quic_vpolimer@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <1645455086-9359-4-git-send-email-quic_vpolimer@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
+On 21/02/2022 17:51, Vinod Polimera wrote:
+> Use atomic variants for encoder callback functions such that
+> certain states like self-refresh can be accessed as part of
+> enable/disable sequence.
+> 
+> Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
+> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+> 
+> Changes in v2:
+> - As per review suggestion by Dmitry.
+> ---
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 10 ++++++----
+>   1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> index 1e648db..6eac417 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> @@ -1138,7 +1138,8 @@ void dpu_encoder_virt_runtime_resume(struct drm_encoder *drm_enc)
+>   	mutex_unlock(&dpu_enc->enc_lock);
+>   }
+>   
+> -static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
+> +static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc,
+> +				struct drm_atomic_state *state)
+>   {
+>   	struct dpu_encoder_virt *dpu_enc = NULL;
+>   	int ret = 0;
+> @@ -1176,7 +1177,8 @@ static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
+>   	mutex_unlock(&dpu_enc->enc_lock);
+>   }
+>   
+> -static void dpu_encoder_virt_disable(struct drm_encoder *drm_enc)
+> +static void dpu_encoder_virt_disable(struct drm_encoder *drm_enc,
+> +				struct drm_atomic_state *state)
+>   {
+>   	struct dpu_encoder_virt *dpu_enc = NULL;
+>   	struct msm_drm_private *priv;
+> @@ -2094,8 +2096,8 @@ static void dpu_encoder_frame_done_timeout(struct timer_list *t)
+>   
+>   static const struct drm_encoder_helper_funcs dpu_encoder_helper_funcs = {
+>   	.mode_set = dpu_encoder_virt_mode_set,
+> -	.disable = dpu_encoder_virt_disable,
+> -	.enable = dpu_encoder_virt_enable,
+> +	.atomic_disable = dpu_encoder_virt_disable,
+> +	.atomic_enable = dpu_encoder_virt_enable,
 
-Unify its label with other toradex SoM dtbs.
-This allows to enable it in an overlay per the current
-system configuration.
+A small nit before you post the next iteration of PSR:
 
-Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
-Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
----
+Please rename these functions to follow atomic_enable/atomic_disable names.
 
-(no changes since v1)
+>   	.atomic_check = dpu_encoder_virt_atomic_check,
+>   };
+>   
 
- arch/arm/boot/dts/imx6qdl-apalis.dtsi | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-index 636b04139a5b..b4742ad85f56 100644
---- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-@@ -592,7 +592,7 @@
- 		/* ADC conversion time: 80 clocks */
- 		st,sample-time = <4>;
- 
--		stmpe_touchscreen: stmpe_touchscreen {
-+		stmpe_ts: stmpe_touchscreen {
- 			compatible = "st,stmpe-ts";
- 			/* 8 sample average control */
- 			st,ave-ctrl = <3>;
-@@ -607,6 +607,7 @@
- 			st,settling = <3>;
- 			/* 5 ms touch detect interrupt delay */
- 			st,touch-det-delay = <5>;
-+			status = "disabled";
- 		};
- 
- 		stmpe_adc: stmpe_adc {
 -- 
-2.20.1
-
+With best wishes
+Dmitry
