@@ -2,164 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B01C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A75BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345428AbiFOPwn (ORCPT
+        id S1345858AbiFOPxg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
+        Wed, 15 Jun 2022 11:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345858AbiFOPwh (ORCPT
+        with ESMTP id S1348811AbiFOPxd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:52:37 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8AAB66;
-        Wed, 15 Jun 2022 08:52:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655308349; x=1686844349;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=vEpxs2+wXr4SsR+MY+H6e3dQBj8yAjWaewnFE5qkviQ=;
-  b=KR3vgA3Ss6LOK2vmKOjb3tQ30EoLt/tjcs4oeUT1tviqGc1SOy/u3jXW
-   /Jf67D3PuIiqNU2Ysrl7mu9wp1cjTFjh9dxcT/xb44ULb9pJVsAF+sOr9
-   NJL4CqCh3l8sXLThtWK/JcyR/YoOQKwpgRERctziCfNEPRP9aMqgyOfa2
-   /RSPaTWLzBnTN8WRrcjL0+gofyk1/hfBUh1gSaxpye0tEm/FrhxDAFf+p
-   Dq+pWyTRSyDruhsAtt2qKEEGlvCUWiH+AxVlAnFsUWRjj3U3JGUJZHWY/
-   nf5YNogIETTLYYZNPxqTZvoagXzHJJIdytUxzZWcd1xypTX07CGIaKAEv
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="340665401"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="340665401"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 08:52:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="572247935"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga002.jf.intel.com with ESMTP; 15 Jun 2022 08:52:24 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25FFqMbv015178;
-        Wed, 15 Jun 2022 16:52:22 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        viro@zeniv.linux.org.uk, linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org, initramfs@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bug-cpio@gnu.org,
-        zohar@linux.vnet.ibm.com, silviu.vlasceanu@huawei.com,
-        dmitry.kasatkin@huawei.com, takondra@cisco.com, kamensky@cisco.com,
-        hpa@zytor.com, arnd@arndb.de, rob@landley.net,
-        james.w.mcmechan@gmail.com, niveditas98@gmail.com
-Subject: Re: [PATCH v4 0/3] initramfs: add support for xattrs in the initial ram disk
-Date:   Wed, 15 Jun 2022 17:50:34 +0200
-Message-Id: <20220615155034.1271240-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20190523121803.21638-1-roberto.sassu@huawei.com>
-References: <20190523121803.21638-1-roberto.sassu@huawei.com>
+        Wed, 15 Jun 2022 11:53:33 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E730E1581F
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:53:31 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id y19so24112080ejq.6
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:53:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=D5ShLIbJdbDjGlxDv7D9TUkds40P1/JB5xsD295mwPM=;
+        b=ciqSZu6WTLDGRSjO54NxzovGpYsYhGGsOZARVTMj+y8DfMifPnFGkOH5KV7BbJhb5k
+         8S640o47KmDM86S99aJ3cBi06365fmZ9hpTCErSvRw1adrK4oe/CZ+xYxayYFKNtdlKR
+         dFtFRl6r9lxLLVnSVLYLcK6ObsYHx8f5RutGYsz3yibJprsZ6aUz04aJK4zk1wTT1TEm
+         94O43RAdX62nAx4IKH6DCUAbUlQZub+z2wGDEz3B8q8hMf+7HTuIw6NOz/lAvaJLYJtC
+         Uz6CfSMbi2lAv5EIA0u9QhuFkAze8QTPtBPM4acfgDLEt6vQw7ON+Z/p5nZ+195qpyoU
+         Cewg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=D5ShLIbJdbDjGlxDv7D9TUkds40P1/JB5xsD295mwPM=;
+        b=XgQzAVdSQztSCTM1AFyl/jVwbvkZZyQzYE5mzWiy4oNM0IDKCmJEC4J/M231XRoPey
+         wYPmMFFqs7tVLiK0NGRTePOKhaOS0Bn2Vzt4HR5Uu09NOwRZ8C9G3b1dVDFolaYsjYCH
+         9JkdpqO9cXOu/k5588cOlsWUsdk0rkj+hX7HSTD+kLYnt9zde6RqK+1lOxcGrB57BXh6
+         X4QhvpJPRkv9mTP8NIC9baNw09lfdoKULfLvdZiZNXue1Mmhah8EX4CDhB2l9IJj3tb5
+         AiW996dB+1Cy7hNdetess9uNJKEUbMSZX+8Zc/gKIXQs6oJ1kaYYrhsG3XvQ+XVP+EIU
+         TH1g==
+X-Gm-Message-State: AJIora/zWMxhADwMVsc8M73axG8FwydtTkKcDrY4EaQ7gGXZ0lKTVYfu
+        oR1fuaEmy/b9zJ1gTXJDJOE=
+X-Google-Smtp-Source: AGRyM1sVtnrDE7GtZbaoUeUmFFWPnp7cBVKqt8WzfkzPflwAbHdYxsZncOddT9V93wqNSiltwTbHlQ==
+X-Received: by 2002:a17:906:519b:b0:711:fb34:16f4 with SMTP id y27-20020a170906519b00b00711fb3416f4mr431124ejk.275.1655308410430;
+        Wed, 15 Jun 2022 08:53:30 -0700 (PDT)
+Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
+        by smtp.gmail.com with ESMTPSA id v14-20020aa7d9ce000000b0042bc97322desm9548790eds.43.2022.06.15.08.53.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 08:53:29 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <mripard@kernel.org>,
+        Samuel Holland <samuel@sholland.org>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Ondrej Jirman <megous@megous.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH] drm/sun4i: Fix crash during suspend after component bind failure
+Date:   Wed, 15 Jun 2022 17:53:28 +0200
+Message-ID: <3671441.kQq0lBPeGt@kista>
+In-Reply-To: <20220615054254.16352-1-samuel@sholland.org>
+References: <20220615054254.16352-1-samuel@sholland.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
-Date: Thu, 23 May 2019 14:18:00 +0200
+Dne sreda, 15. junij 2022 ob 07:42:53 CEST je Samuel Holland napisal(a):
+> If the component driver fails to bind, or is unbound, the driver data
+> for the top-level platform device points to a freed drm_device. If the
+> system is then suspended, the driver passes this dangling pointer to
+> drm_mode_config_helper_suspend(), which crashes.
+> 
+> Fix this by only setting the driver data while the platform driver holds
+> a reference to the drm_device.
+> 
+> Fixes: 624b4b48d9d8 ("drm: sun4i: Add support for suspending the display 
+driver")
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
 
-> This patch set aims at solving the following use case: appraise files from
-> the initial ram disk. To do that, IMA checks the signature/hash from the
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-Hi,
-is this[0] relatable somehow?
+Best regards,
+Jernej
 
-> security.ima xattr. Unfortunately, this use case cannot be implemented
-> currently, as the CPIO format does not support xattrs.
-> 
-> This proposal consists in including file metadata as additional files named
-> METADATA!!!, for each file added to the ram disk. The CPIO parser in the
-> kernel recognizes these special files from the file name, and calls the
-> appropriate parser to add metadata to the previously extracted file. It has
-> been proposed to use bit 17:16 of the file mode as a way to recognize files
-> with metadata, but both the kernel and the cpio tool declare the file mode
-> as unsigned short.
-> 
-> The difference from v2, v3 (https://lkml.org/lkml/2019/5/9/230,
-> https://lkml.org/lkml/2019/5/17/466) is that file metadata are stored in
-> separate files instead of a single file. Given that files with metadata
-> must immediately follow the files metadata will be added to, image
-> generators have to be modified in this version.
-> 
-> The difference from v1 (https://lkml.org/lkml/2018/11/22/1182) is that
-> all files have the same name. The file metadata are added to is always the
-> previous one, and the image generator in user space will make sure that
-> files are in the correct sequence.
-> 
-> The difference with another proposal
-> (https://lore.kernel.org/patchwork/cover/888071/) is that xattrs can be
-> included in an image without changing the image format. Files with metadata
-> will appear as regular files. It will be task of the parser in the kernel
-> to process them.
-> 
-> This patch set extends the format of data defined in patch 9/15 of the last
-> proposal. It adds header version and type, so that new formats can be
-> defined and arbitrary metadata types can be processed.
-> 
-> The changes introduced by this patch set don't cause any compatibility
-> issue: kernels without the metadata parser simply extract the special files
-> and don't process metadata; kernels with the metadata parser don't process
-> metadata if the special files are not included in the image.
-> 
-> >>From the kernel space perspective, backporting this functionality to older
-> kernels should be very easy. It is sufficient to add two calls to the new
-> function do_process_metadata() in do_copy(), and to check the file name in
-> do_name(). From the user space perspective, unlike the previous version of
-> the patch set, it is required to modify the image generators in order to
-> include metadata as separate files.
-> 
-> Changelog
-> 
-> v3:
-> - include file metadata as separate files named METADATA!!!
-> - add the possibility to include in the ram disk arbitrary metadata types
-> 
-> v2:
-> - replace ksys_lsetxattr() with kern_path() and vfs_setxattr()
->   (suggested by Jann Horn)
-> - replace ksys_open()/ksys_read()/ksys_close() with
->   filp_open()/kernel_read()/fput()
->   (suggested by Jann Horn)
-> - use path variable instead of name_buf in do_readxattrs()
-> - set last byte of str to 0 in do_readxattrs()
-> - call do_readxattrs() in do_name() before replacing an existing
->   .xattr-list
-> - pass pathname to do_setxattrs()
-> 
-> v1:
-> - move xattr unmarshaling to CPIO parser
-> 
-> 
-> Mimi Zohar (1):
->   initramfs: add file metadata
-> 
-> Roberto Sassu (2):
->   initramfs: read metadata from special file METADATA!!!
->   gen_init_cpio: add support for file metadata
-> 
->  include/linux/initramfs.h |  21 ++++++
->  init/initramfs.c          | 137 +++++++++++++++++++++++++++++++++++++-
->  usr/Kconfig               |   8 +++
->  usr/Makefile              |   4 +-
->  usr/gen_init_cpio.c       | 137 ++++++++++++++++++++++++++++++++++++--
->  usr/gen_initramfs_list.sh |  10 ++-
->  6 files changed, 305 insertions(+), 12 deletions(-)
->  create mode 100644 include/linux/initramfs.h
-> 
-> -- 
-> 2.17.1
 
-[0] https://lore.kernel.org/all/20210702233727.21301-1-alobakin@pm.me
-
-Thanks,
-Olek
