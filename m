@@ -2,117 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DFCC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 03:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352949AbiFODwv (ORCPT
+        id S1353196AbiFODxL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 23:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32826 "EHLO
+        Tue, 14 Jun 2022 23:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244518AbiFODv4 (ORCPT
+        with ESMTP id S1351718AbiFODwN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 23:51:56 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA1E5005E;
-        Tue, 14 Jun 2022 20:51:55 -0700 (PDT)
-X-UUID: 6da093a912f34a91b69678f47be0baf4-20220615
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:b5310148-119a-4f24-84b7-7ec94e8d2fe6,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:b14ad71,CLOUDID:503b42f6-e099-41ba-a32c-13b8bfe63214,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 6da093a912f34a91b69678f47be0baf4-20220615
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <stanley.chu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1469923884; Wed, 15 Jun 2022 11:51:49 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 15 Jun 2022 11:51:48 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 15 Jun 2022 11:51:47 +0800
-From:   Stanley Chu <stanley.chu@mediatek.com>
-To:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <martin.petersen@oracle.com>, <avri.altman@wdc.com>,
-        <alim.akhtar@samsung.com>, <jejb@linux.ibm.com>,
-        <bvanassche@acm.org>
-CC:     <peter.wang@mediatek.com>, <chun-hung.wu@mediatek.com>,
-        <alice.chao@mediatek.com>, <powen.kao@mediatek.com>,
-        <mason.zhang@mediatek.com>, <qilin.tan@mediatek.com>,
-        <lin.gui@mediatek.com>, <eddie.huang@mediatek.com>,
-        <tun-yu.yu@mediatek.com>, <cc.chou@mediatek.com>,
-        <chaotian.jing@mediatek.com>, <jiajie.hao@mediatek.com>,
-        <stanley.chu@mediatek.com>
-Subject: [PATCH v4 06/10] scsi: ufs-mediatek: Support low-power mode for VCCQ
-Date:   Wed, 15 Jun 2022 11:51:42 +0800
-Message-ID: <20220615035146.20964-7-stanley.chu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220615035146.20964-1-stanley.chu@mediatek.com>
-References: <20220615035146.20964-1-stanley.chu@mediatek.com>
+        Tue, 14 Jun 2022 23:52:13 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD32050052;
+        Tue, 14 Jun 2022 20:52:10 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LNBCR1cT8z1KB1N;
+        Wed, 15 Jun 2022 11:50:11 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 15 Jun 2022 11:52:08 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 15 Jun 2022 11:52:00 +0800
+Message-ID: <5af7a1d9-31fa-74d1-b292-79dc3c658dbd@huawei.com>
+Date:   Wed, 15 Jun 2022 11:52:00 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v5 0/5] introduce mirrored memory support for arm64
+Content-Language: en-US
+To:     Wupeng Ma <mawupeng1@huawei.com>, <corbet@lwn.net>,
+        <will@kernel.org>, <ardb@kernel.org>, <catalin.marinas@arm.com>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
+        <dvhart@infradead.org>, <andy@infradead.org>, <rppt@kernel.org>,
+        <akpm@linux-foundation.org>, <paul.walmsley@sifive.com>,
+        <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>,
+        <paulmck@kernel.org>, <keescook@chromium.org>,
+        <songmuchun@bytedance.com>, <rdunlap@infradead.org>,
+        <damien.lemoal@opensource.wdc.com>, <swboyd@chromium.org>,
+        <wei.liu@kernel.org>, <robin.murphy@arm.com>, <david@redhat.com>,
+        <anshuman.khandual@arm.com>, <thunder.leizhen@huawei.com>,
+        <gpiccoli@igalia.com>, <chenhuacai@kernel.org>,
+        <geert@linux-m68k.org>, <vijayb@linux.microsoft.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-efi@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
+        <linux-mm@kvack.org>, <linux-riscv@lists.infradead.org>
+References: <20220614092156.1972846-1-mawupeng1@huawei.com>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <20220614092156.1972846-1-mawupeng1@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Wang <peter.wang@mediatek.com>
 
-Also allow VCCQ to enter low-power mode, and meanwhile
-remove the restriction of VCC because VCCQ/VCCQ2 can
-be changed to low-power mode even if VCC keeps on while
-the device is not in active power mode.
+On 2022/6/14 17:21, Wupeng Ma wrote:
+> From: Ma Wupeng <mawupeng1@huawei.com>
+>
+> Commit b05b9f5f9dcf ("x86, mirror: x86 enabling - find mirrored memory ranges")
+> introduced mirrored memory support for x86. This support rely on UEFI to
+> report mirrored memory address ranges.  See UEFI 2.5 spec pages 157-158:
+>
+>    http://www.uefi.org/sites/default/files/resources/UEFI%202_5.pdf
+>
+> Memory mirroring is a technique used to separate memory into two separate
+> channels, usually on a memory device, like a server. In memory mirroring,
+> one channel is copied to another to create redundancy. This method makes
+> input/output (I/O) registers and memory appear with more than one address
+> range because the same physical byte is accessible at more than one
+> address. Using memory mirroring, higher memory reliability and a higher
+> level of memory consolidation are possible.
+>
+> These EFI memory regions have various attributes, and the "mirrored"
+> attribute is one of them. The physical memory region whose descriptors
+> in EFI memory map has EFI_MEMORY_MORE_RELIABLE attribute (bit: 16) are
+> mirrored. The address range mirroring feature of the kernel arranges such
+> mirrored regions into normal zones and other regions into movable zones.
+>
+> Arm64 can support this too. So mirrored memory support is added to support
+> arm64.
+>
+> The main purpose of this patch set is to introduce mirrored support for
+> arm64 and we have already fixed the problems we had which is shown in
+> patch #5 to patch #8 and try to bring total isolation in patch #9 which
+> will disable mirror feature if kernelcore is not specified.
+>
+> In order to test this support in arm64:
+> - patch this patch set
+> - add kernelcore=mirror in kernel parameter
+> - start you kernel
+>
+> Patch #1 introduce mirrored memory support form arm64.
+> Patch #2-#4 fix some bugs for arm64 if memory reliable is enabled.
+> Patch #5 disable mirror feature if kernelcore is not specified.
+>
+> Thanks to Ard Biesheuvel's hard work [1], now kernel will perfer mirrored
+> memory if kaslr is enabled.
+>
+> [1] https://lore.kernel.org/linux-arm-kernel/CAMj1kXEPVEzMgOM4+Yj6PxHA-jFuDOAUdDJSiSxy_XaP4P7LSw@mail.gmail.com/T/
 
-Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
-Signed-off-by: Peter Wang <peter.wang@mediatek.com>
-Signed-off-by: Stanley Chu <stanley.chu@mediatek.com>
----
- drivers/ufs/host/ufs-mediatek.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+For series,
 
-diff --git a/drivers/ufs/host/ufs-mediatek.c b/drivers/ufs/host/ufs-mediatek.c
-index 03762ecaaaf8..65a2a4185ef6 100755
---- a/drivers/ufs/host/ufs-mediatek.c
-+++ b/drivers/ufs/host/ufs-mediatek.c
-@@ -1031,7 +1031,13 @@ static int ufs_mtk_link_set_lpm(struct ufs_hba *hba)
- 
- static void ufs_mtk_vreg_set_lpm(struct ufs_hba *hba, bool lpm)
- {
--	if (!hba->vreg_info.vccq2 || !hba->vreg_info.vcc)
-+	struct ufs_vreg *vccqx = NULL;
-+
-+	if (!hba->vreg_info.vccq && !hba->vreg_info.vccq2)
-+		return;
-+
-+	/* Skip if VCC is assumed always-on */
-+	if (!hba->vreg_info.vcc)
- 		return;
- 
- 	/* Bypass LPM when device is still active */
-@@ -1042,12 +1048,13 @@ static void ufs_mtk_vreg_set_lpm(struct ufs_hba *hba, bool lpm)
- 	if (lpm && hba->vreg_info.vcc->enabled)
- 		return;
- 
--	if (lpm)
--		regulator_set_mode(hba->vreg_info.vccq2->reg,
--				   REGULATOR_MODE_IDLE);
-+	if (hba->vreg_info.vccq)
-+		vccqx = hba->vreg_info.vccq;
- 	else
--		regulator_set_mode(hba->vreg_info.vccq2->reg,
--				   REGULATOR_MODE_NORMAL);
-+		vccqx = hba->vreg_info.vccq2;
-+
-+	regulator_set_mode(vccqx->reg,
-+			   lpm ? REGULATOR_MODE_IDLE : REGULATOR_MODE_NORMAL);
- }
- 
- static void ufs_mtk_auto_hibern8_disable(struct ufs_hba *hba)
--- 
-2.18.0
+Reviewed-by: Kefeng Wang<wangkefeng.wang@huawei.com>
 
+>
+> Changelog since v4:
+> - merge the first two patches into one
+> - change __initdata to __initdata_memblock in patch #5
+>
+> Changelog since v3:
+> - limit warning message in vmemmap_verify via pr_warn_once()
+> - only clear memblock_nomap flags rather than bring the mirrored flag back
+> - disable mirrored feature in memblock_mark_mirror()
+>
+> Changelog since v2:
+> - remove efi_fake_mem support
+> - remove Commit ("remove some redundant code in ia64 efi_init") since
+>    efi_print_memmap() is not public
+> - add mirror flag back on initrd memory
+>
+> Changelog since v1:
+> - update changelog in cover letter
+> - use PHYS_PFN in patch #7
+>
+> Ma Wupeng (5):
+>    efi: arm64: Introduce ability to find mirrored memory ranges
+>    mm: Ratelimited mirrored memory related warning messages
+>    mm: Limit warning message in vmemmap_verify() to once
+>    arm64: mm: Only remove nomap flag for initrd
+>    memblock: Disable mirror feature if kernelcore is not specified
+>
+>   arch/arm64/mm/init.c            |  2 +-
+>   arch/x86/include/asm/efi.h      |  4 ----
+>   arch/x86/platform/efi/efi.c     | 23 -----------------------
+>   drivers/firmware/efi/efi-init.c |  1 +
+>   drivers/firmware/efi/efi.c      | 23 +++++++++++++++++++++++
+>   include/linux/efi.h             |  3 +++
+>   mm/internal.h                   |  2 ++
+>   mm/memblock.c                   |  7 +++++--
+>   mm/page_alloc.c                 |  2 +-
+>   mm/sparse-vmemmap.c             |  2 +-
+>   10 files changed, 37 insertions(+), 32 deletions(-)
+>
