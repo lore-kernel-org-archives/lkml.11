@@ -2,92 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0CD2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:10:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B819CCA47B
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 18:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345638AbiFOSKe (ORCPT
+        id S1348143AbiFOSNF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 14:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52164 "EHLO
+        Wed, 15 Jun 2022 14:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231737AbiFOSKb (ORCPT
+        with ESMTP id S1345877AbiFOSNA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 14:10:31 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85A84B403;
-        Wed, 15 Jun 2022 11:10:30 -0700 (PDT)
-Received: from [127.0.0.1] (nyx.walle.cc [158.255.213.36])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 73E5B22249;
-        Wed, 15 Jun 2022 20:10:19 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1655316627;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TS3jYFS6YTAvU3pgkMvxRJI/YD6CxfyrTdrG5rg9tDU=;
-        b=OlchZqjIeXpxF5LKa+OEpi2uZeC6CUN/XH0rxxwQ/x/J6nLbOgm5MbIm2Z9R9PJXpyqyWh
-        ITd9PIHV0TBR+EcsaFzL0mjm/aMwRtzQ1p1ctjGfEYFVgvSbeoDaUZi2Gr+pYPueUu74xN
-        GK5/IzzwgjecRTSUsCYOo2rolRVGf+4=
-Date:   Wed, 15 Jun 2022 20:10:13 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "Oleksandr Ocheretnyi -X (oocheret - GLOBALLOGIC INC at Cisco)" 
-        <oocheret@cisco.com>
-CC:     "tudor.ambarus@microchip.com" <tudor.ambarus@microchip.com>,
-        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
-        "p.yadav@ti.com" <p.yadav@ti.com>,
-        "richard@nod.at" <richard@nod.at>,
-        "vigneshr@ti.com" <vigneshr@ti.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "mauro.lima@eclypsium.com" <mauro.lima@eclypsium.com>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>
-Subject: Re: [PATCH] mtd: spi-nor: handle unsupported FSR opcodes properly
-User-Agent: K-9 Mail for Android
-In-Reply-To: <YqmrIsOEsFoKTwEK@lahna>
-References: <YmZUCIE/ND82BlNh@lahna> <20220610191548.3626218-1-oocheret@cisco.com> <YqbWt9f3of+7Z76e@lahna> <BYAPR11MB27570F2863F7BCDFE629B3DFCDAA9@BYAPR11MB2757.namprd11.prod.outlook.com> <YqmrIsOEsFoKTwEK@lahna>
-Message-ID: <6A852B9E-D84C-4F80-9C17-62BFBB98CC8A@walle.cc>
+        Wed, 15 Jun 2022 14:13:00 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C9020181
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:12:55 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id x38so21901187ybd.9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 11:12:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Z16pRFrlVSPEJ9xrRNhHHI7LBf4bDfmCRp35UKvSt4k=;
+        b=VtyKmitPcYg09JDzUVBPZ5S6YIFz+6XPx9B0hLW3bW2qQhyex8WgwfIRtF1/yr2XsH
+         TbqLRCneP/SNdXsZpEcPik0sjLzLAPZ7hrBV6BNbYpcU9BKUHtLSxO+t+SsnZ3HKT4Dq
+         TBJXZ7KB6kZljE9nylvVCmaRl1PHG0ZfMaLZtGM/ZMFPa+/JX0z2t4P4raOsz/qJGwNH
+         1ZZ6pxqW6Z72rgouQd764O6w2DID43cIlK/wtgu8Vr09F/foL+askZvuhzoqqFyVSXX9
+         h9pkmUJzOuWkKBXeFgnh/NtiZ9hAqshYLUKbED6rT3qIqlXdklYzQU6q97RO4MOFWiTK
+         t3hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Z16pRFrlVSPEJ9xrRNhHHI7LBf4bDfmCRp35UKvSt4k=;
+        b=Odwrvkh4kc23gTKqw28fQLb9Z+iiB+iyL7fvUa8HxUPE+cQTkP1M06/GH6KfWyDPeU
+         E+J1p0K+y8R7mdio4sVXS4p+s0sreokH7qg6m16NyMSceY59qWkFrxrl6k2gXQHcXz4h
+         rvVB0vyCE8gSYWswjHt8jlMB1T06tgHbiBNnvVvpsaDibZ2kyduMGN5UMoHHCkUvTNuE
+         ZsFbmkjLuvefcNFSJAH/5I4WNIIe4UidM7nOx1eWrOcnX4QZDEntJTS8sSpdQxN4ZV8S
+         zCg/l8ieFANVB4zpHFJSWbNO+GcNFQaRNQgq7HwQl+d2/xg1K6VYvptFJHjdz68lj+8y
+         ii/A==
+X-Gm-Message-State: AJIora/TqllAcDqZJU1kG1ODCxm/Geha9BdfAYg5LI7Q8c4FJd3885Kg
+        VijijSh/eQbNryQ0eAAgHqSuEYhWRVzNm7L7rhGTcQ==
+X-Google-Smtp-Source: AGRyM1tJLtrGpehLrr2n0Fe53ACsL/DTs7nIGPdRBRUjYBRB5lguCaNgS5P5xgX1OhBN63gsXLn61AZR7kNeVBdquzU=
+X-Received: by 2002:a25:d913:0:b0:664:67a5:29e3 with SMTP id
+ q19-20020a25d913000000b0066467a529e3mr1310128ybg.592.1655316774128; Wed, 15
+ Jun 2022 11:12:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+References: <20220614183720.861582392@linuxfoundation.org>
+In-Reply-To: <20220614183720.861582392@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 15 Jun 2022 23:42:43 +0530
+Message-ID: <CA+G9fYu6voXw7-DKw6+un4yaKwx7Uw4BB9GeuR-gMYJX6CM1Jw@mail.gmail.com>
+Subject: Re: [PATCH 5.18 00/11] 5.18.5-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 15=2E Juni 2022 11:49:22 OEZ schrieb Mika Westerberg <mika=2Ewesterberg@=
-linux=2Eintel=2Ecom>:
->Hi,
+On Wed, 15 Jun 2022 at 00:16, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
->On Tue, Jun 14, 2022 at 05:56:54PM +0000, Oleksandr Ocheretnyi -X (oocher=
-et - GLOBALLOGIC INC at Cisco) wrote:
->>    Hello Mika,
->>=20
->>    in my case (I work with memory chip n25q128a13 for recent kernels) I=
-'m
->>    getting return value -ENOTSUPP from spi_mem_exec_op() call in the
->>    micron_st_nor_read_fsr() method
->>    [[1]https://elixir=2Ebootlin=2Ecom/linux/v5=2E19-rc2/source/drivers/=
-spi/spi-m
->>    em=2Ec#L326]=2E So I decided to provide the same errorcode to
->>    intel_spi_hw_cycle() method because older kernel versions throw the
->>    error there=2E It is fine to use -EOPNOTSUPP return value instead=2E
->>=20
->>    I suspect we need to cover both cases to check -ENOTSUPP as well as
->>    -EOPNOTSUPP to let the driver work properly=2E
->>=20
->>    if (ret =3D=3D -ENOTSUPP || ret =3D=3D -EOPNOTSUPP)
+> This is the start of the stable review cycle for the 5.18.5 release.
+> There are 11 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
->I think we should follow the same in the Intel driver and return
->-ENOTSUPP too=2E
+> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.18.5-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.18.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-AFAIK ENOTSUPP is for nfs and shouldn't be used=2E
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
--michael
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+
+## Build
+* kernel: 5.18.5-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.18.y
+* git commit: 0e32b2c68ea4d90e0ecca45afd07dcf5d594de7e
+* git describe: v5.18.4-12-g0e32b2c68ea4
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.18.y/build/v5.18=
+.4-12-g0e32b2c68ea4
+
+## Test Regressions (compared to v5.18.4)
+No test regressions found.
+
+## Metric Regressions (compared to v5.18.4)
+No metric regressions found.
+
+## Test Fixes (compared to v5.18.4)
+No test fixes found.
+
+## Metric Fixes (compared to v5.18.4)
+No metric fixes found.
+
+## Test result summary
+total: 127841, pass: 115630, fail: 544, skip: 10874, xfail: 793
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 319 total, 316 passed, 3 failed
+* arm64: 64 total, 62 passed, 2 failed
+* i386: 57 total, 50 passed, 7 failed
+* mips: 41 total, 38 passed, 3 failed
+* parisc: 14 total, 14 passed, 0 failed
+* powerpc: 65 total, 56 passed, 9 failed
+* riscv: 32 total, 27 passed, 5 failed
+* s390: 23 total, 20 passed, 3 failed
+* sh: 26 total, 24 passed, 2 failed
+* sparc: 14 total, 14 passed, 0 failed
+* x86_64: 62 total, 58 passed, 4 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers-dma-buf
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-filesystems-binderfs
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-gpio
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-lib
+* kselftest-membarrier
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-zram
+* kunit
+* kunit/15
+* kunit/261
+* kunit/3
+* kunit/427
+* kunit/90
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-cap_bounds-tests
+* ltp-commands
+* ltp-commands-tests
+* ltp-containers
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps
+* ltp-filecaps-tests
+* ltp-fs
+* ltp-fs-tests
+* ltp-fs_bind
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple
+* ltp-fs_perms_simple-tests
+* ltp-fsx
+* ltp-fsx-tests
+* ltp-hugetlb
+* ltp-hugetlb-tests
+* ltp-io
+* ltp-io-tests
+* ltp-ipc
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-pty-tests
+* ltp-sched
+* ltp-sched-tests
+* ltp-securebits
+* ltp-securebits-tests
+* ltp-smoke
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
