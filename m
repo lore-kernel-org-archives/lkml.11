@@ -2,99 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D21EEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E63C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 22:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350137AbiFOWZ2 (ORCPT
+        id S1350215AbiFOW0D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 18:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44512 "EHLO
+        Wed, 15 Jun 2022 18:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348838AbiFOWZQ (ORCPT
+        with ESMTP id S242770AbiFOW0B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 18:25:16 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062142FFF2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:25:15 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id u12so25870722eja.8
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:25:14 -0700 (PDT)
+        Wed, 15 Jun 2022 18:26:01 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3BDA51306
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:26:00 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id i64so12667589pfc.8
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:26:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=EqzQW4bvuiA6pvJtGB4rjgOdvlv8E2OoMiyxcMbYrTc=;
-        b=JSDW99nkzGyW3xICFnKaivNYgZ++b2aFROAcUyNdGBKm2s/+IJcAqkaFBg0XmZ2/at
-         edM8wEefSZDksc/lyQB8aMS2rfc9PHBogmCkD0C28dfFHNWeHdX2doEMJ2WflhmFU6T5
-         blyVH1ZWFdRN/Ja1usyOpD77t4Gzm8VRRbVYxcznxBulPSb2Rg4XrbBthfBXfH3v6Wf5
-         4+gtdlhnHVpbJJ6lTB5wI7oyMLMavx+gBQ0uW6j/E6LKOih2kqRk1EiTCGWrocgUDsTJ
-         pe8/Vzs97c3I+qE2ezj9xETPih6I6gJesyK/m3sf7ZybpEZiCtO4vJjtL42JwFhjEExG
-         r0rA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=PhsSixX/qIegggQ5xjphGxZRHvJ/OEH0jIlsRPAAQm0=;
+        b=jECmfGSYstnqaxcRrTgZP5JAycoHs5xHRilb4VyHR0fHpBMbaXfFOeO3n6Jbbh5beA
+         fR6s7KbigWwSGO/IkBQmncbFf0e5pg1gzOq7k0XxWjSzggZvZUH/Bmd953k52Tsy6GR1
+         PyWLuf7heFRun0WTH/TniVecnEBlyLSOzBYG/HObB8A3zzLYc/oBitEkoF4arIpQtBDm
+         8OZfJQ8snzRxwFThCUV9khBGxoAV/CH6P3jYjSmzTYx0EFzpTn8sjREmWRLz4Z4FwFIs
+         9WlxEeGNNEJ8OA7vE/7trRewubuZI2ft2YiX56n6G1UKocriqe+oLjyTo1yALvrEM/34
+         f6ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=EqzQW4bvuiA6pvJtGB4rjgOdvlv8E2OoMiyxcMbYrTc=;
-        b=rXu6MJBuo1Hzt7bU4tuezWecGRMDKDGqNA7ahV3bOQMW/L8baaxY7QD7/HpZsWh5Ho
-         KEk5a7DwFaXRYhIGQGJ250lAgBFnDw4UglanTQHRAFM0W6z/vAX2KjJ7g6YjDFC8LGb7
-         enwo6Hjv+Ck8dnTNb9JcPSgsSv50/SEBbyr6qAELP5FO84euZN1y3GHVyF5Xlkv1y1WQ
-         noLyXl1X6H+R+HX25Gb0kIOL1E4OokcmocccbcprmB8w1IDhS9PmZJctn/t+crIXqjCg
-         uy7ebLnYHNGNwHexUSP62NvK6auG6RO5IL3yHo0hxiPZ7j4cMbcjlmJ75QOdCbdxmHQR
-         j42A==
-X-Gm-Message-State: AJIora+9uhFxQ7ALZzfkTmMA1xWQX6SbBcbILSM7CYa0HThjhiO1H1KB
-        5HszlqKx5WNvY3jbbFKaZZU=
-X-Google-Smtp-Source: AGRyM1vecP0FSol4KwYKeB+9vu236BPxycyySMJXvkigqrEt5XtwuYhjnuoaB3hP+TSVK07JAymodQ==
-X-Received: by 2002:a17:906:14d5:b0:711:c55a:998 with SMTP id y21-20020a17090614d500b00711c55a0998mr1798067ejc.708.1655331913477;
-        Wed, 15 Jun 2022 15:25:13 -0700 (PDT)
-Received: from debian.home (90-180-208-18.rcn.o2.cz. [90.180.208.18])
-        by smtp.gmail.com with ESMTPSA id y3-20020a056402358300b0042dc25fdf5bsm350427edc.29.2022.06.15.15.25.12
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 15 Jun 2022 15:25:13 -0700 (PDT)
-From:   Jiri Vanek <jirivanek1@gmail.com>
-To:     Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>
-Cc:     Vinay Simha B N <simhavcs@gmail.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Jiri Vanek <jirivanek1@gmail.com>
-Subject: [PATCH 2/2] drm/bridge/tc358775: Fix DSI clock division for vsync delay calculation
-Date:   Thu, 16 Jun 2022 00:22:21 +0200
-Message-Id: <20220615222221.1501-3-jirivanek1@gmail.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20220615222221.1501-1-jirivanek1@gmail.com>
-References: <20220615222221.1501-1-jirivanek1@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=PhsSixX/qIegggQ5xjphGxZRHvJ/OEH0jIlsRPAAQm0=;
+        b=lVex2O/tQ5piOCDIAd0JEuuXAwK7p5froP+uRoDSDqfpv2mbWYpftQEu0LBDh45C+R
+         hwU77M1eOle5ZvEUT5qFHzRCs2jyl8gPIGtPY1/EFYG/ZcEBG2Kopphd94XauXkQke9C
+         hiIZ4J2XdghEF4mm9SfNYmG1cgK/Kx7g9qa/nvaMUdDZ2Z9I0jq+CVK04Kr1TzrT6qp7
+         6DerwARwTaLZJ7TdhTtmty0LD/UEuHYa5Bpr8P1wWHRNMDctixdyqASR/7lftldpu+mM
+         S1pWFYas+fVCh8yDz6yd3hQZ5O3OrwwRNfdkCDuLvBuo85dRtm+ndOhepzcDmauTYTQH
+         0QqA==
+X-Gm-Message-State: AJIora+xTQ5eUSz8IaeLD6bdj1Vsjrns/D54UajL6+sVvzVtPJmDBBQL
+        p56DuPXL4i57Hwpo0P3RRrwZeQ==
+X-Google-Smtp-Source: AGRyM1t5Z+CeN6seTkZECmQqflRZfLTXrCI+sKYnhHustZ3Jap6ITSkAmhQieyoPoyDyS7fwC5ngsw==
+X-Received: by 2002:a63:6f8a:0:b0:408:bd01:ef4 with SMTP id k132-20020a636f8a000000b00408bd010ef4mr1763774pgc.216.1655331960155;
+        Wed, 15 Jun 2022 15:26:00 -0700 (PDT)
+Received: from google.com ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id x5-20020a170902a38500b00168d9630b49sm100605pla.307.2022.06.15.15.25.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 15:25:59 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 23:25:57 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Fabien Parent <fparent@baylibre.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/7] mfd: mt6358-irq: add MT6357 PMIC support
+Message-ID: <Yqpcdb6sznziWMDo@google.com>
+References: <20220531124959.202787-1-fparent@baylibre.com>
+ <20220531124959.202787-6-fparent@baylibre.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220531124959.202787-6-fparent@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the same PCLK divide option (divide DSI clock to generate pixel clock)
-which is set to LVDS Configuration Register (LVCFG) also for a VSync delay
-calculation. Without this change an auxiliary variable could underflow
-during the calculation for some dual-link LVDS panels and then calculated
-VSync delay is wrong. This leads to a shifted picture on a panel.
+On Tue, 31 May 2022, Fabien Parent wrote:
 
-Tested-by: Jiri Vanek <jirivanek1@gmail.com>
-Signed-off-by: Jiri Vanek <jirivanek1@gmail.com>
----
- drivers/gpu/drm/bridge/tc358775.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Add MT6357 PMIC IRQ support.
+> 
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> ---
+>  drivers/mfd/mt6358-irq.c        | 24 ++++++++++++++++++++++++
+>  include/linux/mfd/mt6397/core.h |  1 +
+>  2 files changed, 25 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/tc358775.c b/drivers/gpu/drm/bridge/tc358775.c
-index cd2721ab02a9..fecb8558b49a 100644
---- a/drivers/gpu/drm/bridge/tc358775.c
-+++ b/drivers/gpu/drm/bridge/tc358775.c
-@@ -430,7 +430,7 @@ static void tc_bridge_enable(struct drm_bridge *bridge)
- 		val = TC358775_VPCTRL_MSF(1);
- 
- 	dsiclk = mode->crtc_clock * 3 * tc->bpc / tc->num_dsi_lanes / 1000;
--	clkdiv = dsiclk / DIVIDE_BY_3 * tc->lvds_link;
-+	clkdiv = dsiclk / (tc->lvds_link == DUAL_LINK ? DIVIDE_BY_6 : DIVIDE_BY_3);
- 	byteclk = dsiclk / 4;
- 	t1 = hactive * (tc->bpc * 3 / 8) / tc->num_dsi_lanes;
- 	t2 = ((100000 / clkdiv)) * (hactive + hback_porch + hsync_len + hfront_porch) / 1000;
+Fixed the subject line.
+
+Applied, thanks.
+
 -- 
-2.30.2
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
