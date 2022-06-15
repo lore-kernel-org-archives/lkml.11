@@ -2,196 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8EF7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AAEBCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:59:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358220AbiFOR7J (ORCPT
+        id S1357701AbiFOR7T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42988 "EHLO
+        Wed, 15 Jun 2022 13:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351546AbiFOR7H (ORCPT
+        with ESMTP id S1357888AbiFOR6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:59:07 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3451229379
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:59:06 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id r82so21786701ybc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:59:06 -0700 (PDT)
+        Wed, 15 Jun 2022 13:58:14 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B9F2A413;
+        Wed, 15 Jun 2022 10:57:52 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so2823618pjl.5;
+        Wed, 15 Jun 2022 10:57:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=6Kq0b6mU5KjZXujIi/NoS9bD6ei6a4n3KRsk6IuQrJk=;
-        b=A4BBHubXCjgVVY76OOJQjIUL2g3oN+jqc+oxXgusEJWgUpCzvUtvfl/zmIAusHqyia
-         mVzTEI/2K6V0NPjtK6jOK8peqDCqhVgpRwhp8jXXkiJJZYZqE2asXlj2keNr/tu5p+E+
-         CNkeZkrYPs/ckCofULDeymHBbh3rBaAYfGgK+PSxU0UgYg9Xsb7P+bM2pq8Zgk/e+FgE
-         p/v6nU0Mgx7M/h4F9esG9LRuJq8Ota0Jd/BpQ7gx3PGi+/wez7tVJpBlOYTj/NodQ8OJ
-         UFC5qlSdhnRn/acDlaVAPvP/+/E8AGyIOZXoipetFREXnHUOgi811aX4f0qRSSDKrUzM
-         eymw==
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=Pdm0v/eHuTn8EFkDzG/jFCh8QYUQn580u0Hjxv+TmSs=;
+        b=O6gq5i4RqzsvkWTYJsuMFS8kKcm670FI0T+LsWRMSujkkRhttepRtBbCuuV3sdBHxN
+         ZkKf9wTiZH+763xUbde92AiQDVe8Rkf4d/gLKDxvlYd0Uxi68FfSA5rHgmyJJSX26up8
+         uuQk//BHaJJJULhr8k+0pnWJTy4DAA4b66GUVVCAC9kbEJwzyBj/XsDcbRnZzy49agjI
+         mPKoDUTSTjacxo8afX8af66SfRrc1La9rhayTXyDofnCPzDCKIVLxFcjN1QeOImSTLAS
+         4d5otv6SXN9r5HnnYp1EzNpnAe4fM4/Ii7YdbbN8xeOr7bA2HBIJwf8meWNLqGce+jDS
+         VO1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=6Kq0b6mU5KjZXujIi/NoS9bD6ei6a4n3KRsk6IuQrJk=;
-        b=Q8Ox8YP+IXzeX/j1oV7yejQmgdMYYRliB7UBo1GWjTUKRmYTjuIHmTZs2Y5lBxKfkr
-         0UcGoueqs7UEtxyHrAM5Bu9iAfBa8BHI1kmeYs0dN0DVCdZkKb69imLBNUtbUXS5nM/w
-         6y7Ee22I7vJhAbLu7buXJBg+tlReNCJwzR+FnxRxvUy/rY32zJj16Q4opWdE/l+Zo+sQ
-         eUA5F6S35W78/kEVK9hm/X/9+IE5TB3zaopxV318zvSc2W0xFrBAHBumYKd2sYGQKv9L
-         wDVl5R21D6K8aGVC3F3P50k5ooljPP64fzLOn/r6wRpVjuutqvrGJ2Gpehj5f6cMB+0n
-         6QpA==
-X-Gm-Message-State: AJIora8EV2IiniD0qVv2ybghrg6+i9WTw4+M1uT62pbShP72v7HOI8yT
-        elAGCIas34UIvLbIrKlUCfsLRdw8MGRMu+/jEFuNaQ==
-X-Google-Smtp-Source: AGRyM1vjqOfkM3gFxn+FF0W4BzIQ7xP06PBMeEQaaW2pCXHKkSndV50Idup39Ub9p4mh3FZ51Qxe/TB3YvfQyT15Hlo=
-X-Received: by 2002:a25:3b52:0:b0:665:f89b:708b with SMTP id
- i79-20020a253b52000000b00665f89b708bmr1048982yba.483.1655315945152; Wed, 15
- Jun 2022 10:59:05 -0700 (PDT)
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=Pdm0v/eHuTn8EFkDzG/jFCh8QYUQn580u0Hjxv+TmSs=;
+        b=ykaqRWSSoTdhkDT7EdKVELiP917YlABZkdL3jnOraWJftSXye39adoHRO89okbhA4p
+         7ff8oFsEm8lH930X+jmRNvJ8HW9igVl3VaUn3B2H1L0KA3RSH2dACH0iVf0sw9FCgrCk
+         +iivZiIMmTw4k+loe45N+DJHjApBX5W+1Mn40ZtTkjwSyQe8kudkH9z+U5Zy1WRiW+Nr
+         thiX9Dl0apza57FiB3OuEuQGB93itnW48VbuFs+craSfAjAZfHIFBZ4xWf8sqoW/QlCh
+         caZXbGihq2I+9nrCa7FxRR4OoBws0J/gwib/XT73ofkq5IS9eoOr6j4FwmygY3hSejmT
+         p79Q==
+X-Gm-Message-State: AJIora9IytRHVlA8PDUGaYX6cTq6J4drYovVzMpuoTYlixGfsXFEdPId
+        QS680cu5MjGutd1ZiWzF9XI=
+X-Google-Smtp-Source: AGRyM1tYNZ3eEVpA869lUoIGayFw5Kmo3S5lbWkKwlKXn5LAschra1zSpqfs75aKZ+F5PiYuACDC8Q==
+X-Received: by 2002:a17:90b:4f4a:b0:1e3:49c9:aab0 with SMTP id pj10-20020a17090b4f4a00b001e349c9aab0mr11518167pjb.223.1655315871910;
+        Wed, 15 Jun 2022 10:57:51 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id p5-20020a170903248500b0015e8d4eb1c8sm5961816plw.18.2022.06.15.10.57.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 10:57:51 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <01243e3e-f4d2-c1ba-98f5-db7bc0c62adc@roeck-us.net>
+Date:   Wed, 15 Jun 2022 10:57:49 -0700
 MIME-Version: 1.0
-References: <20220614183723.328825625@linuxfoundation.org>
-In-Reply-To: <20220614183723.328825625@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 15 Jun 2022 23:28:54 +0530
-Message-ID: <CA+G9fYuikNPmQB-E045j10fWoR5jJBbOq6pGkFrs4Coji0px4g@mail.gmail.com>
-Subject: Re: [PATCH 4.14 00/20] 4.14.284-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Content-Language: en-US
+To:     Liang He <windhl@126.com>, tharvey@gateworks.com,
+        rjones@gateworks.com, jdelvare@suse.com
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220615151856.3970186-1-windhl@126.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] drivers: hwmon: Add missing of_node_put() in gsc-hwmon.c
+In-Reply-To: <20220615151856.3970186-1-windhl@126.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 at 00:12, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 4.14.284 release.
-> There are 20 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
-4.14.284-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-4.14.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+On 6/15/22 08:18, Liang He wrote:
+> In gsc_hwmon_get_devtree_pdata(), of_find_compatible_node() will return
+> a node pointer with refcount incremented. We should use of_node_put() in
+> fail path or when it is not used anymore.
+>  > Signed-off-by: Liang He <windhl@126.com>
+> ---
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Please use proper subject lines. Here it should have been
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+hwmon: (gsc-hwmon) Add missing of_node_put()
 
-## Build
-* kernel: 4.14.284-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-4.14.y
-* git commit: bddb08ba46c857f280bca2f865bd7ef59ac8f90a
-* git describe: v4.14.283-21-gbddb08ba46c8
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.14.y/build/v4.14=
-.283-21-gbddb08ba46c8
+>   drivers/hwmon/gsc-hwmon.c | 6 +++++-
+>   1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/hwmon/gsc-hwmon.c b/drivers/hwmon/gsc-hwmon.c
+> index 1fe37418ff46..34c20d13627a 100644
+> --- a/drivers/hwmon/gsc-hwmon.c
+> +++ b/drivers/hwmon/gsc-hwmon.c
+> @@ -268,10 +268,14 @@ gsc_hwmon_get_devtree_pdata(struct device *dev)
+>   
+>   	/* fan controller base address */
+>   	fan = of_find_compatible_node(dev->parent->of_node, NULL, "gw,gsc-fan");
 
-## Test Regressions (compared to v4.14.283)
-No test regressions found.
+A single of_node_put(fan) here would have been be sufficient.
 
-## Metric Regressions (compared to v4.14.283)
-No metric regressions found.
+> -	if (fan && of_property_read_u32(fan, "reg", &pdata->fan_base)) {
+> +	if (fan && of_property_read_u32(fan, "reg", &pdata->fan_base)) {		
+> +		of_node_put(fan);
+>   		dev_err(dev, "fan node without base\n");
+>   		return ERR_PTR(-EINVAL);
+>   	}
+> +	
+> +	/* if fan&&!of_property_read_u32 fail */
 
-## Test Fixes (compared to v4.14.283)
-No test fixes found.
+This comment only adds confusion and does not add any value.
 
-## Metric Fixes (compared to v4.14.283)
-No metric fixes found.
+Guenter
 
-## Test result summary
-total: 98364, pass: 87114, fail: 190, skip: 10024, xfail: 1036
+> +	of_node_put(fan);
+>   
+>   	/* allocate structures for channels and count instances of each type */
+>   	device_for_each_child_node(dev, child) {
 
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 293 total, 287 passed, 6 failed
-* arm64: 52 total, 45 passed, 7 failed
-* i386: 27 total, 23 passed, 4 failed
-* mips: 22 total, 22 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 16 total, 16 passed, 0 failed
-* s390: 12 total, 9 passed, 3 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 49 total, 47 passed, 2 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kunit
-* kvm-unit-tests
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-cap_bounds-tests
-* ltp-commands
-* ltp-commands-tests
-* ltp-containers
-* ltp-containers-tests
-* ltp-controllers
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps
-* ltp-filecaps-tests
-* ltp-fs
-* ltp-fs-tests
-* ltp-fs_bind
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple
-* ltp-fs_perms_simple-tests
-* ltp-fsx
-* ltp-fsx-tests
-* ltp-hugetlb
-* ltp-hugetlb-tests
-* ltp-io
-* ltp-io-tests
-* ltp-ipc
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-pty-tests
-* ltp-sched
-* ltp-sched-tests
-* ltp-securebits
-* ltp-securebits-tests
-* ltp-smoke
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
