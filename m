@@ -2,254 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B0CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:06:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8842DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244522AbiFOJGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:06:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
+        id S1345255AbiFOJHe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 05:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242290AbiFOJGr (ORCPT
+        with ESMTP id S1343721AbiFOJHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:06:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADACC3A1BA
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 02:06:46 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1o1Oyo-0002y9-9c; Wed, 15 Jun 2022 11:06:26 +0200
-Message-ID: <9cc8d2d2ca9ff2ee71d976b2b0210ce144298c46.camel@pengutronix.de>
-Subject: Re: [PATCH 0/8] interconnect: support i.MX8MP
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Peng Fan <peng.fan@nxp.com>,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        "djakov@kernel.org" <djakov@kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>, Abel Vesa <abel.vesa@nxp.com>,
-        "abailon@baylibre.com" <abailon@baylibre.com>,
-        "laurent.pinchart@ideasonboard.com" 
-        <laurent.pinchart@ideasonboard.com>,
-        "marex@denx.de" <marex@denx.de>,
-        "paul.elder@ideasonboard.com" <paul.elder@ideasonboard.com>,
-        "Markus.Niebel@ew.tq-group.com" <Markus.Niebel@ew.tq-group.com>,
-        "aford173@gmail.com" <aford173@gmail.com>
-Cc:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Date:   Wed, 15 Jun 2022 11:06:23 +0200
-In-Reply-To: <DU0PR04MB94173B94950965B7DB3BA4CB88AA9@DU0PR04MB9417.eurprd04.prod.outlook.com>
-References: <20220601094156.3388454-1-peng.fan@oss.nxp.com>
-         <DU0PR04MB941799547BD863444C6F268D88AB9@DU0PR04MB9417.eurprd04.prod.outlook.com>
-         <c2034c030333f89e0ac7d86c906dd222cc151d52.camel@pengutronix.de>
-         <DU0PR04MB94173B94950965B7DB3BA4CB88AA9@DU0PR04MB9417.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Wed, 15 Jun 2022 05:07:06 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2BE43C4B0;
+        Wed, 15 Jun 2022 02:07:00 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LNKBj0LfPz1K9tt;
+        Wed, 15 Jun 2022 17:05:01 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 15 Jun 2022 17:06:58 +0800
+Received: from [10.67.103.212] (10.67.103.212) by
+ dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 15 Jun 2022 17:06:58 +0800
+Subject: Re: [PATCH v2 1/3] uacce: supports device isolation feature
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        "Kai Ye via Linux-accelerators" <linux-accelerators@lists.ozlabs.org>
+References: <20220614122943.1406-1-yekai13@huawei.com>
+ <20220614122943.1406-2-yekai13@huawei.com>
+ <20220615095211.00000889@Huawei.com>
+CC:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>,
+        <linuxarm@huawei.com>, <linux-kernel@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <linux-crypto@vger.kernel.org>,
+        <zhangfei.gao@linaro.org>
+From:   "yekai(A)" <yekai13@huawei.com>
+Message-ID: <1ed2dd0a-cf8c-3540-928e-53c7b6d2a2d1@huawei.com>
+Date:   Wed, 15 Jun 2022 17:06:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
+In-Reply-To: <20220615095211.00000889@Huawei.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+X-Originating-IP: [10.67.103.212]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peng,
 
-Am Dienstag, dem 14.06.2022 um 23:38 +0000 schrieb Peng Fan:
-> Hi Lucas,
-> 
-> > Subject: Re: [PATCH 0/8] interconnect: support i.MX8MP
-> > 
-> > Hi Peng,
-> > 
-> > Am Montag, dem 13.06.2022 um 01:23 +0000 schrieb Peng Fan:
-> > > All,
-> > > 
-> > > > Subject: [PATCH 0/8] interconnect: support i.MX8MP
-> > > 
-> > > I am going to send out V2 this week to address the comments until now.
-> > > But before that I would like to see if any one has any comments on the
-> > > design here.
-> > > 
-> > > Georgi, do you have comments on Patch 2 " interconnect: add device
-> > > managed bulk API"
-> > > 
-> > > Lucas, since you had comments when I first use syscon to configure
-> > > NoC, are you ok with the design to use interconnect in this patchset?
-> > > 
-> > I'm still not 100% convinced that the blk-ctrl is the right consumer for the
-> > interconnect, since it doesn't do any busmastering. However, the design looks
-> > much better than the syscon based one.
-> > 
-> > I mostly worry about being able to extend this to do more than the current
-> > static configuration if/when NXP decides to release more information about the
-> > NoC configuration options or someone reverse engineers this part of the SoC. 
-> 
-> I have asked internally, NoC documentation for i.MX8M* is not allowed to public.
-> 
-Yea, sadly I've heard this many times from NXP.
 
-> I
-> > still hope that we could optimize NoC usage by setting real bandwidth and
-> > latency limits for the devices connected to the NoC. As the blk-ctrl doesn't have
-> > any clue about this right now, we can't really set any more specific requests
-> > than the current INT_MAX ones.
-> 
-> Actually looking at ATF NoC settings, the values are suggested by Design team,
-> Design team give SW team such a group of value and not suggest SW team
-> to change it. And the value in ATF not touch bandwidth registers, as you
-> could see from the patchset, only mode,priority,ext_control are configured.
-> 
-> Similar to qcom using static settings:
-> ./drivers/interconnect/qcom/qcm2290.c:668.
-> .qos.qos_mode = NOC_QOS_MODE_FIXED,
-> 
-> I understand that people wanna tune the settings at runtime on demand.
-> 
-Right. We had the same situation with QoS settings on the i.MX6, where
-Freescale/NXP claimed that the values from the design team are optimal
-and should not be changed, but we actually had some cases where tuning
-those values to the specific use-case of a board was beneficial. With
-the i.MX6 we could do this on our own, as things were documented, at
-least partially.
-
-I don't request you or anyone from the NXP open source team to do
-something here, as I understand that the no documentation policy is an
-outside decision that you can not really change. I just want to make
-sure that if someone was to do something about this situation, we don't
-make that change harder than necessary by locking us into a DT binding
-and design that might be hard to change later on.
-
-> > I guess we could extend things in this way by making the blk-ctrl not only be a
-> > simple consumer of the interconnect, but aggregate requests from the devices
-> > in the blk-ctrl domain and forward them to the NOC provider, right?
-> 
-> I am not sure. This patchset is actually only for init NoC settings after
-> power on, because the initial value is invalid.
-> 
-> I could think how to resolve the INT_MAX settings in next version,
-> For your upper suggestion, could we start after this version approved for land
-> in tree?
-> 
-I just want you to think about how we could extend the design laid down
-in this patchset if/when the peripheral drivers are starting to request
-their actual bandwidth usage. If the answer to this question is "we'll
-simply make the blk-ctl part of the interconnect hierarchy and let it
-aggregate the bandwidth requests and forward them to the NoC driver"
-then I'm fine with this patchset landing in upstream as-is. I'm just
-not sure if I'm overlooking something here which would prevent such an
-extension of the design, as I'm not a expert in the interconnect
-framework.
-
-Regards,
-Lucas
-
-> 
+On 2022/6/15 16:52, Jonathan Cameron wrote:
+> On Tue, 14 Jun 2022 20:29:38 +0800
+> Kai Ye via Linux-accelerators <linux-accelerators@lists.ozlabs.org> wrote:
+>
+>> UACCE add the hardware error isolation API. Users can configure
+>> the error frequency threshold by this vfs node. This API interface
+>> certainly supports the configuration of user protocol strategy. Then
+>> parse it inside the device driver. UACCE only reports the device
+>> isolate state. When the error frequency is exceeded, the device
+>> will be isolated. The isolation strategy should be defined in each
+>> driver module.
+>>
+>> Signed-off-by: Kai Ye <yekai13@huawei.com>
+>> Reviewed-by: Zhou Wang <wangzhou1@hisilicon.com>
+>> ---
+>>  drivers/misc/uacce/uacce.c | 37 +++++++++++++++++++++++++++++++++++++
+>>  include/linux/uacce.h      | 16 +++++++++++++---
+>>  2 files changed, 50 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
+>> index b6219c6bfb48..525623215132 100644
+>> --- a/drivers/misc/uacce/uacce.c
+>> +++ b/drivers/misc/uacce/uacce.c
+>> @@ -346,12 +346,47 @@ static ssize_t region_dus_size_show(struct device *dev,
+>>  		       uacce->qf_pg_num[UACCE_QFRT_DUS] << PAGE_SHIFT);
+>>  }
+>>
+>> +static ssize_t isolate_show(struct device *dev,
+>> +			    struct device_attribute *attr, char *buf)
+>> +{
+>> +	struct uacce_device *uacce = to_uacce_device(dev);
+>> +
+>> +	return sysfs_emit(buf, "%d\n", uacce->ops->get_isolate_state(uacce));
+>> +}
+>> +
+>> +static ssize_t isolate_strategy_show(struct device *dev,
+>> +				     struct device_attribute *attr, char *buf)
+>> +{
+>> +	struct uacce_device *uacce = to_uacce_device(dev);
+>> +
+>> +	return sysfs_emit(buf, "%s\n", uacce->isolate_strategy);
+>> +}
+>> +
+>> +static ssize_t isolate_strategy_store(struct device *dev,
+>> +				      struct device_attribute *attr,
+>> +				      const char *buf, size_t count)
+>> +{
+>> +	struct uacce_device *uacce = to_uacce_device(dev);
+>> +	int ret;
+>> +
+>> +	if (!buf || sizeof(buf) > UACCE_MAX_ISOLATE_STRATEGY_LEN)
+>> +		return -EINVAL;
+>> +
+>> +	memcpy(uacce->isolate_strategy, buf, strlen(buf));
+> What if it's not a valid strategy for the driver?  We shouldn't
+> store this until we know it's valid.
+>
+>> +
+>> +	ret = uacce->ops->isolate_strategy_write(uacce, buf);
+> Having copied the buf into uacce, why pass it as well?
+>
+> My preference would be to pass buf and length and not do
+> the memcpy in here.  Leave that choice to the driver.
+> If this were a single value, it would be better stored
+> as an integer than as a string.   Obviously that means
+> you need an isolate_strategy_read() as well (that also
+> solves the comment above about not storing what was written
+> until we know it was valid.
+>
 > Thanks,
-> Peng
-> 
-> 
-> > 
-> > Regards,
-> > Lucas
-> > 
-> > > Thanks,
-> > > Peng.
-> > > 
-> > > > 
-> > > > From: Peng Fan <peng.fan@nxp.com>
-> > > > 
-> > > > This patchset is to support i.MX8MP NoC settings, i.MX8MP NoC
-> > > > initial value after power up is invalid, need set a valid value after related
-> > power domain up.
-> > > > 
-> > > > This patchset also includes two patch[1,2] during my development to
-> > > > enable the ICC feature for i.MX8MP.
-> > > > 
-> > > > I not include ddrc DVFS in this patchset, ths patchset is only to
-> > > > support NoC value mode/priority/ext_control being set to a valid
-> > > > value that suggested by i.MX Chip Design Team. The value is same as
-> > > > NXP downstream one inside Arm Trusted Firmware:
-> > > > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fso
-> > > > 
-> > urce.codeaurora.org%2Fexternal%2Fimx%2Fimx-atf%2Ftree%2Fplat%2Fimx%2
-> > > > 
-> > Fimx8m%2Fimx&amp;data=05%7C01%7Cpeng.fan%40nxp.com%7C6cfad0fcec
-> > 0d472
-> > > > 
-> > 408a208da4e2cd96d%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7
-> > C63790
-> > > > 
-> > 8251778425186%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJ
-> > QIjoiV2
-> > > > 
-> > luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=U
-> > vIx%
-> > > > 
-> > 2BAz9rx3Z8Oy7VSCRB90O8M5VICIUaUOiTmYw%2FeI%3D&amp;reserved=0
-> > > > 8mp/gpc.c?h=lf_v2.4#n97
-> > > > 
-> > > > A repo created here:
-> > > > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgi
-> > > > 
-> > thub.com%2FMrVan%2Flinux%2Ftree%2Fimx8mp-interconnect&amp;data=05
-> > %7C
-> > > > 
-> > 01%7Cpeng.fan%40nxp.com%7C6cfad0fcec0d472408a208da4e2cd96d%7C68
-> > 6ea1d
-> > > > 
-> > 3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C637908251778425186%7CUnkn
-> > own%7CT
-> > > > 
-> > WFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJX
-> > V
-> > > > 
-> > CI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=W2iYPMJ6dn%2F4OTalTD2yqB
-> > Hx%2Bo3%
-> > > > 2BuBTuP%2BAe4bBz2Gc%3D&amp;reserved=0
-> > > > 
-> > > > Peng Fan (8):
-> > > >   dt-bindings: interconnect: imx8m: Add bindings for imx8mp noc
-> > > >   interconnect: add device managed bulk API
-> > > >   interconnect: imx: fix max_node_id
-> > > >   interconnect: imx: set src node
-> > > >   interconnect: imx: introduce imx_icc_provider
-> > > >   interconnect: imx: set of_node for interconnect provider
-> > > >   interconnect: imx: configure NoC mode/prioriry/ext_control
-> > > >   interconnect: imx: Add platform driver for imx8mp
-> > > > 
-> > > >  .../bindings/interconnect/fsl,imx8m-noc.yaml  |   6 +
-> > > >  drivers/interconnect/bulk.c                   |  34 +++
-> > > >  drivers/interconnect/imx/Kconfig              |   4 +
-> > > >  drivers/interconnect/imx/Makefile             |   2 +
-> > > >  drivers/interconnect/imx/imx.c                |  68 +++--
-> > > >  drivers/interconnect/imx/imx.h                |  25 +-
-> > > >  drivers/interconnect/imx/imx8mm.c             |   2 +-
-> > > >  drivers/interconnect/imx/imx8mn.c             |   2 +-
-> > > >  drivers/interconnect/imx/imx8mp.c             | 232
-> > > > ++++++++++++++++++
-> > > >  drivers/interconnect/imx/imx8mq.c             |   2 +-
-> > > >  include/dt-bindings/interconnect/fsl,imx8mp.h |  59 +++++
-> > > >  include/linux/interconnect.h                  |   6 +
-> > > >  12 files changed, 424 insertions(+), 18 deletions(-)  create mode
-> > > > 100644 drivers/interconnect/imx/imx8mp.c  create mode 100644
-> > > > include/dt-bindings/interconnect/fsl,imx8mp.h
-> > > > 
-> > > > --
-> > > > 2.25.1
-> > > 
-> > 
-> 
+>
+> Jonathan
 
+it good job, I think so, need an isolate_strategy_read() instead of a copy.
 
+thanks
+
+Kai
+>
+>
+>
+>> +
+>> +	return ret ? ret : count;
+>> +}
+>> +
+>>  static DEVICE_ATTR_RO(api);
+>>  static DEVICE_ATTR_RO(flags);
+>>  static DEVICE_ATTR_RO(available_instances);
+>>  static DEVICE_ATTR_RO(algorithms);
+>>  static DEVICE_ATTR_RO(region_mmio_size);
+>>  static DEVICE_ATTR_RO(region_dus_size);
+>> +static DEVICE_ATTR_RO(isolate);
+>> +static DEVICE_ATTR_RW(isolate_strategy);
+>>
+>>  static struct attribute *uacce_dev_attrs[] = {
+>>  	&dev_attr_api.attr,
+>> @@ -360,6 +395,8 @@ static struct attribute *uacce_dev_attrs[] = {
+>>  	&dev_attr_algorithms.attr,
+>>  	&dev_attr_region_mmio_size.attr,
+>>  	&dev_attr_region_dus_size.attr,
+>> +	&dev_attr_isolate.attr,
+>> +	&dev_attr_isolate_strategy.attr,
+>>  	NULL,
+>>  };
+>>
+>> diff --git a/include/linux/uacce.h b/include/linux/uacce.h
+>> index 48e319f40275..0f7668bfa645 100644
+>> --- a/include/linux/uacce.h
+>> +++ b/include/linux/uacce.h
+>> @@ -8,6 +8,7 @@
+>>  #define UACCE_NAME		"uacce"
+>>  #define UACCE_MAX_REGION	2
+>>  #define UACCE_MAX_NAME_SIZE	64
+>> +#define UACCE_MAX_ISOLATE_STRATEGY_LEN	256
+>>
+>>  struct uacce_queue;
+>>  struct uacce_device;
+>> @@ -30,6 +31,8 @@ struct uacce_qfile_region {
+>>   * @is_q_updated: check whether the task is finished
+>>   * @mmap: mmap addresses of queue to user space
+>>   * @ioctl: ioctl for user space users of the queue
+>> + * @get_isolate_state: get the device state after set the isolate strategy
+>> + * @isolate_strategy_store: stored the isolate strategy to the device
+>>   */
+>>  struct uacce_ops {
+>>  	int (*get_available_instances)(struct uacce_device *uacce);
+>> @@ -43,6 +46,8 @@ struct uacce_ops {
+>>  		    struct uacce_qfile_region *qfr);
+>>  	long (*ioctl)(struct uacce_queue *q, unsigned int cmd,
+>>  		      unsigned long arg);
+>> +	enum uacce_dev_state (*get_isolate_state)(struct uacce_device *uacce);
+>> +	int (*isolate_strategy_write)(struct uacce_device *uacce, const char *buf);
+>>  };
+>>
+>>  /**
+>> @@ -57,6 +62,12 @@ struct uacce_interface {
+>>  	const struct uacce_ops *ops;
+>>  };
+>>
+>> +enum uacce_dev_state {
+>> +	UACCE_DEV_ERR = -1,
+>> +	UACCE_DEV_NORMAL,
+>> +	UACCE_DEV_ISOLATE,
+>> +};
+>> +
+>>  enum uacce_q_state {
+>>  	UACCE_Q_ZOMBIE = 0,
+>>  	UACCE_Q_INIT,
+>> @@ -117,6 +128,7 @@ struct uacce_device {
+>>  	struct list_head queues;
+>>  	struct mutex queues_lock;
+>>  	struct inode *inode;
+>> +	char isolate_strategy[UACCE_MAX_ISOLATE_STRATEGY_LEN];
+>>  };
+>>
+>>  #if IS_ENABLED(CONFIG_UACCE)
+>> @@ -125,7 +137,7 @@ struct uacce_device *uacce_alloc(struct device *parent,
+>>  				 struct uacce_interface *interface);
+>>  int uacce_register(struct uacce_device *uacce);
+>>  void uacce_remove(struct uacce_device *uacce);
+>> -
+>> +struct uacce_device *dev_to_uacce(struct device *dev);
+>>  #else /* CONFIG_UACCE */
+>>
+>>  static inline
+>> @@ -140,8 +152,6 @@ static inline int uacce_register(struct uacce_device *uacce)
+>>  	return -EINVAL;
+>>  }
+>>
+>> -static inline void uacce_remove(struct uacce_device *uacce) {}
+>> -
+>>  #endif /* CONFIG_UACCE */
+>>
+>>  #endif /* _LINUX_UACCE_H */
+>
+> .
+>
