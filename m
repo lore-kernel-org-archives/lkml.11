@@ -2,91 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB46CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:54:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D3DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:54:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245689AbiFOPyU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49848 "EHLO
+        id S1345080AbiFOPyl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 11:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241258AbiFOPyP (ORCPT
+        with ESMTP id S1344198AbiFOPyh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:54:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 320C31EEC1
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:54:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655308453;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TEmJ1fJ8Yf6oDfx0MBc+zDdacxWq2un2XNoeG1V4KKU=;
-        b=FEMNpxkvKwADUdqE0kEgkLuOBuRM9Wj/u9QOyN59Fios5Jbbpx8wzoI2TZbTLlxF7Qu0ZY
-        24gIpvympXZEaqwHoEApMAYN7X++dudUJ+8+F6pBYh3mFh8g7Nel5RvL4txrnviclkPZbR
-        U8TgnjOk7OPV0eOSV/RhhAUm9t0hcgc=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-58-D_983ZWxOxWyh_k1LNsgaw-1; Wed, 15 Jun 2022 11:54:10 -0400
-X-MC-Unique: D_983ZWxOxWyh_k1LNsgaw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5728B38005CB;
-        Wed, 15 Jun 2022 15:54:10 +0000 (UTC)
-Received: from localhost (unknown [10.39.192.100])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E2EE51415107;
-        Wed, 15 Jun 2022 15:54:09 +0000 (UTC)
-Date:   Wed, 15 Jun 2022 14:54:29 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Deming Wang <wangdeming@inspur.com>
-Cc:     vgoyal@redhat.com, miklos@szeredi.hu,
-        virtualization@lists.linux-foundation.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] virtiofs: delete unused parameter for
- virtio_fs_cleanup_vqs
-Message-ID: <YqnklWCUQBamzmJJ@stefanha-x1.localdomain>
-References: <20220610020838.1543-1-wangdeming@inspur.com>
+        Wed, 15 Jun 2022 11:54:37 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482F22FFF0
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:54:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655308476; x=1686844476;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qDm82Al5RdY5yk2Sk8uLzqG18X3zOv/St63Fun4bYIA=;
+  b=VP6yeWoSsGTucRRysjSIUBPmzjpDO3solq2OY7A0YQvPk4S8OpmRw/wb
+   TN/ippkcS8W6KafxFfOqLM/9LkoISKW0EmC9mukZrXoL1M3Btor31l4Fw
+   /OvBfajJ+znxlvLhVswrEM5Rv3OgHNtfxdkgeWE71OMWskr/gueFBRsQy
+   ES1mtx3qIxKnSEImb7PajtUWieMwzNwE34Zrkbrd66zr+Lmt3kDxqsn2t
+   a4YaNrR6fKE19wlvVzxkRnTjDReka0CHuktklPZA42urpTkPnUsiZbVqE
+   QKaJkG4eqZZTVFb6Dve+cQSZdd7SacVrajN7rmNWwmO6IlydudJMYaGhf
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="340665774"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="340665774"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 08:54:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="652727965"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 15 Jun 2022 08:54:32 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 67A85109; Wed, 15 Jun 2022 18:54:36 +0300 (EEST)
+Date:   Wed, 15 Jun 2022 18:54:36 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "peterz@infradead.org" <peterz@infradead.org>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "kcc@google.com" <kcc@google.com>,
+        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "dvyukov@google.com" <dvyukov@google.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "ryabinin.a.a@gmail.com" <ryabinin.a.a@gmail.com>,
+        "glider@google.com" <glider@google.com>
+Subject: Re: [PATCHv3 4/8] x86/mm: Handle LAM on context switch
+Message-ID: <20220615155436.5fvosccsqbpscli4@black.fi.intel.com>
+References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
+ <20220610143527.22974-5-kirill.shutemov@linux.intel.com>
+ <d1a5615633f5e0376d7a75c1d8d12bbd89a7a63e.camel@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="VSfWJTB4dTlkafrv"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220610020838.1543-1-wangdeming@inspur.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+In-Reply-To: <d1a5615633f5e0376d7a75c1d8d12bbd89a7a63e.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jun 10, 2022 at 11:55:02PM +0000, Edgecombe, Rick P wrote:
+> On Fri, 2022-06-10 at 17:35 +0300, Kirill A. Shutemov wrote:
+> > @@ -687,6 +716,7 @@ void initialize_tlbstate_and_flush(void)
+> >         struct mm_struct *mm = this_cpu_read(cpu_tlbstate.loaded_mm);
+> >         u64 tlb_gen = atomic64_read(&init_mm.context.tlb_gen);
+> >         unsigned long cr3 = __read_cr3();
+> > +       u64 lam = cr3 & (X86_CR3_LAM_U48 | X86_CR3_LAM_U57);
+> >  
+> >         /* Assert that CR3 already references the right mm. */
+> >         WARN_ON((cr3 & CR3_ADDR_MASK) != __pa(mm->pgd));
+> > @@ -700,7 +730,7 @@ void initialize_tlbstate_and_flush(void)
+> >                 !(cr4_read_shadow() & X86_CR4_PCIDE));
+> >  
+> >         /* Force ASID 0 and force a TLB flush. */
+> > -       write_cr3(build_cr3(mm->pgd, 0));
+> > +       write_cr3(build_cr3(mm->pgd, 0, lam));
+> >  
+> 
+> Can you explain why to keep the lam bits that were in CR3 here? It
+> seems to be worried some CR3 bits got changed and need to be set to a
+> known state. Why not take them from the MM?
+> 
+> Also, it warns if the cr3 pfn doesn't match the mm pgd, should it warn
+> if cr3 lam bits don't match the MM's copy?
 
---VSfWJTB4dTlkafrv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+You are right, taking LAM mode from init_mm is more correct. And we need
+to update tlbstate with the new LAM mode. 
 
-On Thu, Jun 09, 2022 at 10:08:38PM -0400, Deming Wang wrote:
-> fs parameter not used. So, it needs to be deleted.
->=20
-> Signed-off-by: Deming Wang <wangdeming@inspur.com>
-> ---
->  fs/fuse/virtio_fs.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
+I think both CR3 and init_mm should LAM disabled here as we are bringing
+CPU up. I'll add WARN_ON().
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
---VSfWJTB4dTlkafrv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmKp5JUACgkQnKSrs4Gr
-c8i8ogf+JVNIK5wafiTY0HlfRmCOIhYMJ8AbK4vwM0rKJeoQc+tgLDPQHHCVMGDM
-lqtAdpnNzCHGOTTe8+sbTVhxhH+THmJvh1c7fX630vgW6MQWQICOT1ablFIJN/jF
-4snTGcSXXaPWMp9B4YJp4n+LBkH3WPHLYGuy1tzgDSYRCnv7ofeKitJ5b3BVWhuc
-zBgS6VNklGbEycPII0gUR8doCeW3laSbHT/3Cai3lVs6iqfZlv/wfvpG8gszeHqm
-IFb5Y93cFAWvxZg11kx8g8Ps3GirNj/y1tq/USKPaQ1PlbQmSZKrSW/6eku2RMXO
-yvOmooxFHUf/aUVMw/BqAynlUDfLLg==
-=BmCq
------END PGP SIGNATURE-----
-
---VSfWJTB4dTlkafrv--
-
+-- 
+ Kirill A. Shutemov
