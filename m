@@ -2,165 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 036B6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC140C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349388AbiFOOU7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36740 "EHLO
+        id S243235AbiFOOV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 10:21:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347762AbiFOOUv (ORCPT
+        with ESMTP id S1349429AbiFOOVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:20:51 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB29935A97;
-        Wed, 15 Jun 2022 07:20:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655302822; x=1686838822;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BKDMg8fI4/oxE7Ct5GmeyilLeRcSIf/mmkwDwOrZrs4=;
-  b=Np2qGOeiYtkc96s3V/SkabOv6grGMngz+uIUgNj0MIsQ7p9JJ/P4YvkD
-   pZAWo1FGbSKGgaFrCuiGYLY8tn1Oq1mToKh1TKHABdRNTEaLNkwIh3PsC
-   ULUYbqv6qSD6NVpaWExqm9uSfJAmonS8L1+046KU3Oixhbdir1Ppd8skj
-   Rvnt5PG0nd/X6fCTupuOlrX7P2S2nGdbzVBjgp+w2C4Si1qzB83wudVWl
-   +HJsyZTpHlvac8I435rlwjqc5wUWTXCWr5sYJ/mrF1ToiJczFB0NHw3md
-   gqgu/OCnBTTsj+LDeZRmceW7WvsWu4qdCZRy7PG8yqeVRbexzNRuNCv2F
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="280012571"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="280012571"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 07:20:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="727417450"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Jun 2022 07:20:18 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1TsX-000MvF-LV;
-        Wed, 15 Jun 2022 14:20:17 +0000
-Date:   Wed, 15 Jun 2022 22:19:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Pankaj Raghav <p.raghav@samsung.com>, hch@lst.de,
-        snitzer@redhat.com, damien.lemoal@opensource.wdc.com,
-        axboe@kernel.dk
-Cc:     kbuild-all@lists.01.org, bvanassche@acm.org,
-        linux-kernel@vger.kernel.org, jiangbo.365@bytedance.com,
-        hare@suse.de, pankydev8@gmail.com, dm-devel@redhat.com,
-        jonathan.derrick@linux.dev, gost.dev@samsung.com, dsterba@suse.com,
-        jaegeuk@kernel.org, linux-nvme@lists.infradead.org,
-        Johannes.Thumshirn@wdc.com, linux-block@vger.kernel.org,
-        Pankaj Raghav <p.raghav@samsung.com>,
-        Damien Le Moal <damien.lemoal@wdc.com>
-Subject: Re: [PATCH v7 13/13] dm: add non power of 2 zoned target
-Message-ID: <202206152257.pnoPyl7X-lkp@intel.com>
-References: <20220615101920.329421-14-p.raghav@samsung.com>
+        Wed, 15 Jun 2022 10:21:00 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1168452505
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:20:50 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id d13so10514243plh.13
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:20:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zyV3GEz0EDSQFb2UbQd5dyhvw8xF/tMChAgYEabTTbo=;
+        b=n0YaiQJC8aGaiZl0GQHQ+sC2arcn1ObpcgX4aiAez63DDiXoukajfmYN558+0OHm60
+         I3uwpTVlDR8vwKUj/P9CUU3KAJPQwFHIVdJNJgT1J6izIIYvwJfX5iopYsrTMf0/ygOl
+         7Bsr64IwTNyZXqKH4aIGDJTFPQXTWdqqKeKB1KvTLx8LuaqwOgPTenWTfE4z9JS7wcUH
+         96lYF/sI9BYSW+VCMsZalq43c9ts2lN1amGqzZ7G83I67rScqO1MbQj10Gc/zg/ctiEJ
+         SKLiroNFCXPaITpgiGlMkk8ZJzQr3xpJaLhMYCGmxZUbqarD7BMoInsCl/EilEfMDBdO
+         JgWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zyV3GEz0EDSQFb2UbQd5dyhvw8xF/tMChAgYEabTTbo=;
+        b=4wTz6atnAd9mved50jUC/YmiSYqAAf0tSBG5DSwd9s4bNyoFc0ocC5eTNQIm/KTGao
+         JkcurGKoga7WC+7LPQbAo72ec52WlzRDnuUfzt3PXELv14vHDBG5ix5/Wo64vWgm/BvX
+         6OQmeeVAJTG5U140YwNkZntaHnF4BNVzePAW5djmi5/Dk5hb7bkrtZfmmlg1W2q/Xeum
+         Gzwgi5tz0OU+DFv6Y66Mp6PvEqRFH4smWVLPLpH1EuqDxSo0pTpR/nCn2VvnGdKIFz4R
+         czidBLrly2eQHjBvMwnx1ZOdBMlarDpTHrY8vsZ1fY+XiNbYlX499bDrCbugqmLFGSAt
+         L7yg==
+X-Gm-Message-State: AJIora+YQeujp4X8vVLM1mMoDJyYIx4L6lZ2WnrwMJVTcpM6bERdmmzk
+        UDZwvUv/q2pCL2UAs3af8O7ZDA==
+X-Google-Smtp-Source: AGRyM1ugZW2UggxybZ/ns7cX9//TMM/zGfmzxhxYGXoT10YOgiB7O7NlzLzk4m/Ap3LxaooPVfF2oQ==
+X-Received: by 2002:a17:902:7884:b0:167:4d5b:7a2f with SMTP id q4-20020a170902788400b001674d5b7a2fmr97475pll.18.1655302849484;
+        Wed, 15 Jun 2022 07:20:49 -0700 (PDT)
+Received: from [172.20.0.255] ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id e6-20020a63ae46000000b003f65560a1a7sm9954841pgp.53.2022.06.15.07.20.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 07:20:49 -0700 (PDT)
+Message-ID: <df30578f-3760-a595-963c-35a90f373272@linaro.org>
+Date:   Wed, 15 Jun 2022 07:20:45 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220615101920.329421-14-p.raghav@samsung.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/2] dt-binding: Add cypress,cy8c95x0 binding
+Content-Language: en-US
+To:     Patrick Rudolph <patrick.rudolph@9elements.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220615104921.1390138-1-patrick.rudolph@9elements.com>
+ <20220615104921.1390138-2-patrick.rudolph@9elements.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220615104921.1390138-2-patrick.rudolph@9elements.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pankaj,
+On 15/06/2022 03:49, Patrick Rudolph wrote:
+> Added device tree binding documentation for
+> Cypress CY8C95x0 I2C pin-controller.
+> 
+> Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
 
-Thank you for the patch! Perhaps something to improve:
+The subject is still wrong. You need subsystem prefix (pinctrl) and you
+can skip final "binding" word, as it is implied by dt-bindings.
 
-[auto build test WARNING on axboe-block/for-next]
-[also build test WARNING on device-mapper-dm/for-next linus/master v5.19-rc2 next-20220615]
-[cannot apply to song-md/md-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> ---
+>  .../bindings/pinctrl/cypress,cy8c95x0.yaml    | 131 ++++++++++++++++++
+>  1 file changed, 131 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/cypress,cy8c95x0.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pinctrl/cypress,cy8c95x0.yaml b/Documentation/devicetree/bindings/pinctrl/cypress,cy8c95x0.yaml
+> new file mode 100644
+> index 000000000000..765e8834d9dd
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pinctrl/cypress,cy8c95x0.yaml
+> @@ -0,0 +1,131 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pinctrl/cypress,cy8c95x0.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Cypress CY8C95X0 I2C GPIO expander
+> +
+> +maintainers:
+> +  - Patrick Rudolph <patrick.rudolph@9elements.com>
+> +
+> +description: |
+> +  This supports the 20/40/60 pin Cypress CYC95x0 GPIO I2C expanders.
+> +  Pin function configuration is performed on a per-pin basis.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - cypress,cy8c9520
+> +      - cypress,cy8c9540
+> +      - cypress,cy8c9560
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  gpio-controller: true
+> +
+> +  '#gpio-cells':
+> +    description:
+> +      The first cell is the GPIO number and the second cell specifies GPIO
+> +      flags, as defined in <dt-bindings/gpio/gpio.h>.
+> +    const: 2
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  interrupt-controller: true
+> +
+> +  '#interrupt-cells':
+> +    const: 2
+> +
+> +  gpio-line-names: true
+> +
+> +  gpio-ranges:
+> +    maxItems: 1
+> +
+> +  gpio-reserved-ranges:
+> +    maxItems: 1
+> +
+> +  vdd-supply:
+> +    description:
+> +      Optional power supply.
+> +
+> +patternProperties:
+> +  '-pins$':
+> +    type: object
+> +    description:
+> +      Pinctrl node's client devices use subnodes for desired pin configuration.
+> +      Client device subnodes use below standard properties.
+> +    $ref: "/schemas/pinctrl/pincfg-node.yaml"
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Pankaj-Raghav/block-make-blkdev_nr_zones-and-blk_queue_zone_no-generic-for-npo2-zsze/20220615-191927
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git for-next
-config: s390-allmodconfig (https://download.01.org/0day-ci/archive/20220615/202206152257.pnoPyl7X-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/add4ab54d5b34d4a2f91f241007f23a56c164fb3
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Pankaj-Raghav/block-make-blkdev_nr_zones-and-blk_queue_zone_no-generic-for-npo2-zsze/20220615-191927
-        git checkout add4ab54d5b34d4a2f91f241007f23a56c164fb3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
+Skip quotes.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> +
+> +    properties:
+> +      pins:
+> +        description:
+> +          List of gpio pins affected by the properties specified in this
+> +          subnode.
+> +        items:
+> +          - pattern: "^gp([0-7][0-7])$"
 
-All warnings (new ones prefixed by >>):
+Use the same type of quotes everywhere - either ' or ". Does it actually
+work? It looks like you allow here only one pin but the description
+suggests it is a list of pins. I think you wanted here just "pattern:
+..." without leading minus. Then you need also min and maxItems.
 
-   drivers/md/dm-zoned-npo2-target.c: In function 'dmz_npo2_ctr':
->> drivers/md/dm-zoned-npo2-target.c:62:13: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
-      62 |         int ret = 0;
-         |             ^~~
+Why blank line here disappeared? My comment was in different place.
+
+> +      function:
+> +        description:
+> +          Specify the alternative function to be configured for the specified
+> +          pins.
+> +        enum: [ gpio, pwm ]
+> +
+> +      bias-pull-down: true
+> +
+> +      bias-pull-up: true
+> +
+> +      bias-disable: true
+> +
+> +      output-high: true
+> +
+> +      output-low: true
+> +
+> +      drive-push-pull: true
+> +
+> +      drive-open-drain: true
+> +
+> +      drive-open-source: true
+> +
+> +    required:
+> +      - pins
+> +      - function
+> +
+> +    additionalProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - interrupt-controller
+> +  - '#interrupt-cells'
+> +  - gpio-controller
+> +  - '#gpio-cells'
+> +
+> +additionalProperties: false
+> +
+> +allOf:
+> +  - $ref: "pinctrl.yaml#"
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +
+> +    i2c0 {
+
+Just "i2c".
+
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      pinctrl@20 {
+> +        compatible = "cypress,cy8c9520";
+> +        reg = <0x20>;
+> +        gpio-controller;
+> +        #gpio-cells = <2>;
+> +        #interrupt-cells = <2>;
+> +        interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
+> +        interrupt-controller;
+> +        vdd-supply = <&p3v3>;
+> +        gpio-reserved-ranges = <5 1>;
+> +      };
+> +    };
 
 
-vim +/ret +62 drivers/md/dm-zoned-npo2-target.c
-
-    53	
-    54	/*
-    55	 * <dev-path>
-    56	 * This target works on the complete zoned device. Partial mapping is not
-    57	 * supported
-    58	 */
-    59	static int dmz_npo2_ctr(struct dm_target *ti, unsigned int argc, char **argv)
-    60	{
-    61		struct dmz_npo2_target *dmh = NULL;
-  > 62		int ret = 0;
-    63		sector_t zsze;
-    64		sector_t disk_size;
-    65	
-    66		if (argc < 1)
-    67			return -EINVAL;
-    68	
-    69		dmh = kmalloc(sizeof(*dmh), GFP_KERNEL);
-    70		if (!dmh)
-    71			return -ENOMEM;
-    72	
-    73		ret = dm_get_device(ti, argv[0], dm_table_get_mode(ti->table),
-    74				    &dmh->dev);
-    75	
-    76		zsze = blk_queue_zone_sectors(bdev_get_queue(dmh->dev->bdev));
-    77	
-    78		disk_size = get_capacity(dmh->dev->bdev->bd_disk);
-    79	
-    80		if (ti->len != disk_size || ti->begin) {
-    81			DMERR("%pg Partial mapping of the target not supported",
-    82			      dmh->dev->bdev);
-    83			return -EINVAL;
-    84		}
-    85	
-    86		if (is_power_of_2(zsze)) {
-    87			DMERR("%pg zone size is power of 2", dmh->dev->bdev);
-    88			return -EINVAL;
-    89		}
-    90	
-    91		dmh->zsze = zsze;
-    92		dmh->zsze_po2 = 1 << get_count_order_long(zsze);
-    93		dmh->zsze_diff = dmh->zsze_po2 - dmh->zsze;
-    94	
-    95		ti->private = dmh;
-    96		ti->num_flush_bios = 1;
-    97		ti->num_discard_bios = 1;
-    98		ti->num_secure_erase_bios = 1;
-    99		ti->num_write_zeroes_bios = 1;
-   100	
-   101		dmh->nr_zones = npo2_zone_no(dmh, ti->len);
-   102		ti->len = dmh->zsze_po2 * dmh->nr_zones;
-   103	
-   104		return 0;
-   105	}
-   106	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
