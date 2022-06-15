@@ -2,98 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3EF9C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE56C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 09:30:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347356AbiFOJ3g (ORCPT
+        id S1347446AbiFOJab (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 05:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40664 "EHLO
+        Wed, 15 Jun 2022 05:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347208AbiFOJ2w (ORCPT
+        with ESMTP id S1347361AbiFOJa0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 05:28:52 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7816526AEB;
-        Wed, 15 Jun 2022 02:28:51 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-31332df12a6so55021217b3.4;
-        Wed, 15 Jun 2022 02:28:51 -0700 (PDT)
+        Wed, 15 Jun 2022 05:30:26 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7585733367;
+        Wed, 15 Jun 2022 02:30:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jZiaPZ0ztzZi9sQqqnXkLriNEs5DS/AorKKZ/pc584o=;
-        b=fARbgYFuiloDj2xJOMqKaZhdYrOKBxSHUnhCQ3qzm65OM5rwzBIpMuJ7tAkFnyoF1r
-         OY6TrEbAwBJ/J1kfJsJQU8PLu3hYx/TADoTZlq2YVss6y070F2lu3BJZRm8YNKMuVXfp
-         O8W8KSm6jUASgr7mCV6ro6Gf2Obha9J6IQ+k3aiu919qYFgJYW3aGpt0zt7cpA7omG+8
-         1U2gLli4yuKDrRhwSRlJCBLFWpS+ibEqa7DTUYefaNX8Pb8co7qFaiMQtA1AnNuFb1pl
-         UjC2QMokCzP5J2lFPvDiojwj7TKjYOKAYktkgrbeDrdJzivS5ADV28un+CqqCScBHC2E
-         Hspg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jZiaPZ0ztzZi9sQqqnXkLriNEs5DS/AorKKZ/pc584o=;
-        b=S0vu8TGR4L/1ph14QXttwpTXZ46iQnJWeUgK32GEQP1jS9EUvvmb+uHUko77u04t4W
-         +ayq8gBbxv3KFWf0zJ4gtLijIAkj6hyRT//O3y+zso65G6zXXt5Qj30vk34h9e2pSnsX
-         QjdYvgyxTfeAlzvoRcLwSNSWN4lEJbJ9pcLMZ0CZH3m7HKgqEYi40MiDwKUfdS8BUJqY
-         FC5FPMW8H2zo0UG/8ez0LDxKxckO52/06VtTyhIIRYz1lvt4jVPy7FpKUr10m1tI6YBM
-         rFJ4qPSh3uDqkph8nye959wcaj3jsKUyB6Cb9k9zHeNuIb8YwrgHtQ6VAeCvDekqGPQ2
-         u4Aw==
-X-Gm-Message-State: AJIora84wzdM5ZS6s04k9Fr+SPBliy7uQRrCzbKCtPG4cqRy0UEg8HGs
-        A95vr/MwnJWnDcI8xuWW15bu0yo2AE8Qh1uXVMc=
-X-Google-Smtp-Source: AGRyM1sKf3+5EXx7587X3j6rcCEYz5L/YPi5hi5GgALX4dLxsAIJ+twSErqgT83BDoHXF9HRxqLoqz/rATFICRG/0Ak=
-X-Received: by 2002:a81:6ad5:0:b0:317:52a2:2111 with SMTP id
- f204-20020a816ad5000000b0031752a22111mr1883442ywc.233.1655285330726; Wed, 15
- Jun 2022 02:28:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220614183721.656018793@linuxfoundation.org> <Yqmk8DRLrZMVTj00@debian>
-In-Reply-To: <Yqmk8DRLrZMVTj00@debian>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Wed, 15 Jun 2022 10:28:14 +0100
-Message-ID: <CADVatmMCt4cVpXEZ9YurL6rWSwg6KpHgAYOz0n0=J4Gw87RmCw@mail.gmail.com>
-Subject: Re: [PATCH 5.4 00/15] 5.4.199-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655285425; x=1686821425;
+  h=from:to:cc:subject:date:message-id;
+  bh=AMTJTmjaBl38K652XyoSExmZt+f63mrTd2Xhmelbmm8=;
+  b=rzwWoVYY0aqNRfZahVvbgfMy6dQOwL7UMl0wmYYu1fsQ+U8QB4UPIO+V
+   8ZZO41MYMzqywQCwIAnixSlk+9pmMKXHcEc0R7HDcX4EbZ8zaXmt+rMZc
+   4KlucdPWp+Sq8E263cctRupQ7XQ+UwEyhYxWBnKXicVgz9K6kFc9GRpZD
+   E=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 15 Jun 2022 02:30:25 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 15 Jun 2022 02:30:23 -0700
+X-QCInternal: smtphost
+Received: from hu-dikshita-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.110.13])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 15 Jun 2022 15:00:12 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 347544)
+        id 0E56B45EF; Wed, 15 Jun 2022 15:00:12 +0530 (+0530)
+From:   Dikshita Agarwal <quic_dikshita@quicinc.com>
+To:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, stanimir.varbanov@linaro.org,
+        quic_vgarodia@quicinc.com, swboyd@chromium.org,
+        Dikshita Agarwal <quic_dikshita@quicinc.com>
+Subject: [PATCH v2] venus: Add support for SSR trigger using fault injection
+Date:   Wed, 15 Jun 2022 15:00:09 +0530
+Message-Id: <1655285409-19829-1-git-send-email-quic_dikshita@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 10:22 AM Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
->
-> Hi Greg,
->
-> On Tue, Jun 14, 2022 at 08:40:09PM +0200, Greg Kroah-Hartman wrote:
-> > This is the start of the stable review cycle for the 5.4.199 release.
-> > There are 15 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
-> > Anything received after that time might be too late.
->
-> Build test (gcc version 11.3.1 20220612):
-> mips: 65 configs -> no failure
-> arm: 106 configs -> no failure
-> arm64: 2 configs -> no failure
-> x86_64: 4 configs -> no failure
-> alpha allmodconfig -> no failure
-> powerpc allmodconfig -> no failure
-> riscv allmodconfig -> no failure
+Here we introduce a new fault injection for SSR trigger.
 
-Correction: powerpc and risc allmodconfig failed to build. Backported
-patches sent to list.
+To trigger the SSR:
+ echo 100 >  /sys/kernel/debug/venus/fail_ssr/probability
+ echo 1 >  /sys/kernel/debug/venus/fail_ssr/times
 
+signed-off-by: Dikshita Agarwal <quic_dikshita@quicinc.com>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+---
+ drivers/media/platform/qcom/venus/core.c  | 15 ++++++++++++++-
+ drivers/media/platform/qcom/venus/dbgfs.c | 21 +++++++++++++++++++++
+ drivers/media/platform/qcom/venus/dbgfs.h |  1 +
+ 3 files changed, 36 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/media/platform/qcom/venus/core.c b/drivers/media/platform/qcom/venus/core.c
+index 877eca1..abfa5d6 100644
+--- a/drivers/media/platform/qcom/venus/core.c
++++ b/drivers/media/platform/qcom/venus/core.c
+@@ -265,6 +265,19 @@ static void venus_assign_register_offsets(struct venus_core *core)
+ 	}
+ }
+ 
++static irqreturn_t venus_isr_thread(int irq, void *dev_id)
++{
++	struct venus_core *core = dev_id;
++	irqreturn_t ret;
++
++	ret = hfi_isr_thread(irq, dev_id);
++
++	if (ret == IRQ_HANDLED && venus_fault_inject_ssr())
++		hfi_core_trigger_ssr(core, HFI_TEST_SSR_SW_ERR_FATAL);
++
++	return ret;
++}
++
+ static int venus_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -320,7 +333,7 @@ static int venus_probe(struct platform_device *pdev)
+ 	INIT_DELAYED_WORK(&core->work, venus_sys_error_handler);
+ 	init_waitqueue_head(&core->sys_err_done);
+ 
+-	ret = devm_request_threaded_irq(dev, core->irq, hfi_isr, hfi_isr_thread,
++	ret = devm_request_threaded_irq(dev, core->irq, hfi_isr, venus_isr_thread,
+ 					IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
+ 					"venus", core);
+ 	if (ret)
+diff --git a/drivers/media/platform/qcom/venus/dbgfs.c b/drivers/media/platform/qcom/venus/dbgfs.c
+index 52de47f..ec15078 100644
+--- a/drivers/media/platform/qcom/venus/dbgfs.c
++++ b/drivers/media/platform/qcom/venus/dbgfs.c
+@@ -4,13 +4,34 @@
+  */
+ 
+ #include <linux/debugfs.h>
++#include <linux/fault-inject.h>
+ 
+ #include "core.h"
+ 
++#ifdef CONFIG_FAULT_INJECTION
++static DECLARE_FAULT_ATTR(venus_ssr_attr);
++#endif
++
++#ifdef CONFIG_FAULT_INJECTION
++bool venus_fault_inject_ssr(void)
++{
++	return should_fail(&venus_ssr_attr, 1);
++}
++#else
++bool venus_fault_inject_ssr(void)
++{
++	return false;
++}
++#endif
++
+ void venus_dbgfs_init(struct venus_core *core)
+ {
+ 	core->root = debugfs_create_dir("venus", NULL);
+ 	debugfs_create_x32("fw_level", 0644, core->root, &venus_fw_debug);
++
++#ifdef CONFIG_FAULT_INJECTION
++	fault_create_debugfs_attr("fail_ssr", core->root, &venus_ssr_attr);
++#endif
+ }
+ 
+ void venus_dbgfs_deinit(struct venus_core *core)
+diff --git a/drivers/media/platform/qcom/venus/dbgfs.h b/drivers/media/platform/qcom/venus/dbgfs.h
+index b7b621a..b0d0686 100644
+--- a/drivers/media/platform/qcom/venus/dbgfs.h
++++ b/drivers/media/platform/qcom/venus/dbgfs.h
+@@ -8,5 +8,6 @@ struct venus_core;
+ 
+ void venus_dbgfs_init(struct venus_core *core);
+ void venus_dbgfs_deinit(struct venus_core *core);
++bool venus_fault_inject_ssr(void);
+ 
+ #endif
 -- 
-Regards
-Sudip
+2.7.4
+
