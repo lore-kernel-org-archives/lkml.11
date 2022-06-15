@@ -2,101 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 703B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37BD7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 21:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349781AbiFOV1o (ORCPT
+        id S1349784AbiFOV2T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 17:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
+        Wed, 15 Jun 2022 17:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349710AbiFOV1l (ORCPT
+        with ESMTP id S241445AbiFOV2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 17:27:41 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BFC167C7;
-        Wed, 15 Jun 2022 14:27:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655328434;
-        bh=sewS1k19E5zNFt7guGx8ADD0uovsZroqX/MykOeNoAw=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=ZaY29LgSeKsC0VKC0SfEO8gCT/mbD6Qy/5eG//rKUlfwQK32wCZyAB8p4+MeiczAs
-         wEnfd+sTmcT94yqzlRVJePYywnp5EvPECoxAhy5pRe56snX/8JFtBBgpCsKSUAfHNV
-         jL/7QpKzQmAvk0RCH/rLb4FqlMv8n1jXIqjxFB38=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [0.0.0.0] ([149.28.201.231]) by mail.gmx.net (mrgmx105
- [212.227.17.174]) with ESMTPSA (Nemesis) id 1MsHru-1nhIVP2ZLu-00tnF1; Wed, 15
- Jun 2022 23:27:14 +0200
-Message-ID: <00bbda63-dc00-05c0-4244-343352591d98@gmx.com>
-Date:   Thu, 16 Jun 2022 05:27:04 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [syzbot] KASAN: use-after-free Read in copy_page_from_iter_atomic
- (2)
-Content-Language: en-US
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     dsterba@suse.cz,
-        syzbot <syzbot+d2dd123304b4ae59f1bd@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, clm@fb.com, dsterba@suse.com,
-        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
-        willy@infradead.org
-References: <0000000000003ce9d105e0db53c8@google.com>
- <00000000000085068105e112a117@google.com>
- <20220613193912.GI20633@twin.jikos.cz> <20220614071757.GA1207@lst.de>
- <2cc67037-cf90-cca2-1655-46b92b43eba8@gmx.com>
- <20220615132147.GA18252@lst.de>
-From:   Qu Wenruo <quwenruo.btrfs@gmx.com>
-In-Reply-To: <20220615132147.GA18252@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:GzvWUv7j+dS6fGBh0O76pQHRuv0QctvPBDKfUco4+Y/GlL/5y5g
- BXHYTJT9fnyYxlKhn1+btWdWvWOiF9BDnLfCq+EChmasKSAq6b9B1pCQq6ZQASuejlOodGV
- HN32edj0jLN7bwq3m5m0D0pObpIh6RNHWquJ644IBNrDdnIdMTXGq0sbFfGfNtFwiDuTyIw
- bbtKn1jfl54A+36cVRM4w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:lmKkDBBaQN4=:jf9gSILfZGEkHNseXPaNRe
- PvP7u+k40FY2CY2c0qVJJZBB/SSwTJDnZaUJ+SDpqeZrdOVsk4C8rtHyoZ8VARRoOxw5VTHmO
- Ccz1d/+zDolUMSDJN/JxkTSUDCi2OKfQeM8YN7zQyU1v+Pg8h/hVzRfH+sXiLqZHpm7yImcXe
- Zns22cRY5ahuRaE2oWaY1UC1+UNPve57Dv7F1pFGJQVGEqTOvkI1xzJuM8qT/ieBd55fD/oAs
- +55imKkenFxKoBNFuRBqJtrb98zaAbF0NbNBl5pktTcEOsz1cjYh4KKWMFNa5qnu3lHRVjFW3
- ONRUrJDpOunQSHpCP8sruk9PrSwAmxUHeIWZdGTY7XIfJUMs/ISyhdsYDW1cMmK2JGnUtyp0q
- /5fzm0FFf6xdr6G9q4cwF1q2jsuHIV+y7uKkqGyNicAXak9LPk7aXkU6Mnw0WYUKFdBmMPYTJ
- 8TvJRrLCXnJB4RQGlAe2KNe3jelUpxv0Ei6DJqn7gTb5tiESBPwTu7NHZ7EcZ+io2rjhfrJ7y
- Y/FP/JpHG1b//XFXHUbQTCvbMJ/43T/wrLGtw3wwa2RDgtWGdP+XwIGL5sAlQODdEKXMR2hxa
- L6yL2jOirN64cSOHfNuQ5aHJ9fhfqmezh1imJwI7+nWdkjiKYZMgucyVWFqTwZAyclAj4jLka
- eSVL2A07OUVdeB6IDpq4LW4KFqX+HFtZD566Dw61X8vjl4W2kSyTdZknPV/eatpzAEQKJ+YA3
- +wvPTCK/09H35naTvpU8cdM9FDkWK2rEQHZZpBSlCC0D6F+x3GT0XL2fj+v9j+51RUk2Q4Hbc
- ByLPN/HiArHr1xbq6ktyJEjpMmjMQMv30Vq/4BM6ZqJty8OHCs7dnwqBo1RxgcaDcglFBAy6r
- Wwsy3UqRjM3N3/IsstSmsF1f112zJKzsOYGBVU4n+YxJgSKiRC7yDB2VPVt3e6jdeK3Y8m5gg
- qq53Pz/u7c4wKhvf5ASPAnB2ygA748E+2SLwxVHmnm0UFKhZJCJA+GnZsL21qOCyZ6N0bei8M
- QRln+yhh05sPLbVNlsPEmewJAHICI57FsNDrKog79AJsQEEtviKYHZqb1O8GsrBevAn4KBoZi
- Xr+vzv/l0huLKyq0FCz7buQROHIxWvDxZDm22i6sWCwe/AwVl79didzmQ==
+        Wed, 15 Jun 2022 17:28:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0952ED69
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 14:28:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 128BECE22ED
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 21:28:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 50494C3411A;
+        Wed, 15 Jun 2022 21:28:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655328492;
+        bh=02H0A+ywWsEUJTAC7/gPVQ+RtKoLgJyzpLUpWA0JEUA=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=jawRz6zhJbopxRPCLITm3quvhm37QGN9kKq4WIBL99c8ii5TZgmDvDT9jkbbKCP/5
+         caa69aUroL1IVlFtmzVOd64gi/Xl9r5TowoOPe3KFheusNSIl9klYecKwGl442MVan
+         IAMHj3dJIZp6XsOhv4DBxG2t/vebXw02bIYrapO6K2iMNBf0hn62QgLHVBIu3IEnpp
+         PfA2fWPxaW+/XkLaaENkPLRF5abzOsY035+jLhuMtGX4DXhTgA6mNcgfTljVbl3yob
+         fQMbbXcKp7e88gjbuATLnhOBZqTBHn5KCV5jVcYfkrgFz7s8F0SX5GYxmFAvdYcr3R
+         h8IfOZaxNLkYA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3C98BE6D466;
+        Wed, 15 Jun 2022 21:28:12 +0000 (UTC)
+Subject: Re: [GIT PULL] hardening fixes for v5.19-rc3
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <202206151405.D8EDB70EA@keescook>
+References: <202206151405.D8EDB70EA@keescook>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <202206151405.D8EDB70EA@keescook>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/hardening-v5.19-rc3
+X-PR-Tracked-Commit-Id: 1dfbe9fcda4afc957f0e371e207ae3cb7e8f3b0e
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 30306f6194cadcc29c77f6ddcd416a75bf5c0232
+Message-Id: <165532849223.18693.3759785082100551644.pr-tracker-bot@kernel.org>
+Date:   Wed, 15 Jun 2022 21:28:12 +0000
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Zorro Lang <zlang@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The pull request you sent on Wed, 15 Jun 2022 14:07:05 -0700:
 
+> https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/hardening-v5.19-rc3
 
-On 2022/6/15 21:21, Christoph Hellwig wrote:
-> On Tue, Jun 14, 2022 at 04:50:22PM +0800, Qu Wenruo wrote:
->> The same way as data?
->>
->> map-logical to find the location of a mirror, write 4 bytes of zero int=
-o
->> the location, then call it a day.
->>
->> Although for metadata, you may want to choose a metadata that would
->> definitely get read.
->> Thus tree root is a good candidate.
->
-> And how do I find out the logic address of the tree root?
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/30306f6194cadcc29c77f6ddcd416a75bf5c0232
 
-For tree root, "btrfs ins dump-super <dev> | grep '^root\s'.
+Thank you!
 
-For other tree blocks, "btrfs ins dump-tree <dev>" then with other other
-keywords to grab.
-
-Thanks,
-Qu
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
