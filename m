@@ -2,140 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6163ACCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:19:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 526A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355854AbiFOQTy (ORCPT
+        id S1355124AbiFOQVb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51614 "EHLO
+        Wed, 15 Jun 2022 12:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355150AbiFOQTf (ORCPT
+        with ESMTP id S232224AbiFOQVa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:19:35 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E6F964E4
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:19:30 -0700 (PDT)
-X-UUID: c6ce86a7e4924f778e3432b46bd114ed-20220616
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:2f619c16-03a1-40cb-8808-48e50f43fe83,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:b14ad71,CLOUDID:0baf9e48-4c92-421c-ad91-b806c0f58b2a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: c6ce86a7e4924f778e3432b46bd114ed-20220616
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <yf.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1508141498; Thu, 16 Jun 2022 00:19:27 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 16 Jun 2022 00:19:26 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Thu, 16 Jun 2022 00:19:25 +0800
-From:   <yf.wang@mediatek.com>
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        "Will Deacon" <will@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>,
-        "moderated list:MEDIATEK IOMMU DRIVER" 
-        <linux-mediatek@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list" <linux-kernel@vger.kernel.org>
-CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
-        Yong Wu <Yong.Wu@mediatek.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Yunfei Wang <yf.wang@mediatek.com>,
-        Ning Li <ning.li@mediatek.com>
-Subject: [PATCH v9 3/3] iommu/mediatek: Allow page table PA up to 35bit
-Date:   Thu, 16 Jun 2022 00:12:23 +0800
-Message-ID: <20220615161224.6923-4-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220615161224.6923-1-yf.wang@mediatek.com>
-References: <20220615161224.6923-1-yf.wang@mediatek.com>
+        Wed, 15 Jun 2022 12:21:30 -0400
+Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC139FD1;
+        Wed, 15 Jun 2022 09:21:29 -0700 (PDT)
+Received: by mail-pg1-f172.google.com with SMTP id 184so11791181pga.12;
+        Wed, 15 Jun 2022 09:21:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oxwx2XCF+I1I4h/9eZc3yiqrH4E8gBYoc+9xhREdn5Y=;
+        b=CQhOQWWT+uBu3d7WHmxmNP04saC5VYeoZRnt5DSxhUjwBgW4j2GN/R+QbksL63Ide3
+         TwPgeRJJc96pzgmnsyW3y/FBD/JfFodYW9iAzbAOsS+oshqfNEkxxUZvAHSXsiLqoK3H
+         ITyWTSz3oarmdtBfoQn47beZy4X8p6jQdlMwEJDzoA87Wc3c3yua98e+tNtpZWTyPz37
+         dL6gzV8gvSp5WDcV5BAdA21VuCXXRfK6SLDuJglnH6VkuUtF7dpg6rxzVDAsoyaE55jA
+         ijJ5PBSN5meNQ4LDtZtb7tEL7Fsb9uSP5OcnuqR894OXsXhr7NyOSCXdb9wSohUZQsni
+         LnLQ==
+X-Gm-Message-State: AJIora8czxyHRqfXmnQXzfwYMD1tWNj3DK6z7+TQex1ZmFIZLqhQnpD6
+        o/IqLowrf7M8F30pgu0Q35M=
+X-Google-Smtp-Source: AGRyM1voI3CsDZUvl6kUayV5lUz/OC0ud0TYUc7dOhuNQy/iTKJCGRND7+ozOR8158DkbFk6UxzRxg==
+X-Received: by 2002:a05:6a00:4504:b0:51b:f04e:a130 with SMTP id cw4-20020a056a00450400b0051bf04ea130mr409348pfb.52.1655310088948;
+        Wed, 15 Jun 2022 09:21:28 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:36ac:cabd:84b2:80f6? ([2620:15c:211:201:36ac:cabd:84b2:80f6])
+        by smtp.gmail.com with ESMTPSA id m17-20020a056a00081100b0051b9c0af43dsm10224124pfk.155.2022.06.15.09.21.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 09:21:28 -0700 (PDT)
+Message-ID: <1c422582-b074-c15e-a2d2-94bddf089974@acm.org>
+Date:   Wed, 15 Jun 2022 09:21:27 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3] scsi: support packing multi-segment in UNMAP command
+Content-Language: en-US
+To:     Chao Yu <chao@kernel.org>, jejb@linux.ibm.com,
+        martin.petersen@oracle.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220615153402.2233825-1-chao@kernel.org>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220615153402.2233825-1-chao@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunfei Wang <yf.wang@mediatek.com>
+On 6/15/22 08:34, Chao Yu wrote:
+> As SCSI SBC4 specification section 5.30.2 describes that it can
+> support unmapping one or more LBA range in single UNMAP command,
+> however, previously we only pack one LBA range in UNMAP command
+> by default no matter device gives the block limits that says it
+> can support in-batch UNMAP.
 
-Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA. So add
-the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT to let level 1 and level 2
-pgtable support at most 35bit PA.
+The above sentence is too long. Please split it.
 
-Signed-off-by: Ning Li <ning.li@mediatek.com>
-Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+> This patch tries to set max_discard_segments config according to
+              ^^^^^^^^^^^^
+Consider changing "tries to set" into "sets".
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 3d62399e8865..4dbc33758711 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -138,6 +138,7 @@
- /* PM and clock always on. e.g. infra iommu */
- #define PM_CLK_AO			BIT(15)
- #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
-+#define PGTABLE_PA_35_EN		BIT(17)
- 
- #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
- 				((((pdata)->flags) & (mask)) == (_x))
-@@ -240,6 +241,7 @@ struct mtk_iommu_data {
- struct mtk_iommu_domain {
- 	struct io_pgtable_cfg		cfg;
- 	struct io_pgtable_ops		*iop;
-+	u32				ttbr;
- 
- 	struct mtk_iommu_bank_data	*bank;
- 	struct iommu_domain		domain;
-@@ -596,6 +598,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
- 		.iommu_dev = data->dev,
- 	};
- 
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
-+		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
-+
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
- 		dom->cfg.oas = data->enable_4GB ? 33 : 32;
- 	else
-@@ -684,8 +689,8 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 			goto err_unlock;
- 		}
- 		bank->m4u_dom = dom;
--		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
--		       bank->base + REG_MMU_PT_BASE_ADDR);
-+		bank->m4u_dom->ttbr = MTK_IOMMU_ADDR(dom->cfg.arm_v7s_cfg.ttbr);
-+		writel(bank->m4u_dom->ttbr, data->base + REG_MMU_PT_BASE_ADDR);
- 
- 		pm_runtime_put(m4udev);
- 	}
-@@ -1366,8 +1371,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
- 		writel_relaxed(reg->int_control[i], base + REG_MMU_INT_CONTROL0);
- 		writel_relaxed(reg->int_main_control[i], base + REG_MMU_INT_MAIN_CONTROL);
- 		writel_relaxed(reg->ivrp_paddr[i], base + REG_MMU_IVRP_PADDR);
--		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
--		       base + REG_MMU_PT_BASE_ADDR);
-+		writel(m4u_dom->ttbr, base + REG_MMU_PT_BASE_ADDR);
- 	} while (++i < data->plat_data->banks_num);
- 
- 	/*
-@@ -1401,7 +1405,7 @@ static const struct mtk_iommu_plat_data mt2712_data = {
- static const struct mtk_iommu_plat_data mt6779_data = {
- 	.m4u_plat      = M4U_MT6779,
- 	.flags         = HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN | WR_THROT_EN |
--			 MTK_IOMMU_TYPE_MM,
-+			 MTK_IOMMU_TYPE_MM | PGTABLE_PA_35_EN,
- 	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
- 	.banks_num    = 1,
- 	.banks_enable = {true},
--- 
-2.18.0
+> block limits of device, and supports in-batch UNMAP.
 
+Consider changing "in-batch UNMAP" into "unmapping multiple LBA ranges 
+with a single UNMAP command".
+
+> +	blk_queue_max_discard_segments(q, sdkp->max_block_desc_count);
+
+sdkp->max_block_desc_count is 32 bits wide while 
+blk_queue_max_discard_segments() accepts an unsigned short as second 
+argument. So the value 0x10002 will be converted into 2, which is not 
+correct. Consider changing the second argument into min(U16_MAX, 
+sdkp->max_block_desc_count).
+
+>   	sdkp->provisioning_mode = mode;
+>   
+>   	switch (mode) {
+> @@ -836,9 +837,10 @@ static blk_status_t sd_setup_unmap_cmnd(struct scsi_cmnd *cmd)
+>   	struct scsi_device *sdp = cmd->device;
+>   	struct request *rq = scsi_cmd_to_rq(cmd);
+>   	struct scsi_disk *sdkp = scsi_disk(rq->q->disk);
+> -	u64 lba = sectors_to_logical(sdp, blk_rq_pos(rq));
+> -	u32 nr_blocks = sectors_to_logical(sdp, blk_rq_sectors(rq));
+> -	unsigned int data_len = 24;
+> +	unsigned short segments = blk_rq_nr_discard_segments(rq);
+> +	unsigned int data_len = 8 + 16 * segments;
+> +	unsigned int data_offset = 8;
+
+Please rename 'data_offset' into 'descriptor_offset' to match the SBC-4 
+terminology.
+
+> @@ -2870,9 +2879,9 @@ static void sd_read_block_limits(struct scsi_disk *sdkp)
+>   			goto out;
+>   
+>   		lba_count = get_unaligned_be32(&vpd->data[20]);
+> -		desc_count = get_unaligned_be32(&vpd->data[24]);
+> +		sdkp->max_block_desc_count = get_unaligned_be32(&vpd->data[24]);
+
+Consider adding /* Extract the MAXIMUM UNMAP BLOCK DESCRIPTOR COUNT. */ 
+above the above statement.
+
+> diff --git a/drivers/scsi/sd.h b/drivers/scsi/sd.h
+> index 5eea762f84d1..bda9db5e2322 100644
+> --- a/drivers/scsi/sd.h
+> +++ b/drivers/scsi/sd.h
+> @@ -119,6 +119,7 @@ struct scsi_disk {
+>   	u32		opt_xfer_blocks;
+>   	u32		max_ws_blocks;
+>   	u32		max_unmap_blocks;
+> +	u32		max_block_desc_count;
+
+I do not agree with the choice of the name of this member variable. The 
+name used in SBC-4 is "MAXIMUM UNMAP BLOCK DESCRIPTOR COUNT". Leaving 
+out "unmap" when abbreviating that description into a member name makes 
+it impossible to guess what the purpose of that member variable is.
+
+Thanks,
+
+Bart.
