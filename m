@@ -2,92 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17CF8CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87141C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348703AbiFONkv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48738 "EHLO
+        id S241515AbiFONlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 09:41:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232167AbiFONkt (ORCPT
+        with ESMTP id S232167AbiFONlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:40:49 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F405A36B7F;
-        Wed, 15 Jun 2022 06:40:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=dXp+jK4MrH7OEb332d6Ruc7/Sb9wEG92lN7ioJOCV7c=; b=T6gWnDr/RCAf2tuGlf98kWhaMi
-        jz/yi6ouyKZkItIUDE5opGIcE7y7GVoJ9ZXqGp+VjxoQpzV2W04yd4+IRP/CL9PFiQs3Mr9iwG5GF
-        5Kg/RMsB0vUsoEgKLldO9vSqb6UtvJoPHwMLfOxfFj0yKAwjmI3bFLpo5Vdc45yiF/ZJiibep6jPj
-        aVJlq0eQOqdxE2WeVxXD2ETdLppV3LcxeirDhat9Ps6wVn7uiiV34YUF1CNNtjZPTGQj1EM3hAdKz
-        MYFM7PMOpc5WOZGOh+sx+Yk969wJjaIGHGxFEh8O+sR0EEuDyhSmsVvcY287ahpIvukFd85kdLVlF
-        WdQoEp/w==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1TGF-0015W2-It; Wed, 15 Jun 2022 13:40:43 +0000
-Date:   Wed, 15 Jun 2022 14:40:43 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Brian Foster <bfoster@redhat.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ikent@redhat.com, onestero@redhat.com
-Subject: Re: [PATCH 1/3] radix-tree: propagate all tags in idr tree
-Message-ID: <YqnhW2CI1kbJ3NqR@casper.infradead.org>
-References: <20220614180949.102914-1-bfoster@redhat.com>
- <20220614180949.102914-2-bfoster@redhat.com>
- <Yqm+jmkDA+um2+hd@infradead.org>
- <YqnXVMtBkS2nbx70@bfoster>
+        Wed, 15 Jun 2022 09:41:52 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051F037A3A;
+        Wed, 15 Jun 2022 06:41:51 -0700 (PDT)
+Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LNRFp14TFz688JQ;
+        Wed, 15 Jun 2022 21:38:06 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 15 Jun 2022 15:41:48 +0200
+Received: from [10.202.227.197] (10.202.227.197) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 15 Jun 2022 14:41:47 +0100
+Message-ID: <56cd28b3-da05-7737-c053-3c28459581e4@huawei.com>
+Date:   Wed, 15 Jun 2022 14:44:54 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqnXVMtBkS2nbx70@bfoster>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+From:   John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH RFC v2 02/18] scsi: core: Resurrect
+ scsi_{get,free}_host_dev()
+To:     Bart Van Assche <bvanassche@acm.org>, <axboe@kernel.dk>,
+        <damien.lemoal@opensource.wdc.com>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <brking@us.ibm.com>, <hare@suse.de>,
+        <hch@lst.de>
+CC:     <linux-block@vger.kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <chenxiang66@hisilicon.com>
+References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
+ <1654770559-101375-3-git-send-email-john.garry@huawei.com>
+ <b61d3687-70ea-1ab7-63e1-44e381d36012@acm.org>
+In-Reply-To: <b61d3687-70ea-1ab7-63e1-44e381d36012@acm.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.202.227.197]
+X-ClientProxiedBy: lhreml722-chm.china.huawei.com (10.201.108.73) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 08:57:56AM -0400, Brian Foster wrote:
-> On Wed, Jun 15, 2022 at 04:12:14AM -0700, Christoph Hellwig wrote:
-> > On Tue, Jun 14, 2022 at 02:09:47PM -0400, Brian Foster wrote:
-> > > The IDR tree has hardcoded tag propagation logic to handle the
-> > > internal IDR_FREE tag and ignore all others. Fix up the hardcoded
-> > > logic to support additional tags.
-> > > 
-> > > This is specifically to support a new internal IDR_TGID radix tree
-> > > tag used to improve search efficiency of pids with associated
-> > > PIDTYPE_TGID tasks within a pid namespace.
-> > 
-> > Wouldn't it make sense to switch over to an xarray here rather
-> > then adding new features to the radix tree?
-> > 
+On 14/06/2022 20:33, Bart Van Assche wrote:
+
+Hi Bart,
+
+> On 6/9/22 03:29, John Garry wrote:
+>> +/**
+>> + * scsi_get_host_dev - Create a scsi_device that points to the host 
+>> adapter itself
+>                                                 
+> ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> What does this mean? That part of the function description is not
+> clear to me.
 > 
-> The xarray question crossed my mind when I first waded into this code
-> and realized the idr tree seems to be some sort of offshoot or custom
-> mode of the core radix tree. I eventually realized that the problem wrt
-> to normal radix tree tags in the idr variant was that the tag
-> propagation logic in the idr variant simply didn't care to handle
-> traditional tags, presumably because they were unused in that mode. So
-> this patch doesn't really add a feature to the radix-tree, it just fixes
-> up some of the grotty idr tree logic to handle both forms of tags.
+
+Agreed, this text is just as it was before (it was originally deleted) 
+but I can fix it up to make sense.
+
+>> + * @shost: Host that needs a scsi_device
+>                                ^^^^^^^^^^^^^
+> This is not detailed enough. Consider changing "a scsi_device" into
+> "a scsi device for allocating reserved commands from".
 > 
-> I assume it makes sense for this to move towards xarray in general, but
-> I don't have enough context on either side to know what the sticking
-> points are. In particular, does xarray support something analogous to
-> IDR_FREE or otherwise solve whatever problem idr currently depends on it
-> for (i.e. efficient id allocation)? I think Willy has done work in this
-> area so I'm hoping he can chime in on some of that if he's put any
-> thought into the idr thing specifically..
+>> + *
+>> + * Lock status: None assumed.
+>> + *
+>> + * Returns:     The scsi_device or NULL
+>> + *
+>> + * Notes:
+>> + *    Attach a single scsi_device to the Scsi_Host - this should
+>> + *    be made to look like a "pseudo-device" that points to the
+>> + *    HA itself.
+>> + *
+>> + *    Note - this device is not accessible from any high-level
+>> + *    drivers (including generics), which is probably not
+>> + *    optimal.  We can add hooks later to attach.
+> 
+> The "which is probably not optimal. We can add hooks later to attach."
+> part probably should be moved to the patch description.
 
-Without going into the history of the idr/radix-tree/xarray, the
-current hope is that we'll move all users of the idr & radix tree
-over to the xarray API.  It's fundamentally the same data structure
-for all three now, just a question of the API change. 
+ok
 
-The XArray does indeed have a way to solve the IDR_FREE problem;
-you need to declare an allocating XArray:
-https://www.kernel.org/doc/html/latest/core-api/xarray.html#allocating-xarrays
+> 
+>> + */
+>> +struct scsi_device *scsi_get_host_dev(struct Scsi_Host *shost)
+>> +{
+>> +    struct scsi_device *sdev = NULL;
+>> +    struct scsi_target *starget;
+>> +
+>> +    mutex_lock(&shost->scan_mutex);
+>> +    if (!scsi_host_scan_allowed(shost))
+>> +        goto out;
+>> +    starget = scsi_alloc_target(&shost->shost_gendev, 0, 
+>> shost->this_id);
+>                                                            
+> ^^^^^^^^^^^^^^^^^^
+> Is it guaranteed that this channel / id combination will not be used for
+> any other SCSI device?
 
-and using XA_MARK_1 and XA_MARK_2 should work the way you want them to.
+Does it matter if the parent device is different?
 
+> 
+> What if shost->this_id == -1?
+> 
+>> +    if (!starget)
+>> +        goto out;
+>> +
+>> +    sdev = scsi_alloc_sdev(starget, 0, NULL);
+>> +    if (sdev)
+>> +        sdev->borken = 0;
+>> +    else
+>> +        scsi_target_reap(starget);
+>> +    put_device(&starget->dev);
+>> + out:
+>> +    mutex_unlock(&shost->scan_mutex);
+>> +    return sdev;
+>> +}
+>> +EXPORT_SYMBOL(scsi_get_host_dev);
+> 
+> Elsewhere in the SCSI core "get..dev" means increment the reference 
+> count of
+> a SCSI device. Maybe scsi_alloc_host_dev() is a better name?
+
+I think that the intention is to only use this once for a shost, i.e. 
+get or allocate that scsi_device once and use it for the lifetime of the 
+shost. But I can rename if you think it's better.
+
+> 
+>> +/*
+>> + * These two functions are used to allocate and free a pseudo device
+>> + * which will connect to the host adapter itself rather than any
+>> + * physical device.  You must deallocate when you are done with the
+>> + * thing.  This physical pseudo-device isn't real and won't be available
+>> + * from any high-level drivers.
+>> + */
+> 
+> Please keep function comments in .c files because that makes it more likely
+> that the comment and the implementation will remain in sync.
+> 
+
+fine, I can relocate this.
+
+Thanks,
+John
