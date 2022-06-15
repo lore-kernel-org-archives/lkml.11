@@ -2,159 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC03C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 00:11:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3BE1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 00:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236977AbiFOALI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 20:11:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56250 "EHLO
+        id S235780AbiFOAN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 20:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231530AbiFOAKz (ORCPT
+        with ESMTP id S238144AbiFOANr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 20:10:55 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2065736176;
-        Tue, 14 Jun 2022 17:10:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655251854; x=1686787854;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=rmwqOoory/BhG+mzzDYl/irO2wGnfPfD8xSW1RR8boc=;
-  b=WfuUk4EhdSwZLQ7jdTQiG9I/IPtcn81sX09oqnTKKYgH5jkMWEICy4y+
-   xxLT3wEp6s4zwYWTolnviBRJx2y0PNDJmvQ9y2LqlwaRDKQKwoDaw+PyX
-   O5bNDkpGJ1+CqZvfMTEWnn57Re3CCy8dse+yPA2pkKCParg3KWp999MAh
-   GV3l2eAa2ty3wVZKFa53iuN/GAic+A5z/T5onO3mS112Py96/uauoD/EC
-   v7HO412OvWP3Cw5G48pSLlWnDfNOD2Ix2j7wVecrL/RNhTlCViVub7FPF
-   MQPW7qC4lKzDm8bSc+9tfiUPSyzoRWsqJf2BNRhQnpMs+IhkgYqD4Js92
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="278825457"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="278825457"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 17:10:54 -0700
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="640662914"
-Received: from alison-desk.jf.intel.com (HELO localhost) ([10.54.74.41])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 17:10:53 -0700
-From:   alison.schofield@intel.com
-To:     Dan Williams <dan.j.williams@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     Alison Schofield <alison.schofield@intel.com>,
-        linux-cxl@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] cxl/core: Add sysfs attribute get_poison for list retrieval
-Date:   Tue, 14 Jun 2022 17:10:28 -0700
-Message-Id: <57644934bb7af8e1c692735f53c2c415a1ba16d1.1655250669.git.alison.schofield@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1655250669.git.alison.schofield@intel.com>
-References: <cover.1655250669.git.alison.schofield@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 14 Jun 2022 20:13:47 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDAA1582F
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 17:13:46 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id y8-20020a17090322c800b0016777c34c83so5609390plg.19
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 17:13:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=VWOVk1jH/Ru1/0ssqOaKB13FZQZaZbbtFy4vR2AihMw=;
+        b=LwBF5P4EWnhcmnqlfh220XsbVgQ40ho2vvijCuCVrq7gnnj/aW2PKau3PQwpWSTc0R
+         WAwdHro0SkOGtQpjU1wPz1GxXhMYmKtFpiqUB7TJN31758mqmwuvV25zZ2OGDTxElC7z
+         SOzGTN4LzCMcDgrtlaDrIdHq+8m9uphIJkux74OXeKbrpIKcqMo7EBHTFytmnRo3qAO9
+         Sk4/b/sVysWZ8drQ1TJuzshwmozZC3qo8d6xRuvTa++Z+Xab7SnHQvlsqZ186Jv0yY6+
+         QL3X3/3BTfZ2EFeXU0VNCOOtzRWxTe2LzcB34sG8cWjbhf7BI0bKuYoalC7ZhHFEob/v
+         0EWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=VWOVk1jH/Ru1/0ssqOaKB13FZQZaZbbtFy4vR2AihMw=;
+        b=Wq9BAE2XUhEccSVdKu5ERJDDl+VHVIGF2dG4OWfYP4J39jkDzAyotp1TRxOzqEBkEb
+         ry5Y4kz28uh57acqLoSgpcVAz32dSFA3lWcxun7GDkiPmm/D5ZLKY+Oa8EHrAzW2Q/EG
+         nJjzHyYFR3OesJh0QbiZTAHcfnT9jUaDROxfLHutVOurQKAs2JUjsxOAOtMRk7oO5ssc
+         vxbyHrjb9eVNEpoQgUmOfdDl5LHIdVDFrv7xRkvOFqrYeElKu9qIiKlkORbCNZaoG/Tl
+         aa7j/++U1Vbkz1ESWHpLih0PwY4/09ytrLvR4Z2kQnO4Tg7KVDBZ/cwVvNoMWHu2VLwL
+         yv1A==
+X-Gm-Message-State: AJIora9SJn7/9snWJY2LY834TiY7Q6VvM7BCpyd+IkthOMiMXIVE2+Zg
+        fzq7gGp3ar81GjORV7XY3Q2ZFL0lDbekvn+2
+X-Google-Smtp-Source: AGRyM1vGymm0xuf01VUXyVzBQro51MWVc/Eq45Kv64E7feWc10x4bxuGwSrgK5CdFJ0tBgDQz6uefp9zOxQKWKz7
+X-Received: from blakejones.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:411c])
+ (user=blakejones job=sendgmr) by 2002:a17:90a:fb90:b0:1e3:809:9296 with SMTP
+ id cp16-20020a17090afb9000b001e308099296mr7056679pjb.26.1655252025667; Tue,
+ 14 Jun 2022 17:13:45 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 17:13:34 -0700
+Message-Id: <20220615001334.611882-1-blakejones@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH v2] Add a "-m" option to "perf buildid-list".
+From:   Blake Jones <blakejones@google.com>
+To:     Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Blake Jones <blakejones@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alison Schofield <alison.schofield@intel.com>
+This new option displays all of the information needed to do external
+BuildID-based symbolization of kernel stack traces, such as those collected
+by bpf_get_stackid(). For each kernel module plus the main kernel, it
+displays the BuildID, the start and end virtual addresses of that module's
+text range (rounded out to page boundaries), and the pathname of the
+module.
 
-The sysfs attribute, get_poison, allows user space to request the
-retrieval of a CXL devices poison list for its persistent memory.
+When run as a non-privileged user, the actual addresses of the modules'
+text ranges are not available, so the tools displays "0, <text length>" for
+kernel modules and "0, 0xffffffffffffffff" for the kernel itself.
 
-From Documentation/ABI/.../sysfs-bus-cxl
-        (WO) When a '1' is written to this attribute the memdev
-        driver retrieves the poison list from the device. The list
-        includes addresses that are poisoned or would result in
-        poison if accessed, and the source of the poison. This
-        attribute is only visible for devices supporting the
-        capability. The retrieved errors are logged as kernel
-        trace events with the label: cxl_poison_list.
+Sample output:
 
-Signed-off-by: Alison Schofield <alison.schofield@intel.com>
+root# perf buildid-list -m
+cf6df852fd4da122d616153353cc8f560fd12fe0 ffffffffa5400000 ffffffffa6001e27 [kernel.kallsyms]
+1aa7209aa2acb067d66ed6cf7676d65066384d61 ffffffffc0087000 ffffffffc008b000 /lib/modules/5.15.15-1rodete2-amd64/kernel/crypto/sha512_generic.ko
+3857815b5bf0183697b68f8fe0ea06121644041e ffffffffc008c000 ffffffffc0098000 /lib/modules/5.15.15-1rodete2-amd64/kernel/arch/x86/crypto/sha512-ssse3.ko
+4081fde0bca2bc097cb3e9d1efcb836047d485f1 ffffffffc0099000 ffffffffc009f000 /lib/modules/5.15.15-1rodete2-amd64/kernel/drivers/acpi/button.ko
+1ef81ba4890552ea6b0314f9635fc43fc8cef568 ffffffffc00a4000 ffffffffc00aa000 /lib/modules/5.15.15-1rodete2-amd64/kernel/crypto/cryptd.ko
+cc5c985506cb240d7d082b55ed260cbb851f983e ffffffffc00af000 ffffffffc00b6000 /lib/modules/5.15.15-1rodete2-amd64/kernel/drivers/i2c/busses/i2c-piix4.ko
+[...]
+
+Signed-off-by: Blake Jones <blakejones@google.com>
 ---
- Documentation/ABI/testing/sysfs-bus-cxl | 13 ++++++++++
- drivers/cxl/core/memdev.c               | 32 +++++++++++++++++++++++++
- 2 files changed, 45 insertions(+)
+ .../perf/Documentation/perf-buildid-list.txt  |  4 +++
+ tools/perf/builtin-buildid-list.c             | 35 ++++++++++++++++++-
+ tools/perf/util/machine.c                     | 13 +++++++
+ tools/perf/util/machine.h                     |  5 +++
+ 4 files changed, 56 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-cxl b/Documentation/ABI/testing/sysfs-bus-cxl
-index 7c2b846521f3..9d0c3988fdd2 100644
---- a/Documentation/ABI/testing/sysfs-bus-cxl
-+++ b/Documentation/ABI/testing/sysfs-bus-cxl
-@@ -163,3 +163,16 @@ Description:
- 		memory (type-3). The 'target_type' attribute indicates the
- 		current setting which may dynamically change based on what
- 		memory regions are activated in this decode hierarchy.
-+
-+What:		/sys/bus/cxl/devices/memX/get_poison
-+Date:		June, 2022
-+KernelVersion:	v5.20
-+Contact:	linux-cxl@vger.kernel.org
-+Description:
-+		(WO) When a '1' is written to this attribute the memdev
-+		driver retrieves the poison list from the device. The list
-+		includes addresses that are poisoned or would result in
-+		poison if accessed, and the source of the poison. This
-+		attribute is only visible for devices supporting the
-+		capability. The retrieved errors are logged as kernel
-+		trace events with the label: cxl_poison_list.
-diff --git a/drivers/cxl/core/memdev.c b/drivers/cxl/core/memdev.c
-index f7cdcd33504a..5ef9ffaa934a 100644
---- a/drivers/cxl/core/memdev.c
-+++ b/drivers/cxl/core/memdev.c
-@@ -106,12 +106,34 @@ static ssize_t numa_node_show(struct device *dev, struct device_attribute *attr,
- }
- static DEVICE_ATTR_RO(numa_node);
+diff --git a/tools/perf/Documentation/perf-buildid-list.txt b/tools/perf/Documentation/perf-buildid-list.txt
+index 25c52efcc7f0..e1e8fdbe06b9 100644
+--- a/tools/perf/Documentation/perf-buildid-list.txt
++++ b/tools/perf/Documentation/perf-buildid-list.txt
+@@ -33,6 +33,10 @@ OPTIONS
+ -k::
+ --kernel::
+ 	Show running kernel build id.
++-m::
++--kernel-maps::
++	Show buildid, start/end text address, and path of running kernel and
++	its modules.
+ -v::
+ --verbose::
+ 	Be more verbose.
+diff --git a/tools/perf/builtin-buildid-list.c b/tools/perf/builtin-buildid-list.c
+index cebadd632234..e73520190974 100644
+--- a/tools/perf/builtin-buildid-list.c
++++ b/tools/perf/builtin-buildid-list.c
+@@ -12,6 +12,7 @@
+ #include "util/build-id.h"
+ #include "util/debug.h"
+ #include "util/dso.h"
++#include "util/map.h"
+ #include <subcmd/pager.h>
+ #include <subcmd/parse-options.h>
+ #include "util/session.h"
+@@ -20,6 +21,31 @@
+ #include <errno.h>
+ #include <linux/err.h>
  
-+static ssize_t get_poison_store(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf, size_t len)
-+
++static int buildid__map_cb(struct map *map, void *arg __maybe_unused)
 +{
-+	int rc;
++	const struct dso *dso = map->dso;
++	char bid_buf[SBUILD_ID_SIZE];
 +
-+	if (!sysfs_streq(buf, "1")) {
-+		dev_err(dev, "%s: unknown value: %s\n", attr->attr.name, buf);
-+		return -EINVAL;
-+	}
++	memset(bid_buf, 0, sizeof(bid_buf));
++	if (dso->has_build_id)
++		build_id__sprintf(&dso->bid, bid_buf);
++	printf("%s %16lx %16lx", bid_buf, map->start, map->end);
++	if (dso->long_name != NULL)
++		printf(" %s", dso->long_name);
++	printf("\n");
 +
-+	rc = cxl_mem_get_poison_list(dev);
-+	if (rc) {
-+		dev_err(dev, "Failed to retrieve poison list %d\n", rc);
-+		return rc;
-+	}
-+	return len;
++	return 0;
 +}
-+static DEVICE_ATTR_WO(get_poison);
 +
- static struct attribute *cxl_memdev_attributes[] = {
- 	&dev_attr_serial.attr,
- 	&dev_attr_firmware_version.attr,
- 	&dev_attr_payload_max.attr,
- 	&dev_attr_label_storage_size.attr,
- 	&dev_attr_numa_node.attr,
-+	&dev_attr_get_poison.attr,
- 	NULL,
- };
- 
-@@ -130,6 +152,16 @@ static umode_t cxl_memdev_visible(struct kobject *kobj, struct attribute *a,
++static void buildid__show_kernel_maps(void)
++{
++	struct machine *machine;
++
++	machine = machine__new_host();
++	machine__for_each_kernel_map(machine, buildid__map_cb, NULL);
++	machine__delete(machine);
++}
++
+ static int sysfs__fprintf_build_id(FILE *fp)
  {
- 	if (!IS_ENABLED(CONFIG_NUMA) && a == &dev_attr_numa_node.attr)
- 		return 0;
-+
-+	if (a == &dev_attr_get_poison.attr) {
-+		struct device *dev = container_of(kobj, struct device, kobj);
-+		struct cxl_memdev *cxlmd = to_cxl_memdev(dev);
-+		struct cxl_dev_state *cxlds = cxlmd->cxlds;
-+
-+		if (!test_bit(CXL_MEM_COMMAND_ID_GET_POISON,
-+			      cxlds->enabled_cmds))
-+			return 0;
-+	}
- 	return a->mode;
- }
+ 	char sbuild_id[SBUILD_ID_SIZE];
+@@ -99,6 +125,7 @@ static int perf_session__list_build_ids(bool force, bool with_hits)
+ int cmd_buildid_list(int argc, const char **argv)
+ {
+ 	bool show_kernel = false;
++	bool show_kernel_maps = false;
+ 	bool with_hits = false;
+ 	bool force = false;
+ 	const struct option options[] = {
+@@ -106,6 +133,8 @@ int cmd_buildid_list(int argc, const char **argv)
+ 	OPT_STRING('i', "input", &input_name, "file", "input file name"),
+ 	OPT_BOOLEAN('f', "force", &force, "don't complain, do it"),
+ 	OPT_BOOLEAN('k', "kernel", &show_kernel, "Show current kernel build id"),
++	OPT_BOOLEAN('m', "kernel-maps", &show_kernel_maps,
++	    "Show build id of current kernel + modules"),
+ 	OPT_INCR('v', "verbose", &verbose, "be more verbose"),
+ 	OPT_END()
+ 	};
+@@ -117,8 +146,12 @@ int cmd_buildid_list(int argc, const char **argv)
+ 	argc = parse_options(argc, argv, options, buildid_list_usage, 0);
+ 	setup_pager();
  
+-	if (show_kernel)
++	if (show_kernel) {
+ 		return !(sysfs__fprintf_build_id(stdout) > 0);
++	} else if (show_kernel_maps) {
++		buildid__show_kernel_maps();
++		return 0;
++	}
+ 
+ 	return perf_session__list_build_ids(force, with_hits);
+ }
+diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
+index 009061852808..28fff9a02ab0 100644
+--- a/tools/perf/util/machine.c
++++ b/tools/perf/util/machine.c
+@@ -3327,3 +3327,16 @@ int machine__for_each_dso(struct machine *machine, machine__dso_t fn, void *priv
+ 	}
+ 	return err;
+ }
++
++int machine__for_each_kernel_map(struct machine *machine, machine__map_t fn, void *priv)
++{
++	struct maps *maps = machine__kernel_maps(machine);
++	struct map *map;
++	int err = 0;
++
++	for (map = maps__first(maps); map != NULL; map = map__next(map)) {
++		if (fn(map, priv))
++			err = -1;
++	}
++	return err;
++}
+diff --git a/tools/perf/util/machine.h b/tools/perf/util/machine.h
+index 5d7daf7cb7bc..e1476343cbb2 100644
+--- a/tools/perf/util/machine.h
++++ b/tools/perf/util/machine.h
+@@ -262,6 +262,11 @@ typedef int (*machine__dso_t)(struct dso *dso, struct machine *machine, void *pr
+ 
+ int machine__for_each_dso(struct machine *machine, machine__dso_t fn,
+ 			  void *priv);
++
++typedef int (*machine__map_t)(struct map *map, void *priv);
++int machine__for_each_kernel_map(struct machine *machine, machine__map_t fn,
++				 void *priv);
++
+ int machine__for_each_thread(struct machine *machine,
+ 			     int (*fn)(struct thread *thread, void *p),
+ 			     void *priv);
+
+base-commit: 1bcca2b1bd67f3c0e5c3a88ed16c6389f01a5b31
 -- 
-2.31.1
+2.36.1.476.g0c4daa206d-goog
 
