@@ -2,93 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 02:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26848C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 02:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343754AbiFOCWo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 22:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48110 "EHLO
+        id S241904AbiFOC0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 22:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237156AbiFOCWl (ORCPT
+        with ESMTP id S235340AbiFOCZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 22:22:41 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D3D2DC3;
-        Tue, 14 Jun 2022 19:22:37 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id y17so7864651ilj.11;
-        Tue, 14 Jun 2022 19:22:37 -0700 (PDT)
+        Tue, 14 Jun 2022 22:25:57 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A4F1834D
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 19:25:55 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id k19so13438010wrd.8
+        for <linux-kernel@vger.kernel.org>; Tue, 14 Jun 2022 19:25:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=+OM5i749HJ0lbgx3f4hiitPP5AQjnk1kKAY5+9r81pk=;
-        b=VdL98t24mTd2/nf3gNu7xMuDvqAr6a1FOPUQklAO1iYbcaAiL/bhyOodSCxa+gnnDw
-         VsR6uJEP/ssbpy3WliOrhYVCCPMLO504qv+tRdfsSKxnDJlWBKmUM57f2Y5UVwqtK39l
-         Jvg3O8ypwg4B24s4DJCiLZDjRUfJ5Ychr7jRjewg/KHKjSlV2ZQjsUlo90cCr+y77A4l
-         8n/7hkQtYXr5IUxm4sFi9A+xtXPD8CEjBrUET1ND2xeJ9gX64sK2tmWfbo6kBeadVwVE
-         8uh1CPBptFaNc/yRbcQDFc3WmayMDSCi4CHGy0YdTuq0WegPub/o7qDx72ubMxWGcaC1
-         9ikA==
+        d=chromium.org; s=google;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=8F/FVpqglm8qE8cD/YcY9ulLow7gQRjn5YoNZWPm/8s=;
+        b=G3aV4kArKNwNmPx3WxNkrLgwMofzFkNooODCxpW7OfMNN4RVh+tyTS6N7ah0YCzph2
+         FJ49Xy9CYn955YQbUamhUwHNM2OL1miuJpkwatUg9h+6q+m8m5P9t49saUL65HqXhMC+
+         F+hf9fBdpbOQOd2to9dtnxV3c9Sf4QpE42ncI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=+OM5i749HJ0lbgx3f4hiitPP5AQjnk1kKAY5+9r81pk=;
-        b=Z/o8WxlEEmlb8S2kCCMQYNRRxmE2WNa6kZinZMD5eIKXrDzahxn1SEEAOQjwGRNMgp
-         Py79WzBLqPV6RDLbS/o1NbV3JWNvUriyOvIaRmBnfmvq8PByMgTvugdO6wVbzr5Goh/0
-         m/CAHrP6XqGrRNN3RfG1EEuYdL0ONTqLc1MCIFsivMcNjRA7+wyf7r28FArHYkFhhh0v
-         EdMyHOYiV0vPnwckQ9nCKogtKMZjCl0kdDV5gyrGy9Pn/SDdu0gyf/f64QNW35lJrV7v
-         6NVtohlWPn7CJxyzueM17HcAIvFwAgNocDqSlEmhZcFb+nkXFKEtBy88Bse8l87/OAjO
-         k3ng==
-X-Gm-Message-State: AJIora/h19FWcL33fxzajagLbHgehZNxp1+4YOpZDoijYbXRgA97l3qT
-        SgrXDv0E6sZT6Kx0JHChtAjyshHx3FN4hQ==
-X-Google-Smtp-Source: AGRyM1tB48dDe8RQQl6d6FDNI4bx9iP6CsGfEijr1HdTyqqrfgj4iw+4mTghJV8VC1a8ulSVcVoLIQ==
-X-Received: by 2002:a05:6e02:967:b0:2d3:9b99:e8af with SMTP id q7-20020a056e02096700b002d39b99e8afmr4446782ilt.202.1655259756074;
-        Tue, 14 Jun 2022 19:22:36 -0700 (PDT)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
-        by smtp.gmail.com with ESMTPSA id l44-20020a02666c000000b0032b3a781767sm5576305jaf.43.2022.06.14.19.22.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 19:22:35 -0700 (PDT)
-Message-ID: <62a9426b.1c69fb81.a50a5.65b4@mx.google.com>
-Date:   Tue, 14 Jun 2022 19:22:35 -0700 (PDT)
-X-Google-Original-Date: Wed, 15 Jun 2022 02:22:34 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220614183720.861582392@linuxfoundation.org>
-Subject: RE: [PATCH 5.18 00/11] 5.18.5-rc1 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=8F/FVpqglm8qE8cD/YcY9ulLow7gQRjn5YoNZWPm/8s=;
+        b=e0+dhdcICLLLwweHaUdVo+qR4ZkWrL/2n6I3yT+FQHGqBKzS94RT/xWIYwh/KJcz0l
+         EIuHaaH6Vs/xTw4sJ14jT4VizXcbmHiYT1edWx1UW0G92vqW5psj0FjXcL0hwwYkxcyb
+         gYoD7nrFxxIE9jZn/6LkACVS+w0Fp4QA3aHFYVVjZc1i/1XfHF+mnPJeSkuAfq+wMeOr
+         BBHJrN7RL+DC6uyXydHDUR+7krMPqOt/1DFBeWUaWnE9yS+PrXexFWqzuoUU3W1HJyUQ
+         UULMFV0tUTK7gwwhZPZ5MTgi/dLFoVIXxM+pFKuOJuJXYF2uwfzKOiGdHiNz7mY5YTFQ
+         Nriw==
+X-Gm-Message-State: AJIora/2KnJPPuEeksf8l3YajqF4hUU9wUflxnkv8sNEVwI5hNVJU3Ns
+        CU+PFyBwgrzmNAi/l7OikxI1e8bHH848pvZCtbhW0Q==
+X-Google-Smtp-Source: AGRyM1t3+b9bi2iA5wQ5TwQQ41PstAhl1x0Xp0nJenXM6HUkP9HJ6mvNO38m28aFjGzfncStOLI1OhP+zTbNxDFzit4=
+X-Received: by 2002:a05:6000:156d:b0:210:3125:6012 with SMTP id
+ 13-20020a056000156d00b0021031256012mr7294139wrz.357.1655259953998; Tue, 14
+ Jun 2022 19:25:53 -0700 (PDT)
+MIME-Version: 1.0
+From:   Julius Werner <jwerner@chromium.org>
+Date:   Tue, 14 Jun 2022 19:25:42 -0700
+Message-ID: <CAODwPW9E8wWwxbYKyf4_-JFb4F-JSmLR3qOF_iudjX0f9ndF0A@mail.gmail.com>
+Subject: [RFC] Correct memory layout reporting for "jedec,lpddr2" and related bindings
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Jian-Jia Su <jjsu@google.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Nikola Milosavljevic <mnidza@outlook.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 14 Jun 2022 20:40:37 +0200, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.18.5 release.
-> There are 11 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.5-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+We (Chromium OS) have been trying to find a way to pass LPDDR memory
+chip information that is available to the firmware through the FDT
+(mostly for userspace informational purposes, for now). We have been
+using and expanding the existing "jedec,lpddr2" and "jedec,lpddr3"
+bindings for this (e.g. [1]). The goal is to be able to identify the
+memory layout of the system (how the parts look like, how they're tied
+together, how much capacity there is in total) as accurately as
+possible from software-probed values.
 
-5.18.5-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+The existing bindings contain the fields "io-width" and "density",
+which is terminology directly matching what an LPDDR chip can report
+to firmware through the "Mode Register" interface, specifically MR8.
+(The LPDDR specs describing this are not public, but you can see the
+register definitions in most LPDDR chip datasheets that can be
+randomly found online, e.g. [2] page 37.) The code in
+drivers/memory/of_memory.c also suggests that these are supposed to
+directly correspond to the MR8 values read from the chip, since when
+of_lpddr2_get_info() copies the device tree values into struct
+lpddr2_info, it encodes them in a format that directly matches the
+mode register bit field patterns.
 
+The problem with this is that each individual LPDDR chip has its own
+set of mode registers (per rank) that only describe the density of
+that particular chip (rank). The host memory controller may have
+multiple channels (each of which is basically an entirely separate set
+of physical LPDDR pins on the board), a single channel may be
+connected to multiple LPDDR chips (e.g. if the memory controller has
+an outgoing 32-bit channel, that channel could be tied to two 16-bit
+LPDDR chips by tying the low 16 bits to one and the high 16 bits to
+the other), and then each of those chips may offer multiple
+independent ranks (which rank is being accessed at a given time is
+controlled by a separate chip select pin).
+
+So if we just have one "io-width" and one "density" field in the FDT,
+there's no way to figure out how much memory there's actually
+connected in total, because that only describes a single LPDDR chip.
+Worse, there may be chips where different ranks have different
+densities (e.g. a 6GB dual-rank chip with one 4GB and one 2GB rank),
+and different channels could theoretically be connected to chips of
+completely different manufacturers.
+
+We need to be able to report the information that's currently encoded
+in the "jedec,lpddr2" binding separately for each channel+rank
+combination, and we need to be able to tell how many LPDDR chips are
+combined under a single memory channel. For the former, I'd suggest
+creating a separate FDT node for each channel, and then creating
+subnodes under those for each rank that implement the binding. For the
+latter, I would suggest adding a new property "channel-io-width" which
+describes the width of the channel from the host memory controller's
+point of view, so that you can divide that property by the already
+existing "io-width" property to figure out how many parts are tied
+together in series in a single channel. The final layout, then, would
+look something like this:
+
+lpddr2-channel0 {
+    rank0 {
+        compatible = "jedec,lpddr2";
+        density = <2048>;
+        channel-io-width = <32>;
+        io-width = <16>;
+    };
+    rank1 {
+        compatible = "jedec,lpddr2";
+        density = <1024>;
+        channel-io-width = <32>;
+        io-width = <16>;
+    };
+};
+lpddr2-channel0 {
+    rank0 {
+        compatible = "jedec,lpddr2";
+        density = <2048>;
+        channel-io-width = <32>;
+        io-width = <16>;
+    };
+    rank1 {
+        compatible = "jedec,lpddr2";
+        density = <1024>;
+        channel-io-width = <32>;
+        io-width = <16>;
+    };
+};
+
+This would be describing a dual-channel, dual-rank layout where each
+32-bit channel is connected to two 16-bit LPDDR chips in series. The
+total capacity would be (2048 Mbits * (32/16) chips + 1024 Mbits *
+(32/16) chips) * 2 channels = 12Gbits.
+
+Does this seem reasonable? If nobody has any objections, I can draft
+up a real patch to change the respective bindings. (The two existing
+uses in platform device trees would stay how they are until the
+respective platform maintainers choose to update them, since only they
+would know the exact configuration. They wouldn't technically violate
+the changed binding since they still contain the same properties
+(other than "channel-io-width" which could be declared optional), but
+they wouldn't represent the total memory layout.)
+
+(Also, btw, would it make sense to use this opportunity to combine the
+"jedec,lpddr2" and "jedec,lpddr3" bindings into a single document?
+They contain all the same properties and I think it makes sense to
+keep them in sync, so duplicating the documentation is just
+unnecessary maintenance overhead. I would also like to add a
+"jedec,lpddr4" binding that has the same properties.)
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr2.yaml
+[2] https://media-www.micron.com/-/media/client/global/documents/products/data-sheet/dram/mobile-dram/low-power-dram/lpddr2/2gb_automotive_lpddr2_u89n.pdf
