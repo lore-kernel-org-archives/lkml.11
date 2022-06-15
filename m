@@ -2,113 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 213E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:45:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4FC5C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345165AbiFONpK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54066 "EHLO
+        id S245490AbiFONp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 09:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344964AbiFONpG (ORCPT
+        with ESMTP id S230055AbiFONpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:45:06 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C942F64C
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:45:05 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id i15so10471048plr.1
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:45:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=TU7ppchr+vK4iQFEEkHyhNO3qYqSud0f/b8Qfi4fncE=;
-        b=P4lnu4PmKUs1hCeHvGYVFBJYqh0FxWE38HhkOsolR7DTsCZOW+2TyjdP+mV+jMtb9T
-         FQ/p8lpV2rBPj95AOnT8PFfTbyfL6o6RyTA1MztbW+BhEAdOx55slpKuJ94f+cV6iT8q
-         hFzf9dgkBd+ZZoOG1Cvs9MDvKwHQTmofmR3v+cL/L5+J0hmGGHfve5WDEDY8zYSvTVA0
-         o1hyzHcr5FaE9NGt3ot1Zemqv5eTeIv2uQXszG07S+1rw8OL1qUQR37lDbscCAZgcIf3
-         7LB4MO7Uj82e983wOHqE+d/9jvmqvd+XYCbtDfQsAebY9IoQIdDvuM0KWMado7LgUsRy
-         luAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TU7ppchr+vK4iQFEEkHyhNO3qYqSud0f/b8Qfi4fncE=;
-        b=ULygU2W9MAsExBcj4gO5tJWRyoKwBY/RpW7cn1YWl/s3Dh67ZIFCxAA7xPb0KTmd25
-         kkwFRiTjdVr1vuLuBkHutkMmUCzAr3Kb71cgiMgX81a4/wxWsoZNDc3Axl/tHnzyykOX
-         eLhLx7/hBhLDn9ZvVpNhMDDiuXSwCM6NH7xFPuhYkDQAWYHvnoOGMiKuQnG6oZ3cdVYL
-         RiUNM68XI5Q7j+qJWPI+3e4ed97FFOIL2jvfF64IxO+tKAb9fM82zU+XkXkzu6q75pYk
-         QBX9Ijl7NRnqRBhCypb77ysvlZDIMhLzHwd2su7WweifJ+J470uGxlkwL+nRhJ6Ppcv4
-         w3YQ==
-X-Gm-Message-State: AJIora+uqcpy3XRRNH9li/bj66Ml32h7NGvx9AEB0MFYgSQV/nvMk96A
-        R7rimFLTW/+bhOX5fjtZfKIumsKFQdqEkA==
-X-Google-Smtp-Source: ABdhPJx0T+YdeF+d3X92Xyp5Jiohtxc6kV2ZfTAC3PYSZ9oPTWeOvMnxmENVDIdLhvWiI9IlcP/kjQ==
-X-Received: by 2002:a17:902:7483:b0:167:cfa7:ff3d with SMTP id h3-20020a170902748300b00167cfa7ff3dmr9540876pll.61.1655300703882;
-        Wed, 15 Jun 2022 06:45:03 -0700 (PDT)
-Received: from [172.20.0.255] ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id l13-20020a62be0d000000b0051ba90d55acsm9843057pff.207.2022.06.15.06.45.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 06:45:03 -0700 (PDT)
-Message-ID: <ae8812a8-5f31-1516-74c4-cb427740fea2@linaro.org>
-Date:   Wed, 15 Jun 2022 06:45:02 -0700
+        Wed, 15 Jun 2022 09:45:53 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23692CCB4;
+        Wed, 15 Jun 2022 06:45:52 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LNRPP6xCnzjYF4;
+        Wed, 15 Jun 2022 21:44:41 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 15 Jun
+ 2022 21:45:46 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next] ext4: fix bug_on in ext4_iomap_begin as race between bmap and write
+Date:   Wed, 15 Jun 2022 21:58:50 +0800
+Message-ID: <20220615135850.1961759-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] soc: samsung: Add missing of_node_put in exynos-pmu.c
-Content-Language: en-US
-To:     heliang <windhl@126.com>, alim.akhtar@samsung.com
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220615085525.3961330-1-windhl@126.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220615085525.3961330-1-windhl@126.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/06/2022 01:55, heliang wrote:
-> In exynos_get_pmu_regmap(), of_find_matching_node() will return a
-> node pointer with refcount incremented. We should use of_node_put()
-> for that node pointer. We need a similar code logic in the function
-> syscon_regmap_lookup_by_compatible().
-> 
-> Signed-off-by: heliang <windhl@126.com>
+We got issue as follows:
+------------[ cut here ]------------
+WARNING: CPU: 3 PID: 9310 at fs/ext4/inode.c:3441 ext4_iomap_begin+0x182/0x5d0
+RIP: 0010:ext4_iomap_begin+0x182/0x5d0
+RSP: 0018:ffff88812460fa08 EFLAGS: 00010293
+RAX: ffff88811f168000 RBX: 0000000000000000 RCX: ffffffff97793c12
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: ffff88812c669160 R08: ffff88811f168000 R09: ffffed10258cd20f
+R10: ffff88812c669077 R11: ffffed10258cd20e R12: 0000000000000001
+R13: 00000000000000a4 R14: 000000000000000c R15: ffff88812c6691ee
+FS:  00007fd0d6ff3740(0000) GS:ffff8883af180000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fd0d6dda290 CR3: 0000000104a62000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ iomap_apply+0x119/0x570
+ iomap_bmap+0x124/0x150
+ ext4_bmap+0x14f/0x250
+ bmap+0x55/0x80
+ do_vfs_ioctl+0x952/0xbd0
+ __x64_sys_ioctl+0xc6/0x170
+ do_syscall_64+0x33/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Please use full first and last name. It might be that transcription of
-your name to Latin alphabet looks a bit different.
+Above issue may happen as follows:
+          bmap                    write
+bmap
+  ext4_bmap
+    iomap_bmap
+      ext4_iomap_begin
+                            ext4_file_write_iter
+			      ext4_buffered_write_iter
+			        generic_perform_write
+				  ext4_da_write_begin
+				    ext4_da_write_inline_data_begin
+				      ext4_prepare_inline_data
+				        ext4_create_inline_data
+					  ext4_set_inode_flag(inode,
+						EXT4_INODE_INLINE_DATA);
+      if (WARN_ON_ONCE(ext4_has_inline_data(inode))) ->trigger bug_on
 
-> ---
->  drivers/soc/samsung/exynos-pmu.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/soc/samsung/exynos-pmu.c b/drivers/soc/samsung/exynos-pmu.c
-> index 732c86ce2be8..a44862c405a4 100644
-> --- a/drivers/soc/samsung/exynos-pmu.c
-> +++ b/drivers/soc/samsung/exynos-pmu.c
-> @@ -108,9 +108,13 @@ struct regmap *exynos_get_pmu_regmap(void)
->  {
->  	struct device_node *np = of_find_matching_node(NULL,
->  						      exynos_pmu_of_device_ids);
-> -	if (np)
-> -		return syscon_node_to_regmap(np);
-> -	return ERR_PTR(-ENODEV);
-> +	struct regmap *regmap;
+To solved above issue hold inode lock in ext4_bamp.
 
-Blank line here.
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ fs/ext4/inode.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-> +	if (!np)
-> +		return ERR_PTR(-ENODEV);
-> +	
-> +	regmap = syscon_node_to_regmap(np);
-> +	of_node_put(np);
-> +	return regmap;
->  }
->  EXPORT_SYMBOL_GPL(exynos_get_pmu_regmap);
->  
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 53877ffe3c41..f4a95c80f644 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -3142,13 +3142,15 @@ static sector_t ext4_bmap(struct address_space *mapping, sector_t block)
+ {
+ 	struct inode *inode = mapping->host;
+ 	journal_t *journal;
++	sector_t ret = 0;
+ 	int err;
+ 
++	inode_lock(inode);
+ 	/*
+ 	 * We can get here for an inline file via the FIBMAP ioctl
+ 	 */
+ 	if (ext4_has_inline_data(inode))
+-		return 0;
++		goto out;
+ 
+ 	if (mapping_tagged(mapping, PAGECACHE_TAG_DIRTY) &&
+ 			test_opt(inode->i_sb, DELALLOC)) {
+@@ -3187,10 +3189,14 @@ static sector_t ext4_bmap(struct address_space *mapping, sector_t block)
+ 		jbd2_journal_unlock_updates(journal);
+ 
+ 		if (err)
+-			return 0;
++			goto out;
+ 	}
+ 
+-	return iomap_bmap(mapping, block, &ext4_iomap_ops);
++	ret = iomap_bmap(mapping, block, &ext4_iomap_ops);
++
++out:
++	inode_unlock(inode);
++	return ret;
+ }
+ 
+ static int ext4_read_folio(struct file *file, struct folio *folio)
+-- 
+2.31.1
 
-
-Best regards,
-Krzysztof
