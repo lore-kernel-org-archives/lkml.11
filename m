@@ -2,119 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFD4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0022EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 14:08:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356166AbiFOOGq (ORCPT
+        id S1347525AbiFOOI4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 10:06:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52942 "EHLO
+        Wed, 15 Jun 2022 10:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345845AbiFOOGl (ORCPT
+        with ESMTP id S1356894AbiFOOIm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 10:06:41 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4D74AE2D;
-        Wed, 15 Jun 2022 07:06:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655301999; x=1686837999;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=/J7saP6W0TXPEiZ1K3kLi0tAL5PKe7Bfz4iY/dpF86g=;
-  b=EErOltXS2cxDsv7Fmyd6HIInA4C9vzwPBH3lcCfov8H5pobj4YA1/DsB
-   ke5QOjWzyjcPGSvBa+3Krl6cjVsy/YeokTXB1A3uLnnZr8QZhyVJCCSAo
-   nBOnCZ6Udb4KM+sPuXatJBA6MiPofAwrgUJzdaLe5cZnBhVusX3nlKDSe
-   SCGbKe4gX/n8Iv+BngQYTIXTkWYK3yCNVd/ZrrCuM9RymgxScs6zrPjUQ
-   OezXWt5Zjeajn8d/BuCsK7biL44ROok4TMKJKTK4htNHiLeU4UnQ2uJtr
-   fw7xCzg6O5BlewHBDDLSUeCeGcRMhrabQbx7bZKbf8GJkvoYTV9l5J4t7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="280007170"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="280007170"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 07:05:39 -0700
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="583222325"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 07:05:33 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o1TeD-000dUK-Te;
-        Wed, 15 Jun 2022 17:05:29 +0300
-Date:   Wed, 15 Jun 2022 17:05:29 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Lukas Wunner <lukas@wunner.de>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: Re: [PATCH v7 4/6] serial: take termios_rwsem for .rs485_config() &
- pass termios as param
-Message-ID: <YqnnKQYAnqORpdBJ@smile.fi.intel.com>
-References: <20220615124829.34516-1-ilpo.jarvinen@linux.intel.com>
- <20220615124829.34516-5-ilpo.jarvinen@linux.intel.com>
+        Wed, 15 Jun 2022 10:08:42 -0400
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29F81836C
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 07:08:41 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:5439:2bcc:4a70:48e8])
+        by xavier.telenet-ops.be with bizsmtp
+        id jS8g270044lJ8fu01S8gdf; Wed, 15 Jun 2022 16:08:40 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o1ThH-0044ss-L1; Wed, 15 Jun 2022 16:08:39 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1o1ThH-006y6o-6b; Wed, 15 Jun 2022 16:08:39 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] MAINTAINERS: Add pin control bindings defs to Pin Control Subsystem
+Date:   Wed, 15 Jun 2022 16:08:37 +0200
+Message-Id: <5d0f18b7210c9fd4d9f01d0f8464f7a9701dc366.1655302107.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220615124829.34516-5-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 03:48:27PM +0300, Ilpo Järvinen wrote:
-> To be able to alter ADDRB within .rs485_config(), take termios_rwsem
-> before calling .rs485_config() and pass termios.
+While the section for the Pin Control Subsystem covers Device Tree
+binding documents, it currently lacks DT binding definitions.
+Add the latter.
 
-I would use ->rs485_config() as a reference to the callback.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-...
-
-> -	ret = port->rs485_config(port, rs485);
-> +	ret = port->rs485_config(port, rs485, NULL);
-
-> +
-
-Stray change?
-
->  	if (ret)
->  		memset(rs485, 0, sizeof(*rs485));
-
-...
-
->  	void			(*handle_break)(struct uart_port *);
->  	int			(*rs485_config)(struct uart_port *,
-> -						struct serial_rs485 *rs485);
-> +						struct serial_rs485 *rs485,
-> +						struct ktermios *termios);
-
-Dunno if termios has to be second parameter. The idea is to pass input data
-followed by (auxiliary) output as usual pattern.
-
->  	int			(*iso7816_config)(struct uart_port *,
->  						  struct serial_iso7816 *iso7816);
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 37936d5af08e2f4e..2d31121ade3d81a9 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15711,6 +15711,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git
+ F:	Documentation/devicetree/bindings/pinctrl/
+ F:	Documentation/driver-api/pin-control.rst
+ F:	drivers/pinctrl/
++F:	include/dt-bindings/pinctrl/
+ F:	include/linux/pinctrl/
+ 
+ PIN CONTROLLER - AMD
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
