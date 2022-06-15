@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D35C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C492C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:36:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356778AbiFOQfa (ORCPT
+        id S1356848AbiFOQgK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
+        Wed, 15 Jun 2022 12:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239852AbiFOQf0 (ORCPT
+        with ESMTP id S1356774AbiFOQgG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:35:26 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA602AE20
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:35:25 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id y19so24343689ejq.6
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:35:25 -0700 (PDT)
+        Wed, 15 Jun 2022 12:36:06 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E7736B51
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:36:05 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id d14so16949443eda.12
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:36:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=MuwKI4htQEtOz9pCwUYQ1jubfyaQLDpzvXEiVSqRuH8=;
-        b=Arz1i89VPLi2VpCoMed3ara5BW835+ZMxyqbwlemZ5yW0Ye7RIbw2KdlTG49nmTrem
-         Ri4BMT8Tj12Ilvh3Wv7UB5ft8A3oFaqg43sKKysZfy0Xq0ZQuhzNodWnu9ZTc6Ec7/+y
-         HfAuYQRXUEWUvAS2LhsEBsQ2rXPcJJAibYqqAVtSg+Dp31umS9uCi5us3bA44HKhRVbe
-         xoxxpfjzVcP8ZEn43+yeBAfySiXyO7mOpiWNvgcXLBI3DadJVtr9V89Vb5ZYFdAsoCtW
-         SFzfY7MZwsWN8vJ537fm2vg3SoRWIyn0pYt2+ihNcFPgNrwc/UB5UsO9rz3wn+te6r4u
-         JArA==
+        bh=nxdG4nvp1mL9v47CQ0n2NZ6jB4BK+F4ml55XmGZjxlc=;
+        b=aW4eUYpoym+2aS3zwn0yIvdinvpv4nBYcZa0yWHIXMRk4htHFwFuUN587n4WBK2GKW
+         t+9ekXMwJeoX4f95TduKbtGnuc2xGVwBdQkMLjR1J35sgCXFVVE73zSmJRWb9d8kWOql
+         PaZMGFJZrM4k969lkherPxF/u7g+8v4SetpwtSjEk6sQ1ePpVrFj9VhPlKfafru3gDd7
+         WWWrEzKhx7k48t+rlVfiXJnN+OaC91gwGLo81ccyObTXtA37ihTzM6eZmtuvoDCgXq4b
+         yRk9wKlfxrc7VSdIyA07IAVog1rX8Lp+HSVGtYYOtGtoyeVvt7zFO6so6moGuHeFvFVb
+         8Ivw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=MuwKI4htQEtOz9pCwUYQ1jubfyaQLDpzvXEiVSqRuH8=;
-        b=t3N9c+g5hW6O0h+HBcKOuHs/sbAWBn3lo3bp5tHbM1IVHV1zxQK+p5HkJEVHeHW+KE
-         Xk2hceZqor1wVpKxqjooAOYH6DJc0WB+5Xky4gQJOHo38CFUnTPA6OpM4gMIJeAvYMjy
-         JgEbW3FirHLveL3IDySg+raHcG56ZlM/KN2ytDHbpg6ZXNaBTasyQAK3d/vjUO9FTVtp
-         o5arTi3ex/vksbJMy2fxrzBXetqALUQhMXumO06UvjXMRVw3CoiqBDWtGkfgVK7TJkdc
-         AjcPnCzG3EjT/DlgjzBjutUXijKBSc46kWkzXu+VwvzDAe2mAP++W4L5/9lk+5oYyz8H
-         u6HQ==
-X-Gm-Message-State: AJIora8rx8652pn+GPtFSdyvPY70FMt7gb/Vzl+26kxvd59NIVbm6qlf
-        8fA05hjF7xiS5uheFUZ0FPM/FmdJtEVogVMPHMxcqA==
-X-Google-Smtp-Source: AGRyM1t2BoOftKTjgDbCucVkUeZDbcDAOV2Omq6kwbYD+emPNsZPZS+YNN2qGI0ywd6e4pkUZOPxjXgplRrpZGdMQ3s=
-X-Received: by 2002:a17:907:1c06:b0:6df:b257:cbb3 with SMTP id
- nc6-20020a1709071c0600b006dfb257cbb3mr558423ejc.631.1655310924246; Wed, 15
- Jun 2022 09:35:24 -0700 (PDT)
+        bh=nxdG4nvp1mL9v47CQ0n2NZ6jB4BK+F4ml55XmGZjxlc=;
+        b=eIuE2fqah2SdDqFm31gBWMsuRiG5j36K5mz5KYwyooIcAj2j9jau80GnmBfj47C+mX
+         sqE8tKDxb9Vn9bIM+K6zQa+0J8jKg5MEtJTCrk7KbJqrNhiQSp68hh+sbdMSW7SPIb2Y
+         K9aZDDkfZ713DiH5tMN7dpG9o/MPV9vJhiuzRGX9eg3W47V3zI1oXLUtKp84poG3MGzN
+         qxBnQ5MJ91c6wDx39V7OsMexX7qjbgkQiH/Cw+tXaPZhbzMeMjE0nVb+/OGOZX72tSZb
+         mCbItrrwbrm5F1dT8MBgnRkzo/1lXYWD4ngfawVhzCSjKPz9rZ0FV0n7cD6lHmWy37x2
+         M3QQ==
+X-Gm-Message-State: AJIora+Grp9JzF1snHX9bHfKB17t0xopX9AgUHwHgIugekCYbQw19445
+        3XSNZffIYgNIDUhOjBoBiC97kQqEpeA22E8zAFOc3g==
+X-Google-Smtp-Source: AGRyM1sSYb0g1SC7WPMPbaMd7Nx3KmcIHuYDPLUx8zbSDMp27tkyaiNWX33VSGMY//qWrGXFwyjTzYyBdUa05Dnk5Nk=
+X-Received: by 2002:a05:6402:f14:b0:42d:f989:4a21 with SMTP id
+ i20-20020a0564020f1400b0042df9894a21mr783793eda.168.1655310963717; Wed, 15
+ Jun 2022 09:36:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220615051248.1628156-1-tzungbi@kernel.org> <20220615051248.1628156-3-tzungbi@kernel.org>
-In-Reply-To: <20220615051248.1628156-3-tzungbi@kernel.org>
+References: <20220615051248.1628156-1-tzungbi@kernel.org> <20220615051248.1628156-5-tzungbi@kernel.org>
+In-Reply-To: <20220615051248.1628156-5-tzungbi@kernel.org>
 From:   Guenter Roeck <groeck@google.com>
-Date:   Wed, 15 Jun 2022 09:35:12 -0700
-Message-ID: <CABXOdTdXSzPMXaUx1qmUcaeeGvrKPeAihBup=u5QD0Z8ye--Qw@mail.gmail.com>
-Subject: Re: [PATCH 02/11] platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_cmd_xfer()
+Date:   Wed, 15 Jun 2022 09:35:52 -0700
+Message-ID: <CABXOdTcnB8cQgWOLm5tTxzoUxAZ2Q5=nv0xirtNNOBf5th2Zyg@mail.gmail.com>
+Subject: Re: [PATCH 04/11] platform/chrome: cros_ec_proto: separate cros_ec_xfer_command()
 To:     Tzung-Bi Shih <tzungbi@kernel.org>
 Cc:     Benson Leung <bleung@chromium.org>,
         Guenter Roeck <groeck@chromium.org>,
@@ -66,186 +66,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Tue, Jun 14, 2022 at 10:13 PM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
 >
-> cros_ec_cmd_xfer() transfers the given command and data if any.  It
-> performs some sanity checks and calls cros_ec_send_command().
->
-> Add Kunit tests for cros_ec_cmd_xfer().
+> cros_ec_send_command() has extra logic to handle EC_RES_IN_PROGRESS.
+> Separate the command transfer part into cros_ec_xfer_command() so
+> that other functions can re-use it.
 >
 > Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 
 Reviewed-by: Guenter Roeck <groeck@chromium.org>
 
 > ---
->  drivers/platform/chrome/cros_ec_proto_test.c | 149 +++++++++++++++++++
->  1 file changed, 149 insertions(+)
+>  drivers/platform/chrome/cros_ec_proto.c | 13 ++++++++++---
+>  1 file changed, 10 insertions(+), 3 deletions(-)
 >
-> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
-> index 1e2a1522c288..33721607a5b9 100644
-> --- a/drivers/platform/chrome/cros_ec_proto_test.c
-> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
-> @@ -1535,6 +1535,151 @@ static void cros_ec_proto_test_query_all_default_wake_mask_return0(struct kunit
->         }
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index b02fd1414e52..0cec013be3d3 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -107,7 +107,7 @@ static int prepare_tx_legacy(struct cros_ec_device *ec_dev,
+>         return EC_MSG_TX_PROTO_BYTES + msg->outsize;
 >  }
 >
-> +static void cros_ec_proto_test_cmd_xfer_normal(struct kunit *test)
-> +{
-> +       struct cros_ec_proto_test_priv *priv = test->priv;
-> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
-> +       struct ec_xfer_mock *mock;
-> +       int ret;
-> +       struct {
-> +               struct cros_ec_command msg;
-> +               u8 data[0x100];
-> +       } __packed buf;
-> +
-> +       ec_dev->max_request = 0xff;
-> +       ec_dev->max_response = 0xee;
-> +       ec_dev->max_passthru = 0xdd;
-> +
-> +       buf.msg.version = 0;
-> +       buf.msg.command = EC_CMD_HELLO;
-> +       buf.msg.insize = 4;
-> +       buf.msg.outsize = 2;
-> +       buf.data[0] = 0x55;
-> +       buf.data[1] = 0xaa;
-> +
-> +       {
-> +               u8 *data;
-> +
-> +               mock = cros_kunit_ec_xfer_mock_add(test, 4);
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +
-> +               data = (u8 *)mock->o_data;
-> +               data[0] = 0xaa;
-> +               data[1] = 0x55;
-> +               data[2] = 0xcc;
-> +               data[3] = 0x33;
-> +       }
-> +
-> +       ret = cros_ec_cmd_xfer(ec_dev, &buf.msg);
-> +       KUNIT_EXPECT_EQ(test, ret, 4);
-> +
-> +       {
-> +               u8 *data;
-> +
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_HELLO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize, 4);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 2);
-> +
-> +               data = (u8 *)mock->i_data;
-> +               KUNIT_EXPECT_EQ(test, data[0], 0x55);
-> +               KUNIT_EXPECT_EQ(test, data[1], 0xaa);
-> +
-> +               KUNIT_EXPECT_EQ(test, buf.data[0], 0xaa);
-> +               KUNIT_EXPECT_EQ(test, buf.data[1], 0x55);
-> +               KUNIT_EXPECT_EQ(test, buf.data[2], 0xcc);
-> +               KUNIT_EXPECT_EQ(test, buf.data[3], 0x33);
-> +       }
-> +}
-> +
-> +static void cros_ec_proto_test_cmd_xfer_excess_msg_insize(struct kunit *test)
-> +{
-> +       struct cros_ec_proto_test_priv *priv = test->priv;
-> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
-> +       struct ec_xfer_mock *mock;
-> +       int ret;
-> +       struct {
-> +               struct cros_ec_command msg;
-> +               u8 data[0x100];
-> +       } __packed buf;
-> +
-> +       ec_dev->max_request = 0xff;
-> +       ec_dev->max_response = 0xee;
-> +       ec_dev->max_passthru = 0xdd;
-> +
-> +       buf.msg.version = 0;
-> +       buf.msg.command = EC_CMD_HELLO;
-> +       buf.msg.insize = 0xee + 1;
-> +       buf.msg.outsize = 2;
-> +
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_add(test, 0xcc);
-> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-> +       }
-> +
-> +       ret = cros_ec_cmd_xfer(ec_dev, &buf.msg);
-> +       KUNIT_EXPECT_EQ(test, ret, 0xcc);
-> +
-> +       {
-> +               mock = cros_kunit_ec_xfer_mock_next();
-> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
-> +
-> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_HELLO);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.insize, 0xee);
-> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, 2);
-> +       }
-> +}
-> +
-> +static void cros_ec_proto_test_cmd_xfer_excess_msg_outsize_without_passthru(struct kunit *test)
-> +{
-> +       struct cros_ec_proto_test_priv *priv = test->priv;
-> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
-> +       int ret;
-> +       struct {
-> +               struct cros_ec_command msg;
-> +               u8 data[0x100];
-> +       } __packed buf;
-> +
-> +       ec_dev->max_request = 0xff;
-> +       ec_dev->max_response = 0xee;
-> +       ec_dev->max_passthru = 0xdd;
-> +
-> +       buf.msg.version = 0;
-> +       buf.msg.command = EC_CMD_HELLO;
-> +       buf.msg.insize = 4;
-> +       buf.msg.outsize = 0xff + 1;
-> +
-> +       ret = cros_ec_cmd_xfer(ec_dev, &buf.msg);
-> +       KUNIT_EXPECT_EQ(test, ret, -EMSGSIZE);
-> +}
-> +
-> +static void cros_ec_proto_test_cmd_xfer_excess_msg_outsize_with_passthru(struct kunit *test)
-> +{
-> +       struct cros_ec_proto_test_priv *priv = test->priv;
-> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
-> +       int ret;
-> +       struct {
-> +               struct cros_ec_command msg;
-> +               u8 data[0x100];
-> +       } __packed buf;
-> +
-> +       ec_dev->max_request = 0xff;
-> +       ec_dev->max_response = 0xee;
-> +       ec_dev->max_passthru = 0xdd;
-> +
-> +       buf.msg.version = 0;
-> +       buf.msg.command = EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) + EC_CMD_HELLO;
-> +       buf.msg.insize = 4;
-> +       buf.msg.outsize = 0xdd + 1;
-> +
-> +       ret = cros_ec_cmd_xfer(ec_dev, &buf.msg);
-> +       KUNIT_EXPECT_EQ(test, ret, -EMSGSIZE);
-> +}
-> +
->  static void cros_ec_proto_test_release(struct device *dev)
+> -static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+> +static int cros_ec_xfer_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
 >  {
->  }
-> @@ -1601,6 +1746,10 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
->         KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep_return0),
->         KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask_return_error),
->         KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask_return0),
-> +       KUNIT_CASE(cros_ec_proto_test_cmd_xfer_normal),
-> +       KUNIT_CASE(cros_ec_proto_test_cmd_xfer_excess_msg_insize),
-> +       KUNIT_CASE(cros_ec_proto_test_cmd_xfer_excess_msg_outsize_without_passthru),
-> +       KUNIT_CASE(cros_ec_proto_test_cmd_xfer_excess_msg_outsize_with_passthru),
->         {}
->  };
+>         int ret;
+>         int (*xfer_fxn)(struct cros_ec_device *ec, struct cros_ec_command *msg);
+> @@ -123,14 +123,21 @@ static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_co
+>                  * the EC is trying to use protocol v2, on an underlying
+>                  * communication mechanism that does not support v2.
+>                  */
+> -               dev_err_once(ec_dev->dev,
+> -                            "missing EC transfer API, cannot send command\n");
+> +               dev_err_once(ec_dev->dev, "missing EC transfer API, cannot send command\n");
+>                 return -EIO;
+>         }
 >
+>         trace_cros_ec_request_start(msg);
+>         ret = (*xfer_fxn)(ec_dev, msg);
+>         trace_cros_ec_request_done(msg, ret);
+> +
+> +       return ret;
+> +}
+> +
+> +static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
+> +{
+> +       int ret = cros_ec_xfer_command(ec_dev, msg);
+> +
+>         if (msg->result == EC_RES_IN_PROGRESS) {
+>                 int i;
+>                 struct cros_ec_command *status_msg;
 > --
 > 2.36.1.476.g0c4daa206d-goog
 >
