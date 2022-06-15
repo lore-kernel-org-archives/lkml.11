@@ -2,74 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B7DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E307C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244793AbiFOPaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
+        id S1352365AbiFOPaD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 15 Jun 2022 11:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355419AbiFOP2i (ORCPT
+        with ESMTP id S1355504AbiFOP2j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:28:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BC929379
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:27:47 -0700 (PDT)
+        Wed, 15 Jun 2022 11:28:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE39042A0D;
+        Wed, 15 Jun 2022 08:27:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 466D96172D
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 15:27:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AC96C3411E;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72012B81F0F;
+        Wed, 15 Jun 2022 15:27:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1203C3411C;
         Wed, 15 Jun 2022 15:27:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1655306866;
-        bh=za6XXTXlSO5nrJLYy1rtvLJPylpkekf8kTgLIY5cAts=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cARUWPwSj3OREgsOA5jp6Q6lZIrXQOTUxGJKDSiCSwiW3GZNOyb8zjF0o1L+83oWA
-         O+h8HaQxKFQezSv6vLQedS41KF+H0o+YLTFl78wlbzXnHfRkF0QCKGvK8N//LROjtU
-         dQb2+swSxqDdQ0d2xDqlahKFVR6TUvfk9+/6PbSb4WyvsFX3NnIxXL+H2i+x7eYJcA
-         Imv01jXfonh8Xda27c5WVi0malHtrOcYWW94sA8y8piLFIJvEMsZKoH7hwESd8qQY8
-         JcT6ziT2UQdBfkiNRauRdngekgfilwuqyIHzYy3NoXTq88KZjByvBzljCEs8Dw4184
-         izBQuxjI8S3LA==
+        bh=BlDIEcKJ14OpD6+ESND5UCNOIyMjbS2bd2Y8eqJ8uxk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=F9MjNUhSfIW8LIsi3WBectn1THEMp6emsr48hbbUBq2P3TCS3ncW61UNYtleA9Knt
+         IxxtwpahQvzmOqagK7VYFtPf3ANq/H27tb65repDfjjs3Sf+RMG4fI0RH5bWBk0sDb
+         Ev4qrU/xSHXtHUr8+dGV980TkCrkOBq206yN7HUvhTWOwhIATeZikMwpUHhFWKakbW
+         obpNFsin/mwnj2cyGt4iBEf/unFNA0BLc8H5PxONTr2RgUnMlTlekmnPHeKHHJUs+F
+         bPobjAueges7heOGy0Xt7zGXXx9NFJCCfQAk0TGNRq6k0WSOf9jvnGn92WhMk6WyOR
+         MniWUE7lV7lbA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1o1Uvm-00A4Ja-AR;
+        id 1o1Uvm-00A4Jp-Fz;
         Wed, 15 Jun 2022 16:27:42 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Chris Wilson <chris.p.wilson@intel.com>,
-        tvrtko.ursulin@linux.intel.com, Fei Yang <fei.yang@intel.com>,
-        Thomas Hellstrom <thomas.hellstrom@intel.com>,
-        mauro.chehab@linux.intel.com,
-        =?UTF-8?q?Micha=C5=82=20Winiarski?= <michal.winiarski@intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
+Cc:     Chris Wilson <chris.p.wilson@intel.com>,
+        "Fei Yang" <fei.yang@intel.com>,
+        "Thomas Hellstrom" <thomas.hellstrom@intel.com>,
         Bruce Chang <yu.bruce.chang@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
         Dave Airlie <airlied@redhat.com>,
         David Airlie <airlied@linux.ie>,
         Jani Nikula <jani.nikula@linux.intel.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
         John Harrison <John.C.Harrison@Intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
         Matt Roper <matthew.d.roper@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
         Matthew Brost <matthew.brost@intel.com>,
-        Ramalingam C <ramalingam.c@intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 0/6] Fix TLB invalidate issues with Broadwell
-Date:   Wed, 15 Jun 2022 16:27:34 +0100
-Message-Id: <cover.1655306128.git.mchehab@kernel.org>
+        linux-kernel@vger.kernel.org, mauro.chehab@linux.intel.com,
+        Mika Kuoppala <mika.kuoppala@linux.intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Andi Shyti <andi.shyti@intel.com>, stable@vger.kernel.org,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5/6] drm/i915/gt: Serialize GRDOM access between multiple engine resets
+Date:   Wed, 15 Jun 2022 16:27:39 +0100
+Message-Id: <5ee647f243a774927ec328bfca8212abc4957909.1655306128.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1655306128.git.mchehab@kernel.org>
+References: <cover.1655306128.git.mchehab@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -78,68 +76,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-i915 selftest hangcheck is causing the i915 driver timeouts, as reported
-by Intel CI bot:
+From: Chris Wilson <chris.p.wilson@intel.com>
 
-	http://gfx-ci.fi.intel.com/cibuglog-ng/issuefilterassoc/24297?query_key=42a999f48fa6ecce068bc8126c069be7c31153b4
+Don't allow two engines to be reset in parallel, as they would both
+try to select a reset bit (and send requests to common registers)
+and wait on that register, at the same time. Serialize control of
+the reset requests/acks using the uncore->lock, which will also ensure
+that no other GT state changes at the same time as the actual reset.
 
-When such test runs, the only output is:
+Fixes: 7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
 
-	[   68.811639] i915: Performing live selftests with st_random_seed=0xe138eac7 st_timeout=500
-	[   68.811792] i915: Running hangcheck
-	[   68.811859] i915: Running intel_hangcheck_live_selftests/igt_hang_sanitycheck
-	[   68.816910] i915 0000:00:02.0: [drm] Cannot find any crtc or sizes
-	[   68.841597] i915: Running intel_hangcheck_live_selftests/igt_reset_nop
-	[   69.346347] igt_reset_nop: 80 resets
-	[   69.362695] i915: Running intel_hangcheck_live_selftests/igt_reset_nop_engine
-	[   69.863559] igt_reset_nop_engine(rcs0): 709 resets
-	[   70.364924] igt_reset_nop_engine(bcs0): 903 resets
-	[   70.866005] igt_reset_nop_engine(vcs0): 659 resets
-	[   71.367934] igt_reset_nop_engine(vcs1): 549 resets
-	[   71.869259] igt_reset_nop_engine(vecs0): 553 resets
-	[   71.882592] i915: Running intel_hangcheck_live_selftests/igt_reset_idle_engine
-	[   72.383554] rcs0: Completed 16605 idle resets
-	[   72.884599] bcs0: Completed 18641 idle resets
-	[   73.385592] vcs0: Completed 17517 idle resets
-	[   73.886658] vcs1: Completed 15474 idle resets
-	[   74.387600] vecs0: Completed 17983 idle resets
-	[   74.387667] i915: Running intel_hangcheck_live_selftests/igt_reset_active_engine
-	[   74.889017] rcs0: Completed 747 active resets
-	[   75.174240] intel_engine_reset(bcs0) failed, err:-110
-	[   75.174301] bcs0: Completed 525 active resets
+Reported-by: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Cc: Andi Shyti <andi.shyti@intel.com>
+Cc: stable@vger.kernel.org
+Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-After that, the machine just silently hangs.
+See [PATCH 0/6] at: https://lore.kernel.org/all/cover.1655306128.git.mchehab@kernel.org/
 
-Bisecting the issue, the patch that introduced the regression is:
+ drivers/gpu/drm/i915/gt/intel_reset.c | 37 ++++++++++++++++++++-------
+ 1 file changed, 28 insertions(+), 9 deletions(-)
 
-    7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
-
-Reverting it fix the issues, but introduce other problems, as TLB
-won't be invalidated anymore. So, instead, let's fix the root cause.
-
-It turns that the TLB flush logic ends conflicting with i915 reset,
-which is called during selftest hangcheck. So, the TLB cache should
-be serialized, but other TLB fix patches are required for this one
-to work.
-
-Tested on an Intel NUC5i7RYB with an i7-5557U Broadwell CPU.
-
-Chris Wilson (6):
-  drm/i915/gt: Ignore TLB invalidations on idle engines
-  drm/i915/gt: Invalidate TLB of the OA unit at TLB invalidations
-  drm/i915/gt: Skip TLB invalidations once wedged
-  drm/i915/gt: Only invalidate TLBs exposed to user manipulation
-  drm/i915/gt: Serialize GRDOM access between multiple engine resets
-  drm/i915/gt: Serialize TLB invalidates with GT resets
-
- drivers/gpu/drm/i915/gem/i915_gem_pages.c | 10 +++---
- drivers/gpu/drm/i915/gt/intel_gt.c        | 43 +++++++++++++++++++----
- drivers/gpu/drm/i915/gt/intel_gt_pm.h     |  3 ++
- drivers/gpu/drm/i915/gt/intel_reset.c     | 37 ++++++++++++++-----
- drivers/gpu/drm/i915/i915_vma.c           |  3 +-
- 5 files changed, 75 insertions(+), 21 deletions(-)
-
+diff --git a/drivers/gpu/drm/i915/gt/intel_reset.c b/drivers/gpu/drm/i915/gt/intel_reset.c
+index a5338c3fde7a..c68d36fb5bbd 100644
+--- a/drivers/gpu/drm/i915/gt/intel_reset.c
++++ b/drivers/gpu/drm/i915/gt/intel_reset.c
+@@ -300,9 +300,9 @@ static int gen6_hw_domain_reset(struct intel_gt *gt, u32 hw_domain_mask)
+ 	return err;
+ }
+ 
+-static int gen6_reset_engines(struct intel_gt *gt,
+-			      intel_engine_mask_t engine_mask,
+-			      unsigned int retry)
++static int __gen6_reset_engines(struct intel_gt *gt,
++				intel_engine_mask_t engine_mask,
++				unsigned int retry)
+ {
+ 	struct intel_engine_cs *engine;
+ 	u32 hw_mask;
+@@ -321,6 +321,20 @@ static int gen6_reset_engines(struct intel_gt *gt,
+ 	return gen6_hw_domain_reset(gt, hw_mask);
+ }
+ 
++static int gen6_reset_engines(struct intel_gt *gt,
++			      intel_engine_mask_t engine_mask,
++			      unsigned int retry)
++{
++	unsigned long flags;
++	int ret;
++
++	spin_lock_irqsave(&gt->uncore->lock, flags);
++	ret = __gen6_reset_engines(gt, engine_mask, retry);
++	spin_unlock_irqrestore(&gt->uncore->lock, flags);
++
++	return ret;
++}
++
+ static struct intel_engine_cs *find_sfc_paired_vecs_engine(struct intel_engine_cs *engine)
+ {
+ 	int vecs_id;
+@@ -487,9 +501,9 @@ static void gen11_unlock_sfc(struct intel_engine_cs *engine)
+ 	rmw_clear_fw(uncore, sfc_lock.lock_reg, sfc_lock.lock_bit);
+ }
+ 
+-static int gen11_reset_engines(struct intel_gt *gt,
+-			       intel_engine_mask_t engine_mask,
+-			       unsigned int retry)
++static int __gen11_reset_engines(struct intel_gt *gt,
++				 intel_engine_mask_t engine_mask,
++				 unsigned int retry)
+ {
+ 	struct intel_engine_cs *engine;
+ 	intel_engine_mask_t tmp;
+@@ -583,8 +597,11 @@ static int gen8_reset_engines(struct intel_gt *gt,
+ 	struct intel_engine_cs *engine;
+ 	const bool reset_non_ready = retry >= 1;
+ 	intel_engine_mask_t tmp;
++	unsigned long flags;
+ 	int ret;
+ 
++	spin_lock_irqsave(&gt->uncore->lock, flags);
++
+ 	for_each_engine_masked(engine, gt, engine_mask, tmp) {
+ 		ret = gen8_engine_reset_prepare(engine);
+ 		if (ret && !reset_non_ready)
+@@ -612,17 +629,19 @@ static int gen8_reset_engines(struct intel_gt *gt,
+ 	 * This is best effort, so ignore any error from the initial reset.
+ 	 */
+ 	if (IS_DG2(gt->i915) && engine_mask == ALL_ENGINES)
+-		gen11_reset_engines(gt, gt->info.engine_mask, 0);
++		__gen11_reset_engines(gt, gt->info.engine_mask, 0);
+ 
+ 	if (GRAPHICS_VER(gt->i915) >= 11)
+-		ret = gen11_reset_engines(gt, engine_mask, retry);
++		ret = __gen11_reset_engines(gt, engine_mask, retry);
+ 	else
+-		ret = gen6_reset_engines(gt, engine_mask, retry);
++		ret = __gen6_reset_engines(gt, engine_mask, retry);
+ 
+ skip_reset:
+ 	for_each_engine_masked(engine, gt, engine_mask, tmp)
+ 		gen8_engine_reset_cancel(engine);
+ 
++	spin_unlock_irqrestore(&gt->uncore->lock, flags);
++
+ 	return ret;
+ }
+ 
 -- 
 2.36.1
-
 
