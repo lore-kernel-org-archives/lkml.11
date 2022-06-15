@@ -2,123 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F5F6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:29:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 649EBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 13:29:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349086AbiFON2w (ORCPT
+        id S1348032AbiFON3F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 09:28:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35082 "EHLO
+        Wed, 15 Jun 2022 09:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347478AbiFON2W (ORCPT
+        with ESMTP id S1348446AbiFON2d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 09:28:22 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1B82CCBB
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 06:28:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655299701; x=1686835701;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=G5/lQUzNGrkTsaT8lmei7Sc623MPsT6oyM+mwSRQnwM=;
-  b=F16S51Ytjx5JEpYqTpcvS2DGtyZDU+UHDBecSdMKhQq0Un/+j4lOpz1K
-   TlTkAzN+unrFU0gulqKOvTUzYCkbpWFuxDxovA32FCgy9QuP9HoypGT9d
-   9wdTUu0TuutmCmVQicd1RBG8s1YdS4u5zWutYK7WgOhqQQJZc1XRvjb7N
-   agvbt+GC9Yjo6+tJh2yeQTuCQ25evNH+0/sDEPh/OWcJFKO2p4mh9TKdX
-   DVCScYcXQges1Q82BvLRk1pi/beRKUhU/oI9PcfzHV6V6MqL3zPxnJXKp
-   cvVLZfefe1biREr/a+D1Mx0SNXTiESNSmszDUJEHKNIBaDuGVJEyNQ7r7
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="277752634"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="277752634"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 06:28:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="612739745"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 15 Jun 2022 06:28:17 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1T4C-000Mtf-RD;
-        Wed, 15 Jun 2022 13:28:16 +0000
-Date:   Wed, 15 Jun 2022 21:27:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>
-Cc:     kbuild-all@lists.01.org, Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 24/32] kasan: move kasan_addr_to_slab to common.c
-Message-ID: <202206152134.sadCRvGk-lkp@intel.com>
-References: <5ea6f55fb645405bb52cb15b8d30544ba3f189b0.1655150842.git.andreyknvl@google.com>
+        Wed, 15 Jun 2022 09:28:33 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308952F02D;
+        Wed, 15 Jun 2022 06:28:32 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id F25FC1C0BC8; Wed, 15 Jun 2022 15:28:30 +0200 (CEST)
+Date:   Wed, 15 Jun 2022 15:28:27 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Samuel Holland <samuel@sholland.org>, Ondrej Jirman <x@xff.cz>,
+        Martijn Braam <martijn@brixit.nl>,
+        Ondrej Jirman <megous@megous.com>
+Subject: Re: [PATCH 2/2] arm64: dts: rockchip: Add initial support for Pine64
+ PinePhone Pro
+Message-ID: <20220615132827.GB1429@bug>
+References: <20220529031705.278631-1-tom@tom-fitzhenry.me.uk>
+ <20220529031705.278631-3-tom@tom-fitzhenry.me.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5ea6f55fb645405bb52cb15b8d30544ba3f189b0.1655150842.git.andreyknvl@google.com>
+In-Reply-To: <20220529031705.278631-3-tom@tom-fitzhenry.me.uk>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi!
 
-I love your patch! Perhaps something to improve:
+> +	// Per "RK 3399 SARADC", page 8.
+> +	adc-keys {
+> +		compatible = "adc-keys";
+> +		io-channels = <&saradc 1>;
+> +		io-channel-names = "buttons";
+> +		keyup-threshold-microvolt = <1600000>;
+> +		poll-interval = <100>;
+> +
+> +		button-up {
+> +			label = "Volume Up";
+> +			linux,code = <KEY_VOLUMEUP>;
+> +			press-threshold-microvolt = <100000>;
+> +		};
+> +
+> +		button-down {
+> +			label = "Volume Down";
+> +			linux,code = <KEY_VOLUMEDOWN>;
+> +			press-threshold-microvolt = <300000>;
+> +		};
+> +	};
 
-[auto build test WARNING on akpm-mm/mm-everything]
-[also build test WARNING on linus/master v5.19-rc2 next-20220615]
-[cannot apply to vbabka-slab/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/andrey-konovalov-linux-dev/kasan-switch-tag-based-modes-to-stack-ring-from-per-object-metadata/20220614-042239
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20220615/202206152134.sadCRvGk-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/b0b10a57b2d9a5e5ae5d7ca62046b9774df1a88f
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review andrey-konovalov-linux-dev/kasan-switch-tag-based-modes-to-stack-ring-from-per-object-metadata/20220614-042239
-        git checkout b0b10a57b2d9a5e5ae5d7ca62046b9774df1a88f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash mm/kasan/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   mm/kasan/common.c: In function 'kasan_addr_to_slab':
->> mm/kasan/common.c:35:19: warning: ordered comparison of pointer with null pointer [-Wextra]
-      35 |         if ((addr >= (void *)PAGE_OFFSET) && (addr < high_memory))
-         |                   ^~
-   mm/kasan/common.c: In function '____kasan_slab_free':
-   mm/kasan/common.c:202:12: warning: variable 'tag' set but not used [-Wunused-but-set-variable]
-     202 |         u8 tag;
-         |            ^~~
+Wow. Quite a hack...
 
 
-vim +35 mm/kasan/common.c
+> +	// Per "RK3399 GPIO", page 11.
+> +	leds {
+> +		compatible = "gpio-leds";
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&red_led_pin &green_led_pin &blue_led_pin>;
 
-    32	
-    33	struct slab *kasan_addr_to_slab(const void *addr)
-    34	{
-  > 35		if ((addr >= (void *)PAGE_OFFSET) && (addr < high_memory))
-    36			return virt_to_slab(addr);
-    37		return NULL;
-    38	}
-    39	
+
+> + led-standby { + color = <LED_COLOR_ID_RED>; + default-state = "off"; + function = 
+
+I wish LED was connected to PWM, not to simple GPIO...
+
+Plus, it is really one RGB LED, right? It should be handled as such.
+
+Best regards,
+								Pavel
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
