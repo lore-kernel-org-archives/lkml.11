@@ -2,90 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3068EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77946C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346997AbiFOQSL (ORCPT
+        id S1353431AbiFOQSW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42320 "EHLO
+        Wed, 15 Jun 2022 12:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349399AbiFOQRs (ORCPT
+        with ESMTP id S1344737AbiFOQR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:17:48 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D62155219;
-        Wed, 15 Jun 2022 09:16:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655309767; x=1686845767;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/XGPF/UCiIx5RHiyRCcdECVGuI3Vb0cgI8bym3B3H0w=;
-  b=Ik5OZ06l3yVtRnOgK4nWtHltVig1jQ7MBg2biHeKwP8mZOdup98yCsFl
-   4f+5YH6x1ET7YKqGQto5LGmUjjI1doLIkJDZd8HXHFeYYHS7qzJjWL9rr
-   o7NgdFRfPIQDwZn8Zstf8KM9kTC/aev1l2Gjh1sMQu7kMWHuP6ZOiJjel
-   0=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 15 Jun 2022 09:15:38 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 09:15:37 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 15 Jun 2022 09:15:37 -0700
-Received: from [10.110.75.177] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 15 Jun
- 2022 09:15:36 -0700
-Message-ID: <fb7f1065-9a55-05ef-9dce-51c43ba69d2e@quicinc.com>
-Date:   Wed, 15 Jun 2022 09:15:35 -0700
+        Wed, 15 Jun 2022 12:17:58 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6C836329
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:16:18 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4LNVlj0ys5z9t9B;
+        Wed, 15 Jun 2022 18:15:45 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id m8iRP6BVB3VD; Wed, 15 Jun 2022 18:15:45 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4LNVlj017Cz9t97;
+        Wed, 15 Jun 2022 18:15:45 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E4E128B781;
+        Wed, 15 Jun 2022 18:15:44 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id cUVnCcrq-hje; Wed, 15 Jun 2022 18:15:44 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.102])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9E5AC8B763;
+        Wed, 15 Jun 2022 18:15:44 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 25FGFMtW366790
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 15 Jun 2022 18:15:22 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 25FGFIr9366775;
+        Wed, 15 Jun 2022 18:15:18 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH] powerpc: Merge hardirq stack and softirq stack
+Date:   Wed, 15 Jun 2022 18:15:09 +0200
+Message-Id: <b684cd5c9a6f98f8ab9a2ca3431d9a4065e07f38.1655309696.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] kbuild: remove sed command from cmd_ar_builtin
-Content-Language: en-US
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-CC:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220614055149.1900535-1-masahiroy@kernel.org>
- <CAKwvOdmcLCV6J+PYXCugH=0Pt_=yARZ-Y3SEmYy8F+oBpb1UYw@mail.gmail.com>
- <CAK7LNATxxvBeooj6t1cPYafS7gd9gNX8YOFghvTbbkusFoQ3pA@mail.gmail.com>
-From:   Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <CAK7LNATxxvBeooj6t1cPYafS7gd9gNX8YOFghvTbbkusFoQ3pA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1655309708; l=4828; s=20211009; h=from:subject:message-id; bh=IxZGcSZLaOsSuMMfNuONYPIsJXKwVaC5dmV8z+ZWEWU=; b=Fg3n8XdaxBDwLeCOfuoCMm3CiFNqlLuMm8iWw3vMFevBGm0gvsYZw2IL2gV1iJKRQSRqWs+vc0FW Sb4UR0r2DWCstTflycqj9MWD7ofBwBdA438QP34IQxkClZ5Mfp58
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/14/2022 8:03 PM, Masahiro Yamada wrote:
-> On Wed, Jun 15, 2022 at 3:59 AM Nick Desaulniers
-> <ndesaulniers@google.com> wrote:
->>
->> On Mon, Jun 13, 2022 at 10:53 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->>>
->>> Replace a pipeline of echo and sed with printf to decrease process forks.
->>
->> If you're trying to minimize process forks, is it possible to remove
->> the use of xargs as well and just invoke $(AR) with the parameters
->> splatted out? I don't know myself, but maybe you're creative enough?
-> 
-> 
-> If I remove xargs, we will go back to the situation
-> before cd968b97c49214e6557381bddddacbd0e0fb696e.
-> 
-> This patch tries to avoid "too long argument error"
-> without forking too many processes.
-> Maybe I am too worried about the potential issue, though...
+__do_IRQ() doesn't switch on hardirq stack if we are on softirq stack.
 
- From my very clouded perspective avoiding "too long argument error" 
-should take priority :)
+do_softirq() bail out early without doing anything when already in
+an interrupt.
 
+invoke_softirq() is on task_stack when it calls do_softirq_own_stack().
+
+So there are neither situation where we switch from hardirq stack to
+softirq stack nor from softirq stack to hardirq stack.
+
+It is therefore not necessary to have two stacks because they are
+never used at the same time.
+
+Merge both stacks into a new one called normirq_ctx.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/include/asm/irq.h |  3 +--
+ arch/powerpc/kernel/irq.c      | 18 +++++++-----------
+ arch/powerpc/kernel/process.c  |  6 +-----
+ arch/powerpc/kernel/setup_32.c |  6 ++----
+ arch/powerpc/kernel/setup_64.c |  6 ++----
+ 5 files changed, 13 insertions(+), 26 deletions(-)
+
+diff --git a/arch/powerpc/include/asm/irq.h b/arch/powerpc/include/asm/irq.h
+index 13f0409dd617..03de3fe3488c 100644
+--- a/arch/powerpc/include/asm/irq.h
++++ b/arch/powerpc/include/asm/irq.h
+@@ -49,8 +49,7 @@ extern void *mcheckirq_ctx[NR_CPUS];
+ /*
+  * Per-cpu stacks for handling hard and soft interrupts.
+  */
+-extern void *hardirq_ctx[NR_CPUS];
+-extern void *softirq_ctx[NR_CPUS];
++extern void *normirq_ctx[NR_CPUS];
+ 
+ void __do_IRQ(struct pt_regs *regs);
+ extern void __init init_IRQ(void);
+diff --git a/arch/powerpc/kernel/irq.c b/arch/powerpc/kernel/irq.c
+index dd09919c3c66..7c0455cd7aae 100644
+--- a/arch/powerpc/kernel/irq.c
++++ b/arch/powerpc/kernel/irq.c
+@@ -683,17 +683,16 @@ void __do_irq(struct pt_regs *regs)
+ void __do_IRQ(struct pt_regs *regs)
+ {
+ 	struct pt_regs *old_regs = set_irq_regs(regs);
+-	void *cursp, *irqsp, *sirqsp;
++	void *cursp, *irqsp;
+ 
+ 	/* Switch to the irq stack to handle this */
+ 	cursp = (void *)(current_stack_pointer & ~(THREAD_SIZE - 1));
+-	irqsp = hardirq_ctx[raw_smp_processor_id()];
+-	sirqsp = softirq_ctx[raw_smp_processor_id()];
++	irqsp = normirq_ctx[raw_smp_processor_id()];
+ 
+ 	check_stack_overflow();
+ 
+ 	/* Already there ? */
+-	if (unlikely(cursp == irqsp || cursp == sirqsp)) {
++	if (unlikely(cursp == irqsp)) {
+ 		__do_irq(regs);
+ 		set_irq_regs(old_regs);
+ 		return;
+@@ -719,10 +718,8 @@ static void __init vmap_irqstack_init(void)
+ {
+ 	int i;
+ 
+-	for_each_possible_cpu(i) {
+-		softirq_ctx[i] = alloc_vm_stack();
+-		hardirq_ctx[i] = alloc_vm_stack();
+-	}
++	for_each_possible_cpu(i)
++		normirq_ctx[i] = alloc_vm_stack();
+ }
+ 
+ 
+@@ -744,12 +741,11 @@ void    *dbgirq_ctx[NR_CPUS] __read_mostly;
+ void *mcheckirq_ctx[NR_CPUS] __read_mostly;
+ #endif
+ 
+-void *softirq_ctx[NR_CPUS] __read_mostly;
+-void *hardirq_ctx[NR_CPUS] __read_mostly;
++void *normirq_ctx[NR_CPUS] __read_mostly;
+ 
+ void do_softirq_own_stack(void)
+ {
+-	call_do_softirq(softirq_ctx[smp_processor_id()]);
++	call_do_softirq(normirq_ctx[smp_processor_id()]);
+ }
+ 
+ irq_hw_number_t virq_to_hw(unsigned int virq)
+diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
+index ee0433809621..4b724d86ed9d 100644
+--- a/arch/powerpc/kernel/process.c
++++ b/arch/powerpc/kernel/process.c
+@@ -2089,11 +2089,7 @@ static inline int valid_irq_stack(unsigned long sp, struct task_struct *p,
+ 	unsigned long stack_page;
+ 	unsigned long cpu = task_cpu(p);
+ 
+-	stack_page = (unsigned long)hardirq_ctx[cpu];
+-	if (sp >= stack_page && sp <= stack_page + THREAD_SIZE - nbytes)
+-		return 1;
+-
+-	stack_page = (unsigned long)softirq_ctx[cpu];
++	stack_page = (unsigned long)normirq_ctx[cpu];
+ 	if (sp >= stack_page && sp <= stack_page + THREAD_SIZE - nbytes)
+ 		return 1;
+ 
+diff --git a/arch/powerpc/kernel/setup_32.c b/arch/powerpc/kernel/setup_32.c
+index 813261789303..cad0e4fbdd4b 100644
+--- a/arch/powerpc/kernel/setup_32.c
++++ b/arch/powerpc/kernel/setup_32.c
+@@ -158,10 +158,8 @@ void __init irqstack_early_init(void)
+ 
+ 	/* interrupt stacks must be in lowmem, we get that for free on ppc32
+ 	 * as the memblock is limited to lowmem by default */
+-	for_each_possible_cpu(i) {
+-		softirq_ctx[i] = alloc_stack();
+-		hardirq_ctx[i] = alloc_stack();
+-	}
++	for_each_possible_cpu(i)
++		normirq_ctx[i] = alloc_stack();
+ }
+ 
+ #ifdef CONFIG_VMAP_STACK
+diff --git a/arch/powerpc/kernel/setup_64.c b/arch/powerpc/kernel/setup_64.c
+index 5761f08dae95..70ba227d13fc 100644
+--- a/arch/powerpc/kernel/setup_64.c
++++ b/arch/powerpc/kernel/setup_64.c
+@@ -718,10 +718,8 @@ void __init irqstack_early_init(void)
+ 	 * cannot afford to take SLB misses on them. They are not
+ 	 * accessed in realmode.
+ 	 */
+-	for_each_possible_cpu(i) {
+-		softirq_ctx[i] = alloc_stack(limit, i);
+-		hardirq_ctx[i] = alloc_stack(limit, i);
+-	}
++	for_each_possible_cpu(i)
++		normirq_ctx[i] = alloc_stack(limit, i);
+ }
+ 
+ #ifdef CONFIG_PPC_BOOK3E
+-- 
+2.36.1
 
