@@ -2,113 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C97AEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:10:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B992AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:10:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348390AbiFORKq (ORCPT
+        id S1349876AbiFORKt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46558 "EHLO
+        Wed, 15 Jun 2022 13:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbiFORKn (ORCPT
+        with ESMTP id S1349750AbiFORKq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:10:43 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D806533A33
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:10:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655313042; x=1686849042;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=M06CL0NiYygtoYrGmEwC5NcF30mFpzKbxgEsg1xGaiw=;
-  b=jR3AvSbgISNTou1KvVCETE/5YdXdxB/0Fv4f34m0HKLXGpWVT46VNoGQ
-   HkXViRka+v0cT0qPffYsNdIN8DLsqPs2gAy6R+2qNkMjnnKbdH8lYVMwH
-   AIxj3EXigT5wgMEW+aqIRO021TsoFoIhgRFC+4HHWAV3a8ReHrdUFfu2q
-   DIEnRaDduViu4TdBJQ/BqyqFCxsyuGJU0L+OSsy6+fMJSsK1xXV7lzGqP
-   BzNu1HlQ5tBtfjJSudPlrTfFBXqn+RGX97sKoKXT02md2dtipHR5zXja0
-   sg5CeOWt9pK8CJzb9lYQa48+7c2IOsbUUqjfKDFTkELeaIGSM3eucL0x/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="365390601"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="365390601"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 10:10:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="559240820"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 15 Jun 2022 10:10:38 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 65C02109; Wed, 15 Jun 2022 20:10:42 +0300 (EEST)
-Date:   Wed, 15 Jun 2022 20:10:42 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org, ak@linux.intel.com,
-        dan.j.williams@intel.com, david@redhat.com, hpa@zytor.com,
-        linux-kernel@vger.kernel.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, seanjc@google.com,
-        thomas.lendacky@amd.com, x86@kernel.org
-Subject: Re: [PATCHv4 3/3] x86/tdx: Handle load_unaligned_zeropad()
- page-cross to a shared page
-Message-ID: <20220615171042.oeumb3vs3ttu4rvd@black.fi.intel.com>
-References: <20220614120135.14812-1-kirill.shutemov@linux.intel.com>
- <20220614120135.14812-4-kirill.shutemov@linux.intel.com>
- <051fd468-11e6-308b-66c8-4de16ff80deb@intel.com>
+        Wed, 15 Jun 2022 13:10:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B941633A33;
+        Wed, 15 Jun 2022 10:10:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BC6AB820C4;
+        Wed, 15 Jun 2022 17:10:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2297C34115;
+        Wed, 15 Jun 2022 17:10:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655313043;
+        bh=H3WInZezFiR4P8CKRnqvCzRSHF5GZxIMRPSwGD7BlYQ=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=I/Aze6kNbOmBPbYboiQcuW+LTeP/twbG/pvhe8xAUAZH6okfscE2CyHsBliygVNDO
+         KLLXDGJx/qMKbRxKL2iwZxY49eSI7gsGR1NSmEbj1TIsa3v4x6BUHbG+j7ZMEtYzfr
+         G2fL8ay6mLQQ4spywfLSgO3AkKqNZ+q+cammGu5LUM+XE9V/QTM0YN6/5psRqQnC0X
+         YK/Ba46GTwzCd92RThON46g34nGmV1DgD8CJoPdSSBq3q+zBi6dONCuyYS5b4OxT4+
+         TxdJ1o3TBrzqUWw54KLAu/rnRvIGgVe4ap55zFoBVd9hwzA1rinz8u7xbraMpWdGSe
+         vnxaxu/MmUllA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 6EC965C05B9; Wed, 15 Jun 2022 10:10:42 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 10:10:42 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>, frederic@kernel.org,
+        Peter Geis <pgwipeout@gmail.com>, zhouzhouyi@gmail.com,
+        dave@stgolabs.net, josh@joshtriplett.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        rcu@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] printk: Prevent printk kthreads from blocking direct
+ console handling
+Message-ID: <20220615171042.GT1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220615162805.27962-1-pmladek@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <051fd468-11e6-308b-66c8-4de16ff80deb@intel.com>
+In-Reply-To: <20220615162805.27962-1-pmladek@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 08:27:52AM -0700, Dave Hansen wrote:
-> On 6/14/22 05:01, Kirill A. Shutemov wrote:
-> > load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
-> > The unwanted loads are typically harmless. But, they might be made to
-> > totally unrelated or even unmapped memory. load_unaligned_zeropad()
-> > relies on exception fixup (#PF, #GP and now #VE) to recover from these
-> > unwanted loads.
-> > 
-> > In TDX guests, the second page can be shared page and VMM may configure
-> > it to trigger #VE.
-> > 
-> > Kernel assumes that #VE on a shared page is MMIO access and tries to
-> > decode instruction to handle it. In case of load_unaligned_zeropad() it
-> > may result in confusion as it is not MMIO access.
-> > 
-> > Fix it by detecting split page MMIO accesses and fail them.
-> > load_unaligned_zeropad() will recover using exception fixups.
-> > 
-> > The issue was discovered by analysis. It was not triggered during the
-> > testing.
+On Wed, Jun 15, 2022 at 06:28:03PM +0200, Petr Mladek wrote:
+> There are reports that console kthreads prevented printing
+> messages during panic() or shutdown(), see
+> BugLink: https://lore.kernel.org/r/20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1
+> BugLink: https://lore.kernel.org/r/CAMdYzYpF4FNTBPZsEFeWRuEwSies36QM_As8osPWZSr2q-viEA@mail.gmail.com
 > 
-> I thought this whole exercise was kicked off by hitting this in testing.
->  Am I remembering this wrong?
+> In both situations, printk() correctly tries to flush the consoles
+> directly but it fails to get the global console_lock(). Both
+> problems went away with these patches:
 > 
-> > https://lore.kernel.org/all/20220517153444.11195-10-kirill.shutemov@linux.intel.com/
+> 1st patch blocks console kthreads so that they do not start
+> handling new messages when the direct printing is preferred
+> by the system state. It is probably enough on its own. It
+> solves the problem when the kthreads actively did
+> the wrong thing.
 > 
-> Says:
+> 2nd patch allows to wait for the console kthreads to release
+> the lock in any context. It should make it more reliable.
+> It would have been useful even for the legacy code.
+
+Thank you!
+
+For the series:
+
+Tested-by: Paul E. McKenney <paulmck@kernel.org>
+
+> More possible improvements:
 > 
-> > This is an actual, real-world problem which was discovered during TDX
-> > testing.
+>   +  the waiting might be necessary also in the suspend code paths
 > 
-> Or were you considering this a different problem somehow?
-
-They are different.
-
-The patch by the link addresses issue of load_unaligned_zeropad() stepping
-onto unaccepted memory. This was triggered in practice.
-
-This patch address stepping onto MMIO shared memory. I had to force the
-situation manually as MMIO memory mapped with ioremap() and it is not next
-to normally allocated memory used by load_unaligned_zeropad() (such as
-dentry cache).
-
-Although any shared memory (SWIOTLB buffer for instance) can generate EPT
-violation #VE if the VMM is malicious enough.
-
--- 
- Kirill A. Shutemov
+>   + convert con->mutex to con->spinlock to avoid blocking
+>     the global console_lock() when sleeping with con->lock
+> 
+>   + at least disable preemption around console_emit_next_record()
+>     in console kthread to avoid sleeping in the console driver
+>     code
+> 
+>   + somehow change the priority of the kthread so that it gets
+>     scheduled immediately when the scheduler works
+> 
+> Petr Mladek (2):
+>   printk: Block console kthreads when direct printing will be required
+>   printk: Wait for the global console lock when the system is going down
+> 
+>  include/linux/printk.h      |  5 +++++
+>  kernel/panic.c              |  2 ++
+>  kernel/printk/internal.h    |  2 ++
+>  kernel/printk/printk.c      |  8 +++++++-
+>  kernel/printk/printk_safe.c | 32 ++++++++++++++++++++++++++++++++
+>  kernel/reboot.c             |  2 ++
+>  6 files changed, 50 insertions(+), 1 deletion(-)
+> 
+> -- 
+> 2.35.3
+> 
