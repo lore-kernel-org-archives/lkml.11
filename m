@@ -2,71 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1F24C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:07:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA5D8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 12:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348337AbiFOMHW (ORCPT
+        id S1348389AbiFOMIJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 08:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38278 "EHLO
+        Wed, 15 Jun 2022 08:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239284AbiFOMHU (ORCPT
+        with ESMTP id S1343836AbiFOMIH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 08:07:20 -0400
-Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EFD37ABF;
-        Wed, 15 Jun 2022 05:07:17 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1655294834; bh=izkMW7/nCGStLmJpRPGKVyWyEhaf2yWPv1nwAze4fKo=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To;
-        b=b4ZvYL9PgIee/QHliIcDiomKj4KMu53BbVvWwW22fP6OB2/aYrhLL8bviphVK3OZ/
-         Tq8GyQLc2PzHnweYsbg5OKeiudyxLVLrCPGyMy4bYyLi6PG5tur3FFIBNrPwCEMafg
-         kuHhGtSxG2DKv65jJcYlKa5BZSKI1sEnHVEAqpPs=
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH -next] dmaengine: apple-admac: Fix build on
- 32-bit/non-LPAE platforms
-From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>
-In-Reply-To: <20220614074915.1443629-1-geert@linux-m68k.org>
-Date:   Wed, 15 Jun 2022 14:07:12 +0200
-Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Vinod Koul <vkoul@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <4D5BB835-5DF0-4BBB-B073-A77F1A96EA19@cutebit.org>
-References: <20220614074915.1443629-1-geert@linux-m68k.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
+        Wed, 15 Jun 2022 08:08:07 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0672637ABF;
+        Wed, 15 Jun 2022 05:08:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655294887; x=1686830887;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=iSJPh1Ju/IQynP0+FbgSKh4cSdCd7nA7rEU6e/3J6Bs=;
+  b=S8csEvDE9sGNDbFp12TRR/6kKEbXUUL84xQYq+WOLE/AsuNWPorLxH5O
+   KOq6VvC+4EGLGL2biUgdbfWvEX4aTqThoiSK5A+Fo5JrFDI80dsN4pDps
+   Rsxaj74n9rj1nYIbO4sEVFg6u2SicNYXOin+SwtlttlxPq69OeOJ6qB+U
+   wqguozJeHvUME3bjk+ZddGjhHiPrGGyUPQ9Gd2FilZJiXdfonNfnPIMAy
+   uPdymRW/lsbDyV7ic+9M+4LIDo2UNUwVZtCe2rPE/IiTIB8hXbcTLIbpr
+   mhE/AvMGjNI/b6JO734GJgGWWDCf7cwlcgol6rXGPnZmxy0LaNEYy1VqG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="277731274"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="277731274"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 05:08:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="536013045"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 15 Jun 2022 05:08:04 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id C2F8B18F; Wed, 15 Jun 2022 15:08:08 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v1 1/1] iio: adc: intel_mrfld_adc: explicitly add proper header files
+Date:   Wed, 15 Jun 2022 15:08:03 +0300
+Message-Id: <20220615120803.41350-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Do not trust the fact that iio.h includes of.h which in turn includes
+all the headers we are relying on.
 
-> On 14. 6. 2022, at 9:49, Geert Uytterhoeven <geert@linux-m68k.org> =
-wrote:
->=20
-> If CONFIG_PHYS_ADDR_T_64BIT is not set:
->=20
->    drivers/dma/apple-admac.c: In function =
-=E2=80=98admac_cyclic_write_one_desc=E2=80=99:
->    drivers/dma/apple-admac.c:213:22: error: right shift count >=3D =
-width of type [-Werror=3Dshift-count-overflow]
->      213 |  writel_relaxed(addr >> 32,       ad->base + =
-REG_DESC_WRITE(channo));
->          |                      ^~
->=20
-> Fix this by using the {low,upp}er_32_bits() helper macros to obtain =
-the
-> address parts.
->=20
-> Reported-by: noreply@ellerman.id.au
-> Fixes: b127315d9a78c011 ("dmaengine: apple-admac: Add Apple ADMAC =
-driver")
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+The ultimate goal is to actually drop of.h from iio.h.
 
-Thanks! (TIL about the lower/upper_32_bits helpers)
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
 
-Acked-by: Martin Povi=C5=A1er <povik+lin@cutebit.org>
+Jonathan, this should be squeezed before we remove of.h in iio.h
+I think Nuno somehow missed this
+
+ drivers/iio/adc/intel_mrfld_adc.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/adc/intel_mrfld_adc.c b/drivers/iio/adc/intel_mrfld_adc.c
+index 616de0c3a049..7263ad76124d 100644
+--- a/drivers/iio/adc/intel_mrfld_adc.c
++++ b/drivers/iio/adc/intel_mrfld_adc.c
+@@ -15,6 +15,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/mfd/intel_soc_pmic.h>
+ #include <linux/mfd/intel_soc_pmic_mrfld.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/platform_device.h>
+-- 
+2.35.1
 
