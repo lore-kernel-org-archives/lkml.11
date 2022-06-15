@@ -2,353 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A01BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:01:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 17:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357115AbiFORBi (ORCPT
+        id S1357189AbiFORBl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 13:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35436 "EHLO
+        Wed, 15 Jun 2022 13:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355489AbiFORAt (ORCPT
+        with ESMTP id S1357174AbiFORBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 13:00:49 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9959050041
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:00:27 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id h5so16261324wrb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:00:27 -0700 (PDT)
+        Wed, 15 Jun 2022 13:01:00 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7284FC4F
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:01:00 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-30c2f288f13so67570577b3.7
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 10:01:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=pr7/sSYVOXPdtGS1/T+T8Lqb0MTvzV5EwQqM4oOBt7M=;
-        b=RGjh36gsbSL7V2Cy2m2NjJhaQAc9PMFRxBITRzbJo0e6uQYU2PYDC5NLnQ+yGyDl+R
-         0zS71FKcfX5hIOSm8TbBXXs4Lfr/g8YMMGK1+H7L0MHHJ4ERPJnOAiuvX9kjV/6/j5Jf
-         680iSXj86QecnfayPEJekK0udeX/yNBxkmuLB73Bj7pk1WJkjC4f6VHX7hiLma5UpuCU
-         3V8UHCvzboc1/yrqh8ZW3uLcljQHUwyDtBrjgE/WcQOhhxXOIOYHrY676rcuM4sVZhGn
-         M8SyyBbMOXfe2nTSiGRVqHzLG6gokbEVq5KPRFXRH/NNheY3zwpuJxDGd0jNQRIA3ntp
-         L5Eg==
+         :cc;
+        bh=/r7XkSh5TUFeVMIe3mikVGP0QRjTftc0VpzQNshFaLA=;
+        b=YEY/aa02EjDu6Gde1XwVcHQ2DxuVZ2OBrNiKoejQ6TtQOhFwmhY/+9cbq0+Zp16lgL
+         kD0eDwPqS+oBorSD1W7GoPu2sDRE+nxUfCEwkCsccSZERq+ao/DOWBL9pvFtSCfC1EpI
+         87llx6q+yjmXGkCBE1CGNto4D1wXfUoFpyPr4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=pr7/sSYVOXPdtGS1/T+T8Lqb0MTvzV5EwQqM4oOBt7M=;
-        b=xeNupooSQLM7SzSarFHNWI/kyvNJ8BgaGrK3IykIiXW5LBPZazg05VfCQzH6RTHlz8
-         /6ep4F5WdOmx9NJQYCAtheXbJ7nHv+IXYu9SUMjiWtvyXwb51Pnc0+9o4SL2DwFBQG9s
-         yrO0TAZ0Q4tWXLK7u9TVoa0TNHOO/a/rZ9lR37Wo2oa5OnC1xVCLkUMmlMCJzVp+3kt5
-         E/KAwq5W+TdkeKC52nzuRV70ROd6Rycamed0E3wNhoVa+aVVuUUsWq4wy0Fhm69/gpcv
-         wn4GkvBf5MqP+k7oksc3n8sDLneMDV5TXe2IbG2/sGaSkbJAFXritVCHlcgPq++f265e
-         1F9w==
-X-Gm-Message-State: AJIora8WicSILUque12Pxd7pL6c4qUILXlhO8UJU8gO4ZDPd1sPud0fD
-        oAXRNWeq1QH/gHAaj6FdsnFNlLuHrcohf1+1Ibeh/A==
-X-Google-Smtp-Source: AGRyM1uB0UDMl9b/896cLH/y+hwYakenLps6KtvwAg3Fh2+Uxwu1swfsOSTeK8iwAI8IasAO3ym5N1xcQXZHz/gUbP8=
-X-Received: by 2002:a05:6000:18a9:b0:218:7791:a9ad with SMTP id
- b9-20020a05600018a900b002187791a9admr777565wri.116.1655312425754; Wed, 15 Jun
- 2022 10:00:25 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=/r7XkSh5TUFeVMIe3mikVGP0QRjTftc0VpzQNshFaLA=;
+        b=iPXnMCQSq+bw0vhdnJK3rj/o8cGilFXG46DwG2Bs4PJMVql91aUAxDO9yiGGfMUGnx
+         IFzHO+Iv0UHpoNhwiQDufSbRWXvixD2UbiSZjevY3FAD3UXjZvx9uuPlJwXYMY2cs8t6
+         s36rssdeqtA5D8WNCfazoq1e2nWxGR/ONd2H1mOueLzlVbTFxHcI3kjAdC9/LrnOn5QO
+         w2gJnJNbzopEm51H+3UYG4W459zog/9RwB1JSmkMF+UZc3Uek0tcuCc9EGe33zWTgzLN
+         UYOonwZYEGTFXJO3iwFjYdDLyaxuj2Xa602fOh0rlKNch4RrABKRXUITkIaSdhm76X7E
+         V9oA==
+X-Gm-Message-State: AJIora8TCPbo87y33jQMGqwi3xW/Mn74ROhpiJYtD/s/kzt82aLJ5+x7
+        E/VsiOVhga5/17TKJmPq/3BJQ/7mKFZhHxZSlkzCOg==
+X-Google-Smtp-Source: AGRyM1vwSIJrbZk5hnWNUg96C0Ni2qFhhTib83BhjFCpBSWqIWSHHXOiLELU1pSyNWuERIOYn4A4WUHEnANs0z8CtuA=
+X-Received: by 2002:a0d:f882:0:b0:2f4:d830:6fd with SMTP id
+ i124-20020a0df882000000b002f4d83006fdmr656389ywf.387.1655312459179; Wed, 15
+ Jun 2022 10:00:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220531212521.1231133-1-kaleshsingh@google.com>
- <20220531212521.1231133-3-kaleshsingh@google.com> <14f85d24-a9de-9706-32f0-30be4999c71c@oracle.com>
- <CAC_TJveDzDaYQKmuLSkGWpnuCW+gvrqdVJqq=wbzoTRjw4OoFw@mail.gmail.com>
- <875yll1fp1.fsf@stepbren-lnx.us.oracle.com> <4b79c2ea-dd1a-623d-e5b4-faa732c1a42d@gmail.com>
- <CAC_TJvdU=bhaeJACz70JOAL34W846Bk=EmvkXL8ccfoALJdaOQ@mail.gmail.com>
-In-Reply-To: <CAC_TJvdU=bhaeJACz70JOAL34W846Bk=EmvkXL8ccfoALJdaOQ@mail.gmail.com>
-From:   Kalesh Singh <kaleshsingh@google.com>
-Date:   Wed, 15 Jun 2022 10:00:14 -0700
-Message-ID: <CAC_TJvd6znLxqRON8DTxwsFKmDh_crQyzWmBugS7JPFrPn12Vw@mail.gmail.com>
-Subject: Re: [Linaro-mm-sig] Re: [PATCH 2/2] procfs: Add 'path' to /proc/<pid>/fdinfo/
-To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <ckoenig.leichtzumerken@gmail.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>
-Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Ioannis Ilkos <ilkos@google.com>,
-        "T.J. Mercier" <tjmercier@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Christoph Anton Mitterer <mail@christoph.anton.mitterer.name>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Colin Cross <ccross@google.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        DRI mailing list <dri-devel@lists.freedesktop.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>
+References: <20220609181106.3695103-1-pmalani@chromium.org>
+ <20220609181106.3695103-7-pmalani@chromium.org> <b3b9768d-e0d0-7132-5f50-dd6aa53a68ee@collabora.com>
+ <CACeCKaexczFCja_ndndb_A58yZYQ98rTtgY4vHMknENTLxBPPA@mail.gmail.com> <28135a2f-bf02-fd0b-e881-0ce9d68bd764@collabora.com>
+In-Reply-To: <28135a2f-bf02-fd0b-e881-0ce9d68bd764@collabora.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Wed, 15 Jun 2022 10:00:48 -0700
+Message-ID: <CACeCKadK0A4YD6+Nu=j9dw-dkhkj4ShkpEpSqH_bODjn8wniMg@mail.gmail.com>
+Subject: Re: [PATCH v2 6/7] drm/bridge: anx7625: Register Type-C mode switches
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        heikki.krogerus@linux.intel.com,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        David Airlie <airlied@linux.ie>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Jonas Karlman <jonas@kwiboo.se>,
+        swboyd@chromium.org, Pin-Yen Lin <treapking@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Xin Ji <xji@analogixsemi.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 1, 2022 at 8:31 PM Kalesh Singh <kaleshsingh@google.com> wrote:
+On Wed, Jun 15, 2022 at 1:45 AM AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
 >
-> On Wed, Jun 1, 2022 at 8:02 AM Christian K=C3=B6nig
-> <ckoenig.leichtzumerken@gmail.com> wrote:
+> Il 14/06/22 18:57, Prashant Malani ha scritto:
+> > On Tue, Jun 14, 2022 at 1:18 AM AngeloGioacchino Del Regno
+> > <angelogioacchino.delregno@collabora.com> wrote:
+> >>
+> >> Il 09/06/22 20:09, Prashant Malani ha scritto:
+> >>> When the DT node has "switches" available, register a Type-C mode-switch
+> >>> for each listed "switch". This allows the driver to receive state
+> >>> information about what operating mode a Type-C port and its connected
+> >>> peripherals are in, as well as status information (like VDOs) related to
+> >>> that state.
+> >>>
+> >>> The callback function is currently a stub, but subsequent patches will
+> >>> implement the required functionality.
+> >>>
+> >>> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+> >>> ---
+> >>>
+> >>> Changes since v2:
+> >>> - No changes.
+> >>>
+> >>>    drivers/gpu/drm/bridge/analogix/anx7625.c | 73 +++++++++++++++++++++++
+> >>>    drivers/gpu/drm/bridge/analogix/anx7625.h |  6 ++
+> >>>    2 files changed, 79 insertions(+)
+> >>>
+> >>> diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> >>> index 07ed44c6b839..d41a21103bd3 100644
+> >>> --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
+> >>> +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> >>> @@ -15,6 +15,7 @@
+> >>>    #include <linux/regulator/consumer.h>
+> >>>    #include <linux/slab.h>
+> >>>    #include <linux/types.h>
+> >>> +#include <linux/usb/typec_mux.h>
+> >>>    #include <linux/workqueue.h>
+> >>>
+> >>>    #include <linux/of_gpio.h>
+> >>> @@ -2581,9 +2582,59 @@ static void anx7625_runtime_disable(void *data)
+> >>>        pm_runtime_disable(data);
+> >>>    }
+> >>>
+> >>> +static int anx7625_typec_mux_set(struct typec_mux_dev *mux,
+> >>> +                              struct typec_mux_state *state)
+> >>> +{
+> >>> +     return 0;
+> >>> +}
+> >>> +
+> >>> +static int anx7625_register_mode_switch(struct device *dev, struct device_node *node,
+> >>> +                                     struct anx7625_data *ctx)
+> >>> +{
+> >>> +     struct anx7625_port_data *port_data;
+> >>> +     struct typec_mux_desc mux_desc = {};
+> >>> +     char name[32];
+> >>> +     u32 port_num;
+> >>> +     int ret;
+> >>> +
+> >>> +     ret = of_property_read_u32(node, "reg", &port_num);
+> >>> +     if (ret)
+> >>> +             return ret;
+> >>> +
+> >>> +     if (port_num >= ctx->num_typec_switches) {
+> >>> +             dev_err(dev, "Invalid port number specified: %d\n", port_num);
+> >>> +             return -EINVAL;
+> >>> +     }
+> >>> +
+> >>> +     port_data = &ctx->typec_ports[port_num];
+> >>> +     port_data->ctx = ctx;
+> >>> +     mux_desc.fwnode = &node->fwnode;
+> >>> +     mux_desc.drvdata = port_data;
+> >>> +     snprintf(name, sizeof(name), "%s-%u", node->name, port_num);
+> >>> +     mux_desc.name = name;
+> >>> +     mux_desc.set = anx7625_typec_mux_set;
+> >>> +
+> >>> +     port_data->typec_mux = typec_mux_register(dev, &mux_desc);
+> >>> +     if (IS_ERR(port_data->typec_mux)) {
+> >>> +             ret = PTR_ERR(port_data->typec_mux);
+> >>> +             dev_err(dev, "Mode switch register for port %d failed: %d", port_num, ret);
+> >>> +     }
+> >>
+> >> Please return 0 at the end of this function.
+> >>
+> >>          if (IS_ERR(....)) {
+> >>                  ......code......
+> >>                  return ret;
+> >>          }
+> >>
+> >>          return 0;
+> >> }
 > >
-> > Am 01.06.22 um 00:48 schrieb Stephen Brennan:
-> > > Kalesh Singh <kaleshsingh@google.com> writes:
-> > >> On Tue, May 31, 2022 at 3:07 PM Stephen Brennan
-> > >> <stephen.s.brennan@oracle.com> wrote:
-> > >>> On 5/31/22 14:25, Kalesh Singh wrote:
-> > >>>> In order to identify the type of memory a process has pinned throu=
-gh
-> > >>>> its open fds, add the file path to fdinfo output. This allows
-> > >>>> identifying memory types based on common prefixes. e.g. "/memfd...=
-",
-> > >>>> "/dmabuf...", "/dev/ashmem...".
-> > >>>>
-> > >>>> Access to /proc/<pid>/fdinfo is governed by PTRACE_MODE_READ_FSCRE=
-DS
-> > >>>> the same as /proc/<pid>/maps which also exposes the file path of
-> > >>>> mappings; so the security permissions for accessing path is consis=
-tent
-> > >>>> with that of /proc/<pid>/maps.
-> > >>> Hi Kalesh,
-> > >> Hi Stephen,
-> > >>
-> > >> Thanks for taking a look.
-> > >>
-> > >>> I think I see the value in the size field, but I'm curious about pa=
-th,
-> > >>> which is available via readlink /proc/<pid>/fd/<n>, since those are
-> > >>> symlinks to the file themselves.
-> > >> This could work if we are root, but the file permissions wouldn't
-> > >> allow us to do the readlink on other processes otherwise. We want to
-> > >> be able to capture the system state in production environments from
-> > >> some trusted process with ptrace read capability.
-> > > Interesting, thanks for explaining. It seems weird to have a duplicat=
-e
-> > > interface for the same information but such is life.
+> > May I ask why? We're not missing any return paths. I would rather we
+> > keep it as is (which has the valid return value).
 > >
-> > Yeah, the size change is really straight forward but for this one I'm
-> > not 100% sure either.
 >
-> The 2 concerns I think are:
->   1. Fun characters in the path names
->   2. If exposing the path is appropriate to begin with.
+> I know that you're not missing any return paths.
 >
-> One way I think we can address both is to only expose the path for
-> anon inodes. Then we have well-known path formats and we don't expose
-> much about which files a process is accessing since these aren't real
-> paths.
->
-> +       if (is_anon_inode(inode)) {
-> +               seq_puts(m, "path:\t");
-> +               seq_file_path(m, file, "\n");
-> +               seq_putc(m, '\n');
-> +       }
->
-> Interested to hear thoughts on it.
+> That's only because the proposed one is a common pattern in the kernel
+> and it's only for consistency.
 
-Adding Christoph,
+Thanks for the additional details. Since this isn't addressing any
+specific bug, and I
+notice varied usages of "return ret" in this file itself [1][2], I'd
+prefer keeping it as is.
 
-To be able to identify types of shared memory processes pin through
-FDs in production builds, we would like to add a 'path' field to
-fdinfo of anon inodes. We could then use the common prefixes
-("/dmabuf", "/memfd", ...) to identify different types.
-
-Would appreciate any feedback from the FS perspective.
-
-Thanks,
-Kalesh
+[1]: https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/bridge/analogix/anx7625.c#L296
+[2]: https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/bridge/analogix/anx7625.c#L436
 
 >
-> >
-> > Probably best to ping some core fs developer before going further with =
-it.
+> Regards,
+> Angelo
 >
-> linux-fsdevel is cc'd here. Adding Al Vrio as well. Please let me know
-> if there are other parties I should include.
->
-> >
-> > BTW: Any preferred branch to push this upstream? If not I can take it
-> > through drm-misc-next.
->
-> No other dependencies for this, so drm-misc-next is good.
->
-> Thanks,
-> Kalesh
->
-> >
-> > Regards,
-> > Christian.
-> >
-> > >
-> > >>> File paths can contain fun characters like newlines or colons, whic=
-h
-> > >>> could make parsing out filenames in this text file... fun. How woul=
-d your
-> > >>> userspace parsing logic handle "/home/stephen/filename\nsize:\t4096=
-"? The
-> > >>> readlink(2) API makes that easy already.
-> > >> I think since we have escaped the "\n" (seq_file_path(m, file, "\n")=
-),
-> > > I really should have read through that function before commenting,
-> > > thanks for teaching me something new :)
-> > >
-> > > Stephen
-> > >
-> > >> then user space might parse this line like:
-> > >>
-> > >> if (strncmp(line, "path:\t", 6) =3D=3D 0)
-> > >>          char* path =3D line + 6;
-> > >>
-> > >>
-> > >> Thanks,
-> > >> Kalesh
-> > >>
-> > >>> Is the goal avoiding races (e.g. file descriptor 3 is closed and re=
-opened
-> > >>> to a different path between reading fdinfo and stating the fd)?
-> > >>>
-> > >>> Stephen
-> > >>>
-> > >>>> Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-> > >>>> ---
-> > >>>>
-> > >>>> Changes from rfc:
-> > >>>>    - Split adding 'size' and 'path' into a separate patches, per C=
-hristian
-> > >>>>    - Fix indentation (use tabs) in documentaion, per Randy
-> > >>>>
-> > >>>>   Documentation/filesystems/proc.rst | 14 ++++++++++++--
-> > >>>>   fs/proc/fd.c                       |  4 ++++
-> > >>>>   2 files changed, 16 insertions(+), 2 deletions(-)
-> > >>>>
-> > >>>> diff --git a/Documentation/filesystems/proc.rst b/Documentation/fi=
-lesystems/proc.rst
-> > >>>> index 779c05528e87..591f12d30d97 100644
-> > >>>> --- a/Documentation/filesystems/proc.rst
-> > >>>> +++ b/Documentation/filesystems/proc.rst
-> > >>>> @@ -1886,14 +1886,16 @@ if precise results are needed.
-> > >>>>   3.8  /proc/<pid>/fdinfo/<fd> - Information about opened file
-> > >>>>   ---------------------------------------------------------------
-> > >>>>   This file provides information associated with an opened file. T=
-he regular
-> > >>>> -files have at least five fields -- 'pos', 'flags', 'mnt_id', 'ino=
-', and 'size'.
-> > >>>> +files have at least six fields -- 'pos', 'flags', 'mnt_id', 'ino'=
-, 'size',
-> > >>>> +and 'path'.
-> > >>>>
-> > >>>>   The 'pos' represents the current offset of the opened file in de=
-cimal
-> > >>>>   form [see lseek(2) for details], 'flags' denotes the octal O_xxx=
- mask the
-> > >>>>   file has been created with [see open(2) for details] and 'mnt_id=
-' represents
-> > >>>>   mount ID of the file system containing the opened file [see 3.5
-> > >>>>   /proc/<pid>/mountinfo for details]. 'ino' represents the inode n=
-umber of
-> > >>>> -the file, and 'size' represents the size of the file in bytes.
-> > >>>> +the file, 'size' represents the size of the file in bytes, and 'p=
-ath'
-> > >>>> +represents the file path.
-> > >>>>
-> > >>>>   A typical output is::
-> > >>>>
-> > >>>> @@ -1902,6 +1904,7 @@ A typical output is::
-> > >>>>        mnt_id: 19
-> > >>>>        ino:    63107
-> > >>>>        size:   0
-> > >>>> +     path:   /dev/null
-> > >>>>
-> > >>>>   All locks associated with a file descriptor are shown in its fdi=
-nfo too::
-> > >>>>
-> > >>>> @@ -1920,6 +1923,7 @@ Eventfd files
-> > >>>>        mnt_id: 9
-> > >>>>        ino:    63107
-> > >>>>        size:   0
-> > >>>> +     path:   anon_inode:[eventfd]
-> > >>>>        eventfd-count:  5a
-> > >>>>
-> > >>>>   where 'eventfd-count' is hex value of a counter.
-> > >>>> @@ -1934,6 +1938,7 @@ Signalfd files
-> > >>>>        mnt_id: 9
-> > >>>>        ino:    63107
-> > >>>>        size:   0
-> > >>>> +     path:   anon_inode:[signalfd]
-> > >>>>        sigmask:        0000000000000200
-> > >>>>
-> > >>>>   where 'sigmask' is hex value of the signal mask associated
-> > >>>> @@ -1949,6 +1954,7 @@ Epoll files
-> > >>>>        mnt_id: 9
-> > >>>>        ino:    63107
-> > >>>>        size:   0
-> > >>>> +     path:   anon_inode:[eventpoll]
-> > >>>>        tfd:        5 events:       1d data: ffffffffffffffff pos:0=
- ino:61af sdev:7
-> > >>>>
-> > >>>>   where 'tfd' is a target file descriptor number in decimal form,
-> > >>>> @@ -1968,6 +1974,7 @@ For inotify files the format is the followin=
-g::
-> > >>>>        mnt_id: 9
-> > >>>>        ino:    63107
-> > >>>>        size:   0
-> > >>>> +     path:   anon_inode:inotify
-> > >>>>        inotify wd:3 ino:9e7e sdev:800013 mask:800afce ignored_mask=
-:0 fhandle-bytes:8 fhandle-type:1 f_handle:7e9e0000640d1b6d
-> > >>>>
-> > >>>>   where 'wd' is a watch descriptor in decimal form, i.e. a target =
-file
-> > >>>> @@ -1992,6 +1999,7 @@ For fanotify files the format is::
-> > >>>>        mnt_id: 9
-> > >>>>        ino:    63107
-> > >>>>        size:   0
-> > >>>> +     path:   anon_inode:[fanotify]
-> > >>>>        fanotify flags:10 event-flags:0
-> > >>>>        fanotify mnt_id:12 mflags:40 mask:38 ignored_mask:40000003
-> > >>>>        fanotify ino:4f969 sdev:800013 mflags:0 mask:3b ignored_mas=
-k:40000000 fhandle-bytes:8 fhandle-type:1 f_handle:69f90400c275b5b4
-> > >>>> @@ -2018,6 +2026,7 @@ Timerfd files
-> > >>>>        mnt_id: 9
-> > >>>>        ino:    63107
-> > >>>>        size:   0
-> > >>>> +     path:   anon_inode:[timerfd]
-> > >>>>        clockid: 0
-> > >>>>        ticks: 0
-> > >>>>        settime flags: 01
-> > >>>> @@ -2042,6 +2051,7 @@ DMA Buffer files
-> > >>>>        mnt_id: 9
-> > >>>>        ino:    63107
-> > >>>>        size:   32768
-> > >>>> +     path:   /dmabuf:
-> > >>>>        count:  2
-> > >>>>        exp_name:  system-heap
-> > >>>>
-> > >>>> diff --git a/fs/proc/fd.c b/fs/proc/fd.c
-> > >>>> index 464bc3f55759..8889a8ba09d4 100644
-> > >>>> --- a/fs/proc/fd.c
-> > >>>> +++ b/fs/proc/fd.c
-> > >>>> @@ -60,6 +60,10 @@ static int seq_show(struct seq_file *m, void *v=
-)
-> > >>>>        seq_printf(m, "ino:\t%lu\n", file_inode(file)->i_ino);
-> > >>>>        seq_printf(m, "size:\t%lli\n", (long long)file_inode(file)-=
->i_size);
-> > >>>>
-> > >>>> +     seq_puts(m, "path:\t");
-> > >>>> +     seq_file_path(m, file, "\n");
-> > >>>> +     seq_putc(m, '\n');
-> > >>>> +
-> > >>>>        /* show_fd_locks() never deferences files so a stale value =
-is safe */
-> > >>>>        show_fd_locks(m, file, files);
-> > >>>>        if (seq_has_overflowed(m))
-> > >>> --
-> > >>> To unsubscribe from this group and stop receiving emails from it, s=
-end an email to kernel-team+unsubscribe@android.com.
-> > >>>
-> > > _______________________________________________
-> > > Linaro-mm-sig mailing list -- linaro-mm-sig@lists.linaro.org
-> > > To unsubscribe send an email to linaro-mm-sig-leave@lists.linaro.org
-> >
