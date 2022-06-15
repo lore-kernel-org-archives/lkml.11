@@ -2,149 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 903F1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 228FFCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 16:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356726AbiFOQeo (ORCPT
+        id S1356704AbiFOQf0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 12:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38936 "EHLO
+        Wed, 15 Jun 2022 12:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355054AbiFOQek (ORCPT
+        with ESMTP id S239852AbiFOQfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 12:34:40 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF0A4132A
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:34:38 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id me5so24385873ejb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 09:34:38 -0700 (PDT)
+        Wed, 15 Jun 2022 12:35:23 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5234E2D1E5;
+        Wed, 15 Jun 2022 09:35:23 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id v17-20020a17090a899100b001ead067eaf9so2672584pjn.0;
+        Wed, 15 Jun 2022 09:35:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3/x9Jvq5dHmh9cUcCuKN+pT3+uf0i+wFTmORu8d97Fo=;
-        b=TWW7VRdLrHKJ1iGN0l0ePcy/m0THG+JXj3S/GhTbGYCso/nw5e5tyv7vFpbHbjsE5v
-         tKMQGrsaIOa9PqjeZrVrp6rIPgYD2lPeqsC+RRNCNDqK7qFaK/ZaviVWvt/yYCvtfRf4
-         Q+XBCb1UT9EKD+Dnurnfl8JiCGGRL3v9YYhtuZpBle7tkK+be4NYftO5WgVFrYOIrDSO
-         UtqZVYgmla9YZQd48ijbDoX1XQdBVghmkZ6fFEwrx9Q9UZ+SYMh0zUmdzJoPSAuJa6xB
-         H3owJnermjhwpXm7yH8MC0uGXy6LtlALsFHqDdh+PanY8PULCqkXEaaKeKfFP9UiSaMR
-         rixw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NXNiK5CoOd5h/K567StuCdpvu1byZQqmWfR+aD9BoLg=;
+        b=m2hmwJKhxnLWptIU4bEaOprXB7AjROw7lct5pUQISGmydnU6CeitFPq3Qc9nBe1MQC
+         PaaVmblRPW/g2e460HEqDMv1JWHDx+leQItVlqmFT92ZIOQ4mFuHkp/67ZK/on2CWJ57
+         7cHTsZBoqA/i8uP47pfHx3HmdrA3/UMF6T5VWr7Saf5m5cn6uTuD64FNpK99mmvImEJp
+         Ccu3KzYFY84/TZ/XWD1T0TNUh7Ldx3ruUETmYEfqVSxkJQHNqP4xxrNI8YMsVfFxYGgb
+         FUoek2jo46bd3K8MhP0Z1sx8mK3GTsyfPGDDONzkL2tdDHbiUYLQTk06jL6veFjQXxIi
+         a0Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3/x9Jvq5dHmh9cUcCuKN+pT3+uf0i+wFTmORu8d97Fo=;
-        b=dSRoTkPtiFwfTp5DIQ9lqrtXoMpi91TBSmDOjaYrEfIP6fJxgZvmdTj7mD/ESTFzGR
-         f+ggVsPeetLQ21/rSOLhSvKuVgTudZ2AeGYLiybHFDUU4gJDDNeJqTKRpEN6rnTXcJpZ
-         fnrO3hjohCN4aXh0Tj5Ba2K0jwKW2+hLSbSWNgphLWFIvrFfR6/TRpyVqDFunrwwZCFW
-         hJrcaYtEkYRZ1zSjtLUubprPDfLvT1VhKGIFBkXSVGoxfOXORzH5zNe1C8PnjktdXX7l
-         iEeyGt2lH/LKPXyLZ03ito8fnTV9/R3wIfDs501Ts8xUW1Q01rV166YDg1aMfdsubv/I
-         U1MQ==
-X-Gm-Message-State: AJIora/QvARbXnxSGo8+QYH3I4mofs8qQIl0H06qJaZ7+yzyWUHCy0j7
-        eLk1UGiPwM/v7Uiz4QKAkdTGzIPMe71abJCxFG7OVIf9K3Hryw==
-X-Google-Smtp-Source: AGRyM1tAqHis1A5Tbkl367ddK/r4jr9DNZifQrUFw3AoCvEF2MjQRPabIQ77VzOdqm1l7Ew0c93LJHDLrnt1+XqmILo=
-X-Received: by 2002:a17:906:85cb:b0:70b:ffb4:b0e with SMTP id
- i11-20020a17090685cb00b0070bffb40b0emr546815ejy.533.1655310876651; Wed, 15
- Jun 2022 09:34:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NXNiK5CoOd5h/K567StuCdpvu1byZQqmWfR+aD9BoLg=;
+        b=OofSNZQcoeSd8RrnHMylTElLrbBrcOuGEUO7Ux2GiMQp02MfVXhEFKavbS2fbhEMKp
+         VRkU6APmMi4f/KNTmwlX4Fx7NxyWiH1fcWx5NRcLWUMkjxOaGKmXnnWxt1IjbJ7QB0QW
+         8Wjf1dWLYg+sfZLigSIRXDnqLtJBfEW/Hh0Iu17s17Od0rqcFTm8bNrIEvN1Bka1LT3L
+         QQXnJOSU6oy6EiujBjNEonIFiGG/ERXJk4ZOwwslQDdDTT2Z+nenRE+irF+BQ+t6SJX+
+         a9sF7n2RivDWkslJdUSsmBk7NRGW+zz4PQPbeub93Jw/C1DZ/Dg11JZla3uxTu6A6iqZ
+         6FeA==
+X-Gm-Message-State: AJIora8GH9K/YB55TJJfrBJ+Bo0UYima68aGRVQJBg4ilp6KLgp6xiZh
+        YRhyRzEitI/VcShTs23UN2LIGQzGLYI=
+X-Google-Smtp-Source: AGRyM1tLwthhtZmarB0uyNajKCWDIJw6HY2FWPaSR5DXQjf5zLnQlXHmthoGVTwOVaURRNFowOIaPw==
+X-Received: by 2002:a17:90b:2349:b0:1e3:34f9:87e8 with SMTP id ms9-20020a17090b234900b001e334f987e8mr11146478pjb.217.1655310922780;
+        Wed, 15 Jun 2022 09:35:22 -0700 (PDT)
+Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
+        by smtp.gmail.com with ESMTPSA id v15-20020a63bf0f000000b003fdb97e6961sm9909464pgf.28.2022.06.15.09.35.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 09:35:21 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Emma Anholt <emma@anholt.net>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] drm/msm: Fix %d vs %u
+Date:   Wed, 15 Jun 2022 09:35:28 -0700
+Message-Id: <20220615163532.3013035-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220615051248.1628156-1-tzungbi@kernel.org> <20220615051248.1628156-2-tzungbi@kernel.org>
-In-Reply-To: <20220615051248.1628156-2-tzungbi@kernel.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Wed, 15 Jun 2022 09:34:25 -0700
-Message-ID: <CABXOdTdrJ9pWvr-Fyt-pvcjiat_NhkWyiNysaofN2ggVO=_k_g@mail.gmail.com>
-Subject: Re: [PATCH 01/11] platform/chrome: cros_ec_proto: add "cros_ec_"
- prefix to send_command()
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
-        <chrome-platform@lists.linux.dev>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 10:13 PM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
->
-> To be neat, add "cros_ec_" prefix to static function send_command().
->
-> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+From: Rob Clark <robdclark@chromium.org>
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+In debugging fence rollover, I noticed that GPU state capture and
+devcore dumps were showing me negative fence numbers.  Let's fix that
+and some related signed vs unsigned confusion.
 
-> ---
->  drivers/platform/chrome/cros_ec_proto.c | 15 +++++++--------
->  1 file changed, 7 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-> index 6923ea4401e5..b02fd1414e52 100644
-> --- a/drivers/platform/chrome/cros_ec_proto.c
-> +++ b/drivers/platform/chrome/cros_ec_proto.c
-> @@ -107,8 +107,7 @@ static int prepare_tx_legacy(struct cros_ec_device *ec_dev,
->         return EC_MSG_TX_PROTO_BYTES + msg->outsize;
->  }
->
-> -static int send_command(struct cros_ec_device *ec_dev,
-> -                       struct cros_ec_command *msg)
-> +static int cros_ec_send_command(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
->  {
->         int ret;
->         int (*xfer_fxn)(struct cros_ec_device *ec, struct cros_ec_command *msg);
-> @@ -255,7 +254,7 @@ static int cros_ec_get_host_event_wake_mask(struct cros_ec_device *ec_dev, uint3
->         msg->command = EC_CMD_HOST_EVENT_GET_WAKE_MASK;
->         msg->insize = sizeof(*r);
->
-> -       ret = send_command(ec_dev, msg);
-> +       ret = cros_ec_send_command(ec_dev, msg);
->         if (ret < 0)
->                 goto exit;
->
-> @@ -295,7 +294,7 @@ static int cros_ec_get_proto_info(struct cros_ec_device *ec_dev, int devidx)
->         msg->command = EC_CMD_PASSTHRU_OFFSET(devidx) | EC_CMD_GET_PROTOCOL_INFO;
->         msg->insize = sizeof(*info);
->
-> -       ret = send_command(ec_dev, msg);
-> +       ret = cros_ec_send_command(ec_dev, msg);
->         /*
->          * Send command once again when timeout occurred.
->          * Fingerprint MCU (FPMCU) is restarted during system boot which
-> @@ -304,7 +303,7 @@ static int cros_ec_get_proto_info(struct cros_ec_device *ec_dev, int devidx)
->          * attempt because we waited at least EC_MSG_DEADLINE_MS.
->          */
->         if (ret == -ETIMEDOUT)
-> -               ret = send_command(ec_dev, msg);
-> +               ret = cros_ec_send_command(ec_dev, msg);
->
->         if (ret < 0) {
->                 dev_dbg(ec_dev->dev,
-> @@ -376,7 +375,7 @@ static int cros_ec_get_proto_info_legacy(struct cros_ec_device *ec_dev)
->         params = (struct ec_params_hello *)msg->data;
->         params->in_data = 0xa0b0c0d0;
->
-> -       ret = send_command(ec_dev, msg);
-> +       ret = cros_ec_send_command(ec_dev, msg);
->         if (ret < 0) {
->                 dev_dbg(ec_dev->dev, "EC failed to respond to v2 hello: %d\n", ret);
->                 goto exit;
-> @@ -453,7 +452,7 @@ static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
->         pver = (struct ec_params_get_cmd_versions *)msg->data;
->         pver->cmd = cmd;
->
-> -       ret = send_command(ec_dev, msg);
-> +       ret = cros_ec_send_command(ec_dev, msg);
->         if (ret < 0)
->                 goto exit;
->
-> @@ -634,7 +633,7 @@ int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
->                 }
->         }
->
-> -       ret = send_command(ec_dev, msg);
-> +       ret = cros_ec_send_command(ec_dev, msg);
->         mutex_unlock(&ec_dev->lock);
->
->         return ret;
-> --
-> 2.36.1.476.g0c4daa206d-goog
->
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+index dd044d557c7c..ce3b508b7c2b 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+@@ -790,11 +790,11 @@ void adreno_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
+ 	for (i = 0; i < gpu->nr_rings; i++) {
+ 		drm_printf(p, "  - id: %d\n", i);
+ 		drm_printf(p, "    iova: 0x%016llx\n", state->ring[i].iova);
+-		drm_printf(p, "    last-fence: %d\n", state->ring[i].seqno);
+-		drm_printf(p, "    retired-fence: %d\n", state->ring[i].fence);
+-		drm_printf(p, "    rptr: %d\n", state->ring[i].rptr);
+-		drm_printf(p, "    wptr: %d\n", state->ring[i].wptr);
+-		drm_printf(p, "    size: %d\n", MSM_GPU_RINGBUFFER_SZ);
++		drm_printf(p, "    last-fence: %u\n", state->ring[i].seqno);
++		drm_printf(p, "    retired-fence: %u\n", state->ring[i].fence);
++		drm_printf(p, "    rptr: %u\n", state->ring[i].rptr);
++		drm_printf(p, "    wptr: %u\n", state->ring[i].wptr);
++		drm_printf(p, "    size: %u\n", MSM_GPU_RINGBUFFER_SZ);
+ 
+ 		adreno_show_object(p, &state->ring[i].data,
+ 			state->ring[i].data_size, &state->ring[i].encoded);
+-- 
+2.36.1
+
