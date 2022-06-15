@@ -2,132 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A886C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6243FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 15 Jun 2022 15:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345027AbiFOPDl (ORCPT
+        id S1345550AbiFOPEC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 11:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52246 "EHLO
+        Wed, 15 Jun 2022 11:04:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234402AbiFOPDg (ORCPT
+        with ESMTP id S234402AbiFOPD7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 11:03:36 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F26B3190B
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:03:28 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id h23so13605520ljl.3
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:03:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+ZUiH7xUjYjG63QUOQNlcHltjn5KoG/fwg1/o9vk8ew=;
-        b=gmM5PYGKhtiKN/GQbdXDENmVjVligh9DIPiQkG8g9EDUaaAsjjHXs85qVkWWbbgi+B
-         nszrQbXgZRqTwAgSVchLmIr1m8NPS9bv1EsKB+/xz7kNOjgnEcOt3TRr3ysREOzDAeRh
-         bEnhDJ1ESjIS6/vP+qs+svbNVimu+a8X1ilLtTXxAt2+7vonJ+je4mAzwOZe0I5DBayV
-         LaifTuCEM8AsEcmaD0lCMRhjg/POC/AoBLOb1N+6qWIrQl+g55UKPUvA0EgFMmu7yl4S
-         ygVcSI0g+8rzQy4hxPbmjMblUCycMgOwWgGfW7dOebiG5auWZDOu0mAq02s1hm6IBcs3
-         ipIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+ZUiH7xUjYjG63QUOQNlcHltjn5KoG/fwg1/o9vk8ew=;
-        b=3azCEnq367rtRmyfMaHIzyfGSpKwdbjTQxnkpY17wJilooF5KVnbYOKq0Y4YeOWAou
-         Mg7GLFcovSuZe72i+Ev+wPBtGLrBaJGxTSLycEFzhAQyn5fkhm82YIYGc0zWxQW2qdR0
-         RJPhbRzKz7wt3HWhvgtWuCMmt1JkkLxj523SaizF1PL9mkfLBbPhh8zZfqnGcJW+Ur/5
-         oXb6qaREtZ1WjUvd6FGzsPg1/2FjbS9UFEDugF07soxKwRrWZCA/RXp+pz4tbQb/hPIU
-         JeK+ibTuQepNctaeDspW07ctxZnvsr1deRO37CighFM2hYE2ANiUrVirD6lt+zM401JY
-         tGLw==
-X-Gm-Message-State: AJIora/7I9Tv7wTAlXatdcyJFqukEEgW8s7HQMWffoMHQ4LMHuUPj2El
-        QL4EjuhQaYLhQT9kiYtQ/7R9vQ==
-X-Google-Smtp-Source: AGRyM1uaqkfz9EUjbtFXt3ETq72/vRGrVuX/XEUXnzqPAo5EoI+iVXmhnWWWeIjIy+Gowg+91p1KrQ==
-X-Received: by 2002:a2e:22c6:0:b0:258:fd28:b253 with SMTP id i189-20020a2e22c6000000b00258fd28b253mr85119lji.418.1655305406697;
-        Wed, 15 Jun 2022 08:03:26 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id k13-20020a2e92cd000000b002556e77236dsm1670253ljh.62.2022.06.15.08.03.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 08:03:25 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id EFD7A103B9F; Wed, 15 Jun 2022 18:05:34 +0300 (+03)
-Date:   Wed, 15 Jun 2022 18:05:34 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv7 05/14] x86/boot: Add infrastructure required for
- unaccepted memory support
-Message-ID: <20220615150534.ylkref3runa4kmyj@box.shutemov.name>
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
- <20220614120231.48165-6-kirill.shutemov@linux.intel.com>
- <YqmyQZa4CTHkH3gT@hirez.programming.kicks-ass.net>
+        Wed, 15 Jun 2022 11:03:59 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B93635879
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 08:03:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655305438; x=1686841438;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MHeoGg3PQPdP5VbC2PG27RoW1s04/Fz9tzoP6DSf9WQ=;
+  b=JRh1cvCqg6Y6SSEiaylHziC1kTCVQ2B5g1pxcHIEd5E21/wn0V1axMhr
+   6YLlPJlp5MdW1o651JH4BdNUtqcCxgs0Ay0mq+U5ViRN+/aTLRHaKZAa2
+   vTQixZTjeIa38wLJTSHNs5Ir512cWgQdk3lvfGu1LMI5nLZlgUwHn48+0
+   wHNYZT1VyIh8T8JHpkmw7egCiUixBsdqWJ1fFWGhiwFFN1O3v13M7TQd3
+   1mz04JrO+BE+tQ4nkmqQHLMCyuS3KfKtnj8vMB/xSvfzOYLoIHgFNcSOq
+   n/cT1tE+z4Vs+XTFjLA/3TtdwK7qQ9lJXQcFmrZYSG2Adb02+k9T14JDb
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="277784493"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="277784493"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 08:03:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="612778636"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 15 Jun 2022 08:03:19 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o1UYA-000MxD-PE;
+        Wed, 15 Jun 2022 15:03:18 +0000
+Date:   Wed, 15 Jun 2022 23:02:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ren Zhijie <renzhijie2@huawei.com>, jaegeuk@kernel.org,
+        chao@kernel.org, daehojeong@google.com
+Cc:     kbuild-all@lists.01.org, linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Ren Zhijie <renzhijie2@huawei.com>
+Subject: Re: [PATCH -next] f2fs: fix build error too many arguments to
+ functions
+Message-ID: <202206152345.By6X3FNj-lkp@intel.com>
+References: <20220615070422.214106-1-renzhijie2@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YqmyQZa4CTHkH3gT@hirez.programming.kicks-ass.net>
+In-Reply-To: <20220615070422.214106-1-renzhijie2@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 12:19:45PM +0200, Peter Zijlstra wrote:
-> On Tue, Jun 14, 2022 at 03:02:22PM +0300, Kirill A. Shutemov wrote:
-> > Pull functionality from the main kernel headers and lib/ that is
-> > required for unaccepted memory support.
-> > 
-> > This is preparatory patch. The users for the functionality will come in
-> > following patches.
-> > 
-> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> > ---
-> >  arch/x86/boot/bitops.h                   | 40 ++++++++++++
-> >  arch/x86/boot/compressed/align.h         | 14 +++++
-> >  arch/x86/boot/compressed/bitmap.c        | 43 +++++++++++++
-> >  arch/x86/boot/compressed/bitmap.h        | 49 +++++++++++++++
-> >  arch/x86/boot/compressed/bits.h          | 36 +++++++++++
-> >  arch/x86/boot/compressed/compiler.h      |  9 +++
-> >  arch/x86/boot/compressed/find.c          | 54 ++++++++++++++++
-> >  arch/x86/boot/compressed/find.h          | 80 ++++++++++++++++++++++++
-> >  arch/x86/boot/compressed/math.h          | 37 +++++++++++
-> >  arch/x86/boot/compressed/minmax.h        | 61 ++++++++++++++++++
-> >  arch/x86/boot/compressed/pgtable_types.h | 25 ++++++++
-> 
-> That's quite a lot of duplicated code; is there really no way so share
-> this?
+Hi Ren,
 
-Code duplication also make me uncomfortable. But that what Borislav wanted
-to see. efi.h in the boot stub which copies bulk of <linux/efi.h> also
-sets the trend in the direction.
+Thank you for the patch! Yet something to improve:
 
-Alternative is creating a subset of headers that can be used in both in
-main kernel and boot stub. It is more complex and doesn't allow for short
-cuts that can be made on copy if you know the context it is used in.
+[auto build test ERROR on next-20220615]
 
-It also sounds painfully similar to uapi/ project. I'm not sure we want to
-go this path.
+url:    https://github.com/intel-lab-lkp/linux/commits/Ren-Zhijie/f2fs-fix-build-error-too-many-arguments-to-functions/20220615-150808
+base:    6012273897fefb12566580efedee10bb06e5e6ed
+config: x86_64-rhel-8.3 (https://download.01.org/0day-ci/archive/20220615/202206152345.By6X3FNj-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/1832104c73270fad342bf40c089542083dca7585
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Ren-Zhijie/f2fs-fix-build-error-too-many-arguments-to-functions/20220615-150808
+        git checkout 1832104c73270fad342bf40c089542083dca7585
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/f2fs/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   fs/f2fs/data.c: In function 'f2fs_finish_read_bio':
+>> fs/f2fs/data.c:136:33: error: too few arguments to function 'f2fs_end_read_compressed_page'
+     136 |                                 f2fs_end_read_compressed_page(page, true, 0);
+         |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from fs/f2fs/data.c:25:
+   fs/f2fs/f2fs.h:4226:20: note: declared here
+    4226 | static inline void f2fs_end_read_compressed_page(struct page *page, bool failed,
+         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> fs/f2fs/data.c:137:25: error: too few arguments to function 'f2fs_put_page_dic'
+     137 |                         f2fs_put_page_dic(page);
+         |                         ^~~~~~~~~~~~~~~~~
+   In file included from fs/f2fs/data.c:25:
+   fs/f2fs/f2fs.h:4231:20: note: declared here
+    4231 | static inline void f2fs_put_page_dic(struct page *page, bool in_softirq)
+         |                    ^~~~~~~~~~~~~~~~~
+   fs/f2fs/data.c: In function 'f2fs_handle_step_decompress':
+   fs/f2fs/data.c:239:25: error: too few arguments to function 'f2fs_end_read_compressed_page'
+     239 |                         f2fs_end_read_compressed_page(page, PageError(page),
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from fs/f2fs/data.c:25:
+   fs/f2fs/f2fs.h:4226:20: note: declared here
+    4226 | static inline void f2fs_end_read_compressed_page(struct page *page, bool failed,
+         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/f2fs_end_read_compressed_page +136 fs/f2fs/data.c
+
+6dbb17961f46b2 Eric Biggers      2018-04-18  121  
+7f59b277f79e8a Eric Biggers      2021-01-04  122  static void f2fs_finish_read_bio(struct bio *bio)
+93dfe2ac516250 Jaegeuk Kim       2013-11-30  123  {
+6dbb17961f46b2 Eric Biggers      2018-04-18  124  	struct bio_vec *bv;
+6dc4f100c175dd Ming Lei          2019-02-15  125  	struct bvec_iter_all iter_all;
+93dfe2ac516250 Jaegeuk Kim       2013-11-30  126  
+7f59b277f79e8a Eric Biggers      2021-01-04  127  	/*
+7f59b277f79e8a Eric Biggers      2021-01-04  128  	 * Update and unlock the bio's pagecache pages, and put the
+7f59b277f79e8a Eric Biggers      2021-01-04  129  	 * decompression context for any compressed pages.
+7f59b277f79e8a Eric Biggers      2021-01-04  130  	 */
+2b070cfe582b8e Christoph Hellwig 2019-04-25  131  	bio_for_each_segment_all(bv, bio, iter_all) {
+7f59b277f79e8a Eric Biggers      2021-01-04  132  		struct page *page = bv->bv_page;
+6dbb17961f46b2 Eric Biggers      2018-04-18  133  
+7f59b277f79e8a Eric Biggers      2021-01-04  134  		if (f2fs_is_compressed_page(page)) {
+7f59b277f79e8a Eric Biggers      2021-01-04  135  			if (bio->bi_status)
+6ce19aff0b8cd3 Chao Yu           2021-05-20 @136  				f2fs_end_read_compressed_page(page, true, 0);
+7f59b277f79e8a Eric Biggers      2021-01-04 @137  			f2fs_put_page_dic(page);
+4c8ff7095bef64 Chao Yu           2019-11-01  138  			continue;
+4c8ff7095bef64 Chao Yu           2019-11-01  139  		}
+4c8ff7095bef64 Chao Yu           2019-11-01  140  
+7f59b277f79e8a Eric Biggers      2021-01-04  141  		/* PG_error was set if decryption or verity failed. */
+6dbb17961f46b2 Eric Biggers      2018-04-18  142  		if (bio->bi_status || PageError(page)) {
+6dbb17961f46b2 Eric Biggers      2018-04-18  143  			ClearPageUptodate(page);
+fb7d70db305a14 Jaegeuk Kim       2018-09-25  144  			/* will re-read again later */
+fb7d70db305a14 Jaegeuk Kim       2018-09-25  145  			ClearPageError(page);
+6dbb17961f46b2 Eric Biggers      2018-04-18  146  		} else {
+6dbb17961f46b2 Eric Biggers      2018-04-18  147  			SetPageUptodate(page);
+6dbb17961f46b2 Eric Biggers      2018-04-18  148  		}
+5f9abab42b60e6 Jaegeuk Kim       2018-10-16  149  		dec_page_count(F2FS_P_SB(page), __read_io_type(page));
+6dbb17961f46b2 Eric Biggers      2018-04-18  150  		unlock_page(page);
+6dbb17961f46b2 Eric Biggers      2018-04-18  151  	}
+79bbefb19f1359 Chao Yu           2020-03-23  152  
+7f59b277f79e8a Eric Biggers      2021-01-04  153  	if (bio->bi_private)
+7f59b277f79e8a Eric Biggers      2021-01-04  154  		mempool_free(bio->bi_private, bio_post_read_ctx_pool);
+7f59b277f79e8a Eric Biggers      2021-01-04  155  	bio_put(bio);
+4c8ff7095bef64 Chao Yu           2019-11-01  156  }
+4c8ff7095bef64 Chao Yu           2019-11-01  157  
 
 -- 
- Kirill A. Shutemov
+0-DAY CI Kernel Test Service
+https://01.org/lkp
