@@ -2,66 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82561C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2AFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359513AbiFPIMW (ORCPT
+        id S1358692AbiFPIPO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:12:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
+        Thu, 16 Jun 2022 04:15:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359602AbiFPIMT (ORCPT
+        with ESMTP id S229718AbiFPIPK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:12:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6355D64D;
-        Thu, 16 Jun 2022 01:12:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0FCC61D26;
-        Thu, 16 Jun 2022 08:12:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90DA5C34114;
-        Thu, 16 Jun 2022 08:12:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655367138;
-        bh=mWVWvlbNF5oM92o+SC6qXGqar6mMj/mWssSgx/VPIsY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oXjdS09w8tl6WHwt1elnRwRw61srgTuQepEqDujX/nKPw+I5ZIWuRD9rqzmRmk0ic
-         u30mLIYhthZxNk/xyMVzl47T25FztdspG8l3ZUwBleKi+NoWTzBh9bsVooqZTGeapS
-         uy29WF7wFHy0pbTS8X5g69cocaACtb8QI4vTbOiE=
-Date:   Thu, 16 Jun 2022 10:12:14 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hongyu Xie <xy521521@gmail.com>
-Cc:     mathias.nyman@intel.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, 125707942@qq.com, wangqi@kylinos.cn,
-        xiongxin@kylinos.cn, Hongyu Xie <xiehongyu1@kylinos.cn>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v4 -next] usb: xhci: disable irq during initialization
-Message-ID: <Yqrl3jGyUx7sZVdL@kroah.com>
-References: <20220616080933.1238309-1-xiehongyu1@kylinos.cn>
+        Thu, 16 Jun 2022 04:15:10 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741A45D5D7
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 01:15:09 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id x5so1115728edi.2
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 01:15:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=NTbh4MI+QCwbcpkgIpo7198UESJ/mO1+VW3Q06LAB7c=;
+        b=jaqw6FnWxB/5UThR+ZDWPxP3LWg0yS0YKOWgNceuoysE3QYfS+oCxZDmNCa3RDthiA
+         nkA25n9Yi8JFYV85REMoUBn+G4y6pDSV2DxU42hO4xQRb7+rgdKay4JL4s8VmPBn1nC2
+         yF85m7F7VZaH+V+s+cRL0dGTy2NlNoYtbSfZ1CPjfZrocAUyoNrf37+MCeIEcVKY9Mdz
+         1i9VibVT2e/BJ4fdVSxoKa4OFM3U6ip5yjEZWjhIfkQsGUiBh6VjTAV2L2vDPEt837o3
+         6rPCfBieZXhr+OtkAuMNYQbYzuIY8e5Vdeqa07pg+PV/0s2Uo8oR92+b05AsASWc2IXa
+         l2+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=NTbh4MI+QCwbcpkgIpo7198UESJ/mO1+VW3Q06LAB7c=;
+        b=x4A/SFHnDE9qbmTlkmKoOOOF0YRFW4dfZ6lZ9XtW5zBm6q5q4BGFzO9OrwU/DhkzId
+         UCKFD26w+1vDnkR8ud6NaYdSNgo+KzbtqAdBKf1ax3AmKZ6Hew1JcvzYhHJapKy1QD+A
+         ENAgxD2u3eHcZoVC9iqphEeeoWdjDGdSjjWOSs5+r9dK+c5HdmZwRUQ4xFsV49xyMRN2
+         +xkQh3CC3PLlnsJGSq7T33J+pNUg+XjmH34Qhzt1hxYXCzjVaumXwfEm4ifXJxVW0fty
+         8d8Pm49/Kq+EIurq2vXC6AoN9MST4zPzg0JyxkLdH7pAEQHmLsNR2fu6lU/qG7/AmoFf
+         z/DQ==
+X-Gm-Message-State: AJIora9Lcsr+jidEZIBLHINlITkJfyEmDitVaWDqTnrG8G83LUjPsvkN
+        iYQmSrbQkjlrYO+MdtVFc54zdXqA926QEg==
+X-Google-Smtp-Source: AGRyM1tAV7ubqxgWT2Y3vDm33RYC1UL1k8VL4cdyLifra2KOoXTU0YbVtJhJ79SiTn0ipQMr4EiJtw==
+X-Received: by 2002:a05:6402:100c:b0:42d:f407:b050 with SMTP id c12-20020a056402100c00b0042df407b050mr4735798edu.39.1655367307984;
+        Thu, 16 Jun 2022 01:15:07 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id s2-20020a1709060d6200b006f3ef214e2csm471585ejh.146.2022.06.16.01.15.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 01:15:07 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 09:14:44 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Zhangfei Gao <zhangfei.gao@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Wangzhou <wangzhou1@hisilicon.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-accelerators@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org,
+        Yang Shen <shenyang39@huawei.com>
+Subject: Re: [PATCH] uacce: fix concurrency of fops_open and uacce_remove
+Message-ID: <YqrmdKNrYTCiS/MC@myrica>
+References: <20220610123423.27496-1-zhangfei.gao@linaro.org>
+ <Yqn3spLZHpAkQ9Us@myrica>
+ <fdc8d8b0-4e04-78f5-1e8a-4cf44c89a37f@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220616080933.1238309-1-xiehongyu1@kylinos.cn>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fdc8d8b0-4e04-78f5-1e8a-4cf44c89a37f@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 04:09:33PM +0800, Hongyu Xie wrote:
-> irq is disabled in xhci_quiesce(called by xhci_halt, with bit:2 cleared
-> in USBCMD register), but xhci_run(called by usb_add_hcd) re-enable it.
-> It's possible that you will receive thousands of interrupt requests
-> after initialization for 2.0 roothub. And you will get a lot of
-> warning like, "xHCI dying, ignoring interrupt. Shouldn't IRQs be
-> disabled?". This amount of interrupt requests will cause the entire
-> system to freeze.
-> This problem was first found on a device with ASM2142 host controller
-> on it.
+On Thu, Jun 16, 2022 at 12:10:18PM +0800, Zhangfei Gao wrote:
+> > > diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
+> > > index 281c54003edc..b6219c6bfb48 100644
+> > > --- a/drivers/misc/uacce/uacce.c
+> > > +++ b/drivers/misc/uacce/uacce.c
+> > > @@ -136,9 +136,16 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
+> > >   	if (!q)
+> > >   		return -ENOMEM;
+> > > +	mutex_lock(&uacce->queues_lock);
+> > > +
+> > > +	if (!uacce->parent->driver) {
+> > I don't think this is useful, because the core clears parent->driver after
+> > having run uacce_remove():
+> > 
+> >    rmmod hisi_zip		open()
+> >     ...				 uacce_fops_open()
+> >     __device_release_driver()	  ...
+> >      pci_device_remove()
+> >       hisi_zip_remove()
+> >        hisi_qm_uninit()
+> >         uacce_remove()
+> >          ...			  ...
+> >     				  mutex_lock(uacce->queues_lock)
+> >      ...				  if (!uacce->parent->driver)
+> >      device_unbind_cleanup()	  /* driver still valid, proceed */
+> >       dev->driver = NULL
 > 
-> Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
-> Reported-by: kernel test robot <lkp@intel.com>
+> The check  if (!uacce->parent->driver) is required, otherwise NULL pointer
+> may happen.
 
-the test robot did not find this original problem, it only found
-problems with your original submission, which is different.
+I agree we need something, what I mean is that this check is not
+sufficient.
 
+> iommu_sva_bind_device
+> const struct iommu_ops *ops = dev_iommu_ops(dev);  ->
+> dev->iommu->iommu_dev->ops
+> 
+> rmmod has no issue, but remove parent pci device has the issue.
+
+Ah right, relying on the return value of bind() wouldn't be enough even if
+we mandated SVA.
+
+[...]
+> > 
+> > I think we need the global uacce_mutex to serialize uacce_remove() and
+> > uacce_fops_open(). uacce_remove() would do everything, including
+> > xa_erase(), while holding that mutex. And uacce_fops_open() would try to
+> > obtain the uacce object from the xarray while holding the mutex, which
+> > fails if the uacce object is being removed.
+> 
+> Since fops_open get char device refcount, uacce_release will not happen
+> until open returns.
+
+The refcount only ensures that the uacce_device object is not freed as
+long as there are open fds. But uacce_remove() can run while there are
+open fds, or fds in the process of being opened. And atfer uacce_remove()
+runs, the uacce_device object still exists but is mostly unusable. For
+example once the module is freed, uacce->ops is not valid anymore. But
+currently uacce_fops_open() may dereference the ops in this case:
+
+	uacce_fops_open()
+	 if (!uacce->parent->driver)
+	 /* Still valid, keep going */		
+	 ...					rmmod
+						 uacce_remove()
+	 ...					 free_module()
+	 uacce->ops->get_queue() /* BUG */
+
+Accessing uacce->ops after free_module() is a use-after-free. We need all
+the fops to synchronize with uacce_remove() to ensure they don't use any
+resource of the parent after it's been freed. 
+
+I see uacce_fops_poll() may have the same problem, and should be inside
+uacce_mutex.
+
+Thanks,
+Jean
