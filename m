@@ -2,183 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AAC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F04C4CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378907AbiFPWwr (ORCPT
+        id S1379123AbiFPWyf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 18:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57738 "EHLO
+        Thu, 16 Jun 2022 18:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378512AbiFPWwl (ORCPT
+        with ESMTP id S1349040AbiFPWyb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 18:52:41 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB241A04C
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 15:52:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655419960; x=1686955960;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=82Oy0CEQsVeqYYYAofreddCXB2NdDKhBIELwX0MrIC8=;
-  b=kk+xGrnZ2zMO+fKqdXpho0ASS5uURV3c/Fklq4QHOp6ZT30LW/ud8ULC
-   kMKjckTHiAxJWvEauFL09i38LueJXI9kBn+S8M3fxaGuk6jVZ4mxNxjjE
-   BXGq1BxOXo4OOquqy12jIr+u5Z4fiDDljO1JHjl1pHTHPG5iVgH3Jafxw
-   xIYExMneoCKwuKWyBMt1wpE9lIPrdM0PTFJprhwxDn3UGlCN6LxS/W44g
-   1ZRhUcdslK9+EFfbdGuExgeFQP6gpxRg5Bk4nhz1WFyYaEYBOex6SxceA
-   v/5BYW7R4afVZ6JZIZ1Opewx3+DBh4vjInRHOXg9UUZZzvtNJd600kHD3
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="278166390"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="278166390"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 15:52:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="675231909"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by FMSMGA003.fm.intel.com with ESMTP; 16 Jun 2022 15:52:39 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 16 Jun 2022 15:52:17 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 16 Jun 2022 15:52:17 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.172)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 16 Jun 2022 15:52:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VNkpucCRUOM/ozG8WApKgGa0RaSTqCZzxMIe1/qstp4jUi09Rlm8mozRW8MunUQzKt7BR9jXHa6nfyJSPcELtHQzL+0hNgP9CCeaqjNTYgtkTbzd7b4bDEwkoequizMMjsIB58JePLoa9PHMVTN6FBjanyCuEmT8XPZkPNzIjnL+MNZ8OALrVzsqtHb9yyXY8YQVQ4TYoceekg5oKir8w/Uf7bOZ/kydo6tgEOAOP3GO9Pc9+a/Vgn1eV09RSQAqeN0iCll1QF6CmdxEOt4FtUzoRnbeWpiRd8fcQgSPHulcCwRPUV8nJvkljnl3a5YmWG+0OVYDwnzByzY7tSlFPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=82Oy0CEQsVeqYYYAofreddCXB2NdDKhBIELwX0MrIC8=;
- b=FE2cy0wsP355X+d8YrrK7DAaDbhurryOdfdKdsKhxKKY0IaYZs6Vy5yTltLG96/KNGnw72Jt+fkiE1PM2OtlTKUmKNUD9oJaiFdGK40BlJ02HieXEVG0nZHfQkS9ELjmLUQBMK79NtYrz66+f9NT+pPJAwr+PU4CVHZpyz1qcGPoQ3yOKv3tPQigCzjy87DqL59P/tXJBkFHAW6uxPNZfv54GCDrS9nGNUnluyTOw/COKVRVnx3HLayNF4HuUtJ9uXAx7+0jYlP4TbDtUf+mrgyaLbIRxbJ94PZUT8nLSiTYNLS2YGCu9ZZZpXWGF+QB68U6mQRgueH1uX3ZycfqFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from CY4PR11MB1383.namprd11.prod.outlook.com (2603:10b6:903:2d::13)
- by MWHPR11MB0063.namprd11.prod.outlook.com (2603:10b6:301:6c::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.16; Thu, 16 Jun
- 2022 22:52:14 +0000
-Received: from CY4PR11MB1383.namprd11.prod.outlook.com
- ([fe80::4d77:ae24:577c:8157]) by CY4PR11MB1383.namprd11.prod.outlook.com
- ([fe80::4d77:ae24:577c:8157%11]) with mapi id 15.20.5332.020; Thu, 16 Jun
- 2022 22:52:14 +0000
-From:   "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-To:     "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "kcc@google.com" <kcc@google.com>,
-        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "dvyukov@google.com" <dvyukov@google.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "ryabinin.a.a@gmail.com" <ryabinin.a.a@gmail.com>,
-        "glider@google.com" <glider@google.com>
-Subject: Re: [PATCHv3 0/8] Linear Address Masking enabling
-Thread-Topic: [PATCHv3 0/8] Linear Address Masking enabling
-Thread-Index: AQHYfNjFGdTdbAcQSUuXYNy1+ejGKq1Srb6A
-Date:   Thu, 16 Jun 2022 22:52:14 +0000
-Message-ID: <fdc44a96f0734682338930aec4884d9a2b39650d.camel@intel.com>
-References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
-In-Reply-To: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 42600a66-83a1-480c-d1ca-08da4feadb1e
-x-ms-traffictypediagnostic: MWHPR11MB0063:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <MWHPR11MB0063EE13CDA6B49C5E5EB68FC9AC9@MWHPR11MB0063.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LFqIfw2O4YtSoZEqzxys/06DmOrVP1YUZNyhaRLsWd3XOOumIyxmA5J5+FBrM0304MW/+C8sUB/qVujwBhkxcpZYRObAGToBJNgKnIybg985d3c5Mai8biPNC3erUh2/CTe+ct9YMZ3UySagt60I2bu1nPab3/ET58H5tbhFstjSERLVJs2gtNyCin3w77BHusMLYt7N0wtK/b1otSVDKwy0jB9ZfUjq7U0K019HnfjCOP+oTMIGKFUnJh1/AZEEEpAL21Q9uQDQkKZjG+emoMrm3TZUKD0E/8mPMxpXBLvCrZ+ALkhMb26m2SdCemvrBszR7EgUwjnhwZyClFjEVICGMALZzGTV7S+g0xXU/PTO2AnD1Dup7Rf2vZUUHg5TBhNbF41Uqs7QbpP2/Xt5tocJ58ztVQwE5+JklTYbYKLidPbeaSUiMce+hLouQsr/HtG6B5oNB5+tO2jdXf8FQUNnTHkQy4vBqIgHl6/mFdm6TgDcEMIJkoHsTJtEKAdB/GS4K4tp+qJv+vwAHHNOPGLX5meh9/99pI94DyJitFMCKenhO1WwYgFSuuo9ojMNfRWhBdfjSRcNHhiIk/a9Ft3eDaHyt12j2LKpqVOAoQ+sApTdfR52AXOwppxWnFEy/xE54+91K/H7XjxuQzzn86mrGRAul+SMsehAjuoE6sgWUBpoJbGdc6B10mgIF1ZButru8VegAu//pp1OwurK6gcm8LUmILFajOqS63m9aTo=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR11MB1383.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(82960400001)(316002)(186003)(6506007)(8936002)(38100700002)(91956017)(71200400001)(6512007)(26005)(2616005)(54906003)(122000001)(5660300002)(7416002)(36756003)(8676002)(86362001)(38070700005)(64756008)(66446008)(2906002)(66556008)(6486002)(4744005)(110136005)(66946007)(508600001)(4326008)(66476007)(76116006)(99106002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SytMaFdvQndJOThzSitHWlAwKzR2VUI5Z1FENW9rYmh2R0oxZ1VSZGJEaUJp?=
- =?utf-8?B?cXNYMHpwVUdOSjl6VVh3MmVUNnpjWjZET3BHK1RHTVJKdGVHOTFXb0t5N2Vo?=
- =?utf-8?B?VDBsUmtPZDB6OGtmcnlWZ2FLbnlMeXo4dVo0djFQK0ZsbVFtM0c0T00rUzJ4?=
- =?utf-8?B?TmtyVnI4QmRjSCtWVFVJQjRNaVZVY1VFejhNZFJZOG1LV3NscXVQbTNtaDFO?=
- =?utf-8?B?V0ZpSUVxcmhLUEc2ZjE2WXlOU3pkRWdOaFI4d2VZSEt4Wms2QndyS2RIQ2d0?=
- =?utf-8?B?YnNZVFIvWVBMUmUva3JZRUVaYnVxa1NObEdEdkl4alVPQThoNkZzNHVIQ1Rj?=
- =?utf-8?B?cFMxTGE1T0x1cTlxMVpGVGJqc0M4R0pEV09yVjBSd1BTbVV4WDZ4OWcxSG5C?=
- =?utf-8?B?OG1TOUVVcVlvRHVLTWtWS0p2NjByditBOTZzYWE2OFdHM0xJemtsTGNmK2RH?=
- =?utf-8?B?QjdUQ0JCaWRpOE1PV0VMeEY0dXBpZGgyNXZtMURYSmNQdDd0SmRIbysrVW5w?=
- =?utf-8?B?a0xFdFlZN0t6anJxVTZaMkQzK21nZ0JQeExFcmNkUmpBazVmVkRmQXhwaWlx?=
- =?utf-8?B?bG95THVnZllCSXVJZExYY0RCdTd1QW8vZVI0YndUdEIxL3FFY1VhR1FoaFpu?=
- =?utf-8?B?Z2R5VDdaY1FZOFYyOURhd1M3TFdMSnJ4NStvWnRHNGw2REE2NUkyOVJQZ21U?=
- =?utf-8?B?RTRiNGQzeldBU1dBSmN5eXhBektQSmlQcjJvM0tOck1CNUlEZjZoQUZIeG9H?=
- =?utf-8?B?QWx4Y29uYnpXc2lSdzI5UUl2VkQvbFhNeVkzb01XajliN2hISnZkQ3RKSFRW?=
- =?utf-8?B?VjF3Mmxubm1sRHNsWHJrT0NzS3FpUTVCZ0FzY0tIeEtjbmpWVml1Zkw3RHBy?=
- =?utf-8?B?STJTdHZIWUJzZ0thV3hJMG1adWZHM2JsSWtvMHIxdzZWV0d5dSt6anA0dWxX?=
- =?utf-8?B?UUFINnVONHJRZ05Mb1ZmUklYK0lIckJCWU9wZHAxcEdCTkszVUxlMFgxNVVI?=
- =?utf-8?B?WkY3b2d1UW9vWm1uNGZJTmI4TGRSWWNsaDVXV0NPc2JzWDd3OWFiNEpneFd0?=
- =?utf-8?B?aXBPZjhQNzJnbUYyQ1BZbHZoRVBNd09OMjNMcDdjU1o1Nzc1WUJRVUQvc0VL?=
- =?utf-8?B?N1owR00vRkxXWllmOW1TZmpZQWdPaDVpUW83bC9zUzJtdnB4ODV0ZERRWHBa?=
- =?utf-8?B?VUl0V2NCaFR3bENTa213UktOQktvMysrTWNHdUw0MlNUd28yajBJa0ZERFln?=
- =?utf-8?B?R1hpc2NCNHpWbGVwUTJSbmFLd0NLMXAxNjdPMFlDTkc0a09RemtmOEh0VlAw?=
- =?utf-8?B?cjNtU1pVUk5wR3JjaGkxMllGbTVKQlZ4T1VQSy9pZEszT0QyQ2xxRnFKMWZS?=
- =?utf-8?B?dUJhbThmakptY2ZNSklxcmV6ZElzVTA4akF2WW93T1dXRG5tckRuR1prekJS?=
- =?utf-8?B?RFJXd04zQm9BOW8ySGVGNkNaMWJ5NkNUUmh2d2h4U3NYUVFYRjNjc2NXeWJv?=
- =?utf-8?B?VGdxUTBXQktmNlZMUGh1UUR4Vk03WVNQTE5sdXNld2pkMFZFQkt1RldFemVE?=
- =?utf-8?B?ajdGUDVUVlpuVXlFMHk2SzFvVzcwQm05MlQzTTdHMEdiZTF4MmFuVk9JdGNw?=
- =?utf-8?B?aGtFMkNtSFZhS1FWcTY2UXhSWUlRL0hoeTRoOFhSTXZpdTdkYmg0MGZid2F4?=
- =?utf-8?B?bVVVdE5salRVekV6Y0RpVmQ5MWJUaE9VcStnM29JQ2tUTWFMMUxBTHR6RkJn?=
- =?utf-8?B?YnUrcWJmNEdGYW9iVnJwSXFROHZ5d2Y1TTI5V2d3NUNCZHR4WkI3Y25NcEJm?=
- =?utf-8?B?LzhZcWd1S21HVDkrakJmbGoyT1JhUUsxSGdrdGZ2elJtZytIMi9ZRDY1bEZw?=
- =?utf-8?B?c09qSVFKbHpZZGxKL285YW9tdkV1QTBlUTFQSGFDeXFPaHNCN1Z5OEphcHdo?=
- =?utf-8?B?MkRXWnR2UW1sUFZRTzhOZ3BhNDJ4NHk0bFdwci8vZU9GQi9NanJ6amRPRTY1?=
- =?utf-8?B?NGlhZXY3Y2hURTVtS0lkd1JCYWhPZ2JVODBVZndzNUM0KzRqamFUS2tqR1dV?=
- =?utf-8?B?cGF4MkF6M2JYdzJOY3V0TmJrbEV3ZzhWWjBoY2NzTTE4a0xCL3NQcXRDR3py?=
- =?utf-8?B?bXUrZmFJYnRQT2djNmRBOWpreTFrQ2kyQ1RPcnl5c0pkZFFKenpDUC9RQy9S?=
- =?utf-8?B?UDdJQnhZQUtxYTFxd2sydTNiYnRNL3lDUkJWWGNSRWMvdmV0Sk55Nm12cXVO?=
- =?utf-8?B?Y2FZYmxhcHpIcDVZS2R5UmpwdWM4aEQrbktydDlVNFF3TFJSQjNOMjc3VXZj?=
- =?utf-8?B?UkxTYjlPRGMxbXlVSlVGNFpEcGpzSDM4cG5mZ0ZFajNraWdpVllLMUdGdFU1?=
- =?utf-8?Q?Ty/IVhOFjLLa5QV7GUDZtvlIi9Giocgauhyzr?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <007DDAEC970984498CB1A5B390835271@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Thu, 16 Jun 2022 18:54:31 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D449C6212F
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 15:54:28 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id q11so3513742oih.10
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 15:54:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=7wV78KF4dgnUbQxk8pc94OHUoJRSZfwr41EF876rjV4=;
+        b=DNbvDqObxLMXa/rES4xAoWU4Civ7qJLfBw5zxQx08WrRR7NVxi8Yzg408cwdWX+QH5
+         9dI2+M35fzecclwkWTTDSaRchm8T7VNkAQYYlab/R3Ecj5LgVXjZIXOOQQQIRqcx596j
+         GtHWaX+RqlOcJcM5E4yqqQoF94qQLPi5aOnxw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7wV78KF4dgnUbQxk8pc94OHUoJRSZfwr41EF876rjV4=;
+        b=hLgSRthmA3jgP6QuJzw/xPk4pGChNZdk+Z/0DYeumse0/hMQ2v+PAgwcb2q/X/45BK
+         ZAoTr0UZg9c0MCUIqwTR0IKQBxFEWq2NSPlBkJqPkLDv1XIwu1OhrswaBByHZaQMB1k7
+         iv4PvZ++RTR6W3scJyA1JqCivsbnquEribEslNaT8vpyAlejUUceeDfkIgWtOnqwOO/M
+         o+7aD5mIdrUzmfNdiTrtiCpnuFR/jG8La7L4QX6cZ8X3GADwd1QdR/kpfEodq92rU1Nf
+         zEiktQrgfval+6MdLpfp5OJJbRFn9Yl/mYoM+sCkV4khCQuFk8CEntLLU77STteH0LC9
+         nn5g==
+X-Gm-Message-State: AOAM5309x6uj5y04vo8RtPIiMsN3RLt6kCXubvjkX7fyYmogMT69uDr2
+        t2y9malmTOyDLBkAb2dt03PxEQ==
+X-Google-Smtp-Source: ABdhPJzLEct5qbxT7S+CBrXpkdvX1y1NWqaQyDVrCZHbJaUGj+dQ0MODTBXf676ihx2engLwfu0p9w==
+X-Received: by 2002:a05:6808:2117:b0:32e:f441:8cbe with SMTP id r23-20020a056808211700b0032ef4418cbemr8919388oiw.167.1655420068100;
+        Thu, 16 Jun 2022 15:54:28 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id u19-20020a056870951300b000f309d52933sm1501573oal.47.2022.06.16.15.54.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jun 2022 15:54:27 -0700 (PDT)
+Subject: Re: [PATCH 2/2] selftests/x86/amx: Fix the test to avoid failure when
+ AMX is unavailable
+To:     "Chang S. Bae" <chang.seok.bae@intel.com>,
+        linux-kselftest@vger.kernel.org, shuah@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@suse.de,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220401221014.13556-1-chang.seok.bae@intel.com>
+ <20220401221014.13556-3-chang.seok.bae@intel.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <aaab50d2-592c-69e4-58a6-0a0926669de3@linuxfoundation.org>
+Date:   Thu, 16 Jun 2022 16:54:26 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR11MB1383.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 42600a66-83a1-480c-d1ca-08da4feadb1e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jun 2022 22:52:14.3049
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: H/6cVIyd6fL+4TLh1t82zu7FxWQMJFB5+zM9i+0CH0cXd8AG3XIeYyRJRwxWLtzYDOyzkxu3fK8RHKkRXOC5OLGgrkjPp2du9s5IfBDWof0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB0063
-X-OriginatorOrg: intel.com
+In-Reply-To: <20220401221014.13556-3-chang.seok.bae@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gRnJpLCAyMDIyLTA2LTEwIGF0IDE3OjM1ICswMzAwLCBLaXJpbGwgQS4gU2h1dGVtb3Ygd3Jv
-dGU6DQo+IExpbmVhciBBZGRyZXNzIE1hc2tpbmdbMV0gKExBTSkgbW9kaWZpZXMgdGhlIGNoZWNr
-aW5nIHRoYXQgaXMgYXBwbGllZA0KPiB0bw0KPiA2NC1iaXQgbGluZWFyIGFkZHJlc3NlcywgYWxs
-b3dpbmcgc29mdHdhcmUgdG8gdXNlIG9mIHRoZSB1bnRyYW5zbGF0ZWQNCj4gYWRkcmVzcyBiaXRz
-IGZvciBtZXRhZGF0YS4NCj4gDQo+IFRoZSBwYXRjaHNldCBicmluZ3Mgc3VwcG9ydCBmb3IgTEFN
-IGZvciB1c2Vyc3BhY2UgYWRkcmVzc2VzLg0KDQpBcm0gaGFzIHRoaXMgZG9jdW1lbnRhdGlvbiBh
-Ym91dCB3aGljaCBtZW1vcnkgb3BlcmF0aW9ucyBzdXBwb3J0IGJlaW5nDQpwYXNzZWQgdGFnZ2Vk
-IHBvaW50ZXJzLCBhbmQgd2hpY2ggZG8gbm90Og0KRG9jdW1lbnRhdGlvbi9hcm02NC90YWdnZWQt
-YWRkcmVzcy1hYmkucnN0DQoNCklzIHRoZSBpZGVhIHRoYXQgTEFNIHdvdWxkIGhhdmUgc29tZXRo
-aW5nIHNpbWlsYXIsIG9yIGV4YWN0bHkgbWlycm9yDQp0aGUgYXJtIEFCST8gSXQgc2VlbXMgbGlr
-ZSBpdCBpcyB0aGUgc2FtZSByaWdodCBub3cuIFNob3VsZCB0aGUgZG9jcyBiZQ0KZ2VuZXJhbGl6
-ZWQ/DQoNCg==
+On 4/1/22 4:10 PM, Chang S. Bae wrote:
+> When a CPU does not have AMX, the test fails. But this is wrong as it
+> should be runnable regardless. Skip the test instead.
+> 
+> Reported-by: Thomas Gleixner <tglx@linutronix.de>
+> Fixes: 6a3e0651b4a ("selftests/x86/amx: Add test cases for AMX state management")
+> Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
+> Cc: linux-kselftest@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+>   tools/testing/selftests/x86/amx.c | 42 +++++++++++++++++++++++--------
+>   1 file changed, 31 insertions(+), 11 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/x86/amx.c b/tools/testing/selftests/x86/amx.c
+> index 3615ef4a48bb..14abb6072a7d 100644
+> --- a/tools/testing/selftests/x86/amx.c
+> +++ b/tools/testing/selftests/x86/amx.c
+> @@ -106,6 +106,12 @@ static void clearhandler(int sig)
+>   
+>   #define CPUID_LEAF1_ECX_XSAVE_MASK	(1 << 26)
+>   #define CPUID_LEAF1_ECX_OSXSAVE_MASK	(1 << 27)
+> +
+> +static struct {
+> +	unsigned xsave:   1;
+> +	unsigned osxsave: 1;
+> +} cpuinfo;
+> +
+
+Why is this needed? Also naming this cpuinfo is confuing.
+
+>   static inline void check_cpuid_xsave(void)
+>   {
+>   	uint32_t eax, ebx, ecx, edx;
+> @@ -118,10 +124,8 @@ static inline void check_cpuid_xsave(void)
+>   	eax = 1;
+>   	ecx = 0;
+>   	cpuid(&eax, &ebx, &ecx, &edx);
+> -	if (!(ecx & CPUID_LEAF1_ECX_XSAVE_MASK))
+> -		fatal_error("cpuid: no CPU xsave support");
+> -	if (!(ecx & CPUID_LEAF1_ECX_OSXSAVE_MASK))
+> -		fatal_error("cpuid: no OS xsave support");
+> +	cpuinfo.xsave = !!(ecx & CPUID_LEAF1_ECX_XSAVE_MASK);
+> +	cpuinfo.osxsave = !!(ecx & CPUID_LEAF1_ECX_OSXSAVE_MASK);
+
+Why add this complexity. Why not just Skip here?
+
+>   }
+>   
+>   static uint32_t xbuf_size;
+> @@ -161,14 +165,31 @@ static void check_cpuid_xtiledata(void)
+>   	 * eax: XTILEDATA state component size
+>   	 * ebx: XTILEDATA state component offset in user buffer
+>   	 */
+> -	if (!eax || !ebx)
+> -		fatal_error("xstate cpuid: invalid tile data size/offset: %d/%d",
+> -				eax, ebx);
+> -
+>   	xtiledata.size	      = eax;
+>   	xtiledata.xbuf_offset = ebx;
+>   }
+>   
+> +static bool amx_available(void)
+> +{
+> +	check_cpuid_xsave();
+> +	if (!cpuinfo.xsave) {
+> +		printf("[SKIP]\tcpuid: no CPU xsave support\n");
+> +		return false;
+> +	} else if (!cpuinfo.osxsave) {
+> +		printf("[SKIP]\tcpuid: no OS xsave support\n");
+> +		return false;
+> +	}
+> +
+> +	check_cpuid_xtiledata();
+> +	if (!xtiledata.size || !xtiledata.xbuf_offset) {
+> +		printf("[SKIP]\txstate cpuid: no tile data (size/offset: %d/%d)\n",
+> +		       xtiledata.size, xtiledata.xbuf_offset);
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+
+I am not seeing any value in adding this layer of abstraction.
+Keep it simple and do the handling in main()
+
+>   /* The helpers for managing XSAVE buffer and tile states: */
+>   
+>   struct xsave_buffer *alloc_xbuf(void)
+> @@ -826,9 +847,8 @@ static void test_context_switch(void)
+>   
+>   int main(void)
+>   {
+> -	/* Check hardware availability at first */
+> -	check_cpuid_xsave();
+> -	check_cpuid_xtiledata();
+> +	if (!amx_available())
+> +		return 0;
+
+This should KSFT_SKIP for this to be reported as a skip. Returning 0
+will be reported as a Pass.
+
+>   
+>   	init_stashed_xsave();
+>   	sethandler(SIGILL, handle_noperm, 0);
+> 
+
+thanks,
+-- Shuah
