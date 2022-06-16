@@ -2,145 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 397C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 18:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53CA0CCA47E
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 18:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234839AbiFPSU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 14:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51130 "EHLO
+        id S1377172AbiFPSZf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 14:25:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbiFPSU1 (ORCPT
+        with ESMTP id S231649AbiFPSZc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 14:20:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9344FC6A
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 11:20:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 065CAB82529
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 18:20:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 253CEC34114;
-        Thu, 16 Jun 2022 18:20:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655403623;
-        bh=8D4UPmPWJGZms6MD3CREfq52BmU6+/z5BRR65651Wts=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=QsraUgbu9SU0YBwZZ6+jQn/BdglCIeXx3J/wTE5X92rlzaZtaXCdcqPnksQFUwwqk
-         nR3E/JqTMu5QiPX43myf+PnQgP0uXbshq4YYw4jDwK/6o30SkKIqfIIj2Mvq2rMq0M
-         L2+0mVIHciDqg5RIE5393kLTwHkheBNoCgZqfHCNHTZVRutblqQNPKGO5K4AsSklsI
-         zNTHdgC/93EJ45M/IaQmGJMCK6scVHAmm2kU3sGpfgPQ5wwJWqG/X59ETWlXe2ndnM
-         8DPG5D4wIQIQjhwJUB4CamjR3kMrr02DVWsP2JDnhAkyB+KC0ucby3huL6M8JoiQjI
-         FHBxkahj3NqQw==
-Date:   Thu, 16 Jun 2022 11:20:22 -0700 (PDT)
-From:   Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To:     Juergen Gross <jgross@suse.com>
-cc:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
-        viresh.kumar@linaro.org, hch@infradead.org,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Subject: Re: [PATCH v2] xen: don't require virtio with grants for non-PV
- guests
-In-Reply-To: <20220616053715.3166-1-jgross@suse.com>
-Message-ID: <alpine.DEB.2.22.394.2206161106020.10483@ubuntu-linux-20-04-desktop>
-References: <20220616053715.3166-1-jgross@suse.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Thu, 16 Jun 2022 14:25:32 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE8FA41F9D
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 11:25:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655403931; x=1686939931;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xtsloODx2Xan8hpnAY3csMl8yBgnHRVt/uQ5mEbOaYY=;
+  b=Gh6gg8rinaySWdbE4j9L3CLiow1x5qtKSXlZYICpyTviihE2kcl7wFO1
+   vsDRe7x442MZok7eia5m6brvYKjMqE2S8DNdOIHt9rOHgbng3vepFQfoC
+   +joeHMGMY//XbInLQa8oCFcSlkOMyVi5V6q3RUd8vCJLwHlEhTrLFqxYV
+   SIN4wDSoq2SWYsjFbwbaGKXSz48Mimf2iBl6S2JeCwSu5+UfTcwJPxCoU
+   5K8XlVK5p3f2C6MsSOrqbOW4FxF4aN0Glc4JKdky2u4Td2xucDpwQ7JkS
+   zzUE+onP5vcJfM/GutOOIu1K6gVzL6Lci2R1v7E9pS3JpaRpolg6K+rd3
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="279378949"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="279378949"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 11:25:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="831678364"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 16 Jun 2022 11:25:29 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 3810E1D0; Thu, 16 Jun 2022 21:25:34 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Andy Shevchenko <andy@kernel.org>
+Subject: [PATCH v1 5/9] mfd: intel_soc_pmic_crc: Switch from CONFIG_PM_SLEEP guards to pm_sleep_ptr() etc
+Date:   Thu, 16 Jun 2022 21:25:20 +0300
+Message-Id: <20220616182524.7956-5-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220616182524.7956-1-andriy.shevchenko@linux.intel.com>
+References: <20220616182524.7956-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022, Juergen Gross wrote:
-> Commit fa1f57421e0b ("xen/virtio: Enable restricted memory access using
-> Xen grant mappings") introduced a new requirement for using virtio
-> devices: the backend now needs to support the VIRTIO_F_ACCESS_PLATFORM
-> feature.
-> 
-> This is an undue requirement for non-PV guests, as those can be operated
-> with existing backends without any problem, as long as those backends
-> are running in dom0.
-> 
-> Per default allow virtio devices without grant support for non-PV
-> guests.
-> 
-> Add a new config item to always force use of grants for virtio.
-> 
-> Fixes: fa1f57421e0b ("xen/virtio: Enable restricted memory access using Xen grant mappings")
-> Reported-by: Viresh Kumar <viresh.kumar@linaro.org>
-> Signed-off-by: Juergen Gross <jgross@suse.com>
-> ---
-> V2:
-> - remove command line parameter (Christoph Hellwig)
-> ---
->  drivers/xen/Kconfig | 9 +++++++++
->  include/xen/xen.h   | 2 +-
->  2 files changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/xen/Kconfig b/drivers/xen/Kconfig
-> index bfd5f4f706bc..a65bd92121a5 100644
-> --- a/drivers/xen/Kconfig
-> +++ b/drivers/xen/Kconfig
-> @@ -355,4 +355,13 @@ config XEN_VIRTIO
->  
->  	  If in doubt, say n.
->  
-> +config XEN_VIRTIO_FORCE_GRANT
-> +	bool "Require Xen virtio support to use grants"
-> +	depends on XEN_VIRTIO
-> +	help
-> +	  Require virtio for Xen guests to use grant mappings.
-> +	  This will avoid the need to give the backend the right to map all
-> +	  of the guest memory. This will need support on the backend side
-> +	  (e.g. qemu or kernel, depending on the virtio device types used).
-> +
->  endmenu
-> diff --git a/include/xen/xen.h b/include/xen/xen.h
-> index 0780a81e140d..4d4188f20337 100644
-> --- a/include/xen/xen.h
-> +++ b/include/xen/xen.h
-> @@ -56,7 +56,7 @@ extern u64 xen_saved_max_mem_size;
->  
->  static inline void xen_set_restricted_virtio_memory_access(void)
->  {
-> -	if (IS_ENABLED(CONFIG_XEN_VIRTIO) && xen_domain())
-> +	if (IS_ENABLED(CONFIG_XEN_VIRTIO_FORCE_GRANT) || xen_pv_domain())
->  		platform_set(PLATFORM_VIRTIO_RESTRICTED_MEM_ACCESS);
->  }
+Letting the compiler remove these functions when the kernel is built
+without CONFIG_PM_SLEEP support is simpler and less error prone than the
+use of #ifdef based kernel configuration guards.
 
-Hi Juergen, you might have seen my email:
-https://marc.info/?l=linux-kernel&m=165533636607801&w=2
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/mfd/intel_soc_pmic_crc.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-Linux is always running as HVM on ARM, so if you want to introduce
-XEN_VIRTIO_FORCE_GRANT, then XEN_VIRTIO_FORCE_GRANT should be
-automatically selected on ARM. I don't think there should be a visible
-menu option for XEN_VIRTIO_FORCE_GRANT on ARM.
+diff --git a/drivers/mfd/intel_soc_pmic_crc.c b/drivers/mfd/intel_soc_pmic_crc.c
+index 165f686132f6..c034e226a0bb 100644
+--- a/drivers/mfd/intel_soc_pmic_crc.c
++++ b/drivers/mfd/intel_soc_pmic_crc.c
+@@ -229,7 +229,6 @@ static void intel_soc_pmic_shutdown(struct i2c_client *i2c)
+ 	return;
+ }
+ 
+-#if defined(CONFIG_PM_SLEEP)
+ static int intel_soc_pmic_suspend(struct device *dev)
+ {
+ 	struct intel_soc_pmic *pmic = dev_get_drvdata(dev);
+@@ -247,10 +246,8 @@ static int intel_soc_pmic_resume(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+-static SIMPLE_DEV_PM_OPS(intel_soc_pmic_pm_ops, intel_soc_pmic_suspend,
+-			 intel_soc_pmic_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(crystal_cove_pm_ops, intel_soc_pmic_suspend, intel_soc_pmic_resume);
+ 
+ static const struct i2c_device_id intel_soc_pmic_i2c_id[] = {
+ 	{ }
+@@ -268,7 +265,7 @@ MODULE_DEVICE_TABLE(acpi, intel_soc_pmic_acpi_match);
+ static struct i2c_driver intel_soc_pmic_i2c_driver = {
+ 	.driver = {
+ 		.name = "intel_soc_pmic_i2c",
+-		.pm = &intel_soc_pmic_pm_ops,
++		.pm = pm_sleep_ptr(&crystal_cove_pm_ops),
+ 		.acpi_match_table = ACPI_PTR(intel_soc_pmic_acpi_match),
+ 	},
+ 	.probe = intel_soc_pmic_i2c_probe,
+-- 
+2.35.1
 
-I realize we have a conflict between HVM guests on ARM and x86:
-
-- on ARM, PLATFORM_VIRTIO_RESTRICTED_MEM_ACCESS should be enabled when
-  "xen,grant-dma" is present
-- on x86, due to the lack of "xen,grant-dma", it should be off by
-  default and based on a kconfig or command line option
-
-To be honest, like Christoph suggested, I think even on x86 there should
-be a firmware table to trigger setting
-PLATFORM_VIRTIO_RESTRICTED_MEM_ACCESS. We have 2 Xen-specific ACPI
-tables, and we could have 1 more to define this. Or an HVM param or
-a feature flag?
-
-I think that would be the cleanest way to do this, but it is a lot of
-more work compared to adding a couple of lines of code to Linux, so this
-is why I suggested:
-https://marc.info/?l=linux-kernel&m=165533636607801&w=2
-
-ARM uses "xen,grant-dma" to detect whether
-PLATFORM_VIRTIO_RESTRICTED_MEM_ACCESS needs setting.
-
-One day x86 could check an ACPI property or HVM param or feature flag.
-None of them are available now, so for now use a command line option as
-a workaround. It is totally fine to use an x86-only kconfig option
-instead of a command line option.
-
-Would you be OK with that?
