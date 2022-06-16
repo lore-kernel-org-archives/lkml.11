@@ -2,61 +2,313 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99017C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F419CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:55:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359233AbiFPHyq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 03:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44344 "EHLO
+        id S230043AbiFPHzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 03:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiFPHyo (ORCPT
+        with ESMTP id S1358520AbiFPHzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 03:54:44 -0400
-Received: from imap3.hz.codethink.co.uk (imap3.hz.codethink.co.uk [176.9.8.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B99F19014
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 00:54:43 -0700 (PDT)
-Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=rainbowdash)
-        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
-        id 1o1kKv-0007ZL-7u; Thu, 16 Jun 2022 08:54:41 +0100
-Received: from ben by rainbowdash with local (Exim 4.95)
-        (envelope-from <ben@rainbowdash>)
-        id 1o1kKu-007hmP-Q1;
-        Thu, 16 Jun 2022 08:54:40 +0100
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-To:     linux-kernel@vger.kernel.org, ben-linux@fluff.org
-Cc:     Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: [PATCH] mailmap: add alias from Ben Dooks' old simtec address
-Date:   Thu, 16 Jun 2022 08:54:40 +0100
-Message-Id: <20220616075440.1836576-1-ben.dooks@codethink.co.uk>
-X-Mailer: git-send-email 2.35.1
+        Thu, 16 Jun 2022 03:55:19 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B4B5D5CC
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 00:55:18 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LNvbF1YJRzDrDc;
+        Thu, 16 Jun 2022 15:54:49 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 16 Jun 2022 15:55:15 +0800
+CC:     <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <bristot@redhat.com>,
+        <prime.zeng@huawei.com>, <jonathan.cameron@huawei.com>,
+        <ego@linux.vnet.ibm.com>, <srikar@linux.vnet.ibm.com>,
+        <linuxarm@huawei.com>, <21cnbao@gmail.com>,
+        <guodong.xu@linaro.org>, <hesham.almatary@huawei.com>,
+        <john.garry@huawei.com>, <shenyang39@huawei.com>
+Subject: Re: [PATCH v4 1/2] sched: Add per_cpu cluster domain info and
+ cpus_share_resources API
+To:     K Prateek Nayak <kprateek.nayak@amd.com>,
+        Yicong Yang <yangyicong@hisilicon.com>, <peterz@infradead.org>,
+        <mingo@redhat.com>, <juri.lelli@redhat.com>,
+        <vincent.guittot@linaro.org>, <tim.c.chen@linux.intel.com>,
+        <gautham.shenoy@amd.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220609120622.47724-1-yangyicong@hisilicon.com>
+ <20220609120622.47724-2-yangyicong@hisilicon.com>
+ <e000b124-afd4-28e1-fde2-393b0e38ce19@amd.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <81fbcadb-a58d-2cef-9c05-154555ec1d68@huawei.com>
+Date:   Thu, 16 Jun 2022 15:55:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <e000b124-afd4-28e1-fde2-393b0e38ce19@amd.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I left Simtec a long time ago, so make sure this is now listed
-under my fluff.org account.
+Hi Prateek,
 
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
----
- .mailmap | 1 +
- 1 file changed, 1 insertion(+)
+Seems my previous reply is in the wrong format so the server rejected it..just repost..
 
-diff --git a/.mailmap b/.mailmap
-index 825fae8e6b7b..9f86c296c595 100644
---- a/.mailmap
-+++ b/.mailmap
-@@ -60,6 +60,7 @@ Axel Dyks <xl@xlsigned.net>
- Axel Lin <axel.lin@gmail.com>
- Bart Van Assche <bvanassche@acm.org> <bart.vanassche@sandisk.com>
- Bart Van Assche <bvanassche@acm.org> <bart.vanassche@wdc.com>
-+Ben Dooks <ben-linux@fluff.org> <ben@simtec.co.uk>
- Ben Gardner <bgardner@wabtec.com>
- Ben M Cahill <ben.m.cahill@intel.com>
- Björn Steinbrink <B.Steinbrink@gmx.de>
--- 
-2.35.1
+Thanks a lot for the test!
 
+On 2022/6/15 22:19, K Prateek Nayak wrote:
+> Hello Yicong,
+> 
+> I replied to the v3 of the series by mistake!
+> (https://lore.kernel.org/lkml/0b065646-5b05-cbdb-b20c-e1dfef3f4d79@amd.com/)
+> But rest assured all the analysis discussed there was done with
+> the v4 patch series. I'll add the same observations below so we
+> can continue discussion on v4.
+> 
+> We are observing some serious regression with tbench with this patch
+> series applied. The issue doesn't seem to be related to the actual 
+> functionality of the patch but how the patch changes the per CPU
+> variable layout.
+> 
+> Discussed below are the results from running tbench on a dual
+> socket Zen3 (2 x 64C/128T) configured in different NPS modes.
+> 
+> NPS Modes are used to logically divide single socket into
+> multiple NUMA region.
+> Following is the NUMA configuration for each NPS mode on the system:
+> 
+> NPS1: Each socket is a NUMA node.
+>     Total 2 NUMA nodes in the dual socket machine.
+> 
+>     Node 0: 0-63,   128-191
+>     Node 1: 64-127, 192-255
+> 
+> NPS2: Each socket is further logically divided into 2 NUMA regions.
+>     Total 4 NUMA nodes exist over 2 socket.
+>    
+>     Node 0: 0-31,   128-159
+>     Node 1: 32-63,  160-191
+>     Node 2: 64-95,  192-223
+>     Node 3: 96-127, 223-255
+> 
+> NPS4: Each socket is logically divided into 4 NUMA regions.
+>     Total 8 NUMA nodes exist over 2 socket.
+>    
+>     Node 0: 0-15,    128-143
+>     Node 1: 16-31,   144-159
+>     Node 2: 32-47,   160-175
+>     Node 3: 48-63,   176-191
+>     Node 4: 64-79,   192-207
+>     Node 5: 80-95,   208-223
+>     Node 6: 96-111,  223-231
+>     Node 7: 112-127, 232-255
+> 
+> Benchmark Results:
+> 
+> Kernel versions:
+> - tip:      5.19.0-rc2 tip sched/core
+> - cluster:  5.19.0-rc2 tip sched/core + both the patches of the series
+> 
+> When we started testing, the tip was at:
+> commit: f3dd3f674555 "sched: Remove the limitation of WF_ON_CPU on wakelist if wakee cpu is idle"
+> 
+> * - Data points of concern
+> 
+> ~~~~~~
+> tbench
+> ~~~~~~
+> 
+> NPS1
+> 
+> Clients:       tip                     cluster
+>     1    444.41 (0.00 pct)       439.27 (-1.15 pct)
+>     2    879.23 (0.00 pct)       831.49 (-5.42 pct)     *
+>     4    1648.83 (0.00 pct)      1608.07 (-2.47 pct)
+>     8    3263.81 (0.00 pct)      3086.81 (-5.42 pct)    *
+>    16    6011.19 (0.00 pct)      5360.28 (-10.82 pct)   *
+>    32    12058.31 (0.00 pct)     8769.08 (-27.27 pct)   *
+>    64    21258.21 (0.00 pct)     19021.09 (-10.52 pct)  *
+>   128    30795.27 (0.00 pct)     30861.34 (0.21 pct)
+>   256    25138.43 (0.00 pct)     24711.90 (-1.69 pct)
+>   512    51287.93 (0.00 pct)     51855.55 (1.10 pct)
+>  1024    53176.97 (0.00 pct)     52554.55 (-1.17 pct)
+> 
+> NPS2
+> 
+> Clients:       tip                     cluster
+>     1    445.45 (0.00 pct)       441.75 (-0.83 pct)
+>     2    869.24 (0.00 pct)       845.61 (-2.71 pct)
+>     4    1644.28 (0.00 pct)      1586.49 (-3.51 pct)
+>     8    3120.83 (0.00 pct)      2967.01 (-4.92 pct) 	*
+>    16    5972.29 (0.00 pct)      5208.58 (-12.78 pct)   *
+>    32    11776.38 (0.00 pct)     10229.53 (-13.13 pct)  *
+>    64    20933.15 (0.00 pct)     17033.45 (-18.62 pct)  *
+>   128    32195.00 (0.00 pct)     29507.85 (-8.34 pct)   *
+>   256    24641.52 (0.00 pct)     27225.00 (10.48 pct)
+>   512    50806.96 (0.00 pct)     51377.50 (1.12 pct)
+>  1024    51993.96 (0.00 pct)     50773.35 (-2.34 pct)
+> 
+> NPS4
+> 
+> Clients:      tip                   cluster
+>     1    442.10 (0.00 pct)       435.06 (-1.59 pct)
+>     2    870.94 (0.00 pct)       858.64 (-1.41 pct)
+>     4    1615.30 (0.00 pct)      1607.27 (-0.49 pct)
+>     8    3195.95 (0.00 pct)      3020.63 (-5.48 pct)    *
+>    16    5937.41 (0.00 pct)      5719.87 (-3.66 pct)
+>    32    11800.41 (0.00 pct)     11229.65 (-4.83 pct)	*
+>    64    20844.71 (0.00 pct)     20432.79 (-1.97 pct)
+>   128    31003.62 (0.00 pct)     29441.20 (-5.03 pct)   *
+>   256    27476.37 (0.00 pct)     25857.30 (-5.89 pct)   * [Know to have run to run variance]
+>   512    52276.72 (0.00 pct)     51659.16 (-1.18 pct)
+>  1024    51372.10 (0.00 pct)     51026.87 (-0.67 pct)
+> 
+> Note: tbench results for 256 workers are known to have
+> run to run variation on the test machine. Any regression
+> seen for the data point can be safely ignored.
+> 
+> The behavior is consistent for both tip and patched kernel
+> across multiple runs of tbench.
+> 
+> ~~~~~~~~~~~~~~~~~~~~
+> Analysis done so far
+> ~~~~~~~~~~~~~~~~~~~~
+> 
+> To root cause this issue quicker, we have focused on 8 to 64 clients
+> data points with the machine running in NPS1 mode.
+> 
+> - Even on disabling HW prefetcher, the behavior remains consistent
+>   signifying HW prefetcher is not the cause of the problem.
+> 
+> - Bisecting:
+> 
+> When we ran the tests with only Patch 1 of the series, the
+> regression was visible and the numbers were worse.
+> 
+> Clients:       tip                     cluster              Patch 1 Only
+>     8    3263.81 (0.00 pct)      3086.81 (-5.42 pct)     3018.63 (-7.51 pct)
+>    16    6011.19 (0.00 pct)      5360.28 (-10.82 pct)    4869.26 (-18.99 pct)
+>    32    12058.31 (0.00 pct)     8769.08 (-27.27 pct)    8159.60 (-32.33 pct)
+>    64    21258.21 (0.00 pct)     19021.09 (-10.52 pct)   13161.92 (-38.08 pct)
+> 
+> We further bisected the hunks to narrow down the cause to the per CPU
+> variable declarations. 
+> 
+> 
+> On 6/9/2022 5:36 PM, Yicong Yang wrote:
+>>
+>> [..snip..]
+>>
+>> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+>> index 01259611beb9..b9bcfcf8d14d 100644
+>> --- a/kernel/sched/sched.h
+>> +++ b/kernel/sched/sched.h
+>> @@ -1753,7 +1753,9 @@ static inline struct sched_domain *lowest_flag_domain(int cpu, int flag)
+>>  DECLARE_PER_CPU(struct sched_domain __rcu *, sd_llc);
+>>  DECLARE_PER_CPU(int, sd_llc_size);
+>>  DECLARE_PER_CPU(int, sd_llc_id);
+>> +DECLARE_PER_CPU(int, sd_share_id);
+>>  DECLARE_PER_CPU(struct sched_domain_shared __rcu *, sd_llc_shared);
+>> +DECLARE_PER_CPU(struct sched_domain __rcu *, sd_cluster);
+> 
+> The main reason for the regression seems to be the above declarations.
+> The regression seem to go away if we do one of the following:
+> 
+> - Declare sd_share_id and sd_cluster using DECLARE_PER_CPU_READ_MOSTLY()
+>   instead of DECLARE_PER_CPU() and change the corresponding definition
+>   below to DEFINE_PER_CPU_READ_MOSTLY().
+> 
+>   Clients:       tip                     Patch 1           Patch 1 (READ_MOSTLY)
+>     8      3255.69 (0.00 pct)      3018.63 (-7.28 pct)     3237.33 (-0.56 pct)
+>    16      6092.67 (0.00 pct)      4869.26 (-20.08 pct)    5914.53 (-2.92 pct)
+>    32      11156.56 (0.00 pct)     8159.60 (-26.86 pct)    11536.05 (3.40 pct)
+>    64      21019.97 (0.00 pct)     13161.92 (-37.38 pct)   21162.33 (0.67 pct)
+> 
+> - Convert sd_share_id and sd_cluster to static arrays.
+>   
+>   Clients:       tip                    Patch 1            Patch 1 (Static Array)
+>     8      3255.69 (0.00 pct)      3018.63 (-7.28 pct)     3203.27 (-1.61 pct)
+>    16      6092.67 (0.00 pct)      4869.26 (-20.08 pct)    6198.35 (1.73 pct)
+>    32      11156.56 (0.00 pct)     8159.60 (-26.86 pct)    11385.76 (2.05 pct)
+>    64      21019.97 (0.00 pct)     13161.92 (-37.38 pct)   21919.80 (4.28 pct)
+> 
+> - Move the declarations of sd_share_id and sd_cluster to the top
+> 
+>   Clients:       tip                    Patch 1            Patch 1 (Declarion on Top)
+>     8      3255.69 (0.00 pct)      3018.63 (-7.28 pct)     3072.30 (-5.63 pct)
+>    16      6092.67 (0.00 pct)      4869.26 (-20.08 pct)    5586.59 (-8.30 pct)
+>    32      11156.56 (0.00 pct)     8159.60 (-26.86 pct)    11184.17 (0.24 pct)
+>    64      21019.97 (0.00 pct)     13161.92 (-37.38 pct)   20289.70 (-3.47 pct)
+> 
+> Unfortunately, none of these are complete solutions. For example, using
+> DECLARE_PER_CPU_READ_MOSTLY() with both patches applied reduces the regression
+> but doesn't eliminate it entirely:
+> 
+>    Clients:     tip                     cluster           cluster (READ_MOSTLY)  
+>     1      444.41 (0.00 pct)       439.27 (-1.15 pct)      435.95 (-1.90 pct)
+>     2      879.23 (0.00 pct)       831.49 (-5.42 pct)      842.09 (-4.22 pct)
+>     4      1648.83 (0.00 pct)      1608.07 (-2.47 pct)     1598.77 (-3.03 pct)
+>     8      3263.81 (0.00 pct)      3086.81 (-5.42 pct)     3090.86 (-5.29 pct)	*
+>    16      6011.19 (0.00 pct)      5360.28 (-10.82 pct)    5360.28 (-10.82 pct)	*
+>    32      12058.31 (0.00 pct)     8769.08 (-27.27 pct)    11083.66 (-8.08 pct)	*
+>    64      21258.21 (0.00 pct)     19021.09 (-10.52 pct)   20984.30 (-1.28 pct)
+>   128      30795.27 (0.00 pct)     30861.34 (0.21 pct)     30735.20 (-0.19 pct)
+>   256      25138.43 (0.00 pct)     24711.90 (-1.69 pct)    24021.21 (-4.44 pct)
+>   512      51287.93 (0.00 pct)     51855.55 (1.10 pct)     51672.73 (0.75 pct)
+>  1024      53176.97 (0.00 pct)     52554.55 (-1.17 pct)    52620.02 (-1.04 pct)
+> 
+> We are still trying to root cause the underlying issue that
+> brought about such drastic regression in tbench performance. 
+> 
+>>  DECLARE_PER_CPU(struct sched_domain __rcu *, sd_numa);
+>>  DECLARE_PER_CPU(struct sched_domain __rcu *, sd_asym_packing);
+>>  DECLARE_PER_CPU(struct sched_domain __rcu *, sd_asym_cpucapacity);
+>> diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+>> index 05b6c2ad90b9..0595827d481d 100644
+>> --- a/kernel/sched/topology.c
+>> +++ b/kernel/sched/topology.c
+>> @@ -664,6 +664,8 @@ static void destroy_sched_domains(struct sched_domain *sd)
+>>  DEFINE_PER_CPU(struct sched_domain __rcu *, sd_llc);
+>>  DEFINE_PER_CPU(int, sd_llc_size);
+>>  DEFINE_PER_CPU(int, sd_llc_id);
+>> +DEFINE_PER_CPU(int, sd_share_id);
+>> +DEFINE_PER_CPU(struct sched_domain __rcu *, sd_cluster);
+>>  DEFINE_PER_CPU(struct sched_domain_shared __rcu *, sd_llc_shared);
+>>  DEFINE_PER_CPU(struct sched_domain __rcu *, sd_numa);
+>>  DEFINE_PER_CPU(struct sched_domain __rcu *, sd_asym_packing);
+>>
+>>  [..snip..]
+>>
+> 
+> We would like some time to investigate this issue and root cause
+> the reason for this regression.
+
+One significant difference I can see for now is that Kunpeng 920 is a non-SMT machine while Zen3
+is a SMT machine. So in the select_idle_sibling() path we won't use sd_llc_shared. Since sd_share_id
+and sd_cluster are inserted between sd_llc_id and sd_llc_shared which are both used in the path on
+your test, I guess the change of the layout may affect something like the cache behaviour.
+
+Can you also test with SMT disabled? Or change the layout a bit to see if there's any difference,
+like:
+
+ DEFINE_PER_CPU(struct sched_domain __rcu *, sd_llc);
+ DEFINE_PER_CPU(int, sd_llc_size);
+ DEFINE_PER_CPU(int, sd_llc_id);
+ DEFINE_PER_CPU(struct sched_domain_shared __rcu *, sd_llc_shared);
++DEFINE_PER_CPU(int, sd_share_id);
++DEFINE_PER_CPU(struct sched_domain __rcu *, sd_cluster);
+ DEFINE_PER_CPU(struct sched_domain __rcu *, sd_numa);
+ DEFINE_PER_CPU(struct sched_domain __rcu *, sd_asym_packing);
+
+I need to further look into it and have some tests on a SMT machine. Would you mind to share
+the kernel config as well? I'd like to compare the config as well.
+
+Thanks,
+Yicong
