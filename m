@@ -2,500 +2,335 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F111ECCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 12:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F15DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 12:21:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238637AbiFPMTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 08:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33692 "EHLO
+        id S1376673AbiFPMVk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 08:21:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbiFPMTc (ORCPT
+        with ESMTP id S1376631AbiFPMVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 08:19:32 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0D44B423;
-        Thu, 16 Jun 2022 05:19:31 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id hj18so1811612ejb.0;
-        Thu, 16 Jun 2022 05:19:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v6MtyAVz31cm+skLCA1E7opx+p3Kmx2UCHEt7uQwhqk=;
-        b=IiEyuoaGVRdKabkTBrnth95HOOK5f3uasoz8JA6CSsSrbHDUI0RtEIQbivZ8Qolm4Q
-         /Jz22LwpJUVm9hZ0fcbv9vc6153Qu7t96xsnR7PukCatEEKJza7AodL3vGHzCessZpf9
-         QN/uwI1PQg26wimYLC9s2pY664cuG7FpFnXneZTXyU3jFHIdd/4/Wt6qJogpKUlGCJ23
-         NdsTgH0MGkir2NgGq8E6ht0HLD+bF9TBm1zyoH0gHDaJzIJn+gA5gSLpdChFwgAr6n5L
-         7wOTaE9zXA2vzZOCuId1G+1pJL3SM4V08hIfz/3FZxlISSioRQvaRAuI/M/iOJwyEI52
-         pW9A==
+        Thu, 16 Jun 2022 08:21:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7756D4A931
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 05:21:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655382092;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tKO9kaIoz02UsmIAowV9+PkxCUTdW7CkFsqbsOOxG00=;
+        b=WDua1ee5npb8//JdC6RZckGEj36+ROsvMsTzfbq32p0mgAvpWitVt1aWfx8WrosVUb9MYZ
+        PTnDAFacpZRpEi5UUAjm2M+9WWUqAz3kvXg5YRRNKr0Yj7SOFYtZ0zOGHRB93WqANIt2Ru
+        I093neYTbsxsC4DBZKZlLOBT/iA+DfU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-60-6TPrMxibO4-60ycNDKYhkQ-1; Thu, 16 Jun 2022 08:21:31 -0400
+X-MC-Unique: 6TPrMxibO4-60ycNDKYhkQ-1
+Received: by mail-wm1-f69.google.com with SMTP id ay28-20020a05600c1e1c00b0039c5cbe76c1so1081691wmb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 05:21:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v6MtyAVz31cm+skLCA1E7opx+p3Kmx2UCHEt7uQwhqk=;
-        b=jJUyckJWCsAfG3ZMlihBBcucKnp8078x450bgteULe5UteoGXgs0an1y14I5mqbFPt
-         00bMpKN4DH8E67dxmSb9Gfp2MEH/PIZPELgpaU0a20kqMkPzuC+IPxpXU0O/nrGOK4yu
-         0xEWtewY2ZnhXZvU7m38240CGs9fqx8NmJXjnztPSevi+7z9twbWb+q49znhszM3hfui
-         i8bFeRlx5qporBAZT/e6g1hcZB585duHDKKs8c7AkjBVH1vvctyhottuX9LIYqwpMZ4Q
-         qHtGmNhowasyEVaX/9aUZ2GN3SbKZBhngve2shSRZzgz/yXxiYKuzUNpzfLPcX+gmJZ8
-         N3Lg==
-X-Gm-Message-State: AJIora+6z4jw74fpCi0e5WmWVB8A7HHGkdbTszgnq0sPTO1YYCuHalaZ
-        hGPo3URqUp54m0vWMvgIdqV/Ye6nn/OiQU/sdu66ajQCccvXQfXL
-X-Google-Smtp-Source: AGRyM1sZTLCtLGcsb9jvYqR2RTY3P/hstRkWuTyP5+AjnEzqF2W6n1PKf0HWZECzdr7r9UqeSjswAuc8ktWcQLtFPnI=
-X-Received: by 2002:a17:906:d550:b0:704:7ba6:9854 with SMTP id
- cr16-20020a170906d55000b007047ba69854mr4253929ejc.579.1655381969798; Thu, 16
- Jun 2022 05:19:29 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=tKO9kaIoz02UsmIAowV9+PkxCUTdW7CkFsqbsOOxG00=;
+        b=ESebJSr8cOK0SLFNxKvTrSVCBoDjI+5R3OAyfEZNzvOH8wJuMZmKliTr+YBhqR7loV
+         BJbnG8fJ6oe9UiVZer+XBH1d14wPPeSVXRa+bNfSVat2ABiWq0Y027uwUAtxixBnn06/
+         aRnAhlDp0ZIamdgdSqZqbWKVgOXTfc3pmyWR17Onbk5arvPlHi1lP+19i1fQiC0GkiMS
+         D691nosvusny8VPOtp6zlgKJ3HycvyieTxhcfMf/0YNbdIutqRlsLLZ6vuUuFYv6qR06
+         1pVOT4iZvszh3siu/9g8Q7BCXnwyZAXy3x/kXdPv2J2ZYMfVzow35fLBocWhhJHBkNze
+         JvUQ==
+X-Gm-Message-State: AJIora9xUgoAs6G1lLk4OsJK98TvnI15IOzWt80Heh7Msz8Ayezrb9CT
+        RvxtJClj2QBDoQHWKEA0zhGTKV83op0SFFvfXvRi5hdsaY3N7PMAzispfus7EahxtzTVZsrL194
+        SO/y7CUFK24bHdMQCU0sai55k
+X-Received: by 2002:a1c:7913:0:b0:39e:72d1:b9b3 with SMTP id l19-20020a1c7913000000b0039e72d1b9b3mr3521241wme.53.1655382090137;
+        Thu, 16 Jun 2022 05:21:30 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vImx8v+Pi0fb3eNoM8UymMi4MsjJuA+BPHWsFLmXTWOlrUWS17EyMKP0suss+nPlbqnZ3UlQ==
+X-Received: by 2002:a1c:7913:0:b0:39e:72d1:b9b3 with SMTP id l19-20020a1c7913000000b0039e72d1b9b3mr3521223wme.53.1655382089862;
+        Thu, 16 Jun 2022 05:21:29 -0700 (PDT)
+Received: from redhat.com ([2a03:c5c0:107d:d500:e9ae:3150:6c35:ac38])
+        by smtp.gmail.com with ESMTPSA id i2-20020adffdc2000000b00213ba4b5d94sm2135823wrs.27.2022.06.16.05.21.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 05:21:29 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 08:21:25 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Albert Huang <huangjie.albert@bytedance.com>
+Cc:     yuanzhu@bytedance.com, Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] virtio_ring : keep used_wrap_counter in
+ vq->last_used_idx
+Message-ID: <20220616081812-mutt-send-email-mst@kernel.org>
+References: <20220616024148-mutt-send-email-mst@kernel.org>
+ <20220616095500.41239-1-huangjie.albert@bytedance.com>
 MIME-Version: 1.0
-References: <20220616104211.9257-1-ddrokosov@sberdevices.ru> <20220616104211.9257-3-ddrokosov@sberdevices.ru>
-In-Reply-To: <20220616104211.9257-3-ddrokosov@sberdevices.ru>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 16 Jun 2022 14:18:52 +0200
-Message-ID: <CAHp75Vc0+ckNnm2tzLMPrjeFRjwoj3zy0C4koNShFRG3kP8b6w@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] iio: add MEMSensing MSA311 3-axis accelerometer driver
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220616095500.41239-1-huangjie.albert@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 12:42 PM Dmitry Rokosov
-<DDRokosov@sberdevices.ru> wrote:
->
-> MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
-> sensitivity consumer applications. It has dynamical user selectable full
+On Thu, Jun 16, 2022 at 05:54:59PM +0800, Albert Huang wrote:
+> From: "huangjie.albert" <huangjie.albert@bytedance.com>
+> 
+> the used_wrap_counter and the vq->last_used_idx may get
+> out of sync if they are separate assignment，and interrupt
+> might use an incorrect value to check for the used index.
+> 
+> for example:OOB access
+> ksoftirqd may consume the packet and it will call:
+> virtnet_poll
+> 	-->virtnet_receive
+> 		-->virtqueue_get_buf_ctx
+> 			-->virtqueue_get_buf_ctx_packed
+> and in virtqueue_get_buf_ctx_packed:
+> 
+> vq->last_used_idx += vq->packed.desc_state[id].num;
+> if (unlikely(vq->last_used_idx >= vq->packed.vring.num)) {
+>          vq->last_used_idx -= vq->packed.vring.num;
+>          vq->packed.used_wrap_counter ^= 1;
+> }
+> 
+> if at the same time, there comes a vring interrupt，in vring_interrupt:
+> we will call:
+> vring_interrupt
+> 	-->more_used
+> 		-->more_used_packed
+> 			-->is_used_desc_packed
+> in is_used_desc_packed, the last_used_idx maybe >= vq->packed.vring.num.
+> so this could case a memory out of bounds bug.
+> 
+> this patch is to keep the used_wrap_counter in vq->last_used_idx
+> so we can get the correct value to check for used index in interrupt.
+> 
+> v2->v3:
+> - add inline function to get used_wrap_counter and last_used
+> - when use vq->last_used_idx, only read once
+>   if vq->last_used_idx is read twice, the values can be inconsistent.
+> - use last_used_idx & ~(-(1 << VRING_PACKED_EVENT_F_WRAP_CTR))
+>   to get the all bits below VRING_PACKED_EVENT_F_WRAP_CTR
+> 
+> v1->v2:
+> - reuse the VRING_PACKED_EVENT_F_WRAP_CTR
+> - Remove parameter judgment in is_used_desc_packed,
+> because it can't be illegal
+> 
+> Signed-off-by: huangjie.albert <huangjie.albert@bytedance.com>
+> ---
+>  drivers/virtio/virtio_ring.c | 75 ++++++++++++++++++++++--------------
+>  1 file changed, 47 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> index 13a7348cedff..a253f50b8f86 100644
+> --- a/drivers/virtio/virtio_ring.c
+> +++ b/drivers/virtio/virtio_ring.c
+> @@ -111,7 +111,12 @@ struct vring_virtqueue {
+>  	/* Number we've added since last sync. */
+>  	unsigned int num_added;
+>  
+> -	/* Last used index we've seen. */
+> +	/* Last used index  we've seen.
+> +	 * for split ring, it just contains last used index
+> +	 * for packed ring, it not only contains last used index, but also
+> +	 * used_wrap_counter, the VRING_PACKED_EVENT_F_WRAP_CTR is
+> +	 * the bit shift in last_used_idx
 
-dynamic
-user-selectable
 
-> scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
-> with output data rates from 1Hz to 1000Hz.
->
-> Datasheet can be found at following URL:
-> https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
+reword:
 
-Make it  a tag. (Move closer to SoB without any blank lines and
-keeping as one tag == one line, even if it's longer than any limit)
+for packed ring, bits up to VRING_PACKED_EVENT_F_WRAP_CTR include the
+last used index. Bits from VRING_PACKED_EVENT_F_WRAP_CTR include the
+used wrap counter.
 
-> This driver supports following MSA311 features:
->     - IIO interface
->     - Different power modes: NORMAL and SUSPEND (using pm_runtime)
->     - ODR (Output Data Rate) selection
->     - Scale and samp_freq selection
->     - IIO triggered buffer, IIO reg access
->     - NEW_DATA interrupt + trigger
->
-> Below features to be done:
->     - Motion Events: ACTIVE, TAP, ORIENT, FREEFALL
->     - Low Power mode
-
-...
-
-> +MEMSENSING MICROSYSTEMS MSA311 ACCELEROMETER DRIVER
-
-If MSA311 is accelerometer _only_, then the word "ACCELEROMETER" can be dropped.
-
-...
-
-> +/*
-> + * msa311.c - MEMSensing digital 3-Axis accelerometer
-
-Don't put the filename inside the file. Rationale -- less churn and
-error prone in case it would be renamed.
-
-> + *
-> + * MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
-> + * sensitivity consumer applications. It has dynamical user selectable full
-
-dynamic
-user-selectable
-
-> + * scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
-> + * with output data rates from 1Hz to 1000Hz.
-> + *
-> + * MSA311 is available in an ultra small (2mm x 2mm, height 0.95mm) LGA package
-> + * and is guaranteed to operate over -40C to +85C.
-> + *
-> + * This driver supports following MSA311 features:
-> + *     - IIO interface
-> + *     - Different power modes: NORMAL, SUSPEND
-> + *     - ODR (Output Data Rate) selection
-> + *     - Scale selection
-> + *     - IIO triggered buffer
-> + *     - NEW_DATA interrupt + trigger
-> + *
-> + * Below features to be done:
-> + *     - Motion Events: ACTIVE, TAP, ORIENT, FREEFALL
-> + *     - Low Power mode
-> + *
-> + * Copyright (c) 2022, SberDevices. All Rights Reserved.
-> + *
-> + * Author: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> + */
-
-...
-
-> +enum msa311_fields {
-> +       F_SOFT_RESET_I2C, F_SOFT_RESET_SPI,
+> +	 */
+>  	u16 last_used_idx;
+>  
+>  	/* Hint for event idx: already triggered no need to disable. */
+> @@ -154,9 +159,6 @@ struct vring_virtqueue {
+>  			/* Driver ring wrap counter. */
+>  			bool avail_wrap_counter;
+>  
+> -			/* Device ring wrap counter. */
+> -			bool used_wrap_counter;
+> -
+>  			/* Avail used flags. */
+>  			u16 avail_used_flags;
+>  
+> @@ -973,6 +975,15 @@ static struct virtqueue *vring_create_virtqueue_split(
+>  /*
+>   * Packed ring specific functions - *_packed().
+>   */
+> +static inline bool packed_used_wrap_counter(u16 last_used_idx)
+> +{
+> +	return !!(last_used_idx & (1 << VRING_PACKED_EVENT_F_WRAP_CTR));
+> +}
 > +
-> +       F_ORIENT_INT, F_S_TAP_INT, F_D_TAP_INT, F_ACTIVE_INT, F_FREEFALL_INT,
+> +static inline u16 packed_last_used(u16 last_used_idx)
+> +{
+> +	return last_used_idx & ~(-(1 << VRING_PACKED_EVENT_F_WRAP_CTR));
+> +}
+>  
+>  static void vring_unmap_extra_packed(const struct vring_virtqueue *vq,
+>  				     struct vring_desc_extra *extra)
+> @@ -1406,8 +1417,14 @@ static inline bool is_used_desc_packed(const struct vring_virtqueue *vq,
+>  
+>  static inline bool more_used_packed(const struct vring_virtqueue *vq)
+>  {
+> -	return is_used_desc_packed(vq, vq->last_used_idx,
+> -			vq->packed.used_wrap_counter);
+> +	u16 last_used;
+> +	u16 last_used_idx;
+> +	bool used_wrap_counter;
 > +
-> +       F_NEW_DATA_INT,
+> +	last_used_idx = vq->last_used_idx;
+> +	last_used = packed_last_used(last_used_idx);
+> +	used_wrap_counter = packed_used_wrap_counter(last_used_idx);
+> +	return is_used_desc_packed(vq, last_used, used_wrap_counter);
+>  }
+>  
+>  static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+> @@ -1415,7 +1432,8 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+>  					  void **ctx)
+>  {
+>  	struct vring_virtqueue *vq = to_vvq(_vq);
+> -	u16 last_used, id;
+> +	u16 last_used, id, last_used_idx;
+> +	bool used_wrap_counter;
+>  	void *ret;
+>  
+>  	START_USE(vq);
+> @@ -1434,7 +1452,9 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+>  	/* Only get used elements after they have been exposed by host. */
+>  	virtio_rmb(vq->weak_barriers);
+>  
+> -	last_used = vq->last_used_idx;
+> +	last_used_idx = vq->last_used_idx;
+
+
+I think we need READ_ONCE here. Otherwise compiler is free to still
+do two reads.
+
+> +	used_wrap_counter = packed_used_wrap_counter(last_used_idx);
+> +	last_used = packed_last_used(last_used_idx);
+>  	id = le16_to_cpu(vq->packed.vring.desc[last_used].id);
+>  	*len = le32_to_cpu(vq->packed.vring.desc[last_used].len);
+>  
+> @@ -1451,12 +1471,15 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+>  	ret = vq->packed.desc_state[id].data;
+>  	detach_buf_packed(vq, id, ctx);
+>  
+> -	vq->last_used_idx += vq->packed.desc_state[id].num;
+> -	if (unlikely(vq->last_used_idx >= vq->packed.vring.num)) {
+> -		vq->last_used_idx -= vq->packed.vring.num;
+> -		vq->packed.used_wrap_counter ^= 1;
+> +	last_used += vq->packed.desc_state[id].num;
+> +	if (unlikely(last_used >= vq->packed.vring.num)) {
+> +		last_used -= vq->packed.vring.num;
+> +		used_wrap_counter ^= 1;
+>  	}
+>  
+> +	last_used = (last_used | (used_wrap_counter << VRING_PACKED_EVENT_F_WRAP_CTR));
+> +	vq->last_used_idx = last_used;
 > +
-> +       F_TAP_SIGN, F_TAP_FIRST_X, F_TAP_FIRST_Y, F_TAP_FIRST_Z, F_ACTV_SIGN,
-> +       F_ACTV_FIRST_X, F_ACTV_FIRST_Y, F_ACTV_FIRST_Z,
-> +
-> +       F_ORIENT_Z, F_ORIENT_X_Y,
-> +
-> +       F_FS,
-> +
-> +       F_X_AXIS_DIS, F_Y_AXIS_DIS, F_Z_AXIS_DIS, F_ODR,
-> +
-> +       F_PWR_MODE, F_LOW_POWER_BW,
-> +
-> +       F_X_POLARITY, F_Y_POLARITY, F_Z_POLARITY, F_X_Y_SWAP,
-> +
-> +       F_ORIENT_INT_EN, F_S_TAP_INT_EN, F_D_TAP_INT_EN, F_ACTIVE_INT_EN_Z,
-> +       F_ACTIVE_INT_EN_Y, F_ACTIVE_INT_EN_X,
-> +
-> +       F_NEW_DATA_INT_EN, F_FREEFALL_INT_EN,
-> +
-> +       F_INT1_ORIENT, F_INT1_S_TAP, F_INT1_D_TAP, F_INT1_ACTIVE,
-> +       F_INT1_FREEFALL,
-> +
-> +       F_INT1_NEW_DATA,
-> +
-> +       F_INT1_OD, F_INT1_LVL,
-> +
-> +       F_RESET_INT, F_LATCH_INT,
-> +
-> +       F_FREEFALL_MODE, F_FREEFALL_HY,
-> +
-> +       F_ACTIVE_DUR,
-> +
-> +       F_TAP_QUIET, F_TAP_SHOCK, F_TAP_DUR,
-> +
-> +       F_TAP_TH,
-> +
-> +       F_ORIENT_HYST, F_ORIENT_BLOCKING, F_ORIENT_MODE,
-> +
-> +       F_Z_BLOCKING,
-> +
-> +       F_MAX_FIELDS,
+>  	/*
+>  	 * If we expect an interrupt for the next entry, tell host
+>  	 * by writing event index and flush out the write before
+> @@ -1465,9 +1488,7 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+>  	if (vq->packed.event_flags_shadow == VRING_PACKED_EVENT_FLAG_DESC)
+>  		virtio_store_mb(vq->weak_barriers,
+>  				&vq->packed.vring.driver->off_wrap,
+> -				cpu_to_le16(vq->last_used_idx |
+> -					(vq->packed.used_wrap_counter <<
+> -					 VRING_PACKED_EVENT_F_WRAP_CTR)));
+> +				cpu_to_le16(vq->last_used_idx));
+>  
+>  	LAST_ADD_TIME_INVALID(vq);
+>  
+> @@ -1499,9 +1520,7 @@ static unsigned int virtqueue_enable_cb_prepare_packed(struct virtqueue *_vq)
+>  
+>  	if (vq->event) {
+>  		vq->packed.vring.driver->off_wrap =
+> -			cpu_to_le16(vq->last_used_idx |
+> -				(vq->packed.used_wrap_counter <<
+> -				 VRING_PACKED_EVENT_F_WRAP_CTR));
+> +			cpu_to_le16(vq->last_used_idx);
+>  		/*
+>  		 * We need to update event offset and event wrap
+>  		 * counter first before updating event flags.
+> @@ -1518,8 +1537,7 @@ static unsigned int virtqueue_enable_cb_prepare_packed(struct virtqueue *_vq)
+>  	}
+>  
+>  	END_USE(vq);
+> -	return vq->last_used_idx | ((u16)vq->packed.used_wrap_counter <<
+> -			VRING_PACKED_EVENT_F_WRAP_CTR);
+> +	return vq->last_used_idx;
+>  }
+>  
+>  static bool virtqueue_poll_packed(struct virtqueue *_vq, u16 off_wrap)
+> @@ -1537,7 +1555,7 @@ static bool virtqueue_poll_packed(struct virtqueue *_vq, u16 off_wrap)
+>  static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
+>  {
+>  	struct vring_virtqueue *vq = to_vvq(_vq);
+> -	u16 used_idx, wrap_counter;
+> +	u16 used_idx, wrap_counter, last_used_idx;
+>  	u16 bufs;
+>  
+>  	START_USE(vq);
+> @@ -1550,9 +1568,10 @@ static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
+>  	if (vq->event) {
+>  		/* TODO: tune this threshold */
+>  		bufs = (vq->packed.vring.num - vq->vq.num_free) * 3 / 4;
+> -		wrap_counter = vq->packed.used_wrap_counter;
+> +		last_used_idx = vq->last_used_idx;
+> +		wrap_counter = packed_used_wrap_counter(last_used_idx);
+>  
+> -		used_idx = vq->last_used_idx + bufs;
+> +		used_idx = packed_last_used(last_used_idx) + bufs;
+>  		if (used_idx >= vq->packed.vring.num) {
+>  			used_idx -= vq->packed.vring.num;
+>  			wrap_counter ^= 1;
+> @@ -1582,9 +1601,10 @@ static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
+>  	 */
+>  	virtio_mb(vq->weak_barriers);
+>  
+> -	if (is_used_desc_packed(vq,
+> -				vq->last_used_idx,
+> -				vq->packed.used_wrap_counter)) {
+> +	last_used_idx = vq->last_used_idx;
+
+
+same here.
+
+> +	wrap_counter = packed_used_wrap_counter(last_used_idx);
+> +	used_idx = packed_last_used(last_used_idx);
+> +	if (is_used_desc_packed(vq, used_idx, wrap_counter)) {
+>  		END_USE(vq);
+>  		return false;
+>  	}
+> @@ -1689,7 +1709,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
+>  	vq->notify = notify;
+>  	vq->weak_barriers = weak_barriers;
+>  	vq->broken = true;
+> -	vq->last_used_idx = 0;
+> +	vq->last_used_idx = 0 | (1 << VRING_PACKED_EVENT_F_WRAP_CTR);
+>  	vq->event_triggered = false;
+>  	vq->num_added = 0;
+>  	vq->packed_ring = true;
+> @@ -1720,7 +1740,6 @@ static struct virtqueue *vring_create_virtqueue_packed(
+>  
+>  	vq->packed.next_avail_idx = 0;
+>  	vq->packed.avail_wrap_counter = 1;
+> -	vq->packed.used_wrap_counter = 1;
+>  	vq->packed.event_flags_shadow = 0;
+>  	vq->packed.avail_used_flags = 1 << VRING_PACKED_DESC_F_AVAIL;
+>  
+> -- 
+> 2.31.1
 
-Not sure why you put those blank lines herey, it makes code not compact.
-
-> +};
-
-...
-
-> +/* All supported power modes */
-> +#define MSA311_PWR_MODE_NORMAL  0b00
-
-#define MSA311_PWR_MODE_UNKNOWN_01 0b01
-#define MSA311_PWR_MODE_UNKNOWN_10 0b01
-
-> +#define MSA311_PWR_MODE_SUSPEND 0b11
-
-const char * const msa311_pwr_modes[] = { "normal", "unknown_01",
-"unknown_10", "suspend" };
-
-See below why this is here.
-
-...
-
-> +#define MSA311_GENMASK(field) ({                \
-
-> +       typeof(field) _field = (field);         \
-
-Why not define a pointer to the field here?
-
-_field = &msa311_reg_fields[field];
-GENMASK(_field->msb, _field->lsb);
-
-> +       GENMASK(msa311_reg_fields[_field].msb,  \
-> +               msa311_reg_fields[_field].lsb); \
-> +})
-
-...
-
-> +struct msa311_priv {
-
-> +       struct i2c_client *i2c;
-
-Not sure you need this. Dropping i2c dependency from this structure
-allows much easier to add, e.g. SPI support of the same hardware.
-
-> +       struct mutex lock; /* state guard */
-> +
-> +       struct iio_trigger *new_data_trig;
-> +
-> +       struct regmap *regs;
-
-I believe this is used most, so making this a first member in the
-structure saves  some instructions (check with bloat-o-meter).
-
-> +       struct regmap_field *fields[F_MAX_FIELDS];
-> +};
-
-...
-
-> +       /* Filter bad ODR values */
-> +       switch (pwr_mode) {
-> +       case MSA311_PWR_MODE_NORMAL:
-> +               mode = "normal";
-> +               good_odr = (odr > MSA311_ODR_1_95_HZ);
-> +               break;
-> +       case MSA311_PWR_MODE_SUSPEND:
-> +               mode = "suspend";
-> +               break;
-> +       default:
-> +               mode = "unknown";
-> +               break;
-> +       }
-
-As mentioned below you may think about an array of const char * const [].
-
-...
-
-> +       wait_ms = (USEC_PER_SEC * MSEC_PER_SEC) / freq_uhz;
-
-This looks very odd from a physics perspective: sec * sec * sec == sec ?!
-
-Perhaps you meant some HZ* macros from units.h?
-
-...
-
-> +       dev_dbg(dev, "transition to %s mode\n",
-> +               (mode == MSA311_PWR_MODE_NORMAL) ? "normal" :
-> +               (mode == MSA311_PWR_MODE_SUSPEND) ? "suspend" :
-> +               "unknown");
-
-I would rather put it (near to the mode enum / definitions) like
-
-const char * const msa311_pwr_modes[] = { "normal", "suspend" };
-
-(Also it seems you may reuse this above.)
-
-And use here something like
-
-mode >= ARRAY_SIZE() ? "unknown" : _pwr_modes[mode];
-
-...
-
-> +       /* Wait actual data if we wakeup */
-
-wake up
-
-...
-
-> +       /* We do not have fs >= 1, so skip such values */
-> +       if (val != 0)
-
-if (val)
-
-> +               return 0;
-
-...
-
-> +       err = -EINVAL;
-> +       mutex_lock(&msa311->lock);
-> +       for (odr = 0; odr < ARRAY_SIZE(msa311_odr_table); ++odr)
-> +               if (val == msa311_odr_table[odr].val &&
-> +                   val2 == msa311_odr_table[odr].val2) {
-> +                       err = msa311_set_odr(msa311, odr);
-
-> +                       if (err) {
-> +                               dev_err(dev, "cannot update freq (%d)\n", err);
-> +                               goto failed;
-> +                       }
-
-Why is this inside the loop and more important under lock? Also you
-may cover the initial error code by this message when moving it out of
-the loop and lock.
-
-Ditto for other code snippets in other function(s) where applicable.
-
-> +                       break;
-> +               }
-> +
-> +failed:
-> +       mutex_unlock(&msa311->lock);
-
-...
-
-> +       if (!readval)
-
-Why not positive conditional?
-Same Q whenever this is the case.
-
-> +               err = regmap_write(msa311->regs, reg, writeval);
-> +       else
-> +               err = regmap_read(msa311->regs, reg, readval);
-
-...
-
-> +       mutex_lock(&msa311->lock);
-> +       err = regmap_field_write(msa311->fields[F_NEW_DATA_INT_EN], state);
-> +       mutex_unlock(&msa311->lock);
-
-> +
-
-No need.
-
-> +       if (err)
-> +               dev_err(dev,
-> +                       "cannot %s buffer due to new_data_int failure (%d)\n",
-> +                       state ? "enable" : "disable", err);
-
-str_enable_disable()
-
-...
-
-> +       return (iio_trigger_get_drvdata(trig) != indio_dev) ? -EINVAL : 0;
-
-Unnecessary parentheses and why not the positive conditional?
-
-  return ... == ... ? 0 : ...;
-
-...
-
-> +       __le16 axis;
-> +       int bit = 0, err, i = 0;
-
-> +
-
-Unnecessary blank line.
-
-...
-
-> +       /* TODO: send motion events if needed */
-
-Are you going to address all TODOs? If no, drop ones that you are not
-going to address in the future, better to put into the top of the file
-comment what is supported and what's not.
-
-...
-
-> +       dev_dbg(dev, "Found MSA311 compatible chip[%#x]\n", partid);
-> +
-> +       if (partid != MSA311_WHO_AM_I)
-> +               dev_warn(dev, "invalid partid (%#x), expected (%#x)\n",
-> +                        partid, MSA311_WHO_AM_I);
-
-I would put it rather like:
-
-  if (partid == ...)
-    dev_dbg("Found compatible chip'n");
-  else
-    dev_warn(...);
-
-...
-
-> +               if (IS_ERR(msa311->fields[i])) {
-> +                       return dev_err_probe(dev, PTR_ERR(msa311->fields[i]),
-> +                                            "cannot alloc reg field[%d]\n", i);
-> +               }
-
-{} are not needed.
-
-...
-
-> +       struct msa311_priv *msa311;
-> +       struct iio_dev *indio_dev;
-
-> +       struct device *dev = &i2c->dev;
-
-Making it first line (the rule of thumb "longer lines first") here and
-in any other similar cases?
-
-...
-
-> +       indio_dev->modes = INDIO_DIRECT_MODE; /* setup buffered mode later */
-
-Leaving it 0 is probably better, it's a pity that we don't have
-INDIO_NO_MODE_SET 0 there. However, I haven't checked if it's possible
-to leave it unset like this.
-
-...
-
-> +       if (i2c->irq > 0) {
-> +               err = msa311_setup_interrupts(msa311);
-> +               if (err)
-> +                       return err;
-> +       }
-
-Slightly cleaner is to save what's needed in the your private
-structure, drop i2c_client pointer and move the above check inside the
-function:
-
-/* IRQ is optional */
-if (msa311->irq <= 0)
-  return 0;
-
-But see if it's indeed better...
-
-...
-
-> +static int msa311_runtime_suspend(struct device *dev)
-
-See comments for ->resume() below.
-
-...
-
-> +       dev_dbg(dev, "resuming %s\n", dev->driver->name);
-
-Useless. Remove in other places. In case you need it, use ftracer and
-PM suspend/resume debugging features.
-
-> +       mutex_lock(&msa311->lock);
-> +       err = msa311_set_pwr_mode(msa311, MSA311_PWR_MODE_NORMAL);
-> +       mutex_unlock(&msa311->lock);
-
-> +
-
-No need.
-
-> +       if (err) {
-> +               dev_err(dev, "failed to power on device (%d)\n", err);
-
-> +               return err;
-> +       }
-> +
-> +       return 0;
-
-  return err;
-
-4 LoCs --> 1 LoC
-
-...
-
-> +static struct i2c_driver msa311_driver = {
-> +       .driver = {
-> +               .name = "msa311",
-> +               .owner = THIS_MODULE,
-> +               .of_match_table = msa311_of_match,
-> +               .pm = pm_ptr(&msa311_pm_ops),
-> +       },
-> +       .probe_new      = msa311_probe,
-> +       .id_table       = msa311_i2c_id,
-> +};
-
-> +
-
-No need for a blank line here.
-
-> +module_i2c_driver(msa311_driver);
-
--- 
-With Best Regards,
-Andy Shevchenko
