@@ -2,108 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D55C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 17:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE91EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 17:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378287AbiFPRUB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 13:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
+        id S233441AbiFPR2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 13:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378285AbiFPRTz (ORCPT
+        with ESMTP id S229512AbiFPR2L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 13:19:55 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326504CD57
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 10:19:54 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id u12so4002147eja.8
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 10:19:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bHjV6+d1wPcbJIXXueZ8eXPKto8w1sGcbUP/nhry+Lc=;
-        b=fZLZmEgXFFCbwyUw1zXJ5JL28E/ey7iqcZSqht9lq7kKmvINuMARA0+Ulb4FJDUsty
-         hAgz7ZM0rJIjo1enFtWyVxi8pMFilkYjG+n1yIzkefLHxUTnJEm9Z7JzL0MpVfkVVr0k
-         /IPzEpcZksaPiymRJXKfSMDmYfFX1gnvZoDKU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bHjV6+d1wPcbJIXXueZ8eXPKto8w1sGcbUP/nhry+Lc=;
-        b=Mz4OUlfn7Am621spY6TBAJbdm7Eu3R5LvqmLYXb9YjmTJ8LTtwNiZiAq2TT6LQUbLG
-         Ihc0W55s0d1ty+eVMf2L7miX+p1UofgUYiCISTf46wrSCMVET7qI/7tXpijMCnI41r2u
-         Ut9FA+eN/nl1zhlXR2wm9Dw4xTJzIL/T1mauVsHI3EWwjX5Gr3BVzIyB3RTCfFviTCae
-         IMKnM5OkWY4n73Qk1a45UkcWUo4edIyKIT11MHeIwdY+47rplmxxTLnmBKtQ11XRlEvJ
-         1H+Z6dkca3xEb4kBS9bnLuY7AZ/Lg4WgOf0CSy6fFv/IhcrBW2GVJ5uiqskyRam/5BO4
-         wWzA==
-X-Gm-Message-State: AJIora/2BZ0XU0EMBtWcWww/EU5/BuRR1MehmS76R8GSKNXbShr/6Ddi
-        gWGAKUeHMcq/wTVSRs0qroPWqvrQ81EQG9yV9JTbKQ==
-X-Google-Smtp-Source: AGRyM1vE8prXPyyX2KZN3XXldr/y6R0KwwEZo+KVjq+te8IczQ+4jeOKiFUFoM9AGnEq4B+OLELhdnvfnwrsQXYLabg=
-X-Received: by 2002:a17:906:4fd6:b0:70c:9284:cc01 with SMTP id
- i22-20020a1709064fd600b0070c9284cc01mr5513350ejw.553.1655399992619; Thu, 16
- Jun 2022 10:19:52 -0700 (PDT)
+        Thu, 16 Jun 2022 13:28:11 -0400
+X-Greylist: delayed 1387 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Jun 2022 10:28:08 PDT
+Received: from 18.mo584.mail-out.ovh.net (18.mo584.mail-out.ovh.net [188.165.54.143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24DAA175AF
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 10:28:03 -0700 (PDT)
+Received: from player779.ha.ovh.net (unknown [10.109.156.34])
+        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 955C32222D
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 17:08:40 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player779.ha.ovh.net (Postfix) with ESMTPSA id 64B292B9393D5;
+        Thu, 16 Jun 2022 17:08:32 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-103G0059eda0aa4-c3b8-493b-af8c-1b5db0bc1ce2,
+                    EEA695ED62D0B30D35F9F30395731DD21189161B) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Cc:     Stephen Kitt <steve@sk2.org>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] drm: shmobile: Use backlight helper
+Date:   Thu, 16 Jun 2022 19:08:21 +0200
+Message-Id: <20220616170821.1348169-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220613202852.447738-1-mortonm@chromium.org> <CAJ-EccOhrYG6n6As72R7YzSk+Zzy=oFFJ62hG9476njprpJuvw@mail.gmail.com>
- <202206131643.4FB2340C43@keescook> <CAJ-EccN92u8y46j+h1Vg8tzFfRDynMM=1zRF6zGjx_4qKJ=AbQ@mail.gmail.com>
-In-Reply-To: <CAJ-EccN92u8y46j+h1Vg8tzFfRDynMM=1zRF6zGjx_4qKJ=AbQ@mail.gmail.com>
-From:   Micah Morton <mortonm@chromium.org>
-Date:   Thu, 16 Jun 2022 10:19:41 -0700
-Message-ID: <CAJ-EccMGXZ_-eQsqwFEbxXs-ZBah5q4okBVL9cf8Qx+0nuLs7Q@mail.gmail.com>
-Subject: Re: [PATCH 2/2] LSM: SafeSetID: Add setgroups() security policy handling
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-security-module@vger.kernel.org, jmorris@namei.org,
-        serge@hallyn.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 7176486009031853787
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddvfedguddtfecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejjeelrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekge
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 10:36 AM Micah Morton <mortonm@chromium.org> wrote:
->
-> On Mon, Jun 13, 2022 at 4:46 PM Kees Cook <keescook@chromium.org> wrote:
-> >
-> > On Mon, Jun 13, 2022 at 02:00:03PM -0700, Micah Morton wrote:
-> > > On Mon, Jun 13, 2022 at 1:28 PM Micah Morton <mortonm@chromium.org> wrote:
-> > > [...]
-> > > > +static int safesetid_task_fix_setgroups(struct cred *new, const struct cred *old)
-> > > > +{
-> > > > +       int i;
-> > > > +
-> > > > +       /* Do nothing if there are no setgid restrictions for our old RGID. */
-> > > > +       if (setid_policy_lookup((kid_t){.gid = old->gid}, INVALID_ID, GID) == SIDPOL_DEFAULT)
-> > > > +               return 0;
-> > > > +
-> > > > +       get_group_info(new->group_info);
-> > > > +       for (i = 0; i < new->group_info->ngroups; i++) {
-> > > > +               if (!id_permitted_for_cred(old, (kid_t){.gid = group_info->gid[i]}, GID)) {
-> > >
-> > > Oops, should be:
-> > >
-> > > !id_permitted_for_cred(old, (kid_t){.gid = new->group_info->gid[i]}, GID)
-> > >
-> > > Guess I won't send a whole new patch just for that one line
-> >
-> > This begs the question: are there self-tests for this LSM somewhere?
-> > It'd be really nice to add them to tool/testing/selftests ...
->
-> There actually is tools/testing/selftests/safesetid/ but I haven't
-> updated it since v1 of SafeSetID that only accommodated UIDs. I've
-> been relying on integration testing we have out of tree on the Chrome
-> OS side but I suppose its reasonable to bring the selftest up to date
-> as well :)
->
-> Also both patches are a couple lines off from the ones I was finished
-> developing/testing with.. some kind of screw up happened when I copied
-> from my dev machine to another where I could get git-send-email
-> working properly. I'll just resend these 2 patches along with the
-> update to the selftest.
+This started with work on the removal of backlight_properties'
+deprecated fb_blank field, much of which can be taken care of by using
+helper functions provided by backlight.h instead of directly accessing
+fields in backlight_properties. This patch series doesn't involve
+fb_blank, but it still seems useful to use helper functions where
+appropriate.
 
-Just sent the updated patches and selftest patch.
+Instead of retrieving the backlight brightness in struct
+backlight_properties manually, and then checking whether the backlight
+should be on at all, use backlight_get_brightness() which does all
+this and insulates this from future changes.
 
->
-> Thanks
->
-> >
-> > --
-> > Kees Cook
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
+---
+Changes since v1: clarified commit message, this doesn't touch fb_blank
+---
+ drivers/gpu/drm/shmobile/shmob_drm_backlight.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/drivers/gpu/drm/shmobile/shmob_drm_backlight.c b/drivers/gpu/drm/shmobile/shmob_drm_backlight.c
+index f6628a5ee95f..794573badfe8 100644
+--- a/drivers/gpu/drm/shmobile/shmob_drm_backlight.c
++++ b/drivers/gpu/drm/shmobile/shmob_drm_backlight.c
+@@ -18,11 +18,7 @@ static int shmob_drm_backlight_update(struct backlight_device *bdev)
+ 	struct shmob_drm_connector *scon = bl_get_data(bdev);
+ 	struct shmob_drm_device *sdev = scon->connector.dev->dev_private;
+ 	const struct shmob_drm_backlight_data *bdata = &sdev->pdata->backlight;
+-	int brightness = bdev->props.brightness;
+-
+-	if (bdev->props.power != FB_BLANK_UNBLANK ||
+-	    bdev->props.state & BL_CORE_SUSPENDED)
+-		brightness = 0;
++	int brightness = backlight_get_brightness(bdev);
+ 
+ 	return bdata->set_brightness(brightness);
+ }
+
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+-- 
+2.30.2
+
