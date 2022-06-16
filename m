@@ -2,196 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89425C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F67C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235942AbiFPPxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59638 "EHLO
+        id S1377814AbiFPP42 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 11:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377763AbiFPPxn (ORCPT
+        with ESMTP id S235974AbiFPP40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:53:43 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6468E2E6AA
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:53:42 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso1890987pjk.0
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:53:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=soZ7Z/kpV8xfUd7TwDWGDyhSUZL5/aKbtE1H8BWznbY=;
-        b=ALXXbN/beUYRTTZ5Parx1g8FvpVXPo7FUkg1yB3NJT3YrGYfREprfS4eN7h8M/xOyn
-         5pJlexqpbjbMHbjLHVj8X3IBDTuE0iSiVJLefdXt/4xB0F/3+kvHnD1yGuGmTefLOSfS
-         tzaF3Ec5EBOs/Mpn9ORW/uyIIA4JL6TbRABvZxIMV7cTZJz2fWSZ3NEFenN6gSvg2vN0
-         GR0lOSNB2RiwgdFbGWGDTxncxFNzIZKvdrTc7Wb4/LbGj5TtBLrqm8NQqiyZfPybSvwG
-         9owOYbeP3wiRgnsb9uKRM5vGkAas1C0Cv5hTyUm18on0yUy3KFYUQVlHxnieFiXF7EtD
-         +dJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=soZ7Z/kpV8xfUd7TwDWGDyhSUZL5/aKbtE1H8BWznbY=;
-        b=lpWeahpMvSg6wspdU68e625smkDyW3TgJNcrhrPwSAZAcKW1Pm6+In4b89OKhnRiho
-         jyDyXJgWu848kM0GjlQNeGDPHUdcMWJpN3QDeTF+oYc88heY+YM20ffj9XdVQ5u7VIxo
-         hOY6+SQYie4Ts3OnMQLP++tBsJrLiWWDJTl1VABbJiea24CgHpMB5U4S1kFrjfJbMn+n
-         /LC0BSROXCGCM5yzofPASngmZyJmW1cW2Xwt0iaSDGZXhnzmDhe33YQP/b3AVQWCFWsY
-         cF4ILUOGF6kQ0Lykpm3999cTcDO2oXeNKqEbwjMaj6YbaGJkpZHqMerPWFA3C6ph3MnA
-         LcsQ==
-X-Gm-Message-State: AJIora/3JZPrqBdEtvr9ZqjAiJUx4cydoU/McKCyKoSkgWm+34iWodIK
-        qkAgerTK3EeiaRAPPSGdylWRinsfu/qDBzdAbfQ=
-X-Google-Smtp-Source: AGRyM1szceTmJvxBZDzYIbp8ZWRdBS34Xb5GVhAHComIv9CyqCx8/p7Ht9+z/srDnTdeCQWSDcrDfEaabYT1T5+eyzc=
-X-Received: by 2002:a17:902:c40a:b0:163:d38e:3049 with SMTP id
- k10-20020a170902c40a00b00163d38e3049mr5237599plk.87.1655394821875; Thu, 16
- Jun 2022 08:53:41 -0700 (PDT)
+        Thu, 16 Jun 2022 11:56:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6932F645;
+        Thu, 16 Jun 2022 08:56:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DC71B8247C;
+        Thu, 16 Jun 2022 15:56:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE9C9C3411A;
+        Thu, 16 Jun 2022 15:56:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655394982;
+        bh=Uig/+Nmy6hndeL7nse9511BoQKMIV0erkOstTyQxEHA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=m52+t7VdmErDE6JLTaYv5tPzbMcsH8lDIk30SC0M9sEAzEL4LWH2xbmEWh+OIWUl8
+         YpHijZwpGHzCd7JW2zDYLHi2Nr17I6wRaS/ofWLWldMDIKyRrabQDsFnwU1dyKjmOJ
+         uVcpWJM0jlllMZdKeQYhT+Ok3ixw04Cx6RBPnjRvvbi795CgScI4IOKk5V6CuA//Z6
+         7VUkZILF01TXh5iAf9RdSa9hrjuFGeYiWyxPjiWFJurf1aBrfhOHjsiW1wWqifOEms
+         sEjUuUBpBjfK/mEGXiQ3KiUBwriy0QCje4/lqu+e6OrkNzvYyYK6eHn2gpU8vPMP8R
+         LOCZf1WcS20uA==
+Date:   Thu, 16 Jun 2022 10:56:19 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Hongxing Zhu <hongxing.zhu@nxp.com>
+Cc:     Lucas Stach <l.stach@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v12 09/13] PCI: imx6: Turn off regulator when system is
+ in suspend mode
+Message-ID: <20220616155619.GA1089749@bhelgaas>
 MIME-Version: 1.0
-References: <20220611084731.55155-1-linmiaohe@huawei.com> <20220611084731.55155-8-linmiaohe@huawei.com>
- <CAHbLzkoYkN+QzdfSUkHbLMUYX=zkrgGCrqM6xRaVssFSJh9KqA@mail.gmail.com> <87617483-7945-30e2-471e-578da4f4d9c7@huawei.com>
-In-Reply-To: <87617483-7945-30e2-471e-578da4f4d9c7@huawei.com>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Thu, 16 Jun 2022 08:53:29 -0700
-Message-ID: <CAHbLzkqAJK3C8svOm4mhCP_oP6od=NMKpeW9=oRcczDJ=FXPcw@mail.gmail.com>
-Subject: Re: [PATCH 7/7] mm/khugepaged: try to free transhuge swapcache when possible
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Howells <dhowells@redhat.com>, NeilBrown <neilb@suse.de>,
-        Alistair Popple <apopple@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Peter Xu <peterx@redhat.com>, Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <AS8PR04MB8676919AEB21FDA9F632CA4A8CAC9@AS8PR04MB8676.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 12:42 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
->
-> On 2022/6/16 7:58, Yang Shi wrote:
-> > On Sat, Jun 11, 2022 at 1:47 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
-> >>
-> >> Transhuge swapcaches won't be freed in __collapse_huge_page_copy().
-> >> It's because release_pte_page() is not called for these pages and
-> >> thus free_page_and_swap_cache can't grab the page lock. These pages
-> >> won't be freed from swap cache even if we are the only user until
-> >> next time reclaim. It shouldn't hurt indeed, but we could try to
-> >> free these pages to save more memory for system.
-> >
-> >
-> >>
-> >> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> >> ---
-> >>  include/linux/swap.h | 5 +++++
-> >>  mm/khugepaged.c      | 1 +
-> >>  mm/swap.h            | 5 -----
-> >>  3 files changed, 6 insertions(+), 5 deletions(-)
-> >>
-> >> diff --git a/include/linux/swap.h b/include/linux/swap.h
-> >> index 8672a7123ccd..ccb83b12b724 100644
-> >> --- a/include/linux/swap.h
-> >> +++ b/include/linux/swap.h
-> >> @@ -456,6 +456,7 @@ static inline unsigned long total_swapcache_pages(void)
-> >>         return global_node_page_state(NR_SWAPCACHE);
-> >>  }
-> >>
-> >> +extern void free_swap_cache(struct page *page);
-> >>  extern void free_page_and_swap_cache(struct page *);
-> >>  extern void free_pages_and_swap_cache(struct page **, int);
-> >>  /* linux/mm/swapfile.c */
-> >> @@ -540,6 +541,10 @@ static inline void put_swap_device(struct swap_info_struct *si)
-> >>  /* used to sanity check ptes in zap_pte_range when CONFIG_SWAP=0 */
-> >>  #define free_swap_and_cache(e) is_pfn_swap_entry(e)
-> >>
-> >> +static inline void free_swap_cache(struct page *page)
-> >> +{
-> >> +}
-> >> +
-> >>  static inline int add_swap_count_continuation(swp_entry_t swp, gfp_t gfp_mask)
-> >>  {
-> >>         return 0;
-> >> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-> >> index ee0a719c8be9..52109ad13f78 100644
-> >> --- a/mm/khugepaged.c
-> >> +++ b/mm/khugepaged.c
-> >> @@ -756,6 +756,7 @@ static void __collapse_huge_page_copy(pte_t *pte, struct page *page,
-> >>         list_for_each_entry_safe(src_page, tmp, compound_pagelist, lru) {
-> >>                 list_del(&src_page->lru);
-> >>                 release_pte_page(src_page);
-> >> +               free_swap_cache(src_page);
-> >
-> > Will this really work? The free_swap_cache() will just dec refcounts
-> > without putting the page back to buddy. So the hugepage is not
-> > actually freed at all. Am I missing something?
->
-> Thanks for catching this! If page is on percpu lru_pvecs cache, page will
-> be released when lru_pvecs are drained. But if not, free_swap_cache() won't
-> free the page as it assumes the caller has a reference on the page and thus
-> only does page_ref_sub(). Does the below change looks sense for you?
+On Thu, Jun 16, 2022 at 02:23:29AM +0000, Hongxing Zhu wrote:
+> > -----Original Message-----
+> > From: Bjorn Helgaas <helgaas@kernel.org>
+> > Sent: 2022年6月16日 7:31
+> > To: Hongxing Zhu <hongxing.zhu@nxp.com>; Lucas Stach
+> > <l.stach@pengutronix.de>; Rob Herring <robh+dt@kernel.org>; Mark Brown
+> > <broonie@kernel.org>; Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>; Fabio
+> > Estevam <festevam@gmail.com>; Francesco Dolcini
+> > <francesco.dolcini@toradex.com>
+> > Cc: linux-pci@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
+> > linux-kernel@vger.kernel.org; kernel@pengutronix.de; dl-linux-imx
+> > <linux-imx@nxp.com>; Bjorn Helgaas <bhelgaas@google.com>
+> > Subject: Re: [PATCH v12 09/13] PCI: imx6: Turn off regulator when system is in
+> > suspend mode
+> > 
+> > On Wed, Jun 15, 2022 at 06:15:47PM -0500, Bjorn Helgaas wrote:
+> > > From: Richard Zhu <hongxing.zhu@nxp.com>
+> > >
+> > > The driver should undo any enables it did itself. The regulator
+> > > disable shouldn't be basing decisions on regulator_is_enabled().
+> > >
+> > > Move the regulator_disable to the suspend function, turn off regulator
+> > > when the system is in suspend mode.
+> > >
+> > > To keep the balance of the regulator usage counter, disable the
+> > > regulator in shutdown.
+> > >
+> > > Link:
+> > > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore
+> > > .kernel.org%2Fr%2F1655189942-12678-6-git-send-email-hongxing.z&amp;d
+> > at
+> > >
+> > a=05%7C01%7Chongxing.zhu%40nxp.com%7C8dea46d908d34cb4825808da4
+> > f270eaf%
+> > >
+> > 7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C6379093264156415
+> > 35%7CUnkn
+> > >
+> > own%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1
+> > haWwi
+> > >
+> > LCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=tqzlcCmtSkUNxNzJ0Fr5o
+> > CR3X2CTH
+> > > 4dwUJS4NXt5KRc%3D&amp;reserved=0
+> > > hu@nxp.com
+> > > Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+> > > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> > > ---
+> > >  drivers/pci/controller/dwc/pci-imx6.c | 19 +++++++------------
+> > >  1 file changed, 7 insertions(+), 12 deletions(-)
+> > >
+> > > diff --git a/drivers/pci/controller/dwc/pci-imx6.c
+> > > b/drivers/pci/controller/dwc/pci-imx6.c
+> > > index 6eddd0b5f628..537b8a2e0e3b 100644
+> > > --- a/drivers/pci/controller/dwc/pci-imx6.c
+> > > +++ b/drivers/pci/controller/dwc/pci-imx6.c
+> > > @@ -670,8 +670,6 @@ static void imx6_pcie_clk_disable(struct imx6_pcie
+> > > *imx6_pcie)
+> > >
+> > >  static void imx6_pcie_assert_core_reset(struct imx6_pcie *imx6_pcie)
+> > > {
+> > > -	struct device *dev = imx6_pcie->pci->dev;
+> > > -
+> > >  	switch (imx6_pcie->drvdata->variant) {
+> > >  	case IMX7D:
+> > >  	case IMX8MQ:
+> > > @@ -702,14 +700,6 @@ static void imx6_pcie_assert_core_reset(struct
+> > imx6_pcie *imx6_pcie)
+> > >  		break;
+> > >  	}
+> > >
+> > > -	if (imx6_pcie->vpcie && regulator_is_enabled(imx6_pcie->vpcie) > 0) {
+> > > -		int ret = regulator_disable(imx6_pcie->vpcie);
+> > > -
+> > > -		if (ret)
+> > > -			dev_err(dev, "failed to disable vpcie regulator: %d\n",
+> > > -				ret);
+> > > -	}
+> > > -
+> > >  	/* Some boards don't have PCIe reset GPIO. */
+> > >  	if (gpio_is_valid(imx6_pcie->reset_gpio))
+> > >  		gpio_set_value_cansleep(imx6_pcie->reset_gpio,
+> > > @@ -722,7 +712,7 @@ static int imx6_pcie_deassert_core_reset(struct
+> > imx6_pcie *imx6_pcie)
+> > >  	struct device *dev = pci->dev;
+> > >  	int ret, err;
+> > >
+> > > -	if (imx6_pcie->vpcie && !regulator_is_enabled(imx6_pcie->vpcie)) {
+> > > +	if (imx6_pcie->vpcie) {
+> > >  		ret = regulator_enable(imx6_pcie->vpcie);
+> > >  		if (ret) {
+> > >  			dev_err(dev, "failed to enable vpcie regulator: %d\n", @@
+> > -796,7
+> > > +786,7 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie
+> > *imx6_pcie)
+> > >  	return 0;
+> > >
+> > >  err_clks:
+> > > -	if (imx6_pcie->vpcie && regulator_is_enabled(imx6_pcie->vpcie) > 0) {
+> > > +	if (imx6_pcie->vpcie) {
+> > >  		ret = regulator_disable(imx6_pcie->vpcie);
+> > >  		if (ret)
+> > >  			dev_err(dev, "failed to disable vpcie regulator: %d\n", @@
+> > -1023,6
+> > > +1013,9 @@ static int imx6_pcie_suspend_noirq(struct device *dev)
+> > >  		break;
+> > >  	}
+> > >
+> > > +	if (imx6_pcie->vpcie)
+> > > +		regulator_disable(imx6_pcie->vpcie);
+> > 
+> > This is a little bit ugly because imx6_pcie_suspend_noirq() and
+> > imx6_pcie_resume_noirq() are not symmetric.
+> > 
+> > We call regulator_disable() directly here in imx6_pcie_suspend_noirq(), but the
+> > corresponding regulator_enable() is buried in imx6_pcie_deassert_core_reset().
+> > 
+> > It would be nicer if the suspend and resume paths looked more similar, as
+> > rockchip_pcie_suspend_noirq() and rockchip_pcie_resume_noirq() do, for
+> > example.
+> Yes, it is. The regulator_disable()/regulator_enable() are not invoked
+>  symmetrically.
+> 
+> In the original codes, the regulator_disable() is contained in
+> imx6_pcie_assert_core_reset() and with _eanbled() check.
+> And regulator_enable() is embedded in imx6_pcie_deassert_core_reset().
+> Both the regulator disable and enable are invoked in resume before.
+> I move the regulator_disable to suspend mode refer to Lucas' comments.
+> 
+> Refer to the current situation, how about to move the regulator_disable()
+>  out of imx6_pcie_deassert_core_reset() too?
 
-THP gets drained immediately so they won't stay in pagevecs.
+I think it's important to tweak this closer to the pattern of other
+drivers like exynos and rockchip.
 
->
-> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-> index 52109ad13f78..b8c96e33591d 100644
-> --- a/mm/khugepaged.c
-> +++ b/mm/khugepaged.c
-> @@ -755,8 +755,12 @@ static void __collapse_huge_page_copy(pte_t *pte, struct page *page,
->
->         list_for_each_entry_safe(src_page, tmp, compound_pagelist, lru) {
->                 list_del(&src_page->lru);
-> -               release_pte_page(src_page);
-> +               mod_node_page_state(page_pgdat(src_page),
-> +                                   NR_ISOLATED_ANON + page_is_file_lru(src_page),
-> +                                   -compound_nr(src_page));
-> +               unlock_page(src_page);
->                 free_swap_cache(src_page);
-> +               putback_lru_page(src_page);
+exynos_pcie_resume_noirq() calls exynos_pcie_host_init().
+imx6_pcie_resume_noirq() is VERY similar to imx6_pcie_host_init(), and
+I think it should call imx6_pcie_host_init() instead of duplicating
+that code.  The only real difference is that imx6_pcie_host_init()
+calls imx6_setup_phy_mpll() while imx6_pcie_resume_noirq() does not.
+I suspect that's a bug.
 
-I'm not sure if it is worth it or not for a rare corner case since THP
-should not stay in swapcache unless try_to_unmap() in vmscan fails
-IIUC. And it is not guaranteed that free_swap_cache() will get the
-page lock.
+I don't think "regulator_enable(imx6_pcie->vpcie)" really has anything
+to do with imx6_pcie_deassert_core_reset() and it should be moved out.
+The typical pattern is to enable regulators in *_probe() and
+*_resume_noirq() and disable them in *_remove() and *_suspend_noirq().
+I think you should do the same unless there's some reason you can't.
 
->         }
->  }
->
-> Thanks!
->
-> >
-> >>         }
-> >>  }
-> >>
-> >> diff --git a/mm/swap.h b/mm/swap.h
-> >> index 0193797b0c92..863f6086c916 100644
-> >> --- a/mm/swap.h
-> >> +++ b/mm/swap.h
-> >> @@ -41,7 +41,6 @@ void __delete_from_swap_cache(struct page *page,
-> >>  void delete_from_swap_cache(struct page *page);
-> >>  void clear_shadow_from_swap_cache(int type, unsigned long begin,
-> >>                                   unsigned long end);
-> >> -void free_swap_cache(struct page *page);
-> >>  struct page *lookup_swap_cache(swp_entry_t entry,
-> >>                                struct vm_area_struct *vma,
-> >>                                unsigned long addr);
-> >> @@ -81,10 +80,6 @@ static inline struct address_space *swap_address_space(swp_entry_t entry)
-> >>         return NULL;
-> >>  }
-> >>
-> >> -static inline void free_swap_cache(struct page *page)
-> >> -{
-> >> -}
-> >> -
-> >>  static inline void show_swap_cache_info(void)
-> >>  {
-> >>  }
-> >> --
-> >> 2.23.0
-> >>
-> >>
-> > .
-> >
->
+Can you give this a try, starting with this v12 posting?
+
+Bjorn
