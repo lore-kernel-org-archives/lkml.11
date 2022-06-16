@@ -2,102 +2,290 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E6BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B0BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359836AbiFPIqe (ORCPT
+        id S1359843AbiFPIqi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35076 "EHLO
+        Thu, 16 Jun 2022 04:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359787AbiFPIp7 (ORCPT
+        with ESMTP id S1359805AbiFPIqA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:45:59 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DCC95DD02;
-        Thu, 16 Jun 2022 01:45:52 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Thu, 16 Jun 2022 04:46:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3315DBCD;
+        Thu, 16 Jun 2022 01:45:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 44EA16601745;
-        Thu, 16 Jun 2022 09:45:50 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655369151;
-        bh=3V8ML5nble416YqEnklIe2qV+U/q3IDZwUrctK/WtyU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=jQrHrvQuytaaFWaSqxSHYM0vSS05al78apQ2LJHpDN0hf2dloTBuGpNpWqYBWmsy3
-         tyRtoMdES5KqdD1iIQG+xYHTYbN0FGyVjvR4JqmU0olldQRi5BmIAn1CyH8fEFvDQH
-         SWB7PyRiC7TiLacNPQhqQ5CIQMP5MO7WYVjfxdztcd3jdY9jmnf9TDAfELy2oE9K4t
-         rVbzOokhsQRWjeSq9hl6KWTLDUofWN8quKmI0vWq3LWmVylaz9yAuMk6zxZCYM5rNJ
-         fv6bBWLzZ9sAiIFo/uRoG6/qWLVSg1AWwo3rtwOKiPq8Ze0UlJ2cMR+IQtTeKplz1u
-         BR2QhjXvcrSnA==
-Message-ID: <5bc0a278-6a78-efec-f07b-a990830253f8@collabora.com>
-Date:   Thu, 16 Jun 2022 10:45:47 +0200
+        by ams.source.kernel.org (Postfix) with ESMTPS id D67F2B81E20;
+        Thu, 16 Jun 2022 08:45:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F995C3411F;
+        Thu, 16 Jun 2022 08:45:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655369152;
+        bh=ZJ0brquACtNcXCIAgCRgNB+aJ/fU2CSwf1pEP1xdS3c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rmpY9+pOtMmQn4Yy+VrFIeWB31DRRL5kf9pHv2pn3dg9ADHcEztUGaTGnuSDtJ6FK
+         OmGgKEoJYtkHsedir14+rjJXSGEE4KnNz8BPq7sSioUaiR2y8rcdK4v5sJxdtFle0e
+         jQ+8CBDW5LNum7z8NWYzn7INcYejQJGJC8Y7CqVWINIQye2LQf6qlf/1CSMbaY7oDi
+         /BNuZp2SAHQALxiY3qpXxM0+RcrsqEKps5uDPQgcPREYnMNYZS3p8QJnprDlfTA8jw
+         4MOnuKBznzsFdKwX3X8Xe0suHsarKBdbUNesxloU8EcJex0Dmkgfqk6FfjjXYEVRGg
+         iYEtuB5wBfVAQ==
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: [PATCH V4 08/20] rv/monitor: Add the wip monitor skeleton created by dot2k
+Date:   Thu, 16 Jun 2022 10:44:50 +0200
+Message-Id: <6559fb9064f683fda469849549c72607c0f2ae5b.1655368610.git.bristot@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1655368610.git.bristot@kernel.org>
+References: <cover.1655368610.git.bristot@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 6/6] iommu: mtk_iommu: Lookup phandle to retrieve
- syscon to pericfg
-Content-Language: en-US
-To:     Yong Wu <yong.wu@mediatek.com>
-Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        krzysztof.kozlowski@linaro.org
-References: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
- <20220609100802.54513-7-angelogioacchino.delregno@collabora.com>
- <db422fe4d0b5391ee2aacae989d7e48209e1095f.camel@mediatek.com>
- <80c7fa61-e25a-fc45-bdcb-60ac3796b96e@collabora.com>
- <2d0f49294a8bac34dd5dd1ce4201f009a207b7a7.camel@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <2d0f49294a8bac34dd5dd1ce4201f009a207b7a7.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 16/06/22 08:30, Yong Wu ha scritto:
-> On Mon, 2022-06-13 at 10:13 +0200, AngeloGioacchino Del Regno wrote:
->> Il 13/06/22 07:32, Yong Wu ha scritto:
->>> On Thu, 2022-06-09 at 12:08 +0200, AngeloGioacchino Del Regno
->>> wrote:
->>>> On some SoCs (of which only MT8195 is supported at the time of
->>>> writing),
->>>> the "R" and "W" (I/O) enable bits for the IOMMUs are in the
->>>> pericfg_ao
->>>> register space and not in the IOMMU space: as it happened already
->>>> with
->>>> infracfg, it is expected that this list will grow.
->>>
->>> Currently I don't see the list will grow. As commented before, In
->>> the
->>> lastest SoC, The IOMMU enable bits for IOMMU will be in ATF, rather
->>> than in this pericfg register region. In this case, Is this patch
->>> unnecessary? or we could add this patch when there are 2 SoCs use
->>> this
->>> setting at least?  what's your opinion?
->>>
->>
->> Perhaps I've misunderstood... besides, can you please check if
->> there's any
->> other SoC (not just chromebooks, also smartphone SoCs) that need this
->> logic?
-> 
-> As far as I know, SmartPhone SoCs don't enable the infra iommu until
-> now. they don't have this logic. I don't object this patch, I think we
-> could add it when at least 2 SoCs need this.
-> 
-> Thanks very much for help improving here.
-> 
+This is the direct output this command line:
+  $ dot2k -d ~/wip.dot -t per_cpu
 
-Many thanks for checking that! Now that everything is clear, I can safely
-go on with pushing a v4 of this series.
+with wip.dot as:
+ ----- %< -----
+digraph state_automaton {
+	center = true;
+	size = "7,11";
+	rankdir = LR;
+	{node [shape = circle] "non_preemptive"};
+	{node [shape = plaintext, style=invis, label=""] "__init_preemptive"};
+	{node [shape = doublecircle] "preemptive"};
+	{node [shape = circle] "preemptive"};
+	"__init_preemptive" -> "preemptive";
+	"non_preemptive" [label = "non_preemptive"];
+	"non_preemptive" -> "non_preemptive" [ label = "sched_waking" ];
+	"non_preemptive" -> "preemptive" [ label = "preempt_enable" ];
+	"preemptive" [label = "preemptive"];
+	"preemptive" -> "non_preemptive" [ label = "preempt_disable" ];
+	{ rank = min ;
+		"__init_preemptive";
+		"preemptive";
+	}
+}
+ ----- >% -----
 
-Thanks again!
-Angelo
+This model is broken because preempt_disable_notrace(). It is broken on
+purpose to test the reactors.
+
+It does not compile because it lacks the instrumentation, which will be
+add next.
+
+Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Marco Elver <elver@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Shuah Khan <skhan@linuxfoundation.org>
+Cc: Gabriele Paoloni <gpaoloni@redhat.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Clark Williams <williams@redhat.com>
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-trace-devel@vger.kernel.org
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+---
+ kernel/trace/rv/monitors/wip/wip.c | 112 +++++++++++++++++++++++++++++
+ kernel/trace/rv/monitors/wip/wip.h |  38 ++++++++++
+ 2 files changed, 150 insertions(+)
+ create mode 100644 kernel/trace/rv/monitors/wip/wip.c
+ create mode 100644 kernel/trace/rv/monitors/wip/wip.h
+
+diff --git a/kernel/trace/rv/monitors/wip/wip.c b/kernel/trace/rv/monitors/wip/wip.c
+new file mode 100644
+index 000000000000..08950e09b823
+--- /dev/null
++++ b/kernel/trace/rv/monitors/wip/wip.c
+@@ -0,0 +1,112 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/ftrace.h>
++#include <linux/tracepoint.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/rv.h>
++#include <rv/instrumentation.h>
++#include <rv/da_monitor.h>
++
++#define MODULE_NAME "wip"
++
++/*
++ * XXX: include required tracepoint headers, e.g.,
++ * #include <linux/trace/events/sched.h>
++ */
++#include <trace/events/rv.h>
++
++/*
++ * This is the self-generated part of the monitor. Generally, there is no need
++ * to touch this section.
++ */
++#include "wip.h"
++
++/*
++ * Declare the deterministic automata monitor.
++ *
++ * The rv monitor reference is needed for the monitor declaration.
++ */
++struct rv_monitor rv_wip;
++DECLARE_DA_MON_PER_CPU(wip, char);
++
++/*
++ * This is the instrumentation part of the monitor.
++ *
++ * This is the section where manual work is required. Here the kernel events
++ * are translated into model's event.
++ *
++ */
++static void handle_preempt_disable(void *data, /* XXX: fill header */)
++{
++	da_handle_event_wip(preempt_disable_wip);
++}
++
++static void handle_preempt_enable(void *data, /* XXX: fill header */)
++{
++	da_handle_event_wip(preempt_enable_wip);
++}
++
++static void handle_sched_waking(void *data, /* XXX: fill header */)
++{
++	da_handle_event_wip(sched_waking_wip);
++}
++
++static int start_wip(void)
++{
++	int retval;
++
++	retval = da_monitor_init_wip();
++	if (retval)
++		return retval;
++
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_disable);
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_enable);
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_sched_waking);
++
++	return 0;
++}
++
++static void stop_wip(void)
++{
++	rv_wip.enabled = 0;
++
++	rv_detach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_disable);
++	rv_detach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_enable);
++	rv_detach_trace_probe("wip", /* XXX: tracepoint */, handle_sched_waking);
++
++	da_monitor_destroy_wip();
++}
++
++/*
++ * This is the monitor register section.
++ */
++struct rv_monitor rv_wip = {
++	.name = "wip",
++	.description = "auto-generated wip",
++	.start = start_wip,
++	.stop = stop_wip,
++	.reset = da_monitor_reset_all_wip,
++	.enabled = 0,
++};
++
++int register_wip(void)
++{
++	rv_register_monitor(&rv_wip);
++	return 0;
++}
++
++void unregister_wip(void)
++{
++	if (rv_wip.enabled)
++		stop_wip();
++
++	rv_unregister_monitor(&rv_wip);
++}
++
++module_init(register_wip);
++module_exit(unregister_wip);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("dot2k: auto-generated");
++MODULE_DESCRIPTION("wip");
+diff --git a/kernel/trace/rv/monitors/wip/wip.h b/kernel/trace/rv/monitors/wip/wip.h
+new file mode 100644
+index 000000000000..3055ea331706
+--- /dev/null
++++ b/kernel/trace/rv/monitors/wip/wip.h
+@@ -0,0 +1,38 @@
++enum states_wip {
++	preemptive_wip = 0,
++	non_preemptive_wip,
++	state_max_wip
++};
++
++enum events_wip {
++	preempt_disable_wip = 0,
++	preempt_enable_wip,
++	sched_waking_wip,
++	event_max_wip
++};
++
++struct automaton_wip {
++	char *state_names[state_max_wip];
++	char *event_names[event_max_wip];
++	char function[state_max_wip][event_max_wip];
++	char initial_state;
++	char final_states[state_max_wip];
++};
++
++struct automaton_wip automaton_wip = {
++	.state_names = {
++		"preemptive",
++		"non_preemptive"
++	},
++	.event_names = {
++		"preempt_disable",
++		"preempt_enable",
++		"sched_waking"
++	},
++	.function = {
++		{ non_preemptive_wip,                 -1,                 -1 },
++		{                 -1,     preemptive_wip, non_preemptive_wip },
++	},
++	.initial_state = preemptive_wip,
++	.final_states = { 1, 0 },
++};
+-- 
+2.35.1
+
