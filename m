@@ -2,180 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC812C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 23:30:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1ADC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 23:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379287AbiFPXaG (ORCPT
+        id S1379394AbiFPXa4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 19:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57706 "EHLO
+        Thu, 16 Jun 2022 19:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232177AbiFPX37 (ORCPT
+        with ESMTP id S231899AbiFPXay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 19:29:59 -0400
-Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EA55FF3E
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 16:29:57 -0700 (PDT)
-Received: by mail-vs1-xe2e.google.com with SMTP id j39so2602756vsv.11
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 16:29:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jTQu5pe6Zf0+qj19U3vviuhopcu1lsdgelMDE7rhu0Q=;
-        b=tOonm2OIkZMBU/bLGDvI7kAER+D+N/KWwhs+Yk5bDeqcXoDUEirgvpt7Q9JysPsHYA
-         6LdxZobaPlu7v03YFmDCMAW3+t/XzxD6Xnuh1H32fIjUF1dv66ru8JuQDhuNJA85y/tj
-         jUSf0Exxifrnke77ACFpsYgc3m4l6e17IxPmoPpEu9D7icFToolqS1hjIg6MAgJCK8cp
-         jrsf932jCh/QooZfhdpc2EZ8SlIVNhVQSS5E/hWXAEzlhkomzv5h9DxTefjNLVA77OYa
-         eXlnuSbNI3ELZ1clQiuOgRYCOLMy/JcYAv+YY1F9ryL4RGz/7hVzY8LTHm4fjfAnF4iQ
-         ZXzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jTQu5pe6Zf0+qj19U3vviuhopcu1lsdgelMDE7rhu0Q=;
-        b=bIhlhCwBnfo3cxVcTJuPPkt+rA6MfpFg8uWhJLRLEkjrU3H6FamhDPy8HPa0+tqiOg
-         eBQ3wmbV5yuuj46cvtSVuZG0ubcN3bh6+G2lPynGWR9u9vied015eLHmYltgEMWbvC1S
-         K3JHWjnXDwM5RrdDguG8+v9yuatLPtvBMb7oRJ7M9AmpBi8GQNXX/Dvwncrmme+16QbE
-         sUX2Fs65LYnIwfCRTv5ZrAjdHHrloSoifu3RR9Mow0jY/Juk10x+foelK/5wGLJGxdEz
-         3DFRTccIoNUsgNHVKOq1NuCXP7RGjtMD4JSmR3vMfpGTVffudPAUPwgvfrZA6do8yzFj
-         tZdQ==
-X-Gm-Message-State: AJIora9rxQ7I02IwD2gwAsyu4Z8t85NFg+IbtvOjYqOd3AO5hO/hv/ed
-        bk7U8jesKCfRvW/w4uJseSwDY71tqivRphsb4NKflQ==
-X-Google-Smtp-Source: AGRyM1veGbPT7enA0m3I3+tAnsLBKXsnQLJV3rPbk+ikhnpYHTwYIIIakxBL5WDVTz+5J16Gvq8L0TSQpNlnXCwr6jI=
-X-Received: by 2002:a05:6102:3e23:b0:34b:b6b0:2ae7 with SMTP id
- j35-20020a0561023e2300b0034bb6b02ae7mr3717280vsv.81.1655422195990; Thu, 16
- Jun 2022 16:29:55 -0700 (PDT)
+        Thu, 16 Jun 2022 19:30:54 -0400
+Received: from esa2.hgst.iphmx.com (esa2.hgst.iphmx.com [68.232.143.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6697F5FF3E
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 16:30:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1655422253; x=1686958253;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=3JUll1cokzNoMWjmBVYm6Y8IVuyZM8XJyZI/cVxZcV0=;
+  b=VVRy6cNmdgwK71e/M/D2IXm2yIU1U+6uo705+fcnEGa4aUuLF/mGw/EH
+   JpKOefC+vrFL4JUdm/B9kAEtvey9wq4Pz9ARr6dVt8yE1f4muHbyvFyq3
+   Am4IPlkZXOhE+rjd6JUaxVSypUopIeiEkqE+HUSuYRpjpAFyW3H/wd1XN
+   nA3O3fme/mRF7IY9GWX+oBdmM1bNYzw8ZeV8nFAFQRIwQOqTifemChGSu
+   kgZLWPK332wEN1UavhgosCeg+KYbHWffIhNHH/Yp7qAKeIFI/Tygul1iO
+   ikW0OGpEDMAza8sAEbpF/le+kZrP3KlAUGSAPFiytQgOmdLF/NEuEHuRK
+   g==;
+X-IronPort-AV: E=Sophos;i="5.92,306,1650902400"; 
+   d="scan'208";a="307679375"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 17 Jun 2022 07:30:52 +0800
+IronPort-SDR: m6YKQBHMb80HI9zXLBGMWEyF133C83TTtvBRe32+d4dc8Yw5hCz68piP/V0xFAadknitXE1kQq
+ v39596MNzfNt0TB/K4z09Uiwhi3I4Zk07RhdaGw0mxaMmld57oL0PTx3Nmn1HqGPYTgqqXsrO7
+ EEPkqrxadaoIT8/9jAL1oGutma6NBruSo0jxzAgETaCQ2FtpiVTyhiwKGi9v+O9mhKp/zAKOkx
+ tDZ2L7USpcenVC1/knYAThGNKwx58bONniwRCkDjUuVNnEcX9F2PWfnZ5XMxrnP/nFordrUMCN
+ 71lNUkRw/N+na2iWL92oBHhf
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 Jun 2022 15:49:04 -0700
+IronPort-SDR: psyq/078KpDJTpjqVuShOwUDNSFat5G+nmnI1go/qJSRfbwJvmBUH7aKe8MkYm1LW8v3RLU0xH
+ hXuyEDeNY6wDQ1lv/uhkPwFg8QwZl+HlzpGIilH8uOunBaOgBFTf0kpcAne5wKRs8wniq9PZ8k
+ 74b8EqZWnTaTp5Zzr0sDiZGnt4ozYUkx6ZPlrV5DI7irFvNdn5m9P8hDKLeC+eZz3dTAPx34Y0
+ /QaANidmR5rL+F8FdKeaeuiTHYb47oyQ7LPUh/PGQE0tA5CNRb7O/sc8rq3Lr+9Me13oAX2yC1
+ Dk0=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 16 Jun 2022 16:30:52 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LPJMH54dJz1SHwl
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 16:30:51 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1655422250; x=1658014251; bh=3JUll1cokzNoMWjmBVYm6Y8IVuyZM8XJyZI
+        /cVxZcV0=; b=QrmRAjk+25AzX0pmuPjm21UbJvARRDhpRqZ8MwiHGxi+ExbXMdm
+        KfWGaMfH86r+rqGZFUK3ugIbHq8FopF/CgqfnQjd0OTiUR90tAxXL6VqAHOOhkZI
+        KGSDWUHHy0BNQh8nGkS6W5bM7aRI2w6QGd02G+8eSVrcXCm06MiM+4YsMB/nKjL9
+        Eq6GwkqowHdlry39C7IEa89LanvFqo0WItYGNC0Sj+wKmyYDuQqTESGipfgGpCcD
+        kQQ/njwlbMb6i/SpGKFXo/J5VGgQktL/Fxf9h/1MtXdl4dGOVzCxttSvCxDwQAPU
+        Ob7mFLLGyECGCgsJNZjX0S84j5RQ0W46SKQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id jNndvV7N6fsq for <linux-kernel@vger.kernel.org>;
+        Thu, 16 Jun 2022 16:30:50 -0700 (PDT)
+Received: from [10.225.163.84] (unknown [10.225.163.84])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LPJMC59mkz1Rvlc;
+        Thu, 16 Jun 2022 16:30:47 -0700 (PDT)
+Message-ID: <ab75c1ca-986f-c3af-6c8c-c2c5b7e40bbd@opensource.wdc.com>
+Date:   Fri, 17 Jun 2022 08:30:46 +0900
 MIME-Version: 1.0
-References: <20220518014632.922072-1-yuzhao@google.com> <20220518014632.922072-8-yuzhao@google.com>
- <CAGsJ_4yboZEY9OfyujPxBa_AEuGM3OAq5y_L9gvzSMUv70BxeQ@mail.gmail.com>
- <CAGsJ_4w3S_8Kaw2GyB3hg7b4N_D+6yBO7D6qmgxD9Fqz3_dhAg@mail.gmail.com>
- <20220607102135.GA32448@willie-the-truck> <CAGsJ_4zGEdHDv0ObZ-5y8sFKLO7Y6ZjTsZFs0KvdLwA_-iGJ5A@mail.gmail.com>
- <20220607104358.GA32583@willie-the-truck> <CAOUHufZh46A2hh_fn-8vVBDi_621rgbZq64_afDt8VxrzqJz1g@mail.gmail.com>
- <CAGsJ_4yvsXCj8snemAyX3jPJgWJR+tFCtUhV-3QJ75RNi=q_KA@mail.gmail.com>
- <CAHk-=wirMfOpzNavjWao5GA65ve=9LQN-6=YCUtJGRpu=ujdoA@mail.gmail.com>
- <CAGsJ_4yLCsJJvK5QkFOk_7UW72DRO7gWnd6wdn2TWzBrTmRjSg@mail.gmail.com>
- <CAOUHufZn5L_R7b_S3P9O+VoJC=EnY10e+xyFF7UqiGbLzzzqKg@mail.gmail.com> <CAGsJ_4ws3uNWM1wpW603UPYrcXqMe3vmPzbLRkgj9SjSgurN3A@mail.gmail.com>
-In-Reply-To: <CAGsJ_4ws3uNWM1wpW603UPYrcXqMe3vmPzbLRkgj9SjSgurN3A@mail.gmail.com>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Thu, 16 Jun 2022 17:29:19 -0600
-Message-ID: <CAOUHufbOwPSbBwd7TG0QFt4YJvBp93Q9nUJEDvMpUA6PqjYMUQ@mail.gmail.com>
-Subject: Re: [PATCH v11 07/14] mm: multi-gen LRU: exploit locality in rmap
-To:     Barry Song <21cnbao@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, x86 <x86@kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>, huzhanyuan@oppo.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [dm-devel] [PATCH v7 02/13] block: allow blk-zoned devices to
+ have non-power-of-2 zone size
+Content-Language: en-US
+To:     Pankaj Raghav <p.raghav@samsung.com>,
+        Bart Van Assche <bvanassche@acm.org>, hch@lst.de,
+        snitzer@redhat.com, axboe@kernel.dk
+Cc:     pankydev8@gmail.com, gost.dev@samsung.com,
+        jiangbo.365@bytedance.com, linux-nvme@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        dm-devel@redhat.com, Luis Chamberlain <mcgrof@kernel.org>,
+        jonathan.derrick@linux.dev, Johannes.Thumshirn@wdc.com,
+        dsterba@suse.com, jaegeuk@kernel.org
+References: <20220615101920.329421-1-p.raghav@samsung.com>
+ <CGME20220615101931eucas1p15ed09ae433a2c378b599e9086130d8eb@eucas1p1.samsung.com>
+ <20220615101920.329421-3-p.raghav@samsung.com>
+ <857c444a-02b9-9cef-0c5b-2ecdb2fd46f6@acm.org>
+ <e04db101-5628-2a1d-6b5c-997090484d7d@samsung.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <e04db101-5628-2a1d-6b5c-997090484d7d@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 4:33 PM Barry Song <21cnbao@gmail.com> wrote:
->
-> On Fri, Jun 17, 2022 at 9:56 AM Yu Zhao <yuzhao@google.com> wrote:
-> >
-> > On Wed, Jun 8, 2022 at 4:46 PM Barry Song <21cnbao@gmail.com> wrote:
-> > >
-> > > On Thu, Jun 9, 2022 at 3:52 AM Linus Torvalds
-> > > <torvalds@linux-foundation.org> wrote:
-> > > >
-> > > > On Tue, Jun 7, 2022 at 5:43 PM Barry Song <21cnbao@gmail.com> wrote:
-> > > > >
-> > > > > Given we used to have a flush for clear pte young in LRU, right now we are
-> > > > > moving to nop in almost all cases for the flush unless the address becomes
-> > > > > young exactly after look_around and before ptep_clear_flush_young_notify.
-> > > > > It means we are actually dropping flush. So the question is,  were we
-> > > > > overcautious? we actually don't need the flush at all even without mglru?
-> > > >
-> > > > We stopped flushing the TLB on A bit clears on x86 back in 2014.
-> > > >
-> > > > See commit b13b1d2d8692 ("x86/mm: In the PTE swapout page reclaim case
-> > > > clear the accessed bit instead of flushing the TLB").
-> > >
-> > > This is true for x86, RISC-V, powerpc and S390. but it is not true for
-> > > most platforms.
-> > >
-> > > There was an attempt to do the same thing in arm64:
-> > > https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1793830.html
-> > > but arm64 still sent a nosync tlbi and depent on a deferred to dsb :
-> > > https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1794484.html
-> >
-> > Barry, you've already answered your own question.
-> >
-> > Without commit 07509e10dcc7 arm64: pgtable: Fix pte_accessible():
-> >    #define pte_accessible(mm, pte)        \
-> >   -       (mm_tlb_flush_pending(mm) ? pte_present(pte) : pte_valid_young(pte))
-> >   +       (mm_tlb_flush_pending(mm) ? pte_present(pte) : pte_valid(pte))
-> >
-> > You missed all TLB flushes for PTEs that have gone through
-> > ptep_test_and_clear_young() on the reclaim path. But most of the time,
-> > you got away with it, only occasional app crashes:
-> > https://lore.kernel.org/r/CAGsJ_4w6JjuG4rn2P=d974wBOUtXUUnaZKnx+-G6a8_mSROa+Q@mail.gmail.com/
-> >
-> > Why?
->
-> Yes. On the arm64 platform, ptep_test_and_clear_young() without flush
-> can cause random
-> App to crash.
-> ptep_test_and_clear_young() + flush won't have this kind of crashes though.
-> But after applying commit 07509e10dcc7 arm64: pgtable: Fix
-> pte_accessible(), on arm64,
-> ptep_test_and_clear_young() without flush won't cause App to crash.
->
-> ptep_test_and_clear_young(), with flush, without commit 07509e10dcc7:   OK
-> ptep_test_and_clear_young(), without flush, with commit 07509e10dcc7:   OK
-> ptep_test_and_clear_young(), without flush, without commit 07509e10dcc7:   CRASH
+On 6/16/22 19:09, Pankaj Raghav wrote:
+> On 2022-06-15 22:28, Bart Van Assche wrote:
+> isk_name, zone->len);
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (zone->len =3D=3D 0) {
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 p=
+r_warn("%s: Invalid zone size", disk->disk_name);
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 r=
+eturn -ENODEV;
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+>>> +
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /*
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * Don't allow zoned=
+ device with non power_of_2 zone size with
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * zone capacity les=
+s than zone size.
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
+>>
+>=20
+>> Please change "power_of_2" into "power-of-2".
+>>
+> Ok.
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!is_power_of_2(zone->=
+len) && zone->capacity < zone->len) {
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 p=
+r_warn("%s: Invalid zone capacity for non power of 2
+>>> zone size",
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 disk->disk_name);
+>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 return -ENODEV;
+>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+>>
+>> The above check seems wrong to me. I don't see why devices that report=
+ a
+>> capacity that is less than the zone size should be rejected.
+>>
+> This was brought up by Damien during previous reviews. The argument was
+> that the reason to allow non power-of-2 zoned device is to remove the
+> gaps between zone size and zone capacity. Allowing a npo2 zone size wit=
+h
+> a different capacity, even though it is technically possible, it does
+> not make any practical sense. That is why this check was introduced.
+> Does that answer your question?
 
-I agree -- my question was rhetorical :)
+Add a comment explaining this restriction, clearly mentioning that it is =
+a
+Linux restrictions and not mandated by the specifications.
 
-I was trying to imply this logic:
-1. We cleared the A-bit in PTEs with ptep_test_and_clear_young()
-2. We missed TLB flush for those PTEs on the reclaim path, i.e., case
-3 (case 1 & 2 guarantee flushes)
-3. We saw crashes, but only occasionally
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /*
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * Division is used =
+to calculate nr_zones for both power_of_2
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * and non power_of_=
+2 zone sizes as it is not in the hot path.
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
+>>
+>> Shouldn't the above comment be moved to the patch description? I'm not
+>> sure whether having such a comment in the source code is valuable.
+>>
+> Yeah, I will remove it. Maybe it is very obvious at this point.
+>>> +static inline sector_t blk_queue_offset_from_zone_start(struct
+>>> request_queue *q,
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 sector_t sec)
+>>> +{
+>>> +=C2=A0=C2=A0=C2=A0 sector_t zone_sectors =3D blk_queue_zone_sectors(=
+q);
+>>> +=C2=A0=C2=A0=C2=A0 u64 remainder =3D 0;
+>>> +
+>>> +=C2=A0=C2=A0=C2=A0 if (!blk_queue_is_zoned(q))
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return false;
+>>
+>> "return false" should only occur in functions returning a boolean. Thi=
+s
+>> function returns type sector_t.
+>>
+> Good catch. It was a copy paste mistake. Fixed it.
+>> Thanks,
+>>
+>> Bart.
+>=20
+> --
+> dm-devel mailing list
+> dm-devel@redhat.com
+> https://listman.redhat.com/mailman/listinfo/dm-devel
 
-Assuming TLB cached those PTEs, we would have seen the crashes more
-often, which contradicts our observation. So the conclusion is TLB
-didn't cache them most of the time, meaning flushing TLB just for the
-sake of the A-bit isn't necessary.
 
-> do you think it is safe to totally remove the flush code even for
-> the original
-> LRU?
-
-Affirmative, based on not only my words, but 3rd parties':
-1. Your (indirect) observation
-2. Alexander's benchmark:
-https://lore.kernel.org/r/BYAPR12MB271295B398729E07F31082A7CFAA0@BYAPR12MB2712.namprd12.prod.outlook.com/
-3. The fundamental hardware limitation in terms of the TLB scalability
-(Fig. 1): https://www.usenix.org/legacy/events/osdi02/tech/full_papers/navarro/navarro.pdf
+--=20
+Damien Le Moal
+Western Digital Research
