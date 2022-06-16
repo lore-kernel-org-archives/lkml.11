@@ -2,149 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A2EAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F97CCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:01:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359578AbiFPH7v (ORCPT
+        id S1359598AbiFPIBE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 03:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50006 "EHLO
+        Thu, 16 Jun 2022 04:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359454AbiFPH7t (ORCPT
+        with ESMTP id S1359354AbiFPIBC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 03:59:49 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9D25D661
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 00:59:47 -0700 (PDT)
-X-UUID: 6dadf92a336c44c6a8c71b01b263b41d-20220616
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:4ed39cf7-ba7c-4993-affd-a02a0d8b52b3,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:b14ad71,CLOUDID:6e7775f6-e099-41ba-a32c-13b8bfe63214,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 6dadf92a336c44c6a8c71b01b263b41d-20220616
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <yf.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1466956298; Thu, 16 Jun 2022 15:59:40 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 16 Jun 2022 15:59:38 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Thu, 16 Jun 2022 15:59:36 +0800
-From:   <yf.wang@mediatek.com>
-To:     <robin.murphy@arm.com>
-CC:     <Libo.Kang@mediatek.com>, <iommu@lists.linux-foundation.org>,
-        <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <miles.chen@mediatek.com>, <ning.li@mediatek.com>,
-        <will@kernel.org>, <wsd_upstream@mediatek.com>,
-        <yf.wang@mediatek.com>, <yong.wu@mediatek.com>
-Subject: Re: [PATCH v9 3/3] iommu/mediatek: Allow page table PA up to 35bit
-Date:   Thu, 16 Jun 2022 15:52:46 +0800
-Message-ID: <20220616075246.11076-1-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <81b55048-a6f1-660f-95b0-6798aa4efc38@arm.com>
-References: <81b55048-a6f1-660f-95b0-6798aa4efc38@arm.com>
+        Thu, 16 Jun 2022 04:01:02 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A285D65A
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 01:01:01 -0700 (PDT)
+Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LNvfX64JYzSh08;
+        Thu, 16 Jun 2022 15:57:40 +0800 (CST)
+Received: from [10.174.176.103] (10.174.176.103) by
+ kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 16 Jun 2022 16:00:59 +0800
+Message-ID: <4e5e9276-e32d-0903-1f4e-20880cc72d82@huawei.com>
+Date:   Thu, 16 Jun 2022 16:00:58 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH -next] driver core: fix deadlock in __driver_attach
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <rafael@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yukuai3@huawei.com>
+References: <20220608094355.3298420-1-zhangwensheng5@huawei.com>
+ <YqNL6NPgP+cLOy/I@kroah.com>
+From:   "zhangwensheng (E)" <zhangwensheng5@huawei.com>
+In-Reply-To: <YqNL6NPgP+cLOy/I@kroah.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.103]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500016.china.huawei.com (7.221.188.220)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-15 at 18:25 +0100, Robin Murphy wrote:
-> On 2022-06-15 17:12, yf.wang--- via iommu wrote:
-> > From: Yunfei Wang <yf.wang@mediatek.com>
-> > 
-> > Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA. So
-> > add
-> > the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT to let level 1 and
-> > level 2
-> > pgtable support at most 35bit PA.
-> 
-> I'm not sure how this works in practice, given that you don't seem to
-> be 
-> setting the IOMMU's own DMA masks to more than 32 bits, so the DMA 
-> mapping in io-pgtable is going to fail if you ever do actually
-> allocate 
-> a pagetable page above 4GB :/
-> 
+sorry that I didn't see your reply.
+it is real not potential, I have triggered this problem successfully and 
+proven that this change can fix it.
 
-Hi Robin,
-About DMA masks, the master device has set dma mask, when iommu do dma map,
-it will check the dam_mask of the master dev to determine which range the
-address of the iova alloc is in.
+stack like commit b232b02bf3c2 ("driver core: fix deadlock in 
+__device_attach").
+list below:
+     In __driver_attach function, The lock holding logic is as follows:
+     ...
+     __driver_attach
+     if (driver_allows_async_probing(drv))
+       device_lock(dev)      // get lock dev
+         async_schedule_dev(__driver_attach_async_helper, dev); // func
+           async_schedule_node
+             async_schedule_node_domain(func)
+               entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
+               /* when fail or work limit, sync to execute func, but
+                  __driver_attach_async_helper will get lock dev as
+                  will, which will lead to A-A deadlock.  */
+               if (!entry || atomic_read(&entry_count) > MAX_WORK) {
+                 func;
+               else
+                 queue_work_node(node, system_unbound_wq, &entry->work)
+       device_unlock(dev)
 
-Add the quirk ARM_MTK_TTBR_EXT to let pgtable support larger phys memory.
-Do actually test work fine, example:
-pgtable phys address:0x12054006a, encoded to 32 bits ttbr:0x20540001
+     As above show, when it is allowed to do async probes, because of
+     out of memory or work limit, async work is not be allowed, to do
+     sync execute instead. it will lead to A-A deadlock because of
+     __driver_attach_async_helper getting lock dev.
+
+     Because it's logic is same as commit b232b02bf3c2 ("driver core: 
+fix deadlock
+     in __device_attach"),  I simplify the description.
 
 
-> > Signed-off-by: Ning Li <ning.li@mediatek.com>
-> > Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-> > ---
-> >   drivers/iommu/mtk_iommu.c | 14 +++++++++-----
-> >   1 file changed, 9 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 3d62399e8865..4dbc33758711 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -138,6 +138,7 @@
-> >   /* PM and clock always on. e.g. infra iommu */
-> >   #define PM_CLK_AO			BIT(15)
-> >   #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
-> > +#define PGTABLE_PA_35_EN		BIT(17)
-> >   
-> >   #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
-> >   				((((pdata)->flags) & (mask)) == (_x))
-> > @@ -240,6 +241,7 @@ struct mtk_iommu_data {
-> >   struct mtk_iommu_domain {
-> >   	struct io_pgtable_cfg		cfg;
-> >   	struct io_pgtable_ops		*iop;
-> > +	u32				ttbr;
-> >   
-> >   	struct mtk_iommu_bank_data	*bank;
-> >   	struct iommu_domain		domain;
-> > @@ -596,6 +598,9 @@ static int mtk_iommu_domain_finalise(struct
-> > mtk_iommu_domain *dom,
-> >   		.iommu_dev = data->dev,
-> >   	};
-> >   
-> > +	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
-> > +		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
-> > +
-> >   	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
-> >   		dom->cfg.oas = data->enable_4GB ? 33 : 32;
-> >   	else
-> > @@ -684,8 +689,8 @@ static int mtk_iommu_attach_device(struct
-> > iommu_domain *domain,
-> >   			goto err_unlock;
-> >   		}
-> >   		bank->m4u_dom = dom;
-> > -		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
-> > -		       bank->base + REG_MMU_PT_BASE_ADDR);
-> > +		bank->m4u_dom->ttbr = MTK_IOMMU_ADDR(dom-
-> > >cfg.arm_v7s_cfg.ttbr);
-> > +		writel(bank->m4u_dom->ttbr, data->base +
-> > REG_MMU_PT_BASE_ADDR);
-> 
-> To add to my comment on patch #1, having to make this change here 
-> further indicates that you're using it the wrong way.
-> 
-> Thanks,
-> Robin.
-> 
+Reproduce:
+and it can be reproduce by make the condition
+(if (!entry || atomic_read(&entry_count) > MAX_WORK)) untenable, like below:
 
-Hi Robin,
-According to your Path#1's suggestion, next version will keep ttbr to encoded 32 bits,
-then will don't need to modify it.
+[  370.785650] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" 
+disables this message.
+[  370.787154] task:swapper/0       state:D stack:    0 pid:    1 
+ppid:     0 flags:0x00004000
+[  370.788865] Call Trace:
+[  370.789374]  <TASK>
+[  370.789841]  __schedule+0x482/0x1050
+[  370.790613]  schedule+0x92/0x1a0
+[  370.791290]  schedule_preempt_disabled+0x2c/0x50
+[  370.792256]  __mutex_lock.isra.0+0x757/0xec0
+[  370.793158]  __mutex_lock_slowpath+0x1f/0x30
+[  370.794079]  mutex_lock+0x50/0x60
+[  370.794795]  __device_driver_lock+0x2f/0x70
+[  370.795677]  ? driver_probe_device+0xd0/0xd0
+[  370.796576]  __driver_attach_async_helper+0x1d/0xd0
+[  370.797318]  ? driver_probe_device+0xd0/0xd0
+[  370.797957]  async_schedule_node_domain+0xa5/0xc0
+[  370.798652]  async_schedule_node+0x19/0x30
+[  370.799243]  __driver_attach+0x246/0x290
+[  370.799828]  ? driver_allows_async_probing+0xa0/0xa0
+[  370.800548]  bus_for_each_dev+0x9d/0x130
+[  370.801132]  driver_attach+0x22/0x30
+[  370.801666]  bus_add_driver+0x290/0x340
+[  370.802246]  driver_register+0x88/0x140
+[  370.802817]  ? virtio_scsi_init+0x116/0x116
+[  370.803425]  scsi_register_driver+0x1a/0x30
+[  370.804057]  init_sd+0x184/0x226
+[  370.804533]  do_one_initcall+0x71/0x3a0
+[  370.805107]  kernel_init_freeable+0x39a/0x43a
+[  370.805759]  ? rest_init+0x150/0x150
+[  370.806283]  kernel_init+0x26/0x230
+[  370.806799]  ret_from_fork+0x1f/0x30
 
-Thanks,
-Yunfei.
+And my change can fix it.
+
+thanks.
+
+Wensheng.
+
+在 2022/6/10 21:49, Greg KH 写道:
+> On Wed, Jun 08, 2022 at 05:43:55PM +0800, Zhang Wensheng wrote:
+>> In __driver_attach function, There are also potential AA deadlock
+>> problem, like the commit b232b02bf3c2 ("driver core: fix deadlock
+>> in __device_attach").
+> Potential, but real?
+>
+> And the codepaths for drivers being added is much different than
+> devices, please provide the full information like you did in the other
+> commit.
+>
+> Also, have you triggered this problem successfully and proven that this
+> change fixes the issue?
+>
+> thanks,
+>
+> greg k-h
+> .
