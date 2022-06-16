@@ -2,154 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEBDCC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE95C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377409AbiFPPYk (ORCPT
+        id S1377627AbiFPPZT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
+        Thu, 16 Jun 2022 11:25:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233993AbiFPPYh (ORCPT
+        with ESMTP id S1376858AbiFPPZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:24:37 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5DA338B6;
-        Thu, 16 Jun 2022 08:24:34 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id h23so2736478lfe.4;
-        Thu, 16 Jun 2022 08:24:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wERZkRXyaF/yhUHrF2+CwLMtx6qioAnoch5k8zt02BE=;
-        b=qqev2nWuJtHKAy2NRmgs7KQtMEfFyXYr973lcTQ/3gb9Beq26TLw01HNBtP3bJBXJ/
-         9c714prPoCM6uBK+03SL5aSsfQhv3fAyuKSotWljo93Y6QQE/AilHY5SdoWot6/arMsu
-         bOtdzk50B5G0lHoJSg8h0jW8mAKDUdVRWwHYbjjwLET1EFVqYe1COubiG+Tmqe176asL
-         aGKeMdH/RTBGm4aZKhVmRIKSjDyvGz5NPoSxWwsePZ2PokI6ktESypzQ+0dgULgcIznz
-         GqkxLGEWSW5GDe0agVs4pdkAf4+3sf89wqlbygw3gA7rL+FicZ9uUI/cGvwREfbP/yXj
-         OQVQ==
+        Thu, 16 Jun 2022 11:25:16 -0400
+Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A0036179;
+        Thu, 16 Jun 2022 08:25:15 -0700 (PDT)
+Received: by mail-il1-f171.google.com with SMTP id s1so1175084ilj.0;
+        Thu, 16 Jun 2022 08:25:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wERZkRXyaF/yhUHrF2+CwLMtx6qioAnoch5k8zt02BE=;
-        b=JjdA4JArbobMIghLQ6F9JEGIDr+4fccN1N9U/SkyTw/b+0UzfLHLlW+ThRgl5dSOtv
-         BljZWuWH0OxtSIDVfmu4FQqfVd9hzFD5BKm5Cw5qxWN9sAxWr/m85kVpmJoPkxLaqZNM
-         hMnKMr7fzIjCpFxPpauZ/Wbe68qwg5F80dOcjUlCcbjGnaS3+RO/CQhVy6jV8luwGxWC
-         0Tic4hYaopsSfsORB0xNhaAUdxHJkZ0xqwaiyXMdI4CawFQujLIaIzLL78mUkRxsiqCH
-         xJFsHgMtT+KmBvlMKBRsgyEA1Es2Te9MsEsn+YoRFSiTi7CmENJE9yWzcJZ08QBcWjFN
-         loYg==
-X-Gm-Message-State: AJIora84wTHXVThNh6hY79E0mejZx308Oag7SpXW8sC193kSvre7OAST
-        pEQAtSAVzb9SbKeLZYjbCGQ=
-X-Google-Smtp-Source: AGRyM1um5hqlsEfM5M/bxVqMCqjhSFQ0nHg9h/eo9duBqbu7PtPlevoJ43ArQk9DCohkn0hDcQVYqg==
-X-Received: by 2002:a05:6512:249:b0:479:a3c:de with SMTP id b9-20020a056512024900b004790a3c00demr3114355lfo.128.1655393073057;
-        Thu, 16 Jun 2022 08:24:33 -0700 (PDT)
-Received: from localhost.localdomain (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
-        by smtp.gmail.com with ESMTPSA id t27-20020a192d5b000000b0047dab95a0d5sm273830lft.109.2022.06.16.08.24.32
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=y1YrCLGCWgqcE9VSgcEP/DpmziXDe/63yV+d7p5oWSI=;
+        b=OfDVgf2mVx1RnrIFHlKyVwmZKQ0pNGntCxe75/r0nGR3lukfNGeqJRxIVx82DX/rJO
+         PgbUjV3nOV6935bI5Kd9wBtNHt7uL81efd71PXQQTJyYgbVX0ZnmWO2tkD3dSEFZYU3T
+         UjA87boKIBgnHEYvld2Smenu2+6i0j27NzHkDXOCXItyAbauAN/KD0tR9xthIhCISqUB
+         vMSqMmeqY5ZsYuSj11gQd3B49ITKucM8MlHwthE21RQRU/gOH1QGgqk1K+q7JADbEA9G
+         M5+5nluXgmaDz2PYli41DUDXZ6xWRU+HGl82i9lSQI0n29vUUdd1isGPefIU7gyDrLJg
+         OkzQ==
+X-Gm-Message-State: AJIora94x0N3H6grVmbeziZUR7PcLKhhNNy9u5VBOC3fZSRCvFJSM5uO
+        VqbaZEe1WXJIP/C8V4bhFQ==
+X-Google-Smtp-Source: AGRyM1uHshZPKfDOFM0JkV7l1XiWpFbQYKRVOip7hYFIDYiZPdJ+6MQyWW98n+bTLuelOCUKeiTKKw==
+X-Received: by 2002:a92:d786:0:b0:2d5:3707:e446 with SMTP id d6-20020a92d786000000b002d53707e446mr3011076iln.244.1655393114712;
+        Thu, 16 Jun 2022 08:25:14 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id d19-20020a056e020bf300b002d18e3dcb67sm1099580ilu.46.2022.06.16.08.25.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 08:24:32 -0700 (PDT)
-From:   Peter Ujfalusi <peter.ujfalusi@gmail.com>
-To:     tony@atomide.com, lee.jones@linaro.org
-Cc:     linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mfd: twl4030-audio: Drop legacy, non DT boot support
-Date:   Thu, 16 Jun 2022 18:31:58 +0300
-Message-Id: <20220616153158.29302-1-peter.ujfalusi@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 16 Jun 2022 08:25:14 -0700 (PDT)
+Received: (nullmailer pid 3501441 invoked by uid 1000);
+        Thu, 16 Jun 2022 15:25:12 -0000
+Date:   Thu, 16 Jun 2022 09:25:12 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Romain Perier <romain.perier@gmail.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Palmer <daniel@0x0f.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] dt-bindings: pwm: Add Mstar MSC313e PWM devicetree
+ bindings documentation
+Message-ID: <20220616152512.GA3499420-robh@kernel.org>
+References: <20220615070813.7720-1-romain.perier@gmail.com>
+ <20220615070813.7720-2-romain.perier@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615070813.7720-2-romain.perier@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Legacy or non DT boot is no longer possible on systems where the
-tw4030/5030 is used.
+On Wed, Jun 15, 2022 at 09:08:09AM +0200, Romain Perier wrote:
+> This adds the documentation for the devicetree bindings of the Mstar
+> MSC313e RTC driver, it includes MSC313e SoCs and SSD20xd.
+> 
+> Signed-off-by: Romain Perier <romain.perier@gmail.com>
+> ---
+>  .../bindings/pwm/mstar,msc313e-pwm.yaml       | 47 +++++++++++++++++++
+>  1 file changed, 47 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml b/Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml
+> new file mode 100644
+> index 000000000000..82f2357db085
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/mstar,msc313e-pwm.yaml
+> @@ -0,0 +1,47 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pwm/mstar,msc313e-pwm.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Mstar MSC313e PWM controller
+> +
+> +allOf:
+> +  - $ref: "pwm.yaml#"
+> +
+> +maintainers:
+> +  - Daniel Palmer <daniel@0x0f.com>
+> +  - Romain Perier <romain.perier@gmail.com>
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
 
-Drop the support for handling legacy pdata.
+Don't need oneOf with only 1 entry.
 
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
----
- drivers/mfd/twl4030-audio.c | 29 ++++++-----------------------
- 1 file changed, 6 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/mfd/twl4030-audio.c b/drivers/mfd/twl4030-audio.c
-index 4536d829b43e..c61da99e9681 100644
---- a/drivers/mfd/twl4030-audio.c
-+++ b/drivers/mfd/twl4030-audio.c
-@@ -144,14 +144,10 @@ unsigned int twl4030_audio_get_mclk(void)
- }
- EXPORT_SYMBOL_GPL(twl4030_audio_get_mclk);
- 
--static bool twl4030_audio_has_codec(struct twl4030_audio_data *pdata,
--			      struct device_node *parent)
-+static bool twl4030_audio_has_codec(struct device_node *parent)
- {
- 	struct device_node *node;
- 
--	if (pdata && pdata->codec)
--		return true;
--
- 	node = of_get_child_by_name(parent, "codec");
- 	if (node) {
- 		of_node_put(node);
-@@ -161,14 +157,10 @@ static bool twl4030_audio_has_codec(struct twl4030_audio_data *pdata,
- 	return false;
- }
- 
--static bool twl4030_audio_has_vibra(struct twl4030_audio_data *pdata,
--			      struct device_node *node)
-+static bool twl4030_audio_has_vibra(struct device_node *node)
- {
- 	int vibra;
- 
--	if (pdata && pdata->vibra)
--		return true;
--
- 	if (!of_property_read_u32(node, "ti,enable-vibra", &vibra) && vibra)
- 		return true;
- 
-@@ -178,14 +170,13 @@ static bool twl4030_audio_has_vibra(struct twl4030_audio_data *pdata,
- static int twl4030_audio_probe(struct platform_device *pdev)
- {
- 	struct twl4030_audio *audio;
--	struct twl4030_audio_data *pdata = dev_get_platdata(&pdev->dev);
- 	struct device_node *node = pdev->dev.of_node;
- 	struct mfd_cell *cell = NULL;
- 	int ret, childs = 0;
- 	u8 val;
- 
--	if (!pdata && !node) {
--		dev_err(&pdev->dev, "Platform data is missing\n");
-+	if (!node) {
-+		dev_err(&pdev->dev, "Only DT boot si supported\n");
- 		return -EINVAL;
- 	}
- 
-@@ -222,22 +213,14 @@ static int twl4030_audio_probe(struct platform_device *pdev)
- 	audio->resource[TWL4030_AUDIO_RES_APLL].reg = TWL4030_REG_APLL_CTL;
- 	audio->resource[TWL4030_AUDIO_RES_APLL].mask = TWL4030_APLL_EN;
- 
--	if (twl4030_audio_has_codec(pdata, node)) {
-+	if (twl4030_audio_has_codec(node)) {
- 		cell = &audio->cells[childs];
- 		cell->name = "twl4030-codec";
--		if (pdata) {
--			cell->platform_data = pdata->codec;
--			cell->pdata_size = sizeof(*pdata->codec);
--		}
- 		childs++;
- 	}
--	if (twl4030_audio_has_vibra(pdata, node)) {
-+	if (twl4030_audio_has_vibra(node)) {
- 		cell = &audio->cells[childs];
- 		cell->name = "twl4030-vibra";
--		if (pdata) {
--			cell->platform_data = pdata->vibra;
--			cell->pdata_size = sizeof(*pdata->vibra);
--		}
- 		childs++;
- 	}
- 
--- 
-2.36.1
-
+> +      - items:
+> +        - enum:
+> +          - mstar,msc313e-pwm
+> +          - mstar,ssd20xd-pwm
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  "#pwm-cells":
+> +    const: 2
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    pwm: pwm@3400 {
+> +      compatible = "mstar,msc313e-pwm";
+> +      reg = <0x3400 0x400>;
+> +      #pwm-cells = <2>;
+> +      clocks = <&xtal_div2>;
+> +    };
+> -- 
+> 2.35.1
+> 
+> 
