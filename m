@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8364C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D23BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376426AbiFPItA (ORCPT
+        id S1376259AbiFPIt0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35516 "EHLO
+        Thu, 16 Jun 2022 04:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376279AbiFPIsp (ORCPT
+        with ESMTP id S1376395AbiFPIsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:48:45 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1169C13D08;
-        Thu, 16 Jun 2022 01:47:41 -0700 (PDT)
+        Thu, 16 Jun 2022 04:48:54 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518545DE75;
+        Thu, 16 Jun 2022 01:47:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655369261; x=1686905261;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=LwVrahgpuZc7T0tvDz9kqESk8bh9sRBe1fIKLBtTqC0=;
-  b=Sg3CFc93YRWVjszuAiIdfSvLI6WTghZTvw/4tPVSeqCPEppqLhu+UU3V
-   Zu4JeoD6VCUuCiriZ11ncnY6etGqZyK+bBchzz51vQUsJSNulWfICQPdA
-   ddZjSG1sJ3Wp45meUeiQ65G8/4ulW9bxmr3GZZMIk0VvMMmbcR6CZKLzN
-   s7fE4RMfolS4j/4D1wyB2bP1k8XqHGs//2vXx6Dx+bVcusmVhrokxQ3Ne
-   dOCiuV+NnLZ5fpMZc53mKsSXrjJ0xEQUGLEB5K+VA4EINST2pQMk0e0Zy
-   UQ2FMxC74FRH1Zn8pDyXd4WEM1L1jkqE2QS3BgZ8argZ3tLdMLNc3RaGs
+  t=1655369269; x=1686905269;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=7f++4irz+MftuwUCaj4ppD4AhCBg8dypPeUQuLNrFYQ=;
+  b=CZPdHNG2MLrnH4Cz1KXviKnv7TKGd+WzAv/Rxf3i5fXiZ31YbuZhmq3k
+   ZffYkWwt2sGq/bmz/av4RTqnO+OPfMrHF1iPnVwrNAqVgb7ILj+BKWMMj
+   2DjiRq0KJ6pbiGWa4/q1DR1LwI35tuUR0Jm/pLO/XZ0152Lqd+4lfQGl4
+   q3/9I9thHihe4l6jzvdpHoHmBuAlHJMg9cDUVl32u4MogQIvQcoBnmoFA
+   42oXuBA1g3+lQwO34M6JwUEEvwruX1H8Xrtg2zHDKQVkAFGhO9C5qChTp
+   sFr4xVPRnhnDLiI3AP7geiGsf2Y9qzViMnW89u3t8WPpLwOFJIBHFIblT
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664549"
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259055235"
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="259664549"
+   d="scan'208";a="259055235"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:42 -0700
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="613083125"
+   d="scan'208";a="613083184"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
@@ -43,168 +43,195 @@ To:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         rick.p.edgecombe@intel.com
 Cc:     weijiang.yang@intel.com
-Subject: [PATCH 00/19] Refresh queued CET virtualization series
-Date:   Thu, 16 Jun 2022 04:46:24 -0400
-Message-Id: <20220616084643.19564-1-weijiang.yang@intel.com>
+Subject: [PATCH 19/19] KVM: x86: Enable supervisor IBT support for guest
+Date:   Thu, 16 Jun 2022 04:46:43 -0400
+Message-Id: <20220616084643.19564-20-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220616084643.19564-1-weijiang.yang@intel.com>
+References: <20220616084643.19564-1-weijiang.yang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=yes
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The purpose of this patch series is to refresh the queued CET KVM
-patches[1] with the latest dependent CET native patches, pursuing
-the result that whole series could be merged ahead of CET native
-series[2] [3].
+Mainline kernel now supports supervisor IBT for kernel code,
+to make s-IBT work in guest(nested guest), pass through
+MSR_IA32_S_CET to guest(nested guest) if host kernel and KVM
+enabled IBT. Note, s-IBT can work independent to host xsaves
+support because guest MSR_IA32_S_CET can be stored/loaded from
+specific VMCS field.
 
-The patchset has been tested on Skylake(none-CET) and Sapphire Rapids
-(CET capable) platforms, didn't find breakages to KVM basic functions
-and KVM unit-tests/selftests.
+Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
+---
+ arch/x86/kvm/cpuid.h      |  5 +++++
+ arch/x86/kvm/vmx/nested.c |  3 +++
+ arch/x86/kvm/vmx/vmx.c    | 27 ++++++++++++++++++++++++---
+ arch/x86/kvm/x86.c        | 13 ++++++++++++-
+ 4 files changed, 44 insertions(+), 4 deletions(-)
 
-----------------------------------------------------------------------
-The motivations are:
-1) Customers are interested in developing CET related applications,
-they especially desire to set up CET development environments in
-VM, but suffered by non-trivial native and KVM patch rebasing work.
-If this series could be merged early, it'll save them tons of energy.
-
-2) The kernel and KVM have evolved significantly since the queued day,
-it’s necessary to fix up the KVM patches to make them adapted to the
-recent mainline code.
-
-3) CET native patch series refactored a lot per maintainers’ review
-and some of the patches can be reused by KVM enabling patches.
-
-4) PeterZ’s supervisor IBT patch series got merged in 5.18, it
-requires additional KVM patch to support it in guest kernel.
-
-----------------------------------------------------------------------
-Guest CET states in KVM:
-CET user mode states(MSR_IA32_U_CET,MSR_IA32_PL3_SSP) counts on
-xsaves/xrstors and CET user bit of MSR_IA32_XSS to save/restor when
-thread/process context switch happens. In virtulization world, after
-vm-exit and before vcpu thread exits to user mode, the guest user mode
-states are swapped to guest fpu area and host user mode states are loaded,
-vice-versa on vm-entry. See details in kvm_load_guest_fpu() and
-kvm_put_guest_fpu(). With this design, guest CET xsave-supported states
-retain while the vcpu thread keeps in ring-0 vmx root mode, the
-instantaneous guest states are not expected to impact host side.
-
-Moveover, VMCS includes new fields for CET states, i.e.,GUEST_S_CET,
-GUEST_SSP, GUEST_INTR_SSP_TABLE for guest and HOST_S_CET, HOST_SSP,
-HOST_INTR_SSP_TABLE for host, when loading guest/host state bits set
-in VMCS, the guest/host MSRs are swapped at vm-exit/entry, therefore
-these guest/host CET states are strictly isolated. All CET supervisor
-states map to one of the fields. With the new fields, current guest
-supervisor IBT enalbing doesn't depend on xsaves/xrstors and CET
-supervisor bit of MSR_IA32_XSS.
-
----------------------------------------------------------------------
-Impact to existing kernel/KVM:
-To minimize the impact to exiting kernel/KVM code, most of KVM patch
-code can be bypassed during runtime.Uncheck "CONFIG_X86_KERNEL_IBT"
-and "CONFIG_X86_SHADOW_STACK" in Kconfig before kernel build to get
-rid of CET featrures in KVM. If both of them are not enabled, KVM
-clears related feature bits as well as CET user bit in supported_xss,
-this makes CET related checks stop at the first points. Since most of
-the patch code runs on the none-hot path of KVM, it's expected to
-introduce little impact to existing code.
-On legacy platforms, CET feature is not available by nature, therefore
-the execution flow just like that on CET capable platform with
-features disabled at build time.
-
-One known downside of early merge is thread fpu area size expands by 16
-bytes due to enabling XFEATURE_MASK_CET_USER bit on CET capable platforms.
-
-Although native SHSTK and IBT patch series are split off, but we don't
-want to do the same for KVM patches since supervisor IBT has been merged
-and customers desire full user mode features in guest.
-
-We'd like to get your comments on the practice and patches, thanks!
-
-Patch 1-5: Dependent CET native patches.
-Patch 6-7: KVM XSS Supporting patches from kvm/queue.
-Patch 8-18: Enabling patches for CET user mode.
-Patch 19:  Enabling patch for supervisor IBT.
-
-Change logs:
-1. Removed XFEATURE_MASK_CET_KERNEL, MSR_IA32_PL{0,1,2}_SSP and
-   MSR_IA32_INT_SSP_TAB related code since supervisor SHSTK design is
-   still open.
-2. Added support for guest kernel supervisor IBT.
-3. Refactored some of previous helpers due to change 1) and 2).
-4. Refactored control logic between XSS CET user bit and user mode SHSTK/IBT,
-   make supervisor IBT support independent to XSS user bit.
-5. Rebased the patch series onto kvm/queue:
-   8baacf67c76c ("KVM: SEV-ES: reuse advance_sev_es_emulated_ins for OUT too")
-
-[1]: https://git.kernel.org/pub/scm/virt/kvm/kvm.git/log/?h=intel
-[2]: SHSTK: https://lore.kernel.org/all/20220130211838.8382-1-rick.p.edgecombe@intel.com/
-[3]: old IBT: https://lore.kernel.org/all/20210830182221.3535-1-yu-cheng.yu@intel.com/
-
-Rick Edgecombe (1):
-  x86/fpu: Add helper for modifying xstate
-
-Sean Christopherson (2):
-  KVM: x86: Report XSS as an MSR to be saved if there are supported
-    features
-  KVM: x86: Load guest fpu state when accessing MSRs managed by XSAVES
-
-Yang Weijiang (12):
-  KVM: x86: Refresh CPUID on writes to MSR_IA32_XSS
-  KVM: x86: Add #CP support in guest exception classification.
-  KVM: VMX: Introduce CET VMCS fields and flags
-  KVM: x86: Add fault checks for CR4.CET
-  KVM: VMX: Emulate reads and writes to CET MSRs
-  KVM: VMX: Add a synthetic MSR to allow userspace VMM to access
-    GUEST_SSP
-  KVM: x86: Report CET MSRs as to-be-saved if CET is supported
-  KVM: x86: Save/Restore GUEST_SSP to/from SMM state save area
-  KVM: x86: Enable CET virtualization for VMX and advertise CET to
-    userspace
-  KVM: VMX: Pass through CET MSRs to the guest when supported
-  KVM: nVMX: Enable CET support for nested VMX
-  KVM: x86: Enable supervisor IBT support for guest
-
-Yu-cheng Yu (4):
-  x86/cet/shstk: Add Kconfig option for Shadow Stack
-  x86/cpufeatures: Add CPU feature flags for shadow stacks
-  x86/cpufeatures: Enable CET CR4 bit for shadow stack
-  x86/fpu/xstate: Introduce CET MSR and XSAVES supervisor states
-
- arch/x86/Kconfig                         |  17 +++
- arch/x86/Kconfig.assembler               |   1 +
- arch/x86/include/asm/cpu.h               |   2 +-
- arch/x86/include/asm/cpufeatures.h       |   1 +
- arch/x86/include/asm/disabled-features.h |   8 +-
- arch/x86/include/asm/fpu/api.h           |   7 +-
- arch/x86/include/asm/fpu/types.h         |  14 ++-
- arch/x86/include/asm/fpu/xstate.h        |   6 +-
- arch/x86/include/asm/kvm_host.h          |   3 +-
- arch/x86/include/asm/vmx.h               |   8 ++
- arch/x86/include/uapi/asm/kvm.h          |   1 +
- arch/x86/include/uapi/asm/kvm_para.h     |   1 +
- arch/x86/kernel/cpu/common.c             |  14 +--
- arch/x86/kernel/cpu/cpuid-deps.c         |   1 +
- arch/x86/kernel/fpu/core.c               |  19 ++++
- arch/x86/kernel/fpu/xstate.c             |  93 ++++++++--------
- arch/x86/kernel/machine_kexec_64.c       |   2 +-
- arch/x86/kvm/cpuid.c                     |  21 +++-
- arch/x86/kvm/cpuid.h                     |   5 +
- arch/x86/kvm/emulate.c                   |  11 ++
- arch/x86/kvm/vmx/capabilities.h          |   4 +
- arch/x86/kvm/vmx/nested.c                |  19 +++-
- arch/x86/kvm/vmx/vmcs12.c                |   6 +
- arch/x86/kvm/vmx/vmcs12.h                |  14 ++-
- arch/x86/kvm/vmx/vmx.c                   | 134 ++++++++++++++++++++++-
- arch/x86/kvm/x86.c                       |  95 ++++++++++++++--
- arch/x86/kvm/x86.h                       |  47 +++++++-
- 27 files changed, 468 insertions(+), 86 deletions(-)
-
-
-base-commit: 8baacf67c76c560fed954ac972b63e6e59a6fba0
+diff --git a/arch/x86/kvm/cpuid.h b/arch/x86/kvm/cpuid.h
+index ac72aabba981..c67c1e2fc11a 100644
+--- a/arch/x86/kvm/cpuid.h
++++ b/arch/x86/kvm/cpuid.h
+@@ -230,4 +230,9 @@ static __always_inline bool guest_pv_has(struct kvm_vcpu *vcpu,
+ 	return vcpu->arch.pv_cpuid.features & (1u << kvm_feature);
+ }
+ 
++static __always_inline bool cet_kernel_ibt_supported(void)
++{
++	return HAS_KERNEL_IBT && kvm_cpu_cap_has(X86_FEATURE_IBT);
++}
++
+ #endif
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index f31f3d394507..d394136891d0 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -688,6 +688,9 @@ static inline bool nested_vmx_prepare_msr_bitmap(struct kvm_vcpu *vcpu,
+ 	nested_vmx_set_intercept_for_msr(vmx, msr_bitmap_l1, msr_bitmap_l0,
+ 					 MSR_IA32_U_CET, MSR_TYPE_RW);
+ 
++	nested_vmx_set_intercept_for_msr(vmx, msr_bitmap_l1, msr_bitmap_l0,
++					 MSR_IA32_S_CET, MSR_TYPE_RW);
++
+ 	nested_vmx_set_intercept_for_msr(vmx, msr_bitmap_l1, msr_bitmap_l0,
+ 					 MSR_IA32_PL3_SSP, MSR_TYPE_RW);
+ 
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 00782d1750a5..6e7e596c0147 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -585,6 +585,7 @@ static bool is_valid_passthrough_msr(u32 msr)
+ 		return true;
+ 	case MSR_IA32_U_CET:
+ 	case MSR_IA32_PL3_SSP:
++	case MSR_IA32_S_CET:
+ 		return true;
+ 	}
+ 
+@@ -1773,7 +1774,8 @@ static int vmx_get_msr_feature(struct kvm_msr_entry *msr)
+ static bool cet_is_msr_accessible(struct kvm_vcpu *vcpu,
+ 				  struct msr_data *msr)
+ {
+-	if (!kvm_cet_user_supported())
++	if (!kvm_cet_user_supported() &&
++	    !cet_kernel_ibt_supported())
+ 		return false;
+ 
+ 	if (msr->host_initiated)
+@@ -1783,6 +1785,10 @@ static bool cet_is_msr_accessible(struct kvm_vcpu *vcpu,
+ 	    !guest_cpuid_has(vcpu, X86_FEATURE_IBT))
+ 		return false;
+ 
++	if (msr->index == MSR_IA32_S_CET &&
++	    guest_cpuid_has(vcpu, X86_FEATURE_IBT))
++		return true;
++
+ 	if ((msr->index == MSR_IA32_PL3_SSP ||
+ 	     msr->index == MSR_KVM_GUEST_SSP) &&
+ 	    !guest_cpuid_has(vcpu, X86_FEATURE_SHSTK))
+@@ -1933,10 +1939,13 @@ static int vmx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 	case MSR_IA32_U_CET:
+ 	case MSR_IA32_PL3_SSP:
+ 	case MSR_KVM_GUEST_SSP:
++	case MSR_IA32_S_CET:
+ 		if (!cet_is_msr_accessible(vcpu, msr_info))
+ 			return 1;
+ 		if (msr_info->index == MSR_KVM_GUEST_SSP)
+ 			msr_info->data = vmcs_readl(GUEST_SSP);
++		else if (msr_info->index == MSR_IA32_S_CET)
++			msr_info->data = vmcs_readl(GUEST_S_CET);
+ 		else
+ 			kvm_get_xsave_msr(msr_info);
+ 		break;
+@@ -2273,12 +2282,16 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 			vmx->pt_desc.guest.addr_a[index / 2] = data;
+ 		break;
+ 	case MSR_IA32_U_CET:
++	case MSR_IA32_S_CET:
+ 		if (!cet_is_msr_accessible(vcpu, msr_info))
+ 			return 1;
+ 		if ((data & GENMASK(9, 6)) ||
+ 		    is_noncanonical_address(data, vcpu))
+ 			return 1;
+-		kvm_set_xsave_msr(msr_info);
++		if (msr_index == MSR_IA32_S_CET)
++			vmcs_writel(GUEST_S_CET, data);
++		else
++			kvm_set_xsave_msr(msr_info);
+ 		break;
+ 	case MSR_IA32_PL3_SSP:
+ 	case MSR_KVM_GUEST_SSP:
+@@ -7615,6 +7628,9 @@ static void vmx_update_intercept_for_cet_msr(struct kvm_vcpu *vcpu)
+ 
+ 	incpt |= !guest_cpuid_has(vcpu, X86_FEATURE_SHSTK);
+ 	vmx_set_intercept_for_msr(vcpu, MSR_IA32_PL3_SSP, MSR_TYPE_RW, incpt);
++
++	incpt |= !guest_cpuid_has(vcpu, X86_FEATURE_IBT);
++	vmx_set_intercept_for_msr(vcpu, MSR_IA32_S_CET, MSR_TYPE_RW, incpt);
+ }
+ 
+ static void vmx_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+@@ -7680,7 +7696,7 @@ static void vmx_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 	/* Refresh #PF interception to account for MAXPHYADDR changes. */
+ 	vmx_update_exception_bitmap(vcpu);
+ 
+-	if (kvm_cet_user_supported())
++	if (kvm_cet_user_supported() || cet_kernel_ibt_supported())
+ 		vmx_update_intercept_for_cet_msr(vcpu);
+ }
+ 
+@@ -7743,6 +7759,11 @@ static __init void vmx_set_cpu_caps(void)
+ 		kvm_cpu_cap_clear(X86_FEATURE_SHSTK);
+ #endif
+ 
++#ifndef CONFIG_X86_KERNEL_IBT
++	if (boot_cpu_has(X86_FEATURE_IBT))
++		kvm_cpu_cap_clear(X86_FEATURE_IBT);
++#endif
++
+ }
+ 
+ static void vmx_request_immediate_exit(struct kvm_vcpu *vcpu)
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index fe049d0e5ecc..c0118b33806a 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -1463,6 +1463,7 @@ static const u32 msrs_to_save_all[] = {
+ 	MSR_IA32_XFD, MSR_IA32_XFD_ERR,
+ 	MSR_IA32_XSS,
+ 	MSR_IA32_U_CET, MSR_IA32_PL3_SSP, MSR_KVM_GUEST_SSP,
++	MSR_IA32_S_CET,
+ };
+ 
+ static u32 msrs_to_save[ARRAY_SIZE(msrs_to_save_all)];
+@@ -6823,6 +6824,10 @@ static void kvm_init_msr_list(void)
+ 			if (!kvm_cet_user_supported())
+ 				continue;
+ 			break;
++		case MSR_IA32_S_CET:
++			if (!cet_kernel_ibt_supported())
++				continue;
++			break;
+ 		default:
+ 			break;
+ 		}
+@@ -11830,7 +11835,13 @@ int kvm_arch_hardware_setup(void *opaque)
+ 	/* Update CET features now as kvm_caps.supported_xss is finalized. */
+ 	if (!kvm_cet_user_supported()) {
+ 		kvm_cpu_cap_clear(X86_FEATURE_SHSTK);
+-		kvm_cpu_cap_clear(X86_FEATURE_IBT);
++		/* If CET user bit is disabled due to cmdline option such as
++		 * noxsaves, but kernel IBT is on, this means we can expose
++		 * kernel IBT alone to guest since CET user mode msrs are not
++		 * passed through to guest.
++		 */
++		if (!cet_kernel_ibt_supported())
++			kvm_cpu_cap_clear(X86_FEATURE_IBT);
+ 	}
+ 
+ 	/*
 -- 
 2.27.0
 
