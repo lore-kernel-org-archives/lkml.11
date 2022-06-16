@@ -2,76 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C7BAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 03:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE258C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 03:48:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350287AbiFPDrS (ORCPT
+        id S1358434AbiFPDs5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 23:47:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36284 "EHLO
+        Wed, 15 Jun 2022 23:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346612AbiFPDrN (ORCPT
+        with ESMTP id S1346612AbiFPDsz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 23:47:13 -0400
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0881343ED9
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 20:47:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=wC4O3
-        2zxiCSNPBbpdQ6Ot+qSmdefzQgUrMjx5711jbA=; b=KQ30ozWq91x9r+S3Y588H
-        I9kufrF6rhwTNXIr+E3XqUBrjHtPmR00gN7WM1aKtO7ZIyc/14xyOTbQs8ldKf7A
-        2QjM6yaXG0g2yNO9cREfvrKTvUF9CfO4hiiOEsJLd5+VVndG8gD2hciSIrg039zD
-        UecQjfqqxFBAeSVgX6sORA=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp1 (Coremail) with SMTP id C8mowAAX4DAap6piNBj6EQ--.3670S2;
-        Thu, 16 Jun 2022 11:44:26 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     linus.walleij@linaro.org, linux@armlinux.org.uk
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        windhl@126.com
-Subject: [PATCH v2] arm: mach-versatile: (integrator) Add missing of_node_put()
-Date:   Thu, 16 Jun 2022 11:44:26 +0800
-Message-Id: <20220616034426.3975965-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 23:48:55 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E129045059
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 20:48:53 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VGVio0B_1655351328;
+Received: from 30.97.48.140(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VGVio0B_1655351328)
+          by smtp.aliyun-inc.com;
+          Thu, 16 Jun 2022 11:48:49 +0800
+Message-ID: <255ccf96-2c12-9ca0-9f8b-8a8461253952@linux.alibaba.com>
+Date:   Thu, 16 Jun 2022 11:48:56 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowAAX4DAap6piNBj6EQ--.3670S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7JFyUCr15GrW3ZryfKr47XFb_yoW3WFc_t3
-        Z2g3yUJrn5Za1IvryDCFWakry7Zwn7Grs3Wry8Ar17Gayaqry7Cr4vqryIk34xuwnrKrW7
-        X39Fyr1av3ZIkjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_5l1JUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2hsiF1uwMNnZjQAAsi
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC PATCH 1/3] hugetlb: skip to end of PT page mapping when pte
+ not present
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Muchun Song <songmuchun@bytedance.com>,
+        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        James Houghton <jthoughton@google.com>,
+        Mina Almasry <almasrymina@google.com>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.vnet.ibm.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220527225849.284839-1-mike.kravetz@oracle.com>
+ <20220527225849.284839-2-mike.kravetz@oracle.com>
+ <437e45c5-c46a-46f4-f9cf-d8c2397c988d@linux.alibaba.com>
+ <YqpNmsLrbCowS1IE@monkey>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <YqpNmsLrbCowS1IE@monkey>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In cm_init(), of_find_matching_node() will return a node pointer with
-refcount incremented. We should use of_node_put() when the pointer is
-not used anymore.
 
-Signed-off-by: Liang He <windhl@126.com>
----
- changelog:
 
- v2: use real name for Sob
- v1: fix missing bug
+On 6/16/2022 5:22 AM, Mike Kravetz wrote:
+> On 05/30/22 18:10, Baolin Wang wrote:
+>>
+>>
+>> On 5/28/2022 6:58 AM, Mike Kravetz wrote:
+>>> HugeTLB address ranges are linearly scanned during fork, unmap and
+>>> remap operations.  If a non-present entry is encountered, the code
+>>> currently continues to the next huge page aligned address.  However,
+>>> a non-present entry implies that the page table page for that entry
+>>> is not present.  Therefore, the linear scan can skip to the end of
+>>> range mapped by the page table page.  This can speed operations on
+>>> large sparsely populated hugetlb mappings.
+>>>
+>>> Create a new routine hugetlb_mask_last_hp() that will return an
+>>> address mask.  When the mask is ORed with an address, the result
+>>> will be the address of the last huge page mapped by the associated
+>>> page table page.  Use this mask to update addresses in routines which
+>>> linearly scan hugetlb address ranges when a non-present pte is
+>>> encountered.
+>>>
+>>> hugetlb_mask_last_hp is related to the implementation of huge_pte_offset
+>>> as hugetlb_mask_last_hp is called when huge_pte_offset returns NULL.
+>>> This patch only provides a complete hugetlb_mask_last_hp implementation
+>>> when CONFIG_ARCH_WANT_GENERAL_HUGETLB is defined.  Architectures which
+>>> provide their own versions of huge_pte_offset can also provide their own
+>>> version of hugetlb_mask_last_hp.
+>>
+>> I tested on my ARM64 machine with implementing arm64 specific
+>> hugetlb_mask_last_hp() as below, and it works well.
+>>
+>> Just a few nits inline, otherwise looks good to me.
+>> Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>>
+>> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+>> index d93ba128a2b0..e04a097ffcc4 100644
+>> --- a/arch/arm64/mm/hugetlbpage.c
+>> +++ b/arch/arm64/mm/hugetlbpage.c
+>> @@ -376,6 +376,28 @@ pte_t *huge_pte_offset(struct mm_struct *mm,
+>>          return NULL;
+>>   }
+>>
+>> +unsigned long hugetlb_mask_last_hp(struct hstate *h)
+>> +{
+>> +       unsigned long hp_size = huge_page_size(h);
+>> +
+>> +       switch (hp_size) {
+>> +       case P4D_SIZE:
+>> +               return PGDIR_SIZE - P4D_SIZE;
+>> +       case PUD_SIZE:
+>> +               return P4D_SIZE - PUD_SIZE;
+>> +       case CONT_PMD_SIZE:
+>> +               return PUD_SIZE - CONT_PMD_SIZE;
+>> +       case PMD_SIZE:
+>> +               return PUD_SIZE - PMD_SIZE;
+>> +       case CONT_PTE_SIZE:
+>> +               return PMD_SIZE - CONT_PTE_SIZE;
+>> +       default:
+>> +               break;
+>> +       }
+>> +
+>> +       return ~(0UL);
+>> +}
+> 
+> Hello Baolin,
+> 
+> Would you mind sending this as a proper patch with commit message and
+> 'Signed-off-by:'?  I would like to include it in the upcoming patch series.
 
- arch/arm/mach-versatile/integrator.c | 1 +
- 1 file changed, 1 insertion(+)
+Sure. I've sent it out [1], and please fold it into your series. Thanks.
 
-diff --git a/arch/arm/mach-versatile/integrator.c b/arch/arm/mach-versatile/integrator.c
-index fdf9c4db08a7..fba19357171a 100644
---- a/arch/arm/mach-versatile/integrator.c
-+++ b/arch/arm/mach-versatile/integrator.c
-@@ -76,6 +76,7 @@ void cm_init(void)
- 		return;
- 	}
- 	cm_base = of_iomap(cm, 0);
-+	of_node_put(cm);
- 	if (!cm_base) {
- 		pr_crit("could not remap core module\n");
- 		return;
--- 
-2.25.1
-
+[1] 
+https://lore.kernel.org/all/7256dbe078d7231f45b0f47c2c52a3bd3aa10da7.1655350193.git.baolin.wang@linux.alibaba.com/
