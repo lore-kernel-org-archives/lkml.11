@@ -2,92 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E18DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 09:45:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC76AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 09:46:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232742AbiFPJpU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 05:45:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38076 "EHLO
+        id S1359413AbiFPJqq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 05:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232832AbiFPJpQ (ORCPT
+        with ESMTP id S230464AbiFPJqp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 05:45:16 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163AA5A163
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 02:45:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=EZ8NU+0w2F5SD78Q+6uxvFt+DO+F+fvNNYXfPlfLgcI=; b=lynUDM/hMhZEZmLGxZWZU+3h1Q
-        8V0+gQMhmdZfNddmtIlBBjkwLJf7KOk3T4eljm8z7suhTpxNCNU8ny1wCZllNNEO7SGebgoPkjNRP
-        lfafb3kJi459hMdxH9f+cvYnyQKajRNSLry4r+hPBghzZdZwn73JUV4c+GzOU2Uj+TsUrea30z9mq
-        v/99kdh62FfTN0GwwUY/M3G2W/qrOMlKVl4QBYBwS5/8jEJgsl22Stjq7nLFlOE3LVuMJ6x9/deiG
-        yObiPXD8mQ3v8a3SA22ncYWQoR6aSt+RfgcRpdOEpYb4OsY2qZmG+eJ4jFWYYyE9eMpdvsytfNefR
-        /u3EH0UQ==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1m3g-008Njg-EB; Thu, 16 Jun 2022 09:45:03 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id F3C333031CB;
-        Thu, 16 Jun 2022 11:44:59 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id DF5BB2014ABD6; Thu, 16 Jun 2022 11:44:59 +0200 (CEST)
-Date:   Thu, 16 Jun 2022 11:44:59 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     Rick P Edgecombe <rick.p.edgecombe@intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "H.J. Lu" <hjl.tools@gmail.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
-        "kcc@google.com" <kcc@google.com>, Andi Kleen <ak@linux.intel.com>,
-        "dvyukov@google.com" <dvyukov@google.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "ryabinin.a.a@gmail.com" <ryabinin.a.a@gmail.com>,
-        "glider@google.com" <glider@google.com>
-Subject: Re: [PATCHv3 6/8] x86/mm: Provide ARCH_GET_UNTAG_MASK and
- ARCH_ENABLE_TAGGED_ADDR
-Message-ID: <Yqr7mzvX1+hWM8NL@hirez.programming.kicks-ass.net>
-References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
- <20220610143527.22974-7-kirill.shutemov@linux.intel.com>
- <c3b4f3ccf8ee547a588bf8a971064e4d62b6a44c.camel@intel.com>
- <20220610180635.l44opq2votd3gxpl@black.fi.intel.com>
- <5b56c88e477d879e5a0e3c15627cb05901a812f4.camel@intel.com>
- <dda083610d4c8b8d8d0b09021345e9cc0cb35bbe.camel@intel.com>
- <5d3b281f-3d8b-4bbd-9681-b226810c3e8b@www.fastmail.com>
+        Thu, 16 Jun 2022 05:46:45 -0400
+Received: from gproxy2-pub.mail.unifiedlayer.com (gproxy2-pub.mail.unifiedlayer.com [69.89.18.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2897A5A151
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 02:46:43 -0700 (PDT)
+Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
+        by progateway4.mail.pro1.eigbox.com (Postfix) with ESMTP id 95CE910047FA7
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:46:43 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id 1m5KoetWvNVEz1m5LoHigu; Thu, 16 Jun 2022 09:46:43 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=I5+g+Psg c=1 sm=1 tr=0 ts=62aafc03
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=JPEYwPQDsx4A:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=mVZf0fXdk7trcMvNlOsA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:In-Reply-To:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=WLgbi3u8pNg7vhNOmwuDvv3Xld8l+MmAnMfEqYEXpUQ=; b=JvgRnxXXzW1sMEwuw/D4LGYsAk
+        QNT22VMxFkSQzmSiVse3sfLcdxoV55A8G6Ge2gPq6wDDY6YzAy6TANdL8wFxjc80sUU3Ns3nCfbb6
+        kEHO2Pnx+o+epC8F+5ShHqiYzovXX7phKn1LmSC/Y1ynkpHe95j60i2XKd9p4nyFisqqGM+SsyLMF
+        P4n9Mlc+D2H1eHFCDCn8dduGeg4Tik33B6/j9GVn82rQyy+lZU6A19FNvrwv3Ff0sBEmcKfJgGZGO
+        s1sbOwFKHCgpgoYPjHzHNBjbZ4V0gmmVxeXsNYFIb53YGFzhAEWYldkHJ7ra8HV2kNHOqfXnJZxSX
+        /D6pPvkA==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:44504 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1o1m5J-0000VG-Pi;
+        Thu, 16 Jun 2022 03:46:41 -0600
+Subject: Re: [PATCH 5.10 00/11] 5.10.123-rc1 review
+To:     Jon Hunter <jonathanh@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220614183719.878453780@linuxfoundation.org>
+ <9e43b35e-31da-7e51-006c-1aa69acb10d4@nvidia.com>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <9e43b35e-31da-7e51-006c-1aa69acb10d4@nvidia.com>
+Message-ID: <a05678bb-29f8-23ea-9260-cc1cece3f480@w6rz.net>
+Date:   Thu, 16 Jun 2022 02:46:39 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5d3b281f-3d8b-4bbd-9681-b226810c3e8b@www.fastmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1o1m5J-0000VG-Pi
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:44504
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 3
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 02:03:43PM -0700, Andy Lutomirski wrote:
+On 6/16/22 1:48 AM, Jon Hunter wrote:
+>
+> On 14/06/2022 19:40, Greg Kroah-Hartman wrote:
+>> This is the start of the stable review cycle for the 5.10.123 release.
+>> There are 11 patches in this series, all will be posted as a response
+>> to this one.  If anyone has any issues with these being applied, please
+>> let me know.
+>>
+>> Responses should be made by Thu, 16 Jun 2022 18:37:02 +0000.
+>> Anything received after that time might be too late.
+>>
+>> The whole patch series can be found in one patch at:
+>>     https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.123-rc1.gz 
+>>
+>> or in the git tree and branch at:
+>>     git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git 
+>> linux-5.10.y
+>> and the diffstat can be found below.
+>>
+>> thanks,
+>>
+>> greg k-h
+>
+> No new regressions for Tegra. I am seeing the following kernel warning 
+> that is causing a boot test to fail, but this has been happening for a 
+> few releases now (I would have reported it earlier but we have been 
+> having some infrastructure issues) ...
+>
+>  WARNING KERN urandom_read_iter: 82 callbacks suppressed
+>
+> This appears to be introduced by commit "random: convert to using 
+> fops->read_iter()" [0]. Interestingly, I am not seeing this in the 
+> mainline as far as I can tell and so I am not sure if there is 
+> something else that is missing?
+>
+I'm also seeing this on RISC-V. 5.15 and 5.17, but not 5.18.
 
-> >> > > > +       /* LAM has to be enabled before spawning threads */
-> >> > > > +       if (get_nr_threads(current) > 1)
-> >> > > > +               return -EBUSY;
-
-> >> > > Does this work for vfork()? I guess the idea is that locking is
-
-vfork() isn't the problem, the problem is that Linux allows CLONE_VM
-without CLONE_THREAD. Now, mostly nobody does that these days, but it is
-possible.
-
-> get_nr_threads() is the wrong thing.  Either look at mm->mm_users or
-> find a way to get rid of this restriction entirely.
-
-mm->mm_users should indeed be sufficient here.
-
-> IMO it would not be insane to have a way to iterate over all tasks
-> using an mm.  But doing this for io_uring, etc might be interesting.
-
-That has come up so often over the past 15+ years I've no idea how come
-we've still not managed to actually do that ;-)
