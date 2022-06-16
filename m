@@ -2,117 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53832CCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D71C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359084AbiFPGRa (ORCPT
+        id S1359100AbiFPGTB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 02:17:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37198 "EHLO
+        Thu, 16 Jun 2022 02:19:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358915AbiFPGR1 (ORCPT
+        with ESMTP id S1358690AbiFPGTA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 02:17:27 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B7F37BDB
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:17:25 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id hv24-20020a17090ae41800b001e33eebdb5dso4947497pjb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:17:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sRbNJbc+ahYktLmDyoH4yo1fpASvuRbFucDO6Muj9cg=;
-        b=frv+lCaLqDCtRc1lutAiLWWqQAjy20E2s0IY5gDRdHDdkGVOQG4qvWpbdZxvRyf9RA
-         FI0NCliBh8cSdpfwff8nuZwVTXhTof8MTp0dzDqIzTb7Zyo8YqxgZxBlW7OkCQ7uyvt3
-         TXgmPys4n/YExtF6bmTeTQGqvNmoDMQEn1v8FxSEEGq99TZ2t0R8lVCxdkw5LAy5JOkA
-         5oIzaFO33Z9f4iod6X2daM/+58jqEYZaFyQqC70ABUhVtPe12mpj7F+Y2KPPthzVrcxJ
-         jfh2OmpaHU4aKH+AH74ZZbgHt5DnE8eu8q7hp1kAv0iXjk2BTjKUK7O9PBld3TJqp244
-         N6zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sRbNJbc+ahYktLmDyoH4yo1fpASvuRbFucDO6Muj9cg=;
-        b=XDyFDZaEm0CI42br7gBMfSjIhOG5PRNkpRgUSx8cNxcMCYdU78zG+dMvq/w8yNLicz
-         5tuJFTCugoRHI3tpyRMpxaE776qVYz35uAfumPZVm5OgbCMHXL5cBGcKNypnlS762x2x
-         TIqQXYC81ZHxp9IEWV16/7qy3Y8kJHADIXgBuFNBt7xsQXETRYmpJdfIVEAu7QSmUloi
-         UGWGvc6DGFq72vk6lcMJU2NGefc+kYnWG81e49YAuD4OsOPDIh3U00UdvcUiwp6QkNdQ
-         r8kAuCWvCUkl04uuuBY2m7H4WbFFcu+eCLDfYGT0MQ45Oo6zxeO9NBb3IhIWbMTAZVsX
-         Hvkg==
-X-Gm-Message-State: AJIora/E3VKmDgaElIIbBjAxd+YPK205rEex2yDoN8Ni6g+fuiRQ2gT4
-        kG3IOqqTAWIfFSlLM/DISnRo1g==
-X-Google-Smtp-Source: AGRyM1scPuVidbbJvlKHJZg5ot8FJQuMvDvq36SYo9aLhk8nKm9ZY+MPCW2Rl+lSsHNv9txN09mksQ==
-X-Received: by 2002:a17:902:e951:b0:168:b530:135b with SMTP id b17-20020a170902e95100b00168b530135bmr2983153pll.93.1655360244841;
-        Wed, 15 Jun 2022 23:17:24 -0700 (PDT)
-Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id n6-20020aa78a46000000b0051bd3d55773sm760331pfa.63.2022.06.15.23.17.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 23:17:24 -0700 (PDT)
-Date:   Thu, 16 Jun 2022 11:47:22 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Pierre Gondois <pierre.gondois@arm.com>
-Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
-        Lukasz.Luba@arm.com, Dietmar.Eggemann@arm.com,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH 4/4] cpufreq: Change order of online() CB and
- policy->cpus modification
-Message-ID: <20220616061722.tfsr3svljcupkcvz@vireshk-i7>
-References: <20220615144321.262773-1-pierre.gondois@arm.com>
- <20220615144321.262773-5-pierre.gondois@arm.com>
+        Thu, 16 Jun 2022 02:19:00 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9BA522E0;
+        Wed, 15 Jun 2022 23:18:59 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LNsQL560Gz1K9vn;
+        Thu, 16 Jun 2022 14:16:58 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 16 Jun 2022 14:18:57 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 16 Jun
+ 2022 14:18:57 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <radhey.shyam.pandey@xilinx.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <andy.chiu@sifive.com>,
+        <max.hsu@sifive.com>, <greentime.hu@sifive.com>
+Subject: [PATCH net] net: axienet: add missing error return code in axienet_probe()
+Date:   Thu, 16 Jun 2022 14:29:17 +0800
+Message-ID: <20220616062917.3601-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220615144321.262773-5-pierre.gondois@arm.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15-06-22, 16:43, Pierre Gondois wrote:
-> >From a state where all policy->related_cpus are offline, putting one
-> of the policy's CPU back online re-activates the policy by:
->  1. Calling cpufreq_driver->online()
->  2. Setting the CPU in policy->cpus
-> 
-> qcom_cpufreq_hw_cpu_online() makes use of policy->cpus. Thus 1. and 2.
-> should be inverted to avoid having a policy->cpus empty. The
-> qcom-cpufreq-hw is the only driver affected by this.
-> 
-> Fixes: a1eb080a0447 ("cpufreq: qcom-hw: provide online/offline operations")
-> Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
-> ---
->  drivers/cpufreq/cpufreq.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-> index 2cad42774164..36043be16d8e 100644
-> --- a/drivers/cpufreq/cpufreq.c
-> +++ b/drivers/cpufreq/cpufreq.c
-> @@ -1350,15 +1350,15 @@ static int cpufreq_online(unsigned int cpu)
->  	}
->  
->  	if (!new_policy && cpufreq_driver->online) {
-> +		/* Recover policy->cpus using related_cpus */
-> +		cpumask_copy(policy->cpus, policy->related_cpus);
-> +
->  		ret = cpufreq_driver->online(policy);
->  		if (ret) {
->  			pr_debug("%s: %d: initialization failed\n", __func__,
->  				 __LINE__);
->  			goto out_exit_policy;
->  		}
-> -
-> -		/* Recover policy->cpus using related_cpus */
-> -		cpumask_copy(policy->cpus, policy->related_cpus);
->  	} else {
->  		cpumask_copy(policy->cpus, cpumask_of(cpu));
+It should return error code in error path in axienet_probe().
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Fixes: 00be43a74ca2 ("net: axienet: make the 64b addresable DMA depends on 64b archectures")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index fa7bcd2c1892..1760930ec0c4 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -2039,6 +2039,7 @@ static int axienet_probe(struct platform_device *pdev)
+ 	}
+ 	if (!IS_ENABLED(CONFIG_64BIT) && lp->features & XAE_FEATURE_DMA_64BIT) {
+ 		dev_err(&pdev->dev, "64-bit addressable DMA is not compatible with 32-bit archecture\n");
++		ret = -EINVAL;
+ 		goto cleanup_clk;
+ 	}
+ 
 -- 
-viresh
+2.25.1
+
