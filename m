@@ -2,76 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5EB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 04:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FA87C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 04:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358581AbiFPEEf (ORCPT
+        id S1350843AbiFPEIz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 00:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
+        Thu, 16 Jun 2022 00:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358546AbiFPEEU (ORCPT
+        with ESMTP id S1358588AbiFPEIf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 00:04:20 -0400
-Received: from m15114.mail.126.com (m15114.mail.126.com [220.181.15.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 130AF424B3
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 21:04:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=teE+F
-        0bmrMKR1mJWBjATd3JGAZ0qoeCzoswrsTOyPFo=; b=mlT/sTUf0mnr9bnDqLk/Z
-        xqkM1SaQ0AzKS2OVR06HxW37gdOCKsiSNtsxE6XIj/e5kpulCblKNXIFTQneFF4b
-        VMm2iKE28zbUTGW5wv/pvrH3DaQ1QyibOK9YYPoVMtgoJcU6w6i+JW0ZYA5NBltd
-        OgRFUNuN/TSzyAOMNoO/qA=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp7 (Coremail) with SMTP id DsmowADXFvanq6piOjydDQ--.65253S2;
-        Thu, 16 Jun 2022 12:03:51 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     nm@ti.com, ssantosh@kernel.org, linux@armlinux.org.uk
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        windhl@126.com
-Subject: [PATCH v2] mach-keystone: (pm_domain) Add missing of_node_put()
-Date:   Thu, 16 Jun 2022 12:03:48 +0800
-Message-Id: <20220616040348.3976883-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 16 Jun 2022 00:08:35 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9470456F86;
+        Wed, 15 Jun 2022 21:08:34 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id y13-20020a17090a154d00b001eaaa3b9b8dso402931pja.2;
+        Wed, 15 Jun 2022 21:08:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vd0bN/XPx9OiHy3gzLV4Y4YAjktoSbcYs2uZYZ3e/rE=;
+        b=ibewHG8NBpBVeqDL2HqfKHkpvwh+DszHHVNyZXtLa3L1tM0mm0Gio1zpSmomvTLjb8
+         7Msk/fcArYrHM20BU112m31sFDNSJypd6MrOo2vPSPdy3csxD0vuUk9xgrZ/zkRtiOpB
+         EVjaiMpDJKUEbqV+uIzQld389AHFq8TEZ1CtmzfBOswLF6PMcgpH7uhN894Yve78gPS8
+         xggBKy+PDeUdYXseShdI9t1TxCAXgq4gv52eO2aui2wXZADd19PCnxcWaoAzO9yO30r8
+         OSCvfeEh8PgzkRFB1xmL1PARFsqLH6eA/JRskTTr1CrJr0EuBPAk+orAF+d38eA3cFB1
+         +jUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vd0bN/XPx9OiHy3gzLV4Y4YAjktoSbcYs2uZYZ3e/rE=;
+        b=n2//GmKd+J5brIs9fLaiecffMW2ytoUZ5UlfDNNA5OUU9UqDGKXlfd8jXPTMqqKWyn
+         1pdSexw8KAKWb5hRjdztDSFELZWTQ+0C81+tgRy1qmmdf1OrnVcRLh0Lha5/0wcosUrk
+         Vem5VGHnf0KqihOy6SrgKlfllWNkdKcrUtm1HNHjhjtmIve9BiU5OvqALhFy9RDfvwoj
+         fk33j/emaV/4oyAN90D4qhnohScbvnp8lRAiEl9Pe7XPhT5FB95V68sNvyhJyQ00W4iV
+         R1Vl3DcmzUwJ3BJfFQTjRwLzV1MIMVIjITgsFTz/SHRwwilTo9BX2CJ1ojdBIwx8RqbK
+         jb4w==
+X-Gm-Message-State: AJIora8qqqmrymnHO1cyRkRKofaoGpGzshevfUR0a+cj3GFXTJSJC8Wr
+        iKu/PhmhTMtPjvHhADJF1jw=
+X-Google-Smtp-Source: AGRyM1vpVH9mYKbCmmwnS4lz+GWa53yJrZpou5g2IhEW3/j+pwcP71PaEzDsfNyilqvzTau4LnYyhw==
+X-Received: by 2002:a17:902:8a91:b0:167:621f:9749 with SMTP id p17-20020a1709028a9100b00167621f9749mr2871786plo.9.1655352513997;
+        Wed, 15 Jun 2022 21:08:33 -0700 (PDT)
+Received: from localhost ([2406:7400:63:5d34:e6c2:4c64:12ae:aa11])
+        by smtp.gmail.com with ESMTPSA id e8-20020a170902784800b00163d76696e1sm456561pln.102.2022.06.15.21.08.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 21:08:33 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 09:38:29 +0530
+From:   Ritesh Harjani <ritesh.list@gmail.com>
+To:     Baokun Li <libaokun1@huawei.com>
+Cc:     linux-ext4@vger.kernel.org, tytso@mit.edu,
+        adilger.kernel@dilger.ca, jack@suse.cz, lczerner@redhat.com,
+        enwlinux@gmail.com, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com, yebin10@huawei.com, yukuai3@huawei.com
+Subject: Re: [PATCH v3 4/4] ext4: correct the misjudgment in
+ ext4_iget_extra_inode
+Message-ID: <20220616040829.kb66mg2dnitnlkau@riteshh-domain>
+References: <20220616021358.2504451-1-libaokun1@huawei.com>
+ <20220616021358.2504451-5-libaokun1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsmowADXFvanq6piOjydDQ--.65253S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7JFyUCr15GrW3ZryDJw4DCFg_yoW3CFX_J3
-        4xXa13WF1fJFs7WrWkAw43WrsIqw1kWrsFq343Xw4agF4UJw17ZFsrtrsavrW7XrW2krW3
-        JayDAr1aywn29jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_YFAtUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi7QkiF1pEANT7YQAAsB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616021358.2504451-5-libaokun1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In keystone_pm_runtime_init(), of_find_matching_node() will return a
-node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+On 22/06/16 10:13AM, Baokun Li wrote:
+> Use the EXT4_INODE_HAS_XATTR_SPACE macro to more accurately
+> determine whether the inode have xattr space.
 
-Signed-off-by: Liang He <windhl@126.com>
----
- changelog:
+Right. I also noticed there are few places in fs/ext4/xattr.c
+and in fs/ext4/inline.c where sizeof(__u32) is being used which (I think)
+should be EXT4_XATTR_PAD. But that need not be part of this patch series.
 
- v2: use real name for Sob
- v1: fix missing bug
+Looks good to me. Feel free to add -
+Reviewed-by: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
 
- arch/arm/mach-keystone/pm_domain.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm/mach-keystone/pm_domain.c b/arch/arm/mach-keystone/pm_domain.c
-index 5eea01cbecf0..00c9c0230575 100644
---- a/arch/arm/mach-keystone/pm_domain.c
-+++ b/arch/arm/mach-keystone/pm_domain.c
-@@ -44,6 +44,7 @@ int __init keystone_pm_runtime_init(void)
- 	if (!np)
- 		return 0;
- 
-+	of_node_put(np);
- 	pm_clk_add_notifier(&platform_bus_type, &platform_domain_notifier);
- 
- 	return 0;
--- 
-2.25.1
-
+>
+> Signed-off-by: Baokun Li <libaokun1@huawei.com>
+> ---
+>  fs/ext4/inode.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+> index 53877ffe3c41..ae463cd9b405 100644
+> --- a/fs/ext4/inode.c
+> +++ b/fs/ext4/inode.c
+> @@ -4687,8 +4687,7 @@ static inline int ext4_iget_extra_inode(struct inode *inode,
+>  	__le32 *magic = (void *)raw_inode +
+>  			EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize;
+>
+> -	if (EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize + sizeof(__le32) <=
+> -	    EXT4_INODE_SIZE(inode->i_sb) &&
+> +	if (EXT4_INODE_HAS_XATTR_SPACE(inode)  &&
+>  	    *magic == cpu_to_le32(EXT4_XATTR_MAGIC)) {
+>  		ext4_set_inode_state(inode, EXT4_STATE_XATTR);
+>  		return ext4_find_inline_data_nolock(inode);
+> --
+> 2.31.1
+>
