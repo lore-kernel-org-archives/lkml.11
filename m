@@ -2,200 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D1D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 18:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 18:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378009AbiFPSjg (ORCPT
+        id S1378029AbiFPSkQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 14:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
+        Thu, 16 Jun 2022 14:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378008AbiFPSj2 (ORCPT
+        with ESMTP id S1377897AbiFPSkO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 14:39:28 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE47754194;
-        Thu, 16 Jun 2022 11:39:24 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id hj18so3757055ejb.0;
-        Thu, 16 Jun 2022 11:39:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hTMAYNOtiXLbIpfBfX/ZjoF2j1Xgqm6lvqAWKAijSCw=;
-        b=nyIQTTIZFGabt6h84OUe/BFnlLSq7adaVeP4z1n5ObblUDxDNNljfgsiz3VCvV9ZkC
-         U7xuxJiYskOlhs1ud2X1DPGZvY0xjIFn0sVTd0BZq35jlitXDUvG6OIh7QdQxEUbgMl/
-         yF/djqpmpb4Y2V61qa4hNsSem8fawETTnv347nn+Xsl6BJEDc1HROOx7Zy0VgWMHlvPT
-         6MpuGT7JqBe8jYSmhMsdkF8QOAqzUVq4WuLg6Zd5thSLGxOZfw0eOlXaAt6tw/RCB0NT
-         aVuJY2k1FZN5T0U5k1LuvX8Vn3vXZLMKWU8pKp5GZ3Mie1f1VSRCyeRSRvnZMTM/NbRC
-         koMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hTMAYNOtiXLbIpfBfX/ZjoF2j1Xgqm6lvqAWKAijSCw=;
-        b=UIDO3QUz9J1zukEaiBMJD+2wOskT4cOaxEhnbaIRN+g3aY3almRligZ+kQ4tj+Hgsf
-         CUqZV64nTy/qaSvlp4jGFCgNuIaW+l1K7+Jvd76ErC/16RHfugSe7PPKBTIRFiaW1UrI
-         +VSvm/Y4qRmHwCYeD6FE1pFCxT9SNCNxiMhSR0LHkRsI+GwhkM18y2hoGfA0T6eYUdh9
-         FkXaSVgxmtnvwAdXJoKmlLKTNYd+q9CT6UBOlu3wbbzg54smDglCRUzjOiej3i/yqnmj
-         FhOlcXzUWbTCeGa31AFg2MtQXaQDQcKC3LzrsojZXZSgDyxb8p65zPOYQX3+cIRX5iAh
-         neoA==
-X-Gm-Message-State: AJIora/T2j8qxKU9XywDDx7lw4E6WT0RF4TV5R18QpMigysBmjbYSkEQ
-        kTlnr5IGt3pftLVY5kBq2DGmEZOC1ASx1U0pwk8=
-X-Google-Smtp-Source: AGRyM1tVRlc/Efjknp2j0mwetaeHSRuuZt3+3lupYLxOIvdx4bOnZ8iDWPyj+gzzwfQlpMTvdeDuFyByDBNdSk7oxOI=
-X-Received: by 2002:a17:906:434f:b0:711:eb76:c320 with SMTP id
- z15-20020a170906434f00b00711eb76c320mr5744542ejm.636.1655404763382; Thu, 16
- Jun 2022 11:39:23 -0700 (PDT)
+        Thu, 16 Jun 2022 14:40:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5425400A;
+        Thu, 16 Jun 2022 11:40:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 794F461C5D;
+        Thu, 16 Jun 2022 18:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CE709C3411B;
+        Thu, 16 Jun 2022 18:40:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655404812;
+        bh=uUBE/KWpkbd0j6y3BK6WIh1q3g51qdXfreTj8S+4e2s=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=UA9XtvGIHN5VzPvbPpCQ526yW1G8VGBXRHyD+OgWVXXvaScu8G9Zxrh3U2+nZDoyD
+         WrDlvwk3aExpMCggXDnKsdxIOj+2YFdy2T7BnbNbEWUbZ10QCGZkSNCsxnilxN79va
+         06MnT1AQC5h5r4iF6Kl4v/+1zTkJfUJZcpkp3OxbaWeLGfbhG9iazKezRJ1CercZ/N
+         ceDrMSiT0Ka/bcxRgL99LKoGOu9qUlw/KIzBNdO3dlDdSKutJQCGzB6n/a+tzserJR
+         Z//xYAQ3fHtuN1hB22uyoIH2t0Uu4WJEWXlOaeh5kUM48pZZZUeBnT3ySfyaEwXt3G
+         ypSUg0/00mV2g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B7D20FD99FF;
+        Thu, 16 Jun 2022 18:40:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220616104211.9257-1-ddrokosov@sberdevices.ru>
- <20220616104211.9257-3-ddrokosov@sberdevices.ru> <CAHp75Vc0+ckNnm2tzLMPrjeFRjwoj3zy0C4koNShFRG3kP8b6w@mail.gmail.com>
- <20220616170218.dihjli46spimozeg@CAB-WSD-L081021.sigma.sbrf.ru>
-In-Reply-To: <20220616170218.dihjli46spimozeg@CAB-WSD-L081021.sigma.sbrf.ru>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 16 Jun 2022 20:38:46 +0200
-Message-ID: <CAHp75VdEY9z_0=sAkKOico9JKYPOX6yqnoetiW49oFHm+SeUoQ@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] iio: add MEMSensing MSA311 3-axis accelerometer driver
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: axienet: add missing error return code in
+ axienet_probe()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165540481274.4200.18216116266879133238.git-patchwork-notify@kernel.org>
+Date:   Thu, 16 Jun 2022 18:40:12 +0000
+References: <20220616062917.3601-1-yangyingliang@huawei.com>
+In-Reply-To: <20220616062917.3601-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        radhey.shyam.pandey@xilinx.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, andy.chiu@sifive.com,
+        max.hsu@sifive.com, greentime.hu@sifive.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 7:02 PM Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
-> On Thu, Jun 16, 2022 at 02:18:52PM +0200, Andy Shevchenko wrote:
-> > On Thu, Jun 16, 2022 at 12:42 PM Dmitry Rokosov
-> > <DDRokosov@sberdevices.ru> wrote:
+Hello:
 
-...
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> > Not sure why you put those blank lines herey, it makes code not compact.
->
-> Here I use blank lines to split fields from different registers.
-> In other words, in the msa311_fields enum one line contains fields from one
-> register. But for some heavy registers (like TAP_ACTIVE_STS) we have so many
-> fields and their declaration doesn't fit to 80 symbols.
-> So I've made a decision to split registers using blank lines.
+On Thu, 16 Jun 2022 14:29:17 +0800 you wrote:
+> It should return error code in error path in axienet_probe().
+> 
+> Fixes: 00be43a74ca2 ("net: axienet: make the 64b addresable DMA depends on 64b archectures")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-Better is to add a comment explaining what register is described
-below, and not just a blank line.
+Here is the summary with links:
+  - [net] net: axienet: add missing error return code in axienet_probe()
+    https://git.kernel.org/netdev/net/c/2e7bf4a6af48
 
-...
-
-> > Not sure you need this. Dropping i2c dependency from this structure
-> > allows much easier to add, e.g. SPI support of the same hardware.
->
-> Mainly I use i2c pointer in the probe() path, and you are right, we can
-> change i2c pointer to dev and generalize msa311_priv struct from bus
-> perspective.
-
-Yep, note that you may easily retrieve i2c_client from struct device
-pointer if you need to do that in some (I believe rare to none) cases.
-
-...
-
-> > > +       struct regmap *regs;
-> >
-> > I believe this is used most, so making this a first member in the
-> > structure saves  some instructions (check with bloat-o-meter).
-> >
->
-> Are you talking about archs where offset calculation adds more bytes to
-> instruction? And when offset equals to 0, we can save some space.
-
-It doesn't have anything to do with arches, simply compiler
-optimization, otherwise yes, that's what I meant.
-
-...
-
-> > > +       wait_ms = (USEC_PER_SEC * MSEC_PER_SEC) / freq_uhz;
-> >
-> > This looks very odd from a physics perspective: sec * sec * sec == sec ?!
-> >
-> > Perhaps you meant some HZ* macros from units.h?
-> >
->
-> I suppose because of UHZ calculation I have to use NANO instead of
-> USEC_PER_SEC in the following line:
->
->         freq_uhz = msa311_odr_table[odr].val * USEC_PER_SEC +
->                    msa311_odr_table[odr].val2;
->
-> But below line is right from physics perspective. 1sec = 1/Hz, so
-> msec = (USEC_PER_SEC / freq_uhz) * MSEC_PER_SEC:
->
->         wait_ms = (USEC_PER_SEC * MSEC_PER_SEC) / freq_uhz;
->
-> Or do you mean that I should change MSEC_PER_SEC to just MILLI?
-
-1 / Hz = 1 sec. That's how physics defines it. Try to figure out what
-you meant by above multiplications / divisions and come up with the
-best that fits your purposes.
-
-...
-
-> > > +                       if (err) {
-> > > +                               dev_err(dev, "cannot update freq (%d)\n", err);
-> > > +                               goto failed;
-> > > +                       }
-> >
-> > Why is this inside the loop and more important under lock? Also you
-> > may cover the initial error code by this message when moving it out of
-> > the loop and lock.
-> >
-> > Ditto for other code snippets in other function(s) where applicable.
->
-> Yes, I can move dev_err() outside of loop. But all ODR search loop
-> should be under lock fully, because other msa311 operations should not
-> be executed when we search proper ODR place.
-
-I didn't suggest getting rid of the lock.
-
-...
-
-> > > +       mutex_lock(&msa311->lock);
-> > > +       err = regmap_field_write(msa311->fields[F_NEW_DATA_INT_EN], state);
-> > > +       mutex_unlock(&msa311->lock);
-> >
-> > > +
-> >
-> > No need.
->
-> Sorry, I don't understand. We do not need to call it under lock, right?
-> I think we have to wrap it by msa311 lock, because other msa311
-> operations should not be executed when we enable or disable new data
-> interrupt (for example ODR value changing or something else).
-
-The blank line is not needed, I specifically commented on the
-emphasized paragraph (by delimiting it with blank lines and leaving
-the rest for the better context for you to understand, it seems it did
-the opposite...).
-
-...
-
-> > > +       mutex_lock(&msa311->lock);
-> > > +       err = msa311_set_pwr_mode(msa311, MSA311_PWR_MODE_NORMAL);
-> > > +       mutex_unlock(&msa311->lock);
-> >
-> > > +
-> >
-> > No need.
->
-> Again I don't understand why, sorry. We do not want to get sporadic
-> MSA311 attributes changing during power mode transition from another
-> userspace process.
-
-As per above.
-
+You are awesome, thank you!
 -- 
-With Best Regards,
-Andy Shevchenko
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
