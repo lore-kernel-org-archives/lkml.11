@@ -2,144 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A38C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCFBCCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378593AbiFPUkN (ORCPT
+        id S1378655AbiFPUrw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 16:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55100 "EHLO
+        Thu, 16 Jun 2022 16:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiFPUkK (ORCPT
+        with ESMTP id S229793AbiFPUrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 16:40:10 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E7D5DE49;
-        Thu, 16 Jun 2022 13:40:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655412010; x=1686948010;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3kyqj7rQYGnntBXVKFnHRuP3Q3HC8rJ+VtXx7y0r3mc=;
-  b=SlIUK2d7mfB28gMtqN/IJ+hj88Jvgj9kVBHq/h7tEI38NmGAF/2a0BIS
-   SRgYmceLYY6EdxVY8WAicJdtHuEI8yqGfDJhreV10WvLwgiplKnbVLdlo
-   6MDsELvNPSPyN4hnWE5sg4KSN63ii5rS4Yfozy297BZz1Dli/Q6u3KTqS
-   9aU80FhE+ztuQN1EUxRsl/6ndLUn6D8Z5yeoL6UTPe0AWaLLz9hUGWojE
-   kD5UnGR8VsnZuVVS6ngXqwR27QcYYT7SMGSehv0NjMX/quahiU/iAvUT+
-   7XR12WDK2k2UzEKKFkbtjgJetefzkx1KwJBenhwE/TOMuDfv9Q97ZwsG1
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="278143651"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="278143651"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 13:40:09 -0700
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="641719392"
-Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 13:40:09 -0700
-Date:   Thu, 16 Jun 2022 13:39:49 -0700
-From:   Alison Schofield <alison.schofield@intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Weiny, Ira" <ira.weiny@intel.com>,
-        "Verma, Vishal L" <vishal.l.verma@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] cxl/core: Add sysfs attribute get_poison for list
- retrieval
-Message-ID: <20220616203949.GB1529208@alison-desk>
-References: <cover.1655250669.git.alison.schofield@intel.com>
- <57644934bb7af8e1c692735f53c2c415a1ba16d1.1655250669.git.alison.schofield@intel.com>
- <20220616160412.00000c34@Huawei.com>
+        Thu, 16 Jun 2022 16:47:48 -0400
+Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A935313EBA
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:47:46 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id 1wOxofIO0IaWO1wOxo5r6G; Thu, 16 Jun 2022 22:47:44 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Thu, 16 Jun 2022 22:47:44 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <7b9923c0-50f0-556a-657c-9cf0ef9af5aa@wanadoo.fr>
+Date:   Thu, 16 Jun 2022 22:47:39 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220616160412.00000c34@Huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v8 1/3] ipmi: ssif_bmc: Add SSIF BMC driver
+Content-Language: fr
+To:     quan@os.amperecomputing.com
+Cc:     andrew@aj.id.au, benh@kernel.crashing.org,
+        brendanhiggins@google.com, devicetree@vger.kernel.org,
+        joel@jms.id.au, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, minyard@acm.org,
+        openbmc@lists.ozlabs.org, openipmi-developer@lists.sourceforge.net,
+        patches@amperecomputing.com, phong@os.amperecomputing.com,
+        robh+dt@kernel.org, thang@os.amperecomputing.com, wsa@kernel.org
+References: <20220615090259.1121405-1-quan@os.amperecomputing.com>
+ <20220615090259.1121405-2-quan@os.amperecomputing.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220615090259.1121405-2-quan@os.amperecomputing.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 08:04:12AM -0700, Jonathan Cameron wrote:
-> On Tue, 14 Jun 2022 17:10:28 -0700
-> alison.schofield@intel.com wrote:
+Le 15/06/2022 à 11:02, Quan Nguyen a écrit :
+> The SMBus system interface (SSIF) IPMI BMC driver can be used to perform
+> in-band IPMI communication with their host in management (BMC) side.
 > 
-> > From: Alison Schofield <alison.schofield@intel.com>
-> > 
-> > The sysfs attribute, get_poison, allows user space to request the
-> > retrieval of a CXL devices poison list for its persistent memory.
-> > 
-> > From Documentation/ABI/.../sysfs-bus-cxl
-> >         (WO) When a '1' is written to this attribute the memdev
-> >         driver retrieves the poison list from the device. The list
-> >         includes addresses that are poisoned or would result in
-> >         poison if accessed, and the source of the poison. This
-> >         attribute is only visible for devices supporting the
-> >         capability. The retrieved errors are logged as kernel
-> >         trace events with the label: cxl_poison_list.
-> > 
-> > Signed-off-by: Alison Schofield <alison.schofield@intel.com>
+> Thanks Dan for the copy_from_user() fix in the link below.
 > 
-> Hi Alison,
-> 
-> I'm planning to throw together QEMU support for this and test
-> it. In meantime a few quick comments / suggestions inline.
+> Link: https://lore.kernel.org/linux-arm-kernel/20220310114119.13736-4-quan-shex6MNQR2J/SfDzf78azzKzEDxYleXD@public.gmane.org/
+> Signed-off-by: Quan Nguyen <quan-shex6MNQR2J/SfDzf78azzKzEDxYleXD@public.gmane.org>
+> ---
 
-Thanks Jonathan.
-I've tested with a test patch that returns contrived output payloads,
-and will look fwd to trying out w qemu,
+Hi,
 
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > ---
-snip
-> > +
-> > +	if (!sysfs_streq(buf, "1")) {
-> 
-> Maybe kstrtobool?  If you do then fine to leave the documentation claiming
-> it's tighter as that'll tell people who actually read it to expect to
-> write a 1.
-> 
-Got it.
+a few nitpick below
 
-> > +		dev_err(dev, "%s: unknown value: %s\n", attr->attr.name, buf);
-> 
-> Feels noisy when I'd expect -EINVAL to be enough info to indicate an invalid
-> parameter.
-> 
-Got it.
+[...]
 
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	rc = cxl_mem_get_poison_list(dev);
-> > +	if (rc) {
-> > +		dev_err(dev, "Failed to retrieve poison list %d\n", rc);
-> 
-> Here I'd expect the error code to returned on the write to probably be enough
-> info so not sure this error print is useful either.
-> 
-Got it.
+> diff --git a/drivers/char/ipmi/ssif_bmc.c b/drivers/char/ipmi/ssif_bmc.c
+> new file mode 100644
+> index 000000000000..0bfd4b9bbaf1
+> --- /dev/null
+> +++ b/drivers/char/ipmi/ssif_bmc.c
+> @@ -0,0 +1,880 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * The driver for BMC side of SSIF interface
+> + *
+> + * Copyright (c) 2022, Ampere Computing LLC
+> + *
+> + */
+> +
+> +#include <linux/i2c.h>
+> +#include <linux/miscdevice.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/poll.h>
+> +#include <linux/sched.h>
+> +#include <linux/mutex.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/timer.h>
+> +#include <linux/jiffies.h>
+> +#include <linux/ipmi_ssif_bmc.h>
+> +
+> +#define DEVICE_NAME                             "ipmi-ssif-host"
+> +
+> +#define GET_8BIT_ADDR(addr_7bit)                (((addr_7bit) << 1) & 0xff)
+> +
+> +/* A standard SMBus Transaction is limited to 32 data bytes */
+> +#define MAX_PAYLOAD_PER_TRANSACTION             32
+> +/* Transaction includes the address, the command, the length and the PEC byte */
+> +#define MAX_TRANSACTION                         (MAX_PAYLOAD_PER_TRANSACTION + 4)
+> +
+> +#define MAX_IPMI_DATA_PER_START_TRANSACTION     30
+> +#define MAX_IPMI_DATA_PER_MIDDLE_TRANSACTION    31
+> +
+> +#define SSIF_IPMI_SINGLEPART_WRITE              0x2
+> +#define SSIF_IPMI_SINGLEPART_READ               0x3
+> +#define SSIF_IPMI_MULTIPART_WRITE_START         0x6
+> +#define SSIF_IPMI_MULTIPART_WRITE_MIDDLE        0x7
+> +#define SSIF_IPMI_MULTIPART_WRITE_END           0x8
+> +#define SSIF_IPMI_MULTIPART_READ_START          0x3
+> +#define SSIF_IPMI_MULTIPART_READ_MIDDLE         0x9
+> +
+> +/*
+> + * IPMI 2.0 Spec, section 12.7 SSIF Timing,
+> + * Request-to-Response Time is T6max(250ms) - T1max(20ms) - 3ms = 227ms
+> + * Recover ssif_bmc from busy state if it takes up to 500ms
+> + */
+> +#define RESPONSE_TIMEOUT                        500 /* ms */
+> +
+> +struct ssif_part_buffer {
+> +	u8 address;
+> +	u8 smbus_cmd;
+> +	u8 length;
+> +	u8 payload[MAX_PAYLOAD_PER_TRANSACTION];
+> +	u8 pec;
+> +	u8 index;
+> +};
+> +
+> +/*
+> + * SSIF internal states:
+> + *   SSIF_READY         0x00 : Ready state
+> + *   SSIF_START         0x01 : Start smbus transaction
+> + *   SSIF_SMBUS_CMD     0x02 : Received SMBus command
+> + *   SSIF_REQ_RECVING   0x03 : Receiving request
+> + *   SSIF_RES_SENDING   0x04 : Sending response
+> + *   SSIF_BAD_SMBUS     0x05 : Bad SMbus transaction
 
-> > +
-snip
-> > +	if (a == &dev_attr_get_poison.attr) {
-> > +		struct device *dev = container_of(kobj, struct device, kobj);
-> > +		struct cxl_memdev *cxlmd = to_cxl_memdev(dev);
-> > +		struct cxl_dev_state *cxlds = cxlmd->cxlds;
-> > +
-> > +		if (!test_bit(CXL_MEM_COMMAND_ID_GET_POISON,
-> > +			      cxlds->enabled_cmds))
-> 			      to_cxl_memdev(dev)->enabled_cmds))
-> and drop the local variable is shorter and I don't htink it loses
-> any readability.
-> 
-Got it.
+If these states are related to the enum just below, 
+s/SSIF_BAD_SMBUS/SSIF_ABORTING/ + description update?
 
-Thanks Jonathan!
+> + */
+> +enum ssif_state {
+> +	SSIF_READY,
+> +	SSIF_START,
+> +	SSIF_SMBUS_CMD,
+> +	SSIF_REQ_RECVING,
+> +	SSIF_RES_SENDING,
+> +	SSIF_ABORTING,
+> +	SSIF_STATE_MAX
+> +};
+> +
+
+[...]
+
+> +static int ssif_bmc_probe(struct i2c_client *client, const struct i2c_device_id *id)
+> +{
+> +	struct ssif_bmc_ctx *ssif_bmc;
+> +	int ret;
+> +
+> +	ssif_bmc = devm_kzalloc(&client->dev, sizeof(*ssif_bmc), GFP_KERNEL);
+> +	if (!ssif_bmc)
+> +		return -ENOMEM;
+> +
+> +	spin_lock_init(&ssif_bmc->lock);
+> +
+> +	init_waitqueue_head(&ssif_bmc->wait_queue);
+> +	ssif_bmc->request_available = false;
+> +	ssif_bmc->response_in_progress = false;
+> +	ssif_bmc->busy = false;
+> +	ssif_bmc->response_timer_inited = false;
+> +
+> +	/* Register misc device interface */
+> +	ssif_bmc->miscdev.minor = MISC_DYNAMIC_MINOR;
+> +	ssif_bmc->miscdev.name = DEVICE_NAME;
+> +	ssif_bmc->miscdev.fops = &ssif_bmc_fops;
+> +	ssif_bmc->miscdev.parent = &client->dev;
+> +	ret = misc_register(&ssif_bmc->miscdev);
+> +	if (ret)
+> +		goto out;
+
+Could be "return ret;"
+(see below)
+
+> +
+> +	ssif_bmc->client = client;
+> +	ssif_bmc->client->flags |= I2C_CLIENT_SLAVE;
+> +
+> +	/* Register I2C slave */
+> +	i2c_set_clientdata(client, ssif_bmc);
+> +	ret = i2c_slave_register(client, ssif_bmc_cb);
+> +	if (ret) {
+> +		misc_deregister(&ssif_bmc->miscdev);
+> +		goto out;
+> +	}
+> +
+> +	return 0;
+> +out:
+> +	devm_kfree(&client->dev, ssif_bmc);
+
+This looks useless to me. The whole error handling path could be 
+removed, or updated to only have the "misc_deregister()" above.
+
+CJ
+
+> +	return ret;
+> +}
+
+
