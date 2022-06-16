@@ -2,108 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72183CCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:11:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE572C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376803AbiFPNLs (ORCPT
+        id S1376864AbiFPNNh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:11:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45126 "EHLO
+        Thu, 16 Jun 2022 09:13:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231831AbiFPNLr (ORCPT
+        with ESMTP id S1376868AbiFPNNa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:11:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7287F26113;
-        Thu, 16 Jun 2022 06:11:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07A2761BD4;
-        Thu, 16 Jun 2022 13:11:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE6DC34114;
-        Thu, 16 Jun 2022 13:11:42 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="YO/lfzaG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1655385101;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NBxq3wX4V8CBHa+ItaJq1tCv4j6jgALcJ8eLTTWkvB8=;
-        b=YO/lfzaGzbUdUIEQ73AJA+Nayx3Ea9wGmFkiNhvkalyqsdpjeHioGVAmfdA8+KxPlG95t9
-        CtPpePO3QylqR2r/viosVl2VJfqR3d7LW+9p8NQ2YFoP2AHI9lA1so2f6c3yiHWFYj2zuz
-        PcF9Q64xMMx0e4tBZunIB+1oysVH4BQ=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 58d9ae71 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 16 Jun 2022 13:11:40 +0000 (UTC)
-Date:   Thu, 16 Jun 2022 15:11:34 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Jon Hunter <jonathanh@nvidia.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 00/11] 5.10.123-rc1 review
-Message-ID: <YqssBl7QRyp0nytW@zx2c4.com>
-References: <20220614183719.878453780@linuxfoundation.org>
- <9e43b35e-31da-7e51-006c-1aa69acb10d4@nvidia.com>
+        Thu, 16 Jun 2022 09:13:30 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60922DA96;
+        Thu, 16 Jun 2022 06:13:28 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id g7so2153372eda.3;
+        Thu, 16 Jun 2022 06:13:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Ry52yRe1vJHeR/NJXumPYFRgdjE89QHepbj+xA03vDI=;
+        b=aUne1e5KbwFbS5cXlUlTRO6DxbBw0amZP5ntWJeRpFwLdF61CYzBBzAVkFxkx/C2WL
+         kO9F5rKbcKYUFCEmQaLzkRY93MSqFAqhDtigtCa0ROfWwWXXFX9mDoydQIBG7yk7i6h9
+         rJfMi2FddN6nA2sc6dJNXHxcGNWAUIF0dVZubsaHuptVbnrH6qj+NxRMdrivQurtOYk+
+         t2QeF5AgNd6/9zqK9t8c+aR4zhquLCwx1Zw2Qrb9xin7+ODrrukahYjux16M8Mxz6ohr
+         /uOuJffDTI396gOrogv9MV61cU7zrUgoHMxnXz+eSo7cI9RvcBIcS6JE2sFgDi7vXS01
+         3keA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Ry52yRe1vJHeR/NJXumPYFRgdjE89QHepbj+xA03vDI=;
+        b=DySN0tvr5N8psIWdQiFnXK/Ritzfi3x14kizOCybyMWSPvtgKe04rOFiVLQBaEDAaj
+         rbFzD+UHfdDB0HZUppykyBzWuiHKjRdHT0W0R6tawCvliDlmAgVu0XxSrhXelbEtFO0R
+         lqFpzEvB+Uy5xAnHw0GHvvq3u32Dxr3oxa2Ogdqh5zcIpBtbgsYbNHIy0nblZ+w0OKLj
+         pgaKCo0mKIZSwLkHAy+ibG4JWYJhYpjkHFW1skU73gLnBerExjy4jtxAK4uzUqw6wafA
+         AhpEhJTtqmPiZ1ndlicnbRrbPaZ2cuLcWII0Q5LkRcMTQ44lvnzQMRAfEihdzShmaUq0
+         EeMA==
+X-Gm-Message-State: AJIora+O/XQBU0cgifSlqLeFsnIpPlO9C6+G0uDiu3nzSiKG2q5IF7xb
+        Lu8nZBmrIQ2QN+0tr4wXPJA=
+X-Google-Smtp-Source: AGRyM1tYvWhTzZFvBunl3TLiXBAhnbuKKDXD8wqfxLXwHzyaRErkhmZkBfLntt91OyeMYfVg982itA==
+X-Received: by 2002:a50:9f88:0:b0:42d:f7d2:1b7b with SMTP id c8-20020a509f88000000b0042df7d21b7bmr6470768edf.139.1655385207450;
+        Thu, 16 Jun 2022 06:13:27 -0700 (PDT)
+Received: from debian64.daheim (pd9e290fa.dip0.t-ipconnect.de. [217.226.144.250])
+        by smtp.gmail.com with ESMTPSA id x13-20020aa7d6cd000000b004333e3e3199sm1724792edr.63.2022.06.16.06.13.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 06:13:26 -0700 (PDT)
+Received: from localhost.daheim ([127.0.0.1])
+        by debian64.daheim with esmtp (Exim 4.95)
+        (envelope-from <chunkeey@gmail.com>)
+        id 1o1nQw-003Atz-JA;
+        Thu, 16 Jun 2022 15:13:26 +0200
+Message-ID: <9fa854e1-ad88-9c18-ca68-5709dc1c7906@gmail.com>
+Date:   Thu, 16 Jun 2022 15:13:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <9e43b35e-31da-7e51-006c-1aa69acb10d4@nvidia.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] p54: Fix an error handling path in p54spi_probe()
+Content-Language: de-DE
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>
+References: <297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr>
+ <CAAd0S9DgctqyRx+ppfT6dNntUR-cpySnsYaL=unboQ+qTK2wGQ@mail.gmail.com>
+ <f13c3976-2ba0-e16d-0853-5b5b1be16d11@wanadoo.fr>
+ <df6b487b-b8b7-44fc-7c2d-e6fd15072c14@gmail.com>
+ <20220616103640.GB16517@kadam>
+From:   Christian Lamparter <chunkeey@gmail.com>
+In-Reply-To: <20220616103640.GB16517@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jon,
+On 16/06/2022 12:36, Dan Carpenter wrote:
+> On Wed, Jun 15, 2022 at 11:03:34PM +0200, Christian Lamparter wrote:
+>> On 13/06/2022 22:57, Christophe JAILLET wrote:
+>>> Le 13/06/2022 à 22:02, Christian Lamparter a écrit :
+>>>> On Sun, Jun 12, 2022 at 11:12 PM Christophe JAILLET
+>>>> <christophe.jaillet@wanadoo.fr> wrote:
+>>>>>
+>>>>> If an error occurs after a successful call to p54spi_request_firmware(), it
+>>>>> must be undone by a corresponding release_firmware() as already done in
+>>>>> the error handling path of p54spi_request_firmware() and in the .remove()
+>>>>> function.
+>>>>>
+>>>>> Add the missing call in the error handling path and remove it from
+>>>>> p54spi_request_firmware() now that it is the responsibility of the caller
+>>>>> to release the firmawre
+>>>>
+>>>> that last word hast a typo:  firmware. (maybe Kalle can fix this in post).
+>>>
+>>> More or less the same typo twice in a row... _Embarrassed_
+>>>
+>>>>
+>>>>> Fixes: cd8d3d321285 ("p54spi: p54spi driver")
+>>>>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>>>> Acked-by: Christian Lamparter <chunkeey@gmail.com>
+>>>> (Though, v1 was fine too.)
+>>>>> ---
+>>>>> v2: reduce diffstat and take advantage on the fact that release_firmware()
+>>>>> checks for NULL
+>>>>
+>>>> Heh, ok ;) . Now that I see it,  the "ret = p54_parse_firmware(...); ... "
+>>>> could have been replaced with "return p54_parse_firmware(dev, priv->firmware);"
+>>>> so the p54spi.c could shrink another 5-6 lines.
+>>>>
+>>>> I think leaving p54spi_request_firmware() callee to deal with
+>>>> releasing the firmware
+>>>> in the error case as well is nicer because it gets rid of a "but in
+>>>> this case" complexity.
+>>>
+>>>
+>>> Take the one you consider being the best one.
+>>
+>> well said!
+>>
+>>>
+>>> If it deserves a v3 to axe some lines of code, I can do it but, as said
+>>> previously,
+>>> v1 is for me the cleaner and more future proof.
+>>
+>> Gee, that last sentence about "future proof" is daring.
+> 
+> The future is vast and unknowable but one thing which is pretty likely
+> is that Christophe's patch will introduce a static checker warning.  We
+> really would have expected a to find a release_firmware() in the place
+> where it was in the original code.  There is a comment there now so no
+> one is going to re-add the release_firmware() but that's been an issue
+> in the past.
+> 
+> I'm sort of surprised that it wasn't a static checker warning already.
+> Anyway, I'll add this to Smatch check_unwind.c
+> 
+> +         { "request_firmware", ALLOC, 0, "*$", &int_zero, &int_zero},
+> +         { "release_firmware", RELEASE, 0, "$"},
 
-On Thu, Jun 16, 2022 at 09:48:37AM +0100, Jon Hunter wrote:
-> No new regressions for Tegra. I am seeing the following kernel warning 
-> that is causing a boot test to fail, but this has been happening for a 
-> few releases now (I would have reported it earlier but we have been 
-> having some infrastructure issues) ...
-> 
->   WARNING KERN urandom_read_iter: 82 callbacks suppressed
-> 
-> This appears to be introduced by commit "random: convert to using 
-> fops->read_iter()" [0]. Interestingly, I am not seeing this in the 
-> mainline as far as I can tell and so I am not sure if there is something 
-> else that is missing?
-> 
-> 
-> Test results for stable-v5.10:
->      10 builds:	10 pass, 0 fail
->      28 boots:	28 pass, 0 fail
->      75 tests:	74 pass, 1 fail
-> 
-> Linux version:	5.10.123-rc1-gf67ea0f67087
-> Boards tested:	tegra124-jetson-tk1, tegra186-p2771-0000,
->                  tegra194-p2972-0000, tegra194-p3509-0000+p3668-0000,
->                  tegra20-ventana, tegra210-p2371-2180,
->                  tegra210-p3450-0000, tegra30-cardhu-a04
-> 
-> Test failures:	tegra194-p2972-0000: boot.py
-> 
-> Tested-by: Jon Hunter <jonathanh@nvidia.com>
-> 
-> Jon
-> 
-> [0] 
-> https://lore.kernel.org/lkml/20220527084907.568432116@linuxfoundation.org/
+hmm? I don't follow you there. Why should there be a warning "now"?
+(I assume you mean with v2 but not with v1?). If it's because the static
+checker can't look beyond the function scope then this would be bad news
+since on the "success" path the firmware will stick around until
+p54spi_remove().
 
-Please CC me on RNG issues.
+The p54* drivers would need to be updated (they are ooold) to make good
+use of the firmware_cache. There must have been a good reason why it
+was designed that way. Especially because the firmware_class uses devm
+for the cache already internally. (thanks for Johannes for pointing this
+out).
 
-I'm surprised that this message results in a failure. It's not a
-WARN_ON() or a BUG() that's being triggered here. This is just the
-simple `pr_warn("%s: %d callbacks suppressed\n")` in lib/ratelimit.c,
-which really shouldn't be causing your CI to fail. Sounds like your
-harness could use some adjusting.
-
-Nonetheless, you have found a 4 year old bug in the urandom warning
-accounting that was recently made more easily triggerable by a newer
-commit, though not the one you mentioned. I'll fix this up and keep you
-CC'd on the patch, which should make it into stable as well.
-
-Jason
+Cheers,
+Christian
