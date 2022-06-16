@@ -2,131 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8DDCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C75AFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359250AbiFPGkl (ORCPT
+        id S1358817AbiFPGkv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 02:40:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
+        Thu, 16 Jun 2022 02:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359228AbiFPGkg (ORCPT
+        with ESMTP id S229782AbiFPGkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 02:40:36 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509C557159
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:40:34 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LNsvm3gwwzjY8v;
-        Thu, 16 Jun 2022 14:39:00 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 16 Jun 2022 14:40:31 +0800
-Subject: Re: [PATCH 2/7] mm/khugepaged: stop swapping in page when
- VM_FAULT_RETRY occurs
-To:     Yang Shi <shy828301@gmail.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Howells <dhowells@redhat.com>, NeilBrown <neilb@suse.de>,
-        Alistair Popple <apopple@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Peter Xu <peterx@redhat.com>, Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220611084731.55155-1-linmiaohe@huawei.com>
- <20220611084731.55155-3-linmiaohe@huawei.com>
- <CAHbLzkpc8ag7MkY_D17U1B7SjZFO2Bss8rVVj-scMOC8ttqxEg@mail.gmail.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <c5b8f0c3-de35-9f0e-a3a8-6e132ac398cc@huawei.com>
-Date:   Thu, 16 Jun 2022 14:40:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Thu, 16 Jun 2022 02:40:37 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2E7579AB
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:40:35 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 4DFD63200B4A;
+        Thu, 16 Jun 2022 02:40:34 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Thu, 16 Jun 2022 02:40:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm3; t=1655361633; x=1655448033; bh=gF
+        IVYIZrAyiwuNij5NQCh0fMQtbZDXIrSMS4msW8uGU=; b=m0XlC0FoA0bDWtMj/j
+        IcaW9tyvkpeRkCXfYSY6Vth/Mkmi49gfccDLkVdqp6UKY5jnIyi+mq8J3ts+OR94
+        I4YpvFQIeZt3TllhlYlTPAFuz1NyTWnRxTd8FxMNrTS7vlE140fBqZByWH1C8kQZ
+        kJI3tVt7lNjG7AJNeOdxaxS++HE/SL1yOu0qHAPUNIyDdtPjvh6hlQlMS9zdVsqa
+        XR8070x2xZYsWbe1nYeYipPCk6jLHB+lpqjzcfU1ss+jWwyPfKkPtzLzebmICziH
+        eqeToCfY6utJDGc7zVPPud34jqm1mY5+Zqn/yr+GTCGN4la+On8trSG+rKdVDjFc
+        SMDw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; t=1655361633; x=1655448033; bh=gFIVYIZrAyiwu
+        Nij5NQCh0fMQtbZDXIrSMS4msW8uGU=; b=Q4fz6jZ85VhnWtau8zds6FDPxJ881
+        ThvUdxs7MSTf+fMlHWewlXQWN93pG9X0GLknuydCgseNtVICYDZ62BtZsSxDka6Y
+        OqRYUSk04paFfWjN+CNrpl90TEhI581jfyQ6TntQ1DOObwSGvp5RH6bysmc4k/IH
+        2zqfprulEjBA9/W2Rp3/0FK5bDMwBo7ricDR/UVdsQNh/hA8/7JZhrmOn/yL+fEj
+        RXZauhWWT24vF4duUfGZvPqRBKRYkahTOdhnsJ4V2pfkYRE05MOsoLWscPpcaz0l
+        FH08ObBYlpIC92dVvbVZTdEwGSodew5qSp/dFBK0GVubpxnv8a+Yc+FJg==
+X-ME-Sender: <xms:YdCqYpn561cUKOY40_jA4C-PDJTPKy6KlL-ASaIJK0Z7ASzEZl71Bw>
+    <xme:YdCqYk3YuoB1andJ0q81hAwWcZ0o2lvu6sZQul-s3N_HpkwBNXpnMxb6AduJhU3j8
+    KqNnkXob2a4L55VKA>
+X-ME-Received: <xmr:YdCqYvqeP9LB33hiTqu0N0sevv5mu0YcbtpxYg9GcGqNRmBoHptutG5nlrEb0qYhO9j5yNyE_C11N3cBeMVjMAqm7YHgoO1ld3o45E3DcswGX2VH47MxnOIcCeds95mzov_n_w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddvvddguddtkecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeeh
+    gfdufeeitdevteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:YdCqYpm4Rk0akO96skhLM-potAdFyH2PrmAqx0f8qLQ8P6PX_STRtA>
+    <xmx:YdCqYn3TRYiZwyeBtf7x7FIlMP0LVFa7gLEAZwmiKXUbYVHZtLr23A>
+    <xmx:YdCqYov2358odyPJZeIb42_9_QzBb3xIBczQ4u-vmDQWojTsUK020Q>
+    <xmx:YdCqYlMEwzsCchsAIAz5ij5bNqNix31S8CTyzzrkfV6k0bv9YHIZrQ>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 16 Jun 2022 02:40:33 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Guo Ren <guoren@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Wei Xu <xuwei5@hisilicon.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH v2 1/6] genirq: GENERIC_IRQ_EFFECTIVE_AFF_MASK depends on SMP
+Date:   Thu, 16 Jun 2022 01:40:23 -0500
+Message-Id: <20220616064028.57933-2-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220616064028.57933-1-samuel@sholland.org>
+References: <20220616064028.57933-1-samuel@sholland.org>
 MIME-Version: 1.0
-In-Reply-To: <CAHbLzkpc8ag7MkY_D17U1B7SjZFO2Bss8rVVj-scMOC8ttqxEg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/16 1:49, Yang Shi wrote:
-> On Sat, Jun 11, 2022 at 1:47 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
->>
->> When do_swap_page returns VM_FAULT_RETRY, we do not retry here and thus
->> swap entry will remain in pagetable. This will result in later failure.
->> So stop swapping in pages in this case to save cpu cycles.
->>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->> ---
->>  mm/khugepaged.c | 19 ++++++++-----------
->>  1 file changed, 8 insertions(+), 11 deletions(-)
->>
->> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
->> index 73570dfffcec..a8adb2d1e9c6 100644
->> --- a/mm/khugepaged.c
->> +++ b/mm/khugepaged.c
->> @@ -1003,19 +1003,16 @@ static bool __collapse_huge_page_swapin(struct mm_struct *mm,
->>                 swapped_in++;
->>                 ret = do_swap_page(&vmf);
->>
->> -               /* do_swap_page returns VM_FAULT_RETRY with released mmap_lock */
->> +               /*
->> +                * do_swap_page returns VM_FAULT_RETRY with released mmap_lock.
->> +                * Note we treat VM_FAULT_RETRY as VM_FAULT_ERROR here because
->> +                * we do not retry here and swap entry will remain in pagetable
->> +                * resulting in later failure.
-> 
-> Yeah, it makes sense.
-> 
->> +                */
->>                 if (ret & VM_FAULT_RETRY) {
->>                         mmap_read_lock(mm);
-> 
-> A further optimization, you should not need to relock mmap_lock. You
-> may consider returning a different value or passing in *locked and
-> setting it to false, then check this value in the caller to skip
-> unlock.
+An IRQ's effective affinity can only be different from its configured
+affinity if there are multiple CPUs. Make it clear that this option is
+only meaningful when SMP is enabled. Most of the relevant code in
+irqdesc.c is already hidden behind CONFIG_SMP anyway.
 
-Could we just keep the mmap_sem unlocked when __collapse_huge_page_swapin() fails due to the caller
-always doing mmap_read_unlock when __collapse_huge_page_swapin() returns false and add some comments
-about this behavior? This looks like a simple way for me.
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
 
-> 
->> -                       if (hugepage_vma_revalidate(mm, haddr, &vma)) {
->> -                               /* vma is no longer available, don't continue to swapin */
->> -                               trace_mm_collapse_huge_page_swapin(mm, swapped_in, referenced, 0);
->> -                               return false;
->> -                       }
->> -                       /* check if the pmd is still valid */
->> -                       if (mm_find_pmd(mm, haddr) != pmd) {
->> -                               trace_mm_collapse_huge_page_swapin(mm, swapped_in, referenced, 0);
->> -                               return false;
->> -                       }
->> +                       trace_mm_collapse_huge_page_swapin(mm, swapped_in, referenced, 0);
->> +                       return false;
->>                 }
->>                 if (ret & VM_FAULT_ERROR) {
->>                         trace_mm_collapse_huge_page_swapin(mm, swapped_in, referenced, 0);
-> 
-> And I think "swapped_in++" needs to be moved after error handling.
+(no changes since v1)
 
-Do you mean do "swapped_in++" only after pages are swapped in successfully?
+ arch/arm/mach-hisi/Kconfig |  2 +-
+ drivers/irqchip/Kconfig    | 14 +++++++-------
+ kernel/irq/Kconfig         |  1 +
+ 3 files changed, 9 insertions(+), 8 deletions(-)
 
-Thanks!
-
-> 
->> --
->> 2.23.0
->>
->>
-> .
-> 
+diff --git a/arch/arm/mach-hisi/Kconfig b/arch/arm/mach-hisi/Kconfig
+index 75cccbd3f05f..7b3440687176 100644
+--- a/arch/arm/mach-hisi/Kconfig
++++ b/arch/arm/mach-hisi/Kconfig
+@@ -40,7 +40,7 @@ config ARCH_HIP04
+ 	select HAVE_ARM_ARCH_TIMER
+ 	select MCPM if SMP
+ 	select MCPM_QUAD_CLUSTER if SMP
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 	help
+ 	  Support for Hisilicon HiP04 SoC family
+ 
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 4ab1038b5482..6f74c144a7cc 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -8,7 +8,7 @@ config IRQCHIP
+ config ARM_GIC
+ 	bool
+ 	select IRQ_DOMAIN_HIERARCHY
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config ARM_GIC_PM
+ 	bool
+@@ -34,7 +34,7 @@ config ARM_GIC_V3
+ 	bool
+ 	select IRQ_DOMAIN_HIERARCHY
+ 	select PARTITION_PERCPU
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config ARM_GIC_V3_ITS
+ 	bool
+@@ -76,7 +76,7 @@ config ARMADA_370_XP_IRQ
+ 	bool
+ 	select GENERIC_IRQ_CHIP
+ 	select PCI_MSI if PCI
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config ALPINE_MSI
+ 	bool
+@@ -112,7 +112,7 @@ config BCM6345_L1_IRQ
+ 	bool
+ 	select GENERIC_IRQ_CHIP
+ 	select IRQ_DOMAIN
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config BCM7038_L1_IRQ
+ 	tristate "Broadcom STB 7038-style L1/L2 interrupt controller driver"
+@@ -120,7 +120,7 @@ config BCM7038_L1_IRQ
+ 	default ARCH_BRCMSTB || BMIPS_GENERIC
+ 	select GENERIC_IRQ_CHIP
+ 	select IRQ_DOMAIN
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config BCM7120_L2_IRQ
+ 	tristate "Broadcom STB 7120-style L2 interrupt controller driver"
+@@ -179,7 +179,7 @@ config IRQ_MIPS_CPU
+ 	select GENERIC_IRQ_CHIP
+ 	select GENERIC_IRQ_IPI if SYS_SUPPORTS_MULTITHREADING
+ 	select IRQ_DOMAIN
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config CLPS711X_IRQCHIP
+ 	bool
+@@ -294,7 +294,7 @@ config VERSATILE_FPGA_IRQ_NR
+ config XTENSA_MX
+ 	bool
+ 	select IRQ_DOMAIN
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config XILINX_INTC
+ 	bool "Xilinx Interrupt Controller IP"
+diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
+index 10929eda9825..a2a8df39c2bc 100644
+--- a/kernel/irq/Kconfig
++++ b/kernel/irq/Kconfig
+@@ -24,6 +24,7 @@ config GENERIC_IRQ_SHOW_LEVEL
+ 
+ # Supports effective affinity mask
+ config GENERIC_IRQ_EFFECTIVE_AFF_MASK
++       depends on SMP
+        bool
+ 
+ # Support for delayed migration from interrupt context
+-- 
+2.35.1
 
