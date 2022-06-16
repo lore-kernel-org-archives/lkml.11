@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE27CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F37CCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245031AbiFPQ7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 12:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34414 "EHLO
+        id S1350315AbiFPQ7v (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 12:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238989AbiFPQ6b (ORCPT
+        with ESMTP id S239867AbiFPQ6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 16 Jun 2022 12:58:31 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995313B546
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:58:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2A13CFF7
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:58:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655398710; x=1686934710;
+  t=1655398711; x=1686934711;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cHdpBl+6Hl0GMaotNRwtTh0W0TP2VPq870wRr3FppS4=;
-  b=n70vu+50tG+7ZM2z2qESTeMAIhes/7z3QUVN044sWWLqWcslDSg4RFNg
-   qNjgIPLoiMOUo23lSwKDG3+ItmAcxBQkpPRJRr0TXxR06q51HJrrCRO2U
-   FTTzZKPMSKs7BNDxzUke5tL7/qqgjinInkeNdtJft87gYofeooP0XVhGE
-   +syalmrEAnWPCEtIh4xsVR4rCFa1gTXLvCM3qrusKJPwYhsd9+/qrsykO
-   xb73V2HQXYTZTbczDo/UE8uqO3fTqPJnu8hSREDukjUFlMw9ONpz9o95/
-   lN8i4jsHjBgPMHYLI78WW/YC/H7TYJHLVKuvW93rGcXPUP1iOV53aWW03
+  bh=5LIUNq3A1YHHdIISMtbksOe6rN9yJFBm6vL/yG7ouBM=;
+  b=f2OsDZurzp20F4pANlhE+K3Fmqah8DDbTHijDIkAlDLgm3eFroRyH1Xh
+   KXFWr157kWMrSaUce+uArEg3x7aunvuLCrEVEtV+9j5/BzZqpb+wYmsGD
+   irbu6LwBmIB0FPoNH5vVvM0Ih8Ddc/mvnMCUfFlpvaJ2MJO4R4QhNT2tr
+   enoOYTF7mXGa0OHsz3HXtii7mw6Rb9Ul5lege4eMIOjWiW8q5xirYWGqF
+   V33lqwf3ZG64f3wLSfq5vDby4fGHwaE5VyKzVLHHHg+vdRRc3woayGtsR
+   +ITyJKh9jOItK8D1UrlGqScYcg7bprhUPQo3IvDDFxdfXt9zgZxLabGV5
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="259756090"
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="259756092"
 X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="259756090"
+   d="scan'208";a="259756092"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 09:58:30 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="589725023"
+   d="scan'208";a="589725025"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga007.fm.intel.com with ESMTP; 16 Jun 2022 09:58:29 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 81D2C4BA; Thu, 16 Jun 2022 19:58:31 +0300 (EEST)
+        id BD3B9537; Thu, 16 Jun 2022 19:58:31 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andy@kernel.org>, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v1 06/11] mfd: intel_soc_pmic_bxtwc: Switch from CONFIG_PM_SLEEP guards to pm_sleep_ptr() etc
-Date:   Thu, 16 Jun 2022 19:58:18 +0300
-Message-Id: <20220616165823.4919-6-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 11/11] mfd: intel_soc_pmic_bxtwc: Fix spelling in the comment
+Date:   Thu, 16 Jun 2022 19:58:23 +0300
+Message-Id: <20220616165823.4919-11-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220616165823.4919-1-andriy.shevchenko@linux.intel.com>
 References: <20220616165823.4919-1-andriy.shevchenko@linux.intel.com>
@@ -56,47 +57,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Letting the compiler remove these functions when the kernel is built
-without CONFIG_PM_SLEEP support is simpler and less error prone than the
-use of #ifdef based kernel configuration guards.
+There are a couple of spelling issues in the comment, fix them.
+While at it, fix indentation in the MODULE_AUTHOR() parameter
+and update copyright years.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/mfd/intel_soc_pmic_bxtwc.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/mfd/intel_soc_pmic_bxtwc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/mfd/intel_soc_pmic_bxtwc.c b/drivers/mfd/intel_soc_pmic_bxtwc.c
-index a211c70d532b..6e4c2ca47d82 100644
+index 953f535a3c93..9e412d1d00f1 100644
 --- a/drivers/mfd/intel_soc_pmic_bxtwc.c
 +++ b/drivers/mfd/intel_soc_pmic_bxtwc.c
-@@ -544,7 +544,6 @@ static void bxtwc_shutdown(struct platform_device *pdev)
- 	disable_irq(pmic->irq);
- }
+@@ -2,7 +2,7 @@
+ /*
+  * MFD core driver for Intel Broxton Whiskey Cove PMIC
+  *
+- * Copyright (C) 2015 Intel Corporation. All rights reserved.
++ * Copyright (C) 2015-2017, 2022 Intel Corporation. All rights reserved.
+  */
  
--#ifdef CONFIG_PM_SLEEP
- static int bxtwc_suspend(struct device *dev)
- {
- 	struct intel_soc_pmic *pmic = dev_get_drvdata(dev);
-@@ -561,8 +560,8 @@ static int bxtwc_resume(struct device *dev)
- 	enable_irq(pmic->irq);
- 	return 0;
- }
--#endif
--static SIMPLE_DEV_PM_OPS(bxtwc_pm_ops, bxtwc_suspend, bxtwc_resume);
-+
-+static DEFINE_SIMPLE_DEV_PM_OPS(bxtwc_pm_ops, bxtwc_suspend, bxtwc_resume);
+ #include <linux/acpi.h>
+@@ -527,11 +527,11 @@ static int bxtwc_probe(struct platform_device *pdev)
+ 		return dev_err_probe(dev, ret, "Failed to add devices\n");
  
- static const struct acpi_device_id bxtwc_acpi_ids[] = {
- 	{ "INT34D3", },
-@@ -575,7 +574,7 @@ static struct platform_driver bxtwc_driver = {
- 	.shutdown = bxtwc_shutdown,
- 	.driver	= {
- 		.name	= "BXTWC PMIC",
--		.pm     = &bxtwc_pm_ops,
-+		.pm     = pm_sleep_ptr(&bxtwc_pm_ops),
- 		.acpi_match_table = ACPI_PTR(bxtwc_acpi_ids),
- 		.dev_groups = bxtwc_groups,
- 	},
+ 	/*
+-	 * There is known hw bug. Upon reset BIT 5 of register
++	 * There is known HW bug. Upon reset BIT 5 of register
+ 	 * BXTWC_CHGR_LVL1_IRQ is 0 which is the expected value. However,
+ 	 * later it's set to 1(masked) automatically by hardware. So we
+-	 * have the software workaround here to unmaksed it in order to let
+-	 * charger interrutp work.
++	 * have the software workaround here to unmasked it in order to let
++	 * charger interrupt work.
+ 	 */
+ 	regmap_update_bits(pmic->regmap, BXTWC_MIRQLVL1, BXTWC_MIRQLVL1_MCHGR, 0);
+ 
+@@ -584,4 +584,4 @@ static struct platform_driver bxtwc_driver = {
+ module_platform_driver(bxtwc_driver);
+ 
+ MODULE_LICENSE("GPL v2");
+-MODULE_AUTHOR("Qipeng Zha<qipeng.zha@intel.com>");
++MODULE_AUTHOR("Qipeng Zha <qipeng.zha@intel.com>");
 -- 
 2.35.1
 
