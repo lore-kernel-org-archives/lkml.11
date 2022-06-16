@@ -2,80 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DD1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 01:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34782CCA473
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 01:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349436AbiFPBro (ORCPT
+        id S1348770AbiFPBss (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 21:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50718 "EHLO
+        Wed, 15 Jun 2022 21:48:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344998AbiFPBrT (ORCPT
+        with ESMTP id S1350759AbiFPBsl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 21:47:19 -0400
-Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E663579AA;
-        Wed, 15 Jun 2022 18:47:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=1icBp
-        5p0Rg4t5QP7pXu7euYCDr/0Q6K0TcaAKQpB4i0=; b=XdUB94F7618pZ2LNG/vIR
-        Fv3OMtc6WYp3RG4SI6KEj/0c0TxLeLVrJeaJaWrCY3l/5CT1gShqxGSXYP09QsH9
-        1aX1SvQrwuU1H7DuWjbFUBLZnkDLLnQIaQhk+3o4VB2lR5hUR8x043tWMpB++Tlw
-        3Iw6BEp/qy6XP5gVYL32O8=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp3 (Coremail) with SMTP id DcmowADHYJJ9i6pi+1CxDQ--.61740S2;
-        Thu, 16 Jun 2022 09:46:46 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     thierry.reding@gmail.com, jonathanh@nvidia.com,
-        p.zabel@pengutronix.de, digetx@gmail.com, ndesaulniers@google.com,
-        ulf.hansson@linaro.org, skamble@nvidia.com, nathan@kernel.org,
-        kkartik@nvidia.com
-Cc:     linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
-        windhl@126.com
-Subject: [PATCH v2] soc: tegra: fuse: Add missing of_node_put in tegra_init_fuse
-Date:   Thu, 16 Jun 2022 09:46:36 +0800
-Message-Id: <20220616014636.3972830-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 15 Jun 2022 21:48:41 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A05C580E9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 18:48:40 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id l9-20020a056830268900b006054381dd35so84386otu.4
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 18:48:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=zsAR485NAoLbuB4xy+EFaubp0HCxCBbW1Ts4crF5Tow=;
+        b=fFbJr2IbEynRy8sloZIbFIKtAgvnSDsMcczI/pilKtebnbmnffln9+D+JvgqFqHmy7
+         fzDj+BWsTbjUnXVamZs6LUKx6o6jah5DOhR8WSbCv+r+stXp8b6G5Ed5Zl5FwwIK4QEG
+         nyIq0y7qYeh/9hb6l0sXqUB47+yv1g9WB8IAY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=zsAR485NAoLbuB4xy+EFaubp0HCxCBbW1Ts4crF5Tow=;
+        b=IgBz8KXYNSTe2RzfcQy5DeJ0Bbq4ctCsgs0fJ9OcY+FN6y5BXwpM0u8WF0kz+IfJ5N
+         ioOcJXM2q66UAnVApDxFHCkdpU2KhcLIfIqjDr1bmiiTh9JTOdsqwEKjqjW4vaEWx3Ri
+         hq0NpHcqLAf39JrDIQDEBW5HJX/yC3SbarmbecqnuakLs2SjBbKOQTlo/oyECUMf7iQp
+         vdi0b6Q7ZQg+NY91ecwzUtlzmyDhohSDvUZOVWequddsfFpAUplVNUsOwegHd2rPIXm9
+         BkMEtrowXAbxz1SuDy1vFUp7Vy6OHQvp9nf9feGRQ1x6PHDi4KKdp57UGK1M4cb7dxxG
+         9Xkg==
+X-Gm-Message-State: AJIora9kFWpPP0sJaRzktnLvSMfTM2x9+nu3qam8mbn5g6Jw2u+fgj+P
+        f5le4egna3+NV11vgAoG4paVO/Q1UHvYW5/B4vb6CQ==
+X-Google-Smtp-Source: AGRyM1vkdG1UsaBWMVNR7pM3j9XT4Pof9Ae4f+42js0Hjj5kjpMoNBueX1tXdoue7LykGv4I9lZ63ndZ012a2vrv43I=
+X-Received: by 2002:a9d:729b:0:b0:60c:21bd:97c0 with SMTP id
+ t27-20020a9d729b000000b0060c21bd97c0mr1212868otj.77.1655344119098; Wed, 15
+ Jun 2022 18:48:39 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 15 Jun 2022 18:48:38 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcmowADHYJJ9i6pi+1CxDQ--.61740S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrKFW3GryrZw1rAw4fKFy3Jwb_yoW3KFc_Xa
-        1xWFZ7XF1UWanYva40qrWfZFy2yF4Iqrnaqr4Iv3W2k3W7Zr17GFsIvr17Ca4a9wsrCFW5
-        GryDZFyayr13AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRt73kDUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/xtbBGgAiF1-HZTo2ggAAsc
+In-Reply-To: <1655285409-19829-1-git-send-email-quic_dikshita@quicinc.com>
+References: <1655285409-19829-1-git-send-email-quic_dikshita@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 15 Jun 2022 18:48:38 -0700
+Message-ID: <CAE-0n53O7gb9C2uPOiHjyDuAZmxMQyUL9MtLoRa-8Lr666PENw@mail.gmail.com>
+Subject: Re: [PATCH v2] venus: Add support for SSR trigger using fault injection
+To:     Dikshita Agarwal <quic_dikshita@quicinc.com>,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, stanimir.varbanov@linaro.org,
+        quic_vgarodia@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In this function, of_find_matching_node() will return a node
-pointer with refcount incremented. We should use of_node_put
-when the pointer *np* is not used anymore.
+Quoting Dikshita Agarwal (2022-06-15 02:30:09)
+> Here we introduce a new fault injection for SSR trigger.
+>
+> To trigger the SSR:
+>  echo 100 >  /sys/kernel/debug/venus/fail_ssr/probability
+>  echo 1 >  /sys/kernel/debug/venus/fail_ssr/times
+>
+> signed-off-by: Dikshita Agarwal <quic_dikshita@quicinc.com>
+> Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
 
-Signed-off-by: Liang He <windhl@126.com>
----
- changelog:
+Why is Stan's SoB here?
 
- v2: use real name for Sob
- v1: fix the bug
+> diff --git a/drivers/media/platform/qcom/venus/dbgfs.c b/drivers/media/platform/qcom/venus/dbgfs.c
+> index 52de47f..ec15078 100644
+> --- a/drivers/media/platform/qcom/venus/dbgfs.c
+> +++ b/drivers/media/platform/qcom/venus/dbgfs.c
+> @@ -4,13 +4,34 @@
+>   */
+>
+>  #include <linux/debugfs.h>
+> +#include <linux/fault-inject.h>
+>
+>  #include "core.h"
+>
+> +#ifdef CONFIG_FAULT_INJECTION
+> +static DECLARE_FAULT_ATTR(venus_ssr_attr);
+> +#endif
 
+This endif isn't needed.
 
- drivers/soc/tegra/fuse/fuse-tegra.c | 1 +
- 1 file changed, 1 insertion(+)
+> +
+> +#ifdef CONFIG_FAULT_INJECTION
 
-diff --git a/drivers/soc/tegra/fuse/fuse-tegra.c b/drivers/soc/tegra/fuse/fuse-tegra.c
-index b0a8405dbdb1..6542267a224d 100644
---- a/drivers/soc/tegra/fuse/fuse-tegra.c
-+++ b/drivers/soc/tegra/fuse/fuse-tegra.c
-@@ -568,6 +568,7 @@ static int __init tegra_init_fuse(void)
- 	np = of_find_matching_node(NULL, car_match);
- 	if (np) {
- 		void __iomem *base = of_iomap(np, 0);
-+		of_node_put(np);
- 		if (base) {
- 			tegra_enable_fuse_clk(base);
- 			iounmap(base);
--- 
-2.25.1
+and this ifdef isn't either. The two can be combined.
 
+> +bool venus_fault_inject_ssr(void)
+> +{
+> +       return should_fail(&venus_ssr_attr, 1);
+> +}
+> +#else
+> +bool venus_fault_inject_ssr(void)
+> +{
+> +       return false;
+> +}
+
+Put this part in the header file and make it static inline. Then the
+compiler is going to inline the false to the if condition and optimize
+the entire branch away unless the config is enabled. It would also be
+nice to extern the venus_ssr_attr so that the should_fail() can be
+directly inlined into the interrupt handler.
+
+> +#endif
+> +
+>  void venus_dbgfs_init(struct venus_core *core)
+>  {
+>         core->root = debugfs_create_dir("venus", NULL);
+>         debugfs_create_x32("fw_level", 0644, core->root, &venus_fw_debug);
+> +
+> +#ifdef CONFIG_FAULT_INJECTION
+> +       fault_create_debugfs_attr("fail_ssr", core->root, &venus_ssr_attr);
+> +#endif
+>  }
+>
+>  void venus_dbgfs_deinit(struct venus_core *core)
+> diff --git a/drivers/media/platform/qcom/venus/dbgfs.h b/drivers/media/platform/qcom/venus/dbgfs.h
+> index b7b621a..b0d0686 100644
+> --- a/drivers/media/platform/qcom/venus/dbgfs.h
+> +++ b/drivers/media/platform/qcom/venus/dbgfs.h
+> @@ -8,5 +8,6 @@ struct venus_core;
+
++#include <linux/fault-inject.h>
+
+>
+>  void venus_dbgfs_init(struct venus_core *core);
+>  void venus_dbgfs_deinit(struct venus_core *core);
+
+#ifdef CONFIG_FAULT_INJECTION
+extern struct fault_attr venus_ssr_attr;
+static inline venus_fault_inject_ssr(void)
+{
+	return should_fail(&venus_ssr_attr, 1);
+}
+#else
+static inline bool venus_fault_inject_ssr(void) { return false; }
+#endif
