@@ -2,445 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0DAECCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 11:40:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC18C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 11:42:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376903AbiFPLk5 (ORCPT
+        id S1359331AbiFPLmQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 07:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54656 "EHLO
+        Thu, 16 Jun 2022 07:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376844AbiFPLkz (ORCPT
+        with ESMTP id S230122AbiFPLmP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 07:40:55 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2053.outbound.protection.outlook.com [40.107.220.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664255EBDE;
-        Thu, 16 Jun 2022 04:40:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q2ALMc8VqIFoZGoYueNeURUbLKMAVJCZCyBSzHvkflq6Sz5uXULYA0gWNfmGlHUa6GX5Q+Hb4QmQ7CDNENX+qBZ30yx4Ilw9BUngByIrTvYxf1Mp0T71S6vQ7RkuH7Kwg0g7z1RAjmINDzjLuYAfHxP6THSCHEaEhDd4pMoTvMTf9Mmj0xEu5lrd0nUoKLgap44N/yfC3jZE4RS6vBbBfPep3uXxI66ffWOB7yNcEhcKt1i26HdY3en4Ixyy3axALhDQhZEgj7tfY11dekPA8Xr+lC/3O8ePYmhjTaYn09HsKAms4nhcCB7Ihr46GMIYc63eOYsM8ma6RqAyUuW7MA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8KG/zn2yxtQbyxKTAi5LWZHqFAxPtY9J8mw27R3U5/o=;
- b=MgUGIyP7GmkmVNVlyrwWi3NgTgkXLd0I9O6Hbi8CZgWQN7CIykUJ/IBPKSsZMCyxkrx3+I9aq8/CWpjKHYqbMp/S0v64ViPZk4I0fx30Jwu3ctrAjsDQTtj/832flBD8J7hLedkDLHULj9auf6xBbT83B+erx2qJGMsRlWPcVly+0GPUSK9urBLUFMewohU1fl9ZFGJ+6ftilVC3+KKmheC/s2LXgNZX/eX9TDcWSA63G+M9H/PDWFTiGRjGNIDAnslelA+HLg5/l7KVrXhR4vo8GsCLyx/nRucugbpGK8nft/g2YLnqf/amfIqHLIomgN2e57SgylWg2RX2a7A35A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=infradead.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8KG/zn2yxtQbyxKTAi5LWZHqFAxPtY9J8mw27R3U5/o=;
- b=PG0P9mcKUb2eJrYqHjdjCGyVhGpFCoSUENmssiJVx7sQ+X239oI/uQWBlND7ZaZEgD1pzmkuBruPZM6lPfyGr3w6lA8/PtHIf0MSA3Z+KXDuiZrQ2OGd9oqQGTlt5z5rIxSTFE+h/+9leq6tqHnQ/xvIDBp9vl6NbVVRT58rWPQ=
-Received: from MWHPR14CA0003.namprd14.prod.outlook.com (2603:10b6:300:ae::13)
- by SA0PR12MB4591.namprd12.prod.outlook.com (2603:10b6:806:9d::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14; Thu, 16 Jun
- 2022 11:40:52 +0000
-Received: from CO1NAM11FT059.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:ae:cafe::5e) by MWHPR14CA0003.outlook.office365.com
- (2603:10b6:300:ae::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15 via Frontend
- Transport; Thu, 16 Jun 2022 11:40:51 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT059.mail.protection.outlook.com (10.13.174.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5332.12 via Frontend Transport; Thu, 16 Jun 2022 11:40:51 +0000
-Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 16 Jun
- 2022 06:39:39 -0500
-From:   Ravi Bangoria <ravi.bangoria@amd.com>
-To:     <peterz@infradead.org>, <acme@kernel.org>
-CC:     <ravi.bangoria@amd.com>, <jolsa@kernel.org>, <namhyung@kernel.org>,
-        <eranian@google.com>, <irogers@google.com>, <jmario@redhat.com>,
-        <leo.yan@linaro.org>, <alisaidi@amazon.com>, <ak@linux.intel.com>,
-        <kan.liang@linux.intel.com>, <dave.hansen@linux.intel.com>,
-        <hpa@zytor.com>, <mingo@redhat.com>, <mark.rutland@arm.com>,
-        <alexander.shishkin@linux.intel.com>, <tglx@linutronix.de>,
-        <bp@alien8.de>, <x86@kernel.org>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
-        <kim.phillips@amd.com>, <santosh.shukla@amd.com>
-Subject: [PATCH v2 03/14] perf/x86/amd: Support PERF_SAMPLE_DATA_SRC
-Date:   Thu, 16 Jun 2022 17:06:26 +0530
-Message-ID: <20220616113638.900-4-ravi.bangoria@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220616113638.900-1-ravi.bangoria@amd.com>
-References: <20220616113638.900-1-ravi.bangoria@amd.com>
+        Thu, 16 Jun 2022 07:42:15 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1020C5EBF9
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 04:42:14 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id x5-20020a923005000000b002d1a91c4d13so710908ile.4
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 04:42:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=WoXzkdWEyk21YOfzrQvrjUMbfEYuzosGbJuQ+VH4u6o=;
+        b=qHzphcYXAXFaBCwS4PRE/4KTyuMFEg1KYErSfum5Vb8gHw27t7bUBqlCuTSC7xbQUf
+         ByuuT7v8exGnV8w0y1hEVvULjlSIjZpcMqDVNSzpkqCkp85FWosm75yf5F50HT3pgwlT
+         d39aAnhaFFMgr/ApY3WqtbsHXtdL7sGIvoE55M2pgW/tvYbJorKamErHbTn1YFUQo5Oq
+         NGjwC/3QE8O27CABmthe3hXCc6tQvASQ8Hru6OhpU+77QGP9b0KWwpQNuHgB9tpmyMIP
+         +7e461fUCc/hzQpOZV5c6BrmLotRbyYNmUYBgWs8lFfRJxW8DmrBH2irrh+cnpFYZawr
+         ReJg==
+X-Gm-Message-State: AJIora9YtpMWUnTEy6oePDM0+ZGJtDfROct5XhwT58+w9jvWA3JkyNxz
+        yaOVBFpQ4XLselrrAKuHC2G2iSWm2FeYt9/ChfsL61o4oWXp
+X-Google-Smtp-Source: AGRyM1ueRHTqAMAvwTtHUhx3poMfBDXorw1KC3tfjtoA/ZzDp6qzOJWO1QhBVMPOh8MKTWaddjFPziAJRO+/IJMPFWsttXvAY22M
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6eee8822-482a-4edb-da12-08da4f8d10aa
-X-MS-TrafficTypeDiagnostic: SA0PR12MB4591:EE_
-X-Microsoft-Antispam-PRVS: <SA0PR12MB4591BF673A9C08D9948EC387E0AC9@SA0PR12MB4591.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6O0tUe1hrFpwTtdK4wIFjMd3xsW8s1/8VfcAmifDPxckfX/cIbwn8jtJWDav5m4Zz82wgds2VgDsX9VQc6s+SQFafbb6GGTj9quCEnpV8H2nZ0xXzSq1Qwx+e7/rRAoejSs+lpym0DGxWFiRuBavKZ+Hm3/ujGus2+Qdq7cc0Ei+QQpO8C+szLbmlJGJXZnCmTHjLjEScoU661CilBZkXgwPF+whKCBSz3vk4o62fdkNQVLQg9xeZSJ8PRvFuRYiV41GgF0xUBnPJGOq+DBccwgApujCM6RhykAagJCXY0JZodJVC6MiBAM24ud5hnT4X4fYGlZnOIJaYisW/m7V/Grffr1WxNpEwlUV96BlCfVgxthGRT0y/Bxf4ASfwsBvnIsnr/Ogy+SJ7SjAO4tohqEMK15D+PYQPNsboaW2/nhrOekU0YZ9RZQ0L+e1g8FQZjA2RzescTODVvVP5n4l1nOSErGg1loqLpkreXwJeO80xujCnYjzNhfx4FTKofcmYf2JthGkar6306z6uw0TtFfmZKDklZRbsd++aOv7N7kDT2tO8QvWW7qWtiNhOY4pLwumI1JIZPfZA/9dCnoSiY3yxOAOZRiy1QY8oT57pTSHbPwU1xz775+LwOqKg2A8poejBkmBCABAaKAbiiJq2I86RW3yv2xtaEC1OvCsJ/zPxCsycT/BmHG7sJd5l1yGCMfoxyVeQpH6cXLtPbrBvg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(36840700001)(40470700004)(46966006)(1076003)(186003)(6666004)(47076005)(16526019)(426003)(2616005)(40460700003)(336012)(36860700001)(70206006)(26005)(7696005)(81166007)(86362001)(356005)(83380400001)(8936002)(44832011)(5660300002)(7416002)(8676002)(4326008)(36756003)(82310400005)(110136005)(54906003)(316002)(2906002)(508600001)(70586007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2022 11:40:51.2930
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6eee8822-482a-4edb-da12-08da4f8d10aa
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT059.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4591
+X-Received: by 2002:a05:6638:22d4:b0:333:f776:e896 with SMTP id
+ j20-20020a05663822d400b00333f776e896mr2478056jat.75.1655379733458; Thu, 16
+ Jun 2022 04:42:13 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 04:42:13 -0700
+In-Reply-To: <20220616112635.2462-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fb37a705e18f203e@google.com>
+Subject: Re: [syzbot] WARNING: ODEBUG bug in route4_destroy
+From:   syzbot <syzbot+2e3efb5eb71cb5075ba7@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-struct perf_mem_data_src is used to pass arch specific memory access
-details into generic form. These details gets consumed by tools like
-perf mem and c2c. IBS tagged load/store sample provides most of the
-information needed for these tools. Add a logic to convert IBS
-specific raw data into perf_mem_data_src.
+Hello,
 
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
----
- arch/x86/events/amd/ibs.c | 302 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 296 insertions(+), 6 deletions(-)
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+KASAN: use-after-free Read in route4_destroy
 
-diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
-index c251bc44c088..de2632a2e44d 100644
---- a/arch/x86/events/amd/ibs.c
-+++ b/arch/x86/events/amd/ibs.c
-@@ -688,6 +688,294 @@ static struct perf_ibs perf_ibs_op = {
- 	.get_count		= get_ibs_op_count,
- };
- 
-+static void perf_ibs_get_mem_op(union ibs_op_data3 *op_data3,
-+				struct perf_sample_data *data)
-+{
-+	union perf_mem_data_src *data_src = &data->data_src;
-+
-+	data_src->mem_op = PERF_MEM_OP_NA;
-+
-+	if (op_data3->ld_op)
-+		data_src->mem_op = PERF_MEM_OP_LOAD;
-+	else if (op_data3->st_op)
-+		data_src->mem_op = PERF_MEM_OP_STORE;
-+}
-+
-+/*
-+ * Processors having CPUID_Fn8000001B_EAX[11] aka IBS_CAPS_ZEN4 has
-+ * more fine granular DataSrc encodings. Others have coarse.
-+ */
-+static u8 perf_ibs_data_src(union ibs_op_data2 *op_data2)
-+{
-+	if (ibs_caps & IBS_CAPS_ZEN4)
-+		return (op_data2->data_src_hi << 3) | op_data2->data_src_lo;
-+
-+	return op_data2->data_src_lo;
-+}
-+
-+static void perf_ibs_get_mem_lvl(struct perf_event *event,
-+				 union ibs_op_data2 *op_data2,
-+				 union ibs_op_data3 *op_data3,
-+				 struct perf_sample_data *data)
-+{
-+	union perf_mem_data_src *data_src = &data->data_src;
-+	u8 ibs_data_src = perf_ibs_data_src(op_data2);
-+
-+	data_src->mem_lvl = 0;
-+
-+	/*
-+	 * DcMiss, L2Miss, DataSrc, DcMissLat etc. are all invalid for Uncached
-+	 * memory accesses. So, check DcUcMemAcc bit early.
-+	 */
-+	if (op_data3->dc_uc_mem_acc && ibs_data_src != IBS_DATA_SRC_EXT_IO) {
-+		data_src->mem_lvl = PERF_MEM_LVL_UNC | PERF_MEM_LVL_HIT;
-+		return;
-+	}
-+
-+	/* L1 Hit */
-+	if (op_data3->dc_miss == 0) {
-+		data_src->mem_lvl = PERF_MEM_LVL_L1 | PERF_MEM_LVL_HIT;
-+		return;
-+	}
-+
-+	/* L2 Hit */
-+	if (op_data3->l2_miss == 0) {
-+		/* Erratum #1293 */
-+		if (boot_cpu_data.x86 != 0x19 || boot_cpu_data.x86_model > 0xF ||
-+		    !(op_data3->sw_pf || op_data3->dc_miss_no_mab_alloc)) {
-+			data_src->mem_lvl = PERF_MEM_LVL_L2 | PERF_MEM_LVL_HIT;
-+			return;
-+		}
-+	}
-+
-+	/* L3 Hit */
-+	if (ibs_caps & IBS_CAPS_ZEN4) {
-+		if (data_src->mem_op == PERF_MEM_OP_LOAD &&
-+		    ibs_data_src == IBS_DATA_SRC_EXT_LOC_CACHE) {
-+			data_src->mem_lvl = PERF_MEM_LVL_L3 | PERF_MEM_LVL_HIT;
-+			return;
-+		}
-+	} else {
-+		if (data_src->mem_op == PERF_MEM_OP_LOAD &&
-+		    ibs_data_src == IBS_DATA_SRC_LOC_CACHE) {
-+			data_src->mem_lvl = PERF_MEM_LVL_L3 | PERF_MEM_LVL_REM_CCE1 |
-+					    PERF_MEM_LVL_HIT;
-+			return;
-+		}
-+	}
-+
-+	/* A peer cache in a near CCX. */
-+	if (ibs_caps & IBS_CAPS_ZEN4 && data_src->mem_op == PERF_MEM_OP_LOAD &&
-+	    ibs_data_src == IBS_DATA_SRC_EXT_NEAR_CCX_CACHE) {
-+		data_src->mem_lvl = PERF_MEM_LVL_REM_CCE1 | PERF_MEM_LVL_HIT;
-+		return;
-+	}
-+
-+	/* A peer cache in a far CCX. */
-+	if (ibs_caps & IBS_CAPS_ZEN4) {
-+		if (data_src->mem_op == PERF_MEM_OP_LOAD &&
-+		    ibs_data_src == IBS_DATA_SRC_EXT_FAR_CCX_CACHE) {
-+			data_src->mem_lvl = PERF_MEM_LVL_REM_CCE2 | PERF_MEM_LVL_HIT;
-+			return;
-+		}
-+	} else {
-+		if (data_src->mem_op == PERF_MEM_OP_LOAD &&
-+		    ibs_data_src == IBS_DATA_SRC_REM_CACHE) {
-+			data_src->mem_lvl = PERF_MEM_LVL_REM_CCE2 | PERF_MEM_LVL_HIT;
-+			return;
-+		}
-+	}
-+
-+	/* DRAM */
-+	if (data_src->mem_op == PERF_MEM_OP_LOAD &&
-+	    ibs_data_src == IBS_DATA_SRC_EXT_DRAM) {
-+		if (op_data2->rmt_node == 0)
-+			data_src->mem_lvl = PERF_MEM_LVL_LOC_RAM | PERF_MEM_LVL_HIT;
-+		else
-+			data_src->mem_lvl = PERF_MEM_LVL_REM_RAM1 | PERF_MEM_LVL_HIT;
-+		return;
-+	}
-+
-+	/* PMEM */
-+	if (ibs_caps & IBS_CAPS_ZEN4 && data_src->mem_op == PERF_MEM_OP_LOAD &&
-+	    ibs_data_src == IBS_DATA_SRC_EXT_PMEM) {
-+		data_src->mem_lvl_num = PERF_MEM_LVLNUM_PMEM;
-+		if (op_data2->rmt_node) {
-+			data_src->mem_remote = PERF_MEM_REMOTE_REMOTE;
-+			/* IBS doesn't provide Remote socket detail */
-+			data_src->mem_hops = PERF_MEM_HOPS_1;
-+		}
-+		return;
-+	}
-+
-+	/* Extension Memory */
-+	if (ibs_caps & IBS_CAPS_ZEN4 && data_src->mem_op == PERF_MEM_OP_LOAD &&
-+	    ibs_data_src == IBS_DATA_SRC_EXT_EXT_MEM) {
-+		data_src->mem_lvl_num = PERF_MEM_LVLNUM_EXTN_MEM;
-+		if (op_data2->rmt_node) {
-+			data_src->mem_remote = PERF_MEM_REMOTE_REMOTE;
-+			/* IBS doesn't provide Remote socket detail */
-+			data_src->mem_hops = PERF_MEM_HOPS_1;
-+		}
-+		return;
-+	}
-+
-+	/* IO */
-+	if (data_src->mem_op == PERF_MEM_OP_LOAD &&
-+	    ibs_data_src == IBS_DATA_SRC_EXT_IO) {
-+		data_src->mem_lvl = PERF_MEM_LVL_IO;
-+		data_src->mem_lvl_num = PERF_MEM_LVLNUM_IO;
-+		if (op_data2->rmt_node) {
-+			data_src->mem_remote = PERF_MEM_REMOTE_REMOTE;
-+			/* IBS doesn't provide Remote socket detail */
-+			data_src->mem_hops = PERF_MEM_HOPS_1;
-+		}
-+		return;
-+	}
-+
-+	/*
-+	 * MAB (Miss Address Buffer) Hit. MAB keeps track of outstanding
-+	 * DC misses. However such data may come from any level in mem
-+	 * hierarchy. IBS provides detail about both MAB as well as actual
-+	 * DataSrc simultaneously. Prioritize DataSrc over MAB, i.e. set
-+	 * MAB only when IBS fails to provide DataSrc.
-+	 */
-+	if (op_data3->dc_miss_no_mab_alloc) {
-+		data_src->mem_lvl = PERF_MEM_LVL_LFB | PERF_MEM_LVL_HIT;
-+		return;
-+	}
-+
-+	data_src->mem_lvl = PERF_MEM_LVL_NA;
-+}
-+
-+static bool perf_ibs_cache_hit_st_valid(void)
-+{
-+	/* 0: Uninitialized, 1: Valid, -1: Invalid */
-+	static int cache_hit_st_valid;
-+
-+	if (unlikely(!cache_hit_st_valid)) {
-+		if (boot_cpu_data.x86 == 0x19 &&
-+		    (boot_cpu_data.x86_model <= 0xF ||
-+		    (boot_cpu_data.x86_model >= 0x20 &&
-+		     boot_cpu_data.x86_model <= 0x5F))) {
-+			cache_hit_st_valid = -1;
-+		} else {
-+			cache_hit_st_valid = 1;
-+		}
-+	}
-+
-+	return cache_hit_st_valid == 1;
-+}
-+
-+static void perf_ibs_get_mem_snoop(union ibs_op_data2 *op_data2,
-+				   struct perf_sample_data *data)
-+{
-+	union perf_mem_data_src *data_src = &data->data_src;
-+	u8 ibs_data_src;
-+
-+	data_src->mem_snoop = PERF_MEM_SNOOP_NA;
-+
-+	if (!perf_ibs_cache_hit_st_valid() ||
-+	    data_src->mem_op != PERF_MEM_OP_LOAD ||
-+	    data_src->mem_lvl & PERF_MEM_LVL_L1 ||
-+	    data_src->mem_lvl & PERF_MEM_LVL_L2 ||
-+	    op_data2->cache_hit_st)
-+		return;
-+
-+	ibs_data_src = perf_ibs_data_src(op_data2);
-+
-+	if (ibs_caps & IBS_CAPS_ZEN4) {
-+		if (ibs_data_src == IBS_DATA_SRC_EXT_LOC_CACHE ||
-+		    ibs_data_src == IBS_DATA_SRC_EXT_NEAR_CCX_CACHE ||
-+		    ibs_data_src == IBS_DATA_SRC_EXT_FAR_CCX_CACHE)
-+			data_src->mem_snoop = PERF_MEM_SNOOP_HITM;
-+	} else if (ibs_data_src == IBS_DATA_SRC_LOC_CACHE) {
-+		data_src->mem_snoop = PERF_MEM_SNOOP_HITM;
-+	}
-+}
-+
-+static void perf_ibs_get_tlb_lvl(union ibs_op_data3 *op_data3,
-+				 struct perf_sample_data *data)
-+{
-+	union perf_mem_data_src *data_src = &data->data_src;
-+
-+	data_src->mem_dtlb = PERF_MEM_TLB_NA;
-+
-+	if (!op_data3->dc_lin_addr_valid)
-+		return;
-+
-+	if (!op_data3->dc_l1tlb_miss) {
-+		data_src->mem_dtlb = PERF_MEM_TLB_L1 | PERF_MEM_TLB_HIT;
-+		return;
-+	}
-+
-+	if (!op_data3->dc_l2tlb_miss) {
-+		data_src->mem_dtlb = PERF_MEM_TLB_L2 | PERF_MEM_TLB_HIT;
-+		return;
-+	}
-+
-+	data_src->mem_dtlb = PERF_MEM_TLB_L2 | PERF_MEM_TLB_MISS;
-+}
-+
-+static void perf_ibs_get_mem_lock(union ibs_op_data3 *op_data3,
-+				  struct perf_sample_data *data)
-+{
-+	union perf_mem_data_src *data_src = &data->data_src;
-+
-+	data_src->mem_lock = PERF_MEM_LOCK_NA;
-+
-+	if (op_data3->dc_locked_op)
-+		data_src->mem_lock = PERF_MEM_LOCK_LOCKED;
-+}
-+
-+#define ibs_op_msr_idx(msr)	(msr - MSR_AMD64_IBSOPCTL)
-+
-+static void perf_ibs_get_data_src(struct perf_event *event,
-+				  struct perf_ibs_data *ibs_data,
-+				  struct perf_sample_data *data)
-+{
-+	union perf_mem_data_src *data_src = &data->data_src;
-+	union ibs_op_data2 op_data2;
-+	union ibs_op_data3 op_data3;
-+
-+	op_data3.val = ibs_data->regs[ibs_op_msr_idx(MSR_AMD64_IBSOPDATA3)];
-+
-+	perf_ibs_get_mem_op(&op_data3, data);
-+	if (data_src->mem_op != PERF_MEM_OP_LOAD &&
-+	    data_src->mem_op != PERF_MEM_OP_STORE)
-+		return;
-+
-+	op_data2.val = ibs_data->regs[ibs_op_msr_idx(MSR_AMD64_IBSOPDATA2)];
-+
-+	/* Erratum #1293 */
-+	if (boot_cpu_data.x86 == 0x19 && boot_cpu_data.x86_model <= 0xF &&
-+	    (op_data3.sw_pf || op_data3.dc_miss_no_mab_alloc)) {
-+		/*
-+		 * OP_DATA2 has only two fields on Zen3: DataSrc and RmtNode.
-+		 * DataSrc=0 is No valid status and RmtNode is invalid when
-+		 * DataSrc=0.
-+		 */
-+		op_data2.val = 0;
-+	}
-+
-+	perf_ibs_get_mem_lvl(event, &op_data2, &op_data3, data);
-+	perf_ibs_get_mem_snoop(&op_data2, data);
-+	perf_ibs_get_tlb_lvl(&op_data3, data);
-+	perf_ibs_get_mem_lock(&op_data3, data);
-+}
-+
-+static int perf_ibs_get_offset_max(struct perf_ibs *perf_ibs, u64 sample_type,
-+				   int check_rip)
-+{
-+	if (sample_type & PERF_SAMPLE_RAW ||
-+	    (perf_ibs == &perf_ibs_op &&
-+	     sample_type & PERF_SAMPLE_DATA_SRC))
-+		return perf_ibs->offset_max;
-+	else if (check_rip)
-+		return 3;
-+	return 1;
-+}
-+
- static int perf_ibs_handle_irq(struct perf_ibs *perf_ibs, struct pt_regs *iregs)
- {
- 	struct cpu_perf_ibs *pcpu = this_cpu_ptr(perf_ibs->pcpu);
-@@ -735,12 +1023,9 @@ static int perf_ibs_handle_irq(struct perf_ibs *perf_ibs, struct pt_regs *iregs)
- 	size = 1;
- 	offset = 1;
- 	check_rip = (perf_ibs == &perf_ibs_op && (ibs_caps & IBS_CAPS_RIPINVALIDCHK));
--	if (event->attr.sample_type & PERF_SAMPLE_RAW)
--		offset_max = perf_ibs->offset_max;
--	else if (check_rip)
--		offset_max = 3;
--	else
--		offset_max = 1;
-+
-+	offset_max = perf_ibs_get_offset_max(perf_ibs, event->attr.sample_type, check_rip);
-+
- 	do {
- 		rdmsrl(msr + offset, *buf++);
- 		size++;
-@@ -793,6 +1078,11 @@ static int perf_ibs_handle_irq(struct perf_ibs *perf_ibs, struct pt_regs *iregs)
- 		data.raw = &raw;
- 	}
- 
-+	if (perf_ibs == &perf_ibs_op) {
-+		if (event->attr.sample_type & PERF_SAMPLE_DATA_SRC)
-+			perf_ibs_get_data_src(event, &ibs_data, &data);
-+	}
-+
- 	/*
- 	 * rip recorded by IbsOpRip will not be consistent with rsp and rbp
- 	 * recorded as part of interrupt regs. Thus we need to use rip from
--- 
-2.31.1
+==================================================================
+BUG: KASAN: use-after-free in route4_destroy+0x82b/0x9a0 net/sched/cls_route.c:302
+BUG: KASAN: use-after-free in route4_destroy+0x82b/0x9a0 net/sched/cls_route.c:302
+Read of size 8 at addr ffff88802160ec00 by task syz-executor.0/4173
+
+CPU: 0 PID: 4173 Comm: syz-executor.0 Not tainted 5.19.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ route4_destroy+0x82b/0x9a0 net/sched/cls_route.c:302
+ tcf_proto_destroy+0x6a/0x2d0 net/sched/cls_api.c:314
+ tcf_proto_put+0x8c/0xc0 net/sched/cls_api.c:326
+ tcf_chain_flush+0x21a/0x360 net/sched/cls_api.c:632
+ tcf_block_flush_all_chains net/sched/cls_api.c:1034 [inline]
+ __tcf_block_put+0x15a/0x510 net/sched/cls_api.c:1196
+ tcf_block_put_ext net/sched/cls_api.c:1396 [inline]
+ tcf_block_put+0xb3/0x100 net/sched/cls_api.c:1411
+ drr_destroy_qdisc+0x44/0x1d0 net/sched/sch_drr.c:455
+ qdisc_destroy+0xc4/0x4e0 net/sched/sch_generic.c:1067
+ qdisc_put+0xcd/0xe0 net/sched/sch_generic.c:1086
+ notify_and_destroy net/sched/sch_api.c:1012 [inline]
+ qdisc_graft+0xeb1/0x1270 net/sched/sch_api.c:1084
+ tc_modify_qdisc+0xbb7/0x1a00 net/sched/sch_api.c:1671
+ rtnetlink_rcv_msg+0x43a/0xc90 net/core/rtnetlink.c:6089
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:734
+ ____sys_sendmsg+0x6eb/0x810 net/socket.c:2492
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2546
+ __sys_sendmsg net/socket.c:2575 [inline]
+ __do_sys_sendmsg net/socket.c:2584 [inline]
+ __se_sys_sendmsg net/socket.c:2582 [inline]
+ __x64_sys_sendmsg+0x132/0x220 net/socket.c:2582
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x4665f9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fe70b8b5188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 000000000056bf80 RCX: 00000000004665f9
+RDX: 0000000000000000 RSI: 0000000020000040 RDI: 0000000000000004
+RBP: 00000000004bfcc4 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf80
+R13: 00007ffdfeb02b6f R14: 00007fe70b8b5300 R15: 0000000000022000
+ </TASK>
+
+Allocated by task 4169:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+ __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
+ kmalloc include/linux/slab.h:600 [inline]
+ kzalloc include/linux/slab.h:733 [inline]
+ route4_change+0x28c/0x2450 net/sched/cls_route.c:500
+ tc_new_tfilter+0x98d/0x2200 net/sched/cls_api.c:2148
+ rtnetlink_rcv_msg+0x946/0xc90 net/core/rtnetlink.c:6080
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:734
+ ____sys_sendmsg+0x6eb/0x810 net/socket.c:2492
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2546
+ __sys_sendmsg net/socket.c:2575 [inline]
+ __do_sys_sendmsg net/socket.c:2584 [inline]
+ __se_sys_sendmsg net/socket.c:2582 [inline]
+ __x64_sys_sendmsg+0x132/0x220 net/socket.c:2582
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+Freed by task 1312:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0x166/0x1a0 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:200 [inline]
+ slab_free_hook mm/slub.c:1727 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1753
+ slab_free mm/slub.c:3507 [inline]
+ kfree+0xd6/0x4d0 mm/slub.c:4555
+ __route4_delete_filter net/sched/cls_route.c:262 [inline]
+ route4_delete_filter_work+0xb0/0xf0 net/sched/cls_route.c:271
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+
+Last potentially related work creation:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
+ insert_work+0x48/0x350 kernel/workqueue.c:1358
+ __queue_work+0x62f/0x1150 kernel/workqueue.c:1517
+ rcu_work_rcufn+0x58/0x80 kernel/workqueue.c:1754
+ rcu_do_batch kernel/rcu/tree.c:2578 [inline]
+ rcu_core+0x7b1/0x1880 kernel/rcu/tree.c:2838
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:571
+
+Second to last potentially related work creation:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
+ call_rcu+0x99/0x790 kernel/rcu/tree.c:3126
+ queue_rcu_work+0x82/0xa0 kernel/workqueue.c:1774
+ route4_queue_work+0x46/0x50 net/sched/cls_route.c:279
+ route4_change+0x1a73/0x2450 net/sched/cls_route.c:559
+ tc_new_tfilter+0x98d/0x2200 net/sched/cls_api.c:2148
+ rtnetlink_rcv_msg+0x946/0xc90 net/core/rtnetlink.c:6080
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:734
+ ____sys_sendmsg+0x6eb/0x810 net/socket.c:2492
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2546
+ __sys_sendmsg net/socket.c:2575 [inline]
+ __do_sys_sendmsg net/socket.c:2584 [inline]
+ __se_sys_sendmsg net/socket.c:2582 [inline]
+ __x64_sys_sendmsg+0x132/0x220 net/socket.c:2582
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+The buggy address belongs to the object at ffff88802160ec00
+ which belongs to the cache kmalloc-192 of size 192
+The buggy address is located 0 bytes inside of
+ 192-byte region [ffff88802160ec00, ffff88802160ecc0)
+
+The buggy address belongs to the physical page:
+page:ffffea0000858380 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x2160e
+flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000200 ffffea0000848740 dead000000000002 ffff888010c41a00
+raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY), pid 1, tgid 1 (swapper/0), ts 9272225302, free_ts 9271655317
+ prep_new_page mm/page_alloc.c:2456 [inline]
+ get_page_from_freelist+0x1290/0x3b70 mm/page_alloc.c:4198
+ __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5426
+ alloc_page_interleave+0x1e/0x200 mm/mempolicy.c:2105
+ alloc_pages+0x2b1/0x310 mm/mempolicy.c:2267
+ alloc_slab_page mm/slub.c:1797 [inline]
+ allocate_slab+0x26c/0x3c0 mm/slub.c:1942
+ new_slab mm/slub.c:2002 [inline]
+ ___slab_alloc+0x985/0xd90 mm/slub.c:3002
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3089
+ slab_alloc_node mm/slub.c:3180 [inline]
+ slab_alloc mm/slub.c:3222 [inline]
+ kmem_cache_alloc_trace+0x310/0x3f0 mm/slub.c:3253
+ kmalloc include/linux/slab.h:600 [inline]
+ kzalloc include/linux/slab.h:733 [inline]
+ call_usermodehelper_setup+0x97/0x340 kernel/umh.c:365
+ kobject_uevent_env+0xefa/0x1660 lib/kobject_uevent.c:614
+ driver_register+0x2db/0x3a0 drivers/base/driver.c:248
+ usb_register_driver+0x249/0x460 drivers/usb/core/driver.c:1062
+ do_one_initcall+0x103/0x650 init/main.c:1295
+ do_initcall_level init/main.c:1368 [inline]
+ do_initcalls init/main.c:1384 [inline]
+ do_basic_setup init/main.c:1403 [inline]
+ kernel_init_freeable+0x6b1/0x73a init/main.c:1610
+ kernel_init+0x1a/0x1d0 init/main.c:1499
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1371 [inline]
+ free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1421
+ free_unref_page_prepare mm/page_alloc.c:3343 [inline]
+ free_unref_page_list+0x16f/0xf80 mm/page_alloc.c:3475
+ release_pages+0xff1/0x2290 mm/swap.c:980
+ tlb_batch_pages_flush+0xa8/0x1a0 mm/mmu_gather.c:58
+ tlb_flush_mmu_free mm/mmu_gather.c:255 [inline]
+ tlb_flush_mmu mm/mmu_gather.c:262 [inline]
+ tlb_finish_mmu+0x147/0x7e0 mm/mmu_gather.c:353
+ exit_mmap+0x1de/0x4a0 mm/mmap.c:3164
+ __mmput+0x122/0x4b0 kernel/fork.c:1187
+ mmput+0x56/0x60 kernel/fork.c:1208
+ free_bprm+0x65/0x2e0 fs/exec.c:1486
+ kernel_execve+0x3fa/0x500 fs/exec.c:2005
+ call_usermodehelper_exec_async+0x2e3/0x580 kernel/umh.c:112
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
+
+Memory state around the buggy address:
+ ffff88802160eb00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88802160eb80: 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc
+>ffff88802160ec00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                   ^
+ ffff88802160ec80: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+ ffff88802160ed00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+
+Tested on:
+
+commit:         018ab4fa netfs: fix up netfs_inode_init() docbook comm..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=144269e8080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f21890d74080ef72
+dashboard link: https://syzkaller.appspot.com/bug?extid=2e3efb5eb71cb5075ba7
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1461c9a7f00000
 
