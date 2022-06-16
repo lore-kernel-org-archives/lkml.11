@@ -2,77 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90412C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 09:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BED87C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 09:45:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359783AbiFPJkM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 05:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34426 "EHLO
+        id S232531AbiFPJpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 05:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359460AbiFPJkK (ORCPT
+        with ESMTP id S231648AbiFPJpK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 05:40:10 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194C559309
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 02:40:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Xe7EVTVfA/LYwJX1fqIJNYg/fd5ZMqoScXc4Hw5xwQc=; b=oqFOhI9n/euMEb6yHqNMZXCtN+
-        JXj3RafSEAdQvbGKAHXQHOE5f56H8B1uBNQCQt6AA3+v7gxD+BD7jU+CrwBITfLkzM24eovGid8Tn
-        E2S0CWp8H1z1zdhxQhiNsB8tABKSZsju3DBEgMWPPSgFKlsZ6ZsKKIh2qW3ESza3b0ImFSc/xl6/j
-        ua4cNeuvFm0KeFDgwdK/V8lToG+myTHc336nOVpEdPm95Al4keI/ZqdTcgH1IdcrAJ9ggjxz9rmJK
-        0Iz4cVWuyHzHJ+L5sFDqA1W3vQ50sU/FvWuMwrFrzRf8/rxm3HYRH/CI5FdhAvm80wTnnnR9mhl8S
-        2cu+oXzA==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1lyh-008Nh5-Mg; Thu, 16 Jun 2022 09:39:52 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        Thu, 16 Jun 2022 05:45:10 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989105A0AE
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 02:45:09 -0700 (PDT)
+Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id EDFFA300212;
-        Thu, 16 Jun 2022 11:39:50 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id D7AFD2014ABD6; Thu, 16 Jun 2022 11:39:50 +0200 (CEST)
-Date:   Thu, 16 Jun 2022 11:39:50 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
-        Kostya Serebryany <kcc@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv3 6/8] x86/mm: Provide ARCH_GET_UNTAG_MASK and
- ARCH_ENABLE_TAGGED_ADDR
-Message-ID: <Yqr6ZsLEyFb+Bphf@hirez.programming.kicks-ass.net>
-References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
- <20220610143527.22974-7-kirill.shutemov@linux.intel.com>
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9372B6601747;
+        Thu, 16 Jun 2022 10:45:06 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655372707;
+        bh=owOec3ENWoPb4iRlfY9RietfB+Qk2KOm5zhpCMG04tM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ovhB16DKYKkIROx3Rs3Scft0/Z5GkNFbwGsx9RTPm2lZh5bdYhzr373WXVzyG32kW
+         b8Ea5JBxyRApcIajSIkflDtr3XM2GtDN9shRpde39h9Tf2Al00Jk/A+4t8ILPg5Umv
+         aYplr1syjm2OS+MXdTQXdLAPupuIhcZ3RaBd0kFbRW6ujtGeo4BYSXaf+sU+YocR4M
+         iBMSs3SJNY7b7cm4td5YYnFnfqbZshl7Auc11l/diCfuBF9RMHQ0KmwMDIUxgAujFM
+         CVCOrkg2pcVwuQ/F8jPSpLXi3sHkkiKkD3VWSbL9Mp9rVTw3be8KO+kBpgJYXwFlYG
+         UyFYWx8XfMxfA==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     matthias.bgg@gmail.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, wenst@chromium.org,
+        alyssa.rosenzweig@collabora.com, nfraprado@collabora.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH] soc: mediatek: Introduce mediatek-regulator-coupler driver
+Date:   Thu, 16 Jun 2022 11:45:02 +0200
+Message-Id: <20220616094502.15318-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610143527.22974-7-kirill.shutemov@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 05:35:25PM +0300, Kirill A. Shutemov wrote:
-> Add a couple of arch_prctl() handles:
-> 
->  - ARCH_ENABLE_TAGGED_ADDR enabled LAM. The argument is required number
->    of tag bits. It is rounded up to the nearest LAM mode that can
->    provide it. For now only LAM_U57 is supported, with 6 tag bits.
+This driver currently deals with GPU-SRAM regulator coupling, ensuring
+that the SRAM voltage is always between a specific range of distance to
+the GPU voltage, depending on the SoC, necessary in order to achieve
+system stability across the full range of supported GPU frequencies.
 
-As stated in the reply to the other patch; this isn't a 'for now' thing.
-Due to how the untag thing works. Supporting U48 on 5-level kernels is
-going to require a more complicated untag.
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
 
+Context:
+This driver is one of the pieces of a bigger puzzle, aiming to finally
+enable Dynamic Voltage/Frequency Scaling for Mali GPUs found on MediaTek
+SoCs on the fully open source graphics stack (Panfrost driver).
+
+No devicetree bindings are provided because this does not require any
+driver-specific binding at all.
+
+Last but not least: it was chosen to have this driver enabled for
+( ARCH_MEDIATEK && REGULATOR ) without really giving a free configuration
+choice because, once the DVFS mechanism will be fully working, using one
+of the listed MediaTek SoCs *without* this coupling mechanism *will* lead
+to unstabilities and system crashes.
+For COMPILE_TEST, choice is given for obvious reasons.
+
+ drivers/soc/mediatek/Kconfig                 |   5 +
+ drivers/soc/mediatek/Makefile                |   1 +
+ drivers/soc/mediatek/mtk-regulator-coupler.c | 148 +++++++++++++++++++
+ 3 files changed, 154 insertions(+)
+ create mode 100644 drivers/soc/mediatek/mtk-regulator-coupler.c
+
+diff --git a/drivers/soc/mediatek/Kconfig b/drivers/soc/mediatek/Kconfig
+index fdd8bc08569e..b0d9bc2b98fc 100644
+--- a/drivers/soc/mediatek/Kconfig
++++ b/drivers/soc/mediatek/Kconfig
+@@ -43,6 +43,11 @@ config MTK_PMIC_WRAP
+ 	  on different MediaTek SoCs. The PMIC wrapper is a proprietary
+ 	  hardware to connect the PMIC.
+ 
++config MTK_REGULATOR_COUPLER
++	bool "MediaTek SoC Regulator Coupler" if COMPILE_TEST
++	default ARCH_MEDIATEK
++	depends on REGULATOR
++
+ config MTK_SCPSYS
+ 	bool "MediaTek SCPSYS Support"
+ 	default ARCH_MEDIATEK
+diff --git a/drivers/soc/mediatek/Makefile b/drivers/soc/mediatek/Makefile
+index 90270f8114ed..7f9114aba0b5 100644
+--- a/drivers/soc/mediatek/Makefile
++++ b/drivers/soc/mediatek/Makefile
+@@ -3,6 +3,7 @@ obj-$(CONFIG_MTK_CMDQ) += mtk-cmdq-helper.o
+ obj-$(CONFIG_MTK_DEVAPC) += mtk-devapc.o
+ obj-$(CONFIG_MTK_INFRACFG) += mtk-infracfg.o
+ obj-$(CONFIG_MTK_PMIC_WRAP) += mtk-pmic-wrap.o
++obj-$(CONFIG_MTK_REGULATOR_COUPLER) += mtk-regulator-coupler.o
+ obj-$(CONFIG_MTK_SCPSYS) += mtk-scpsys.o
+ obj-$(CONFIG_MTK_SCPSYS_PM_DOMAINS) += mtk-pm-domains.o
+ obj-$(CONFIG_MTK_MMSYS) += mtk-mmsys.o
+diff --git a/drivers/soc/mediatek/mtk-regulator-coupler.c b/drivers/soc/mediatek/mtk-regulator-coupler.c
+new file mode 100644
+index 000000000000..241d60e74a6e
+--- /dev/null
++++ b/drivers/soc/mediatek/mtk-regulator-coupler.c
+@@ -0,0 +1,148 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Voltage regulators coupler for MediaTek SoCs
++ *
++ * Copyright (C) 2022 Collabora, Ltd.
++ * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/of.h>
++#include <linux/regulator/coupler.h>
++#include <linux/regulator/driver.h>
++#include <linux/regulator/machine.h>
++#include <linux/suspend.h>
++
++#define to_mediatek_coupler(x)	container_of(x, struct mediatek_regulator_coupler, coupler)
++
++struct mediatek_regulator_coupler {
++	struct regulator_coupler coupler;
++	struct regulator_dev *vsram_rdev;
++};
++
++/*
++ * We currently support only couples of not more than two vregs and
++ * modify the vsram voltage only when changing voltage of vgpu.
++ *
++ * This function is limited to the GPU<->SRAM voltages relationships.
++ */
++static int mediatek_regulator_balance_voltage(struct regulator_coupler *coupler,
++					      struct regulator_dev *rdev,
++					      suspend_state_t state)
++{
++	struct mediatek_regulator_coupler *mrc = to_mediatek_coupler(coupler);
++	int max_spread = rdev->constraints->max_spread[0];
++	int vsram_min_uV = mrc->vsram_rdev->constraints->min_uV;
++	int vsram_max_uV = mrc->vsram_rdev->constraints->max_uV;
++	int vsram_target_min_uV, vsram_target_max_uV;
++	int min_uV = 0;
++	int max_uV = INT_MAX;
++	int ret;
++
++	/*
++	 * If the target device is on, setting the SRAM voltage directly
++	 * is not supported as it scales through its coupled supply voltage.
++	 *
++	 * An exception is made in case the use_count is zero: this means
++	 * that this is the first time we power up the SRAM regulator, which
++	 * implies that the target device has yet to perform initialization
++	 * and setting a voltage at that time is harmless.
++	 */
++	if (rdev == mrc->vsram_rdev) {
++		if (rdev->use_count == 0)
++			return regulator_do_balance_voltage(rdev, state, true);
++
++		return -EPERM;
++	}
++
++	ret = regulator_check_consumers(rdev, &min_uV, &max_uV, state);
++	if (ret < 0)
++		return ret;
++
++	if (min_uV == 0) {
++		ret = regulator_get_voltage_rdev(rdev);
++		if (ret < 0)
++			return ret;
++		min_uV = ret;
++	}
++
++	ret = regulator_check_voltage(rdev, &min_uV, &max_uV);
++	if (ret < 0)
++		return ret;
++
++	/*
++	 * If we're asked to set a voltage less than VSRAM min_uV, set
++	 * the minimum allowed voltage on VSRAM, as in this case it is
++	 * safe to ignore the max_spread parameter.
++	 */
++	vsram_target_min_uV = max(vsram_min_uV, min_uV + max_spread);
++	vsram_target_max_uV = min(vsram_max_uV, vsram_target_min_uV + max_spread);
++
++	/* Make sure we're not out of range */
++	vsram_target_min_uV = min(vsram_target_min_uV, vsram_max_uV);
++
++	pr_debug("Setting voltage %d-%duV on %s (minuV %d)\n",
++		 vsram_target_min_uV, vsram_target_max_uV,
++		 rdev_get_name(mrc->vsram_rdev), min_uV);
++
++	ret = regulator_set_voltage_rdev(mrc->vsram_rdev, vsram_target_min_uV,
++					 vsram_target_max_uV, state);
++	if (ret)
++		return ret;
++
++	/* The sram voltage is now balanced: update the target vreg voltage */
++	return regulator_do_balance_voltage(rdev, state, true);
++}
++
++static int mediatek_regulator_attach(struct regulator_coupler *coupler,
++				     struct regulator_dev *rdev)
++{
++	struct mediatek_regulator_coupler *mrc = to_mediatek_coupler(coupler);
++	const char *rdev_name = rdev_get_name(rdev);
++
++	if (strstr(rdev_name, "sram")) {
++		if (mrc->vsram_rdev)
++			return -EINVAL;
++		mrc->vsram_rdev = rdev;
++	}
++
++	return 0;
++}
++
++static int mediatek_regulator_detach(struct regulator_coupler *coupler,
++				     struct regulator_dev *rdev)
++{
++	struct mediatek_regulator_coupler *mrc = to_mediatek_coupler(coupler);
++
++	if (rdev == mrc->vsram_rdev) {
++		mrc->vsram_rdev = NULL;
++		return 0;
++	}
++
++	return -EINVAL;
++}
++
++static struct mediatek_regulator_coupler mediatek_coupler = {
++	.coupler = {
++		.attach_regulator = mediatek_regulator_attach,
++		.detach_regulator = mediatek_regulator_detach,
++		.balance_voltage = mediatek_regulator_balance_voltage,
++	},
++};
++
++static int mediatek_regulator_coupler_init(void)
++{
++	if (!of_machine_is_compatible("mediatek,mt8183") &&
++	    !of_machine_is_compatible("mediatek,mt8186") &&
++	    !of_machine_is_compatible("mediatek,mt8192"))
++		return 0;
++
++	return regulator_coupler_register(&mediatek_coupler.coupler);
++}
++arch_initcall(mediatek_regulator_coupler_init);
++
++MODULE_DESCRIPTION("MediaTek Regulator Coupler driver");
++MODULE_LICENSE("GPL");
+-- 
+2.35.1
 
