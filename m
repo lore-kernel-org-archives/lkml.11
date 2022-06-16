@@ -2,153 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6ADDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FAEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377926AbiFPPa2 (ORCPT
+        id S1377929AbiFPPao (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
+        Thu, 16 Jun 2022 11:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377915AbiFPPaV (ORCPT
+        with ESMTP id S1377921AbiFPPak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:30:21 -0400
-Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9292DAAE;
-        Thu, 16 Jun 2022 08:30:20 -0700 (PDT)
-Received: by mail-io1-f51.google.com with SMTP id q11so1823520iod.8;
-        Thu, 16 Jun 2022 08:30:20 -0700 (PDT)
+        Thu, 16 Jun 2022 11:30:40 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55CB13C4A5
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:30:38 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id o17so1555344pla.6
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:30:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xyQA3i9LnHHRPtVIgpzT7gUhIahjzWNFcSvLeE3NzXM=;
+        b=m8zeYkKW1u4euayYAVyXDBaR9zlZbRLD9hLN82f7yubbRQj413prV28w+UiWa+pdmO
+         KfQU5sqy4lxAVxLWqvxNJ+R0X1Cg49NLh+9dqRacje4S+bLKHChZGLn5cCY9qVldylWv
+         BThfklbuxOqytrmtLCTcgu6672q0ulAJh/DmRwjEMqmbseJmnzoSpyL3Re5y11oA/Pdf
+         ene2w0/s2/w8UiMku30v+m6LUnIoyJEEw1zTmk4fXijS4O9ZxAzsgd8cwtwv5imNpYnA
+         96g8TJtI50rX4BZPGwQ1loluMHVGomrK3kyaqqHN+iXQKU9L12RDbql4lPWX3FeB8+lo
+         J93Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=2sf5mUaKrviwp13TGF8u3f+HZJ1MhfMWStrlSi0a7lE=;
-        b=siJ8kY+phpx603+zObdKU5P9G9boFmUfXNnoEMbtp8KZMvxh4m12KF9TLfdIV7edkS
-         kHfiQhoQIY3zCdFUm2DJ9oAnL6UFnh4TMYnEwWLKnGn4xurVkRP/evVHKGy9h7qHz2P4
-         Pb0smF4uzGIz9u8frTtFl5u8HkEvdSwnzwTK3x7NL59dhDNMG+ZtLZbgrRJyCtBy5l5U
-         pT3xLE5gYM9K48pBbIwMB8O2BXUp/ZeeajqgQeR2YiGpmQN5H+JAFPnA7LM1YsXhcdsa
-         wcuhAx7OYJ4vovcVSTPM4Y3eM+SKzIQfDwt2zHw42xlBdAxZwEsF+hnS7UWz93ezTs/c
-         0fpw==
-X-Gm-Message-State: AJIora+DjjX2FH3tdQptumFVOK39fhcjnpSolse+E6iiX1aJ2ugQR0j0
-        8/N0V+QoQR6iprR4RzIzNQ==
-X-Google-Smtp-Source: AGRyM1vvg+GE8jDNHocB+G2TLYD4tIOMcVSsqFkB8s77NHYxFHcjaOt00sxR+0MRCDR0eoPwFZR11A==
-X-Received: by 2002:a05:6602:13c7:b0:669:dcc5:4687 with SMTP id o7-20020a05660213c700b00669dcc54687mr2782285iov.63.1655393419921;
-        Thu, 16 Jun 2022 08:30:19 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id b8-20020a92a048000000b002cde6e35302sm1102011ilm.76.2022.06.16.08.30.18
+        bh=xyQA3i9LnHHRPtVIgpzT7gUhIahjzWNFcSvLeE3NzXM=;
+        b=zJOhqWyHh+J9lXncKtHSqimPXxs61qVcOS/hdVCu9zUtFtFkzjZ272NLjYa2lG+/A+
+         lBShAP7GCgB9jSfgnvWIl0KK06vFmZZB9oqiFOJq5vJ+0TBMgrWvYGT6e6BeoWSr9rmS
+         Gfbctj8FtqSRVB907plJLxrrU3l38EpHC0fRrhZpuohdQmrLXNawZU5NGzllbBotpkz+
+         gcE6rFdhT1WtsJxXYCp02MvW81POsaE8XX9/qe5432Mxzn7w4/1rGo1XoIu2tqkP2lnR
+         mOjUe50CT6+l8JWeC8obl6dqBWbbiPqHCDqGPCu1ZFFEV98rC7mKdqfubHG+pmJrmQxz
+         SoDQ==
+X-Gm-Message-State: AJIora+dlSfE0W8biDWqiYg1lFjVLKPDwrTfK4WX1HHciVq9AKR2cVvk
+        8hQheBQl/+o8aQ1PwJhjtxeCOA==
+X-Google-Smtp-Source: AGRyM1vJ6B9gtYuMINf2l7lRLtW7qllBMCm1snr4t0uqnQGiA2z/c3Ik3BuauG2Z1RHrpJXEIU4ngg==
+X-Received: by 2002:a17:90b:4b02:b0:1e2:ff51:272a with SMTP id lx2-20020a17090b4b0200b001e2ff51272amr5616373pjb.56.1655393437532;
+        Thu, 16 Jun 2022 08:30:37 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id x10-20020a1709028eca00b0016368840c41sm179880plo.14.2022.06.16.08.30.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 08:30:19 -0700 (PDT)
-Received: (nullmailer pid 3507680 invoked by uid 1000);
-        Thu, 16 Jun 2022 15:30:17 -0000
-Date:   Thu, 16 Jun 2022 09:30:17 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Sebastian Ene <sebastianene@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        maz@kernel.org, will@kernel.org, vdonnefort@google.com,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v6 1/2] dt-bindings: vcpu_stall_detector: Add
- qemu,vcpu-stall-detector compatible
-Message-ID: <20220616153017.GA3503416-robh@kernel.org>
-References: <20220616092737.1713667-1-sebastianene@google.com>
- <20220616092737.1713667-2-sebastianene@google.com>
+        Thu, 16 Jun 2022 08:30:36 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 15:30:32 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Like Xu <like.xu.linux@gmail.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH 1/2] KVM: vmx, pmu: accept 0 for absent MSRs when
+ host-initiated
+Message-ID: <YqtMmAiOvJbmHCaP@google.com>
+References: <20220531175450.295552-1-pbonzini@redhat.com>
+ <20220531175450.295552-2-pbonzini@redhat.com>
+ <YpZgU+vfjkRuHZZR@google.com>
+ <ce2b4fed-3d9e-a179-a907-5b8e09511b7d@gmail.com>
+ <YpeWPAHNhQQ/lRKF@google.com>
+ <cbb9a8b5-f31f-dd3b-3278-01f12d935ebe@gmail.com>
+ <YqoqZjH+yjYJTxmT@google.com>
+ <69fac460-ff29-ca76-d9a8-d2529cf02fa2@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220616092737.1713667-2-sebastianene@google.com>
+In-Reply-To: <69fac460-ff29-ca76-d9a8-d2529cf02fa2@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 09:27:38AM +0000, Sebastian Ene wrote:
-> The VCPU stall detection mechanism allows to configure the expiration
-> duration and the internal counter clock frequency measured in Hz.
-> Add these properties in the schema.
+On Thu, Jun 16, 2022, Paolo Bonzini wrote:
+> On 6/15/22 20:52, Sean Christopherson wrote:
+> > I completely agree on needing better transparency for the lifecycle of patches
+> > going through the KVM tree.  First and foremost, there need to be formal, documented
+> > rules for the "official" kvm/* branches, e.g. everything in kvm/queue passes ABC
+> > tests, everything in kvm/next also passes XYZ tests.  That would also be a good
+> > place to document expectations, how things works, etc...
 > 
-> While this is a memory mapped virtual device, it is expected to be loaded
-> when the DT contains the compatible: "qemu,vcpu-stall-detector" node.
-> In a protected VM we trust the generated DT nodes and we don't rely on
-> the host to present the hardware peripherals.
-> 
-> Signed-off-by: Sebastian Ene <sebastianene@google.com>
-> ---
->  .../bindings/misc/vcpu_stall_detector.yaml    | 49 +++++++++++++++++++
+> Agreed.  I think this is a more general problem with Linux development and I
+> will propose this for maintainer summit.
 
-qemu,vcpu-stall-detector.yaml
+I believe the documentation side of things is an acknowledged gap, people just need
+to actually write the documentation, e.g. Boris and Thomas documented the tip-tree
+under Documentation/process/maintainer-tip.rst and stubbed in maintainer-handbooks.rst.
 
->  1 file changed, 49 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml b/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
-> new file mode 100644
-> index 000000000000..55323676194b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
-> @@ -0,0 +1,49 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/misc/vcpu_stall_detector.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: VCPU stall detector
-> +
-> +description: |
-
-Don't need '|' if no formatting.
-
-> +  This binding describes a CPU stall detector mechanism for virtual cpus
-
-s/cpus/CPUs/
-
-> +  which is accessed through MMIO.
-> +
-> +maintainers:
-> +  - Sebastian Ene <sebastianene@google.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - qemu,vcpu-stall-detector
-> +
-> +  clock-frequency:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      The internal clock of the stall detector peripheral measure in Hz used
-> +      to decrement its internal counter register on each tick.
-> +      Defaults to 10 if unset.
-
-       default: 10
-
-> +
-> +  timeout-sec:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: |
-> +      The stall detector expiration timeout measured in seconds.
-> +      Defaults to 8 if unset. Please note that it also takes into account the
-> +      time spent while the VCPU is not running.
-
-       default: 8
-
-> +
-> +required:
-> +  - compatible
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    vmwdt@9030000 {
-> +      compatible = "qemu,vcpu-stall-detector";
-> +      clock-frequency = <10>;
-> +      timeout-sec = <8>;
-> +      reg = <0x0 0x9030000 0x0 0x10000>;
-> +    };
-> +
-> +...
-> -- 
-> 2.36.1.476.g0c4daa206d-goog
-> 
-> 
+As for patch lifecycle, I would love to have something like tip-bot (can we just
+steal whatever scripts they use?) that explicitly calls out the branch, commit,
+committer, date, etc...  IMO that'd pair nicely with adding kvm/pending, as the
+bot/script could provide updates when a patch is first added to kvm/pending, then
+again when it got moved to kvm/queue or dropped because it was broken, etc...
