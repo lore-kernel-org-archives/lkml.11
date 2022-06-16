@@ -2,115 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 654BFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 05:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55879CCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 05:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358509AbiFPFhh (ORCPT
+        id S1358740AbiFPFhp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 01:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57096 "EHLO
+        Thu, 16 Jun 2022 01:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242913AbiFPFhe (ORCPT
+        with ESMTP id S1349153AbiFPFhk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 01:37:34 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3F855B1
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 22:37:32 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id EEB6221BC3;
-        Thu, 16 Jun 2022 05:37:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1655357842; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=dts+yl7uUGQYgHpGD+VRq8p1wRFkW3OYpt27WoT5mBw=;
-        b=Wx6s/9DMRIBUq5O2Ke+thHwBX/osV+aWHUpiZvIt+G+IFpLzMjvbRDuj/MJ050pNFTctl4
-        8dE8pXdY3hRNQ0SbDIBUrxQXzeDaHSrwPiWsXhR6K0w0nwLIfI2c4YaTL8lAgab2z9P8Ij
-        zoMmc13vZ8d1+vQZkTY/g1lOkI6qGa8=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B8DAE139C4;
-        Thu, 16 Jun 2022 05:37:22 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id PojHK5LBqmKVRwAAMHmgww
-        (envelope-from <jgross@suse.com>); Thu, 16 Jun 2022 05:37:22 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
-Cc:     viresh.kumar@linaro.org, hch@infradead.org,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Subject: [PATCH v2] xen: don't require virtio with grants for non-PV guests
-Date:   Thu, 16 Jun 2022 07:37:15 +0200
-Message-Id: <20220616053715.3166-1-jgross@suse.com>
-X-Mailer: git-send-email 2.35.3
+        Thu, 16 Jun 2022 01:37:40 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01407120A5;
+        Wed, 15 Jun 2022 22:37:35 -0700 (PDT)
+X-UUID: 9174b6845ed249e4b38dd9e42b325281-20220616
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:02d432d9-7078-40bb-83f7-fd496c604210,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:b14ad71,CLOUDID:5faeb248-4c92-421c-ad91-b806c0f58b2a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 9174b6845ed249e4b38dd9e42b325281-20220616
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <stanley.chu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 344290406; Thu, 16 Jun 2022 13:37:29 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 16 Jun 2022 13:37:27 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 16 Jun 2022 13:37:27 +0800
+From:   Stanley Chu <stanley.chu@mediatek.com>
+To:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <martin.petersen@oracle.com>, <avri.altman@wdc.com>,
+        <alim.akhtar@samsung.com>, <jejb@linux.ibm.com>,
+        <bvanassche@acm.org>
+CC:     <peter.wang@mediatek.com>, <chun-hung.wu@mediatek.com>,
+        <alice.chao@mediatek.com>, <powen.kao@mediatek.com>,
+        <mason.zhang@mediatek.com>, <qilin.tan@mediatek.com>,
+        <lin.gui@mediatek.com>, <eddie.huang@mediatek.com>,
+        <tun-yu.yu@mediatek.com>, <cc.chou@mediatek.com>,
+        <chaotian.jing@mediatek.com>, <jiajie.hao@mediatek.com>,
+        <stanley.chu@mediatek.com>
+Subject: [PATCH v5 09/11] scsi: ufs: Export regulator functions
+Date:   Thu, 16 Jun 2022 13:37:23 +0800
+Message-ID: <20220616053725.5681-10-stanley.chu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220616053725.5681-1-stanley.chu@mediatek.com>
+References: <20220616053725.5681-1-stanley.chu@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit fa1f57421e0b ("xen/virtio: Enable restricted memory access using
-Xen grant mappings") introduced a new requirement for using virtio
-devices: the backend now needs to support the VIRTIO_F_ACCESS_PLATFORM
-feature.
+Export below regulator functions to allow vendors to
+customize regulator configuration in their own platforms.
 
-This is an undue requirement for non-PV guests, as those can be operated
-with existing backends without any problem, as long as those backends
-are running in dom0.
+int ufshcd_populate_vreg(struct device *dev, const char *name,
+                         struct ufs_vreg **out_vreg);
+int ufshcd_get_vreg(struct device *dev, struct ufs_vreg *vreg);
 
-Per default allow virtio devices without grant support for non-PV
-guests.
-
-Add a new config item to always force use of grants for virtio.
-
-Fixes: fa1f57421e0b ("xen/virtio: Enable restricted memory access using Xen grant mappings")
-Reported-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Stanley Chu <stanley.chu@mediatek.com>
 ---
-V2:
-- remove command line parameter (Christoph Hellwig)
----
- drivers/xen/Kconfig | 9 +++++++++
- include/xen/xen.h   | 2 +-
- 2 files changed, 10 insertions(+), 1 deletion(-)
+ drivers/ufs/core/ufshcd.c        | 3 ++-
+ drivers/ufs/host/ufshcd-pltfrm.c | 5 +++--
+ drivers/ufs/host/ufshcd-pltfrm.h | 2 ++
+ include/ufs/ufshcd.h             | 2 ++
+ 4 files changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/xen/Kconfig b/drivers/xen/Kconfig
-index bfd5f4f706bc..a65bd92121a5 100644
---- a/drivers/xen/Kconfig
-+++ b/drivers/xen/Kconfig
-@@ -355,4 +355,13 @@ config XEN_VIRTIO
- 
- 	  If in doubt, say n.
- 
-+config XEN_VIRTIO_FORCE_GRANT
-+	bool "Require Xen virtio support to use grants"
-+	depends on XEN_VIRTIO
-+	help
-+	  Require virtio for Xen guests to use grant mappings.
-+	  This will avoid the need to give the backend the right to map all
-+	  of the guest memory. This will need support on the backend side
-+	  (e.g. qemu or kernel, depending on the virtio device types used).
-+
- endmenu
-diff --git a/include/xen/xen.h b/include/xen/xen.h
-index 0780a81e140d..4d4188f20337 100644
---- a/include/xen/xen.h
-+++ b/include/xen/xen.h
-@@ -56,7 +56,7 @@ extern u64 xen_saved_max_mem_size;
- 
- static inline void xen_set_restricted_virtio_memory_access(void)
- {
--	if (IS_ENABLED(CONFIG_XEN_VIRTIO) && xen_domain())
-+	if (IS_ENABLED(CONFIG_XEN_VIRTIO_FORCE_GRANT) || xen_pv_domain())
- 		platform_set(PLATFORM_VIRTIO_RESTRICTED_MEM_ACCESS);
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index 0d16739c67bb..8131a75e41e5 100755
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -8408,7 +8408,7 @@ static int ufshcd_setup_hba_vreg(struct ufs_hba *hba, bool on)
+ 	return ufshcd_toggle_vreg(hba->dev, info->vdd_hba, on);
  }
  
+-static int ufshcd_get_vreg(struct device *dev, struct ufs_vreg *vreg)
++int ufshcd_get_vreg(struct device *dev, struct ufs_vreg *vreg)
+ {
+ 	int ret = 0;
+ 
+@@ -8424,6 +8424,7 @@ static int ufshcd_get_vreg(struct device *dev, struct ufs_vreg *vreg)
+ out:
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(ufshcd_get_vreg);
+ 
+ static int ufshcd_init_vreg(struct ufs_hba *hba)
+ {
+diff --git a/drivers/ufs/host/ufshcd-pltfrm.c b/drivers/ufs/host/ufshcd-pltfrm.c
+index e7332cc65b1f..2dd9c660531b 100755
+--- a/drivers/ufs/host/ufshcd-pltfrm.c
++++ b/drivers/ufs/host/ufshcd-pltfrm.c
+@@ -109,8 +109,8 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
+ }
+ 
+ #define MAX_PROP_SIZE 32
+-static int ufshcd_populate_vreg(struct device *dev, const char *name,
+-		struct ufs_vreg **out_vreg)
++int ufshcd_populate_vreg(struct device *dev, const char *name,
++			 struct ufs_vreg **out_vreg)
+ {
+ 	char prop_name[MAX_PROP_SIZE];
+ 	struct ufs_vreg *vreg = NULL;
+@@ -145,6 +145,7 @@ static int ufshcd_populate_vreg(struct device *dev, const char *name,
+ 	*out_vreg = vreg;
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(ufshcd_populate_vreg);
+ 
+ /**
+  * ufshcd_parse_regulator_info - get regulator info from device tree
+diff --git a/drivers/ufs/host/ufshcd-pltfrm.h b/drivers/ufs/host/ufshcd-pltfrm.h
+index 43c2e412bd99..5130c9471dc2 100755
+--- a/drivers/ufs/host/ufshcd-pltfrm.h
++++ b/drivers/ufs/host/ufshcd-pltfrm.h
+@@ -32,5 +32,7 @@ void ufshcd_init_pwr_dev_param(struct ufs_dev_params *dev_param);
+ int ufshcd_pltfrm_init(struct platform_device *pdev,
+ 		       const struct ufs_hba_variant_ops *vops);
+ void ufshcd_pltfrm_shutdown(struct platform_device *pdev);
++int ufshcd_populate_vreg(struct device *dev, const char *name,
++			 struct ufs_vreg **out_vreg);
+ 
+ #endif /* UFSHCD_PLTFRM_H_ */
+diff --git a/include/ufs/ufshcd.h b/include/ufs/ufshcd.h
+index aa778418703f..18eb253cfd91 100755
+--- a/include/ufs/ufshcd.h
++++ b/include/ufs/ufshcd.h
+@@ -1187,6 +1187,8 @@ void ufshcd_map_desc_id_to_length(struct ufs_hba *hba, enum desc_idn desc_id,
+ 
+ u32 ufshcd_get_local_unipro_ver(struct ufs_hba *hba);
+ 
++int ufshcd_get_vreg(struct device *dev, struct ufs_vreg *vreg);
++
+ int ufshcd_send_uic_cmd(struct ufs_hba *hba, struct uic_command *uic_cmd);
+ 
+ int ufshcd_exec_raw_upiu_cmd(struct ufs_hba *hba,
 -- 
-2.35.3
+2.18.0
 
