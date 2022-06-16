@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F37CCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:59:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7153C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:59:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350315AbiFPQ7v (ORCPT
+        id S1348448AbiFPQ7u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 12:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
+        Thu, 16 Jun 2022 12:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239867AbiFPQ6b (ORCPT
+        with ESMTP id S238865AbiFPQ6a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 12:58:31 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2A13CFF7
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:58:31 -0700 (PDT)
+        Thu, 16 Jun 2022 12:58:30 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81E23F885
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:58:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655398711; x=1686934711;
+  t=1655398709; x=1686934709;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5LIUNq3A1YHHdIISMtbksOe6rN9yJFBm6vL/yG7ouBM=;
-  b=f2OsDZurzp20F4pANlhE+K3Fmqah8DDbTHijDIkAlDLgm3eFroRyH1Xh
-   KXFWr157kWMrSaUce+uArEg3x7aunvuLCrEVEtV+9j5/BzZqpb+wYmsGD
-   irbu6LwBmIB0FPoNH5vVvM0Ih8Ddc/mvnMCUfFlpvaJ2MJO4R4QhNT2tr
-   enoOYTF7mXGa0OHsz3HXtii7mw6Rb9Ul5lege4eMIOjWiW8q5xirYWGqF
-   V33lqwf3ZG64f3wLSfq5vDby4fGHwaE5VyKzVLHHHg+vdRRc3woayGtsR
-   +ITyJKh9jOItK8D1UrlGqScYcg7bprhUPQo3IvDDFxdfXt9zgZxLabGV5
+  bh=oO/Kr66E5zY2pAB51oGGinxu4q9cZS7UN0tCM/RiijE=;
+  b=AVzWpfuUCi5thvyuYM1rB6PoXQ5TZ7RL6V1IK2kaheKDJm0tq5lQxoQk
+   fhIYnBCOaUQMLNeXnMt2Qrn0mrZGm1tgx3eS7qVJHveYWZFBDKXsZZ0Q2
+   4CLU1kyYF8PKYk+NvzKuYeqdnqTQsD8jWynYPyuhzmoAAIbUda5shNkX4
+   c7E7oXEIZmvxgjhPbpUHMWXILMHczE0aMi1nkDclWoqZKX8rcJO12Ta8Y
+   AwBQgYt3CohHkw51imwTjK0CSYshCuZdz0Ag4eAl8A0e3UdTYCO9W+x7t
+   v0i25gZTgae/ls602j3Mnji5zEPhgndOGdkKClfFy6EawqnBaKTGUIaqZ
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="259756092"
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280327613"
 X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="259756092"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 09:58:30 -0700
+   d="scan'208";a="280327613"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 09:58:28 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="589725025"
+   d="scan'208";a="536514728"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 16 Jun 2022 09:58:29 -0700
+  by orsmga003.jf.intel.com with ESMTP; 16 Jun 2022 09:58:27 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id BD3B9537; Thu, 16 Jun 2022 19:58:31 +0300 (EEST)
+        id 689AF30C; Thu, 16 Jun 2022 19:58:31 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andy@kernel.org>, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v1 11/11] mfd: intel_soc_pmic_bxtwc: Fix spelling in the comment
-Date:   Thu, 16 Jun 2022 19:58:23 +0300
-Message-Id: <20220616165823.4919-11-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 04/11] mfd: intel_soc_pmic_bxtwc: Use dev_err_probe()
+Date:   Thu, 16 Jun 2022 19:58:16 +0300
+Message-Id: <20220616165823.4919-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220616165823.4919-1-andriy.shevchenko@linux.intel.com>
 References: <20220616165823.4919-1-andriy.shevchenko@linux.intel.com>
@@ -57,49 +57,179 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are a couple of spelling issues in the comment, fix them.
-While at it, fix indentation in the MODULE_AUTHOR() parameter
-and update copyright years.
+Simplify the mux error path a bit by using dev_err_probe().
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/mfd/intel_soc_pmic_bxtwc.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/mfd/intel_soc_pmic_bxtwc.c | 86 +++++++++---------------------
+ 1 file changed, 26 insertions(+), 60 deletions(-)
 
 diff --git a/drivers/mfd/intel_soc_pmic_bxtwc.c b/drivers/mfd/intel_soc_pmic_bxtwc.c
-index 953f535a3c93..9e412d1d00f1 100644
+index b240baeb0c94..576fe55bd4d4 100644
 --- a/drivers/mfd/intel_soc_pmic_bxtwc.c
 +++ b/drivers/mfd/intel_soc_pmic_bxtwc.c
-@@ -2,7 +2,7 @@
- /*
-  * MFD core driver for Intel Broxton Whiskey Cove PMIC
-  *
-- * Copyright (C) 2015 Intel Corporation. All rights reserved.
-+ * Copyright (C) 2015-2017, 2022 Intel Corporation. All rights reserved.
-  */
+@@ -419,12 +419,9 @@ static int bxtwc_add_chained_irq_chip(struct intel_soc_pmic *pmic,
+ 	int irq;
  
- #include <linux/acpi.h>
-@@ -527,11 +527,11 @@ static int bxtwc_probe(struct platform_device *pdev)
- 		return dev_err_probe(dev, ret, "Failed to add devices\n");
+ 	irq = regmap_irq_get_virq(pdata, pirq);
+-	if (irq < 0) {
+-		dev_err(pmic->dev,
+-			"Failed to get parent vIRQ(%d) for chip %s, ret:%d\n",
+-			pirq, chip->name, irq);
+-		return irq;
+-	}
++	if (irq < 0)
++		return dev_err_probe(pmic->dev, irq, "Failed to get parent vIRQ(%d) for chip %s\n",
++				     pirq, chip->name);
+ 
+ 	return devm_regmap_add_irq_chip(pmic->dev, pmic->regmap, irq, irq_flags,
+ 					0, chip, data);
+@@ -432,6 +429,7 @@ static int bxtwc_add_chained_irq_chip(struct intel_soc_pmic *pmic,
+ 
+ static int bxtwc_probe(struct platform_device *pdev)
+ {
++	struct device *dev = &pdev->dev;
+ 	int ret;
+ 	acpi_handle handle;
+ 	acpi_status status;
+@@ -440,15 +438,10 @@ static int bxtwc_probe(struct platform_device *pdev)
+ 
+ 	handle = ACPI_HANDLE(&pdev->dev);
+ 	status = acpi_evaluate_integer(handle, "_HRV", NULL, &hrv);
+-	if (ACPI_FAILURE(status)) {
+-		dev_err(&pdev->dev, "Failed to get PMIC hardware revision\n");
+-		return -ENODEV;
+-	}
+-	if (hrv != BROXTON_PMIC_WC_HRV) {
+-		dev_err(&pdev->dev, "Invalid PMIC hardware revision: %llu\n",
+-			hrv);
+-		return -ENODEV;
+-	}
++	if (ACPI_FAILURE(status))
++		return dev_err_probe(dev, -ENODEV, "Failed to get PMIC hardware revision\n");
++	if (hrv != BROXTON_PMIC_WC_HRV)
++		return dev_err_probe(dev, -ENODEV, "Invalid PMIC hardware revision: %llu\n", hrv);
+ 
+ 	pmic = devm_kzalloc(&pdev->dev, sizeof(*pmic), GFP_KERNEL);
+ 	if (!pmic)
+@@ -468,40 +461,31 @@ static int bxtwc_probe(struct platform_device *pdev)
+ 
+ 	pmic->regmap = devm_regmap_init(&pdev->dev, NULL, pmic,
+ 					&bxtwc_regmap_config);
+-	if (IS_ERR(pmic->regmap)) {
+-		ret = PTR_ERR(pmic->regmap);
+-		dev_err(&pdev->dev, "Failed to initialise regmap: %d\n", ret);
+-		return ret;
+-	}
++	if (IS_ERR(pmic->regmap))
++		return dev_err_probe(dev, PTR_ERR(pmic->regmap), "Failed to initialise regmap\n");
+ 
+ 	ret = devm_regmap_add_irq_chip(&pdev->dev, pmic->regmap, pmic->irq,
+ 				       IRQF_ONESHOT | IRQF_SHARED,
+ 				       0, &bxtwc_regmap_irq_chip,
+ 				       &pmic->irq_chip_data);
+-	if (ret) {
+-		dev_err(&pdev->dev, "Failed to add IRQ chip\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to add IRQ chip\n");
+ 
+ 	ret = bxtwc_add_chained_irq_chip(pmic, pmic->irq_chip_data,
+ 					 BXTWC_PWRBTN_LVL1_IRQ,
+ 					 IRQF_ONESHOT,
+ 					 &bxtwc_regmap_irq_chip_pwrbtn,
+ 					 &pmic->irq_chip_data_pwrbtn);
+-	if (ret) {
+-		dev_err(&pdev->dev, "Failed to add PWRBTN IRQ chip\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to add PWRBTN IRQ chip\n");
+ 
+ 	ret = bxtwc_add_chained_irq_chip(pmic, pmic->irq_chip_data,
+ 					 BXTWC_TMU_LVL1_IRQ,
+ 					 IRQF_ONESHOT,
+ 					 &bxtwc_regmap_irq_chip_tmu,
+ 					 &pmic->irq_chip_data_tmu);
+-	if (ret) {
+-		dev_err(&pdev->dev, "Failed to add TMU IRQ chip\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to add TMU IRQ chip\n");
+ 
+ 	/* Add chained IRQ handler for BCU IRQs */
+ 	ret = bxtwc_add_chained_irq_chip(pmic, pmic->irq_chip_data,
+@@ -509,12 +493,8 @@ static int bxtwc_probe(struct platform_device *pdev)
+ 					 IRQF_ONESHOT,
+ 					 &bxtwc_regmap_irq_chip_bcu,
+ 					 &pmic->irq_chip_data_bcu);
+-
+-
+-	if (ret) {
+-		dev_err(&pdev->dev, "Failed to add BUC IRQ chip\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to add BUC IRQ chip\n");
+ 
+ 	/* Add chained IRQ handler for ADC IRQs */
+ 	ret = bxtwc_add_chained_irq_chip(pmic, pmic->irq_chip_data,
+@@ -522,12 +502,8 @@ static int bxtwc_probe(struct platform_device *pdev)
+ 					 IRQF_ONESHOT,
+ 					 &bxtwc_regmap_irq_chip_adc,
+ 					 &pmic->irq_chip_data_adc);
+-
+-
+-	if (ret) {
+-		dev_err(&pdev->dev, "Failed to add ADC IRQ chip\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to add ADC IRQ chip\n");
+ 
+ 	/* Add chained IRQ handler for CHGR IRQs */
+ 	ret = bxtwc_add_chained_irq_chip(pmic, pmic->irq_chip_data,
+@@ -535,12 +511,8 @@ static int bxtwc_probe(struct platform_device *pdev)
+ 					 IRQF_ONESHOT,
+ 					 &bxtwc_regmap_irq_chip_chgr,
+ 					 &pmic->irq_chip_data_chgr);
+-
+-
+-	if (ret) {
+-		dev_err(&pdev->dev, "Failed to add CHGR IRQ chip\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to add CHGR IRQ chip\n");
+ 
+ 	/* Add chained IRQ handler for CRIT IRQs */
+ 	ret = bxtwc_add_chained_irq_chip(pmic, pmic->irq_chip_data,
+@@ -548,19 +520,13 @@ static int bxtwc_probe(struct platform_device *pdev)
+ 					 IRQF_ONESHOT,
+ 					 &bxtwc_regmap_irq_chip_crit,
+ 					 &pmic->irq_chip_data_crit);
+-
+-
+-	if (ret) {
+-		dev_err(&pdev->dev, "Failed to add CRIT IRQ chip\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to add CRIT IRQ chip\n");
+ 
+ 	ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE, bxt_wc_dev,
+ 				   ARRAY_SIZE(bxt_wc_dev), NULL, 0, NULL);
+-	if (ret) {
+-		dev_err(&pdev->dev, "Failed to add devices\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to add devices\n");
  
  	/*
--	 * There is known hw bug. Upon reset BIT 5 of register
-+	 * There is known HW bug. Upon reset BIT 5 of register
- 	 * BXTWC_CHGR_LVL1_IRQ is 0 which is the expected value. However,
- 	 * later it's set to 1(masked) automatically by hardware. So we
--	 * have the software workaround here to unmaksed it in order to let
--	 * charger interrutp work.
-+	 * have the software workaround here to unmasked it in order to let
-+	 * charger interrupt work.
- 	 */
- 	regmap_update_bits(pmic->regmap, BXTWC_MIRQLVL1, BXTWC_MIRQLVL1_MCHGR, 0);
- 
-@@ -584,4 +584,4 @@ static struct platform_driver bxtwc_driver = {
- module_platform_driver(bxtwc_driver);
- 
- MODULE_LICENSE("GPL v2");
--MODULE_AUTHOR("Qipeng Zha<qipeng.zha@intel.com>");
-+MODULE_AUTHOR("Qipeng Zha <qipeng.zha@intel.com>");
+ 	 * There is known hw bug. Upon reset BIT 5 of register
 -- 
 2.35.1
 
