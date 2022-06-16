@@ -2,114 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81764CCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377365AbiFPN5I (ORCPT
+        id S1377359AbiFPN51 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33582 "EHLO
+        Thu, 16 Jun 2022 09:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233673AbiFPN5D (ORCPT
+        with ESMTP id S1377355AbiFPN4X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:57:03 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1601646C90
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:57:03 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id s135so1300522pgs.10
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:57:03 -0700 (PDT)
+        Thu, 16 Jun 2022 09:56:23 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411DD46B3B;
+        Thu, 16 Jun 2022 06:56:23 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id f16so490993pjj.1;
+        Thu, 16 Jun 2022 06:56:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WF4lAn49sjJB9tDcffvKOR2ZsYx014rUPjpNYWe2CH4=;
-        b=n1wLv515CJx4S59bI6gUm/jJzYE1Jd4ZyAEjXYZY41fVhqp0NKiqt1/QkpPk1D8t82
-         iuMkt6sHeax+j1qVZLhL8P9r910GR29TsPcyG7zghs7Ifd1tgKZ16/3DDAi4smkoKOxP
-         Esri746E8NxIhzUMoDZT/xDm89MVNCHpLxf2Wiu0m+w3vUNUhaaPneZg/8bqliICfZkp
-         t6YRYoINqDoA2xIX7/ZqzCzF2N8+cH7NITpfqyKhEclO+zJ2HNeXjaXOobyxPW3J/UT/
-         RIWVO8F9JCy+oiYbnClKxhyepZU6oLJPWlUTAymbkx5n3TGn2CG+1g09mtAmsUrK1k5A
-         GpxQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=c2gM3wzeGG5xpS3I4Gd+kO+ny3mVcmHQeudfRtcSuyY=;
+        b=oqnQ1amYllYfMFhLL6UGLzNaDOjk0tNOtVEfL2PxqSzpHqdEC59/uDNDqNzMkQA3pg
+         hiUS9ASzkdqBYNglhisltpP0eE1cQD3a/xkmrQqzo8JxIsh7+4FbHjAGuB2Ef5bJDtzo
+         hiex/jO2Wx2e7VMbSnwfEatDvNK8M+l2m43PxB5qHr60UPwRiy5BN2KXaw3b5y2kYW5z
+         Rc+jeUGWyAP5Md4ZXMu7vG35ee6KJXtHoJr0GH+FLPwXWpXLYydlgFCBE8+Pi4Hr1xWS
+         1w2RfzQG73cX/sLbNoxz+IOTTnuVrA/hncQ1GrACZml3svh8+S4L3JWWRMkSP9/AxoKc
+         7ISQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=WF4lAn49sjJB9tDcffvKOR2ZsYx014rUPjpNYWe2CH4=;
-        b=4HSa5DscYmE9uexGtO7dajIqVuSJeTtxtbnw0AElkUY2FgdV4vFrLJLx/xTT6xMgsw
-         lBubJLDD+fkjoAkaQIlnADqp1xgeR+CL6x9FNkVq5CwM5TcorEerT0DgTcQLOGy8GEG0
-         P81DVnabnepGLIZcqwKcFjuhdftdWlVizlKQl1tWqAEmKsqweoObCkinQ3bKZDhX5oH2
-         WVyL0eZp6uljyjihdD6/xuLzqZfLuWhpp5V6H4cWGIdZkLKv9TfRdQ47of6voZoRSYKS
-         d+ZQWDg7QkcD62evZ8Fm88wP7O8uZx2U1TLgLZRkKvV8l2PLe/5FF8ozJ+/zy1F30ewq
-         XjSw==
-X-Gm-Message-State: AJIora8IBeeiypmnOFXfjV/qWHJWNrmoffwiwgY9NpMlVNo42LPGgjuN
-        PJAx+HWNdm6JGlfCrOXHj+BjAv1KFBQNOA==
-X-Google-Smtp-Source: AGRyM1sHbtQQLESsZ+61Z/D9ovq2bt4L/GoaAb4iwdCOR9MeEktPEh/7EQdFda5Tek+t1qulAbQlmQ==
-X-Received: by 2002:a05:6a00:a16:b0:518:ffe0:7229 with SMTP id p22-20020a056a000a1600b00518ffe07229mr5022001pfh.49.1655387822594;
-        Thu, 16 Jun 2022 06:57:02 -0700 (PDT)
-Received: from [172.20.0.255] ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id jd12-20020a170903260c00b0015e8d4eb1dbsm1693992plb.37.2022.06.16.06.57.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jun 2022 06:57:02 -0700 (PDT)
-Message-ID: <b12be0e9-4fbe-ff92-6a75-ab65dbaf5160@linaro.org>
-Date:   Thu, 16 Jun 2022 06:57:01 -0700
+        bh=c2gM3wzeGG5xpS3I4Gd+kO+ny3mVcmHQeudfRtcSuyY=;
+        b=6QQh/Fsg09Fds/B+joHw2ydMnhFmx44LlOCtelD59N3DoJIvG5oaMt4xRg6c6KCKQV
+         01NM2ka8oZPrmDfHtu5qSL1kPZIh5/0LAsGKG7nX4PNVdy+4aSmJoQSa3NflKEQ8y/Ls
+         /gx0JCErCoe8gxIFMcqD7AqJl5YYALRUvzIJtwqvqeVXq7A3mZrMUGC2gif9wF9MmrYb
+         pLnpTko5rNNpaWNJrdXFPk5Ed1xz2oaTD0YyxArI9IjhpT2edE7f9Ia+HD+iCtA9Vhmd
+         TZ+hXTh+0o2lZlSbavJHcTor18JTy3nLDB7zAu4ODZX0ZAvPvONH6PYn85CflP6yfk9p
+         rQzg==
+X-Gm-Message-State: AJIora/eIRxs5UnlXE2hpCZSONrtAy6wciqLDNSCI/sFDaS0xmaR2LjV
+        z7DL1HmGZDRF2hkrVCxMYpI=
+X-Google-Smtp-Source: AGRyM1sGhY2Fhf8p+iBBnlUJMnC30ww+CqWuVYAFjW8KGj/XYkqVsd5zWoLe9ckN+61VHkOeplwgeA==
+X-Received: by 2002:a17:902:aa43:b0:168:ef35:5bd9 with SMTP id c3-20020a170902aa4300b00168ef355bd9mr4491890plr.137.1655387782699;
+        Thu, 16 Jun 2022 06:56:22 -0700 (PDT)
+Received: from localhost.localdomain ([43.132.141.9])
+        by smtp.gmail.com with ESMTPSA id k16-20020a17090aaa1000b001e3351cb7fbsm3814583pjq.28.2022.06.16.06.56.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 06:56:22 -0700 (PDT)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>
+Cc:     "H. Peter Anvin" <hpa@zytor.com>, Baoquan He <bhe@redhat.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>,
+        stable@vger.kernel.org
+Subject: [PATCH] x86/mm: Fix possible index overflow when creating page table mapping
+Date:   Thu, 16 Jun 2022 21:55:10 +0800
+Message-Id: <20220616135510.1784995-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/4] dt-bindings: gpio: Add AXP221/AXP223/AXP809
- compatibles
-Content-Language: en-US
-To:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-kernel@vger.kernel.org
-References: <20220616060915.48325-1-samuel@sholland.org>
- <20220616060915.48325-2-samuel@sholland.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220616060915.48325-2-samuel@sholland.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/06/2022 23:09, Samuel Holland wrote:
-> These PMICs each have 2 GPIOs with the same register layout as AXP813,
-> but without an ADC function.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> ---
-> 
->  .../devicetree/bindings/gpio/x-powers,axp209-gpio.yaml     | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/gpio/x-powers,axp209-gpio.yaml b/Documentation/devicetree/bindings/gpio/x-powers,axp209-gpio.yaml
-> index 0f628b088cec..6faa3ef28960 100644
-> --- a/Documentation/devicetree/bindings/gpio/x-powers,axp209-gpio.yaml
-> +++ b/Documentation/devicetree/bindings/gpio/x-powers,axp209-gpio.yaml
-> @@ -19,7 +19,14 @@ properties:
->      oneOf:
->        - enum:
->            - x-powers,axp209-gpio
-> +          - x-powers,axp221-gpio
->            - x-powers,axp813-gpio
-> +      - items:
-> +          - const: x-powers,axp223-gpio
-> +          - const: x-powers,axp221-gpio
-> +      - items:
-> +          - const: x-powers,axp809-gpio
+There are two issues in phys_p4d_init():
 
-This is just an enum with 223 and 809. No need for two separate entries
-here.
+- The __kernel_physical_mapping_init() does not do boundary-checking for
+  paddr_end and passes it directly to phys_p4d_init(), phys_p4d_init() does
+  not do bounds checking either, so if the physical memory to be mapped is
+  large enough, 'p4d_page + p4d_index(vaddr)' will wrap around to the
+  beginning entry of the P4D table and its data will be overwritten.
 
-> +          - const: x-powers,axp221-gpio
->        - items:
->            - const: x-powers,axp803-gpio
->            - const: x-powers,axp813-gpio
+- The for loop body will be executed only when 'vaddr < vaddr_end'
+  evaluates to true, but if that condition is true, 'paddr >= paddr_end'
+  will evaluate to false, thus the 'if (paddr >= paddr_end) {}' block will
+  never be executed and become dead code.
 
+To fix these issues, use 'i < PTRS_PER_P4D' instead of 'vaddr < vaddr_end'
+as the for loop condition, this also make it more consistent with the logic
+of the phys_{pud,pmt,pte}_init() functions.
 
-Best regards,
-Krzysztof
+Fixes: 432c833218dd ("x86/mm: Handle physical-virtual alignment mismatch in phys_p4d_init()")
+Cc: stable@vger.kernel.org
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+ arch/x86/mm/init_64.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+index 8779d6be6a49..e718c9b3f539 100644
+--- a/arch/x86/mm/init_64.c
++++ b/arch/x86/mm/init_64.c
+@@ -674,18 +674,18 @@ static unsigned long __meminit
+ phys_p4d_init(p4d_t *p4d_page, unsigned long paddr, unsigned long paddr_end,
+ 	      unsigned long page_size_mask, pgprot_t prot, bool init)
+ {
+-	unsigned long vaddr, vaddr_end, vaddr_next, paddr_next, paddr_last;
+-
+-	paddr_last = paddr_end;
+-	vaddr = (unsigned long)__va(paddr);
+-	vaddr_end = (unsigned long)__va(paddr_end);
++	unsigned long vaddr, vaddr_next, paddr_next, paddr_last;
++	int i;
+ 
+ 	if (!pgtable_l5_enabled())
+ 		return phys_pud_init((pud_t *) p4d_page, paddr, paddr_end,
+ 				     page_size_mask, prot, init);
+ 
+-	for (; vaddr < vaddr_end; vaddr = vaddr_next) {
+-		p4d_t *p4d = p4d_page + p4d_index(vaddr);
++	paddr_last = paddr_end;
++	vaddr = (unsigned long)__va(paddr);
++
++	for (i = p4d_index(vaddr); i < PTRS_PER_P4D; i++, vaddr = vaddr_next) {
++		p4d_t *p4d = p4d_page + i;
+ 		pud_t *pud;
+ 
+ 		vaddr_next = (vaddr & P4D_MASK) + P4D_SIZE;
+@@ -704,13 +704,13 @@ phys_p4d_init(p4d_t *p4d_page, unsigned long paddr, unsigned long paddr_end,
+ 
+ 		if (!p4d_none(*p4d)) {
+ 			pud = pud_offset(p4d, 0);
+-			paddr_last = phys_pud_init(pud, paddr, __pa(vaddr_end),
++			paddr_last = phys_pud_init(pud, paddr, paddr_end,
+ 					page_size_mask, prot, init);
+ 			continue;
+ 		}
+ 
+ 		pud = alloc_low_page();
+-		paddr_last = phys_pud_init(pud, paddr, __pa(vaddr_end),
++		paddr_last = phys_pud_init(pud, paddr, paddr_end,
+ 					   page_size_mask, prot, init);
+ 
+ 		spin_lock(&init_mm.page_table_lock);
+-- 
+2.36.0
+
