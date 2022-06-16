@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F272FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 01:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77755C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 01:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350890AbiFPByL (ORCPT
+        id S1348001AbiFPBzQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 21:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59084 "EHLO
+        Wed, 15 Jun 2022 21:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357326AbiFPBxs (ORCPT
+        with ESMTP id S244252AbiFPBzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 21:53:48 -0400
+        Wed, 15 Jun 2022 21:55:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 484D65908D;
-        Wed, 15 Jun 2022 18:53:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE85C17E0E;
+        Wed, 15 Jun 2022 18:55:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96B4861CDE;
-        Thu, 16 Jun 2022 01:53:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB884C3411A;
-        Thu, 16 Jun 2022 01:53:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FC8561D1D;
+        Thu, 16 Jun 2022 01:55:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 764F5C3411A;
+        Thu, 16 Jun 2022 01:55:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655344427;
-        bh=HiMa+tJvNJGODYWz5WKt+6j0GBah4EbArBxZz+K7pjM=;
+        s=k20201202; t=1655344509;
+        bh=s6HStFs4/6AgD9BgAuBbABMWYGIbMoeJt428xBib/yY=;
         h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=oGCVVmvGmbeeNKeo4pIkroVmZEAYKxHL+jhT7JHH4oHijIACesAbid8zK86Kh39Ak
-         tGoJR6I7sgZnN3SpdKmDy0vDYvwzr5mynkaTacoSQRjSiWqzzzDFJf6EKHe+6kRzt9
-         YnPRwAQ/ZAxr52aGxVinagHFtNdctm/rwwY7RBsMEyVMUNJOuB2IRt6Zv7Qd6P4U7i
-         VduVnCpjubYTD6m+sljhXSd/8poolbHHkB2iI5kptEoESMZVeW/JbVEVFGD6mxXXCM
-         XaJUIG53bgpYyyZ+urqCgpMBo7CFp3Ut40mDQSH9kMwAabyBueFDw4KrFe/7RaZwpD
-         px29ESAdg4mZQ==
+        b=pjLiWRo4h7HB+5bzzc2YSC8Iw6AayXcNAYPaEQ7mYf0ob+I0mKI/pnmwVPK1lXQIl
+         sXdE5bEfCdOBkwGFEaWLl+oTitkaSrp2dpF5IKR0HUtYVVEzoxYwrtuEsRqt41Jgyc
+         RTaYnv/gIKi1AkO2fOfOXcJxdw8s2Xt54byEIatWkgBHNXe7NupaZKAJqiuT77Ktye
+         4nG05Ne00Ps/0+HWCGsYtASlNmcZoTpFqTGMvK188DrpLbrfmk5PSe7v+4a1AGlS9m
+         1pC7EHUGZOlERmHnbLd1viGO1P8kPbj1nebbzmRv8T4DbFUgxOxGuVeUzHKEEuAiew
+         nJ5/xYtLg3uKA==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220523093346.28493-14-rex-bc.chen@mediatek.com>
-References: <20220523093346.28493-1-rex-bc.chen@mediatek.com> <20220523093346.28493-14-rex-bc.chen@mediatek.com>
-Subject: Re: [RESEND v8 13/19] dt-bindings: reset: mediatek: Add infra_ao reset index for MT8192/MT8195
+In-Reply-To: <20220523093346.28493-15-rex-bc.chen@mediatek.com>
+References: <20220523093346.28493-1-rex-bc.chen@mediatek.com> <20220523093346.28493-15-rex-bc.chen@mediatek.com>
+Subject: Re: [RESEND v8 14/19] clk: mediatek: reset: Add infra_ao reset support for MT8192/MT8195
 From:   Stephen Boyd <sboyd@kernel.org>
 Cc:     p.zabel@pengutronix.de, angelogioacchino.delregno@collabora.com,
         nfraprado@collabora.com, chun-jie.chen@mediatek.com,
@@ -51,19 +51,23 @@ Cc:     p.zabel@pengutronix.de, angelogioacchino.delregno@collabora.com,
 To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
         krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
         mturquette@baylibre.com, robh+dt@kernel.org
-Date:   Wed, 15 Jun 2022 18:53:43 -0700
+Date:   Wed, 15 Jun 2022 18:55:06 -0700
 User-Agent: alot/0.10
-Message-Id: <20220616015346.EB884C3411A@smtp.kernel.org>
+Message-Id: <20220616015509.764F5C3411A@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Rex-BC Chen (2022-05-23 02:33:40)
-> To support reset of infra_ao, add the index of infra_ao reset of
-> thermal/svs/pcei for MT8192 and thermal/svs for MT8195.
+Quoting Rex-BC Chen (2022-05-23 02:33:41)
+> The infra_ao reset is needed for MT8192 and MT8195.
+> - Add mtk_clk_rst_desc for MT8192 and MT8195
+> - Add register reset controller function for MT8192 infra_ao.
+> - Move definition of infra reset from cl-mt8183.c to reset.h
+>   because it's the same definition with MT8192 and MT8195.
+> - Add new definition of infra reset_4 for MT8192 and MT8195.
+> - Add infra_ao_idx_map for MT8192 and MT8195.
 >=20
 > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collab=
 ora.com>
 > Reviewed-by: N=C3=ADcolas F. R. A. Prado <nfraprado@collabora.com>
