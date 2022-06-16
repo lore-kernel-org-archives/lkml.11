@@ -2,106 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB30FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF85C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379202AbiFPVb1 (ORCPT
+        id S1378803AbiFPVcG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 17:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
+        Thu, 16 Jun 2022 17:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378548AbiFPVbQ (ORCPT
+        with ESMTP id S1378565AbiFPVcD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 17:31:16 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D4761299;
-        Thu, 16 Jun 2022 14:31:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655415076; x=1686951076;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=fbbL5YLQP0MasUHy7YV1k35vvgrXQQq2fNl3ZEoDQ3Y=;
-  b=d3r6H0NyAwn1nbLnhJTw1odjqMTIikaIhyX9x5iMyQ2pYiwRLgaCXZE1
-   BGkg9Z5euWw8Gw0++X2Df4HZYHy4rdmGS4CqJRqrfgOCPMjvwpx54roet
-   1q0SBYKNd8JJTo5j8zPTntSs/4MRjmTkruabn5EmKeFefRjmdPdrc5KNt
-   Dw5q8rQIzGNwNqZcyLHF8XyEmAQT4KPGCAcde8v+nAgJv9jJEotbYzWj5
-   5XI+T+9R2uDU8FyqOGwvWbG5LPj7nJPsk4wSLGMVPHRRSPeejdXF1uu7m
-   2fdeKwKaW78tYBgQzYNfFtaO/vMaUOL4LGR76yHcymktdeltwkapoPuBZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280389925"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="280389925"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 14:31:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="589824135"
-Received: from chang-linux-3.sc.intel.com ([172.25.66.173])
-  by fmsmga007.fm.intel.com with ESMTP; 16 Jun 2022 14:31:15 -0700
-From:   "Chang S. Bae" <chang.seok.bae@intel.com>
-To:     dave.hansen@intel.com, len.brown@intel.com, tony.luck@intel.com,
-        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
-        dan.j.williams@intel.com
-Cc:     corbet@lwn.net, pbonzini@redhat.com, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        chang.seok.bae@intel.com
-Subject: [PATCH 2/2] Documentation/x86: Explain guest XSTATE permission control
-Date:   Thu, 16 Jun 2022 14:22:10 -0700
-Message-Id: <20220616212210.3182-3-chang.seok.bae@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220616212210.3182-1-chang.seok.bae@intel.com>
-References: <20220616212210.3182-1-chang.seok.bae@intel.com>
+        Thu, 16 Jun 2022 17:32:03 -0400
+Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82D2612B5;
+        Thu, 16 Jun 2022 14:32:02 -0700 (PDT)
+Received: by mail-io1-f54.google.com with SMTP id y79so2788349iof.2;
+        Thu, 16 Jun 2022 14:32:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zi3qEd0xoKgYhRV3kEX7XrHmXR6KfbG1TrpITcXXADA=;
+        b=Gj1VakrtGX9vw3fMVdzXNWl0Ey/A/K1Uv27KA06QF9wOVgE2LEet2xaRVNSyMj6k6h
+         mhM2FTbFFU9Hup203NpLq3hjZXV1jsrDAmMNTyc3QeKs1LAw7jCX/JxeQ9YbgxtqpNdu
+         n18BGS9++Q2RYz9reFZZRFGVX2QMryiSoq3M5iGa4nW4c9Z15qU9EZup+Vibb/84/ySe
+         lCHXirGvkpQsSNIxQNxbR0rkdlD2J1M/pguSeyq/cbehsbcgX4Xaa6KyOaI+j8XBF3oP
+         J9OXd47GpfKo/ET/4beoFVM1rnW1vqJC8p/CBGEsJ0WqXZBrJhpKZixPZHWSD0eV6oUG
+         vxng==
+X-Gm-Message-State: AJIora94RG5GY/bv/OFIX7+QNPimRQy62GUdxysNuG9iwfz4HGEX+dGj
+        4Ff7juiKFbwRJyAc7DOqZfYxfv1xGA==
+X-Google-Smtp-Source: AGRyM1s39VJ/A9B7GJronl3MTGXu6WTZ6JN0PSLlYmz7U1pu0vz2NhTmfRV6zD2MKa92MwziU/UCPw==
+X-Received: by 2002:a05:6638:dc6:b0:332:3565:397a with SMTP id m6-20020a0566380dc600b003323565397amr3768500jaj.312.1655415122178;
+        Thu, 16 Jun 2022 14:32:02 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id a5-20020a029105000000b00331a9a96764sm1366633jag.85.2022.06.16.14.32.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 14:32:01 -0700 (PDT)
+Received: (nullmailer pid 4029746 invoked by uid 1000);
+        Thu, 16 Jun 2022 21:32:00 -0000
+Date:   Thu, 16 Jun 2022 15:32:00 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH v2 1/2] dt-bindings: dma: rework qcom,adm Documentation
+ to yaml schema
+Message-ID: <20220616213200.GB3991754-robh@kernel.org>
+References: <20220615235404.3457-1-ansuelsmth@gmail.com>
+ <1655388301.055791.3391580.nullmailer@robh.at.kernel.org>
+ <62ab38f5.1c69fb81.303fc.3bc8@mx.google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62ab38f5.1c69fb81.303fc.3bc8@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 980fe2fddcff ("x86/fpu: Extend fpu_xstate_prctl() with guest
-permissions") extends a couple of arch_prctl(2) options for VCPU threads.
-Add description for them.
+On Thu, Jun 16, 2022 at 04:02:34PM +0200, Christian Marangi wrote:
+> On Thu, Jun 16, 2022 at 08:05:01AM -0600, Rob Herring wrote:
+> > On Thu, 16 Jun 2022 01:54:03 +0200, Christian Marangi wrote:
+> > > Rework the qcom,adm Documentation to yaml schema.
+> > > This is not a pure conversion since originally the driver has changed
+> > > implementation for the #dma-cells and was wrong from the start.
+> > > Also the driver now handles the common DMA clients implementation with
+> > > the first cell that denotes the channel number and nothing else since
+> > > the client will have to provide the crci information via other means.
+> > > 
+> > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > > ---
+> > > v2:
+> > > - Change Sob to Christian Marangi
+> > > - Add Bjorn in the maintainers list
+> > > 
+> > >  .../devicetree/bindings/dma/qcom,adm.yaml     | 96 +++++++++++++++++++
+> > >  .../devicetree/bindings/dma/qcom_adm.txt      | 61 ------------
+> > >  2 files changed, 96 insertions(+), 61 deletions(-)
+> > >  create mode 100644 Documentation/devicetree/bindings/dma/qcom,adm.yaml
+> > >  delete mode 100644 Documentation/devicetree/bindings/dma/qcom_adm.txt
+> > > 
+> > 
+> > Running 'make dtbs_check' with the schema in this patch gives the
+> > following warnings. Consider if they are expected or the schema is
+> > incorrect. These may not be new warnings.
+> > 
+> > Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+> > This will change in the future.
+> > 
+> > Full log is available here: https://patchwork.ozlabs.org/patch/
+> > 
+> > 
+> > dma-controller@18300000: reset-names:1: 'c0' was expected
+> > 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> > 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> > 
+> > dma-controller@18300000: reset-names:2: 'c1' was expected
+> > 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> > 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> > 
+> > dma-controller@18300000: reset-names:3: 'c2' was expected
+> > 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> > 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> > 
+> > dma-controller@18300000: reset-names: ['clk', 'pbus', 'c0', 'c1', 'c2'] is too long
+> > 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> > 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> > 
+> > dma-controller@18300000: resets: [[11, 13], [11, 12], [11, 11], [11, 10], [11, 9]] is too long
+> > 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
+> > 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+> >
+> 
+> I should have fixed this with the other patch. 
 
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
-Reviewed-by: Thiago Macieira <thiago.macieira@intel.com>
-Reviewed-by: Yang Zhong <yang.zhong@intel.com>
-Cc: kvm@vger.kernel.org
-Cc: linux-doc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- Documentation/x86/xstate.rst | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+Ah, okay.
 
-diff --git a/Documentation/x86/xstate.rst b/Documentation/x86/xstate.rst
-index 9597e6caa30e..55cbce580853 100644
---- a/Documentation/x86/xstate.rst
-+++ b/Documentation/x86/xstate.rst
-@@ -64,6 +64,27 @@ the handler allocates a larger xstate buffer for the task so the large
- state can be context switched. In the unlikely cases that the allocation
- fails, the kernel sends SIGSEGV.
- 
-+In addition, a couple of extended options are provided for a VCPU thread.
-+The VCPU XSTATE permission is separately controlled.
-+
-+-ARCH_GET_XCOMP_GUEST_PERM
-+
-+ arch_prctl(ARCH_GET_XCOMP_GUEST_PERM, &features);
-+
-+ ARCH_GET_XCOMP_GUEST_PERM is a variant of ARCH_GET_XCOMP_PERM. So it
-+ provides the same semantics and functionality but for VCPU.
-+
-+-ARCH_REQ_XCOMP_GUEST_PERM
-+
-+ arch_prctl(ARCH_REQ_XCOMP_GUEST_PERM, feature_nr);
-+
-+ ARCH_REQ_XCOMP_GUEST_PERM is a variant of ARCH_REQ_XCOMP_PERM. Like the
-+ above, it has the same semantics for VCPU permission. It performs a
-+ similar functionality but with a constraint. Permission is frozen when the
-+ first VCPU is created. So any attempt to change permission after that
-+ point is rejected. Thus, permission has to be requested before the first
-+ VCPU creation.
-+
- AMX TILE_DATA enabling example
- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 
--- 
-2.17.1
+> Should the conversion fix
+> this directly?
+
+Given it was clearly wrong, that would be fine with a note in the commit 
+message about the change. But no need to respin just for that.
+
+Rob
 
