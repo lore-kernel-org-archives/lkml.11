@@ -2,206 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA8F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 17:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD8BBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 17:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244727AbiFPRB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 13:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
+        id S245417AbiFPRC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 13:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233730AbiFPRB4 (ORCPT
+        with ESMTP id S1345057AbiFPRC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 13:01:56 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A583F885
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 10:01:55 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Thu, 16 Jun 2022 13:02:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F5F443C3
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 10:02:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 0B9F01F8BB;
-        Thu, 16 Jun 2022 17:01:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655398914; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=m8FLOcERmZrpjJZ8Jd9/Y7nfhUCFzUgn4yTma3QGvug=;
-        b=YWFDKtMY0LbEkUyeN5hZdDo8o9ynLosp6Rw14sy5TA1W5umeEvw4LMXl2UAG1jNdUdNWru
-        Arp5xbTXA/DF/JLLQshKgDo3BHm8SBees5DCmnZwK8NDyDSjYsDpRXJisDI6tJD8dDcNaS
-        Q+rvnPwPIQrssTM65RYu1/if4knd7BM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655398914;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=m8FLOcERmZrpjJZ8Jd9/Y7nfhUCFzUgn4yTma3QGvug=;
-        b=hQso4cv0U5K8brxQ4UlJFYq7ARJg8Hlo8p87GLHP2f9nWzGT7VaFKGdzhfwT1nAz2dArXx
-        7Oapxb5PBn2FlODg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D3A9E1344E;
-        Thu, 16 Jun 2022 17:01:53 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id KJG5MQFiq2IRZAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 16 Jun 2022 17:01:53 +0000
-Message-ID: <43033655-2e78-621b-cc76-c3dc53024d00@suse.cz>
-Date:   Thu, 16 Jun 2022 19:01:53 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B39AC6194A
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 17:02:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6488C34114;
+        Thu, 16 Jun 2022 17:02:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655398944;
+        bh=XnVv4J01sdGBe11MNJIXMTTsXg4laIcwwL1T++aKoAY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RcWyAlCr0j8hyWym7NRFXVgQcYDBVCnYdfXopAy+sBmRw59Ei3RFI86S6eWFdDkRw
+         yOT53lW3zswSA6EgeLsI+M9SgidiiobkmfeZOTGQykdcqq5AfotbvsMRhxJl0W2WAL
+         re7TJCh1n6zpyyoaDwTlno3Odx9bfybDVjTaBOnD79wgzONbGehld0Ekqp9uenrbot
+         uDqE/JODSJK3lW7gZgdqMqzZUBUxswtX1s+G4XE65kvJhxp24jLjOJ32WTUDyMb7fh
+         Gv/gFzgOEErxTi2NMfM6K8bao92r8awJaNRKVI5DfiUOA5/4OhD0S4SVvdTy9sAUws
+         Sir100L21DLqg==
+Date:   Thu, 16 Jun 2022 10:02:22 -0700
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Waiman Long <longman@redhat.com>,
+        Tim Murray <timmurray@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>
+Subject: Re: [GIT PULL] f2fs for 5.18
+Message-ID: <YqtiHmFTbWyrueq8@google.com>
+References: <YjjihIZuvZpUjaSs@google.com>
+ <CAHk-=wgsmvoJFKFWxQ2orEVUOWH1agk9iUNZ=-DFh5OXZL=Ldw@mail.gmail.com>
+ <51cded74-3135-eed8-06d3-0b2165e3b379@redhat.com>
+ <CAHk-=wi=Xsekgj7zfw_vpOM673CG24vznmz-yx9G05rWSAAYXg@mail.gmail.com>
+ <Yjo4fg4HRzEVDr7o@google.com>
+ <20220615201318.GA1194@bug>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 7/7] mm/page_alloc: Replace local_lock with normal
- spinlock
-Content-Language: en-US
-To:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220613125622.18628-1-mgorman@techsingularity.net>
- <20220613125622.18628-8-mgorman@techsingularity.net>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220613125622.18628-8-mgorman@techsingularity.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615201318.GA1194@bug>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/13/22 14:56, Mel Gorman wrote:
-> struct per_cpu_pages is no longer strictly local as PCP lists can be
-> drained remotely using a lock for protection. While the use of local_lock
-> works, it goes against the intent of local_lock which is for "pure
-> CPU local concurrency control mechanisms and not suited for inter-CPU
-> concurrency control" (Documentation/locking/locktypes.rst)
+On 06/15, Pavel Machek wrote:
+> Hi!
 > 
-> local_lock protects against migration between when the percpu pointer is
-> accessed and the pcp->lock acquired. The lock acquisition is a preemption
-> point so in the worst case, a task could migrate to another NUMA node
-> and accidentally allocate remote memory. The main requirement is to pin
-> the task to a CPU that is suitable for PREEMPT_RT and !PREEMPT_RT.
+> > > > AFAICS, the read-unfair rwsem code is created to resolve a potential
+> > > > lock starvation problem that they found on linux-5.10.y stable tree. I
+> > > > believe I have fixed that in the v5.11 kernel, see commit 2f06f702925
+> > > > ("locking/rwsem: Prevent potential lock starvation").
+> > > 
+> > > Ahh.
+> > > 
+> > > Adding Tim Murray to the cc, since he was the source of that odd
+> > > reader-unfair thing.
+> > > 
+> > > I really *really* dislike people thinking they can do locking
+> > > primitives, because history has taught us that they are wrong.
+> > > 
+> > > Even when people get the semantics and memory ordering right (which is
+> > > not always the case, but at least the f2fs code uses real lock
+> > > primitives - just oddly - and should thus be ok), it invariably tends
+> > > to be a sign of something else being very wrong.
+> > > 
+> > > And I can easily believe that in this case it's due to a rmsem issue
+> > > that was already fixed long long ago as per Waiman.
+> > > 
+> > > Can people please test with the actual modern rwsem code and with the
+> > > odd reader-unfair locks disabled?
+> > 
+> > The pain point is 1) we don't have a specific test to reproduce the issue,
+> > but got some foundings from field only, 2) in order to test the patches, we
+> > need to merge the patches into Android kernel [1] through LTS, 3) but, LTS
+> > wants to see any test results [2].
+> > 
+> > [1] https://android-review.googlesource.com/q/topic:rwsem_unfair
+> > [2] https://lore.kernel.org/stable/988fd9b5-8e89-03ae-3858-85320382792e@redhat.com/
 > 
-> Replace local_lock with helpers that pin a task to a CPU, lookup the
-> per-cpu structure and acquire the embedded lock. It's similar to local_lock
-> without breaking the intent behind the API. It is not a complete API
-> as only the parts needed for PCP-alloc are implemented but in theory,
-> the generic helpers could be promoted to a general API if there was
-> demand for an embedded lock within a per-cpu struct with a guarantee
-> that the per-cpu structure locked matches the running CPU and cannot use
-> get_cpu_var due to RT concerns. PCP requires these semantics to avoid
-> accidentally allocating remote memory.
+> Wait, what? Normally, patches are tested before going to mainline, and especially
+> before being backported to stable.
 > 
-> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+> If you can't reproduce issue on mainline kernel, there's something very wrong
+> with trying to fix it on mainline kernel. You should not be merging untested fixes
+> so that they can make it into mainline and then into stable and then into android kernel
+> to be tested.
 
-...
+What do you mean "untested fixes" here? As Tim mentioned [1], this F2FS patch
+resolved the issue in our Pixel devices.
 
-> @@ -3367,30 +3429,17 @@ static int nr_pcp_high(struct per_cpu_pages *pcp, struct zone *zone,
->  	return min(READ_ONCE(pcp->batch) << 2, high);
->  }
->  
-> -/* Returns true if the page was committed to the per-cpu list. */
-> -static bool free_unref_page_commit(struct page *page, int migratetype,
-> -				   unsigned int order, bool locked)
-> +static void free_unref_page_commit(struct per_cpu_pages *pcp, struct zone *zone,
-> +				   struct page *page, int migratetype,
-> +				   unsigned int order)
+[1] https://lore.kernel.org/lkml/CAEe=Sxmcn5+YUXBQhxDpzZVJu_T6S6+EURDqrP9uUS-PHGyuSg@mail.gmail.com/
 
-Hmm given this drops the "bool locked" and bool return value again, my
-suggestion for patch 5/7 would result in less churn as those woudn't need to
-be introduced?
+> 
+> If there's no other way, you should be able to backport those patches to android kernel and
+> test them _before_ merging them. Android phones are rather cheap. Some should even run mainline
+> kernels -- see for example Oneplus 4T -- if you don't need all the features.
 
-...
+IIUC, the point here was whether we need another generic rwsem API to address
+the issue or not. [1] said some rwsem fixes couldn't resolve our issue,
+and Waiman wanted to test another patch [2]. In order to avoid endless
+tests, I decided to get some results from Pixel using v5.15 (at least) by
+turning CONFIG_F2FS_UNFAIR_RWSEM off as of now. If we can see v5.15
+works, I'm happy to revert the F2FS patch. Otherwise, we need it for
+our production.
 
-> @@ -3794,19 +3805,29 @@ static struct page *rmqueue_pcplist(struct zone *preferred_zone,
->  	struct list_head *list;
->  	struct page *page;
->  	unsigned long flags;
-> +	unsigned long __maybe_unused UP_flags;
->  
-> -	local_lock_irqsave(&pagesets.lock, flags);
-> +	/*
-> +	 * spin_trylock_irqsave is not necessary right now as it'll only be
-> +	 * true when contending with a remote drain. It's in place as a
-> +	 * preparation step before converting pcp locking to spin_trylock
-> +	 * to protect against IRQ reentry.
-> +	 */
-> +	pcp_trylock_prepare(UP_flags);
-> +	pcp = pcp_spin_trylock_irqsave(zone->per_cpu_pageset, flags);
-> +	if (!pcp)
+[2] https://lore.kernel.org/lkml/5acaaf61-5419-178d-c805-62f979697653@redhat.com/#t
 
-Besides the missing unpin Andrew fixed, I think also this is missing
-pcp_trylock_finish(UP_flags); ?
-
-> +		return NULL;
->  
->  	/*
->  	 * On allocation, reduce the number of pages that are batch freed.
->  	 * See nr_pcp_free() where free_factor is increased for subsequent
->  	 * frees.
->  	 */
-> -	pcp = this_cpu_ptr(zone->per_cpu_pageset);
->  	pcp->free_factor >>= 1;
->  	list = &pcp->lists[order_to_pindex(migratetype, order)];
-> -	page = __rmqueue_pcplist(zone, order, migratetype, alloc_flags, pcp, list, false);
-> -	local_unlock_irqrestore(&pagesets.lock, flags);
-> +	page = __rmqueue_pcplist(zone, order, migratetype, alloc_flags, pcp, list);
-> +	pcp_spin_unlock_irqrestore(pcp, flags);
-> +	pcp_trylock_finish(UP_flags);
->  	if (page) {
->  		__count_zid_vm_events(PGALLOC, page_zonenum(page), 1);
->  		zone_statistics(preferred_zone, zone, 1);
-> @@ -5410,10 +5431,8 @@ unsigned long __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
->  		goto failed;
->  
->  	/* Attempt the batch allocation */
-> -	local_lock_irqsave(&pagesets.lock, flags);
-> -	pcp = this_cpu_ptr(zone->per_cpu_pageset);
-> +	pcp = pcp_spin_lock_irqsave(zone->per_cpu_pageset, flags);
->  	pcp_list = &pcp->lists[order_to_pindex(ac.migratetype, 0)];
-> -	spin_lock(&pcp->lock);
->  
->  	while (nr_populated < nr_pages) {
->  
-> @@ -5424,13 +5443,11 @@ unsigned long __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
->  		}
->  
->  		page = __rmqueue_pcplist(zone, 0, ac.migratetype, alloc_flags,
-> -							pcp, pcp_list, true);
-> +							pcp, pcp_list);
->  		if (unlikely(!page)) {
->  			/* Try and allocate at least one page */
-> -			if (!nr_account) {
-> -				spin_unlock(&pcp->lock);
-> +			if (!nr_account)
->  				goto failed_irq;
-> -			}
->  			break;
->  		}
->  		nr_account++;
-> @@ -5443,8 +5460,7 @@ unsigned long __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
->  		nr_populated++;
->  	}
->  
-> -	spin_unlock(&pcp->lock);
-> -	local_unlock_irqrestore(&pagesets.lock, flags);
-> +	pcp_spin_unlock_irqrestore(pcp, flags);
->  
->  	__count_zid_vm_events(PGALLOC, zone_idx(zone), nr_account);
->  	zone_statistics(ac.preferred_zoneref->zone, zone, nr_account);
-> @@ -5453,7 +5469,7 @@ unsigned long __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
->  	return nr_populated;
->  
->  failed_irq:
-> -	local_unlock_irqrestore(&pagesets.lock, flags);
-> +	pcp_spin_unlock_irqrestore(pcp, flags);
->  
->  failed:
->  	page = __alloc_pages(gfp, 0, preferred_nid, nodemask);
-
+> 
+> It looks hch was right NAKing the patches.
+> 
+> Best regards,
+> 
+> 									Pavel
+> -- 
+> (english) http://www.livejournal.com/~pavelmachek
+> (cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
