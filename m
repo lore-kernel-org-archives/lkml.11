@@ -2,308 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F73C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 09:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D51C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 09:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229779AbiFPJhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 05:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60134 "EHLO
+        id S1359751AbiFPJj7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 05:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiFPJhq (ORCPT
+        with ESMTP id S229803AbiFPJj6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 05:37:46 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4BF6591
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 02:37:42 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id t2so858914pld.4
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 02:37:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8TR8ONYNxS2yof19BmDJUJD8HxOk6Zh+FqQICXsXPXs=;
-        b=ZyqPpKhCZIyy6oigjxAM7+Hfsd8fEu3UTSEnhn6wUv7Blw7aBA6SAusoVJTFTs3Dla
-         DOrD1Xge8Hq2a/GMRx4d8TT+j6nkrqGHzcBT2M6kTuD+PRv5vHzV8UEzkihhQLeDbe5o
-         6eMHfAthkK+ZoTdTWLKeay7CJxy4P4hc95Ae5/JNMWboEDv0aig2mraNMRHSWpY9eaym
-         Ihy3g0paeflsFnMrdoHHzcqiwRzbG4vK3Fx6R2xIngPY9VPdWApdqvEIiGs2vr4B0Rim
-         264FacCS5cO3Wz7E6MxPnzfhiLJsZPCQwZBZGfBTqc6gVnrDilMuGG/pzzjSzrANdnBb
-         0V1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8TR8ONYNxS2yof19BmDJUJD8HxOk6Zh+FqQICXsXPXs=;
-        b=jGhXBtPpSKWZuJpFcwKHM3aohq/jWnyWB8rUAZT0s12z0NN7ReN0QC2WuRXQuDn7Xg
-         uI12F4eIoHWvobFb7Tw93CT54L8mesYeK9F9rX8oof+/Vvn+qfpSvn1E6DK9FoX9VKY6
-         kG5DmCEFKabIEk/dgDs0t8yaB82WNE3NmY+Ag7RGuZ+/YwiIVYFu6Cga+vH1Gw7k1faZ
-         D1uR43zwfP/OiIvzqBqetWJ2W0+T+wBsjeahnfdwQht3DhDmVk2HLnTPZm20qGvPjns7
-         yD02896ulcurx3qhU9ceFFXBJmdYvx7lzTOIbvQfbKy4UQ+S4j4oR7jqu/XNzeNSYM+A
-         3zcA==
-X-Gm-Message-State: AJIora8OrhCfTcnjJw33spRCJK6ysU3TjQWd4d5tmKaVONlJ0toRcdev
-        euNkzgroMz81rCrq4nHqle/+qv1X17DtG/mx
-X-Google-Smtp-Source: AGRyM1uBxY5pSjJi4t8oGVMgMRfevSN4nbd6JsziLBQZzyH+o3dOv62F6u4/b5Zl0zvawpU3EWzbdA==
-X-Received: by 2002:a17:902:b714:b0:168:f72d:b8d5 with SMTP id d20-20020a170902b71400b00168f72db8d5mr3776071pls.66.1655372262270;
-        Thu, 16 Jun 2022 02:37:42 -0700 (PDT)
-Received: from C02FG34NMD6R.bytedance.net ([139.177.225.231])
-        by smtp.gmail.com with ESMTPSA id v24-20020a170902e8d800b0015e8d4eb246sm1196415plg.144.2022.06.16.02.37.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 Jun 2022 02:37:41 -0700 (PDT)
-From:   Albert Huang <huangjie.albert@bytedance.com>
-To:     mst@redhat.com
-Cc:     yuanzhu@bytedance.com,
-        "huangjie.albert" <huangjie.albert@bytedance.com>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3] virtio_ring : keep used_wrap_counter in vq->last_used_idx
-Date:   Thu, 16 Jun 2022 17:37:02 +0800
-Message-Id: <20220616093703.39609-1-huangjie.albert@bytedance.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20220616024148-mutt-send-email-mst@kernel.org>
-References: <20220616024148-mutt-send-email-mst@kernel.org>
+        Thu, 16 Jun 2022 05:39:58 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C876959312
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 02:39:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655372396; x=1686908396;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=W/+52W6xVzB0f3kukDyNrSKN6m+fH4uvlhVHm9n1Pg8=;
+  b=cEqAy+spHFHoWZesZPz7EDsYqjzfoMsGfZM8LWtLzjcXsaLzPpn+acaD
+   udMJZg9ny3UsoDxYhAA/v9L2SzF+0xdgSjXVOBB9Cz9bTOIBbvIAViEH1
+   yjtKARzXi/c6Didl1XQ3EEsN33vpyOSCyDnozPC3ap6mdus2wC++5Ez1P
+   z6mRE8LjffPsc4mLofrnKp1nSRPQykInLufhgQuoqq1f9QUtgFRD79zff
+   x4nBXmTXQ9LQ2NglGtNfhzlI5OI30lqczdVpUaiJAqZ29kzsstb+OMK/s
+   yvqUiOnWOfFCkivA3zcFE83FEIo3FMvC5ivCeUUS8EAPCzyOD0XlbMEeJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="340865599"
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
+   d="scan'208";a="340865599"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 02:39:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
+   d="scan'208";a="831485598"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 16 Jun 2022 02:39:54 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o1lyk-000OFd-8L;
+        Thu, 16 Jun 2022 09:39:54 +0000
+Date:   Thu, 16 Jun 2022 17:39:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Atish Patra <atishp@rivosinc.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Atish Patra <Atish.Patra@wdc.com>, linux-kernel@vger.kernel.org
+Subject: [atishp04:kvm_isa_ext_v1 1/1]
+ arch/riscv/include/asm/kvm_host.h:173:22: error: use of undeclared
+ identifier 'RISCV_ISA_EXT_MAX'; did you mean 'KVM_RISCV_ISA_EXT_MAX'?
+Message-ID: <202206161714.QeqmmF3R-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "huangjie.albert" <huangjie.albert@bytedance.com>
+tree:   https://github.com/atishp04/linux kvm_isa_ext_v1
+head:   f581904c5e3c943b3ad5fbaf91606d5f5e12018a
+commit: f581904c5e3c943b3ad5fbaf91606d5f5e12018a [1/1] RISC-V: KVM: Improve ISA extension by using a bitmap
+config: riscv-buildonly-randconfig-r003-20220616 (https://download.01.org/0day-ci/archive/20220616/202206161714.QeqmmF3R-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f0e608de27b3d568000046eebf3712ab542979d6)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/atishp04/linux/commit/f581904c5e3c943b3ad5fbaf91606d5f5e12018a
+        git remote add atishp04 https://github.com/atishp04/linux
+        git fetch --no-tags atishp04 kvm_isa_ext_v1
+        git checkout f581904c5e3c943b3ad5fbaf91606d5f5e12018a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv prepare
 
-the used_wrap_counter and the vq->last_used_idx may get
-out of sync if they are separate assignment，and interrupt
-might use an incorrect value to check for the used index.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-for example:OOB access
-ksoftirqd may consume the packet and it will call:
-virtnet_poll
-	-->virtnet_receive
-		-->virtqueue_get_buf_ctx
-			-->virtqueue_get_buf_ctx_packed
-and in virtqueue_get_buf_ctx_packed:
+All errors (new ones prefixed by >>):
 
-vq->last_used_idx += vq->packed.desc_state[id].num;
-if (unlikely(vq->last_used_idx >= vq->packed.vring.num)) {
-         vq->last_used_idx -= vq->packed.vring.num;
-         vq->packed.used_wrap_counter ^= 1;
-}
+   In file included from arch/riscv/kernel/asm-offsets.c:12:
+>> arch/riscv/include/asm/kvm_host.h:173:22: error: use of undeclared identifier 'RISCV_ISA_EXT_MAX'; did you mean 'KVM_RISCV_ISA_EXT_MAX'?
+           DECLARE_BITMAP(isa, RISCV_ISA_EXT_MAX);
+                               ^~~~~~~~~~~~~~~~~
+                               KVM_RISCV_ISA_EXT_MAX
+   include/linux/types.h:11:35: note: expanded from macro 'DECLARE_BITMAP'
+           unsigned long name[BITS_TO_LONGS(bits)]
+                                            ^
+   include/linux/bitops.h:19:49: note: expanded from macro 'BITS_TO_LONGS'
+   #define BITS_TO_LONGS(nr)       __KERNEL_DIV_ROUND_UP(nr, BITS_PER_TYPE(long))
+                                                         ^
+   include/uapi/linux/const.h:34:40: note: expanded from macro '__KERNEL_DIV_ROUND_UP'
+   #define __KERNEL_DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
+                                          ^
+   arch/riscv/include/uapi/asm/kvm.h:99:2: note: 'KVM_RISCV_ISA_EXT_MAX' declared here
+           KVM_RISCV_ISA_EXT_MAX,
+           ^
+   1 error generated.
+   make[2]: *** [scripts/Makefile.build:117: arch/riscv/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1200: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
-if at the same time, there comes a vring interrupt，in vring_interrupt:
-we will call:
-vring_interrupt
-	-->more_used
-		-->more_used_packed
-			-->is_used_desc_packed
-in is_used_desc_packed, the last_used_idx maybe >= vq->packed.vring.num.
-so this could case a memory out of bounds bug.
 
-this patch is to keep the used_wrap_counter in vq->last_used_idx
-so we can get the correct value to check for used index in interrupt.
+vim +173 arch/riscv/include/asm/kvm_host.h
 
-v2->v3:
-- add inline function to get used_wrap_counter and last_used
-- when use vq->last_used_idx, only read once
-  if vq->last_used_idx is read twice, the values can be inconsistent.
-- use last_used_idx & ~(-(1 << VRING_PACKED_EVENT_F_WRAP_CTR))
-  to get the all bits below VRING_PACKED_EVENT_F_WRAP_CTR
+   164	
+   165	struct kvm_vcpu_arch {
+   166		/* VCPU ran at least once */
+   167		bool ran_atleast_once;
+   168	
+   169		/* Last Host CPU on which Guest VCPU exited */
+   170		int last_exit_cpu;
+   171	
+   172		/* ISA feature bits (similar to MISA) */
+ > 173		DECLARE_BITMAP(isa, RISCV_ISA_EXT_MAX);
+   174	
+   175		/* SSCRATCH, STVEC, and SCOUNTEREN of Host */
+   176		unsigned long host_sscratch;
+   177		unsigned long host_stvec;
+   178		unsigned long host_scounteren;
+   179	
+   180		/* CPU context of Host */
+   181		struct kvm_cpu_context host_context;
+   182	
+   183		/* CPU context of Guest VCPU */
+   184		struct kvm_cpu_context guest_context;
+   185	
+   186		/* CPU CSR context of Guest VCPU */
+   187		struct kvm_vcpu_csr guest_csr;
+   188	
+   189		/* CPU context upon Guest VCPU reset */
+   190		struct kvm_cpu_context guest_reset_context;
+   191	
+   192		/* CPU CSR context upon Guest VCPU reset */
+   193		struct kvm_vcpu_csr guest_reset_csr;
+   194	
+   195		/*
+   196		 * VCPU interrupts
+   197		 *
+   198		 * We have a lockless approach for tracking pending VCPU interrupts
+   199		 * implemented using atomic bitops. The irqs_pending bitmap represent
+   200		 * pending interrupts whereas irqs_pending_mask represent bits changed
+   201		 * in irqs_pending. Our approach is modeled around multiple producer
+   202		 * and single consumer problem where the consumer is the VCPU itself.
+   203		 */
+   204		unsigned long irqs_pending;
+   205		unsigned long irqs_pending_mask;
+   206	
+   207		/* VCPU Timer */
+   208		struct kvm_vcpu_timer timer;
+   209	
+   210		/* HFENCE request queue */
+   211		spinlock_t hfence_lock;
+   212		unsigned long hfence_head;
+   213		unsigned long hfence_tail;
+   214		struct kvm_riscv_hfence hfence_queue[KVM_RISCV_VCPU_MAX_HFENCE];
+   215	
+   216		/* MMIO instruction details */
+   217		struct kvm_mmio_decode mmio_decode;
+   218	
+   219		/* SBI context */
+   220		struct kvm_sbi_context sbi_context;
+   221	
+   222		/* Cache pages needed to program page tables with spinlock held */
+   223		struct kvm_mmu_memory_cache mmu_page_cache;
+   224	
+   225		/* VCPU power-off state */
+   226		bool power_off;
+   227	
+   228		/* Don't run the VCPU (blocked) */
+   229		bool pause;
+   230	};
+   231	
 
-v1->v2:
-- reuse the VRING_PACKED_EVENT_F_WRAP_CTR
-- Remove parameter judgment in is_used_desc_packed,
-because it can't be illegal
-
-Signed-off-by: huangjie.albert <huangjie.albert@bytedance.com>
----
- drivers/virtio/virtio_ring.c | 75 ++++++++++++++++++++++--------------
- 1 file changed, 47 insertions(+), 28 deletions(-)
-
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 13a7348cedff..0184b5056457 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -111,7 +111,12 @@ struct vring_virtqueue {
- 	/* Number we've added since last sync. */
- 	unsigned int num_added;
- 
--	/* Last used index we've seen. */
-+	/* Last used index  we've seen.
-+	 * for split ring, it just contains last used index
-+	 * for packed ring, it not only contains last used index, but also
-+	 * used_wrap_counter, the VRING_PACKED_EVENT_F_WRAP_CTR is
-+	 * the bit shift in last_used_idx
-+	 */
- 	u16 last_used_idx;
- 
- 	/* Hint for event idx: already triggered no need to disable. */
-@@ -154,9 +159,6 @@ struct vring_virtqueue {
- 			/* Driver ring wrap counter. */
- 			bool avail_wrap_counter;
- 
--			/* Device ring wrap counter. */
--			bool used_wrap_counter;
--
- 			/* Avail used flags. */
- 			u16 avail_used_flags;
- 
-@@ -973,6 +975,15 @@ static struct virtqueue *vring_create_virtqueue_split(
- /*
-  * Packed ring specific functions - *_packed().
-  */
-+static inline bool packed_used_wrap_counter(u16 last_used_idx)
-+{
-+	return !!(last_used_idx & (1 << VRING_PACKED_EVENT_F_WRAP_CTR));
-+}
-+
-+static inline u16 packed_last_used(u16 last_used_idx)
-+{
-+	return last_used_idx & ~(-(1 << VRING_PACKED_EVENT_F_WRAP_CTR));
-+}
- 
- static void vring_unmap_extra_packed(const struct vring_virtqueue *vq,
- 				     struct vring_desc_extra *extra)
-@@ -1406,8 +1417,14 @@ static inline bool is_used_desc_packed(const struct vring_virtqueue *vq,
- 
- static inline bool more_used_packed(const struct vring_virtqueue *vq)
- {
--	return is_used_desc_packed(vq, vq->last_used_idx,
--			vq->packed.used_wrap_counter);
-+	u16 last_used;
-+	u16 last_used_idx;
-+	bool used_wrap_counter;
-+
-+	last_used_idx = vq->last_used_idx;
-+	last_used = packed_last_used(last_used_idx);
-+	used_wrap_counter = packed_used_wrap_counter(last_used_idx);
-+	return is_used_desc_packed(vq, last_used, used_wrap_counter);
- }
- 
- static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
-@@ -1415,7 +1432,8 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
- 					  void **ctx)
- {
- 	struct vring_virtqueue *vq = to_vvq(_vq);
--	u16 last_used, id;
-+	u16 last_used, id, last_used_idx;
-+	bool used_wrap_counter;
- 	void *ret;
- 
- 	START_USE(vq);
-@@ -1434,7 +1452,9 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
- 	/* Only get used elements after they have been exposed by host. */
- 	virtio_rmb(vq->weak_barriers);
- 
--	last_used = vq->last_used_idx;
-+	last_used_idx = vq->last_used_idx;
-+	used_wrap_counter = packed_used_wrap_counter(last_used_idx);
-+	last_used = packed_last_used(last_used_idx);
- 	id = le16_to_cpu(vq->packed.vring.desc[last_used].id);
- 	*len = le32_to_cpu(vq->packed.vring.desc[last_used].len);
- 
-@@ -1451,12 +1471,15 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
- 	ret = vq->packed.desc_state[id].data;
- 	detach_buf_packed(vq, id, ctx);
- 
--	vq->last_used_idx += vq->packed.desc_state[id].num;
--	if (unlikely(vq->last_used_idx >= vq->packed.vring.num)) {
--		vq->last_used_idx -= vq->packed.vring.num;
--		vq->packed.used_wrap_counter ^= 1;
-+	last_used += vq->packed.desc_state[id].num;
-+	if (unlikely(last_used >= vq->packed.vring.num)) {
-+		last_used -= vq->packed.vring.num;
-+		used_wrap_counter ^= 1;
- 	}
- 
-+	last_used = (last_used | (used_wrap_counter << VRING_PACKED_EVENT_F_WRAP_CTR));
-+	vq->last_used_idx = last_used;
-+
- 	/*
- 	 * If we expect an interrupt for the next entry, tell host
- 	 * by writing event index and flush out the write before
-@@ -1465,9 +1488,7 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
- 	if (vq->packed.event_flags_shadow == VRING_PACKED_EVENT_FLAG_DESC)
- 		virtio_store_mb(vq->weak_barriers,
- 				&vq->packed.vring.driver->off_wrap,
--				cpu_to_le16(vq->last_used_idx |
--					(vq->packed.used_wrap_counter <<
--					 VRING_PACKED_EVENT_F_WRAP_CTR)));
-+				cpu_to_le16(vq->last_used_idx));
- 
- 	LAST_ADD_TIME_INVALID(vq);
- 
-@@ -1499,9 +1520,7 @@ static unsigned int virtqueue_enable_cb_prepare_packed(struct virtqueue *_vq)
- 
- 	if (vq->event) {
- 		vq->packed.vring.driver->off_wrap =
--			cpu_to_le16(vq->last_used_idx |
--				(vq->packed.used_wrap_counter <<
--				 VRING_PACKED_EVENT_F_WRAP_CTR));
-+			cpu_to_le16(vq->last_used_idx);
- 		/*
- 		 * We need to update event offset and event wrap
- 		 * counter first before updating event flags.
-@@ -1518,8 +1537,7 @@ static unsigned int virtqueue_enable_cb_prepare_packed(struct virtqueue *_vq)
- 	}
- 
- 	END_USE(vq);
--	return vq->last_used_idx | ((u16)vq->packed.used_wrap_counter <<
--			VRING_PACKED_EVENT_F_WRAP_CTR);
-+	return vq->last_used_idx;
- }
- 
- static bool virtqueue_poll_packed(struct virtqueue *_vq, u16 off_wrap)
-@@ -1537,7 +1555,7 @@ static bool virtqueue_poll_packed(struct virtqueue *_vq, u16 off_wrap)
- static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
- {
- 	struct vring_virtqueue *vq = to_vvq(_vq);
--	u16 used_idx, wrap_counter;
-+	u16 used_idx, wrap_counter, last_used_idx;
- 	u16 bufs;
- 
- 	START_USE(vq);
-@@ -1550,9 +1568,10 @@ static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
- 	if (vq->event) {
- 		/* TODO: tune this threshold */
- 		bufs = (vq->packed.vring.num - vq->vq.num_free) * 3 / 4;
--		wrap_counter = vq->packed.used_wrap_counter;
-+		last_used_idx = vq->last_used_idx;
-+		wrap_counter = packed_used_wrap_counter(last_used_idx);
- 
--		used_idx = vq->last_used_idx + bufs;
-+		used_idx = packed_last_used(last_used_idx) + bufs;
- 		if (used_idx >= vq->packed.vring.num) {
- 			used_idx -= vq->packed.vring.num;
- 			wrap_counter ^= 1;
-@@ -1582,9 +1601,10 @@ static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
- 	 */
- 	virtio_mb(vq->weak_barriers);
- 
--	if (is_used_desc_packed(vq,
--				vq->last_used_idx,
--				vq->packed.used_wrap_counter)) {
-+	last_used_idx = READ_ONCE(vq->last_used_idx);
-+	wrap_counter = packed_used_wrap_counter(last_used_idx);
-+	used_idx = packed_last_used(last_used_idx);
-+	if (is_used_desc_packed(vq, used_idx, wrap_counter)) {
- 		END_USE(vq);
- 		return false;
- 	}
-@@ -1689,7 +1709,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	vq->notify = notify;
- 	vq->weak_barriers = weak_barriers;
- 	vq->broken = true;
--	vq->last_used_idx = 0;
-+	vq->last_used_idx = 0 | (1 << VRING_PACKED_EVENT_F_WRAP_CTR);
- 	vq->event_triggered = false;
- 	vq->num_added = 0;
- 	vq->packed_ring = true;
-@@ -1720,7 +1740,6 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 
- 	vq->packed.next_avail_idx = 0;
- 	vq->packed.avail_wrap_counter = 1;
--	vq->packed.used_wrap_counter = 1;
- 	vq->packed.event_flags_shadow = 0;
- 	vq->packed.avail_used_flags = 1 << VRING_PACKED_DESC_F_AVAIL;
- 
 -- 
-2.31.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
