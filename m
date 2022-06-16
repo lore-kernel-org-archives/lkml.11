@@ -2,207 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C4DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D2EFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377649AbiFPPVH (ORCPT
+        id S1377619AbiFPPVq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
+        Thu, 16 Jun 2022 11:21:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232449AbiFPPVD (ORCPT
+        with ESMTP id S231305AbiFPPVl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:21:03 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FD93136D;
-        Thu, 16 Jun 2022 08:21:01 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25GD9b7Y029767;
-        Thu, 16 Jun 2022 15:20:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=VXZpH9Ui9uFOQns/MWxO8PXR9n0CWDiMSaHA1bCiKuE=;
- b=Lmasv0023QJ5X/QOOTZbLP2SpAld0EyIe9hlsLE3Q2GobCKr7LaPyd0CQ3Qftj/qNFZu
- t7YqpkYSxWqt7d6adPlOSGJ6Ct2N/XdMvK9y9zMQST8YulMglQl7qtVDZsa/q/l/oQRd
- 6W6Yb7eEBufWG8ivU4vCXQbbFK8CrK7IBr/if05+JlJQ23mt87UMOQFJFQ4Nr4ifoLcN
- yth+kl53b1EMTmZcYpPPflno3UWYQ4S7HEFX4odyK3KyPT3NGtckSyBGnRMMDo3ONHj1
- zJJGjUCbaiJV24W+szP+qANIUFGfcZMRi5L4LC9xZoBudqCa4lLlTRjMAFhuy1es6tGi oQ== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmjx9kbcw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 16 Jun 2022 15:20:25 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25GFId6j004052;
-        Thu, 16 Jun 2022 15:20:24 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2174.outbound.protection.outlook.com [104.47.58.174])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gprbsxpa5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 16 Jun 2022 15:20:23 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eQ+XjqFj8G3TvdhmMT3Eibre8T30etKGP+bdvva9n/ED03w111drMYNhqcdo1CW44HKMREE9rmfOwWR0Ry0BIBpZhwXkdY0usg1C9Jv57R08oSv90U0wwT8JBkZKNJDVhVlYB/6AAeQsYm7xAis0koRmtiDohdoBAeSIQn5Sy/Jjo9pieO0Fy4HREM4Znccv+s1tBxk8rwlrXKYb0uMnJ+yQ4SLTSd7QzypZFKXBl1FrVry0rwwBF4beuYSFhNLTDNbzxoyOZmFpZLzLIxNfG0LyGrt6r4qqZ/NIax9DtTutiuPFA7cixmkJXTiQARW7qeP8CIv/4uoomwsYzFw8dg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VXZpH9Ui9uFOQns/MWxO8PXR9n0CWDiMSaHA1bCiKuE=;
- b=Qv06nncsdFJUbxAvA/EQH9w00fjv3Ql1jUKp9ebdz05Pr+j325b3HdCH3dHPkbe3nsXNhPcaMD8wqcOPdhgpFyPxc/d0Cg4XupOUG5jMvZMsg+7BL/cLNmuc7ZaIEjkT8s2XMEXCFCo4+8rtmGKIcYHPeq9J6RJetohdj9X2AnEAxCdjmgUzMgku0U7A+jEI82XUSo1BKQ1qwckHLXxJuqQYQs+FQIigEve0aqdPtO7Q5mALl8HDNO3EvXvuyVlvMtt34VawF/HeXDeaRUhQDgkgDNdHeIzefno1DtIg+KQ1D+skyJ6rKQC7QOYWrv6WiG/9hLCmNVaWhFQ4P189JA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VXZpH9Ui9uFOQns/MWxO8PXR9n0CWDiMSaHA1bCiKuE=;
- b=ADguvuwhCCG257SiUy/70dVIlOKLpkyMZCyFJ5yf5iiGW/suKRMSqKbbcGWqmp7SmSKBCavnS9Zex+NpcZvGT11Tgh00d7xvbIdBPE2ma1YjrurVmb2qhkbJ7ptRZSYzFeF7rhP4fw+3/Ko2FrSpc63eX90Xuzs4QCa5Nvlp18I=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by SN6PR10MB2864.namprd10.prod.outlook.com
- (2603:10b6:805:d6::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Thu, 16 Jun
- 2022 15:20:22 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5332.020; Thu, 16 Jun 2022
- 15:20:21 +0000
-Date:   Thu, 16 Jun 2022 18:19:48 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Christian Lamparter <chunkeey@gmail.com>
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [PATCH v2] p54: Fix an error handling path in p54spi_probe()
-Message-ID: <20220616151948.GD16517@kadam>
-References: <297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr>
- <CAAd0S9DgctqyRx+ppfT6dNntUR-cpySnsYaL=unboQ+qTK2wGQ@mail.gmail.com>
- <f13c3976-2ba0-e16d-0853-5b5b1be16d11@wanadoo.fr>
- <df6b487b-b8b7-44fc-7c2d-e6fd15072c14@gmail.com>
- <20220616103640.GB16517@kadam>
- <9fa854e1-ad88-9c18-ca68-5709dc1c7906@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9fa854e1-ad88-9c18-ca68-5709dc1c7906@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0053.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::18)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        Thu, 16 Jun 2022 11:21:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 64276377D6
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:21:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655392899;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=06juFOw2FxSYc+BHU/Wl3gl3OUWvf0N50iDPfaEDM38=;
+        b=i/VAlUYd5GcuXFyinoEdkIyJVwus8/u9a3loVg9IxZzPv/bRefuiBBL4MhVdLrvA15oCK3
+        3kckEYl5KoKukDVtE1VnQgUNxp90sNaD02s0/k09aubXLTSirhX21QIXpXKIbLOfOyRbhD
+        U9Wx8hYv90ngbnqwYYUS0snZ/yKij2w=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-574-vIoQMoJIM9av38uCzEDoFg-1; Thu, 16 Jun 2022 11:21:30 -0400
+X-MC-Unique: vIoQMoJIM9av38uCzEDoFg-1
+Received: by mail-ed1-f72.google.com with SMTP id m5-20020a056402430500b004319d8ba8afso1501293edc.5
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:21:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=06juFOw2FxSYc+BHU/Wl3gl3OUWvf0N50iDPfaEDM38=;
+        b=Iklit5UQxTTnlLNF/qsEuntPTzPgnbO/70a8ckvjIiD1CapWxSd/ftEOoxwTtN7Phv
+         Jl3IwHJ0zibTOhxygvLMKdZMUh53OIqJw11LwNOaYeVDy5LI9MtFrATH6tPgfPSLVC6U
+         wziMm31UwGtwCsEWPTvLGskqyLTuQ8ki2/POHpq30+Cy/6Wm6g31eWm0F66LCQwBsptY
+         W4UookfwNC5353aTVWzlkj2dSlfy39h913KQVgSdpwEQN9ZkPStoOhlVdrJvTErUUUJu
+         kLzX/hvVJvUstkC6SuYcICY/rw+lSXC/1aWzhPyXeENQeFU2+IR+IIxsLfmIvwPEh80s
+         QzKw==
+X-Gm-Message-State: AJIora+zuiXvaufcZg5cA6n8StL3sk1M3/bXYQFrc4y+LWhA8sBP2S0I
+        /JBmNLspNhVzRVVekH4geZF1xb5Nnuw5xj9Z/xEa710PvXU0SVx6cxILTBuQAqPRFEbSh2WA6CC
+        uKc4gXUwd6fR4WInNFoxaCfCJ
+X-Received: by 2002:a17:906:7053:b0:711:b90e:47b7 with SMTP id r19-20020a170906705300b00711b90e47b7mr4876476ejj.652.1655392889371;
+        Thu, 16 Jun 2022 08:21:29 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1scUxIqI2Go1RYSFcOPPILRtIJCYm33+w4HHAK64jTkfDW6I9MnDnvZVmp1Mh1gVt+nVMKYPA==
+X-Received: by 2002:a17:906:7053:b0:711:b90e:47b7 with SMTP id r19-20020a170906705300b00711b90e47b7mr4876460ejj.652.1655392889166;
+        Thu, 16 Jun 2022 08:21:29 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id kz24-20020a17090777d800b00715a02874acsm911612ejc.35.2022.06.16.08.21.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jun 2022 08:21:28 -0700 (PDT)
+Message-ID: <99e7513a-af90-46ef-fb65-a9ffd0f925f9@redhat.com>
+Date:   Thu, 16 Jun 2022 17:21:26 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d4ff236c-4f0b-44a8-36f6-08da4fabbaab
-X-MS-TrafficTypeDiagnostic: SN6PR10MB2864:EE_
-X-Microsoft-Antispam-PRVS: <SN6PR10MB286496F854F10DE33C84E3F38EAC9@SN6PR10MB2864.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HqSG2B0nsO7iLl2aW/6ijVdZUwmGtY62Z5TjxQQh85qE16mfKADYgtDsjsUFmCQcftkqvKjPv7f7QVjbYke+lhCGYgJww8TjmkGXNALC1MklG2jTGqTnXF+VoRLfwdbNGwY/tE3e8TJrz23Lnwaaf640fa5LpWE98VdTg9hvGIk4vmTTT3jRjfmzgPP0lCNayutCnN0cQWOj6T+wG3qAYgOCWIVr7QJ/zcIwfshYS0XUEo8ujn2a8030Kd9QVm9qE66vhm6KVaGau1o6WDtEDkE2vZxjlX2R5Q/iVNxmwkKRhJ6HpnMF98nD1cTfl+dSRakGOYHzVtij+HE6ZVuz9punznJOyR/D/qzmTyu281nMA0n17XAOWfybTSQ9Ugyn+81LR5jlyCSq62oXVXZw0hd5I0a5IeWyJVejfITTMasVy3Kgj217MdSV5eSlf6gYmQNNyHQwyoQvmFqDUZCO4U/uPzO3di+p/6NLBopN/6Y4IMbiKxPYGBb5ukO6zStrnYua1hUFLwUxTisT+qRUS4Mq/DiN0XLBb0jFQY1fVj3cYmyhNuUic7djAI+etMhT6mXMsrLvrw6W9OaptR03pDe1e88+vTtXcIpJLnhoPu1/MgM1xLhsWob4epBV2g8jw05CvBapprgcyz8fi2fQiOdG5nVuReOUx45ryriepi/xaUItwrli+T9zhywZpq7O3ZxoU+1sI6EfuyC140EBJg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(26005)(9686003)(6512007)(83380400001)(6506007)(6916009)(6666004)(52116002)(53546011)(186003)(8936002)(7416002)(2906002)(1076003)(33716001)(5660300002)(33656002)(66946007)(86362001)(44832011)(6486002)(508600001)(38100700002)(38350700002)(66556008)(54906003)(66476007)(8676002)(4326008)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?m8zX4k5f8xzpkGCeWn8USzfWi3vFMy+TBax5a2hvuKDBVAm8AR2PSg5xn7J7?=
- =?us-ascii?Q?IuV73phk3qCjYwlVzhb/DxVpwfZSbHOQwjTh3RUO/KMxe7mGiz9XCcvkC8Q6?=
- =?us-ascii?Q?oCkdHmvOoh4bOWKqIaLA1uWpLjPSAGTLmNU7EInHdVUUG3JzYdAp7+9SZodl?=
- =?us-ascii?Q?oHUamowU9SoOZN0Si5smqLwprY4jnVSjuN9E8vFa5dmGSKMezzZ93E/KjVDw?=
- =?us-ascii?Q?HMfjpK6eKublCrca+MCr6HEYIoerziEiSSPzF9RkmtsZsjx2f6/c963C7lSP?=
- =?us-ascii?Q?gpscidfYIfbuAFdEaXkdCXNJUxRWD46oKbKv/Ya33IF/sfWFjJsPmyy2o7YO?=
- =?us-ascii?Q?N5RsSMhoTZ4kJOmQeNdeowChxZGH39kLdfdxgn3ASG0d1Wq5dMr3HnJhgJvg?=
- =?us-ascii?Q?0FTnRjvDjSvItCu+fFbRbuMyRNvT88zCwabIS6Bd9m+uTPctzQ2yR6r2fWb2?=
- =?us-ascii?Q?86ZHSSh3pxS5pUG4b2+AbnMuLciO1/gvxX+k03jkeBMhWJVDLG/ezJ6+wlGs?=
- =?us-ascii?Q?E1/74byX6aEuadYyqtPn/I4OCx++sqk3TEgJP3HKJj+zoh2hYaj2D61TS2Vi?=
- =?us-ascii?Q?ubaTUPaaZ29sXf/2GlLT4FVQd74j3r9fQbXPqzq8/fQoLNOpRFtD57upLaSz?=
- =?us-ascii?Q?GXLWaeyhAxRBY38TYJUkE2t0no0bl3HBRJB1AMAjFnVMbpdEc65uSB20xDZk?=
- =?us-ascii?Q?gwSouvs4SO4NZUESzat+FYaZclMKaOzbzGzsFcnBTAK/0lZj9fj7sWsHobxy?=
- =?us-ascii?Q?qcUUqMWvP4hgB4ueZ7AGJMlZIYwz29dHz/TKpf7Al+Fvl2jVWJfTmysjmysD?=
- =?us-ascii?Q?CaosmBOww1/Mj4UDF4Ozmv0sWsiBt2fuHoEMigo1cgvOIwVIxJYyRHsme929?=
- =?us-ascii?Q?5far0S9lvEHtHrbpsgMKYFtQ39t0rju+n2Wj43XyOLPnRmbCXzoM8IOHwdgy?=
- =?us-ascii?Q?K3fWI3vOLs2TNFQllwImOxOZrDo1SmWK9+YbyZh0oA8IF5AnAVtC0tq69Ev8?=
- =?us-ascii?Q?23Y6lu2kq+oKD1okFTnp3/K74JESanrLtp//tv0eHWcKBEbSwcFpnXJGR2Fw?=
- =?us-ascii?Q?jQ26iilr7ULIdbmq7jL/YVem/9jqDg/lbojDhWtdMS/K2ozwos3YqBG87AwZ?=
- =?us-ascii?Q?Ii6jCrZSIEGoVelXQUKlEGidJ4VzNYMD1nmOjfoxII9z241TgLfKC9If0Bjb?=
- =?us-ascii?Q?HiQQpV7GMzJyXlfcAXO+8Sn5AyAPeTjIJuVih+dpyzGq47DSd4DbCwGO4ulF?=
- =?us-ascii?Q?eP0sVk9dXFj34BTSAVAgueLaax2XPhcz4Xx6T5P+j7gHltSLpdQ5aSST5s1C?=
- =?us-ascii?Q?c40oLiLT7pp94jRr0DhyIfVHPYm6LIfel8nDbOcLuLrGGu14GmI9mQd5HBJH?=
- =?us-ascii?Q?vQ/CRMFlX2eDk/mx7J/sXZekQssbYzt/LaSCoFDCfm593zEBkZezwy0haVeS?=
- =?us-ascii?Q?GsWi0gZkl+ZjW0KwxcvuUA/A73hr92nXOeJsYUSySkF9nIbtPfEGx6HS4t5e?=
- =?us-ascii?Q?kQoXmdx2uXYDg70LSSol4MxjXOuYTgEfbpm5DOxPSdUEVJ/DFMO8uU85cngW?=
- =?us-ascii?Q?4CBFqAgP21t6HnoLh2BhIemnvhACbIFieXqBPT6g9vKuM3WtejRxvPYvl8Dt?=
- =?us-ascii?Q?qhzRHt+YYpJLVluAvQs5Nfxv1sFfZ8iNd/g6dvkPaiLxM2cIQhLdQsEGSQZM?=
- =?us-ascii?Q?p1gAILHYPV5loTz1cCMsY9809FEm2fZLinaWurW1/EP54ARBAnoGemocVbmm?=
- =?us-ascii?Q?nLLE6X9qDn08sL1VBkCdsBLG0h2QIhI=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4ff236c-4f0b-44a8-36f6-08da4fabbaab
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2022 15:20:21.8787
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qIViIzuloCKINilLIdV8fUHJSaN7NFQYiZlAE6keFk1RT64EhAng6IZ4e04r04kI1Y1bz0A+P3xs3zj4IOsAq0wRjLw/ukQNPSMZK/b5UYo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB2864
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-06-16_11:2022-06-16,2022-06-16 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=960 spamscore=0
- phishscore=0 suspectscore=0 adultscore=0 malwarescore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206160063
-X-Proofpoint-ORIG-GUID: dk00lEazTZr7yimuDOBejB5bdSiuPLjb
-X-Proofpoint-GUID: dk00lEazTZr7yimuDOBejB5bdSiuPLjb
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 00/10] KVM: Clean up 'struct page' / pfn helpers
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220429010416.2788472-1-seanjc@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220429010416.2788472-1-seanjc@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 03:13:26PM +0200, Christian Lamparter wrote:
-> On 16/06/2022 12:36, Dan Carpenter wrote:
-> > > > If it deserves a v3 to axe some lines of code, I can do it but, as said
-> > > > previously,
-> > > > v1 is for me the cleaner and more future proof.
-> > > 
-> > > Gee, that last sentence about "future proof" is daring.
-> > 
-> > The future is vast and unknowable but one thing which is pretty likely
-> > is that Christophe's patch will introduce a static checker warning.  We
-> > really would have expected a to find a release_firmware() in the place
-> > where it was in the original code.  There is a comment there now so no
-> > one is going to re-add the release_firmware() but that's been an issue
-> > in the past.
-> > 
-> > I'm sort of surprised that it wasn't a static checker warning already.
-> > Anyway, I'll add this to Smatch check_unwind.c
-> > 
-> > +         { "request_firmware", ALLOC, 0, "*$", &int_zero, &int_zero},
-> > +         { "release_firmware", RELEASE, 0, "$"},
+On 4/29/22 03:04, Sean Christopherson wrote:
+> Clean up KVM's struct page / pfn helpers to reduce the number of
+> pfn_to_page() and page_to_pfn() conversions.  E.g. kvm_release_pfn_dirty()
+> makes 6 (if I counted right) calls to pfn_to_page() when releasing a dirty
+> pfn that backed by a vanilla struct page.  That is easily trimmed down to
+> a single call.
 > 
-> hmm? I don't follow you there. Why should there be a warning "now"?
-> (I assume you mean with v2 but not with v1?).
+> And perhaps more importantly, rename and refactor kvm_is_reserved_pfn() to
+> try and better reflect what it actually queries, which at this point is
+> effectively whether or not the pfn is backed by a refcounted page.
+> 
+> Sean Christopherson (10):
+>    KVM: Do not zero initialize 'pfn' in hva_to_pfn()
+>    KVM: Drop bogus "pfn != 0" guard from kvm_release_pfn()
+>    KVM: Don't set Accessed/Dirty bits for ZERO_PAGE
+>    KVM: Avoid pfn_to_page() and vice versa when releasing pages
+>    KVM: nVMX: Use kvm_vcpu_map() to get/pin vmcs12's APIC-access page
+>    KVM: Don't WARN if kvm_pfn_to_page() encounters a "reserved" pfn
+>    KVM: Remove kvm_vcpu_gfn_to_page() and kvm_vcpu_gpa_to_page()
+>    KVM: Take a 'struct page', not a pfn in kvm_is_zone_device_page()
+>    KVM: Rename/refactor kvm_is_reserved_pfn() to
+>      kvm_pfn_to_refcounted_page()
+>    KVM: x86/mmu: Shove refcounted page dependency into
+>      host_pfn_mapping_level()
+> 
+>   arch/x86/kvm/mmu/mmu.c     |  26 +++++--
+>   arch/x86/kvm/mmu/tdp_mmu.c |   3 +-
+>   arch/x86/kvm/vmx/nested.c  |  39 ++++-------
+>   arch/x86/kvm/vmx/vmx.h     |   2 +-
+>   include/linux/kvm_host.h   |  12 +---
+>   virt/kvm/kvm_main.c        | 140 +++++++++++++++++++++++++------------
+>   6 files changed, 131 insertions(+), 91 deletions(-)
+> 
+> 
+> base-commit: 2a39d8b39bffdaf1a4223d0d22f07baee154c8f3
 
-Yep.  Generally, static checkers assume that functions clean up after
-themselves on error paths so there would be a warning in
-p54spi_request_firmware().  This is the easiest kind of static analysis
-to implement and it's the way most kernel error handling is written.
+Queued, thanks.
 
-> If it's because the static
-> checker can't look beyond the function scope then this would be bad news
-> since on the "success" path the firmware will stick around until
-> p54spi_remove().
-
-Presumably Christophe found this bug with static analysis already but
-my guess is that it has a lot of false positives?
-
-Eventually the leak in the probe function would be found with static
-analysis as well.  The truth is that there are a lot of leaks so I'm
-already a bit overwhelmed fixing the ones that I know about.
-
-It would be fairly simple to make a high quality resource leak checker
-which is specific to probe functions.  But the thing is that leaks in
-probe functions are not really exploitable.  Also some devices are
-needed for the system to boot so often the devs don't care about about
-cleaning up...  My motivation is low.
-
-regards,
-dan carpenter
+Paolo
 
