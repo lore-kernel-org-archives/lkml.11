@@ -2,161 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22AF4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA16C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:14:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376405AbiFPNNq (ORCPT
+        id S1376984AbiFPNOS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:13:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47224 "EHLO
+        Thu, 16 Jun 2022 09:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376906AbiFPNNd (ORCPT
+        with ESMTP id S233105AbiFPNOL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:13:33 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938352DAA3;
-        Thu, 16 Jun 2022 06:13:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655385212; x=1686921212;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=g4hwdW93fGoTn7LgrmQ5ZdqeG0AbiIa9tqo2kkr2L28=;
-  b=ywduekpZNitFFHDaSdnD6rtHppOJeLe1jKlXzU5OQzBFyPPt65vOeO6t
-   jJu+RAiUqw0uHXFErlC64RzgOo/SxaRMcinlqmR0sKSXs2dtq7uAG4pYK
-   TqmZuThZfD7gyO+0173CtUVWESk1ZaaQmSmvkl0LY17Ef0LC3mRrBGlRQ
-   0=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 16 Jun 2022 06:13:32 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 06:13:32 -0700
-Received: from [10.216.41.43] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 16 Jun
- 2022 06:13:29 -0700
-Message-ID: <b4393af3-d2ec-85b5-4be8-d5abd8847499@quicinc.com>
-Date:   Thu, 16 Jun 2022 18:43:24 +0530
+        Thu, 16 Jun 2022 09:14:11 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C7132069;
+        Thu, 16 Jun 2022 06:14:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1655385230;
+        bh=9JzekwRcTTH87yPrLP08+Xsxgb/jf6L+u5cxUoWlAO8=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=gRpToD2tXV6pmlHyDurQ5A8QN3he/k9KP64IhB/96PWLH1z99CuMDgn9VoBMCYviR
+         nalHoejsKRZlREJp4aw6gNbkobZnP7ShCgJfqDTvyzHGfF2FPr4tMoyF02GlqvLf6+
+         pgLwAwEhtzdsLVpaHwWIeUPiyi+8wGSHzvFb69Cc=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.0.33] ([46.223.2.17]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MvsEn-1nkhwH1xKB-00stVu; Thu, 16
+ Jun 2022 15:13:50 +0200
+Subject: Re: [PATCH v5 10/10] tpm, tpm_tis: Enable interrupt test
+To:     =?UTF-8?Q?Michael_Niew=c3=b6hner?= <linux@mniewoehner.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        James.Bottomley@hansenpartnership.com,
+        twawrzynczak <twawrzynczak@chromium.org>
+Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        l.sanfilippo@kunbus.com, lukas@wunner.de, p.rosenberger@kunbus.com
+References: <20220610110846.8307-1-LinoSanfilippo@gmx.de>
+ <20220610110846.8307-11-LinoSanfilippo@gmx.de> <YqokW/cNLrrsZ2ib@iki.fi>
+ <c610a318258198f72a53541c551c0c595a205329.camel@mniewoehner.de>
+ <1c90aba2-5874-7251-ff19-4b6c5bc19962@gmx.de>
+ <8ed1c322b6f3dc36427c6a5704df0caab2dcec11.camel@mniewoehner.de>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <14583fe9-a374-1022-3aac-1f05fa8f6e94@gmx.de>
+Date:   Thu, 16 Jun 2022 15:13:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] cgroup.c: add helper __cset_cgroup_from_root to cleanup
- duplicated codes
+In-Reply-To: <8ed1c322b6f3dc36427c6a5704df0caab2dcec11.camel@mniewoehner.de>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Lin Feng <linf@wangsu.com>, <tj@kernel.org>,
-        <lizefan.x@bytedance.com>, <hannes@cmpxchg.org>
-CC:     <cgroups@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220616103830.197458-1-linf@wangsu.com>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <20220616103830.197458-1-linf@wangsu.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01c.na.qualcomm.com (10.47.97.222)
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:V6aNRS4pfcmJAUy62E3547AvrfhU/+gvMRP+QY/0PxiJ1yHRKEc
+ GGdhxJmFJ1fyMPMEmxiDHEKg9nTE/epumuQNnE+Mdo4jmeHn7Jc3nWzawlhpk0AvvItfk5J
+ DJXj/Sf5mDgtCzFxXvT9ZryaK05u/lEngncSQKfsIboK/qqOMeLl20HGtuOnqj3zni0sa+t
+ PT3RImWXsTPc/d7xj1Djg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:4C7SLbBP5eQ=:fbuonv0A4Gu1Y6rT0+NZqP
+ g8v+6GPip3G9NCCPUinlr7npqmG4smMninR1+ZQ16lk7qcpZX6qjsJfEfnPkIx9ZXWZ9kwaeK
+ ezKJc1mBmEvkmN1mA6hEb89tZvyT7OYGS4agdhUgJrXMzXur4xOAef9FMj5bo0YX1RBz5fmXC
+ SliYysMpRCO9/la3ez55BHvIvETwdaBWWusTtFex+kgJ/Azc+R0hgbZR9+0YzMQ6mQJ7ylesI
+ zJcHHErz/73EewrQFEJ6h+EG2Kb58rHt7790Gbeasw8WzNwoFi709EOz/9TmNqTR3bpwLjogA
+ 6gZNk0jUQckb7faQSdpuqLs8TvfdL/XzCqQSozj7BypSn3tAgnlJDwtyCLGbrDPZ+4bs6IJ9n
+ f7lDk4J8Ep/ypSY7/RXGGaB79ps+tFRqupY2VGDqhrwiwhh5BAiDPuLhUQayQ5nqoMNrWmway
+ 0JcN99rs8PAlXdjvM7oM7BdXv7QpIOlj0RVYi6rGOpk4PMsGhZrACmiSzdd0qyaeUd9Fcw0XF
+ +65gyz8tB+8loiH7VlfWmEgHeX2FQYFeOwVlF+UDSQ6fYpDJVqu5nnD6X2tWTChbWCdi98BpX
+ 4mkxw0ogwdHmBPvh/jl8z5XCHaa2LarawDOxfJkq3Uqlku4WBiDYa4tcHw2htUxkn3LJyiKDj
+ Ddu+DRj4/vpnC1uc6ayzXkFMVdmqXyDRd7Ape7iQ19AjdD75zns8z1HziyEw19CM4N2S4IdpH
+ Lg/VtP45kNuz3hqmZpS6fdcr+2352MSqWfoq2W0kRy3kLCEsGJAViQ6DZkkP7zsq/M/NSu03i
+ c+j2e5X3upH6R9J7PbgChs8EgzPKWH7p+em7lROZZKYowFu8iq37OSjQ2LF5M/TTGps1+CD0r
+ gDlgEm7yvY+zWAmmllmIdxzN76P/N9eD1HbrGzObVZ+AlrRKWjz+cZWkW1bgvk/jLUT9GwjpA
+ xdJ6pU8mYI4wvbqgo/uQot2QqWGbtI1f9MNfk4oCG8n9fOYxlNRProBZa/jrfs0xSVCmM4Qsm
+ 279/+0DR3s4ONzkwbLB238Naf/UDJr/9HgyaG4vE1cJWo1Mg7olb/bdFST+3EoZZVIguhnUnH
+ CvzyjkFZU7/o9Of6w/s/lwcPLRxkP2SYaAQ3Mp/RtSbO14Zjimx03PQkA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Michael,
 
-On 6/16/2022 4:08 PM, Lin Feng wrote:
-> No funtionality change, but save us some lines.
-> 
-> Signed-off-by: Lin Feng <linf@wangsu.com>
-> ---
->   kernel/cgroup/cgroup.c | 58 ++++++++++++++++++++----------------------
->   1 file changed, 27 insertions(+), 31 deletions(-)
-> 
-> diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-> index 1779ccddb734..a8a46eb66f21 100644
-> --- a/kernel/cgroup/cgroup.c
-> +++ b/kernel/cgroup/cgroup.c
-> @@ -1376,6 +1376,31 @@ static void cgroup_destroy_root(struct cgroup_root *root)
->   	cgroup_free_root(root);
->   }
->   
-> +static inline struct cgroup *__cset_cgroup_from_root(struct css_set *cset,
-> +					    struct cgroup_root *root)
-> +{
-> +	struct cgroup *res_cgroup = NULL;
-> +
-> +	if (cset == &init_css_set) {
-> +		res_cgroup = &root->cgrp;
-> +	} else if (root == &cgrp_dfl_root) {
-> +		res_cgroup = cset->dfl_cgrp;
-> +	} else {
-> +		struct cgrp_cset_link *link;
-> +
-> +		list_for_each_entry(link, &cset->cgrp_links, cgrp_link) {
-> +			struct cgroup *c = link->cgrp;
-> +
-> +			if (c->root == root) {
-> +				res_cgroup = c;
-> +				break;
-> +			}
-> +		}
-> +	}
-> +
-> +	return res_cgroup;
-> +}
-> +
->   /*
->    * look up cgroup associated with current task's cgroup namespace on the
->    * specified hierarchy
-> @@ -1391,22 +1416,8 @@ current_cgns_cgroup_from_root(struct cgroup_root *root)
->   	rcu_read_lock();
->   
->   	cset = current->nsproxy->cgroup_ns->root_cset;
-> -	if (cset == &init_css_set) {
-> -		res = &root->cgrp;
-> -	} else if (root == &cgrp_dfl_root) {
-> -		res = cset->dfl_cgrp;
-> -	} else {
-> -		struct cgrp_cset_link *link;
-> -
-> -		list_for_each_entry(link, &cset->cgrp_links, cgrp_link) {
-> -			struct cgroup *c = link->cgrp;
-> +	res = __cset_cgroup_from_root(cset, root);
->   
-> -			if (c->root == root) {
-> -				res = c;
-> -				break;
-> -			}
-> -		}
-> -	}
->   	rcu_read_unlock();
->   
->   	BUG_ON(!res);
-> @@ -1422,22 +1433,7 @@ static struct cgroup *cset_cgroup_from_root(struct css_set *cset,
->   	lockdep_assert_held(&cgroup_mutex);
->   	lockdep_assert_held(&css_set_lock);
->   
-> -	if (cset == &init_css_set) {
-> -		res = &root->cgrp;
-> -	} else if (root == &cgrp_dfl_root) {
-> -		res = cset->dfl_cgrp;
-> -	} else {
-> -		struct cgrp_cset_link *link;
-> -
-> -		list_for_each_entry(link, &cset->cgrp_links, cgrp_link) {
-> -			struct cgroup *c = link->cgrp;
-> -
-> -			if (c->root == root) {
-> -				res = c;
-> -				break;
-> -			}
-> -		}
-> -	}
-> +	res = __cset_cgroup_from_root(cset, root);
->   
->   	BUG_ON(!res);
->   	return res;
+On 16.06.22 at 15:03, Michael Niew=C3=B6hner wrote:
+> Hi Lino,
+>
+> On Thu, 2022-06-16 at 01:30 +0200, Lino Sanfilippo wrote:
+>>
+>> Hi Michael,
+>>
+>> On 15.06.22 at 23:54, Michael Niew=C3=B6hner wrote:
+>>
+>>>
+>>> Hi guys,
+>>>
+>>> for me this series causes boot problems - somehow feels like an interr=
+upt
+>>> storm...
+>>
+>>
+>> Thanks for this info. Which hardware do you use?
+>>
+>>> Not sure yet, which commit is causing that
+>>> @Tim could you test on any of your devices, please?
+>>>
+>>> BR
+>>> Michael
+>>>
+>>
+>> Regards,
+>> Lino
+>
+> looks like something was wrong with the devices firmware... I flashed a =
+fresh
+> image and everything is totally fine now - TPM gets detected without the
+> "interrupts not working" error! :-)
+>
+> Test device: Clevo L140MU, FW v1.07.12, TPM 2.0 Infineon SLB9670 (SPI)
+>
 
 
-Thanks for the patch
-Liked the idea.
+Good to hear that everything is fine now, thanks a lot for testing!
 
-Acked-by: Mukesh Ojha <quic_mojha@quicinc.com>
+Best regards,
+Lino
 
--Mukesh
