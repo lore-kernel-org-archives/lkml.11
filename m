@@ -2,121 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D91C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D3FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:46:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377220AbiFPNp4 (ORCPT
+        id S1377096AbiFPNq2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50172 "EHLO
+        Thu, 16 Jun 2022 09:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377096AbiFPNpx (ORCPT
+        with ESMTP id S233511AbiFPNq0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:45:53 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437273120C;
-        Thu, 16 Jun 2022 06:45:52 -0700 (PDT)
-Received: from fraeml737-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LP3N46PqQz680Bd;
-        Thu, 16 Jun 2022 21:45:40 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml737-chm.china.huawei.com (10.206.15.218) with Microsoft SMTP Server
+        Thu, 16 Jun 2022 09:46:26 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7365A37A2C
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:46:25 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LP3K23sMNzSgvN;
+        Thu, 16 Jun 2022 21:43:02 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 16 Jun 2022 15:45:49 +0200
-Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 16 Jun
- 2022 14:45:48 +0100
-Date:   Thu, 16 Jun 2022 14:45:47 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     "yekai(A)" <yekai13@huawei.com>
-CC:     Kai Ye via Linux-accelerators 
-        <linux-accelerators@lists.ozlabs.org>,
-        <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>,
-        <linuxarm@huawei.com>, <linux-kernel@vger.kernel.org>,
-        <wangzhou1@hisilicon.com>, <linux-crypto@vger.kernel.org>,
-        <zhangfei.gao@linaro.org>
-Subject: Re: [PATCH v2 3/3] crypto: hisilicon/qm - defining the device
- isolation strategy
-Message-ID: <20220616144547.00003093@Huawei.com>
-In-Reply-To: <f4fde630-a2ba-2416-5091-33c510c30593@huawei.com>
-References: <20220614122943.1406-1-yekai13@huawei.com>
-        <20220614122943.1406-4-yekai13@huawei.com>
-        <20220615140249.000077f8@Huawei.com>
-        <f4fde630-a2ba-2416-5091-33c510c30593@huawei.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+ 15.1.2375.24; Thu, 16 Jun 2022 21:46:21 +0800
+Received: from mdc.huawei.com (10.175.112.208) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 16 Jun 2022 21:46:21 +0800
+From:   Chen Jun <chenjun102@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <mingo@redhat.com>,
+        <peterz@infradead.org>, <will@kernel.org>
+CC:     <xuqiang36@huawei.com>
+Subject: [PATCH 1/1] lockdep: pass curr_inner to print_lock_invalid_wait_context
+Date:   Thu, 16 Jun 2022 13:40:42 +0000
+Message-ID: <20220616134042.130002-1-chenjun102@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhreml723-chm.china.huawei.com (10.201.108.74) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-...
+Same information (task_wait_context(curr)) is printed twice.
+curr_inner in check_wait_context is what we need.
 
-> >  
-> >> +	hw_err->tick_stamp = jiffies;
-> >> +	list_for_each_entry_safe(err, tmp, &qm->uacce_hw_errs, list) {  
-> >
-> > These are ordered (I think). Could take advantage of that by
-> > maintaining count of elements in parallel to the list then walking
-> > list in right direction + stop when you reach last one to need
-> > deleting.
-> >  
-> 
-> thanks, The current list + jiffies solution seems more simple.
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+---
+ kernel/locking/lockdep.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-If list always remains relatively short then that's probably fine.
-
-> >  
-> >> +		if ((hw_err->tick_stamp - err->tick_stamp) / HZ >
-> >> +		    SECONDS_PER_HOUR) {
-> >> +			list_del(&err->list);
-> >> +			kfree(err);
-> >> +		} else {
-> >> +			count++;
-> >> +		}
-> >> +	}
-> >> +	list_add(&hw_err->list, &qm->uacce_hw_errs);
-> >> +
-> >> +	if (count >= isolate->hw_err_isolate_hz)
-> >> +		atomic_set(&isolate->is_isolate, 1);
-> >> +
-> >> +	return 0;
-> >> +}
-> >> +  
-> >
-> > ...
-> >  
-> >> +static int hisi_qm_isolate_strategy_write(struct uacce_device *uacce,
-> >> +						const char *buf)
-> >> +{
-> >> +	struct hisi_qm *qm = uacce->priv;
-> >> +	unsigned long val = 0;
-> >> +
-> >> +#define MAX_ISOLATE_STRATEGY	65535
-> >> +
-> >> +	if (atomic_read(&qm->uacce_ref))
-> >> +		return -EBUSY;
-> >> +
-> >> +	/* must be set by PF */
-> >> +	if (atomic_read(&qm->isolate_data.is_isolate) || uacce->is_vf)  
-> >
-> > Why is the file visible on the vf?  Hide it or don't register it for vfs.  
-> Because VF devices can be registered with UACCE. So this file node can 
-> be visited on the vf. We're not sure if someone else's device is the 
-> same as qm. So i configure it this way by driver. the 'isolate_strategy' 
-> must be set by pf.
-> 
-
-If possible have the uacce registration from the driver provide information
-on whether this applies to the VF.  Much better to have no file presented
-by the VF than one that always returns an error code.
-
-Jonathan
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index 81e87280513e..2eb9802df7b9 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -4676,10 +4676,8 @@ static inline short task_wait_context(struct task_struct *curr)
+ 
+ static int
+ print_lock_invalid_wait_context(struct task_struct *curr,
+-				struct held_lock *hlock)
++				struct held_lock *hlock, short curr_inner)
+ {
+-	short curr_inner;
+-
+ 	if (!debug_locks_off())
+ 		return 0;
+ 	if (debug_locks_silent)
+@@ -4695,9 +4693,7 @@ print_lock_invalid_wait_context(struct task_struct *curr,
+ 	print_lock(hlock);
+ 
+ 	pr_warn("other info that might help us debug this:\n");
+-
+-	curr_inner = task_wait_context(curr);
+-	pr_warn("context-{%d:%d}\n", curr_inner, curr_inner);
++	pr_warn("context-{%d:%d}\n", curr_inner, task_wait_context(curr));
+ 
+ 	lockdep_print_held_locks(curr);
+ 
+@@ -4763,7 +4759,7 @@ static int check_wait_context(struct task_struct *curr, struct held_lock *next)
+ 	}
+ 
+ 	if (next_outer > curr_inner)
+-		return print_lock_invalid_wait_context(curr, next);
++		return print_lock_invalid_wait_context(curr, next, curr_inner);
+ 
+ 	return 0;
+ }
+-- 
+2.17.1
 
