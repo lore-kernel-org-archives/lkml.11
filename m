@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5A8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:58:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 590ABCCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378831AbiFPU6R (ORCPT
+        id S1378958AbiFPU6u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 16:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45442 "EHLO
+        Thu, 16 Jun 2022 16:58:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378809AbiFPU6J (ORCPT
+        with ESMTP id S1378921AbiFPU6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 16:58:09 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1762628722
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:58:06 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id 187so2482007pfu.9
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:58:06 -0700 (PDT)
+        Thu, 16 Jun 2022 16:58:45 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BAC22A707
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:58:45 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id q140so2288138pgq.6
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:58:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=3odd+CoUCDX7IoaEaSLss/9w0NCvjM2XDJMHtoPV8qE=;
-        b=mEdlJCBMO2qy2bytIS50JuL1WzxojSbUNPCgMyaNzNr7HIKwfEDdRiJe8fEZBEOI8q
-         oDjGz4YAlVH/8JUlYm5xQG5mOR/t3TR6mzu3cN6S2smcZad/pZe707JM4GjH6uCYrHtQ
-         dY8+Q4dEU+ztLhY1qzevUho9I5d1LeVW2XF0FAjhT3Vo8hEk1Qfw68xcr7ObUvOBBUe0
-         L5RX/WwsRh6QC7BUATzBt2RFaQyxTh+5/6T7XBO1bIAs6lK32Zc4Y1tdBIS4hmjA+QLG
-         yGdvotjlH8Ydr642jmGn41gCmyE/uxs8AFcWWRQ61JvNfhwPP7MrW/NBLeLZPSMzQYNn
-         moWA==
+        bh=i/ID+pDiSzzMuJuiQpKwiHmsa9j1VcPIYRxj1Z2pw9I=;
+        b=u/1l0Eoiz4R0iMnssEAD/HtH1dCWVB0z0UAaSkzRk9jPWafYOFWXfmo/obB+39E8/E
+         lUv4bVzuvdkm6ytXHLa05IQuuXILc5gZDC6wrp5thffAuTNIym/2zKmQWxgPcFq2YvSg
+         A3uLcEhjJ3cpaIuIdoz5XxO62xsLQHVXEuB61bmwvDs0MiUgqs+L3pX57ZVq/S5b9SLV
+         7n75wErkeo/kNk5/yxk0hZz6odF45+7Mw1G4TnKQiSaKvbeylZfyhagqmJqJ50iqE294
+         +zkBwvZ9EnwaT/ajH/waktJHPWoten4mouaS/nLmcsmKsUbgCDp78LrS96G1P44b/A6K
+         maXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=3odd+CoUCDX7IoaEaSLss/9w0NCvjM2XDJMHtoPV8qE=;
-        b=uRRvrt50htCsN+55bFtO0B1lD09lCBUglrCmCX9pyWQi8cQsymq2DvUlYMO4nA3iW0
-         KubQMVcrg2bi/KrxTCw67cqOVbTvVPyDP/qxw37qKEToQiz7wiDn4O6pP+VhYooOWEsR
-         juuvCtmkh3P0DiDSXgtjGx73O9X6yrNKsKK3ZxpKzzpcBcHVRKcuXWqrgD3X9z3R+kyo
-         YVpo4fV30+ftnvSRFw7499g3YkIQKU5Y5P6aUR8YGMjE2ki3KUDamGDSCG+UoiCUpXJk
-         4011ojY3URpT+JHXZooHpSL+18BDnKF5XTqq3zlP5fRz/TVZ3twRlquufWFYP9ZU0mbi
-         1x0Q==
-X-Gm-Message-State: AJIora8mkFn2b0hfxAGlfvgrsa8T9vXlNo2GEagl1NVd8JS2GlfALkEu
-        ZfGpzh7EuSmcoI3blCu78fGZyA==
-X-Google-Smtp-Source: AGRyM1ubYbWNsLiEkDJckGpD3XxEVsQvHLEChWPG1wS7oT5ke3l3ekzRFeKsT7B0AJBkaPynOQutSQ==
-X-Received: by 2002:a05:6a00:1344:b0:51b:e3b5:54e2 with SMTP id k4-20020a056a00134400b0051be3b554e2mr6685158pfu.6.1655413085606;
-        Thu, 16 Jun 2022 13:58:05 -0700 (PDT)
+        bh=i/ID+pDiSzzMuJuiQpKwiHmsa9j1VcPIYRxj1Z2pw9I=;
+        b=uLsK7IpMYUADd20xlxtd0qAwnMHLbCvBZt+6E9NVb5NdW7eXwWgRr2pjbWZQHIj4ev
+         KItZ6OOhMbuH/8BqP5Rp848R4ol7eQve8ym0L4WdP2qh1g0P9TJQjZ/N0Os1YaDD8hvp
+         qFMc2EQ7SeWHxWQYHA5mJbx0yUS2AjdZaEfOI/a8/WUSeFN4wET9Rxsgtac+9jzsqYxm
+         OCRjvZie+dUVXnTCpnWjs/nHOCb0ZHCiPJoSuvTpDhJ/6jNCyKGk268LCIoSfak4YkF9
+         4vqmq+9AIvBvb5PIEewEOWORQNh4xXlNvGEoqmhGn5WmHonFKCTCGxNVweKQ7HCEL4q5
+         PEKg==
+X-Gm-Message-State: AJIora86FVQWei77KddFMYNRt/3RlSwL8Lp9wj680pYcHruGQHLg+tu/
+        lnZw3hglTfpZhgQrESOnf3QxRA==
+X-Google-Smtp-Source: AGRyM1vOz2Afkti6mlOah/khUmgMyLaPLcgaTVa4kk2bxbz2YytR62NITJ+OJBzf1zpxhYbXtZiOmg==
+X-Received: by 2002:a63:8642:0:b0:3fd:a160:6724 with SMTP id x63-20020a638642000000b003fda1606724mr6041960pgd.506.1655413124744;
+        Thu, 16 Jun 2022 13:58:44 -0700 (PDT)
 Received: from google.com ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id v8-20020a17090a778800b001eab0a27d92sm4123401pjk.51.2022.06.16.13.58.03
+        by smtp.gmail.com with ESMTPSA id cp17-20020a170902e79100b0015e8d4eb1d5sm2082190plb.31.2022.06.16.13.58.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 13:58:05 -0700 (PDT)
-Date:   Thu, 16 Jun 2022 21:58:00 +0100
+        Thu, 16 Jun 2022 13:58:44 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 21:58:37 +0100
 From:   Lee Jones <lee.jones@linaro.org>
 To:     Satya Priya <quic_c_skakit@quicinc.com>
 Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -60,29 +60,27 @@ Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         swboyd@chromium.org, quic_collinsd@quicinc.com,
         quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
-Subject: Re: [PATCH V15 5/9] mfd: pm8008: Remove the regmap member from
- pm8008_data struct
-Message-ID: <YquZWKQIMs5paD5n@google.com>
+Subject: Re: [PATCH V15 3/9] dt-bindings: mfd: pm8008: Add regulators for
+ pm8008
+Message-ID: <YquZfQ3HRQ1FLBkt@google.com>
 References: <1655200111-18357-1-git-send-email-quic_c_skakit@quicinc.com>
- <1655200111-18357-6-git-send-email-quic_c_skakit@quicinc.com>
+ <1655200111-18357-4-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <1655200111-18357-6-git-send-email-quic_c_skakit@quicinc.com>
+In-Reply-To: <1655200111-18357-4-git-send-email-quic_c_skakit@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Tue, 14 Jun 2022, Satya Priya wrote:
 
-> Remove the regmap member from pm8008_data struct as it is
-> not used outside of probe. Add a local variable for regmap
-> and pass it to the pm8008_probe_irq_peripherals()
-> API in pm8008_probe.
+> Add regulators and their parent supplies along with example.
 > 
 > Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
 > Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 > ---
 > Changes in V15:
 >  - None.
@@ -93,8 +91,8 @@ On Tue, 14 Jun 2022, Satya Priya wrote:
 > Changes in V13:
 >  - None.
 > 
->  drivers/mfd/qcom-pm8008.c | 22 +++++++++++-----------
->  1 file changed, 11 insertions(+), 11 deletions(-)
+>  .../devicetree/bindings/mfd/qcom,pm8008.yaml       | 50 ++++++++++++++++++++++
+>  1 file changed, 50 insertions(+)
 
 For my own reference (apply this as-is to your sign-off block):
 
