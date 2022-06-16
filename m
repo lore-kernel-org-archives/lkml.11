@@ -2,132 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91486C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377557AbiFPOGx (ORCPT
+        id S1377340AbiFPOIp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 10:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44634 "EHLO
+        Thu, 16 Jun 2022 10:08:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377544AbiFPOGt (ORCPT
+        with ESMTP id S1377556AbiFPOI1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 10:06:49 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582BE49FB0;
-        Thu, 16 Jun 2022 07:06:47 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id n10so3012836ejk.5;
-        Thu, 16 Jun 2022 07:06:47 -0700 (PDT)
+        Thu, 16 Jun 2022 10:08:27 -0400
+Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676232A719;
+        Thu, 16 Jun 2022 07:08:26 -0700 (PDT)
+Received: by mail-vs1-xe33.google.com with SMTP id r4so1332707vsf.10;
+        Thu, 16 Jun 2022 07:08:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ld37J2VuQn8PPhwE47ARtw0waR2/HuJQhsucGvvTMtA=;
-        b=P1l0MNTTA01XHISNTKWCqpoCKZVy3VRBbiKjUMYFH65SWbEA+sXDzta7ZjrxNsfX0R
-         6cwnvTOUSSEGSzKhUbmMo33u77oF/MEB5Yhbxcxq2vz0l6vioq7RllXKZ9A/VUWuqYvc
-         sQHWHHwhD/Esbwhc66UtDCyse6FDfUbI2FS1Ak8TMdfnKw6UqyOrhRRei0ssYzVfg+Gt
-         U59OmFAZM20lzyARr1bkG2JZzmlY7Pdnswnk802RLmCB5f0Ak3Am64oUGdlzVGLCiyxp
-         0uPCmM9X/+tWEaPVgFsrBbx0ZaqF0DWNpD9bxViE43uSb34BzpcOzQyZppEdk5/gbmJP
-         aQPw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=QrYcdQgMMj0tJd0GCypW33PRE4/W3iPmmyMq8bz+7DE=;
+        b=kKK3GAH4z4U3YumVZNn79Ch1G44q7SVw7+oi81SquZQyrhVztXfwIT6XYtr4LKGFJB
+         xzr1GE27vDB5oF16k5TaEQwtMTsruEn6OvaGk1I4g7+43k+5ScAx1Efpg+TzfZQ1PuX3
+         YaV5YRA3rxg1mycPj9Zwu/tYhfS4/Fu8q92pcplEu4oPBWi6A+6Fyq++c2m5AsDC1kuV
+         Aug65pumjqtJF5j8ZpNJ638hWnbZ5Kr3v9vqYy5TGrNHLuUczGZtTzJ51+T0uVbnIvfi
+         +ghIwqNvRvOHu/PprpB6nf58C+hvF+rAP6PLtNkTySIiHsKKoCvheZOerguH7HtLUpe1
+         gPSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ld37J2VuQn8PPhwE47ARtw0waR2/HuJQhsucGvvTMtA=;
-        b=Xiy6/4Oq4vz8YoDaRjmWpYMCYv+c11toMElaggpqw4dlczcuscTNkuej+EOwTtU5wg
-         j57zwdvnjOR5QNHUwYx6LI1s9ziTLq6mgpMWCyC6lxtc9mnuHr7+YtPDk/NUVqujoNsr
-         fvQyV9qUmHrEbErtFACMpAGFGiWNqumyFOT+2OCBqvo9oPqWRY8uIZBZcu5w2zLA1GBD
-         1dF5RSIE2eqghgrqiioEh1XmEFM/3L9dFC1yBi6agoRyD5qxa1Bq1/tbn3PYSALe+1QE
-         dFE5BcDG2HYkASEG+XYEjmN298QVEhznyE0+08W7k/FsJ6jAlevLMK32K3gPb0BmKqIF
-         WSAw==
-X-Gm-Message-State: AJIora8fWmrCfL1UoJ7BgX5uM3rgvzRjPVpsJ41J/OuB+q/YYGTOoPMU
-        hVgVHaFTuybQvnIKiOL3yis=
-X-Google-Smtp-Source: AGRyM1u3umsK6xlqHwPnz5O2TeypBw4QaXQtA/xI3l39ercIbY2HybfED7MyFbauNWPsGryguzh7jQ==
-X-Received: by 2002:a17:907:9813:b0:711:d5ac:b9ef with SMTP id ji19-20020a170907981300b00711d5acb9efmr4650798ejc.95.1655388405685;
-        Thu, 16 Jun 2022 07:06:45 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id j4-20020a50ed04000000b004318ba244dcsm1845428eds.10.2022.06.16.07.06.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 07:06:45 -0700 (PDT)
-Message-ID: <62ab38f5.1c69fb81.303fc.3bc8@mx.google.com>
-X-Google-Original-Message-ID: <Yqs3+kqSfW62ieoK@Ansuel-xps.>
-Date:   Thu, 16 Jun 2022 16:02:34 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dmaengine@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH v2 1/2] dt-bindings: dma: rework qcom,adm Documentation
- to yaml schema
-References: <20220615235404.3457-1-ansuelsmth@gmail.com>
- <1655388301.055791.3391580.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=QrYcdQgMMj0tJd0GCypW33PRE4/W3iPmmyMq8bz+7DE=;
+        b=sWMgZStGK7OZ4T88m5+/FfFvD2gYQO1SDZYGa4Z8ebgA0pSqUCYU4EWKfkI01dD06i
+         5kUCWyY5aT6/S4kUh2Qqd/Sp5qb0bPF7aYMtI5MQpSpoT9kPYWT7/mM4ETTGxUjkqNNT
+         qCaXF7e0UXwFkfXsNH5cv+EVBcw/EILHlrC5hpJb2ePomR/Tx8G9Wyo8igft572gfFNj
+         1fCilw3tUrEWj0x07iM2rc0FXG9g95p3/u73BhIhuOusNwkGM8wQIWQYnVGAGayEPUWR
+         eLf6fb//SwS5U3M6MNs718f5Cupg0Hw+lZ523ejuHGI9c5inHJj1bPY88PFSSWqXqCjn
+         MNLA==
+X-Gm-Message-State: AJIora/6Ac54kvEk5iUqkCQw8kvGDBb1HcPJPTIs0afCh7PyEhzEVZI6
+        m8H1avzkj8XFsb/rJyNC1jG2pSkqBMf2KPgmIQo=
+X-Google-Smtp-Source: AGRyM1sAkqNmpZ7DjWNnBWpUFGZXOCr/kKVwhJU4zW7sv3K86XpIJYzfhVP3KnpFJK+qNs2H7HVkZ1A9NcAKvqFEbK8=
+X-Received: by 2002:a67:2246:0:b0:34a:46d:4f48 with SMTP id
+ i67-20020a672246000000b0034a046d4f48mr2407019vsi.4.1655388505555; Thu, 16 Jun
+ 2022 07:08:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1655388301.055791.3391580.nullmailer@robh.at.kernel.org>
+References: <20220615070813.7720-1-romain.perier@gmail.com>
+ <20220615070813.7720-2-romain.perier@gmail.com> <1655298962.395709.662448.nullmailer@robh.at.kernel.org>
+In-Reply-To: <1655298962.395709.662448.nullmailer@robh.at.kernel.org>
+From:   Romain Perier <romain.perier@gmail.com>
+Date:   Thu, 16 Jun 2022 16:08:14 +0200
+Message-ID: <CABgxDoLCJTn8Ohvb0TQQ_MsgCNoV5e9R1-7JUe137uTRtFY71w@mail.gmail.com>
+Subject: Re: [PATCH 1/5] dt-bindings: pwm: Add Mstar MSC313e PWM devicetree
+ bindings documentation
+To:     Rob Herring <robh@kernel.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Daniel Palmer <daniel@0x0f.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 08:05:01AM -0600, Rob Herring wrote:
-> On Thu, 16 Jun 2022 01:54:03 +0200, Christian Marangi wrote:
-> > Rework the qcom,adm Documentation to yaml schema.
-> > This is not a pure conversion since originally the driver has changed
-> > implementation for the #dma-cells and was wrong from the start.
-> > Also the driver now handles the common DMA clients implementation with
-> > the first cell that denotes the channel number and nothing else since
-> > the client will have to provide the crci information via other means.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> > v2:
-> > - Change Sob to Christian Marangi
-> > - Add Bjorn in the maintainers list
-> > 
-> >  .../devicetree/bindings/dma/qcom,adm.yaml     | 96 +++++++++++++++++++
-> >  .../devicetree/bindings/dma/qcom_adm.txt      | 61 ------------
-> >  2 files changed, 96 insertions(+), 61 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/dma/qcom,adm.yaml
-> >  delete mode 100644 Documentation/devicetree/bindings/dma/qcom_adm.txt
-> > 
-> 
-> Running 'make dtbs_check' with the schema in this patch gives the
-> following warnings. Consider if they are expected or the schema is
-> incorrect. These may not be new warnings.
-> 
-> Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-> This will change in the future.
-> 
-> Full log is available here: https://patchwork.ozlabs.org/patch/
-> 
-> 
-> dma-controller@18300000: reset-names:1: 'c0' was expected
-> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
-> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
-> 
-> dma-controller@18300000: reset-names:2: 'c1' was expected
-> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
-> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
-> 
-> dma-controller@18300000: reset-names:3: 'c2' was expected
-> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
-> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
-> 
-> dma-controller@18300000: reset-names: ['clk', 'pbus', 'c0', 'c1', 'c2'] is too long
-> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
-> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
-> 
-> dma-controller@18300000: resets: [[11, 13], [11, 12], [11, 11], [11, 10], [11, 9]] is too long
-> 	arch/arm/boot/dts/qcom-ipq8064-ap148.dtb
-> 	arch/arm/boot/dts/qcom-ipq8064-rb3011.dtb
+Hi,
+
+Le mer. 15 juin 2022 =C3=A0 15:16, Rob Herring <robh@kernel.org> a =C3=A9cr=
+it :
+> If you already ran 'make dt_binding_check' and didn't see the above
+> error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> date:
+>
+> pip3 install dtschema --upgrade
+>
+> Please check and re-submit.
 >
 
-I should have fixed this with the other patch. Should the conversion fix
-this directly?
 
--- 
-	Ansuel
+Mhhh, not sure to have yamllint, I will check it and fix it.
+
+Regards,
+Romain
