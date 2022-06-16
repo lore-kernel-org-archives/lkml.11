@@ -2,83 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FC6C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 286A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358728AbiFPHLw (ORCPT
+        id S1358826AbiFPHMZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 03:11:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57172 "EHLO
+        Thu, 16 Jun 2022 03:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbiFPHLu (ORCPT
+        with ESMTP id S229718AbiFPHMY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 03:11:50 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655362B1BD
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 00:11:48 -0700 (PDT)
-Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LNtbn5XrSzjY3t;
-        Thu, 16 Jun 2022 15:10:13 +0800 (CST)
-Received: from [10.174.176.103] (10.174.176.103) by
- kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 16 Jun 2022 15:11:45 +0800
-Message-ID: <71004ab9-38e0-4323-2506-38d6e71130f6@huawei.com>
-Date:   Thu, 16 Jun 2022 15:11:12 +0800
+        Thu, 16 Jun 2022 03:12:24 -0400
+Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415135BD34
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 00:12:19 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id KDC00116;
+        Thu, 16 Jun 2022 15:12:16 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201601.home.langchao.com (10.100.2.1) with Microsoft SMTP Server id
+ 15.1.2308.27; Thu, 16 Jun 2022 15:12:16 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <sudeep.holla@arm.com>, <cristian.marussi@arm.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] firmware: arm_scmi: Remove usage of the deprecated ida_simple_xxx API
+Date:   Thu, 16 Jun 2022 01:50:52 -0400
+Message-ID: <20220616055052.4559-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH -next] driver core: fix deadlock in __driver_attach
-To:     <gregkh@linuxfoundation.org>, <rafael@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>
-References: <20220608094355.3298420-1-zhangwensheng5@huawei.com>
-From:   "zhangwensheng (E)" <zhangwensheng5@huawei.com>
-In-Reply-To: <20220608094355.3298420-1-zhangwensheng5@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.103]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500016.china.huawei.com (7.221.188.220)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   202261615121680575a135cc1fb6a44243d32fd659860
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-friendly ping...
+Use ida_alloc_xxx()/ida_free() instead of
+ida_simple_get()/ida_simple_remove().
+The latter is deprecated and more verbose.
 
-在 2022/6/8 17:43, Zhang Wensheng 写道:
-> In __driver_attach function, There are also potential AA deadlock
-> problem, like the commit b232b02bf3c2 ("driver core: fix deadlock
-> in __device_attach").
->
-> Fixes: ef0ff68351be ("driver core: Probe devices asynchronously instead of the driver")
-> Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-> ---
->   drivers/base/dd.c | 5 ++++-
->   1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-> index 11b0fb6414d3..b766968a873c 100644
-> --- a/drivers/base/dd.c
-> +++ b/drivers/base/dd.c
-> @@ -1115,6 +1115,7 @@ static void __driver_attach_async_helper(void *_dev, async_cookie_t cookie)
->   static int __driver_attach(struct device *dev, void *data)
->   {
->   	struct device_driver *drv = data;
-> +	bool async = false;
->   	int ret;
->   
->   	/*
-> @@ -1153,9 +1154,11 @@ static int __driver_attach(struct device *dev, void *data)
->   		if (!dev->driver && !dev->p->async_driver) {
->   			get_device(dev);
->   			dev->p->async_driver = drv;
-> -			async_schedule_dev(__driver_attach_async_helper, dev);
-> +			async = true;
->   		}
->   		device_unlock(dev);
-> +		if (async)
-> +			async_schedule_dev(__driver_attach_async_helper, dev);
->   		return 0;
->   	}
->   
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ drivers/firmware/arm_scmi/bus.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/firmware/arm_scmi/bus.c b/drivers/firmware/arm_scmi/bus.c
+index f6fe723ab869..d4e23101448a 100644
+--- a/drivers/firmware/arm_scmi/bus.c
++++ b/drivers/firmware/arm_scmi/bus.c
+@@ -181,7 +181,7 @@ scmi_device_create(struct device_node *np, struct device *parent, int protocol,
+ 		return NULL;
+ 	}
+ 
+-	id = ida_simple_get(&scmi_bus_id, 1, 0, GFP_KERNEL);
++	id = ida_alloc_min(&scmi_bus_id, 1, GFP_KERNEL);
+ 	if (id < 0) {
+ 		kfree_const(scmi_dev->name);
+ 		kfree(scmi_dev);
+@@ -204,7 +204,7 @@ scmi_device_create(struct device_node *np, struct device *parent, int protocol,
+ put_dev:
+ 	kfree_const(scmi_dev->name);
+ 	put_device(&scmi_dev->dev);
+-	ida_simple_remove(&scmi_bus_id, id);
++	ida_free(&scmi_bus_id, id);
+ 	return NULL;
+ }
+ 
+@@ -212,7 +212,7 @@ void scmi_device_destroy(struct scmi_device *scmi_dev)
+ {
+ 	kfree_const(scmi_dev->name);
+ 	scmi_handle_put(scmi_dev->handle);
+-	ida_simple_remove(&scmi_bus_id, scmi_dev->id);
++	ida_free(&scmi_bus_id, scmi_dev->id);
+ 	device_unregister(&scmi_dev->dev);
+ }
+ 
+-- 
+2.27.0
+
