@@ -2,204 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FB44C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:49:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377148AbiFPOtO (ORCPT
+        id S1377139AbiFPOts (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 10:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57080 "EHLO
+        Thu, 16 Jun 2022 10:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233699AbiFPOtH (ORCPT
+        with ESMTP id S233699AbiFPOtn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 10:49:07 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923905F66
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 07:49:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655390945; x=1686926945;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8GRTdOKhgZUTyAOwSLAdCbYHI0wnSiuMdd9R7+rwbdI=;
-  b=LwsrVwtFYTN6CMG9O6+mVFAt8q6EIjvro6+l7TxpgODnAPQBHH8hpBus
-   +QPZV+f35RCBc+4WQcoZuYCWNSRGin7wsiMIL5q7oohrLYSxXg1KiJE22
-   9fRGr/dazW/QVJDglxjPRUecd7u8DfNBEbhdgsP4qwrNU2rhR340ijvpc
-   S35aHXOx2ekjClnb869xijGSACqNry29ZXz/EAFso25HiPNgdWsIoVP3T
-   0pcLsNZklR0V8YXKkYARv49xJLm3DFmF6OI9hvX49dwKvooP8zgdVi6qC
-   UIgQiJrFzpieMSD2uQDn4nDVEKmbb6LrNc7zguunJvq8gimOz7FkPBbj1
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="304707872"
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="304707872"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 07:49:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="831590928"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 16 Jun 2022 07:49:03 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1qnu-000OTA-Lw;
-        Thu, 16 Jun 2022 14:49:02 +0000
-Date:   Thu, 16 Jun 2022 22:48:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Qian Cai <quic_qiancai@quicinc.com>
-Cc:     kbuild-all@lists.01.org, Yu Zhao <yuzhao@google.com>
-Subject: Re: [PATCH v2 Fix 2/3] maple_tree: Change spanning store to work on
- larger trees
-Message-ID: <202206162211.tEs2TZjY-lkp@intel.com>
-References: <20220616011739.802669-3-Liam.Howlett@oracle.com>
+        Thu, 16 Jun 2022 10:49:43 -0400
+Received: from FRA01-MR2-obe.outbound.protection.outlook.com (mail-eopbgr90070.outbound.protection.outlook.com [40.107.9.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF7529365
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 07:49:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LSXERi08FS/UG0grJYdLNyR/XSXVvDfQp3f6Io3FNu5jFU1ljTdek1QJKCKKdmZ0ww5ZysEc2Az1p5KRvl3RYFTZOHlHhXBTrqE5Tw2NxknECXtitskajhcwUWf90K30Fil/gkw2YN3jnyhxVjWxJTb9Y/Q9jruDSxA9gyTQJfvWGfblLgHjP0K+egXBzwwTrEulGv/zQqMPOnxpXrOFUJIkpfWAijjsDZNNRjfOOZOWsTCp0vuyik5cl9GudecyRBNFYqhUk3Hit4a7C1AeutJ4F/nHqv3uWRXr+fOvZugPMkCZimoP3SnbOF5Ks/f+9qDSWZ3SuC21j6fG9LvBTw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=S5Umk0GCMfA5bLH4vqr/+11CIOgGqybFCrEvB3gtzS8=;
+ b=XsRzQqUzOYUEg3dsWBs63tRi2mOHOtf1u4Txfa8H6O/cYq/bjz9ufPqr6mvOMl3yTk2zHcmh2pAlZ22GZVXisycu+K4EUfBN+4wYZr0A5mI/hMibPfPuh+yXc6Iqfx046/uNZuyllRfAEQwijlA1RYI6VyXXtlFVX/RCPGSCIeQ2USnjGTwPm9fumxVME/Z7h7KlO4yo828OD8454+GuJFFXDXLG5oyw602/H+uuatSoBostndcwEpRDtt5rkArcV1U2j9m4+HWoUrNd/B56Cij7GhAvT7vDmPZJvy4wJYrMKMnzYB3fvZU85CTfRj9HffkC3vuuw02BkhUVNpF3lA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=csgroup.eu;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S5Umk0GCMfA5bLH4vqr/+11CIOgGqybFCrEvB3gtzS8=;
+ b=GddCDKsstyxL+nMz9rRALrYYHOoX9TMCHzA8tHcQJW5Ufd3bRXkkHhP+3VXGAIVgcIXtCuWTVRf95KQYsJydBUpSohlnMiLX74YH+rm49M+JyiAn7RQEz5uKQNUxCrKSJHyfIxOXz6WwGDlB81CrFfkhQG2Dl+xz0zpzycHR3h7iTowbcuZL+Qef8vxyj0Q82yFMAZqvsUXL1tqpODpb5aB6EpiMq/NUD1rnNoKOw96NmB5OC7Qn9637SUfOitk5vqY3eX3n8ScZCz/jvLYI7VGU7lNKjqjdXW51Kipx4ObNsEL7VbGAkrST7/UXRGHBNpQWQQL/RcOK4N9i+mIJ8w==
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by MRZP264MB2087.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:17::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14; Thu, 16 Jun
+ 2022 14:49:36 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::b15e:862f:adf7:5356]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::b15e:862f:adf7:5356%5]) with mapi id 15.20.5353.014; Thu, 16 Jun 2022
+ 14:49:36 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Liang He <windhl@126.com>, "oss@buserror.net" <oss@buserror.net>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "paulus@samba.org" <paulus@samba.org>
+CC:     "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] arch: powerpc: platforms: 85xx: Add missing of_node_put
+ in sgy_cts1000.c
+Thread-Topic: [PATCH] arch: powerpc: platforms: 85xx: Add missing of_node_put
+ in sgy_cts1000.c
+Thread-Index: AQHYgSSC7Eezc3FRx0Sqk04i/snhNa1SHk6A
+Date:   Thu, 16 Jun 2022 14:49:36 +0000
+Message-ID: <db681dac-5c42-d659-d0ed-31390b2feb3a@csgroup.eu>
+References: <20220615120717.3965164-1-windhl@126.com>
+In-Reply-To: <20220615120717.3965164-1-windhl@126.com>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f4747eae-1c9b-4eef-7e68-08da4fa76f0d
+x-ms-traffictypediagnostic: MRZP264MB2087:EE_
+x-microsoft-antispam-prvs: <MRZP264MB20878DD58A68BD07981FC2BEEDAC9@MRZP264MB2087.FRAP264.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Du59EY/VeSblyyGCiq6UXMlONriEiV/NrU9fMLht3e4SPr5U4tvLFUE9ZsNswi2lODRgT61IA8robWp1Y1FlQi+f3hMFwg9OA1XMMmlI1Ghdn7YtMAMsHfrjWlbMR7mBxDPi1zuyp3TeMBMl1gm7aUy5zOnYbwCC9VgbxewRquM0p2wcuR8Cb1OMVh4YmR5IBQa9b2HV+aepYv3Gw5+epMqJUq+/QaKXJmA8o5Mo8uIOR+oNGF2wQx0Dmfkav7ELH+SnbIDfdGqohwFijJiIU/SwixSnjrfxElFKjdBXWOSJU0Bvxj/gsKokPj99vEchuHhkUOAwifbQqHICsnbMg3pq8ACv6y3wTCNGx7OkE+kVCOlV+9bPISJ9DZH1YmPCuTdDQS5llraTzZx9cJgDIb3EZNDn1lEp4lgHM9+VwFXNqmKSSWCQC21dRXRsqXxl5OZYtS/wNBkUYGuZ6px9ljx8M1q+uWA1bqLVEugYPWSYc/X7BfOFNuWZE+VWBORU3DX1OsSCbUYpSd3yVYWmQK4f3C+DAgGHeLxdDGOh8aRr8i0rh1YioQWJHdyHH+t0ZmSU05dz84O6ic+eL3hswKeobAE7raleFc6oiK3IC9L1E1LomqbRtSCR9jCCwPZ2dPnSEvxYMQZY6Fcwq99n1C9YhQpeSkwEPhq5apjQRqX8pzCWIanM3A+eZgya5gIN0oJfctvdlEc8jBzEzw69pocrIpuvKXrCp75XsHec41s4Qkwlg4HJDub9vH/VBk/N1I0Kfd25RL/Ll0T9XlAElA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(31696002)(71200400001)(186003)(38100700002)(6506007)(54906003)(110136005)(38070700005)(66574015)(966005)(6486002)(8936002)(6512007)(5660300002)(44832011)(26005)(508600001)(83380400001)(316002)(4326008)(2616005)(31686004)(76116006)(8676002)(122000001)(36756003)(66946007)(66556008)(64756008)(66476007)(66446008)(2906002)(91956017)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Y1ozQTUxQVJtRWJUd0c3R09sRU5MRXdxTFFlRHdYNFRwbTgzK2tPNTJRMVRz?=
+ =?utf-8?B?RGtERkR5Y1hwdmozWlJFQURuOGF2M01GN3Q0c0d2TkdWRGxncmJDWnp1Y3Vs?=
+ =?utf-8?B?dURUZ0cyTzU1cU9XcVV1TFJWL1c0UFRmVTBmamZ5ZDZNN2ZnTXgrRm1yakdt?=
+ =?utf-8?B?QkJrUmNsVjBnOVR2dld4SFJNbnd2d0UwOThuL0gyUHVJTG95QTZNZUQ1RE04?=
+ =?utf-8?B?V0VNby9ZQWxVVW1WNnhkMzQ1Q3RhNkZkSU1hSEVrcTFWdE50Rml2N1VONkFM?=
+ =?utf-8?B?QmNucE9jUHhMdU41ZUxhaytlZ3A3am1HSXRTQlc4OGVFMkhjdkdGMGc4N0ti?=
+ =?utf-8?B?eFZ2U3RaS05GOWpmR3F4S0s5RENiZWdEWHh0SFZPUmgwczhCZVF4UmQrcHh1?=
+ =?utf-8?B?U0xya1l4aUxaWlJIdkhqRERUUVdZd0EwNEpGM0gzdmFwR0dQdU83L0lYUzNs?=
+ =?utf-8?B?cThibitQOTlab2QvRWFvaURnQWxMd0JjKzkzM2Y5WDZSczR2S2t3RFY0Yldn?=
+ =?utf-8?B?U0ZTcjNTdDlscTFlbVlhcjZkUURzeERoODJOV1ZMRklWbzhlNkZ2V2cyaG9K?=
+ =?utf-8?B?VGpQQURDOUZMbVFjUXZxanhzNWxuQTBFNXBNQ2NEaW1YbW9ydXBIeURUTUFD?=
+ =?utf-8?B?Z2xvWFhFRGZJcWQ4OTdWWFFoZVRXRkNXRHFlZXI5WUJUUkRYSXhvVHcraUMr?=
+ =?utf-8?B?ZHQrZk94YjF5MTZ0aEpWZHVMbURlWUpVTWZTd1o1aWd6RC90WllURy9ONkcr?=
+ =?utf-8?B?elYxZmRKQW5oYnNEVmJ0aXI4dkh0dHFxT05kT0pmVTh2R1ZrdVY5WEFDZm1L?=
+ =?utf-8?B?L09WTkNicTlCUE9MS2U5SjlST0l4R0xiOS9ZM0FOWm5lbTB5WlVsTVBQMEx6?=
+ =?utf-8?B?TzJEV3UzZUtpcFBuZi8vLzhNM2NLOFpYUitzaDg4VXJ2R2V2OUhzRFNneDhV?=
+ =?utf-8?B?UFdyNGJNZzUyYXcrKzRDZlNGYjlmNHBvd2dYOVpqaGFxbnJCQnRYeGx2WWhv?=
+ =?utf-8?B?L3ljOTZMN2xFa2JpcllEWC9HcjkwOUtjMGVPbWdyU3IvUWlaL0V2ZHI3dFI5?=
+ =?utf-8?B?eUxJb0xtNG1EUWY2N08zMFBRb2RSRXBjSHk3ODFZL1N5SERMUjV3ckZKV01B?=
+ =?utf-8?B?aER4VDc5eU5Xa1lEZ2VSOVM3MXdKRkV4SHlYR1lCQjJkSUZvd3V4M2ZhaEt5?=
+ =?utf-8?B?Y25TbTNoLzZqcDV5VzhPNHdRTnJJUlcrK2FGMXY2cXYzcFpOM3h3clMvWWdO?=
+ =?utf-8?B?MVNaY0t6ZDBIYTRTUTNrK205d3ZxUU1uTUtqRWhiOEZ2OU4vVWJhSUxSY2Jh?=
+ =?utf-8?B?TEtXOC9Lamt3eFZDN3AxTktHQ1luRHVlYzFTRWoxSUlHQnR0ckN3NlUwalgv?=
+ =?utf-8?B?THBtVFJXbEJHaEZrOEpzSlEzZ01BZS9LMDhkd0VxMjVUYVNOR1BkY1l4Tk0z?=
+ =?utf-8?B?dzV0V2RaVnZLdU9rVms2cFhJdHJUa1VjR1lkcVZmclFlUVlxTjBLMmJvOURt?=
+ =?utf-8?B?dnpDZnRNRlI3K2FmalpIclRKVzhCNmZCdlhiRzhIbTFlb1dXUXZrbEdPZHVC?=
+ =?utf-8?B?enJSNE5tT1BNY3JVdlB0WFY2N3VsdDBCVkJjRCs2enpZdUY1WGdMb0VFcmxS?=
+ =?utf-8?B?dlFoclJMUCtiKzNJa2E5VlltSFVUVE10UlpCa1VIb0l0d2NQSDJOaXNxNVlM?=
+ =?utf-8?B?MGQrMkU0ejBQVUx4SUxYN1ZHT2xKckdrMEhOUDFmb3Rpb2J3aVF3SEtreHhI?=
+ =?utf-8?B?ak1McGdEaEZQZktiWFdnTm9mNXB0MVFOdHNyd2l5WTFMM3F1ZzdkQVBvblQ5?=
+ =?utf-8?B?R1NBWWllQjhoV2I4aW9janhJZnlHSVoxMjJYeEg1enpNVUxMYUhzcWpXNTcz?=
+ =?utf-8?B?dVhYRFNhR3lTZnkybDZsNFBrT09Qa3B4VWd5YysybXhRd2l2eklUN3M1OG8z?=
+ =?utf-8?B?WDdjaXEvOGZnTWFON09meWhQblA4aEdvNlBaamxGWldrL0tZZW9adkZ2TGtM?=
+ =?utf-8?B?Q0oyT2YrZklack5odGY4NjBjQnp4SzdPcVBkMm1zNStaTHpGSjF0aG5xVVVw?=
+ =?utf-8?B?M29CZDJCMllBK3cvZEh0ckpwUEI2UDFGaExWZnhnR3FKQjljQVcyYnd3d3Iz?=
+ =?utf-8?B?UHZYajFMQ3p4NHR0NDJ5TlpVL0JYdFFOL3BxU3B2Wm90RVczd09kWDFyS2JH?=
+ =?utf-8?B?R0NubEk4ZnVtZ2lwaFg3d3c2WFBoQjB0eTk2ZHlGdnZWb25DdDVOL01FcWdF?=
+ =?utf-8?B?T0ZncERESmpTRnpmRmc0ZXVsMHhtQjZXWnlhSERwcitidzMzNFlxMU83WTkz?=
+ =?utf-8?B?OTFHazZ6ZjZNRjBHTVBvbnhNYW9LcnlOQllhRkNJdU13alVMeVBlK0p3aks0?=
+ =?utf-8?Q?egtEDC9Rp9xIdO7RJfzU4YVU3pyKoBeCV3yJl?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DAD173419697E84EAA7F11E489E8FA04@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220616011739.802669-3-Liam.Howlett@oracle.com>
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: f4747eae-1c9b-4eef-7e68-08da4fa76f0d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jun 2022 14:49:36.7322
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /YgYuAOnPQArCC8lJR0D0unbrHCUAsybAIAqp5xqLGuRcqr+fHK7HUPQlToxBH5UOlWOrJMuE/m4fMsqq112vLBbCOUFiiJpjRzKt3UJ3ok=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MRZP264MB2087
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Liam,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on akpm-mm/mm-everything]
-[cannot apply to linus/master v5.19-rc2 next-20220616]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Liam-Howlett/Maple-tree-spanning-fixes/20220616-091945
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: openrisc-randconfig-s032-20220616 (https://download.01.org/0day-ci/archive/20220616/202206162211.tEs2TZjY-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-30-g92122700-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/ebc93d5486b6fed251043d034790c95faac9394d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Liam-Howlett/Maple-tree-spanning-fixes/20220616-091945
-        git checkout ebc93d5486b6fed251043d034790c95faac9394d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=openrisc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
->> lib/maple_tree.c:5506:69: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct maple_enode const *entry @@     got void [noderef] __rcu * @@
-   lib/maple_tree.c:5506:69: sparse:     expected struct maple_enode const *entry
-   lib/maple_tree.c:5506:69: sparse:     got void [noderef] __rcu *
-   lib/maple_tree.c:5507:38: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct maple_enode const *entry @@     got void [noderef] __rcu * @@
-   lib/maple_tree.c:5507:38: sparse:     expected struct maple_enode const *entry
-   lib/maple_tree.c:5507:38: sparse:     got void [noderef] __rcu *
->> lib/maple_tree.c:2322:17: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void **l_slots @@     got void [noderef] __rcu ** @@
-   lib/maple_tree.c:2322:17: sparse:     expected void **l_slots
-   lib/maple_tree.c:2322:17: sparse:     got void [noderef] __rcu **
->> lib/maple_tree.c:2325:17: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void **r_slots @@     got void [noderef] __rcu ** @@
-   lib/maple_tree.c:2325:17: sparse:     expected void **r_slots
-   lib/maple_tree.c:2325:17: sparse:     got void [noderef] __rcu **
->> lib/maple_tree.c:2329:57: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __rcu **slots @@     got void **l_slots @@
-   lib/maple_tree.c:2329:57: sparse:     expected void [noderef] __rcu **slots
-   lib/maple_tree.c:2329:57: sparse:     got void **l_slots
->> lib/maple_tree.c:2333:57: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __rcu **slots @@     got void **r_slots @@
-   lib/maple_tree.c:2333:57: sparse:     expected void [noderef] __rcu **slots
-   lib/maple_tree.c:2333:57: sparse:     got void **r_slots
-   lib/maple_tree.c:2351:57: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __rcu **slots @@     got void **l_slots @@
-   lib/maple_tree.c:2351:57: sparse:     expected void [noderef] __rcu **slots
-   lib/maple_tree.c:2351:57: sparse:     got void **l_slots
-   lib/maple_tree.c:2358:57: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __rcu **slots @@     got void **r_slots @@
-   lib/maple_tree.c:2358:57: sparse:     expected void [noderef] __rcu **slots
-   lib/maple_tree.c:2358:57: sparse:     got void **r_slots
->> lib/maple_tree.c:2322:17: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void **l_slots @@     got void [noderef] __rcu ** @@
-   lib/maple_tree.c:2322:17: sparse:     expected void **l_slots
-   lib/maple_tree.c:2322:17: sparse:     got void [noderef] __rcu **
->> lib/maple_tree.c:2325:17: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void **r_slots @@     got void [noderef] __rcu ** @@
-   lib/maple_tree.c:2325:17: sparse:     expected void **r_slots
-   lib/maple_tree.c:2325:17: sparse:     got void [noderef] __rcu **
->> lib/maple_tree.c:2329:57: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __rcu **slots @@     got void **l_slots @@
-   lib/maple_tree.c:2329:57: sparse:     expected void [noderef] __rcu **slots
-   lib/maple_tree.c:2329:57: sparse:     got void **l_slots
->> lib/maple_tree.c:2333:57: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __rcu **slots @@     got void **r_slots @@
-   lib/maple_tree.c:2333:57: sparse:     expected void [noderef] __rcu **slots
-   lib/maple_tree.c:2333:57: sparse:     got void **r_slots
-   lib/maple_tree.c:2351:57: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __rcu **slots @@     got void **l_slots @@
-   lib/maple_tree.c:2351:57: sparse:     expected void [noderef] __rcu **slots
-   lib/maple_tree.c:2351:57: sparse:     got void **l_slots
-   lib/maple_tree.c:2358:57: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __rcu **slots @@     got void **r_slots @@
-   lib/maple_tree.c:2358:57: sparse:     expected void [noderef] __rcu **slots
-   lib/maple_tree.c:2358:57: sparse:     got void **r_slots
-   lib/maple_tree.c:5444:9: sparse: sparse: context imbalance in 'mt_free_walk' - different lock contexts for basic block
-
-vim +5506 lib/maple_tree.c
-
-  5472	
-  5473	static void mt_destroy_walk(struct maple_enode *enode, unsigned char ma_flags,
-  5474				    bool free)
-  5475	{
-  5476		void __rcu **slots;
-  5477		struct maple_node *node = mte_to_node(enode);
-  5478		struct maple_enode *start;
-  5479		struct maple_tree mt;
-  5480	
-  5481		MA_STATE(mas, &mt, 0, 0);
-  5482	
-  5483		if (mte_is_leaf(enode))
-  5484			goto free_leaf;
-  5485	
-  5486		mt_init_flags(&mt, ma_flags);
-  5487		mas_lock(&mas);
-  5488	
-  5489		mas.node = start = enode;
-  5490		slots = mas_destroy_descend(&mas, start, 0);
-  5491		node = mas_mn(&mas);
-  5492		do {
-  5493			enum maple_type type;
-  5494			unsigned char offset;
-  5495	
-  5496			node->slot_len = mas_dead_leaves(&mas, slots);
-  5497			if (free)
-  5498				mt_free_bulk(node->slot_len, slots);
-  5499			offset = node->parent_slot + 1;
-  5500			mas.node = node->piv_parent;
-  5501			if (mas_mn(&mas) == node)
-  5502				goto start_slots_free;
-  5503	
-  5504			type = mte_node_type(mas.node);
-  5505			slots = ma_slots(mte_to_node(mas.node), type);
-> 5506			if ((offset < mt_slots[type]) && mte_node_type(slots[offset]) &&
-  5507			    mte_to_node(slots[offset])) {
-  5508				struct maple_enode *parent = mas.node;
-  5509	
-  5510				mas.node = mas_slot_locked(&mas, slots, offset);
-  5511				slots = mas_destroy_descend(&mas, parent, offset);
-  5512			}
-  5513			node = mas_mn(&mas);
-  5514		} while (start != mas.node);
-  5515	
-  5516		node = mas_mn(&mas);
-  5517		node->slot_len = mas_dead_leaves(&mas, slots);
-  5518		if (free)
-  5519			mt_free_bulk(node->slot_len, slots);
-  5520	
-  5521	start_slots_free:
-  5522		mas_unlock(&mas);
-  5523	
-  5524	free_leaf:
-  5525		if (free)
-  5526			mt_free_rcu(&node->rcu);
-  5527	}
-  5528	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+DQoNCkxlIDE1LzA2LzIwMjIgw6AgMTQ6MDcsIExpYW5nIEhlIGEgw6ljcml0wqA6DQo+IFtZb3Ug
+ZG9uJ3Qgb2Z0ZW4gZ2V0IGVtYWlsIGZyb20gd2luZGhsQDEyNi5jb20uIExlYXJuIHdoeSB0aGlz
+IGlzIGltcG9ydGFudCBhdCBodHRwczovL2FrYS5tcy9MZWFybkFib3V0U2VuZGVySWRlbnRpZmlj
+YXRpb24gXQ0KPiANCj4gU2lnbmVkLW9mZi1ieTogTGlhbmcgSGUgPHdpbmRobEAxMjYuY29tPg0K
+PiAtLS0NCj4gICBhcmNoL3Bvd2VycGMvcGxhdGZvcm1zLzg1eHgvc2d5X2N0czEwMDAuYyB8IDEw
+ICsrKysrKysrKysNCj4gICAxIGZpbGUgY2hhbmdlZCwgMTAgaW5zZXJ0aW9ucygrKQ0KPiANCj4g
+ZGlmZiAtLWdpdCBhL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvODV4eC9zZ3lfY3RzMTAwMC5jIGIv
+YXJjaC9wb3dlcnBjL3BsYXRmb3Jtcy84NXh4L3NneV9jdHMxMDAwLmMNCj4gaW5kZXggOThhZTY0
+MDc1MTkzLi4yYTQ1YjMwODUyYjIgMTAwNjQ0DQo+IC0tLSBhL2FyY2gvcG93ZXJwYy9wbGF0Zm9y
+bXMvODV4eC9zZ3lfY3RzMTAwMC5jDQo+ICsrKyBiL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvODV4
+eC9zZ3lfY3RzMTAwMC5jDQo+IEBAIC04NSwxNyArODUsMjQgQEAgc3RhdGljIGludCBncGlvX2hh
+bHRfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4gICAgICAgICAgLyogVGVj
+aG5pY2FsbHkgd2UgY291bGQganVzdCByZWFkIHRoZSBmaXJzdCBvbmUsIGJ1dCBwdW5pc2gNCj4g
+ICAgICAgICAgICogRFQgd3JpdGVycyBmb3IgaW52YWxpZCBmb3JtLiAqLw0KPiAgICAgICAgICBp
+ZiAob2ZfZ3Bpb19jb3VudChoYWx0X25vZGUpICE9IDEpDQo+ICsgICAgICAgew0KPiArICAgICAg
+ICAgICAgICAgb2Zfbm9kZV9wdXQoaGFsdF9ub2RlKTsNCg0KRHVwbGljYXRpbmcgdGhlIHNhbWUg
+Y29kZSBhdCBtdWx0aXBsZSBleGl0IHBvaW50cyBpcyBiYWQgcHJhY3RpY2UuDQoNCklmIHlvdSBj
+YW4ndCBkbyBhIHNpbXBsZSAncmV0dXJuJyBleGl0LCB5b3Ugc2hvdWxkIHVzZSAnZ290bycgdG8g
+YSANCmNvbW1vbiBlcnJvciBwYXRoIGV4aXQuDQoNCj4gICAgICAgICAgICAgICAgICByZXR1cm4g
+LUVJTlZBTDsNCj4gKyAgICAgICB9DQo+IA0KPiAgICAgICAgICAvKiBHZXQgdGhlIGdwaW8gbnVt
+YmVyIHJlbGF0aXZlIHRvIHRoZSBkeW5hbWljIGJhc2UuICovDQo+ICAgICAgICAgIGdwaW8gPSBv
+Zl9nZXRfZ3Bpb19mbGFncyhoYWx0X25vZGUsIDAsICZmbGFncyk7DQo+ICAgICAgICAgIGlmICgh
+Z3Bpb19pc192YWxpZChncGlvKSkNCj4gKyAgICAgICB7DQo+ICsgICAgICAgICAgICAgICBvZl9u
+b2RlX3B1dChoYWx0X25vZGUpOw0KPiAgICAgICAgICAgICAgICAgIHJldHVybiAtRUlOVkFMOw0K
+PiArICAgICAgIH0NCj4gDQo+ICAgICAgICAgIGVyciA9IGdwaW9fcmVxdWVzdChncGlvLCAiZ3Bp
+by1oYWx0Iik7DQo+ICAgICAgICAgIGlmIChlcnIpIHsNCj4gICAgICAgICAgICAgICAgICBwcmlu
+dGsoS0VSTl9FUlIgImdwaW8taGFsdDogZXJyb3IgcmVxdWVzdGluZyBHUElPICVkLlxuIiwNCj4g
+ICAgICAgICAgICAgICAgICAgICAgICAgZ3Bpbyk7DQo+ICsgICAgICAgICAgICAgICBvZl9ub2Rl
+X3B1dChoYWx0X25vZGUpOw0KPiAgICAgICAgICAgICAgICAgIGhhbHRfbm9kZSA9IE5VTEw7DQo+
+ICAgICAgICAgICAgICAgICAgcmV0dXJuIGVycjsNCj4gICAgICAgICAgfQ0KPiBAQCAtMTEyLDYg
+KzExOSw3IEBAIHN0YXRpYyBpbnQgZ3Bpb19oYWx0X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZp
+Y2UgKnBkZXYpDQo+ICAgICAgICAgICAgICAgICAgcHJpbnRrKEtFUk5fRVJSICJncGlvLWhhbHQ6
+IGVycm9yIHJlcXVlc3RpbmcgSVJRICVkIGZvciAiDQo+ICAgICAgICAgICAgICAgICAgICAgICAg
+ICJHUElPICVkLlxuIiwgaXJxLCBncGlvKTsNCj4gICAgICAgICAgICAgICAgICBncGlvX2ZyZWUo
+Z3Bpbyk7DQo+ICsgICAgICAgICAgICAgICBvZl9ub2RlX3B1dChoYWx0X25vZGUpOw0KPiAgICAg
+ICAgICAgICAgICAgIGhhbHRfbm9kZSA9IE5VTEw7DQo+ICAgICAgICAgICAgICAgICAgcmV0dXJu
+IGVycjsNCj4gICAgICAgICAgfQ0KPiBAQCAtMTIzLDYgKzEzMSw4IEBAIHN0YXRpYyBpbnQgZ3Bp
+b19oYWx0X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ICAgICAgICAgIHBy
+aW50ayhLRVJOX0lORk8gImdwaW8taGFsdDogcmVnaXN0ZXJlZCBHUElPICVkICglZCB0cmlnZ2Vy
+LCAlZCINCj4gICAgICAgICAgICAgICAgICIgaXJxKS5cbiIsIGdwaW8sIHRyaWdnZXIsIGlycSk7
+DQo+IA0KPiArICAgICAgIG9mX25vZGVfcHV0KGhhbHRfbm9kZSk7DQo+ICsNCj4gICAgICAgICAg
+cmV0dXJuIDA7DQo+ICAgfQ0KPiANCj4gLS0NCj4gMi4yNS4xDQo+IA==
