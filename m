@@ -2,184 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01439C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 10:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B16A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 10:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376610AbiFPK3A (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 06:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46266 "EHLO
+        id S231468AbiFPKbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 06:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbiFPK26 (ORCPT
+        with ESMTP id S229479AbiFPKbm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 06:28:58 -0400
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B725DA65
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 03:28:56 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220616102854euoutp01b96a8dcf4e8877af8fc81ce371d76a9c~5Exin2S9v1670116701euoutp01J
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 10:28:54 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220616102854euoutp01b96a8dcf4e8877af8fc81ce371d76a9c~5Exin2S9v1670116701euoutp01J
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1655375334;
-        bh=PeyUtqdx+y3aUFcAHiPZOAT0rWZohdyPt4V0xngM98M=;
-        h=Date:Subject:To:CC:From:In-Reply-To:References:From;
-        b=M36uwlQ7b9i14CE3O4o4pnN0UH2w4xAKlP5wuabyFZW847WE8L019Kdbt5boRTVJ1
-         ACTfZoL4Yr2PyaemwZCdTJcmXw3cF+o4p/lwZddtoZj0qYu3JjoGT+K7g0d53+jiBI
-         fxZsMMsnivgskWcGnWkXVGz8YDUrjRTe98jBrb24=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220616102854eucas1p28d84911385a41f5d0c5b61050ff913f3~5ExiMhGOf1431814318eucas1p24;
-        Thu, 16 Jun 2022 10:28:54 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 5D.CE.10067.6E50BA26; Thu, 16
-        Jun 2022 11:28:54 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220616102853eucas1p14f7747a8a646b23d68310ba45e0e4bed~5ExhxAD3R1626416264eucas1p1f;
-        Thu, 16 Jun 2022 10:28:53 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220616102853eusmtrp2e56ce9309829d1d15872a0fef861251a~5Exhv54v-1339413394eusmtrp2h;
-        Thu, 16 Jun 2022 10:28:53 +0000 (GMT)
-X-AuditID: cbfec7f4-dc1ff70000002753-e7-62ab05e6f479
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id E3.A8.09095.5E50BA26; Thu, 16
-        Jun 2022 11:28:53 +0100 (BST)
-Received: from CAMSVWEXC01.scsc.local (unknown [106.1.227.71]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220616102853eusmtip1b59df1eccc24e951d0f3918da805ea15~5Exhk_UlM3259832598eusmtip1O;
-        Thu, 16 Jun 2022 10:28:53 +0000 (GMT)
-Received: from [192.168.1.12] (106.210.248.244) by CAMSVWEXC01.scsc.local
-        (2002:6a01:e347::6a01:e347) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-        Thu, 16 Jun 2022 11:28:46 +0100
-Message-ID: <92c922ed-cc04-6e55-9c12-81a43332b318@samsung.com>
-Date:   Thu, 16 Jun 2022 12:28:44 +0200
+        Thu, 16 Jun 2022 06:31:42 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 67B3B5DBDC
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 03:31:41 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0FAB912FC;
+        Thu, 16 Jun 2022 03:31:41 -0700 (PDT)
+Received: from [10.57.82.209] (unknown [10.57.82.209])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 053D13F792;
+        Thu, 16 Jun 2022 03:31:37 -0700 (PDT)
+Message-ID: <521ed82e-f213-f635-6f5e-3e35ff8cc020@arm.com>
+Date:   Thu, 16 Jun 2022 11:31:32 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
-        Thunderbird/91.9.1
-Subject: Re: [PATCH v7 13/13] dm: add non power of 2 zoned target
-Content-Language: en-US
-To:     Randy Dunlap <rdunlap@infradead.org>, <hch@lst.de>,
-        <snitzer@redhat.com>, <damien.lemoal@opensource.wdc.com>,
-        <axboe@kernel.dk>
-CC:     <bvanassche@acm.org>, <linux-kernel@vger.kernel.org>,
-        <jiangbo.365@bytedance.com>, <hare@suse.de>, <pankydev8@gmail.com>,
-        <dm-devel@redhat.com>, <jonathan.derrick@linux.dev>,
-        <gost.dev@samsung.com>, <dsterba@suse.com>, <jaegeuk@kernel.org>,
-        <linux-nvme@lists.infradead.org>, <Johannes.Thumshirn@wdc.com>,
-        <linux-block@vger.kernel.org>,
-        Damien Le Moal <damien.lemoal@wdc.com>
-From:   Pankaj Raghav <p.raghav@samsung.com>
-In-Reply-To: <0480d917-94e5-20ab-514c-bb1374a8d9c4@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 2/5] iommu/mediatek: Add error path for loop of
+ mm_dts_parse
+Content-Language: en-GB
+To:     Yong Wu <yong.wu@mediatek.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        mingyuan.ma@mediatek.com, yf.wang@mediatek.com,
+        libo.kang@mediatek.com, chengci.xu@mediatek.com,
+        youlin.pei@mediatek.com, anan.sun@mediatek.com,
+        xueqi.zhang@mediatek.com, Guenter Roeck <groeck@chromium.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220616054203.11365-1-yong.wu@mediatek.com>
+ <20220616054203.11365-3-yong.wu@mediatek.com>
+ <e2091397-b6e2-7296-1378-dc10b24c6ef4@arm.com>
+ <b2ea919315d0084adb465378e6970dbfa4f0829e.camel@mediatek.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <b2ea919315d0084adb465378e6970dbfa4f0829e.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [106.210.248.244]
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-        CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpgk+LIzCtJLcpLzFFi42LZduznOd1nrKuTDC78Z7VYfbefzWLah5/M
-        Fr/Pnme2aG3/xmSx991sVosLPxqZLPYsmsRksXL1USaLJ+tnMVv0HPjAYvG36x5QrOUhs8Xe
-        W9oWl3fNYbOYv+wpu8Wam09ZLN7emc5i0bbxK6ODkMflK94e/06sYfPYOesuu8fmFVoel8+W
-        emxa1cnmsbBhKrPH5iX1HrtvNgDlW++zerzfd5XNY/2Wqywem09Xe3zeJOfRfqCbKYA/issm
-        JTUnsyy1SN8ugSvj46lHzAWNvBVrpz9mamDcx9nFyMkhIWAi8WrLMaYuRi4OIYEVjBI3rlyF
-        cr4wStw8vR7K+cwo8WTrbSCHA6zl10ptiPhyRommL3cQim5tf8EM4exilJh3/i0zSAevgJ3E
-        jcn2IPtYBFQlJj//wgxi8woISpyc+YQFxBYViJBY2fqGBaRcWMBRoulEEkiYWUBc4taT+WDz
-        RQRaGYHqb7CAOMwCLcwSXfsfgs1nE9CSaOxkB2ngBOq91NXFCNGsKdG6/Tc7hC0vsf3tHGaI
-        B5Ql/u1khni/VmLtsTPsEPZMLompTfkQtovErmnnWCFsYYlXx7dA1chI/N8Jcg+IXS3x9MZv
-        sHclBFoYJfp3rmeDmG8t0XcmB6LGUWJVyxNGiDCfxI23ghDX8ElM2jadeQKj6iykgJiF5ONZ
-        SB6YheSBBYwsqxjFU0uLc9NTi43yUsv1ihNzi0vz0vWS83M3MQIT6el/x7/sYFz+6qPeIUYm
-        DsZDjBIczEoivGbBK5OEeFMSK6tSi/Lji0pzUosPMUpzsCiJ8yZnbkgUEkhPLEnNTk0tSC2C
-        yTJxcEo1MBXMO/v1jbl2bt31FxM2rJE9s0jl4VOrSYcvtfEnxIeIyq5h3qW3/F2zvmvslW+/
-        /a5f253skZMo5MlbLVeyWWn+Ee7SQ4cuLraVe1H+aFt+2beTdVMfP3D2Mr044SsDo3i0KO+C
-        228EdJvPsjXHX5y44eX6V6aqUQ4Ptuz3WF12I3Aea2JR5yQtpvubS6vCvHLz+pa+qbMP+OBw
-        YrLGT84Jeb86l6samJXLbzt89lze6XeNie/qPnnqFPFPOVKXsFPpezP7lsXGS8/vydjYs+fl
-        uxJp88XPi/YvzMifbcvDKFczPXP/yqs/72zV/lAyx3LKhe5TP/ddEKk0cuHV1/sgv7BlraDR
-        /blskeeXHbVQYinOSDTUYi4qTgQAWSLBrBMEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrCKsWRmVeSWpSXmKPExsVy+t/xu7pPWVcnGaxdpGax+m4/m8W0Dz+Z
-        LX6fPc9s0dr+jcli77vZrBYXfjQyWexZNInJYuXqo0wWT9bPYrboOfCBxeJv1z2gWMtDZou9
-        t7QtLu+aw2Yxf9lTdos1N5+yWLy9M53Fom3jV0YHIY/LV7w9/p1Yw+axc9Zddo/NK7Q8Lp8t
-        9di0qpPNY2HDVGaPzUvqPXbfbADKt95n9Xi/7yqbx/otV1k8Np+u9vi8Sc6j/UA3UwB/lJ5N
-        UX5pSapCRn5xia1StKGFkZ6hpYWekYmlnqGxeayVkamSvp1NSmpOZllqkb5dgl7Gx1OPmAsa
-        eSvWTn/M1MC4j7OLkYNDQsBE4tdK7S5GLg4hgaWMEhtPnmXrYuQEistIfLrykR3CFpb4c60L
-        LC4k8JFR4s9Bcwh7F6PE7LMFIHN4Bewkbky2BwmzCKhKTH7+hRnE5hUQlDg58wkLiC0qECHx
-        adkEVpByYQFHiaYTSSBhZgFxiVtP5jOBnCAi0Moo8WbbLRYQh1mghVmia/9DZojjvjNKXHyz
-        lQWkm01AS6KxE+w2TqBBl7q6GCEmaUq0bv/NDmHLS2x/O4cZ4kdliX87mSFeqZV4dX834wRG
-        0VlIzpuF5I5ZSCbNQjJpASPLKkaR1NLi3PTcYkO94sTc4tK8dL3k/NxNjMDks+3Yz807GOe9
-        +qh3iJGJg/EQowQHs5IIr1nwyiQh3pTEyqrUovz4otKc1OJDjKbAMJrILCWanA9Mf3kl8YZm
-        BqaGJmaWBqaWZsZK4ryeBR2JQgLpiSWp2ampBalFMH1MHJxSDUwruv15P3nP+Fga9/n0piq5
-        d0yLv9ntkeDIX833rIrZjuGTKJfJPut3r5ju5Ijbn7gqM3Vl7hTm8iXhb+3fsa+xKs4IiWjY
-        fvntrsRLK8zvHJV3WLW28Oiun4/fX98dLn9L6urtJI+e8wbRdtNZN/y4l3ljjdXMGRw69+w3
-        9AaUW28zSPI6oXNJ4O5aofNT4xJqdsvvUH5tPvHhPOEjov4MYl9PB6571rO5ZVvEH6ktZ5Z8
-        PF3+3M6k9gnzDCvDPxMKFt60eR3qKVzA3vTzSNCLTcrNEndCufR3hd9KShHo6r7zYul9/sL/
-        8R9qKyZ9yZtzcNsWDoWXCz/pRQUsW2Tfkz5ZbUffnn5O38U5QYqflFiKMxINtZiLihMBLOYv
-        9McDAAA=
-X-CMS-MailID: 20220616102853eucas1p14f7747a8a646b23d68310ba45e0e4bed
-X-Msg-Generator: CA
-X-RootMTR: 20220615102011eucas1p220368db4a186181b1927dea50a79e5d4
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220615102011eucas1p220368db4a186181b1927dea50a79e5d4
-References: <20220615101920.329421-1-p.raghav@samsung.com>
-        <CGME20220615102011eucas1p220368db4a186181b1927dea50a79e5d4@eucas1p2.samsung.com>
-        <20220615101920.329421-14-p.raghav@samsung.com>
-        <0480d917-94e5-20ab-514c-bb1374a8d9c4@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-15 21:54, Randy Dunlap wrote:
-> Hi--
-> 
-> On 6/15/22 03:19, Pankaj Raghav wrote:
-> 
->> ---
->>  drivers/md/Kconfig                |   9 +
->>  drivers/md/Makefile               |   2 +
->>  drivers/md/dm-zone.c              |   9 +
->>  drivers/md/dm-zoned-npo2-target.c | 268 ++++++++++++++++++++++++++++++
->>  4 files changed, 288 insertions(+)
->>  create mode 100644 drivers/md/dm-zoned-npo2-target.c
+On 2022-06-16 11:08, Yong Wu wrote:
+> On Thu, 2022-06-16 at 09:59 +0100, Robin Murphy wrote:
+>> On 2022-06-16 06:42, Yong Wu wrote:
+>>> The mtk_iommu_mm_dts_parse will parse the smi larbs nodes. if the
+>>> i+1
+>>> larb is parsed fail(return -EINVAL), we should of_node_put for the
+>>> 0..i
+>>> larbs. In the fail path, one of_node_put matches with
+>>> of_parse_phandle in
+>>> it.
+>>>
+>>> Fixes: d2e9a1102cfc ("iommu/mediatek: Contain MM IOMMU flow with
+>>> the MM TYPE")
+>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+>>> ---
+>>>    drivers/iommu/mtk_iommu.c | 21 ++++++++++++++++-----
+>>>    1 file changed, 16 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+>>> index 3b2489e8a6dd..ab24078938bf 100644
+>>> --- a/drivers/iommu/mtk_iommu.c
+>>> +++ b/drivers/iommu/mtk_iommu.c
+>>> @@ -1071,12 +1071,12 @@ static int mtk_iommu_mm_dts_parse(struct
+>>> device *dev, struct component_match **m
+>>>    
+>>>    		plarbdev = of_find_device_by_node(larbnode);
+>>>    		if (!plarbdev) {
+>>> -			of_node_put(larbnode);
+>>> -			return -ENODEV;
+>>> +			ret = -ENODEV;
+>>> +			goto err_larbnode_put;
+>>>    		}
+>>>    		if (!plarbdev->dev.driver) {
+>>> -			of_node_put(larbnode);
+>>> -			return -EPROBE_DEFER;
+>>> +			ret = -EPROBE_DEFER;
+>>> +			goto err_larbnode_put;
+>>>    		}
+>>>    		data->larb_imu[id].dev = &plarbdev->dev;
+>>>    
+>>> @@ -1107,9 +1107,20 @@ static int mtk_iommu_mm_dts_parse(struct
+>>> device *dev, struct component_match **m
+>>>    			       DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
+>>>    	if (!link) {
+>>>    		dev_err(dev, "Unable to link %s.\n", dev_name(data-
+>>>> smicomm_dev));
+>>> -		return -EINVAL;
+>>> +		ret = -EINVAL;
+>>> +		goto err_larbnode_put;
+>>>    	}
+>>>    	return 0;
+>>> +
+>>> +err_larbnode_put:
+>>> +	while (i--) {
+>>> +		larbnode = of_parse_phandle(dev->of_node,
+>>> "mediatek,larbs", i);
+>>> +		if (larbnode && of_device_is_available(larbnode)) {
+>>> +			of_node_put(larbnode);
+>>> +			of_node_put(larbnode);
+>>> +		}
 >>
->> diff --git a/drivers/md/Kconfig b/drivers/md/Kconfig
->> index 998a5cfdb..773314536 100644
->> --- a/drivers/md/Kconfig
->> +++ b/drivers/md/Kconfig
->> @@ -518,6 +518,15 @@ config DM_FLAKEY
->>  	help
->>  	 A target that intermittently fails I/O for debugging purposes.
->>  
->> +config DM_ZONED_NPO2
->> +	tristate "Zoned non power of 2 target"
+>> This looks a bit awkward - could we not just iterate through
+>> data->larb_imu and put dev->of_node for each valid dev?
 > 
-> 	         "Zoned non-power-of-2 target"
+> It should work. Thanks very much.
 > 
->> +	depends on BLK_DEV_DM
->> +	depends on BLK_DEV_ZONED
->> +	help
->> +	A target that converts a zoned device with non power of 2 zone size to
+>>
+>> Also, of_find_device_by_node() takes a reference on the struct
+>> device
+>> itself, so strictly we should be doing put_device() on those as well
+>> if we're bailing out.
 > 
-> 	                                           non-power-of-2 zone size to
-> 
->> +	be power of 2. This is done by introducing gaps in between the zone
->> +	capacity and the power of 2 zone size.
-> 
-> All help text should be indented with one tab and 2 spaces
-> according to Documentation/process/coding-style.rst.
-> 
->> +
->>  config DM_VERITY
->>  	tristate "Verity target support"
->>  	depends on BLK_DEV_DM
-> 
-> [snip]
-> 
->> +
->> +MODULE_DESCRIPTION(DM_NAME " non power 2 zoned target");
-> 
->                                 non-power-of-2
-> 
->> +MODULE_AUTHOR("Pankaj Raghav <p.raghav@samsung.com>");
->> +MODULE_LICENSE("GPL");
->> +
-> 
-Thanks Randy. Fixed.
+> Thanks for this hint. A new reference for me. I will add it.
+
+In fact, thinking about it some more we may as well do the of_node_put() 
+unconditionally immediately after the of_find_device_by_node() call, so 
+then it's *only* the device references we'd need to worry about cleaning 
+up in the failure path.
+
+Robin.
