@@ -2,197 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6566FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9376FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378205AbiFPU7n (ORCPT
+        id S1378622AbiFPVAb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 16:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47906 "EHLO
+        Thu, 16 Jun 2022 17:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378722AbiFPU7m (ORCPT
+        with ESMTP id S233525AbiFPVA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 16:59:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E552860062;
-        Thu, 16 Jun 2022 13:59:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D3ABB8251F;
-        Thu, 16 Jun 2022 20:59:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03802C34114;
-        Thu, 16 Jun 2022 20:59:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655413177;
-        bh=8V+Tiyh/01oedS5WI5VecpKZ7FpOLNZCWZJZC8Rgn3I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qjjFTVO2EO8ewNnGfHF1GacDxc38DpKRsRaVFaa5i7onB82Pwz/An1M1bYeRITYKb
-         p+5UqTJ5Vt17iTjKppTtgtUTBvQ0hBzkmy5UTRB3fIa6JXo3+5RNk+OQyv8TwGZv56
-         yduvGgeyJ+6aT88lC2OEntThvWnmu+U3VALQRnHtYEwmrktQHxVLiUW3L8aUAaRpFY
-         G+E2hK7yVG80nIyFlIZKomotlsOhM2BYNeBVVmmpJc0LhNA9jmL0y9MPe1kB7ZRj1n
-         WluqobhDVn88pw0mGB1G1i9UwueBVAGLK5YT6rT1J2koCt0pLJJssnSa9EFRNilWz9
-         ibedWECw/O3mg==
-Date:   Fri, 17 Jun 2022 02:29:36 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Jeffrey Hugo <quic_jhugo@quicinc.com>
-Cc:     Qiang Yu <quic_qianyu@quicinc.com>, quic_hemantk@quicinc.com,
-        loic.poulain@linaro.org, mhi@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        quic_cang@quicinc.com
-Subject: Re: [PATCH] bus: mhi: Disable IRQs instead of freeing them during
- power down
-Message-ID: <20220616205936.GG2889@thinkpad>
-References: <1654782215-70383-1-git-send-email-quic_qianyu@quicinc.com>
- <62d09e6f-9898-6233-dfd6-b5ba5d837571@quicinc.com>
- <9659ecb9-9727-a146-e286-d28d656483c3@quicinc.com>
- <9a11394d-f7df-e549-8afb-0834f7d30202@quicinc.com>
- <8eceb966-b5c1-8913-ac97-95348f92650d@quicinc.com>
- <b3f5e49d-8917-79ab-8f59-29ad6cec3973@quicinc.com>
- <20220615211621.GD3606@thinkpad>
- <1c48ef5b-65c0-501d-db55-714a8a4388b2@quicinc.com>
+        Thu, 16 Jun 2022 17:00:29 -0400
+Received: from pokefinder.org (sauhun.de [88.99.104.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6ADA960062;
+        Thu, 16 Jun 2022 14:00:26 -0700 (PDT)
+Received: from localhost (dynamic-089-015-239-099.89.15.239.pool.telefonica.de [89.15.239.99])
+        by pokefinder.org (Postfix) with ESMTPSA id 4AD7F2C009E;
+        Thu, 16 Jun 2022 23:00:24 +0200 (CEST)
+Date:   Thu, 16 Jun 2022 23:00:22 +0200
+From:   Wolfram Sang <wsa@the-dreams.de>
+To:     Xu Wang <vulab@iscas.ac.cn>
+Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] i2c: Fix a potential use after free
+Message-ID: <YquZ5iADDamgQ+9w@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@the-dreams.de>,
+        Xu Wang <vulab@iscas.ac.cn>, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1577439272-10362-1-git-send-email-vulab@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="rYtBd5w2y9ac+Wjk"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1c48ef5b-65c0-501d-db55-714a8a4388b2@quicinc.com>
+In-Reply-To: <1577439272-10362-1-git-send-email-vulab@iscas.ac.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 09:53:34AM -0600, Jeffrey Hugo wrote:
-> On 6/15/2022 3:16 PM, Manivannan Sadhasivam wrote:
-> > On Mon, Jun 13, 2022 at 07:07:02AM -0600, Jeffrey Hugo wrote:
-> > > On 6/12/2022 7:48 PM, Qiang Yu wrote:
-> > > > 
-> > > > On 6/10/2022 10:00 PM, Jeffrey Hugo wrote:
-> > > > > On 6/9/2022 9:21 PM, Qiang Yu wrote:
-> > > > > > On 6/9/2022 9:54 PM, Jeffrey Hugo wrote:
-> > > > > > 
-> > > > > > > On 6/9/2022 7:43 AM, Qiang Yu wrote:
-> > > > > > > > EP tends to read MSI address/data once and cache them
-> > > > > > > > after BME is set.
-> > > > > > > > So host should avoid changing MSI address/data after BME is set.
-> > > > > > > > 
-> > > > > > > > In pci reset function, host invokes free_irq(), which also clears MSI
-> > > > > > > > address/data in EP's PCIe config space. If the invalid address/data
-> > > > > > > > are cached and used by EP, MSI triggered by EP wouldn't be received by
-> > > > > > > > host, because an invalid MSI data is sent to an invalid MSI address.
-> > > > > > > > 
-> > > > > > > > To fix this issue, after host runs request_irq() successfully during
-> > > > > > > > mhi driver probe, let's invoke enable_irq()/disable_irq() instead of
-> > > > > > > > request_irq()/free_irq() when we want to power on and power down MHI.
-> > > > > > > > Meanwhile, Host should invoke free_irq() when mhi host driver is
-> > > > > > > > removed.
-> > > > > > > 
-> > > > > > > I don't think this works for hotplug, nor cases where there
-> > > > > > > are multiple MHI devices on the system.
-> > > > > > > 
-> > > > > > > The EP shouldn't be caching this information for multiple
-> > > > > > > reasons. Masking the MSIs, disabling the MSIs, changing the
-> > > > > > > address when the affinity changes, etc.
-> > > > > > > 
-> > > > > > > It really feels like we are solving the problem in the wrong place.
-> > > > > > > 
-> > > > > > > Right now, this gets a NACK from me.
-> > > > > > > 
-> > > > > > After free_irq(), MSI is still enabled but MSI address and data
-> > > > > > are cleared. So there is a chance that device initiates MSI
-> > > > > > using zero address. How to fix this race conditions.
-> > > > > 
-> > > > > On what system is MSI still enabled?  I just removed the AIC100
-> > > > > controller on an random x86 system, and lspci is indicating MSIs are
-> > > > > disabled -
-> > > > > 
-> > > > > Capabilities: [50] MSI: Enable- Count=32/32 Maskable+ 64bit+
-> > > > 
-> > > > system: Ubuntu18.04, 5.4.0-89-generic,  Intel(R) Core(TM) i7-6700 CPU @
-> > > > 3.40GHz
-> > > > 
-> > > > After removing MHI driver, I also see MSI enable is cleared.  But I
-> > > > don't think free_irq clears it. I add log before free_irq and after
-> > > > free_irq as following show:
-> > > > 
-> > > > [62777.625111] msi cap before free irq
-> > > > [62777.625125] msi control=0x1bb, address=0xfee00318, data=0x0
-> > > > [62777.625301] msi cap after free irq
-> > > > [62777.625313] msi control=0x1bb, address=0x0, data=0x0
-> > > > [62777.625496] mhi-pci-generic 0000:01:00.0: mhi_pci_remove end of line,
-> > > > block 90 secs.
-> > > > # lspci -vvs 01:00.0
-> > > >           Capabilities: [50] MSI: Enable+ Count=8/32 Maskable+ 64bit+
-> > > >                   Address: 0000000000000000  Data: 0000
-> > > >                   Masking: ffffffff  Pending: 00000000
-> > > 
-> > > At this point, the MSI functionality is still enabled, but every MSI is
-> > > masked out (Masking), so per the PCIe spec, the endpoint may not trigger a
-> > > MSI to the host.  The device advertises that it supports maskable MSIs
-> > > (Maskable+), so this is appropiate.
-> > > 
-> > > If your device can still send a MSI at this point, then it violates the PCIe
-> > > spec.
-> > > 
-> > > disable_irq() will not help you with this as it will do the same thing.
-> > > 
-> > > I still think you are trying to fix an issue in the wrong location (host vs
-> > > EP), and causing additional issues by doing so.
-> > > 
-> > 
-> > Irrespective of caching the MSI data in endpoint, I'd like to get rid of
-> > request_irq/free_irq during the mhi_{power_down/power_up} time. As like the MHI
-> > endpoint stack, we should just do disable/enable irq. Because, the MHI device
-> > may go down several times while running and we do not want to deallocate the
-> > IRQs all the time. And if the device gets removed, ultimately the MHI driver
-> > will get removed and we are fine while loading it back (even if MSI count
-> > changes).
-> > 
-> > I didn't had time to look into the patch in detail but I'm in favour of
-> > accepting the proposal.
-> > 
-> > @Jeff: Any specific issue you are seeing with hotplug etc...?
-> 
-> Perhaps I'm getting confused by the commit text of this change.
-> 
-> The issue described is that we free the irq, and then the EP sends a MSI,
-> and the host doesn't receive it.  To me, that is expected.  The host doesn't
-> care about the irq anymore because it freed it, therefore it would be
-> expected that the host doesn't receive the irq.  So, the described issue is
-> not an issue since it is expected behavior from what I can tell.
-> 
-> The proposed fix, is to disable the interrupts, and not free them until the
-> driver is removed.  I interpret removing the driver as "rmmod mhi".  Based
-> on this, the problem I see is a scenario where we have N devices in a
-> system, and one device is hotplugged.  On hotplug, we would want to clean up
-> all resources (free irq), but according to the description, we need to rmmod
-> mhi, which is both not automatic and also affects the other N-1 devices
-> which are presumed to be operational.
 
-No. When the PCI device gets removed during runtime, the remove() callback will
-get called with relevant "struct pci_dev" and that should take care of all
-resource cleanup for that particular device (including free_irq).
+--rYtBd5w2y9ac+Wjk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-You do not need to manually rmmod the driver as that will be done by the
-hotplug driver when there are no devices making use of it. And yes, the commit
-message needs to be changed...
+On Fri, Dec 27, 2019 at 09:34:32AM +0000, Xu Wang wrote:
+> Free the adap structure only after we are done using it.
+> This patch just moves the put_device() down a bit to avoid the
+> use after free.
+>=20
+> Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
 
-> 
-> Now, if we throw all of that out the window, and say that the goal is to
-> register the irqs when the controller is registered, free them when the
-> controller is unregistered, and enable/disable based on power up/down as a
-> optimization, that could be sane.  If that is what this change is attempting
-> to do, it is not what the commit text describes.
-> 
-> Under the assumption that you want the optimization I just described, I will
-> re-review the code next week when I get back from my travel. Assuming the
-> implementation is good (other than what I've already pointed out), I think
-> the commit text needs to be rewritten.
-> 
-> Does that clarify things for you?
+Added a comment why we reverse the order for putting our stuff and
+applied to for-next, thanks! This way, we get more testing until it hits
+upstream. Still, stable tag added because we want it to be backported if
+all is well.
 
-Yep!
 
-Thanks,
-Mani
+--rYtBd5w2y9ac+Wjk
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-மணிவண்ணன் சதாசிவம்
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKrmeIACgkQFA3kzBSg
+KbaRUA/8CQ5A2iiywZCEDARYlutF420XPsrdYgQmCh49Gy2UN8PpMOuIDoX10xa6
+sf+llbsSQvmPKkeRxnyH51Ctm9gPN8xtVlCFpcZ9+8g6WbhXz0j++i0PUP4YAsW8
+0n1MBzxHEuBVRsqJyhZ/JxyR1yjiR6N6RrywsgEty9AYfn9XbXuUz3xlIGd3G5Yj
+vQQeC+5a8znfHcfr8MOudpMBb3gaAHF/IvqOuiT6y5gSB6d6QqlC8OeQJ/tCkEgk
+FtdVYRPf43mdZBAH4Kl+uneULnBhIx4YVuUlt1doG+N8szUiSXcCuWfGNwXh9Ta8
+s1CaGzG4qXCBjCSl+e2bX1hFr787ZFiyyNRaC8iQ6Eauy6dA7ZWEzz9I2wQgHkhg
+ALqADG+YENA90QKsGLdDMzkZH3c6udQXt3qnn+TEuN89x8KTIJFuExZGM97EsHNW
+1SgFuV56iCYdgWocuD2cdD6Om6bR0q75LlcuWM76w5JBZ6JenPutQbCc6uJ9PZoN
+CvDfm043rzsbtCbX1E8OMFPeXmnrF7OSDYrJXWXHflBP34wTcz8dqdJY2gOp31mv
+WvPGa36x4swQdKJg2qdenJG5HljDQISVbI1K/OESYMQoOWOVTf8F4T58HsQGjQ/r
+1ssEIHcr/sGaiqL/v4nsatV4EQNwnJuIWDwXBXG+AX/3Yor60Rw=
+=t3S7
+-----END PGP SIGNATURE-----
+
+--rYtBd5w2y9ac+Wjk--
