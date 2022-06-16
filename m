@@ -2,278 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A0ECCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:39:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89927C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377714AbiFPOjZ (ORCPT
+        id S1377730AbiFPOkP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 10:39:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        Thu, 16 Jun 2022 10:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230393AbiFPOjY (ORCPT
+        with ESMTP id S230393AbiFPOkN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 10:39:24 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 589CE3C700
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 07:39:23 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id a10so888926wmj.5
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 07:39:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=FEM1Uf5duJRx7g0l0kd4cIvvZ1+75a2y+0Eok25cSmM=;
-        b=O+MTudmHgt+i7rtSY2PXtqsNNlchKEJZaScaV8u7BZR01lV2AQ9m/ghcMlLr8A5J2v
-         5w0eF0QqkXCbpLEo+f6Gpg2SmHkfwSmPnA8FOxvPptdflh1h31UuSr3FE10sNbXQGM+0
-         NXGiHkrhy8L0q29QulKvfEYSSRWSV0RFSBQMVb9+JrfzWlLUGmpW+ZPo7Mahg2cKsh5/
-         5PDJCPTFis/5GP9x5JLD5yuYaI6EISEY55YJwyNwHonQoZLXMVeDPrXlS6aq6SDbdxPZ
-         YFf/ufuwMQSEWK980FaRoZntBeu4zN2eirl71xNyHNPqO3Sm5f70stoRnYFOXH0+0jGG
-         EIrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FEM1Uf5duJRx7g0l0kd4cIvvZ1+75a2y+0Eok25cSmM=;
-        b=bw4COXMmjb3xafiMacL4eBOdkl1g0tdcmE/fAle/JyZzuEnKzwLoqtpQ1EroZnzwdF
-         av8afGQAlpbu95TvuisPq87jxkJpMnCUqrE32RBAsR+vYcs3GqdQg9/YRy1C8+YIZDTm
-         oM/lolKRD/Sue4FJvbQ0arN30i/dQkEChRoQjlGdXstk3swBDP+zs7/wn49qUTXv3rx+
-         98AEa6bS3ni6bTUbNBSaSts2z9ToPpBLNgCFqZXGi9uBWiat9voj6XbZHqayfxpTvq8f
-         swaiaaptohnBPMwg4qsEoyFW4XZuaP+pFb0n810ajb8pWyzKl3uAERxilRkjjqMzG14W
-         t2Tw==
-X-Gm-Message-State: AJIora/LaKX4sOMzY66T06nPzE+tvyTYMSv7Oagx71CVWf+6SCeBfuI2
-        Z6uu2o5cuq5V6qgQiStqAV/bww+NRPIHnlGT1TOjfg==
-X-Google-Smtp-Source: AGRyM1sQqeAEHeE4SPnRemtsjCPjUsThJLHHPx63FK6t+loyl6xOOqwQXqPAqnrX/PYD2sT7CQMZqCp+l9LF2xGMIuQ=
-X-Received: by 2002:a1c:6a16:0:b0:39c:655a:ac2c with SMTP id
- f22-20020a1c6a16000000b0039c655aac2cmr5492500wmc.66.1655390361741; Thu, 16
- Jun 2022 07:39:21 -0700 (PDT)
+        Thu, 16 Jun 2022 10:40:13 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 863A845784
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 07:40:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655390412; x=1686926412;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6Ru5QawfiihtQC83tInxzrQfzQ8s3TFasls5hcGWHhk=;
+  b=HccOol7mhPN5JHLCn7SXfxJ3sYfQOc4co13+e77Ae4srhwHgparvX6bT
+   kymKZrMSa09v1Iv4JDZsSg2mcgU/8uUsdue+XBhA5pyvMR2xXL+cqQ/AM
+   5mOIyYAmm2tMHD2BSprD6V2IuCDjSxK0XYWc8mnYbFVT5DYrmD1KHm6kl
+   RgLU5PLLXqq0216hvS7XNi0hReQ1VJ3l5PKvucqLTtTVFOlDE6gAF1twf
+   s1aajwscqf6K5AxhpwL04gfvp6R0KXgWqd4JTF/bzPjr8OjQsDeVDXF51
+   hmXnVE5sDbiK37N9Dd1tTqUKT/E6mG2Wtt2y6+eAFEqDmMRYvSHLWqDrF
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="340917803"
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="340917803"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 07:40:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="687845577"
+Received: from shbuild999.sh.intel.com ([10.239.146.138])
+  by fmsmga002.fm.intel.com with ESMTP; 16 Jun 2022 07:40:08 -0700
+From:   Feng Tang <feng.tang@intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jonathan Corbet <corbet@lwn.net>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     paulmck@kernel.org, rui.zhang@intel.com, len.brown@intel.com,
+        tim.c.chen@intel.com, Feng Tang <feng.tang@intel.com>
+Subject: [PATCH v3] x86/tsc: Add option to force frequency recalibration with HW timer
+Date:   Thu, 16 Jun 2022 22:40:07 +0800
+Message-Id: <20220616144007.81994-1-feng.tang@intel.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20220608010709.272962-1-maira.canal@usp.br>
-In-Reply-To: <20220608010709.272962-1-maira.canal@usp.br>
-From:   David Gow <davidgow@google.com>
-Date:   Thu, 16 Jun 2022 22:39:10 +0800
-Message-ID: <CABVgOSmesj5MGfQrtdWCgXzm1VXRoG0fAMCbkBCAvtqediqAjQ@mail.gmail.com>
-Subject: Re: [RFC 0/3] drm/amd/display: Introduce KUnit to Display Mode Library
-To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>
-Cc:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
-        Jun Lei <jun.lei@amd.com>,
-        Nicholas Choi <Nicholas.Choi@amd.com>,
-        Harrison Chiu <harrison.chiu@amd.com>,
-        Mark Yacoub <markyacoub@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
-        Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 9:08 AM Ma=C3=ADra Canal <maira.canal@usp.br> wrote:
->
-> This RFC is a preview of the work being developed by Isabella Basso [1],
-> Ma=C3=ADra Canal [2], and Tales Lelo [3], as part of their Google Summer =
-of Code
-> projects [4], and Magali Lemes [5], as part of her capstone project.
->
-> Our main goal is to bring unit testing to the AMDPGU driver; in particula=
-r,
-> we'll focus on the Display Mode Library (DML) for DCN2.0 and some of the =
-DCE
-> functions. The modern AMD Linux kernel graphics driver is the single larg=
-est
-> driver in the mainline Linux codebase [6]. As AMD releases new GPU models=
-,
-> the size of AMDGPU drivers is only becoming even larger.
->
-> Assuring the drivers' quality and reliability becomes a complex task with=
-out
-> systematic testing, especially for graphic drivers - which usually involv=
-e
-> tons of complex calculations. Also, keeping bugs away becomes an increasi=
-ngly
-> hard task with the introduction of new code. Moreover, developers might w=
-ant
-> to refactor old code without fear of the introduction of new issues.
->
-> In that sense, it is possible to argue for the benefits of implementing u=
-nit
-> testing at the AMDGPU drivers. This implementation will help developers t=
-o
-> recognize bugs before they are merged into the mainline and also makes it
-> possible for future code refactors of the AMDGPU driver.
->
-> When analyzing the AMDGPU driver, a particular part of the driver highlig=
-hts
-> itself as a good candidate for the implementation of unit tests: the Disp=
-lay
-> Mode Library (DML), as it is focused on mathematical operations.
->
-> For the implementation of the tests, we decided to go with the Kernel Uni=
-t
-> Testing Framework (KUnit). KUnit makes it possible to run test suites on
-> kernel boot or load the tests as a module. It reports all test case resul=
-ts
-> through a TAP (Test Anything Protocol) in the kernel log.
->
-> Moreover, KUnit unifies the test structure and provides tools to simplify=
- the
-> testing for developers and CI systems.
->
-> That said, we developed a little snippet on what we intend to develop in =
-our
-> summer. We planned the basic structure on how the tests will be introduce=
-d
-> into the codebase and, on the concern of the CI systems, developed a stru=
-cture
-> where the unit tests can be introduced as modules and run on IGT (the IGT=
- patch
-> will be introduced soon).
+The kernel assumes that the TSC frequency which is provided by the
+hardware / firmware via MSRs or CPUID(0x15) is correct after applying
+a few basic consistency checks. This disables the TSC recalibration
+against HPET or PM timer.
 
-It's awesome to see this! It's definitely one of the more ambitious
-KUnit test projects out there, and the DML code does seem particularly
-well suited to unit-testings.
+As a result there is no mechanism to validate that frequency in cases
+where a firmware or hardware defect is suspected.
 
-> The way the modules are implemented might seem a little unusual for KUnit
-> developers. We need to call the KUnit init function inside the AMDGPU sta=
-ck,
-> otherwise, the test won't compile as a module. So, the solution to this
-> problem was based on the unit tests for the Thunderbolt driver, which use=
-s
-> KUnit and also tests a physical driver.
->
-> As kunit_test_suites() defines itself as an init_module(), it conflicts w=
-ith
-> the existing one at amdgpu_drv. So, if we use kunit_test_suites(), we won=
-'t
-> be able to compile the tests as modules and, therefore, won't be able to =
-use
-> IGT to run the tests. This problem with kunit_test_suites() was already
-> discussed in the KUnit mailing list, as can be seen in [7].
+Add an option 'recalibrate' for 'tsc' kernel parameter to force the
+tsc freq recalibration with HPET or PM timer, and warn if the deviation
+from previous value is more than about 500 PPM. There is no functional
+change to existing work flow.
 
-I'm not sure I fully understand why these tests need to be part of the
-amdgpu module, though admittedly I've not played with IGT much. Would
-it be possible to compile these tests as separate modules, which could
-depend on amdgpu (or maybe include the DML stuff directly), and
-therefore not have this conflict? I definitely was able to get these
-tests working under kunit_tool (albeit as built-ins) by using
-kunit_test_suites(). If each suite were built as a separate module (or
-indeed, even if all the tests were in one module, with one list of
-suites), then it should be possible to avoid the init_module()
-conflict. That'd also make it possible to run these tests without
-actually needing the driver to initialise, which seems like it might
-require actual hardware(?)
+Signed-off-by: Feng Tang <feng.tang@intel.com>
+---
+Changelog:
 
-There are two other reasons the 'thunderbolt'-style technique is one
-we want to avoid:
-1. It makes it much more difficult to run tests using kunit_tool and
-KUnit-based CI tools: these tests would not run automatically, and if
-they were built-in as-is, they'd need to be
-2. We're planning to improve module support to replace the
-init_module()-based implementation of kunit_test_suites() with one
-which won't have these conflicts, so the need for this should be
-short-lived.
+  since v2:
+    * revise the option description in kernel-parameters.txt
+    * rebase against v5.19-rc2
 
-If you're curious, an early version of the improved module support can
-be found here, though it's out-of-date enough it won't apply or work
-as-is:
-https://lore.kernel.org/all/101d12fc9250b7a445ff50a9e7a25cd74d0e16eb.camel@=
-codeconstruct.com.au/
+  since v1:
+    * refine commit log to state clearly the problem and intention
+      of the patch by copying Thomas' words
 
-Now, that's unlikely to be ready very soon, but I'd be hesitant to
-implement too extensive a system for avoiding kunit_test_suites()
-given at some point it should work and we'll need to migrate back to
-it.
+ .../admin-guide/kernel-parameters.txt         |  4 +++
+ arch/x86/kernel/tsc.c                         | 34 ++++++++++++++++---
+ 2 files changed, 34 insertions(+), 4 deletions(-)
 
-At the very least, having the dependency on KUNIT=3Dm is a very bad
-idea: it should be possible to have tests built as modules, even if
-KUnit itself isn't, and ideally (even if this sort-of implementation
-is required), it _should_ be possible to have these tests be built-in
-if all their dependencies (KUnit, amdgpu) are, which would make it
-possible to run the tests without a userland.
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 8090130b544b..1bb54d562a01 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -6135,6 +6135,10 @@
+ 			in situations with strict latency requirements (where
+ 			interruptions from clocksource watchdog are not
+ 			acceptable).
++			[x86] recalibrate: force to do frequency recalibration
++			with a HW timer (HPET or PM timer) for systems whose
++			TSC frequency comes from HW or FW through MSR or CPUID(0x15),
++			and warn if the difference is more than 500 ppm.
+ 
+ 	tsc_early_khz=  [X86] Skip early TSC calibration and use the given
+ 			value instead. Useful when the early TSC frequency discovery
+diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
+index cafacb2e58cc..5cf62a58754a 100644
+--- a/arch/x86/kernel/tsc.c
++++ b/arch/x86/kernel/tsc.c
+@@ -48,6 +48,8 @@ static DEFINE_STATIC_KEY_FALSE(__use_tsc);
+ 
+ int tsc_clocksource_reliable;
+ 
++static int __read_mostly tsc_force_recalibrate;
++
+ static u32 art_to_tsc_numerator;
+ static u32 art_to_tsc_denominator;
+ static u64 art_to_tsc_offset;
+@@ -303,6 +305,8 @@ static int __init tsc_setup(char *str)
+ 		mark_tsc_unstable("boot parameter");
+ 	if (!strcmp(str, "nowatchdog"))
+ 		no_tsc_watchdog = 1;
++	if (!strcmp(str, "recalibrate"))
++		tsc_force_recalibrate = 1;
+ 	return 1;
+ }
+ 
+@@ -1374,6 +1378,25 @@ static void tsc_refine_calibration_work(struct work_struct *work)
+ 	else
+ 		freq = calc_pmtimer_ref(delta, ref_start, ref_stop);
+ 
++	/* Will hit this only if tsc_force_recalibrate has been set */
++	if (boot_cpu_has(X86_FEATURE_TSC_KNOWN_FREQ)) {
++
++		/* Warn if the deviation exceeds 500 ppm */
++		if (abs(tsc_khz - freq) > (tsc_khz >> 11)) {
++			pr_warn("Warning: TSC freq calibrated by CPUID/MSR differs from what is calibrated by HW timer, please check with vendor!!\n");
++			pr_info("Previous calibrated TSC freq:\t %lu.%03lu MHz\n",
++				(unsigned long)tsc_khz / 1000,
++				(unsigned long)tsc_khz % 1000);
++		}
++
++		pr_info("TSC freq recalibrated by [%s]:\t %lu.%03lu MHz\n",
++			hpet ? "HPET" : "PM_TIMER",
++			(unsigned long)freq / 1000,
++			(unsigned long)freq % 1000);
++
++		return;
++	}
++
+ 	/* Make sure we're within 1% */
+ 	if (abs(tsc_khz - freq) > tsc_khz/100)
+ 		goto out;
+@@ -1407,8 +1430,10 @@ static int __init init_tsc_clocksource(void)
+ 	if (!boot_cpu_has(X86_FEATURE_TSC) || !tsc_khz)
+ 		return 0;
+ 
+-	if (tsc_unstable)
+-		goto unreg;
++	if (tsc_unstable) {
++		clocksource_unregister(&clocksource_tsc_early);
++		return 0;
++	}
+ 
+ 	if (boot_cpu_has(X86_FEATURE_NONSTOP_TSC_S3))
+ 		clocksource_tsc.flags |= CLOCK_SOURCE_SUSPEND_NONSTOP;
+@@ -1421,9 +1446,10 @@ static int __init init_tsc_clocksource(void)
+ 		if (boot_cpu_has(X86_FEATURE_ART))
+ 			art_related_clocksource = &clocksource_tsc;
+ 		clocksource_register_khz(&clocksource_tsc, tsc_khz);
+-unreg:
+ 		clocksource_unregister(&clocksource_tsc_early);
+-		return 0;
++
++		if (!tsc_force_recalibrate)
++			return 0;
+ 	}
+ 
+ 	schedule_delayed_work(&tsc_irqwork, 0);
+-- 
+2.27.0
 
-That being said, I've got basically no knowledge of amdgpu (or even
-drm in general), so there could be something I'm missing.
-
->
-> The first patch configures the basic structure of the KUnit Tests, settin=
-g the
-> proper Makefile, Kconfig, and init function. It also contains a simple te=
-st
-> involving DML logging, which is the pretext for building the testing stru=
-cture.
->
-> The second patch adds KUnit tests to bw_fixed functions. This patch repre=
-sents
-> what we intend to do on the rest of the DML modules: systematic testing o=
-f the
-> public functions of the DML, especially mathematically complicated functi=
-ons.
-> Also, it shows how simple it is to add new tests to the DML with the stru=
-cture
-> we built.
->
-> Any feedback or ideas for the project are welcome!
->
-Looks great to me so far: I'll try to get a more detailed review in soon.
-
-Cheers,
--- David
-
-> [1] https://crosscat.me
-> [2] https://mairacanal.github.io
-> [3] https://tales-aparecida.github.io/
-> [4] https://summerofcode.withgoogle.com/programs/2022/organizations/xorg-=
-foundation
-> [5] https://magalilemes.github.io/
-> [6] https://www.phoronix.com/scan.php?page=3Dnews_item&px=3DAMDGPU-Closin=
-g-4-Million
-> [7] https://groups.google.com/g/kunit-dev/c/hbJbh8L37FU/m/EmszZE9qBAAJ
->
-> - Isabella Basso, Magali Lemes, Ma=C3=ADra Canal, and Tales Lelo
->
-> Magali Lemes (1):
->   drm/amd/display: Introduce KUnit tests to the bw_fixed library
->
-> Ma=C3=ADra Canal (2):
->   drm/amd/display: Introduce KUnit to DML
->   drm/amd/display: Move bw_fixed macros to header file
->
->  drivers/gpu/drm/amd/display/Kconfig           |   1 +
->  .../gpu/drm/amd/display/amdgpu_dm/Makefile    |   5 +
->  .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |   3 +
->  .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h |   3 +
->  .../drm/amd/display/amdgpu_dm/tests/Kconfig   |  41 +++
->  .../drm/amd/display/amdgpu_dm/tests/Makefile  |  18 +
->  .../amdgpu_dm/tests/calcs/bw_fixed_test.c     | 322 ++++++++++++++++++
->  .../amdgpu_dm/tests/display_mode_lib_test.c   |  83 +++++
->  .../amd/display/amdgpu_dm/tests/dml_test.c    |  26 ++
->  .../amd/display/amdgpu_dm/tests/dml_test.h    |  21 ++
->  .../drm/amd/display/dc/dml/calcs/bw_fixed.c   |  14 +-
->  drivers/gpu/drm/amd/display/dc/inc/bw_fixed.h |  14 +
->  12 files changed, 538 insertions(+), 13 deletions(-)
->  create mode 100644 drivers/gpu/drm/amd/display/amdgpu_dm/tests/Kconfig
->  create mode 100644 drivers/gpu/drm/amd/display/amdgpu_dm/tests/Makefile
->  create mode 100644 drivers/gpu/drm/amd/display/amdgpu_dm/tests/calcs/bw_=
-fixed_test.c
->  create mode 100644 drivers/gpu/drm/amd/display/amdgpu_dm/tests/display_m=
-ode_lib_test.c
->  create mode 100644 drivers/gpu/drm/amd/display/amdgpu_dm/tests/dml_test.=
-c
->  create mode 100644 drivers/gpu/drm/amd/display/amdgpu_dm/tests/dml_test.=
-h
->
-> --
-> 2.36.1
->
