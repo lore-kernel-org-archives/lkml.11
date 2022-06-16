@@ -2,91 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 522BAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E95DBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378631AbiFPUTH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 16:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59938 "EHLO
+        id S231513AbiFPUUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 16:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378441AbiFPUSW (ORCPT
+        with ESMTP id S1378460AbiFPUUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 16:18:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2028D35257;
-        Thu, 16 Jun 2022 13:18:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAC37B82607;
-        Thu, 16 Jun 2022 20:18:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD09C3411C;
-        Thu, 16 Jun 2022 20:18:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655410698;
-        bh=3rj4WdawLiqjsFa+aKI99KNDxfLaqIxoRLyLJlDBqmw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H19XpfN8GkkUHhYR02xbTsqgogF5KcZJbHrq2kIS32cLsgm/2TNR1T/19NAos3McU
-         l/Wl2AafD9Zgy3V1s5B42RxsH+Lcr1thaddHlXA6tPwB/c+s5ZdpSoEkmCPnXkLDqQ
-         yZEWUrsqkdzLVyKo3PMUdLsG6oJRxPsHxNde2zMl3LhHHDuATsC2d5ni7r2DQj49vr
-         ry1J1B+0DDEEbdzRsng6jfR8ICuBAsK8zqVKKvptaAMGFGv+4hzIBMFRdJALYQdMQg
-         EtWk8LIBNiwVCFtNsRhlO/PUyP2gi+8sMiP51NSoqMU428wT6y/Qk37RuXveINNLck
-         6/YDojNAp9QTA==
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        linux-xfs@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>
-Subject: [PATCH v3 8/8] f2fs: support STATX_DIOALIGN
-Date:   Thu, 16 Jun 2022 13:15:06 -0700
-Message-Id: <20220616201506.124209-9-ebiggers@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220616201506.124209-1-ebiggers@kernel.org>
-References: <20220616201506.124209-1-ebiggers@kernel.org>
+        Thu, 16 Jun 2022 16:20:34 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D525C76B
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:19:56 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id a10so2602063ioe.9
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:19:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Dfkm2dRdVxtt3SV4LQI+L9Ln4V2YzTGpPhRrTLCNvI8=;
+        b=QSWpvu9pWfaUPtZWEVpGfTPlC4TAzgLKTQazq9FVTmXWjrP7M8kNlU8AN8oqhkIvad
+         fQdfo6nlia4m120WWW67tUJiMptbuycHSVLtE4oGfB+/dQMM2VypdNmh+s1ID6SP3flH
+         fUryY1g6P4hWm6WOsHv/RZ0oncfsgXIOoT2EQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Dfkm2dRdVxtt3SV4LQI+L9Ln4V2YzTGpPhRrTLCNvI8=;
+        b=Pv1yJxMEgDZDuayZLnxuUdLDYXTro9YfVxw6U1v5MtDOBpdygwM1IYHKza5kJnIufC
+         jxWZkuYlPOxhe/XRXl2lSJeF2H10DabZtj0/j6wYN0D3ZylCYy0tAzWdXMlDw0Z1aECf
+         jwen4rHHhaBJOeCsS044NJ6MyCPct3Ngyxmy6u5BqHW280yM9d1IipLab709ag1Ej8P7
+         U25bMSt+ecc/QL5EYiqSgA3y9AunO0UNMORTBBt79h3Dx7oNiEE6iQpJV8Yd5hqTAfBk
+         H4wP6u9qdGzXvusD5Fxzpsg5uNuT+N5RwhZTIN4TqFilbctGgLlgNc8REJbDP8WIc+G0
+         vi7g==
+X-Gm-Message-State: AJIora/W+VV09oikUbektet+BdRUI9gABc0zhOYnu76f7W/UCSi8O1Nt
+        ggmUllBDJsxohqxdI9xYcqDJiA==
+X-Google-Smtp-Source: AGRyM1uhjyLP+Q7fR9PxCN3oEeMg+rYmK3g6VQVZBzwNqbTEr5ANByUlMGD6MD/qFY1p/nDnL1xa4A==
+X-Received: by 2002:a05:6602:29c3:b0:669:25e5:72d2 with SMTP id z3-20020a05660229c300b0066925e572d2mr3474783ioq.206.1655410795569;
+        Thu, 16 Jun 2022 13:19:55 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id s70-20020a025149000000b00331f8fff9a3sm1286586jaa.64.2022.06.16.13.19.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jun 2022 13:19:55 -0700 (PDT)
+Subject: Re: [PATCH] selftests: vm: Fix resource leak when return error
+To:     Ding Xiang <dingxiang@cmss.chinamobile.com>,
+        akpm@linux-foundation.org, shuah@kernel.org
+Cc:     linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220615093629.1330809-1-dingxiang@cmss.chinamobile.com>
+ <29be48c7-7178-6f25-c99b-0d11eb967539@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <c2d63817-dc5b-13eb-2698-4ca39bd0d1c1@linuxfoundation.org>
+Date:   Thu, 16 Jun 2022 14:19:54 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
+In-Reply-To: <29be48c7-7178-6f25-c99b-0d11eb967539@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+On 6/16/22 2:11 PM, Shuah Khan wrote:
+> On 6/15/22 3:36 AM, Ding Xiang wrote:
+>> When return on an error path, file handle need to be closed
+>> to prevent resource leak
+>>
+>> Signed-off-by: Ding Xiang <dingxiang@cmss.chinamobile.com>
+>> ---
+>>   tools/testing/selftests/vm/ksm_tests.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/tools/testing/selftests/vm/ksm_tests.c b/tools/testing/selftests/vm/ksm_tests.c
+>> index 2fcf24312da8..f5e4e0bbd081 100644
+>> --- a/tools/testing/selftests/vm/ksm_tests.c
+>> +++ b/tools/testing/selftests/vm/ksm_tests.c
+>> @@ -54,6 +54,7 @@ static int ksm_write_sysfs(const char *file_path, unsigned long val)
+>>       }
+>>       if (fprintf(f, "%lu", val) < 0) {
+>>           perror("fprintf");
+>> +        fclose(f);
+>>           return 1;
+>>       }
+>>       fclose(f);
+>> @@ -72,6 +73,7 @@ static int ksm_read_sysfs(const char *file_path, unsigned long *val)
+>>       }
+>>       if (fscanf(f, "%lu", val) != 1) {
+>>           perror("fscanf");
+>> +        fclose(f);
+>>           return 1;
+>>       }
+>>       fclose(f);
+>>
+> 
+> Looks good to me.
+> 
+> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+> 
 
-Add support for STATX_DIOALIGN to f2fs, so that direct I/O alignment
-restrictions are exposed to userspace in a generic way.
+I applied this to linux-kselftest fixes for next rc.
 
-Signed-off-by: Eric Biggers <ebiggers@google.com>
----
- fs/f2fs/file.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index 1b452bb75af29..11d75aa3da185 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -852,6 +852,21 @@ int f2fs_getattr(struct user_namespace *mnt_userns, const struct path *path,
- 		stat->btime.tv_nsec = fi->i_crtime.tv_nsec;
- 	}
- 
-+	/*
-+	 * Return the DIO alignment restrictions if requested.  We only return
-+	 * this information when requested, since on encrypted files it might
-+	 * take a fair bit of work to get if the file wasn't opened recently.
-+	 */
-+	if ((request_mask & STATX_DIOALIGN) && S_ISREG(inode->i_mode)) {
-+		unsigned int bsize = i_blocksize(inode);
-+
-+		stat->result_mask |= STATX_DIOALIGN;
-+		if (!f2fs_force_buffered_io(inode)) {
-+			stat->dio_mem_align = bsize;
-+			stat->dio_offset_align = bsize;
-+		}
-+	}
-+
- 	flags = fi->i_flags;
- 	if (flags & F2FS_COMPR_FL)
- 		stat->attributes |= STATX_ATTR_COMPRESSED;
--- 
-2.36.1
-
+thanks,
+-- Shuah
