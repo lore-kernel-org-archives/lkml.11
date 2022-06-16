@@ -2,98 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0257C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 05:09:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D923C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 05:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344862AbiFPFJr (ORCPT
+        id S1349658AbiFPFM1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 01:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37918 "EHLO
+        Thu, 16 Jun 2022 01:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbiFPFJp (ORCPT
+        with ESMTP id S229694AbiFPFM0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 01:09:45 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8385E56B35;
-        Wed, 15 Jun 2022 22:09:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=8mZ1bXeHffFC/kHmIXWI5Muej2f+NxPZdpt2fFJLCPg=; b=pwLr72dcqADpqWELJCQtWR6StY
-        fuboEy9QOQJ/IPzSuw2Mjmq9P95HaWH/L+Gl7M+ZJ43parY5YaQQMmS2FWsxQfso5RDLoLVsujWFt
-        HZIkOnTrJ76lQxPhS1gs/J95YzxEXr8Vbdv+w8YyfVM+ffGs7qWvpI04jcuME70RoQBgMGKnun4J8
-        IIZ41IPOjTu7Yb8uWhimoxa9ICjR3sU3X7TcSFf2YzcMpEM4gurASEm5mDBBU2m8g61Hse2WfLC52
-        C3xW4LM3pX8Q8LQlWftdVdqykqCTZ8D5mui0YOoIL64wYNycVGcJIHkLx8Y5Lzft2nc0v4ben4wkv
-        qFH6n6Fw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1hlC-008KMC-CQ; Thu, 16 Jun 2022 05:09:39 +0000
-Message-ID: <e04450b6-822e-ca66-484b-a48856e94a9e@infradead.org>
-Date:   Wed, 15 Jun 2022 22:09:31 -0700
+        Thu, 16 Jun 2022 01:12:26 -0400
+Received: from smtp.smtpout.orange.fr (smtp03.smtpout.orange.fr [80.12.242.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98595AED9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 22:12:24 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id 1hnpoMOui26JC1hnpo2ksk; Thu, 16 Jun 2022 07:12:23 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Thu, 16 Jun 2022 07:12:23 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <a5f6f76d-efc1-b421-7623-ad46996f5b94@wanadoo.fr>
+Date:   Thu, 16 Jun 2022 07:12:21 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v6 3/4] i2c: ch341: add I2C MFD cell driver for the CH341
-Content-Language: en-US
-To:     frank zago <frank@zago.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Wolfram Sang <wsa@kernel.org>, Johan Hovold <johan@kernel.org>,
-        linux-usb@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org
-References: <20220616013747.126051-1-frank@zago.net>
- <20220616013747.126051-4-frank@zago.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220616013747.126051-4-frank@zago.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] drivers: soc: sifive: Add missing of_node_put() in
+ sifive_l2_cache.c
+Content-Language: fr
+To:     Liang He <windhl@126.com>, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, aou@eecs.berkeley.edu
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220615122315.3965435-1-windhl@126.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220615122315.3965435-1-windhl@126.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
-
-On 6/15/22 18:37, frank zago wrote:
-> The I2C interface can run at 4 different speeds. This driver currently
-> only offer 100kHz. Tested with a variety of I2C sensors, and the IIO
-> subsystem.
+Le 15/06/2022 à 14:23, Liang He a écrit :
+> In sifive_l2_init(), of_find_matching_node() will return a node pointer
+> with refcount incremented. We should use of_node_put() in each fail path
+> or when it is not used anymore.
 > 
-> Signed-off-by: frank zago <frank@zago.net>
+> Signed-off-by: Liang He <windhl@126.com>
 > ---
->  MAINTAINERS                    |   1 +
->  drivers/i2c/busses/Kconfig     |  10 +
->  drivers/i2c/busses/Makefile    |   1 +
->  drivers/i2c/busses/i2c-ch341.c | 377 +++++++++++++++++++++++++++++++++
->  4 files changed, 389 insertions(+)
->  create mode 100644 drivers/i2c/busses/i2c-ch341.c
+>   drivers/soc/sifive/sifive_l2_cache.c | 29 ++++++++++++++++++++++------
+>   1 file changed, 23 insertions(+), 6 deletions(-)
 > 
+> diff --git a/drivers/soc/sifive/sifive_l2_cache.c b/drivers/soc/sifive/sifive_l2_cache.c
+> index 59640a1d0b28..2b9c9522ef21 100644
+> --- a/drivers/soc/sifive/sifive_l2_cache.c
+> +++ b/drivers/soc/sifive/sifive_l2_cache.c
+> @@ -198,29 +198,41 @@ static int __init sifive_l2_init(void)
+>   	struct resource res;
+>   	int i, rc, intr_num;
+>   
 
-> diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-> index a1bae59208e3..db9797345ad5 100644
-> --- a/drivers/i2c/busses/Kconfig
-> +++ b/drivers/i2c/busses/Kconfig
-> @@ -1199,6 +1199,16 @@ config I2C_RCAR
->  
->  comment "External I2C/SMBus adapter drivers"
->  
-> +config I2C_CH341
-> +	tristate "CH341 USB to I2C support"
-> +	select MFD_CH341
-> +	help
-> +	  If you say yes to this option, I2C support will be included for the
-> +	  WCH CH341, a USB to I2C/SPI/GPIO interface.
+Hi,
+this empty line is not needed.
+
+> +	int ret;
 > +
-> +	  This driver can also be built as a module.  If so, the module
-> +	  will be called i2c-ch341.
+>   	np = of_find_matching_node(NULL, sifive_l2_ids);
+>   	if (!np)
+>   		return -ENODEV;
+>   
+>   	if (of_address_to_resource(np, 0, &res))
+> -		return -ENODEV;
+> +	{
 
-I haven't tested it, but just from reading, it looks like
-this one needs a "depends on USB" since it selects MFD_CH341, which
-depends on USB, and since 'select' ignores dependency chains.
+this should be at the end of the previous line.
 
-The GPIO driver (patch 2/4) already depends on USB.
+> +		ret = -ENODEV;
+> +		goto out_put;
+> +	}
+>   
+>   	l2_base = ioremap(res.start, resource_size(&res));
+>   	if (!l2_base)
+> -		return -ENOMEM;
+> +	{
+>
 
--- 
-~Randy
+Same here.
+
+  +		ret = -ENOMEM;
+> +		goto out_put;
+> +	}
+>   
+>   	intr_num = of_property_count_u32_elems(np, "interrupts");
+> -	if (!intr_num) {
+> +	if (!intr_num) {		
+>   		pr_err("L2CACHE: no interrupts property\n");
+> -		return -ENODEV;
+> +		ret = -ENODEV
+
+Missing ";" as reported by the bot.
+
+> +		goto out_put;
+>   	}
+>   
+>   	for (i = 0; i < intr_num; i++) {
+>   		g_irq[i] = irq_of_parse_and_map(np, i);
+>   		rc = request_irq(g_irq[i], l2_int_handler, 0, "l2_ecc", NULL);
+> +		
+>   		if (rc) {
+> +			
+
+Why a new empty line here?
+
+>   			pr_err("L2CACHE: Could not request IRQ %d\n", g_irq[i]);
+> -			return rc;
+> +			ret = rc;
+> +			goto out_put;
+>   		}
+>   	}
+>   
+> @@ -232,6 +244,11 @@ static int __init sifive_l2_init(void)
+>   #ifdef CONFIG_DEBUG_FS
+>   	setup_sifive_debug();
+>   #endif
+> -	return 0;
+> +	ret = 0;
+> +	
+> +	
+
+No need for 2 empty lines here.
+
+
+There are also some trailing white spaces on some lines.
+
+"./scripts/checkpatch <name_of_the_patch>" catches some of these tiny 
+issues. Using --strict catches even more of these issues.
+
+You should also always at least compile test your patches, even if they 
+look obvious,
+
+CJ
+
+
+> +out_put:
+> +	of_node_put(np);
+> +	return ret;
+>   }
+>   device_initcall(sifive_l2_init);
+
