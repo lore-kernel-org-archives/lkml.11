@@ -2,138 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F812C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE78C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378256AbiFPQps (ORCPT
+        id S1378390AbiFPQqq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 12:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47600 "EHLO
+        Thu, 16 Jun 2022 12:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378230AbiFPQpS (ORCPT
+        with ESMTP id S231207AbiFPQqe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 12:45:18 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D8A403F8;
-        Thu, 16 Jun 2022 09:44:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=rdCg6im4FTYRC+krLkTNcrz9yXNDSAEOLtpVfWokJzk=; b=lIYqkylRNsFWHYC10t48L3rTzz
-        yBq8yCuNVVYqjoqPFXIS46lBCHD2NlAezsgABwyHdfMw66+kZP182Ua/ep6vVGNTs4F4CopCrFbEw
-        BWwqJURZ+2cthMYSs2sTja5FH6wt9G7AD7XNbVJa6piDo9PI9RUuHDlswpJ0uDp36s2PxE+EBlFod
-        Ea/aw52v+C5EArkPseYDvvLUiGIaKYuhrvSLyidul12C5DII7ZZBPjIYY8bncKLacdtXhZJCZgYw4
-        YkddyDxUs+Bv8mvNdNch9eNcVV46iAs17/v9EfjT1Whiyq+JdK1E62ph6AEv4FwDeksedEJK6XfI+
-        e6jnqHCg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1sba-0025gl-SZ; Thu, 16 Jun 2022 16:44:26 +0000
-Date:   Thu, 16 Jun 2022 17:44:26 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-xfs <linux-xfs@vger.kernel.org>,
-        linux-hardening@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Uladzislau Rezki <urezki@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>
-Subject: Re: [PATCH] usercopy: use unsigned long instead of uintptr_t
-Message-ID: <Yqtd6hTS52mbb9+q@casper.infradead.org>
-References: <20220616143617.449094-1-Jason@zx2c4.com>
- <YqtAShjjo1zC6EgO@casper.infradead.org>
- <YqtDXPWdFQ/fqgDo@zx2c4.com>
- <YqtKjAZRPBVjlE8S@casper.infradead.org>
- <CAHk-=wj2OHy-5e+srG1fy+ZU00TmZ1NFp6kFLbVLMXHe7A1d-g@mail.gmail.com>
+        Thu, 16 Jun 2022 12:46:34 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B3FF50E3B;
+        Thu, 16 Jun 2022 09:45:30 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id n11so2057488iod.4;
+        Thu, 16 Jun 2022 09:45:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2nZIbA02OXNIyOJXo7QF5v3mB7RiS92/ilxeBqv2VfA=;
+        b=AM9RhXBt+LsVNDi+BD7JqxRyoFeds10ltwQAurvIK++eeWSRboWL2CudUwDRxaQW5Z
+         RCG1QYnkiqHPVunNNiioVe9/MaAS5TyGvz/yNjFf201p/y1TBPUZVdAVBgm8zPQ5TtBS
+         iaUvX/3DpCIIDj4FDt8cB/gr0R5i/yfx309bLUl1BUcAf7DCqiSbfXVZB29oY68waMIz
+         waNbvxOTYszbjEwe6zUwGzPKgnkoLvRGG5y4DXbGokBWao2defVOX6ElDFHf0pmlBQWh
+         JfjaYWRkj4lfVm2cZrcKIi/YZ1MD/5L1Dbl+WrOtw8rD0VMuO3khgMd4K0yqcSopGyUg
+         GOaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2nZIbA02OXNIyOJXo7QF5v3mB7RiS92/ilxeBqv2VfA=;
+        b=pKOGhjMlo5bONcXDt1/9NFrJdV79iraY+oWZGdwVsueDpPkG836aPnkY9P4BX1rM4o
+         QeAAvHs4wAqCw/G5+FNVvJRkV0VHZoCIQzCmTgvG8Yju2EsizIHEJxKI9vJAyPrmQbtm
+         v1ZR8m+zuPct7MIDR/9jPmhTjbhSgu7wp4Xaaq2YvMuxUvEte35zOi3sEzhuBP7+S0qK
+         R2vxQQwgCNbdoXEh0s66mCwTXkov08iOXwmgs41OEO002NhGCnlCHhUQ1LatydoPUxS2
+         0t1l96SdxqLqhSSGVRQLLgP4rUUi+aiUv/JzW6L5mUl81QI22lChsilBbeCOhQgCzqWH
+         9F8Q==
+X-Gm-Message-State: AJIora+dqGsIGXQwwE8BQGwP1mvXXM2pz5IIZWaMfFSgazBhzAH/I9/I
+        /QkPS904qinZVY0PHGzfqiA=
+X-Google-Smtp-Source: AGRyM1tQ0Ty3qcwovZ4LFfcBf4Rj32abjfMSZ7jnhkPVz/YfOFNN3/WAGJtf7QB/DzEom5KAK2LLcg==
+X-Received: by 2002:a05:6638:3291:b0:331:7589:677 with SMTP id f17-20020a056638329100b0033175890677mr3194294jav.96.1655397920307;
+        Thu, 16 Jun 2022 09:45:20 -0700 (PDT)
+Received: from ?IPV6:2600:1700:2442:6db0:7c5a:aa57:ff5:df70? ([2600:1700:2442:6db0:7c5a:aa57:ff5:df70])
+        by smtp.gmail.com with ESMTPSA id g2-20020a925202000000b002d5199dab1fsm1184668ilb.42.2022.06.16.09.45.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jun 2022 09:45:19 -0700 (PDT)
+Message-ID: <afea990a-9378-e684-2129-e24393b60b4b@gmail.com>
+Date:   Thu, 16 Jun 2022 11:45:17 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wj2OHy-5e+srG1fy+ZU00TmZ1NFp6kFLbVLMXHe7A1d-g@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: Default async probing for DT based systems
+Content-Language: en-US
+To:     Saravana Kannan <saravanak@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Kevin Hilman <khilman@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     Android Kernel Team <kernel-team@android.com>,
+        Linux PM <linux-pm@vger.kernel.org>
+References: <CAGETcx8z4dn1j05Za6nfDeC3v4r1yo30Nqu=1K2BEsvLcqqybQ@mail.gmail.com>
+From:   Frank Rowand <frowand.list@gmail.com>
+In-Reply-To: <CAGETcx8z4dn1j05Za6nfDeC3v4r1yo30Nqu=1K2BEsvLcqqybQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 08:59:51AM -0700, Linus Torvalds wrote:
-> On Thu, Jun 16, 2022 at 8:21 AM Matthew Wilcox <willy@infradead.org> wrote:
-> >
-> > I don't know why people call uintptr_t a "userspace type".  It's a type
-> > invented by C99 that is an integer type large enough to hold a pointer.
-> > Which is exactly what we want here.
+Hi Saravana,
+
+You failed to include me in the distribution.  Adding myself now...
+
+-Frank
+
+On 6/15/22 23:24, Saravana Kannan wrote:
+> Hi,
 > 
-> On the other hand, "unsigned long" has existed since the first version
-> of C, and is an integer type large enough to hold a pointer.
+> TL;DR: I want to improve boot times by enabling async probing by
+> default for DT based systems. Can you give it a shot please?
 > 
-> Which is exactly what we want here, and what we use everywhere else too.
+> Why do you think it might work when async probing has been a pain before?
+> ==========================================================
+> Since fw_devlink=on is the default behavior and fw_devlink understands
+> approximately 24 DT bindings, it should capture most of the device
+> dependencies and ensure proper probe ordering. For example, on a Pixel
+> 6, fw_devlink figures out 325 dependencies that it uses to enforce
+> probe ordering.
 > 
-> The whole "uintptr_t handles the historical odd cases with pointers
-> that are smaller than a 'long'" is entirely irrelevant, since those
-> odd cases are just not a factor.
-
-I don't care about the odd historical cases either.
-
-> And the "pointers are _larger_ than a 'long'" case is similarly
-> irrelevant, since we very much want to use arithmetic on these things,
-> and they are 'long' later. They aren't used as pointers, they are used
-> as integer indexes into the virtual address space that we do odd
-> operations on.
+> You can find all the dependencies under /sys/class/devlink.
 > 
-> Honestly, even if you believe in the 128-bit pointer thing, changing
-> one cast in one random place to be different from everything else is
-> *not* productive. We're never going to do some "let's slowly migrate
-> from one to the other".
+> Fine! What do you want me to try?
+> ==========================
+> With the patches that have landed in 5.19-rc1, we can now enable
+> default async probing for all built-in drivers by adding the following
+> to the kernel command line:
 > 
-> And honestly, we're never going to do that using "uintptr_t" anyway,
-> since it would be based on a kernel config variable and be a very
-> specific type, and would need to be type-safe for any sane conversion.
+> driver_async_probe=*
 > 
-> IOW, in a hypothetical word where the address size is larger than the
-> word-size, it would have to be something like out "pte_t", which is
-> basically wrapped in a struct so that C implicit type conversion
-> doesn't bite you in the arse.
-
-I don't want to support an address space larger than word size.  I can't
-imagine any CPU vendor saying "So we have these larger registers that
-you can only use for pointers and then these smaller registers that you
-can use for data".  We haven't had A/D register splits since the m68k.
-Perhaps I haven't talked to enough crazy CPU people.  But if anyone does
-propose something that bad, we should laugh at them.
-
-So how do you think we should solve the 128-bit-word-size problem?
-Leave int at 32-bit, promote long to 128-bit and get the compiler to
-add __int64 to give us a 64-bit type?
-
-> We use the user-space types in a few places, and they have caused
-> problems, but at least they are really traditional and the compiler
-> actually enforces them for some really standard functions. I'm looking
-> at 'size_t' in particular, which caused problems exactly because it's
-> a type that is strictly speaking not under our control.
+> I'd really appreciate it if folks can try adding driver_async_probe=*
+> to their kernel command line and report any boot time
+> improvements/regression or boot/probe failures it causes.
 > 
-> 'size_t' is actually a great example of why 'uintptr_t' is a horrid
-> thing. It's effectively a integer type that is large enough to hold a
-> pointer difference. On unsegmented architectures, that ends up being a
-> type large enough to hold a pointer.
-
-The only reason I like size_t is that it's good _documentation_.
-It says "This integer is a byte count of something that's in memory".
-As opposed to being a count of sectors, blocks, pages, pointers or
-turtles.
-
-As an example:
-extern int bio_add_pc_page(struct request_queue *, struct bio *, struct page *,
-                           unsigned int, unsigned int);
-
-What the hell are those two ints?  Based on experience, they're probably
-offset & length, but who even knows what order they're in.
-
-> And does it sound familiar how on some architectures it's "unsigned
-> int", and on others it is "unsigned long"? It's very annoying, and
-> it's been annoying over the years. The latest annoyance was literally
-> less than a week ago in 1c27f1fc1549 ("iov_iter: fix build issue due
-> to possible type mis-match").
-
-Yes, ARM is just crazy here.  We should get the compiler people to give
-us an option to make size_t unsigned long.  Like we have -mcmodel=kernel
-on x86.
+> (* insert cat begging pic *)
+> Can I haz some reports pleez?!
+> 
+> Tips:
+> ====
+> One easy way to check for devices probe failures is to compare the
+> output of this command with/without the commandline changes:
+> 
+> # find /sys/devices -name driver
+> 
+> Btw, if you need to force sync probing for a few drivers so that your
+> rootfs mounts properly, you can set the flag in the driver, or you can
+> list them as exceptions following the * in the command line option.
+> For example:
+> driver_async_probe=*,my_flash_driver,my_sdio_driver
+> 
+> Report these too.
+> 
+> Known issues:
+> ===========
+> fw_devlink doesn't yet support phy-handle and mdio-parent DT bindings.
+> They have some tricky issues I need to resolve first and I need to add
+> both of them together -- I'm working on it. If there are other DT
+> bindings that are missing support, do let me know. Most of them are
+> easy to add.
+> 
+> The driver_async_probe=* won't have any useful impact for modules
+> without adding <module_name>.async_probe to the commandline or
+> async_probe as a module option when loading it. This is because
+> modules intentionally force sync before they exit. There's a patch for
+> a global flag for modules too [1], but it can never be set by default
+> for userspace reasons[2].
+> 
+> [1] - https://lore.kernel.org/lkml/20220604010101.719508-1-saravanak@google.com/
+> [2] - https://lore.kernel.org/lkml/CA+55aFxV40V2WvNtJY3EC0F-B9wPk8CV2o1TTTyoF4CoWH7rhQ@mail.gmail.com/
+> 
+> Thanks,
+> Saravana
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 
