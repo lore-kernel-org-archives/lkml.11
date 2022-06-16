@@ -2,129 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4746C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 19:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B194C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 19:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377912AbiFPTIj (ORCPT
+        id S1377750AbiFPTLm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 15:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60024 "EHLO
+        Thu, 16 Jun 2022 15:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378036AbiFPTId (ORCPT
+        with ESMTP id S230230AbiFPTLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 15:08:33 -0400
-Received: from smtp.smtpout.orange.fr (smtp10.smtpout.orange.fr [80.12.242.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F3D36321
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 12:08:32 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id 1uqzoyzz62ovC1uqzoKVy7; Thu, 16 Jun 2022 21:08:30 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Thu, 16 Jun 2022 21:08:30 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <d2637e89-db7e-e69a-f97b-ab87ed5af25a@wanadoo.fr>
-Date:   Thu, 16 Jun 2022 21:08:29 +0200
+        Thu, 16 Jun 2022 15:11:40 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66B337AA2;
+        Thu, 16 Jun 2022 12:11:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=co28jhl7e2oX2eriA4KZwcAFjSaTF3hFTt8kuzGQ+5A=; b=5iDiYlmBfHd4W4dgJBQjbDpkVm
+        lebmyi2WhxsVnBphpBbUq7ZFrGw3Cr60gawRFb4+EkAA02I3XHeHyNHAyvt47u28aI2Wg5sC5G8J8
+        uFZuNYJ8jqWVNlSXxmUZ0yy79zcTSs35j5EOutlqGDikdT8Una1rhWc7qnxhzYg3oGW0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o1utt-007E9H-IA; Thu, 16 Jun 2022 21:11:29 +0200
+Date:   Thu, 16 Jun 2022 21:11:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, lxu@maxlinear.com,
+        davem@davemloft.net, linux-kernel@vger.kernel.org,
+        bryan.whitehead@microchip.com, richardcochran@gmail.com,
+        UNGLinuxDriver@microchip.com, Ian.Saturley@microchip.com
+Subject: Re: [PATCH net-next V2 1/4] net: lan743x: Add support to LAN743x
+ register dump
+Message-ID: <YquAYSl9e98NxW2u@lunn.ch>
+References: <20220616041226.26996-1-Raju.Lakkaraju@microchip.com>
+ <20220616041226.26996-2-Raju.Lakkaraju@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2] bus: (mvebu-mbus) Add missing of_node_put()
-Content-Language: en-US
-To:     Liang He <windhl@126.com>, pali@kernel.org, lpieralisi@kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20220616020135.3973141-1-windhl@126.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220616020135.3973141-1-windhl@126.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616041226.26996-2-Raju.Lakkaraju@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 16/06/2022 à 04:01, Liang He a écrit :
-> In mvebu_mbus_dt_init(), of_find_matching_node_and_match() and
-> of_find_node_by_phandle() will both return node pointers with
-> refcount incremented. We should use of_node_put() in fail path
-> or when it is not used anymore.
+On Thu, Jun 16, 2022 at 09:42:23AM +0530, Raju Lakkaraju wrote:
+> Add support to LAN743x common register dump
 > 
-> Signed-off-by: Liang He <windhl@126.com>
-> ---
->   changelog:
-> 
->    v2: (1) use real name (2) add of_node_put when not used anymore
-> 
->    v1: add of_node_put in fail path
-> 
-> 
->   drivers/bus/mvebu-mbus.c | 15 ++++++++++++++-
->   1 file changed, 14 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/bus/mvebu-mbus.c b/drivers/bus/mvebu-mbus.c
-> index db612045616f..e168c8de2ae8 100644
-> --- a/drivers/bus/mvebu-mbus.c
-> +++ b/drivers/bus/mvebu-mbus.c
-> @@ -1327,22 +1327,28 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
->   
->   	prop = of_get_property(np, "controller", NULL);
->   	if (!prop) {
-> +		of_node_put(np);
->   		pr_err("required 'controller' property missing\n");
->   		return -EINVAL;
->   	}
->   
->   	controller = of_find_node_by_phandle(be32_to_cpup(prop));
->   	if (!controller) {
-> +		of_node_put(np);
->   		pr_err("could not find an 'mbus-controller' node\n");
->   		return -ENODEV;
->   	}
->   
->   	if (of_address_to_resource(controller, 0, &mbuswins_res)) {
-> +		of_node_put(np);
-> +		of_node_put(controller);
->   		pr_err("cannot get MBUS register address\n");
->   		return -EINVAL;
->   	}
->   
->   	if (of_address_to_resource(controller, 1, &sdramwins_res)) {
-> +		of_node_put(np);
-> +		of_node_put(controller);
->   		pr_err("cannot get SDRAM register address\n");
->   		return -EINVAL;
->   	}
-> @@ -1360,6 +1366,8 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
->   			pr_warn(FW_WARN "deprecated mbus-mvebu Device Tree, suspend/resume will not work\n");
->   	}
->   
-> +	of_node_put(controller);	
-> +
->   	mbus_state.hw_io_coherency = is_coherent;
->   
->   	/* Get optional pcie-{mem,io}-aperture properties */
-> @@ -1378,6 +1386,11 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
->   		return ret;
+> Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
 
-I guess that a "of_node_put(np);" is missing before this return.
-This really looks like an error handling path and it has not been 
-updated as all the other path, including the normal one below.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Moreover having an error handling path and some gotos is a more usual 
-solution. It avoids code duplication. (but it is also a matter of taste...)
-
-CJ
-
->   
->   	/* Setup statically declared windows in the DT */
-> -	return mbus_dt_setup(&mbus_state, np);
-> +	ret = mbus_dt_setup(&mbus_state, np);
-> +
-> +	of_node_put(np);
-> +	
-> +	return ret;
-> +
-
-Nitpick : This extra new line is not needed.
-
->   }
->   #endif
-
+    Andrew
