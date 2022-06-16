@@ -2,110 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9738CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49300C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378995AbiFPWFw (ORCPT
+        id S1378746AbiFPWLI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 18:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47822 "EHLO
+        Thu, 16 Jun 2022 18:11:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379008AbiFPWFj (ORCPT
+        with ESMTP id S229457AbiFPWLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 18:05:39 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667FD6129B;
-        Thu, 16 Jun 2022 15:05:13 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 5C90F1F37E;
-        Thu, 16 Jun 2022 22:05:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655417111;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=60VPT8oMa+JleU+N4k5yeM0YGzH9c1yMuWkZXfIBx2Q=;
-        b=ca/Kx249PJn3ys4VBzyp8/pOEdhfXS0ESJyjgZfo2iKJgnaucGHtVdSkSkTpL+Hatc2Hh9
-        2TRztA2paZKxpaWGXRHRfayguUH53QpQEQlxBY7ul4RQ7/024zYecknQetmqgUm7Fw335m
-        rNMHYIrGj4aGKHsQtv6a0dm7auCkXgY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655417111;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=60VPT8oMa+JleU+N4k5yeM0YGzH9c1yMuWkZXfIBx2Q=;
-        b=FLgB+caB+gYGr0bWmD0mtEnjkKf/cqHeHwUYYI2sjy31hWj4InPzEe/GRSEa7I/U0epV5u
-        VZWRQL2/8E2wGTAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 277271344E;
-        Thu, 16 Jun 2022 22:05:11 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id wcaJCBepq2ICRAAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Thu, 16 Jun 2022 22:05:11 +0000
-Date:   Fri, 17 Jun 2022 00:00:36 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        David Sterba <dsterba@suse.com>, 0day robot <lkp@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-btrfs@vger.kernel.org,
-        lkp@lists.01.org
-Subject: Re: [btrfs]  66a7a2412f: xfstests.btrfs.131.fail
-Message-ID: <20220616220036.GF20633@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Matthew Wilcox <willy@infradead.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        David Sterba <dsterba@suse.com>, 0day robot <lkp@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-btrfs@vger.kernel.org,
-        lkp@lists.01.org
-References: <20220607154229.9164-1-dsterba@suse.com>
- <20220616143710.GF25633@xsang-OptiPlex-9020>
- <Yqud1/SooVDamiuP@casper.infradead.org>
+        Thu, 16 Jun 2022 18:11:07 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD03B61296;
+        Thu, 16 Jun 2022 15:11:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655417462; x=1686953462;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ulGVt/Fg7JPQd5zppcun4FREfJet3CM9109arLOZJME=;
+  b=bxS2j0+mKoMtEI7ywC4nvTG+a1fvh31T4pPQZbfSv5Pc18fb92WU8vFH
+   xZoqbnNGHYVMeIbETo5jTLPwj7P1xulgVGNHosPddQbM6PH/vTyF3EH13
+   wGyG9Ssna4541ZVXU8BQ+lLfMiwESr/8juxMtz97hGpeJ88pvMjFXBsKC
+   k123vh9bNTXEHr9RrDbQZ+m5gHhD77u+kN3+WXq4SOKsPPx3ROQgs0jQv
+   FojqWje4Sq+HY6P9bkf8o/pRZeZi26W0F3/86hL9us83ne+nHuBD8fqvk
+   isNFtDCFM3p/BtXAYMCFSf1RSUOf9kT2PXFC3MW7ITwIuVJwSHl7DXO9P
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280396276"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="280396276"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 15:11:02 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="831757106"
+Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 15:11:01 -0700
+Date:   Thu, 16 Jun 2022 15:10:41 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     Davidlohr Bueso <dave@stgolabs.net>
+Cc:     "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Weiny, Ira" <ira.weiny@intel.com>,
+        "Verma, Vishal L" <vishal.l.verma@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        "linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "a.manzanares@samsung.com" <a.manzanares@samsung.com>
+Subject: Re: [PATCH 2/3] cxl/mbox: Add GET_POISON_LIST mailbox command support
+Message-ID: <20220616221041.GA1529592@alison-desk>
+References: <cover.1655250669.git.alison.schofield@intel.com>
+ <382a9c35ef43e89db85670637d88371f9197b7a2.1655250669.git.alison.schofield@intel.com>
+ <20220616194334.pvorvoozt4rrzr66@offworld>
+ <20220616203400.GA1529208@alison-desk>
+ <20220616214740.7pyjagx3gosni7mw@offworld>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yqud1/SooVDamiuP@casper.infradead.org>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <20220616214740.7pyjagx3gosni7mw@offworld>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 10:17:11PM +0100, Matthew Wilcox wrote:
-> On Thu, Jun 16, 2022 at 10:37:10PM +0800, kernel test robot wrote:
-> > btrfs/131	- output mismatch (see /lkp/benchmarks/xfstests/results//btrfs/131.out.bad)
-> >     --- tests/btrfs/131.out	2022-06-13 17:10:24.000000000 +0000
-> >     +++ /lkp/benchmarks/xfstests/results//btrfs/131.out.bad	2022-06-15 18:54:06.505508542 +0000
-> >     @@ -2,9 +2,9 @@
-> >      Using free space cache
-> >      free space tree is disabled
-> >      Enabling free space tree
-> >     -free space tree is enabled
-> >     +free space tree is disabled
-> 
-> I think I know what's going on here:
-> 
->         compat_ro="$($BTRFS_UTIL_PROG inspect-internal dump-super "$SCRATCH_DEV"
->  | \
->                      sed -rn 's/^compat_ro_flags\s+(.*)$/\1/p')"
->         if ((compat_ro & 0x1)); then
->                 echo "free space tree is enabled"
->         else
->                 echo "free space tree is disabled"
->         fi
-> 
-> dump-super is reading the super block out of the page cache, but this
-> change makes the page cache incoherent with what's on disc.  We could
-> fix that by invalidating the page out of the page cache, but it may be
-> easier to just dump this patch and fix how we use the page cache to
-> write back the superblocks?
+David - you make lots of good points, one quick comments at end...
 
-The build bot picks up the branch with some delay, I've removed it from
-the pushed branches. It's interesting to see that using the page cache
-vs direct write does have effects in tests, so it would need to be
-unified in kernel and user space.
+On Thu, Jun 16, 2022 at 02:47:40PM -0700, Davidlohr Bueso wrote:
+> On Thu, 16 Jun 2022, Alison Schofield wrote:
+> >I'm headed in this direction -
+> 
+> I like these interfaces, btw.
+> 
+> >cxl list --media-errors -m mem1
+> >	lists media errors for requested memdev
+> 
+> But in this patchset you're only listing for persistent configurations.
+> So if there is a volatile partion, or the whole device is volatile,
+> this would not consider that.
+> 
+> So unless I'm missing something, we need to consider ram_range as well.
+> 
+> >cxl list --media-errors -r region#
+> >	lists region errors with HPA addresses
+> >	(So here cxl tool will collect the poison for all the regions
+> >	 memdevs and do the DPA to HPA translation)
+> 
+> I was indeed thinking along these lines. But similar to the above,
+> the region driver also has plans to enumarate volatile regions
+> configured by BIOS.
+> 
+> >
+> >To answer your question, I wasn't thinking of limiting
+> >the range within the memdev, but certainly could. And if we were
+> >taking in ranges, those ranges would need to be checked.
+> 
+> My question was originally considering poisoning only within pmem DPA
+> ranges, but now I'm wondering if all this also applies equally to volatile
+> parts as well... Reading the spec I interpret both, but reading the
+> T3 Memory Device Software Guide '2.13.19' it only mentions persistent
+> capacity.
+> 
+> >
+> >$cxl list --media-errors -m mem1 --range-start=  --range-end|len=
+> 
+> I figure this kind of like the above with regions being very arbitrary
+> and dynamic.
+> 
+> >Now, if I left the sysfs interface as is, the driver will read the
+> >entire poison list for the memdev and then cxl tool will filter it
+> >for the range requested.
+> >
+> >Or, maybe we should implement in libcxl (not sysfs), with memdev and
+> >range options and only collect from the device the range requested.
+> 
+> I wonder if the latter may be the better option considering that always
+> scanning the entire memdev would cause unnecessary media scan wait times,
+> specially for large capacities.
+
+This is not a Media Scan. This is only reading the existing Poison List.
+
+> 
+> Thanks,
+> Davidlohr
