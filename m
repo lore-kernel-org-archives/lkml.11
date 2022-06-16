@@ -2,239 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B9C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:18:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76F6EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377629AbiFPOSg (ORCPT
+        id S1377641AbiFPOSr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 10:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56864 "EHLO
+        Thu, 16 Jun 2022 10:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377090AbiFPOSb (ORCPT
+        with ESMTP id S1377642AbiFPOSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 10:18:31 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7EDD14D23;
-        Thu, 16 Jun 2022 07:18:30 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id c4so2416754lfj.12;
-        Thu, 16 Jun 2022 07:18:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=s5aFrnl2AMyHctil0oe+qIm2HKoq9Fasg76DynmQFT8=;
-        b=TaZ91E/BoG18frEgBhkHoS2ZO/yNO/bkZNudGfR/5BjKPibX4g+xoEj2mHHRam+TcJ
-         AAKw02u4dGAC1IQztDalowD/g9kOd7w/j+bXr1zdHAvFPdmSpsdQZU3By69Oxj1K259S
-         CUXr36ItqScfq3bMuA/K4JMHh88ZxQp7opnpylen4lMe+2qE/INOMwLbhLn2VaO8+wn9
-         ctXFFC9LvNaVYlcOJSK0HiLjJlO1/UIO0ApiAG6zf6AmCL2rmgyHlXcUusciOii6fJ1O
-         XOADbq5ciJuu/VSp9o7fA1w4LWCfgTeLEWpy1FouNyT2vHlIToUUNOf41SgDB/8/mPPJ
-         1FGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=s5aFrnl2AMyHctil0oe+qIm2HKoq9Fasg76DynmQFT8=;
-        b=MOkJTpeVeRIsCerIVHTIWSWS9o0/BdfS8zQx37DEH25EiHsTWmVDH6YxbIZBx0tAzq
-         LrrcpB0Ofac9ZlnksztiQwAnnb58nQj2XT3E5+Y4JIJqZBc3GmEj4zGg+oUJV9RADksz
-         +/L3xEmE7Zpklyiz/hb4ndH14NMQp0J6MbowQcQIgPdbD7TMdz6xid68FH35MEKd2i7b
-         JM8JH1bkUhuHV0YBkcFWFB85sSkx9EGgC32qfgojCjsj6+tYqYR1jAozGpvvbYqRddmO
-         +pK/iJcmu8BrP5QefB2kfFLAlrfPlG6ms0ZhKYjZH28jUN1w0CL3KgB8WAelAa42i46E
-         8rvw==
-X-Gm-Message-State: AJIora+a7KuUYugpCDXmrr2/sIWAdZtwiUe7wk6QaO2HcP+TRBllOQGx
-        zlaoahjUBcTly7YbnQ4zNVw=
-X-Google-Smtp-Source: AGRyM1vVyx9qpPdlvimqOhvHYayIkfga0oQ7ZkWbaRKtWNnWsA/t96Fxv1C4DRgGpjkiU1DItozkVg==
-X-Received: by 2002:a05:6512:c07:b0:479:2e0f:9a06 with SMTP id z7-20020a0565120c0700b004792e0f9a06mr2768718lfu.687.1655389108968;
-        Thu, 16 Jun 2022 07:18:28 -0700 (PDT)
-Received: from [10.0.0.42] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
-        by smtp.gmail.com with ESMTPSA id a14-20020a19ca0e000000b004796a17246esm251884lfg.252.2022.06.16.07.18.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jun 2022 07:18:28 -0700 (PDT)
-Message-ID: <cd61d081-8f10-6dc2-c2ae-ffb8658d216b@gmail.com>
-Date:   Thu, 16 Jun 2022 17:25:53 +0300
+        Thu, 16 Jun 2022 10:18:43 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B14DD38BF2;
+        Thu, 16 Jun 2022 07:18:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=u5EdENq+ei/uB3hVuj+8C5dFhMYjXxg2KzK2A5yd0yY=; b=BzaUueabgfP0CWvdxYqZ2jqjn8
+        muioLUhJx1Dn31tfLnwJeUQAH3iRg36Ppx8n7a4S0n4e380NYauBdtenJMIA0Y4BV/7hs56pNNWf1
+        3ko8F0Xz7H7Z36BRsnm5CHA3MegVat45maW7aoiCVhy6mBjTxje+EvashYHhqfBToFsEiiDR2RGIw
+        BsAKUt8eGLAZXO1V975msmZaqDJ7COkjiUnP3BK/bqHAGYdVN7vaM4gazKwBjYgnGyWHtwOF7tyMw
+        5/GA6lzbGggsOUGYDUtQ3tDV0UkYiFlnoQRTMeaKkIOvJ/m+TozOyNPULEA2xx6Tav5X95a4FNLH2
+        YogpxHig==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o1qKA-008QiY-VJ; Thu, 16 Jun 2022 14:18:19 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7091430008D;
+        Thu, 16 Jun 2022 16:18:18 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 57D4728B675F1; Thu, 16 Jun 2022 16:18:18 +0200 (CEST)
+Date:   Thu, 16 Jun 2022 16:18:18 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Yang Weijiang <weijiang.yang@intel.com>, seanjc@google.com,
+        x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rick.p.edgecombe@intel.com
+Subject: Re: [PATCH 00/19] Refresh queued CET virtualization series
+Message-ID: <Yqs7qjjbqxpw62B/@hirez.programming.kicks-ass.net>
+References: <20220616084643.19564-1-weijiang.yang@intel.com>
+ <YqsB9upUystxvl+d@hirez.programming.kicks-ass.net>
+ <62d4f7f0-e7b2-83ad-a2c7-a90153129da2@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] ASoC: ti: omap-mcbsp: duplicate sysfs error
-Content-Language: en-US
-To:     David Owens <dowens@precisionplanting.com>,
-        Jarkko Nikula <jarkko.nikula@bitmer.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     alsa-devel@alsa-project.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220615150955.4140789-1-dowens@precisionplanting.com>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-In-Reply-To: <20220615150955.4140789-1-dowens@precisionplanting.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62d4f7f0-e7b2-83ad-a2c7-a90153129da2@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David,
+On Thu, Jun 16, 2022 at 12:21:20PM +0200, Paolo Bonzini wrote:
+> On 6/16/22 12:12, Peter Zijlstra wrote:
+> > Do I understand this right in that a host without X86_KERNEL_IBT cannot
+> > run a guest with X86_KERNEL_IBT on? That seems unfortunate, since that
+> > was exactly what I did while developing the X86_KERNEL_IBT patches.
+> > 
+> > I'm thinking that if the hardware supports it, KVM should expose it,
+> > irrespective of the host kernel using it.
+> 
+> For IBT in particular, I think all processor state is only loaded and stored
+> at vmentry/vmexit (does not need XSAVES), so it should be feasible.
 
-On 6/15/22 18:09, David Owens wrote:
-> Convert to managed versions of sysfs and clk allocation to simplify
-> unbinding and error handling in probe.  Managed sysfs node
-> creation specifically addresses the following error seen the second time
-> probe is attempted after sdma_pcm_platform_register() previously requsted
-> probe deferral:
-> 
-> sysfs: cannot create duplicate filename '/devices/platform/68000000.ocp/49022000.mcbsp/max_tx_thres'
+That would be the S_CET stuff, yeah, that's VMCS managed. The U_CET
+stuff is all XSAVE though.
 
-I have tried to looked up devm_sysfs_remove_group(), which did not
-existed, but you found the correct devm ;)
+But funny thing, CPUID doesn't enumerate {U,S}_CET separately. It *does*
+enumerate IBT and SS separately, but for each IBT/SS you have to
+implement both U and S.
 
-Looks good, thank you!
+That was a problem with the first series, which only implemented support
+for U_CET while advertising IBT and SS (very much including S_CET), and
+still is a problem with this series because S_SS is missing while
+advertised.
 
-Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-
-
-> Signed-off-by: David Owens <dowens@precisionplanting.com>
-> ---
->  sound/soc/ti/omap-mcbsp-priv.h |  2 --
->  sound/soc/ti/omap-mcbsp-st.c   | 21 ++++-----------------
->  sound/soc/ti/omap-mcbsp.c      | 26 ++++----------------------
->  3 files changed, 8 insertions(+), 41 deletions(-)
-> 
-> diff --git a/sound/soc/ti/omap-mcbsp-priv.h b/sound/soc/ti/omap-mcbsp-priv.h
-> index 7865cda4bf0a..da519ea1f303 100644
-> --- a/sound/soc/ti/omap-mcbsp-priv.h
-> +++ b/sound/soc/ti/omap-mcbsp-priv.h
-> @@ -316,8 +316,6 @@ static inline int omap_mcbsp_read(struct omap_mcbsp *mcbsp, u16 reg,
-> 
->  /* Sidetone specific API */
->  int omap_mcbsp_st_init(struct platform_device *pdev);
-> -void omap_mcbsp_st_cleanup(struct platform_device *pdev);
-> -
->  int omap_mcbsp_st_start(struct omap_mcbsp *mcbsp);
->  int omap_mcbsp_st_stop(struct omap_mcbsp *mcbsp);
-> 
-> diff --git a/sound/soc/ti/omap-mcbsp-st.c b/sound/soc/ti/omap-mcbsp-st.c
-> index 0bc7d26c660a..402a57a502e6 100644
-> --- a/sound/soc/ti/omap-mcbsp-st.c
-> +++ b/sound/soc/ti/omap-mcbsp-st.c
-> @@ -292,14 +292,11 @@ static ssize_t st_taps_store(struct device *dev,
-> 
->  static DEVICE_ATTR_RW(st_taps);
-> 
-> -static const struct attribute *sidetone_attrs[] = {
-> +static struct attribute *sidetone_attrs[] = {
->         &dev_attr_st_taps.attr,
->         NULL,
->  };
-> -
-> -static const struct attribute_group sidetone_attr_group = {
-> -       .attrs = (struct attribute **)sidetone_attrs,
-> -};
-> +ATTRIBUTE_GROUPS(sidetone);
-> 
->  int omap_mcbsp_st_start(struct omap_mcbsp *mcbsp)
->  {
-> @@ -347,7 +344,7 @@ int omap_mcbsp_st_init(struct platform_device *pdev)
->         if (!st_data)
->                 return -ENOMEM;
-> 
-> -       st_data->mcbsp_iclk = clk_get(mcbsp->dev, "ick");
-> +       st_data->mcbsp_iclk = devm_clk_get(mcbsp->dev, "ick");
->         if (IS_ERR(st_data->mcbsp_iclk)) {
->                 dev_warn(mcbsp->dev,
->                          "Failed to get ick, sidetone might be broken\n");
-> @@ -359,7 +356,7 @@ int omap_mcbsp_st_init(struct platform_device *pdev)
->         if (!st_data->io_base_st)
->                 return -ENOMEM;
-> 
-> -       ret = sysfs_create_group(&mcbsp->dev->kobj, &sidetone_attr_group);
-> +       ret = devm_device_add_group(mcbsp->dev, &sidetone_group);
->         if (ret)
->                 return ret;
-> 
-> @@ -368,16 +365,6 @@ int omap_mcbsp_st_init(struct platform_device *pdev)
->         return 0;
->  }
-> 
-> -void omap_mcbsp_st_cleanup(struct platform_device *pdev)
-> -{
-> -       struct omap_mcbsp *mcbsp = platform_get_drvdata(pdev);
-> -
-> -       if (mcbsp->st_data) {
-> -               sysfs_remove_group(&mcbsp->dev->kobj, &sidetone_attr_group);
-> -               clk_put(mcbsp->st_data->mcbsp_iclk);
-> -       }
-> -}
-> -
->  static int omap_mcbsp_st_info_volsw(struct snd_kcontrol *kcontrol,
->                                     struct snd_ctl_elem_info *uinfo)
->  {
-> diff --git a/sound/soc/ti/omap-mcbsp.c b/sound/soc/ti/omap-mcbsp.c
-> index 4479d74f0a45..395493a2d965 100644
-> --- a/sound/soc/ti/omap-mcbsp.c
-> +++ b/sound/soc/ti/omap-mcbsp.c
-> @@ -595,16 +595,13 @@ static ssize_t dma_op_mode_store(struct device *dev,
-> 
->  static DEVICE_ATTR_RW(dma_op_mode);
-> 
-> -static const struct attribute *additional_attrs[] = {
-> +static struct attribute *additional_attrs[] = {
->         &dev_attr_max_tx_thres.attr,
->         &dev_attr_max_rx_thres.attr,
->         &dev_attr_dma_op_mode.attr,
->         NULL,
->  };
-> -
-> -static const struct attribute_group additional_attr_group = {
-> -       .attrs = (struct attribute **)additional_attrs,
-> -};
-> +ATTRIBUTE_GROUPS(additional);
-> 
->  /*
->   * McBSP1 and McBSP3 are directly mapped on 1610 and 1510.
-> @@ -702,8 +699,7 @@ static int omap_mcbsp_init(struct platform_device *pdev)
->                 mcbsp->max_tx_thres = max_thres(mcbsp) - 0x10;
->                 mcbsp->max_rx_thres = max_thres(mcbsp) - 0x10;
-> 
-> -               ret = sysfs_create_group(&mcbsp->dev->kobj,
-> -                                        &additional_attr_group);
-> +               ret = devm_device_add_group(mcbsp->dev, &additional_group);
->                 if (ret) {
->                         dev_err(mcbsp->dev,
->                                 "Unable to create additional controls\n");
-> @@ -711,16 +707,7 @@ static int omap_mcbsp_init(struct platform_device *pdev)
->                 }
->         }
-> 
-> -       ret = omap_mcbsp_st_init(pdev);
-> -       if (ret)
-> -               goto err_st;
-> -
-> -       return 0;
-> -
-> -err_st:
-> -       if (mcbsp->pdata->buffer_size)
-> -               sysfs_remove_group(&mcbsp->dev->kobj, &additional_attr_group);
-> -       return ret;
-> +       return omap_mcbsp_st_init(pdev);
->  }
-> 
->  /*
-> @@ -1431,11 +1418,6 @@ static int asoc_mcbsp_remove(struct platform_device *pdev)
->         if (cpu_latency_qos_request_active(&mcbsp->pm_qos_req))
->                 cpu_latency_qos_remove_request(&mcbsp->pm_qos_req);
-> 
-> -       if (mcbsp->pdata->buffer_size)
-> -               sysfs_remove_group(&mcbsp->dev->kobj, &additional_attr_group);
-> -
-> -       omap_mcbsp_st_cleanup(pdev);
-> -
->         return 0;
->  }
-> 
-> --
-> 2.34.1
-> 
-> This email is intended solely for the use of the individual to whom it is addressed and may contain confidential and/or privileged material. Any views or opinions presented are solely those of the author and do not necessarily represent those of Precision Planting. If you are not the intended recipient, be advised that you have received this email in error and that any use, dissemination, forwarding, printing, or copying of this email is strictly prohibited. Neither AGCO nor the sender accepts any responsibility for viruses, and it is your responsibility to scan, and virus check the e-mail and its attachment(s) (if any).
-
--- 
-Péter
