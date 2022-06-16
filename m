@@ -2,135 +2,332 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35DA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:59:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378018AbiFPP7B convert rfc822-to-8bit (ORCPT
+        id S1378020AbiFPP7M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:59:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35656 "EHLO
+        Thu, 16 Jun 2022 11:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377785AbiFPP66 (ORCPT
+        with ESMTP id S1378025AbiFPP7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:58:58 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5BE534132A
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:58:56 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-127-G5mX8BQ_PnOGd3hJyVz1GQ-1; Thu, 16 Jun 2022 16:58:53 +0100
-X-MC-Unique: G5mX8BQ_PnOGd3hJyVz1GQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Thu, 16 Jun 2022 16:58:52 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Thu, 16 Jun 2022 16:58:52 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Andrew Jones' <drjones@redhat.com>,
-        Raghavendra Rao Ananta <rananta@google.com>
-CC:     Marc Zyngier <maz@kernel.org>, James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "Peter Shier" <pshier@google.com>,
-        Ricardo Koller <ricarkol@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Reiji Watanabe <reijiw@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Colton Lewis <coltonlewis@google.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Subject: RE: [PATCH] selftests: KVM: Handle compiler optimizations in ucall
-Thread-Topic: [PATCH] selftests: KVM: Handle compiler optimizations in ucall
-Thread-Index: AQHYgXkNkdHi2edO0UOJoWwOrv/ni61SMGPg
-Date:   Thu, 16 Jun 2022 15:58:52 +0000
-Message-ID: <33ca91aeb5254831a88e187ff8d9a2c2@AcuMS.aculab.com>
-References: <20220615185706.1099208-1-rananta@google.com>
- <20220616120232.ctkekviusrozqpru@gator>
-In-Reply-To: <20220616120232.ctkekviusrozqpru@gator>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Thu, 16 Jun 2022 11:59:09 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A43C11C2F
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:59:08 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id h34-20020a17090a29a500b001eb01527d9eso1020237pjd.3
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:59:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Hr1jmjONcx7ZPGYxp0mA/BSgGQb50zHv1XSk0r2m1ZQ=;
+        b=eUb0sCabS4tR1ZWwwFSUb1anL3bnXZhpgdzzuHZkmxgpjw6mexWTssfZ6PMJw+lK2L
+         rjKvT81e2j/Xf3KROMjp/1BpV9ySkINV/Fm0bc8v83B1GXjLZah9vWBXL/XGRh/kDZNp
+         BGT6o2ToLqYRhpOgmSWjA8VaDuZKVyq4RTBdI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Hr1jmjONcx7ZPGYxp0mA/BSgGQb50zHv1XSk0r2m1ZQ=;
+        b=2gzpnOUP0sOVhbMbQC4WncdtwE41SLO2f2UKl3Xeu9MX3Mhe90X8KNopa+5Xtqg6n1
+         Dx7H8c9dQ6c3dtbdJ5r/zl1DjJIBnA1JPUFyZ0sMehlIq/NPkyYo1LTu6ypJa2Ud0+TK
+         SqhvZL+sgvhSRUugzRc/FHRBuGI6GMo3V5MrzI4t5T/OC1Gufyxegb6b5n8mSiZywiNP
+         9Np/b+89c8aLjXx1rjc6Ny1BmgEKioAxqA5yCuACkKA5EbqRNmDfBimlDaNKkDCv0pH6
+         otcUUp/DKRkOkLG1IuPQrxbE1Rfk792PeLQQFmVNuptMOUimfOdKSwkisQ6OE1vV2QYS
+         o6aA==
+X-Gm-Message-State: AJIora+CPl5+GTXdkaTUefFQLCW3Zacvr//lkIOuVivna4q9lxEqPiGH
+        IlhultzuJJ3sxYK3vkDg4itutg==
+X-Google-Smtp-Source: AGRyM1t+I7uZ3tDiiC0xD1KoX0+OfhENUkzJAvRcbOb25SLiGcsjbqCm8iR5BwWf6is5Xg95B1DZJw==
+X-Received: by 2002:a17:902:f112:b0:169:968:29b5 with SMTP id e18-20020a170902f11200b00169096829b5mr2628231plb.109.1655395147518;
+        Thu, 16 Jun 2022 08:59:07 -0700 (PDT)
+Received: from judyhsiao0523.c.googlers.com.com (0.223.81.34.bc.googleusercontent.com. [34.81.223.0])
+        by smtp.gmail.com with ESMTPSA id f8-20020a170902684800b00161478027f5sm1779797pln.150.2022.06.16.08.59.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 08:59:07 -0700 (PDT)
+From:   Judy Hsiao <judyhsiao@chromium.org>
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Chen-Yu Tsai <wenst@chromium.org>, alsa-devel@alsa-project.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Judy Hsiao <judyhsiao@chromium.org>
+Subject: [PATCH v2 1/3] ASoC: rockchip: i2s: switch BCLK to GPIO
+Date:   Thu, 16 Jun 2022 15:58:34 +0000
+Message-Id: <20220616155836.3401420-2-judyhsiao@chromium.org>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+In-Reply-To: <20220616155836.3401420-1-judyhsiao@chromium.org>
+References: <20220616155836.3401420-1-judyhsiao@chromium.org>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Jones
-> Sent: 16 June 2022 13:03
-> 
-> On Wed, Jun 15, 2022 at 06:57:06PM +0000, Raghavendra Rao Ananta wrote:
-> > The selftests, when built with newer versions of clang, is found
-> > to have over optimized guests' ucall() function, and eliminating
-> > the stores for uc.cmd (perhaps due to no immediate readers). This
-> > resulted in the userspace side always reading a value of '0', and
-> > causing multiple test failures.
-> >
-> > As a result, prevent the compiler from optimizing the stores in
-> > ucall() with WRITE_ONCE().
-> >
-> > Suggested-by: Ricardo Koller <ricarkol@google.com>
-> > Suggested-by: Reiji Watanabe <reijiw@google.com>
-> > Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
-> > ---
-> >  tools/testing/selftests/kvm/lib/aarch64/ucall.c | 9 ++++-----
-> >  1 file changed, 4 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-> b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-> > index e0b0164e9af8..be1d9728c4ce 100644
-> > --- a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-> > +++ b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-> > @@ -73,20 +73,19 @@ void ucall_uninit(struct kvm_vm *vm)
-> >
-> >  void ucall(uint64_t cmd, int nargs, ...)
-> >  {
-> > -	struct ucall uc = {
-> > -		.cmd = cmd,
-> > -	};
-> > +	struct ucall uc = {};
-> >  	va_list va;
-> >  	int i;
-> >
-> > +	WRITE_ONCE(uc.cmd, cmd);
-> >  	nargs = nargs <= UCALL_MAX_ARGS ? nargs : UCALL_MAX_ARGS;
-> >
-> >  	va_start(va, nargs);
-> >  	for (i = 0; i < nargs; ++i)
-> > -		uc.args[i] = va_arg(va, uint64_t);
-> > +		WRITE_ONCE(uc.args[i], va_arg(va, uint64_t));
-> >  	va_end(va);
-> >
-> > -	*ucall_exit_mmio_addr = (vm_vaddr_t)&uc;
-> > +	WRITE_ONCE(*ucall_exit_mmio_addr, (vm_vaddr_t)&uc);
-> >  }
+We discoverd that the state of BCLK on, LRCLK off and SD_MODE on
+may cause the speaker melting issue. Removing LRCLK while BCLK
+is present can cause unexpected output behavior including a large
+DC output voltage as described in the Max98357a datasheet.
 
-Am I misreading things again?
-That function looks like it writes the address of an on-stack
-item into global data.
+In order to:
+  1. prevent BCLK from turning on by other component.
+  2. keep BCLK and LRCLK being present at the same time
 
-Maybe 'uc' ought to be static?
+This patch switches BCLK to GPIO func before LRCLK output, and
+configures BCLK func back during LRCLK is output.
 
-	David
+Without this fix, BCLK is turned on 11 ms earlier than LRCK by the
+da7219.
+With this fix, BCLK is turned on only 0.4 ms earlier than LRCK by
+the rockchip codec.
 
+Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
+---
+ sound/soc/rockchip/rockchip_i2s.c | 134 ++++++++++++++++++++++++------
+ 1 file changed, 108 insertions(+), 26 deletions(-)
+
+diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
+index 47a3971a9ce1..574d3d0900c4 100644
+--- a/sound/soc/rockchip/rockchip_i2s.c
++++ b/sound/soc/rockchip/rockchip_i2s.c
+@@ -54,8 +54,40 @@ struct rk_i2s_dev {
+ 	const struct rk_i2s_pins *pins;
+ 	unsigned int bclk_ratio;
+ 	spinlock_t lock; /* tx/rx lock */
++	struct pinctrl *pinctrl;
++	struct pinctrl_state *bclk_on;
++	struct pinctrl_state *bclk_off;
+ };
+ 
++static int i2s_pinctrl_select_bclk_on(struct rk_i2s_dev *i2s)
++{
++	int ret = 0;
++
++	if (!IS_ERR(i2s->pinctrl) && !IS_ERR_OR_NULL(i2s->bclk_on))
++		ret = pinctrl_select_state(i2s->pinctrl,
++				     i2s->bclk_on);
++
++	if (ret)
++		dev_err(i2s->dev, "bclk enable failed %d\n", ret);
++
++	return ret;
++}
++
++static int i2s_pinctrl_select_bclk_off(struct rk_i2s_dev *i2s)
++{
++
++	int ret = 0;
++
++	if (!IS_ERR(i2s->pinctrl) && !IS_ERR_OR_NULL(i2s->bclk_off))
++		ret = pinctrl_select_state(i2s->pinctrl,
++				     i2s->bclk_off);
++
++	if (ret)
++		dev_err(i2s->dev, "bclk disable failed %d\n", ret);
++
++	return ret;
++}
++
+ static int i2s_runtime_suspend(struct device *dev)
+ {
+ 	struct rk_i2s_dev *i2s = dev_get_drvdata(dev);
+@@ -92,39 +124,46 @@ static inline struct rk_i2s_dev *to_info(struct snd_soc_dai *dai)
+ 	return snd_soc_dai_get_drvdata(dai);
+ }
+ 
+-static void rockchip_snd_txctrl(struct rk_i2s_dev *i2s, int on)
++static int rockchip_snd_txctrl(struct rk_i2s_dev *i2s, int on)
+ {
+ 	unsigned int val = 0;
+ 	int retry = 10;
 -
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
++	int ret = 0;
++
+ 	spin_lock(&i2s->lock);
+ 	if (on) {
+-		regmap_update_bits(i2s->regmap, I2S_DMACR,
++		ret = regmap_update_bits(i2s->regmap, I2S_DMACR,
+ 				   I2S_DMACR_TDE_ENABLE, I2S_DMACR_TDE_ENABLE);
+-
+-		regmap_update_bits(i2s->regmap, I2S_XFER,
++		if (ret < 0)
++			goto end;
++		ret = regmap_update_bits(i2s->regmap, I2S_XFER,
+ 				   I2S_XFER_TXS_START | I2S_XFER_RXS_START,
+ 				   I2S_XFER_TXS_START | I2S_XFER_RXS_START);
+-
++		if (ret < 0)
++			goto end;
+ 		i2s->tx_start = true;
+ 	} else {
+ 		i2s->tx_start = false;
+ 
+-		regmap_update_bits(i2s->regmap, I2S_DMACR,
++		ret = regmap_update_bits(i2s->regmap, I2S_DMACR,
+ 				   I2S_DMACR_TDE_ENABLE, I2S_DMACR_TDE_DISABLE);
++		if (ret < 0)
++			goto end;
+ 
+ 		if (!i2s->rx_start) {
+-			regmap_update_bits(i2s->regmap, I2S_XFER,
++			ret = regmap_update_bits(i2s->regmap, I2S_XFER,
+ 					   I2S_XFER_TXS_START |
+ 					   I2S_XFER_RXS_START,
+ 					   I2S_XFER_TXS_STOP |
+ 					   I2S_XFER_RXS_STOP);
+-
++			if (ret < 0)
++				goto end;
+ 			udelay(150);
+-			regmap_update_bits(i2s->regmap, I2S_CLR,
++			ret = regmap_update_bits(i2s->regmap, I2S_CLR,
+ 					   I2S_CLR_TXC | I2S_CLR_RXC,
+ 					   I2S_CLR_TXC | I2S_CLR_RXC);
+-
++			if (ret < 0)
++				goto end;
+ 			regmap_read(i2s->regmap, I2S_CLR, &val);
+ 
+ 			/* Should wait for clear operation to finish */
+@@ -138,42 +177,55 @@ static void rockchip_snd_txctrl(struct rk_i2s_dev *i2s, int on)
+ 			}
+ 		}
+ 	}
++end:
+ 	spin_unlock(&i2s->lock);
++	if (ret < 0)
++		dev_err(i2s->dev, "lrclk update failed\n");
++
++	return ret;
+ }
+ 
+ static void rockchip_snd_rxctrl(struct rk_i2s_dev *i2s, int on)
+ {
+ 	unsigned int val = 0;
+ 	int retry = 10;
++	int ret = 0;
+ 
+ 	spin_lock(&i2s->lock);
+ 	if (on) {
+-		regmap_update_bits(i2s->regmap, I2S_DMACR,
++		ret = regmap_update_bits(i2s->regmap, I2S_DMACR,
+ 				   I2S_DMACR_RDE_ENABLE, I2S_DMACR_RDE_ENABLE);
++		if (ret < 0)
++			goto end;
+ 
+-		regmap_update_bits(i2s->regmap, I2S_XFER,
++		ret = regmap_update_bits(i2s->regmap, I2S_XFER,
+ 				   I2S_XFER_TXS_START | I2S_XFER_RXS_START,
+ 				   I2S_XFER_TXS_START | I2S_XFER_RXS_START);
+-
++		if (ret < 0)
++			goto end;
+ 		i2s->rx_start = true;
+ 	} else {
+ 		i2s->rx_start = false;
+ 
+-		regmap_update_bits(i2s->regmap, I2S_DMACR,
++		ret = regmap_update_bits(i2s->regmap, I2S_DMACR,
+ 				   I2S_DMACR_RDE_ENABLE, I2S_DMACR_RDE_DISABLE);
++		if (ret < 0)
++			goto end;
+ 
+ 		if (!i2s->tx_start) {
+-			regmap_update_bits(i2s->regmap, I2S_XFER,
++			ret = regmap_update_bits(i2s->regmap, I2S_XFER,
+ 					   I2S_XFER_TXS_START |
+-					   I2S_XFER_RXS_START,
++						   I2S_XFER_RXS_START,
+ 					   I2S_XFER_TXS_STOP |
+ 					   I2S_XFER_RXS_STOP);
+-
++			if (ret < 0)
++				goto end;
+ 			udelay(150);
+-			regmap_update_bits(i2s->regmap, I2S_CLR,
++			ret = regmap_update_bits(i2s->regmap, I2S_CLR,
+ 					   I2S_CLR_TXC | I2S_CLR_RXC,
+ 					   I2S_CLR_TXC | I2S_CLR_RXC);
+-
++			if (ret < 0)
++				goto end;
+ 			regmap_read(i2s->regmap, I2S_CLR, &val);
+ 
+ 			/* Should wait for clear operation to finish */
+@@ -187,7 +239,12 @@ static void rockchip_snd_rxctrl(struct rk_i2s_dev *i2s, int on)
+ 			}
+ 		}
+ 	}
++end:
+ 	spin_unlock(&i2s->lock);
++	if (ret < 0)
++		dev_err(i2s->dev, "lrclk update failed\n");
++
++	return ret;
+ }
+ 
+ static int rockchip_i2s_set_fmt(struct snd_soc_dai *cpu_dai,
+@@ -425,17 +482,25 @@ static int rockchip_i2s_trigger(struct snd_pcm_substream *substream,
+ 	case SNDRV_PCM_TRIGGER_RESUME:
+ 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+ 		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
+-			rockchip_snd_rxctrl(i2s, 1);
++			ret = rockchip_snd_rxctrl(i2s, 1);
+ 		else
+-			rockchip_snd_txctrl(i2s, 1);
++			ret = rockchip_snd_txctrl(i2s, 1);
++		if (ret < 0)
++			return ret;
++		i2s_pinctrl_select_bclk_on(i2s);
+ 		break;
+ 	case SNDRV_PCM_TRIGGER_SUSPEND:
+ 	case SNDRV_PCM_TRIGGER_STOP:
+ 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+-		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
+-			rockchip_snd_rxctrl(i2s, 0);
+-		else
+-			rockchip_snd_txctrl(i2s, 0);
++		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
++			if (!i2s->tx_start)
++				i2s_pinctrl_select_bclk_off(i2s);
++			ret = rockchip_snd_rxctrl(i2s, 0);
++		} else {
++			if (!i2s->rx_start)
++				i2s_pinctrl_select_bclk_off(i2s);
++			ret = rockchip_snd_txctrl(i2s, 0);
++		}
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -736,6 +801,23 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	i2s->bclk_ratio = 64;
++	i2s->pinctrl = devm_pinctrl_get(&pdev->dev);
++	if (IS_ERR(i2s->pinctrl))
++		dev_err(&pdev->dev, "failed to find i2s pinctrl\n");
++
++	i2s->bclk_on = pinctrl_lookup_state(i2s->pinctrl,
++				   "bclk_on");
++	if (!IS_ERR_OR_NULL(i2s->bclk_on)) {
++		dev_info(&pdev->dev, "switch bclk to GPIO func\n");
++		i2s->bclk_off = pinctrl_lookup_state(i2s->pinctrl,
++				  "bclk_off");
++		if (IS_ERR_OR_NULL(i2s->bclk_off)) {
++			dev_err(&pdev->dev, "failed to find i2s bclk_off\n");
++			goto err_clk;
++		}
++	}
++
++	i2s_pinctrl_select_bclk_off(i2s);
+ 
+ 	dev_set_drvdata(&pdev->dev, i2s);
+ 
+-- 
+2.36.1.476.g0c4daa206d-goog
 
