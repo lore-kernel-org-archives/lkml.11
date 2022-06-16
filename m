@@ -2,73 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54DBCC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 02:01:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0690C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 02:01:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358125AbiFPCBL (ORCPT
+        id S1358024AbiFPCBt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 22:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37368 "EHLO
+        Wed, 15 Jun 2022 22:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357782AbiFPCBA (ORCPT
+        with ESMTP id S244252AbiFPCBs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 22:01:00 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888DE59947;
-        Wed, 15 Jun 2022 19:00:59 -0700 (PDT)
-Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LNlg71srHzSh2X;
-        Thu, 16 Jun 2022 09:57:39 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by dggpeml500021.china.huawei.com
- (7.185.36.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 16 Jun
- 2022 10:00:57 +0800
-From:   Baokun Li <libaokun1@huawei.com>
-To:     <linux-ext4@vger.kernel.org>
-CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
-        <ritesh.list@gmail.com>, <lczerner@redhat.com>,
-        <enwlinux@gmail.com>, <linux-kernel@vger.kernel.org>,
-        <yi.zhang@huawei.com>, <yebin10@huawei.com>, <yukuai3@huawei.com>,
-        <libaokun1@huawei.com>
-Subject: [PATCH v3 4/4] ext4: correct the misjudgment in ext4_iget_extra_inode
-Date:   Thu, 16 Jun 2022 10:13:58 +0800
-Message-ID: <20220616021358.2504451-5-libaokun1@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220616021358.2504451-1-libaokun1@huawei.com>
-References: <20220616021358.2504451-1-libaokun1@huawei.com>
+        Wed, 15 Jun 2022 22:01:48 -0400
+Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 797205933D
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 19:01:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=3Atn7
+        fZcqnvSgGIlwBuPlL0MZEzYhI5kcoueR1+mD/o=; b=nUI9OGAV7FLPRLIz8jaYc
+        9+LZ+XwiDZL7mv+zByXaU2bv1Sc/cMI5YbxCsAb+iBAiXz5Ciig/hHNIi+mxrhlt
+        zwl/jzH4ZlNjYG2w3e2BtrgCiQh5Mn6S96EirAHYrQwgpZr9DRYwSJ6d6EZox5r8
+        T/IuYKXE6DAn+2mtqaddqs=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp8 (Coremail) with SMTP id NORpCgAX9loBj6piLpPcFg--.13778S2;
+        Thu, 16 Jun 2022 10:01:39 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     pali@kernel.org, lpieralisi@kernel.org
+Cc:     windhl@126.com, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] bus: (mvebu-mbus) Add missing of_node_put()
+Date:   Thu, 16 Jun 2022 10:01:35 +0800
+Message-Id: <20220616020135.3973141-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500021.china.huawei.com (7.185.36.21)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NORpCgAX9loBj6piLpPcFg--.13778S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Kr18Cw4xAFy7uw48KrW3Jrb_yoW8ur18pa
+        y7WrW3try0qr4fJFZayryfZFyakFn7WFWjqFsFkFnrAanxGry5Jry2kryrAF98AFW09w15
+        tr10ya1xWF9rAF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRoSotUUUUU=
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbiuAgiF2JVj4ze6AABsG
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the EXT4_INODE_HAS_XATTR_SPACE macro to more accurately
-determine whether the inode have xattr space.
+In mvebu_mbus_dt_init(), of_find_matching_node_and_match() and
+of_find_node_by_phandle() will both return node pointers with
+refcount incremented. We should use of_node_put() in fail path
+or when it is not used anymore.
 
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Liang He <windhl@126.com>
 ---
- fs/ext4/inode.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ changelog:
 
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 53877ffe3c41..ae463cd9b405 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -4687,8 +4687,7 @@ static inline int ext4_iget_extra_inode(struct inode *inode,
- 	__le32 *magic = (void *)raw_inode +
- 			EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize;
+  v2: (1) use real name (2) add of_node_put when not used anymore
+
+  v1: add of_node_put in fail path
+
+
+ drivers/bus/mvebu-mbus.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/bus/mvebu-mbus.c b/drivers/bus/mvebu-mbus.c
+index db612045616f..e168c8de2ae8 100644
+--- a/drivers/bus/mvebu-mbus.c
++++ b/drivers/bus/mvebu-mbus.c
+@@ -1327,22 +1327,28 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
  
--	if (EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize + sizeof(__le32) <=
--	    EXT4_INODE_SIZE(inode->i_sb) &&
-+	if (EXT4_INODE_HAS_XATTR_SPACE(inode)  &&
- 	    *magic == cpu_to_le32(EXT4_XATTR_MAGIC)) {
- 		ext4_set_inode_state(inode, EXT4_STATE_XATTR);
- 		return ext4_find_inline_data_nolock(inode);
+ 	prop = of_get_property(np, "controller", NULL);
+ 	if (!prop) {
++		of_node_put(np);
+ 		pr_err("required 'controller' property missing\n");
+ 		return -EINVAL;
+ 	}
+ 
+ 	controller = of_find_node_by_phandle(be32_to_cpup(prop));
+ 	if (!controller) {
++		of_node_put(np);
+ 		pr_err("could not find an 'mbus-controller' node\n");
+ 		return -ENODEV;
+ 	}
+ 
+ 	if (of_address_to_resource(controller, 0, &mbuswins_res)) {
++		of_node_put(np);
++		of_node_put(controller);
+ 		pr_err("cannot get MBUS register address\n");
+ 		return -EINVAL;
+ 	}
+ 
+ 	if (of_address_to_resource(controller, 1, &sdramwins_res)) {
++		of_node_put(np);
++		of_node_put(controller);
+ 		pr_err("cannot get SDRAM register address\n");
+ 		return -EINVAL;
+ 	}
+@@ -1360,6 +1366,8 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
+ 			pr_warn(FW_WARN "deprecated mbus-mvebu Device Tree, suspend/resume will not work\n");
+ 	}
+ 
++	of_node_put(controller);	
++
+ 	mbus_state.hw_io_coherency = is_coherent;
+ 
+ 	/* Get optional pcie-{mem,io}-aperture properties */
+@@ -1378,6 +1386,11 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
+ 		return ret;
+ 
+ 	/* Setup statically declared windows in the DT */
+-	return mbus_dt_setup(&mbus_state, np);
++	ret = mbus_dt_setup(&mbus_state, np);
++
++	of_node_put(np);
++	
++	return ret;
++
+ }
+ #endif
 -- 
-2.31.1
+2.25.1
 
