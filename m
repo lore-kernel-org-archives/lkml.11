@@ -2,72 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A2DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01AFDC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233433AbiFPNao (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35894 "EHLO
+        id S1376765AbiFPNeg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 09:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233379AbiFPNal (ORCPT
+        with ESMTP id S232908AbiFPNef (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:30:41 -0400
-Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03D6D286D1
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:30:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=lt4cZ
-        XCiaVcjGvhuT4ufqgA61fK3nl/LsSYLL/GBPXI=; b=XDNa0blq5lRe7Gk3wyjyI
-        Sefm5EB7e9LHXt3544UvMIyDR3cALbRtuhodZtrvlBk7DQQ/r+NRa3COXXrSr0zy
-        WH3oYsio2xoCpPhOC9b9w2eU6exS3e78wtpCPETyk4wH7TNo7Q06opgzxRVaUNHP
-        mgRwif0MnZ4KoyAMYw8O/g=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp10 (Coremail) with SMTP id NuRpCgCH51szMKtitIMkEw--.42762S2;
-        Thu, 16 Jun 2022 21:29:25 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     oss@buserror.net, mpe@ellerman.id.au, benh@kernel.crashing.org,
-        paulus@samba.org, christophe.leroy@csgroup.eu
-Cc:     windhl@126.com, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] arch: powerpc: platforms: 85xx: Fix refcount leak bug in ksi8560.c
-Date:   Thu, 16 Jun 2022 21:29:22 +0800
-Message-Id: <20220616132922.3987053-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 16 Jun 2022 09:34:35 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C221FCDB;
+        Thu, 16 Jun 2022 06:34:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=uQ4d+/hCDpXIIuZA6ifN1eXUKkJ4wcl+niFQzW1KPWg=; b=1DqtUF+rjV/XZiC/scS+elV2ov
+        JhbCgVmhK8D7fZlYN0fobs4BcsSYsHPad6IxRsc/+LoQfWpZs8o18AK8CZgdQBqRgmQN18NXa6lkD
+        nRProzG3HaUzlPlGAZgT9pjJHJKO5UV3jBY8V/GEy23EUNNiKfxjDGNsCwR/gbQIs8Qc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o1pda-007Bvi-6c; Thu, 16 Jun 2022 15:34:18 +0200
+Date:   Thu, 16 Jun 2022 15:34:18 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: dsa: ar9331: fix potential dead
+ lock on mdio access
+Message-ID: <YqsxWv79Ge1AFiQx@lunn.ch>
+References: <20220616112550.877118-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NuRpCgCH51szMKtitIMkEw--.42762S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtF4UXry8JryrKryfGFWDXFb_yoW3CrgEkw
-        n3Aa1UCrs5Cr4ktF4qyr1rKr1jq3yrWFWUGr1Ig3W7JFy5ZanxGwsrXF4xu3W5Xr4IkrWa
-        qFZrG3s8CasakjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRMa9-UUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/xtbBGg0iF1-HZT6SiQAAs6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616112550.877118-1-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In ksi8560_setup_arch(), of_find_compatible_node() will return a
-node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+>  static int ar9331_mdio_read(void *ctx, const void *reg_buf, size_t reg_len,
+> @@ -849,6 +849,8 @@ static int ar9331_mdio_read(void *ctx, const void *reg_buf, size_t reg_len,
+>  		return 0;
+>  	}
+>  
+> +	mutex_lock_nested(&sbus->mdio_lock, MDIO_MUTEX_NESTED);
+> +
 
-Signed-off-by: Liang He <windhl@126.com>
----
- arch/powerpc/platforms/85xx/ksi8560.c | 2 ++
- 1 file changed, 2 insertions(+)
+Do you know about mdiobus_read_nested() and
+mdiobus_write_nested(). The mv88e6xxx driver uses these.
 
-diff --git a/arch/powerpc/platforms/85xx/ksi8560.c b/arch/powerpc/platforms/85xx/ksi8560.c
-index bdf9d42f8521..a22f02b0fc77 100644
---- a/arch/powerpc/platforms/85xx/ksi8560.c
-+++ b/arch/powerpc/platforms/85xx/ksi8560.c
-@@ -133,6 +133,8 @@ static void __init ksi8560_setup_arch(void)
- 	else
- 		printk(KERN_ERR "Can't find CPLD in device tree\n");
- 
-+	of_node_put(cpld);
-+
- 	if (ppc_md.progress)
- 		ppc_md.progress("ksi8560_setup_arch()", 0);
- 
--- 
-2.25.1
-
+	Andrew
