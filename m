@@ -2,91 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F51DCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:05:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9738CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379081AbiFPWFU (ORCPT
+        id S1378995AbiFPWFw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 18:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
+        Thu, 16 Jun 2022 18:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378572AbiFPWFA (ORCPT
+        with ESMTP id S1379008AbiFPWFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 18:05:00 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91DE61630
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 15:04:52 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id b12-20020a17090a6acc00b001ec2b181c98so1373082pjm.4
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 15:04:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l7bNYgy+kj8u/jxC0moNwUt1/A1dWzpe6enKDLs3CYw=;
-        b=vbp6VGbXIF+ANmagPv6oY9KhOIlXhEJ/vbaTYawbBSJUALwdTygMrXNi6hIbI2uVtA
-         WDsDi0e7k+bgkXHlj45ijFbhfBjcycXF6UY5ZYfJ+MWZ0wn3tkcFEABG0WRFtdpVTpDX
-         dGC0zHuucnNwJXo2U+7H90bxpNRp37Lp8v/wgZajKi09AnZ+nq6wN2ICLne/E6Qc4ASE
-         pz3iw3f4no4zX/fQLqTUVnjjtSDz7V7RuU90fOB9lkGOpQrVPY6R1GnVjSjudzsMpJqq
-         HTWXNrG2csc19lOCRuYMGtROF1jKTVT0wTQZTFK1pICfVcZrImaZdHtzr8mmIBtaKS8M
-         xP5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=l7bNYgy+kj8u/jxC0moNwUt1/A1dWzpe6enKDLs3CYw=;
-        b=wQUUITfDU5OsYKs+6ofdVcHn7Filjt5xnFApQhh0lO85JHFZK5jdrYzOjC9BUlokbM
-         WxA+TkOyRc/+BNB8Hi/by1qhkRZIOaxY31ZG8kEX6XtqvOffTX4/IPJOHfkmqJCtZAnm
-         kgQeT2TtKXD53iBpI12pXU/e91AH2wLHUnlJFM6QS6J80KlXhGb/qhY2yhh2+wGgw4z+
-         GRNPrnQFeG0fBg/rSBDdQ8A0eqcyyApsEkepyvdCp/f74dns1WhmU+OZzJimJO67GAUy
-         Ro5/LjWuhPfATdD7Q3Av11HzJ+SmSXtGS6jV6/6xWjN7XdaPVT+eyiyBELi7mH2aRSeA
-         9WwQ==
-X-Gm-Message-State: AJIora9wKgFy1D5XlAOQxv5VbKc0EJcSVu+O/hryv2mIWeuN446SuniB
-        5s7kYi+gypto9zREFcECg/ku9Q==
-X-Google-Smtp-Source: AGRyM1u/yXpwyrUF4jgUMyqRVFRAoXSg7gMnc5yFVQgEn/9sJrmjQsFr4WOYlU3Q3XtOqdWvT2kljA==
-X-Received: by 2002:a17:902:9348:b0:167:8e92:272f with SMTP id g8-20020a170902934800b001678e92272fmr6779739plp.77.1655417091611;
-        Thu, 16 Jun 2022 15:04:51 -0700 (PDT)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id r24-20020a638f58000000b00401a7b4f137sm2311093pgn.41.2022.06.16.15.04.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 15:04:50 -0700 (PDT)
-Date:   Thu, 16 Jun 2022 15:04:50 -0700 (PDT)
-X-Google-Original-Date: Thu, 16 Jun 2022 13:10:07 PDT (-0700)
-Subject:     Re: [PATCH v2 0/2] introduce unified static key mechanism for ISA ext
-In-Reply-To: <20220522153543.2656-1-jszhang@kernel.org>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        atishp@atishpatra.org, anup@brainfault.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     jszhang@kernel.org
-Message-ID: <mhng-ea1ebe26-82ad-4a9d-b024-f6d79a0cb699@palmer-ri-x1c9>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Thu, 16 Jun 2022 18:05:39 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667FD6129B;
+        Thu, 16 Jun 2022 15:05:13 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 5C90F1F37E;
+        Thu, 16 Jun 2022 22:05:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655417111;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=60VPT8oMa+JleU+N4k5yeM0YGzH9c1yMuWkZXfIBx2Q=;
+        b=ca/Kx249PJn3ys4VBzyp8/pOEdhfXS0ESJyjgZfo2iKJgnaucGHtVdSkSkTpL+Hatc2Hh9
+        2TRztA2paZKxpaWGXRHRfayguUH53QpQEQlxBY7ul4RQ7/024zYecknQetmqgUm7Fw335m
+        rNMHYIrGj4aGKHsQtv6a0dm7auCkXgY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655417111;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=60VPT8oMa+JleU+N4k5yeM0YGzH9c1yMuWkZXfIBx2Q=;
+        b=FLgB+caB+gYGr0bWmD0mtEnjkKf/cqHeHwUYYI2sjy31hWj4InPzEe/GRSEa7I/U0epV5u
+        VZWRQL2/8E2wGTAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 277271344E;
+        Thu, 16 Jun 2022 22:05:11 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id wcaJCBepq2ICRAAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Thu, 16 Jun 2022 22:05:11 +0000
+Date:   Fri, 17 Jun 2022 00:00:36 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        David Sterba <dsterba@suse.com>, 0day robot <lkp@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-btrfs@vger.kernel.org,
+        lkp@lists.01.org
+Subject: Re: [btrfs]  66a7a2412f: xfstests.btrfs.131.fail
+Message-ID: <20220616220036.GF20633@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Matthew Wilcox <willy@infradead.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        David Sterba <dsterba@suse.com>, 0day robot <lkp@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-btrfs@vger.kernel.org,
+        lkp@lists.01.org
+References: <20220607154229.9164-1-dsterba@suse.com>
+ <20220616143710.GF25633@xsang-OptiPlex-9020>
+ <Yqud1/SooVDamiuP@casper.infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yqud1/SooVDamiuP@casper.infradead.org>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 22 May 2022 08:35:41 PDT (-0700), jszhang@kernel.org wrote:
-> Currently, riscv has several extensions which may not be supported on all
-> riscv platforms, for example, FPU and so on. To support unified kernel
-> Image style, we need to check whether the feature is supported or not.
-> If the check sits at hot code path, the performance will be impacted a
-> lot. static key can be used to solve the issue. In the past, FPU
-> support has been converted to use static key mechanism. I believe we
-> will have similar cases in the future.
->
-> Since v1:
->   - fix typo, thank Atish
->   - remove riscv_isa_have_key_extension() instead use the isa ext keys
->     directly as pointed out by Atish.
->
-> Jisheng Zhang (2):
->   riscv: introduce unified static key mechanism for ISA extensions
->   riscv: switch has_fpu() to the unified static key mechanism
->
->  arch/riscv/include/asm/hwcap.h     | 25 +++++++++++++++++++++++++
->  arch/riscv/include/asm/switch_to.h |  4 ++--
->  arch/riscv/kernel/cpufeature.c     | 14 +++++++-------
->  3 files changed, 34 insertions(+), 9 deletions(-)
+On Thu, Jun 16, 2022 at 10:17:11PM +0100, Matthew Wilcox wrote:
+> On Thu, Jun 16, 2022 at 10:37:10PM +0800, kernel test robot wrote:
+> > btrfs/131	- output mismatch (see /lkp/benchmarks/xfstests/results//btrfs/131.out.bad)
+> >     --- tests/btrfs/131.out	2022-06-13 17:10:24.000000000 +0000
+> >     +++ /lkp/benchmarks/xfstests/results//btrfs/131.out.bad	2022-06-15 18:54:06.505508542 +0000
+> >     @@ -2,9 +2,9 @@
+> >      Using free space cache
+> >      free space tree is disabled
+> >      Enabling free space tree
+> >     -free space tree is enabled
+> >     +free space tree is disabled
+> 
+> I think I know what's going on here:
+> 
+>         compat_ro="$($BTRFS_UTIL_PROG inspect-internal dump-super "$SCRATCH_DEV"
+>  | \
+>                      sed -rn 's/^compat_ro_flags\s+(.*)$/\1/p')"
+>         if ((compat_ro & 0x1)); then
+>                 echo "free space tree is enabled"
+>         else
+>                 echo "free space tree is disabled"
+>         fi
+> 
+> dump-super is reading the super block out of the page cache, but this
+> change makes the page cache incoherent with what's on disc.  We could
+> fix that by invalidating the page out of the page cache, but it may be
+> easier to just dump this patch and fix how we use the page cache to
+> write back the superblocks?
 
-Thanks, this is on for-next.
+The build bot picks up the branch with some delay, I've removed it from
+the pushed branches. It's interesting to see that using the page cache
+vs direct write does have effects in tests, so it would need to be
+unified in kernel and user space.
