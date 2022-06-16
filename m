@@ -2,117 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E13C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:41:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 647F6CCA481
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236070AbiFPQls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 12:41:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42554 "EHLO
+        id S234980AbiFPQn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 12:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230491AbiFPQlr (ORCPT
+        with ESMTP id S231467AbiFPQnw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 12:41:47 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAED30571
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:41:46 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 05D3B21D69;
-        Thu, 16 Jun 2022 16:41:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655397705; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=C1VoBgkGbXg4laL5bH4HWrKR+vWwEu9Z23xckivXmes=;
-        b=xqtDQC6j7j+cQrEePhj/pcb7yMcbwTGcnUwC/c/h4hG4E88F2rduqNEi29Ellay8XBooIL
-        B9Ec8q2Acn9n/vHbap2YRi0DLOkaxFFbhO8CmftVhMT9wP/RpY99fAizx1F9yPwMoS/LK/
-        ClhBjwd8d+7ni5wJ9BlFhTicVax3Xx4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655397705;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=C1VoBgkGbXg4laL5bH4HWrKR+vWwEu9Z23xckivXmes=;
-        b=Jpyet56oMoTv+WiDy5u1cSLDwAPXED/B20ff7fmHtvM/DYzob2DnUqtbtzdMGGgR0zoLAl
-        Nqf25PzOYC+jtQAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CF8431344E;
-        Thu, 16 Jun 2022 16:41:44 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Spz3MEhdq2IUXQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 16 Jun 2022 16:41:44 +0000
-Message-ID: <4a5d90b3-afe4-7c13-b989-3ece4a797b1f@suse.cz>
-Date:   Thu, 16 Jun 2022 18:41:44 +0200
+        Thu, 16 Jun 2022 12:43:52 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF57C27FE4;
+        Thu, 16 Jun 2022 09:43:47 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-100eb6f7782so2563569fac.2;
+        Thu, 16 Jun 2022 09:43:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sCKsj+St5eBkoPclTa2En9zfCgN8+cKxVUt9jp6Eju0=;
+        b=rSfU7+dQ9rIHicdVKszqZ7j6R+G26ovDu4S8kimJkxQ7hm6Ps8Fv41T8UMNkqyRFpl
+         hFUnbBrs95lolYV7X/d8jyyJC51X9eilAc28jCsZpcttsWni2BCZLqtOui/mw7i1A8t3
+         I0Kj0PP2k6CYkI4x5f8nhQOV1JetEUcRRw4dExD8UZ1szXwc8lkt8yrZMUPhjBRjfChv
+         nR6ND2lCh0F7FjVeiR9BX6MfELoHotlyAvBiEqkKTW+YH5DdiWVZacPJ9PVruLfGFVJv
+         z4ZAFdYCuxFVjQUlxxHGjJlDo5cdXWGA2t75SeeRD5uGutkEr0MWj9xQ+lxL7NChIK0B
+         EGzQ==
+X-Gm-Message-State: AJIora8pZpVjxw0lkKmDm1zI5LKXfZvGlo6PRarC9dBqeVGdAjC/ljTl
+        GClAgHNBSvg3pqKWzFQHpEalFFtaKTbaq+MtDIg=
+X-Google-Smtp-Source: AGRyM1uiNilmgCkMLL3RIor+VnxuOx5WmIHieZHnw8pepHrqFELZ71BJIxi2vOS4y2KJKXCtTI32mAsPpi55aT8WPvI=
+X-Received: by 2002:a05:6870:4585:b0:fb:5105:76b8 with SMTP id
+ y5-20020a056870458500b000fb510576b8mr3109112oao.92.1655397827074; Thu, 16 Jun
+ 2022 09:43:47 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 6/7] mm/page_alloc: Remotely drain per-cpu lists
-Content-Language: en-US
-To:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
+References: <20220615190735.1298213-1-namhyung@kernel.org> <9242ecfa-36ab-c425-999c-fad44056223b@arm.com>
+In-Reply-To: <9242ecfa-36ab-c425-999c-fad44056223b@arm.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Thu, 16 Jun 2022 09:43:36 -0700
+Message-ID: <CAM9d7cg6xE0YcTt3YGPsCkTzRXZZjDQm2We2v+O7tgj-E=djoQ@mail.gmail.com>
+Subject: Re: [PATCH] perf test: Add ARM SPE system wide test
+To:     German Gomez <german.gomez@arm.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220613125622.18628-1-mgorman@techsingularity.net>
- <20220613125622.18628-7-mgorman@techsingularity.net>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220613125622.18628-7-mgorman@techsingularity.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/13/22 14:56, Mel Gorman wrote:
-> From: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-> 
-> Some setups, notably NOHZ_FULL CPUs, are too busy to handle the per-cpu
-> drain work queued by __drain_all_pages().  So introduce a new mechanism to
-> remotely drain the per-cpu lists.  It is made possible by remotely locking
-> 'struct per_cpu_pages' new per-cpu spinlocks.  A benefit of this new
-> scheme is that drain operations are now migration safe.
-> 
-> There was no observed performance degradation vs.  the previous scheme.
-> Both netperf and hackbench were run in parallel to triggering the
-> __drain_all_pages(NULL, true) code path around ~100 times per second.  The
-> new scheme performs a bit better (~5%), although the important point here
-> is there are no performance regressions vs.  the previous mechanism.
-> Per-cpu lists draining happens only in slow paths.
-> 
-> Minchan Kim tested this independently and reported;
-> 
-> 	My workload is not NOHZ CPUs but run apps under heavy memory
-> 	pressure so they goes to direct reclaim and be stuck on
-> 	drain_all_pages until work on workqueue run.
-> 
-> 	unit: nanosecond
-> 	max(dur)        avg(dur)                count(dur)
-> 	166713013       487511.77786438033      1283
-> 
-> 	From traces, system encountered the drain_all_pages 1283 times and
-> 	worst case was 166ms and avg was 487us.
-> 
-> 	The other problem was alloc_contig_range in CMA. The PCP draining
-> 	takes several hundred millisecond sometimes though there is no
-> 	memory pressure or a few of pages to be migrated out but CPU were
-> 	fully booked.
-> 
-> 	Your patch perfectly removed those wasted time.
-> 
-> Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-> Tested-by: Minchan Kim <minchan@kernel.org>
-> Acked-by: Minchan Kim <minchan@kernel.org>
+Hello,
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+On Thu, Jun 16, 2022 at 3:12 AM German Gomez <german.gomez@arm.com> wrote:
+>
+> Thanks for the patch, Namhyung
+>
+> On 15/06/2022 20:07, Namhyung Kim wrote:
+> > In the past it had a problem not setting the pid/tid on the sample
+> > correctly when system-wide mode is used.  Although it's fixed now it'd
+> > be nice if we have a test case for it.
+> >
+> > Cc: German Gomez <german.gomez@arm.com>
+> > Cc: Leo Yan <leo.yan@linaro.org>
+> > Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> > ---
+> >  tools/perf/tests/shell/test_arm_spe.sh | 15 +++++++++++++++
+> >  1 file changed, 15 insertions(+)
+> >
+> > diff --git a/tools/perf/tests/shell/test_arm_spe.sh b/tools/perf/tests/shell/test_arm_spe.sh
+> > index e59044edc406..b9c588ae393b 100755
+> > --- a/tools/perf/tests/shell/test_arm_spe.sh
+> > +++ b/tools/perf/tests/shell/test_arm_spe.sh
+> > @@ -23,6 +23,7 @@ glb_err=0
+> >  cleanup_files()
+> >  {
+> >       rm -f ${perfdata}
+> > +     rm -f ${perfdata}.old
+> >       exit $glb_err
+> >  }
+> >
+> > @@ -85,5 +86,19 @@ arm_spe_snapshot_test() {
+> >       arm_spe_report "SPE snapshot testing" $err
+> >  }
+> >
+> > +arm_spe_system_wide_test() {
+> > +     echo "Recording trace with system-wide mode $perfdata"
+> > +     perf record -o ${perfdata} -e arm_spe// -a \
+> > +             -- dd if=/dev/zero of=/dev/null count=100000 > /dev/null 2>&1
+> > +
+>
+> Should we skip if we don't have privileges for CPU tracing? (attached diff)
+
+Oh, you're right.  I'll squash it to the patch.
+
+Thanks,
+Namhyung
+
+
+>
+> > +     perf_script_samples dd &&
+> > +     perf_report_samples dd
+> > +
+> > +     err=$?
+> > +     arm_spe_report "SPE system-wide testing" $err
+> > +}
+> > +
+> >  arm_spe_snapshot_test
+> > +arm_spe_system_wide_test
+> > +
+> >  exit $glb_err
