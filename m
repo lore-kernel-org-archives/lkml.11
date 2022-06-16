@@ -2,69 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5427C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 10:59:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C05CCA47D
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 11:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376715AbiFPK72 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 06:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45720 "EHLO
+        id S231837AbiFPLCU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 07:02:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229641AbiFPK70 (ORCPT
+        with ESMTP id S229663AbiFPLCT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 06:59:26 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4364EA37;
-        Thu, 16 Jun 2022 03:59:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ZkPfOde6LsK0Glx12hkc81WxEBScqSjLnE5JE7ziIK8=; b=F58PV9TK4+5Y/Ni+iIf7FjLqsv
-        EmNgEdycjPhFe2KJ6SLdLFdtZl9cmlZrTx49IYfyK97KdSMdp6YQKcDrY/Fc9gF8CiTY9UJ+lkf7M
-        Y8pOlAUIFyhWgCcuVXXoZn+6wAtybGO25/jiMDOiDLrPd0Xw/kA2+ST0UN6t1M2Mo2YwxrvirPlvI
-        7NKw0DeZSwQD8e+8pd5q2SOp191+3PzToSZwiXXpx7jIYI8eaWjzgaT2T3xo9MaTuTd8EtDFAiu+W
-        QGTRqIVBAsOZsKdWlQObFv/BkCgSh2hijoZgp3wFVHs/RMw1+0P5ZFAyKPwC8lvE46oV0/789Oqp2
-        b/P3xQkA==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1nDM-008OiG-9b; Thu, 16 Jun 2022 10:59:08 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id ED23F980DD0; Thu, 16 Jun 2022 12:59:01 +0200 (CEST)
-Date:   Thu, 16 Jun 2022 12:59:01 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Yang Weijiang <weijiang.yang@intel.com>
-Cc:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rick.p.edgecombe@intel.com,
-        Sean Christopherson <sean.j.christopherson@intel.com>
-Subject: Re: [PATCH 16/19] KVM: x86: Enable CET virtualization for VMX and
- advertise CET to userspace
-Message-ID: <YqsM9VkQ4cTSJ4Ct@worktop.programming.kicks-ass.net>
-References: <20220616084643.19564-1-weijiang.yang@intel.com>
- <20220616084643.19564-17-weijiang.yang@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220616084643.19564-17-weijiang.yang@intel.com>
+        Thu, 16 Jun 2022 07:02:19 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA825DD09;
+        Thu, 16 Jun 2022 04:02:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655377338; x=1686913338;
+  h=from:to:cc:subject:date:message-id;
+  bh=7g/s2GiM6jmBG+/eoD9DO8AkGUDJbrWKyYBTl86tXM8=;
+  b=GoRfAYxQIsAF6IBFIoyn5iU3xBjcM3SqhJ9A5MWbSCdgSecU/d8Qjaak
+   cqPm1Y1EV18zRYD7sYV/Jg59L4sZxtemK1lBoRZPcvp5ZC1nxrN3OWMxf
+   yKyw905tUa9vWOiiioLDZ6+Uk9TKumH4H2fy63HdyZuWcfaBOX0knVcQ/
+   I=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 16 Jun 2022 04:02:18 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 16 Jun 2022 04:02:15 -0700
+X-QCInternal: smtphost
+Received: from hu-dikshita-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.110.13])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 16 Jun 2022 16:32:05 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 347544)
+        id 842E2460E; Thu, 16 Jun 2022 16:32:04 +0530 (+0530)
+From:   Dikshita Agarwal <quic_dikshita@quicinc.com>
+To:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, stanimir.varbanov@linaro.org,
+        quic_vgarodia@quicinc.com, swboyd@chromium.org,
+        Dikshita Agarwal <quic_dikshita@quicinc.com>
+Subject: [PATCH v3] venus: Add support for SSR trigger using fault injection
+Date:   Thu, 16 Jun 2022 16:32:02 +0530
+Message-Id: <1655377322-14195-1-git-send-email-quic_dikshita@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 04:46:40AM -0400, Yang Weijiang wrote:
-> Set the feature bits so that CET capabilities can be seen in guest via
-> CPUID enumeration. Add CR4.CET bit support in order to allow guest set CET
-> master control bit(CR4.CET).
-> 
-> Disable KVM CET feature if unrestricted_guest is unsupported/disabled as
-> KVM does not support emulating CET.
-> 
-> Don't expose CET feature if dependent CET bits are cleared in host XSS,
-> or if XSAVES isn't supported.  Updating the CET features in common x86 is
-> a little ugly, but there is no clean solution without risking breakage of
-> SVM if SVM hardware ever gains support for CET, e.g. moving everything to
-> common x86 would prematurely expose CET on SVM.  The alternative is to
-> put all the logic in VMX, but that means rereading host_xss in VMX and
-> duplicating the XSAVES check across VMX and SVM.
+Here we introduce a new fault injection for SSR trigger.
 
-Doesn't Zen3 already have SHSTK ?
+To trigger the SSR:
+ echo 100 >  /sys/kernel/debug/venus/fail_ssr/probability
+ echo 1 >  /sys/kernel/debug/venus/fail_ssr/times
+
+Co-developed-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+signed-off-by: Dikshita Agarwal <quic_dikshita@quicinc.com>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+---
+ drivers/media/platform/qcom/venus/core.c  | 15 ++++++++++++++-
+ drivers/media/platform/qcom/venus/dbgfs.c |  9 +++++++++
+ drivers/media/platform/qcom/venus/dbgfs.h | 13 +++++++++++++
+ 3 files changed, 36 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/media/platform/qcom/venus/core.c b/drivers/media/platform/qcom/venus/core.c
+index 877eca1..abfa5d6 100644
+--- a/drivers/media/platform/qcom/venus/core.c
++++ b/drivers/media/platform/qcom/venus/core.c
+@@ -265,6 +265,19 @@ static void venus_assign_register_offsets(struct venus_core *core)
+ 	}
+ }
+ 
++static irqreturn_t venus_isr_thread(int irq, void *dev_id)
++{
++	struct venus_core *core = dev_id;
++	irqreturn_t ret;
++
++	ret = hfi_isr_thread(irq, dev_id);
++
++	if (ret == IRQ_HANDLED && venus_fault_inject_ssr())
++		hfi_core_trigger_ssr(core, HFI_TEST_SSR_SW_ERR_FATAL);
++
++	return ret;
++}
++
+ static int venus_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -320,7 +333,7 @@ static int venus_probe(struct platform_device *pdev)
+ 	INIT_DELAYED_WORK(&core->work, venus_sys_error_handler);
+ 	init_waitqueue_head(&core->sys_err_done);
+ 
+-	ret = devm_request_threaded_irq(dev, core->irq, hfi_isr, hfi_isr_thread,
++	ret = devm_request_threaded_irq(dev, core->irq, hfi_isr, venus_isr_thread,
+ 					IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
+ 					"venus", core);
+ 	if (ret)
+diff --git a/drivers/media/platform/qcom/venus/dbgfs.c b/drivers/media/platform/qcom/venus/dbgfs.c
+index 52de47f..726f4b7 100644
+--- a/drivers/media/platform/qcom/venus/dbgfs.c
++++ b/drivers/media/platform/qcom/venus/dbgfs.c
+@@ -4,13 +4,22 @@
+  */
+ 
+ #include <linux/debugfs.h>
++#include <linux/fault-inject.h>
+ 
+ #include "core.h"
+ 
++#ifdef CONFIG_FAULT_INJECTION
++DECLARE_FAULT_ATTR(venus_ssr_attr);
++#endif
++
+ void venus_dbgfs_init(struct venus_core *core)
+ {
+ 	core->root = debugfs_create_dir("venus", NULL);
+ 	debugfs_create_x32("fw_level", 0644, core->root, &venus_fw_debug);
++
++#ifdef CONFIG_FAULT_INJECTION
++	fault_create_debugfs_attr("fail_ssr", core->root, &venus_ssr_attr);
++#endif
+ }
+ 
+ void venus_dbgfs_deinit(struct venus_core *core)
+diff --git a/drivers/media/platform/qcom/venus/dbgfs.h b/drivers/media/platform/qcom/venus/dbgfs.h
+index b7b621a..c87c135 100644
+--- a/drivers/media/platform/qcom/venus/dbgfs.h
++++ b/drivers/media/platform/qcom/venus/dbgfs.h
+@@ -4,8 +4,21 @@
+ #ifndef __VENUS_DBGFS_H__
+ #define __VENUS_DBGFS_H__
+ 
++#include <linux/fault-inject.h>
++
+ struct venus_core;
+ 
++#ifdef CONFIG_FAULT_INJECTION
++extern struct fault_attr venus_ssr_attr;
++static inline bool venus_fault_inject_ssr(void)
++{
++	return should_fail(&venus_ssr_attr, 1);
++}
++#else
++static inline bool venus_fault_inject_ssr(void) { return false; }
++#endif
++
++
+ void venus_dbgfs_init(struct venus_core *core);
+ void venus_dbgfs_deinit(struct venus_core *core);
+ 
+-- 
+2.7.4
+
