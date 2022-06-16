@@ -2,143 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB18C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:10:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65FC1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359623AbiFPIKc (ORCPT
+        id S1359633AbiFPIK5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:10:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58090 "EHLO
+        Thu, 16 Jun 2022 04:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359243AbiFPIK3 (ORCPT
+        with ESMTP id S1358831AbiFPIKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:10:29 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B42135D663
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 01:10:26 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 36FFC1474;
-        Thu, 16 Jun 2022 01:10:26 -0700 (PDT)
-Received: from [10.57.84.206] (unknown [10.57.84.206])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E16833F7F5;
-        Thu, 16 Jun 2022 01:10:24 -0700 (PDT)
-Message-ID: <26872911-d9d2-3764-a579-ad60f8c8bfa5@arm.com>
-Date:   Thu, 16 Jun 2022 09:10:23 +0100
+        Thu, 16 Jun 2022 04:10:55 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853995D1B9
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 01:10:54 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LNvw04yRfzjXf3;
+        Thu, 16 Jun 2022 16:09:20 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 16 Jun 2022 16:10:52 +0800
+CC:     <yangyicong@hisilicon.com>, <peterz@infradead.org>,
+        <mingo@redhat.com>, <juri.lelli@redhat.com>,
+        <vincent.guittot@linaro.org>, <tim.c.chen@linux.intel.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <dietmar.eggemann@arm.com>,
+        <rostedt@goodmis.org>, <bsegall@google.com>, <bristot@redhat.com>,
+        <prime.zeng@huawei.com>, <jonathan.cameron@huawei.com>,
+        <ego@linux.vnet.ibm.com>, <srikar@linux.vnet.ibm.com>,
+        <linuxarm@huawei.com>, <21cnbao@gmail.com>,
+        <guodong.xu@linaro.org>, <hesham.almatary@huawei.com>,
+        <john.garry@huawei.com>, <shenyang39@huawei.com>
+Subject: Re: [PATCH v4 1/2] sched: Add per_cpu cluster domain info and
+ cpus_share_resources API
+To:     "Gautham R. Shenoy" <gautham.shenoy@amd.com>,
+        K Prateek Nayak <kprateek.nayak@amd.com>
+References: <20220609120622.47724-1-yangyicong@hisilicon.com>
+ <20220609120622.47724-2-yangyicong@hisilicon.com>
+ <e000b124-afd4-28e1-fde2-393b0e38ce19@amd.com>
+ <Yqn+K08JFRgtR3eY@BLR-5CG11610CF.amd.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <ce4b3fd8-70db-b427-9087-bbff78eb9e2e@huawei.com>
+Date:   Thu, 16 Jun 2022 16:10:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH] init: Initialize noop_backing_dev_info early
-To:     Jan Kara <jack@suse.cz>, LKML <linux-kernel@vger.kernel.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-mm@kvack.org, Guenter Roeck <linux@roeck-us.net>,
-        Alexandru Elisei <alexandru.elisei@arm.com>
-References: <20220615214815.6901-1-jack@suse.cz>
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <20220615214815.6901-1-jack@suse.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <Yqn+K08JFRgtR3eY@BLR-5CG11610CF.amd.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/06/2022 22:48, Jan Kara wrote:
-> noop_backing_dev_info is used by superblocks of various
-> pseudofilesystems such as kdevtmpfs. After commit 10e14073107d
-> ("writeback: Fix inode->i_io_list not be protected by inode->i_lock
-> error") this broke because __mark_inode_dirty() started to access more
-> fields from noop_backing_dev_info and this led to crashes inside
-> locked_inode_to_wb_and_lock_list() called from __mark_inode_dirty().
-> Fix the problem by initializing noop_backing_dev_info before the
-> filesystems get mounted.
+On 2022/6/15 23:43, Gautham R. Shenoy wrote:
+> On Wed, Jun 15, 2022 at 07:49:22PM +0530, K Prateek Nayak wrote:
 > 
-> Fixes: 10e14073107d ("writeback: Fix inode->i_io_list not be protected by inode->i_lock error")
-> Reported-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-> Reported-and-tested-by: Alexandru Elisei <alexandru.elisei@arm.com>
-> Reported-and-tested-by: Guenter Roeck <linux@roeck-us.net>
-> Signed-off-by: Jan Kara <jack@suse.cz>
-
-Works for me too. Thanks for the proper fix
-
-
-Tested-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-
-
-> ---
->   drivers/base/init.c         |  2 ++
->   include/linux/backing-dev.h |  2 ++
->   mm/backing-dev.c            | 11 ++---------
->   3 files changed, 6 insertions(+), 9 deletions(-)
+> [..snip..]
 > 
-> Since this bug prevents some machines from booting, I plan to push this patch
-> to Linus unless someone objects soon... Review is welcome :).
+>>
+>> - Bisecting:
+>>
+>> When we ran the tests with only Patch 1 of the series, the
+>> regression was visible and the numbers were worse.
+>>
+>> Clients:       tip                     cluster              Patch 1 Only
+>>     8    3263.81 (0.00 pct)      3086.81 (-5.42 pct)     3018.63 (-7.51 pct)
+>>    16    6011.19 (0.00 pct)      5360.28 (-10.82 pct)    4869.26 (-18.99 pct)
+>>    32    12058.31 (0.00 pct)     8769.08 (-27.27 pct)    8159.60 (-32.33 pct)
+>>    64    21258.21 (0.00 pct)     19021.09 (-10.52 pct)   13161.92 (-38.08 pct)
+>>
+>> We further bisected the hunks to narrow down the cause to the per CPU
+>> variable declarations. 
+>>
+>>
+>>>
+>>> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+>>> index 01259611beb9..b9bcfcf8d14d 100644
+>>> --- a/kernel/sched/sched.h
+>>> +++ b/kernel/sched/sched.h
+>>> @@ -1753,7 +1753,9 @@ static inline struct sched_domain *lowest_flag_domain(int cpu, int flag)
+>>>  DECLARE_PER_CPU(struct sched_domain __rcu *, sd_llc);
+>>>  DECLARE_PER_CPU(int, sd_llc_size);
+>>>  DECLARE_PER_CPU(int, sd_llc_id);
+>>> +DECLARE_PER_CPU(int, sd_share_id);
+>>>  DECLARE_PER_CPU(struct sched_domain_shared __rcu *, sd_llc_shared);
+>>> +DECLARE_PER_CPU(struct sched_domain __rcu *, sd_cluster);
+>>
+>> The main reason for the regression seems to be the above declarations.
 > 
-> diff --git a/drivers/base/init.c b/drivers/base/init.c
-> index d8d0fe687111..397eb9880cec 100644
-> --- a/drivers/base/init.c
-> +++ b/drivers/base/init.c
-> @@ -8,6 +8,7 @@
->   #include <linux/init.h>
->   #include <linux/memory.h>
->   #include <linux/of.h>
-> +#include <linux/backing-dev.h>
->   
->   #include "base.h"
->   
-> @@ -20,6 +21,7 @@
->   void __init driver_init(void)
->   {
->   	/* These are the core pieces */
-> +	bdi_init(&noop_backing_dev_info);
->   	devtmpfs_init();
->   	devices_init();
->   	buses_init();
-> diff --git a/include/linux/backing-dev.h b/include/linux/backing-dev.h
-> index 2bd073fa6bb5..f0baef68f90f 100644
-> --- a/include/linux/backing-dev.h
-> +++ b/include/linux/backing-dev.h
-> @@ -119,6 +119,8 @@ int bdi_set_max_ratio(struct backing_dev_info *bdi, unsigned int max_ratio);
->   
->   extern struct backing_dev_info noop_backing_dev_info;
->   
-> +extern int bdi_init(struct backing_dev_info *bdi);
-> +
->   /**
->    * writeback_in_progress - determine whether there is writeback in progress
->    * @wb: bdi_writeback of interest
-> diff --git a/mm/backing-dev.c b/mm/backing-dev.c
-> index ff60bd7d74e0..95550b8fa7fe 100644
-> --- a/mm/backing-dev.c
-> +++ b/mm/backing-dev.c
-> @@ -231,20 +231,13 @@ static __init int bdi_class_init(void)
->   }
->   postcore_initcall(bdi_class_init);
->   
-> -static int bdi_init(struct backing_dev_info *bdi);
-> -
->   static int __init default_bdi_init(void)
->   {
-> -	int err;
-> -
->   	bdi_wq = alloc_workqueue("writeback", WQ_MEM_RECLAIM | WQ_UNBOUND |
->   				 WQ_SYSFS, 0);
->   	if (!bdi_wq)
->   		return -ENOMEM;
-> -
-> -	err = bdi_init(&noop_backing_dev_info);
-> -
-> -	return err;
-> +	return 0;
->   }
->   subsys_initcall(default_bdi_init);
->   
-> @@ -781,7 +774,7 @@ static void cgwb_remove_from_bdi_list(struct bdi_writeback *wb)
->   
->   #endif	/* CONFIG_CGROUP_WRITEBACK */
->   
-> -static int bdi_init(struct backing_dev_info *bdi)
-> +int bdi_init(struct backing_dev_info *bdi)
->   {
->   	int ret;
->   
+> I think you meant that the regressions are due to the DEFINE_PER_CPU()
+> instances from the following hunk:
+> 
+>>> @@ -664,6 +664,8 @@ static void destroy_sched_domains(struct sched_domain *sd)
+>>>  DEFINE_PER_CPU(struct sched_domain __rcu *, sd_llc);
+>>>  DEFINE_PER_CPU(int, sd_llc_size);
+>>>  DEFINE_PER_CPU(int, sd_llc_id);
+>>> +DEFINE_PER_CPU(int, sd_share_id);
+>>> +DEFINE_PER_CPU(struct sched_domain __rcu *, sd_cluster);
+>>>  DEFINE_PER_CPU(struct sched_domain_shared __rcu *, sd_llc_shared);
+>>>  DEFINE_PER_CPU(struct sched_domain __rcu *, sd_numa);
+>>>  DEFINE_PER_CPU(struct sched_domain __rcu *, sd_asym_packing);
+>>>
+> 
+> 
+> The System.map diff for these variables between tip vs tip +
+> cluster-sched-v4 on your test system looks as follows:
+> 
+>  0000000000020520 D sd_asym_packing
+>  0000000000020528 D sd_numa
+> -0000000000020530 D sd_llc_shared
+> -0000000000020538 D sd_llc_id
+> -000000000002053c D sd_llc_size
+> -0000000000020540 D sd_llc
+> +0000000000020530 D sd_cluster
+> +0000000000020538 D sd_llc_shared
 
+looks like below are in another cacheline (for 64B cacheline)?
+while previous sd_llc_id and sd_llc_shared are in the same.
+
+> +0000000000020540 D sd_share_id
+> +0000000000020544 D sd_llc_id
+> +0000000000020548 D sd_llc_size
+> +0000000000020550 D sd_llc
+> 
+> The allocations are in the reverse-order of the definitions.
+> 
+> That perhaps explains why you no longer see the regression when you
+> define the sd_share_id and sd_cluster per-cpu definitions at the
+> beginning as indicated by the following
+> 
+>> - Move the declarations of sd_share_id and sd_cluster to the top
+>>
+>>   Clients:       tip                    Patch 1            Patch 1 (Declarion on Top)
+>>     8      3255.69 (0.00 pct)      3018.63 (-7.28 pct)     3072.30 (-5.63 pct)
+>>    16      6092.67 (0.00 pct)      4869.26 (-20.08 pct)    5586.59 (-8.30 pct)
+>>    32      11156.56 (0.00 pct)     8159.60 (-26.86 pct)    11184.17 (0.24 pct)
+>>    64      21019.97 (0.00 pct)     13161.92 (-37.38 pct)   20289.70 (-3.47 pct)
+> 
+> 
+> --
+> Thanks and Regards
+> gautham.
+> .
+> 
