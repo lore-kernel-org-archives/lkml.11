@@ -2,89 +2,299 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E795AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A83DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:40:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359206AbiFPGfw (ORCPT
+        id S1359217AbiFPGkN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 02:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
+        Thu, 16 Jun 2022 02:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344922AbiFPGft (ORCPT
+        with ESMTP id S1358699AbiFPGkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 02:35:49 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2441A56B2C
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:35:47 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-122-sCnYHqVNOFmgVXEq4wuTBA-1; Thu, 16 Jun 2022 07:35:45 +0100
-X-MC-Unique: sCnYHqVNOFmgVXEq4wuTBA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Thu, 16 Jun 2022 07:35:44 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Thu, 16 Jun 2022 07:35:44 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Dave Hansen' <dave.hansen@intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>
-CC:     "ak@linux.intel.com" <ak@linux.intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "david@redhat.com" <david@redhat.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "x86@kernel.org" <x86@kernel.org>
-Subject: RE: [PATCHv4 3/3] x86/tdx: Handle load_unaligned_zeropad() page-cross
- to a shared page
-Thread-Topic: [PATCHv4 3/3] x86/tdx: Handle load_unaligned_zeropad()
- page-cross to a shared page
-Thread-Index: AQHYgRCKqYZTWjd2ckufHWAySodJ3K1Rk5mQ
-Date:   Thu, 16 Jun 2022 06:35:44 +0000
-Message-ID: <9708d6cf72184b7788bfb95ea1f46faf@AcuMS.aculab.com>
-References: <20220614120135.14812-1-kirill.shutemov@linux.intel.com>
- <20220614120135.14812-4-kirill.shutemov@linux.intel.com>
- <20220615225200.lflv4tbqus6lnj5u@black.fi.intel.com>
- <db63853f-dbd8-7593-032d-e674046bff8e@intel.com>
-In-Reply-To: <db63853f-dbd8-7593-032d-e674046bff8e@intel.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+        Thu, 16 Jun 2022 02:40:12 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1596456FA5;
+        Wed, 15 Jun 2022 23:40:11 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id AB9B91A5E31;
+        Thu, 16 Jun 2022 08:40:09 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 48EF51A3031;
+        Thu, 16 Jun 2022 08:40:09 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 06DDB181D0CB;
+        Thu, 16 Jun 2022 14:40:05 +0800 (+08)
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
+        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
+        alexandre.belloni@bootlin.com, fido_max@inbox.ru,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, pabeni@redhat.com,
+        kuba@kernel.org, edumazet@google.com, andrew@lunn.ch,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        vladimir.oltean@nxp.com, leoyang.li@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com
+Subject: [PATCH v1 net-next] net: dsa: felix: update base time of time-aware shaper when adjusting PTP time
+Date:   Thu, 16 Jun 2022 14:46:41 +0800
+Message-Id: <20220616064641.11905-1-xiaoliang.yang_1@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogRGF2ZSBIYW5zZW4NCj4gU2VudDogMTYgSnVuZSAyMDIyIDAwOjM1DQo+IA0KPiBPbiA2
-LzE1LzIyIDE1OjUyLCBLaXJpbGwgQS4gU2h1dGVtb3Ygd3JvdGU6DQo+ID4+ICsJdmFkZHIgPSAo
-dW5zaWduZWQgbG9uZylpbnNuX2dldF9hZGRyX3JlZigmaW5zbiwgcmVncyk7DQo+ID4+ICsJaWYg
-KHZhZGRyIC8gUEFHRV9TSVpFICE9ICh2YWRkciArIHNpemUpIC8gUEFHRV9TSVpFKQ0KPiA+IE9v
-cHMuIEkganVzdCByZWFsaXplZCBpdCBoYXMgb2ZmLWJ5LW9uZS4gSXQgc3VwcG9zZWQgdG8gYmU6
-DQo+ID4NCj4gPiAJaWYgKHZhZGRyIC8gUEFHRV9TSVpFICE9ICh2YWRkciArIHNpemUgLSAxKSAv
-IFBBR0VfU0laRSkNCj4gDQo+IFRoYXQgd2FzIGJ1Z2dpbmcgbWUuICBHbGFkIHlvdSBjYXVnaHQg
-dGhpcy4NCj4gDQo+IFdvdWxkbid0IHRoaXMgYmUgbW9yZSBvYnZpb3VzbHkgY29ycmVjdD8NCj4g
-DQo+IAlpZiAoQUxJR05fRE9XTih2YWRkciwgICAgICAgIFBBR0VfU0laRSkgIT0NCj4gCSAgICBB
-TElHTl9ET1dOKHZhZGRyICsgc2l6ZSwgUEFHRV9TSVpFKSkNCj4gCQkuLi4NCj4gDQo+IEkgZG9u
-J3QgdGhpbmsgd2UgaGF2ZSBhIFBBR0VfQUxJR05fRE9XTigpLg0KDQpPcjoNCglpZiAoKHZhZGRy
-IF4gKHZhZGRyICsgc2l6ZSAtIDEpKSA+PiBQQUdFX1NISUZUKQ0KDQoJRGF2aWQNCg0KLQ0KUmVn
-aXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRv
-biBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+When adjusting the PTP clock, the base time of the TAS configuration
+will become unreliable. We need reset the TAS configuration by using a
+new base time.
+
+For example, if the driver gets a base time 0 of Qbv configuration from
+user, and current time is 20000. The driver will set the TAS base time
+to be 20000. After the PTP clock adjustment, the current time becomes
+10000. If the TAS base time is still 20000, it will be a future time,
+and TAS entry list will stop running. Another example, if the current
+time becomes to be 10000000 after PTP clock adjust, a large time offset
+can cause the hardware to hang.
+
+This patch introduces a tas_clock_adjust() function to reset the TAS
+module by using a new base time after the PTP clock adjustment. This can
+avoid issues above.
+
+Due to PTP clock adjustment can occur at any time, it may conflict with
+the TAS configuration. We introduce a new TAS lock to serialize the
+access to the TAS registers.
+
+Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+---
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 83 ++++++++++++++++++++++++--
+ drivers/net/ethernet/mscc/ocelot.c     |  1 +
+ drivers/net/ethernet/mscc/ocelot_ptp.c | 12 +++-
+ include/soc/mscc/ocelot.h              |  7 +++
+ 4 files changed, 95 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 570d0204b7be..dd9085ae0922 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1196,10 +1196,13 @@ static void vsc9959_tas_gcl_set(struct ocelot *ocelot, const u32 gcl_ix,
+ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 				    struct tc_taprio_qopt_offload *taprio)
+ {
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 	struct timespec64 base_ts;
+ 	int ret, i;
+ 	u32 val;
+ 
++	mutex_lock(&ocelot->tas_lock);
++
+ 	if (!taprio->enable) {
+ 		ocelot_rmw_rix(ocelot,
+ 			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
+@@ -1207,15 +1210,20 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
+ 			       QSYS_TAG_CONFIG, port);
+ 
++		mutex_unlock(&ocelot->tas_lock);
+ 		return 0;
+ 	}
+ 
+ 	if (taprio->cycle_time > NSEC_PER_SEC ||
+-	    taprio->cycle_time_extension >= NSEC_PER_SEC)
+-		return -EINVAL;
++	    taprio->cycle_time_extension >= NSEC_PER_SEC) {
++		ret = -EINVAL;
++		goto err;
++	}
+ 
+-	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX)
+-		return -ERANGE;
++	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX) {
++		ret = -ERANGE;
++		goto err;
++	}
+ 
+ 	/* Enable guard band. The switch will schedule frames without taking
+ 	 * their length into account. Thus we'll always need to enable the
+@@ -1236,8 +1244,10 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 	 * config is pending, need reset the TAS module
+ 	 */
+ 	val = ocelot_read(ocelot, QSYS_PARAM_STATUS_REG_8);
+-	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING)
+-		return  -EBUSY;
++	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING) {
++		ret = -EBUSY;
++		goto err;
++	}
+ 
+ 	ocelot_rmw_rix(ocelot,
+ 		       QSYS_TAG_CONFIG_ENABLE |
+@@ -1248,6 +1258,8 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 		       QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES_M,
+ 		       QSYS_TAG_CONFIG, port);
+ 
++	ocelot_port->base_time = taprio->base_time;
++
+ 	vsc9959_new_base_time(ocelot, taprio->base_time,
+ 			      taprio->cycle_time, &base_ts);
+ 	ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
+@@ -1271,9 +1283,67 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 				 !(val & QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE),
+ 				 10, 100000);
+ 
++err:
++	mutex_unlock(&ocelot->tas_lock);
++
+ 	return ret;
+ }
+ 
++static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
++{
++	struct ocelot_port *ocelot_port;
++	struct timespec64 base_ts;
++	u64 cycletime;
++	int port;
++	u32 val;
++
++	mutex_lock(&ocelot->tas_lock);
++
++	for (port = 0; port < ocelot->num_phys_ports; port++) {
++		val = ocelot_read_rix(ocelot, QSYS_TAG_CONFIG, port);
++		if (!(val & QSYS_TAG_CONFIG_ENABLE))
++			continue;
++
++		ocelot_rmw(ocelot,
++			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port),
++			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M,
++			   QSYS_TAS_PARAM_CFG_CTRL);
++
++		ocelot_rmw_rix(ocelot,
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
++			       QSYS_TAG_CONFIG_ENABLE |
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
++			       QSYS_TAG_CONFIG, port);
++
++		cycletime = ocelot_read(ocelot, QSYS_PARAM_CFG_REG_4);
++		ocelot_port = ocelot->ports[port];
++
++		vsc9959_new_base_time(ocelot, ocelot_port->base_time,
++				      cycletime, &base_ts);
++
++		ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
++		ocelot_write(ocelot, lower_32_bits(base_ts.tv_sec),
++			     QSYS_PARAM_CFG_REG_2);
++		val = upper_32_bits(base_ts.tv_sec);
++		ocelot_rmw(ocelot,
++			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB(val),
++			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB_M,
++			   QSYS_PARAM_CFG_REG_3);
++
++		ocelot_rmw(ocelot, QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
++			   QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
++			   QSYS_TAS_PARAM_CFG_CTRL);
++
++		ocelot_rmw_rix(ocelot,
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF) |
++			       QSYS_TAG_CONFIG_ENABLE,
++			       QSYS_TAG_CONFIG_ENABLE |
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
++			       QSYS_TAG_CONFIG, port);
++	}
++	mutex_unlock(&ocelot->tas_lock);
++}
++
+ static int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
+ 				    struct tc_cbs_qopt_offload *cbs_qopt)
+ {
+@@ -2210,6 +2280,7 @@ static const struct ocelot_ops vsc9959_ops = {
+ 	.psfp_filter_del	= vsc9959_psfp_filter_del,
+ 	.psfp_stats_get		= vsc9959_psfp_stats_get,
+ 	.cut_through_fwd	= vsc9959_cut_through_fwd,
++	.tas_clock_adjust	= vsc9959_tas_clock_adjust,
+ };
+ 
+ static const struct felix_info felix_info_vsc9959 = {
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 8da7e25a47c9..d4649e4ee0e7 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -3367,6 +3367,7 @@ int ocelot_init(struct ocelot *ocelot)
+ 	mutex_init(&ocelot->ptp_lock);
+ 	mutex_init(&ocelot->mact_lock);
+ 	mutex_init(&ocelot->fwd_domain_lock);
++	mutex_init(&ocelot->tas_lock);
+ 	spin_lock_init(&ocelot->ptp_clock_lock);
+ 	spin_lock_init(&ocelot->ts_id_lock);
+ 	snprintf(queue_name, sizeof(queue_name), "%s-stats",
+diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.c b/drivers/net/ethernet/mscc/ocelot_ptp.c
+index 87ad2137ba06..522fdc38d4d0 100644
+--- a/drivers/net/ethernet/mscc/ocelot_ptp.c
++++ b/drivers/net/ethernet/mscc/ocelot_ptp.c
+@@ -72,15 +72,19 @@ int ocelot_ptp_settime64(struct ptp_clock_info *ptp,
+ 	ocelot_write_rix(ocelot, val, PTP_PIN_CFG, TOD_ACC_PIN);
+ 
+ 	spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
++
++	if (ocelot->ops->tas_clock_adjust)
++		ocelot->ops->tas_clock_adjust(ocelot);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(ocelot_ptp_settime64);
+ 
+ int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ {
++	struct ocelot *ocelot = container_of(ptp, struct ocelot, ptp_info);
++
+ 	if (delta > -(NSEC_PER_SEC / 2) && delta < (NSEC_PER_SEC / 2)) {
+-		struct ocelot *ocelot = container_of(ptp, struct ocelot,
+-						     ptp_info);
+ 		unsigned long flags;
+ 		u32 val;
+ 
+@@ -117,6 +121,10 @@ int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 
+ 		ocelot_ptp_settime64(ptp, &ts);
+ 	}
++
++	if (ocelot->ops->tas_clock_adjust)
++		ocelot->ops->tas_clock_adjust(ocelot);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(ocelot_ptp_adjtime);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 5f88385a7748..3737570116c3 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -575,6 +575,7 @@ struct ocelot_ops {
+ 	int (*psfp_stats_get)(struct ocelot *ocelot, struct flow_cls_offload *f,
+ 			      struct flow_stats *stats);
+ 	void (*cut_through_fwd)(struct ocelot *ocelot);
++	void (*tas_clock_adjust)(struct ocelot *ocelot);
+ };
+ 
+ struct ocelot_vcap_policer {
+@@ -691,6 +692,9 @@ struct ocelot_port {
+ 	int				bridge_num;
+ 
+ 	int				speed;
++
++	/* Store the AdminBaseTime of EST fetched from userspace. */
++	s64				base_time;
+ };
+ 
+ struct ocelot {
+@@ -757,6 +761,9 @@ struct ocelot {
+ 	/* Lock for serializing forwarding domain changes */
+ 	struct mutex			fwd_domain_lock;
+ 
++	/* Lock for serializing Time-Aware Shaper changes */
++	struct mutex			tas_lock;
++
+ 	struct workqueue_struct		*owq;
+ 
+ 	u8				ptp:1;
+-- 
+2.17.1
 
