@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B001C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35454C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:50:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376359AbiFPIt7 (ORCPT
+        id S1347065AbiFPIuC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
+        Thu, 16 Jun 2022 04:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376283AbiFPIsr (ORCPT
+        with ESMTP id S1376392AbiFPIsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:48:47 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CDD15705;
-        Thu, 16 Jun 2022 01:47:42 -0700 (PDT)
+        Thu, 16 Jun 2022 04:48:54 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6035A5DE4A;
+        Thu, 16 Jun 2022 01:47:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655369262; x=1686905262;
+  t=1655369268; x=1686905268;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=IKjbYcydGhUQOtO5VnHy7aAu+jLJsu2LqXV0XPrI8+M=;
-  b=UhUIz0bj+7pY7qY4tlLJlE0hP5ByrHMA//lR3Kg3Ty8zBbQzouplfuLc
-   M6FLBZ2r4/Q86hy3JUq+TW34W1dfN+b+uRm6wuv6EC9FUqZNYBHYgwmi4
-   WjWp5G9zqoXZIl3dVUN5p6GovVanBcO2JLfMejx31W0XlSTHvCUBGW0X9
-   bJdRsp5wnzT8K3hKAYyyeBUU9Zm2GWZU3I+LzGi2qQ7rbUwggxZZqqzf3
-   NzXBpNnZ1ZkbqgQgSv4bNAEG6KgHNbMAp992+IjWygSddr7HOwq1Hx2NK
-   2ZVfERhB6gyJstaC7wolTVVkAKKE0gcAfJYx5ARTEbwRfxvmfoefqyFNB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664550"
+  bh=Ztaj5gfZsCYVHfksYf+7zuhCQauSNN6mu9/n9Y3T3iQ=;
+  b=Vj7pxj1McicP+r4f+895P/n+IAYgV2c4Ah3Q7aTrFQYXMaXdpvXUb+D2
+   OYyAjYyiP3/nfNQClYqOGDet9DUZ7prPe4pkoJbauMYOIwBUhTkBnR1R6
+   eie8JnYyKR0RsQZwDIC38mS4iYsdm3IosDoojMKwK2HZ5N46AgBCR3WqS
+   1lkI+J5xw69U8KnToBdJyPQiKQIkwcZCXfpsKQUJ3Cj3Rp6asFI4P3ZGB
+   CaeTMNLP/za+5tNIFlvp1HKZDJqxyiVLKoTJZaBARXr7csFe6hbvKWW1u
+   rY9F5DrcclI/UfIz79PCD76Jesyol5UqseP1WNDNRpjNwdNmjEusP5UJq
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259055234"
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="259664550"
+   d="scan'208";a="259055234"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:42 -0700
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="613083128"
+   d="scan'208";a="613083178"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         rick.p.edgecombe@intel.com
-Cc:     weijiang.yang@intel.com, Yu-cheng Yu <yu-cheng.yu@intel.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 01/19] x86/cet/shstk: Add Kconfig option for Shadow Stack
-Date:   Thu, 16 Jun 2022 04:46:25 -0400
-Message-Id: <20220616084643.19564-2-weijiang.yang@intel.com>
+Cc:     weijiang.yang@intel.com, Zhang Yi Z <yi.z.zhang@linux.intel.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>
+Subject: [PATCH 17/19] KVM: VMX: Pass through CET MSRs to the guest when supported
+Date:   Thu, 16 Jun 2022 04:46:41 -0400
+Message-Id: <20220616084643.19564-18-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220616084643.19564-1-weijiang.yang@intel.com>
 References: <20220616084643.19564-1-weijiang.yang@intel.com>
@@ -56,81 +56,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu-cheng Yu <yu-cheng.yu@intel.com>
+Pass through CET user mode MSRs when the associated CET component
+is enabled to improve guest performance.  All CET MSRs are context
+switched, either via dedicated VMCS fields or XSAVES.
 
-Shadow Stack provides protection against function return address
-corruption. It is active when the processor supports it, the kernel has
-CONFIG_X86_SHADOW_STACK enabled, and the application is built for the
-feature. This is only implemented for the 64-bit kernel. When it is
-enabled, legacy non-Shadow Stack applications continue to work, but without
-protection.
-
-Signed-off-by: Yu-cheng Yu <yu-cheng.yu@intel.com>
-Co-developed-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
-Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+Co-developed-by: Zhang Yi Z <yi.z.zhang@linux.intel.com>
+Signed-off-by: Zhang Yi Z <yi.z.zhang@linux.intel.com>
+Co-developed-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-Cc: Kees Cook <keescook@chromium.org>
-
 ---
-v2:
- - Remove already wrong kernel size increase info (tlgx)
- - Change prompt to remove "Intel" (tglx)
- - Update line about what CPUs are supported (Dave)
+ arch/x86/kvm/vmx/vmx.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-Yu-cheng v25:
- - Remove X86_CET and use X86_SHADOW_STACK directly.
-
-Yu-cheng v24:
- - Update for the splitting X86_CET to X86_SHADOW_STACK and X86_IBT.
-
- arch/x86/Kconfig           | 17 +++++++++++++++++
- arch/x86/Kconfig.assembler |  1 +
- 2 files changed, 18 insertions(+)
-
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 9783ebc4e021..79c6b0490350 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -26,6 +26,7 @@ config X86_64
- 	depends on 64BIT
- 	# Options that are inherently 64-bit kernel only:
- 	select ARCH_HAS_GIGANTIC_PAGE
-+	select ARCH_HAS_SHADOW_STACK
- 	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
- 	select ARCH_USE_CMPXCHG_LOCKREF
- 	select HAVE_ARCH_SOFT_DIRTY
-@@ -1969,6 +1970,22 @@ config X86_SGX
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 4bdede87669a..9aebd67ff03e 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -583,6 +583,9 @@ static bool is_valid_passthrough_msr(u32 msr)
+ 	case MSR_LBR_CORE_TO ... MSR_LBR_CORE_TO + 8:
+ 		/* LBR MSRs. These are handled in vmx_update_intercept_for_lbr_msrs() */
+ 		return true;
++	case MSR_IA32_U_CET:
++	case MSR_IA32_PL3_SSP:
++		return true;
+ 	}
  
- 	  If unsure, say N.
+ 	r = possible_passthrough_msr_slot(msr) != -ENOENT;
+@@ -7595,6 +7598,23 @@ static void update_intel_pt_cfg(struct kvm_vcpu *vcpu)
+ 		vmx->pt_desc.ctl_bitmask &= ~(0xfULL << (32 + i * 4));
+ }
  
-+config ARCH_HAS_SHADOW_STACK
-+	def_bool n
++static bool is_cet_state_supported(struct kvm_vcpu *vcpu, u32 xss_state)
++{
++	return (kvm_caps.supported_xss & xss_state) &&
++	       (guest_cpuid_has(vcpu, X86_FEATURE_SHSTK) ||
++		guest_cpuid_has(vcpu, X86_FEATURE_IBT));
++}
 +
-+config X86_SHADOW_STACK
-+	prompt "X86 Shadow Stack"
-+	def_bool n
-+	depends on ARCH_HAS_SHADOW_STACK
-+	help
-+	  Shadow Stack protection is a hardware feature that detects function
-+	  return address corruption. Today the kernel's support is limited to
-+	  virtualizing it in KVM guests.
++static void vmx_update_intercept_for_cet_msr(struct kvm_vcpu *vcpu)
++{
++	bool incpt = !is_cet_state_supported(vcpu, XFEATURE_MASK_CET_USER);
 +
-+	  CPUs supporting shadow stacks were first released in 2020.
++	vmx_set_intercept_for_msr(vcpu, MSR_IA32_U_CET, MSR_TYPE_RW, incpt);
 +
-+	  If unsure, say N.
++	incpt |= !guest_cpuid_has(vcpu, X86_FEATURE_SHSTK);
++	vmx_set_intercept_for_msr(vcpu, MSR_IA32_PL3_SSP, MSR_TYPE_RW, incpt);
++}
 +
- config EFI
- 	bool "EFI runtime service support"
- 	depends on ACPI
-diff --git a/arch/x86/Kconfig.assembler b/arch/x86/Kconfig.assembler
-index 26b8c08e2fc4..41428391e475 100644
---- a/arch/x86/Kconfig.assembler
-+++ b/arch/x86/Kconfig.assembler
-@@ -19,3 +19,4 @@ config AS_TPAUSE
- 	def_bool $(as-instr,tpause %ecx)
- 	help
- 	  Supported by binutils >= 2.31.1 and LLVM integrated assembler >= V7
+ static void vmx_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+@@ -7657,6 +7677,9 @@ static void vmx_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 
+ 	/* Refresh #PF interception to account for MAXPHYADDR changes. */
+ 	vmx_update_exception_bitmap(vcpu);
 +
++	if (kvm_cet_user_supported())
++		vmx_update_intercept_for_cet_msr(vcpu);
+ }
+ 
+ static __init void vmx_set_cpu_caps(void)
 -- 
 2.27.0
 
