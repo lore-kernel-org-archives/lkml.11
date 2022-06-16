@@ -2,226 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DFCCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E136C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359449AbiFPHmG (ORCPT
+        id S1350811AbiFPHmX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 03:42:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34098 "EHLO
+        Thu, 16 Jun 2022 03:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359264AbiFPHmE (ORCPT
+        with ESMTP id S1359264AbiFPHmT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 03:42:04 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55535D1A5
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 00:42:02 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id p8so957663oip.8
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 00:42:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=K1qaur0XpbMxeFbDS5W87YOBUiUaAflQIADLDQn7Ujs=;
-        b=m8Gps9LsbxAYdtCBGKNo2enla/9DKTViETZQMmsW8myE1vng5QgQ/gHEUDoqu8pINF
-         j2znEdpDVeJjQTBmg7n+22gbjzHnPGB1tBxwont1Np8/Kmk1GuKWEEa3Af/ha8PXADZm
-         iz95PcviZ/d4/dOo3iDtd3YbIXumoCuMr4XFI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=K1qaur0XpbMxeFbDS5W87YOBUiUaAflQIADLDQn7Ujs=;
-        b=eUT4hm+6BuMJii3icx+PfMSUzyzBmhWvwqTvK62YLfItQSB6PwYwbQCCp7iNN+/2aG
-         kjvw5yZhXKBQp/wJP69SWDuYLQoIrzyR/WXc3JDOjUcZUZDfoKg4+8pVJ1Hzk+QdhOy1
-         i6rAHxaNFmnnAGj1VsFRPekXFT4jRF2UEnUbdXvoh5tQIldy4vjkG+PG1ZSmZ0DwQQk8
-         izu5poJvgQMm3+MFTBXf3YiPHXQZMPmpxoH4KAUivyz9LVuNwUgY3iakbDHIit5er+TF
-         TKp2r7o8u9u5n14Qi/A+evMLc7H/75W7cqQ30DvPGyCpEwyDm7EKvXTs9NK4rWQX1YKQ
-         AMsg==
-X-Gm-Message-State: AJIora87bV2fp2NN97D1BKjiEifYUzO5P633g80yIeKiOQnP9YHmhBkp
-        3MR/wAbHEwKCDR+8kBgrzVnAVGa9AgJCJuw+LYmGvg==
-X-Google-Smtp-Source: AGRyM1s9MtjEOO5rLMeoWiFwOBdRlYnoeT78XqlzfIUIJenUnulANnCxO4vINozshjIORVaM6OXEEOonvijl0t9yjF8=
-X-Received: by 2002:a05:6808:e87:b0:32e:4789:d2c with SMTP id
- k7-20020a0568080e8700b0032e47890d2cmr1789833oil.193.1655365322078; Thu, 16
- Jun 2022 00:42:02 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 16 Jun 2022 00:42:01 -0700
+        Thu, 16 Jun 2022 03:42:19 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 680BA5D194;
+        Thu, 16 Jun 2022 00:42:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655365338; x=1686901338;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=QVIx4qVuVd8wCYaFS31911D6k3+63SEBMiaY928x8UE=;
+  b=JmSgkhxTmNCHG8xCvnHnhpAtOycJEJyIq9R33hlZedO144uE4lHyqKVK
+   43VXvY2N2PQ1GLdZWFDTfLDqfnZt1hB6kStdCVvwfPSsRUHfPv3Gm+YkS
+   ApdzIrTK3Pyz81CCRSm/7BaWTf/AYmsTVffOgmsTkcvFw8TmBTkFi1Vio
+   VOQVKtP/PYdGHMy5s9qjmEEvsclhEMJX8Gn/YIR+gqYediJ0AgwLD5YQ2
+   p7t8FB9rDypX/oJLlji/BhYal0Ph/35cAkvCXYa/GSj+kMmfTPcQWaFc+
+   gn87SBlTJ9VAOIn53SgwkovD2c78MXJoaOJM1OQ5SD/3DaEqsW/SlETNP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="279905787"
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
+   d="scan'208";a="279905787"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 00:42:10 -0700
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
+   d="scan'208";a="641418725"
+Received: from yxiao-mobl1.ccr.corp.intel.com (HELO jiezho4x-mobl1.ccr.corp.intel.com) ([10.255.28.222])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 00:42:06 -0700
+From:   Jie2x Zhou <jie2x.zhou@intel.com>
+To:     jie2x.zhou@intel.com, shuah@kernel.org, pablo@netfilter.org,
+        sbrivio@redhat.com, liuhangbin@gmail.com, fw@strlen.de
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Philip Li <philip.li@intel.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] selftests: netfilter: correct PKTGEN_SCRIPT_PATHS in nft_concat_range.sh
+Date:   Thu, 16 Jun 2022 15:40:46 +0800
+Message-Id: <20220616074046.49349-1-jie2x.zhou@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20220615172129.1314056-5-pmalani@chromium.org>
-References: <20220615172129.1314056-1-pmalani@chromium.org> <20220615172129.1314056-5-pmalani@chromium.org>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Thu, 16 Jun 2022 00:42:01 -0700
-Message-ID: <CAE-0n53ub30HXB325wPoMB4C3n4j_9FWnNu5AmtYgU3PBvs8mQ@mail.gmail.com>
-Subject: Re: [PATCH v4 4/7] dt-bindings: drm/bridge: anx7625: Add mode-switch support
-To:     Prashant Malani <pmalani@chromium.org>,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, heikki.krogerus@linux.intel.com,
-        =?UTF-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4gUHJhZG8=?= 
-        <nfraprado@collabora.com>, Andrzej Hajda <andrzej.hajda@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Prashant Malani (2022-06-15 10:20:20)
->
->  .../display/bridge/analogix,anx7625.yaml      | 64 +++++++++++++++++++
->  1 file changed, 64 insertions(+)
+Before change:
+make -C netfilter
+ TEST: performance
+   net,port                                                      [SKIP]
+   perf not supported
+   port,net                                                      [SKIP]
+   perf not supported
+   net6,port                                                     [SKIP]
+   perf not supported
+   port,proto                                                    [SKIP]
+   perf not supported
+   net6,port,mac                                                 [SKIP]
+   perf not supported
+   net6,port,mac,proto                                           [SKIP]
+   perf not supported
+   net,mac                                                       [SKIP]
+   perf not supported
 
-Can this file get a link to the product brief[1]? It helps to quickly
-find the block diagram.
+After change:
+   net,mac                                                       [ OK ]
+     baseline (drop from netdev hook):               2061098pps
+     baseline hash (non-ranged entries):             1606741pps
+     baseline rbtree (match on first field only):    1191607pps
+     set with  1000 full, ranged entries:            1639119pps
+ok 8 selftests: netfilter: nft_concat_range.sh
 
->
-> diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-> index 35a48515836e..bc6f7644db31 100644
-> --- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-> +++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-> @@ -105,6 +105,34 @@ properties:
->        - port@0
->        - port@1
->
-> +  switches:
-> +    type: object
-> +    description: Set of switches controlling DisplayPort traffic on
-> +      outgoing RX/TX lanes to Type C ports.
-> +    additionalProperties: false
-> +
-> +    properties:
-> +      '#address-cells':
-> +        const: 1
-> +
-> +      '#size-cells':
-> +        const: 0
-> +
-> +    patternProperties:
-> +      '^switch@[01]$':
-> +        $ref: /schemas/usb/typec-switch.yaml#
-> +        unevaluatedProperties: false
-> +
-> +        properties:
-> +          reg:
-> +            maxItems: 1
-> +
-> +        required:
-> +          - reg
-> +
-> +    required:
-> +      - switch@0
-> +
->  required:
->    - compatible
->    - reg
-> @@ -167,5 +195,41 @@ examples:
->                      };
->                  };
->              };
-> +            switches {
+Fixes: 611973c1e06f ("selftests: netfilter: Introduce tests for sets with range concatenation")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
+---
+ tools/testing/selftests/netfilter/nft_concat_range.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Is "switches" a bus?
+diff --git a/tools/testing/selftests/netfilter/nft_concat_range.sh b/tools/testing/selftests/netfilter/nft_concat_range.sh
+index b35010cc7f6a..a6991877e50c 100755
+--- a/tools/testing/selftests/netfilter/nft_concat_range.sh
++++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
+@@ -31,7 +31,7 @@ BUGS="flush_remove_add reload"
+ 
+ # List of possible paths to pktgen script from kernel tree for performance tests
+ PKTGEN_SCRIPT_PATHS="
+-	../../../samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
++	../../../../samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
+ 	pktgen/pktgen_bench_xmit_mode_netif_receive.sh"
+ 
+ # Definition of set types:
+-- 
+2.34.1
 
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                switch@0 {
-> +                    compatible = "typec-switch";
-
-Is this compatible matched against a driver that's populated on this
-"switches" bus?
-
-> +                    reg = <0>;
-> +                    mode-switch;
-> +
-> +                    ports {
-> +                        #address-cells = <1>;
-> +                        #size-cells = <0>;
-> +                        port@0 {
-> +                            reg = <0>;
-> +                            anx_typec0: endpoint {
-> +                                remote-endpoint = <&typec_port0>;
-> +                            };
-> +                        };
-> +                    };
-
-I was expecting to see these simply be more ports in the existing graph
-binding of this device, and then have the 'mode-switch' or
-'orientation-switch' properties be at the same level as the compatible
-string "analogix,anx7625". Here's the reasoning, based on looking at the
-product brief and the existing binding/implementation.
-
-Looking at the only existing implementation of this binding upstream in
-mt8183-kukui-jacuzzi.dtsi it looks like one of these typec ports is
-actually the same physically as the 'anx7625_out' endpoint (reg address
-of 1) that is already defined in the binding. It seems that MIPI DSI/DPI
-comes in and is output through 2 lanes, SSRX2 and SSTX2 according to the
-product brief[1], and that is connected to some eDP panel
-("auo,b116xw03"). Presumably that is the same as anx_typec1 in this
-patch? I suspect the USB3.1 input is not connected on this board, and
-thus the crosspoint switch is never used, nor the SSRX1/SSTX1 pins.
-
-The existing binding defines the MIPI DSI/DPI input as port0 and two of
-the four lanes of output that is probably by default connected to the
-"DisplayPort Transmitter" as port1 because that's how the crosspoint
-switch comes out of reset. That leaves the USB3.1 input possibly needing
-a port in the ports binding, and the other two lanes of output needing a
-port in the ports binding to describe their connection to the downstream
-device. And finally information about if the crosspoint switch needs to
-be registered with the typec framework to do typec things, which can be
-achieved by the presence of the 'mode-switch' property.
-
-On a board like kukui-jacuzzi these new properties and ports wouldn't be
-specified, because what is there is already sufficient. If this chip is
-connected to a usb-c-connector then I'd expect to see a connection from
-the output ports in the graph binding to the connector node's ports.
-There aren't any ports in the usb-c-connector binding though from what I
-see.
-
-I believe there's also one more use case here where USB3.1 or MIPI
-DSI/DPI is connected on the input side and this device is used to steer
-USB3.1 or DP through the crosspoint switch to either of the two output
-pairs. This last scenario means that we have to describe both output
-pairs, SSRX1/SSTX1 and SSRX2/SSTX2, as different ports in the binding so
-they can be connected to different usb-c-connectors if the hardware
-engineer wired the output pins that way.
-
-TL;DR: Can we add 'mode-switch' as an optional property and two more
-ports at address 2 and 3 for the USB3.1 input and the SSRX1/SSTX1 pair
-respectively to the existing graph part of this binding?
-
-> +                };
-> +                switch@1 {
-> +                    compatible = "typec-switch";
-> +                    reg = <1>;
-> +                    mode-switch;
-> +
-> +                    ports {
-> +                        #address-cells = <1>;
-> +                        #size-cells = <0>;
-> +                        port@0 {
-> +                            reg = <0>;
-> +                            anx_typec1: endpoint {
-> +                                remote-endpoint = <&typec_port1>;
-> +                            };
-> +                        };
-> +                    };
-> +                };
-> +            };
->          };
-
-[1] https://www.analogix.com/en/system/files/AA-002291-PB-6-ANX7625_ProductBrief.pdf
