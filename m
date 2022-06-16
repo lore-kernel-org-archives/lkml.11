@@ -2,88 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A31ECCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 19:37:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9239C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 19:38:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378426AbiFPThw (ORCPT
+        id S1378436AbiFPTis (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 15:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
+        Thu, 16 Jun 2022 15:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229953AbiFPThu (ORCPT
+        with ESMTP id S1378419AbiFPTir (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 15:37:50 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302482AE0C;
-        Thu, 16 Jun 2022 12:37:49 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id CB3D91FA18;
-        Thu, 16 Jun 2022 19:37:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655408267;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=01cTbq+h2IymvC6NFpX7j8ot9JunhL9DOIgBhtE7F/E=;
-        b=GDIZffdGZrX5o0krQOrtj4OUp10k/hQCM37Djc+JDSuvelmZUJ4YephnohAHdfGoipZRJZ
-        rEqzvSaAuWrwG5xkmRTguREKS99v5d3LnaeEEm7nkdY7x49U3srTo9sN5WZRTKs6SE9OwP
-        7bkOWe3qy5CioDKUdz4xA/6Dbr8O47E=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655408267;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=01cTbq+h2IymvC6NFpX7j8ot9JunhL9DOIgBhtE7F/E=;
-        b=pzsyo1OikFK8hUze6rvrAHBEQyH2R20Gx7YjN7C8sqWLkJLQPJDhfHQwXEj/jKhTZXOMsK
-        H2aAQCsclwmiaaDA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 97F131344E;
-        Thu, 16 Jun 2022 19:37:47 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id cZr1I4uGq2LpFwAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Thu, 16 Jun 2022 19:37:47 +0000
-Date:   Thu, 16 Jun 2022 21:33:13 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Ioannis Angelakopoulos <iangelak@fb.com>, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] btrfs: Fix 64-bit divisions in btrfs_commit_stats_show()
- on 32-bit
-Message-ID: <20220616193313.GE20633@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Ioannis Angelakopoulos <iangelak@fb.com>, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220616080814.1805417-1-geert@linux-m68k.org>
+        Thu, 16 Jun 2022 15:38:47 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D91957159;
+        Thu, 16 Jun 2022 12:38:47 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id e9so2205287pju.5;
+        Thu, 16 Jun 2022 12:38:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3mANjjY0moGxiXZnHLX+UHOhvERe+q5moP+dgBuCZ9M=;
+        b=F9CvRl3u0bPQkegn8gRDzTFpWVRsfPRpQInrBIe0BVAlITR/VWYRRA4RaFrE1lJ1BN
+         QxOPr5FPEK7ztGZKRsasgt/szMabvzttgNQVb6YRE/J+GWn8Stg4Vse23xGOe+nL0Vi+
+         oiTdkNApvaHhAmQdM+bRBQxjIvFtyNw8XoGkJ3auyWS3Je5pWqzGomJkA9LODLwhvxtC
+         lgo3KyUHcvXBM8/Ac5BQIq8v9JKGO45rDaVaEWSRRimbJP0SbQaCElw22ENg/zyshET3
+         +xY//2BI38BXicqIzmJGJGA2wyWUMOYoi858u/xLbGZkFFq3N1UYF+2HDkHv+i3CUNjp
+         AFUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=3mANjjY0moGxiXZnHLX+UHOhvERe+q5moP+dgBuCZ9M=;
+        b=oTXBPCCPqpyfjO+jOAFbgFaPE+OUtMYhPNjFUrgocOf2vMQqzLCU4LGLfv87Sn4ttv
+         wctLIqHQdh/N2gpjZc1IBPleTdF0ytJh2TOgo95SsK+su3O70A4g5pkZKMVRQpFZPapi
+         qjMsAAilgtL1mZuyRZEk54tpMJtjx67IswF185XwkAaNhEiXiCgqL6KyJJ6oFZqlgORS
+         Ogxusm7LvWP1vXAWdmFP/3PkLP5lDumGTddaJ0LypEJKatOiM9gZAUlR/0aTYV8ZTfPb
+         /S2Xlli8v3J4ZcHixNzUAHhYLz3Zq0MfOmrwA9vlalV9cSmgNgTnrYgSCtoz5TvwBu2/
+         y3gw==
+X-Gm-Message-State: AJIora+TVWPK+AqDL4PPUidmmu7yniakuL5Ncg5MD2nnOsQWImCtGemm
+        JeOrSqBULZAR/SK3nThVGsQ=
+X-Google-Smtp-Source: AGRyM1sK5DS6R3nuQSXiuNFAv5tzrx8Y+NYiYuVnj2DYE5e2vGjO1uAj8Df9AuNCkIKdsfJrOS9lHA==
+X-Received: by 2002:a17:902:ea03:b0:166:ab55:d7ee with SMTP id s3-20020a170902ea0300b00166ab55d7eemr5940058plg.103.1655408326629;
+        Thu, 16 Jun 2022 12:38:46 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:330c])
+        by smtp.gmail.com with ESMTPSA id s2-20020a17090302c200b00163fa4b7c12sm1882140plk.34.2022.06.16.12.38.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 12:38:46 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 16 Jun 2022 09:38:44 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Mukesh Ojha <quic_mojha@quicinc.com>
+Cc:     paulmck@kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        cgroups@vger.kernel.org, brauner@kernel.org, hannes@cmpxchg.org,
+        shisiyuan <shisiyuan19870131@gmail.com>,
+        Li Zefan <lizefan@huawei.com>,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+Subject: Re: [PATCH cgroup/for-5.19-fixes] cgroup: Use separate src/dst nodes
+ when preloading css_sets for migration
+Message-ID: <YquGxN1IWLegNyh6@slm.duckdns.org>
+References: <549de740-1356-7ad2-3ee5-c52bc355fd99@quicinc.com>
+ <Yh+RGIJ0f3nrqIiN@slm.duckdns.org>
+ <8d21e655-4ce9-c7b3-2010-e484161bdbe9@quicinc.com>
+ <20220516203417.GY1790663@paulmck-ThinkPad-P17-Gen-1>
+ <9a93cf2d-0efe-5a46-dcd5-7dcd8f173188@quicinc.com>
+ <Yqe4BjMZRohur3UM@slm.duckdns.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220616080814.1805417-1-geert@linux-m68k.org>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <Yqe4BjMZRohur3UM@slm.duckdns.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 10:08:14AM +0200, Geert Uytterhoeven wrote:
-> On 32-bit (e.g. m68k):
-> 
->     ERROR: modpost: "__udivdi3" [fs/btrfs/btrfs.ko] undefined!
-> 
-> Fix this by using div_u64() instead.
-> 
-> Reported-by: noreply@ellerman.id.au
-> Fixes: e665ec2ab6e1ae36 ("btrfs: Expose the BTRFS commit stats through sysfs")
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+On Mon, Jun 13, 2022 at 12:19:50PM -1000, Tejun Heo wrote:
+> Each cset (css_set) is pinned by its tasks. When we're moving tasks around
+> across csets for a migration, we need to hold the source and destination
+> csets to ensure that they don't go away while we're moving tasks about. This
+> is done by linking cset->mg_preload_node on either the
+> mgctx->preloaded_dst_csets or mgctx->preloaded_dst_csets list. Using the
+> same cset->mg_preload_node for both the src and dst lists was deemed okay as
+> a cset can't be both the source and destination at the same time.
 
-Folded to the patch, thanks.
+Applied to cgroup/for-5.19-fixes w/ patch description fixed.
+
+Thanks.
+
+-- 
+tejun
