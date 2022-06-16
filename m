@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3795CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B34BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359414AbiFPGyU (ORCPT
+        id S1359342AbiFPGyW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 02:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
+        Thu, 16 Jun 2022 02:54:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359264AbiFPGxs (ORCPT
+        with ESMTP id S1358733AbiFPGxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 02:53:48 -0400
+        Thu, 16 Jun 2022 02:53:54 -0400
 Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 372C15BD17
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:53:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EBBD459080
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:53:36 -0700 (PDT)
 X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
         LIVER,40,3)
 Received: from 172.28.114.216
         by mx1.cqplus1.com with MailGates ESMTP Server V5.0(23338:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Thu, 16 Jun 2022 14:42:36 +0800 (CST)
+        (envelope-from <qinjian@cqplus1.com>); Thu, 16 Jun 2022 14:42:34 +0800 (CST)
 From:   Qin Jian <qinjian@cqplus1.com>
 To:     sboyd@kernel.org
 Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
@@ -28,10 +28,11 @@ Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
         olof@lixom.net, soc@kernel.org,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        Qin Jian <qinjian@cqplus1.com>
-Subject: [PATCH v19 09/11] ARM: sunplus: Add initial support for Sunplus SP7021 SoC
-Date:   Thu, 16 Jun 2022 14:42:25 +0800
-Message-Id: <e1d1878affe709c1ef42794dec77d0f79009bb59.1655360818.git.qinjian@cqplus1.com>
+        Qin Jian <qinjian@cqplus1.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v19 02/11] dt-bindings: reset: Add bindings for SP7021 reset driver
+Date:   Thu, 16 Jun 2022 14:42:18 +0800
+Message-Id: <c1113098f3f3f4872f8d10c93a3ed89f46724ddc.1655360818.git.qinjian@cqplus1.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1655360818.git.qinjian@cqplus1.com>
 References: <cover.1655360818.git.qinjian@cqplus1.com>
@@ -41,128 +42,169 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch aims to add an initial support for Sunplus SP7021 SoC.
+Add documentation to describe Sunplus SP7021 reset driver bindings.
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Qin Jian <qinjian@cqplus1.com>
 ---
- MAINTAINERS                    |  1 +
- arch/arm/Kconfig               |  2 ++
- arch/arm/Makefile              |  1 +
- arch/arm/mach-sunplus/Kconfig  | 27 +++++++++++++++++++++++++++
- arch/arm/mach-sunplus/Makefile |  8 ++++++++
- arch/arm/mach-sunplus/sp7021.c | 16 ++++++++++++++++
- 6 files changed, 55 insertions(+)
- create mode 100644 arch/arm/mach-sunplus/Kconfig
- create mode 100644 arch/arm/mach-sunplus/Makefile
- create mode 100644 arch/arm/mach-sunplus/sp7021.c
+ .../bindings/reset/sunplus,reset.yaml         | 38 ++++++++
+ MAINTAINERS                                   |  2 +
+ .../dt-bindings/reset/sunplus,sp7021-reset.h  | 87 +++++++++++++++++++
+ 3 files changed, 127 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+ create mode 100644 include/dt-bindings/reset/sunplus,sp7021-reset.h
 
+diff --git a/Documentation/devicetree/bindings/reset/sunplus,reset.yaml b/Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+new file mode 100644
+index 000000000..f24646ba9
+--- /dev/null
++++ b/Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+@@ -0,0 +1,38 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/reset/sunplus,reset.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Sunplus SoC Reset Controller
++
++maintainers:
++  - Qin Jian <qinjian@cqplus1.com>
++
++properties:
++  compatible:
++    const: sunplus,sp7021-reset
++
++  reg:
++    maxItems: 1
++
++  "#reset-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - "#reset-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    rstc: reset@9c000054 {
++      compatible = "sunplus,sp7021-reset";
++      reg = <0x9c000054 0x28>;
++      #reset-cells = <1>;
++    };
++
++...
 diff --git a/MAINTAINERS b/MAINTAINERS
-index cdbc9eb26..ac2cb50d0 100644
+index 92be76d1f..de125d4f9 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -2831,6 +2831,7 @@ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
- F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
- F:	Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
- F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
-+F:	arch/arm/mach-sunplus/
- F:	drivers/clk/clk-sp7021.c
- F:	drivers/irqchip/irq-sp7021-intc.c
- F:	drivers/reset/reset-sunplus.c
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 7630ba9cb..cb37b1722 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -588,6 +588,8 @@ source "arch/arm/mach-sti/Kconfig"
+@@ -2828,6 +2828,8 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for mon-subscribers)
+ S:	Maintained
+ W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
++F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
++F:	include/dt-bindings/reset/sunplus,sp7021-reset.h
  
- source "arch/arm/mach-stm32/Kconfig"
- 
-+source "arch/arm/mach-sunplus/Kconfig"
-+
- source "arch/arm/mach-sunxi/Kconfig"
- 
- source "arch/arm/mach-tegra/Kconfig"
-diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-index c8e3633f5..56f655dee 100644
---- a/arch/arm/Makefile
-+++ b/arch/arm/Makefile
-@@ -215,6 +215,7 @@ machine-$(CONFIG_ARCH_RENESAS)	 	+= shmobile
- machine-$(CONFIG_ARCH_INTEL_SOCFPGA)	+= socfpga
- machine-$(CONFIG_ARCH_STI)		+= sti
- machine-$(CONFIG_ARCH_STM32)		+= stm32
-+machine-$(CONFIG_ARCH_SUNPLUS)		+= sunplus
- machine-$(CONFIG_ARCH_SUNXI)		+= sunxi
- machine-$(CONFIG_ARCH_TEGRA)		+= tegra
- machine-$(CONFIG_ARCH_U8500)		+= ux500
-diff --git a/arch/arm/mach-sunplus/Kconfig b/arch/arm/mach-sunplus/Kconfig
+ ARM/Synaptics SoC support
+ M:	Jisheng Zhang <jszhang@kernel.org>
+diff --git a/include/dt-bindings/reset/sunplus,sp7021-reset.h b/include/dt-bindings/reset/sunplus,sp7021-reset.h
 new file mode 100644
-index 000000000..926cde5e3
+index 000000000..ab4867073
 --- /dev/null
-+++ b/arch/arm/mach-sunplus/Kconfig
-@@ -0,0 +1,27 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+menuconfig ARCH_SUNPLUS
-+	bool "Sunplus SoCs"
-+	depends on ARCH_MULTI_V7
-+	help
-+	  Support for Sunplus SoC family: SP7021 and succeeding SoC-based systems,
-+	  such as the Banana Pi BPI-F2S development board (and derivatives).
-+	  (<http://www.sinovoip.com.cn/ecp_view.asp?id=586>)
-+	  (<https://tibbo.com/store/plus1.html>)
-+
-+config SOC_SP7021
-+	bool "Sunplus SP7021 SoC support"
-+	depends on ARCH_SUNPLUS
-+	default ARCH_SUNPLUS
-+	select HAVE_ARM_ARCH_TIMER
-+	select ARM_GIC
-+	select ARM_PSCI
-+	select PINCTRL
-+	select PINCTRL_SPPCTL
-+	select SERIAL_SUNPLUS
-+	select SERIAL_SUNPLUS_CONSOLE
-+	help
-+	  Support for Sunplus SP7021 SoC. It is based on ARM 4-core
-+	  Cortex-A7 with various peripherals (e.g.: I2C, SPI, SDIO,
-+	  Ethernet, etc.), FPGA interface,  chip-to-chip bus.
-+	  It is designed for industrial control.
-diff --git a/arch/arm/mach-sunplus/Makefile b/arch/arm/mach-sunplus/Makefile
-new file mode 100644
-index 000000000..d211de6af
---- /dev/null
-+++ b/arch/arm/mach-sunplus/Makefile
-@@ -0,0 +1,8 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for the linux kernel.
-+#
-+
-+# Object file lists.
-+
-+obj-$(CONFIG_SOC_SP7021)	+= sp7021.o
-diff --git a/arch/arm/mach-sunplus/sp7021.c b/arch/arm/mach-sunplus/sp7021.c
-new file mode 100644
-index 000000000..774d0a5bd
---- /dev/null
-+++ b/arch/arm/mach-sunplus/sp7021.c
-@@ -0,0 +1,16 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++++ b/include/dt-bindings/reset/sunplus,sp7021-reset.h
+@@ -0,0 +1,87 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
 +/*
 + * Copyright (C) Sunplus Technology Co., Ltd.
 + *       All rights reserved.
 + */
-+#include <linux/kernel.h>
-+#include <asm/mach/arch.h>
++#ifndef _DT_BINDINGS_RST_SUNPLUS_SP7021_H
++#define _DT_BINDINGS_RST_SUNPLUS_SP7021_H
 +
-+static const char *sp7021_compat[] __initconst = {
-+	"sunplus,sp7021",
-+	NULL
-+};
++#define RST_SYSTEM              0
++#define RST_RTC                 1
++#define RST_IOCTL               2
++#define RST_IOP                 3
++#define RST_OTPRX               4
++#define RST_NOC                 5
++#define RST_BR                  6
++#define RST_RBUS_L00            7
++#define RST_SPIFL               8
++#define RST_SDCTRL0             9
++#define RST_PERI0               10
++#define RST_A926                11
++#define RST_UMCTL2              12
++#define RST_PERI1               13
++#define RST_DDR_PHY0            14
++#define RST_ACHIP               15
++#define RST_STC0                16
++#define RST_STC_AV0             17
++#define RST_STC_AV1             18
++#define RST_STC_AV2             19
++#define RST_UA0                 20
++#define RST_UA1                 21
++#define RST_UA2                 22
++#define RST_UA3                 23
++#define RST_UA4                 24
++#define RST_HWUA                25
++#define RST_DDC0                26
++#define RST_UADMA               27
++#define RST_CBDMA0              28
++#define RST_CBDMA1              29
++#define RST_SPI_COMBO_0         30
++#define RST_SPI_COMBO_1         31
++#define RST_SPI_COMBO_2         32
++#define RST_SPI_COMBO_3         33
++#define RST_AUD                 34
++#define RST_USBC0               35
++#define RST_USBC1               36
++#define RST_UPHY0               37
++#define RST_UPHY1               38
++#define RST_I2CM0               39
++#define RST_I2CM1               40
++#define RST_I2CM2               41
++#define RST_I2CM3               42
++#define RST_PMC                 43
++#define RST_CARD_CTL0           44
++#define RST_CARD_CTL1           45
++#define RST_CARD_CTL4           46
++#define RST_BCH                 47
++#define RST_DDFCH               48
++#define RST_CSIIW0              49
++#define RST_CSIIW1              50
++#define RST_MIPICSI0            51
++#define RST_MIPICSI1            52
++#define RST_HDMI_TX             53
++#define RST_VPOST               54
++#define RST_TGEN                55
++#define RST_DMIX                56
++#define RST_TCON                57
++#define RST_INTERRUPT           58
++#define RST_RGST                59
++#define RST_GPIO                60
++#define RST_RBUS_TOP            61
++#define RST_MAILBOX             62
++#define RST_SPIND               63
++#define RST_I2C2CBUS            64
++#define RST_SEC                 65
++#define RST_DVE                 66
++#define RST_GPOST0              67
++#define RST_OSD0                68
++#define RST_DISP_PWM            69
++#define RST_UADBG               70
++#define RST_DUMMY_MASTER        71
++#define RST_FIO_CTL             72
++#define RST_FPGA                73
++#define RST_L2SW                74
++#define RST_ICM                 75
++#define RST_AXI_GLOBAL          76
 +
-+DT_MACHINE_START(SP7021_DT, "SP7021")
-+	.dt_compat	= sp7021_compat,
-+MACHINE_END
++#endif
 -- 
 2.33.1
 
