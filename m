@@ -2,117 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:56:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3278C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377980AbiFPP4i (ORCPT
+        id S1377816AbiFPP51 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
+        Thu, 16 Jun 2022 11:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235974AbiFPP43 (ORCPT
+        with ESMTP id S233673AbiFPP5Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:56:29 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C19530559;
-        Thu, 16 Jun 2022 08:56:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655394989; x=1686930989;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=vl6QQxwjCAX4+CqE6Wqd7HLf/CcgifYO4slix8mPH74=;
-  b=SfXsXRNLqq/aRYCWuJ1kU9xgGroTHI8U+tavOH2CjNTnls3L5yiYzD31
-   /5rWT2Ni0z3Inw5rruVSScKBIU9+EpoIWjgDC5DBVx/DnXdb1nlUq6uJX
-   iVv8wmwQSdka+3KNnZCCZ8zrHqRRSuYo90/MqxJIjclycvouXzr35+Dyz
-   F+f5ohxXLMSlmlP35krC37A7DC6u9eTViL9h9sqV4kKI1tHebxFHouCxd
-   vHqMFwPvrMNRT01qlIxvdcRTAuLnvbe4quDCchLuoB+m50YdVaJ6qRK70
-   Jc5/y0HB3f3sDhHIvSYy6mCDDSOXmW7U8AqS8F6SZAdKoSisOcbTdI2BW
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="278074937"
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="278074937"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 08:56:29 -0700
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="675079729"
-Received: from yangweij-mobl.ccr.corp.intel.com (HELO [10.255.30.124]) ([10.255.30.124])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 08:56:26 -0700
-Message-ID: <8d104ff6-5f31-5388-90f9-7dd6474440c9@intel.com>
-Date:   Thu, 16 Jun 2022 23:56:17 +0800
+        Thu, 16 Jun 2022 11:57:25 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EE72FE71
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:57:24 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id e5so1029161wma.0
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:57:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chrisdown.name; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=x+qCp/PIALvKkyHuuSMxH6g0K4aMNeDFtao/lYcSdV0=;
+        b=eeXvTyGIvYEENE4EBbgxKRwF1N6RXVfsFOj4hRYxgsG4WHIYQ+ilmz4RReG261USM2
+         Jpo+qpjF11Qb7gL/EMJoc3IEJJKeUZq3e81dTO73K+Q96gdPRfldhoCZYgzXdNUCwzPt
+         CKVEsD5kx5cmfXV4+nem+euno/6L+i1owLUKM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=x+qCp/PIALvKkyHuuSMxH6g0K4aMNeDFtao/lYcSdV0=;
+        b=nJkWLvgmxG8eAandLyvnA/iItV2zDUqTYVHOAyf53XvYMCj8NnMlLCmNjUYN2hjuJG
+         SbvsGgcB0vrRPX5lLe9jSmqiCr4YBGIFopFmkz9UKDUcWOZDSvzSFlLrFNIiWCxdu9Jv
+         RB8iAi2xguge7ejH0PxDcRr+B43EyV10w+5WeYVrjps3nRtBfY9fIhp1O7CVOb8jQ8hX
+         2h8KPSLtPm7d5O+40GXre0j3Q0XXS1k+038L6CO0NH5STXKmpQeGkO7Q3bSkJCLi9pLp
+         BHl9foEd1DVFatw7Mmqnek2NOxAmt3szBUtT/PjnyFa7YbOuVcPTcNNjk1ad/YhDU/0w
+         Lo1g==
+X-Gm-Message-State: AJIora+mqzslkIg2IIeeHfprF17gzNPbxMt4NjQi+C7VUwtvXnDXu+t0
+        pOxF4CEdbRd6JmZUVW/HGrJUmUB34bHs8w==
+X-Google-Smtp-Source: AGRyM1viKXSPJjBRIqZFdGDIYYNNfew2vfVZvjdK0FMdXFZK+PXSuSNtORvSK+UxeAhra2kt7RWCvA==
+X-Received: by 2002:a05:600c:35c2:b0:39b:fa1f:4f38 with SMTP id r2-20020a05600c35c200b0039bfa1f4f38mr5766130wmq.22.1655395042858;
+        Thu, 16 Jun 2022 08:57:22 -0700 (PDT)
+Received: from localhost ([2620:10d:c092:400::5:8b4b])
+        by smtp.gmail.com with ESMTPSA id h28-20020adfa4dc000000b0020fff0ea0a3sm2241327wrb.116.2022.06.16.08.57.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 08:57:22 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 16:57:21 +0100
+From:   Chris Down <chris@chrisdown.name>
+To:     linux-kernel@vger.kernel.org
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>, kernel-team@fb.com
+Subject: Re: [RFC PATCH v2] printk: console: Allow each console to have its
+ own loglevel
+Message-ID: <YqtS4W8Pl3YmVEQg@chrisdown.name>
+References: <YoeQLxhDeIk4VSmx@chrisdown.name>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 19/19] KVM: x86: Enable supervisor IBT support for guest
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-References: <20220616084643.19564-1-weijiang.yang@intel.com>
- <20220616084643.19564-20-weijiang.yang@intel.com>
- <YqsRttmgmbthHWVR@worktop.programming.kicks-ass.net>
-From:   "Yang, Weijiang" <weijiang.yang@intel.com>
-In-Reply-To: <YqsRttmgmbthHWVR@worktop.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <YoeQLxhDeIk4VSmx@chrisdown.name>
+User-Agent: Mutt/2.2.6 (2022-06-05)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Just to update on v3: I planned to quickly get it out today but it turns out 
+that there's some work needed to add compatibility for John's threaded console 
+printing patches for 5.19.
 
-On 6/16/2022 7:19 PM, Peter Zijlstra wrote:
-> On Thu, Jun 16, 2022 at 04:46:43AM -0400, Yang Weijiang wrote:
->> Mainline kernel now supports supervisor IBT for kernel code,
->> to make s-IBT work in guest(nested guest), pass through
->> MSR_IA32_S_CET to guest(nested guest) if host kernel and KVM
->> enabled IBT. Note, s-IBT can work independent to host xsaves
->> support because guest MSR_IA32_S_CET can be stored/loaded from
->> specific VMCS field.
->
->> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
->> index fe049d0e5ecc..c0118b33806a 100644
->> --- a/arch/x86/kvm/x86.c
->> +++ b/arch/x86/kvm/x86.c
->> @@ -1463,6 +1463,7 @@ static const u32 msrs_to_save_all[] = {
->>   	MSR_IA32_XFD, MSR_IA32_XFD_ERR,
->>   	MSR_IA32_XSS,
->>   	MSR_IA32_U_CET, MSR_IA32_PL3_SSP, MSR_KVM_GUEST_SSP,
->> +	MSR_IA32_S_CET,
->>   };
->
-> So much like my local kvm/qemu hacks; this patch suffers the problem of
-> not exposing S_SHSTK. What happens if a guest tries to use that?
-With current solution, I think guest kernel will hit #GP while 
-reading/writing PL0_SSP.
->
-> Should we intercept and reject setting those bits or complete this patch
-> and support full S_SHSTK? (with all the warts and horrors that entails)
->
-> I don't think throwing this out in this half-finished state makes much
-> sense (which is why I never much shared my hacks).
-
-You reminded me to think over these cases even I don't have a solution now,
-
-thank you!
-
->
->
->> @@ -11830,7 +11835,13 @@ int kvm_arch_hardware_setup(void *opaque)
->>   	/* Update CET features now as kvm_caps.supported_xss is finalized. */
->>   	if (!kvm_cet_user_supported()) {
->>   		kvm_cpu_cap_clear(X86_FEATURE_SHSTK);
->> -		kvm_cpu_cap_clear(X86_FEATURE_IBT);
->> +		/* If CET user bit is disabled due to cmdline option such as
->> +		 * noxsaves, but kernel IBT is on, this means we can expose
->> +		 * kernel IBT alone to guest since CET user mode msrs are not
->> +		 * passed through to guest.
->> +		 */
-> Invalid multi-line comment style.
-Oops, last minute change messed it up :-(
->
->> +		if (!cet_kernel_ibt_supported())
->> +			kvm_cpu_cap_clear(X86_FEATURE_IBT);
+I'll add support for threaded console printing and send v3 when I'm back from 
+being away at the beginning of July. In the meantime, any further feedback on 
+the general concept is welcome. :-)
