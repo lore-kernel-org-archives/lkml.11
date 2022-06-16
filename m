@@ -2,294 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D13DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 11:26:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46663C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 11:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376826AbiFPL0S (ORCPT
+        id S1376821AbiFPL04 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 07:26:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40978 "EHLO
+        Thu, 16 Jun 2022 07:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376681AbiFPL0H (ORCPT
+        with ESMTP id S1376833AbiFPL0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 07:26:07 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FA885E16B
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 04:26:03 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o1ndK-0004ZU-7z; Thu, 16 Jun 2022 13:25:54 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o1ndH-000rIF-Jw; Thu, 16 Jun 2022 13:25:53 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o1ndI-003gFG-7W; Thu, 16 Jun 2022 13:25:52 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v1 1/1] net: dsa: ar9331: fix potential dead lock on mdio access
-Date:   Thu, 16 Jun 2022 13:25:50 +0200
-Message-Id: <20220616112550.877118-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Thu, 16 Jun 2022 07:26:53 -0400
+Received: from esa.hc3962-90.iphmx.com (esa.hc3962-90.iphmx.com [216.71.142.165])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17E975E763;
+        Thu, 16 Jun 2022 04:26:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qccesdkim1;
+  t=1655378811; x=1655983611;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=e7OiPqa+7RVecTygEgYBCsgfbsWuw5iLwRTNGRV+1W0=;
+  b=p7bzPvb+L8QFR130oQLDnrR703NFRJVtAk9jCf5l6foDC5d1a1RE8VaI
+   43UGIkjTcEORRnc37NftpZ6qplRGxYeQFvUPtOusC/JHJpMnFJyK4WLu8
+   Gsknzh/wl96Bin7Ktjd5XtN/P3Xcw8So4am4/YBNeXYKAVpj6Jds9DH3a
+   o=;
+Received: from mail-mw2nam12lp2040.outbound.protection.outlook.com (HELO NAM12-MW2-obe.outbound.protection.outlook.com) ([104.47.66.40])
+  by ob1.hc3962-90.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 11:26:50 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JaV7HIw0NkJOj7pkcAyiE4rvDk2QeifLlO8ee5fluTprT6/ou102ZYDuKsrKPEjVzSlNsGWf+l4Zr6an55g/84rwycTTnhHljomiWjDl9S2cmcI+rZDHg77oojPXqm39cFUMlEB+z7dlAlvVGmbxEnt39cAwZWaTAXO/wW2gQg0zZUHyoac3jHpWX8aO/w03RIzaiHd8BkKfa8B8+uGa27Zlc+TTcw2FHao2DJ/r73b1agjFCTPhXmEohku6Ji+9cwzYOGRR839TPqHYSUvor6++6/F/3TdUY3cOeXlmlUqemFTH7p6RWo1OfbjRq+JxMFPh9my5PH5SvglYgKNj1A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=e7OiPqa+7RVecTygEgYBCsgfbsWuw5iLwRTNGRV+1W0=;
+ b=j/OchFky8OUx1Wbre1xMeoso1BN7iXi8+rgoLRlfnUUXcHp48ZsQTBC5RkeMaMEmW7BHYybi1KaOtc6Fo6Dn0+jquEo4SHskeKh01ljyMf6I35sKiTfq+ua3you1E+4p4NM3n+Zc9hNMOxHaw8T1juw5b3V2IVowqvAABd2e+L+u4C7JosS3fzDzPa96CLws5yS/qdf+BCxFBMcCnXVCZQ5qnpA11/6sC751+D7azEO+f3IsFgO1UzCmXfzuhiFluJUA3Bag9XXXiij5ckSGEotdNOK4tzOG9/GnUiWWDjMe8ZgZO9PbJYIJWRrytbybRwNNIWC/G5r4r/C/dWAXeg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=quicinc.com; dmarc=pass action=none header.from=quicinc.com;
+ dkim=pass header.d=quicinc.com; arc=none
+Received: from DM6PR02MB5148.namprd02.prod.outlook.com (2603:10b6:5:48::21) by
+ BL0PR02MB4292.namprd02.prod.outlook.com (2603:10b6:208:4b::27) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5332.17; Thu, 16 Jun 2022 11:26:47 +0000
+Received: from DM6PR02MB5148.namprd02.prod.outlook.com
+ ([fe80::44a5:24fa:db60:5900]) by DM6PR02MB5148.namprd02.prod.outlook.com
+ ([fe80::44a5:24fa:db60:5900%6]) with mapi id 15.20.5353.015; Thu, 16 Jun 2022
+ 11:26:47 +0000
+From:   "Dikshita Agarwal (QUIC)" <quic_dikshita@quicinc.com>
+To:     Stephen Boyd <swboyd@chromium.org>,
+        "Dikshita Agarwal (QUIC)" <quic_dikshita@quicinc.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>
+CC:     "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "stanimir.varbanov@linaro.org" <stanimir.varbanov@linaro.org>,
+        "Vikash Garodia (QUIC)" <quic_vgarodia@quicinc.com>
+Subject: RE: [PATCH v2] venus: Add support for SSR trigger using fault
+ injection
+Thread-Topic: [PATCH v2] venus: Add support for SSR trigger using fault
+ injection
+Thread-Index: AQHYgJqN30RVX3txNUygQJcPmes0Eq1RRTAAgAChhcA=
+Date:   Thu, 16 Jun 2022 11:26:47 +0000
+Message-ID: <DM6PR02MB5148DEBF07F2F6C7BF7A1BE0F3AC9@DM6PR02MB5148.namprd02.prod.outlook.com>
+References: <1655285409-19829-1-git-send-email-quic_dikshita@quicinc.com>
+ <CAE-0n53O7gb9C2uPOiHjyDuAZmxMQyUL9MtLoRa-8Lr666PENw@mail.gmail.com>
+In-Reply-To: <CAE-0n53O7gb9C2uPOiHjyDuAZmxMQyUL9MtLoRa-8Lr666PENw@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=quicinc.com;
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d26c7819-6023-446a-456d-08da4f8b19c1
+x-ms-traffictypediagnostic: BL0PR02MB4292:EE_
+x-ld-processed: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d,ExtAddr
+x-microsoft-antispam-prvs: <BL0PR02MB4292C8B9FF8482CEFD3AA6378FAC9@BL0PR02MB4292.namprd02.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 4JnBuwRF6u/n6BWYLkF3fdV21XDR8JEcnN/hVIiTP9dQJ7l/zT8uPx6GJz5fbFVJT0ELCy/8o/2lpYNG1gnb4b3TejJdFw8yRVMeSGtUKIlHzuEJPUPasdulhdrM3QY1wIDlAgGewM5TJpRix3EqNxYEHuS8xpFcOCKkgHao4uGzxXdORcg6RBgOGEH/PfNYBaFYDVJGM2sdvBlRG7gOeACyuaA5wyem5qUuX/geMEgEJaDOS+eTKkR76l4gm6y3KpUJu17ShCCecOJ/eN3hzOg8yQNdsbt7hl3EPowKhFzzCz82v2UMGKBLEPIcCOTRh+cbcxEvr2orL26XfDZGM9uaXrh6QzaZFb5R3nRZgIbKzi8V8fvT2n2rN4lsNwUUJ+hT+e3uS9gl4+ZaUj8pHLbyv7AMFXwUs6ZA+IFXYHZylgnBSWnM2oCb9Xua8hoRV2uO8RhxbXlRct5gIY5v1Fpif05iUsr+T3N5HNVPJJ1va24DNQyOZ6uJ7aZBvyJUVh7zWXzlT4aw7uSDGiq6B+fdwlv8wfI98F2SFX4TudkjE4eNimY22F/yPalywdxYNR3aBVOTr63AwK5oWyO85SlrsWv98ybnqqvawPyNN97lgH5lofOJH/Exm9dDh1C8+tAqW16aE1gBVyxVGKqJR9jdtuuVyHws4baFfu44Hm2Xz/UPOX3sbTe6hBMX5V0hkiL6ZUECdYE2sxXjPve5dA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR02MB5148.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(186003)(316002)(508600001)(52536014)(7696005)(76116006)(53546011)(6506007)(122000001)(66446008)(66556008)(66946007)(26005)(64756008)(33656002)(66476007)(2906002)(38100700002)(110136005)(9686003)(8676002)(8936002)(71200400001)(107886003)(38070700005)(55016003)(5660300002)(54906003)(83380400001)(4326008)(86362001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WDFkTE9uWWtZYVUxOXBrUnFlR0phTktOaFcxOW9CM3JXSnJ1Sy9UNWNnemlV?=
+ =?utf-8?B?M3NkN1VuQzZNWGRqbjllUkhyUVNLcXBFeDJxQkFKV2JHZlEvL3l0Z2YyaW5w?=
+ =?utf-8?B?RG9taUkxTkRZcEMwL2FJdjQvT1lZZkpMczJ6aDR2d1YxWTFXTDV6Y2JBY0d2?=
+ =?utf-8?B?KzJVa1hXM2s1Mk14RW9PWUF2anZpSHdHNy9CMXVyTTl5ZE5PeHpua3ViakNQ?=
+ =?utf-8?B?N0dPeC9ZVUxUN29aOWcvUkNqdEFhVWZQdi9VMXFjRFhOUC9KR0hCa3UzdE5z?=
+ =?utf-8?B?VjVKK0xCR0xZazlmQzVwai9aUTdkb1g4Tlgwei9kODFIaU0vRm94K2M3NytK?=
+ =?utf-8?B?NCs1UkZnUzdaYitqRGhraFVUKzYvNEZUZndoSVJZRnBEdldBWjU1c0JFdmsx?=
+ =?utf-8?B?dS9yMEYrbHo3T2k0NEwxdmN6eDNFcTQweE10eEFQRisxOTJsdDIvaFlzSjFE?=
+ =?utf-8?B?RlNHQVBYVjBxOXVFeHJxTnEzVFgvVDNiY0dzWFcxSlRodCt3bUVIaEFuMUxJ?=
+ =?utf-8?B?Tk1yZGIvMkdVNmZXRGdLWUFIWk1JY0NhcklnYW1DcmJ2NmJWY2dwVVNrUVZM?=
+ =?utf-8?B?bWs2VzBhS1ZUenJEaEdCOVhJSWNXdXZHRGZLVTQ2MWlrcGpBVURmRHpoaHhv?=
+ =?utf-8?B?SjJTUTdTVUNYU2VML1B2aUxjSjFNRmZsRlFnTkdEKzM2L2wraHkwNnUrTWt3?=
+ =?utf-8?B?TzBlR3FpUnM5dklNMnQxcjZrRFRWdkxVL0M3Vm9uUDVFNnRuTXd4OFMwakFP?=
+ =?utf-8?B?VmJpTmVXYjh5OHVqT09mU012aTArbUdOdzI1ZmN1VkhyK3dZWWxkbHZtRStB?=
+ =?utf-8?B?OGlNWUltUTJwanh6MjI3VXQxbHVpWHBkZlFJSU1PMEdpcFpxNFBCV2JLQ1p5?=
+ =?utf-8?B?R3EwcjZqZW9rV2hYYWFWU2V2OXRYR1RSb1B5MHBQazdwZ0pSOVRkOUYrY3pO?=
+ =?utf-8?B?YnRhQ3g5TENjT2tFbU1uQ05aWWwyU0FWV2NwcEVwb01WajVhS3M5NkhETlZ2?=
+ =?utf-8?B?dU9xOWNici9jdTg3LzlPM0pKbnJ3MExFdlh6MnhrcUJscWtvaEdJZGdiSmVJ?=
+ =?utf-8?B?bkllZlNucGhpYTl1OEZrTUZPMTY4N1ByLzN6UnB1a1RuK2RndnBYanlzOWJ2?=
+ =?utf-8?B?Q3JrNmUyeUtKRTJ3M0RTQWFxeGJrWFk1SE5iWEpUeDd6Njk3Nlh4WHJXTkNL?=
+ =?utf-8?B?Kzh2cXdHR0ZEaEpqeFV6K1R4YnYycDh0c3hjK2d4NlVaWlUvN1htVk5Sby90?=
+ =?utf-8?B?WVFwSHlEbWwxUnhLOFIzVG9TYXVTVWlWc2tQSWdKNWI5dnNnL2lEc09sNDd6?=
+ =?utf-8?B?a2dqSkhoK2x6azd0bWt1SnUyYUorbzNlTlFmMWM3THo4YndMRkMvWXcvdit2?=
+ =?utf-8?B?OUpFYjlmZFhVMmo4djJSemhON3FLMHpwYkRKU2JCWWdtU2RKa3VOaWUvL0Nq?=
+ =?utf-8?B?Q3o3QzBwa2h6dDZmeDlUQnlEdkJWdGRBVjdLSzhjRURqTmxxbWJBQmMvcW5s?=
+ =?utf-8?B?d0hMQzF1bUNsbHJMbm5PdXZ5d091Mk93MitwTDN2Zkl4T0dabUlsNm91ZDBp?=
+ =?utf-8?B?eFcxNjVpa3N6RDRnTGtnSFFINlVFejlQZkRuckpZVm1kOHZUUmszMzJPaldV?=
+ =?utf-8?B?ejZBNkNBMXNQWFBLSEFMUUIxY1RmVStKSXh1QksySzJ1cW5lemcwNGlROUUx?=
+ =?utf-8?B?cVdzdTdrd2g0VnVETEh6MDdqQkx0MFVRWXBxSXdUc21PRVBuQWZLT0JYaWlE?=
+ =?utf-8?B?dmNFMlQ3YmtMcjVUTGZpLy95RXJRWk1GWVQ5NS9MZ2kzUmFEc1RkdStRWE9j?=
+ =?utf-8?B?UkdTUjZkQ0JYZXNzZVRMV0h4L2lEWDNMRVNFZENiN2pJRUNyNkI3Rkx4Nmxu?=
+ =?utf-8?B?Yjl0b21hallEWlpJb2Z0VzN1MnNFbWdVbE13ZENxbS9NMWhxMUFhZVRxbjJZ?=
+ =?utf-8?B?aS8rZzR4c3lwaVR5RWRYSUNoOHZ1amlqamY0WVRWM09KODVRZDRVQ1ZUNXcw?=
+ =?utf-8?B?RHlqTmJKbGk5elprYlhaVlIrNWhjRTlLSWdsTkQ5VUtiLzJTanNES2VOc04y?=
+ =?utf-8?B?eGZROGtBRXcyZnN3Rjg5TUp3emZLQjlEVVhFZXFPa1ZSSFFKUEtjZGRFV1Fr?=
+ =?utf-8?B?K0oyWjRxRzE0YnFzZlYyanljZkRsSVNlNXFTcHY5dWFWQmozc1VOdWRVbzQ3?=
+ =?utf-8?B?cy9JcSswcm1PS0U3UzYrSlJVMnJpM3gxNnhhSGQwaHo2R3JsZ1F3Uk1kQkJD?=
+ =?utf-8?B?N2hBSWM1VjBUWThCOHNwUDVQdjNTNzRNenJlVmxNenlob05GMTluSmNVREky?=
+ =?utf-8?B?dXZWUEpPenBBaC9rdFlJZjBRT3JJcG03RmFabWN5YmlNZXdxUFNsdz09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+X-OriginatorOrg: quicinc.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR02MB5148.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d26c7819-6023-446a-456d-08da4f8b19c1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jun 2022 11:26:47.7335
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wXLWaHpasv3XmWx0EMhYYSU1gwr5ml2Hc0TP3pad5e8og5SeDhYuQ/Axw+8au6LVcwhWyB9lgGcZLXaLBv95dea5d+qWh/gjp2w8wgRWB90=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR02MB4292
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rework MDIO locking to avoid potential  circular locking:
-
- WARNING: possible circular locking dependency detected
- 5.19.0-rc1-ar9331-00017-g3ab364c7c48c #5 Not tainted
- ------------------------------------------------------
- kworker/u2:4/68 is trying to acquire lock:
- 81f3c83c (ar9331:1005:(&ar9331_mdio_regmap_config)->lock){+.+.}-{4:4}, at: regmap_write+0x50/0x8c
-
- but task is already holding lock:
- 81f60494 (&bus->mdio_lock){+.+.}-{4:4}, at: mdiobus_read+0x40/0x78
-
- which lock already depends on the new lock.
-
- the existing dependency chain (in reverse order) is:
-
- -> #1 (&bus->mdio_lock){+.+.}-{4:4}:
-        lock_acquire+0x2d4/0x360
-        __mutex_lock+0xf8/0x384
-        mutex_lock_nested+0x2c/0x38
-        mdiobus_write+0x44/0x80
-        ar9331_sw_bus_write+0x50/0xe4
-        _regmap_raw_write_impl+0x604/0x724
-        _regmap_bus_raw_write+0x9c/0xb4
-        _regmap_write+0xdc/0x1a0
-        _regmap_update_bits+0xf4/0x118
-        _regmap_select_page+0x108/0x138
-        _regmap_raw_read+0x25c/0x288
-        _regmap_bus_read+0x60/0x98
-        _regmap_read+0xd4/0x1b0
-        _regmap_update_bits+0xc4/0x118
-        regmap_update_bits_base+0x64/0x8c
-        ar9331_sw_irq_bus_sync_unlock+0x40/0x6c
-        __irq_set_handler+0x7c/0xac
-        ar9331_sw_irq_map+0x48/0x7c
-        irq_domain_associate+0x174/0x208
-        irq_create_mapping_affinity+0x1a8/0x230
-        ar9331_sw_probe+0x22c/0x388
-        mdio_probe+0x44/0x70
-        really_probe+0x200/0x424
-        __driver_probe_device+0x290/0x298
-        driver_probe_device+0x54/0xe4
-        __device_attach_driver+0xe4/0x130
-        bus_for_each_drv+0xb4/0xd8
-        __device_attach+0x104/0x1a4
-        bus_probe_device+0x48/0xc4
-        device_add+0x600/0x800
-        mdio_device_register+0x68/0xa0
-        of_mdiobus_register+0x2bc/0x3c4
-        ag71xx_probe+0x6e4/0x984
-        platform_probe+0x78/0xd0
-        really_probe+0x200/0x424
-        __driver_probe_device+0x290/0x298
-        driver_probe_device+0x54/0xe4
-        __driver_attach+0x17c/0x190
-        bus_for_each_dev+0x8c/0xd0
-        bus_add_driver+0x110/0x228
-        driver_register+0xe4/0x12c
-        do_one_initcall+0x104/0x2a0
-        kernel_init_freeable+0x250/0x288
-        kernel_init+0x34/0x130
-        ret_from_kernel_thread+0x14/0x1c
-
- -> #0 (ar9331:1005:(&ar9331_mdio_regmap_config)->lock){+.+.}-{4:4}:
-        check_noncircular+0x88/0xc0
-        __lock_acquire+0x10bc/0x18bc
-        lock_acquire+0x2d4/0x360
-        __mutex_lock+0xf8/0x384
-        mutex_lock_nested+0x2c/0x38
-        regmap_write+0x50/0x8c
-        ar9331_sw_mbus_read+0x74/0x1b8
-        __mdiobus_read+0x90/0xec
-        mdiobus_read+0x50/0x78
-        get_phy_device+0xa0/0x18c
-        fwnode_mdiobus_register_phy+0x120/0x1d4
-        of_mdiobus_register+0x244/0x3c4
-        devm_of_mdiobus_register+0xe8/0x100
-        ar9331_sw_setup+0x16c/0x3a0
-        dsa_register_switch+0x7dc/0xcc0
-        ar9331_sw_probe+0x370/0x388
-        mdio_probe+0x44/0x70
-        really_probe+0x200/0x424
-        __driver_probe_device+0x290/0x298
-        driver_probe_device+0x54/0xe4
-        __device_attach_driver+0xe4/0x130
-        bus_for_each_drv+0xb4/0xd8
-        __device_attach+0x104/0x1a4
-        bus_probe_device+0x48/0xc4
-        deferred_probe_work_func+0xf0/0x10c
-        process_one_work+0x314/0x4d4
-        worker_thread+0x2a4/0x354
-        kthread+0x134/0x13c
-        ret_from_kernel_thread+0x14/0x1c
-
- other info that might help us debug this:
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(&bus->mdio_lock);
-                                lock(ar9331:1005:(&ar9331_mdio_regmap_config)->lock);
-                                lock(&bus->mdio_lock);
-   lock(ar9331:1005:(&ar9331_mdio_regmap_config)->lock);
-
-  *** DEADLOCK ***
-
- 5 locks held by kworker/u2:4/68:
-  #0: 81c04eb4 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_one_work+0x1e4/0x4d4
-  #1: 81f0de78 (deferred_probe_work){+.+.}-{0:0}, at: process_one_work+0x1e4/0x4d4
-  #2: 81f0a880 (&dev->mutex){....}-{4:4}, at: __device_attach+0x40/0x1a4
-  #3: 80c8aee0 (dsa2_mutex){+.+.}-{4:4}, at: dsa_register_switch+0x5c/0xcc0
-  #4: 81f60494 (&bus->mdio_lock){+.+.}-{4:4}, at: mdiobus_read+0x40/0x78
-
- stack backtrace:
- CPU: 0 PID: 68 Comm: kworker/u2:4 Not tainted 5.19.0-rc1-ar9331-00017-g3ab364c7c48c #5
- Workqueue: events_unbound deferred_probe_work_func
- Stack : 00000056 800d4638 81f0d64c 00000004 00000018 00000000 80a20000 80a20000
-         80937590 81ef3858 81f0d760 3913578a 00000005 8045e824 81f0d600 a8db84cc
-         00000000 00000000 80937590 00000a44 00000000 00000002 00000001 ffffffff
-         81f0d6a4 80982d7c 0000000f 20202020 80a20000 00000001 80937590 81ef3858
-         81f0d760 3913578a 00000005 00000005 00000000 03bd0000 00000000 80e00000
-         ...
- Call Trace:
- [<80069db0>] show_stack+0x94/0x130
- [<8045e824>] dump_stack_lvl+0x54/0x8c
- [<800c7fac>] check_noncircular+0x88/0xc0
- [<800ca068>] __lock_acquire+0x10bc/0x18bc
- [<800cb478>] lock_acquire+0x2d4/0x360
- [<807b84c4>] __mutex_lock+0xf8/0x384
- [<807b877c>] mutex_lock_nested+0x2c/0x38
- [<804ea640>] regmap_write+0x50/0x8c
- [<80501e38>] ar9331_sw_mbus_read+0x74/0x1b8
- [<804fe9a0>] __mdiobus_read+0x90/0xec
- [<804feac4>] mdiobus_read+0x50/0x78
- [<804fcf74>] get_phy_device+0xa0/0x18c
- [<804ffeb4>] fwnode_mdiobus_register_phy+0x120/0x1d4
- [<805004f0>] of_mdiobus_register+0x244/0x3c4
- [<804f0c50>] devm_of_mdiobus_register+0xe8/0x100
- [<805017a0>] ar9331_sw_setup+0x16c/0x3a0
- [<807355c8>] dsa_register_switch+0x7dc/0xcc0
- [<80501468>] ar9331_sw_probe+0x370/0x388
- [<804ff0c0>] mdio_probe+0x44/0x70
- [<804d1848>] really_probe+0x200/0x424
- [<804d1cfc>] __driver_probe_device+0x290/0x298
- [<804d1d58>] driver_probe_device+0x54/0xe4
- [<804d2298>] __device_attach_driver+0xe4/0x130
- [<804cf048>] bus_for_each_drv+0xb4/0xd8
- [<804d200c>] __device_attach+0x104/0x1a4
- [<804d026c>] bus_probe_device+0x48/0xc4
- [<804d108c>] deferred_probe_work_func+0xf0/0x10c
- [<800a0ffc>] process_one_work+0x314/0x4d4
- [<800a17fc>] worker_thread+0x2a4/0x354
- [<800a9a54>] kthread+0x134/0x13c
- [<8006306c>] ret_from_kernel_thread+0x14/0x1c
-[
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/dsa/qca/ar9331.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-index e5098cfe44bc..f23ce56fa591 100644
---- a/drivers/net/dsa/qca/ar9331.c
-+++ b/drivers/net/dsa/qca/ar9331.c
-@@ -818,7 +818,7 @@ static int __ar9331_mdio_write(struct mii_bus *sbus, u8 mode, u16 reg, u16 val)
- 		FIELD_GET(AR9331_SW_LOW_ADDR_PHY, reg);
- 	r = FIELD_GET(AR9331_SW_LOW_ADDR_REG, reg);
- 
--	return mdiobus_write(sbus, p, r, val);
-+	return __mdiobus_write(sbus, p, r, val);
- }
- 
- static int __ar9331_mdio_read(struct mii_bus *sbus, u16 reg)
-@@ -829,7 +829,7 @@ static int __ar9331_mdio_read(struct mii_bus *sbus, u16 reg)
- 		FIELD_GET(AR9331_SW_LOW_ADDR_PHY, reg);
- 	r = FIELD_GET(AR9331_SW_LOW_ADDR_REG, reg);
- 
--	return mdiobus_read(sbus, p, r);
-+	return __mdiobus_read(sbus, p, r);
- }
- 
- static int ar9331_mdio_read(void *ctx, const void *reg_buf, size_t reg_len,
-@@ -849,6 +849,8 @@ static int ar9331_mdio_read(void *ctx, const void *reg_buf, size_t reg_len,
- 		return 0;
- 	}
- 
-+	mutex_lock_nested(&sbus->mdio_lock, MDIO_MUTEX_NESTED);
-+
- 	ret = __ar9331_mdio_read(sbus, reg);
- 	if (ret < 0)
- 		goto error;
-@@ -860,9 +862,13 @@ static int ar9331_mdio_read(void *ctx, const void *reg_buf, size_t reg_len,
- 
- 	*(u32 *)val_buf |= ret << 16;
- 
-+	mutex_unlock(&sbus->mdio_lock);
-+
- 	return 0;
- error:
-+	mutex_unlock(&sbus->mdio_lock);
- 	dev_err_ratelimited(&sbus->dev, "Bus error. Failed to read register.\n");
-+
- 	return ret;
- }
- 
-@@ -872,12 +878,15 @@ static int ar9331_mdio_write(void *ctx, u32 reg, u32 val)
- 	struct mii_bus *sbus = priv->sbus;
- 	int ret;
- 
-+	mutex_lock_nested(&sbus->mdio_lock, MDIO_MUTEX_NESTED);
- 	if (reg == AR9331_SW_REG_PAGE) {
- 		ret = __ar9331_mdio_write(sbus, AR9331_SW_MDIO_PHY_MODE_PAGE,
- 					  0, val);
- 		if (ret < 0)
- 			goto error;
- 
-+		mutex_unlock(&sbus->mdio_lock);
-+
- 		return 0;
- 	}
- 
-@@ -897,10 +906,14 @@ static int ar9331_mdio_write(void *ctx, u32 reg, u32 val)
- 	if (ret < 0)
- 		goto error;
- 
-+	mutex_unlock(&sbus->mdio_lock);
-+
- 	return 0;
- 
- error:
-+	mutex_unlock(&sbus->mdio_lock);
- 	dev_err_ratelimited(&sbus->dev, "Bus error. Failed to write register.\n");
-+
- 	return ret;
- }
- 
--- 
-2.30.2
-
+VGhhbmtzIFN0ZXBoZW4gZm9yIHlvdXIgcmV2aWV3Lg0KQWRkcmVzc2VkIGFsbCBjb21tZW50cyBp
+biB2My4NCg0KVGhhbmtzLA0KRGlrc2hpdGEgQWdhcndhbA0KDQotLS0tLU9yaWdpbmFsIE1lc3Nh
+Z2UtLS0tLQ0KRnJvbTogU3RlcGhlbiBCb3lkIDxzd2JveWRAY2hyb21pdW0ub3JnPiANClNlbnQ6
+IFRodXJzZGF5LCBKdW5lIDE2LCAyMDIyIDc6MTkgQU0NClRvOiBEaWtzaGl0YSBBZ2Fyd2FsIChR
+VUlDKSA8cXVpY19kaWtzaGl0YUBxdWljaW5jLmNvbT47IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5l
+bC5vcmc7IGxpbnV4LW1lZGlhQHZnZXIua2VybmVsLm9yZw0KQ2M6IGxpbnV4LWFybS1tc21Admdl
+ci5rZXJuZWwub3JnOyBzdGFuaW1pci52YXJiYW5vdkBsaW5hcm8ub3JnOyBWaWthc2ggR2Fyb2Rp
+YSAoUVVJQykgPHF1aWNfdmdhcm9kaWFAcXVpY2luYy5jb20+DQpTdWJqZWN0OiBSZTogW1BBVENI
+IHYyXSB2ZW51czogQWRkIHN1cHBvcnQgZm9yIFNTUiB0cmlnZ2VyIHVzaW5nIGZhdWx0IGluamVj
+dGlvbg0KDQpRdW90aW5nIERpa3NoaXRhIEFnYXJ3YWwgKDIwMjItMDYtMTUgMDI6MzA6MDkpDQo+
+IEhlcmUgd2UgaW50cm9kdWNlIGEgbmV3IGZhdWx0IGluamVjdGlvbiBmb3IgU1NSIHRyaWdnZXIu
+DQo+DQo+IFRvIHRyaWdnZXIgdGhlIFNTUjoNCj4gIGVjaG8gMTAwID4gIC9zeXMva2VybmVsL2Rl
+YnVnL3ZlbnVzL2ZhaWxfc3NyL3Byb2JhYmlsaXR5DQo+ICBlY2hvIDEgPiAgL3N5cy9rZXJuZWwv
+ZGVidWcvdmVudXMvZmFpbF9zc3IvdGltZXMNCj4NCj4gc2lnbmVkLW9mZi1ieTogRGlrc2hpdGEg
+QWdhcndhbCA8cXVpY19kaWtzaGl0YUBxdWljaW5jLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogU3Rh
+bmltaXIgVmFyYmFub3YgPHN0YW5pbWlyLnZhcmJhbm92QGxpbmFyby5vcmc+DQoNCldoeSBpcyBT
+dGFuJ3MgU29CIGhlcmU/DQoNCkhlIGlzIGNvLWRldmVsb3BlciBoZW5jZSBhZGRlZCB0aGUgc2Ft
+ZS4NCkFkZGVkIGNvLWRldmVsb3BlZC1ieSBhcyB3ZWxsIGluIGxhdGVzdCBwYXRjaC4NCg0KPiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9xY29tL3ZlbnVzL2RiZ2ZzLmMgDQo+
+IGIvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9xY29tL3ZlbnVzL2RiZ2ZzLmMNCj4gaW5kZXggNTJk
+ZTQ3Zi4uZWMxNTA3OCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9xY29t
+L3ZlbnVzL2RiZ2ZzLmMNCj4gKysrIGIvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9xY29tL3ZlbnVz
+L2RiZ2ZzLmMNCj4gQEAgLTQsMTMgKzQsMzQgQEANCj4gICAqLw0KPg0KPiAgI2luY2x1ZGUgPGxp
+bnV4L2RlYnVnZnMuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9mYXVsdC1pbmplY3QuaD4NCj4NCj4g
+ICNpbmNsdWRlICJjb3JlLmgiDQo+DQo+ICsjaWZkZWYgQ09ORklHX0ZBVUxUX0lOSkVDVElPTg0K
+PiArc3RhdGljIERFQ0xBUkVfRkFVTFRfQVRUUih2ZW51c19zc3JfYXR0cik7DQo+ICsjZW5kaWYN
+Cg0KVGhpcyBlbmRpZiBpc24ndCBuZWVkZWQuDQoNCj4gKw0KPiArI2lmZGVmIENPTkZJR19GQVVM
+VF9JTkpFQ1RJT04NCg0KYW5kIHRoaXMgaWZkZWYgaXNuJ3QgZWl0aGVyLiBUaGUgdHdvIGNhbiBi
+ZSBjb21iaW5lZC4NCg0KPiArYm9vbCB2ZW51c19mYXVsdF9pbmplY3Rfc3NyKHZvaWQpDQo+ICt7
+DQo+ICsgICAgICAgcmV0dXJuIHNob3VsZF9mYWlsKCZ2ZW51c19zc3JfYXR0ciwgMSk7IH0gI2Vs
+c2UgYm9vbCANCj4gK3ZlbnVzX2ZhdWx0X2luamVjdF9zc3Iodm9pZCkgew0KPiArICAgICAgIHJl
+dHVybiBmYWxzZTsNCj4gK30NCg0KUHV0IHRoaXMgcGFydCBpbiB0aGUgaGVhZGVyIGZpbGUgYW5k
+IG1ha2UgaXQgc3RhdGljIGlubGluZS4gVGhlbiB0aGUgY29tcGlsZXIgaXMgZ29pbmcgdG8gaW5s
+aW5lIHRoZSBmYWxzZSB0byB0aGUgaWYgY29uZGl0aW9uIGFuZCBvcHRpbWl6ZSB0aGUgZW50aXJl
+IGJyYW5jaCBhd2F5IHVubGVzcyB0aGUgY29uZmlnIGlzIGVuYWJsZWQuIEl0IHdvdWxkIGFsc28g
+YmUgbmljZSB0byBleHRlcm4gdGhlIHZlbnVzX3Nzcl9hdHRyIHNvIHRoYXQgdGhlIHNob3VsZF9m
+YWlsKCkgY2FuIGJlIGRpcmVjdGx5IGlubGluZWQgaW50byB0aGUgaW50ZXJydXB0IGhhbmRsZXIu
+DQoNCj4gKyNlbmRpZg0KPiArDQo+ICB2b2lkIHZlbnVzX2RiZ2ZzX2luaXQoc3RydWN0IHZlbnVz
+X2NvcmUgKmNvcmUpICB7DQo+ICAgICAgICAgY29yZS0+cm9vdCA9IGRlYnVnZnNfY3JlYXRlX2Rp
+cigidmVudXMiLCBOVUxMKTsNCj4gICAgICAgICBkZWJ1Z2ZzX2NyZWF0ZV94MzIoImZ3X2xldmVs
+IiwgMDY0NCwgY29yZS0+cm9vdCwgDQo+ICZ2ZW51c19md19kZWJ1Zyk7DQo+ICsNCj4gKyNpZmRl
+ZiBDT05GSUdfRkFVTFRfSU5KRUNUSU9ODQo+ICsgICAgICAgZmF1bHRfY3JlYXRlX2RlYnVnZnNf
+YXR0cigiZmFpbF9zc3IiLCBjb3JlLT5yb290LCANCj4gKyZ2ZW51c19zc3JfYXR0cik7ICNlbmRp
+Zg0KPiAgfQ0KPg0KPiAgdm9pZCB2ZW51c19kYmdmc19kZWluaXQoc3RydWN0IHZlbnVzX2NvcmUg
+KmNvcmUpIGRpZmYgLS1naXQgDQo+IGEvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9xY29tL3ZlbnVz
+L2RiZ2ZzLmggDQo+IGIvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9xY29tL3ZlbnVzL2RiZ2ZzLmgN
+Cj4gaW5kZXggYjdiNjIxYS4uYjBkMDY4NiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9tZWRpYS9w
+bGF0Zm9ybS9xY29tL3ZlbnVzL2RiZ2ZzLmgNCj4gKysrIGIvZHJpdmVycy9tZWRpYS9wbGF0Zm9y
+bS9xY29tL3ZlbnVzL2RiZ2ZzLmgNCj4gQEAgLTgsNSArOCw2IEBAIHN0cnVjdCB2ZW51c19jb3Jl
+Ow0KDQorI2luY2x1ZGUgPGxpbnV4L2ZhdWx0LWluamVjdC5oPg0KDQo+DQo+ICB2b2lkIHZlbnVz
+X2RiZ2ZzX2luaXQoc3RydWN0IHZlbnVzX2NvcmUgKmNvcmUpOyAgdm9pZCANCj4gdmVudXNfZGJn
+ZnNfZGVpbml0KHN0cnVjdCB2ZW51c19jb3JlICpjb3JlKTsNCg0KI2lmZGVmIENPTkZJR19GQVVM
+VF9JTkpFQ1RJT04NCmV4dGVybiBzdHJ1Y3QgZmF1bHRfYXR0ciB2ZW51c19zc3JfYXR0cjsgc3Rh
+dGljIGlubGluZSB2ZW51c19mYXVsdF9pbmplY3Rfc3NyKHZvaWQpIHsNCglyZXR1cm4gc2hvdWxk
+X2ZhaWwoJnZlbnVzX3Nzcl9hdHRyLCAxKTsgfSAjZWxzZSBzdGF0aWMgaW5saW5lIGJvb2wgdmVu
+dXNfZmF1bHRfaW5qZWN0X3Nzcih2b2lkKSB7IHJldHVybiBmYWxzZTsgfSAjZW5kaWYNCg==
