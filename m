@@ -2,92 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9955AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35DA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377293AbiFPP64 (ORCPT
+        id S1378018AbiFPP7B convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35594 "EHLO
+        Thu, 16 Jun 2022 11:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238923AbiFPP6y (ORCPT
+        with ESMTP id S1377785AbiFPP66 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:58:54 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1289111C2F
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:58:54 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id 187so1865731pfu.9
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:58:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Dt7moyOGq/wGPX6up0TVePAZeRh2KcSmjYDlmf94HxE=;
-        b=etAzaLvBUF3LEk3BYYPg9CD5v+EkBJJTvunVknq9iG/wLOY/Le32cBqexS0UkwiMlm
-         ETzSnFjod9eT57QJBIyjiwXD7Ji0tFwwKHTkKj1Ize6vtPyw2HENYoBzT1QYSCFPVmH1
-         oC8sYIl2DMZmXaRla94BaQApJ2Rdu8zrT5qdE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Dt7moyOGq/wGPX6up0TVePAZeRh2KcSmjYDlmf94HxE=;
-        b=t4nDHNVFGgrPxkvRUJ9poQjfyEOEAxGvdSOpdkj0TAPam7YBI4pquhHx1xZgFzVf7r
-         P4sjQb3qvUWdYHfqu8xoERgEOA9gF64uXLEVqpjqWwY7noC9hBWVls4htx+vU9aAx4b7
-         0mEfc4JhIIA6aCM5i+001aiaERxX6otkoM7op4es+PjNvj0CUKGZxv40L2P6capKE9wm
-         JwIPKAMEZVdq7be8fIZBPtIvo4bRkyGaDzVpGNRSf86ftd223ZyC3MOHWreffUb0LeZB
-         Ddsjc4kZw4/tmrV5LCiEnbsQDUus9Ht53VKbWcGebYpc41dGf7Ln4CRscdkXO4dMiPmj
-         YFOw==
-X-Gm-Message-State: AJIora9CQLPeAPGI/ZsPwial1QPdtU5DBhN799V3yNKDgG0D4nh+1Igy
-        J/Ncap0CeIx7ha/Rw3k0VIj1yQ==
-X-Google-Smtp-Source: AGRyM1t0X7UHlN5X6Tiqx+yKhBWm7VLeGVTI8ighHLTVurpkRre+vuBb+6E5+wGZ4rm7QDhfp1ipTg==
-X-Received: by 2002:aa7:888c:0:b0:505:7832:98fc with SMTP id z12-20020aa7888c000000b00505783298fcmr5333501pfe.0.1655395133562;
-        Thu, 16 Jun 2022 08:58:53 -0700 (PDT)
-Received: from judyhsiao0523.c.googlers.com.com (0.223.81.34.bc.googleusercontent.com. [34.81.223.0])
-        by smtp.gmail.com with ESMTPSA id f8-20020a170902684800b00161478027f5sm1779797pln.150.2022.06.16.08.58.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 08:58:53 -0700 (PDT)
-From:   Judy Hsiao <judyhsiao@chromium.org>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Chen-Yu Tsai <wenst@chromium.org>, alsa-devel@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Judy Hsiao <judyhsiao@chromium.org>
-Subject: [PATCH v2 0/3] ASoC: rockchip: i2s: switch BCLK to GPIO
-Date:   Thu, 16 Jun 2022 15:58:33 +0000
-Message-Id: <20220616155836.3401420-1-judyhsiao@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+        Thu, 16 Jun 2022 11:58:58 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5BE534132A
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:58:56 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-127-G5mX8BQ_PnOGd3hJyVz1GQ-1; Thu, 16 Jun 2022 16:58:53 +0100
+X-MC-Unique: G5mX8BQ_PnOGd3hJyVz1GQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Thu, 16 Jun 2022 16:58:52 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Thu, 16 Jun 2022 16:58:52 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Andrew Jones' <drjones@redhat.com>,
+        Raghavendra Rao Ananta <rananta@google.com>
+CC:     Marc Zyngier <maz@kernel.org>, James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Catalin Marinas" <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "Peter Shier" <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Colton Lewis <coltonlewis@google.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+Subject: RE: [PATCH] selftests: KVM: Handle compiler optimizations in ucall
+Thread-Topic: [PATCH] selftests: KVM: Handle compiler optimizations in ucall
+Thread-Index: AQHYgXkNkdHi2edO0UOJoWwOrv/ni61SMGPg
+Date:   Thu, 16 Jun 2022 15:58:52 +0000
+Message-ID: <33ca91aeb5254831a88e187ff8d9a2c2@AcuMS.aculab.com>
+References: <20220615185706.1099208-1-rananta@google.com>
+ <20220616120232.ctkekviusrozqpru@gator>
+In-Reply-To: <20220616120232.ctkekviusrozqpru@gator>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The patches series is to fix the unexpected large
-DC output voltage of Max98357a to burn the speakers 
-on rockchip platform when BCLK and SD_MODE are ON but LRCLK is OFF.
+From: Andrew Jones
+> Sent: 16 June 2022 13:03
+> 
+> On Wed, Jun 15, 2022 at 06:57:06PM +0000, Raghavendra Rao Ananta wrote:
+> > The selftests, when built with newer versions of clang, is found
+> > to have over optimized guests' ucall() function, and eliminating
+> > the stores for uc.cmd (perhaps due to no immediate readers). This
+> > resulted in the userspace side always reading a value of '0', and
+> > causing multiple test failures.
+> >
+> > As a result, prevent the compiler from optimizing the stores in
+> > ucall() with WRITE_ONCE().
+> >
+> > Suggested-by: Ricardo Koller <ricarkol@google.com>
+> > Suggested-by: Reiji Watanabe <reijiw@google.com>
+> > Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+> > ---
+> >  tools/testing/selftests/kvm/lib/aarch64/ucall.c | 9 ++++-----
+> >  1 file changed, 4 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+> b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+> > index e0b0164e9af8..be1d9728c4ce 100644
+> > --- a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+> > +++ b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+> > @@ -73,20 +73,19 @@ void ucall_uninit(struct kvm_vm *vm)
+> >
+> >  void ucall(uint64_t cmd, int nargs, ...)
+> >  {
+> > -	struct ucall uc = {
+> > -		.cmd = cmd,
+> > -	};
+> > +	struct ucall uc = {};
+> >  	va_list va;
+> >  	int i;
+> >
+> > +	WRITE_ONCE(uc.cmd, cmd);
+> >  	nargs = nargs <= UCALL_MAX_ARGS ? nargs : UCALL_MAX_ARGS;
+> >
+> >  	va_start(va, nargs);
+> >  	for (i = 0; i < nargs; ++i)
+> > -		uc.args[i] = va_arg(va, uint64_t);
+> > +		WRITE_ONCE(uc.args[i], va_arg(va, uint64_t));
+> >  	va_end(va);
+> >
+> > -	*ucall_exit_mmio_addr = (vm_vaddr_t)&uc;
+> > +	WRITE_ONCE(*ucall_exit_mmio_addr, (vm_vaddr_t)&uc);
+> >  }
 
-Changes Since V2:
-    -- Add documents of i2s pinctrl-names.
-    -- Fix dtsi syntax error.
-    -- Include the dtsi change and the driver change in the same series.
-    -- Ensure that driver gets both bclk_on and bclk_off states before using them.
+Am I misreading things again?
+That function looks like it writes the address of an on-stack
+item into global data.
 
-Judy Hsiao (3):
-  ASoC: rockchip: i2s: switch BCLK to GPIO
-  arm64: dts: rk3399: i2s: switch BCLK to GPIO
-  ASoC: dt-bindings: rockchip: Document pinctrl-names for i2s
+Maybe 'uc' ought to be static?
 
- .../bindings/sound/rockchip-i2s.yaml          |   7 +
- .../boot/dts/rockchip/rk3399-gru-scarlet.dtsi |  10 ++
- arch/arm64/boot/dts/rockchip/rk3399.dtsi      |  25 +++-
- sound/soc/rockchip/rockchip_i2s.c             | 134 ++++++++++++++----
- 4 files changed, 149 insertions(+), 27 deletions(-)
+	David
 
--- 
-2.36.1.476.g0c4daa206d-goog
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
