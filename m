@@ -2,781 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F193C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:58:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F56ACCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379284AbiFPW6i (ORCPT
+        id S1379294AbiFPW6p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 18:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35330 "EHLO
+        Thu, 16 Jun 2022 18:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379274AbiFPW6b (ORCPT
+        with ESMTP id S1379286AbiFPW6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 18:58:31 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2651F62A05
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 15:58:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655420308; x=1686956308;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=aL2bGAoy8rBsX2XRSTJs9E3sEQ8FRbGQJzlqyxP0boE=;
-  b=MRWDEb3XH/286uo5lj8NwRZ8GV7S7a3ruFx6vcQqKU87RFzmmaHoLGOJ
-   0R2ct+LRy7LklDI6Hrz1Jz6LOLAUO51SF2ZhL8ZU250Dk9uUbWFQvlU5l
-   eFFH6iXR/wFUSXunwQPTwGYAAdQV9jO5OhIvSmbvIfPcC7CMSFfFxnLbO
-   ++LxUvrAda9ihiPBk8M53WaK2ylqRjpwfW1bohGHNH036UmsiDLiT+RnL
-   YfcFyWpLEwlASS0oB/6LmQPYTOqrxhZfn9BwwJFrOGeA3igqXO/qDnFh1
-   6sw3rk3BSAZNKBy+FpWY+n8TOmy5A40S5WW5vHHJUOJrV03RV/fkL38y/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="341025753"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="341025753"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 15:58:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="576074137"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 16 Jun 2022 15:58:18 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1yRN-000Oqk-NP;
-        Thu, 16 Jun 2022 22:58:17 +0000
-Date:   Fri, 17 Jun 2022 06:57:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     James Morse <james.morse@arm.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [morse:mpam/snapshot/v5.18 66/146] include/linux/bits.h:35:29:
- warning: left shift count >= width of type
-Message-ID: <202206170626.0T1niDps-lkp@intel.com>
+        Thu, 16 Jun 2022 18:58:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F1962A14;
+        Thu, 16 Jun 2022 15:58:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8217CB82677;
+        Thu, 16 Jun 2022 22:58:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A181BC3411C;
+        Thu, 16 Jun 2022 22:58:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655420318;
+        bh=BhBSw9D9ltx5eL2VOtxBAgMRkCtcfgjW4sB86qkvEWU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=O5yP0MIVY9hQpBQur4ksZUlxWpn4EZ8BsqV1Q/gMV59ra7EMrb6I2j5b9IaetwL7G
+         b7UYX++AYKx91UASeN8k1yeeTwDAQIHg2E4mG4YiG/6W6xFS0UPFhxEe0Kecbw7pr8
+         BULCMbxdVK8LoKR3opAeSmWWoU7ZNoyzSJQb/SBTY4aNxXrtES5mmaxuhvJcH5CGwl
+         0halR+YTriqyvJnTnfjpecBFuxtVtHWpSktTqcu2RtiDZaCe7zEhOvRJ7UyZunRl3N
+         fOyIla2gMtTwRA+x3C8NIjsfbClotpvqPiUoYMpPVMTmTd0o31RJ3MlCV/xwgfdV9T
+         dhyhajVoW9Ryw==
+Message-ID: <4b4b08af-887b-89e9-b4a5-93e7d8a03222@kernel.org>
+Date:   Thu, 16 Jun 2022 15:58:37 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 2/5] dt-bindings: phy: Add ARTPEC-8 PCIe phy
+Content-Language: en-US
+To:     wangseok.lee@samsung.com,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
+        "lars.persson@axis.com" <lars.persson@axis.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "kw@linux.com" <kw@linux.com>,
+        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
+        "kernel@axis.com" <kernel@axis.com>
+Cc:     Moon-Ki Jun <moonki.jun@samsung.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Dongjin Yang <dj76.yang@samsung.com>,
+        Yeeun Kim <yeeun119.kim@samsung.com>
+References: <20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7@epcms2p7>
+ <CGME20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7@epcms2p5>
+ <20220614012916epcms2p5cf8d55e7420dea10bb4a05d91aaf99dd@epcms2p5>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220614012916epcms2p5cf8d55e7420dea10bb4a05d91aaf99dd@epcms2p5>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/snapshot/v5.18
-head:   bac90d25cbdee0fc233b9b1c47d5b6f44101a384
-commit: 2881ac404cd937d1529d641acc4055fb14822de0 [66/146] fs/resctrl: Export the closid/rmid to user-space
-config: arc-randconfig-r043-20220616 (https://download.01.org/0day-ci/archive/20220617/202206170626.0T1niDps-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git/commit/?id=2881ac404cd937d1529d641acc4055fb14822de0
-        git remote add morse https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git
-        git fetch --no-tags morse mpam/snapshot/v5.18
-        git checkout 2881ac404cd937d1529d641acc4055fb14822de0
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash fs/proc/
+On 13/06/2022 18:29, Wangseok Lee wrote:
+> Add description to support Axis, ARTPEC-8 SoC.
+> ARTPEC-8 is the SoC platform of Axis Communications
+> and PCIe phy is designed based on SAMSUNG PHY.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+No improvements here. On v2 I gave you link pointing to specific
+paragraph of our documentation which you need to apply - wrong wrapping.
+Is there something unclear here?
 
-All warnings (new ones prefixed by >>):
-
-   In file included from <command-line>:
-   include/linux/resctrl.h: In function '__resctrl_id_decode':
->> include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:65:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      65 |                 BUILD_BUG_ON_MSG(!__builtin_constant_p(_mask),          \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:65:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      65 |                 BUILD_BUG_ON_MSG(!__builtin_constant_p(_mask),          \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:67:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      67 |                 BUILD_BUG_ON_MSG((_mask) == 0, _pfx "mask is zero");    \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:67:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      67 |                 BUILD_BUG_ON_MSG((_mask) == 0, _pfx "mask is zero");    \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:68:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      68 |                 BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?           \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:68:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      68 |                 BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?           \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:68:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      68 |                 BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?           \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:69:47: note: in expansion of macro '__bf_shf'
-      69 |                                  ~((_mask) >> __bf_shf(_mask)) & (_val) : 0, \
-         |                                               ^~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:68:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      68 |                 BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?           \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:69:47: note: in expansion of macro '__bf_shf'
-      69 |                                  ~((_mask) >> __bf_shf(_mask)) & (_val) : 0, \
-         |                                               ^~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:71:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      71 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:71:34: note: in expansion of macro '__bf_cast_unsigned'
-      71 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-         |                                  ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:71:17: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      71 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:71:34: note: in expansion of macro '__bf_cast_unsigned'
-      71 |                 BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >     \
-         |                                  ^~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-      21 |         BUILD_BUG_ON(((n) & ((n) - 1)) != 0)
-         |         ^~~~~~~~~~~~
-   include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON_NOT_POWER_OF_2'
-      74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +                 \
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-      21 |         BUILD_BUG_ON(((n) & ((n) - 1)) != 0)
-         |         ^~~~~~~~~~~~
-   include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON_NOT_POWER_OF_2'
-      74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +                 \
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-      21 |         BUILD_BUG_ON(((n) & ((n) - 1)) != 0)
-         |         ^~~~~~~~~~~~
-   include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON_NOT_POWER_OF_2'
-      74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +                 \
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:75:56: note: in expansion of macro '__bf_shf'
-      75 |                                               (1ULL << __bf_shf(_mask))); \
-         |                                                        ^~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-      21 |         BUILD_BUG_ON(((n) & ((n) - 1)) != 0)
-         |         ^~~~~~~~~~~~
-   include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON_NOT_POWER_OF_2'
-      74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +                 \
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:75:56: note: in expansion of macro '__bf_shf'
-      75 |                                               (1ULL << __bf_shf(_mask))); \
-         |                                                        ^~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-      21 |         BUILD_BUG_ON(((n) & ((n) - 1)) != 0)
-         |         ^~~~~~~~~~~~
-   include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON_NOT_POWER_OF_2'
-      74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +                 \
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-      21 |         BUILD_BUG_ON(((n) & ((n) - 1)) != 0)
-         |         ^~~~~~~~~~~~
-   include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON_NOT_POWER_OF_2'
-      74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +                 \
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-      21 |         BUILD_BUG_ON(((n) & ((n) - 1)) != 0)
-         |         ^~~~~~~~~~~~
-   include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON_NOT_POWER_OF_2'
-      74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +                 \
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:75:56: note: in expansion of macro '__bf_shf'
-      75 |                                               (1ULL << __bf_shf(_mask))); \
-         |                                                        ^~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/compiler_types.h:332:23: note: in definition of macro '__compiletime_assert'
-     332 |                 if (!(condition))                                       \
-         |                       ^~~~~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:21:9: note: in expansion of macro 'BUILD_BUG_ON'
-      21 |         BUILD_BUG_ON(((n) & ((n) - 1)) != 0)
-         |         ^~~~~~~~~~~~
-   include/linux/bitfield.h:74:17: note: in expansion of macro '__BUILD_BUG_ON_NOT_POWER_OF_2'
-      74 |                 __BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +                 \
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bitfield.h:75:56: note: in expansion of macro '__bf_shf'
-      75 |                                               (1ULL << __bf_shf(_mask))); \
-         |                                                        ^~~~~~~~
-   include/linux/bitfield.h:128:17: note: in expansion of macro '__BF_FIELD_CHECK'
-     128 |                 __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
-         |                 ^~~~~~~~~~~~~~~~
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
-   In file included from include/linux/resctrl.h:5,
-                    from fs/proc/base.c:97:
->> include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/bitfield.h:129:44: note: in definition of macro 'FIELD_GET'
-     129 |                 (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
-         |                                            ^~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
->> include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/bitfield.h:129:44: note: in definition of macro 'FIELD_GET'
-     129 |                 (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
-         |                                            ^~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
-   include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
-         |                             ^~
-   include/linux/bitfield.h:45:38: note: in definition of macro '__bf_shf'
-      45 | #define __bf_shf(x) (__builtin_ffsll(x) - 1)
-         |                                      ^
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
-   include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
-      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-         |                  ^~
-   include/linux/bitfield.h:45:38: note: in definition of macro '__bf_shf'
-      45 | #define __bf_shf(x) (__builtin_ffsll(x) - 1)
-         |                                      ^
-   include/linux/resctrl.h:286:17: note: in expansion of macro 'FIELD_GET'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                 ^~~~~~~~~
-   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
-      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-         |                                      ^~~~~~~~~
-   include/linux/resctrl.h:40:33: note: in expansion of macro 'GENMASK'
-      40 | #define RESCTRL_ID_RMID         GENMASK(63, 32)
-         |                                 ^~~~~~~
-   include/linux/resctrl.h:286:27: note: in expansion of macro 'RESCTRL_ID_RMID'
-     286 |         *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
-         |                           ^~~~~~~~~~~~~~~
+Please
+do
+not
+wrap
+in
+different
+style.
 
 
-vim +35 include/linux/bits.h
+> 
+> Signed-off-by: Wangseok Lee <wangseok.lee@samsung.com>
+> ---
+> v2->v3 :
+> -modify version history to fit the linux commit rule
+> -remove 'Device Tree Bindings' on title
+> -remove clock-names entries
+> -change node name to soc from artpec8 on excamples
+> 
+> v1->v2 :
+> -'make dt_binding_check' result improvement
+> -Add the missing property list
+> -Align the indentation of continued lines/entries
+> ---
+>  .../bindings/phy/axis,artpec8-pcie-phy.yaml        | 73 ++++++++++++++++++++++
+>  1 file changed, 73 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml
+> new file mode 100644
+> index 0000000..316b774
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml
+> @@ -0,0 +1,73 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/phy/axis,artpec8-pcie-phy.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: ARTPEC-8 SoC PCIe PHY
+> +
+> +maintainers:
+> +  - Jesper Nilsson <jesper.nilsson@axis.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: axis,artpec8-pcie-phy
+> +
+> +  reg:
+> +    items:
+> +      - description: PHY registers.
+> +      - description: PHY coding sublayer registers.
+> +
+> +  reg-names:
+> +    items:
+> +      - const: phy
+> +      - const: pcs
+> +
+> +  "#phy-cells":
+> +    const: 0
+> +
+> +  clocks:
+> +    items:
+> +      - description: PCIe PHY reference clock
+> +
+> +  num-lanes:
+> +    const: 2
+> +
+> +  lcpll-ref-clk:
+> +    const: 1
 
-295bcca84916cb Rikard Falkeborn 2020-04-06  33  
-295bcca84916cb Rikard Falkeborn 2020-04-06  34  #define __GENMASK(h, l) \
-95b980d62d52c4 Masahiro Yamada  2019-07-16 @35  	(((~UL(0)) - (UL(1) << (l)) + 1) & \
-95b980d62d52c4 Masahiro Yamada  2019-07-16 @36  	 (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
-295bcca84916cb Rikard Falkeborn 2020-04-06  37  #define GENMASK(h, l) \
-295bcca84916cb Rikard Falkeborn 2020-04-06  38  	(GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
-8bd9cb51daac89 Will Deacon      2018-06-19  39  
+Unknown field... custom properties need vendor (axis,), type (boolean)
+and description.
 
-:::::: The code at line 35 was first introduced by commit
-:::::: 95b980d62d52c4c1768ee719e8db3efe27ef52b2 linux/bits.h: make BIT(), GENMASK(), and friends available in assembly
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - reg-names
+> +  - "#phy-cells"
+> +  - clocks
+> +  - clock-names
+> +  - samsung,fsys-sysreg
 
-:::::: TO: Masahiro Yamada <yamada.masahiro@socionext.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+Same problem as in patch #1.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +  - num-lanes
+> +  - lcpll-ref-clk
+> +
+> +additionalProperties: true
+
+No, this must be false.
+
+
+Best regards,
+Krzysztof
