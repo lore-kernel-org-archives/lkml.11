@@ -2,112 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6372C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 18:40:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7716C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 18:43:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378067AbiFPSkf (ORCPT
+        id S1377728AbiFPSnW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 14:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41266 "EHLO
+        Thu, 16 Jun 2022 14:43:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378041AbiFPSkd (ORCPT
+        with ESMTP id S229683AbiFPSnU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 14:40:33 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D85544CB
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 11:40:32 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id y196so2214370pfb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 11:40:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=HU/S2rDRdJXSvF2HJYT5MX/Baf9+5cy35uV5UBnDVAE=;
-        b=UgAioPDwOol1mtX0moiIbUq+7g/dIGZTQMDu5AExU6sV7xVip/EnXbsCYhrh+WNSuv
-         3h3bc+N4mJWEnpIVGGN5FXzozf+7YN/8zTSAkAwZfnleROINqUyL24D1QrqvXWGRhx+K
-         OCqAZBEhp4X769KOpgSkUT89EKd/ve/Di6LiAM2REFFYHDOxtaTwUFQoTBWzPX71QHsm
-         Yl6jlmv1I6C+WmgoUV0wwSo/7SeDGhP5hOb9SNMtF7Uop4RTkdB7KdgIWoftWnCBY70s
-         /Wkm+ijxr+jah2XQshzjkHeeKoAAOWtzKrVhnik94cYstOcvMlmgSuELVNle2JqCOVUh
-         Hi2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=HU/S2rDRdJXSvF2HJYT5MX/Baf9+5cy35uV5UBnDVAE=;
-        b=Pl0Xu7sgVbzAphsC2rVhZSWW8AELqAPFBtAcCFWNbfq/mrye9UfDCf6R9IrhMoqa8k
-         6fcnbg0obUCz3upSQq5rI7a5sVVPPOx4SjwO8YdP9cL2tkT15IRZzPqz09OIlSRfOvZ4
-         1vEdZuQ3i0IwseeMFfnvW4NfYapr6DzpZ5scnuopXg+pykhAbltreJwhi+Rskl5fXXta
-         tS1BWY0Qflk7i+PocTMqMvaN4BuTRPSnHnTiDDUr+SXyD/ZH4sz9dnfgbwA2EHIpIUnv
-         naD/qNpdzFCRnFpaRr/jf4lAU3o81TABKJ2ZbF6FiY1utV2HsZc4kPgqSKYKbAXkC6vh
-         8esA==
-X-Gm-Message-State: AJIora9oa7wznAyKlfyHfcin7LQ2NXVYawLIq8aMNViQkVS8Jr6LcT4s
-        SpiZGAD0/mlb8ktwhNdUa+BgZg==
-X-Google-Smtp-Source: AGRyM1uTOQPUU6gJIf2RfGvYLof4xidypQqv0TIVUTH6ipWOrME4pI+sniIJ6KwXyC6IjQxxeU2/2g==
-X-Received: by 2002:a63:441f:0:b0:3fc:8bd2:f828 with SMTP id r31-20020a63441f000000b003fc8bd2f828mr5506549pga.579.1655404832093;
-        Thu, 16 Jun 2022 11:40:32 -0700 (PDT)
-Received: from google.com ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id o11-20020a63730b000000b003fadfd7be5asm2148272pgc.18.2022.06.16.11.40.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 11:40:31 -0700 (PDT)
-Date:   Thu, 16 Jun 2022 19:40:28 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, johnson.wang@mediatek.com,
-        hsin-hsiung.wang@mediatek.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] mfd: mt6397: Add basic support for MT6331+MT6332 PMIC
-Message-ID: <Yqt5HPIXbOab6ik5@google.com>
-References: <20220520124617.228808-1-angelogioacchino.delregno@collabora.com>
- <20220520124617.228808-3-angelogioacchino.delregno@collabora.com>
+        Thu, 16 Jun 2022 14:43:20 -0400
+Received: from 1.mo581.mail-out.ovh.net (1.mo581.mail-out.ovh.net [178.33.45.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9960F2AC6C
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 11:43:17 -0700 (PDT)
+Received: from player715.ha.ovh.net (unknown [10.111.172.45])
+        by mo581.mail-out.ovh.net (Postfix) with ESMTP id 6DF5224DBA
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 17:25:09 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player715.ha.ovh.net (Postfix) with ESMTPSA id 5AE862B80DA9F;
+        Thu, 16 Jun 2022 17:25:03 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-100R0033e926c55-2866-4034-a799-f193b4c44a42,
+                    EEA695ED62D0B30D35F9F30395731DD21189161B) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Sam Ravnborg <sam@ravnborg.org>, dri-devel@lists.freedesktop.org
+Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Stephen Kitt <steve@sk2.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/3] drm/panel: Use backlight helpers
+Date:   Thu, 16 Jun 2022 19:23:12 +0200
+Message-Id: <20220616172316.1355133-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220520124617.228808-3-angelogioacchino.delregno@collabora.com>
+X-Ovh-Tracer-Id: 7454864759303931611
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddvfedguddtjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejudehrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekud
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 20 May 2022, AngeloGioacchino Del Regno wrote:
-65;6800;1c
-> Add support for the MT6331 PMIC with MT6332 Companion PMIC, found
-> in MT6795 Helio X10 smartphone platforms.
-> 
-> This combo has support for multiple devices but, for a start,
-> only the following have been implemented:
-> - Regulators (two instances, one in MT6331, one in MT6332)
-> - RTC (MT6331)
-> - Keys (MT6331)
-> - Interrupts (MT6331 also dispatches MT6332's interrupts)
-> 
-> There's more to be implemented, especially for MT6332, which
-> will come at a later stage.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  drivers/mfd/mt6397-core.c            |  47 ++
->  drivers/mfd/mt6397-irq.c             |   9 +-
->  include/linux/mfd/mt6331/core.h      |  53 +++
->  include/linux/mfd/mt6331/registers.h | 584 ++++++++++++++++++++++++
->  include/linux/mfd/mt6332/core.h      |  53 +++
->  include/linux/mfd/mt6332/registers.h | 642 +++++++++++++++++++++++++++
->  include/linux/mfd/mt6397/core.h      |   2 +
->  7 files changed, 1389 insertions(+), 1 deletion(-)
->  create mode 100644 include/linux/mfd/mt6331/core.h
->  create mode 100644 include/linux/mfd/mt6331/registers.h
->  create mode 100644 include/linux/mfd/mt6332/core.h
->  create mode 100644 include/linux/mfd/mt6332/registers.h
+backlight_properties.fb_blank is deprecated. The states it represents
+are handled by other properties; but instead of accessing those
+properties directly, drivers should use the helpers provided by
+backlight.h.
 
-For my own reference (apply this as-is to your sign-off block):
+This will ultimately allow fb_blank to be removed.
 
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+Changes since v1:
+- remove the last remaining fb_blank reference in drm/panel in the
+  last patch
+- remove unnecessary parentheses
 
+Stephen Kitt (3):
+  drm/panel: Use backlight helper
+  drm/panel: panel-dsi-cm: Use backlight helpers
+  drm/panel: sony-acx565akm: Use backlight helpers
+
+ .../drm/panel/panel-asus-z00t-tm5p5-n35596.c  |  7 +----
+ drivers/gpu/drm/panel/panel-dsi-cm.c          | 29 ++++---------------
+ drivers/gpu/drm/panel/panel-sony-acx565akm.c  | 12 ++------
+ 3 files changed, 9 insertions(+), 39 deletions(-)
+
+
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.30.2
+
