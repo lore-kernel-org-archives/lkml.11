@@ -2,94 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA79DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 00:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2396EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 00:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346372AbiFPAsr (ORCPT
+        id S1346114AbiFPAuO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 20:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51090 "EHLO
+        Wed, 15 Jun 2022 20:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344835AbiFPAso (ORCPT
+        with ESMTP id S245351AbiFPAuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 20:48:44 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5457156FB9;
-        Wed, 15 Jun 2022 17:48:43 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 25G0m84q9029397, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 25G0m84q9029397
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 16 Jun 2022 08:48:08 +0800
-Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 16 Jun 2022 08:48:08 +0800
-Received: from localhost.localdomain (172.21.177.191) by
- RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 16 Jun 2022 08:48:07 +0800
-From:   Edward Wu <edwardwu@realtek.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Hannes Reinecke <hare@suse.de>,
-        Edward Wu <edwardwu@realtek.com>, Tejun Heo <tj@kernel.org>,
-        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] ata: libata: add qc->flags in ata_qc_complete_template tracepoint
-Date:   Thu, 16 Jun 2022 08:48:02 +0800
-Message-ID: <20220616004803.12145-1-edwardwu@realtek.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220616001615.11636-1-edwardwu@realtek.com>
-References: <20220616001615.11636-1-edwardwu@realtek.com>
+        Wed, 15 Jun 2022 20:50:11 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6663757125
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 17:50:10 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id q1-20020a056830018100b0060c2bfb668eso2056ota.8
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 17:50:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=2n+TFof2POThL99hyq/41irwfqDc3AvWFjRglyLstd8=;
+        b=kkakXjBt/V6u5jkZ8lAGtuG5THuUQOXAXhQ5t7xxQ1bZ867DsPsh6EImLphuq5fs9m
+         dHRWyw92ps+4aK9S0iOh5TyCmBMusc0rU7T4dyZ0VTB+re06qoqjCAQlmmn6Bhtq/gEV
+         GPzw26VRwLnqQDp/o+uv6K1dgu9zqduUnfe38=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=2n+TFof2POThL99hyq/41irwfqDc3AvWFjRglyLstd8=;
+        b=rgU30s610lNlkb/KO3kiH2txD5j2VMKv3I9kupM9IPBAfjToaEoKQUWB4UVudUPxeg
+         6qVN5+CZD+6yWYZkDharOS44Ak28axcQP2d+3LuFg6etd8qwdqOO67LrayIFCwN876T8
+         afaCXGdXqCSpSZbyNa3pfn5ymL0Yb2D2iqcYeH6ZnrHoRboKrUnzSCx3M+0TK13LeOPC
+         mx1boJKaUwgp7BdwBSa+Tlm67r1+qVmjHeuWuqN6UBPw6AuSXPZ//RT9tFiSth19vfzs
+         krbNRd3Io32ABwIqtPHfTv/liQZS/dST2l5eP82Kpp7VPQ9lEA1tDH526TAjyzSaNugQ
+         Z1VA==
+X-Gm-Message-State: AJIora9cXcKGSrIHoZDSLPyFtbAzvJ18+1E/tfLAvg8sl0Xz2c5JcnKc
+        ct+pC+NrMLX7fd+HoHr1dbiAyAtGzc2nWTmrSR10gw==
+X-Google-Smtp-Source: AGRyM1sFQjWy7A0wLfGZw6Rskgi/CnY4DvjLwxEzj4DpBc8R4s8j8PtToCS9MtRb3a/yZKR0osG6MihBhJdqDZBQNVI=
+X-Received: by 2002:a9d:6484:0:b0:60b:eb0b:4054 with SMTP id
+ g4-20020a9d6484000000b0060beb0b4054mr1106041otl.159.1655340609475; Wed, 15
+ Jun 2022 17:50:09 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 15 Jun 2022 17:50:09 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.21.177.191]
-X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
- RTEXMBS03.realtek.com.tw (172.21.6.96)
-X-KSE-ServerInfo: RTEXMBS03.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: trusted connection
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 06/16/2022 00:26:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzYvMTUgpFWkyCAxMDoxODowMA==?=
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+In-Reply-To: <CAD=FV=UU-AENyChCvVAKH709E4hFtgo4Txa8zFDY=JM1UifA0g@mail.gmail.com>
+References: <20220614195144.2794796-1-swboyd@chromium.org> <20220614195144.2794796-3-swboyd@chromium.org>
+ <CAD=FV=UU-AENyChCvVAKH709E4hFtgo4Txa8zFDY=JM1UifA0g@mail.gmail.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 15 Jun 2022 17:50:09 -0700
+Message-ID: <CAE-0n53v4Ts0D=FUZwCHa-q0gkQnujPWvvq+_8zZmYaAozcVAw@mail.gmail.com>
+Subject: Re: [PATCH v6 2/2] dt-bindings: cros-ec: Add ChromeOS fingerprint binding
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, chrome-platform@lists.linux.dev,
+        Guenter Roeck <groeck@chromium.org>,
+        Craig Hesling <hesling@chromium.org>,
+        Tom Hughes <tomhughes@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add flags value to check the result of ata completion
+Quoting Doug Anderson (2022-06-14 15:41:25)
+> On Tue, Jun 14, 2022 at 12:51 PM Stephen Boyd <swboyd@chromium.org> wrote:
+> > +
+> > +select:
+> > +  properties:
+> > +    compatible:
+> > +      contains:
+> > +        const: google,cros-ec-spi
+> > +  required:
+> > +    - compatible
+> > +    - boot0-gpios
+>
+> I've never personally used "select" before and I'm not sure where it's
+> documented. Without knowing anything, it seems weird to me that in
+> this file we're matching against a compatible that's not
+> google,cros-ec-fp. Randomly grabbing some other example that's similar
+> (panel-lvds.yaml) looks more like what I would have expected. AKA in
+> this file:
+>
+> select:
+>   properties:
+>     compatible:
+>       contains:
+>         const: google,cros-ec-fp
+>   required:
+>     - compatible
+>
+> ...and then in the other file:
+>
+> select:
+>   properties:
+>     compatible:
+>       contains:
+>         const: google,cros-ec-spi
+>   not:
+>     properties:
+>       compatible:
+>         contains:
+>           const: google,cros-ec-fp
+>   required:
+>     - compatible
+>
+>
+> Of course, if one of the dt maintainers gives different advice then
+> listen to them. ;-)
+>
 
-Fixes: 255c03d15a29 ("libata: Add tracepoints")
-Link: https://lkml.kernel.org/r/20220616001615.11636-1-edwardwu@realtek.com
-Signed-off-by: Edward Wu <edwardwu@realtek.com>
----
-v2:
-- Add Fixes tag
-
- include/trace/events/libata.h | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/include/trace/events/libata.h b/include/trace/events/libata.h
-index d4e631aa976f..6025dd8ba4aa 100644
---- a/include/trace/events/libata.h
-+++ b/include/trace/events/libata.h
-@@ -288,6 +288,7 @@ DECLARE_EVENT_CLASS(ata_qc_complete_template,
- 		__entry->hob_feature	= qc->result_tf.hob_feature;
- 		__entry->nsect		= qc->result_tf.nsect;
- 		__entry->hob_nsect	= qc->result_tf.hob_nsect;
-+		__entry->flags		= qc->flags;
- 	),
- 
- 	TP_printk("ata_port=%u ata_dev=%u tag=%d flags=%s status=%s " \
--- 
-2.17.1
-
+I followed a pwm example, see renesas,tpu-pwm.yaml, but I suspect this
+works just as well. I don't really care either way so I'll defer to DT
+maintainers here.
