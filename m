@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C88AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3795CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:54:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359405AbiFPGyQ (ORCPT
+        id S1359414AbiFPGyU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 02:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
+        Thu, 16 Jun 2022 02:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359136AbiFPGxr (ORCPT
+        with ESMTP id S1359264AbiFPGxs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 02:53:47 -0400
+        Thu, 16 Jun 2022 02:53:48 -0400
 Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A57B5BD12
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:53:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 372C15BD17
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:53:29 -0700 (PDT)
 X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
         LIVER,40,3)
 Received: from 172.28.114.216
         by mx1.cqplus1.com with MailGates ESMTP Server V5.0(23338:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Thu, 16 Jun 2022 14:42:35 +0800 (CST)
+        (envelope-from <qinjian@cqplus1.com>); Thu, 16 Jun 2022 14:42:36 +0800 (CST)
 From:   Qin Jian <qinjian@cqplus1.com>
 To:     sboyd@kernel.org
 Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
@@ -29,9 +29,9 @@ Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
         Qin Jian <qinjian@cqplus1.com>
-Subject: [PATCH v19 05/11] clk: gate: Add devm_clk_hw_register_gate_parent_data()
-Date:   Thu, 16 Jun 2022 14:42:21 +0800
-Message-Id: <70efe3b8ba941d897599ba8a61ae31984dbd3ed2.1655360818.git.qinjian@cqplus1.com>
+Subject: [PATCH v19 09/11] ARM: sunplus: Add initial support for Sunplus SP7021 SoC
+Date:   Thu, 16 Jun 2022 14:42:25 +0800
+Message-Id: <e1d1878affe709c1ef42794dec77d0f79009bb59.1655360818.git.qinjian@cqplus1.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1655360818.git.qinjian@cqplus1.com>
 References: <cover.1655360818.git.qinjian@cqplus1.com>
@@ -41,42 +41,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devm_clk_hw_register_gate_parent_data() - devres-managed version
-of clk_hw_register_gate_parent_data()
+This patch aims to add an initial support for Sunplus SP7021 SoC.
 
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Qin Jian <qinjian@cqplus1.com>
 ---
- include/linux/clk-provider.h | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ MAINTAINERS                    |  1 +
+ arch/arm/Kconfig               |  2 ++
+ arch/arm/Makefile              |  1 +
+ arch/arm/mach-sunplus/Kconfig  | 27 +++++++++++++++++++++++++++
+ arch/arm/mach-sunplus/Makefile |  8 ++++++++
+ arch/arm/mach-sunplus/sp7021.c | 16 ++++++++++++++++
+ 6 files changed, 55 insertions(+)
+ create mode 100644 arch/arm/mach-sunplus/Kconfig
+ create mode 100644 arch/arm/mach-sunplus/Makefile
+ create mode 100644 arch/arm/mach-sunplus/sp7021.c
 
-diff --git a/include/linux/clk-provider.h b/include/linux/clk-provider.h
-index c10dc4c65..179346c5c 100644
---- a/include/linux/clk-provider.h
-+++ b/include/linux/clk-provider.h
-@@ -567,6 +567,23 @@ struct clk *clk_register_gate(struct device *dev, const char *name,
- 	__devm_clk_hw_register_gate((dev), NULL, (name), (parent_name), NULL, \
- 			       NULL, (flags), (reg), (bit_idx),		      \
- 			       (clk_gate_flags), (lock))
-+/**
-+ * devm_clk_hw_register_gate_parent_data - register a gate clock with the
-+ * clock framework
-+ * @dev: device that is registering this clock
-+ * @name: name of this clock
-+ * @parent_data: parent clk data
-+ * @flags: framework-specific flags for this clock
-+ * @reg: register address to control gating of this clock
-+ * @bit_idx: which bit in the register controls gating of this clock
-+ * @clk_gate_flags: gate-specific flags for this clock
-+ * @lock: shared register lock for this clock
+diff --git a/MAINTAINERS b/MAINTAINERS
+index cdbc9eb26..ac2cb50d0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2831,6 +2831,7 @@ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+ F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ F:	Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
+ F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
++F:	arch/arm/mach-sunplus/
+ F:	drivers/clk/clk-sp7021.c
+ F:	drivers/irqchip/irq-sp7021-intc.c
+ F:	drivers/reset/reset-sunplus.c
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 7630ba9cb..cb37b1722 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -588,6 +588,8 @@ source "arch/arm/mach-sti/Kconfig"
+ 
+ source "arch/arm/mach-stm32/Kconfig"
+ 
++source "arch/arm/mach-sunplus/Kconfig"
++
+ source "arch/arm/mach-sunxi/Kconfig"
+ 
+ source "arch/arm/mach-tegra/Kconfig"
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index c8e3633f5..56f655dee 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -215,6 +215,7 @@ machine-$(CONFIG_ARCH_RENESAS)	 	+= shmobile
+ machine-$(CONFIG_ARCH_INTEL_SOCFPGA)	+= socfpga
+ machine-$(CONFIG_ARCH_STI)		+= sti
+ machine-$(CONFIG_ARCH_STM32)		+= stm32
++machine-$(CONFIG_ARCH_SUNPLUS)		+= sunplus
+ machine-$(CONFIG_ARCH_SUNXI)		+= sunxi
+ machine-$(CONFIG_ARCH_TEGRA)		+= tegra
+ machine-$(CONFIG_ARCH_U8500)		+= ux500
+diff --git a/arch/arm/mach-sunplus/Kconfig b/arch/arm/mach-sunplus/Kconfig
+new file mode 100644
+index 000000000..926cde5e3
+--- /dev/null
++++ b/arch/arm/mach-sunplus/Kconfig
+@@ -0,0 +1,27 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++
++menuconfig ARCH_SUNPLUS
++	bool "Sunplus SoCs"
++	depends on ARCH_MULTI_V7
++	help
++	  Support for Sunplus SoC family: SP7021 and succeeding SoC-based systems,
++	  such as the Banana Pi BPI-F2S development board (and derivatives).
++	  (<http://www.sinovoip.com.cn/ecp_view.asp?id=586>)
++	  (<https://tibbo.com/store/plus1.html>)
++
++config SOC_SP7021
++	bool "Sunplus SP7021 SoC support"
++	depends on ARCH_SUNPLUS
++	default ARCH_SUNPLUS
++	select HAVE_ARM_ARCH_TIMER
++	select ARM_GIC
++	select ARM_PSCI
++	select PINCTRL
++	select PINCTRL_SPPCTL
++	select SERIAL_SUNPLUS
++	select SERIAL_SUNPLUS_CONSOLE
++	help
++	  Support for Sunplus SP7021 SoC. It is based on ARM 4-core
++	  Cortex-A7 with various peripherals (e.g.: I2C, SPI, SDIO,
++	  Ethernet, etc.), FPGA interface,  chip-to-chip bus.
++	  It is designed for industrial control.
+diff --git a/arch/arm/mach-sunplus/Makefile b/arch/arm/mach-sunplus/Makefile
+new file mode 100644
+index 000000000..d211de6af
+--- /dev/null
++++ b/arch/arm/mach-sunplus/Makefile
+@@ -0,0 +1,8 @@
++# SPDX-License-Identifier: GPL-2.0
++#
++# Makefile for the linux kernel.
++#
++
++# Object file lists.
++
++obj-$(CONFIG_SOC_SP7021)	+= sp7021.o
+diff --git a/arch/arm/mach-sunplus/sp7021.c b/arch/arm/mach-sunplus/sp7021.c
+new file mode 100644
+index 000000000..774d0a5bd
+--- /dev/null
++++ b/arch/arm/mach-sunplus/sp7021.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ * Copyright (C) Sunplus Technology Co., Ltd.
++ *       All rights reserved.
 + */
-+#define devm_clk_hw_register_gate_parent_data(dev, name, parent_data, flags,  \
-+				       reg, bit_idx, clk_gate_flags, lock)    \
-+	__devm_clk_hw_register_gate((dev), NULL, (name), NULL, NULL,	      \
-+			       (parent_data), (flags), (reg), (bit_idx),      \
-+			       (clk_gate_flags), (lock))
- void clk_unregister_gate(struct clk *clk);
- void clk_hw_unregister_gate(struct clk_hw *hw);
- int clk_gate_is_enabled(struct clk_hw *hw);
++#include <linux/kernel.h>
++#include <asm/mach/arch.h>
++
++static const char *sp7021_compat[] __initconst = {
++	"sunplus,sp7021",
++	NULL
++};
++
++DT_MACHINE_START(SP7021_DT, "SP7021")
++	.dt_compat	= sp7021_compat,
++MACHINE_END
 -- 
 2.33.1
 
