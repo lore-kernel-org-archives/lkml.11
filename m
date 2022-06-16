@@ -2,88 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DB2BCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79EACC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbiFPUs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 16:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60790 "EHLO
+        id S1378685AbiFPUyY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 16:54:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378749AbiFPUsD (ORCPT
+        with ESMTP id S231972AbiFPUyL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 16:48:03 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C8E31510
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:47:59 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id y196so2470123pfb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:47:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=DSrnqAFWoF8mM4JPrtGHlUHqt2gHTlKj7WZsyQLOO9Y=;
-        b=NgrhyL1PF0ArhJm3ZhmdVUCh7jC1G5NtECPB4odxnvf36oIlo9JvJxiwHUOikYnGez
-         OZfYmHP8lBAcxmsCX8JHuOyz2fSjl1a/gbp4YZzz+fcUUxozbYkaHcm7iUjUMyYs77nh
-         ptLlGDzrt0KJ9WVl/mJX/KRi7YLkikhaZtxY+3sl1xUw2weLKkSzVSatDZF5srb6gVTj
-         L5hynDAGPpaDVarNiOTx00gFaJHpnxyj1Emh3ipGEdzu6G8DIds4TxAMyRLtQbJK+8Xs
-         QojnrCRX9V5dwo1ThTzJ8xEXXmh97WnM6DDJmGcEmlfmtIgfZJ4X7Hse164v7gPkCfv9
-         V2kQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DSrnqAFWoF8mM4JPrtGHlUHqt2gHTlKj7WZsyQLOO9Y=;
-        b=RIb/Txrs+8y2kON9O5GjLOGFFGvCW7wgCF7Mhzq82Sz+qrN+IDaq6PZQHSmovSxNez
-         iUa/e3iyxPRsLucBhuP4+SAUdXcFylCo0uf4dBrjtok/A1VeDFSgJZJQAju2HzCCYABG
-         2eA4ryNt2p27lEtZJJTxykOb5I9mx0Xbgvf0VkMkl0PrmSAL5uES8NH78IPoC4JmGvoA
-         0HHfpCP11SOp96dCpYM9fqGVnMvNPeMs3RaCqtsANk8kH8UfxzxXgZGqnHwBsa+ApM+n
-         +M37djOjlvIN8IaMHpcuNg1MiRFQ3gpClXzueBIjBjgq1Z0kj6iwFnn+w1mkVfd0FV3s
-         +euQ==
-X-Gm-Message-State: AJIora/VK0in9Fgz1cCt6Pqv5QHYimxPwspVmXl90H0N/9/3iGdJCUdS
-        tdgpDBI36TkHsbzVB+TXA30rPQ==
-X-Google-Smtp-Source: AGRyM1s3VZTZrltd4/YYrXxaN7XSMklshqxOTInsXy0XAwRNWsYt3C+nUfHUDZDFdXfzDYBLQBwVzQ==
-X-Received: by 2002:a05:6a00:14c8:b0:51c:29fb:7b2 with SMTP id w8-20020a056a0014c800b0051c29fb07b2mr6611600pfu.24.1655412479376;
-        Thu, 16 Jun 2022 13:47:59 -0700 (PDT)
-Received: from krzk-bin.. ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id 203-20020a6218d4000000b0051ba0ee30cbsm2165453pfy.128.2022.06.16.13.47.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 13:47:59 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Nancy Yuen <yuenn@google.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Tomer Maimon <tmaimon77@gmail.com>, openbmc@lists.ozlabs.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Avi Fishman <avifishman70@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Benjamin Fair <benjaminfair@google.com>,
-        Patrick Venture <venture@google.com>,
-        Tali Perry <tali.perry1@gmail.com>, devicetree@vger.kernel.org
-Subject: Re: [PATCH] ARM: dts: nuvoton: adjust whitespace around '='
-Date:   Thu, 16 Jun 2022 13:47:20 -0700
-Message-Id: <165541242280.9040.13557968338799812389.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220526203724.831215-1-krzysztof.kozlowski@linaro.org>
-References: <20220526203724.831215-1-krzysztof.kozlowski@linaro.org>
+        Thu, 16 Jun 2022 16:54:11 -0400
+X-Greylist: delayed 25331 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Jun 2022 13:54:05 PDT
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EEF5AED6;
+        Thu, 16 Jun 2022 13:54:05 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 3677FC01C; Thu, 16 Jun 2022 22:54:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1655412844; bh=X/9Mnt59MpOxvWO59sXdsi9u5n4Xq1/JhwqX4dEqABs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JoqVs5/UNitWWr0njvnA/+JKPeUjQvQ95A8K6WEcSWEJKRmm9H0yW7blkvGrDgWlH
+         AUYSXMobBMbVMg/MxHGCHwqnG56mpLlwKhFfuR2ifjZGNqoX1KZ3h0OQvWvcXQtdVy
+         vELCHD4L6Ctaq7cV7jblsJTgzWrheYU3bKbIPCZQTAnKVtpcEVlRPRllNOqGBmu9RQ
+         6KS0VI66q2FKjhbgic+sMn7debdfHEgnyd6sXjzddTvMFcN6wog37JjhjeUfzix+NY
+         5pf3r8QYkQ7IiYBls+6K+2AmTDrYp1Wzu0NCV02XhuW4Kb6Lr8SkMgrV+FCGTvp7tV
+         bOCPC7zEnvZ1Q==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 2D342C009;
+        Thu, 16 Jun 2022 22:54:00 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1655412843; bh=X/9Mnt59MpOxvWO59sXdsi9u5n4Xq1/JhwqX4dEqABs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KQYxpI9EUKW9gNY7pUpW5oLCxetbUStRGqpC7RfFJAfas8VEzTfxcg2D1uaZrv58U
+         1it6igOsJHiXHaBKCRA7Hl980tJQCvIw8rz7S9hsvwHPWmrzskbOHw6zl7fTz6WBNu
+         FhWj0bJ55znDeBC3fnuXK8vgPEdW6+cnQ17o0OwY6YIdq/fsrRQBigLdHJXn8ZpClb
+         m1bpoMkSeSCyZTVqriB7qb2xNe9Eca4b0CjUgH76VZvvPbZ5kd7jJ2kL1lauc6gZwP
+         LcEB3YoT/6hdWhbXdkY1m/rB57grS610znEtFx7+hNFrdHbO+MZDilr1gXtTlJsTqu
+         mEhCmA8ZBPC4Q==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 0a286bde;
+        Thu, 16 Jun 2022 20:53:57 +0000 (UTC)
+Date:   Fri, 17 Jun 2022 05:53:42 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        David Howells <dhowells@redhat.com>,
+        linux-fsdevel@vger.kernel.org, stable@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] 9p: fix EBADF errors in cached mode
+Message-ID: <YquYVgBMxY37P+r3@codewreck.org>
+References: <YqW5s+GQZwZ/DP5q@codewreck.org>
+ <Yqs1Y8G/Emi/q+S2@codewreck.org>
+ <Yqs6BPVc3rNZ9byJ@codewreck.org>
+ <15767273.MGizftpLG7@silver>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <15767273.MGizftpLG7@silver>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 26 May 2022 22:37:24 +0200, Krzysztof Kozlowski wrote:
-> Fix whitespace coding style: use single space instead of tabs or
-> multiple spaces around '=' sign in property assignment.  No functional
-> changes (same DTB).
+Christian Schoenebeck wrote on Thu, Jun 16, 2022 at 10:14:16PM +0200:
+> I tested all 3 variants today, and they were all behaving correctly (no EBADF 
+> errors anymore, no other side effects observed).
+
+Thanks!
+
+> The minimalistic version (i.e. your initial suggestion) performed 20% slower 
+> in my tests, but that could be due to the fact that it was simply the 1st 
+> version I tested, so caching on host side might be the reason. If necessary I 
+> can check the performance aspect more thoroughly.
+
+hmm, yeah we open the writeback fids anyway so I'm not sure what would
+be really different performance-wise, but I'd tend to go with the most
+restricted change anyway.
+
+> Personally I would at least use the NETFS_READ_FOR_WRITE version, but that's 
+> up to you. On doubt, clarify with David's plans.
 > 
+> Feel free to add my RB and TB tags to any of the 3 version(s) you end up 
+> queuing:
 > 
+> Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+> Tested-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 
-Applied, thanks!
+Thanks, I'll add these and resend the last version for archival on the
+list / commit message wording check.
 
-[1/1] ARM: dts: nuvoton: adjust whitespace around '='
-      https://git.kernel.org/krzk/linux/c/f30528c6b08a4e4b8e6a36ef10c1e7bc918bf6f0
-
-Best regards,
--- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+At last that issue closed...
+--
+Dominique
