@@ -2,103 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD84FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C620C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378925AbiFPVdO (ORCPT
+        id S1379151AbiFPVdh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 17:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53186 "EHLO
+        Thu, 16 Jun 2022 17:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378817AbiFPVdL (ORCPT
+        with ESMTP id S1379218AbiFPVdc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 17:33:11 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9736B3AA6A
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 14:33:10 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id n28so3842237edb.9
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 14:33:10 -0700 (PDT)
+        Thu, 16 Jun 2022 17:33:32 -0400
+X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Jun 2022 14:33:31 PDT
+Received: from USAT19PA22.eemsg.mail.mil (USAT19PA22.eemsg.mail.mil [214.24.22.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCFF612AB;
+        Thu, 16 Jun 2022 14:33:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=laSJoDIgvQBCTId5pVKj53fMxGvIURwK5+ffKs0ASlY=;
-        b=UBd17f/1SnZchYlExkTEs7FEuYTDz5ujzCzXm/SGFxfc7vQJ4lD7bhjBqiIPj2yGEY
-         OwWwEycnPAU139vVsRVxUyNnf6H75fg5PESXPcSy4hSPmAVLjAgzMN7gutw+N7PP/V/n
-         4Xha3koafKzw6BNAP+dZFpiWU3OKxLzLTXz5t7r/ZXiv/OgndLmncmtxxVKo22qgcomS
-         nTxiiFAiPY6wxRbda4CwsKu1nSWydVfLTtRpNEv6aAzv+AsbfvhPMIOeOhCoOLZPP9Ws
-         w+cmzNI/W2M1sMrVY8ka2YLMDqLl5axbTOql/Vt16eIKZ39AGlUcV6dPfCwO1RUQQdn0
-         B45w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=laSJoDIgvQBCTId5pVKj53fMxGvIURwK5+ffKs0ASlY=;
-        b=Uld0Xke1rhFbAWyWF6Xr+YGtHfQJlikhN7U48CBpktd9RmJ1+Y4TaLN76hP4nuauOS
-         xujg4RVfYQBV39kamRq6LHoayB8ES2wWS6YIR2MSZm0JozNgIgdlwYI8SwsAPdnP9etc
-         2QD45Q0LyFot4XstXEqlN5Jz631UZrLQcqYyoti6PyFOFAKjeB9IHslS6zHVcpPVpojS
-         S9NqDL5drn8S6OlP5aJ0g/FCBBIsLwDN3ePVRsN1Wildop2Uxd1QF0CDxFpu153bhv6w
-         b1PtYpftxy7zIIA/1x1QiTp1F73TPJ5osBI+D8Kt38MmKDDhA6rlhLCsfS08zruxo4Qi
-         YohQ==
-X-Gm-Message-State: AJIora+Ya6lkQUTdI9RCWbg+TS/FZ7c40ta+art621l0MloP0iJCenLD
-        qn+XGwueUHydVpSthVNJD+0=
-X-Google-Smtp-Source: AGRyM1smWRQNfSGi+fNS3fxjPTkk1JtE/FL1CrltkwNtsatE8j54xbfVNS+Jv1BDstvw0sEj54qO3A==
-X-Received: by 2002:aa7:c857:0:b0:433:5c62:ddbc with SMTP id g23-20020aa7c857000000b004335c62ddbcmr8865690edt.218.1655415189047;
-        Thu, 16 Jun 2022 14:33:09 -0700 (PDT)
-Received: from kista.localdomain (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id d5-20020a170906304500b0070f7d1c5a18sm1241230ejd.55.2022.06.16.14.33.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 14:33:08 -0700 (PDT)
-From:   Jernej Skrabec <jernej.skrabec@gmail.com>
-To:     mripard@kernel.org, wens@csie.org
-Cc:     airlied@linux.ie, daniel@ffwll.ch, samuel@sholland.org,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: [PATCH] drm/sun4i: Add DMA mask and segment size
-Date:   Thu, 16 Jun 2022 23:32:40 +0200
-Message-Id: <20220616213240.392041-1-jernej.skrabec@gmail.com>
-X-Mailer: git-send-email 2.36.1
+  d=mail.mil; i=@mail.mil; q=dns/txt; s=EEMSG2021v1a;
+  t=1655415211; x=1686951211;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=DEo/Kl2hiWvMzst9BA79rVasOcb1cnduGVjmoVeD4zY=;
+  b=bWnmy2cADLMUBeQ3hEhi6mcF66jPeCrqeANKkFAHzITSNlDXKuAld/MB
+   3qxRNgsKUFS6HqYlyyMDmXwPtJJxbs3L2D4W7xKj+gH3wkpHX50mraS5W
+   PVgHQbdwBFYu9LiQHeInxSHVGZSKjmj16lY31/yU+g4KhH2ZNvG73NjR4
+   SuahQ0CRgVx6Wn2DXqIpoxmqY8LRU8ZlsPqUrU+h5h65X+SlVhUDeLwqU
+   /SnbcfU77FdMYTlsqu7P2waIWvtKenWdRdhuVot0ib0GXHPb/ITWoabGo
+   zw+OHYsy3ihQvakp9rY623/Y3iMNHZ/SyreMySDY4fE8/nAMQ/ceRTQdp
+   g==;
+X-EEMSG-check-017: 339600149|USAT19PA22_ESA_OUT03.csd.disa.mil
+X-IronPort-AV: E=Sophos;i="5.92,306,1650931200"; 
+   d="scan'208";a="339600149"
+IronPort-Data: A9a23:75snCawWmrgNjHjGu9V6t+fqxyrEfRIJ4+MujC+fZmUNrF6WrkUHz
+ GMdDDyBP/beYGGhKYgiaIizoUMAvpOBnNdjHQZsrS00HyNBpPSeCIXCJC8cHc8zwu4v7q5Dx
+ 59DAjUVBJlsFhcwnj/0bv656yMUOZigHtIQMsacUsxKbVIiGX1JZS5LwbZj2NY22IbhX2thh
+ PuqyyHhEA79s9JLGj9Mg06zgEsHUCPa5Vv0FnRnDRx6lAe2e0s9VfrzFonoR5fMebS4K8bhL
+ wr1IBFVyUuCl/slIovNfr8W6STmSJaKVeSFoiI+t6RPHnGuqwRqupvXOsbwZm9QpByFssw2+
+ e99uLOCFBcOY4Pjp8gCBkww/yFWZcWq+ZfKLXey9MmexE2eKj3pyvRqSkQ3OeX0+M4tWD0Ir
+ 6VecWtVKEnb3Ipaw5riIgVorsYqKcTweoZZtHBmyTjIFvEgHdbIQrvi4NZZ2HE1h8Qm8fP2P
+ JFIN2I3NUiRC/FJEhAJLag7pcv2vVnYch1b9XKFgoA2umeGmWSd15CoarI5YOeiXs9cgkuDj
+ njP/nj5BhAccteYzFKt/W+rn+7JkmX5WYsUG5W89/h3kBufy3J7IDEfS1q358K9jUe4c99eJ
+ 0EI+yEpqO4580nDZvz0RQG5pjijuh8CVttKGsU36Q2A1qvf5APfDW8BJhZBY9wOtck4XzUm2
+ 1aF2dTzClRHtLyTVGLY9bqOqz62ETYaIHVEZiIeSwYBpd75r+kbihXAR9BsOKK4isH8BTz9h
+ TuNqUAWnLIVguYI2r+98FSBhCijzrDNTwgo9kDNV2Opxh12aZTjZIGy71Xfq/FaI+6kokKps
+ XQLlo2b4esOVcjLkSWMRKMIHbXBC+u5DQAwSGVHR/EJnwlBMVb6FWyMyFmS/HtUD/s=
+IronPort-HdrOrdr: A9a23:dTaBDK+llUsixd1tFPVuk+ACI+orL9Y04lQ7vn2ZESYlFfBxl6
+ iV88jzpiWE7gr5P0tQ5OxoWZPwO080mqQFgrX5UY3OYOCighrNEGgA1/qf/9SDIVydygc178
+ 4JGMJD4Z/LfD1HZK7BkXaF+r0bruVvhZrJuQ6o9RZQpG9RB52IpD0JczpzWncGPDWuK6BJb6
+ ah2g==
+Received: from edge-mech01.mail.mil ([214.21.130.103])
+  by USAT19PA22.eemsg.mail.mil with ESMTP/TLS/ECDHE-RSA-AES256-SHA384; 16 Jun 2022 21:32:22 +0000
+Received: from UMECHPAOE.easf.csd.disa.mil (214.21.130.32) by
+ edge-mech01.mail.mil (214.21.130.103) with Microsoft SMTP Server (TLS) id
+ 14.3.498.0; Thu, 16 Jun 2022 21:32:22 +0000
+Received: from UMECHPA68.easf.csd.disa.mil ([169.254.4.207]) by
+ UMECHPAOE.easf.csd.disa.mil ([214.21.130.32]) with mapi id 14.03.0513.000;
+ Thu, 16 Jun 2022 21:32:22 +0000
+From:   "Finlayson, James M CIV (USA)" <james.m.finlayson4.civ@mail.mil>
+To:     'Logan Gunthorpe' <logang@deltatee.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-raid@vger.kernel.org" <linux-raid@vger.kernel.org>,
+        Song Liu <song@kernel.org>
+CC:     Christoph Hellwig <hch@infradead.org>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Stephen Bates <sbates@raithlin.com>,
+        "Martin Oliveira" <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>,
+        "Finlayson, James M CIV (USA)" <james.m.finlayson4.civ@mail.mil>
+Subject: RE: [Non-DoD Source] [PATCH v3 15/15] md/raid5: Increase
+ restriction on max segments per request
+Thread-Topic: [Non-DoD Source] [PATCH v3 15/15] md/raid5: Increase
+ restriction on max segments per request
+Thread-Index: AQHYgbYZzZIsZ5fz0kGRNXRewB/NQK1SjPhQ
+Date:   Thu, 16 Jun 2022 21:32:21 +0000
+Message-ID: <5EAED86C53DED2479E3E145969315A2389D4672D@UMECHPA68.easf.csd.disa.mil>
+References: <20220616191945.23935-1-logang@deltatee.com>
+ <20220616191945.23935-16-logang@deltatee.com>
+In-Reply-To: <20220616191945.23935-16-logang@deltatee.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [214.21.44.13]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kernel occasionally complains that there is mismatch in segment size
-when trying to render HW decoded videos and rendering them directly with
-sun4i DRM driver.
+Innocent question from position of ignorance....I see these last 15 check-i=
+ns all as performance improvements.   I tend to push hard on mdraid perform=
+ance, but have RAID6 needs....are these some optimizations available for RA=
+ID6 and are they in process or did I just ask a silly question?
 
-Fix that by setting DMA mask and segment size.
+Regards,
+Jim Finlayson
+US Department of Defense
 
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+-----Original Message-----
+From: Logan Gunthorpe <logang@deltatee.com>=20
+Sent: Thursday, June 16, 2022 3:20 PM
+To: linux-kernel@vger.kernel.org; linux-raid@vger.kernel.org; Song Liu <son=
+g@kernel.org>
+Cc: Christoph Hellwig <hch@infradead.org>; Guoqing Jiang <guoqing.jiang@lin=
+ux.dev>; Stephen Bates <sbates@raithlin.com>; Martin Oliveira <Martin.Olive=
+ira@eideticom.com>; David Sloan <David.Sloan@eideticom.com>; Logan Gunthorp=
+e <logang@deltatee.com>
+Subject: [Non-DoD Source] [PATCH v3 15/15] md/raid5: Increase restriction o=
+n max segments per request
+
+The block layer defaults the maximum segments to 128, which means requests =
+tend to get split around the 512KB depending on how many pages can be merge=
+d. There's no such restriction in the raid5 code so increase the limit to U=
+SHRT_MAX so that larger requests can be sent as one.
+
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 ---
- drivers/gpu/drm/sun4i/sun4i_drv.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/md/raid5.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
-index 275f7e4a03ae..83f4e87f77f6 100644
---- a/drivers/gpu/drm/sun4i/sun4i_drv.c
-+++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
-@@ -7,6 +7,7 @@
-  */
- 
- #include <linux/component.h>
-+#include <linux/dma-mapping.h>
- #include <linux/kfifo.h>
- #include <linux/module.h>
- #include <linux/of_graph.h>
-@@ -367,6 +368,9 @@ static int sun4i_drv_probe(struct platform_device *pdev)
- 
- 	INIT_KFIFO(list.fifo);
- 
-+	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-+	dma_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(32));
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c index e48c16bfe657..57=
+23a497108a 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -8005,6 +8005,9 @@ static int raid5_run(struct mddev *mddev)
+ 		 */
+ 		blk_queue_max_hw_sectors(mddev->queue,
+ 			RAID5_MAX_REQ_STRIPES << RAID5_STRIPE_SHIFT(conf));
 +
- 	for (i = 0;; i++) {
- 		struct device_node *pipeline = of_parse_phandle(np,
- 								"allwinner,pipelines",
--- 
-2.36.1
++		/* No restrictions on the number of segments in the request */
++		blk_queue_max_segments(mddev->queue, USHRT_MAX);
+ 	}
+=20
+ 	if (log_init(conf, journal_dev, raid5_has_ppl(conf)))
+--
+2.30.2
 
