@@ -2,102 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 991DCCCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A9FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:56:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377334AbiFPNz4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60922 "EHLO
+        id S230289AbiFPN4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 09:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377273AbiFPNzy (ORCPT
+        with ESMTP id S233560AbiFPN4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:55:54 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8685B4664C
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:55:53 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id s135so1297756pgs.10
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:55:53 -0700 (PDT)
+        Thu, 16 Jun 2022 09:56:43 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B0C46B38
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:56:42 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id e5so838014wma.0
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:56:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=p++bIs2HneM4Mmo2YjeBS7JYAqLzkFDGH55M3o+NIxg=;
-        b=BehuJv74CLjkgQwQW2YTJI7GYHpWAyt46Adp9YWqP2Ino810KUqBU3m1LAkJP2RoeF
-         +eA+u8d7kVSzDosz5vq7VxcNcZTX5YfEAdbw3WwaqZk6zp6IGjSa69Y0nIzpcs7oQ7T1
-         5P9k5mgEtdwx7+92E2Hd+8E/s1CExYyHRLZ7rC2g7YdASXXLLCb/7P762HZgHrjLA75R
-         xG5TtUiW3VtMrQd6uFAmQG8Y4p1sUGlhBWUz7hIEqmjYZkezA6cSjVo4NTIG9NzxS6uo
-         9KvtSOoyXEs4n5UZOYuuYOrIE0Y0joFHJlTY2q8mQG0IgbCAF5+0MpkutS140mIBOqqJ
-         kXZQ==
+        bh=m6uBZVuyEz2LJoe25N52zu3vkj3sZBGqGpB8uE3jv7A=;
+        b=FCcdLGR8f+Nh4u2S5InboaIgmcQQkJa1/T5sIaER5b1erKLX9DvZqJNGD7loQo/q7C
+         2952kKcUSS0KV+Y8KCAA2obrp6Y7UwwaB/Pq5FcS+zSpkx7tWMmapHDfShl4e/pt0Rxu
+         /acX5/8UCfH0p0Kw9wexWShHNrRFe81xuW+3iCzpM6BLg34RyYTX8NwW/PmHwy7+joru
+         O9lks34OHP+dOji5ulmU7tW46oqOySDujx/+lIOJwUWX+1sRiOxHGobuNE4qEL5zAjj9
+         tGaXFzLgjYRHKA0q72nZauUDuqLWqwwLkD5RD9KB0TMTc+HrUsZ55yS61/GGqUt4DMhA
+         uZdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=p++bIs2HneM4Mmo2YjeBS7JYAqLzkFDGH55M3o+NIxg=;
-        b=QS1irzyeq4VXIP47yQonB+yG//tLdaM8WS9g5h+fqrXOOfFRw+J4a+VaOgJS6KY5Gv
-         UzZLVIibzK3D372abxJDvDxcgQuolliXL4ttfFlwT0Zz9PKHW4Omccz3N5b0D7VLDMbf
-         ZyPaX7HNPh4eQ1ueudKGFnv2BRtRdOC74OrTFNToxZcKuA8wBaQ6wl3L/Z6tsK8FiTzV
-         QAzTLQeIxxKRV4nzp3avpnlAvFFvpk5WR+pHa/QYVnGslxmR6UZf0OkGWv5nMoi/QuB1
-         pG1lisYK7jIluxsIYPstPMKgTJoZx6HizXBjj9YLl9cdPp1SLahL+kfWQmStCvADKMvT
-         DyIA==
-X-Gm-Message-State: AJIora/FUo6W0yDOZr3EavNJRKM8Qo0dzMO/qIhMfDqzEc2xqO3XZBwF
-        d1IZfIHvv9xcvfoETD75B9ezBg==
-X-Google-Smtp-Source: AGRyM1vXMhY+ZrUKaR7yePLi9tk4x6RLg+QaJ2jT5cqYNFanziG3iv5eJoN4umJFjqajEOEp+YtBpQ==
-X-Received: by 2002:a63:356:0:b0:3fd:7477:63f0 with SMTP id 83-20020a630356000000b003fd747763f0mr4613366pgd.601.1655387752971;
-        Thu, 16 Jun 2022 06:55:52 -0700 (PDT)
-Received: from [172.20.0.255] ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id d2-20020a056a00198200b0051b9ecb53e6sm1773063pfl.105.2022.06.16.06.55.51
+        bh=m6uBZVuyEz2LJoe25N52zu3vkj3sZBGqGpB8uE3jv7A=;
+        b=5RJ9KHDyZAjGKrhLrNJY9N1avjHmde+8kZvhLM80A6FMZIAPztjqcl3cSi1/SKPxNP
+         LqCdfkZa/0ycv4cH9dKZD0i6LBSi+gs9cdXDvUXx4JNquG5D3D7fKDzXHqJE/hUCOTlG
+         yDMFiJsTOYxYPUo9CLF3vOlY+TlbAqagTQPX1tqi9p19t8gyAB6PJAv69oE/G2GnYHkg
+         +hUIz1ne0YzI8/+u9Jl9bCzv4W66V3cCShhPwBVRfA+MLguTajc9cnauSPrlAF1vPAoQ
+         Jr8kKCF843JewFuOAZGqdUKNXiUYbb/9YvRG/dXLm1p54BjKEScf+IjJJ0EbowTU1OZI
+         CUuQ==
+X-Gm-Message-State: AJIora9uB9PR1x6dfso57DUXeAxfIPvsqeGP721UJLc+7GlRGc+nYqHP
+        nCrZ+FboxNbl244gxW7CEjZK4VvQNDFVzg==
+X-Google-Smtp-Source: AGRyM1vaMBvDopUDTt0s4tdWKsT6HUNecCRsYk/m/z7HxI6lnV8qvwV44VhHPlGJhcCQclZE98LQ/Q==
+X-Received: by 2002:a05:600c:34cf:b0:39c:4dfb:1398 with SMTP id d15-20020a05600c34cf00b0039c4dfb1398mr5161884wmq.133.1655387801411;
+        Thu, 16 Jun 2022 06:56:41 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id o15-20020a05600c4fcf00b0039c811077d3sm2518057wmq.22.2022.06.16.06.56.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jun 2022 06:55:52 -0700 (PDT)
-Message-ID: <ea767ff8-9fa0-7a2f-af52-e0d05adafb03@linaro.org>
-Date:   Thu, 16 Jun 2022 06:55:51 -0700
+        Thu, 16 Jun 2022 06:56:40 -0700 (PDT)
+Message-ID: <65ebee0a-391a-294f-13f1-bc039f0a748c@gmail.com>
+Date:   Thu, 16 Jun 2022 15:56:39 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 3/4] dt-bindings: dsp: mediatek: Add mt8186 dsp
- document
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 5/5] iommu/mediatek: Remove a unused "mapping" which is
+ only for v1
 Content-Language: en-US
-To:     Tinghan Shen <tinghan.shen@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, YC Hung <yc.hung@mediatek.com>,
-        Curtis Malainey <cujomalainey@chromium.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220616073042.13229-1-tinghan.shen@mediatek.com>
- <20220616073042.13229-4-tinghan.shen@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220616073042.13229-4-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>
+Cc:     iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        mingyuan.ma@mediatek.com, yf.wang@mediatek.com,
+        libo.kang@mediatek.com, chengci.xu@mediatek.com,
+        youlin.pei@mediatek.com, anan.sun@mediatek.com,
+        xueqi.zhang@mediatek.com, Guenter Roeck <groeck@chromium.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220616054203.11365-1-yong.wu@mediatek.com>
+ <20220616054203.11365-6-yong.wu@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220616054203.11365-6-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/06/2022 00:30, Tinghan Shen wrote:
-> This patch adds mt8186 dsp document. The dsp is used for Sound Open
-> Firmware driver node. It includes registers, clocks, memory regions,
-> and mailbox for dsp.
+
+
+On 16/06/2022 07:42, Yong Wu wrote:
+> Just remove a unused variable that only is for mtk_iommu_v1.
 > 
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> Fixes: 9485a04a5bb9 ("iommu/mediatek: Separate mtk_iommu_data for v1 and v2")
 
+It does not fix a bug, so no fixes tag here needed.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+With that:
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
-
-Best regards,
-Krzysztof
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>   drivers/iommu/mtk_iommu.c | 3 ---
+>   1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 5e86fd48928a..e65e705d9fc1 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -221,10 +221,7 @@ struct mtk_iommu_data {
+>   	struct device			*smicomm_dev;
+>   
+>   	struct mtk_iommu_bank_data	*bank;
+> -
+> -	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
+>   	struct regmap			*pericfg;
+> -
+>   	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
+>   
+>   	/*
