@@ -2,105 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4000C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:25:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC71FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377689AbiFPOY6 (ORCPT
+        id S1377092AbiFPO2L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 10:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34394 "EHLO
+        Thu, 16 Jun 2022 10:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377680AbiFPOYy (ORCPT
+        with ESMTP id S1376939AbiFPO2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 10:24:54 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360D834BBD;
-        Thu, 16 Jun 2022 07:24:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655389493; x=1686925493;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=hE6chBrBrGD7pj5GeBUGyoLBvmW45blq2Czih28Qh54=;
-  b=RgQjah8OMeTODBKoQ/2gDCFC9eA7bB4s6irayevqsgYpUcSGheDxmeFW
-   SOMQ7hx7whHxDTsKRPLDsg7a33hYDLaLSDJBpa03KA3Gl1sxv82MYL1a6
-   iowjitl9Kv1S8+mEZP1PCeBOFB1HIM7PPRp43kWauEoWsXQCrygJJIldZ
-   awy5Iqq/X0VucMPtIgBtFdc9HOte1+EA5uFq/Sc4hmCWQmKPPNHcJs7Lm
-   kJVd1W6IFSF4+WdGaIb2oS8dyyqtATS1nQKYd2LdrK+0LmN8IODucoK+w
-   5+bRAUDUrroG78Q7lUotQcr8gq5myNp4oB9G79EN4vuvPFHLiTJrimlZi
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259721301"
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="259721301"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 07:24:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="583653276"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 16 Jun 2022 07:24:50 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 27E6A1C2; Thu, 16 Jun 2022 17:24:54 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] iio: accel: mma7660: Drop wrong use of ACPI_PTR()
-Date:   Thu, 16 Jun 2022 17:24:51 +0300
-Message-Id: <20220616142451.10322-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 16 Jun 2022 10:28:04 -0400
+Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252E61116A;
+        Thu, 16 Jun 2022 07:27:54 -0700 (PDT)
+X-QQ-mid: bizesmtp74t1655389596t1j0bi5p
+Received: from localhost.localdomain ( [153.0.97.30])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 16 Jun 2022 22:26:31 +0800 (CST)
+X-QQ-SSF: 01000000003000D0I000B00A0000000
+X-QQ-FEAT: FXvDfBZI5O56AgfY+y0EGHBY3j6zgMvT0PfShBaBl2GAqPoKvhB/MZWbB44z3
+        /nX30qdY08GnpBykwBv9D2LafbusBvrPO8OSNp+kZARzhX7kLFLlJ7m+78dOKt/WerR8qTN
+        WsNBulpyEAHvZbxFXnvT1onP040gUY5IsaGfDU1OG9fE+ZIk9Rm5+ckO0gbB0L8g2pWB2wu
+        NM1H+xkuBpbRgvax1Bhqir/lzHUCFpaR2UWFneIkoD9Ig9JI0UgqEDhjZ7KQL2kM17v7GtB
+        Qchb+WstPQ+UuNd+M7l6e4YOrKxKvGX/oU4rD5Q3+v5e14wAdUr1Pa8XxAm/UwwJ2euEKGl
+        O5YG8Sw3kmtUDfyDlw=
+X-QQ-GoodBg: 0
+From:   Xiang wangx <wangxiang@cdjrlc.com>
+To:     paulus@samba.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-ppp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiang wangx <wangxiang@cdjrlc.com>
+Subject: [PATCH] ppp: Fix typo in comment
+Date:   Thu, 16 Jun 2022 22:26:24 +0800
+Message-Id: <20220616142624.3397-1-wangxiang@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ACPI_PTR() is more harmful than helpful. For example, in this case
-if CONFIG_ACPI=n, the ID table left unused which is not what we want.
+Delete the redundant word 'the'.
 
-Instead of making linker to drop a section, drop ACPI_PTR().
-
-As a side effect this makes driver ACPI and OF clean.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
 ---
- drivers/iio/accel/mma7660.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ppp/ppp_generic.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/mma7660.c b/drivers/iio/accel/mma7660.c
-index 112a5a33c29f..794f2f383303 100644
---- a/drivers/iio/accel/mma7660.c
-+++ b/drivers/iio/accel/mma7660.c
-@@ -7,8 +7,8 @@
-  * IIO driver for Freescale MMA7660FC; 7-bit I2C address: 0x4c.
-  */
+diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
+index 4a365f15533e..9206c660a72e 100644
+--- a/drivers/net/ppp/ppp_generic.c
++++ b/drivers/net/ppp/ppp_generic.c
+@@ -2968,7 +2968,7 @@ ppp_unregister_channel(struct ppp_channel *chan)
+ 	chan->ppp = NULL;
  
--#include <linux/acpi.h>
- #include <linux/i2c.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -255,7 +255,7 @@ static const struct of_device_id mma7660_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, mma7660_of_match);
- 
--static const struct acpi_device_id __maybe_unused mma7660_acpi_id[] = {
-+static const struct acpi_device_id mma7660_acpi_id[] = {
- 	{"MMA7660", 0},
- 	{}
- };
-@@ -267,7 +267,7 @@ static struct i2c_driver mma7660_driver = {
- 		.name = "mma7660",
- 		.pm = pm_sleep_ptr(&mma7660_pm_ops),
- 		.of_match_table = mma7660_of_match,
--		.acpi_match_table = ACPI_PTR(mma7660_acpi_id),
-+		.acpi_match_table = mma7660_acpi_id,
- 	},
- 	.probe		= mma7660_probe,
- 	.remove		= mma7660_remove,
+ 	/*
+-	 * This ensures that we have returned from any calls into the
++	 * This ensures that we have returned from any calls into
+ 	 * the channel's start_xmit or ioctl routine before we proceed.
+ 	 */
+ 	down_write(&pch->chan_sem);
 -- 
-2.35.1
+2.36.1
 
