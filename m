@@ -2,91 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C20C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE32CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378280AbiFPURp (ORCPT
+        id S1378398AbiFPUSU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 16:17:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58606 "EHLO
+        Thu, 16 Jun 2022 16:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231259AbiFPURd (ORCPT
+        with ESMTP id S1378388AbiFPUSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 16:17:33 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CD9CD1
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:17:31 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id h23so4773201ejj.12
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:17:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DX0lnwq0FoNDe0NHo5zKy58uDrKTU3ba2v/5ACg45Z4=;
-        b=Ftx+4afl5YF/5tcf+NRZe6rqNl8IY6qTVKvED70taBft2puuoEEjqrpuI+6wzeM+6A
-         nDYdLOMEoyIbdqrTHajuBCSFjvXqcyMgTZFifeNBpEpLFZ1gM0gatIsXSeI+e9eCXpoN
-         IYTJ2Jfw6AVvqpaW759a5kHQiTF1p8/HAZIOFYqw0/VesAvnLL7xlhq8WZTJW/Q+girV
-         zosFGF9LZoR89rNz2kkNtezOLzvoDRb34Y6ZXHJvTnUOA+iHOKVFQTZIINO0Ci0/+exg
-         eTtybAaIBbs0oIoqDj1OUN2E3tcGIdjyU75XOCkNTsl/HCOvD072EqSq0kSJDB1Y5fBw
-         CE4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DX0lnwq0FoNDe0NHo5zKy58uDrKTU3ba2v/5ACg45Z4=;
-        b=jIDNg6LbNjmExBTDDqVHIg/XbrLUlLCgYh/cR/afYiMSLnSoqX/U6+XJIwgmvpXdv3
-         PTEk90XBpl8jFmHZt9+wXMasxoVuJ74dk3d81bkSYgo0/kZm/uusrqlk9ADUuzg8CTlw
-         SH6v/hBGaloDAwKwyvfMTaJVzvXrxqclD0mvOs85lR4XZx4r48T9bTgya/tNFUwe9Nku
-         pJamJCylJ+cmnCSOF+E7bXn7PTPrBcTeRryaScVo8WgdyvnL2Ek7q6J2kGnG6wVun7MA
-         oicuXP/B0mFSBoxWKINsZ5zXmr5dQozRxuQDIrgOc41H30K/dPj9PK8IffUxJV1bggrU
-         PSaw==
-X-Gm-Message-State: AJIora/nwqO8ND06BxEHKI11Os7YMh/BR1WtjQANU2m2mzVTz9IdtLwu
-        CaKKJr+gEFR62N8lZ87n4OefI/QziZXl/h7QnlmmsW0YrsQ=
-X-Google-Smtp-Source: AGRyM1vReoKWj7a7/tslQx3VnTeuxl59MJHG6jHeVjNgYy9WKSILutmLIGTT07Uc+vE/vpKVxqEUYXfq7AuWDxwygGc=
-X-Received: by 2002:a17:906:7386:b0:715:7024:3df7 with SMTP id
- f6-20020a170906738600b0071570243df7mr6017328ejl.543.1655410649682; Thu, 16
- Jun 2022 13:17:29 -0700 (PDT)
+        Thu, 16 Jun 2022 16:18:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1650135257;
+        Thu, 16 Jun 2022 13:18:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8CE561DB9;
+        Thu, 16 Jun 2022 20:18:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3B2AC3411F;
+        Thu, 16 Jun 2022 20:18:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655410696;
+        bh=iOxOv0QdDiqnoNfajHWkadykNw8yw6SMHWPSQ+/Z1Cs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XCySuz3YzYlgIHp8UL9jy8oSMx9yC+Hk6wTrq88c+IqE3hXqu0MY+j4K/xAAKTOAB
+         sAbep1qh9fUb8cPkmzPaQXFgxh+7nOMstYpxFHqIhVpafDfYexM9uSN3fhdwzTOemJ
+         vVKthy2fIB4Jh7ii0yur32iWQbzJuBIUYh4gNt3v2cHdnfB4jmyxfEh79bOgfZG9iS
+         MwwX6yNWttTI2eKEHpQxjcfMtWiL98SiARcc+j/jzMKfzRbnNY05boFEMDVUk5YG+S
+         rtMLJEhH/UUTKqs7mFfPlqVdeaqbFX2S7jZCkEZDBN+SJH0Yk7KT3G3/QA0AbK9qR/
+         ASb2CbGMlBDdA==
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     linux-fsdevel@vger.kernel.org
+Cc:     linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        linux-xfs@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>
+Subject: [PATCH v3 2/8] vfs: support STATX_DIOALIGN on block devices
+Date:   Thu, 16 Jun 2022 13:15:00 -0700
+Message-Id: <20220616201506.124209-3-ebiggers@kernel.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220616201506.124209-1-ebiggers@kernel.org>
+References: <20220616201506.124209-1-ebiggers@kernel.org>
 MIME-Version: 1.0
-References: <20220616144915.3988071-1-windhl@126.com>
-In-Reply-To: <20220616144915.3988071-1-windhl@126.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Thu, 16 Jun 2022 22:17:19 +0200
-Message-ID: <CAFBinCB-WZmnMtvG1P=sWASQZCg9F9d-Hg0OzVNUsEutUFX0Cg@mail.gmail.com>
-Subject: Re: [PATCH] soc: amlogic: Fix refcount leak in meson-secure-pwrc.c
-To:     Liang He <windhl@126.com>
-Cc:     Neil Armstrong <narmstrong@baylibre.com>, khilman@baylibre.com,
-        jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Eric Biggers <ebiggers@google.com>
 
-On Thu, Jun 16, 2022 at 4:50 PM Liang He <windhl@126.com> wrote:
->
-> In meson_secure_pwrc_probe(), there is a refcount leak in one fail
-> path.
->
-> Signed-off-by: Liang He <windhl@126.com>
-Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Add support for STATX_DIOALIGN to block devices, so that direct I/O
+alignment restrictions are exposed to userspace in a generic way.
 
-[...]
->         pwrc = devm_kzalloc(&pdev->dev, sizeof(*pwrc), GFP_KERNEL);
-> -       if (!pwrc)
-> +       if (!pwrc) {
-> +               of_node_put(sm_np);
->                 return -ENOMEM;
-> +       }
-Another approach would be to just move devm_kzalloc() a few lines
-further up (above of_find_compatible_node()).
-That would catch similar issues in future when someone wants to add
-more code right after devm_kzalloc(). That said, I don't think that
-this is a likely scenario so the patch is fine for me as-is.
+Note that this breaks the tradition of stat operating only on the block
+device node, not the block device itself.  However, it was felt that
+doing this is preferable, in order to make the interface useful and
+avoid needing separate interfaces for regular files and block devices.
 
-Thanks a lot for submitting this!
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+---
+ fs/stat.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
+diff --git a/fs/stat.c b/fs/stat.c
+index a7930d7444830..c1ce447c1a383 100644
+--- a/fs/stat.c
++++ b/fs/stat.c
+@@ -5,6 +5,7 @@
+  *  Copyright (C) 1991, 1992  Linus Torvalds
+  */
+ 
++#include <linux/blkdev.h>
+ #include <linux/export.h>
+ #include <linux/mm.h>
+ #include <linux/errno.h>
+@@ -198,6 +199,35 @@ int getname_statx_lookup_flags(int flags)
+ 	return lookup_flags;
+ }
+ 
++/* Handle STATX_DIOALIGN for block devices. */
++static inline void handle_bdev_dioalign(struct path *path, u32 request_mask,
++					struct kstat *stat)
++{
++#ifdef CONFIG_BLOCK
++	struct inode *inode;
++	struct block_device *bdev;
++	unsigned int lbs;
++
++	if (likely(!(request_mask & STATX_DIOALIGN)))
++		return;
++
++	inode = d_backing_inode(path->dentry);
++	if (!S_ISBLK(inode->i_mode))
++		return;
++
++	bdev = blkdev_get_no_open(inode->i_rdev);
++	if (!bdev)
++		return;
++
++	lbs = bdev_logical_block_size(bdev);
++	stat->dio_mem_align = lbs;
++	stat->dio_offset_align = lbs;
++	stat->result_mask |= STATX_DIOALIGN;
++
++	blkdev_put_no_open(bdev);
++#endif /* CONFIG_BLOCK */
++}
++
+ /**
+  * vfs_statx - Get basic and extra attributes by filename
+  * @dfd: A file descriptor representing the base dir for a relative filename
+@@ -230,11 +260,16 @@ static int vfs_statx(int dfd, struct filename *filename, int flags,
+ 		goto out;
+ 
+ 	error = vfs_getattr(&path, stat, request_mask, flags);
++
+ 	stat->mnt_id = real_mount(path.mnt)->mnt_id;
+ 	stat->result_mask |= STATX_MNT_ID;
++
+ 	if (path.mnt->mnt_root == path.dentry)
+ 		stat->attributes |= STATX_ATTR_MOUNT_ROOT;
+ 	stat->attributes_mask |= STATX_ATTR_MOUNT_ROOT;
++
++	handle_bdev_dioalign(&path, request_mask, stat);
++
+ 	path_put(&path);
+ 	if (retry_estale(error, lookup_flags)) {
+ 		lookup_flags |= LOOKUP_REVAL;
+-- 
+2.36.1
 
-Best regards,
-Martin
