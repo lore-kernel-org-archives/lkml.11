@@ -2,86 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0B8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23036C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377551AbiFPPRq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54720 "EHLO
+        id S238136AbiFPPTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 11:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233390AbiFPPRp (ORCPT
+        with ESMTP id S232449AbiFPPTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:17:45 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319E6DF29
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:17:42 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id o37-20020a05600c512500b0039c4ba4c64dso3006010wms.2
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:17:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oI88Qu4qiMkSjs5momI9WAT894CnS3fhP5J1kHBA0Xw=;
-        b=dvH6AD5BOgP7SSTByX9sqdfXDqv0OAOSj6yDH69SlzCgeOMMJ5RggvfLElOU/1QXhq
-         jYCoS4+pJ+UoOD+Lc0st87cKPaVMPrifpGWvfdHMjDcxCTaXRalKzy9yr+iVAXSqiqr+
-         aG2A6PGYZKOu7X87JiidBlHZRmUpgKqBFxJiXbJ/4siOMyHpspZEp0ToVO0ncipcNHGc
-         aX3XRSi6kg50O2HCZvy6xYLEXZSAJpBf/v9MQchyhTE0sFvYza9elswswpa7Korf2ZXc
-         K/syg11U9WT7hJ+DHV++210vXWPLaVHF9xyMxRisHNcCdvj3PEJts3hJF3cnEmRdhejl
-         EvZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oI88Qu4qiMkSjs5momI9WAT894CnS3fhP5J1kHBA0Xw=;
-        b=uS7FVgVR3b2vhOSQHCRjIBZswq6cXQoaIG03njEolVV+mUMRmAOoGSZERqpmZvqspw
-         lQcgvaPPchAtutlodeMtmGHB01oOuE7FHFOa1/42uM+tYTZqfQYaYO04F6tfe99ASk+H
-         FoKUzv3fJVkuAUyrRpx4m7vS1lKlM17mrlcrjqdZie3YgVbi9/x//2hHc688A2k/j5M7
-         tkx5gg4W4MINEw/Bko0/AIGQKNWQ1S703wnsDlkNQ0Kky8BA889bg1eSAbLip7JCKPJM
-         hxdz0fhh/aAfk14jJFmWkNGPgSWXd9t+dfv1yxDMciNuIr416ANlIsc/BadRCvBvfmA7
-         Vnbg==
-X-Gm-Message-State: AJIora/hHfTDLfXoR7hvCjEtouvA2lNOkIVw7tWPP7bvMYkDwPVFtYFf
-        06XN0hwbK8+phPjEWojBPM/pw+tqJSmw0G1Ga1c=
-X-Google-Smtp-Source: AGRyM1t7s8sG7knah9RyDCtIy/zQzva/JpPwmUWGpQaRjdRRkx4tAVGSo4OZULRC2k5nQVmwxr3X/A==
-X-Received: by 2002:a05:600c:2244:b0:39c:4060:1ec9 with SMTP id a4-20020a05600c224400b0039c40601ec9mr5421401wmm.147.1655392660737;
-        Thu, 16 Jun 2022 08:17:40 -0700 (PDT)
-Received: from henark71.. ([51.37.234.167])
-        by smtp.gmail.com with ESMTPSA id j18-20020a5d6052000000b0021a35730281sm1929534wrt.91.2022.06.16.08.17.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 08:17:40 -0700 (PDT)
-From:   Conor Dooley <mail@conchuod.ie>
-To:     nagasuresh.relli@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, palmer@dabbelt.com
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        linux-riscv@lists.infradead.org, robh@kernel.org,
-        paul.walmsley@sifive.com, linux-kernel@vger.kernel.org,
-        aou@eecs.berkeley.edu, daire.mcnamara@microchip.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH] riscv: dts: microchip: remove spi-max-frequency property
-Date:   Thu, 16 Jun 2022 16:17:12 +0100
-Message-Id: <165539261570.229722.8766263484989186462.b4-ty@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220616064251.586263-1-nagasuresh.relli@microchip.com>
-References: <20220616064251.586263-1-nagasuresh.relli@microchip.com>
+        Thu, 16 Jun 2022 11:19:51 -0400
+Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC5BF11816
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:19:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=nsVvp
+        /8TetDFrxpido6IqFxlF0d+SkPkvOqKIqtD0WE=; b=JRXx6VdfJRgtM7cqNamoD
+        iDlPiD9x3Jz7b7UXz+tWd08mcWIrjoLX6bp/Nmq40hPImFzDaa0BeA6ntT70cV6e
+        +UeVF+bPj6Be3t786E2PtoEIimFp4cRM+rphjKsN/2HS3rYcUatoHzruJEzTxDtc
+        pNAUIy3LDv2FpVQS2U2mpM=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp1 (Coremail) with SMTP id C8mowACn1CTkSatiqJdkEg--.27454S2;
+        Thu, 16 Jun 2022 23:19:02 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     oss@buserror.net, mpe@ellerman.id.au, paulus@samba.org,
+        christophe.leroy@csgroup.eu, nixiaoming@huawei.com
+Cc:     windhl@126.com, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] arch: powerpc: platforms: 85xx: Add missing of_node_put in sgy_cts1000.c
+Date:   Thu, 16 Jun 2022 23:19:01 +0800
+Message-Id: <20220616151901.3989078-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: C8mowACn1CTkSatiqJdkEg--.27454S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7tFW8uw1UJF13CF4xKrWktFb_yoW8KryfpF
+        Z8GrWSkrWkGr1xG3s7ta1DuFy3tw10qay3tw13Cws7C3WUX3yqvry0vF4rXr1fWFW8C3yr
+        Jr4akayj9FZFv3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRfMarUUUUU=
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizgciF18RPTmY+QAAsX
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+In gpio_halt_probe(), of_find_matching_node() will return a node pointer with
+refcount incremented. We should use of_node_put() in each fail path or when it
+is not used anymore.
 
-On Thu, 16 Jun 2022 12:12:51 +0530, Nagasuresh Relli wrote:
-> Remove the spi-max-frequency property from the spi0 controller
-> node as it is supposed to be a per SPI peripheral device property.
-> 
-> 
+Signed-off-by: Liang He <windhl@126.com>
+---
+ changelog:
 
-Applied to dt-for-next, thanks!
+ v2: use goto-label patch style advised by Christophe.
+ v1: add of_node_put() before each exit.
 
-[1/1] riscv: dts: microchip: remove spi-max-frequency property
-      https://git.kernel.org/conor/c/3f8ccf5f1a8c
+ arch/powerpc/platforms/85xx/sgy_cts1000.c | 27 +++++++++++++++--------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
 
-Thanks,
-Conor.
+diff --git a/arch/powerpc/platforms/85xx/sgy_cts1000.c b/arch/powerpc/platforms/85xx/sgy_cts1000.c
+index 98ae64075193..e280f963d88c 100644
+--- a/arch/powerpc/platforms/85xx/sgy_cts1000.c
++++ b/arch/powerpc/platforms/85xx/sgy_cts1000.c
+@@ -73,6 +73,7 @@ static int gpio_halt_probe(struct platform_device *pdev)
+ 	struct device_node *node = pdev->dev.of_node;
+ 	int gpio, err, irq;
+ 	int trigger;
++	int ret;
+ 
+ 	if (!node)
+ 		return -ENODEV;
+@@ -84,20 +85,24 @@ static int gpio_halt_probe(struct platform_device *pdev)
+ 
+ 	/* Technically we could just read the first one, but punish
+ 	 * DT writers for invalid form. */
+-	if (of_gpio_count(halt_node) != 1)
+-		return -EINVAL;
++	if (of_gpio_count(halt_node) != 1) {
++		ret = -EINVAL;
++		goto err_put;
++	}
+ 
+ 	/* Get the gpio number relative to the dynamic base. */
+ 	gpio = of_get_gpio_flags(halt_node, 0, &flags);
+-	if (!gpio_is_valid(gpio))
+-		return -EINVAL;
++	if (!gpio_is_valid(gpio)) {
++		ret = -EINVAL;
++		gotot err_put;
++	}
+ 
+ 	err = gpio_request(gpio, "gpio-halt");
+ 	if (err) {
+ 		printk(KERN_ERR "gpio-halt: error requesting GPIO %d.\n",
+ 		       gpio);
+-		halt_node = NULL;
+-		return err;
++		ret = err;
++		goto err_put;
+ 	}
+ 
+ 	trigger = (flags == OF_GPIO_ACTIVE_LOW);
+@@ -112,8 +117,8 @@ static int gpio_halt_probe(struct platform_device *pdev)
+ 		printk(KERN_ERR "gpio-halt: error requesting IRQ %d for "
+ 		       "GPIO %d.\n", irq, gpio);
+ 		gpio_free(gpio);
+-		halt_node = NULL;
+-		return err;
++		ret = err;
++		goto err_put;
+ 	}
+ 
+ 	/* Register our halt function */
+@@ -122,8 +127,12 @@ static int gpio_halt_probe(struct platform_device *pdev)
+ 
+ 	printk(KERN_INFO "gpio-halt: registered GPIO %d (%d trigger, %d"
+ 	       " irq).\n", gpio, trigger, irq);
++	ret = 0;
+ 
+-	return 0;
++err_put:
++	of_node_put(halt_node);
++	halt_node = NULL;
++	return ret;
+ }
+ 
+ static int gpio_halt_remove(struct platform_device *pdev)
+-- 
+2.25.1
+
