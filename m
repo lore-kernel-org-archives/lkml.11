@@ -2,146 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C7FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 04:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E0ACC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 04:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356452AbiFPEvB (ORCPT
+        id S1349333AbiFPEzV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 00:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52022 "EHLO
+        Thu, 16 Jun 2022 00:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349195AbiFPEu6 (ORCPT
+        with ESMTP id S229681AbiFPEzS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 00:50:58 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249022CC81
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 21:50:58 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25G4HTAg024824;
-        Thu, 16 Jun 2022 04:50:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=mamJNC0U/jU3Ok7lpo1pHDh8LmW22sEmyputeCy+QEM=;
- b=cN3eaf1lvqL4/9YcdeNAH1VJ+N1F488NpS/C3f+m5P2kF69sOPcB88DEMM9v8GLtAaxS
- SEv+rWM5ur/LQl1PYPjldN+6oW23nVIV6eO4P5dNneYzhqqSN8NFgpi+w9mg1IY+3gUZ
- hS3uwvk7tsZWbpJXPUqGPxUVVS34YOFbQq+j7NDk7zbLZAQBJ/go//Cy7oRaUs66ZZpf
- MrYWMAwKE0oByeqFjKUVO+vRt/fOI8isLdX+Vsn/nww6URmArglHPeSfd3hr8hCzxQ57
- 2soKcYXJuobc0aQ1jepgNvqvyMehVBWBiv9YuMwys2fADRD/0ieWY00uUSfCvZqLEcuz QQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gppbskydv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jun 2022 04:50:37 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25G4oas5015891;
-        Thu, 16 Jun 2022 04:50:36 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gppbsky8j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jun 2022 04:50:35 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25G4agXG012607;
-        Thu, 16 Jun 2022 04:47:47 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3gmjp8w875-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jun 2022 04:47:47 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25G4lnJi25166196
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 16 Jun 2022 04:47:49 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 35FEA11C05C;
-        Thu, 16 Jun 2022 04:47:45 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7D62A11C04A;
-        Thu, 16 Jun 2022 04:47:41 +0000 (GMT)
-Received: from [9.109.205.170] (unknown [9.109.205.170])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 16 Jun 2022 04:47:41 +0000 (GMT)
-Message-ID: <cbfe5abe-155b-ac79-2daa-06d9dd60b55a@linux.ibm.com>
-Date:   Thu, 16 Jun 2022 10:17:40 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v5 1/9] mm/demotion: Add support for explicit memory tiers
-Content-Language: en-US
-To:     Wei Xu <weixugc@google.com>, Ying Huang <ying.huang@intel.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-References: <YqDncfLeEeBaosrY@cmpxchg.org>
- <02ee2c97-3bca-8eb6-97d8-1f8743619453@linux.ibm.com>
- <YqH74WaUzJlb+smt@cmpxchg.org> <20220609152243.00000332@Huawei.com>
- <YqJa4N/VlS4zN4vf@cmpxchg.org> <20220610105708.0000679b@Huawei.com>
- <YqdEEhJFr3SlfvSJ@cmpxchg.org>
- <4297bd21-e984-9d78-2bca-e70c11749a72@linux.ibm.com>
- <Yqdc4DE8gYJ3zesO@cmpxchg.org>
- <42f536af-b17d-b001-7b6b-2c6b928f3ecf@linux.ibm.com>
- <YqjZyP11O0yCMmiO@cmpxchg.org>
- <2b261518bbb5b8466301f8ab978f408141fa6e68.camel@intel.com>
- <CAAPL-u9hjR8sFeUYM46TXPg-Lho6hr0zaLvrGhg9=htRrPtjqw@mail.gmail.com>
-From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
-In-Reply-To: <CAAPL-u9hjR8sFeUYM46TXPg-Lho6hr0zaLvrGhg9=htRrPtjqw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: y0ubvEXHPYVM4LKj3n6euztfCvr1A9fm
-X-Proofpoint-ORIG-GUID: pgtDHW9V_y_QlXsQnyTg-e-HOnbz5teF
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 16 Jun 2022 00:55:18 -0400
+Received: from m1524.mail.126.com (m1524.mail.126.com [220.181.15.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70C98427DE
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 21:55:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=dshfT
+        7W6MY5sBDSYiWA99vNTQfl5M8jX0dK3LxKchtg=; b=kGaypZpwiRhQsvtsbLNua
+        gqglHQHDFf3c2zv5nv2hPsuXQKIt0OMw9jbY+77QFvhBqhyOK/Xupjaa4uG+JUoE
+        9bhn7IWxO3tKBmbFLf7JCc/KWftTz2xb22hKWYgZuA1ZOtJ9BaNmbydDc1mWOZqx
+        Kj2QJXL1rvaIDZ2Oc9F4uk=
+Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr24
+ (Coremail) ; Thu, 16 Jun 2022 12:54:50 +0800 (CST)
+X-Originating-IP: [124.16.139.61]
+Date:   Thu, 16 Jun 2022 12:54:50 +0800 (CST)
+From:   "Liang He" <windhl@126.com>
+To:     "kernel test robot" <lkp@intel.com>
+Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, kbuild-all@lists.01.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re:Re: [PATCH] drivers: soc: sifive: Add missing of_node_put() in
+ sifive_l2_cache.c
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 126com
+In-Reply-To: <202206160559.fVKJx0ST-lkp@intel.com>
+References: <20220615122315.3965435-1-windhl@126.com>
+ <202206160559.fVKJx0ST-lkp@intel.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-16_01,2022-06-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=993
- priorityscore=1501 suspectscore=0 impostorscore=0 adultscore=0
- phishscore=0 bulkscore=0 mlxscore=0 malwarescore=0 clxscore=1015
- lowpriorityscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2206160016
+Message-ID: <3e6469ba.38b2.1816add33c5.Coremail.windhl@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: GMqowACXpiaat6piW_k2AA--.1844W
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbiuA4iF2JVj44gFgACsB
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/16/22 9:15 AM, Wei Xu wrote:
-> On Wed, Jun 15, 2022 at 6:11 PM Ying Huang <ying.huang@intel.com> wrote:
->>
->> On Tue, 2022-06-14 at 14:56 -0400, Johannes Weiner wrote:
->>> On Tue, Jun 14, 2022 at 01:31:37PM +0530, Aneesh Kumar K V wrote:
-
-....
-
->> As Jonathan Cameron pointed, we may need the memory tier ID to be
->> stable if possible.  I know this isn't a easy task.  At least we can
->> make the default memory tier (CPU local DRAM) ID stable (for example
->> make it always 128)?  That provides an anchor for users to understand.
-> 
-> One of the motivations of introducing "rank" is to allow memory tier
-> ID to be stable, at least for the well-defined tiers such as the
-> default memory tier.  The default memory tier can be moved around in
-> the tier hierarchy by adjusting its rank position relative to other
-> tiers, but its device ID can remain the same, e.g. always 1.
-> 
-
-With /sys/devices/system/memtier/default_tier userspace will be able query
-the default tier details. Did you get to look at 
-
-https://lore.kernel.org/linux-mm/7b72ccf4-f4ae-cb4e-f411-74d055482026@linux.ibm.com
-
-Any reason why that will not work with all the requirements we had?
-
--aneesh
+CgoKCkF0IDIwMjItMDYtMTYgMDU6NTg6MDUsICJrZXJuZWwgdGVzdCByb2JvdCIgPGxrcEBpbnRl
+bC5jb20+IHdyb3RlOgo+SGkgTGlhbmcsCj4KPlRoYW5rIHlvdSBmb3IgdGhlIHBhdGNoISBZZXQg
+c29tZXRoaW5nIHRvIGltcHJvdmU6Cj4KPlthdXRvIGJ1aWxkIHRlc3QgRVJST1Igb24gbGludXMv
+bWFzdGVyXQo+W2Fsc28gYnVpbGQgdGVzdCBFUlJPUiBvbiB2NS4xOS1yYzIgbmV4dC0yMDIyMDYx
+NV0KPltJZiB5b3VyIHBhdGNoIGlzIGFwcGxpZWQgdG8gdGhlIHdyb25nIGdpdCB0cmVlLCBraW5k
+bHkgZHJvcCB1cyBhIG5vdGUuCj5BbmQgd2hlbiBzdWJtaXR0aW5nIHBhdGNoLCB3ZSBzdWdnZXN0
+IHRvIHVzZSAnLS1iYXNlJyBhcyBkb2N1bWVudGVkIGluCj5odHRwczovL2dpdC1zY20uY29tL2Rv
+Y3MvZ2l0LWZvcm1hdC1wYXRjaF0KPgoKV2hlbiBJIHVzZSAtLWJhc2UsIHRoZXJlIGFyZSB0b28g
+bWFueSBwcmVyZXF1ZXN0cy1wYXRjaC1pZCBjYXVzZWQgYnkgbXkgbG9jYWwgY29tbWl0cy4gCkkg
+ZG9uJ3Qga25vdyBpZiBpdCB3aWxsIGNhdXNlIG90aGVyIHRyb3VibGVzLiBTbyBJIHJlc2VudCBh
+IG5ldyBwYXRjaCBzdGlsbCB3aXRob3V0IHRoaXMgJy0tYmFzZScuCklzIGl0IE9rPwoKU29ycnks
+IEkgZm9yZ2V0IHRvIHNheSBpbiBuZXcgcGF0Y2ggdGhhdCAgaXMgYmFzZWQgb24gdjUuMTktcmMy
+IG1haW5saW5lIGdpdCByZXBvLgoKPnVybDogICAgaHR0cHM6Ly9naXRodWIuY29tL2ludGVsLWxh
+Yi1sa3AvbGludXgvY29tbWl0cy9MaWFuZy1IZS9kcml2ZXJzLXNvYy1zaWZpdmUtQWRkLW1pc3Np
+bmctb2Zfbm9kZV9wdXQtaW4tc2lmaXZlX2wyX2NhY2hlLWMvMjAyMjA2MTUtMjAyNTI4Cj5iYXNl
+OiAgIGh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZh
+bGRzL2xpbnV4LmdpdCAwMThhYjRmYWJkZGQ5NGYxYzk2ZjNiNTllMTgwNjkxYjllODhkNWQ4Cj5j
+b25maWc6IHJpc2N2LWFsbHllc2NvbmZpZyAoaHR0cHM6Ly9kb3dubG9hZC4wMS5vcmcvMGRheS1j
+aS9hcmNoaXZlLzIwMjIwNjE2LzIwMjIwNjE2MDU1OS5mVktKeDBTVC1sa3BAaW50ZWwuY29tL2Nv
+bmZpZykKPmNvbXBpbGVyOiByaXNjdjY0LWxpbnV4LWdjYyAoR0NDKSAxMS4zLjAKPnJlcHJvZHVj
+ZSAodGhpcyBpcyBhIFc9MSBidWlsZCk6Cj4gICAgICAgIHdnZXQgaHR0cHM6Ly9yYXcuZ2l0aHVi
+dXNlcmNvbnRlbnQuY29tL2ludGVsL2xrcC10ZXN0cy9tYXN0ZXIvc2Jpbi9tYWtlLmNyb3NzIC1P
+IH4vYmluL21ha2UuY3Jvc3MKPiAgICAgICAgY2htb2QgK3ggfi9iaW4vbWFrZS5jcm9zcwo+ICAg
+ICAgICAjIGh0dHBzOi8vZ2l0aHViLmNvbS9pbnRlbC1sYWItbGtwL2xpbnV4L2NvbW1pdC80OWM0
+MDg2NzY4YjVhZmY0MTBhNGExOWNhNzQwZjhhZThlMjExODQ0Cj4gICAgICAgIGdpdCByZW1vdGUg
+YWRkIGxpbnV4LXJldmlldyBodHRwczovL2dpdGh1Yi5jb20vaW50ZWwtbGFiLWxrcC9saW51eAo+
+ICAgICAgICBnaXQgZmV0Y2ggLS1uby10YWdzIGxpbnV4LXJldmlldyBMaWFuZy1IZS9kcml2ZXJz
+LXNvYy1zaWZpdmUtQWRkLW1pc3Npbmctb2Zfbm9kZV9wdXQtaW4tc2lmaXZlX2wyX2NhY2hlLWMv
+MjAyMjA2MTUtMjAyNTI4Cj4gICAgICAgIGdpdCBjaGVja291dCA0OWM0MDg2NzY4YjVhZmY0MTBh
+NGExOWNhNzQwZjhhZThlMjExODQ0Cj4gICAgICAgICMgc2F2ZSB0aGUgY29uZmlnIGZpbGUKPiAg
+ICAgICAgbWtkaXIgYnVpbGRfZGlyICYmIGNwIGNvbmZpZyBidWlsZF9kaXIvLmNvbmZpZwo+ICAg
+ICAgICBDT01QSUxFUl9JTlNUQUxMX1BBVEg9JEhPTUUvMGRheSBDT01QSUxFUj1nY2MtMTEuMy4w
+IG1ha2UuY3Jvc3MgVz0xIE89YnVpbGRfZGlyIEFSQ0g9cmlzY3YgU0hFTEw9L2Jpbi9iYXNoIGRy
+aXZlcnMvc29jLwo+Cj5JZiB5b3UgZml4IHRoZSBpc3N1ZSwga2luZGx5IGFkZCBmb2xsb3dpbmcg
+dGFnIHdoZXJlIGFwcGxpY2FibGUKPlJlcG9ydGVkLWJ5OiBrZXJuZWwgdGVzdCByb2JvdCA8bGtw
+QGludGVsLmNvbT4KPgoKVGhhbmtzIGZvciB0aGlzIHJlcG9ydCwgbm93IEkgbWFrZSBhIG5ldyBw
+YXRjaCBhbmQgYWRkICJSZXBvcnRlZC1ieToga2VybmVsIHRlc3Qgcm9ib3QgPGxrcEBpbnRlbC5j
+b20+IgoKCj5BbGwgZXJyb3JzIChuZXcgb25lcyBwcmVmaXhlZCBieSA+Pik6Cj4KPiAgIGRyaXZl
+cnMvc29jL3NpZml2ZS9zaWZpdmVfbDJfY2FjaGUuYzogSW4gZnVuY3Rpb24gJ3NpZml2ZV9sMl9p
+bml0JzoKPj4+IGRyaXZlcnMvc29jL3NpZml2ZS9zaWZpdmVfbDJfY2FjaGUuYzoyMjQ6MTc6IGVy
+cm9yOiBleHBlY3RlZCAnOycgYmVmb3JlICdnb3RvJwo+ICAgICAyMjQgfCAgICAgICAgICAgICAg
+ICAgZ290byBvdXRfcHV0Owo+ICAgICAgICAgfCAgICAgICAgICAgICAgICAgXn5+fgo+Cj4KClRo
+YW5rcyBmb3IgYWxsIHlvdXIgZWZmb3J0IHRvIGltcHJvdmUgdGhlIHBhdGNoLgo=
