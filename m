@@ -2,56 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E2A4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 722CBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377589AbiFPPnt (ORCPT
+        id S1377417AbiFPPn7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
+        Thu, 16 Jun 2022 11:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233439AbiFPPns (ORCPT
+        with ESMTP id S235511AbiFPPn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:43:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407B618350
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:43:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1B40B8248D
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 15:43:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4028FC34114;
-        Thu, 16 Jun 2022 15:43:44 +0000 (UTC)
-Date:   Thu, 16 Jun 2022 11:43:42 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: Re: possible trace_printk() bug in v5.19-rc1
-Message-ID: <20220616114342.3aba84ac@gandalf.local.home>
-In-Reply-To: <E309A098-DA06-490D-A75C-E6295C2987B9@oracle.com>
-References: <F6C267B0-83EA-4151-A4EC-44482AC52C59@oracle.com>
-        <20220616113400.15335d91@gandalf.local.home>
-        <E309A098-DA06-490D-A75C-E6295C2987B9@oracle.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 16 Jun 2022 11:43:57 -0400
+Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2074419C01
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:43:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=3SyGV
+        GPAl6RCeoR6/3GY66rPKd6XLustmDizqKaNl8Y=; b=RwOw51MgK71kHeJ0Qekqq
+        RN7adtZBwVvPmvKYxLmvLvrDIiYYpSjwiEboWze5XbCspqeQeiCIyHCGfGxkEDRt
+        Pdd20rs0iemeL6zUKqT3XjCjGfRrXLcVeOVuQUPY/TQ/nDNKzGhwkbR0u/J0NuN9
+        7P/adUvdXX+wiz2qSaKfBo=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp8 (Coremail) with SMTP id NORpCgA37ZEwT6titcAYFw--.50981S2;
+        Thu, 16 Jun 2022 23:41:37 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        clg@kaod.org, nick.child@ibm.com
+Cc:     windhl@126.com, christophe.leroy@csgroup.eu,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] powerpc: sysdev: xive: Fix refcount leak in native.c
+Date:   Thu, 16 Jun 2022 23:41:35 +0800
+Message-Id: <20220616154135.3989769-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NORpCgA37ZEwT6titcAYFw--.50981S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7uFyfZFy5ur4xZw47GFW7urg_yoW8CFW5pF
+        Z7GFyjya1S9w18KrWSyF10vF4DCr1ktayrXa97GwnrAw4q9w4ktr45KryFqrW5GrWku3Wr
+        tF1fCr1UJFsrWaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziZa9DUUUUU=
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2hEiF1uwMN39YwAAsm
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022 15:36:43 +0000
-Chuck Lever III <chuck.lever@oracle.com> wrote:
+In xive_native_init(), of_find_compatible_node() will return a
+node pointer with refcount incremented. We should use of_node_put()
+in each fail path or when it is not used anymore.
 
-> I haven't explicitly removed nfsd.ko, and lsmod says it's still there.
-> And, trace_printk was working as expected on v5.18.
+Signed-off-by: Liang He <windhl@126.com>
+---
+ arch/powerpc/sysdev/xive/native.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-If you were to add a printk() with the same format in the same location,
-does it work?
+diff --git a/arch/powerpc/sysdev/xive/native.c b/arch/powerpc/sysdev/xive/native.c
+index d25d8c692909..3925825954bc 100644
+--- a/arch/powerpc/sysdev/xive/native.c
++++ b/arch/powerpc/sysdev/xive/native.c
+@@ -579,12 +579,12 @@ bool __init xive_native_init(void)
+ 	/* Resource 1 is HV window */
+ 	if (of_address_to_resource(np, 1, &r)) {
+ 		pr_err("Failed to get thread mgmnt area resource\n");
+-		return false;
++		goto err_put;
+ 	}
+ 	tima = ioremap(r.start, resource_size(&r));
+ 	if (!tima) {
+ 		pr_err("Failed to map thread mgmnt area\n");
+-		return false;
++		goto err_put;
+ 	}
+ 
+ 	/* Read number of priorities */
+@@ -612,7 +612,7 @@ bool __init xive_native_init(void)
+ 	/* Resource 2 is OS window */
+ 	if (of_address_to_resource(np, 2, &r)) {
+ 		pr_err("Failed to get thread mgmnt area resource\n");
+-		return false;
++		goto err_put;
+ 	}
+ 
+ 	xive_tima_os = r.start;
+@@ -624,7 +624,7 @@ bool __init xive_native_init(void)
+ 	rc = opal_xive_reset(OPAL_XIVE_MODE_EXPL);
+ 	if (rc) {
+ 		pr_err("Switch to exploitation mode failed with error %lld\n", rc);
+-		return false;
++		goto err_put;
+ 	}
+ 
+ 	/* Setup some dummy HV pool VPs */
+@@ -634,10 +634,15 @@ bool __init xive_native_init(void)
+ 	if (!xive_core_init(np, &xive_native_ops, tima, TM_QW3_HV_PHYS,
+ 			    max_prio)) {
+ 		opal_xive_reset(OPAL_XIVE_MODE_EMU);
+-		return false;
++		goto err_put;
+ 	}
++	of_node_put(np);
+ 	pr_info("Using %dkB queues\n", 1 << (xive_queue_shift - 10));
+ 	return true;
++
++err_put:
++	of_node_put(np);
++	return false;
+ }
+ 
+ static bool xive_native_provision_pages(void)
+-- 
+2.25.1
 
-That is:
-
-	printk("%pS still here\n", __func__);
-
--- Steve
