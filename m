@@ -2,114 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D12E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15AFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236256AbiFPO7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 10:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
+        id S1377501AbiFPO7x (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 10:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233481AbiFPO7Q (ORCPT
+        with ESMTP id S233481AbiFPO7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 10:59:16 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE9A28705;
-        Thu, 16 Jun 2022 07:59:15 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-136-92.dynamic.spd-mgts.ru [109.252.136.92])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 193A06601776;
-        Thu, 16 Jun 2022 15:59:13 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655391553;
-        bh=480bxtXiQTLxL9SJFuz2MLO035X+tYFjlvxNEbvX1vQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=D1dR5eTFuepMuh2aUkqS4+tbq4xK9g2XhmVfvl08dCsjqbS1klllGMoPH56M4ThGF
-         QUmRWxqt7Q32NaXKfImOc3m2WpgC32QpI9j18CdzMAwbzfLJOykTSPMuafKg1wfDTi
-         oP/DO+a+qqzQ5U16dtaJ3pp31b/PjcPMz3Spu6LNF+H1UxyZU18mfvA5am8NAjZ542
-         LGrpVOSinA1tZN8mm0jvNQDK0yRi9PRa5WVZqaQBrnw6DQjlERNNuzEuJXlgWOtDPE
-         890Eq0OlS/b0+5VYJhEJe4LzibSR16jA26hQjWfYt/H5+2oUhNcmWRahHwJPW18VEw
-         VgqU3QaAbJHfg==
-Message-ID: <65fbe95b-241a-c5c5-4eca-d6932e0fd59d@collabora.com>
-Date:   Thu, 16 Jun 2022 17:59:10 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: regression, 5.19.0-rc1 not powering off when hibernated
-Content-Language: en-US
-To:     Ken Moffat <zarniwhoop@ntlworld.com>,
-        Thorsten Leemhuis <regressions@leemhuis.info>
-Cc:     linux-kernel@vger.kernel.org,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-References: <YqE22nS9k2+AldI6@llamedos.localdomain>
- <84d01637-febb-f602-2d03-fe1600e85ae3@leemhuis.info>
- <YqTPlGM9KQ0FqHdc@llamedos.localdomain>
- <YqeUDpo+8RLVKH8r@llamedos.localdomain>
- <YqoLjk8P+fChJ04m@llamedos.localdomain>
- <Yqo4ZTrRZXEvxS36@llamedos.localdomain>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <Yqo4ZTrRZXEvxS36@llamedos.localdomain>
+        Thu, 16 Jun 2022 10:59:52 -0400
+Received: from m1550.mail.126.com (m1550.mail.126.com [220.181.15.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 350293CFE1
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 07:59:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=ovjTU
+        O24ypn/3asmCSBp8kcH40860kjRDa2YdbnXg2A=; b=g4/QoVpG4t/oSYplaftP6
+        XN76yO+RkWFao9sZg2RH3tYLJZx+43ZKucab9EForRQ1UkuCN6Tc07MYFba0iDO2
+        fjv9+X+fENzRnay376cML00kT4RCv1kyzs0B7bLzlKblRww3+14NS0coSUo8jUyB
+        6cqqa36FZN1rmdSNGnHPyo=
+Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr50
+ (Coremail) ; Thu, 16 Jun 2022 22:56:21 +0800 (CST)
+X-Originating-IP: [124.16.139.61]
+Date:   Thu, 16 Jun 2022 22:56:21 +0800 (CST)
+From:   "Liang He" <windhl@126.com>
+To:     "Christophe Leroy" <christophe.leroy@csgroup.eu>
+Cc:     "oss@buserror.net" <oss@buserror.net>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "paulus@samba.org" <paulus@samba.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re:Re: [PATCH] arch: powerpc: platforms: 85xx: Add missing
+ of_node_put in sgy_cts1000.c
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 126com
+In-Reply-To: <db681dac-5c42-d659-d0ed-31390b2feb3a@csgroup.eu>
+References: <20220615120717.3965164-1-windhl@126.com>
+ <db681dac-5c42-d659-d0ed-31390b2feb3a@csgroup.eu>
+Content-Transfer-Encoding: base64
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Message-ID: <8470436.7edc.1816d03e9c2.Coremail.windhl@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: MsqowACn9fGXRKti6e43AA--.53681W
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbiuA4iF2JVj5SI4QABsH
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 6/15/22 22:52, Ken Moffat wrote:
-> On Wed, Jun 15, 2022 at 05:40:46PM +0100, Ken Moffat wrote:
->> On Mon, Jun 13, 2022 at 08:46:22PM +0100, Ken Moffat wrote:
->>
->>>>>> But with 5.19.0-rc1 the screen is blank throughtout the hibernation,
->>>>>> and briefly when restoring (no complaint about that), but when
->>>>>> hibernating it no longer powers off and I have to hold the on/off
->>>>>> switch to power off.
->>>>>>
->>>>>> Is this a known problem ?
->>>>>
-> [...]
->> Indeed, on the second attempt I've got a much more likely commit to
->> blame:
->>
->> 98f30d0ecf79da8cf17a171fa4cf6eda7ba4dd71 is the first bad commit
->> commit 98f30d0ecf79da8cf17a171fa4cf6eda7ba4dd71
->> Author: Dmitry Osipenko <dmitry.osipenko@collabora.com>
->> Date:   Tue May 10 02:32:30 2022 +0300
->>
->>     ACPI: power: Switch to sys-off handler API
->>     
->>     Switch to sys-off API that replaces legacy pm_power_off callbacks,
->>     allowing us to remove global pm_* variables and support chaining of
->>     all restart and power-off modes consistently.
->>     
->>     Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
->>     Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
->>
->> Unsurprisingly, with this reverted 5.19-rc2 fails to build.
->>
-> It occurs to me that maybe I'm missing something in my .config.
-> Since that is 117K, here is the gzipped config from the version that
-> git blamed (apart from not powering off, it appears to work ok).
-
-The patch below likely should fix the problem, please give it a try on
-top of the 5.19-rc2.
-
-diff --git a/kernel/power/hibernate.c b/kernel/power/hibernate.c
-index 20a66bf9f465..89c71fce225d 100644
---- a/kernel/power/hibernate.c
-+++ b/kernel/power/hibernate.c
-@@ -665,7 +665,7 @@ static void power_down(void)
- 		hibernation_platform_enter();
- 		fallthrough;
- 	case HIBERNATION_SHUTDOWN:
--		if (pm_power_off)
-+		if (kernel_can_power_off())
- 			kernel_power_off();
- 		break;
- 	}
+CgoKCkF0IDIwMjItMDYtMTYgMjI6NDk6MzYsICJDaHJpc3RvcGhlIExlcm95IiA8Y2hyaXN0b3Bo
+ZS5sZXJveUBjc2dyb3VwLmV1PiB3cm90ZToKPgo+Cj5MZSAxNS8wNi8yMDIyIMOgIDE0OjA3LCBM
+aWFuZyBIZSBhIMOpY3JpdMKgOgo+PiBbWW91IGRvbid0IG9mdGVuIGdldCBlbWFpbCBmcm9tIHdp
+bmRobEAxMjYuY29tLiBMZWFybiB3aHkgdGhpcyBpcyBpbXBvcnRhbnQgYXQgaHR0cHM6Ly9ha2Eu
+bXMvTGVhcm5BYm91dFNlbmRlcklkZW50aWZpY2F0aW9uIF0KPj4gCj4+IFNpZ25lZC1vZmYtYnk6
+IExpYW5nIEhlIDx3aW5kaGxAMTI2LmNvbT4KPj4gLS0tCj4+ICAgYXJjaC9wb3dlcnBjL3BsYXRm
+b3Jtcy84NXh4L3NneV9jdHMxMDAwLmMgfCAxMCArKysrKysrKysrCj4+ICAgMSBmaWxlIGNoYW5n
+ZWQsIDEwIGluc2VydGlvbnMoKykKPj4gCj4+IGRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMvcGxh
+dGZvcm1zLzg1eHgvc2d5X2N0czEwMDAuYyBiL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvODV4eC9z
+Z3lfY3RzMTAwMC5jCj4+IGluZGV4IDk4YWU2NDA3NTE5My4uMmE0NWIzMDg1MmIyIDEwMDY0NAo+
+PiAtLS0gYS9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zLzg1eHgvc2d5X2N0czEwMDAuYwo+PiArKysg
+Yi9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zLzg1eHgvc2d5X2N0czEwMDAuYwo+PiBAQCAtODUsMTcg
+Kzg1LDI0IEBAIHN0YXRpYyBpbnQgZ3Bpb19oYWx0X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZp
+Y2UgKnBkZXYpCj4+ICAgICAgICAgIC8qIFRlY2huaWNhbGx5IHdlIGNvdWxkIGp1c3QgcmVhZCB0
+aGUgZmlyc3Qgb25lLCBidXQgcHVuaXNoCj4+ICAgICAgICAgICAqIERUIHdyaXRlcnMgZm9yIGlu
+dmFsaWQgZm9ybS4gKi8KPj4gICAgICAgICAgaWYgKG9mX2dwaW9fY291bnQoaGFsdF9ub2RlKSAh
+PSAxKQo+PiArICAgICAgIHsKPj4gKyAgICAgICAgICAgICAgIG9mX25vZGVfcHV0KGhhbHRfbm9k
+ZSk7Cj4KPkR1cGxpY2F0aW5nIHRoZSBzYW1lIGNvZGUgYXQgbXVsdGlwbGUgZXhpdCBwb2ludHMg
+aXMgYmFkIHByYWN0aWNlLgo+Cj5JZiB5b3UgY2FuJ3QgZG8gYSBzaW1wbGUgJ3JldHVybicgZXhp
+dCwgeW91IHNob3VsZCB1c2UgJ2dvdG8nIHRvIGEgCj5jb21tb24gZXJyb3IgcGF0aCBleGl0LgoK
+VGhhbmtzIGZvciB5b3VyIHZhbHVhYmxlIGFkdmljZSwgSSB3aWxsIHJlc2VuZCBhIG5ldyBwYXRj
+aCBmb3IgdGhhdC4KCgo+Cj4+ICAgICAgICAgICAgICAgICAgcmV0dXJuIC1FSU5WQUw7Cj4+ICsg
+ICAgICAgfQo+PiAKPj4gICAgICAgICAgLyogR2V0IHRoZSBncGlvIG51bWJlciByZWxhdGl2ZSB0
+byB0aGUgZHluYW1pYyBiYXNlLiAqLwo+PiAgICAgICAgICBncGlvID0gb2ZfZ2V0X2dwaW9fZmxh
+Z3MoaGFsdF9ub2RlLCAwLCAmZmxhZ3MpOwo+PiAgICAgICAgICBpZiAoIWdwaW9faXNfdmFsaWQo
+Z3BpbykpCj4+ICsgICAgICAgewo+PiArICAgICAgICAgICAgICAgb2Zfbm9kZV9wdXQoaGFsdF9u
+b2RlKTsKPj4gICAgICAgICAgICAgICAgICByZXR1cm4gLUVJTlZBTDsKPj4gKyAgICAgICB9Cj4+
+IAo+PiAgICAgICAgICBlcnIgPSBncGlvX3JlcXVlc3QoZ3BpbywgImdwaW8taGFsdCIpOwo+PiAg
+ICAgICAgICBpZiAoZXJyKSB7Cj4+ICAgICAgICAgICAgICAgICAgcHJpbnRrKEtFUk5fRVJSICJn
+cGlvLWhhbHQ6IGVycm9yIHJlcXVlc3RpbmcgR1BJTyAlZC5cbiIsCj4+ICAgICAgICAgICAgICAg
+ICAgICAgICAgIGdwaW8pOwo+PiArICAgICAgICAgICAgICAgb2Zfbm9kZV9wdXQoaGFsdF9ub2Rl
+KTsKPj4gICAgICAgICAgICAgICAgICBoYWx0X25vZGUgPSBOVUxMOwo+PiAgICAgICAgICAgICAg
+ICAgIHJldHVybiBlcnI7Cj4+ICAgICAgICAgIH0KPj4gQEAgLTExMiw2ICsxMTksNyBAQCBzdGF0
+aWMgaW50IGdwaW9faGFsdF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+PiAg
+ICAgICAgICAgICAgICAgIHByaW50ayhLRVJOX0VSUiAiZ3Bpby1oYWx0OiBlcnJvciByZXF1ZXN0
+aW5nIElSUSAlZCBmb3IgIgo+PiAgICAgICAgICAgICAgICAgICAgICAgICAiR1BJTyAlZC5cbiIs
+IGlycSwgZ3Bpbyk7Cj4+ICAgICAgICAgICAgICAgICAgZ3Bpb19mcmVlKGdwaW8pOwo+PiArICAg
+ICAgICAgICAgICAgb2Zfbm9kZV9wdXQoaGFsdF9ub2RlKTsKPj4gICAgICAgICAgICAgICAgICBo
+YWx0X25vZGUgPSBOVUxMOwo+PiAgICAgICAgICAgICAgICAgIHJldHVybiBlcnI7Cj4+ICAgICAg
+ICAgIH0KPj4gQEAgLTEyMyw2ICsxMzEsOCBAQCBzdGF0aWMgaW50IGdwaW9faGFsdF9wcm9iZShz
+dHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+PiAgICAgICAgICBwcmludGsoS0VSTl9JTkZP
+ICJncGlvLWhhbHQ6IHJlZ2lzdGVyZWQgR1BJTyAlZCAoJWQgdHJpZ2dlciwgJWQiCj4+ICAgICAg
+ICAgICAgICAgICAiIGlycSkuXG4iLCBncGlvLCB0cmlnZ2VyLCBpcnEpOwo+PiAKPj4gKyAgICAg
+ICBvZl9ub2RlX3B1dChoYWx0X25vZGUpOwo+PiArCj4+ICAgICAgICAgIHJldHVybiAwOwo+PiAg
+IH0KPj4gCj4+IC0tCj4+IDIuMjUuMQo+PiAK
