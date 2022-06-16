@@ -2,314 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DBB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 03:43:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF09C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 03:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353703AbiFPDnG (ORCPT
+        id S1358201AbiFPDp6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 23:43:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33444 "EHLO
+        Wed, 15 Jun 2022 23:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349629AbiFPDnC (ORCPT
+        with ESMTP id S1343970AbiFPDpz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 23:43:02 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9F9167D0;
-        Wed, 15 Jun 2022 20:43:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655350981; x=1686886981;
-  h=from:to:cc:subject:date:message-id:references:
-   content-transfer-encoding:mime-version;
-  bh=7qf+b1+YvesxTUW7SvcTEGyq/g0rFPY7Pd4LtonY83U=;
-  b=Xg6BVyD5zsV+iZjQ+5gCw5DdOF8pDRy3PBdzZzRqWmnGC7wsSUxj4tyQ
-   BoHBAoYSL/uEZBWRVd7qTPpUfDDjEZxOy2OYiklqNzD+jNi53rtkF33MI
-   uFeYLwTUG0u5TMTd+t7dKODVNuPb8Pf5PYpYK01fivFeBPqyo+dqHsfFO
-   JaKyQGTyhckvXZ1Jqhwaa0GiyxIFMzm6siuzsKW24Dp8XEkMYtq8XBHz6
-   opIaGDxYpmASHD1wIs4tRKcG9ltbSafw31wUKIcdhdCq+LI9JPVdiaosS
-   xsWVB2ECDW8SpHnuUNYrbWBHI/HGqghY9o2Emp/kZlCFiKRdaeEIDJnf6
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="279215346"
-X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="279215346"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 20:43:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="613011034"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga008.jf.intel.com with ESMTP; 15 Jun 2022 20:43:00 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Wed, 15 Jun 2022 20:42:59 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Wed, 15 Jun 2022 20:42:59 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Wed, 15 Jun 2022 20:42:59 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.175)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Wed, 15 Jun 2022 20:42:58 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jej7i7cmBR8JWpRNkaLA2c7sllGnYkrkF+YlLKxpDQdrWXVg6kYjAe24CYYrmD1wG+K8THlW1sR3yWh7e4fUBlP5XNRdMvwNs5qzyuoF50oDw5tpS9Gr53p6PCK51zYKa46uFUcH9aL9Rp9mOG9JZ4p6X6TX2xrSvcH/f9A6T4UmolmTm19395j/fxlxdlKxkId/WKRtl/Jim9fOF1aYT4hd35f6Yi0Tug6RujaYjtirTGRwzUbrj0o7kNygFa2nYYVMqedQWvlGSnHDKx85JcNj7cTMiZyeBYzUX/1e+vP3fXSFBRTJCiHHy2yjp/mBD8jPOl4L5ecONtiOTDuwTA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rYFvNBro+VeKjSesppc8bdTt65v9XTPjYm2+P8cY/vg=;
- b=X5idUDVERRWKHiD5Dvyit8DszQtRMqkimPh/2edjZv9YPDfmsCk36HChuuDLU5VMDZVaNoYsVOWjw8xkOW0mx/7quFXB2K3OmAjzy4QxFCUVJOZjQjSMj1ilKih4GmOFKYlDZKcf5fcllxX1Re/xG1OUzGtHscd146ZDk9ru+Q/NZj691bquC5MIwRfis82AcDc0eI50xFEyBhSWTjj2WV+lb0A21DD8E9zZJZNXcK6UJiKxT6+FTvVB094aZRSTLNLpXwmtGP7+ZyvT+Yfm7fHC4x2+R79Y8fyHfIQj1UBIJ223o0ub3cyhE5tk1JBvMDExlU2jynhoRiWmrhWPaA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from IA1PR11MB6218.namprd11.prod.outlook.com (2603:10b6:208:3ea::9)
- by SN6PR11MB3279.namprd11.prod.outlook.com (2603:10b6:805:c6::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Thu, 16 Jun
- 2022 03:42:52 +0000
-Received: from IA1PR11MB6218.namprd11.prod.outlook.com
- ([fe80::d451:e933:b262:d77c]) by IA1PR11MB6218.namprd11.prod.outlook.com
- ([fe80::d451:e933:b262:d77c%9]) with mapi id 15.20.5332.020; Thu, 16 Jun 2022
- 03:42:52 +0000
-From:   "Sanil, Shruthi" <shruthi.sanil@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rob Herring <robh@kernel.org>
-CC:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Mark Gross <mgross@linux.intel.com>,
-        "Thokala, Srikanth" <srikanth.thokala@intel.com>,
-        "Raja Subramanian, Lakshmi Bai" 
-        <lakshmi.bai.raja.subramanian@intel.com>,
-        "Sangannavar, Mallikarjunappa" 
-        <mallikarjunappa.sangannavar@intel.com>
-Subject: RE: [PATCH v8 1/2] dt-bindings: timer: Add bindings for Intel Keem
- Bay SoC Timer
-Thread-Topic: [PATCH v8 1/2] dt-bindings: timer: Add bindings for Intel Keem
- Bay SoC Timer
-Thread-Index: AQHYJ9KPmrr71unh3EaZNB9EpLdxlqygNAOAgADN5wCAE5UmgIAAw7QAgA6SSICAjibRAA==
-Date:   Thu, 16 Jun 2022 03:42:51 +0000
-Message-ID: <IA1PR11MB6218F9374CF01DB72EC40A76F1AC9@IA1PR11MB6218.namprd11.prod.outlook.com>
-References: <20220222095654.9097-1-shruthi.sanil@intel.com>
- <20220222095654.9097-2-shruthi.sanil@intel.com>
- <YhVuJaf3AJ1c6TpT@robh.at.kernel.org> <YhYa3tlTEcLct2xu@smile.fi.intel.com>
- <CAL_JsqK_k49eKZ+Z+uw29GdY9KFVJL9o5xkzg=1=yF-oEt+JRg@mail.gmail.com>
- <YicsXm9JboW2b+5f@smile.fi.intel.com> 
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.500.17
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: aa32d899-189f-4a86-41a6-08da4f4a4a64
-x-ms-traffictypediagnostic: SN6PR11MB3279:EE_
-x-microsoft-antispam-prvs: <SN6PR11MB327906CF16802A89682BC177F1AC9@SN6PR11MB3279.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +uHVtXqzr38I7cllJfZQR5NfPh5UqnmrMoN4DEmzkjjilDhJsTGah5+/KgCJrdyEGuraLxNDJsxKIJ99wysWain9sIHTPcqxs1diyo7FuE226847+NIhJlPaAJvexwqLeWAVZloAdZvINvLPbkHz1dnuY0N93paKS1UNmW/HYE4aTcpBuTCadOcvOLcy1Q259RLLR5EXAPqPTsKE4qOGP2m9xbm80QiSqOebpHzRE6KCFrtCrSqRgxCmvHvYRNqZOCiMHboKPFYyXk7ciQKgCFK+HxH7KzgsPlaauRBitPkhl8xZrXgaj0JkkcMzYZnKN6z2DUkQNCJXLEHSIMTWlV64sm2WYcaGd6Y4cb5sVnT+cSS93Vu5zGJ+3F+xgRI2Zz8yejCSoJl/yec5Y/fKho57az4y2qRridDl8cQPqcLJWi3ZMfBYzzTpVWwF1jfGYl6M8bOgFGuoziYRGBZeyBNeocmNuZ6jvu+X1kkYL2IhgyibwlIf1J7MKXc/g3+jbxC5h2gDjKgVzb1Q7UtBXY/DPiaOfsl0UT47Ra+89wSXYjk/KIhzX55qKOIqt1S39znbL1lvBtpU4XEqT5fS0jNkODfr8b+rtmq4eGWQxXkiQ0DK9Byg7CAZ6VFg6qkJQOyqqO82pXhTEdacXcXoluMihbY7ioBoRYHvewryhL1KrNTCe9oxm0NnW5hdn/0Nv86eCc1drR7kVyoikRLhBQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR11MB6218.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(84040400005)(186003)(38070700005)(83380400001)(82960400001)(55016003)(6506007)(7696005)(38100700002)(122000001)(52536014)(110136005)(508600001)(316002)(2906002)(8936002)(26005)(9686003)(4326008)(66446008)(66946007)(8676002)(54906003)(66556008)(66476007)(76116006)(5660300002)(64756008)(53546011)(71200400001)(86362001)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?YG3fW5/5GLIvNO+r5B4HslBRsRQLHRpCQsytlqpuMCIrRbzQUaWRRV8QgsRJ?=
- =?us-ascii?Q?FvJz1cpQ1qjyKI2wahZE/MMoW2xWxHnHzNAgXKwSsmdl9+pWSQllbmR+rvC6?=
- =?us-ascii?Q?j5un1urzRhyX2ORewvb275ab37y5aZTELA36PusYvybwOPbN4hP3ctpnwb9i?=
- =?us-ascii?Q?MAzjGzd9ST2RkVE5sVShzVjFI8TPixiN8F3jSADWz2M0UellthB6ICB618uj?=
- =?us-ascii?Q?NbRL9Hlj0Nzq7zu0UnUkI6enQFxk+3ryldm7q6PFp/HWxUrJ7KnsTdcVHkGv?=
- =?us-ascii?Q?G23P6F5VQucNaGKqlt/W0oHlgfwuOk9URuFafKEZOO/Er+q5BM8fKn/lkfzT?=
- =?us-ascii?Q?BnV9MoFDylbDq423B2pb8DCzVyIUVSF/qo8TLgRTGK9G9CdK6EbXbyl1Bc5/?=
- =?us-ascii?Q?XJn9+LUDNltNyNw8N5cp2iFIvui45vI32o3ruGuUZLH+5Z6RWza1qej9SVPH?=
- =?us-ascii?Q?R3T27eOLpyhjneYrCTx0aoPSlPICRnWZbIbYgVyIJc3/7FMFm74VIhVWPbRt?=
- =?us-ascii?Q?EsOGtulsyiXV/ZhcKXriFBJAHzDeqMWiLa3Q5oJLrljQyW/Pws923OsS7j5m?=
- =?us-ascii?Q?iqPTC7g8r/Bf02ZHTuCQkXLdK7xkHT7qrFCqiYGzO9iUydTCXR1lMylTJ+CC?=
- =?us-ascii?Q?MnfCBeUTQnZ+e9PdtfujYxj2uRFLcZvI6lW8v4Qol7AKbxUmU8DAt4QuXE5z?=
- =?us-ascii?Q?qp4tDuRCyoaJMAlCrSqOq2vdwOmfovRYdN4n+ZtCoXEicVSG+bjRtvOPt7L1?=
- =?us-ascii?Q?RPv+qVMEb39nPrMQXys8Wr+i9Q/ONHeoAPYTCL2Mo3AcI7PvEp9JK7OjsFjf?=
- =?us-ascii?Q?6DD+81SHerRtjl9qfLwPljHDuqsQjVrHnKar3wR1DssbU0os0ggoaUyRDB/V?=
- =?us-ascii?Q?LL7wy1QiJmkq9nVscQzdhWj2JTy0Eb+9eULUH5bX+6Q7E3xUzkoynS6DXI/i?=
- =?us-ascii?Q?zXuzxS4NKy7OS2isCjTAjimMsPunOxH+fZzvrJm1lgutzyg96owkFLBD7QnK?=
- =?us-ascii?Q?UaB8A8wde3P0Bg4QBoV08cHsiybubCzuLXsWn+HPhz8O1qUNRtioaPcO8Zia?=
- =?us-ascii?Q?yF8dVuGrPl8DZpEKT7fUmOy+LysuIrYa6EUh01fvFJpp+/eyy8qv3JmB1f0x?=
- =?us-ascii?Q?m9xTle0soS9S8CBO+ffHCvI5k/+kcEr4p39SsnuMgh5y0txkKW6AwREHQ/Z9?=
- =?us-ascii?Q?U7JzOgAMSA5FtHBrWvYjokGPbq89OKvQNumrV3pB0CjtGLJE5uxgr1uKmpm5?=
- =?us-ascii?Q?3PqxSQdEYLi0gD6Cuzvmxy8JV9EarS6uYSvKu1i47zAdSjVG1CFgxrthboqI?=
- =?us-ascii?Q?3MOAfJ5zprXXspUhCZr6f4TTDBC/wJARdtXU2xxjHvf91YMtGV+U8Ijk70dw?=
- =?us-ascii?Q?p66fQDTpf19eL4vcY3p5orq9uUwjERv3XRAdlr2LeeJiZ8TjAGY9nbPuGSSg?=
- =?us-ascii?Q?qMNPD773FNbx+IdWWMSQuc0xCohmPVlkBs6B+sz69LHjtcPIZ8xxrGs+k1RV?=
- =?us-ascii?Q?rR6qdF/PpaJJHqTj9aBKZuy/SVasdZT0aC+cyhZNiQatR2hld7o7nBGzvDc3?=
- =?us-ascii?Q?x/uCfesWBmk+j6lir9zRyyGLPrpGRBPAnyYzC6VCvene/YRysSXvj2sBNPM2?=
- =?us-ascii?Q?hXFAgjTQWq00qOx3Q4bO6/neEEzwD6L5teHeNU6P3HaFSjvB9Ri+3b5VZheH?=
- =?us-ascii?Q?/xcP/6GkYKK3VRSaE6h/Zq+cpqOSl+P7xKO9srBN6Ow1Eh9qO1vU8EPFTK1Y?=
- =?us-ascii?Q?AYa+GHuM34+FEyAk3QSontTxEuk+5uE=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 15 Jun 2022 23:45:55 -0400
+Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCDD42ED0
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 20:45:54 -0700 (PDT)
+Received: by mail-vs1-xe2a.google.com with SMTP id g6so125274vsb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 20:45:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=k7VXVbqh0bhzQK4yW0QJWfypGCveVteOymCQFvAwJB8=;
+        b=na36DyrTfQu1n/OqBEP3BerJJX8gLahUFmWmw7cSgpwPcazwJc9FDc9pT9DAEFVdKR
+         ctcfwmN9VqdierMnOzJo/8kc1U5kWDdoSMSnC0cQ0jLU2qgxHDmSwZY1+5oaJxPZLTW2
+         Akxkm79mwVWYwfZnLcUVBrcH2qKhf3mWu5og1yQqx14RohLCBa/+kDA9dwULNXJfCfOT
+         NSXrTeGRgE5+bf37s6cMP/OGFs79QatJe3d9Xf7QIEJvsg7er9ed1dPnPSaKFM7ZpSMY
+         SBi4g8sHkIjWCXcQoGJ/LWgUjlhrHlMRf3uY/x+D7zPHVmdkzUydNCG1tC5nK7dGd/OE
+         XCtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=k7VXVbqh0bhzQK4yW0QJWfypGCveVteOymCQFvAwJB8=;
+        b=bJF2yCU3MbJxL19QC/6CVPzOeGthnDzUgM57VQpWrykIGFpNHV7tkqq+RHybWzcHN3
+         5E/26qdBb/By/9+FVOVea7Mo8ABtOZEqhTsyqmjz090Ro8laTodrX23ElWHtSaJgtWe/
+         dbXMhYb6p7vt+jhVOxSArcCMczZOVrioNwAHs5yw+9nG54riBQ3ZrNb0qlZxyw31rNlQ
+         7E7kZIGv0EAOG5o0IKOFEqBgi2Q8v+E/+G7k4nYI2Wjkqx+83lm2+UUG1GDMhiIWqgjY
+         LJBPKNKriVq2Q2raDnH3IZoaDQ+BFhEhrPtRbnkf+ox1aEdOnJ2fuyPWYYILts0nJsVN
+         B2eA==
+X-Gm-Message-State: AJIora/zCEcChvWusJlKWfJEY6EINzygYQ6tZDTQ5c3yg+S0a8vkIwBD
+        DDiLrp29AO1bP5lEMgREgudjIxOhAss8tXnO5NAvJA==
+X-Google-Smtp-Source: AGRyM1utwYUcs7rjymmDuVwA9/HUeNqJhefjrWmnuwOUtFitsp3/T+5eisHFb6LIznNPR9meg30yHLqbVnpkjepjzP0=
+X-Received: by 2002:a67:e185:0:b0:34c:46ab:ca96 with SMTP id
+ e5-20020a67e185000000b0034c46abca96mr1354060vsl.77.1655351153487; Wed, 15 Jun
+ 2022 20:45:53 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR11MB6218.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa32d899-189f-4a86-41a6-08da4f4a4a64
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jun 2022 03:42:51.9980
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tDCPZlrgHrU4DB3jem6PAmbvtYOQDN52D5ibD9uk9/IQnthrs3EJ0OXJfRknFO8hHFfbUdI9+wcBM6kJNetYHQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB3279
-X-OriginatorOrg: intel.com
+References: <YqDncfLeEeBaosrY@cmpxchg.org> <02ee2c97-3bca-8eb6-97d8-1f8743619453@linux.ibm.com>
+ <YqH74WaUzJlb+smt@cmpxchg.org> <20220609152243.00000332@Huawei.com>
+ <YqJa4N/VlS4zN4vf@cmpxchg.org> <20220610105708.0000679b@Huawei.com>
+ <YqdEEhJFr3SlfvSJ@cmpxchg.org> <4297bd21-e984-9d78-2bca-e70c11749a72@linux.ibm.com>
+ <Yqdc4DE8gYJ3zesO@cmpxchg.org> <42f536af-b17d-b001-7b6b-2c6b928f3ecf@linux.ibm.com>
+ <YqjZyP11O0yCMmiO@cmpxchg.org> <2b261518bbb5b8466301f8ab978f408141fa6e68.camel@intel.com>
+In-Reply-To: <2b261518bbb5b8466301f8ab978f408141fa6e68.camel@intel.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Wed, 15 Jun 2022 20:45:42 -0700
+Message-ID: <CAAPL-u9hjR8sFeUYM46TXPg-Lho6hr0zaLvrGhg9=htRrPtjqw@mail.gmail.com>
+Subject: Re: [PATCH v5 1/9] mm/demotion: Add support for explicit memory tiers
+To:     Ying Huang <ying.huang@intel.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
-
-> -----Original Message-----
-> From: Sanil, Shruthi
-> Sent: Friday, March 18, 2022 11:07 AM
-> To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>; Rob Herring
-> <robh@kernel.org>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>; Thomas Gleixner
-> <tglx@linutronix.de>; linux-kernel@vger.kernel.org;
-> devicetree@vger.kernel.org; Mark Gross <mgross@linux.intel.com>;
-> Thokala, Srikanth <srikanth.thokala@intel.com>; Raja Subramanian, Lakshmi
-> Bai <lakshmi.bai.raja.subramanian@intel.com>; Sangannavar,
-> Mallikarjunappa <mallikarjunappa.sangannavar@intel.com>
-> Subject: RE: [PATCH v8 1/2] dt-bindings: timer: Add bindings for Intel Ke=
-em
-> Bay SoC Timer
->=20
-> > -----Original Message-----
-> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Sent: Tuesday, March 8, 2022 3:44 PM
-> > To: Rob Herring <robh@kernel.org>
-> > Cc: Sanil, Shruthi <shruthi.sanil@intel.com>; Daniel Lezcano
-> > <daniel.lezcano@linaro.org>; Thomas Gleixner <tglx@linutronix.de>;
-> > linux- kernel@vger.kernel.org; devicetree@vger.kernel.org; Mark Gross
-> > <mgross@linux.intel.com>; Thokala, Srikanth
-> > <srikanth.thokala@intel.com>; Raja Subramanian, Lakshmi Bai
-> > <lakshmi.bai.raja.subramanian@intel.com>;
-> > Sangannavar, Mallikarjunappa <mallikarjunappa.sangannavar@intel.com>
-> > Subject: Re: [PATCH v8 1/2] dt-bindings: timer: Add bindings for Intel
-> > Keem Bay SoC Timer
-> >
-> > On Mon, Mar 07, 2022 at 04:33:23PM -0600, Rob Herring wrote:
-> > > On Wed, Feb 23, 2022 at 5:31 AM Andy Shevchenko
-> > > <andriy.shevchenko@linux.intel.com> wrote:
+On Wed, Jun 15, 2022 at 6:11 PM Ying Huang <ying.huang@intel.com> wrote:
+>
+> On Tue, 2022-06-14 at 14:56 -0400, Johannes Weiner wrote:
+> > On Tue, Jun 14, 2022 at 01:31:37PM +0530, Aneesh Kumar K V wrote:
+> > > On 6/13/22 9:20 PM, Johannes Weiner wrote:
+> > > > On Mon, Jun 13, 2022 at 07:53:03PM +0530, Aneesh Kumar K V wrote:
+> > > > > If the kernel still can't make the right decision, userspace could rearrange
+> > > > > them in any order using rank values. Without something like rank, if
+> > > > > userspace needs to fix things up,  it gets hard with device
+> > > > > hotplugging. ie, the userspace policy could be that any new PMEM tier device
+> > > > > that is hotplugged, park it with a very low-rank value and hence lowest in
+> > > > > demotion order by default. (echo 10 >
+> > > > > /sys/devices/system/memtier/memtier2/rank) . After that userspace could
+> > > > > selectively move the new devices to the correct memory tier?
 > > > >
-> > > > On Tue, Feb 22, 2022 at 05:13:41PM -0600, Rob Herring wrote:
-> > > > > On Tue, Feb 22, 2022 at 03:26:53PM +0530,
-> > > > > shruthi.sanil@intel.com
-> > wrote:
-> > > > > > From: Shruthi Sanil <shruthi.sanil@intel.com>
-> > > > > >
-> > > > > > Add Device Tree bindings for the Timer IP, which can be used
-> > > > > > as clocksource and clockevent device in the Intel Keem Bay SoC.
+> > > > I had touched on this in the other email.
 > > > >
-> > > > ...
+> > > > This doesn't work if two drivers that should have separate policies
+> > > > collide into the same tier - which is very likely with just 3 tiers.
+> > > > So it seems to me the main usecase for having a rank tunable falls
+> > > > apart rather quickly until tiers are spaced out more widely. And it
+> > > > does so at the cost of an, IMO, tricky to understand interface.
 > > > >
-> > > > > > +    soc {
-> > > > > > +        #address-cells =3D <0x2>;
-> > > > > > +        #size-cells =3D <0x2>;
-> > > > > > +
-> > > > > > +        gpt@20331000 {
-> > > > > > +            compatible =3D "intel,keembay-gpt-creg",
-> > > > > > + "simple-mfd";
-> > > > >
-> > > > > It looks like you are splitting things based on Linux
-> > > > > implementation details. Does this h/w block have different
-> > > > > combinations of timers and counters? If not, then you don't need
-> > > > > the child nodes at all. There's plenty of h/w blocks that get
-> > > > > used as both
-> > a clocksource and clockevent.
-> > > > >
-> > > > > Maybe I already raised this, but assume I don't remember and
-> > > > > this patch needs to address any questions I already asked.
-> > > >
-> > > > I dunno if I mentioned that hardware seems to have 5 or so devices
-> > > > behind the block, so ideally it should be one device node that
-> > > > represents the global register spaces and several children nodes.
 > > >
-> > > Is it 5 devices or 9 devices?
-> >
-> > 5 devices, one of which is a timer block out of 8 timers.
-> > You may count them as 12 altogether.
-> >
-> > > > However, I am not familiar with the established practices in DT
-> > > > world, but above seems to me the right thing to do since it
-> > > > describes the hardware as is (without any linuxisms).
+> > > Considering the kernel has a static map for these tiers, how can two drivers
+> > > end up using the same tier? If a new driver is going to manage a memory
+> > > device that is of different characteristics than the one managed by dax/kmem,
+> > > we will end up adding
 > > >
-> > > The Linuxism in these cases defining 1 node per driver because
-> > > that's what is convenient for automatic probing. That appears to be
-> > > exactly the case here. The red flag is nodes with a compatible and
-> > > nothing else. The next question is whether the sub-devices are
-> > > blocks that will be assembled in varying combinations and
-> > > quantities. If not, then not much point subdividing the h/w blocks.
-> >
-> > AFAIU the hardware architecture the amount of timers is dependent on
-> > the IP synthesis configuration. On this platform it's 8, but it may be
-> > 1 or 2, for example.
->=20
-> Yes, the number of timers can vary between platforms.
-> For eg., Intel Keem Bay SoC has 8 timers where as in Intel Thunder Bay So=
-C
-> has 6 timers.
->=20
-> >
-> > > There's also many cases of having multiple 'identical' timers and
-> > > wanting to encode which timer gets assigned to clocksource vs.
-> > > clockevent. But those 'identical' timers aren't if you care about
-> > > which timer gets assigned where. I *think* that's not the case here
-> > > unless you are trying to pick the timer for the clockevent by not
-> > > defining the other timers.
+> > > #define MEMORY_TIER_NEW_DEVICE 4
 > > >
-> > > Without having a complete picture of what's in 'gpt-creg', I can't
-> > > give better advice.
+> > > The new driver will never use MEMORY_TIER_PMEM
+> > >
+> > > What can happen is two devices that are managed by DAX/kmem that
+> > > should be in two memory tiers get assigned the same memory tier
+> > > because the dax/kmem driver added both the device to the same memory tier.
+> > >
+> > > In the future we would avoid that by using more device properties like HMAT
+> > > to create additional memory tiers with different rank values. ie, we would
+> > > do in the dax/kmem create_tier_from_rank() .
 > >
-> > I guess they need to share TRM, if possible, to show what this block is=
-.
+> > Yes, that's the type of collision I mean. Two GPUs, two CXL-attached
+> > DRAMs of different speeds etc.
 > >
->=20
-> I would like to explain briefly about the Timer IP in the Keem Bay Soc.
-> The Timers block contains 8 general purpose timers, a free running counte=
-r.
-> Each general purpose timer can generate an individual interrupt to the
-> interrupt controller.
-> The timer block consists of secure and non-secure timers. Hence there are
-> secure and non-secure registers in separate address banks.
-> The secure register bank consists of the common control register where th=
-e
-> timers and counters need to be enabled.
-> From the driver we try to check if these bits are enabled to continue wit=
-h the
-> initialization of the driver.
-> Hence we need to pass the base address of both the address banks to the
-> driver from the DTB.
-> The control register is common for both timer and counter. Hence we went
-> for parent child module in DTB. 'gpt-creg' represents this control regist=
-er.
->=20
-
-I tried to get the technical manual that could be shared publicly, but coul=
-dn't find one which has the timer IP details.
-In the previous reply above, I have tried to explain the details of the Tim=
-er IP. Could you please let me know if I was able to answer your question?
-
-I think the concern point here is the common register that needs to be acce=
-ssed by the timer during initialization. Same address cannot be defined in =
-multiple timer nodes and also we cannot have this in the driver too as offs=
-et because this offset is changing from platform to platform. Hence we have=
- gone with the parent child approach. I need your help here on whats the be=
-st possible way to do this?
-
-I need your support in taking this patch forward?
-
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
+> > I also like Huang's idea of using latency characteristics instead of
+> > abstract distances. Though I'm not quite sure how feasible this is in
+> > the short term, and share some concerns that Jonathan raised. But I
+> > think a wider possible range to begin with makes sense in any case.
 > >
+> > > > In the other email I had suggested the ability to override not just
+> > > > the per-device distance, but also the driver default for new devices
+> > > > to handle the hotplug situation.
+> > > >
+> > >
+> > > I understand that the driver override will be done via module parameters.
+> > > How will we implement device override? For example in case of dax/kmem driver
+> > > the device override will be per dax device? What interface will we use to set the override?
+> > >
+> > > IIUC in the above proposal the dax/kmem will do
+> > >
+> > > node_create_and_set_memory_tier(numa_node, get_device_tier_index(dev_dax));
+> > >
+> > > get_device_tier_index(struct dev_dax *dev)
+> > > {
+> > >     return dax_kmem_tier_index; // module parameter
+> > > }
+> > >
+> > > Are you suggesting to add a dev_dax property to override the tier defaults?
+> >
+> > I was thinking a new struct memdevice and struct memtype(?). Every
+> > driver implementing memory devices like this sets those up and
+> > registers them with generic code and preset parameters. The generic
+> > code creates sysfs directories and allows overriding the parameters.
+> >
+> > struct memdevice {
+> >       struct device dev;
+> >       unsigned long distance;
+> >       struct list_head siblings;
+> >       /* nid? ... */
+> > };
+> >
+> > struct memtype {
+> >       struct device_type type;
+> >       unsigned long default_distance;
+> >       struct list_head devices;
+> > };
+> >
+> > That forms the (tweakable) tree describing physical properties.
+>
+> In general, I think memtype is a good idea.  I have suggested
+> something similar before.  It can describe the characters of a
+> specific type of memory (same memory media with different interface
+> (e.g., CXL, or DIMM) will be different memory types).  And they can
+> be used to provide overriding information.
+>
+> As for memdevice, I think that we already have "node" to represent
+> them in sysfs.  Do we really need another one?  Is it sufficient to
+> add some links to node in the appropriate directory?  For example,
+> make memtype class device under the physical device (e.g. CXL device),
+> and create links to node inside the memtype class device directory?
+>
+> > From that, the kernel then generates the ordered list of tiers.
+>
+> As Jonathan Cameron pointed, we may need the memory tier ID to be
+> stable if possible.  I know this isn't a easy task.  At least we can
+> make the default memory tier (CPU local DRAM) ID stable (for example
+> make it always 128)?  That provides an anchor for users to understand.
 
+One of the motivations of introducing "rank" is to allow memory tier
+ID to be stable, at least for the well-defined tiers such as the
+default memory tier.  The default memory tier can be moved around in
+the tier hierarchy by adjusting its rank position relative to other
+tiers, but its device ID can remain the same, e.g. always 1.
+
+> Best Regards,
+> Huang, Ying
+>
+> > > > This should be less policy than before. Driver default and per-device
+> > > > distances (both overridable) combined with one tunable to set the
+> > > > range of distances that get grouped into tiers.
+> > > >
+> > >
+> > > Can you elaborate more on how distance value will be used? The device/device NUMA node can have
+> > > different distance value from other NUMA nodes. How do we group them?
+> > > for ex: earlier discussion did outline three different topologies. Can you
+> > > ellaborate how we would end up grouping them using distance?
+> > >
+> > > For ex: in the topology below node 2 is at distance 30 from Node0 and 40 from Nodes
+> > > so how will we classify node 2?
+> > >
+> > >
+> > > Node 0 & 1 are DRAM nodes, node 2 & 3 are PMEM nodes.
+> > >
+> > >               20
+> > >   Node 0 (DRAM)  ----  Node 1 (DRAM)
+> > >        |        \   /       |
+> > >        | 30    40 X 40      | 30
+> > >        |        /   \       |
+> > >   Node 2 (PMEM)  ----  Node 3 (PMEM)
+> > >               40
+> > >
+> > > node distances:
+> > > node   0    1    2    3
+> > >    0  10   20   30   40
+> > >    1  20   10   40   30
+> > >    2  30   40   10   40
+> > >    3  40   30   40   10
+> >
+> > I'm fairly confused by this example. Do all nodes have CPUs? Isn't
+> > this just classic NUMA, where optimizing for locality makes the most
+> > sense, rather than tiering?
+> >
+> > Forget the interface for a second, I have no idea how tiering on such
+> > a system would work. One CPU's lower tier can be another CPU's
+> > toptier. There is no lowest rung from which to actually *reclaim*
+> > pages. Would the CPUs just demote in circles?
+> >
+> > And the coldest pages on one socket would get demoted into another
+> > socket and displace what that socket considers hot local memory?
+> >
+> > I feel like I missing something.
+> >
+> > When we're talking about tiered memory, I'm thinking about CPUs
+> > utilizing more than one memory node. If those other nodes have CPUs,
+> > you can't reliably establish a singular tier order anymore and it
+> > becomes classic NUMA, no?
+>
+>
+>
