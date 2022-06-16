@@ -2,70 +2,592 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03E1AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1BBEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379265AbiFPW5R (ORCPT
+        id S1379276AbiFPW6g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 18:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33172 "EHLO
+        Thu, 16 Jun 2022 18:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379248AbiFPW5M (ORCPT
+        with ESMTP id S1379259AbiFPW6W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 18:57:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06806212F;
-        Thu, 16 Jun 2022 15:57:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CE6F60F73;
-        Thu, 16 Jun 2022 22:57:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E4AC2C34114;
-        Thu, 16 Jun 2022 22:57:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655420230;
-        bh=zznE9cygfawFKzOkGsp6z3Fu47wZj6MgkBmsFByFzmw=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=FVTyeuiQzn3V09bbv6wCSuwKmkC9M5KbQlVW0AjVPW5nyA0IfvttriuKd7y9qGaUy
-         GElzfaC1SZkTeGe2rTiqEhcOwbcsKAsWlMPT3EgqBHKr1Pl5YepYT0jFOBpKn3eptt
-         iIszudU4VGkykwgoTTHw1XGCozaXpr6BfpFHnN4AlgNM/15618Ytl1mfagFD378vo0
-         ukko0HIk4PzEisfaVe+D8bdsgFG9EAIflOoAO8iNH/nu4xx25w3P0x3flQ5w46RsWf
-         NB7j9aGlhmUN5sMADNyjtdEYPZlG+fgc12tJmMxWODoXr7vWi9xwkGBSD7WbIlN+mo
-         2ZTISfJyaMlzA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D15A1FD99FB;
-        Thu, 16 Jun 2022 22:57:10 +0000 (UTC)
-Subject: Re: [GIT PULL] SELinux fixes for v5.19 (#1)
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAHC9VhQa-L-_F4UdMekqvyF714xhEerVQzc9rPvuwTQJtmMd8A@mail.gmail.com>
-References: <CAHC9VhQa-L-_F4UdMekqvyF714xhEerVQzc9rPvuwTQJtmMd8A@mail.gmail.com>
-X-PR-Tracked-List-Id: <selinux.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAHC9VhQa-L-_F4UdMekqvyF714xhEerVQzc9rPvuwTQJtmMd8A@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit.git selinux-pr-20220616
-X-PR-Tracked-Commit-Id: cad140d00899e7a9cb6fe93b282051df589e671c
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 6decbf75c93e654ce6cb0e93a02ca6575dce9922
-Message-Id: <165542023085.4629.13548382440245751190.pr-tracker-bot@kernel.org>
-Date:   Thu, 16 Jun 2022 22:57:10 +0000
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
+        Thu, 16 Jun 2022 18:58:22 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B692B62A05
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 15:58:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655420300; x=1686956300;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=BWxsxWawtf6Hs4uicUqdzcEgaSLbxNpf6q1slaH91EY=;
+  b=Fn/3ysQ+MFOjvkVLN/lW4KyDuM1dkuhCsT6+LTif3VltKc6tryvW2WyC
+   2JKURcKZtZ7hvnIabkhpM9XTMwLbnHPCQg6A2pC4G14HsInesZs5X9fdl
+   AwXB4Iy2Nnc4NAVEA3sORHecv38gjG5v3XCvK8KLy99ImIcW5Y0HDpmh4
+   LFP4COX72Y3oqQdQ0HHS23yDyrset/Uz8vLChu68QGmMYTts5mXWjj2ld
+   fGR+8rQugk9iD4czMFlWrA39aG6Yib3ec18QxznqqPvKdeE2Ui6sMeOjf
+   HHsjdapyrqu1dR35U5IVbtVBA4BWI9I5vsWRBr7eFikSdbUPUUVMOzbGY
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="304819564"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="304819564"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 15:58:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="763034903"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 16 Jun 2022 15:58:18 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o1yRN-000Oqn-O4;
+        Thu, 16 Jun 2022 22:58:17 +0000
+Date:   Fri, 17 Jun 2022 06:57:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     James Morse <james.morse@arm.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org
+Subject: [morse:mpam/snapshot/v5.18 66/146] include/linux/resctrl.h:286:20:
+ warning: shift count >= width of type
+Message-ID: <202206170631.gKMr1Rch-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 16 Jun 2022 17:44:35 -0400:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/snapshot/v5.18
+head:   bac90d25cbdee0fc233b9b1c47d5b6f44101a384
+commit: 2881ac404cd937d1529d641acc4055fb14822de0 [66/146] fs/resctrl: Export the closid/rmid to user-space
+config: hexagon-randconfig-r041-20220616 (https://download.01.org/0day-ci/archive/20220617/202206170631.gKMr1Rch-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f0e608de27b3d568000046eebf3712ab542979d6)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git/commit/?id=2881ac404cd937d1529d641acc4055fb14822de0
+        git remote add morse https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git
+        git fetch --no-tags morse mpam/snapshot/v5.18
+        git checkout 2881ac404cd937d1529d641acc4055fb14822de0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash fs/proc/
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit.git selinux-pr-20220616
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/6decbf75c93e654ce6cb0e93a02ca6575dce9922
+All warnings (new ones prefixed by >>):
 
-Thank you!
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count >= width of type [-Wshift-count-overflow]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:35:22: note: expanded from macro '__GENMASK'
+           (((~UL(0)) - (UL(1) << (l)) + 1) & \
+                               ^
+   note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count is negative [-Wshift-count-negative]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:36:11: note: expanded from macro '__GENMASK'
+            (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+                    ^
+   note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count >= width of type [-Wshift-count-overflow]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:35:22: note: expanded from macro '__GENMASK'
+           (((~UL(0)) - (UL(1) << (l)) + 1) & \
+                               ^
+   note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count is negative [-Wshift-count-negative]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:36:11: note: expanded from macro '__GENMASK'
+            (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+                    ^
+   note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count >= width of type [-Wshift-count-overflow]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:35:22: note: expanded from macro '__GENMASK'
+           (((~UL(0)) - (UL(1) << (l)) + 1) & \
+                               ^
+   note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count is negative [-Wshift-count-negative]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:36:11: note: expanded from macro '__GENMASK'
+            (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+                    ^
+   note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count >= width of type [-Wshift-count-overflow]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:35:22: note: expanded from macro '__GENMASK'
+           (((~UL(0)) - (UL(1) << (l)) + 1) & \
+                               ^
+   note: (skipping 4 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count is negative [-Wshift-count-negative]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:36:11: note: expanded from macro '__GENMASK'
+            (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+                    ^
+   note: (skipping 4 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count >= width of type [-Wshift-count-overflow]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:35:22: note: expanded from macro '__GENMASK'
+           (((~UL(0)) - (UL(1) << (l)) + 1) & \
+                               ^
+   note: (skipping 4 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count is negative [-Wshift-count-negative]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:36:11: note: expanded from macro '__GENMASK'
+            (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+                    ^
+   note: (skipping 4 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count >= width of type [-Wshift-count-overflow]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:35:22: note: expanded from macro '__GENMASK'
+           (((~UL(0)) - (UL(1) << (l)) + 1) & \
+                               ^
+   note: (skipping 5 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count is negative [-Wshift-count-negative]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:36:11: note: expanded from macro '__GENMASK'
+            (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+                    ^
+   note: (skipping 5 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count >= width of type [-Wshift-count-overflow]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:35:22: note: expanded from macro '__GENMASK'
+           (((~UL(0)) - (UL(1) << (l)) + 1) & \
+                               ^
+   note: (skipping 6 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count is negative [-Wshift-count-negative]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:36:11: note: expanded from macro '__GENMASK'
+            (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+                    ^
+   note: (skipping 6 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count >= width of type [-Wshift-count-overflow]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:35:22: note: expanded from macro '__GENMASK'
+           (((~UL(0)) - (UL(1) << (l)) + 1) & \
+                               ^
+   note: (skipping 5 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count is negative [-Wshift-count-negative]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:36:11: note: expanded from macro '__GENMASK'
+            (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+                    ^
+   note: (skipping 5 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count >= width of type [-Wshift-count-overflow]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:35:22: note: expanded from macro '__GENMASK'
+           (((~UL(0)) - (UL(1) << (l)) + 1) & \
+                               ^
+   note: (skipping 6 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count is negative [-Wshift-count-negative]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:36:11: note: expanded from macro '__GENMASK'
+            (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+                    ^
+   note: (skipping 6 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                         ^~~~~~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count >= width of type [-Wshift-count-overflow]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:35:22: note: expanded from macro '__GENMASK'
+           (((~UL(0)) - (UL(1) << (l)) + 1) & \
+                               ^
+   include/linux/bitfield.h:129:30: note: expanded from macro 'FIELD_GET'
+                   (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
+                                              ^~~~~
+   In file included from fs/proc/base.c:97:
+>> include/linux/resctrl.h:286:20: warning: shift count is negative [-Wshift-count-negative]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:36:11: note: expanded from macro '__GENMASK'
+            (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+                    ^
+   include/linux/bitfield.h:129:30: note: expanded from macro 'FIELD_GET'
+                   (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
+                                              ^~~~~
+   In file included from fs/proc/base.c:97:
+   include/linux/resctrl.h:286:20: warning: shift count >= width of type [-Wshift-count-overflow]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:35:22: note: expanded from macro '__GENMASK'
+           (((~UL(0)) - (UL(1) << (l)) + 1) & \
+                               ^
+   include/linux/bitfield.h:129:50: note: expanded from macro 'FIELD_GET'
+                   (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
+                                                         ~~~~~~~~~^~~~~~
+   include/linux/bitfield.h:45:38: note: expanded from macro '__bf_shf'
+   #define __bf_shf(x) (__builtin_ffsll(x) - 1)
+                                        ^
+   In file included from fs/proc/base.c:97:
+   include/linux/resctrl.h:286:20: warning: shift count is negative [-Wshift-count-negative]
+           *rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+                   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+   include/linux/resctrl.h:40:26: note: expanded from macro 'RESCTRL_ID_RMID'
+   #define RESCTRL_ID_RMID         GENMASK(63, 32)
+                                   ^
+   include/linux/bits.h:38:31: note: expanded from macro 'GENMASK'
+           (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+                                        ^
+   include/linux/bits.h:36:11: note: expanded from macro '__GENMASK'
+            (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+                    ^
+   include/linux/bitfield.h:129:50: note: expanded from macro 'FIELD_GET'
+                   (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
+                                                         ~~~~~~~~~^~~~~~
+   include/linux/bitfield.h:45:38: note: expanded from macro '__bf_shf'
+   #define __bf_shf(x) (__builtin_ffsll(x) - 1)
+                                        ^
+   22 warnings generated.
+
+
+vim +286 include/linux/resctrl.h
+
+   269	
+   270	/**
+   271	 * __resctrl_id_decode() - unpack a known-good id that has been checked by
+   272	 *                         resctrl_id_decode().
+   273	 * @id:		The value originally passed by user-space.
+   274	 * @closid:	Returned closid.
+   275	 * @rmid:	Returned rmid.
+   276	 *
+   277	 * Decodes the id field with no error checking. resctrl_id_decode() must have
+   278	 * been used to check the id produces values that are in range and are
+   279	 * allocated at the time of first use.
+   280	 */
+   281	static inline void __resctrl_id_decode(u64 id, u32 *closid, u32 *rmid)
+   282	{
+   283		id ^= resctrl_id_obsfucation;
+   284	
+   285		*closid = FIELD_GET(RESCTRL_ID_CLOSID, id);
+ > 286		*rmid = FIELD_GET(RESCTRL_ID_RMID, id);
+   287	}
+   288	
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+0-DAY CI Kernel Test Service
+https://01.org/lkp
