@@ -2,107 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 772BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 11:25:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA78DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 11:26:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376807AbiFPLZU (ORCPT
+        id S1376817AbiFPL0E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 07:25:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40082 "EHLO
+        Thu, 16 Jun 2022 07:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376442AbiFPLZS (ORCPT
+        with ESMTP id S1376681AbiFPLZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 07:25:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E849D5DE46;
-        Thu, 16 Jun 2022 04:25:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F2CAB82360;
-        Thu, 16 Jun 2022 11:25:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30ACCC34114;
-        Thu, 16 Jun 2022 11:25:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655378715;
-        bh=iIk2YS5z65pjvpfKrUKwRuHJctWgL1FjnG556xx/xV0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ceqGBWqVUrt6dyOkV2RGVN1XXwmlKVQ4sllwi+WyxWWVVQrAqpZygZBxXykX1FgEp
-         K1wEVpFQHojUm0ufK7sjR3+x6BasaudcVJ6P9GCayrYVDoXLubotPG7kmuheZjQc1k
-         cjid70BIz96LbbYL4dkeijs4bquJuVz7yZ19d9grrB+4WagEjr2xpiwTK5aamv4prw
-         J7xEoyn8lJqdbQGCJAvfVHDFSsmUAehPBSm0h8E9Pxd/mr37jVmEAA5DUKAPmVweGy
-         az2jFmPfO+Cj0JvGhU/9LPwnmcFuG2qoVv126pgUNfdSzR7xCV1ykrNq81PsX4n1si
-         hTmdXSqwlUbjA==
-Received: by mail-ot1-f54.google.com with SMTP id y16-20020a9d5190000000b0060c1292a5b9so816256otg.3;
-        Thu, 16 Jun 2022 04:25:15 -0700 (PDT)
-X-Gm-Message-State: AJIora+HNLWsZLLlTda+6E1yFV412SprlGhz1+81WZoszaGIOcoZ3h2A
-        iEETB8jUsMYcgMKdgBdy2DHHgZmLPQk1WkPG2Ww=
-X-Google-Smtp-Source: AGRyM1sq6WhQFq4kYMdW/m0PJWq0sNgWE09mDloXs/0UqdIfemWCq+RA5+Bc450OKx4Yj2EjPEeqDY5pIUAi1ElWO/4=
-X-Received: by 2002:a9d:37a3:0:b0:60c:5427:1f56 with SMTP id
- x32-20020a9d37a3000000b0060c54271f56mr1824706otb.71.1655378714352; Thu, 16
- Jun 2022 04:25:14 -0700 (PDT)
+        Thu, 16 Jun 2022 07:25:59 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2DCD5E16B;
+        Thu, 16 Jun 2022 04:25:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=OFa1n6K77JzaEo8adfWBAbuXdRRnUBxjmifrmcpcPP8=; b=aLxznHPjqsmQVwNHGzEIMV/gGH
+        roKRWjSnvWHpZoEyc+I2fLUFPrNPiS7genjXmY28cyL/ozF0C4h0RIiDv6PzTRonoSr2ND+CKwMmq
+        46ePNMaHRTQm6+PGuM5hY6U9GhxhiyXuBVZ10g3F5ucVMj+ickYOp7sK4pbCXnYafP74ht6TlOnsr
+        qsQGOAktItNmjYwrPa4zyq+YelZtPQnpgotl5uUaY5s7bqDphsHWELVX8UOZNzxlwqILMAHAiRvZV
+        Q4a8uAOaZgD0Qg0JmlV8caEaw5ts4wNaAP8SSBxj/F9XDRJDcQ7RW7w+bIjPVA2NNNzWxIiR6Z/9C
+        B0EwHOEg==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o1ndG-001ttY-TX; Thu, 16 Jun 2022 11:25:51 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 8B76E980DD0; Thu, 16 Jun 2022 13:25:50 +0200 (CEST)
+Date:   Thu, 16 Jun 2022 13:25:50 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Yang Weijiang <weijiang.yang@intel.com>, pbonzini@redhat.com,
+        seanjc@google.com, x86@kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rick.p.edgecombe@intel.com
+Subject: Re: [PATCH 00/19] Refresh queued CET virtualization series
+Message-ID: <YqsTPopgTHYCzCJD@worktop.programming.kicks-ass.net>
+References: <20220616084643.19564-1-weijiang.yang@intel.com>
+ <Yqrzmr27siGjPB88@infradead.org>
 MIME-Version: 1.0
-References: <20220615154142.1574619-1-ardb@kernel.org> <20220615154142.1574619-4-ardb@kernel.org>
-In-Reply-To: <20220615154142.1574619-4-ardb@kernel.org>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 16 Jun 2022 13:25:02 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXFfVi8sYXR0z42v72XfTBaQ9jaDAzuLuK=TBKHUqKkEPA@mail.gmail.com>
-Message-ID: <CAMj1kXFfVi8sYXR0z42v72XfTBaQ9jaDAzuLuK=TBKHUqKkEPA@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] jump_label: make initial NOP patching the special case
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        "open list:S390" <linux-s390@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yqrzmr27siGjPB88@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 at 17:41, Ard Biesheuvel <ardb@kernel.org> wrote:
->
-> Instead of defaulting to patching NOP opcodes at init time, and leaving
-> it to the architectures to override this if this is not needed, switch
-> to a model where doing nothing is the default. This is the common case
-> by far, as only MIPS requires NOP patching at init time. On all other
-> architectures, the correct encodings are emitted by the compiler and so
-> no initial patching is needed.
->
-> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-> Acked-by: Mark Rutland <mark.rutland@arm.com>
-> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  Documentation/staging/static-keys.rst |  3 ---
->  arch/arc/kernel/jump_label.c          | 13 -------------
->  arch/arm/kernel/jump_label.c          |  6 ------
->  arch/arm64/kernel/jump_label.c        | 11 -----------
->  arch/mips/include/asm/jump_label.h    |  2 ++
->  arch/parisc/kernel/jump_label.c       | 11 -----------
->  arch/riscv/kernel/jump_label.c        | 12 ------------
->  arch/s390/kernel/jump_label.c         |  5 -----
->  arch/x86/kernel/jump_label.c          | 13 -------------
->  kernel/jump_label.c                   | 14 +++++---------
->  10 files changed, 7 insertions(+), 83 deletions(-)
->
+On Thu, Jun 16, 2022 at 02:10:50AM -0700, Christoph Hellwig wrote:
+> On Thu, Jun 16, 2022 at 04:46:24AM -0400, Yang Weijiang wrote:
+> > The purpose of this patch series is to refresh the queued CET KVM
+> > patches[1] with the latest dependent CET native patches, pursuing
+> > the result that whole series could be merged ahead of CET native
+> > series[2] [3].
+> 
+> It might be helpful to explain what CET is here..
 
-This needs the following hunk as well, as spotted by the bot:
+Central European Time ofc :-)
 
---- a/include/linux/jump_label.h
-+++ b/include/linux/jump_label.h
-@@ -220,8 +220,6 @@ extern void jump_label_lock(void);
- extern void jump_label_unlock(void);
- extern void arch_jump_label_transform(struct jump_entry *entry,
-                                      enum jump_label_type type);
--extern void arch_jump_label_transform_static(struct jump_entry *entry,
--                                            enum jump_label_type type);
- extern bool arch_jump_label_transform_queue(struct jump_entry *entry,
-                                            enum jump_label_type type);
- extern void arch_jump_label_transform_apply(void);
+I think it stands for Control-flow Enforcement Technology or something
+along those lines, but this being Intel it loves to obfuscate stuff and
+make it impossible to understand what's being said to increase the
+buzzword bong hits.
 
-Let me know if I need to resend for this.
+Its a mostly pointless umbrella term for IBT (Indirect Branch Tracking)
+and SHSTK (SHadow STacK), the first of which covers forward edge control
+flow and the second covers backward edge control flow.
+
+
