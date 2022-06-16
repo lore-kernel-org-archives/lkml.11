@@ -2,132 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23036C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:19:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A57BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238136AbiFPPTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:19:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
+        id S1377573AbiFPPUL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 11:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232449AbiFPPTv (ORCPT
+        with ESMTP id S232449AbiFPPUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:19:51 -0400
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC5BF11816
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:19:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=nsVvp
-        /8TetDFrxpido6IqFxlF0d+SkPkvOqKIqtD0WE=; b=JRXx6VdfJRgtM7cqNamoD
-        iDlPiD9x3Jz7b7UXz+tWd08mcWIrjoLX6bp/Nmq40hPImFzDaa0BeA6ntT70cV6e
-        +UeVF+bPj6Be3t786E2PtoEIimFp4cRM+rphjKsN/2HS3rYcUatoHzruJEzTxDtc
-        pNAUIy3LDv2FpVQS2U2mpM=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp1 (Coremail) with SMTP id C8mowACn1CTkSatiqJdkEg--.27454S2;
-        Thu, 16 Jun 2022 23:19:02 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     oss@buserror.net, mpe@ellerman.id.au, paulus@samba.org,
-        christophe.leroy@csgroup.eu, nixiaoming@huawei.com
-Cc:     windhl@126.com, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] arch: powerpc: platforms: 85xx: Add missing of_node_put in sgy_cts1000.c
-Date:   Thu, 16 Jun 2022 23:19:01 +0800
-Message-Id: <20220616151901.3989078-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 16 Jun 2022 11:20:09 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7725D344FA;
+        Thu, 16 Jun 2022 08:20:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655392808; x=1686928808;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9GFnmtQhesbFhhI0eu3wSxeKy81JLBgTOD42fl56qpI=;
+  b=JEW6yD50IZIDv9HeKAhilIvU9jCu8in+F3PrbAhi8rYSvHErin/qG6Cl
+   m+F91NqpgDYfwOEZl6HnTl5qPlYW7FDtVvEs48IsAPdoxB1yQYgX5JQ00
+   Go9KNJf1xfTYbYjFARb79XcZE+wsycLFh5Q/SdUqtxTRxwSm5MX+EhYt3
+   xZrznowtEFN2Anij6/B/gxgEzT9wBBVDgjdPkk5P7TRXwAbEnZt6yAGIj
+   wdYClxUDpektpMuyePlMh/MTPWLNqWuuqnWiKiB929X0ThPOCq/IKIIet
+   z98UhDxlf+C1CN64C+JYJXVrEUmC5m+a71Vpt1ZPw7hj5V869V4S0vzE0
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259733613"
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="259733613"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 08:20:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="653200801"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 16 Jun 2022 08:20:04 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o1rHv-000OUJ-JV;
+        Thu, 16 Jun 2022 15:20:03 +0000
+Date:   Thu, 16 Jun 2022 23:20:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     kbuild-all@lists.01.org,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: Re: [PATCH V4 13/20] rv/reactor: Add the panic reactor
+Message-ID: <202206162325.aggB6gj9-lkp@intel.com>
+References: <67e522ab57e64eee313af508a8c70f3cce33e525.1655368610.git.bristot@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowACn1CTkSatiqJdkEg--.27454S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tFW8uw1UJF13CF4xKrWktFb_yoW8KryfpF
-        Z8GrWSkrWkGr1xG3s7ta1DuFy3tw10qay3tw13Cws7C3WUX3yqvry0vF4rXr1fWFW8C3yr
-        Jr4akayj9FZFv3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRfMarUUUUU=
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizgciF18RPTmY+QAAsX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <67e522ab57e64eee313af508a8c70f3cce33e525.1655368610.git.bristot@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In gpio_halt_probe(), of_find_matching_node() will return a node pointer with
-refcount incremented. We should use of_node_put() in each fail path or when it
-is not used anymore.
+Hi Daniel,
 
-Signed-off-by: Liang He <windhl@126.com>
----
- changelog:
+I love your patch! Perhaps something to improve:
 
- v2: use goto-label patch style advised by Christophe.
- v1: add of_node_put() before each exit.
+[auto build test WARNING on rostedt-trace/for-next]
+[also build test WARNING on tip/sched/core]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
- arch/powerpc/platforms/85xx/sgy_cts1000.c | 27 +++++++++++++++--------
- 1 file changed, 18 insertions(+), 9 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Bristot-de-Oliveira/The-Runtime-Verification-RV-interface/20220616-164837
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git for-next
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220616/202206162325.aggB6gj9-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/c32f84c1978c0e0b8526da45a2ab87e191246f68
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Daniel-Bristot-de-Oliveira/The-Runtime-Verification-RV-interface/20220616-164837
+        git checkout c32f84c1978c0e0b8526da45a2ab87e191246f68
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/trace/rv/
 
-diff --git a/arch/powerpc/platforms/85xx/sgy_cts1000.c b/arch/powerpc/platforms/85xx/sgy_cts1000.c
-index 98ae64075193..e280f963d88c 100644
---- a/arch/powerpc/platforms/85xx/sgy_cts1000.c
-+++ b/arch/powerpc/platforms/85xx/sgy_cts1000.c
-@@ -73,6 +73,7 @@ static int gpio_halt_probe(struct platform_device *pdev)
- 	struct device_node *node = pdev->dev.of_node;
- 	int gpio, err, irq;
- 	int trigger;
-+	int ret;
- 
- 	if (!node)
- 		return -ENODEV;
-@@ -84,20 +85,24 @@ static int gpio_halt_probe(struct platform_device *pdev)
- 
- 	/* Technically we could just read the first one, but punish
- 	 * DT writers for invalid form. */
--	if (of_gpio_count(halt_node) != 1)
--		return -EINVAL;
-+	if (of_gpio_count(halt_node) != 1) {
-+		ret = -EINVAL;
-+		goto err_put;
-+	}
- 
- 	/* Get the gpio number relative to the dynamic base. */
- 	gpio = of_get_gpio_flags(halt_node, 0, &flags);
--	if (!gpio_is_valid(gpio))
--		return -EINVAL;
-+	if (!gpio_is_valid(gpio)) {
-+		ret = -EINVAL;
-+		gotot err_put;
-+	}
- 
- 	err = gpio_request(gpio, "gpio-halt");
- 	if (err) {
- 		printk(KERN_ERR "gpio-halt: error requesting GPIO %d.\n",
- 		       gpio);
--		halt_node = NULL;
--		return err;
-+		ret = err;
-+		goto err_put;
- 	}
- 
- 	trigger = (flags == OF_GPIO_ACTIVE_LOW);
-@@ -112,8 +117,8 @@ static int gpio_halt_probe(struct platform_device *pdev)
- 		printk(KERN_ERR "gpio-halt: error requesting IRQ %d for "
- 		       "GPIO %d.\n", irq, gpio);
- 		gpio_free(gpio);
--		halt_node = NULL;
--		return err;
-+		ret = err;
-+		goto err_put;
- 	}
- 
- 	/* Register our halt function */
-@@ -122,8 +127,12 @@ static int gpio_halt_probe(struct platform_device *pdev)
- 
- 	printk(KERN_INFO "gpio-halt: registered GPIO %d (%d trigger, %d"
- 	       " irq).\n", gpio, trigger, irq);
-+	ret = 0;
- 
--	return 0;
-+err_put:
-+	of_node_put(halt_node);
-+	halt_node = NULL;
-+	return ret;
- }
- 
- static int gpio_halt_remove(struct platform_device *pdev)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> kernel/trace/rv/reactor_panic.c:28:5: warning: no previous prototype for 'register_react_panic' [-Wmissing-prototypes]
+      28 | int register_react_panic(void)
+         |     ^~~~~~~~~~~~~~~~~~~~
+>> kernel/trace/rv/reactor_panic.c:34:6: warning: no previous prototype for 'unregister_react_panic' [-Wmissing-prototypes]
+      34 | void unregister_react_panic(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/register_react_panic +28 kernel/trace/rv/reactor_panic.c
+
+    27	
+  > 28	int register_react_panic(void)
+    29	{
+    30		rv_register_reactor(&rv_panic);
+    31		return 0;
+    32	}
+    33	
+  > 34	void unregister_react_panic(void)
+    35	{
+    36		rv_unregister_reactor(&rv_panic);
+    37	}
+    38	
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
