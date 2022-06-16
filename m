@@ -2,91 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A458DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B944C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:40:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231807AbiFPUjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 16:39:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54120 "EHLO
+        id S1378481AbiFPUkG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 16:40:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378196AbiFPUjf (ORCPT
+        with ESMTP id S1378124AbiFPUkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 16:39:35 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F555DE66
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:39:30 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id g8so2170769plt.8
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:39:30 -0700 (PDT)
+        Thu, 16 Jun 2022 16:40:02 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B48105DBE4
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:40:01 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id r5so2263254pgr.3
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:40:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:cc:from:in-reply-to:content-transfer-encoding;
-        bh=BBmUYzK8f9SnovKoa+NZytnW9BcbD9Pk0ULgGxv2bI4=;
-        b=rYfpldiYa2Gue535MVTLTOD1x0t7UtoovpEyoFz/741wAYWRL2XYgKvczyDgx+9vtN
-         9p/GmBWldaycFlKIOVV23dF1oVi2KdLDOCUpPy4XdbPsHNIdmHUZkmv0ae81XaIxwgAK
-         kA3NWrgRAao+mWdvNxhBTa8HczAGyIWxCpHII/Q3KQaT9ujGGQ8REOm4zaJazrAHS6Jx
-         NeGmE4GEOTbGQwfa9OCbgT83EEwcqnKqvfzDJ/wgfviUgdm8teTFOJZQTtur4JiexEPC
-         rVhne+W+zsnUvg1YsdQQjJ801tbd2hwd9soM/nk0EFYJLKJCgB8EfrF1XUCf8ricSW2i
-         UCsQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JtBNgW1ARnpZB6Usfv9UpMfEN0Bux+WIpRpd7bK6hxQ=;
+        b=OSvwT9JLcNTz2PhtzapCz8T4/EZ5bjSd/8SuAYqCmqs9XM+JGPsYPVpZ0Hs6+4PIuA
+         a7bYZtU1CVgpeFZFwwMIZ7jZvcgSn8+4wedjyZZRF7y72wvf/W5QFky8iHWAP9FShTxx
+         w/B5oRXmdgzFfKAcEI9wfz/+TXI16XsDH5fnI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:cc:from:in-reply-to
-         :content-transfer-encoding;
-        bh=BBmUYzK8f9SnovKoa+NZytnW9BcbD9Pk0ULgGxv2bI4=;
-        b=ryoP9Os4LQT09PjAMEtLnGOpMRapMK6xHVXp4IsSty2hcsuOGgFSADLBvXXh9S+Wux
-         +PA4AJ21eYFgsR2QELQJ3+JJ9NUTE9Wh1+bIaIYKFqKSGx6ksmazuVV+eQGDg/gE1fQe
-         NpZ8C5wCbwOoRSh4GiApPU3LfHdbl8aPKGE+W9DU/5+uQyj1aFzsi2S4FRRGPcDhvrWY
-         ckygHjSofs1+JEf6HDTd+8gOg3AkGr12rNPB+6uZXIkM+VxJ0l1xZzauCs6nhyY5aoqd
-         LETb7oMiiIuzPCjXh5Rk0TLxVqL/57yHiKuCPPPQNft/a0qa/OmoR4AovJ/X522hUytX
-         oQRg==
-X-Gm-Message-State: AJIora87oeqfakLXSo9YaKoqYJUhlnmaQHVVVDz/qgnyfEqD2o8qN/OI
-        REwhRomCkkuM0YEFZs1ykqPcQg==
-X-Google-Smtp-Source: AGRyM1tMt0yXd5H9eQZJu1TilhIOEDsCnF3M8D8EuGKgWb7ezGwyekiJ5Fm9htKWuGLz4mewvPcHeA==
-X-Received: by 2002:a17:90b:388f:b0:1e8:57db:443 with SMTP id mu15-20020a17090b388f00b001e857db0443mr6846943pjb.52.1655411970316;
-        Thu, 16 Jun 2022 13:39:30 -0700 (PDT)
-Received: from [172.22.33.138] ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id p5-20020a170902eac500b00161f9e72233sm2036781pld.261.2022.06.16.13.39.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jun 2022 13:39:29 -0700 (PDT)
-Message-ID: <ba0ae6b9-c66d-81a3-f324-79efb4455ea7@linaro.org>
-Date:   Thu, 16 Jun 2022 13:39:28 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/3] arm64: dts: ti: adjust whitespace around '='
-Content-Language: en-US
-To:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>
-References: <20220526204139.831895-1-krzysztof.kozlowski@linaro.org>
-Cc:     soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, arm@kernel.org,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JtBNgW1ARnpZB6Usfv9UpMfEN0Bux+WIpRpd7bK6hxQ=;
+        b=gkT0c2qx0myUgQLR7H2rXSG5FVF2qK9Y2pNAMB/8hwdzPAkgXCDyFDwJLJLqodxpJH
+         B01EJbWCBDPr1IrWQHSKbManK3I80dt+AdzWJYrTrQ2U+W104Sp0HqO4kVwpX1ExsttO
+         YBZ+hj9PLWIKmOlMDTyn81I1Memfpjd4h0MfG+mmRUwWGfqddB4XtPPmK4gBlJFf/RE8
+         fWklmAyij+7IhztZ5lqIibQLQQB8iKfvFz1jEu2Gj6ac+Q+066OZiHpoIyGpc4Y5HZ5b
+         Ftc8FLypTYR9WWqQp7QmxJ/LdmW6CvHpaA5OoDEXB2fasPgWx9ABE5+WhdkVDHzRFqQQ
+         Y5Jg==
+X-Gm-Message-State: AJIora8ET+6hpwpnnGdy3nTYuD993mIkrfA7yrdmCZsBb08nLpZlfwDT
+        Wo8kN3ab1P2wyMKASQdTXCwNXA==
+X-Google-Smtp-Source: AGRyM1t4XwzbfHdrXzUb66ogKwmRbMD2im+YephNe2bZ85fDvw0CEazfFrh+x12rE1Kl9iAlqYEZ5w==
+X-Received: by 2002:a05:6a00:26cf:b0:4f6:fc52:7b6a with SMTP id p15-20020a056a0026cf00b004f6fc527b6amr6529975pfw.39.1655412001211;
+        Thu, 16 Jun 2022 13:40:01 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:4709:a407:1ca6:24ea])
+        by smtp.gmail.com with ESMTPSA id jc15-20020a17090325cf00b00168dadc7354sm2064393plb.78.2022.06.16.13.40.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 13:40:00 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 13:39:58 -0700
+From:   Brian Norris <briannorris@chromium.org>
+To:     Judy Hsiao <judyhsiao@chromium.org>
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Chen-Yu Tsai <wenst@chromium.org>, alsa-devel@alsa-project.org,
         linux-arm-kernel@lists.infradead.org,
-        Olof Johansson <olof@lixom.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220526204139.831895-1-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] arm64: dts: rk3399: i2s: switch BCLK to GPIO
+Message-ID: <YquVHsUoSbKfd2CS@google.com>
+References: <20220616155836.3401420-1-judyhsiao@chromium.org>
+ <20220616155836.3401420-3-judyhsiao@chromium.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616155836.3401420-3-judyhsiao@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26/05/2022 13:41, Krzysztof Kozlowski wrote:
-> Fix whitespace coding style: use single space instead of tabs or
-> multiple spaces around '=' sign in property assignment.  No functional
-> changes (same DTB).
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> Output compared with dtx_diff and fdtdump.
+Hi,
 
-Hi Nishanth,
+On Thu, Jun 16, 2022 at 03:58:35PM +0000, Judy Hsiao wrote:
+> We discoverd that the state of BCLK on, LRCLK off and SD_MODE on
+> may cause the speaker melting issue. Removing LRCLK while BCLK
+> is present can cause unexpected output behavior including a large
+> DC output voltage as described in the Max98357a datasheet.
+> 
+> In order to:
+>   1. prevent BCLK from turning on by other component.
+>   2. keep BCLK and LRCLK being present at the same time
+> 
+> This patch adjusts the device tree to allow BCLK to switch
+> to GPIO func before LRCLK output, and switch back during
+> LRCLK is output.
+> 
+> Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
 
-Are you ok with the patches? Any comments?
 
-Best regards,
-Krzysztof
+> --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+> +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+> @@ -1662,9 +1662,10 @@ i2s0: i2s@ff880000 {
+>  		dma-names = "tx", "rx";
+>  		clock-names = "i2s_clk", "i2s_hclk";
+>  		clocks = <&cru SCLK_I2S0_8CH>, <&cru HCLK_I2S0_8CH>;
+> -		pinctrl-names = "default";
+> +		pinctrl-names = "bclk_on", "bclk_off";
+>  		pinctrl-0 = <&i2s0_8ch_bus>;
+>  		power-domains = <&power RK3399_PD_SDIOAUDIO>;
+> +		pinctrl-1 = <&i2s0_8ch_bus_bclk_off>;
+
+It seems like 'pinctrl-1' may make sense after pinctrl-0, not here.
+Perhaps you're interacting with my RFC PATCH that removes this
+'power-domains' property?
+
+https://lore.kernel.org/linux-rockchip/20220613183556.RFC.1.I9ca71105e505f024d53b7e0ba4462230813ebb8d@changeid/
+
+But that most likely isn't landing upstream as-is.
+
+Otherwise, this patch looks good to me:
+
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+
+>  		#sound-dai-cells = <0>;
+>  		status = "disabled";
+>  	};
