@@ -2,154 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 930A9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 12:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55643C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 12:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377043AbiFPMEC (ORCPT
+        id S1377032AbiFPMEQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 08:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48196 "EHLO
+        Thu, 16 Jun 2022 08:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377032AbiFPMEB (ORCPT
+        with ESMTP id S1377055AbiFPMEI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 08:04:01 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457665DD3D
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 05:04:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655381040; x=1686917040;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=2kR2Ok5bcpn2wj7M/9J9IniP7ZhPLw91TlhNNniyR9U=;
-  b=NpU3ZM3VXzIRs5dq57aQTRsT38gLrlYWebkfBAiuDx9HUL4XFkm1fBu7
-   sc8lihbxXuF1mXZlLEGMAMFguOOwwjB3dVhsU/0yPqq+tOkBSQmOAi2ui
-   pRvYdNiyjaWsliiERy5Ts9+eRUdKT95gTk5IO7d1fEZg9PWkpWQO47UyQ
-   aaLaqC+G5kR4iz1379liOHahCgb6IwQtTBLtkuIInMl9EA05SeR5rXoIY
-   L8SiYyFAghyxEjZ4P0fqSjhXGascp8qxmzXFGg3ymbWFsHNKxFagN50q6
-   O9OAXQunbOnEBABopBI4B+9wA9hPGGrBBLiV0qTXQw1EIzNeEh/Is8Rca
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="304674104"
-X-IronPort-AV: E=Sophos;i="5.91,305,1647327600"; 
-   d="scan'208";a="304674104"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 05:04:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,305,1647327600"; 
-   d="scan'208";a="674990511"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 16 Jun 2022 05:03:58 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1oE9-000OLh-Ss;
-        Thu, 16 Jun 2022 12:03:57 +0000
-Date:   Thu, 16 Jun 2022 20:03:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Venkata Lakshmi Narayana Gubba <gubbaven@codeaurora.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>
-Subject: drivers/bluetooth/hci_qca.c:1860:37: warning: unused variable
- 'qca_soc_data_wcn6750'
-Message-ID: <202206161902.21jQwI1B-lkp@intel.com>
+        Thu, 16 Jun 2022 08:04:08 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1214A5F262;
+        Thu, 16 Jun 2022 05:04:08 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id c21so1602868wrb.1;
+        Thu, 16 Jun 2022 05:04:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NvTotWv8XnzVZu+pHQebgM4bWsTTZKNeIdjOwDoju7E=;
+        b=FW7I1cA/aAcawnoclOF3N/CI0+ENH8qb6obcOzoQ6ODb2/OGq0INjFy8zF8ZxnNa20
+         XLceFXJ3I08a7I7hyt26nZjN+3I4pehoxfIVgpkM11DhEh3oef7rnCC5X0ile71OJtCN
+         xaBtR2bmdVgf8LreqXb4Ahr+9eqK6QePgB1O6OxUudDYvuk7EZASerj/LCDO9nJJvLBb
+         7Hju6O1R+SHO/mTFJ4/V3GxBq2l1IZzF6EDusy63YRAMNLbhyRLIpa4/yDWq9PuCnMa2
+         AEvKYYTowKDUBPWQCc8VlqIyLVWBINn/5sxWbrFJssiHVtuC7/AW6NidGcJcuk1zLBnT
+         /SXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NvTotWv8XnzVZu+pHQebgM4bWsTTZKNeIdjOwDoju7E=;
+        b=awlF6vR41aE2Rf5A4/ITvy/GAQ8G8HPoF7HFqDQOrgr5/YEF+OczLxt8PgD/uBfNIS
+         Aqk4FMGYWBTz4Cu24S1CrsLfQVYMB2bdt21QGtbk7QXmJc5bbU4EGnYgu4J9jez1CoG8
+         xAyLCYTcXptUo3G3Ju15UEsDiOOwdQwNdHwZOOyjF7ngXzP1qLo1XerwdTMumxjQsyvo
+         2k7D7jkf3GXw1yzrXgwJjdRuls7CzKfkuxG7xKHbek+bgP0lvFL/eCUfiHsNzpev0zZx
+         UIP+L/ekmTfIfEMjkcT4xtVeSQ2xzBfWfeGjgS7UK399iVEPy5okLg5zMIwueoc6wdOD
+         uaGA==
+X-Gm-Message-State: AJIora8wYlJ2UDgKHVIBRV7fi5LV19JmiCFWlfnVDqHn82TDnsQESq/Q
+        QAiAS2xpVDnPZyOLCKvhp4M=
+X-Google-Smtp-Source: AGRyM1vGe0hqTNQlFi19vRGu0VDlfq55drHnbDnjclViV5t5NFO8MwRfAtbD0ugYV3SFtgr/4mg+fw==
+X-Received: by 2002:a5d:6a0e:0:b0:213:1f7f:e1cc with SMTP id m14-20020a5d6a0e000000b002131f7fe1ccmr4373123wru.31.1655381046289;
+        Thu, 16 Jun 2022 05:04:06 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id f3-20020adff583000000b002100316b126sm1700890wro.6.2022.06.16.05.04.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 05:04:05 -0700 (PDT)
+Message-ID: <62ab1c35.1c69fb81.9ea8e.2cb0@mx.google.com>
+X-Google-Original-Message-ID: <YqscMzlPDIT0mbTQ@Ansuel-xps.>
+Date:   Thu, 16 Jun 2022 14:04:03 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH] net: ethernet: stmicro: stmmac: permit MTU
+ change with interface up
+References: <20220614224141.23576-1-ansuelsmth@gmail.com>
+ <20220615195507.52ee19df@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220615195507.52ee19df@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Venkata,
+On Wed, Jun 15, 2022 at 07:55:07PM -0700, Jakub Kicinski wrote:
+> On Wed, 15 Jun 2022 00:41:41 +0200 Christian 'Ansuel' Marangi wrote:
+> > +	if (netif_running(dev)) {
+> > +		netdev_dbg(priv->dev, "restarting interface to change its MTU\n");
+> > +		stmmac_release(dev);
+> > +
+> > +		stmmac_open(dev);
+> > +		stmmac_set_filter(priv, priv->hw, dev);
+> 
+> What if stmmac_open() fails because the memory is low or is fragmented?
+> 
+> You'd need to invest more effort into this change and try to allocate
+> all the resources before shutting the device down.
 
-FYI, the error/warning still remains.
+Well what I'm doing here is following what is done with other similar
+function in stmmac. For example the reinit_queues and reinit_ringparam
+doesn't do such check.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   30306f6194cadcc29c77f6ddcd416a75bf5c0232
-commit: d8f97da1b92d2fe89d51c673ecf80c4016119e5c Bluetooth: hci_qca: Add support for QTI Bluetooth chip wcn6750
-date:   12 months ago
-config: hexagon-randconfig-r041-20220616 (https://download.01.org/0day-ci/archive/20220616/202206161902.21jQwI1B-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f0e608de27b3d568000046eebf3712ab542979d6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d8f97da1b92d2fe89d51c673ecf80c4016119e5c
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout d8f97da1b92d2fe89d51c673ecf80c4016119e5c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/bluetooth/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/bluetooth/hci_qca.c:1821:37: warning: unused variable 'qca_soc_data_wcn3990' [-Wunused-const-variable]
-   static const struct qca_device_data qca_soc_data_wcn3990 = {
-                                       ^
-   drivers/bluetooth/hci_qca.c:1832:37: warning: unused variable 'qca_soc_data_wcn3991' [-Wunused-const-variable]
-   static const struct qca_device_data qca_soc_data_wcn3991 = {
-                                       ^
-   drivers/bluetooth/hci_qca.c:1844:37: warning: unused variable 'qca_soc_data_wcn3998' [-Wunused-const-variable]
-   static const struct qca_device_data qca_soc_data_wcn3998 = {
-                                       ^
-   drivers/bluetooth/hci_qca.c:1855:37: warning: unused variable 'qca_soc_data_qca6390' [-Wunused-const-variable]
-   static const struct qca_device_data qca_soc_data_qca6390 = {
-                                       ^
->> drivers/bluetooth/hci_qca.c:1860:37: warning: unused variable 'qca_soc_data_wcn6750' [-Wunused-const-variable]
-   static const struct qca_device_data qca_soc_data_wcn6750 = {
-                                       ^
-   5 warnings generated.
-
-
-vim +/qca_soc_data_wcn6750 +1860 drivers/bluetooth/hci_qca.c
-
-  1831	
-> 1832	static const struct qca_device_data qca_soc_data_wcn3991 = {
-  1833		.soc_type = QCA_WCN3991,
-  1834		.vregs = (struct qca_vreg []) {
-  1835			{ "vddio", 15000  },
-  1836			{ "vddxo", 80000  },
-  1837			{ "vddrf", 300000 },
-  1838			{ "vddch0", 450000 },
-  1839		},
-  1840		.num_vregs = 4,
-  1841		.capabilities = QCA_CAP_WIDEBAND_SPEECH | QCA_CAP_VALID_LE_STATES,
-  1842	};
-  1843	
-  1844	static const struct qca_device_data qca_soc_data_wcn3998 = {
-  1845		.soc_type = QCA_WCN3998,
-  1846		.vregs = (struct qca_vreg []) {
-  1847			{ "vddio", 10000  },
-  1848			{ "vddxo", 80000  },
-  1849			{ "vddrf", 300000 },
-  1850			{ "vddch0", 450000 },
-  1851		},
-  1852		.num_vregs = 4,
-  1853	};
-  1854	
-  1855	static const struct qca_device_data qca_soc_data_qca6390 = {
-  1856		.soc_type = QCA_QCA6390,
-  1857		.num_vregs = 0,
-  1858	};
-  1859	
-> 1860	static const struct qca_device_data qca_soc_data_wcn6750 = {
-  1861		.soc_type = QCA_WCN6750,
-  1862		.vregs = (struct qca_vreg []) {
-  1863			{ "vddio", 5000 },
-  1864			{ "vddaon", 26000 },
-  1865			{ "vddbtcxmx", 126000 },
-  1866			{ "vddrfacmn", 12500 },
-  1867			{ "vddrfa0p8", 102000 },
-  1868			{ "vddrfa1p7", 302000 },
-  1869			{ "vddrfa1p2", 257000 },
-  1870			{ "vddrfa2p2", 1700000 },
-  1871			{ "vddasd", 200 },
-  1872		},
-  1873		.num_vregs = 9,
-  1874		.capabilities = QCA_CAP_WIDEBAND_SPEECH | QCA_CAP_VALID_LE_STATES,
-  1875	};
-  1876	
+But ok you are right, will see a good solution to change stmmac_open to
+preallocate the buffers.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+	Ansuel
