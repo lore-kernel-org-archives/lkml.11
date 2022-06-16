@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19AE9CCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E213C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376535AbiFPIti (ORCPT
+        id S1376428AbiFPIto (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
+        Thu, 16 Jun 2022 04:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359794AbiFPIs5 (ORCPT
+        with ESMTP id S1376354AbiFPIsw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:48:57 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035A65EDED;
-        Thu, 16 Jun 2022 01:47:52 -0700 (PDT)
+        Thu, 16 Jun 2022 04:48:52 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626551A80F;
+        Thu, 16 Jun 2022 01:47:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655369271; x=1686905271;
+  t=1655369264; x=1686905264;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ulzzAHI2dEL92o/KzFQRO8FgEw/C8l+obGu5qgBKRBU=;
-  b=LaVn5YXpwgxFa42lbbjKSQ4XkGjxh21W01QUcMyUhR67jq4vC41/APw1
-   X6mI2WZ3rmr3tIAKuVna+Bavinku6DXKX6trvyZ38DYBgk3POLIPNqKXU
-   ucOy7rt5lSKHy3N8qCPcxIoJWS2rVIB3kGMgCSen2ZTb86z4URVtOjglx
-   RV21S0losdGclc/xhD2LH+q3DtjdBZ7yRI63rQsDcJ/x3T8gkl7hxtnWN
-   kDZMX7BxVfQPK3d6dY8URjNEfsjPDffoFC6igjWIQtQrKxRMrNJPcYI5g
-   feSsDbIwfYAk6Ntp6gBpdfpAzCK+6tAD9rk/6jexnfpjK+u2pgrohMTAb
+  bh=wMy9QLp1MqvMyYPb5VEt2CgYty+Gh8hHunwvtTY1ADI=;
+  b=SFiyhX1TSpeiikyvDfN4djnFzygwVy/Z3vEO8v1EEVRgpvkGsXfzdU2j
+   7Dikzay2mjhLnEhDAMilrTnMoyTB324/VN/in4wBPVyPapJuw/QZeTAiq
+   Q/lGJVF9LzS6OO3AFZfcAOUM7EJhY0s22OwdwX/bpd/fCO2RCQ1HghnG8
+   udefnEoH0V5eq1Mr31QlmistxOwUVncirD37Xi730Qm+Lr6p4lKYOCApV
+   mehrI1IMCTqjDoMOtgU0vUF3zwnXXK9N12GdNcT5PP9n+fRxXtP5FeI2h
+   rbvwiQCvJ2CShKFfTUZi2XLp8WsXggmASaM68lnDyGEhT/5BZ1uvY7hz7
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664558"
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259055231"
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="259664558"
+   d="scan'208";a="259055231"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:41 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:41 -0700
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="613083158"
+   d="scan'208";a="613083165"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
@@ -44,9 +44,9 @@ To:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
         rick.p.edgecombe@intel.com
 Cc:     weijiang.yang@intel.com,
         Sean Christopherson <sean.j.christopherson@intel.com>
-Subject: [PATCH 11/19] KVM: x86: Add fault checks for CR4.CET
-Date:   Thu, 16 Jun 2022 04:46:35 -0400
-Message-Id: <20220616084643.19564-12-weijiang.yang@intel.com>
+Subject: [PATCH 13/19] KVM: VMX: Add a synthetic MSR to allow userspace VMM to access GUEST_SSP
+Date:   Thu, 16 Jun 2022 04:46:37 -0400
+Message-Id: <20220616084643.19564-14-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220616084643.19564-1-weijiang.yang@intel.com>
 References: <20220616084643.19564-1-weijiang.yang@intel.com>
@@ -56,59 +56,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the fault checks for CR4.CET, which is the master control for all
-CET features (SHSTK and IBT).  In addition to basic support checks, CET
-can be enabled if and only if CR0.WP==1, i.e. setting CR4.CET=1 faults
-if CR0.WP==0 and setting CR0.WP=0 fails if CR4.CET==1.
+Introduce a host-only synthetic MSR, MSR_KVM_GUEST_SSP so that the VMM
+can read/write the guest's SSP, e.g. to migrate CET state.  Use a
+synthetic MSR, e.g. as opposed to a VCPU_REG_, as GUEST_SSP is subject
+to the same consistency checks as the PL*_SSP MSRs, i.e. can share code.
 
 Co-developed-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-Message-Id: <20210203113421.5759-7-weijiang.yang@intel.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/x86.c | 6 ++++++
- arch/x86/kvm/x86.h | 3 +++
- 2 files changed, 9 insertions(+)
+ arch/x86/include/uapi/asm/kvm_para.h |  1 +
+ arch/x86/kvm/vmx/vmx.c               | 15 ++++++++++++---
+ 2 files changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 40749e47cda7..cce789f1246a 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -952,6 +952,9 @@ int kvm_set_cr0(struct kvm_vcpu *vcpu, unsigned long cr0)
- 	    (is_64_bit_mode(vcpu) || kvm_read_cr4_bits(vcpu, X86_CR4_PCIDE)))
- 		return 1;
+diff --git a/arch/x86/include/uapi/asm/kvm_para.h b/arch/x86/include/uapi/asm/kvm_para.h
+index 6e64b27b2c1e..7af465e4e0bd 100644
+--- a/arch/x86/include/uapi/asm/kvm_para.h
++++ b/arch/x86/include/uapi/asm/kvm_para.h
+@@ -58,6 +58,7 @@
+ #define MSR_KVM_ASYNC_PF_INT	0x4b564d06
+ #define MSR_KVM_ASYNC_PF_ACK	0x4b564d07
+ #define MSR_KVM_MIGRATION_CONTROL	0x4b564d08
++#define MSR_KVM_GUEST_SSP	0x4b564d09
  
-+	if (!(cr0 & X86_CR0_WP) && kvm_read_cr4_bits(vcpu, X86_CR4_CET))
-+		return 1;
-+
- 	static_call(kvm_x86_set_cr0)(vcpu, cr0);
+ struct kvm_steal_time {
+ 	__u64 steal;
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index d1f2ffa07576..fc1229f23987 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -1780,7 +1780,8 @@ static bool cet_is_msr_accessible(struct kvm_vcpu *vcpu,
+ 	    !guest_cpuid_has(vcpu, X86_FEATURE_IBT))
+ 		return false;
  
- 	kvm_post_set_cr0(vcpu, old_cr0, cr0);
-@@ -1168,6 +1171,9 @@ int kvm_set_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
+-	if (msr->index == MSR_IA32_PL3_SSP &&
++	if ((msr->index == MSR_IA32_PL3_SSP ||
++	     msr->index == MSR_KVM_GUEST_SSP) &&
+ 	    !guest_cpuid_has(vcpu, X86_FEATURE_SHSTK))
+ 		return false;
+ 
+@@ -1928,9 +1929,13 @@ static int vmx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		break;
+ 	case MSR_IA32_U_CET:
+ 	case MSR_IA32_PL3_SSP:
++	case MSR_KVM_GUEST_SSP:
+ 		if (!cet_is_msr_accessible(vcpu, msr_info))
  			return 1;
- 	}
- 
-+	if ((cr4 & X86_CR4_CET) && !(kvm_read_cr0(vcpu) & X86_CR0_WP))
-+		return 1;
-+
- 	static_call(kvm_x86_set_cr4)(vcpu, cr4);
- 
- 	kvm_post_set_cr4(vcpu, old_cr4, cr4);
-diff --git a/arch/x86/kvm/x86.h b/arch/x86/kvm/x86.h
-index b9b1fff6d97a..01493b7ae150 100644
---- a/arch/x86/kvm/x86.h
-+++ b/arch/x86/kvm/x86.h
-@@ -477,6 +477,9 @@ bool kvm_msr_allowed(struct kvm_vcpu *vcpu, u32 index, u32 type);
- 		__reserved_bits |= X86_CR4_VMXE;        \
- 	if (!__cpu_has(__c, X86_FEATURE_PCID))          \
- 		__reserved_bits |= X86_CR4_PCIDE;       \
-+	if (!__cpu_has(__c, X86_FEATURE_SHSTK) &&	\
-+	    !__cpu_has(__c, X86_FEATURE_IBT))		\
-+		__reserved_bits |= X86_CR4_CET;		\
- 	__reserved_bits;                                \
- })
- 
+-		kvm_get_xsave_msr(msr_info);
++		if (msr_info->index == MSR_KVM_GUEST_SSP)
++			msr_info->data = vmcs_readl(GUEST_SSP);
++		else
++			kvm_get_xsave_msr(msr_info);
+ 		break;
+ 	case MSR_IA32_DEBUGCTLMSR:
+ 		msr_info->data = vmcs_read64(GUEST_IA32_DEBUGCTL);
+@@ -2273,12 +2278,16 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		kvm_set_xsave_msr(msr_info);
+ 		break;
+ 	case MSR_IA32_PL3_SSP:
++	case MSR_KVM_GUEST_SSP:
+ 		if (!cet_is_msr_accessible(vcpu, msr_info))
+ 			return 1;
+ 		if ((data & GENMASK(2, 0)) ||
+ 		    is_noncanonical_address(data, vcpu))
+ 			return 1;
+-		kvm_set_xsave_msr(msr_info);
++		if (msr_index == MSR_KVM_GUEST_SSP)
++			vmcs_writel(GUEST_SSP, data);
++		else
++			kvm_set_xsave_msr(msr_info);
+ 		break;
+ 	case MSR_IA32_PERF_CAPABILITIES:
+ 		if (data && !vcpu_to_pmu(vcpu)->version)
 -- 
 2.27.0
 
