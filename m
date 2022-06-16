@@ -2,117 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B40F1CCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:59:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78BFAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:59:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377434AbiFPN7C (ORCPT
+        id S1377446AbiFPN6V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34742 "EHLO
+        Thu, 16 Jun 2022 09:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377439AbiFPN6M (ORCPT
+        with ESMTP id S1377326AbiFPN5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:58:12 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA6B237E8;
-        Thu, 16 Jun 2022 06:58:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655387888; x=1686923888;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=iIYJWJmShwNGkYNuXD5wNnHd+SQL3c/U0f/z+4+WjXc=;
-  b=sf6LgQMW6DVvKIeoBPM59bZh2GEOR3UmG2kzWZEy7vXxQMtH5g/1bVCB
-   uYgoYSZlbKJRYaYeGaGLPJMmv8k5gEO+pfQTg1U0MCAKYY69hdeyyckKi
-   Ym36ZdzNjKqvftNuGrrNwJFVWF/OI5p/7+n0sj7mVb/cw7Mx0V634244J
-   z0D0+EOTl7jgQ7q2iWIO0u8JU1Cc1/neAr8+9kbuoimAKllyfzsJdCHal
-   CBavh4O6DsRwgVQN4njLs6XVChrOq+aY0N1IXyNokCNubMGN/xfHnTEuh
-   W7kAM2Z3b4LMfXRQK1ne/k178v+Lis9E76u2aCf2ivUuXDmezXFkaAY8I
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="100340842"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Jun 2022 06:58:07 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 16 Jun 2022 06:58:07 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 16 Jun 2022 06:58:04 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <patrice.chotard@foss.st.com>
-CC:     <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v3 3/4] tty: serial: atmel: remove enable/disable clock due to atmel_console_setup()
-Date:   Thu, 16 Jun 2022 17:00:23 +0300
-Message-ID: <20220616140024.2081238-4-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220616140024.2081238-1-claudiu.beznea@microchip.com>
-References: <20220616140024.2081238-1-claudiu.beznea@microchip.com>
+        Thu, 16 Jun 2022 09:57:41 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF0C10D2
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:57:33 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id l7-20020a6b7007000000b00669b2a0d497so959726ioc.0
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:57:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=TyPOt0yJwwiVzwhZL6932xCsniSIc1nJmBUoZIQlk3U=;
+        b=rUeNedUyLOaELuM2twNDrvPHGa5CfOcCG4VZ2XkXFB0BNLUJy7zpuPuFfFvZ8fl+LO
+         GaV3HMiNFOiAjn+Rm1zGXJ1/jAcFxdI/Se3VMgCDIZeFNeLAfZlD2wly8XbuNywJHefz
+         dkYox5dEhd1BGbfJtIrze3/W3WtsfhcKk+Gu7pBS4rPCRmLQT9Ej0XHZQAcz1KootNdz
+         pvYL1IIJQdG2hbZ4YJiKYrYLcCloTi7aKZMOyMebGz3z7v354dJf8bI6IpMYsacI+S8/
+         ij++HAQg4jjrMqYMmPq9u6ZCYr91w4O32DRRmv2FrA0pI4jYdFHGI8LPHtY9iq0l0vf3
+         rpRw==
+X-Gm-Message-State: AJIora96Je71tlC6U0gWcErpSIdd4zJOWk5v2J5h4dMNO58zppSc68rY
+        o7DovOQowZX0OiG0aziTGK0kwcS8hLPS0bmHCRZtEHwWDthc
+X-Google-Smtp-Source: AGRyM1sg3smBqvQULwfGQDJAxwblcUgJun7P/SxhjIWWg9NygJSkcHJwZbL2XOyt74isJ16ZElXQBUhJuDJVwnXuu5tXrRAmLPm7
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-Received: by 2002:a05:6e02:12ce:b0:2d3:de67:9f96 with SMTP id
+ i14-20020a056e0212ce00b002d3de679f96mr3018159ilm.261.1655387852665; Thu, 16
+ Jun 2022 06:57:32 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 06:57:32 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ec7b7d05e1910402@google.com>
+Subject: [syzbot] memory leak in __register_sysctl_table
+From:   syzbot <syzbot+9f160a43b2cf201cbe65@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        keescook@chromium.org, kpsingh@kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mcgrof@kernel.org, netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com, yzaikin@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no need for clk_prepare_enable() at the beginning of
-atmel_console_setup() and clk_disable_unprepare() at the end of
-atmel_console_setup() as the clock is already enabled when calling
-atmel_console_setup() and its disablement is done at the end
-of probe.
+Hello,
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+syzbot found the following issue on:
+
+HEAD commit:    7a68065eb9cd Merge tag 'gpio-fixes-for-v5.19-rc2' of git:/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1432d953f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b8e07e4ed17ee546
+dashboard link: https://syzkaller.appspot.com/bug?extid=9f160a43b2cf201cbe65
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1297ba43f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14bf34a7f00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+9f160a43b2cf201cbe65@syzkaller.appspotmail.com
+
+BUG: memory leak
+unreferenced object 0xffff8881016dfa00 (size 256):
+  comm "syz-executor201", pid 3662, jiffies 4294969093 (age 12.970s)
+  hex dump (first 32 bytes):
+    00 90 da 0d 81 88 ff ff 00 00 00 00 01 00 00 00  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff816fe96b>] kmalloc include/linux/slab.h:605 [inline]
+    [<ffffffff816fe96b>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff816fe96b>] __register_sysctl_table+0x7b/0x7f0 fs/proc/proc_sysctl.c:1344
+    [<ffffffff82219a5a>] setup_mq_sysctls+0x12a/0x1c0 ipc/mq_sysctl.c:112
+    [<ffffffff822196d2>] create_ipc_ns ipc/namespace.c:63 [inline]
+    [<ffffffff822196d2>] copy_ipcs+0x292/0x390 ipc/namespace.c:91
+    [<ffffffff8127de6c>] create_new_namespaces+0xdc/0x4f0 kernel/nsproxy.c:90
+    [<ffffffff8127e88b>] unshare_nsproxy_namespaces+0x9b/0x120 kernel/nsproxy.c:226
+    [<ffffffff8123f92e>] ksys_unshare+0x2fe/0x600 kernel/fork.c:3165
+    [<ffffffff8123fc42>] __do_sys_unshare kernel/fork.c:3236 [inline]
+    [<ffffffff8123fc42>] __se_sys_unshare kernel/fork.c:3234 [inline]
+    [<ffffffff8123fc42>] __x64_sys_unshare+0x12/0x20 kernel/fork.c:3234
+    [<ffffffff845abc55>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845abc55>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff8460006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+BUG: memory leak
+unreferenced object 0xffff88810edf7b00 (size 256):
+  comm "syz-executor201", pid 3662, jiffies 4294969093 (age 12.970s)
+  hex dump (first 32 bytes):
+    78 7b df 0e 81 88 ff ff 00 00 00 00 01 00 00 00  x{..............
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff816fee99>] kmalloc include/linux/slab.h:605 [inline]
+    [<ffffffff816fee99>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff816fee99>] new_dir fs/proc/proc_sysctl.c:978 [inline]
+    [<ffffffff816fee99>] get_subdir fs/proc/proc_sysctl.c:1022 [inline]
+    [<ffffffff816fee99>] __register_sysctl_table+0x5a9/0x7f0 fs/proc/proc_sysctl.c:1373
+    [<ffffffff82219a5a>] setup_mq_sysctls+0x12a/0x1c0 ipc/mq_sysctl.c:112
+    [<ffffffff822196d2>] create_ipc_ns ipc/namespace.c:63 [inline]
+    [<ffffffff822196d2>] copy_ipcs+0x292/0x390 ipc/namespace.c:91
+    [<ffffffff8127de6c>] create_new_namespaces+0xdc/0x4f0 kernel/nsproxy.c:90
+    [<ffffffff8127e88b>] unshare_nsproxy_namespaces+0x9b/0x120 kernel/nsproxy.c:226
+    [<ffffffff8123f92e>] ksys_unshare+0x2fe/0x600 kernel/fork.c:3165
+    [<ffffffff8123fc42>] __do_sys_unshare kernel/fork.c:3236 [inline]
+    [<ffffffff8123fc42>] __se_sys_unshare kernel/fork.c:3234 [inline]
+    [<ffffffff8123fc42>] __x64_sys_unshare+0x12/0x20 kernel/fork.c:3234
+    [<ffffffff845abc55>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845abc55>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff8460006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+BUG: memory leak
+unreferenced object 0xffff888101926f00 (size 256):
+  comm "syz-executor201", pid 3662, jiffies 4294969093 (age 12.970s)
+  hex dump (first 32 bytes):
+    78 6f 92 01 81 88 ff ff 00 00 00 00 01 00 00 00  xo..............
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff816fee99>] kmalloc include/linux/slab.h:605 [inline]
+    [<ffffffff816fee99>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff816fee99>] new_dir fs/proc/proc_sysctl.c:978 [inline]
+    [<ffffffff816fee99>] get_subdir fs/proc/proc_sysctl.c:1022 [inline]
+    [<ffffffff816fee99>] __register_sysctl_table+0x5a9/0x7f0 fs/proc/proc_sysctl.c:1373
+    [<ffffffff82219a5a>] setup_mq_sysctls+0x12a/0x1c0 ipc/mq_sysctl.c:112
+    [<ffffffff822196d2>] create_ipc_ns ipc/namespace.c:63 [inline]
+    [<ffffffff822196d2>] copy_ipcs+0x292/0x390 ipc/namespace.c:91
+    [<ffffffff8127de6c>] create_new_namespaces+0xdc/0x4f0 kernel/nsproxy.c:90
+    [<ffffffff8127e88b>] unshare_nsproxy_namespaces+0x9b/0x120 kernel/nsproxy.c:226
+    [<ffffffff8123f92e>] ksys_unshare+0x2fe/0x600 kernel/fork.c:3165
+    [<ffffffff8123fc42>] __do_sys_unshare kernel/fork.c:3236 [inline]
+    [<ffffffff8123fc42>] __se_sys_unshare kernel/fork.c:3234 [inline]
+    [<ffffffff8123fc42>] __x64_sys_unshare+0x12/0x20 kernel/fork.c:3234
+    [<ffffffff845abc55>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845abc55>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff8460006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+write to /proc/sys/kernel/hung_task_check_interval_secs failed: No such file or directory
+write to /proc/sys/kernel/softlockup_all_cpu_backtrace failed: No such file or directory
+write to /proc/sys/kernel/hung_task_check_interval_secs failed: No such file or directory
+write to /proc/sys/kernel/softlockup_all_cpu_backtrace failed: No such file or directory
+
+
 ---
- drivers/tty/serial/atmel_serial.c | 16 ----------------
- 1 file changed, 16 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 4cec97fd7241..3a94c2bdda72 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -2617,7 +2617,6 @@ static void __init atmel_console_get_options(struct uart_port *port, int *baud,
- 
- static int __init atmel_console_setup(struct console *co, char *options)
- {
--	int ret;
- 	struct uart_port *port = &atmel_ports[co->index].uart;
- 	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
- 	int baud = 115200;
-@@ -2630,10 +2629,6 @@ static int __init atmel_console_setup(struct console *co, char *options)
- 		return -ENODEV;
- 	}
- 
--	ret = clk_prepare_enable(atmel_ports[co->index].clk);
--	if (ret)
--		return ret;
--
- 	atmel_uart_writel(port, ATMEL_US_IDR, -1);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-@@ -2914,17 +2909,6 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_add_port;
- 
--#ifdef CONFIG_SERIAL_ATMEL_CONSOLE
--	if (uart_console(&atmel_port->uart)
--			&& ATMEL_CONSOLE_DEVICE->flags & CON_ENABLED) {
--		/*
--		 * The serial core enabled the clock for us, so undo
--		 * the clk_prepare_enable() in atmel_console_setup()
--		 */
--		clk_disable_unprepare(atmel_port->clk);
--	}
--#endif
--
- 	device_init_wakeup(&pdev->dev, 1);
- 	platform_set_drvdata(pdev, atmel_port);
- 
--- 
-2.34.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
