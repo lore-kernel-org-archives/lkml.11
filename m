@@ -2,131 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 424CBC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 267D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358992AbiFPGr1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 02:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37080 "EHLO
+        id S237285AbiFPGxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 02:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbiFPGrZ (ORCPT
+        with ESMTP id S1359210AbiFPGxi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 02:47:25 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDA45AEC0
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:47:20 -0700 (PDT)
-X-UUID: 72cfa3363cb6482f891f5acbba363967-20220616
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:f54830ad-cf65-4c36-b30c-35111088470e,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:b14ad71,CLOUDID:378ab548-4c92-421c-ad91-b806c0f58b2a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 72cfa3363cb6482f891f5acbba363967-20220616
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <yf.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 262145049; Thu, 16 Jun 2022 14:47:14 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Thu, 16 Jun 2022 14:47:13 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Thu, 16 Jun 2022 14:47:13 +0800
-From:   <yf.wang@mediatek.com>
-To:     <robin.murphy@arm.com>
-CC:     <Libo.Kang@mediatek.com>, <iommu@lists.linux-foundation.org>,
-        <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <miles.chen@mediatek.com>, <ning.li@mediatek.com>,
-        <will@kernel.org>, <wsd_upstream@mediatek.com>,
-        <yf.wang@mediatek.com>, <yong.wu@mediatek.com>
-Subject: Re: [PATCH v9 2/3] iommu/mediatek: Rename MTK_IOMMU_TLB_ADDR to MTK_IOMMU_ADDR
-Date:   Thu, 16 Jun 2022 14:40:24 +0800
-Message-ID: <20220616064024.10683-1-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <949c22c4-5f64-47cf-673c-14fcadcc1d27@arm.com>
-References: <949c22c4-5f64-47cf-673c-14fcadcc1d27@arm.com>
+        Thu, 16 Jun 2022 02:53:38 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3727F5BD16
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:53:28 -0700 (PDT)
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(23338:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Thu, 16 Jun 2022 14:42:35 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     sboyd@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        mturquette@baylibre.com, linux@armlinux.org.uk, arnd@arndb.de,
+        olof@lixom.net, soc@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Qin Jian <qinjian@cqplus1.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v19 04/11] dt-bindings: clock: Add bindings for SP7021 clock driver
+Date:   Thu, 16 Jun 2022 14:42:20 +0800
+Message-Id: <1091b6695b062c24849a370400a867223c96c40a.1655360818.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1655360818.git.qinjian@cqplus1.com>
+References: <cover.1655360818.git.qinjian@cqplus1.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-15 at 18:14 +0100, Robin Murphy wrote:
-> On 2022-06-15 17:12, yf.wang--- via iommu wrote:
-> > From: Yunfei Wang <yf.wang@mediatek.com>
-> > 
-> > Rename MTK_IOMMU_TLB_ADDR to MTK_IOMMU_ADDR, and update
-> > MTK_IOMMU_ADDR
-> > definition for better generality.
-> > 
-> > Signed-off-by: Ning Li <ning.li@mediatek.com>
-> > Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-> > ---
-> >   drivers/iommu/mtk_iommu.c | 8 ++++----
-> >   1 file changed, 4 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index bb9dd92c9898..3d62399e8865 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -265,8 +265,8 @@ static const struct iommu_ops mtk_iommu_ops;
-> >   
-> >   static int mtk_iommu_hw_init(const struct mtk_iommu_data *data,
-> > unsigned int bankid);
-> >   
-> > -#define MTK_IOMMU_TLB_ADDR(iova) ({				
-> > 	\
-> > -	dma_addr_t _addr = iova;					\
-> > +#define MTK_IOMMU_ADDR(addr) ({					
-> > 	\
-> > +	unsigned long long _addr = addr;				\
-> 
-> If phys_addr_t is 64-bit, then dma_addr_t is also 64-bit, so there is
-> no 
-> loss of generality from using an appropriate type - IOVAs have to
-> fit 
-> into dma_addr_t for iommu-dma, after all. However, since IOVAs also
-> have 
-> to fit into unsigned long in the general IOMMU API, as "addr" is
-> here, 
-> then this is still just as broken for 32-bit LPAE as the existing
-> code is.
-> 
-> Thanks,
-> Robin.
-> 
+Add documentation to describe Sunplus SP7021 clock driver bindings.
 
-Hi Robin,
-According to Path#1's suggestion, next version will keep ttbr to encoded 32 bits,
-then will don't need to modify it.
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Qin Jian <qinjian@cqplus1.com>
+---
+ .../bindings/clock/sunplus,sp7021-clkc.yaml   | 52 +++++++++++
+ MAINTAINERS                                   |  2 +
+ .../dt-bindings/clock/sunplus,sp7021-clkc.h   | 88 +++++++++++++++++++
+ 3 files changed, 142 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ create mode 100644 include/dt-bindings/clock/sunplus,sp7021-clkc.h
 
-Thanks,
-Yunfei.
+diff --git a/Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml b/Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+new file mode 100644
+index 000000000..bcc140882
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+@@ -0,0 +1,52 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/sunplus,sp7021-clkc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sunplus SP7021 SoC Clock Controller
++
++maintainers:
++  - Qin Jian <qinjian@cqplus1.com>
++
++properties:
++  compatible:
++    const: sunplus,sp7021-clkc
++
++  reg:
++    maxItems: 3
++
++  clocks:
++    maxItems: 1
++
++  "#clock-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - "#clock-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    extclk: osc0 {
++      compatible = "fixed-clock";
++      #clock-cells = <0>;
++      clock-frequency = <27000000>;
++      clock-output-names = "extclk";
++    };
++
++    clkc: clock-controller@9c000004 {
++      compatible = "sunplus,sp7021-clkc";
++      reg = <0x9c000004 0x28>,
++            <0x9c000200 0x44>,
++            <0x9c000268 0x08>;
++      clocks = <&extclk>;
++      #clock-cells = <1>;
++    };
++
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d86e0d99c..b8d6c2c90 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2828,8 +2828,10 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for mon-subscribers)
+ S:	Maintained
+ W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
++F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+ F:	drivers/reset/reset-sunplus.c
++F:	include/dt-bindings/clock/sunplus,sp7021-clkc.h
+ F:	include/dt-bindings/reset/sunplus,sp7021-reset.h
+ 
+ ARM/Synaptics SoC support
+diff --git a/include/dt-bindings/clock/sunplus,sp7021-clkc.h b/include/dt-bindings/clock/sunplus,sp7021-clkc.h
+new file mode 100644
+index 000000000..cd84321eb
+--- /dev/null
++++ b/include/dt-bindings/clock/sunplus,sp7021-clkc.h
+@@ -0,0 +1,88 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * Copyright (C) Sunplus Technology Co., Ltd.
++ *       All rights reserved.
++ */
++#ifndef _DT_BINDINGS_CLOCK_SUNPLUS_SP7021_H
++#define _DT_BINDINGS_CLOCK_SUNPLUS_SP7021_H
++
++/* gates */
++#define CLK_RTC         0
++#define CLK_OTPRX       1
++#define CLK_NOC         2
++#define CLK_BR          3
++#define CLK_SPIFL       4
++#define CLK_PERI0       5
++#define CLK_PERI1       6
++#define CLK_STC0        7
++#define CLK_STC_AV0     8
++#define CLK_STC_AV1     9
++#define CLK_STC_AV2     10
++#define CLK_UA0         11
++#define CLK_UA1         12
++#define CLK_UA2         13
++#define CLK_UA3         14
++#define CLK_UA4         15
++#define CLK_HWUA        16
++#define CLK_DDC0        17
++#define CLK_UADMA       18
++#define CLK_CBDMA0      19
++#define CLK_CBDMA1      20
++#define CLK_SPI_COMBO_0 21
++#define CLK_SPI_COMBO_1 22
++#define CLK_SPI_COMBO_2 23
++#define CLK_SPI_COMBO_3 24
++#define CLK_AUD         25
++#define CLK_USBC0       26
++#define CLK_USBC1       27
++#define CLK_UPHY0       28
++#define CLK_UPHY1       29
++#define CLK_I2CM0       30
++#define CLK_I2CM1       31
++#define CLK_I2CM2       32
++#define CLK_I2CM3       33
++#define CLK_PMC         34
++#define CLK_CARD_CTL0   35
++#define CLK_CARD_CTL1   36
++#define CLK_CARD_CTL4   37
++#define CLK_BCH         38
++#define CLK_DDFCH       39
++#define CLK_CSIIW0      40
++#define CLK_CSIIW1      41
++#define CLK_MIPICSI0    42
++#define CLK_MIPICSI1    43
++#define CLK_HDMI_TX     44
++#define CLK_VPOST       45
++#define CLK_TGEN        46
++#define CLK_DMIX        47
++#define CLK_TCON        48
++#define CLK_GPIO        49
++#define CLK_MAILBOX     50
++#define CLK_SPIND       51
++#define CLK_I2C2CBUS    52
++#define CLK_SEC         53
++#define CLK_DVE         54
++#define CLK_GPOST0      55
++#define CLK_OSD0        56
++#define CLK_DISP_PWM    57
++#define CLK_UADBG       58
++#define CLK_FIO_CTL     59
++#define CLK_FPGA        60
++#define CLK_L2SW        61
++#define CLK_ICM         62
++#define CLK_AXI_GLOBAL  63
++
++/* plls */
++#define PLL_A           64
++#define PLL_E           65
++#define PLL_E_2P5       66
++#define PLL_E_25        67
++#define PLL_E_112P5     68
++#define PLL_F           69
++#define PLL_TV          70
++#define PLL_TV_A        71
++#define PLL_SYS         72
++
++#define CLK_MAX         73
++
++#endif
+-- 
+2.33.1
 
-
-> >   	((lower_32_bits(_addr) & GENMASK(31, 12)) |
-> > upper_32_bits(_addr));\
-> >   })
-> >   
-> > @@ -381,8 +381,8 @@ static void
-> > mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
-> >   		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
-> >   			       base + data->plat_data->inv_sel_reg);
-> >   
-> > -		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova), base +
-> > REG_MMU_INVLD_START_A);
-> > -		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova + size - 1),
-> > +		writel_relaxed(MTK_IOMMU_ADDR(iova), base +
-> > REG_MMU_INVLD_START_A);
-> > +		writel_relaxed(MTK_IOMMU_ADDR(iova + size - 1),
-> >   			       base + REG_MMU_INVLD_END_A);
-> >   		writel_relaxed(F_MMU_INV_RANGE, base +
-> > REG_MMU_INVALIDATE);
-> >
