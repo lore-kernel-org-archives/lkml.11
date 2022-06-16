@@ -2,107 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 993E9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 19:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40719C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 19:34:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378402AbiFPTdH (ORCPT
+        id S1378168AbiFPTeR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 15:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53814 "EHLO
+        Thu, 16 Jun 2022 15:34:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbiFPTdG (ORCPT
+        with ESMTP id S229672AbiFPTeQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 15:33:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDEB2935F;
-        Thu, 16 Jun 2022 12:33:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7702B825AB;
-        Thu, 16 Jun 2022 19:33:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B0ABC34114;
-        Thu, 16 Jun 2022 19:33:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655407982;
-        bh=eG8CVe/IgYT7/YEH84OgJj81/Y8HH9wzHZYp7KUete8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=G967x/l4vWZZJUF4E5uTQJktWgodU8Kb5bEo+oQUr3HdQFDDR03A/La5YOnuqlxfh
-         9a0wdhxsYXeKFBeic/1sBXJ6ssGJ0QczHdYhaU2UO2Ifyiw0TrD949wByLgPGdlQh6
-         voFZcdvt3IMZf50r3ECTVMz/n/LWXhebolnzPvFaX28dKx7JgFLYcnvqrcLjeK4qDo
-         TsvjtNy2i5Ibt7JWiA7VJTOsjh87sXX7lzVIgy1HQWHUgnGzEypE3pqssPtRV7kv7m
-         ZkS7Je5sAkL9+cskSlYWyvMyMzFT0rONSTbAu5QZg9BXadah9r25MjM7W/P3oS0pHk
-         E4khgXw8/NTpw==
-Date:   Thu, 16 Jun 2022 21:32:51 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] i2c: core: fix potential use-after-free on adapter
- removal
-Message-ID: <YquFY50LfsezqrVn@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <a9dc272e4e06db661125b7b4c330821b532afc4d.1642209079.git.mirq-linux@rere.qmqm.pl>
- <YqjlZuFGl0dAUZyd@shikoro>
- <YqoehVjd5qgEYSen@qmqm.qmqm.pl>
+        Thu, 16 Jun 2022 15:34:16 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F985715B
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 12:34:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655408055; x=1686944055;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=g8JN9o2azBOeoFzFmUP6z+SaTbSfQgezcqAfmpF2rL0=;
+  b=MSlby5LF4AvZGgcA6BGORiC2Tc4CVL2cB7tNrO7gqMrlu6HZXd16y+KR
+   SY5NqdPAo/gIpZ+lm4VJccITxKIhjucirLNRjXigg643EBnQDs9J39u38
+   G1ccNka/Z6P/2kk0NiamuWbuOtOsMRaYYGqJP33PRxgD3LP9pRsbWEzdv
+   ip6jL9Dcs5XZMvanow26gCIeM+7FIcaFgubcCQh9Pwa3mSi1ZhisiIcCo
+   OK7ba4p1DTpkF8n94Z199DCFXU/kvOLRyvLqIL2tFfE2Swn0Lusk314Y6
+   zgcTQbO+JCr/zQdYLyEiF7ErcJcHz7kIpP2lcLxCVRhKSeCIWJpufD552
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280049021"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="280049021"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 12:34:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="687961309"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 16 Jun 2022 12:34:13 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o1vFs-000Ohx-Bw;
+        Thu, 16 Jun 2022 19:34:12 +0000
+Date:   Fri, 17 Jun 2022 03:33:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:pmladek.2022.06.15a] BUILD SUCCESS WITH WARNING
+ 0ba7324b44282870af740a5a121add62c7f5f730
+Message-ID: <62ab8587.j8Ju7IuzIFZk71FR%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="S2FIYZZN/lYn5+1m"
-Content-Disposition: inline
-In-Reply-To: <YqoehVjd5qgEYSen@qmqm.qmqm.pl>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git pmladek.2022.06.15a
+branch HEAD: 0ba7324b44282870af740a5a121add62c7f5f730  printk: Wait for the global console lock when the system is going down
 
---S2FIYZZN/lYn5+1m
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Warning reports:
 
-Hi Micha=C5=82,
+https://lore.kernel.org/lkml/202206160411.v3iL3YC0-lkp@intel.com
+https://lore.kernel.org/llvm/202206160421.Gnl3tpxc-lkp@intel.com
 
-> I looked briefly at the kobject machinery and it seems to ignore module
-> dependencies. So while both approaches might work, I'd usually reverse
+Warning: (recently discovered and may have been fixed)
 
-Thanks for checking!
+vmlinux.o: warning: objtool: __ct_user_enter+0x7f: call to __kasan_check_read() leaves .noinstr.text section
+vmlinux.o: warning: objtool: __ct_user_exit+0x41: call to __kasan_check_read() leaves .noinstr.text section
 
-> the order the init code is using: in this case module_get+device_get,
-> so on release: device_put+module_put. I don't know what keeps the kernel
+Warning ids grouped by kconfigs:
 
-I agree this is good style. I'll add a comment why we reverse the order.
-This will be also good to avoid regressions.
+gcc_recent_errors
+`-- x86_64-randconfig-r003-20220516
+    |-- vmlinux.o:warning:objtool:__ct_user_enter:call-to-__kasan_check_read()-leaves-.noinstr.text-section
+    `-- vmlinux.o:warning:objtool:__ct_user_exit:call-to-__kasan_check_read()-leaves-.noinstr.text-section
 
-> from unloading the module after module_put() and before the function
-> returns, but I assume that would blow up for both patches.
+clang_recent_errors
+`-- x86_64-randconfig-a005-20220613
+    |-- vmlinux.o:warning:objtool:ct_kernel_enter:call-to-ftrace_likely_update()-leaves-.noinstr.text-section
+    |-- vmlinux.o:warning:objtool:ct_kernel_enter_state:call-to-ftrace_likely_update()-leaves-.noinstr.text-section
+    |-- vmlinux.o:warning:objtool:ct_kernel_exit:call-to-ftrace_likely_update()-leaves-.noinstr.text-section
+    `-- vmlinux.o:warning:objtool:ct_kernel_exit_state:call-to-ftrace_likely_update()-leaves-.noinstr.text-section
 
-Yes. There are other users in the kernel doing it like this (RTC and
-regmap IIRC), so I think problems would have become visible by then.
+elapsed time: 1477m
 
-Thank you for your help!
+configs tested: 51
+configs skipped: 3
 
-   Wolfram
+gcc tested configs:
+arm64                            allyesconfig
+arm                                 defconfig
+arm64                               defconfig
+arm                              allmodconfig
+arm                              allyesconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+alpha                               defconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                            allyesconfig
+arc                                 defconfig
+xtensa                           allyesconfig
+sh                               allmodconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+i386                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                           allnoconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                    rhel-8.3-kselftests
+x86_64                         rhel-8.3-kunit
 
-
---S2FIYZZN/lYn5+1m
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKrhVsACgkQFA3kzBSg
-KbYEMBAAjjdr/oTw44e/h8NHL8xpV+uGXDahirps/+FNqv+YfyLeTM8RA8MnjtJt
-3NblrlNafxOIhsFSPm0WU2ixoPbD7LAPFabLUFaPaauxTR+d99svkQNpCSvQxK/V
-sE78j7oI8u2wpThfReh1uc4E19rUUAX8AdRVjWW3GOyQXtz5PaVvNUHtoXEt4fc7
-WWX2tSq48j6JYkPELGmF5FtXre/lYGb65KHa6LmJkHTrcLVi30+mtQdmMJm5u3CL
-MXg9HkPiUGhAP1Uo/GzO+6p0MHeDRv+99UOT8Ke8vh3krljsIDEPdXGp2od/r0PV
-l5Of1RBadvIUKs7Ecwf+guYWV+5vOa56lihFP+DmuENhDUyan8X5EDiyP1tU7Y+V
-r0Y8uudCbzPNEUczNfyeNjTUP127uhp6NyuwHRzsnqCpO0fBu9bX1NYlpZWlBZeo
-rc9+pGALzsAT2Pyyqvd8uqn/PyYYNEQN2JyYChAvPz5v1CweWyplxv5bFRuZ6cFa
-BBu26xbD57HIL94s2QaGEtTZ3bBCVUd9LGtobV8T9r3LyI3YOoCR1HzO+5gKDtqB
-NEvMTXYVJW1iBCrqhhfNRRTLZZvP+kOCfOIGA8V3zKal9J7IivNazwt+lHJsNc8X
-9UJ2hEXgr86Z8KXfAN08Iwav0gs/r8rOWJ3WGF/dH49Dmckuoac=
-=0yDV
------END PGP SIGNATURE-----
-
---S2FIYZZN/lYn5+1m--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
