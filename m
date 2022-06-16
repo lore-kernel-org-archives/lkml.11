@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A39C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04323C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:49:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376518AbiFPItH (ORCPT
+        id S1359810AbiFPItM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35264 "EHLO
+        Thu, 16 Jun 2022 04:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376304AbiFPIsv (ORCPT
+        with ESMTP id S1376318AbiFPIsv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 16 Jun 2022 04:48:51 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3FF21901F;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8231A3AC;
         Thu, 16 Jun 2022 01:47:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1655369263; x=1686905263;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=IFsbLhw2T9ri7FM7lx8baIjLwWZ/8GijXSEdM4I3dCE=;
-  b=gRVPUvUh1/FRqq5kxfy62uPr69CMaippso4Py4L++BiP0PVAx94F/GGZ
-   wjUH48yQmKVCb8w/6A1zAFNphREb2OU3QPJjmYXM0jJiewQFJpFPIQRfV
-   8d3EVsKlbedWSLNnnl5gVhfurfXcB8Q92Of1xM7wgoTtEV4gjRyniso8s
-   NPKy8s8fjaYki5ZJ1a4dLHnnFf78hgxnTft2HrcI60N7pEJ9WbcT+ghvy
-   Ck/e6Q+4HLY0S1hlsD3VaL/b+h+hFrZ94AZMv0l1LTiLQqFKpTokcIZr1
-   8ikPInhkPcV1lb6ljH9l8h2Ef80TeWdnz0EuDowV6CyK0j0MpsdukCyhg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664552"
+  bh=IQkHWXIhJkLWuzUiRVSy3/hnrnF2/6up2mxzDX06RXk=;
+  b=g1tyla9ZBRLbEmnA5s4+Lt5aVyRyeTG2xbu2N1/uN7rvlxqtRBuD3Fad
+   HtRmcFFEvSaEW7Lk+HZKpIeu2jyjvok/z+an8TZCY3WsvpyUkkOBMpC7V
+   k4A/kaw17JMZMOjunDLnpuFzW259URG8YnOg21ABP1mpidQ0iww9zYYBt
+   dn7eXt75SEp+kZiv1JbgxHSjJIM9HumIvtVV80tI3Y7tYfyVlhwOAepoU
+   yxvVYrXeCGZQnphVhnH92Nl5mp4LFzHQtnRhK809sEe9Mi8LxDTVHk2km
+   CMOm43atldtYNUa3skmA6sn1oabuW0E4tkkhnp9QcsgRKcFPAcVfOLVwU
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664553"
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="259664552"
+   d="scan'208";a="259664553"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:41 -0700
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="613083131"
+   d="scan'208";a="613083146"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         rick.p.edgecombe@intel.com
-Cc:     weijiang.yang@intel.com, Yu-cheng Yu <yu-cheng.yu@intel.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 02/19] x86/cpufeatures: Add CPU feature flags for shadow stacks
-Date:   Thu, 16 Jun 2022 04:46:26 -0400
-Message-Id: <20220616084643.19564-3-weijiang.yang@intel.com>
+Cc:     weijiang.yang@intel.com, Zhang Yi Z <yi.z.zhang@linux.intel.com>
+Subject: [PATCH 07/19] KVM: x86: Refresh CPUID on writes to MSR_IA32_XSS
+Date:   Thu, 16 Jun 2022 04:46:31 -0400
+Message-Id: <20220616084643.19564-8-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220616084643.19564-1-weijiang.yang@intel.com>
 References: <20220616084643.19564-1-weijiang.yang@intel.com>
@@ -56,95 +55,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu-cheng Yu <yu-cheng.yu@intel.com>
+Updated CPUID.0xD.0x1, which reports the current required storage size
+of all features enabled via XCR0 | XSS, when the guest's XSS is modified.
 
-The Control-Flow Enforcement Technology contains two related features,
-one of which is Shadow Stacks. Future patches will utilize this feature
-for shadow stack support in KVM, so add a CPU feature flags for Shadow
-Stacks (CPUID.(EAX=7,ECX=0):ECX[bit 7]).
+Note, KVM does not yet support any XSS based features, i.e. supported_xss
+is guaranteed to be zero at this time.
 
-To protect shadow stack state from malicious modification, the registers
-are only accessible in supervisor mode. This implementation
-context-switches the registers with XSAVES. Make X86_FEATURE_SHSTK depend
-on XSAVES.
-
-Signed-off-by: Yu-cheng Yu <yu-cheng.yu@intel.com>
-Co-developed-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
-Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+Co-developed-by: Zhang Yi Z <yi.z.zhang@linux.intel.com>
+Signed-off-by: Zhang Yi Z <yi.z.zhang@linux.intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-Cc: Kees Cook <keescook@chromium.org>
-
+Message-Id: <20220517154100.29983-5-weijiang.yang@intel.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
-v2:
- - Remove IBT reference in commit log (Kees)
- - Describe xsaves dependency using text from (Dave)
+ arch/x86/kvm/cpuid.c | 16 +++++++++++++---
+ arch/x86/kvm/x86.c   |  6 ++++--
+ 2 files changed, 17 insertions(+), 5 deletions(-)
 
-v1:
- - Remove IBT, can be added in a follow on IBT series.
-
-Yu-cheng v25:
- - Make X86_FEATURE_IBT depend on X86_FEATURE_SHSTK.
-
-Yu-cheng v24:
- - Update for splitting CONFIG_X86_CET to CONFIG_X86_SHADOW_STACK and
-   CONFIG_X86_IBT.
- - Move DISABLE_IBT definition to the IBT series.
-
- arch/x86/include/asm/cpufeatures.h       | 1 +
- arch/x86/include/asm/disabled-features.h | 8 +++++++-
- arch/x86/kernel/cpu/cpuid-deps.c         | 1 +
- 3 files changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index 393f2bbb5e3a..2a3aaf5e1052 100644
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -355,6 +355,7 @@
- #define X86_FEATURE_OSPKE		(16*32+ 4) /* OS Protection Keys Enable */
- #define X86_FEATURE_WAITPKG		(16*32+ 5) /* UMONITOR/UMWAIT/TPAUSE Instructions */
- #define X86_FEATURE_AVX512_VBMI2	(16*32+ 6) /* Additional AVX512 Vector Bit Manipulation Instructions */
-+#define X86_FEATURE_SHSTK		(16*32+ 7) /* Shadow Stack */
- #define X86_FEATURE_GFNI		(16*32+ 8) /* Galois Field New Instructions */
- #define X86_FEATURE_VAES		(16*32+ 9) /* Vector AES */
- #define X86_FEATURE_VPCLMULQDQ		(16*32+10) /* Carry-Less Multiplication Double Quadword */
-diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
-index 36369e76cc63..c61c65bbc58d 100644
---- a/arch/x86/include/asm/disabled-features.h
-+++ b/arch/x86/include/asm/disabled-features.h
-@@ -68,6 +68,12 @@
- # define DISABLE_TDX_GUEST	(1 << (X86_FEATURE_TDX_GUEST & 31))
- #endif
+diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+index d47222ab8e6e..46ca0f1abbcb 100644
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -240,9 +240,19 @@ static void __kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu, struct kvm_cpuid_e
+ 		best->ebx = xstate_required_size(vcpu->arch.xcr0, false);
  
-+#ifdef CONFIG_X86_SHADOW_STACK
-+#define DISABLE_SHSTK	0
-+#else
-+#define DISABLE_SHSTK	(1 << (X86_FEATURE_SHSTK & 31))
-+#endif
+ 	best = cpuid_entry2_find(entries, nent, 0xD, 1);
+-	if (best && (cpuid_entry_has(best, X86_FEATURE_XSAVES) ||
+-		     cpuid_entry_has(best, X86_FEATURE_XSAVEC)))
+-		best->ebx = xstate_required_size(vcpu->arch.xcr0, true);
++	if (best) {
++		if (cpuid_entry_has(best, X86_FEATURE_XSAVES) ||
++		    cpuid_entry_has(best, X86_FEATURE_XSAVEC))  {
++			u64 xstate = vcpu->arch.xcr0 | vcpu->arch.ia32_xss;
 +
- /*
-  * Make sure to add features to the correct mask
-  */
-@@ -88,7 +94,7 @@
- #define DISABLED_MASK14	0
- #define DISABLED_MASK15	0
- #define DISABLED_MASK16	(DISABLE_PKU|DISABLE_OSPKE|DISABLE_LA57|DISABLE_UMIP| \
--			 DISABLE_ENQCMD)
-+			 DISABLE_ENQCMD|DISABLE_SHSTK)
- #define DISABLED_MASK17	0
- #define DISABLED_MASK18	0
- #define DISABLED_MASK19	0
-diff --git a/arch/x86/kernel/cpu/cpuid-deps.c b/arch/x86/kernel/cpu/cpuid-deps.c
-index c881bcafba7d..bf1b55a1ba21 100644
---- a/arch/x86/kernel/cpu/cpuid-deps.c
-+++ b/arch/x86/kernel/cpu/cpuid-deps.c
-@@ -78,6 +78,7 @@ static const struct cpuid_dep cpuid_deps[] = {
- 	{ X86_FEATURE_XFD,			X86_FEATURE_XSAVES    },
- 	{ X86_FEATURE_XFD,			X86_FEATURE_XGETBV1   },
- 	{ X86_FEATURE_AMX_TILE,			X86_FEATURE_XFD       },
-+	{ X86_FEATURE_SHSTK,			X86_FEATURE_XSAVES    },
- 	{}
- };
++			best->ebx = xstate_required_size(xstate, true);
++		}
++
++		if (!cpuid_entry_has(best, X86_FEATURE_XSAVES)) {
++			best->ecx = 0;
++			best->edx = 0;
++		}
++	}
  
+ 	best = __kvm_find_kvm_cpuid_features(vcpu, entries, nent);
+ 	if (kvm_hlt_in_guest(vcpu->kvm) && best &&
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index f525228168b8..06fbd3daf393 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -3605,8 +3605,10 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		 */
+ 		if (data & ~kvm_caps.supported_xss)
+ 			return 1;
+-		vcpu->arch.ia32_xss = data;
+-		kvm_update_cpuid_runtime(vcpu);
++		if (vcpu->arch.ia32_xss != data) {
++			vcpu->arch.ia32_xss = data;
++			kvm_update_cpuid_runtime(vcpu);
++		}
+ 		break;
+ 	case MSR_SMI_COUNT:
+ 		if (!msr_info->host_initiated)
 -- 
 2.27.0
 
