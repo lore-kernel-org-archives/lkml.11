@@ -2,166 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22DA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7534AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377830AbiFPOkW (ORCPT
+        id S1377774AbiFPOlj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 10:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
+        Thu, 16 Jun 2022 10:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230393AbiFPOkR (ORCPT
+        with ESMTP id S1376985AbiFPOlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 10:40:17 -0400
-Received: from mail.sysgo.com (mail.sysgo.com [159.69.174.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B797245784;
-        Thu, 16 Jun 2022 07:40:15 -0700 (PDT)
-Date:   Thu, 16 Jun 2022 16:40:10 +0200
-From:   Vit Kabele <vit.kabele@sysgo.com>
-To:     linux-hyperv@vger.kernel.org
-Cc:     mikelley@microsoft.com, linux-kernel@vger.kernel.org,
-        kys@microsoft.com
-Subject: [RFC PATCH] Hyper-V: Initialize crash reporting before vmbus
-Message-ID: <YqtAyitIGRAHL7V0@czspare1-lap.sysgo.cz>
-Mail-Followup-To: Vit Kabele <vit.kabele@sysgo.com>,
-        linux-hyperv@vger.kernel.org, mikelley@microsoft.com,
-        linux-kernel@vger.kernel.org, kys@microsoft.com
+        Thu, 16 Jun 2022 10:41:35 -0400
+Received: from m15114.mail.126.com (m15114.mail.126.com [220.181.15.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A910D4738B
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 07:41:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=phAgN
+        klwvZ7SdoZ2WJPlzBwUJAkY95Zd5DNyI8fp88c=; b=gBN4cU/Myd2tGIza1Q6lT
+        mqFRxwpu5vmSthPUPG6AOxgZNKYaKWQ0mRLVwC+WVFfgl6jm+4etuqxnC3yjAv/r
+        0OXRxcMIUa+UYWyWc9TvFhRRH9/RdRAZbX2NujXRYcQ5hzqM3nMnuKL1pzv3wE/3
+        d31MQtZ47sW2VMFNWQxQAs=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp7 (Coremail) with SMTP id DsmowABXlfTHQKti04bZDQ--.15246S2;
+        Thu, 16 Jun 2022 22:40:08 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     mpe@ellerman.id.au, agust@denx.de, benh@kernel.crashing.org,
+        paulus@samba.org, christophe.leroy@csgroup.eu, maz@kernel.org,
+        wangqing@vivo.com
+Cc:     windhl@126.com, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] powerpc: platforms: 52xx: Fix refcount leak in media5200.c
+Date:   Thu, 16 Jun 2022 22:40:07 +0800
+Message-Id: <20220616144007.3987743-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DsmowABXlfTHQKti04bZDQ--.15246S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Gr17tFykJFykZw48KF45ZFb_yoWkArg_W3
+        WkZF47Wr48Jr4DJrZIvr13AF1jyw48WF18KFn0qa17Jwn8XrsxWrn2vFsFkw4UXr4IvrW5
+        Gan5KF4qya4YvjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUjn2-3UUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2gkiF1uwMN203AAAsI
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Hyper-V crash reporting feature is initialized after a successful
-vmbus setup. The reporting feature however does not require vmbus at all
-and Windows guests can indeed use the reporting capabilities even with
-the minimal Hyper-V implementation (as described in the Minimal
-Requirements document).
+In media5200_init_irq(), of_find_compatible_node() will return a
+node pointer with refcount incremented. We should use of_node_put()
+in fail path or when it is not used anymore.
 
-Reorder the initialization callbacks so that the crash reporting
-callbacks are registered before the vmbus initialization starts.
+Don't worry about 'fpga_np==NULL' as of_node_put() can correctly
+handle it.
 
-Nevertheless, I am not sure about following:
-
-1/ The vmbus_initiate_unload function is called within the panic handler
-even when the vmbus initialization does not finish (there might be no
-vmbus at all). This should probably not be problem because the vmbus
-unload function always checks for current connection state and does
-nothing when this is "DISCONNECTED". For better readability, it might be
-better to add separate panic notifier for vmbus and crash reporting.
-
-2/ Wouldn't it be better to extract the whole reporting capability out
-of the vmbus module, so that it stays present in the kernel even when
-the vmbus module is possibly unloaded?
-
-Signed-off-by: Vit Kabele <vit.kabele@sysgo.com>
-
+Signed-off-by: Liang He <windhl@126.com>
 ---
- drivers/hv/vmbus_drv.c | 77 +++++++++++++++++++++++-------------------
- 1 file changed, 42 insertions(+), 35 deletions(-)
+ arch/powerpc/platforms/52xx/media5200.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 714d549b7b46..97873f03aa7a 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -1509,41 +1509,6 @@ static int vmbus_bus_init(void)
- 	if (hv_is_isolation_supported())
- 		sysctl_record_panic_msg = 0;
+diff --git a/arch/powerpc/platforms/52xx/media5200.c b/arch/powerpc/platforms/52xx/media5200.c
+index ee367ff3ec8a..33a35fff11b5 100644
+--- a/arch/powerpc/platforms/52xx/media5200.c
++++ b/arch/powerpc/platforms/52xx/media5200.c
+@@ -174,6 +174,8 @@ static void __init media5200_init_irq(void)
+ 		goto out;
+ 	pr_debug("%s: allocated irqhost\n", __func__);
  
--	/*
--	 * Only register if the crash MSRs are available
--	 */
--	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE) {
--		u64 hyperv_crash_ctl;
--		/*
--		 * Panic message recording (sysctl_record_panic_msg)
--		 * is enabled by default in non-isolated guests and
--		 * disabled by default in isolated guests; the panic
--		 * message recording won't be available in isolated
--		 * guests should the following registration fail.
--		 */
--		hv_ctl_table_hdr = register_sysctl_table(hv_root_table);
--		if (!hv_ctl_table_hdr)
--			pr_err("Hyper-V: sysctl table register error");
--
--		/*
--		 * Register for panic kmsg callback only if the right
--		 * capability is supported by the hypervisor.
--		 */
--		hyperv_crash_ctl = hv_get_register(HV_REGISTER_CRASH_CTL);
--		if (hyperv_crash_ctl & HV_CRASH_CTL_CRASH_NOTIFY_MSG)
--			hv_kmsg_dump_register();
--
--		register_die_notifier(&hyperv_die_block);
--	}
--
--	/*
--	 * Always register the panic notifier because we need to unload
--	 * the VMbus channel connection to prevent any VMbus
--	 * activity after the VM panics.
--	 */
--	atomic_notifier_chain_register(&panic_notifier_list,
--			       &hyperv_panic_block);
--
- 	vmbus_request_offers();
++	of_node_put(fpga_np);
++
+ 	irq_set_handler_data(cascade_virq, &media5200_irq);
+ 	irq_set_chained_handler(cascade_virq, media5200_irq_cascade);
  
- 	return 0;
-@@ -2675,6 +2640,46 @@ static struct syscore_ops hv_synic_syscore_ops = {
- 	.resume = hv_synic_resume,
- };
+@@ -181,6 +183,7 @@ static void __init media5200_init_irq(void)
  
-+static void __init crash_reporting_init(void)
-+{
-+	/*
-+	 * Only register if the crash MSRs are available
-+	 */
-+	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE) {
-+		u64 hyperv_crash_ctl;
-+		/*
-+		 * Panic message recording (sysctl_record_panic_msg)
-+		 * is enabled by default in non-isolated guests and
-+		 * disabled by default in isolated guests; the panic
-+		 * message recording won't be available in isolated
-+		 * guests should the following registration fail.
-+		 */
-+		hv_ctl_table_hdr = register_sysctl_table(hv_root_table);
-+		if (!hv_ctl_table_hdr)
-+			pr_err("Hyper-V: sysctl table register error");
-+
-+		/*
-+		 * Register for panic kmsg callback only if the right
-+		 * capability is supported by the hypervisor.
-+		 */
-+		hyperv_crash_ctl = hv_get_register(HV_REGISTER_CRASH_CTL);
-+		if (hyperv_crash_ctl & HV_CRASH_CTL_CRASH_NOTIFY_MSG)
-+			hv_kmsg_dump_register();
-+
-+		register_die_notifier(&hyperv_die_block);
-+	}
-+
-+	/*
-+	 * Always register the panic notifier because we need to unload
-+	 * the VMbus channel connection to prevent any VMbus
-+	 * activity after the VM panics.
-+	 */
-+	atomic_notifier_chain_register(&panic_notifier_list,
-+			       &hyperv_panic_block);
-+
-+
-+}
-+
- static int __init hv_acpi_init(void)
- {
- 	int ret, t;
-@@ -2687,6 +2692,8 @@ static int __init hv_acpi_init(void)
+  out:
+ 	pr_err("Could not find Media5200 FPGA; PCI interrupts will not work\n");
++	of_node_put(fpga_np);
+ }
  
- 	init_completion(&probe_event);
- 
-+	crash_reporting_init();
-+
- 	/*
- 	 * Get ACPI resources first.
- 	 */
+ /*
 -- 
-2.30.2
+2.25.1
+
