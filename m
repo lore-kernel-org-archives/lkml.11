@@ -2,116 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40BB9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D59CCCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:41:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbiFPWfT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 18:35:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42760 "EHLO
+        id S231511AbiFPWlX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 18:41:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378518AbiFPWfP (ORCPT
+        with ESMTP id S245332AbiFPWlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 18:35:15 -0400
-Received: from crane.ash.relay.mailchannels.net (crane.ash.relay.mailchannels.net [23.83.222.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86ACE6210E;
-        Thu, 16 Jun 2022 15:35:11 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 67CC8801DA3;
-        Thu, 16 Jun 2022 22:35:08 +0000 (UTC)
-Received: from pdx1-sub0-mail-a312.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id CE1CE801D9A;
-        Thu, 16 Jun 2022 22:35:07 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1655418908; a=rsa-sha256;
-        cv=none;
-        b=FtzwEnKqs5aM6EyTKVd89leR3AA+ANLRdP2N04mlZFnFmUbsbymSL8xEhaMXHSL7yC8pNz
-        CnpsmKLJQp9BOHfiiiSmkvAVxRSHKrgWgqe1QdJ9aSZoNM5bOM9wVhQID3mb1/IStu1GBa
-        qaGI2iVYWUnxXmGmFK9OL2mBVkxSw47h+ZOBVIk2R2FUl5+oEmDhKZoOd3+4fKJFRAX0iO
-        dZeAZGHi8HEBrKofzGz2OHd1P2WnUgorSxlfRTF6o1uVvLz02Gw3iTWy81m6Kgfl5GX31W
-        dWHXRvyt1IdtTkKt7rvj3GzBHSdIUrz/Chkt24rKVKO6s3DHhdK9RXXHucONtw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1655418908;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=FQDo/MRb129ADZX+XkIZfbp3tPlh05DubOmMkb1Pe3Y=;
-        b=q89F+FzLyhvA3ax7ebTOXmPU+tbx09HfLoxl67KeVBUWnibEeC/f8xpSmDdGVi6JGzVa3g
-        4SlQtY1VZsJcxF6pbKzF/YdicuQv49mZcJXgJfZW6DGYkDagWkXNB9vUJGJ/ydjm1debBn
-        FwHsPT4RysYYJ9GGxnsmoIs7oxu0ueM+VEo7Lcn7lXc4W1GMumEDmoLoDiaHHBHJ03fOGr
-        j3MMEC2ITMjxUhPJhNTW8/QRNaeIp6BDjYjUm4ZZjljR66tlH9AKbyOtHTkxfF0zarvq40
-        P2ob2kbptVOivWtwsf5P9ICYT93M0sp+FxVjhZTW/i5lTuZDehNV7EctqhrQSQ==
-ARC-Authentication-Results: i=1;
-        rspamd-786f5898df-9jkmw;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Vacuous-Share: 6d388d5b6917c99f_1655418908268_1620883124
-X-MC-Loop-Signature: 1655418908268:4216171093
-X-MC-Ingress-Time: 1655418908268
-Received: from pdx1-sub0-mail-a312.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.124.238.94 (trex/6.7.1);
-        Thu, 16 Jun 2022 22:35:08 +0000
-Received: from offworld (unknown [104.36.31.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a312.dreamhost.com (Postfix) with ESMTPSA id 4LPH6y33nPz4f;
-        Thu, 16 Jun 2022 15:35:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1655418907;
-        bh=FQDo/MRb129ADZX+XkIZfbp3tPlh05DubOmMkb1Pe3Y=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=drMCdu2uIo/NNLTErfkizhZZLstIA+O+Y5JfDGcJDYvDfMTcH1K0ieN0Wewm8plcb
-         cZcczrcEum5qndRzVn25IN2H2f2CiDsX2pGxze7Mx81O5by8ggHGbur+jwjVJ6+82e
-         gfUErX5aU5ku5WBd6OE/UDbC5TkrF4/jKvR2yw3i1N/ylvQjn+3w+3/nVEgDlYzQBn
-         NsIugDSst4LPCwCGLz8O7Qyq8Jo1qeIeS4WjeoZEQQ1mAjzuwoQwFKyEEfygzW8XkX
-         rbJ/cHYIfe7FoejX1cHJUoC1DgGAqNKSpVCHoaro6B04bA8JnMYo6i1TlMFj9k0fOi
-         CByL14JY01lNw==
-Date:   Thu, 16 Jun 2022 15:20:51 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Alison Schofield <alison.schofield@intel.com>
-Cc:     "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Weiny, Ira" <ira.weiny@intel.com>,
-        "Verma, Vishal L" <vishal.l.verma@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "a.manzanares@samsung.com" <a.manzanares@samsung.com>
-Subject: Re: [PATCH 2/3] cxl/mbox: Add GET_POISON_LIST mailbox command support
-Message-ID: <20220616222051.wzf4iokvhxnro56v@offworld>
-References: <cover.1655250669.git.alison.schofield@intel.com>
- <382a9c35ef43e89db85670637d88371f9197b7a2.1655250669.git.alison.schofield@intel.com>
- <20220616194334.pvorvoozt4rrzr66@offworld>
- <20220616203400.GA1529208@alison-desk>
- <20220616214740.7pyjagx3gosni7mw@offworld>
- <20220616221041.GA1529592@alison-desk>
+        Thu, 16 Jun 2022 18:41:20 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B7162111
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 15:41:16 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id y16-20020a9d5190000000b0060c1292a5b9so1980995otg.3
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 15:41:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=AWCHew8dJ92FRAa86sjZqg/7uz35kqackjChUgkNjiw=;
+        b=Sbn07kQgTXlj8XatmfRNXAU72cQaXb8VxilvqYsKtyR3h6nwF007C4986DhNrSkO+s
+         x5OVfHmx3rGoV5XgKxT2TDvBiqTYywKNLRUPPHlr3amgPN+UCeO9vrHZmiMMRFRthmVI
+         JbtKX1fCXXSeRR/e1ecfNesPq3ruFPKsZKkL8V2LFSQWvkqSsveykkdd1YWSpsxd9sd8
+         nd9TeH5H8oVeM9sjgDlwHNcLy2C6Re7a1hmMUhFs/N8GGl3OeE1cWFJLZnTPlYJ/xHoP
+         9ICO8nPy8CaK+XwlEWGmW0qyAZFV/c9tu/yqBdpNFnSB9PJ+4HImJ7khcWbtRRIFOy0T
+         v3Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AWCHew8dJ92FRAa86sjZqg/7uz35kqackjChUgkNjiw=;
+        b=pPuYuaAYUPkTYmybBd4j3q5lvBTaxzRind2+w3JY6ru47L2aYhnlgu6DstgAO2uNvM
+         yGZO8iIa65P3BDJbyFOtmJZf1p6ur98JB9fJl8Nb9mEWg8t10zPY2Y8CgjzNEi+BA4nv
+         R1EiQMkp7C6K0Eziz6aGf6tXzK73PxIfqWWGco0hy+Bl+1O4t/FFcJ66G1bddYDBQGS2
+         322h6Ad2PFI4gAeYt4aAMcqpBGW0ur5YE/oURcB7lkRTCJZWqC+G5rpaNYJ42x2smMSj
+         cUO23kUj1FVVaG3Au/1EyRJTITxM0BkQYCDdfqIMHIysTrcYTW/ANkGLBN8mmbD2gS5E
+         CtHg==
+X-Gm-Message-State: AJIora+25e2JptcZiAuxfBZFJq3lWbZP0OWHzG4eYUsO99A8lKOESKON
+        9+FRhCmnNwVUYotWS2MEY2UBTQ==
+X-Google-Smtp-Source: AGRyM1vg4mrJ0bSA38QQ60GxwD9BVX0fzA6Z6x2kYxwAP5Zg8De9eraONxzGZct4/qBV37pr7IgO+Q==
+X-Received: by 2002:a05:6830:2695:b0:60c:6e16:460f with SMTP id l21-20020a056830269500b0060c6e16460fmr2899781otu.249.1655419275291;
+        Thu, 16 Jun 2022 15:41:15 -0700 (PDT)
+Received: from ?IPV6:2804:14d:8084:84c6:fe26:c42d:aab9:fa8a? ([2804:14d:8084:84c6:fe26:c42d:aab9:fa8a])
+        by smtp.gmail.com with ESMTPSA id ly14-20020a056870fc8e00b000e686d13889sm1532110oab.35.2022.06.16.15.41.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jun 2022 15:41:14 -0700 (PDT)
+Message-ID: <8b040fb2-7edd-6fd1-864e-ee04115c5b1d@usp.br>
+Date:   Thu, 16 Jun 2022 19:41:05 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220616221041.GA1529592@alison-desk>
-User-Agent: NeoMutt/20220429
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC 0/3] drm/amd/display: Introduce KUnit to Display Mode
+ Library
+Content-Language: en-US
+To:     David Gow <davidgow@google.com>
+Cc:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
+        Jun Lei <jun.lei@amd.com>,
+        Nicholas Choi <Nicholas.Choi@amd.com>,
+        Harrison Chiu <harrison.chiu@amd.com>,
+        Mark Yacoub <markyacoub@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
+        Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>
+References: <20220608010709.272962-1-maira.canal@usp.br>
+ <CABVgOSmesj5MGfQrtdWCgXzm1VXRoG0fAMCbkBCAvtqediqAjQ@mail.gmail.com>
+From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <maira.canal@usp.br>
+In-Reply-To: <CABVgOSmesj5MGfQrtdWCgXzm1VXRoG0fAMCbkBCAvtqediqAjQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022, Alison Schofield wrote:
->> I wonder if the latter may be the better option considering that always
->> scanning the entire memdev would cause unnecessary media scan wait times,
->> specially for large capacities.
->
->This is not a Media Scan. This is only reading the existing Poison List.
+Hi David,
 
-Right, but I was thinking we'd want a input similar interface passing the
-desidered range.
+Thank you for your feedback!
 
-Thanks,
-Davidlohr
+On 6/16/22 11:39, David Gow wrote:
+> On Wed, Jun 8, 2022 at 9:08 AM Maíra Canal <maira.canal@usp.br> wrote:
+
+>>
+>> As kunit_test_suites() defines itself as an init_module(), it conflicts with
+>> the existing one at amdgpu_drv. So, if we use kunit_test_suites(), we won't
+>> be able to compile the tests as modules and, therefore, won't be able to use
+>> IGT to run the tests. This problem with kunit_test_suites() was already
+>> discussed in the KUnit mailing list, as can be seen in [7].
+> 
+> I'm not sure I fully understand why these tests need to be part of the
+> amdgpu module, though admittedly I've not played with IGT much. Would
+> it be possible to compile these tests as separate modules, which could
+> depend on amdgpu (or maybe include the DML stuff directly), and
+> therefore not have this conflict? I definitely was able to get these
+> tests working under kunit_tool (albeit as built-ins) by using
+> kunit_test_suites(). If each suite were built as a separate module (or
+> indeed, even if all the tests were in one module, with one list of
+> suites), then it should be possible to avoid the init_module()
+> conflict. That'd also make it possible to run these tests without
+> actually needing the driver to initialise, which seems like it might
+> require actual hardware(?)
+
+Initially, we tried the kunit_test_suites() approach. And it did work pretty well for the kunit_tool (although we didn't test any hardware-specific unit test). But when compiling the test as a module, we would get a linking error, pointing out multiple definitions of 'init_module'/'cleanup_module' at kunit_test_suites().
+
+At this point, we thought about a couple of options to resolve this problem:
+- Add EXPORT_SYMBOL to the functions we would test. But, this doesn't scale pretty well, because it would pollute AMDGPU code as the tests expand.
+- Take the Thunderbolt path and add the tests to the driver stack.
+
+We end up taking the Thunderbolt path as it would be more maintainable.
+
+Compiling the tests as a module is essential to make the tests run at IGT, as IGT essentially loads the module, runs it, and parses the output (a very very simplified explanation of what IGT does). IGT is a very known tool for DRI developers, so we believe that IGT support is crucial for this project.
+
+If you have any other options on how to make the module compilation viable without using the 'thunderbolt'-style, we would be glad to hear your suggestions.
+
+> 
+> There are two other reasons the 'thunderbolt'-style technique is one
+> we want to avoid:
+> 1. It makes it much more difficult to run tests using kunit_tool and
+> KUnit-based CI tools: these tests would not run automatically, and if
+> they were built-in as-is, they'd need to be
+> 2. We're planning to improve module support to replace the
+> init_module()-based implementation of kunit_test_suites() with one
+> which won't have these conflicts, so the need for this should be
+> short-lived.
+> 
+> If you're curious, an early version of the improved module support can
+> be found here, though it's out-of-date enough it won't apply or work
+> as-is:
+> https://lore.kernel.org/all/101d12fc9250b7a445ff50a9e7a25cd74d0e16eb.camel@codeconstruct.com.au/
+> 
+> Now, that's unlikely to be ready very soon, but I'd be hesitant to
+> implement too extensive a system for avoiding kunit_test_suites()
+> given at some point it should work and we'll need to migrate back to
+> it.
+
+We hope to see in the near future the improved module support from KUnit as it would make the addition of tests much more simple and clean.
+
+Could you explain more about what is missing to make this improved module support come upstream?
+
+> 
+> At the very least, having the dependency on KUNIT=m is a very bad
+> idea: it should be possible to have tests built as modules, even if
+> KUnit itself isn't, and ideally (even if this sort-of implementation
+> is required), it _should_ be possible to have these tests be built-in
+> if all their dependencies (KUnit, amdgpu) are, which would make it
+> possible to run the tests without a userland.
+> 
+
+Thank you for the suggestion! We will change the KUNIT dependency.
+
+- Maíra Canal
