@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7867C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C17DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 17:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347257AbiFPQ76 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 12:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34458 "EHLO
+        id S233692AbiFPRAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 13:00:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240141AbiFPQ6c (ORCPT
+        with ESMTP id S239381AbiFPQ6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 12:58:32 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B7F3B546
+        Thu, 16 Jun 2022 12:58:31 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F7F43E5C5
         for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:58:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1655398711; x=1686934711;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=S5O1PtSeWWp85IzvqLzspKlCA3tRqJn7LtXeyvRwsbI=;
-  b=cMBhkc6IAJ8AxpW5r0zFXRL5XRn0wJCvd98bLwmdhcL9hKrTGc5HP5wn
-   mGo2j5q6B2i+OpnMn3gOxYqr2Ck27Xa3CJ5ESBzxsRAH8r6OUE+3h1nyj
-   DcXJrpUKgtR1Qefp/Mp3m2Al90NqxK4xUMwaCYdyd5uWQ1Xt1t3p8n296
-   kU1jV8rdkDmPBJYgQQvvikHzs7d5xVt8DfkbSMdOKhEZxz+pdiyLwAEF/
-   Z+gOYDYou8kcNlDld4zNQFBKVxT+/CgYBycbFUo5l9aI81/0l+L/mcI7s
-   z6MRT48W+blrvwSy1+TjgTMliHHdgt1hZ2DPdRIijXL/9wxHPSnNm7SyH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="304739433"
+  bh=HDhkQjB1m5InUrtWZxmERWvNg1OJJDFC7pB+LdGiCZo=;
+  b=i26k5of7SybPkqNtwfHQ9vCSaDdCgYs4rdgQneEqbh26SPsNQmLJA5OE
+   lTuAjjVHrya83OkZNHtnAffN3fI28qrOO2LbuZy4p4NV5mZ6VkjBitZ5Q
+   zB5Cu5xfQdRK8cPKPUJOPJhG08WhufWCqeunSgnhd3dgITla4lJLNFpxW
+   Lf3C+B+baPQgTJ38lglCxo4A0hwv8EEc62tuA/R9b4QU8U+79O25WfZVI
+   DxVUbBcqXE7bZgVyzJpNLJyk/vle8rXa2pynxfAX/gqcmNPH2agzfWhug
+   vssNeX69xEUtpvKnBIdphGo577ZtodOiHFgzDXpTHQyk7UnuKSu/pmHRn
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="276870461"
 X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="304739433"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 09:58:30 -0700
+   d="scan'208";a="276870461"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 09:58:30 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="762925713"
+   d="scan'208";a="559894733"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 16 Jun 2022 09:58:29 -0700
+  by orsmga006.jf.intel.com with ESMTP; 16 Jun 2022 09:58:29 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 8BD1E3B9; Thu, 16 Jun 2022 19:58:31 +0300 (EEST)
+        id B82715E2; Thu, 16 Jun 2022 19:58:31 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-kernel@vger.kernel.org
 Cc:     Andy Shevchenko <andy@kernel.org>, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v1 07/11] mfd: intel_soc_pmic_bxtwc: Drop redundant ACPI_PTR()
-Date:   Thu, 16 Jun 2022 19:58:19 +0300
-Message-Id: <20220616165823.4919-7-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 10/11] mfd: intel_soc_pmic_bxtwc: Drop unneeded casting
+Date:   Thu, 16 Jun 2022 19:58:22 +0300
+Message-Id: <20220616165823.4919-10-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220616165823.4919-1-andriy.shevchenko@linux.intel.com>
 References: <20220616165823.4919-1-andriy.shevchenko@linux.intel.com>
@@ -57,11 +56,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver depends on ACPI (via MFD_INTEL_PMC_BXT), ACPI_PTR() resolution
-is always the same. Otherwise a compiler may produce a warning.
-
-That said, the rule of thumb either ugly ifdeffery with ACPI_PTR or
-none should be used in a driver.
+The casting from size_t to ssize_t is not needed in addr_store(),
+drop it.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
@@ -69,18 +65,18 @@ Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/mfd/intel_soc_pmic_bxtwc.c b/drivers/mfd/intel_soc_pmic_bxtwc.c
-index 6e4c2ca47d82..b48e620de7a3 100644
+index 4e890f095721..953f535a3c93 100644
 --- a/drivers/mfd/intel_soc_pmic_bxtwc.c
 +++ b/drivers/mfd/intel_soc_pmic_bxtwc.c
-@@ -575,7 +575,7 @@ static struct platform_driver bxtwc_driver = {
- 	.driver	= {
- 		.name	= "BXTWC PMIC",
- 		.pm     = pm_sleep_ptr(&bxtwc_pm_ops),
--		.acpi_match_table = ACPI_PTR(bxtwc_acpi_ids),
-+		.acpi_match_table = bxtwc_acpi_ids,
- 		.dev_groups = bxtwc_groups,
- 	},
- };
+@@ -348,7 +348,7 @@ static ssize_t addr_store(struct device *dev,
+ 		return ret;
+ 	}
+ 
+-	return (ssize_t)count;
++	return count;
+ }
+ 
+ static ssize_t val_show(struct device *dev,
 -- 
 2.35.1
 
