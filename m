@@ -2,98 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20820C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C2AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:59:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377687AbiFPP73 (ORCPT
+        id S1378071AbiFPP7t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36392 "EHLO
+        Thu, 16 Jun 2022 11:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378079AbiFPP7X (ORCPT
+        with ESMTP id S1378110AbiFPP7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:59:23 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7760F443E5
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:59:17 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id g186so1644851pgc.1
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:59:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DgrwewMce2rCEAP+XlA9uqVT9sKMIcKrgNTnswDM33Y=;
-        b=j1+LKGPK//opsez1h3IZYLmloo+4hPEoxEk8xMICOmbOhqlBLGAMND2zjOoFyug2EY
-         5w+Wt5QkKbiSzcJfiUrlZXilCZK7CzVdOKye1m0P35pjQXxCnDRhlzva6yupERBJDrHJ
-         N5pZ4c/wqoz867w4DqOPA5KqOEfbKkO/oGYIg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DgrwewMce2rCEAP+XlA9uqVT9sKMIcKrgNTnswDM33Y=;
-        b=U6DPWCZ8JvDdRm53jgn/ZCw+BlVZ21nNseyc/QKBJwZkXwYRaO8LB9WL2RQZFaB6qJ
-         nBTBR81sLVUY6ZJlHAQa3JEjsc0KYqUDssF9fT4+PNYWb7Md9VvskLLwDWwiMgnlJDG4
-         87yqgJQduQ0aTaW7EypUYo9rNuDL+c+q9i+xGsKOBvN8ysjvq5ovsdmXrTGIJ6qt5df7
-         CpfYTbKT7AZdLay/QXvfXP93SsAqsHdDiNheueRoDQfcc+xjXseYt+yqNr9PxqOhMjPU
-         xo+xUnfniYM4hKli99sZ5QEJRWBAM5fDGUmT+aoHgrR85LyIvKZb38bemsT0g+mVrpYq
-         9gZA==
-X-Gm-Message-State: AJIora+Qvk73YDvnJyiGn5jcLGCxtPm9ynUhlh/iwnP107snVvWMNimV
-        USVX+1oLdswFfy9JteudSyfl/Q==
-X-Google-Smtp-Source: AGRyM1tJ4+JyFVVgPMz5uyUA7b8XnLeEV3bIK43Yl9Qo91NqaGe+fP3lYzpmcrF6e9DSJkwDcLQiGQ==
-X-Received: by 2002:a62:b802:0:b0:51b:f4d2:65be with SMTP id p2-20020a62b802000000b0051bf4d265bemr5477983pfe.79.1655395156957;
-        Thu, 16 Jun 2022 08:59:16 -0700 (PDT)
-Received: from judyhsiao0523.c.googlers.com.com (0.223.81.34.bc.googleusercontent.com. [34.81.223.0])
-        by smtp.gmail.com with ESMTPSA id f8-20020a170902684800b00161478027f5sm1779797pln.150.2022.06.16.08.59.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 08:59:16 -0700 (PDT)
-From:   Judy Hsiao <judyhsiao@chromium.org>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Chen-Yu Tsai <wenst@chromium.org>, alsa-devel@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Judy Hsiao <judyhsiao@chromium.org>
-Subject: [PATCH v2 3/3] ASoC: dt-bindings: rockchip: Document pinctrl-names for i2s
-Date:   Thu, 16 Jun 2022 15:58:36 +0000
-Message-Id: <20220616155836.3401420-4-judyhsiao@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220616155836.3401420-1-judyhsiao@chromium.org>
-References: <20220616155836.3401420-1-judyhsiao@chromium.org>
+        Thu, 16 Jun 2022 11:59:41 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED9B483AE
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:59:36 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2DD331F7AB;
+        Thu, 16 Jun 2022 15:59:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655395175; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MhO8fx+N0t/ZLpQ+sMzhgl7vGpI2fxQcQAASoCjQrlE=;
+        b=bt/65kyRXDmJD9B6Mfex4CmXNZpULdJOEmHZTFOcFCOykT47YgmDngb9h6SURkwUGIA29j
+        M1JS3jILhGOOx1M0oXMnN6aRNbgFJEkTh4yKb+EYQOJ7yIau/Q6+XmcFpgd/Sh1qmzvlKe
+        +Sarv/sxALURpL6+qUiMPu17LqqXuEs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655395175;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MhO8fx+N0t/ZLpQ+sMzhgl7vGpI2fxQcQAASoCjQrlE=;
+        b=dE7415pV/JQhObWc64P3wIuMigOwne1KfssobhSNON3HaoBXVhoUPdtgZKOCghirighPQQ
+        FqIfxCwvT6wj8ABA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0750613A70;
+        Thu, 16 Jun 2022 15:59:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 4qQRAWdTq2JGTwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 16 Jun 2022 15:59:35 +0000
+Message-ID: <af8f5c7d-5f7f-17ad-835e-1fdea2d8dda8@suse.cz>
+Date:   Thu, 16 Jun 2022 17:59:34 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 5/7] mm/page_alloc: Protect PCP lists with a spinlock
+Content-Language: en-US
+To:     Mel Gorman <mgorman@techsingularity.net>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Hugh Dickins <hughd@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+References: <20220613125622.18628-1-mgorman@techsingularity.net>
+ <20220613125622.18628-6-mgorman@techsingularity.net>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220613125622.18628-6-mgorman@techsingularity.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch documents pinctrl-names for i2s.
+On 6/13/22 14:56, Mel Gorman wrote:
+> Currently the PCP lists are protected by using local_lock_irqsave to
+> prevent migration and IRQ reentrancy but this is inconvenient.  Remote
+> draining of the lists is impossible and a workqueue is required and every
+> task allocation/free must disable then enable interrupts which is
+> expensive.
+> 
+> As preparation for dealing with both of those problems, protect the lists
+> with a spinlock.  The IRQ-unsafe version of the lock is used because IRQs
+> are already disabled by local_lock_irqsave.  spin_trylock is used in
+> preparation for a time when local_lock could be used instead of
+> lock_lock_irqsave.
+> 
+> The per_cpu_pages still fits within the same number of cache lines after
+> this patch relative to before the series.
+> 
+> struct per_cpu_pages {
+>         spinlock_t                 lock;                 /*     0     4 */
+>         int                        count;                /*     4     4 */
+>         int                        high;                 /*     8     4 */
+>         int                        batch;                /*    12     4 */
+>         short int                  free_factor;          /*    16     2 */
+>         short int                  expire;               /*    18     2 */
+> 
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         struct list_head           lists[13];            /*    24   208 */
+> 
+>         /* size: 256, cachelines: 4, members: 7 */
+>         /* sum members: 228, holes: 1, sum holes: 4 */
+>         /* padding: 24 */
+> } __attribute__((__aligned__(64)));
+> 
+> There is overhead in the fast path due to acquiring the spinlock even
+> though the spinlock is per-cpu and uncontended in the common case.  Page
+> Fault Test (PFT) running on a 1-socket reported the following results on a
+> 1 socket machine.
+> 
+>                                      5.18.0-rc1               5.18.0-rc1
+>                                         vanilla         mm-pcpdrain-v2r1
+> Hmean     faults/sec-1   886331.5718 (   0.00%)   885462.7479 (  -0.10%)
+> Hmean     faults/sec-3  2337706.1583 (   0.00%)  2332130.4909 *  -0.24%*
+> Hmean     faults/sec-5  2851594.2897 (   0.00%)  2844123.9307 (  -0.26%)
+> Hmean     faults/sec-7  3543251.5507 (   0.00%)  3516889.0442 *  -0.74%*
+> Hmean     faults/sec-8  3947098.0024 (   0.00%)  3916162.8476 *  -0.78%*
+> Stddev    faults/sec-1     2302.9105 (   0.00%)     2065.0845 (  10.33%)
+> Stddev    faults/sec-3     7275.2442 (   0.00%)     6033.2620 (  17.07%)
+> Stddev    faults/sec-5    24726.0328 (   0.00%)    12525.1026 (  49.34%)
+> Stddev    faults/sec-7     9974.2542 (   0.00%)     9543.9627 (   4.31%)
+> Stddev    faults/sec-8     9468.0191 (   0.00%)     7958.2607 (  15.95%)
+> CoeffVar  faults/sec-1        0.2598 (   0.00%)        0.2332 (  10.24%)
+> CoeffVar  faults/sec-3        0.3112 (   0.00%)        0.2587 (  16.87%)
+> CoeffVar  faults/sec-5        0.8670 (   0.00%)        0.4404 (  49.21%)
+> CoeffVar  faults/sec-7        0.2815 (   0.00%)        0.2714 (   3.60%)
+> CoeffVar  faults/sec-8        0.2399 (   0.00%)        0.2032 (  15.28%)
+> 
+> There is a small hit in the number of faults per second but given that the
+> results are more stable, it's borderline noise.
+> 
+> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+> Tested-by: Minchan Kim <minchan@kernel.org>
+> Acked-by: Minchan Kim <minchan@kernel.org>
+> Reviewed-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
 
-Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
----
- Documentation/devicetree/bindings/sound/rockchip-i2s.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-diff --git a/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml b/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml
-index 5ea16b8ef93f..af1069278623 100644
---- a/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml
-+++ b/Documentation/devicetree/bindings/sound/rockchip-i2s.yaml
-@@ -61,6 +61,13 @@ properties:
-           - const: tx
-           - const: rx
- 
-+  pinctrl-names:
-+    oneOf:
-+      - const: default
-+        - items:
-+          - const: bclk_on
-+          - const: bclk_off
-+
-   power-domains:
-     maxItems: 1
- 
--- 
-2.36.1.476.g0c4daa206d-goog
+With comments:
 
+> -static void free_unref_page_commit(struct page *page, int migratetype,
+> -				   unsigned int order)
+> +/* Returns true if the page was committed to the per-cpu list. */
+> +static bool free_unref_page_commit(struct page *page, int migratetype,
+> +				   unsigned int order, bool locked)
+
+'bool locked' schemes are frowned upon. Although this does some preparatory
+work outside of the locked section...
+
+>  {
+>  	struct zone *zone = page_zone(page);
+>  	struct per_cpu_pages *pcp;
+>  	int high;
+>  	int pindex;
+>  	bool free_high;
+> +	unsigned long __maybe_unused UP_flags;
+>  
+>  	__count_vm_event(PGFREE);
+>  	pcp = this_cpu_ptr(zone->per_cpu_pageset);
+>  	pindex = order_to_pindex(migratetype, order);
+
+... maybe it would be simpler to just do the locking always outside? We
+aren't expecting any contention anyway except if draining is in progress,
+and thus making the lock hold time a bunch of instructions longer won't make
+any difference?
+
+That said I don't know yet how patches 6 and 7 change this...
+
+[...]
+
+> @@ -3465,10 +3510,19 @@ void free_unref_page(struct page *page, unsigned int order)
+>  void free_unref_page_list(struct list_head *list)
+>  {
+>  	struct page *page, *next;
+> +	struct per_cpu_pages *pcp;
+> +	struct zone *locked_zone;
+>  	unsigned long flags;
+>  	int batch_count = 0;
+>  	int migratetype;
+>  
+> +	/*
+> +	 * An empty list is possible. Check early so that the later
+> +	 * lru_to_page() does not potentially read garbage.
+> +	 */ 
+> +	if (list_empty(list))
+> +		return;
+
+There's another check below and list_for_each_entry_safe() is fine with an
+empty list, so this one seems unnecessary?
+
+>  	/* Prepare pages for freeing */
+>  	list_for_each_entry_safe(page, next, list, lru) {
+>  		unsigned long pfn = page_to_pfn(page);
+> @@ -3489,8 +3543,31 @@ void free_unref_page_list(struct list_head *list)
+>  		}
+>  	}
+>  
+> +	/*
+> +	 * Preparation could have drained the list due to failing to prepare
+> +	 * or all pages are being isolated.
+> +	 */
+> +	if (list_empty(list))
+> +		return;
+> +
+>  	local_lock_irqsave(&pagesets.lock, flags);
+> +
+> +	page = lru_to_page(list);
