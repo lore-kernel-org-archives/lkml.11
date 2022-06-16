@@ -2,61 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A42EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1057C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377196AbiFPOuK (ORCPT
+        id S1377237AbiFPOu1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 10:50:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57886 "EHLO
+        Thu, 16 Jun 2022 10:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233254AbiFPOuH (ORCPT
+        with ESMTP id S233481AbiFPOuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 10:50:07 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2167731534;
-        Thu, 16 Jun 2022 07:50:04 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-173-48-118-63.bstnma.fios.verizon.net [173.48.118.63])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 25GEnrsL016481
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jun 2022 10:49:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1655390995; bh=AVh4XvYQgeUERqts3Qq/5UwLQw/hh9wtP74QW3XmZKo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=Gn+9OAGD5U6vwbsonNj42JgJv3+w1/saL1GZGw3RFdeO0HDWuz9GZamMayVO8D41c
-         kQPtt2zj58qE4K7+GCAeYyVHsUe/CIopa7X1r8t8GKIe0N7V/SfoRiXy8/FMqw6QvB
-         bSMwak0hgCPRxVz0UwSgTdPgJWLSHGkd1L18A+Pbp3aQ76klsyok8Xp0F0ejxu66oY
-         jf/XivjW4425AzubT2LYK59Rki8u8vTjyN2916Qq7OTFHlYw2X06QdwOwGvcWtfwrQ
-         h7aghvqeXRPZauJ1Cgkmd+p0m4jLPw65lWqU0QyxYThgFkhwJg/9+KUe83DuC316mT
-         nAHIpCNU4RWXw==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 6137E15C3F35; Thu, 16 Jun 2022 10:49:53 -0400 (EDT)
-Date:   Thu, 16 Jun 2022 10:49:53 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Liu Peibao <liupeibao@163.com>
-Cc:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] ext4: page-io: use 'unsigned int' to bare use of
- 'unsigned'
-Message-ID: <YqtDEfJd5uUxucaS@mit.edu>
-References: <20220518120137.2544-1-liupeibao@163.com>
+        Thu, 16 Jun 2022 10:50:23 -0400
+Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE6A543EF1
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 07:50:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ARBcG
+        NcD3T88nKaXT4MWM/zoSyK1nZmN5buYZLmG/Ok=; b=ZsvkMzs/NznMFaHRatqKk
+        O7Js+dZEmVL5eYjbA71d+mH7Q5qiWtRQDKX/1Cd1CCKuI1wHdSY146DAhF/okeTM
+        uQoKKpZs43siheQnNcy0NUp9BdmddvVePiJEgy3SbaWiJ7EdSAswy1fII2+xxGr7
+        FClXStbkw3rgdJmwbfTHdI=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp3 (Coremail) with SMTP id DcmowACXp5_rQqtigmn6DQ--.14906S2;
+        Thu, 16 Jun 2022 22:49:15 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     narmstrong@baylibre.com, khilman@baylibre.com,
+        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com
+Cc:     windhl@126.com, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] soc: amlogic: Fix refcount leak in meson-secure-pwrc.c
+Date:   Thu, 16 Jun 2022 22:49:15 +0800
+Message-Id: <20220616144915.3988071-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518120137.2544-1-liupeibao@163.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcmowACXp5_rQqtigmn6DQ--.14906S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWruF18Jw17Jr1UCr1rGw43GFg_yoW3AwcEka
+        ykJrnrXFy8ArWxtrWFkryS9rW09F1j93yv93W5tFy3Aw4UAr18XF9rurn3W3y7X3yvyF4U
+        XFykJFZrtrZ2yjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUjnYwUUUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi7QwiF1pEANi9CQAAsm
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 08:01:36PM +0800, Liu Peibao wrote:
-> Fix warnings by checkpatch.
-> 
-> Signed-off-by: Liu Peibao <liupeibao@163.com>
+In meson_secure_pwrc_probe(), there is a refcount leak in one fail
+path.
 
-Please don't send checkpatch-only patches.
+Signed-off-by: Liang He <windhl@126.com>
+---
+ drivers/soc/amlogic/meson-secure-pwrc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Thanks,
+diff --git a/drivers/soc/amlogic/meson-secure-pwrc.c b/drivers/soc/amlogic/meson-secure-pwrc.c
+index a10a417a87db..e93518763526 100644
+--- a/drivers/soc/amlogic/meson-secure-pwrc.c
++++ b/drivers/soc/amlogic/meson-secure-pwrc.c
+@@ -152,8 +152,10 @@ static int meson_secure_pwrc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	pwrc = devm_kzalloc(&pdev->dev, sizeof(*pwrc), GFP_KERNEL);
+-	if (!pwrc)
++	if (!pwrc) {
++		of_node_put(sm_np);
+ 		return -ENOMEM;
++	}
+ 
+ 	pwrc->fw = meson_sm_get(sm_np);
+ 	of_node_put(sm_np);
+-- 
+2.25.1
 
-						- Ted
