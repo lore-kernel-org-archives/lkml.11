@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F0D3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B5CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376415AbiFPIuF (ORCPT
+        id S1376391AbiFPIuI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
+        Thu, 16 Jun 2022 04:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376391AbiFPIsy (ORCPT
+        with ESMTP id S1376381AbiFPIsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 16 Jun 2022 04:48:54 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56BE53700;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBBB55345;
         Thu, 16 Jun 2022 01:47:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1655369267; x=1686905267;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=DNQHbD5a674vCUo1VWtLPFj7GhV8y9chgvxSiYSfVNY=;
-  b=IlSDl792FFu4QfRYMCsjgRW/9PNh9LROzOz1OTUQcg1bnvyuEmqznlLx
-   f+e5HcBFGQUB7yCn49VjXNKK8JgkD1Zipo/hxJAcmmosB8feTWBvzkNbU
-   V9tDuYyT2Gkjq1ygc3rJwE5dSemDUbhxIh7ueTW03qEIZRGok5fE+52jg
-   Sq+cQSZu1Kw/64OjwmX1TVG71sBshrduM47uloxphWDitutLc+zALq3Sp
-   upUp2Xgr9DPelbfHuXfw+zpZ2UV/sMkIs9vaq9R+MH4r+N+BCwkfQ9y6N
-   vwIbcMXNjpVxELRJqfz3ZrIo9yV2yA5KsoeqtUa+X21cGH9qcHf1wxvkQ
+  bh=JsIh7oKQdnGxj98JCNvo7OifsO3pR9D4QbYf4cQgaAM=;
+  b=JxcGNOVyX7LnV+W5tz7sl5ElcKYE5S2qJFQLpxeziz0Z7ENxOYG8uJmc
+   mnJy3usL8TQ22XZ85b5tRIDfcYVzqGKS9JpCL9xgVuPA1Frw1QMvCJD4C
+   g49sBXBdHll3xRJXsWLdG9g/VRJFNrf1GVlZI60pvEkDjxpk+W3zegmO/
+   xzJMDCAupVqLIZRZKxomqjrBjLnaDPRSWvhsJ/C2XJQMs9ypY1Y6bpybZ
+   uMg431aoNwNaAv05H3ongF1ChSnWa+Yuo7g3D78yQVm3uskYU5C2xwSmv
+   RcC3oM9atVu0TJ7z/qyzJJOMDRkmz4AFD0hFoFocOcuMjRvxqT8NmYqzB
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664556"
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664557"
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="259664556"
+   d="scan'208";a="259664557"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:41 -0700
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="613083137"
+   d="scan'208";a="613083155"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         rick.p.edgecombe@intel.com
-Cc:     weijiang.yang@intel.com, Yu-cheng Yu <yu-cheng.yu@intel.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 04/19] x86/fpu/xstate: Introduce CET MSR and XSAVES supervisor states
-Date:   Thu, 16 Jun 2022 04:46:28 -0400
-Message-Id: <20220616084643.19564-5-weijiang.yang@intel.com>
+Cc:     weijiang.yang@intel.com, Zhang Yi Z <yi.z.zhang@linux.intel.com>
+Subject: [PATCH 10/19] KVM: VMX: Introduce CET VMCS fields and flags
+Date:   Thu, 16 Jun 2022 04:46:34 -0400
+Message-Id: <20220616084643.19564-11-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220616084643.19564-1-weijiang.yang@intel.com>
 References: <20220616084643.19564-1-weijiang.yang@intel.com>
@@ -56,290 +55,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu-cheng Yu <yu-cheng.yu@intel.com>
+CET (Control-flow Enforcement Technology) is a CPU feature used to prevent
+Return/Jump-Oriented Programming (ROP/JOP) attacks. CET introduces a new
+exception type, Control Protection (#CP), and two sub-features to defend
+against ROP/JOP style control-flow subversion attacks:
 
-Shadow stack register state can be managed with XSAVE. The registers
-can logically be separated into two groups:
-        * Registers controlling user-mode operation
-        * Registers controlling kernel-mode operation
+Shadow Stack (SHSTK):
+  A shadow stack is a second stack used exclusively for control transfer
+  operations. The shadow stack is separate from the data/normal stack and
+  can be enabled individually in user and kernel mode.  When shadow stacks
+  are enabled, CALL pushes the return address on both the data and shadow
+  stack. RET pops the return address from both stacks and compares them.
+  If the return addresses from the two stacks do not match, the processor
+  signals a #CP.
 
-The architecture has two new XSAVE state components: one for each group
-of those groups of registers. This lets an OS manage them separately if
-it chooses. Future patches for host userspace and KVM guests will only
-utilize the user-mode registers, so only configure XSAVE to save
-user-mode registers. This state will add 16 bytes to the xsave buffer
-size.
+Indirect Branch Tracking (IBT):
+  IBT adds a new instrution, ENDBRANCH, that is used to mark valid target
+  addresses of indirect branches (CALL, JMP, ENCLU[EEXIT], etc...). If an
+  indirect branch is executed and the next instruction is _not_ an
+  ENDBRANCH, the processor signals a #CP.
 
-Future patches will use the user-mode XSAVE area to save guest user-mode
-CET state. However, VMCS includes new fields for guest CET supervisor
-states. KVM can use these to save and restore guest supervisor state, so
-host supervisor XSAVE support is not required.
+Several new CET MSRs are defined to support CET:
+  MSR_IA32_{U,S}_CET: Controls the CET settings for user mode and kernel
+                      mode respectively.
 
-Adding this exacerbates the already unwieldy if statement in
-check_xstate_against_struct() that handles warning about un-implemented
-xfeatures. So refactor these check's by having XCHECK_SZ() set a bool when
-it actually check's the xfeature. This ends up exceeding 80 chars, but was
-better on balance than other options explored. Pass the bool as pointer to
-make it clear that XCHECK_SZ() can change the variable.
+  MSR_IA32_PL{0,1,2,3}_SSP: Stores shadow stack pointers for CPL-0,1,2,3
+                            protection respectively.
 
-While configuring user-mode XSAVE, clarify kernel-mode registers are not
-managed by XSAVE by defining the xfeature in
-XFEATURE_MASK_SUPERVISOR_UNSUPPORTED, like is done for XFEATURE_MASK_PT.
-This serves more of a documentation as code purpose, and functionally,
-only enables a few safety checks.
+  MSR_IA32_INT_SSP_TAB: Stores base address of shadow stack pointer table.
 
-Both XSAVE state components are supervisor states, even the state
-controlling user-mode operation. This is a departure from earlier features
-like protection keys where the PKRU state a normal user (non-supervisor)
-state. Having the user state be supervisor-managed ensures there is no
-direct, unprivileged access to it, making it harder for an attacker to
-subvert CET.
+Two XSAVES state bits are introduced for CET:
+  IA32_XSS:[bit 11]: Control saving/restoring user mode CET states
+  IA32_XSS:[bit 12]: Control saving/restoring kernel mode CET states.
 
-To facilitate this privileged access, define the two user-mode CET MSRs,
-and the bits defined in those MSRs relevant to future shadow stack
-enablement patches.
+Six VMCS fields are introduced for CET:
+  {HOST,GUEST}_S_CET: Stores CET settings for kernel mode.
+  {HOST,GUEST}_SSP: Stores shadow stack pointer of current task/thread.
+  {HOST,GUEST}_INTR_SSP_TABLE: Stores base address of shadow stack pointer
+  table.
 
-Signed-off-by: Yu-cheng Yu <yu-cheng.yu@intel.com>
-Co-developed-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
-Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+If VM_EXIT_LOAD_HOST_CET_STATE = 1, the host CET states are restored from
+the following VMCS fields at VM-Exit:
+  HOST_S_CET
+  HOST_SSP
+  HOST_INTR_SSP_TABLE
+
+If VM_ENTRY_LOAD_GUEST_CET_STATE = 1, the guest CET states are loaded from
+the following VMCS fields at VM-Entry:
+  GUEST_S_CET
+  GUEST_SSP
+  GUEST_INTR_SSP_TABLE
+
+Co-developed-by: Zhang Yi Z <yi.z.zhang@linux.intel.com>
+Signed-off-by: Zhang Yi Z <yi.z.zhang@linux.intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-Cc: Kees Cook <keescook@chromium.org>
-
+Message-Id: <20210203113421.5759-6-weijiang.yang@intel.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
-v2:
- - Reword commit log using some verbiage posted by Dave Hansen
- - Remove unlikely to be used supervisor cet xsave struct
- - Clarify that supervisor cet state is not saved by xsave
- - Remove unused supervisor MSRs
+ arch/x86/include/asm/vmx.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-v1:
- - Remove outdated reference to sigreturn checks on msr's.
-
-Yu-cheng v29:
- - Move CET MSR definition up in msr-index.h.
-
-Yu-cheng v28:
- - Add XFEATURE_MASK_CET_USER to XFEATURES_INIT_FPSTATE_HANDLED.
-
-Yu-cheng v25:
- - Update xsave_cpuid_features[].  Now CET XSAVES features depend on
-   X86_FEATURE_SHSTK (vs. the software-defined X86_FEATURE_CET).
-
- arch/x86/include/asm/fpu/types.h  | 14 ++++-
- arch/x86/include/asm/fpu/xstate.h |  6 +-
- arch/x86/kernel/fpu/xstate.c      | 93 ++++++++++++++++---------------
- 3 files changed, 63 insertions(+), 50 deletions(-)
-
-diff --git a/arch/x86/include/asm/fpu/types.h b/arch/x86/include/asm/fpu/types.h
-index eb7cd1139d97..03aa98fb9c2b 100644
---- a/arch/x86/include/asm/fpu/types.h
-+++ b/arch/x86/include/asm/fpu/types.h
-@@ -115,8 +115,8 @@ enum xfeature {
- 	XFEATURE_PT_UNIMPLEMENTED_SO_FAR,
- 	XFEATURE_PKRU,
- 	XFEATURE_PASID,
--	XFEATURE_RSRVD_COMP_11,
--	XFEATURE_RSRVD_COMP_12,
-+	XFEATURE_CET_USER,
-+	XFEATURE_CET_KERNEL_UNIMPLEMENTED_SO_FAR,
- 	XFEATURE_RSRVD_COMP_13,
- 	XFEATURE_RSRVD_COMP_14,
- 	XFEATURE_LBR,
-@@ -138,6 +138,8 @@ enum xfeature {
- #define XFEATURE_MASK_PT		(1 << XFEATURE_PT_UNIMPLEMENTED_SO_FAR)
- #define XFEATURE_MASK_PKRU		(1 << XFEATURE_PKRU)
- #define XFEATURE_MASK_PASID		(1 << XFEATURE_PASID)
-+#define XFEATURE_MASK_CET_USER		(1 << XFEATURE_CET_USER)
-+#define XFEATURE_MASK_CET_KERNEL	(1 << XFEATURE_CET_KERNEL_UNIMPLEMENTED_SO_FAR)
- #define XFEATURE_MASK_LBR		(1 << XFEATURE_LBR)
- #define XFEATURE_MASK_XTILE_CFG		(1 << XFEATURE_XTILE_CFG)
- #define XFEATURE_MASK_XTILE_DATA	(1 << XFEATURE_XTILE_DATA)
-@@ -252,6 +254,14 @@ struct pkru_state {
- 	u32				pad;
- } __packed;
+diff --git a/arch/x86/include/asm/vmx.h b/arch/x86/include/asm/vmx.h
+index c371ef695fcc..4e019fa968b8 100644
+--- a/arch/x86/include/asm/vmx.h
++++ b/arch/x86/include/asm/vmx.h
+@@ -102,6 +102,7 @@
+ #define VM_EXIT_CLEAR_BNDCFGS                   0x00800000
+ #define VM_EXIT_PT_CONCEAL_PIP			0x01000000
+ #define VM_EXIT_CLEAR_IA32_RTIT_CTL		0x02000000
++#define VM_EXIT_LOAD_CET_STATE                  0x10000000
  
-+/*
-+ * State component 11 is Control-flow Enforcement user states
-+ */
-+struct cet_user_state {
-+	u64 user_cet;			/* user control-flow settings */
-+	u64 user_ssp;			/* user shadow stack pointer */
-+};
-+
- /*
-  * State component 15: Architectural LBR configuration state.
-  * The size of Arch LBR state depends on the number of LBRs (lbr_depth).
-diff --git a/arch/x86/include/asm/fpu/xstate.h b/arch/x86/include/asm/fpu/xstate.h
-index cd3dd170e23a..d4427b88ee12 100644
---- a/arch/x86/include/asm/fpu/xstate.h
-+++ b/arch/x86/include/asm/fpu/xstate.h
-@@ -50,7 +50,8 @@
- #define XFEATURE_MASK_USER_DYNAMIC	XFEATURE_MASK_XTILE_DATA
+ #define VM_EXIT_ALWAYSON_WITHOUT_TRUE_MSR	0x00036dff
  
- /* All currently supported supervisor features */
--#define XFEATURE_MASK_SUPERVISOR_SUPPORTED (XFEATURE_MASK_PASID)
-+#define XFEATURE_MASK_SUPERVISOR_SUPPORTED (XFEATURE_MASK_PASID | \
-+					    XFEATURE_MASK_CET_USER)
+@@ -115,6 +116,7 @@
+ #define VM_ENTRY_LOAD_BNDCFGS                   0x00010000
+ #define VM_ENTRY_PT_CONCEAL_PIP			0x00020000
+ #define VM_ENTRY_LOAD_IA32_RTIT_CTL		0x00040000
++#define VM_ENTRY_LOAD_CET_STATE                 0x00100000
  
- /*
-  * A supervisor state component may not always contain valuable information,
-@@ -77,7 +78,8 @@
-  * Unsupported supervisor features. When a supervisor feature in this mask is
-  * supported in the future, move it to the supported supervisor feature mask.
-  */
--#define XFEATURE_MASK_SUPERVISOR_UNSUPPORTED (XFEATURE_MASK_PT)
-+#define XFEATURE_MASK_SUPERVISOR_UNSUPPORTED (XFEATURE_MASK_PT | \
-+					      XFEATURE_MASK_CET_KERNEL)
+ #define VM_ENTRY_ALWAYSON_WITHOUT_TRUE_MSR	0x000011ff
  
- /* All supervisor states including supported and unsupported states. */
- #define XFEATURE_MASK_SUPERVISOR_ALL (XFEATURE_MASK_SUPERVISOR_SUPPORTED | \
-diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
-index c8340156bfd2..5e6a4867fd05 100644
---- a/arch/x86/kernel/fpu/xstate.c
-+++ b/arch/x86/kernel/fpu/xstate.c
-@@ -39,26 +39,26 @@
-  */
- static const char *xfeature_names[] =
- {
--	"x87 floating point registers"	,
--	"SSE registers"			,
--	"AVX registers"			,
--	"MPX bounds registers"		,
--	"MPX CSR"			,
--	"AVX-512 opmask"		,
--	"AVX-512 Hi256"			,
--	"AVX-512 ZMM_Hi256"		,
--	"Processor Trace (unused)"	,
--	"Protection Keys User registers",
--	"PASID state",
--	"unknown xstate feature"	,
--	"unknown xstate feature"	,
--	"unknown xstate feature"	,
--	"unknown xstate feature"	,
--	"unknown xstate feature"	,
--	"unknown xstate feature"	,
--	"AMX Tile config"		,
--	"AMX Tile data"			,
--	"unknown xstate feature"	,
-+	"x87 floating point registers"			,
-+	"SSE registers"					,
-+	"AVX registers"					,
-+	"MPX bounds registers"				,
-+	"MPX CSR"					,
-+	"AVX-512 opmask"				,
-+	"AVX-512 Hi256"					,
-+	"AVX-512 ZMM_Hi256"				,
-+	"Processor Trace (unused)"			,
-+	"Protection Keys User registers"		,
-+	"PASID state"					,
-+	"Control-flow User registers"			,
-+	"Control-flow Kernel registers (unused)"	,
-+	"unknown xstate feature"			,
-+	"unknown xstate feature"			,
-+	"unknown xstate feature"			,
-+	"unknown xstate feature"			,
-+	"AMX Tile config"				,
-+	"AMX Tile data"					,
-+	"unknown xstate feature"			,
+@@ -343,6 +345,9 @@ enum vmcs_field {
+ 	GUEST_PENDING_DBG_EXCEPTIONS    = 0x00006822,
+ 	GUEST_SYSENTER_ESP              = 0x00006824,
+ 	GUEST_SYSENTER_EIP              = 0x00006826,
++	GUEST_S_CET                     = 0x00006828,
++	GUEST_SSP                       = 0x0000682a,
++	GUEST_INTR_SSP_TABLE            = 0x0000682c,
+ 	HOST_CR0                        = 0x00006c00,
+ 	HOST_CR3                        = 0x00006c02,
+ 	HOST_CR4                        = 0x00006c04,
+@@ -355,6 +360,9 @@ enum vmcs_field {
+ 	HOST_IA32_SYSENTER_EIP          = 0x00006c12,
+ 	HOST_RSP                        = 0x00006c14,
+ 	HOST_RIP                        = 0x00006c16,
++	HOST_S_CET                      = 0x00006c18,
++	HOST_SSP                        = 0x00006c1a,
++	HOST_INTR_SSP_TABLE             = 0x00006c1c
  };
  
- static unsigned short xsave_cpuid_features[] __initdata = {
-@@ -73,6 +73,7 @@ static unsigned short xsave_cpuid_features[] __initdata = {
- 	[XFEATURE_PT_UNIMPLEMENTED_SO_FAR]	= X86_FEATURE_INTEL_PT,
- 	[XFEATURE_PKRU]				= X86_FEATURE_PKU,
- 	[XFEATURE_PASID]			= X86_FEATURE_ENQCMD,
-+	[XFEATURE_CET_USER]			= X86_FEATURE_SHSTK,
- 	[XFEATURE_XTILE_CFG]			= X86_FEATURE_AMX_TILE,
- 	[XFEATURE_XTILE_DATA]			= X86_FEATURE_AMX_TILE,
- };
-@@ -276,6 +277,7 @@ static void __init print_xstate_features(void)
- 	print_xstate_feature(XFEATURE_MASK_Hi16_ZMM);
- 	print_xstate_feature(XFEATURE_MASK_PKRU);
- 	print_xstate_feature(XFEATURE_MASK_PASID);
-+	print_xstate_feature(XFEATURE_MASK_CET_USER);
- 	print_xstate_feature(XFEATURE_MASK_XTILE_CFG);
- 	print_xstate_feature(XFEATURE_MASK_XTILE_DATA);
- }
-@@ -344,6 +346,7 @@ static __init void os_xrstor_booting(struct xregs_state *xstate)
- 	 XFEATURE_MASK_BNDREGS |		\
- 	 XFEATURE_MASK_BNDCSR |			\
- 	 XFEATURE_MASK_PASID |			\
-+	 XFEATURE_MASK_CET_USER |		\
- 	 XFEATURE_MASK_XTILE)
- 
  /*
-@@ -446,13 +449,14 @@ static void __init __xstate_dump_leaves(void)
- 	}									\
- } while (0)
- 
--#define XCHECK_SZ(sz, nr, nr_macro, __struct) do {			\
--	if ((nr == nr_macro) &&						\
--	    WARN_ONCE(sz != sizeof(__struct),				\
--		"%s: struct is %zu bytes, cpu state %d bytes\n",	\
--		__stringify(nr_macro), sizeof(__struct), sz)) {		\
--		__xstate_dump_leaves();					\
--	}								\
-+#define XCHECK_SZ(checked, sz, nr, nr_macro, __struct) do {			\
-+	if (nr == nr_macro) {							\
-+		*checked = true;						\
-+		if (WARN_ONCE(sz != sizeof(__struct),				\
-+			      "%s: struct is %zu bytes, cpu state %d bytes\n",	\
-+			      __stringify(nr_macro), sizeof(__struct), sz))	\
-+			__xstate_dump_leaves();					\
-+	}									\
- } while (0)
- 
- /**
-@@ -527,33 +531,30 @@ static bool __init check_xstate_against_struct(int nr)
- 	 * Ask the CPU for the size of the state.
- 	 */
- 	int sz = xfeature_size(nr);
-+	bool chked = false;
-+
- 	/*
- 	 * Match each CPU state with the corresponding software
- 	 * structure.
- 	 */
--	XCHECK_SZ(sz, nr, XFEATURE_YMM,       struct ymmh_struct);
--	XCHECK_SZ(sz, nr, XFEATURE_BNDREGS,   struct mpx_bndreg_state);
--	XCHECK_SZ(sz, nr, XFEATURE_BNDCSR,    struct mpx_bndcsr_state);
--	XCHECK_SZ(sz, nr, XFEATURE_OPMASK,    struct avx_512_opmask_state);
--	XCHECK_SZ(sz, nr, XFEATURE_ZMM_Hi256, struct avx_512_zmm_uppers_state);
--	XCHECK_SZ(sz, nr, XFEATURE_Hi16_ZMM,  struct avx_512_hi16_state);
--	XCHECK_SZ(sz, nr, XFEATURE_PKRU,      struct pkru_state);
--	XCHECK_SZ(sz, nr, XFEATURE_PASID,     struct ia32_pasid_state);
--	XCHECK_SZ(sz, nr, XFEATURE_XTILE_CFG, struct xtile_cfg);
-+	XCHECK_SZ(&chked, sz, nr, XFEATURE_YMM,       struct ymmh_struct);
-+	XCHECK_SZ(&chked, sz, nr, XFEATURE_BNDREGS,   struct mpx_bndreg_state);
-+	XCHECK_SZ(&chked, sz, nr, XFEATURE_BNDCSR,    struct mpx_bndcsr_state);
-+	XCHECK_SZ(&chked, sz, nr, XFEATURE_OPMASK,    struct avx_512_opmask_state);
-+	XCHECK_SZ(&chked, sz, nr, XFEATURE_ZMM_Hi256, struct avx_512_zmm_uppers_state);
-+	XCHECK_SZ(&chked, sz, nr, XFEATURE_Hi16_ZMM,  struct avx_512_hi16_state);
-+	XCHECK_SZ(&chked, sz, nr, XFEATURE_PKRU,      struct pkru_state);
-+	XCHECK_SZ(&chked, sz, nr, XFEATURE_PASID,     struct ia32_pasid_state);
-+	XCHECK_SZ(&chked, sz, nr, XFEATURE_XTILE_CFG, struct xtile_cfg);
-+	XCHECK_SZ(&chked, sz, nr, XFEATURE_CET_USER,  struct cet_user_state);
- 
- 	/* The tile data size varies between implementations. */
--	if (nr == XFEATURE_XTILE_DATA)
-+	if (nr == XFEATURE_XTILE_DATA) {
- 		check_xtile_data_against_struct(sz);
-+		chked = true;
-+	}
- 
--	/*
--	 * Make *SURE* to add any feature numbers in below if
--	 * there are "holes" in the xsave state component
--	 * numbers.
--	 */
--	if ((nr < XFEATURE_YMM) ||
--	    (nr >= XFEATURE_MAX) ||
--	    (nr == XFEATURE_PT_UNIMPLEMENTED_SO_FAR) ||
--	    ((nr >= XFEATURE_RSRVD_COMP_11) && (nr <= XFEATURE_RSRVD_COMP_16))) {
-+	if (!chked) {
- 		WARN_ONCE(1, "no structure for xstate: %d\n", nr);
- 		XSTATE_WARN_ON(1);
- 		return false;
 -- 
 2.27.0
 
