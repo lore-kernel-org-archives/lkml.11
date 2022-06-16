@@ -2,97 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3837FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46A53CCA47E
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377977AbiFPPlL (ORCPT
+        id S1377396AbiFPPl5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
+        Thu, 16 Jun 2022 11:41:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233674AbiFPPlI (ORCPT
+        with ESMTP id S233364AbiFPPly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:41:08 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF9637030
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:41:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655394066; x=1686930066;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=PKdrXrAzjIvDU1Ic1yRpuUEl06zvIKU558SCZYtshoI=;
-  b=YeyRJMiHMMWJFKYS9T8hcPLDib4rAZeoxYsFHpvCXeIlTLgY1P5FwcaM
-   NGiE1yRIWUJSmms7HnUEKkJX1f1TTwlZpl6PK/EZyG5LVxHQiZ+5sQrjI
-   v77LUkGak63TUFq9JAlTD0cw9hLsafKB0C9FfaDeaKnT0AggGZA4uf4Rh
-   asJR7oq7oamxACr5mVBTpx62KhsSMvzEf4dkgVxK9qJFfe8AWXfwZoSv3
-   KBlxY8RhQCPrX3SFaYhMLlxNZ3VUYY3kvJedn3WqW0DummhF3L9R6WAoN
-   cjTXltWlAhha5gUpviE9tHYEIqLie1a90cmEW3k/xE1Jofv0TcWf9DJ+a
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="276852103"
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="276852103"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 08:41:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="589696319"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 16 Jun 2022 08:41:04 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1rcG-000OVN-7l;
-        Thu, 16 Jun 2022 15:41:04 +0000
-Date:   Thu, 16 Jun 2022 23:40:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Steve Wahl <steve.wahl@hpe.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        0day robot <lkp@intel.com>, Kevin Tian <kevin.tian@intel.com>
-Subject: include/linux/dmar.h:21:33: error: 'CONFIG_DMAR_UNITS_SUPPORTED'
- undeclared here (not in a function); did you mean 'DMAR_UNITS_SUPPORTED'?
-Message-ID: <202206162309.0IdGIck1-lkp@intel.com>
+        Thu, 16 Jun 2022 11:41:54 -0400
+Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2604237BDC;
+        Thu, 16 Jun 2022 08:41:54 -0700 (PDT)
+Received: by mail-io1-f44.google.com with SMTP id b138so1847950iof.13;
+        Thu, 16 Jun 2022 08:41:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=c+Of7pAImRcJq99CbMv/G3hY7m2gLQV0aaUFDPDS9K0=;
+        b=gR+VxdYtmBvcBdDIUCz8HkF49vmn3j+bQRWEosgEtYPY2NIrEFXSkbuLpAfHNQJ3iV
+         q0+0m8qZGfyg+kg3yCCkftTNPpx/ofYyQ5HckDoKoIH80JKjUmbB6bETmMz9rcr5GhWH
+         r987EfwAoBrIqfLOStRPnB101r4Yh8Lss0PLj677c8t+YBp6j8GhL5d3yzsMN0J2UZ11
+         /Z0+nkfl6OM2QhWc6TY+2NDIbtzdTuJZhtfoospqLhFLwPhAkVkpAwRBMsgJ4gTyPVeV
+         8Bx2l/EztDuKlcEZZ3Rcu3lJSMrGKxH2M+wyLqxsv3tJPpCOzpE6kPQvvZohn6p0vxlZ
+         d5zw==
+X-Gm-Message-State: AJIora/0VrOIUz2d+ciF9zGpgSeHrA33iLicoGBSxB3MfIiZEi/Q1wfX
+        dFOW4GINyJLQCKiJxMY9kxybh3+/Pg==
+X-Google-Smtp-Source: AGRyM1tSOR64Ae/eujWzzeeM77A3ZzCWEqAAf7jb/wDwxahhn0VLduHwEjuUuXSJE6UZ5RBW7e3Ang==
+X-Received: by 2002:a05:6638:13d1:b0:331:c916:d6cd with SMTP id i17-20020a05663813d100b00331c916d6cdmr3029714jaj.317.1655394113361;
+        Thu, 16 Jun 2022 08:41:53 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id c9-20020a029609000000b00331d411da60sm1011098jai.75.2022.06.16.08.41.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 08:41:53 -0700 (PDT)
+Received: (nullmailer pid 3528499 invoked by uid 1000);
+        Thu, 16 Jun 2022 15:41:51 -0000
+Date:   Thu, 16 Jun 2022 09:41:51 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-mtd@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Subject: Re: [PATCH v8 3/3] dt-bindings: mtd: qcom_nandc: document
+ qcom,boot-partitions binding
+Message-ID: <20220616154151.GA3528396-robh@kernel.org>
+References: <20220616001835.24393-1-ansuelsmth@gmail.com>
+ <20220616001835.24393-4-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220616001835.24393-4-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220616-024802/Steve-Wahl/iommu-vt-d-Increase-DMAR_UNITS_SUPPORTED/20220506-035321
-head:   3e005e10e4d8627a55a987d047c19dba233ba66b
-commit: 3e005e10e4d8627a55a987d047c19dba233ba66b iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
-date:   21 hours ago
-config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220616/202206162309.0IdGIck1-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/3e005e10e4d8627a55a987d047c19dba233ba66b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review UPDATE-20220616-024802/Steve-Wahl/iommu-vt-d-Increase-DMAR_UNITS_SUPPORTED/20220506-035321
-        git checkout 3e005e10e4d8627a55a987d047c19dba233ba66b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Thu, 16 Jun 2022 02:18:35 +0200, Christian Marangi wrote:
+> Document new qcom,boot-partition binding used to apply special
+> read/write layout to boot partitions.
+> 
+> QCOM apply a special layout where spare data is not protected
+> by ECC for some special pages (used for boot partition). Add
+> Documentation on how to declare these special pages.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+>  .../devicetree/bindings/mtd/qcom,nandc.yaml   | 27 +++++++++++++++++++
+>  1 file changed, 27 insertions(+)
+> 
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/intel-iommu.h:21,
-                    from drivers/char/agp/intel-gtt.c:23:
->> include/linux/dmar.h:21:33: error: 'CONFIG_DMAR_UNITS_SUPPORTED' undeclared here (not in a function); did you mean 'DMAR_UNITS_SUPPORTED'?
-      21 | #define DMAR_UNITS_SUPPORTED    CONFIG_DMAR_UNITS_SUPPORTED
-         |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/intel-iommu.h:531:35: note: in expansion of macro 'DMAR_UNITS_SUPPORTED'
-     531 |         unsigned int iommu_refcnt[DMAR_UNITS_SUPPORTED];
-         |                                   ^~~~~~~~~~~~~~~~~~~~
-
-
-vim +21 include/linux/dmar.h
-
-    20	
-  > 21	#define	DMAR_UNITS_SUPPORTED	CONFIG_DMAR_UNITS_SUPPORTED
-    22	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Reviewed-by: Rob Herring <robh@kernel.org>
