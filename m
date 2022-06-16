@@ -2,124 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68572C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD09C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:26:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359262AbiFPHZz (ORCPT
+        id S1359246AbiFPH0E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 03:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        Thu, 16 Jun 2022 03:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359190AbiFPHZt (ORCPT
+        with ESMTP id S1359288AbiFPH0B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 03:25:49 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDEBC5C341;
-        Thu, 16 Jun 2022 00:25:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655364348; x=1686900348;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=laArYtF8mBOjJYoElswvAL3XNiFY/jmqVMM9+bukyLs=;
-  b=f3GF5E0j4niAj0pfmjIY+lLyRO3iB7Zm/0ZiUCsYmFNSuKRnOnbgJR8l
-   afcCYd6ZNjHKO91HlX2+ysA7BUXcm0TIqQe3fgWGVhOY7PDvORcvitd+2
-   VLmiiiOqpKeSSW6hcyQ9L/+nZguc6sI/yjFVR9q2lESuYHmAM3SdTudQ4
-   x0o7ACHg/IpFiQ9CWZMKdJZg9oSmhVid+uPY3Ljlolqqr9wrM1ZzlwAfl
-   ARf0c1JSdVPWsBXqf+VT/7a5Eihq+GQtu/vd6PqK7aavq0sbvdQv3RlYC
-   Qmb4LLZ6rEK2X2aMbelNpPI1qhXb1AKO3yUsFT2oqLURDoxzA2jv5/VCo
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259041571"
-X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="259041571"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 00:25:48 -0700
-X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="912045889"
-Received: from mstokes1-mobl.ger.corp.intel.com (HELO [10.213.198.82]) ([10.213.198.82])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 00:25:44 -0700
-Message-ID: <fb554850-e8f2-f136-fe80-4664719f8312@linux.intel.com>
-Date:   Thu, 16 Jun 2022 08:25:42 +0100
+        Thu, 16 Jun 2022 03:26:01 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD2A5C37C
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 00:26:00 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 25G7OEsG031436;
+        Thu, 16 Jun 2022 16:24:15 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 25G7OEsG031436
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1655364256;
+        bh=+UChpnutO8NUWrayLWCckLkfeguNyYFqZbas2ZeTgNQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RBNOKkuRliKchlVMC41y6Od+PKWirrzGYaP+BI0bmuc8q5PcQlvt7RSFNfAZgrP73
+         CDtk4VxunKuU8o2TUDmvGXBvQaXRBgR3SeI8A3tnyuYOlZZvDj17rnCF27T1mAysMs
+         0fFApaOJ3NHjZMZ5zIEwdlKzornwkKz8EEEk68r+6M53cA3EOBViHa23/Cd3HwJAgW
+         go/DcZtjCno+xROwjuT0937SqhABqU2XEisG2tc2vjA91XhbThD3J6bB+bNseCwFiu
+         6awXrTO3hU2jQMt/7vvgO6Xp3BptSgEIWWoqpo5MZ2Ly97Blj4imEzH0jjsdLXxbxU
+         9yTbqQDaGrwXw==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 2/2] x86/purgatory: Omit use of bin2c
+Date:   Thu, 16 Jun 2022 16:24:07 +0900
+Message-Id: <20220616072407.2317131-2-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220616072407.2317131-1-masahiroy@kernel.org>
+References: <20220616072407.2317131-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 3/6] drm/i915/gt: Skip TLB invalidations once wedged
-Content-Language: en-US
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Chris Wilson <chris.p.wilson@intel.com>,
-        Fei Yang <fei.yang@intel.com>,
-        =?UTF-8?Q?Micha=c5=82_Winiarski?= <michal.winiarski@intel.com>,
-        Thomas Hellstrom <thomas.hellstrom@intel.com>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Dave Airlie <airlied@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        John Harrison <John.C.Harrison@Intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, mauro.chehab@linux.intel.com,
-        stable@vger.kernel.org,
-        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
-        <thomas.hellstrom@linux.intel.com>
-References: <cover.1655306128.git.mchehab@kernel.org>
- <9d9e663ca8e97becf04e1d4c8cb8a9a1f397a5f1.1655306128.git.mchehab@kernel.org>
-From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Organization: Intel Corporation UK Plc
-In-Reply-To: <9d9e663ca8e97becf04e1d4c8cb8a9a1f397a5f1.1655306128.git.mchehab@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The .incbin assembler directive is much faster than bin2c + $(CC).
 
-On 15/06/2022 16:27, Mauro Carvalho Chehab wrote:
-> From: Chris Wilson <chris.p.wilson@intel.com>
-> 
-> Skip all further TLB invalidations once the device is wedged and
-> had been reset, as, on such cases, it can no longer process instructions
-> on the GPU and the user no longer has access to the TLB's in each engine.
-> 
-> Fixes: 7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
+Do similar refactoring as in commit 4c0f032d4963 ("s390/purgatory:
+Omit use of bin2c").
 
-Are there any real problems fixed or it's just a logical thing to do? 
-Not much harm tagging it as fixes in terms of process since it is tiny 
-but, again, wanting a clear picture.
+Please note the .quad directive matches to size_t in C (both 8 byte)
+because the purgatory is compiled only for the 64-bit kernel.
+(KEXEC_FILE depends on X86_64).
 
-Regards,
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
-Tvrtko
+ arch/x86/.gitignore                  |  2 --
+ arch/x86/Kconfig                     |  1 -
+ arch/x86/purgatory/Makefile          |  8 +-------
+ arch/x86/purgatory/kexec-purgatory.S | 14 ++++++++++++++
+ scripts/remove-stale-files           |  2 ++
+ 5 files changed, 17 insertions(+), 10 deletions(-)
+ create mode 100644 arch/x86/purgatory/kexec-purgatory.S
 
-> Signed-off-by: Chris Wilson <chris.p.wilson@intel.com>
-> Cc: Fei Yang <fei.yang@intel.com>
-> Cc: Andi Shyti <andi.shyti@linux.intel.com>
-> Cc: stable@vger.kernel.org
-> Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
-> 
-> See [PATCH 0/6] at: https://lore.kernel.org/all/cover.1655306128.git.mchehab@kernel.org/
-> 
->   drivers/gpu/drm/i915/gt/intel_gt.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
-> index 61b7ec5118f9..fb4fd5273ca4 100644
-> --- a/drivers/gpu/drm/i915/gt/intel_gt.c
-> +++ b/drivers/gpu/drm/i915/gt/intel_gt.c
-> @@ -1226,6 +1226,9 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
->   	if (I915_SELFTEST_ONLY(gt->awake == -ENODEV))
->   		return;
->   
-> +	if (intel_gt_is_wedged(gt))
-> +		return;
-> +
->   	if (GRAPHICS_VER(i915) == 12) {
->   		regs = gen12_regs;
->   		num = ARRAY_SIZE(gen12_regs);
+diff --git a/arch/x86/.gitignore b/arch/x86/.gitignore
+index 677111acbaa3..f2e1d6c347fb 100644
+--- a/arch/x86/.gitignore
++++ b/arch/x86/.gitignore
+@@ -3,6 +3,4 @@ boot/compressed/vmlinux
+ tools/test_get_len
+ tools/insn_sanity
+ tools/insn_decoder_test
+-purgatory/kexec-purgatory.c
+ purgatory/purgatory.ro
+-
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index be0b95e51df6..2c1d37cd479f 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2032,7 +2032,6 @@ config KEXEC
+ config KEXEC_FILE
+ 	bool "kexec file based system call"
+ 	select KEXEC_CORE
+-	select BUILD_BIN2C
+ 	depends on X86_64
+ 	depends on CRYPTO=y
+ 	depends on CRYPTO_SHA256=y
+diff --git a/arch/x86/purgatory/Makefile b/arch/x86/purgatory/Makefile
+index 248b009c4061..31c634a22818 100644
+--- a/arch/x86/purgatory/Makefile
++++ b/arch/x86/purgatory/Makefile
+@@ -73,12 +73,6 @@ $(obj)/purgatory.ro: $(PURGATORY_OBJS) FORCE
+ $(obj)/purgatory.chk: $(obj)/purgatory.ro FORCE
+ 		$(call if_changed,ld)
+ 
+-targets += kexec-purgatory.c
+-
+-quiet_cmd_bin2c = BIN2C   $@
+-      cmd_bin2c = $(objtree)/scripts/bin2c kexec_purgatory < $< > $@
+-
+-$(obj)/kexec-purgatory.c: $(obj)/purgatory.ro $(obj)/purgatory.chk FORCE
+-	$(call if_changed,bin2c)
++$(obj)/kexec-purgatory.o: $(obj)/purgatory.ro $(obj)/purgatory.chk
+ 
+ obj-y += kexec-purgatory.o
+diff --git a/arch/x86/purgatory/kexec-purgatory.S b/arch/x86/purgatory/kexec-purgatory.S
+new file mode 100644
+index 000000000000..1a1abf6268bc
+--- /dev/null
++++ b/arch/x86/purgatory/kexec-purgatory.S
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++	.section .rodata, "a"
++
++	.align	8
++kexec_purgatory:
++	.globl	kexec_purgatory
++	.incbin	"arch/x86/purgatory/purgatory.ro"
++.Lkexec_purgatroy_end:
++
++	.align	8
++kexec_purgatory_size:
++	.globl	kexec_purgatory_size
++	.quad	.Lkexec_purgatroy_end - kexec_purgatory
+diff --git a/scripts/remove-stale-files b/scripts/remove-stale-files
+index 7adab4618035..379e86c71bed 100755
+--- a/scripts/remove-stale-files
++++ b/scripts/remove-stale-files
+@@ -41,3 +41,5 @@ if [ -n "${building_out_of_srctree}" ]; then
+ fi
+ 
+ rm -f scripts/extract-cert
++
++rm -f arch/x86/purgatory/kexec-purgatory.c
+-- 
+2.32.0
+
