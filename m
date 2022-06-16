@@ -2,113 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1153CCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 12:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44DF1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 12:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbiFPMKk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 08:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54202 "EHLO
+        id S229543AbiFPMMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 08:12:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376779AbiFPMKh (ORCPT
+        with ESMTP id S233024AbiFPMMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 08:10:37 -0400
-Received: from m12-14.163.com (m12-14.163.com [220.181.12.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 753BB2CCBA;
-        Thu, 16 Jun 2022 05:10:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=oC2+/
-        LNKAYJzJDGB6msmArnHeDnp+bcp6dLSZ6JHMXA=; b=MQMsx6u6GvxCI91gf03b1
-        lYJ7o+0OMyZYyczF+tw0veVE/0lNLwFAGkPZwKidyrKZk5qPa9v0K/qrQ8ltt4PA
-        4JM8iGQD5jn4jd29bk0BypaFJnE0jv4VVG/hyz5oHoUeUHqRu3MGacyCfOWsvuLK
-        9hMOiiv/Ma3QgRSArdoAdw=
-Received: from carlis-virtual-machine (unknown [218.17.89.92])
-        by smtp10 (Coremail) with SMTP id DsCowAAHhx_8Gatiy3J6IA--.11358S2;
-        Thu, 16 Jun 2022 19:54:37 +0800 (CST)
-From:   Xuezhi Zhang <zhangxuezhi1@coolpad.com>
-To:     hare@suse.de, jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xuezhi Zhang <zhangxuezhi1@coolpad.com>
-Subject: [PATCH] scsi: fcoe: convert sysfs snprintf to sysfs_emit
-Date:   Thu, 16 Jun 2022 19:54:35 +0800
-Message-Id: <20220616115435.9980-1-zhangxuezhi1@coolpad.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 16 Jun 2022 08:12:02 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44F33B576;
+        Thu, 16 Jun 2022 05:12:01 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 464AD67373; Thu, 16 Jun 2022 14:11:57 +0200 (CEST)
+Date:   Thu, 16 Jun 2022 14:11:57 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+Cc:     Christoph Hellwig <hch@lst.de>, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, wefu@redhat.com, guoren@kernel.org,
+        cmuellner@linux.com, philipp.tomsich@vrull.eu, samuel@sholland.org,
+        atishp@atishpatra.org, anup@brainfault.org, mick@ics.forth.gr,
+        robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org,
+        drew@beagleboard.org, Atish Patra <atish.patra@wdc.com>
+Subject: Re: [PATCH 2/3] riscv: Implement Zicbom-based cache management
+ operations
+Message-ID: <20220616121157.GA11657@lst.de>
+References: <20220610004308.1903626-1-heiko@sntech.de> <1752040.TLkxdtWsSY@diego> <20220616115342.GA11289@lst.de> <2041345.KlZ2vcFHjT@diego>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsCowAAHhx_8Gatiy3J6IA--.11358S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tF4DWF13Ar1rKF1xuF4Durg_yoW8KryDpF
-        4kJa45uay7GFn5Kr15G3WDur909as7Jr9rG395J3s7W3Z5ArWDKF1kAa9F9F1fJ348GryU
-        JF4qkr98ua10yr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jdDGOUUUUU=
-X-Originating-IP: [218.17.89.92]
-Sender: llyz108@163.com
-X-CM-SenderInfo: xoo16iiqy6il2tof0z/xtbBOQohhV-PN8x1rQACsm
+In-Reply-To: <2041345.KlZ2vcFHjT@diego>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following coccicheck warnings:
+On Thu, Jun 16, 2022 at 02:09:47PM +0200, Heiko Stübner wrote:
+> My guess was that new platforms implementing cache-management will want
+> to be non-coherent by default?
 
-drivers/scsi/fcoe/fcoe_sysfs.c:376:8-16:
-WARNING: use scnprintf or sprintf
-drivers/scsi/fcoe/fcoe_sysfs.c:268:8-16:
-WARNING: use scnprintf or sprintf
-drivers/scsi/fcoe/fcoe_sysfs.c:253:8-16:
-WARNING: use scnprintf or sprintf
-
-Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
----
- drivers/scsi/fcoe/fcoe_sysfs.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/scsi/fcoe/fcoe_sysfs.c b/drivers/scsi/fcoe/fcoe_sysfs.c
-index af658aa38fed..eabab69f9861 100644
---- a/drivers/scsi/fcoe/fcoe_sysfs.c
-+++ b/drivers/scsi/fcoe/fcoe_sysfs.c
-@@ -239,7 +239,6 @@ static char *fcf_state_names[] = {
- 	[ FCOE_FCF_STATE_CONNECTED ]    = "Connected",
- };
- fcoe_enum_name_search(fcf_state, fcf_state, fcf_state_names)
--#define FCOE_FCF_STATE_MAX_NAMELEN 50
- 
- static ssize_t show_fcf_state(struct device *dev,
- 			      struct device_attribute *attr,
-@@ -250,7 +249,7 @@ static ssize_t show_fcf_state(struct device *dev,
- 	name = get_fcoe_fcf_state_name(fcf->state);
- 	if (!name)
- 		return -EINVAL;
--	return snprintf(buf, FCOE_FCF_STATE_MAX_NAMELEN, "%s\n", name);
-+	return sysfs_emit(buf, "%s\n", name);
- }
- static FCOE_DEVICE_ATTR(fcf, state, S_IRUGO, show_fcf_state, NULL);
- 
-@@ -265,8 +264,7 @@ static ssize_t show_ctlr_mode(struct device *dev,
- 	name = get_fcoe_ctlr_mode_name(ctlr->mode);
- 	if (!name)
- 		return -EINVAL;
--	return snprintf(buf, FCOE_MAX_MODENAME_LEN,
--			"%s\n", name);
-+	return sysfs_emit(buf, "%s\n", name);
- }
- 
- static ssize_t store_ctlr_mode(struct device *dev,
-@@ -361,7 +359,6 @@ static char *ctlr_enabled_state_names[] = {
- };
- fcoe_enum_name_search(ctlr_enabled_state, ctlr_enabled_state,
- 		      ctlr_enabled_state_names)
--#define FCOE_CTLR_ENABLED_MAX_NAMELEN 50
- 
- static ssize_t show_ctlr_enabled_state(struct device *dev,
- 				       struct device_attribute *attr,
-@@ -373,8 +370,7 @@ static ssize_t show_ctlr_enabled_state(struct device *dev,
- 	name = get_fcoe_ctlr_enabled_state_name(ctlr->enabled);
- 	if (!name)
- 		return -EINVAL;
--	return snprintf(buf, FCOE_CTLR_ENABLED_MAX_NAMELEN,
--			"%s\n", name);
-+	return sysfs_emit(buf, "%s\n", name);
- }
- 
- static FCOE_DEVICE_ATTR(ctlr, enabled, S_IRUGO | S_IWUSR,
--- 
-2.34.1
-
+No.  Cache incoherent DMA is absolutely horrible and almost impossible
+to get right for the corner cases.  It is a cost cutting measure seen on
+cheap SOCs and mostly avoided for more enterprise grade products.
