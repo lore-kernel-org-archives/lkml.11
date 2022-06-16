@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5062C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6EA4C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376540AbiFPIuO (ORCPT
+        id S1376616AbiFPIuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
+        Thu, 16 Jun 2022 04:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376379AbiFPIsx (ORCPT
+        with ESMTP id S1359860AbiFPIs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:48:53 -0400
+        Thu, 16 Jun 2022 04:48:58 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEA54756F;
-        Thu, 16 Jun 2022 01:47:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 177DB5F24E;
+        Thu, 16 Jun 2022 01:47:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655369267; x=1686905267;
+  t=1655369278; x=1686905278;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=axZQXpthMwv42bC9pB1QFXId7O4Vr4FbCohL9wqJtaU=;
-  b=PVKk0g00E6Li2JnQ6ZKvZkiYSLZqGCmq7EqcFXCBrLA33bCJieAZatja
-   PhcmulDrqHk6RIJ/KxVdSs8vsLBWrP+Rh5Wc9YzCMXUfJImTfEAkCow6I
-   a6EpN4iAve38vtpMVsHYSxSbKvJcTB6OQLZ8rWfyScUjdllvRsvvzW2QP
-   L3oHPOP2J2dnf5VzCMtvy2cZup/uXVth84fL6KGViidX/ofjD1Bl3FzDl
-   h+y4VLY6iSaXxWcr8bLlQUTx15VObV7nnkdoC7JmDnPdv43UzaqF8Rfl3
-   PJtjuokr975YNPYcwzmjhhJ/9+vdn4/U4CeegP+uJGfudc/BFg6uQ0f9y
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664555"
+  bh=p5k/MrqOyMSrhK6Fesac4BN03NYVV73OQspmMYtoAHw=;
+  b=fAz4mctTkRZIdSjnDKYjTSLZS8a3jzc06P7uOoXB9HJbrJUGgfahOus0
+   n7MN47jtKowtR+JkoGY/+tt9c7gRx6GgoOhPmAlI4SPL07DJQzs7oED+x
+   M69/1l976RwdV7tX6lAqvx5Ac2CYOcAznFfkMeLAqqg1ay4lOIckjvoHi
+   5kCPLsKSEobjqsazWEU3y52TYT8U6l5rXXXtOmJ0vLh7htXYwJ1fndJtU
+   6xTJk3qQbpgXadLLh0/nb+uG3sspSMmiho1g3SD8MRGngZPC1N0Y0rkaW
+   Md49NBe/IGjGMPsyT3r0dAw+GybSLGAjaWMIUEmgiZuYI86s0MD3JgoFT
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664563"
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="259664555"
+   d="scan'208";a="259664563"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:41 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:42 -0700
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="613083152"
+   d="scan'208";a="613083181"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         rick.p.edgecombe@intel.com
-Cc:     weijiang.yang@intel.com
-Subject: [PATCH 09/19] KVM: x86: Add #CP support in guest exception classification.
-Date:   Thu, 16 Jun 2022 04:46:33 -0400
-Message-Id: <20220616084643.19564-10-weijiang.yang@intel.com>
+Cc:     weijiang.yang@intel.com,
+        Sean Christopherson <sean.j.christopherson@intel.com>
+Subject: [PATCH 18/19] KVM: nVMX: Enable CET support for nested VMX
+Date:   Thu, 16 Jun 2022 04:46:42 -0400
+Message-Id: <20220616084643.19564-19-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220616084643.19564-1-weijiang.yang@intel.com>
 References: <20220616084643.19564-1-weijiang.yang@intel.com>
@@ -55,105 +56,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add handling for Control Protection (#CP) exceptions, vector 21, used
-and introduced by Intel's Control-Flow Enforcement Technology (CET).
-relevant CET violation case.  See Intel's SDM for details.
+Add vmcs12 fields for all CET fields, pass-through CET MSRs to L2 when
+possible, and enumerate the VMCS controls and CR4 bit as supported.
 
+Co-developed-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-Message-Id: <20210203113421.5759-5-weijiang.yang@intel.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/uapi/asm/kvm.h |  1 +
- arch/x86/kvm/vmx/nested.c       |  2 +-
- arch/x86/kvm/x86.c              | 10 +++++++---
- arch/x86/kvm/x86.h              | 13 ++++++++++---
- 4 files changed, 19 insertions(+), 7 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 14 ++++++++++++--
+ arch/x86/kvm/vmx/vmcs12.c |  6 ++++++
+ arch/x86/kvm/vmx/vmcs12.h | 14 +++++++++++++-
+ arch/x86/kvm/vmx/vmx.c    |  2 ++
+ 4 files changed, 33 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
-index 50a4e787d5e6..69146e7436af 100644
---- a/arch/x86/include/uapi/asm/kvm.h
-+++ b/arch/x86/include/uapi/asm/kvm.h
-@@ -32,6 +32,7 @@
- #define MC_VECTOR 18
- #define XM_VECTOR 19
- #define VE_VECTOR 20
-+#define CP_VECTOR 21
- 
- /* Select x86 specific features in <linux/kvm.h> */
- #define __KVM_HAVE_PIT
 diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 7d8cd0ebcc75..01fe23c6fa49 100644
+index 01fe23c6fa49..f31f3d394507 100644
 --- a/arch/x86/kvm/vmx/nested.c
 +++ b/arch/x86/kvm/vmx/nested.c
-@@ -2819,7 +2819,7 @@ static int nested_check_vm_entry_controls(struct kvm_vcpu *vcpu,
- 		/* VM-entry interruption-info field: deliver error code */
- 		should_have_error_code =
- 			intr_type == INTR_TYPE_HARD_EXCEPTION && prot_mode &&
--			x86_exception_has_error_code(vector);
-+			x86_exception_has_error_code(vcpu, vector);
- 		if (CC(has_error_code != should_have_error_code))
- 			return -EINVAL;
+@@ -684,6 +684,13 @@ static inline bool nested_vmx_prepare_msr_bitmap(struct kvm_vcpu *vcpu,
+ 	nested_vmx_set_intercept_for_msr(vmx, msr_bitmap_l1, msr_bitmap_l0,
+ 					 MSR_IA32_PRED_CMD, MSR_TYPE_W);
  
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 506454e17afc..40749e47cda7 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -511,11 +511,15 @@ EXPORT_SYMBOL_GPL(kvm_spurious_fault);
- #define EXCPT_CONTRIBUTORY	1
- #define EXCPT_PF		2
- 
--static int exception_class(int vector)
-+static int exception_class(struct kvm_vcpu *vcpu, int vector)
- {
- 	switch (vector) {
- 	case PF_VECTOR:
- 		return EXCPT_PF;
-+	case CP_VECTOR:
-+		if (vcpu->arch.cr4_guest_rsvd_bits & X86_CR4_CET)
-+			return EXCPT_BENIGN;
-+		return EXCPT_CONTRIBUTORY;
- 	case DE_VECTOR:
- 	case TS_VECTOR:
- 	case NP_VECTOR:
-@@ -659,8 +663,8 @@ static void kvm_multiple_exception(struct kvm_vcpu *vcpu,
- 		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
- 		return;
- 	}
--	class1 = exception_class(prev_nr);
--	class2 = exception_class(nr);
-+	class1 = exception_class(vcpu, prev_nr);
-+	class2 = exception_class(vcpu, nr);
- 	if ((class1 == EXCPT_CONTRIBUTORY && class2 == EXCPT_CONTRIBUTORY)
- 		|| (class1 == EXCPT_PF && class2 != EXCPT_BENIGN)) {
- 		/*
-diff --git a/arch/x86/kvm/x86.h b/arch/x86/kvm/x86.h
-index 501b884b8cc4..b9b1fff6d97a 100644
---- a/arch/x86/kvm/x86.h
-+++ b/arch/x86/kvm/x86.h
-@@ -148,13 +148,20 @@ static inline bool is_64_bit_hypercall(struct kvm_vcpu *vcpu)
- 	return vcpu->arch.guest_state_protected || is_64_bit_mode(vcpu);
- }
- 
--static inline bool x86_exception_has_error_code(unsigned int vector)
-+static inline bool x86_exception_has_error_code(struct kvm_vcpu *vcpu,
-+						unsigned int vector)
- {
- 	static u32 exception_has_error_code = BIT(DF_VECTOR) | BIT(TS_VECTOR) |
- 			BIT(NP_VECTOR) | BIT(SS_VECTOR) | BIT(GP_VECTOR) |
--			BIT(PF_VECTOR) | BIT(AC_VECTOR);
-+			BIT(PF_VECTOR) | BIT(AC_VECTOR) | BIT(CP_VECTOR);
- 
--	return (1U << vector) & exception_has_error_code;
-+	if (!((1U << vector) & exception_has_error_code))
-+		return false;
++	/* Pass CET MSRs to nested VM if L0 and L1 are set to pass-through. */
++	nested_vmx_set_intercept_for_msr(vmx, msr_bitmap_l1, msr_bitmap_l0,
++					 MSR_IA32_U_CET, MSR_TYPE_RW);
 +
-+	if (vector == CP_VECTOR)
-+		return !(vcpu->arch.cr4_guest_rsvd_bits & X86_CR4_CET);
++	nested_vmx_set_intercept_for_msr(vmx, msr_bitmap_l1, msr_bitmap_l0,
++					 MSR_IA32_PL3_SSP, MSR_TYPE_RW);
 +
-+	return true;
- }
+ 	kvm_vcpu_unmap(vcpu, &vmx->nested.msr_bitmap_map, false);
  
- static inline bool mmu_is_nested(struct kvm_vcpu *vcpu)
+ 	vmx->nested.force_msr_bitmap_recalc = false;
+@@ -6593,7 +6600,9 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 		VM_EXIT_HOST_ADDR_SPACE_SIZE |
+ #endif
+ 		VM_EXIT_LOAD_IA32_PAT | VM_EXIT_SAVE_IA32_PAT |
+-		VM_EXIT_CLEAR_BNDCFGS | VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
++		VM_EXIT_CLEAR_BNDCFGS | VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |
++		VM_EXIT_LOAD_CET_STATE;
++
+ 	msrs->exit_ctls_high |=
+ 		VM_EXIT_ALWAYSON_WITHOUT_TRUE_MSR |
+ 		VM_EXIT_LOAD_IA32_EFER | VM_EXIT_SAVE_IA32_EFER |
+@@ -6613,7 +6622,8 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 		VM_ENTRY_IA32E_MODE |
+ #endif
+ 		VM_ENTRY_LOAD_IA32_PAT | VM_ENTRY_LOAD_BNDCFGS |
+-		VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
++		VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL | VM_ENTRY_LOAD_CET_STATE;
++
+ 	msrs->entry_ctls_high |=
+ 		(VM_ENTRY_ALWAYSON_WITHOUT_TRUE_MSR | VM_ENTRY_LOAD_IA32_EFER);
+ 
+diff --git a/arch/x86/kvm/vmx/vmcs12.c b/arch/x86/kvm/vmx/vmcs12.c
+index 2251b60920f8..4c3836db548e 100644
+--- a/arch/x86/kvm/vmx/vmcs12.c
++++ b/arch/x86/kvm/vmx/vmcs12.c
+@@ -138,6 +138,9 @@ const unsigned short vmcs12_field_offsets[] = {
+ 	FIELD(GUEST_PENDING_DBG_EXCEPTIONS, guest_pending_dbg_exceptions),
+ 	FIELD(GUEST_SYSENTER_ESP, guest_sysenter_esp),
+ 	FIELD(GUEST_SYSENTER_EIP, guest_sysenter_eip),
++	FIELD(GUEST_S_CET, guest_s_cet),
++	FIELD(GUEST_SSP, guest_ssp),
++	FIELD(GUEST_INTR_SSP_TABLE, guest_ssp_tbl),
+ 	FIELD(HOST_CR0, host_cr0),
+ 	FIELD(HOST_CR3, host_cr3),
+ 	FIELD(HOST_CR4, host_cr4),
+@@ -150,5 +153,8 @@ const unsigned short vmcs12_field_offsets[] = {
+ 	FIELD(HOST_IA32_SYSENTER_EIP, host_ia32_sysenter_eip),
+ 	FIELD(HOST_RSP, host_rsp),
+ 	FIELD(HOST_RIP, host_rip),
++	FIELD(HOST_S_CET, host_s_cet),
++	FIELD(HOST_SSP, host_ssp),
++	FIELD(HOST_INTR_SSP_TABLE, host_ssp_tbl),
+ };
+ const unsigned int nr_vmcs12_fields = ARRAY_SIZE(vmcs12_field_offsets);
+diff --git a/arch/x86/kvm/vmx/vmcs12.h b/arch/x86/kvm/vmx/vmcs12.h
+index 746129ddd5ae..672abd1f500b 100644
+--- a/arch/x86/kvm/vmx/vmcs12.h
++++ b/arch/x86/kvm/vmx/vmcs12.h
+@@ -117,7 +117,13 @@ struct __packed vmcs12 {
+ 	natural_width host_ia32_sysenter_eip;
+ 	natural_width host_rsp;
+ 	natural_width host_rip;
+-	natural_width paddingl[8]; /* room for future expansion */
++	natural_width host_s_cet;
++	natural_width host_ssp;
++	natural_width host_ssp_tbl;
++	natural_width guest_s_cet;
++	natural_width guest_ssp;
++	natural_width guest_ssp_tbl;
++	natural_width paddingl[2]; /* room for future expansion */
+ 	u32 pin_based_vm_exec_control;
+ 	u32 cpu_based_vm_exec_control;
+ 	u32 exception_bitmap;
+@@ -293,6 +299,12 @@ static inline void vmx_check_vmcs12_offsets(void)
+ 	CHECK_OFFSET(host_ia32_sysenter_eip, 656);
+ 	CHECK_OFFSET(host_rsp, 664);
+ 	CHECK_OFFSET(host_rip, 672);
++	CHECK_OFFSET(host_s_cet, 680);
++	CHECK_OFFSET(host_ssp, 688);
++	CHECK_OFFSET(host_ssp_tbl, 696);
++	CHECK_OFFSET(guest_s_cet, 704);
++	CHECK_OFFSET(guest_ssp, 712);
++	CHECK_OFFSET(guest_ssp_tbl, 720);
+ 	CHECK_OFFSET(pin_based_vm_exec_control, 744);
+ 	CHECK_OFFSET(cpu_based_vm_exec_control, 748);
+ 	CHECK_OFFSET(exception_bitmap, 752);
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 9aebd67ff03e..00782d1750a5 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -7508,6 +7508,8 @@ static void nested_vmx_cr_fixed1_bits_update(struct kvm_vcpu *vcpu)
+ 	cr4_fixed1_update(X86_CR4_PKE,        ecx, feature_bit(PKU));
+ 	cr4_fixed1_update(X86_CR4_UMIP,       ecx, feature_bit(UMIP));
+ 	cr4_fixed1_update(X86_CR4_LA57,       ecx, feature_bit(LA57));
++	cr4_fixed1_update(X86_CR4_CET,	      ecx, feature_bit(SHSTK));
++	cr4_fixed1_update(X86_CR4_CET,	      edx, feature_bit(IBT));
+ 
+ #undef cr4_fixed1_update
+ }
 -- 
 2.27.0
 
