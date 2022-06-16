@@ -2,186 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC151C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 05:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66566C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 05:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358664AbiFPFpy (ORCPT
+        id S1358652AbiFPFtG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 01:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38350 "EHLO
+        Thu, 16 Jun 2022 01:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358723AbiFPFpv (ORCPT
+        with ESMTP id S229739AbiFPFtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 01:45:51 -0400
-Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A0C5B88F
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 22:45:50 -0700 (PDT)
-Received: by mail-vs1-xe2f.google.com with SMTP id x9so264692vsg.13
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 22:45:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f3mQL/OJn2hHrWnYrnODSjMNsBnHIx074Y+WX87KAgU=;
-        b=n3+xTygTBjLD9xLxE1fiUFliU+Wla5QbizTVJhvSPPftZoF5tcVxE8kCaNm4/TYwf0
-         8moHlhROnEI/9Z/C2z8kCY8harS/SWK2HVrkJIP3rGUCF3csWZ/b/MQqImIm1NR4vXXd
-         0VvvmnHEKu9hMzl2Y13XfGWEAlceJnnJcrXZDYNmnrwz3atu7do+C49fiLremCPx1jLB
-         TpVdwj5zFa4ltt1ifrv8uPXrSYR+eUEL8scQhtElmPPvRlTDteA/EobXZ9rLlZBkOG/0
-         FSk/gIXs1FTvtXPScJodbQkgCKnAuwidtysiLvXJ0Wp4mYFqMqix0YBi0163sRI7Lqqy
-         XiiQ==
+        Thu, 16 Jun 2022 01:49:03 -0400
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B845D5B8A1;
+        Wed, 15 Jun 2022 22:49:02 -0700 (PDT)
+Received: by mail-ej1-f42.google.com with SMTP id o7so763669eja.1;
+        Wed, 15 Jun 2022 22:49:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f3mQL/OJn2hHrWnYrnODSjMNsBnHIx074Y+WX87KAgU=;
-        b=nlFmF/3icq6rzAd/oHc7BG0sJw5VIECHbOQ1kvocLN+pIyeg5C0/4/twQeRqgLm2i3
-         1WwWqKzd1QxR6MTeZCJMrAnw0qL+OtFi9+fmc1fB8c86eCynBjnjKSzrUPhjffhTYSue
-         XqiPxTnNHQ9k2w1KXKZR72l1ex0vgDR4eSeAJgzxOBTFrw88ZUB3RGzJbpsTsWru7XbT
-         UTDeJDTDFCIwaGgeL8a2gzOFwZHmkdM1WBLJEsmsjiTR+ZMzxkC5shzKkiVtA0EZUDJG
-         Dthliy5kgC1Rj59GsGF5OdssUVoYXR6yK/4Bh8oKUrzIuwzfC+pxPw7q7OAgwFYXfTNE
-         g00g==
-X-Gm-Message-State: AJIora/K7k0gOrtSNjRdegsEOFsl+dN+tzGkGQYlOLnlSA/ugeH2w+iA
-        BoLA8s7bVPD4ArouMbfLCIHjJpdLEJoeObHrvv9Idg==
-X-Google-Smtp-Source: AGRyM1vRafXBXoM3ca309NV7Lyl7pTIavaVDWwzsZtpf1lV/jUEagmb483Pv72Dw0kpXA4IPI2pykf7H3Cts2km3zdY=
-X-Received: by 2002:a05:6102:3e23:b0:34b:b6b0:2ae7 with SMTP id
- j35-20020a0561023e2300b0034bb6b02ae7mr1690724vsv.81.1655358349275; Wed, 15
- Jun 2022 22:45:49 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2aLyJ9nuinCimwT80iv0uqjCDdiMiOsD8JMaFZPN2jc=;
+        b=CIPD1irzWymApegaoxjvjur2zymqxzi+2U9LT8OmeXGJ5W+NlMI0Kv/A9zx+AC3plA
+         /vn09chL3OAjfdeefRrTJvrgQzVRpEzNTrT8ownlfWMyEKbKPBInODVEWbtKZ+kDmnQK
+         XC0xDsH27sgdYT9rLZqncw7eGMmfAbrV4hgyjqiC4Y2tRQNT9AQfnWDfW6+g+M7aiFOc
+         YGvARglA+ntIlD0bFnrVgs3njRoVB38Q1Gg2hCZK+69PctfIkk0dmyCc53KN10GqGZMy
+         lKb6KopYrZuibrcrP7/V6vhqX788BFoLZgiaiiKOpfV6EgToaK4ztsp5qtkef+h9/nd6
+         rl7g==
+X-Gm-Message-State: AJIora92Oof4jrA3z1Ev+S9MkroX/j55QOsjTCTuD/e+kWVEKWIsSUit
+        Ck5M+ltALW/0CdJ+xLdHZMo=
+X-Google-Smtp-Source: AGRyM1vjlFZPdL9JPMwyXIXYk6FbCyEkJJLFrBU67z3e6uvGzso9Ey7SC1Ab+KqVljeIIbn1GiDVLA==
+X-Received: by 2002:a17:906:74d1:b0:712:2293:8f41 with SMTP id z17-20020a17090674d100b0071222938f41mr2896433ejl.495.1655358541178;
+        Wed, 15 Jun 2022 22:49:01 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id c26-20020a170906171a00b006fed9a0eb17sm305138eje.187.2022.06.15.22.48.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 22:49:00 -0700 (PDT)
+Message-ID: <c0996d75-070e-21e6-eb51-a10a358dbb46@kernel.org>
+Date:   Thu, 16 Jun 2022 07:48:58 +0200
 MIME-Version: 1.0
-References: <Yp4uD8uWB3rit/Ee@qian> <CAOUHufZk+3xCqK38CuVdWg_ZiWaLyke+Y+=CYJpraET6nKQ=yQ@mail.gmail.com>
- <CAOUHufbOz66HPebrCuJXfnfapY0qxu42-1Ppbti86Yii-GYsAQ@mail.gmail.com>
- <20220615142508.mtp65w6tdiurtvcn@revolver> <CAOUHufaoZ99qkBfsRWwCAx6fspL5KJYgCGe=nOVR07_2dF6URQ@mail.gmail.com>
- <20220615185500.i5bzt7srzm6q72na@revolver> <CAOUHufY5dBrNc81oDnmKSyRY2d3=e0CZJiXaOUBs=LFoUBDJUg@mail.gmail.com>
- <CAOUHufZa9G2VDHLPsNmp3yRyXqYCE-3-nT6P7+uf-gbgyOHXYQ@mail.gmail.com>
- <20220616014956.6jgxvbzh4ld3c32q@revolver> <CAOUHufZtq0PDiGXBvLV=POraK-4dfnQ9UNmsafHhJmzxAhzrfw@mail.gmail.com>
- <20220616025557.euz6z5rlh7fqewy2@revolver> <CAOUHufb04ej_R32qWgah1Oqds_KpEgL+=d0SysE=pfCM7wovxQ@mail.gmail.com>
-In-Reply-To: <CAOUHufb04ej_R32qWgah1Oqds_KpEgL+=d0SysE=pfCM7wovxQ@mail.gmail.com>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Wed, 15 Jun 2022 23:45:13 -0600
-Message-ID: <CAOUHufbNR6NsYX_fd+_6WaiNkewyfWuDN-9KnPBOdxaPTks-8w@mail.gmail.com>
-Subject: Re: [PATCH v9 28/69] mm/mmap: reorganize munmap to use maple states
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     Qian Cai <quic_qiancai@quicinc.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v7 5/6] serial: Support for RS-485 multipoint addresses
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, linux-arch@vger.kernel.org,
+        Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        linux-api@vger.kernel.org
+References: <20220615124829.34516-1-ilpo.jarvinen@linux.intel.com>
+ <20220615124829.34516-6-ilpo.jarvinen@linux.intel.com>
+ <Yqno+b/+W2RP8rnh@smile.fi.intel.com>
+ <ae5c2e50-1a19-7a8f-7dbf-d7ef84128be6@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <ae5c2e50-1a19-7a8f-7dbf-d7ef84128be6@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 9:02 PM Yu Zhao <yuzhao@google.com> wrote:
->
-> On Wed, Jun 15, 2022 at 8:56 PM Liam Howlett <liam.howlett@oracle.com> wrote:
-> >
-> > * Yu Zhao <yuzhao@google.com> [220615 21:59]:
-> > > On Wed, Jun 15, 2022 at 7:50 PM Liam Howlett <liam.howlett@oracle.com> wrote:
-> > > >
-> > > > * Yu Zhao <yuzhao@google.com> [220615 17:17]:
-> > > >
-> > > > ...
-> > > >
-> > > > > > Yes, I used the same parameters with 512GB of RAM, and the kernel with
-> > > > > > KASAN and other debug options.
-> > > > >
-> > > > > Sorry, Liam. I got the same crash :(
-> > > >
-> > > > Thanks for running this promptly.  I am trying to get my own server
-> > > > setup now.
-> > > >
-> > > > >
-> > > > > 9d27f2f1487a (tag: mm-everything-2022-06-14-19-05, akpm/mm-everything)
-> > > > > 00d4d7b519d6 fs/userfaultfd: Fix vma iteration in mas_for_each() loop
-> > > > > 55140693394d maple_tree: Make mas_prealloc() error checking more generic
-> > > > > 2d7e7c2fcf16 maple_tree: Fix mt_destroy_walk() on full non-leaf non-alloc nodes
-> > > > > 4d4472148ccd maple_tree: Change spanning store to work on larger trees
-> > > > > ea36bcc14c00 test_maple_tree: Add tests for preallocations and large
-> > > > > spanning writes
-> > > > > 0d2aa86ead4f mm/mlock: Drop dead code in count_mm_mlocked_page_nr()
-> > > > >
-> > > > > ==================================================================
-> > > > > BUG: KASAN: slab-out-of-bounds in mab_mas_cp+0x2d9/0x6c0
-> > > > > Write of size 136 at addr ffff88c35a3b9e80 by task stress-ng/19303
-> > > > >
-> > > > > CPU: 66 PID: 19303 Comm: stress-ng Tainted: G S        I       5.19.0-smp-DEV #1
-> > > > > Call Trace:
-> > > > >  <TASK>
-> > > > >  dump_stack_lvl+0xc5/0xf4
-> > > > >  print_address_description+0x7f/0x460
-> > > > >  print_report+0x10b/0x240
-> > > > >  ? mab_mas_cp+0x2d9/0x6c0
-> > > > >  kasan_report+0xe6/0x110
-> > > > >  ? mast_spanning_rebalance+0x2634/0x29b0
-> > > > >  ? mab_mas_cp+0x2d9/0x6c0
-> > > > >  kasan_check_range+0x2ef/0x310
-> > > > >  ? mab_mas_cp+0x2d9/0x6c0
-> > > > >  ? mab_mas_cp+0x2d9/0x6c0
-> > > > >  memcpy+0x44/0x70
-> > > > >  mab_mas_cp+0x2d9/0x6c0
-> > > > >  mas_spanning_rebalance+0x1a3e/0x4f90
-> > > >
-> > > > Does this translate to an inline around line 2997?
-> > > > And then probably around 2808?
-> > >
-> > > $ ./scripts/faddr2line vmlinux mab_mas_cp+0x2d9
-> > > mab_mas_cp+0x2d9/0x6c0:
-> > > mab_mas_cp at lib/maple_tree.c:1988
-> > > $ ./scripts/faddr2line vmlinux mas_spanning_rebalance+0x1a3e
-> > > mas_spanning_rebalance+0x1a3e/0x4f90:
-> > > mast_cp_to_nodes at lib/maple_tree.c:?
-> > > (inlined by) mas_spanning_rebalance at lib/maple_tree.c:2997
-> > > $ ./scripts/faddr2line vmlinux mas_wr_spanning_store+0x16c5
-> > > mas_wr_spanning_store+0x16c5/0x1b80:
-> > > mas_wr_spanning_store at lib/maple_tree.c:?
-> > >
-> > > No idea why faddr2line didn't work for the last two addresses. GDB
-> > > seems more reliable.
-> > >
-> > > (gdb) li *(mab_mas_cp+0x2d9)
-> > > 0xffffffff8226b049 is in mab_mas_cp (lib/maple_tree.c:1988).
-> > > (gdb) li *(mas_spanning_rebalance+0x1a3e)
-> > > 0xffffffff822633ce is in mas_spanning_rebalance (lib/maple_tree.c:2801).
-> > > quit)
-> > > (gdb) li *(mas_wr_spanning_store+0x16c5)
-> > > 0xffffffff8225cfb5 is in mas_wr_spanning_store (lib/maple_tree.c:4030).
-> >
-> >
-> > Thanks.  I am not having luck recreating it.  I am hitting what looks
-> > like an unrelated issue in the unstable mm, "scheduling while atomic".
-> > I will try the git commit you indicate above.
->
-> Fix here:
-> https://lore.kernel.org/linux-mm/20220615160446.be1f75fd256d67e57b27a9fc@linux-foundation.org/
+On 16. 06. 22, 7:04, Ilpo Järvinen wrote:
+> On Wed, 15 Jun 2022, Andy Shevchenko wrote:
+> 
+>> On Wed, Jun 15, 2022 at 03:48:28PM +0300, Ilpo Järvinen wrote:
+>>> Add support for RS-485 multipoint addressing using 9th bit [*]. The
+>>> addressing mode is configured through .rs485_config().
+>>>
+>>> ADDRB in termios indicates 9th bit addressing mode is enabled. In this
+>>> mode, 9th bit is used to indicate an address (byte) within the
+>>> communication line. ADDRB can only be enabled/disabled through
+>>> .rs485_config() that is also responsible for setting the destination and
+>>> receiver (filter) addresses.
+>>>
+>>> [*] Technically, RS485 is just an electronic spec and does not itself
+>>> specify the 9th bit addressing mode but 9th bit seems at least
+>>> "semi-standard" way to do addressing with RS485.
+>>>
+>>> Cc: Arnd Bergmann <arnd@arndb.de>
+>>> Cc: Jonathan Corbet <corbet@lwn.net>
+>>> Cc: linux-api@vger.kernel.org
+>>> Cc: linux-doc@vger.kernel.org
+>>> Cc: linux-kernel@vger.kernel.org
+>>> Cc: linux-arch@vger.kernel.org
+>>
+>> Hmm... In order to reduce commit messages you can move these Cc:s after the
+>> cutter line ('---').
+> 
+> Ok, although the toolchain I use didn't support preserving --- content
+> so I had to create hack to preserve them, hopefully nothing backfires due
+> to the hack. :-)
+> 
+>>> -	__u32	padding[5];		/* Memory is cheap, new structs
+>>> -					   are a royal PITA .. */
+>>> +	__u8	addr_recv;
+>>> +	__u8	addr_dest;
+>>> +	__u8	padding[2 + 4 * sizeof(__u32)];		/* Memory is cheap, new structs
+>>> +							 * are a royal PITA .. */
+>>
+>> I'm not sure it's an equivalent. I would leave u32 members  untouched, so
+>> something like
+>>
+>> 	__u8	addr_recv;
+>> 	__u8	addr_dest;
+>> 	__u8	padding0[2];		/* Memory is cheap, new structs
+>> 	__u32	padding1[4];		 * are a royal PITA .. */
+>>
+>> And repeating about `pahole` tool which may be useful here to check for ABI
+>> potential changes.
+> 
+> I cannot take __u32 padding[] away like that, this is an uapi header.
 
-A seemingly new crash on arm64:
+Yeah, but it's padding after all. I would personally break it for 
+example as Andy suggests (if pahole shows no differences in size on both 
+32/64 bit) and wait if something breaks. To be honest, I'd not expect 
+anyone to touch it. And if someone does, we would fix it somehow and 
+they should too...
 
-KASAN: null-ptr-deref in range [0x0000000000000000-0x000000000000000f]
-pc : __hwasan_check_x2_67043363+0x4/0x34
-lr : mas_wr_walk_descend+0xe0/0x2c0
-sp : ffffffc0164378d0
-x29: ffffffc0164378f0 x28: 13ffff8028ee7328 x27: ffffffc016437a68
-x26: 0dffff807aa63710 x25: ffffffc016437a60 x24: 51ffff8028ee1928
-x23: ffffffc016437a78 x22: ffffffc0164379e0 x21: ffffffc016437998
-x20: efffffc000000000 x19: ffffffc016437998 x18: 07ffff8077718180
-x17: 45ffff800b366010 x16: 0000000000000000 x15: 9cffff8092bfcdf0
-x14: ffffffefef411b8c x13: 0000000000000001 x12: 0000000000000002
-x11: ffffffffffffff00 x10: 0000000000000000 x9 : efffffc000000000
-x8 : ffffffc016437a60 x7 : 0000000000000000 x6 : ffffffefef8246cc
-x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffffffeff0bf48ee
-x2 : 0000000000000008 x1 : ffffffc0164379b8 x0 : ffffffc016437998
-Call trace:
- __hwasan_check_x2_67043363+0x4/0x34
- mas_wr_store_entry+0x178/0x5c0
- mas_store+0x88/0xc8
- dup_mmap+0x4bc/0x6d8
- dup_mm+0x8c/0x17c
- copy_mm+0xb0/0x12c
- copy_process+0xa44/0x17d4
- kernel_clone+0x100/0x2cc
- __arm64_sys_clone+0xf4/0x120
- el0_svc_common+0xfc/0x1cc
- do_el0_svc_compat+0x38/0x5c
- el0_svc_compat+0x68/0xf4
- el0t_32_sync_handler+0xc0/0xf0
- el0t_32_sync+0x190/0x194
-Code: aa0203e0 d2800441 141e931d 9344dc50 (38706930)
+thanks,
+-- 
+js
+suse labs
