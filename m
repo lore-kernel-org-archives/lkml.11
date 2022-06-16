@@ -2,123 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F8DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:25:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82EA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377765AbiFPPZX (ORCPT
+        id S1377570AbiFPP0B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:25:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33710 "EHLO
+        Thu, 16 Jun 2022 11:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377570AbiFPPZS (ORCPT
+        with ESMTP id S233439AbiFPPZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:25:18 -0400
-X-Greylist: delayed 342 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Jun 2022 08:25:16 PDT
-Received: from smtpout30.security-mail.net (smtpout30.security-mail.net [85.31.212.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A69C37A06
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:25:16 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by fx306.security-mail.net (Postfix) with ESMTP id EA094399488
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 17:19:32 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalray.eu;
-        s=sec-sig-email; t=1655392773;
-        bh=2ebmjz3DZxCC+hSEljeBnmkIaKP8IuAOYICTMSOTjmQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=UdHf2fjty0QVDXLZttQNnTIKlRRsafhGqAhPnpQK7FLsXRCCV+ZVPjxeKbAw69ksB
-         8vxSrf982AAtbsWGXRteTXLg+esyfK/UGwRYM9V7h3Db/6sKOOQyd7bvf9qNWBGgiZ
-         Qoe9khTitVP865LL+fDxMtYnsp4WK1l7n/jkVQuI=
-Received: from fx306 (localhost [127.0.0.1]) by fx306.security-mail.net
- (Postfix) with ESMTP id 97EC9399457; Thu, 16 Jun 2022 17:19:32 +0200 (CEST)
-Received: from zimbra2.kalray.eu (unknown [217.181.231.53]) by
- fx306.security-mail.net (Postfix) with ESMTPS id 0E30639945D; Thu, 16 Jun
- 2022 17:19:32 +0200 (CEST)
-Received: from zimbra2.kalray.eu (localhost [127.0.0.1]) by
- zimbra2.kalray.eu (Postfix) with ESMTPS id DF67E27E04E7; Thu, 16 Jun 2022
- 17:19:31 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1]) by zimbra2.kalray.eu
- (Postfix) with ESMTP id C81D927E04EC; Thu, 16 Jun 2022 17:19:31 +0200 (CEST)
-Received: from zimbra2.kalray.eu ([127.0.0.1]) by localhost
- (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026) with ESMTP id
- HRohE4rTlDqw; Thu, 16 Jun 2022 17:19:31 +0200 (CEST)
-Received: from ws2104.lin.mbt.kalray.eu (unknown [192.168.37.162]) by
- zimbra2.kalray.eu (Postfix) with ESMTPSA id B691C27E04E7; Thu, 16 Jun 2022
- 17:19:31 +0200 (CEST)
-X-Virus-Scanned: E-securemail, by Secumail
-Secumail-id: <1373d.62ab4a04.cf63.0>
-DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu C81D927E04EC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalray.eu;
- s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1655392771;
- bh=ZnF5dOAqai9/DAKHxn+FgY+HSbzOiIIV25KahdTP0oo=;
- h=Date:From:To:Message-ID:MIME-Version;
- b=gaU2Riaia48af4yqsScW3pl2L7Yf7P4xXQMwOKldoIJ1fKBssvAk3DgS+n3hAKo1w
- ULcf5OTQS0CtzPStFg74q9W/fr9LPpjB2KF2SY11xlrVKd+KDgjmlRVSyFnQpAdOvY
- EGzrsRdcSAwL3sJJbBs8rJwjo1efUBg9BLlmHiDo=
-Date:   Thu, 16 Jun 2022 17:19:30 +0200
-From:   Julian Vetter <jvetter@kalray.eu>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     rafael@kernel.org, linux-kernel@vger.kernel.org,
-        ysionneau@kalrayinc.com, jmaselbas@kalrayinc.com
-Subject: Re: [PATCH v2 1/2] msi: The MSI framework only supports 2048
- platform MSIs
-Message-ID: <20220616151930.GA22409@ws2104.lin.mbt.kalray.eu>
-References: <20220614151411.32674-1-jvetter@kalrayinc.com>
- <Yqin77ydGHV9N85x@kroah.com>
+        Thu, 16 Jun 2022 11:25:59 -0400
+Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49A382E09A
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:25:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=coaM8
+        pDPv4WD3NukZ62DQq1/+jhgGiORkl6++lYLC+A=; b=kvNLnPsMxg6w8VfQG0Wni
+        R87cgA0/bdv8rT0HQXa/n0U1QbNMuiWptvIOh/a90GyuDzV+IP6Mvn4LxHxTLqX2
+        freGqkMMMfTX/ezKoQMT7SU9b6R+Y3EvGGy7756Imrw2BNcDmF8hr+GJxMnTRvHL
+        ftDozWBOy7m74trbS7M/+0=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp3 (Coremail) with SMTP id DcmowADXc5VSS6tizrX+DQ--.15781S2;
+        Thu, 16 Jun 2022 23:25:06 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     linux@armlinux.org.uk, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com
+Cc:     windhl@126.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] arm: mach-imx: Fix refcount leak in mm-imx3.c
+Date:   Thu, 16 Jun 2022 23:25:05 +0800
+Message-Id: <20220616152505.3989451-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <Yqin77ydGHV9N85x@kroah.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-X-ALTERMIMEV2_out: done
+X-CM-TRANSID: DcmowADXc5VSS6tizrX+DQ--.15781S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtF4UXry8JryrKry3Kry7trb_yoWktrc_Xa
+        9agwnrtr4rCF4kur4DZw4fWay2yws5uF15Jr1jv3ZrtwsxZF17ArsFyF9Fqa45Gr429rW5
+        ArWDZa15A342kjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUjnYwUUUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizhMiF18RPTmfQgAAs-
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 05:23:27PM +0200, Greg KH wrote:
-> On Tue, Jun 14, 2022 at 05:14:10PM +0200, Julian Vetter wrote:
-> > Some devices need more MSIs. To support this the number must be
-> > increased.
+In imx31_init_early() and imx35_init_early(), of_find_compatible_node()
+will return a node pointer with refcount incremented. We should use
+of_node_put() when it is not used anymore.
 
-Hello Greg,
-thank you for the feedback. See below my comments on it.
+Signed-off-by: Liang He <windhl@126.com>
+---
+ changelog:
 
-> What devices specifically?
+ v2: add missing put for both imx31_xx and imx35_xx
+ v1: only add missing put in imx31_xx
 
-You're right I didn't specify this. We have a mailbox device in our
-system which supports up to 8192 MSIs. Our architecture is not yet upstreamed,
-but the code can be found here https://github.com/kalray/linux_coolidge/blob/coolidge/drivers/irqchip/irq-kvx-apic-mailbox.c
-It's a mailbox that can be written to, to trigger an interrupt. It has
-128 x 64bit registers and each bit can trigger an interrupt.
+ arch/arm/mach-imx/mm-imx3.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> How many more did you just increase it by?
-> 
-> How much more memory are you now using?
-> 
-> Why is there a limit in the first place?  Why not just make it dynamic
-> so that it never runs out in another month or so?
-> 
-> We need lots more specifics here...
-
-I increased the number from 2048 -> 8192. But you're right. I just
-increased it to the amount that it serves our device. But in my opinion could
-it be increased to 2^16. Because the value is OR'ed with the device ID
-((devid << (32 - DEV_ID_SHIFT)) | desc->msi_index;) and I assume the device ID
-will not exceed 65536. They are stored in a variable of type irq_hw_number_t
-which is at least 32bit. So, we could just use the lower 16bit for the
-MSI index and the upper 16bit for the device ID.
-
-In terms of memory usage I'm not entirely sure. But the value in the
-MAX_DEV_MSIS is only a "global" limit that ensures that we don't overflow the
-variable. So, no additional memory is consumed. Because the size of the
-IRQ bitmap is handled by other variable(s) (i.e. NR_IRQS).
-
-> thanks,
-> 
-> greg k-h
-
-Thanks you,
-Julian
-
-
-
+diff --git a/arch/arm/mach-imx/mm-imx3.c b/arch/arm/mach-imx/mm-imx3.c
+index 28db97289ee8..d333a8fdb731 100644
+--- a/arch/arm/mach-imx/mm-imx3.c
++++ b/arch/arm/mach-imx/mm-imx3.c
+@@ -107,6 +107,7 @@ void __init imx31_init_early(void)
+ 	arm_pm_idle = imx31_idle;
+ 	np = of_find_compatible_node(NULL, NULL, "fsl,imx31-ccm");
+ 	mx3_ccm_base = of_iomap(np, 0);
++	of_node_put(np);
+ 	BUG_ON(!mx3_ccm_base);
+ }
+ #endif /* ifdef CONFIG_SOC_IMX31 */
+@@ -144,6 +145,7 @@ void __init imx35_init_early(void)
+ 	arch_ioremap_caller = imx3_ioremap_caller;
+ 	np = of_find_compatible_node(NULL, NULL, "fsl,imx35-ccm");
+ 	mx3_ccm_base = of_iomap(np, 0);
++	of_node_put(np);
+ 	BUG_ON(!mx3_ccm_base);
+ }
+ #endif /* ifdef CONFIG_SOC_IMX35 */
+-- 
+2.25.1
 
