@@ -2,95 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 138AAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 11:09:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A758C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 11:11:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376736AbiFPLJB (ORCPT
+        id S1376740AbiFPLLF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 07:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54898 "EHLO
+        Thu, 16 Jun 2022 07:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376717AbiFPLIp (ORCPT
+        with ESMTP id S229748AbiFPLLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 07:08:45 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B065E159;
-        Thu, 16 Jun 2022 04:08:44 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id BB0C66601756;
-        Thu, 16 Jun 2022 12:08:42 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655377723;
-        bh=Ym8V4C7cqusZmnKUp44mYzfUNnjhU5hnhfnX8Zm9pqA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NmtPN0WvcM9Ve1t1pov1LUxFbiFgFsHXn7r1U0/dBzpD2ev+nNt/AsBREsxoLTnvg
-         1MXrkjTKKJ2o3BdglJrC/B/r0wtT7q/Bd1JOTv4SG0kt9axG22fWfGU61cHQUDFq8G
-         sGjjCszu4KJdE/J7JzQ5U7AP45Msq8+2TkLltrtmxCq2CPMnRIMMDCGxZZhvAIbgFL
-         wusIWrO6ZpaBFJOSF6Du39eqV3BaWwFAPhGtE3zlRKZHppx0Qy2rh6BvZ+aXB+DvyO
-         0NXS43OHcFjvEcxekxmHDZwzuA/EpVcnhbEyBSPSDcEnjVvkMn9TpG8mtQelh9vn0T
-         svphRSs2SqIIg==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     yong.wu@mediatek.com
-Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        krzysztof.kozlowski@linaro.org, miles.chen@mediatek.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v4 5/5] iommu/mediatek: Cleanup pericfg lookup flow
-Date:   Thu, 16 Jun 2022 13:08:30 +0200
-Message-Id: <20220616110830.26037-6-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220616110830.26037-1-angelogioacchino.delregno@collabora.com>
-References: <20220616110830.26037-1-angelogioacchino.delregno@collabora.com>
+        Thu, 16 Jun 2022 07:11:01 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD3425C86F;
+        Thu, 16 Jun 2022 04:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655377860; x=1686913860;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8+NH6Ri5lpQfIS3/RPQfvg5J7ybyzEhikh7up91AaKE=;
+  b=Hc9/BbKXdZTqs7KjqSKu+cGHAYnNeqRGmAC/WxCuLkOEtn1yWfNg5nWZ
+   AF7AY2U73sjHiXx+9/BjdrkgnknAMGqOjNh4DiMMh/iazysoVXB6dwQ3M
+   xQhAn2Ka0zlG+3HVWwX4N6uIRvTQ+wR91FymO4E0jvGJ+lae+NRC/ZMqo
+   lf8cQzkmmjvYAftscTs5Q5DUfprbkFZeiCZSlFZOthoGv2j7byfc03jpZ
+   62tdIvONp72exz+wC+0TPn7dHsiGGCtR5zdDH3/iCvMidUg91IXqRa6cl
+   eLDAieAuNVSAQzZWSUA3WjinqYdfeaQTZiKelhd2HESOfZEQdZYPytEQx
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="262244491"
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
+   d="scan'208";a="262244491"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 04:11:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
+   d="scan'208";a="536413410"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 16 Jun 2022 04:10:57 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o1nOq-000OJd-Mv;
+        Thu, 16 Jun 2022 11:10:56 +0000
+Date:   Thu, 16 Jun 2022 19:10:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     frank zago <frank@zago.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Wolfram Sang <wsa-dev@sang-engineering.com>,
+        Johan Hovold <johan@kernel.org>, linux-usb@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org
+Cc:     kbuild-all@lists.01.org
+Subject: Re: [PATCH v6 3/4] i2c: ch341: add I2C MFD cell driver for the CH341
+Message-ID: <202206161938.BiOHSAOi-lkp@intel.com>
+References: <20220616013747.126051-4-frank@zago.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616013747.126051-4-frank@zago.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since only the INFRA type IOMMU needs to modify register(s) in the
-pericfg iospace, it's safe to drop the pericfg_comp_str NULL check;
-also, directly assign the regmap handle to data->pericfg instead of
-to the infracfg variable to improve code readability.
+Hi frank,
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/mtk_iommu.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+Thank you for the patch! Yet something to improve:
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 90685946fcbe..b2ae84046249 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1217,15 +1217,13 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 			dev_err(dev, "mm dts parse fail(%d).", ret);
- 			goto out_runtime_disable;
- 		}
--	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) &&
--		   data->plat_data->pericfg_comp_str) {
--		infracfg = syscon_regmap_lookup_by_compatible(data->plat_data->pericfg_comp_str);
--		if (IS_ERR(infracfg)) {
--			ret = PTR_ERR(infracfg);
-+	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA)) {
-+		p = data->plat_data->pericfg_comp_str;
-+		data->pericfg = syscon_regmap_lookup_by_compatible(p);
-+		if (IS_ERR(data->pericfg)) {
-+			ret = PTR_ERR(data->pericfg);
- 			goto out_runtime_disable;
- 		}
--
--		data->pericfg = infracfg;
- 	}
- 
- 	platform_set_drvdata(pdev, data);
+[auto build test ERROR on lee-mfd/for-mfd-next]
+[also build test ERROR on brgl/gpio/for-next wsa/i2c/for-next linus/master v5.19-rc2 next-20220616]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/frank-zago/add-driver-for-the-WCH-CH341-in-I2C-GPIO-mode/20220616-094113
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git for-mfd-next
+config: arc-buildonly-randconfig-r004-20220616 (https://download.01.org/0day-ci/archive/20220616/202206161938.BiOHSAOi-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/46c68aee86d34ee630272146a73ad7c3147bb094
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review frank-zago/add-driver-for-the-WCH-CH341-in-I2C-GPIO-mode/20220616-094113
+        git checkout 46c68aee86d34ee630272146a73ad7c3147bb094
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "usb_bulk_msg" [drivers/i2c/busses/i2c-ch341.ko] undefined!
+>> ERROR: modpost: "usb_deregister" [drivers/mfd/ch341-core.ko] undefined!
+>> ERROR: modpost: "usb_register_driver" [drivers/mfd/ch341-core.ko] undefined!
+>> ERROR: modpost: "usb_find_common_endpoints" [drivers/mfd/ch341-core.ko] undefined!
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for MFD_CH341
+   Depends on HAS_IOMEM && USB
+   Selected by
+   - I2C_CH341 && I2C && HAS_IOMEM
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
