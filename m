@@ -2,220 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5974C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B27B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377460AbiFPO4Z (ORCPT
+        id S1377430AbiFPO5r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 10:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35454 "EHLO
+        Thu, 16 Jun 2022 10:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233481AbiFPO4V (ORCPT
+        with ESMTP id S233481AbiFPO5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 10:56:21 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE76D2BB1E
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 07:56:19 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id i17-20020a7bc951000000b0039c4760ec3fso3569800wml.0
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 07:56:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=Etn/dQhjuQJaHbnT3OVtyS239w7heYivZbd+vYx1CP0=;
-        b=bP7Ix5TGzwlg2jVGKyLnQt9uvuvmXeb5tcmtCnixtuB5rTsg3M2UFhePgzpE/lVVgl
-         kqJnNN/Y0PAl61/sWvGCNcskYpZsxsdVNVgk45GmZpXMpSIx3bA+vxxTUGrgxzE2Jrnt
-         wocX7UWj9XaC2H7q+P5OJJuAEcDSlhaZ6URgS8SPGVaVzY1hFyzWFfkDtBjvG0AAMcbJ
-         Z/x/Z45DUbuFD/rdiC3bcR4tamtHLICgxIyiKy7ZeTY3dyxdlcRJ0Cq4nzVLEiPCrRS8
-         WvbKFubGA83wF9kH9JfPLuHry3Y88Spkk2hB0AXvF6Dyxo31gVqfC6gzpOfJgI4i0IkM
-         comg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=Etn/dQhjuQJaHbnT3OVtyS239w7heYivZbd+vYx1CP0=;
-        b=lgAVcJRwcKA2PswIFVDHKUeBIfCbBOCRmrZVwLVBkE/L9QYCTBNHv+HtOW1Hp4i+MW
-         vluVkJ5f3InP2Ri1WNmEBqF9Y/HwWuDicHNr6NCXRpPAFk0rvz0L2pXjgPeCXXrYaxOd
-         KLktlvF/uAK/WfGOQ7AHgdqfXvfEDNzrinTo8x29IEMoNqQEcs7kDwBXcYxmetOVLhfc
-         wVgn1v0hDnIKuu6oNgwVdj0RenR7+luQxJffvGH5TbeUaFob+BcQWtK4UWJPedC5fLnU
-         ZCFmSTJy0of18nQwv8T2F+4KHpESZzxZm1NxmaHfyYUC/J6ShB9pmMFj4Z4kVRpq3mdE
-         5ymw==
-X-Gm-Message-State: AJIora+ZchYKQfeDNIwmS7dBoe4REhcOI8J7pEd3pahfmvknumLCLDIZ
-        s3AOxcC/uGQln2iC4hKf28+veg==
-X-Google-Smtp-Source: AGRyM1t8rK29d8qNmLcqjZf5xT0oVNKxL8Rp+fM0+1+6P/SnZTl1+7Br+8zrIoG5oHFAi75h1tgsLg==
-X-Received: by 2002:a05:600c:190d:b0:39c:8216:f53d with SMTP id j13-20020a05600c190d00b0039c8216f53dmr5591994wmq.108.1655391378431;
-        Thu, 16 Jun 2022 07:56:18 -0700 (PDT)
-Received: from localhost ([109.180.234.132])
-        by smtp.gmail.com with ESMTPSA id n23-20020a05600c3b9700b0039c5224bfcbsm6853844wms.46.2022.06.16.07.56.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 07:56:17 -0700 (PDT)
-From:   Punit Agrawal <punit.agrawal@bytedance.com>
-To:     Riwen Lu <luriwen@hotmail.com>
-Cc:     rafael@kernel.org, lenb@kernel.org, rui.zhang@intel.com,
-        robert.moore@intel.com, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Riwen Lu <luriwen@kylinos.cn>
-Subject: Re: [PATCH v2] ACPI: Split out processor thermal register from ACPI
- PSS
-References: <TYWP286MB2601DDBB0F472C876D36FBCCB1A69@TYWP286MB2601.JPNP286.PROD.OUTLOOK.COM>
-Date:   Thu, 16 Jun 2022 15:56:16 +0100
-In-Reply-To: <TYWP286MB2601DDBB0F472C876D36FBCCB1A69@TYWP286MB2601.JPNP286.PROD.OUTLOOK.COM>
-        (Riwen Lu's message of "Fri, 10 Jun 2022 17:22:05 +0800")
-Message-ID: <877d5gpshb.fsf@stealth>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 16 Jun 2022 10:57:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCFC24F3E;
+        Thu, 16 Jun 2022 07:57:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51554B823E0;
+        Thu, 16 Jun 2022 14:57:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B281C34114;
+        Thu, 16 Jun 2022 14:57:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655391458;
+        bh=Q/PnTzhXRBmKrI0PFPrXpgukiy9ng7otJtD++t+syas=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fSqYvQr14hkhuxDT1yqOrr+i4qHaWON6KtgtBD7V4tE1J8Dx7+Nheja2S8ISmL7/R
+         cWZTMYVBFDgkSIHGPrLSR7SVflZuov9jVVgQqA45iGv2dDNigOU9Gks+JSGdscrdIL
+         2uiUGXsSzbxulyTEP5YtmSoyECR20Eab+qQ38MeDydLE1wWEVxYstTtHhRhwZ1pH2E
+         71ucsOabMGOtPXzvsXo7S8V1HoUtptE7zgeOJjZUheaBifwR1IgP7cFkaprIkJP3AX
+         xzAMKt+gb76pcKhq9VO9YKKtClpaAKETxGNWyDMQ6RzFIU/GmmmjVVLcuxfyH+8oa4
+         +rVFHxpQ2Q/kQ==
+Date:   Thu, 16 Jun 2022 15:57:33 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     David Owens <dowens@precisionplanting.com>
+Cc:     Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Jarkko Nikula <jarkko.nikula@bitmer.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] ASoC: ti: omap-mcbsp: duplicate sysfs error
+Message-ID: <YqtE3Wu4Ku7fh7D4@sirena.org.uk>
+References: <20220615150955.4140789-1-dowens@precisionplanting.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="dtd9UxDP2fBlpOtG"
+Content-Disposition: inline
+In-Reply-To: <20220615150955.4140789-1-dowens@precisionplanting.com>
+X-Cookie: I think my career is ruined!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Riwen,
 
-Usually it's a good practice to Cc anybody who has commented on previous
-versions. It makes it easier to follow your updates.
+--dtd9UxDP2fBlpOtG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-A couple of comments below.
+On Wed, Jun 15, 2022 at 10:09:55AM -0500, David Owens wrote:
+> Convert to managed versions of sysfs and clk allocation to simplify
+> unbinding and error handling in probe.  Managed sysfs node
+> creation specifically addresses the following error seen the second time
+> probe is attempted after sdma_pcm_platform_register() previously requsted
+> probe deferral:
 
-Riwen Lu <luriwen@hotmail.com> writes:
+This doesn't apply against current code (either for-5.19 or for-5.20),
+please check and resend.
 
-> From: Riwen Lu <luriwen@kylinos.cn>
->
-> Commit 239708a3af44 ("ACPI: Split out ACPI PSS from ACPI Processor
-> driver"), moves processor thermal registration to acpi_pss_perf_init(),
-> which doesn't get executed if ACPI_CPU_FREQ_PSS is not enabled.
->
-> As ARM64 supports P-states using CPPC, it should be possible to also
-> support processor passive cooling even if PSS is not enabled. Split
-> out the processor thermal cooling register from ACPI PSS to support
-> this, and move it into a separate function in processor_thermal.c.
->
-> Signed-off-by: Riwen Lu <luriwen@kylinos.cn>
-> ---
->  drivers/acpi/Kconfig             |  2 +-
->  drivers/acpi/Makefile            |  5 +--
->  drivers/acpi/processor_driver.c  | 72 ++++----------------------------
->  drivers/acpi/processor_thermal.c | 69 ++++++++++++++++++++++++++++++
->  include/acpi/processor.h         |  6 ++-
->  5 files changed, 84 insertions(+), 70 deletions(-)
->
+--dtd9UxDP2fBlpOtG
+Content-Type: application/pgp-signature; name="signature.asc"
 
-[...]
+-----BEGIN PGP SIGNATURE-----
 
-> --- a/drivers/acpi/processor_driver.c
-> +++ b/drivers/acpi/processor_driver.c
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKrRNwACgkQJNaLcl1U
+h9A8dQf+OVItQpQi15+ykEglfxmtFxqiwDLZB/YmOYAJcJ5MQ30z+ZlB/KffQ1VS
+PF7MzKVQFXT1QSsTDsasRla7+U+TlIweloDb0VL8RnIIua42Oz5WtDWuksTtl54z
+J3UBrBzeo4SQwRHCFJhpCGpv7wRPUyKE2XzACuCK19UGyxroKiqLROqS6C359XKt
+ekpRODoc5on1BugbOvEgRYdRL4GuKfkt32GY1zfNlPXa0VTMTVVHg92XYQQqBilf
+N3EF/pAnOIljK/k6UJNhAaM4xCSAPeupRWZZsaPizrEWFqHMYIs7E2kGsS0URGaB
+x6sda4Z59uT4xrSCsYP7lIRz70cPWA==
+=c5ec
+-----END PGP SIGNATURE-----
 
-[...]
-
-> @@ -239,7 +183,7 @@ static int __acpi_processor_start(struct acpi_device *device)
->  		return 0;
->  
->  	result = -ENODEV;
-> -	acpi_pss_perf_exit(pr, device);
-> +	acpi_processor_thermal_exit(pr);
->  
->  err_power_exit:
->  	acpi_processor_power_exit(pr);
-> @@ -277,10 +221,10 @@ static int acpi_processor_stop(struct device *dev)
->  		return 0;
->  	acpi_processor_power_exit(pr);
->  
-> -	acpi_pss_perf_exit(pr, device);
-> -
->  	acpi_cppc_processor_exit(pr);
->  
-> +	acpi_processor_thermal_exit(pr);
-> +
->  	return 0;
->  }
->  
-> diff --git a/drivers/acpi/processor_thermal.c b/drivers/acpi/processor_thermal.c
-> index d8b2dfcd59b5..93928db2ae5f 100644
-> --- a/drivers/acpi/processor_thermal.c
-> +++ b/drivers/acpi/processor_thermal.c
-> @@ -266,3 +266,72 @@ const struct thermal_cooling_device_ops processor_cooling_ops = {
->  	.get_cur_state = processor_get_cur_state,
->  	.set_cur_state = processor_set_cur_state,
->  };
-> +
-> +int acpi_processor_thermal_init(struct acpi_processor *pr)
-> +{
-> +	struct acpi_device *device;
-> +	int result = 0;
-> +
-> +	if (!pr)
-> +		return -ENODEV;
-
-What's the reason for this check? When will "pr" be NULL in this code
-path?
-
-> +
-> +	device = acpi_fetch_acpi_dev(pr->handle);
-> +	if (!device)
-> +		return -ENODEV;
-
-Wouldn't it be better to pass the acpi_device into the function as well?
-The device is already available in the caller and it'll avoid having to
-convert it back.
-
-> +
-> +	pr->cdev = thermal_cooling_device_register("Processor", device,
-> +						   &processor_cooling_ops);
-> +	if (IS_ERR(pr->cdev)) {
-> +		result = PTR_ERR(pr->cdev);
-> +		return result;
-> +	}
-> +
-> +	dev_dbg(&device->dev, "registered as cooling_device%d\n",
-> +		pr->cdev->id);
-> +
-> +	result = sysfs_create_link(&device->dev.kobj,
-> +				   &pr->cdev->device.kobj,
-> +				   "thermal_cooling");
-> +	if (result) {
-> +		dev_err(&device->dev,
-> +			"Failed to create sysfs link 'thermal_cooling'\n");
-> +		goto err_thermal_unregister;
-> +	}
-> +
-> +	result = sysfs_create_link(&pr->cdev->device.kobj,
-> +				   &device->dev.kobj,
-> +				   "device");
-> +	if (result) {
-> +		dev_err(&pr->cdev->device,
-> +			"Failed to create sysfs link 'device'\n");
-> +		goto err_remove_sysfs_thermal;
-> +	}
-> +
-> +	return 0;
-> +
-> +err_remove_sysfs_thermal:
-> +	sysfs_remove_link(&device->dev.kobj, "thermal_cooling");
-> +err_thermal_unregister:
-> +	thermal_cooling_device_unregister(pr->cdev);
-> +
-> +	return result;
-> +}
-> +
-> +void acpi_processor_thermal_exit(struct acpi_processor *pr)
-> +{
-> +	struct acpi_device *device;
-> +
-> +	if (!pr)
-> +		return;
-> +
-> +	device = acpi_fetch_acpi_dev(pr->handle);
-> +	if (!device)
-> +		return;
-
-The same comment about passing the acpi_device structure applies here as
-well.
-
-> +
-> +	if (pr->cdev) {
-> +		sysfs_remove_link(&device->dev.kobj, "thermal_cooling");
-> +		sysfs_remove_link(&pr->cdev->device.kobj, "device");
-> +		thermal_cooling_device_unregister(pr->cdev);
-> +		pr->cdev = NULL;
-> +	}
-> +}
-
-[...]
+--dtd9UxDP2fBlpOtG--
