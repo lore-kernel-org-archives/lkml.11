@@ -2,196 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A55CCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3538C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378153AbiFPQpF (ORCPT
+        id S1378162AbiFPQpK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 12:45:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45612 "EHLO
+        Thu, 16 Jun 2022 12:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377331AbiFPQoN (ORCPT
+        with ESMTP id S1377280AbiFPQoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 12:44:13 -0400
-Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30040.outbound.protection.outlook.com [40.107.3.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3BF28990;
-        Thu, 16 Jun 2022 09:44:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fj4Ja6xivTc2bP5G9Bf7ObbjmyF/iR3OQi0K9yi4LD3NKtpYGDxVQEsbpumMriKfwNrZppEubh827+0oFp8p1eYE/gUJ3+/jV4DOFNXP0baQ66AayOZIsHo+EFKAtomK6T1jyTTiuGCBB5lW0uW8QPIgXabursJA5SEEY3ZEfeNA007vJe04xdRiqQmQ0p06Im/LF5p8b00JFWse1kRx2Bs5oNKur3MPoZLulw0KXPmDo11MsFxiyItGkwy+N8SmuwG9LpsZ09R1YOqqtEN4gvPjrdH5EOU8ld7fOGFwD6wpjgTXQZT1z1OcxNKOSZbjxXRrX8ZTatMUsf38vXSE1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=l5x/1RxaPX0UIG8HgVPFH956p0wIEXaxlqmAU5EfXBI=;
- b=XuyOyKr+vIXspKXw1ly3XqLS+lCrvaNxIY0tvZ4ImnAzzcJGBSyYqRmxnKzT176maCSXn9DOKqCfjeADsfR+cm2l5R+GadZO2/AS5n5tFBkscFmYt7CohutvFVAxrHevnthxyUJjaaQ879Pei1v8NMzwvDOtosKJx3xK83xCnbnJlmVFfYGNO3ENTJ/Vuq/0tP4GOneC8dvRIEWEom1UsD3kJCiRuyqs6usu8nIEGziRkWWuTuBqVJYWBCSnLqUbzbJuHRl98zw/J1dNjYP8ITom7FkywgUEvkH6puisjgmEUpfHZU1t5XR1ndvjIS9NBfwSJQZ6Aicw5jHIENED2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l5x/1RxaPX0UIG8HgVPFH956p0wIEXaxlqmAU5EfXBI=;
- b=SMNxWcslsp466GX9fTjICIWNBqT7/5M2oQrvwCV05Wt5xwoHsPI4/7S1D7UlfrS2Yy51Xh+JI0SapEgPNmoupc2Uf1eg5vVe0PLihCuuZQ+kw83ch9ivfbluRldA+/zEJCy6+YG0gcm5ToqVLoLPBy9WqjrO652XBVNA6xcswo0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5005.eurprd04.prod.outlook.com (2603:10a6:803:57::30)
- by HE1PR0401MB2649.eurprd04.prod.outlook.com (2603:10a6:3:85::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.20; Thu, 16 Jun
- 2022 16:44:05 +0000
-Received: from VI1PR04MB5005.eurprd04.prod.outlook.com
- ([fe80::7505:2581:368f:5619]) by VI1PR04MB5005.eurprd04.prod.outlook.com
- ([fe80::7505:2581:368f:5619%5]) with mapi id 15.20.5353.015; Thu, 16 Jun 2022
- 16:44:05 +0000
-From:   Viorel Suman <viorel.suman@nxp.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Dong Aisheng <aisheng.dong@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Stefan Agner <stefan@agner.ch>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Abel Vesa <abelvesa@kernel.org>,
-        Viorel Suman <viorel.suman@nxp.com>,
-        Oliver Graute <oliver.graute@kococonnector.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>, Liu Ying <victor.liu@nxp.com>,
-        Ming Qian <ming.qian@nxp.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Abel Vesa <abel.vesa@nxp.com>
-Subject: [PATCH v5 07/14] dt-bindings: rtc: Add fsl,scu-rtc yaml file
-Date:   Thu, 16 Jun 2022 19:42:56 +0300
-Message-Id: <20220616164303.790379-8-viorel.suman@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220616164303.790379-1-viorel.suman@nxp.com>
-References: <20220616164303.790379-1-viorel.suman@nxp.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AM0PR04CA0029.eurprd04.prod.outlook.com
- (2603:10a6:208:122::42) To VI1PR04MB5005.eurprd04.prod.outlook.com
- (2603:10a6:803:57::30)
+        Thu, 16 Jun 2022 12:44:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C743289A6
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:44:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE656B82346
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 16:44:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A1E6C34114;
+        Thu, 16 Jun 2022 16:44:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655397856;
+        bh=EolkjpCPZI2MjBzt62Su7lhjjW4xiamLc2eTna4D4RY=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=t/4p6pGthRLYB+t18wzKMBvG8YhBSmOj9OtlHdRZkkzCg6TPbfVT8Ym9er2q+OG/T
+         eU5+83JXJEKYQUx/QfhsWf37Dp7FF1iKXdivRNJra/69Vw+popfCVdqFGw90ruWGPR
+         dZTvPbCQ7oUJXojmCDmvO1AOOW2IKp1m5X9pbW2IYE10EWjb7spFHlCFQI9H23suvy
+         9LNu+aVdWeUD7Mi9cjocgqhLlSEMBpqZoT6Qp0r6r7DaA+HCQbNR4s+qfLMezv5Tf5
+         oN/ocqb4jVxWj1pdBu8t2496S3rgRAm/yaldO+WHgA735SDWRM/MIkHZsEsv7UXoIa
+         uTsl0FD9FSzQw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 1DDD05C0546; Thu, 16 Jun 2022 09:44:16 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 09:44:16 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Marco Elver <elver@google.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, dvyukov@google.com
+Subject: Re: [ammarfaizi2-block:paulmck/linux-rcu/pmladek.2022.06.15a
+ 133/140] vmlinux.o: warning: objtool: __ct_user_exit+0x41: call to
+ __kasan_check_read() leaves .noinstr.text section
+Message-ID: <20220616164416.GA2130702@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <202206160411.v3iL3YC0-lkp@intel.com>
+ <20220615204039.GI1790663@paulmck-ThinkPad-P17-Gen-1>
+ <20220615211717.GA972937@paulmck-ThinkPad-P17-Gen-1>
+ <CANpmjNMswUJhqfttxZGbkfN7X5d5FLiS1yPXzzGDivLtWDB9=g@mail.gmail.com>
+ <20220616134021.GP1790663@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 658ae421-b4c9-4f75-df07-08da4fb76d1e
-X-MS-TrafficTypeDiagnostic: HE1PR0401MB2649:EE_
-X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-X-Microsoft-Antispam-PRVS: <HE1PR0401MB264900D0E8433013D3E6A0B092AC9@HE1PR0401MB2649.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: H5JZctDP1zb2F73fF1ClJkBGHUAzDHer6Yb6DQNPii3tamL/RWO4VeBm1QcLh1Xkk+g/d8fcl2TtOe/33xaOdge8PHLSoufKjrTBATpwse09hAO5nmImGN109EOh2KiVNxe7Xy9F4t2ceuNHiHS2tFS2PLhMDLxAA99IxmnLLRQVh+PdTQjjnnGbwofFXJwFnKigSqxmjQMJv0dwO8SMgljA8l7IoKzxgvZ2AWl5LaPRvzkfqe6c8Q6mMC1jNspfx32vMGf8EZJzsddmzxZpe90x1aZFCJ2FJ9Ubl4TIWdl1EgZjNaxC3MHjLXs8Yxw8X+ZqdnWZ/yMe84R3B2EOGaT1rMk3SsgQXM5ebk/tdd50e/r9Yyple5NHFPrxB7ekr1NV3DZSURiN09VNTO33WjUWYKxegcsuiGy7zv5ELBbW80Vq30FoAmna6QvNU1YrGdnARf/7YOHmnASaAK+2GfXg+6bYNf96mfBetA9Hu9Bv9jTcYNEFJNfZ6P7klig99Yuk5plA4DmcZCmE2wNzANbHdAnr13Mc2jEO+wY13Qsefg1YUnUkK2cNib5IVd2cCajWCP9NZn6yt5Fk5J2kdv57eXntWQY0kUnGNCNp4kUDYA6cTOfssfsBXumcD/Sq36A99bXSqKSqj20rM5FKYfN5Um2msJ17ulnwCy3EaAz94U2IKsNrREEl1asV+GmcTvu7v8IfGamycZXBcWm8In4X0Kut1aPEDw+cuV6pDQvC1u9KTbXcdobSUJaHNhkyMYFs26kGGyPUVuopymGoLMloi+VOdWgmlowBxkkEC46tTUkTZSVJbRTB11XeYTRQV8JxCpYZubnQquY7e0VfKLVA7dFxPa4XkROKNljoECA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5005.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(1076003)(86362001)(186003)(38100700002)(6666004)(5660300002)(2616005)(26005)(7416002)(6512007)(66556008)(7406005)(2906002)(83380400001)(66946007)(38350700002)(316002)(110136005)(52116002)(6506007)(8676002)(508600001)(44832011)(4326008)(966005)(36756003)(6486002)(66476007)(8936002)(921005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?5vXGTWz6uDqHFqByQnfBsessK8Uw5yVOUHtKUIcFATSoC4iwOeJFtFAR5J?=
- =?iso-8859-1?Q?ksI4l9qWFq0RFJGkleb8Qhd8HByWkAIqUIgQr+RVqab5QCZqXSa3xnECN5?=
- =?iso-8859-1?Q?OT8BxgUusXloVVAzvhOwl46WhW1B5+eoGApjxxaQ7zLX2zUTJf631p4wLS?=
- =?iso-8859-1?Q?Ygza8UcWZDMx5dfkNSBwVphNXHVycFvCp6BNieaNgX6QbwUEhfzB9Lrqqk?=
- =?iso-8859-1?Q?4Qh+mgC5rKmeSXCjgJUoECooBB2VOEYF9ztR/oAvphHrQrQx5KZx1cbo8A?=
- =?iso-8859-1?Q?OLq/tQXFxs6fC1DeQ6R9Vd4uQ21HIWsZWnnMruyH270SCQ4evi0ta3kN5k?=
- =?iso-8859-1?Q?ua9Hb1xoqdgylCGg+2fiW3YGFWEHjHDAza4Rp592L1R8ehGAyIl93WoWEp?=
- =?iso-8859-1?Q?blTf5NUY8tCZn+Lf9w+1x39OGyWjm2UMSokzSi9FtLegv523HpJh7Qj6H9?=
- =?iso-8859-1?Q?gX62IL5Aa/XnuKCL/XrQj1Q3FNG4ujbEekvIb7rPkb9A3aLiDK3DUUxKO4?=
- =?iso-8859-1?Q?fUgGJyQDsQzOPdzmpcrg+jvd+rvwQ5B185B5i2pw697sxURaXiE4LJNLPE?=
- =?iso-8859-1?Q?TKkwCDhmSl6QJCJNnELKCMQr6j0i53LW8BqIegx1zP+a0Wg5RTeg/K33vs?=
- =?iso-8859-1?Q?UhmdMIGkW7Ie3G9lT6ztbd818uOfuYqk7ORh5h8cRIFB1BZqh/QtDRrX/R?=
- =?iso-8859-1?Q?i7RvzAGcnURERztaftmxXa0XmEnRrBOefvMp6djUaifDyL75zn8TtKASkq?=
- =?iso-8859-1?Q?yyzbDzFYECwyjsXpSFQnyigg6iCRiIlK/dsTrC7w1/rsTA7N3zvo1WlE5a?=
- =?iso-8859-1?Q?Jax9Lk2/jzF3HZSXFxBhg1W3pQJrBBqhutV0Dwleuo1JzrbjsCQfXpGBGC?=
- =?iso-8859-1?Q?1P9ypTsIEU9WXCaYdCrXJLLdvq4lSjwNpfznUGJa8EBc+1xnvuxfU1Ppxv?=
- =?iso-8859-1?Q?tlRcP6xZFhxnW6RQKqi9tJjf2PUr57+Cw8uc+AEUnlqyJhR9Bo8pLhNksd?=
- =?iso-8859-1?Q?hJiHVdvkAhzqvC3xshP2BFHyEkW9krhB4wby8QZkzFHxPJB/TR+YaaF+/j?=
- =?iso-8859-1?Q?djiZc4/qvYD/QtWxyI1J3Ye1mTjSlrq0sE35hV4p43npdz7WBWHKSKgUug?=
- =?iso-8859-1?Q?9gzC+tmAXHKd/uQs84qiqQqkLXiLJcHfvypuginOQLVimpw1/9U5oMROUn?=
- =?iso-8859-1?Q?6ydUGtbchnS1+lQdPJmCy99KWjzG1hNh88uiKWhJWANVOFAE7z3gqFRRuP?=
- =?iso-8859-1?Q?iUMFyffJkgZR9RdS/Suv8gR88wlLew8QgzudADPZSCATSf0cPpgjWhfz4C?=
- =?iso-8859-1?Q?rd6atP/OJJ9AwhclQYvX4ZC3LCZz6fcFJWWGIJbg208lXWh+vqpjlppcEq?=
- =?iso-8859-1?Q?o+sd1G7H00BPF/bzVtqwmfMWQZqWWYuYha9Uw6ouvrCKucphX8Ao/nNIO6?=
- =?iso-8859-1?Q?8CiEq5RLwuVsjJh9jHyB+rfAvN6qa+POdkP6nOs58RM4IIcSHIDEguq4OW?=
- =?iso-8859-1?Q?tWKCpcayoi1PyiRyf8LZ2Ep2DUZByI5lsOZnmNVSBlnB/It6P740lDlX3z?=
- =?iso-8859-1?Q?c/5DNTKDyI7MIm5Nc0MUFxmYS2a0rqZRI0g4swdFr5GkkF/lBmPLx+IqZY?=
- =?iso-8859-1?Q?ILkXjio0i4OUNnucI9x55L3m7b1wk8iBxIG0Pkzn2UdHA9mvhTQCbBHqQh?=
- =?iso-8859-1?Q?+oN4A3kiM1CQ7EmCQfCovaR4sW95nUAnHSI2UWBCxdK0VRl0EIQ6aSZo8b?=
- =?iso-8859-1?Q?gOdfQIb1uIokg4UTZhJqQ83lN1dvBDWFfJDxwGDPz12St+9lGtU8/cBiiu?=
- =?iso-8859-1?Q?lWvzzKyQDA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 658ae421-b4c9-4f75-df07-08da4fb76d1e
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5005.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2022 16:44:05.6258
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CbngsLH+oUTscdjUbV1kjYkyFTUFQ9vroBzfxHUViSSnfKG6E8wyY41h96lGLb0+4x5sTiGuXSMIILkIFPWzRQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0401MB2649
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616134021.GP1790663@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abel Vesa <abel.vesa@nxp.com>
+On Thu, Jun 16, 2022 at 06:40:21AM -0700, Paul E. McKenney wrote:
+> On Thu, Jun 16, 2022 at 10:19:18AM +0200, Marco Elver wrote:
+> > On Wed, 15 Jun 2022 at 23:17, Paul E. McKenney <paulmck@kernel.org> wrote:
+> > >
+> > > On Wed, Jun 15, 2022 at 01:40:39PM -0700, Paul E. McKenney wrote:
+> > > > On Thu, Jun 16, 2022 at 04:26:16AM +0800, kernel test robot wrote:
+> > > > > tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/pmladek.2022.06.15a
+> > > > > head:   0ba7324b44282870af740a5a121add62c7f5f730
+> > > > > commit: db21b02f8044e812f8a5e3811f602409290e3ede [133/140] context_tracking: Convert state to atomic_t
+> > > > > config: x86_64-randconfig-r003-20220516 (https://download.01.org/0day-ci/archive/20220616/202206160411.v3iL3YC0-lkp@intel.com/config)
+> > > > > compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+> > > > > reproduce (this is a W=1 build):
+> > > > >         # https://github.com/ammarfaizi2/linux-block/commit/db21b02f8044e812f8a5e3811f602409290e3ede
+> > > > >         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+> > > > >         git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/pmladek.2022.06.15a
+> > > > >         git checkout db21b02f8044e812f8a5e3811f602409290e3ede
+> > > > >         # save the config file
+> > > > >         mkdir build_dir && cp config build_dir/.config
+> > > > >         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+> > > > >
+> > > > > If you fix the issue, kindly add following tag where applicable
+> > > > > Reported-by: kernel test robot <lkp@intel.com>
+> > > > >
+> > > > > All warnings (new ones prefixed by >>):
+> > > > >
+> > > > > >> vmlinux.o: warning: objtool: __ct_user_exit+0x41: call to __kasan_check_read() leaves .noinstr.text section
+> > > > > >> vmlinux.o: warning: objtool: __ct_user_enter+0x7f: call to __kasan_check_read() leaves .noinstr.text section
+> > > >
+> > > > Marco, Dmitry, my guess is that this is due to the ct->active check in
+> > > > both functions.  Are we supposed to do something to make this sort of
+> > > > thing safe for KASAN?
+> > >
+> > > This time actually CCing Marco and Dmitry...
+> > 
+> > It's due to the atomic_read()s within the noinstr function. Within
+> > noinstr you can use arch_atomic_read() to avoid the instrumentation.
+> 
+> Thank you, will fix!
 
-In order to replace the fsl,scu txt file from bindings/arm/freescale,
-we need to split it between the right subsystems. This patch documents
-separately the 'rtc' child node of the SCU main node.
+And please see below for an alleged fix.
 
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
----
- .../devicetree/bindings/rtc/fsl,scu-rtc.yaml  | 28 +++++++++++++++++++
- 1 file changed, 28 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/rtc/fsl,scu-rtc.yaml
+							Thanx, Paul
 
-diff --git a/Documentation/devicetree/bindings/rtc/fsl,scu-rtc.yaml b/Documentation/devicetree/bindings/rtc/fsl,scu-rtc.yaml
-new file mode 100644
-index 000000000000..a2594fdd486f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/rtc/fsl,scu-rtc.yaml
-@@ -0,0 +1,28 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/rtc/fsl,scu-rtc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: i.MX SCU Client Device Node - RTC bindings based on SCU Message Protocol
-+
-+maintainers:
-+  - Dong Aisheng <aisheng.dong@nxp.com>
-+
-+description: i.MX SCU Client Device Node
-+  Client nodes are maintained as children of the relevant IMX-SCU device node.
-+
-+properties:
-+  compatible:
-+    const: fsl,imx8qxp-sc-rtc
-+
-+required:
-+  - compatible
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    rtc {
-+             compatible = "fsl,imx8qxp-sc-rtc";
-+    };
--- 
-2.25.1
+------------------------------------------------------------------------
 
+commit 81e24ca26ee9933bcacf67a61e3f6ae41a025442
+Author: Paul E. McKenney <paulmck@kernel.org>
+Date:   Thu Jun 16 09:30:37 2022 -0700
+
+    context_tracking: Use arch_atomic_read() in __ct_state for KASAN
+    
+    Context tracking's __ct_state() function can be invoked from noinstr state
+    where RCU is not watching.  This means that its use of atomic_read()
+    causes KASAN to invoke the non-noinstr __kasan_check_read() function
+    from the noinstr function __ct_state().  This is problematic because
+    someone tracing the __kasan_check_read() function could get a nasty
+    surprise because of RCU not watching.
+    
+    This commit therefore replaces the __ct_state() function's use of
+    atomic_read() with arch_atomic_read(), which KASAN does not attempt to
+    add instrumention to.
+    
+    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+    Cc: Frederic Weisbecker <frederic@kernel.org>
+    Cc: Marco Elver <elver@google.com>
+
+diff --git a/include/linux/context_tracking_state.h b/include/linux/context_tracking_state.h
+index 0aecc07fb4f50..81c51e5f03143 100644
+--- a/include/linux/context_tracking_state.h
++++ b/include/linux/context_tracking_state.h
+@@ -49,7 +49,7 @@ DECLARE_PER_CPU(struct context_tracking, context_tracking);
+ 
+ static __always_inline int __ct_state(void)
+ {
+-	return atomic_read(this_cpu_ptr(&context_tracking.state)) & CT_STATE_MASK;
++	return arch_atomic_read(this_cpu_ptr(&context_tracking.state)) & CT_STATE_MASK;
+ }
+ #endif
+ 
