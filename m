@@ -2,94 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D36C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:00:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8EA1CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378809AbiFPVAr (ORCPT
+        id S1378823AbiFPVA5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 17:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
+        Thu, 16 Jun 2022 17:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233525AbiFPVAn (ORCPT
+        with ESMTP id S1378787AbiFPVAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 17:00:43 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98F7606C1;
-        Thu, 16 Jun 2022 14:00:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=mjWClmykFoP1P+NE+FHwPy2EeZJYzAdrJuiOYk2mq8A=; b=Bpe2zJD3VPzlHkuFdoWBx6AMC5
-        aZqWclk6HsPV30RI9X+EyoXpwJ7U0TybFWXFe3bMQxMD3JYEahQ/LMb11Q/iziReIT9XIbXTW9b09
-        h9sFynenOyJp9N2KT+ScMPPA5XKzszARDJB6idzEMEUSssXxkyUneT25zTOBrd4JiOyiqYnYPaR4r
-        XPG4LfeVvPr5RIdo4mSt+YKHov3/Zd7osIHEHq5ndkY2J3WbMtKEE4ulC+plqEYYx+F8KT2Jk6dLZ
-        buvGdNiNPM2kG2JOY8z3YU9+dH5O6oCEEPAYeODo07w4AU7Gc55HKYWDG7tHN7E3ToZCq3Q7JvSY6
-        Yn+5eJKw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1wbE-008VuH-Bg; Thu, 16 Jun 2022 21:00:20 +0000
-Message-ID: <4d975ef5-7e50-9241-1a3e-f0f9bad9c5b5@infradead.org>
-Date:   Thu, 16 Jun 2022 14:00:10 -0700
+        Thu, 16 Jun 2022 17:00:54 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B436007B;
+        Thu, 16 Jun 2022 14:00:53 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id g7so3793636eda.3;
+        Thu, 16 Jun 2022 14:00:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9PnHnVLahiLFldPLozedmiE5cWgmYzHNZk7Z8fYNdbI=;
+        b=pf+DTNRN9rHEQXYSlj7DZF3u2MserPjhDCdRZHb9CrMHuri6opM0vB70wO7GHf+mny
+         PpcYMdnjulHRlQ+cYKhaz0WRm8o9h9/C8dVdnBF9GCTg0ypqLzaEEat8b16HBXECnGz2
+         KYXedFs+liAU/OKwpto0ajykiBkDBfqZDUW4X1BH7BaGatw7d3ZTqXqF+jdGsg+bvJMF
+         H6vh8Vn+JZ26/sSDfHYifsDliOMfzyIUfGp8t14ybC8Z1TVb4K80FgBVcCV9AqT9aEOV
+         NF/DGp482cA9pv0jkr2Kzima8E7RzhVJ1B78WD7CvOCwqLBzhbbJJyPC5D7ooND9K78q
+         ZT4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9PnHnVLahiLFldPLozedmiE5cWgmYzHNZk7Z8fYNdbI=;
+        b=lbIkTfK59YTTc1Uf1oF7fn713hKTQJb6eBJoef/0bCgmWlLSmdFPhndVmg4Snc/gKr
+         5Vd2o9k88jD3adctDtr/3kbbwSWuFjQKKaW54lGLyYh2k5n3qQJtX3pQXKgKaheHOoHh
+         9wM/3L5tZpjH4TxVHTTZKtny8+atkyCglmGCTPyxPeCzGixfyk1WnVG/K+a1oFECdk3U
+         VyLjRIsEjSxYqvgcrHnqVUt7uJ1xX7ElnVw1PoynF1q6hQ+oilAeHjwumQ42tm6XxIss
+         AV8bvESSfBQV6DSVIeyo8pRBXjJbL1+9Otvq4MT7HfvQoSp/tlQG5Qa94xmbUKsh9Z1a
+         /fOw==
+X-Gm-Message-State: AJIora/0Y1KTUnk6RpfHlXO3jAPfk7cV/tBLmUs3MWnmIzyDzCS6JyLu
+        ZW4GkuYsw6WaUwJlyqjcOKsJ0ndf92TlE2dSnj0=
+X-Google-Smtp-Source: AGRyM1sTFo3+eTpM3qi6KGpkSVRl6TIch5Ti1q3gSKfZhOhUyWj/GLSvHcJbG2Ouoe8dybz6xNmQoHJnnyS0hpfzz48=
+X-Received: by 2002:aa7:c450:0:b0:431:55c6:29f9 with SMTP id
+ n16-20020aa7c450000000b0043155c629f9mr8805858edr.14.1655413251761; Thu, 16
+ Jun 2022 14:00:51 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH V4 09/20] rv/monitor: wip instrumentation and
- Makefile/Kconfig entries
-Content-Language: en-US
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org
-References: <cover.1655368610.git.bristot@kernel.org>
- <9c05a95927c18bebcf0eb79bef15ec59667bc08c.1655368610.git.bristot@kernel.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <9c05a95927c18bebcf0eb79bef15ec59667bc08c.1655368610.git.bristot@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220603055156.2830463-1-irogers@google.com> <165428101333.23591.13242354654538988127.git-patchwork-notify@kernel.org>
+ <CAP-5=fWwKkj1HtAvOXxGxcrG99gpy8v4ReW_Jh7uumbQMiJYng@mail.gmail.com>
+In-Reply-To: <CAP-5=fWwKkj1HtAvOXxGxcrG99gpy8v4ReW_Jh7uumbQMiJYng@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 16 Jun 2022 14:00:40 -0700
+Message-ID: <CAEf4BzYYcnu1PHoudKnvpjPJAszgu3TFSbNe=E6vctgh9JLkTg@mail.gmail.com>
+Subject: Re: [PATCH v2] libbpf: Fix is_pow_of_2
+To:     Ian Rogers <irogers@google.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Yuze Chi <chiyuze@google.com>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 14, 2022 at 1:41 PM Ian Rogers <irogers@google.com> wrote:
+>
+> On Fri, Jun 3, 2022 at 11:30 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
+> >
+> > Hello:
+> >
+> > This patch was applied to bpf/bpf-next.git (master)
+> > by Andrii Nakryiko <andrii@kernel.org>:
+> >
+> > On Thu,  2 Jun 2022 22:51:56 -0700 you wrote:
+> > > From: Yuze Chi <chiyuze@google.com>
+> > >
+> > > Move the correct definition from linker.c into libbpf_internal.h.
+> > >
+> > > Reported-by: Yuze Chi <chiyuze@google.com>
+> > > Signed-off-by: Yuze Chi <chiyuze@google.com>
+> > > Signed-off-by: Ian Rogers <irogers@google.com>
+> > >
+> > > [...]
+> >
+> > Here is the summary with links:
+> >   - [v2] libbpf: Fix is_pow_of_2
+> >     https://git.kernel.org/bpf/bpf-next/c/f913ad6559e3
+> >
+> > You are awesome, thank you!
+>
+> Will this patch get added to 5.19?
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/lib/bpf/libbpf.c#n4948
+>
 
+I've applied it to bpf-next, so as it stands right now - no. Do you
+need this for perf?
 
-On 6/16/22 01:44, Daniel Bristot de Oliveira wrote:
-> diff --git a/kernel/trace/rv/Kconfig b/kernel/trace/rv/Kconfig
-> index 1eafb5adcfcb..e9246b0bec9d 100644
-> --- a/kernel/trace/rv/Kconfig
-> +++ b/kernel/trace/rv/Kconfig
-> @@ -26,6 +26,13 @@ menuconfig RV
->  	  the system behavior.
->  
->  if RV
-> +config RV_MON_WIP
-> +	depends on PREEMPTIRQ_TRACEPOINTS
-> +	select DA_MON_EVENTS_IMPLICIT
-> +	bool "WIP monitor"
-
-Does WIP mean work-in-progress?  (It does to me.)
-
-If not, please explain what it means in the help text.
-
-> +	help
-> +	  Enable WIP sample monitor, this is a sample monitor that
-> +	  illustrates the usage of per-cpu monitors.
-
-thanks.
--- 
-~Randy
+> Thanks,
+> Ian
+>
+> > --
+> > Deet-doot-dot, I am a bot.
+> > https://korg.docs.kernel.org/patchwork/pwbot.html
+> >
+> >
