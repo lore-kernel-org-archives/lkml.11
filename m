@@ -2,80 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7906C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:35:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4DCC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377052AbiFPNfA (ORCPT
+        id S1377074AbiFPNgK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
+        Thu, 16 Jun 2022 09:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376839AbiFPNe5 (ORCPT
+        with ESMTP id S1376839AbiFPNgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:34:57 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A25205DC
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:34:56 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id t32so2182255ybt.12
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:34:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E4oRD4fpeOcIe9J3CDXeLQW7t2RI1ucb4W5YyAxRXTc=;
-        b=i+aNtOa0+P+UbHlJ+UN0VZmv+j16VlraJF77uRCdHFS9DDTc2ta8XYvSfxc1rbXh52
-         C9Hwy4bHsghReeEsAOr5frAUR0h/6yvnL98uuM/BV5p6LF6ip1BxtdTvaIJRzEoCoJy7
-         HA80uJ9DSen54oYDsfLIsIyXI8ieNXW53l/JP7kirV0mPi57XiWfohaX1D1/TOvEvTg/
-         mTMITFgeJolEY5F43ftAl1AFapXqkYT57sFcHPxuWR/BDsZNk/fViXrCbaIOdIWGRapw
-         Ef4Vs2gqSuHK2KLCX2E/zi9ktMQtWwZS2eAYxgKkkO8lJ6Wtt4oRt1hPRH4iksDjaemh
-         +Gbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E4oRD4fpeOcIe9J3CDXeLQW7t2RI1ucb4W5YyAxRXTc=;
-        b=hYQ5fY9fnAxRRvm/n0ps9t46yb+BF6YOzpJqRQofr/eyV4i4RDUsHt5ahvwPREClN9
-         AH8W6jkv2gghc5vbppfH80e6T0xZIWioStSV6TfcOiV0v6d9U12WlEDckCSxL60nDeEi
-         +gJEvHKTSyam0w45fvRmlJpC7/uiv61j1mKXNEdVrQU/cqLJwfoSaUcl0F5u3hQkZ/67
-         0idxTZnBgplCiwVHlZOe1CLMUhZ7Uh5icBGo60NOe5P8RRrrqAaOW+ei8LUdKDBbghkf
-         fOkDN24ttMjABR86JUaoa/UUrAFfYLO/ylRkzdYeLosc62WNWaEIWQwlPkt5idNDpOvb
-         AAlw==
-X-Gm-Message-State: AJIora/5XVB2729SmOV+RIzb0xF8QgCNTKK0k9QVeBCyPjnkJY4PKo/n
-        qtBkxBLPY7zGIEvLz9qwUrWMe3oNjnAzjdDszjW+3g==
-X-Google-Smtp-Source: AGRyM1tOESzLLHsKWOfNIxiAJfDhdbEqfPn3s2ZPVjXgSzXCZ24IEI92hnqOwbzdBIKkU7b9sRdugwSZhPXLa08JRCI=
-X-Received: by 2002:a25:3417:0:b0:664:aab3:7c44 with SMTP id
- b23-20020a253417000000b00664aab37c44mr5233002yba.533.1655386495611; Thu, 16
- Jun 2022 06:34:55 -0700 (PDT)
+        Thu, 16 Jun 2022 09:36:07 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC1E220EB
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:36:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655386562; x=1686922562;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=lZ7LdJzLzTp3TOQzB6WHSMJVfTKOBtpkE263PHLhVVA=;
+  b=YcWi2tcO4ZEbNR0f/KFC3ZReclC7DZjpbCYWhXAGNTisz3kMFdofgQpB
+   GfWIa4WV/4mfnUJwHM/GJVS8DtQMgRz0+FTqXCMiaSZiv5Ykb1O2fKJs9
+   Ygqc9XOwVErhUoulaYAmnHDhoApFglN8/MzeOsDBZPUNfN0ojL4+/V6lw
+   qG7jXfy2KbrftsLW26cBABHFsxjwL7jGFyiK5D5XPwsMjONGLsD35QfG/
+   Zcs7KPvo4MXjENMihbCk010KXXg3X1iUPSAXhrsPHjO1TmdgVdZZbOpYp
+   LnpKB3g9XbAkhEGp9iooTNhtPIOrSzaVgvY3CSv+zFpfn3pCGuRmpp1xi
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="267937296"
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="267937296"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 06:36:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="687822640"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 16 Jun 2022 06:36:01 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o1pfE-000OPp-Fv;
+        Thu, 16 Jun 2022 13:36:00 +0000
+Date:   Thu, 16 Jun 2022 21:35:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [sudeep-holla:wip/acpi_ffh_opregion 2/3] drivers/acpi/bus.c:301:6:
+ sparse: sparse: symbol 'osc_sb_ffh_opregion_support_confirmed' was not
+ declared. Should it be static?
+Message-ID: <202206162156.TTEhmMTa-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220610203746.2191518-1-robh@kernel.org>
-In-Reply-To: <20220610203746.2191518-1-robh@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 16 Jun 2022 15:34:44 +0200
-Message-ID: <CACRpkdaayHZaeC4X1+d_jC0nCvAtw=w2t2m1txj4OtV_LqcnoA@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: mtd/partitions: Convert arm-firmware-suite
- to DT schema
-To:     Rob Herring <robh@kernel.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 10:38 PM Rob Herring <robh@kernel.org> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git wip/acpi_ffh_opregion
+head:   aca46ad097a20fee2f395f051d575d323c15ffff
+commit: 42de507063eebc8c7d728fbac4012e35c8b854df [2/3] ACPI: Implement a generic FFH Opregion handler
+config: i386-randconfig-s001 (https://download.01.org/0day-ci/archive/20220616/202206162156.TTEhmMTa-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-30-g92122700-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git/commit/?id=42de507063eebc8c7d728fbac4012e35c8b854df
+        git remote add sudeep-holla https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git
+        git fetch --no-tags sudeep-holla wip/acpi_ffh_opregion
+        git checkout 42de507063eebc8c7d728fbac4012e35c8b854df
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/acpi/
 
-> Convert the arm,arm-firmware-suite partition binding to DT schema
-> format. Simple conversion as there's only a compatible property.
->
-> Signed-off-by: Rob Herring <robh@kernel.org>
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-I see your own robot bit you about the unit name but with
-that fixed:
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Yours,
-Linus Walleij
+sparse warnings: (new ones prefixed by >>)
+>> drivers/acpi/bus.c:301:6: sparse: sparse: symbol 'osc_sb_ffh_opregion_support_confirmed' was not declared. Should it be static?
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
