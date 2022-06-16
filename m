@@ -2,79 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C721DCCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:50:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DE8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:51:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376659AbiFPIuv (ORCPT
+        id S1376644AbiFPIvB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36506 "EHLO
+        Thu, 16 Jun 2022 04:51:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376635AbiFPIu2 (ORCPT
+        with ESMTP id S1376460AbiFPIuj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:50:28 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B325E775;
-        Thu, 16 Jun 2022 01:48:48 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id A7C776601749;
-        Thu, 16 Jun 2022 09:48:46 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655369327;
-        bh=KA13VqCDgHgef3ZpqRd5dKhIy17RNSMxo/QI/sH1ruk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=B5WQEl4RgDw+NJwI0Y8l4j9efQ7tyGQSlkKl5B/GgxCW0oir70nMtIF8h4TYa44yx
-         InunNn+EEFvDmpBB/xdAVSSoDslOtSs6EWNhH8HP5At8nVpg1MZqXfLNBqZDdgDgxM
-         byED472+WBo7Ef6sNU15KUQuHC/SA5U5orLv8IXYVYcp7Ae91FQ+OVEF35i7Zy8OQi
-         aQIrDlvC7ygLfBVkgv0+bSj0cRQwW+hjcBZYOYiIcskS3TF8BkBCc+fHlV+VZA6qgD
-         KxavUC0Xhm9UzFE7abx1iNGrem4H9I+8OH118kuf3MQhw0SVDYmVpxnQoR89a3+Iii
-         lhgRWXkptZ9sA==
-Message-ID: <88be9f00-2b1a-977d-dadd-95a131bf7f1f@collabora.com>
-Date:   Thu, 16 Jun 2022 10:48:44 +0200
+        Thu, 16 Jun 2022 04:50:39 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0300410D3
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 01:48:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655369335; x=1686905335;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=J1gdiJA41T2Z2wOi3LUY95qiuypvu+H6Osn9BPErGMQ=;
+  b=ZJdzKlLf3CS01SZJzSTuwRbWEVJ0QZ/nmC3CPMhGWZX/pPcW8PbLiPbq
+   vf0skAbDOu8hfeLmg44Vt6i6fKL9FaGf6a6ormHxYF7ZbKlvpd92O9ouM
+   hXL38TOK+MBzkV7T8geZKKm+3AVbXns8QYS18FGawY6RH/sMbsEj7w1AZ
+   Pbek7jrhu0BbgoMhBf5IiQlmac6/G7IRPpXS813od2n2DOnEA8hcWYyqZ
+   f7su7ygUC2GZWxIGYm6oxxwTmnUznBR346zeAi6CJcjAxFJC5l9uzZYOL
+   F+6taJ9/faEg4BLqSkAmgQ7OKWuO/JBM2mITl/dqZuvrGkgmzjmrdA6KV
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="280235693"
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
+   d="scan'208";a="280235693"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:48:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
+   d="scan'208";a="559661238"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 16 Jun 2022 01:48:52 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o1lBM-000ODb-AZ;
+        Thu, 16 Jun 2022 08:48:52 +0000
+Date:   Thu, 16 Jun 2022 16:47:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>,
+        mike.kravetz@oracle.com
+Cc:     kbuild-all@lists.01.org, songmuchun@bytedance.com,
+        akpm@linux-foundation.org, catalin.marinas@arm.com,
+        will@kernel.org, anshuman.khandual@arm.com,
+        baolin.wang@linux.alibaba.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH] arm64/hugetlb: Implement arm64 specific
+ hugetlb_mask_last_hp
+Message-ID: <202206161633.yB7NR9sh-lkp@intel.com>
+References: <7256dbe078d7231f45b0f47c2c52a3bd3aa10da7.1655350193.git.baolin.wang@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] clk: mediatek: clk-mt8195-vdo0: Set rate on
- vdo0_dp_intf0_dp_intf's parent
-Content-Language: en-US
-To:     Stephen Boyd <sboyd@kernel.org>, mturquette@baylibre.com
-Cc:     matthias.bgg@gmail.com, wenst@chromium.org,
-        miles.chen@mediatek.com, chun-jie.chen@mediatek.com,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        rex-bc.chen@mediatek.com
-References: <20220614091020.21472-1-angelogioacchino.delregno@collabora.com>
- <20220616024442.1337EC3411E@smtp.kernel.org>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220616024442.1337EC3411E@smtp.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7256dbe078d7231f45b0f47c2c52a3bd3aa10da7.1655350193.git.baolin.wang@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 16/06/22 04:44, Stephen Boyd ha scritto:
-> Quoting AngeloGioacchino Del Regno (2022-06-14 02:10:20)
->> Add the CLK_SET_RATE_PARENT flag to the CLK_VDO0_DP_INTF0_DP_INTF
->> clock: this is required to trigger clock source selection on
->> CLK_TOP_EDP, while avoiding to manage the enablement of the former
->> separately from the latter in the displayport driver.
->>
->> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
->> ---
-> 
-> Any Fixes tag?
+Hi Baolin,
 
-Backporting is useless because there's no DisplayPort driver that supports MT8195
-in the previous kernel versions, so this clock (and whatever logic behind it) is
-unused.
+I love your patch! Perhaps something to improve:
 
-Though, if you think that's going to be useful in any way, I can add one?
+[auto build test WARNING on arm64/for-next/core]
+[also build test WARNING on linus/master]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Regards,
-Angelo
+url:    https://github.com/intel-lab-lkp/linux/commits/Baolin-Wang/arm64-hugetlb-Implement-arm64-specific-hugetlb_mask_last_hp/20220616-113640
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220616/202206161633.yB7NR9sh-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/f1309dfbc2b70ec5dd72ac38e95a49b7be42b9b6
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Baolin-Wang/arm64-hugetlb-Implement-arm64-specific-hugetlb_mask_last_hp/20220616-113640
+        git checkout f1309dfbc2b70ec5dd72ac38e95a49b7be42b9b6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/mm/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/arm64/mm/hugetlbpage.c:371:15: warning: no previous prototype for 'hugetlb_mask_last_hp' [-Wmissing-prototypes]
+     371 | unsigned long hugetlb_mask_last_hp(struct hstate *h)
+         |               ^~~~~~~~~~~~~~~~~~~~
+
+
+vim +/hugetlb_mask_last_hp +371 arch/arm64/mm/hugetlbpage.c
+
+   370	
+ > 371	unsigned long hugetlb_mask_last_hp(struct hstate *h)
+   372	{
+   373		unsigned long hp_size = huge_page_size(h);
+   374	
+   375		switch (hp_size) {
+   376		case PUD_SIZE:
+   377			return PGDIR_SIZE - PUD_SIZE;
+   378		case CONT_PMD_SIZE:
+   379			return PUD_SIZE - CONT_PMD_SIZE;
+   380		case PMD_SIZE:
+   381			return PUD_SIZE - PMD_SIZE;
+   382		case CONT_PTE_SIZE:
+   383			return PMD_SIZE - CONT_PTE_SIZE;
+   384		default:
+   385			break;
+   386		}
+   387	
+   388		return ~0UL;
+   389	}
+   390	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
