@@ -2,116 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B87BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:07:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9A5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:07:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379111AbiFPVHY (ORCPT
+        id S1379055AbiFPVHw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 17:07:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
+        Thu, 16 Jun 2022 17:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379084AbiFPVHM (ORCPT
+        with ESMTP id S1379143AbiFPVHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 17:07:12 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC7E61291;
-        Thu, 16 Jun 2022 14:06:52 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id h23so4007521lfe.4;
-        Thu, 16 Jun 2022 14:06:52 -0700 (PDT)
+        Thu, 16 Jun 2022 17:07:41 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6E4DED7
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 14:07:35 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id n185so1369022wmn.4
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 14:07:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=tXQDZ/38qZYh6K2LSUfy/ZlT8ca4F2f6CeQBxW8J2Rw=;
-        b=YDDhbkaybl0y166vNMC1zU/AMyxZSa1wcvpawfckZDS+0veCRECtb+eHxdFvjVPT7P
-         wO1LRRPLOuoTjxwgD5VEXxLr+NZ+EgeUi9NDjZRH01fXPmipDyk7/uF1wJN3kvtwk3/U
-         JfrA6OSvZfqAbZVajthuEb2rpTZia9iycWK7jiahkz0avp1ktbYECFxKartVglBoZgh1
-         0BHOZuj9t8wzYpytbCSWWNGDp036jHPTc1BBUjwa2vf1WDBcrD8kU3us7vSCzA4N+joz
-         1uysTJkCI43qnFz7mpV0Wqkai0Kz9yNHLfyqhrfzf/ymN3sVDjRqF1KRLJsSyvfovGZd
-         iZAg==
+        bh=MDMBC2uTyxc9TPqLmLiHDJqJa928rge4eTwck2J/9uM=;
+        b=lc9M109acw0E9Tk/CWR0AyJ+g+BS+b0Reuq7NJOGkRAHgfyUWBum8lGu6eiXjZLQzv
+         R/9FTuA9ep0kBGKZ2Uvg3Nhb17QU2fa7daR7UViBL+D2I1krHJdBFoSw++hnQnNrvrsh
+         LtbXyZ4gWU6RlAs6Gx4p+nvma7XjI2RSEN9JTEdF8AnOBj5Eiy2LlK8ZPyiXoejvWdCo
+         vNVfDZkrzydF9qOVKMdx8JNAn71QrUWVNvuySZHoPxVx/ATKQS8jviHZbC66k9SiavRp
+         Xh4Y3edBuxSjYxqmjPYD37+WQf8rNDloVGzYoXsxyO857iUD28Uhg+NNP0zfA3LW+3zE
+         8ShQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=tXQDZ/38qZYh6K2LSUfy/ZlT8ca4F2f6CeQBxW8J2Rw=;
-        b=z5VRDKCIk3GcVX4bXobZi1Atvby7AnMZQ0nNl8eyT4WWINdO3Bl65BQrGaBuFwcaGe
-         B/Cg82udQgMFanOl6kL3zb/Cz31eRx6bQN9Gk+PNS6+wXPSG7RXm2BCwnW7YBe6cRyGN
-         vgtUYI5P46TxVEE8uPo++QdvgB2o5fR/OVkYtyzU9/N7NU2JlykD2i3NAzV2mT8feiCK
-         u8477DM11j8tuTqcxIZwnb5xyrarOCVNM1DX7Ho/GdgS3yivWJTefDdH0q1XrBa/Kapr
-         OgJFk6MRL3N+TufGVz3Xkelk05EWflm80Vviy+g2L4yWl+WyXrzZ1ENrL5uLBQW7WyYN
-         KPTg==
-X-Gm-Message-State: AJIora9wnR9leR0QSRS6zu/Xa3TgxN7uzsxYoX/A7GaW8z7Nhw4DjPlx
-        OFduCXY7s2fqexwuW6yORBQhYa27nOxWJhuPEuU=
-X-Google-Smtp-Source: AGRyM1tunwARBCrCvdwXIujxrW/QSjMvLQ9m2XGDJxT+oiqV5+SW8+0Z9kjKeE1FSlj8rczzvaUAiVUFzlL41fLDXk0=
-X-Received: by 2002:a05:6512:1052:b0:479:1f92:13b4 with SMTP id
- c18-20020a056512105200b004791f9213b4mr3606425lfb.200.1655413610945; Thu, 16
- Jun 2022 14:06:50 -0700 (PDT)
+        bh=MDMBC2uTyxc9TPqLmLiHDJqJa928rge4eTwck2J/9uM=;
+        b=2g/o7CI9D2UoDV/E5MDcjHyXfOcfqCvalos5jzugLOHHhh/Zs44sfjI0SaUHDCiQbe
+         srD6XbOpKvbS7hbE/4q3B50It+PhUbwtuLVY+4ix8Nr/2bTpKp2Rrujw62jFG/x+FtpZ
+         Z4q9Uy7+kESx0S0g4Q0SSGB9pB1jsJu2mzEwbAPuD8ClSrVNuasZZnOnu2jwHHJGrXcw
+         vP/C9HE5KfqzX6z22hCZshRed7+mtyq5E7sSUdS0FUHwOUYfjvmzLaHbodcZ/4to56as
+         8a3yGcTsvpIAkq8oRr1ODpLXycRgkJ6azE/OkWG3uumlc8S09Eyr62L7CFtWYFrqJuSg
+         0Bxw==
+X-Gm-Message-State: AOAM531hX/Y4d8G1KRfrWGmpGKHLhHytSXXTHiFC0w7VqdPEQNog59VV
+        ZojSDZSoO6Vfcp/Hq94hqF8sTGNhVEWCGbs4CPW6EQ==
+X-Google-Smtp-Source: ABdhPJyRRizb4gVeyKzgCb6DKuEQzZg/aSSJcQ3OvUMxYRuZMuoa3UQyqOTmfH2045gbZ5xAWDkYnrWMfpYxTVY+m80=
+X-Received: by 2002:a7b:c7da:0:b0:39c:5b34:3019 with SMTP id
+ z26-20020a7bc7da000000b0039c5b343019mr17371381wmk.115.1655413653567; Thu, 16
+ Jun 2022 14:07:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-6-tmaimon77@gmail.com>
- <CAK8P3a2CNxijmy0AO6NEfg=hxQZn5WxgQij4JgkTjDTfZZSScA@mail.gmail.com>
-In-Reply-To: <CAK8P3a2CNxijmy0AO6NEfg=hxQZn5WxgQij4JgkTjDTfZZSScA@mail.gmail.com>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Fri, 17 Jun 2022 00:06:40 +0300
-Message-ID: <CAP6Zq1h+PzkD1vjx787F_tbk30rAZHEkZp9uNUOmrFSd4gLO=g@mail.gmail.com>
-Subject: Re: [PATCH v2 05/20] watchdog: npcm_wdt: Add NPCM845 watchdog support
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        gregkh <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        "nathan=20Neusch=C3=A4fer?=" <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
+References: <20220603055156.2830463-1-irogers@google.com> <165428101333.23591.13242354654538988127.git-patchwork-notify@kernel.org>
+ <CAP-5=fWwKkj1HtAvOXxGxcrG99gpy8v4ReW_Jh7uumbQMiJYng@mail.gmail.com> <CAEf4BzYYcnu1PHoudKnvpjPJAszgu3TFSbNe=E6vctgh9JLkTg@mail.gmail.com>
+In-Reply-To: <CAEf4BzYYcnu1PHoudKnvpjPJAszgu3TFSbNe=E6vctgh9JLkTg@mail.gmail.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Thu, 16 Jun 2022 14:07:21 -0700
+Message-ID: <CAP-5=fUANeeEHyCrynbJRrE4cU0BNrWYXN2G=MikjZS0cTJ1ZA@mail.gmail.com>
+Subject: Re: [PATCH v2] libbpf: Fix is_pow_of_2
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Yuze Chi <chiyuze@google.com>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
-
-On Wed, 8 Jun 2022 at 16:05, Arnd Bergmann <arnd@arndb.de> wrote:
+On Thu, Jun 16, 2022 at 2:00 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> On Wed, Jun 8, 2022 at 11:56 AM Tomer Maimon <tmaimon77@gmail.com> wrote:
+> On Tue, Jun 14, 2022 at 1:41 PM Ian Rogers <irogers@google.com> wrote:
 > >
-> > Add Nuvoton BMC NPCM845 watchdog support.
-> > The NPCM845 uses the same watchdog as the NPCM750.
+> > On Fri, Jun 3, 2022 at 11:30 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
+> > >
+> > > Hello:
+> > >
+> > > This patch was applied to bpf/bpf-next.git (master)
+> > > by Andrii Nakryiko <andrii@kernel.org>:
+> > >
+> > > On Thu,  2 Jun 2022 22:51:56 -0700 you wrote:
+> > > > From: Yuze Chi <chiyuze@google.com>
+> > > >
+> > > > Move the correct definition from linker.c into libbpf_internal.h.
+> > > >
+> > > > Reported-by: Yuze Chi <chiyuze@google.com>
+> > > > Signed-off-by: Yuze Chi <chiyuze@google.com>
+> > > > Signed-off-by: Ian Rogers <irogers@google.com>
+> > > >
+> > > > [...]
+> > >
+> > > Here is the summary with links:
+> > >   - [v2] libbpf: Fix is_pow_of_2
+> > >     https://git.kernel.org/bpf/bpf-next/c/f913ad6559e3
+> > >
+> > > You are awesome, thank you!
 > >
-> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> > Will this patch get added to 5.19?
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/lib/bpf/libbpf.c#n4948
+> >
 >
-> This one should no longer be needed if the timers are compatible with the
-> old ones and correctly described in the DT.
-by timers do you mean clocks?
->
->       Arnd
+> I've applied it to bpf-next, so as it stands right now - no. Do you
+> need this for perf?
 
-Best regards,
+Nope. We carry it as a patch against 5.19 in Google and was surprised
+to see I didn't need to drop the patch.  Our internal code had
+encountered the bug, hence needing the fix. I'd expect others could
+encounter it, but I'm unaware of an issue with it and perf.
 
-Tomer
+Thanks,
+Ian
+
+> > Thanks,
+> > Ian
+> >
+> > > --
+> > > Deet-doot-dot, I am a bot.
+> > > https://korg.docs.kernel.org/patchwork/pwbot.html
+> > >
+> > >
