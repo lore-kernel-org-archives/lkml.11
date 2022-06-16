@@ -2,171 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 615EFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 505B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378936AbiFPVFm (ORCPT
+        id S1378986AbiFPVGM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 17:05:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
+        Thu, 16 Jun 2022 17:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378925AbiFPVFj (ORCPT
+        with ESMTP id S1378943AbiFPVGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 17:05:39 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E4E606F1
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 14:05:37 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id t2so2225824pld.4
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 14:05:37 -0700 (PDT)
+        Thu, 16 Jun 2022 17:06:09 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04DA60A8C;
+        Thu, 16 Jun 2022 14:06:02 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25GIjgZg005235;
+        Thu, 16 Jun 2022 21:05:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-transfer-encoding : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=QpZCpUTTzEh4ele31B2viMEnUBgQKg4lMJANWXODm2w=;
+ b=B2p8Jqd/iGgzsqQ6GhW3RYT6Nqz2Cp5kwshsnQKxG59Kpqm5TlCiX5D+KHvLN1awAL80
+ 4ei/v5JtOxV7Fngq84/A+sDvfiTwhuKSjS4qwuN/RddKSsTFxU54//nFhJpgzYQI2Cse
+ lxPOlSPPrGwtwpgzb+hwnf42Qu+QNbvgzUn2UpIZ7V5zfcsQImjCpBK7o7ri5v9rrsWh
+ BGG1l1PNgKF3JG1LBrOzxrtoqwx4hG+tY0bgimvvmkU/ibgSPyqBpI2isxQuq/67qEd+
+ dA8uwZ1Sh81KiEOmSOjeMCil8bTPIGruBn2xSAQyeNdyjs2uMKA4CvInELoT+AZsJ/n4 pQ== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmjnscbnx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 16 Jun 2022 21:05:26 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25GL0HAK031901;
+        Thu, 16 Jun 2022 21:05:26 GMT
+Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam02lp2045.outbound.protection.outlook.com [104.47.56.45])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gpr2bpsb0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 16 Jun 2022 21:05:26 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OaFM771tbFoW5zUWIwRoiqvx56dyK7RmiM+y90HAVmqyNY4aySliEyyTg8U1bn0D5UTuVkbOz65QVl4g8LoSzdwH82caamj5lGbhbzcFCI9JMSOOm+6cmD97GKPAi5+TgMTTZhXxDWMMfhIh/qrTz8vnWDCGzFEo/xP+C/lOa+zxGqfhDbyvIojIWSl1PEgVKO3wXpS1ANp2CtVvq+9xQ7O0fWaWv8kfhwqq4E9WhxUUzyzeuELvvL0a+CbmFAh/7Q3PE9Dbl26liPoG0I3bD8W7vLLrS4P4TcVTSssckFTzYRT6h/vf3LL8aS6vyrDBkc/wlyQxCICxdkVbaqBOYQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QpZCpUTTzEh4ele31B2viMEnUBgQKg4lMJANWXODm2w=;
+ b=ceQWXG4fFJqj3XNvPwVVjVTWRBOnmywJ52ls7oANpYSRN3Q0kZRzc4zi8axuAbQcGeMgaTU58JdIuoqniJdpKr37E+9dgia4CR//dRbGUDzZyJ1OpmQTSj5peMPoJuCoy9yKb4qyRJnl0KfPfD37wP4is0BQWLGWyzM2ldOxjSDyzVpfkFDBYEwRgZJuMo/w+XQxi4UYGCQQSr623/Lm0POigrzkRZsxh77l+4QA3hJ8UMCRCGvlZQ/eg/+kplrHeUvP79WaxYndIMm6rKv23sbvWTc1uwLYXcnaaa9cRH7Umo97rTnNG3P/IrdL3rMbJ7eXXX/WhIXgH2585GfOOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qWeAN6wBOdgTg8JbowHd+2FzjeCfu8a+6968a4QI8WI=;
-        b=N5ZFoL+aFoUS6hB954SKMlb7yCUNVwnEz5QTGbIWpo81EwQ1sMXtUJNQgQWUFXyaqj
-         B3EKyPgnhgeP6Zxqc0o0AXWyPWgb2jZKHij8R6bu7VXYG/qL6Jeu3Pus4aTVrIH5N/up
-         1mVgnWLjqxO/IM/TYAske9+86aHB4TE/sPT2q6jKDvKrVbIRbqCUop88VsbKe70HL/Xn
-         WD13w1gMuXTC77dfwj7AUO0e7PAT47hYpwj/3hqPUXU+ijawuZQFwT1JvD33vRGoqe5d
-         JySTlKChot+aWilu0E/PsGcDvuRxR9SgKE0cOeMTOx1RDYK8f3vG2bi+O+s59MTFKM8U
-         9Wlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qWeAN6wBOdgTg8JbowHd+2FzjeCfu8a+6968a4QI8WI=;
-        b=Hs6shr11+Bws3ilTVbJC6ymiNMNs9b5vVFIkIazRwsFQcAtoEp2BPs3xClGj+nuTOr
-         i1anfnRPY8UpGjBQB1nqZir2GVFU54bVlITVgbMjT/gm1Ix5XD46W9zUOdesW3BDTfXj
-         Z5sj3xxZh0v18z2j59UyiuKg70KG7/xTyq7BrFFzmYykK+8UEXydvhokdvgchlEKEFsY
-         FO5OtMbsH67IynynFHadw1wLjeFbhYK9Ln2WPwsUU5rhitA16hSv1t+KXdsLLYby882P
-         LQwVTVzkgM6pPvfifCDZBDb0onu7JGL+r+1Oh+WDgSjI5Bee7IFOfw4nX68bL2fko41s
-         hZ9Q==
-X-Gm-Message-State: AJIora9cO20KbU6TaYvPP9ucd5utGiwyKbUX4sX+m6SzR9rGpf7nVhbI
-        3a+62a/CnNIGx19oWdtaX3mkrQ==
-X-Google-Smtp-Source: AGRyM1unXZ92n4cSgCY+nW05HkVgMJnrvjv1CRQe+KwLgKR+A0HSLHUM2FUPV+vxq7K020P5WmFE0w==
-X-Received: by 2002:a17:90b:4d8a:b0:1e6:87ad:bfd3 with SMTP id oj10-20020a17090b4d8a00b001e687adbfd3mr7000104pjb.138.1655413536660;
-        Thu, 16 Jun 2022 14:05:36 -0700 (PDT)
-Received: from [172.22.33.138] ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id y5-20020a17090ad70500b001dd16b86fc0sm4249403pju.19.2022.06.16.14.05.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jun 2022 14:05:36 -0700 (PDT)
-Message-ID: <dd9b9be2-7bdf-6cb6-b8ad-d7c0a0d5b98a@linaro.org>
-Date:   Thu, 16 Jun 2022 14:05:34 -0700
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QpZCpUTTzEh4ele31B2viMEnUBgQKg4lMJANWXODm2w=;
+ b=C9p5tBpbvd5wgqZ7mQvPoLK5nG1P+NAQ58tT84prgUQh8zUDOppBZn+YUI95BrKE2hvSmja1XQ/pjyevqrsCSmGTIIf0RKlzses7oOWbc/SDOiEweMNgwq0HHwxl4gyskiAFKAaaeB0AiRsgVgE1PU8PDRCIRIsRm7BSevAZoUM=
+Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
+ by DS0PR10MB6197.namprd10.prod.outlook.com (2603:10b6:8:c3::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5332.22; Thu, 16 Jun 2022 21:05:24 +0000
+Received: from BY5PR10MB4196.namprd10.prod.outlook.com
+ ([fe80::2125:9bb7:bfeb:81f9]) by BY5PR10MB4196.namprd10.prod.outlook.com
+ ([fe80::2125:9bb7:bfeb:81f9%8]) with mapi id 15.20.5353.015; Thu, 16 Jun 2022
+ 21:05:24 +0000
+From:   Mike Kravetz <mike.kravetz@oracle.com>
+To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc:     Muchun Song <songmuchun@bytedance.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        James Houghton <jthoughton@google.com>,
+        Mina Almasry <almasrymina@google.com>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.vnet.ibm.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        catalin.marinas@arm.com, will@kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Subject: [PATCH 0/4] hugetlb: speed up linear address scanning
+Date:   Thu, 16 Jun 2022 14:05:14 -0700
+Message-Id: <20220616210518.125287-1-mike.kravetz@oracle.com>
+X-Mailer: git-send-email 2.35.3
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MW4PR03CA0220.namprd03.prod.outlook.com
+ (2603:10b6:303:b9::15) To BY5PR10MB4196.namprd10.prod.outlook.com
+ (2603:10b6:a03:20d::23)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 02/15] dt-bindings: power: supply: Add Mediatek MT6370
- Charger
-Content-Language: en-US
-To:     ChiaEn Wu <peterwu.pub@gmail.com>, jic23@kernel.org,
-        lars@metafoo.de, matthias.bgg@gmail.com, lee.jones@linaro.org,
-        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com, ChiaEn Wu <chiaen_wu@richtek.com>
-References: <20220613111146.25221-1-peterwu.pub@gmail.com>
- <20220613111146.25221-3-peterwu.pub@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220613111146.25221-3-peterwu.pub@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 833a5b65-45e3-47eb-093d-08da4fdbee49
+X-MS-TrafficTypeDiagnostic: DS0PR10MB6197:EE_
+X-Microsoft-Antispam-PRVS: <DS0PR10MB619707D3D5995D8CBE7EDF3AE2AC9@DS0PR10MB6197.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pp6fbO9DmIiOaCIHj9DTM+XKqClbmCIxuGflJTguiJjBYtyoHhvylOTqaC7dKAYIq8P0HCLC70baSs0SHvkF6MLoobBSKQmvT3u8YnrYuDi6D//ROJ1f1JTs9tiJtlDZn7rW30ZlEuG7FwUwXX2PbQCkRFE0rtNJMuU1GuFC2Kt1J+foJnt+X5natad9878I/4ZR7EBR5tvfiUnqj3/Y5MR32RSZa6itfDLUESNdIOJiaBYWdtyaRrW05K+wa/xGA3gtRtik7JmE8/LbMvGTojGLwZZ/nRYdu1bq0Zo1bKByYNBg/iIrAsagHHAFlAk2n/l82ATlFmJoNFZRmqQnSBvK6E13x0qLxOVTsALmAMYKDsHutBkurk/qcHw0kNzvDQ/oAzlMC4WXch1KUcSvfvqcsRpVvzj388uu7uqya7ZYACYLXbxCq4yBlfaJJiwImAGS+ewOF4GCjsRRSQJZ/wFeYbQkfHKpzrGqPdHh1YnFdW2SW4m6pywukC/jLYixyPnzDIajPwelRM6vSc3RjILT+bb/xEi/0RnYnFpIXwWQdCTH81ENPdLpolJeC4frqzzV0s9QT89aGbIQCBy/aMpYEXYzgZkALwGklzJobC+A2gurjd9hu9iH3ERan55/z/t5947D2wp++LMthxp3P27bbQdxgEkQ98uraTchxw/VXWknpte81ZQY8K/kXtVK
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(6486002)(38100700002)(6666004)(66946007)(7416002)(83380400001)(316002)(2906002)(66476007)(6506007)(4326008)(8676002)(54906003)(1076003)(498600001)(5660300002)(66556008)(86362001)(26005)(44832011)(36756003)(6512007)(2616005)(186003)(921005)(8936002)(107886003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HT1vbJNma+8ymAOMuQXIIs8WNu462ADHxqVAsCecpD5RnCNYHu+n0XDWwm3B?=
+ =?us-ascii?Q?ZecwIl1IL4l01rUxpkNsdoGCvrvEB7CMEZBCDk0puhmQBOlwoEDSaWKnZyMm?=
+ =?us-ascii?Q?Wb0DaVkLXSXbsDHp9Z/NhpRgYfmB6qG3n3eGhwIi5HKAzU6AavvkwabMzrvz?=
+ =?us-ascii?Q?pDKen/8LzrB1ckHhy9R7JxDdzAx5iSd4TzMlgOfXd75zYPOKtl8cuhk1UjWX?=
+ =?us-ascii?Q?ISOQSsjLSDZfxJNXOdPhfw25iIcq5Vsjo77If/s2mDU2+YIVhoGgajy+zeCz?=
+ =?us-ascii?Q?cYMFDgP/U0/6GINBlB7jc1y+baKFFX06tyM0tN0q6v6XpZbfn/sSJ9m27a8M?=
+ =?us-ascii?Q?aHlsS0OA/LK12T3rZRoCEVA6f56FYjoESaanNehSLx5v27M60HsbZrTyJbzc?=
+ =?us-ascii?Q?/Iq9JuOiHYko0ZeTMxweeGt6xGQexFSaLe7IpXbuLRQw5BrBq74vbEqHA7M8?=
+ =?us-ascii?Q?3ZhYsqpODGzNjuVsb6PuI7x+2qeUkxcYHASp+zqooTs3ZTKb3CehZo3NJzr5?=
+ =?us-ascii?Q?hLNRWHBDLgj9W/yPiQkYhXrmHhlA8jXuka8flZi9Cq+sr1e7tSb8/j6rtUD5?=
+ =?us-ascii?Q?RHSH7YGw+OwlSTbzvBU2LNjpJyLidFsqQg+m0Nc6jfpSajw7MOI6fUOjWPYx?=
+ =?us-ascii?Q?GvBzBaFjhuqE/juBJ+lEmL3YIIqV/isMARXudQTxb/vV4syPC8jttn2jd6tX?=
+ =?us-ascii?Q?VzGDegbM/Z10L6Sts/PA/F499fXhtFapxVO1SHZ2FDtB07AL6NwYTDF7Uykx?=
+ =?us-ascii?Q?s6P3gn6lUVj14ByJBwfCeuqxY4hDLnTHNGE7FGL+9HqDvb/hM5lowEVkLkNz?=
+ =?us-ascii?Q?G69gKs2matClOJR3KkbrgKT+DLbeqw4OJWMSQJKoOXxkSvyXQRQeaAt3aHQW?=
+ =?us-ascii?Q?hCf0KI8eccTsQj/fAlaHe5Spt1zSZ0SGeu4zvvTeC777L8VCu2ypVVMao4aG?=
+ =?us-ascii?Q?SdlOMAlJDs3dnvJP6YxvZYLNa2XLqeb8BxvuGy9QlU9VV3fUHal5Uyj/jTtJ?=
+ =?us-ascii?Q?yCo+T3/6er+sJdMW085S7EmTq1tqOMFgHVsLtePOZpKDzDB5h3soVafNmsut?=
+ =?us-ascii?Q?8GpLBm/hM/bkd5g+4lJqlPX+9/QsaYmWMoJC6gWgiIriRtLxhclZEdgqyzLG?=
+ =?us-ascii?Q?YxakgHO8Id2UCwSzjy1Kx1QqnXXqWgpqmfx/tlDLkHafJ7Y1lb9hdu/RZGSE?=
+ =?us-ascii?Q?9y2gIZ+IpUp2oqdEkr6yqAFZus0wc1P4Cmr/IWq6bHaJ2nsesyvd9ebbCFDz?=
+ =?us-ascii?Q?MRC2a23Ikpe0gplFgNkwV5z7JEWygnZB5yOY5nbvEhooQmQQ9AUF6HK9TLvj?=
+ =?us-ascii?Q?4ZsZrjZ7eB5vYh7i8G1ymdy9BrNrPxLNapcYO4O9rBOIxLY9chGzuN76rbFO?=
+ =?us-ascii?Q?Nk/dqIGTXUS+6M91thDONNipsSrlNDMrl5LRdQJ8tBoZATJcK5ClAuQifRHp?=
+ =?us-ascii?Q?0WTz/BMV8mwLK+lxJ2i5ERZkjonr7GCWRLhVwH75G/hkikTepeIIq/eXdOV8?=
+ =?us-ascii?Q?lXJfhgZOHkWzIES6KmJ/hXzmRhGFyOq4iofDV4/X7NQloBr8fJg0bJB4b8oJ?=
+ =?us-ascii?Q?ag/1CqsrRvFiNsVBObA+TtyJphHIGwPjGVMpl95/Kjc1nU2XSnBKobS/1NfQ?=
+ =?us-ascii?Q?vxiskBlIn84Ib0T4GR9NOfxd480tgmXyxuuBsLWhZAr9w/idcTXnX+a4DTeO?=
+ =?us-ascii?Q?kFBFnWSJ7EujF4Qc2ybiGYWflpLsq+irPzlFhc5MML8+NCfzdGpPuW51zEFd?=
+ =?us-ascii?Q?dKX1JiSyqCP1C9TQOQW3QSAisxxg5vg=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 833a5b65-45e3-47eb-093d-08da4fdbee49
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2022 21:05:24.3354
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +WqW0pIQjQEyrChZbuDw3j2/Hgdh539HtpsK3lWHv5Sh8J1BPWRdq+2Tbj3bGVTbFtOTt0fEirL8WXeP5eANAw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR10MB6197
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
+ definitions=2022-06-16_16:2022-06-16,2022-06-16 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 adultscore=0
+ mlxlogscore=632 phishscore=0 malwarescore=0 bulkscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2206160084
+X-Proofpoint-GUID: oUKA8D6jfRc-KarU3RJEtIBUHTQe9aX9
+X-Proofpoint-ORIG-GUID: oUKA8D6jfRc-KarU3RJEtIBUHTQe9aX9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/06/2022 04:11, ChiaEn Wu wrote:
-> From: ChiaEn Wu <chiaen_wu@richtek.com>
-> 
-> Add Mediatek MT6370 Charger binding documentation.
-> 
-> Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
-> ---
->  .../power/supply/mediatek,mt6370-charger.yaml | 60 +++++++++++++++++++
->  1 file changed, 60 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml b/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
-> new file mode 100644
-> index 000000000000..b63553ebb15b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
-> @@ -0,0 +1,60 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/power/supply/mediatek,mt6370-charger.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Mediatek MT6370 Battery Charger
-> +
-> +maintainers:
-> +  - ChiaEn Wu <chiaen_wu@richtek.com>
-> +
-> +description: |
-> +  This module is part of the MT6370 MFD device.
-> +  Provides Battery Charger, Boost for OTG devices and BC1.2 detection.
-> +
-> +properties:
-> +  compatible:
-> +    const: mediatek,mt6370-charger
-> +
-> +  interrupts:
-> +    description: |
-> +      Specify what irqs are needed to be handled by MT6370 Charger driver. IRQ
-> +      "MT6370_IRQ_CHG_MIVR", "MT6370_IRQ_ATTACH" and "MT6370_IRQ_OVPCTRL_UVP_D"
-> +      are required.
-> +    items:
-> +      - description: BC1.2 done irq
-> +      - description: usb plug in irq
-> +      - description: mivr irq
-> +
-> +  interrupt-names:
-> +    items:
-> +      - const: attach_i
-> +      - const: uvp_d_evt
-> +      - const: mivr
-> +
-> +  io-channels:
-> +    description: |
-> +      Use ADC channel to read vbus, ibus, ibat, etc., info. Ibus ADC channel
-> +      is required.
+At unmap, fork and remap time hugetlb address ranges are linearly
+scanned.  We can optimize these scans if the ranges are sparsely
+populated.
 
-Add io-channel-names and describe each item - what type of ADC it is
-expected to be.
+Also, enable page table "Lazy copy" for hugetlb at fork.
 
-> +    minItems: 1
-> +    maxItems: 9
-> +
-> +  usb-otg-vbus-regulator:
-> +    type: object
-> +    description: OTG boost regulator.
-> +    $ref: /schemas/regulator/regulator.yaml#
+NOTE: Architectures not defining CONFIG_ARCH_WANT_GENERAL_HUGETLB
+need to add an arch specific version hugetlb_mask_last_page() to
+take advantage of sparse address scanning improvements.  Baolin Wang
+added the routine for arm64.  Other architectures which could be
+optimized are: ia64, mips, parisc, powerpc, s390, sh and sparc.
 
-unevaluatedProperties: false
+Baolin Wang (1):
+  arm64/hugetlb: Implement arm64 specific hugetlb_mask_last_page
 
-> +
-> +    properties:
-> +      enable-gpio:
+Mike Kravetz (3):
+  hugetlb: skip to end of PT page mapping when pte not present
+  hugetlb: do not update address in huge_pmd_unshare
+  hugetlb: Lazy page table copies in fork()
 
-"gpios", so:
-enable-gpios
+ arch/arm64/mm/hugetlbpage.c |  20 +++++++
+ include/linux/hugetlb.h     |   5 +-
+ mm/hugetlb.c                | 109 +++++++++++++++++++++++++-----------
+ mm/memory.c                 |   2 +-
+ mm/rmap.c                   |   4 +-
+ 5 files changed, 103 insertions(+), 37 deletions(-)
 
-> +        maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - interrupts
-> +  - interrupt-names
-> +  - io-channels
-> +
-> +additionalProperties: false
-> +
-> +...
+-- 
+2.35.3
 
-
-Best regards,
-Krzysztof
