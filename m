@@ -2,56 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57DC2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64EE8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358995AbiFPGNY (ORCPT
+        id S1359024AbiFPGN5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 02:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
+        Thu, 16 Jun 2022 02:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358989AbiFPGNS (ORCPT
+        with ESMTP id S1358989AbiFPGNy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 02:13:18 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488B927CED
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:13:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5o1Ys4ieRSqjv3+eRXfpB9VkGSv0VjKBWqXd1dfvccs=; b=Js/uI3K8FXXY6hOON2Xtt+VqkV
-        Bk7NaU6mqsRF+VFxtPHkVQ3DvOxAG8JU6MibjM/Z4oelhZnEwEtu28WyFHjQLDxtwshahGmBVz4dI
-        QOp5J+OMqu1SODqMGYeBH7uwyqo+VSGInl8xBHKfzmm/RYY8ceD4aKXkUOAYhED2l9+WpJYljiODy
-        2oJ/5FYhUyMWqZwzMotBkkeNkCQpKboocOQqJZuctlYUrJjnVFEXJ97opWkrepnj+Zs2g6Q53lMN3
-        Vx3MWyewD+BzTQl5MioIypyKmDAH4L8vV6SGpbep33IkxkvL/0RfiZ9fUvPkmcut75mAiQXfrfpuo
-        AQ8JK9dg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1ikk-000h16-Se; Thu, 16 Jun 2022 06:13:14 +0000
-Date:   Wed, 15 Jun 2022 23:13:14 -0700
-From:   "hch@infradead.org" <hch@infradead.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V3 0/2] mm/mmap: Drop __SXXX/__PXXX macros from across
- platforms
-Message-ID: <YqrJ+nQ2Th27lf2k@infradead.org>
-References: <20220616040924.1022607-1-anshuman.khandual@arm.com>
- <1fe37a32-f11b-fbc4-7fca-46dcc89b50c4@csgroup.eu>
+        Thu, 16 Jun 2022 02:13:54 -0400
+Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D057533883
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:13:50 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id KCD00144;
+        Thu, 16 Jun 2022 14:13:44 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201601.home.langchao.com (10.100.2.1) with Microsoft SMTP Server id
+ 15.1.2308.27; Thu, 16 Jun 2022 14:13:45 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <johan@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] gnss: Remove usage of the deprecated ida_simple_xxx API
+Date:   Thu, 16 Jun 2022 00:47:33 -0400
+Message-ID: <20220616044733.3605-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1fe37a32-f11b-fbc4-7fca-46dcc89b50c4@csgroup.eu>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   20226161413449a8fcf6a1089cae2fb28a060a6c8d695
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 05:22:23AM +0000, Christophe Leroy wrote:
-> I think you should keep the architecture lists in copy allthough you 
-> don't include individual maintainers/reviewers for now.
+Use ida_alloc_xxx()/ida_free() instead of
+ida_simple_get()/ida_simple_remove().
+The latter is deprecated and more verbose.
 
-That's what I tend to do for big global changes.
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ drivers/gnss/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gnss/core.c b/drivers/gnss/core.c
+index e6f94501cb28..1e82b7967570 100644
+--- a/drivers/gnss/core.c
++++ b/drivers/gnss/core.c
+@@ -217,7 +217,7 @@ static void gnss_device_release(struct device *dev)
+ 
+ 	kfree(gdev->write_buf);
+ 	kfifo_free(&gdev->read_fifo);
+-	ida_simple_remove(&gnss_minors, gdev->id);
++	ida_free(&gnss_minors, gdev->id);
+ 	kfree(gdev);
+ }
+ 
+@@ -232,7 +232,7 @@ struct gnss_device *gnss_allocate_device(struct device *parent)
+ 	if (!gdev)
+ 		return NULL;
+ 
+-	id = ida_simple_get(&gnss_minors, 0, GNSS_MINORS, GFP_KERNEL);
++	id = ida_alloc_max(&gnss_minors, GNSS_MINORS - 1, GFP_KERNEL);
+ 	if (id < 0) {
+ 		kfree(gdev);
+ 		return NULL;
+-- 
+2.27.0
+
