@@ -2,181 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:13:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E72CCCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358968AbiFPHNb (ORCPT
+        id S1358984AbiFPHOQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 03:13:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
+        Thu, 16 Jun 2022 03:14:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359041AbiFPHNY (ORCPT
+        with ESMTP id S229817AbiFPHON (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 03:13:24 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335B123143;
-        Thu, 16 Jun 2022 00:13:21 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id BD72E240004;
-        Thu, 16 Jun 2022 07:13:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1655363600;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/ylwRydwSJ1vl505rIcsqlZRV8qHAjzTkuzOn3IJaxY=;
-        b=LJPb2Nd1CvgSZLX2nP41tGlPv6KZN9tbzWLxHLWLbPbK9vWbVOfa2G9oJIScPODdB0HHDT
-        puwfaAEjZa/qWjni4mrATRg9Hz7OeZLFCOsfBJ5FR2sDgQ0iYz2EWLU+zzqnlR3ISNN+UK
-        kCJLFH1N7RiaMBpRqW0k5sHPRqdAanVW2V35vB4PwRIGqsSXtZhvyvpr08lMa/PYhf0rzh
-        j0L0DdnBx+4gdnxlLgaDcPB7nEqxhKeGBT5RpzJg64e9nAoYbPNGq1GX+GoOneNGxY4BsT
-        QDhKQKrPWQl1OIiQlFTNoZgWS+brgsq7PcScRJNlKSfPZw2mD7Kk/onqljfLqA==
-Date:   Thu, 16 Jun 2022 09:12:22 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH RESEND net-next v7 05/16] net: pcs: add Renesas MII
- converter driver
-Message-ID: <20220616091222.4dbf9de3@fixe.home>
-In-Reply-To: <20220614223109.603935fb@kernel.org>
-References: <20220610103712.550644-1-clement.leger@bootlin.com>
-        <20220610103712.550644-6-clement.leger@bootlin.com>
-        <20220614223109.603935fb@kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Thu, 16 Jun 2022 03:14:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF145B3D6;
+        Thu, 16 Jun 2022 00:14:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92166B82281;
+        Thu, 16 Jun 2022 07:14:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A597C34114;
+        Thu, 16 Jun 2022 07:14:07 +0000 (UTC)
+Message-ID: <39a83a7e-caaf-1dac-1072-72cd2f5d8bf5@xs4all.nl>
+Date:   Thu, 16 Jun 2022 09:14:05 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 0/2] media: cedrus: fix HEVC decoding
+Content-Language: en-US
+To:     Jernej Skrabec <jernej.skrabec@gmail.com>, mripard@kernel.org,
+        paul.kocialkowski@bootlin.com
+Cc:     mchehab@kernel.org, wens@csie.org, samuel@sholland.org,
+        benjamin.gaignard@collabora.com, nicolas.dufresne@collabora.com,
+        gregkh@linuxfoundation.org, linux-media@vger.kernel.org,
+        linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+References: <20220615204436.137377-1-jernej.skrabec@gmail.com>
+From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
+In-Reply-To: <20220615204436.137377-1-jernej.skrabec@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Tue, 14 Jun 2022 22:31:09 -0700,
-Jakub Kicinski <kuba@kernel.org> a =C3=A9crit :
-
-> On Fri, 10 Jun 2022 12:37:01 +0200 Cl=C3=A9ment L=C3=A9ger wrote:
-> > Subject: [PATCH RESEND net-next v7 05/16] net: pcs: add Renesas MII con=
-verter driver
-> >=20
-> > Add a PCS driver for the MII converter that is present on the Renesas
-> > RZ/N1 SoC. This MII converter is reponsible for converting MII to
-> > RMII/RGMII or act as a MII pass-trough. Exposing it as a PCS allows to
-> > reuse it in both the switch driver and the stmmac driver. Currently,
-> > this driver only allows the PCS to be used by the dual Cortex-A7
-> > subsystem since the register locking system is not used. =20
->=20
-> Could someone with MII &| PCS knowledge cast an eye over this code?
-> All I can do is point out error path issues...
->=20
-> > +struct phylink_pcs *miic_create(struct device *dev, struct device_node=
- *np)
-> > +{
-> > +	struct platform_device *pdev;
-> > +	struct miic_port *miic_port;
-> > +	struct device_node *pcs_np;
-> > +	struct miic *miic;
-> > +	u32 port;
-> > +
-> > +	if (!of_device_is_available(np))
-> > +		return ERR_PTR(-ENODEV);
-> > +
-> > +	if (of_property_read_u32(np, "reg", &port))
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> > +	if (port > MIIC_MAX_NR_PORTS || port < 1)
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> > +	/* The PCS pdev is attached to the parent node */
-> > +	pcs_np =3D of_get_parent(np); =20
->=20
-> of_get_parent()? ..
->=20
-> > +	if (!pcs_np)
-> > +		return ERR_PTR(-ENODEV);
-> > +
-> > +	if (!of_device_is_available(pcs_np))
-> > +		return ERR_PTR(-ENODEV); =20
->=20
-> .. more like of_leak_parent()
-
-Indeed, I'll fix that.
-
->=20
-> > +	pdev =3D of_find_device_by_node(pcs_np);
-> > +	if (!pdev || !platform_get_drvdata(pdev))
-> > +		return ERR_PTR(-EPROBE_DEFER);
-> > +
-> > +	miic_port =3D kzalloc(sizeof(*miic_port), GFP_KERNEL);
-> > +	if (!miic_port)
-> > +		return ERR_PTR(-ENOMEM);
-> > +
-> > +	miic =3D platform_get_drvdata(pdev);
-> > +	device_link_add(dev, miic->dev, DL_FLAG_AUTOREMOVE_CONSUMER);
-> > +
-> > +	miic_port->miic =3D miic;
-> > +	miic_port->port =3D port - 1;
-> > +	miic_port->pcs.ops =3D &miic_phylink_ops;
-> > +
-> > +	return &miic_port->pcs;
-> > +}
-> > +EXPORT_SYMBOL(miic_create); =20
->=20
-> > +static int miic_parse_dt(struct device *dev, u32 *mode_cfg)
-> > +{
-> > +	s8 dt_val[MIIC_MODCTRL_CONF_CONV_NUM];
-> > +	struct device_node *np =3D dev->of_node;
-> > +	struct device_node *conv;
-> > +	u32 conf;
-> > +	int port;
-> > +
-> > +	memset(dt_val, MIIC_MODCTRL_CONF_NONE, sizeof(dt_val));
-> > +
-> > +	of_property_read_u32(np, "renesas,miic-switch-portin", &conf);
-> > +	dt_val[0] =3D conf;
-> > +
-> > +	for_each_child_of_node(np, conv) {
-> > +		if (of_property_read_u32(conv, "reg", &port))
-> > +			continue;
-> > +
-> > +		if (!of_device_is_available(conv))
-> > +			continue;
-> > +
-> > +		if (of_property_read_u32(conv, "renesas,miic-input", &conf) =3D=3D 0)
-> > +			dt_val[port] =3D conf;
-> > +
-> > +		of_node_put(conv); =20
->=20
-> Don't these iteration functions put() the current before taking the
-> next one all by themselves? Or is there supposed to be a "break" here?
-
-Yes, of_node_put() should actually only be called in case of early exit.
-I'll fix that.
 
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+On 6/15/22 22:44, Jernej Skrabec wrote:
+> After detailed comparison of register names to vendor library I noticed
+> that one register has completely different name. After some testing I
+> discovered that it was misnamed and used incorrectly. This patch series
+> fixes it. With that, 3 more reference bitstreams are now correctly
+> decoded. It is also possible that this fixes instability issue I had
+> after decoding such bitstreams. Running Fluster test suite very often
+> locked up my board, but after applying this fix, I never experienced it
+> again. It might still be completely coincidental, but I doubt this is
+> the case.
+> 
+> Note: Patch 2 clashes with HEVC uAPI destaging. In current form, it can
+> be easily backported. However, there are few users of Cedrus HEVC and
+> skipping this fix wouldn't be that bad.
+> 
+> Please let me know which way to go:
+> 1) wait for destaging, send rebased v2 and not care about backporting
+
+Let's go with 1. There is not much point in backporting since destaging
+the HEVC API will also change it, so userspace will need to adapt. It's
+a staging driver anyway (although hopefully not for long).
+
+If you post a v2 on top of the latest series from Benjamin, then that
+should almost certainly work fine when Benjamin posts what will hopefully
+be the final version of his series. When it is all OK, then I put both in
+the same PR.
+
+Regards,
+
+	Hans
+
+> 2) merge before destaging, but v9 of HEVC uAPI destaging would need to
+>    be rebased.
+> 3) something else?
+> 
+> Best regards,
+> Jernej
+> 
+> Jernej Skrabec (2):
+>   media: cedrus: h265: Fix flag name
+>   media: cedrus: h265: Fix logic for not low delay flag
+> 
+>  .../staging/media/sunxi/cedrus/cedrus_h265.c  | 29 ++++++++++++++++++-
+>  .../staging/media/sunxi/cedrus/cedrus_regs.h  |  3 +-
+>  2 files changed, 29 insertions(+), 3 deletions(-)
+> 
