@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0031CCCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 10:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 10:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231200AbiFPKYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 06:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
+        id S1376605AbiFPKZx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 06:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiFPKYb (ORCPT
+        with ESMTP id S1376565AbiFPKZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 06:24:31 -0400
+        Thu, 16 Jun 2022 06:25:47 -0400
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA2E5A2D3;
-        Thu, 16 Jun 2022 03:24:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CBB5D66B;
+        Thu, 16 Jun 2022 03:25:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ONvx+l+n21mU4SRMI+oxjSdQZ0rMJlHHALZTxjAM1Bg=; b=YlxyFmKu9FBt9QLtgjDJ36ZcVP
-        lYzM3bMHpkozc7Vb4eCjlCw8vGWfVrvU/Og+v/+FE/o8TKG6Gi/IgUkt4oFrb406ou9q08mfRXzse
-        xLRlkn4l58cdVNRLICUm3WXDkUtmwBNnztn0CP/DeQiI8j/cHhl2+R2lHzg0RSDzD2MLgoTDIiTfj
-        sX+HL9O612L+2EhT9onFJo1LMZCY6m5d6pl5Psej0ZbO7qY9QLaYYqU0coZknMyvXX88fUqL1nFjS
-        i7ZIx/ZmajGpa+fHturGlwgIHlrTxXcvHueci+T+FgXjROkU+flekWQrbpCkxg9hI6LTLHZokpP7z
-        Vm+DiywQ==;
+        bh=qCNpGrURBOL5WaNoLGR+TiQCsTHpJ5I4gKVYyIhMhq4=; b=FsauEinDYWkzDJi5mojX/TZe65
+        lhNmxUtxP2pUmxCmju1Svy+Zmfw6k0+HME+T5kz5y4DaZqL05DXRBDPQ5ZBbCXAleYGmk9c+ISABJ
+        J5sEYMTRGp6rEB1nBt2TizrfHTYSaJWQtMsqtzTA6/8Zdk7rwXvjFW3Apao5lsWmfd3U4j1cpuMBU
+        hVSmagMn9QAetw44+3uC+xxcyxo63NcoZSgoSa2g+JaomriVlZo1++TmZMHPHk3n0pewhqHA6J2sE
+        c7/UdTd6L1wY9gS/UVnxWgIAO4/wJXsoSGAStjuG5QM6NFJ2amnzE4/iuapdRVSeUR68XHDt8Z/8s
+        tTaPelNg==;
 Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o1mfb-008OFr-Gk; Thu, 16 Jun 2022 10:24:13 +0000
+        id 1o1mgz-008OHI-SP; Thu, 16 Jun 2022 10:25:38 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 02615302AC0;
-        Thu, 16 Jun 2022 12:24:11 +0200 (CEST)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 84116302E4D;
+        Thu, 16 Jun 2022 12:25:37 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id E04912019864B; Thu, 16 Jun 2022 12:24:10 +0200 (CEST)
-Date:   Thu, 16 Jun 2022 12:24:10 +0200
+        id 75FC92019864B; Thu, 16 Jun 2022 12:25:37 +0200 (CEST)
+Date:   Thu, 16 Jun 2022 12:25:37 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Yang Weijiang <weijiang.yang@intel.com>
 Cc:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
@@ -45,7 +46,7 @@ Cc:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
         Kees Cook <keescook@chromium.org>
 Subject: Re: [PATCH 03/19] x86/cpufeatures: Enable CET CR4 bit for shadow
  stack
-Message-ID: <YqsEyoaxPFpZcolP@hirez.programming.kicks-ass.net>
+Message-ID: <YqsFIRDPvaEKMqIh@hirez.programming.kicks-ass.net>
 References: <20220616084643.19564-1-weijiang.yang@intel.com>
  <20220616084643.19564-4-weijiang.yang@intel.com>
 MIME-Version: 1.0
@@ -57,48 +58,27 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Thu, Jun 16, 2022 at 04:46:27AM -0400, Yang Weijiang wrote:
-> --- a/arch/x86/include/asm/cpu.h
-> +++ b/arch/x86/include/asm/cpu.h
-> @@ -74,7 +74,7 @@ void init_ia32_feat_ctl(struct cpuinfo_x86 *c);
->  static inline void init_ia32_feat_ctl(struct cpuinfo_x86 *c) {}
->  #endif
->  
-> -extern __noendbr void cet_disable(void);
-> +extern __noendbr void ibt_disable(void);
->  
->  struct ucode_cpu_info;
->  
-> diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-> index c296cb1c0113..86102a8d451e 100644
-> --- a/arch/x86/kernel/cpu/common.c
-> +++ b/arch/x86/kernel/cpu/common.c
-> @@ -598,23 +598,23 @@ __noendbr void ibt_restore(u64 save)
 
->  
-> -__noendbr void cet_disable(void)
-> +__noendbr void ibt_disable(void)
+>  static __always_inline void setup_cet(struct cpuinfo_x86 *c)
 >  {
->  	if (cpu_feature_enabled(X86_FEATURE_IBT))
->  		wrmsrl(MSR_IA32_S_CET, 0);
-
-Not sure about this rename; it really disables all of (S) CET.
-
-Specifically, once we do S-SHSTK (after FRED) we might also very much
-need to kill that for kexec.
-
-> diff --git a/arch/x86/kernel/machine_kexec_64.c b/arch/x86/kernel/machine_kexec_64.c
-> index 0611fd83858e..745024654fcd 100644
-> --- a/arch/x86/kernel/machine_kexec_64.c
-> +++ b/arch/x86/kernel/machine_kexec_64.c
-> @@ -311,7 +311,7 @@ void machine_kexec(struct kimage *image)
->  	/* Interrupts aren't acceptable while we reboot */
->  	local_irq_disable();
->  	hw_breakpoint_disable();
-> -	cet_disable();
-> +	ibt_disable();
+> +	bool kernel_ibt = HAS_KERNEL_IBT && cpu_feature_enabled(X86_FEATURE_IBT);
+>  	u64 msr = CET_ENDBR_EN;
 >  
->  	if (image->preserve_context) {
->  #ifdef CONFIG_X86_IO_APIC
-> -- 
-> 2.27.0
-> 
+> +	if (kernel_ibt)
+> +		wrmsrl(MSR_IA32_S_CET, msr);
+>  
+> +	if (kernel_ibt || cpu_feature_enabled(X86_FEATURE_SHSTK))
+> +		cr4_set_bits(X86_CR4_CET);
+
+Does flipping the CR4 and S_CET MSR write not result in simpler code?
+
+>  
+> +	if (kernel_ibt && !ibt_selftest()) {
+>  		pr_err("IBT selftest: Failed!\n");
+>  		setup_clear_cpu_cap(X86_FEATURE_IBT);
+
+Looking at this error path; I think I forgot to clear S_CET here.
+
+>  		return;
+>  	}
+>  }
