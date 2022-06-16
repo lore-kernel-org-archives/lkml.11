@@ -2,209 +2,377 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA05EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 18:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 532C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 18:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238314AbiFPSDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 14:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
+        id S238865AbiFPSEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 14:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347111AbiFPSDs (ORCPT
+        with ESMTP id S229509AbiFPSEj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 14:03:48 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01CC4474F
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 11:03:45 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25GFV0EF032726;
-        Thu, 16 Jun 2022 18:03:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=Uua3kQlr7s54gE0BxM62bAAi8e8HEjmYRtKgJQKIDqM=;
- b=NIbeLdfp+6Ni/uyKKMHFmZ6N8tyb+eSuK14iD4XQTp0Vns8lYPI6aU91MAk+S25ByzCz
- vShnqV0+4nSLB57ujYvhKhmNNSgeovcSMnXUlfRSedBF4cBAzaFwCkjQ6PJD9Pw7dXHw
- GstZ8cZiZYRJtq1pALJ/pmsOYEro+XuR3tAGOwnSLFk2VwFhlJrG0UlAaJzjk5m03XIs
- aL/VWKlpXGyj5qAYQQsc5Z0VZVWXlXmXuF5cHNWTvGySxUm5EXvXrEdt+A3saVMSaxK1
- t9uLnx6a5vKEEa2P6FR+IaQmkn2+nwPcwgzsZw4GKhW0IbV8ar2TykFHrFQ2sCDMpn1b 5A== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmhu2v4de-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 16 Jun 2022 18:03:40 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25GHaS2K009538;
-        Thu, 16 Jun 2022 18:03:39 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2177.outbound.protection.outlook.com [104.47.56.177])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gpqq2ntc8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 16 Jun 2022 18:03:39 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iJT1yXjA62YLzduqI8Ng9XqSHlgoL/aR0aCtCBpzOOR9sti3wg+J6jo1Ix2o0NPQQFOk3YiHHDkykoIEc6TQmACQ51UqM/FH5pnStnm6YDOHoj44G7wRJ8AdG2tz9rS7KH6ydJpgyWNLgg8yUohHxFw4mv9Bs55hClIb6yboMWMx51vSjct+L5YT+Ne5aHWi+1mlJJwP2paLvqP9dtSiTAnJaMBOS21dvRyMQLj/VD/ghc4aCxlL1XX/jUVQ3c2PA9koBKJ9lruzWgtPRG7oDYDgIKo9hNMAZkLQRb+a9fsmdxjDwCr99ans/I17sbK7lCRMow59xM4qc+sWLfJz/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Uua3kQlr7s54gE0BxM62bAAi8e8HEjmYRtKgJQKIDqM=;
- b=HDY+4fT0N8t2ZmJbF0zt2gw9fYop9g8fTNit0iUAChHaux6wRI+5QJnkJIqI5TJMbn8zS2W4a75RTMBi1gSnpr+Q/9vaCWqubdkjnSpd0Gfqh4ovcDaE+wIoKx5GJXwdkEsrFRk9Eg5eBm77wrdUaggMj+cn/1UpVW+9WtIfstvQEuXLqNwi0/VRawxh1BmU08b0FdTAsGJJ3oCmUVY50oeTutGPCK1HUEE8aeFB4/faP96VjxzQ5mvf3kNxJxdhyXTMEI89Rj1pbDHXQzSse75mpUcleFJcUSh73Yh6bq9+uxr2aWOgugb1g+JvrSBVYLzSFsc0sDkRJlQUGg5Y9w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Thu, 16 Jun 2022 14:04:39 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062B342A1A
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 11:04:38 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id v191-20020a25c5c8000000b00663d6d41f5aso1687122ybe.12
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 11:04:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Uua3kQlr7s54gE0BxM62bAAi8e8HEjmYRtKgJQKIDqM=;
- b=nP5laO5f10V0gJr7Y87xAQY9qWRJwvgqu7IlJdthrHX/A2wfKr6qB/pKQkDXMkMz4ONPrC2VDQz4yLRgoND8Un4LQvPdTp+Pma+9Z/CLs5u0a/amVOQwE/d0yJrpAOdzcae4XNEgB1tr9hpAiKbo4AqKGRL/32UgXDWo4aFxnOY=
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
- by SJ0PR10MB4543.namprd10.prod.outlook.com (2603:10b6:a03:2d9::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Thu, 16 Jun
- 2022 18:03:37 +0000
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::2125:9bb7:bfeb:81f9]) by BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::2125:9bb7:bfeb:81f9%8]) with mapi id 15.20.5353.015; Thu, 16 Jun 2022
- 18:03:37 +0000
-Date:   Thu, 16 Jun 2022 11:03:34 -0700
-From:   Mike Kravetz <mike.kravetz@oracle.com>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     Oscar Salvador <osalvador@suse.de>, akpm@linux-foundation.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: hugetlb: remove minimum_order variable
-Message-ID: <YqtwdhEx+57uDtpQ@monkey>
-References: <20220616033846.96937-1-songmuchun@bytedance.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220616033846.96937-1-songmuchun@bytedance.com>
-X-ClientProxiedBy: MW4PR03CA0112.namprd03.prod.outlook.com
- (2603:10b6:303:b7::27) To BY5PR10MB4196.namprd10.prod.outlook.com
- (2603:10b6:a03:20d::23)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0267108b-cea7-4104-c05c-08da4fc28978
-X-MS-TrafficTypeDiagnostic: SJ0PR10MB4543:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR10MB454312FF015DCC171F08E6ADE2AC9@SJ0PR10MB4543.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tlQxKb2y8TTw/Ir0fJfOE1Zh+7Qne5+HiQwj4tku2JzPIxEU+YdkUoOe26vg+QoFwed/W+YVn/dI9acNFxjAKkmyEAhIe9SGVWq4orMFn1NSsTQ8zdrYdF6pF+4MDj09fCsUg4puZy+NZGfI1YiI6C4BEPxEv+h6NBWaYluQBatp/fro/7L6bH42d2aungrQhHGjzHnuJ6vGSVBpGitNWwGLtxE3h5IfO4ypl6c+LVw1UYV75Iwgz+t9TmtoYm1aVc0Q2hg4lJAIHKcy4jLxMwVsjnHElkSJk+bWvyzAC/4T5NLrFAt+IX1va8+k7ZvqFlPiouvOh+cwUePIKzlqlyvMhKjzX2r7+GarbeBgP+1qmDIyiJyI7ElbeZ22Jsk4D1cDbFd0/3zXOKItGA3QnpT8NY7Ujt7pZ4OIf8iKqbLx/hBQg3w2D/rZqy/zPy1QWW+7Cg93o5cFUJD58PpEmgWSHdGwxywjxbizmRHHVO+UM0aMNZR8r8gaZ1O0f5rkjuuYny6+89Izt/lE1DiWvVbmjf9FBX+iCcVI013+uGldQylYwMDt4JEK8JT5akISM2u4yTGNvm2Dpyxy467D/BkhSCS9Dg4j62Xs1ddTJTHb57oY2WZDd0NlCWbrV3UPv6UKfgyW64w0PqsgE/dvVybIZOF5mg7/nKS+BPqYrbnEUHlEo1sgN5imDDLdgQoTKrOZ47W/VP718jYqg9mGyw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(2906002)(6666004)(4326008)(53546011)(66946007)(66476007)(66556008)(8676002)(44832011)(33716001)(6506007)(5660300002)(8936002)(498600001)(6486002)(186003)(6916009)(38100700002)(9686003)(6512007)(26005)(83380400001)(86362001)(316002)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3vWu9Vd3ysBDAO3Jbl79WvOTuiEulWw/mLvaMl/rTfjaBNO8E8wwLdXknwa6?=
- =?us-ascii?Q?OE4M7FIUGFyqNpWsscH6rR6X9ghJIuSBZ5X/kEw6aOav3VKs9MKkh2Mz4wV6?=
- =?us-ascii?Q?llyDDVFy8S7Ymi9ujXtgi09I/EufsWaiajRj6JtDg3UE9TMirzbWVCk/MrPE?=
- =?us-ascii?Q?WHnfu9wF8Tkql17pxwk3saj3UZymsyLI5yYXyxLD28q/usq9SGjwlR8/eG6w?=
- =?us-ascii?Q?HYEUDNGh4cN2u+ZPlIY7yqQPGU0WCwtQ6wIuzmEupIAutsTaznMJLu9fdZvE?=
- =?us-ascii?Q?d6aw4/G8yjIPuzpqeUqZnq1Vwp1Za2mvdlOnudbRti13OsH8RotAWpMfJMra?=
- =?us-ascii?Q?/00D2S1R47D/f+mK1V+gJNqTqg2ZPlQUoxbQUT0ADOohIiNeXcxszCFLrn13?=
- =?us-ascii?Q?SmKeBt5m+wEIDjED9jjTT+7wSaFizRwJWvU+h21HXwQww6UuJ4EZnHHiWvRb?=
- =?us-ascii?Q?uEBq+7JDVrT01UvV0Xxgz66LVl7kAU/Nh4hglgrG1fx9/ZLMv25mtBdmhT6/?=
- =?us-ascii?Q?MBC7oYIe3LfgCBf7o7Zq9zv/8lmnAPZRDFxUm4uQn08R6Uw+Vt5Hyue3ztgP?=
- =?us-ascii?Q?JhMUktOlo3Ihu/OVsK/rokMviE4a9eBFs4NvujEXrexIdZfWuSzENevfvCWO?=
- =?us-ascii?Q?xB+0Oun6Xl8TmauwUu+VzZQN9v3x0JVW0c2FkSW5wv6llrNOawb7FZmF4yiH?=
- =?us-ascii?Q?CoLbK4Q0McfwyqFjX5ZcosLozC3oeK0w2q8716khts8G1SdeZuoPW277xUOY?=
- =?us-ascii?Q?l3InOw1Ng7lIIL51j9KwpL5z+6oUasueeH9f4K6aluqTclq61GS8q6gRdebl?=
- =?us-ascii?Q?iiH+qcyaCoFrqeWwe+uAM7Q6mdvw7o0cnSXkiv7s6tWzSFwSQOCfUc1gc5u1?=
- =?us-ascii?Q?xyzuVY7IFVH9RsXQ3JLBy8bcOgQ10iWp0ZE7AVAPZJ6uUj4I+gZli7CeSc1n?=
- =?us-ascii?Q?ER5oGEkB43QIhE7UIDNFaPOX9NhAoARZoISJCpYdCSQshHMUojYpV474mhig?=
- =?us-ascii?Q?5/wK8GWw/Izi3pUVSoQkEdIMEjkG8tpd3M2cm+xlDg/5DeSr9SKL0/OP3mMB?=
- =?us-ascii?Q?8vmdkzd9QmGYvo3vKv1JqAItWk3LPUxu2409njSCM7hzreZ6psMOt0pfBqBj?=
- =?us-ascii?Q?zjmu81HQpGsXqfcyy1LjIzpEQVT9yGKgHNOANAFkvr/6Clss8+JcocsbE0+A?=
- =?us-ascii?Q?ryr2mmyAZJeIicGnb4NenEKRGhA98w+gQaxT4fFpY5W+BfxYRq/jXUHY08No?=
- =?us-ascii?Q?IWJDG3xr/MGqNGh1N71fDT4RG/qVw1nTu1NggZoSwxUEHldTNDgNE2p1tyAW?=
- =?us-ascii?Q?hcYJPxi9tmSkrIfcXMm8D8FY0vS7a3Nobq4TM5atHRxt4gSZUZ1Tymy6FcML?=
- =?us-ascii?Q?p6TQXw4LDVulsHBe8KSXGCjytMWAB2NJ56sJ8YuMO2JDSDn4LGB5zclwDd+h?=
- =?us-ascii?Q?7fFJ32ehKm7AJ6HVn2FO2Qocc+5j4d6hJq8vBLcV2N7iEy3gOZ1uJUPKphir?=
- =?us-ascii?Q?m9z5U6VLDiXNQ3VSSFa0brffxEvOB6jVbFLxqMJrLQ8VvGlujVO+pdKXHzb9?=
- =?us-ascii?Q?AVXuqgFPiNYnTZEWkJSRYszPdzHFR906CoF2mHIIfm5kk1aUW68sI+nejs4Y?=
- =?us-ascii?Q?mxFwHbRRzUJR3WUnZBj2kEKiSe1k6o6n2hCinV8NeuHghmo0Sf/MMQf7JtyH?=
- =?us-ascii?Q?zBGh8Y92VtCFdkHJg721NMg9fYqpSXlzLRPfHHXcnqohzdgFEXBn12HBLZ8T?=
- =?us-ascii?Q?2Yfsk9O2VQavrIznfrhDaIUebCDkcD0=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0267108b-cea7-4104-c05c-08da4fc28978
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2022 18:03:37.6706
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FjcjK+GKqRknKi1FgbS4QNugxOqsNIaYKkRNguTuydyywlFZO8RFqvCk/A76ym812IAgrnzjfwL84jghbV5TEQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4543
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-06-16_13:2022-06-16,2022-06-16 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
- bulkscore=0 spamscore=0 phishscore=0 adultscore=0 suspectscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206160073
-X-Proofpoint-GUID: cpg0Fb-5qXRZu69CpP4TE1g2vl4XhPjt
-X-Proofpoint-ORIG-GUID: cpg0Fb-5qXRZu69CpP4TE1g2vl4XhPjt
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=B7y5xFQUO2XPKfD+iGXVJQVQoOaGKsydlG5wYQRqLQs=;
+        b=NorBcaKNIoiN+30Lxx94m93i9h5FRuCPKvN42nKIAI4gMZ582tiAiUUbRI3/PobwUt
+         of2BUPTpu3KYMnL6fTS56mP80kWfX5Q1wc+c5iSgZgydj3VdPfw7K5GtJhecWaxdwOlq
+         hCAmBs/YJ3OV3leBUerBaiUQPXSXrFMOW985EjsqqrB/z1CDP0F/cC6KF5y98O0TqFWd
+         OWWYLSaEZCb49QYtE66gHuGY0YpwbXYNwkhecn+0voo4eivp4L4yka12zIe/BrGmB3II
+         UkTh49LOkN+UfuycDhrQ8z3OMuSIMfESYAX/lixzZA/nIJNa2q4JUd0aXu/ATd7kW65q
+         Kc9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=B7y5xFQUO2XPKfD+iGXVJQVQoOaGKsydlG5wYQRqLQs=;
+        b=X2GFcm+NVZ4ihjM4W2eixuPky3JCVEOosEqhXLKnGMjcca3o/qj7dEVSaxFGHKGAYl
+         4JzRjCCoolrmCJKgSLsVLREwZsPkoOb+vsB/hXpVoWzINx1i0/DCD3JMf/bvfLbJZnva
+         ++9F+Q0SeIC3KCPJhH0tTy8XnoCAT1eK3Z02Dco+wEAncG5rkAihg5vV+2jokm9RUi4L
+         isWIuqSZ2pkOf70ktb5eXdPEFrE/8hVs+HUjZrbp+8a1n33OkiOMLcHRnkWj/a73ZtvQ
+         hSEVMbN/5HMEYv+6xr4ivS5v25B7smLLp1OKNtH4GmlRsptH+8xygEmYnj0JaC+QIF77
+         eVVw==
+X-Gm-Message-State: AJIora/OZdk2/dXkHwGl42d8CRe7BEl0LeMePk69NHzZ1/aerfflPHfl
+        NW3UTx1nG0s8w2NEjmwhcXp6fbS93Qim/Q==
+X-Google-Smtp-Source: AGRyM1tOj+PeW31Dofykg82yAp+/y8XMa/ajAUlPhnMweGdgT2aohSnXqHPGAao40zUTkNbkO79xUZYG/zfXAw==
+X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:fe25:49b5:6fff:bf1a])
+ (user=dlatypov job=sendgmr) by 2002:a81:2fd8:0:b0:314:eaa:bbc1 with SMTP id
+ v207-20020a812fd8000000b003140eaabbc1mr7151094ywv.141.1655402677220; Thu, 16
+ Jun 2022 11:04:37 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 11:04:30 -0700
+Message-Id: <20220616180430.930721-1-dlatypov@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH] lib/atomic64_test.c: convert to use KUnit
+From:   Daniel Latypov <dlatypov@google.com>
+To:     mark.rutland@arm.com, boqun.feng@gmail.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        peterz@infradead.org, Daniel Latypov <dlatypov@google.com>,
+        David Gow <davidgow@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/16/22 11:38, Muchun Song wrote:
-> The following commit:
-> 
->   commit 641844f5616d ("mm/hugetlb: introduce minimum hugepage order")
-> 
-> fixed a static checker warning and introduced a global variable minimum_order
-> to fix the warning.  However, the local variable in dissolve_free_huge_pages()
-> can be initialized to huge_page_order(&default_hstate) to fix the warning.
-> So remove minimum_order to simplify the code.
-> 
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> ---
->  mm/hugetlb.c | 18 +++++++-----------
->  1 file changed, 7 insertions(+), 11 deletions(-)
-> 
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index 8ea4e51d8186..405d1c7441c9 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -66,12 +66,6 @@ static bool hugetlb_cma_page(struct page *page, unsigned int order)
->  #endif
->  static unsigned long hugetlb_cma_size __initdata;
->  
-> -/*
-> - * Minimum page order among possible hugepage sizes, set to a proper value
-> - * at boot time.
-> - */
-> -static unsigned int minimum_order __read_mostly = UINT_MAX;
-> -
->  __initdata LIST_HEAD(huge_boot_pages);
->  
->  /* for command line parsing */
-> @@ -2161,11 +2155,17 @@ int dissolve_free_huge_pages(unsigned long start_pfn, unsigned long end_pfn)
->  	unsigned long pfn;
->  	struct page *page;
->  	int rc = 0;
-> +	unsigned int order;
-> +	struct hstate *h;
->  
->  	if (!hugepages_supported())
->  		return rc;
->  
-> -	for (pfn = start_pfn; pfn < end_pfn; pfn += 1 << minimum_order) {
-> +	order = huge_page_order(&default_hstate);
-> +	for_each_hstate(h)
-> +		order = min(order, huge_page_order(h));
+The test currently is a bunch of checks (implemented using BUG_ON())
+that can be built into the kernel or as a module.
 
-Since we will be traversing the array of hstates, I wonder if we should
-optimize this further?  We could:
-- Pass the node into dissolve_free_huge_pages
-- When traversing the hstate array, check free_huge_pages_node[node] in
-  each hstate.
-- If no free huge pages, no need to do the pfn scan.
+Convert it to a KUnit test, which can also run in both modes.
+From a user's perspective, this change adds a CONFIG_KUNIT=3Dy dep and
+changes the output format of the test [1] and makes it less destructive
+on failure. The test itself is the same.
 
-Yes, the above is racy.  However, the code is already racy as hugetlb
-page state can change while performing this scan.  We only hold the hugetlb
-lock when checking an individual hugetlb page.  The change above may
-make the code a bit more racy.
+This hopefully makes the test easier to run and more consistent with
+similar tests in lib/.
+Since it has no dependencies, it can be run without explicitly setting
+up a .kunitconfig via
+$ ./tools/testing/kunit/kunit.py run atomic
+...
+[13:53:44] Starting KUnit Kernel (1/1)...
+[13:53:44] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+[13:53:47] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D atomic=
+ (2 subtests) =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+[13:53:47] [PASSED] test_atomic
+[13:53:47] [PASSED] test_atomic64
+[13:53:47] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =
+[PASSED] atomic =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D
+[13:53:47] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+[13:53:47] Testing complete. Passed: 2, Failed: 0, Crashed: 0, Skipped: 0, =
+Errors: 0
+[13:53:47] Elapsed time: 13.902s total, 1.629s configuring, 9.331s building=
+, 2.852s running
 
-If we think that is too racy, they we could at least check
-nr_huge_pages_node[node].  If there are no hugetlb pages on the node
-there is no need to scan.  And, I think we have isolated this pfn range
-so no new hugetlb pages can be created.
+It can be run on ARCH=3Dx86_64 (and others) via:
+$ ./tools/testing/kunit/kunit.py run --arch=3Dx86_64 atomic
 
-Not sure if the above optimizations are worth the effort.  IIUC, the
-pfn range is at most a memory block size which is not huge.
--- 
-Mike Kravetz
+The message about which platform the test ran on won't show up in
+kunit.py, but still gets printed out in dmesg, e.g.
+> TAP version 14
+> 1..1
+>     # Subtest: atomic
+>     1..2
+>     ok 1 - test_atomic
+>     ok 2 - test_atomic64
+>     # atomic: ran on x86-64 platform with CX8 and with SSE
+> # atomic: pass:2 fail:0 skip:0 total:2
+> # Totals: pass:2 fail:0 skip:0 total:2
+> ok 1 - atomic
+
+[1] https://www.kernel.org/doc/html/latest/dev-tools/ktap.html
+
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: David Gow <davidgow@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Tested-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+---
+Meta: this is a resend of https://lore.kernel.org/linux-kselftest/202205021=
+92327.81153-1-dlatypov@google.com/
+Michael kindly pointed me to the right MAINTAINERS entry (this test file
+isn't covered by it, and it slipped my mind to check the non-test code).
+
+I've waited until 5.19-rc1 so that the relevant KUnit patches this
+depended on have been merged.
+Rebasing and tweaking the commit message a bit are the only changes.
+---
+ lib/Kconfig.debug   |   4 +-
+ lib/atomic64_test.c | 107 +++++++++++++++++++++-----------------------
+ 2 files changed, 55 insertions(+), 56 deletions(-)
+
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 2e24db4bff19..4cf1ce8910f6 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -2147,7 +2147,9 @@ config PERCPU_TEST
+ 	  If unsure, say N.
+=20
+ config ATOMIC64_SELFTEST
+-	tristate "Perform an atomic64_t self-test"
++	tristate "Perform an atomic64_t self-test" if !KUNIT_ALL_TESTS
++	depends on KUNIT
++	default KUNIT_ALL_TESTS
+ 	help
+ 	  Enable this option to test the atomic64_t functions at boot or
+ 	  at module load time.
+diff --git a/lib/atomic64_test.c b/lib/atomic64_test.c
+index d9d170238165..46cb0130f8d0 100644
+--- a/lib/atomic64_test.c
++++ b/lib/atomic64_test.c
+@@ -5,13 +5,9 @@
+  * Copyright =C2=A9 2010  Luca Barbieri
+  */
+=20
+-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++#include <kunit/test.h>
+=20
+-#include <linux/init.h>
+-#include <linux/bug.h>
+-#include <linux/kernel.h>
+ #include <linux/atomic.h>
+-#include <linux/module.h>
+=20
+ #ifdef CONFIG_X86
+ #include <asm/cpufeature.h>	/* for boot_cpu_has below */
+@@ -23,9 +19,7 @@ do {								\
+ 	r =3D v0;							\
+ 	atomic##bit##_##op(val, &v);				\
+ 	r c_op val;						\
+-	WARN(atomic##bit##_read(&v) !=3D r, "%Lx !=3D %Lx\n",	\
+-		(unsigned long long)atomic##bit##_read(&v),	\
+-		(unsigned long long)r);				\
++	KUNIT_ASSERT_EQ(test, atomic##bit##_read(&v), r);	\
+ } while (0)
+=20
+ /*
+@@ -46,8 +40,8 @@ do {								\
+ 	atomic##bit##_set(&v, v0);				\
+ 	r =3D v0;							\
+ 	r c_op val;						\
+-	BUG_ON(atomic##bit##_##op(val, &v) !=3D r);		\
+-	BUG_ON(atomic##bit##_read(&v) !=3D r);			\
++	KUNIT_ASSERT_EQ(test, atomic##bit##_##op(val, &v), r);	\
++	KUNIT_ASSERT_EQ(test, atomic##bit##_read(&v), r);	\
+ } while (0)
+=20
+ #define TEST_FETCH(bit, op, c_op, val)				\
+@@ -55,8 +49,8 @@ do {								\
+ 	atomic##bit##_set(&v, v0);				\
+ 	r =3D v0;							\
+ 	r c_op val;						\
+-	BUG_ON(atomic##bit##_##op(val, &v) !=3D v0);		\
+-	BUG_ON(atomic##bit##_read(&v) !=3D r);			\
++	KUNIT_ASSERT_EQ(test, atomic##bit##_##op(val, &v), v0);	\
++	KUNIT_ASSERT_EQ(test, atomic##bit##_read(&v), r);	\
+ } while (0)
+=20
+ #define RETURN_FAMILY_TEST(bit, op, c_op, val)			\
+@@ -72,8 +66,8 @@ do {								\
+ #define TEST_ARGS(bit, op, init, ret, expect, args...)		\
+ do {								\
+ 	atomic##bit##_set(&v, init);				\
+-	BUG_ON(atomic##bit##_##op(&v, ##args) !=3D ret);		\
+-	BUG_ON(atomic##bit##_read(&v) !=3D expect);		\
++	KUNIT_ASSERT_EQ(test, atomic##bit##_##op(&v, ##args), ret);\
++	KUNIT_ASSERT_EQ(test, atomic##bit##_read(&v), expect);	\
+ } while (0)
+=20
+ #define XCHG_FAMILY_TEST(bit, init, new)				\
+@@ -101,7 +95,7 @@ do {							\
+ 			i, (i) - one, (i) - one);	\
+ } while (0)
+=20
+-static __init void test_atomic(void)
++static void test_atomic(struct kunit *test)
+ {
+ 	int v0 =3D 0xaaa31337;
+ 	int v1 =3D 0xdeadbeef;
+@@ -144,7 +138,7 @@ static __init void test_atomic(void)
+ }
+=20
+ #define INIT(c) do { atomic64_set(&v, c); r =3D c; } while (0)
+-static __init void test_atomic64(void)
++static void test_atomic64(struct kunit *test)
+ {
+ 	long long v0 =3D 0xaaa31337c001d00dLL;
+ 	long long v1 =3D 0xdeadbeefdeafcafeLL;
+@@ -156,12 +150,12 @@ static __init void test_atomic64(void)
+=20
+ 	atomic64_t v =3D ATOMIC64_INIT(v0);
+ 	long long r =3D v0;
+-	BUG_ON(v.counter !=3D r);
++	KUNIT_ASSERT_EQ(test, v.counter, r);
+=20
+ 	atomic64_set(&v, v1);
+ 	r =3D v1;
+-	BUG_ON(v.counter !=3D r);
+-	BUG_ON(atomic64_read(&v) !=3D r);
++	KUNIT_ASSERT_EQ(test, v.counter, r);
++	KUNIT_ASSERT_EQ(test, atomic64_read(&v), r);
+=20
+ 	TEST(64, add, +=3D, onestwos);
+ 	TEST(64, add, +=3D, -one);
+@@ -190,12 +184,12 @@ static __init void test_atomic64(void)
+ 	INIT(v0);
+ 	atomic64_inc(&v);
+ 	r +=3D one;
+-	BUG_ON(v.counter !=3D r);
++	KUNIT_ASSERT_EQ(test, v.counter, r);
+=20
+ 	INIT(v0);
+ 	atomic64_dec(&v);
+ 	r -=3D one;
+-	BUG_ON(v.counter !=3D r);
++	KUNIT_ASSERT_EQ(test, v.counter, r);
+=20
+ 	INC_RETURN_FAMILY_TEST(64, v0);
+ 	DEC_RETURN_FAMILY_TEST(64, v0);
+@@ -204,73 +198,76 @@ static __init void test_atomic64(void)
+ 	CMPXCHG_FAMILY_TEST(64, v0, v1, v2);
+=20
+ 	INIT(v0);
+-	BUG_ON(atomic64_add_unless(&v, one, v0));
+-	BUG_ON(v.counter !=3D r);
++	KUNIT_ASSERT_FALSE(test, atomic64_add_unless(&v, one, v0));
++	KUNIT_ASSERT_EQ(test, v.counter, r);
+=20
+ 	INIT(v0);
+-	BUG_ON(!atomic64_add_unless(&v, one, v1));
++	KUNIT_ASSERT_TRUE(test, atomic64_add_unless(&v, one, v1));
+ 	r +=3D one;
+-	BUG_ON(v.counter !=3D r);
++	KUNIT_ASSERT_EQ(test, v.counter, r);
+=20
+ 	INIT(onestwos);
+-	BUG_ON(atomic64_dec_if_positive(&v) !=3D (onestwos - 1));
++	KUNIT_ASSERT_EQ(test, atomic64_dec_if_positive(&v), (onestwos - 1));
+ 	r -=3D one;
+-	BUG_ON(v.counter !=3D r);
++	KUNIT_ASSERT_EQ(test, v.counter, r);
+=20
+ 	INIT(0);
+-	BUG_ON(atomic64_dec_if_positive(&v) !=3D -one);
+-	BUG_ON(v.counter !=3D r);
++	KUNIT_ASSERT_EQ(test, atomic64_dec_if_positive(&v), -one);
++	KUNIT_ASSERT_EQ(test, v.counter, r);
+=20
+ 	INIT(-one);
+-	BUG_ON(atomic64_dec_if_positive(&v) !=3D (-one - one));
+-	BUG_ON(v.counter !=3D r);
++	KUNIT_ASSERT_EQ(test, atomic64_dec_if_positive(&v), (-one - one));
++	KUNIT_ASSERT_EQ(test, v.counter, r);
+=20
+ 	INIT(onestwos);
+-	BUG_ON(!atomic64_inc_not_zero(&v));
++	KUNIT_ASSERT_TRUE(test, atomic64_inc_not_zero(&v));
+ 	r +=3D one;
+-	BUG_ON(v.counter !=3D r);
++	KUNIT_ASSERT_EQ(test, v.counter, r);
+=20
+ 	INIT(0);
+-	BUG_ON(atomic64_inc_not_zero(&v));
+-	BUG_ON(v.counter !=3D r);
++	KUNIT_ASSERT_FALSE(test, atomic64_inc_not_zero(&v));
++	KUNIT_ASSERT_EQ(test, v.counter, r);
+=20
+ 	INIT(-one);
+-	BUG_ON(!atomic64_inc_not_zero(&v));
++	KUNIT_ASSERT_TRUE(test, atomic64_inc_not_zero(&v));
+ 	r +=3D one;
+-	BUG_ON(v.counter !=3D r);
++	KUNIT_ASSERT_EQ(test, v.counter, r);
+=20
+ 	/* Confirm the return value fits in an int, even if the value doesn't */
+ 	INIT(v3);
++
+ 	r_int =3D atomic64_inc_not_zero(&v);
+-	BUG_ON(!r_int);
++	KUNIT_ASSERT_NE(test, r_int, 0);
+ }
+=20
+-static __init int test_atomics_init(void)
+-{
+-	test_atomic();
+-	test_atomic64();
++static struct kunit_case atomic_test_cases[] =3D {
++	KUNIT_CASE(test_atomic),
++	KUNIT_CASE(test_atomic64),
++	{},
++};
+=20
++static void atomic_suite_exit(struct kunit_suite *suite)
++{
+ #ifdef CONFIG_X86
+-	pr_info("passed for %s platform %s CX8 and %s SSE\n",
++	kunit_info(suite, "ran on %s platform %s CX8 and %s SSE\n",
+ #ifdef CONFIG_X86_64
+-		"x86-64",
++		   "x86-64",
+ #elif defined(CONFIG_X86_CMPXCHG64)
+-		"i586+",
++		   "i586+",
+ #else
+-		"i386+",
++		   "i386+",
+ #endif
+-	       boot_cpu_has(X86_FEATURE_CX8) ? "with" : "without",
+-	       boot_cpu_has(X86_FEATURE_XMM) ? "with" : "without");
+-#else
+-	pr_info("passed\n");
++		   boot_cpu_has(X86_FEATURE_CX8) ? "with" : "without",
++		   boot_cpu_has(X86_FEATURE_XMM) ? "with" : "without");
+ #endif
+-
+-	return 0;
+ }
+=20
+-static __exit void test_atomics_exit(void) {}
++static struct kunit_suite atomic_test_suite =3D {
++	.name =3D "atomic",
++	.test_cases =3D atomic_test_cases,
++	.suite_exit =3D atomic_suite_exit,
++};
+=20
+-module_init(test_atomics_init);
+-module_exit(test_atomics_exit);
++kunit_test_suites(&atomic_test_suite);
+=20
+ MODULE_LICENSE("GPL");
+
+base-commit: 8ab2afa23bd197df47819a87f0265c0ac95c5b6a
+--=20
+2.36.1.476.g0c4daa206d-goog
+
