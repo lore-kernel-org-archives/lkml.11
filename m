@@ -2,130 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A35FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 029ADC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 20:26:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378632AbiFPUZt (ORCPT
+        id S1378644AbiFPU0K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 16:25:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39690 "EHLO
+        Thu, 16 Jun 2022 16:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378560AbiFPUZ2 (ORCPT
+        with ESMTP id S1378680AbiFPU0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 16:25:28 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C435B895;
-        Thu, 16 Jun 2022 13:25:27 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id w27so3679933edl.7;
-        Thu, 16 Jun 2022 13:25:26 -0700 (PDT)
+        Thu, 16 Jun 2022 16:26:03 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D615D5C8
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:25:58 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id 187so2422152pfu.9
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 13:25:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HUtwgF4GgsHpYDtVHC8Pb/yKV/u5JGnJVytpp+Tyji0=;
-        b=VIBDDCUA7EDMjVpT7zkHkhn7oucpO9dZAr5RdMH8gLUJQNdX3s4Brv/8/b4gDkHChp
-         trvTGuGn0WbWO5iyJ3yO2ZcLMyvit3ym4DojDUX4g+U05h36fR1Q3lv0bgzcMKZ0rE4g
-         muKKz08J638DasHXxeksMC4PJNMCGDq+c1J420zvrZ3SZ2/6icHBpNB++uCf1/uGeiIv
-         uaYDK9NrM5YldDGbYZR1mKiqexWykA/Jjo+lC8qK/wKX36/HlMmkduUXDE07ZgLQLXVP
-         h/bd7fOU1a7kcJS5M8XiEk0FbE9I1n1kehh2GS2o/fj28Z3wZz31hY0oUuzd2Ht67ps+
-         8L2g==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bbDBGGsEK1jYVvzMKav/qd1WKubS1sd2Uxf8fAcgTzE=;
+        b=SzuOeAxrAHt0py68MK2MIKGmUae4mH1tPgKxoBU+O3Ad0mZeCj815Hr2gdTa4Z0eEd
+         fkCdCCHFucZ/fZ+epsJHDTv5Uk/wbPgKxpai4ch9DpoNH5rh2BxbBWwIlsVgvD9oT3Oa
+         2D50jvtsAeqfvD5tV5+1iIBNFIwJ7+pgqCtt0KmdEQXT6Ekrb8r6mHZcSV5cjIaByWq0
+         +LyEXmySiRwAedVixgeFjDRG4LmjXVdR1h2wFbBAdf18rlII+TYY/302odDf3SH1qHMm
+         4+8p8KHwBp64v+PYypFeZxI0EJ2eRzk/JCdRLZ3IDSGd7AaEMWry0OsTg3CNZ6lOfVsK
+         K5eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HUtwgF4GgsHpYDtVHC8Pb/yKV/u5JGnJVytpp+Tyji0=;
-        b=ngE9rncF4jficjYx9WcOK/hyKV7Ouiv8iwy1AF3P3d3lUB/cryTS/T8n6vf5CZyozN
-         49fqo9KmorHJPJujMlEOUnK9t+Dvlbz1C6Eha0CywOvVxejw6lhhDiGYxcZkEEP76v+p
-         /TgEKtBLvgV2EsxkAXCCD7gJXSsAI1I9L2RdgDO66CENVPTypO+gvsyaXlkvc4A7LnNP
-         kfAOSFWCckF+hy/gtaxE5QPqAdXsJVzp/BidgjMJv+GyOWU0O04xddxNZFibrv+GJtpt
-         ZlFSA9rlnn+xAHDi3gkN/8ZNd9hh5FJwWJWFPJZxi00gJ9ZV1EeiyrLc5GHRt3LILi58
-         xDLw==
-X-Gm-Message-State: AJIora9vLa18M9Qd8hPp6ud2KjH7sNeFJ56jP68K/LtEi1D+FIUjAkg1
-        UCypstp/7UpnZCnPSmPx5pw=
-X-Google-Smtp-Source: AGRyM1s+LCS6ApVWlV0wlYNA8FpbdeKqTi9OLHoLWn7sfH9jMC4sAuP2R7t34r/FaNjWdPfi107VfQ==
-X-Received: by 2002:a05:6402:5114:b0:42f:b5f3:1f96 with SMTP id m20-20020a056402511400b0042fb5f31f96mr8758001edd.260.1655411125683;
-        Thu, 16 Jun 2022 13:25:25 -0700 (PDT)
-Received: from kista.localdomain (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id 21-20020a170906329500b006fe8a4ec62fsm1186760ejw.4.2022.06.16.13.25.24
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bbDBGGsEK1jYVvzMKav/qd1WKubS1sd2Uxf8fAcgTzE=;
+        b=QZjLTQCf5xh7Uvy6BpqR9+Nv0/ocBagoMbeCCrn6J6KayeYhYr63FP8okzbSGeXU69
+         s9inPNXHlV4JDjPbF7Xd0q4L5JijGxxwcpRwpQ7J1jI6VzXVBvBpKsjKSyU+dBNfCd52
+         +EcksE1Het1NpFTvO1kR4vDfJ4Pm0hDPcWyJPo6TvYJ0j+PjCGuAt4yaH5gE+BDZ6T2n
+         nm30kSg3E9XRWdmgdQH20uhjeKhkIpRrFnmMIZGadMhDVm2/xrXFiL4+ArH89E+TXySg
+         78aX+TPhw4cIpXdgfElit7LziovEg0Srlpl7dYW4MZdOcOPTkr4Pt5ob1Q/lgRXEziIt
+         dnEQ==
+X-Gm-Message-State: AJIora8kz8edrbRPHI3/4h2p9uKucMfVwWMfO+4SHpii+oyEXOjLsxQB
+        sKTcCwb8UQRjPrCgxrWwTPuSlw==
+X-Google-Smtp-Source: AGRyM1tlCYvbmuJBdptri1XDWzKflhHxLGFw/IhDdS1HUrdh8pPFurAGKffCF5X93axKER/tI3VlyQ==
+X-Received: by 2002:a05:6a00:1a48:b0:522:9716:4e0a with SMTP id h8-20020a056a001a4800b0052297164e0amr6452320pfv.22.1655411157949;
+        Thu, 16 Jun 2022 13:25:57 -0700 (PDT)
+Received: from mai.imgcgcw.net ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id a5-20020aa79705000000b0051bb0be7109sm2182960pfg.78.2022.06.16.13.25.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 13:25:25 -0700 (PDT)
-From:   Jernej Skrabec <jernej.skrabec@gmail.com>
-To:     ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de
-Cc:     mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
-        benjamin.gaignard@collabora.com, nicolas.dufresne@collabora.com,
-        gregkh@linuxfoundation.org, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: [PATCH v2 6/7] media: hantro: Store VP9 bit depth in context
-Date:   Thu, 16 Jun 2022 22:25:12 +0200
-Message-Id: <20220616202513.351039-7-jernej.skrabec@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220616202513.351039-1-jernej.skrabec@gmail.com>
-References: <20220616202513.351039-1-jernej.skrabec@gmail.com>
+        Thu, 16 Jun 2022 13:25:57 -0700 (PDT)
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+To:     daniel.lezcano@linaro.org, rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        linux-arm-msm@vger.kernel.org (open list:QUALCOMM TSENS THERMAL DRIVER)
+Subject: [PATCH 1/3] thermal/drivers/qcom: Remove get_trend function
+Date:   Thu, 16 Jun 2022 22:25:35 +0200
+Message-Id: <20220616202537.303655-1-daniel.lezcano@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that we have proper infrastructure for postprocessing 10-bit
-formats, store VP9 bit depth in context.
+There is a get_trend function which is a wrapper to call a private
+get_trend function. However, this private get_trend function is not
+assigned anywhere.
 
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Remove this dead code.
+
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
- drivers/staging/media/hantro/hantro_drv.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/thermal/qcom/tsens.c | 12 ------------
+ drivers/thermal/qcom/tsens.h |  2 --
+ 2 files changed, 14 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
-index 01d33dcb0467..afddf7ac0731 100644
---- a/drivers/staging/media/hantro/hantro_drv.c
-+++ b/drivers/staging/media/hantro/hantro_drv.c
-@@ -324,6 +324,24 @@ static int hantro_hevc_s_ctrl(struct v4l2_ctrl *ctrl)
- 	return 0;
+diff --git a/drivers/thermal/qcom/tsens.c b/drivers/thermal/qcom/tsens.c
+index 7963ee33bf75..e49f58e83513 100644
+--- a/drivers/thermal/qcom/tsens.c
++++ b/drivers/thermal/qcom/tsens.c
+@@ -933,17 +933,6 @@ static int tsens_get_temp(void *data, int *temp)
+ 	return priv->ops->get_temp(s, temp);
  }
  
-+static int hantro_vp9_s_ctrl(struct v4l2_ctrl *ctrl)
-+{
-+	struct hantro_ctx *ctx;
-+
-+	ctx = container_of(ctrl->handler,
-+			   struct hantro_ctx, ctrl_handler);
-+
-+	switch (ctrl->id) {
-+	case V4L2_CID_STATELESS_VP9_FRAME:
-+		ctx->bit_depth = ctrl->p_new.p_vp9_frame->bit_depth;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- static const struct v4l2_ctrl_ops hantro_ctrl_ops = {
- 	.try_ctrl = hantro_try_ctrl,
- };
-@@ -336,6 +354,10 @@ static const struct v4l2_ctrl_ops hantro_hevc_ctrl_ops = {
- 	.s_ctrl = hantro_hevc_s_ctrl,
+-static int tsens_get_trend(void *data, int trip, enum thermal_trend *trend)
+-{
+-	struct tsens_sensor *s = data;
+-	struct tsens_priv *priv = s->priv;
+-
+-	if (priv->ops->get_trend)
+-		return priv->ops->get_trend(s, trend);
+-
+-	return -ENOTSUPP;
+-}
+-
+ static int  __maybe_unused tsens_suspend(struct device *dev)
+ {
+ 	struct tsens_priv *priv = dev_get_drvdata(dev);
+@@ -1004,7 +993,6 @@ MODULE_DEVICE_TABLE(of, tsens_table);
+ 
+ static const struct thermal_zone_of_device_ops tsens_of_ops = {
+ 	.get_temp = tsens_get_temp,
+-	.get_trend = tsens_get_trend,
+ 	.set_trips = tsens_set_trips,
  };
  
-+static const struct v4l2_ctrl_ops hantro_vp9_ctrl_ops = {
-+	.s_ctrl = hantro_vp9_s_ctrl,
-+};
-+
- #define HANTRO_JPEG_ACTIVE_MARKERS	(V4L2_JPEG_ACTIVE_MARKER_APP0 | \
- 					 V4L2_JPEG_ACTIVE_MARKER_COM | \
- 					 V4L2_JPEG_ACTIVE_MARKER_DQT | \
-@@ -503,6 +525,7 @@ static const struct hantro_ctrl controls[] = {
- 		.codec = HANTRO_VP9_DECODER,
- 		.cfg = {
- 			.id = V4L2_CID_STATELESS_VP9_FRAME,
-+			.ops = &hantro_vp9_ctrl_ops,
- 		},
- 	}, {
- 		.codec = HANTRO_VP9_DECODER,
+diff --git a/drivers/thermal/qcom/tsens.h b/drivers/thermal/qcom/tsens.h
+index 1471a2c00f15..ba05c8233356 100644
+--- a/drivers/thermal/qcom/tsens.h
++++ b/drivers/thermal/qcom/tsens.h
+@@ -65,7 +65,6 @@ struct tsens_sensor {
+  * @disable: Function to disable the tsens device
+  * @suspend: Function to suspend the tsens device
+  * @resume: Function to resume the tsens device
+- * @get_trend: Function to get the thermal/temp trend
+  */
+ struct tsens_ops {
+ 	/* mandatory callbacks */
+@@ -77,7 +76,6 @@ struct tsens_ops {
+ 	void (*disable)(struct tsens_priv *priv);
+ 	int (*suspend)(struct tsens_priv *priv);
+ 	int (*resume)(struct tsens_priv *priv);
+-	int (*get_trend)(struct tsens_sensor *s, enum thermal_trend *trend);
+ };
+ 
+ #define REG_FIELD_FOR_EACH_SENSOR11(_name, _offset, _startbit, _stopbit) \
 -- 
-2.36.1
+2.25.1
 
