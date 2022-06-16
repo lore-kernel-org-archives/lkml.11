@@ -2,149 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C22C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 17:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96947C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 17:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbiFPREI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 13:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
+        id S1350732AbiFPRFP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 13:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233152AbiFPREE (ORCPT
+        with ESMTP id S1347011AbiFPRFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 13:04:04 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AD1B18372
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 10:04:03 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EFD3511FB;
-        Thu, 16 Jun 2022 10:04:02 -0700 (PDT)
-Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B76BC3F73B;
-        Thu, 16 Jun 2022 10:04:01 -0700 (PDT)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, robin.murphy@arm.com,
-        nicola.mazzucato@arm.com, vincent.guittot@linaro.org,
-        f.fainelli@gmail.com, Cristian Marussi <cristian.marussi@arm.com>
-Subject: [PATCH] firmware: arm_scmi: Relax CLOCK_DESCRIBE_RATES out-of-spec checks
-Date:   Thu, 16 Jun 2022 18:03:47 +0100
-Message-Id: <20220616170347.2800771-1-cristian.marussi@arm.com>
-X-Mailer: git-send-email 2.32.0
+        Thu, 16 Jun 2022 13:05:12 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C42024961
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 10:05:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655399111; x=1686935111;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=14R00hyORYQkQS21lImVuriB8mbmj12+xt+1CcXGOjg=;
+  b=g2rN2sQWB5fRPq5fWbLNRHTrPJg9BvvUzBD22vdt5U5d+EabYysGJrAJ
+   o7/oRcnKTXYdzyekeTFpHePgxUpM/OyG1FyAE+jRGjOKQPwXD9YFU+toR
+   ossHGifgLlTUnAZ/kYE15G8mw2MI/40DIUl1P6qkYptEzQP0bRdFcDpBA
+   nUIb6v/J4BCx/9eBBNOyIZCw7dujRbH0bdLVMP0ngzbzhl4a3xPv9OoBy
+   G4/2kqvfifZCJxbvnB9JLaZBu4clJyXlEwE4erA4on6FEli2c4MVvD1WV
+   jLYNgDNnfKS5y2X9rrJf3+jSt3X/9LAXMCJ2pyS/Dv7O+ubfhLLX8DSOh
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="262318318"
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="262318318"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 10:05:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="618953848"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 16 Jun 2022 10:05:06 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id E784A109; Thu, 16 Jun 2022 20:05:10 +0300 (EEST)
+Date:   Thu, 16 Jun 2022 20:05:10 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        Kostya Serebryany <kcc@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv3 6/8] x86/mm: Provide ARCH_GET_UNTAG_MASK and
+ ARCH_ENABLE_TAGGED_ADDR
+Message-ID: <20220616170510.gpm5pjd4yzk7hfsx@black.fi.intel.com>
+References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
+ <20220610143527.22974-7-kirill.shutemov@linux.intel.com>
+ <YqdM8ZIi0/35IhzF@dhcp22.suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqdM8ZIi0/35IhzF@dhcp22.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A reply to CLOCK_DESCRIBE_RATES issued against a non rate-discrete clock
-should be composed of a triplet of rates descriptors (min/max/step)
-returned all in one reply message.
+On Mon, Jun 13, 2022 at 04:42:57PM +0200, Michal Hocko wrote:
+> On Fri 10-06-22 17:35:25, Kirill A. Shutemov wrote:
+> [...]
+> > diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+> > index 1962008fe743..93c8eba1a66d 100644
+> > --- a/arch/x86/kernel/process_64.c
+> > +++ b/arch/x86/kernel/process_64.c
+> > @@ -742,6 +742,32 @@ static long prctl_map_vdso(const struct vdso_image *image, unsigned long addr)
+> >  }
+> >  #endif
+> >  
+> > +static int prctl_enable_tagged_addr(unsigned long nr_bits)
+> > +{
+> > +	struct mm_struct *mm = current->mm;
+> > +
+> > +	/* Already enabled? */
+> > +	if (mm->context.lam_cr3_mask)
+> > +		return -EBUSY;
+> > +
+> > +	/* LAM has to be enabled before spawning threads */
+> > +	if (get_nr_threads(current) > 1)
+> > +		return -EBUSY;
+> 
+> This will not be sufficient in general. You can have mm shared with a
+> process without CLONE_THREAD. So you would also need to check also
+> MMF_MULTIPROCESS. But I do remember that general get_nr_threads is quite
+> tricky to use properly. Make sure to CC Oleg Nesterov for more details.
+> 
+> Also how does this work when the mm is shared with a kernel thread?
 
-This is not always the case when dealing with some SCMI server deployed in
-the wild: relax such constraint while maintaining memory safety by checking
-carefully the returned payload size.
+It seems we need to check mm_count to exclude kernel threads that use the
+mm. But I expect it to produce bunch of false-positives.
 
-While at that cleanup a stale debug printout.
+Or we can make all CPUs to do
 
-Fixes: 7bc7caafe6b1 ("firmware: arm_scmi: Use common iterators in the clock protocol")
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
----
- drivers/firmware/arm_scmi/clock.c     | 26 +++++++++++++++++++++++++-
- drivers/firmware/arm_scmi/driver.c    |  1 +
- drivers/firmware/arm_scmi/protocols.h |  3 +++
- 3 files changed, 29 insertions(+), 1 deletion(-)
+	switch_mm(current->mm, current->mm, current);
 
-diff --git a/drivers/firmware/arm_scmi/clock.c b/drivers/firmware/arm_scmi/clock.c
-index c7a83f6e38e5..3ed7ae0d6781 100644
---- a/drivers/firmware/arm_scmi/clock.c
-+++ b/drivers/firmware/arm_scmi/clock.c
-@@ -194,6 +194,7 @@ static int rate_cmp_func(const void *_r1, const void *_r2)
- }
- 
- struct scmi_clk_ipriv {
-+	struct device *dev;
- 	u32 clk_id;
- 	struct scmi_clock_info *clk;
- };
-@@ -223,6 +224,29 @@ iter_clk_describe_update_state(struct scmi_iterator_state *st,
- 	st->num_returned = NUM_RETURNED(flags);
- 	p->clk->rate_discrete = RATE_DISCRETE(flags);
- 
-+	/* Warn about out of spec replies ... */
-+	if (!p->clk->rate_discrete &&
-+	    (st->num_returned != 3 || st->num_remaining != 0)) {
-+		dev_warn(p->dev,
-+			 "Out-of-spec CLOCK_DESCRIBE_RATES reply for %s - returned:%d remaining:%d rx_len:%zd\n",
-+			 p->clk->name, st->num_returned, st->num_remaining,
-+			 st->rx_len);
-+
-+		/*
-+		 * A known quirk: a triplet is returned but num_returned != 3
-+		 * Check for a safe payload size and fix.
-+		 */
-+		if (st->num_returned != 3 && st->num_remaining == 0 &&
-+		    st->rx_len == sizeof(*r) + sizeof(__le32) * 2 * 3) {
-+			st->num_returned = 3;
-+			st->num_remaining = 0;
-+		} else {
-+			dev_err(p->dev,
-+				"Cannot fix out-of-spec reply !\n");
-+			return -EPROTO;
-+		}
-+	}
-+
- 	return 0;
- }
- 
-@@ -255,7 +279,6 @@ iter_clk_describe_process_response(const struct scmi_protocol_handle *ph,
- 
- 		*rate = RATE_TO_U64(r->rate[st->loop_idx]);
- 		p->clk->list.num_rates++;
--		//XXX dev_dbg(ph->dev, "Rate %llu Hz\n", *rate);
- 	}
- 
- 	return ret;
-@@ -275,6 +298,7 @@ scmi_clock_describe_rates_get(const struct scmi_protocol_handle *ph, u32 clk_id,
- 	struct scmi_clk_ipriv cpriv = {
- 		.clk_id = clk_id,
- 		.clk = clk,
-+		.dev = ph->dev,
- 	};
- 
- 	iter = ph->hops->iter_response_init(ph, &ops, SCMI_MAX_NUM_RATES,
-diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
-index c1922bd650ae..8b7ac6663d57 100644
---- a/drivers/firmware/arm_scmi/driver.c
-+++ b/drivers/firmware/arm_scmi/driver.c
-@@ -1223,6 +1223,7 @@ static int scmi_iterator_run(void *iter)
- 		if (ret)
- 			break;
- 
-+		st->rx_len = i->t->rx.len;
- 		ret = iops->update_state(st, i->resp, i->priv);
- 		if (ret)
- 			break;
-diff --git a/drivers/firmware/arm_scmi/protocols.h b/drivers/firmware/arm_scmi/protocols.h
-index c679f3fb8718..51c31379f9b3 100644
---- a/drivers/firmware/arm_scmi/protocols.h
-+++ b/drivers/firmware/arm_scmi/protocols.h
-@@ -179,6 +179,8 @@ struct scmi_protocol_handle {
-  * @max_resources: Maximum acceptable number of items, configured by the caller
-  *		   depending on the underlying resources that it is querying.
-  * @loop_idx: The iterator loop index in the current multi-part reply.
-+ * @rx_len: Size in bytes of the currenly processed message; it can be used by
-+ *	    the user of the iterator to verify a reply size.
-  * @priv: Optional pointer to some additional state-related private data setup
-  *	  by the caller during the iterations.
-  */
-@@ -188,6 +190,7 @@ struct scmi_iterator_state {
- 	unsigned int num_remaining;
- 	unsigned int max_resources;
- 	unsigned int loop_idx;
-+	size_t rx_len;
- 	void *priv;
- };
- 
+and get LAM bits updated regardless what mm it runs. It would also remove
+limitation that LAM can only be enabled when there's no threads.
+
+But I feel that is a bad idea, but I have no clue why. :P
+
 -- 
-2.32.0
-
+ Kirill A. Shutemov
