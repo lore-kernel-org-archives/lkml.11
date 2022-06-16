@@ -2,91 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2158C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 17:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1408C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 17:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236960AbiFPRnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 13:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
+        id S230379AbiFPRrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 13:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236657AbiFPRnG (ORCPT
+        with ESMTP id S229455AbiFPRq6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 13:43:06 -0400
-Received: from 7.mo584.mail-out.ovh.net (7.mo584.mail-out.ovh.net [178.33.253.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845521D0C3
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 10:43:04 -0700 (PDT)
-Received: from player760.ha.ovh.net (unknown [10.108.20.200])
-        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 96ADD25136
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 17:04:54 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player760.ha.ovh.net (Postfix) with ESMTPSA id 69C3F2BA93F59;
-        Thu, 16 Jun 2022 17:04:46 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-109S00346fcc5bb-3e02-4ca4-bc11-402143604e80,
-                    EEA695ED62D0B30D35F9F30395731DD21189161B) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
-        Stephen Kitt <steve@sk2.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] macintosh: via-pmu-backlight: Use backlight helper
-Date:   Thu, 16 Jun 2022 19:04:24 +0200
-Message-Id: <20220616170425.1346081-1-steve@sk2.org>
-X-Mailer: git-send-email 2.30.2
+        Thu, 16 Jun 2022 13:46:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DD242489;
+        Thu, 16 Jun 2022 10:46:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35D54B824F8;
+        Thu, 16 Jun 2022 17:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCCE8C341C4;
+        Thu, 16 Jun 2022 17:46:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655401614;
+        bh=a3Z5yeH3jen1/5E0ibGP8X9xUa5ldCFEjepDQx1NRsY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=d0kdz0DzHwhcGptroXeLu+3qcuAfPo/3Rzhf+RDVWqfzk9wL3r7PSedONUhdaY29n
+         /nhab28u086NtFzQLMiLNQKT9iToUwMPCTJ7uN1URhP6lQfWrQSqRIT/bHh9LnBH+L
+         /LzAzGTbtQQjAFB4gUYhmdq8g5AUJGvO6TA60GqjT4qeJJo97pi6YQceAJrZDEuTEZ
+         vXdTjLjR8RISzkbHuEXn4dfvaUpPP+kIQHaIYHhmsLrqly8MFmM1O+L/nYJ0szcLyX
+         veNECykkqaoNxyudT03b+jc3dvpDg83YFBGpucM9owWuShDBdKG7EnlPYftfFDs48+
+         cJszjRzqyIZew==
+Received: by mail-vs1-f47.google.com with SMTP id e20so1917515vso.4;
+        Thu, 16 Jun 2022 10:46:54 -0700 (PDT)
+X-Gm-Message-State: AJIora/P9vwCQ6EstqexlIm2+tBKm2n7oxMM36iFuPo9dSKHO9TJJr5T
+        8PumwXWhxSU10F/dqh8XTj1iZMHxj4ID9ezVNg==
+X-Google-Smtp-Source: AGRyM1vGAqdzOalUBqekYDSJugHvCocjWd/glXnsxxGXG96fj+Wiea2ZNDAp6I7ij/DVFmUPO/pfYWyNZ3oXE7Owq1w=
+X-Received: by 2002:a05:6102:3d0f:b0:34b:bdd0:baef with SMTP id
+ i15-20020a0561023d0f00b0034bbdd0baefmr2813780vsv.85.1655401613705; Thu, 16
+ Jun 2022 10:46:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 7112872661861631707
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedruddvfedguddtfecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeelgeetueejffejfeejvefhtddufeejgfetleegtddukeelieelvddvteduveejtdenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejiedtrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekge
+References: <1654793615-21290-1-git-send-email-radhey.shyam.pandey@amd.com>
+ <5e5580c4d3f84b9e9ae43e1e4ae43ac0a2162a75.camel@redhat.com>
+ <MN0PR12MB5953590F8098E46C02943AFEB7AA9@MN0PR12MB5953.namprd12.prod.outlook.com>
+ <1ae6dce1-0c5c-64f0-c6a4-b0f11a82f315@linaro.org> <20220614185454.7479405c@kernel.org>
+In-Reply-To: <20220614185454.7479405c@kernel.org>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 16 Jun 2022 11:46:42 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+32b6GcoX4+d7bnu512-FFaFgb3AEn=iEM_54Mp59RHQ@mail.gmail.com>
+Message-ID: <CAL_Jsq+32b6GcoX4+d7bnu512-FFaFgb3AEn=iEM_54Mp59RHQ@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next] dt-bindings: net: xilinx: document xilinx
+ emaclite driver binding
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "Katakam, Harini" <harini.katakam@amd.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "git (AMD-Xilinx)" <git@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-backlight_properties.fb_blank is deprecated. The states it represents
-are handled by other properties; but instead of accessing those
-properties directly, drivers should use the helpers provided by
-backlight.h.
+On Tue, Jun 14, 2022 at 7:54 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 14 Jun 2022 15:48:43 -0700 Krzysztof Kozlowski wrote:
+> > > I have seen a mixed set of the convention for dts patches. They are following
+> > > both routes i.e device tree or subsystem repos provided acked from device
+> > > tree maintainer.  If there is preference for device tree repo then I can drop
+> > > net-next from subject prefix and resend it for the dt repo.
+> >
+> > If you got Ack from Devicetree bindings maintainer (Rob Herring or me),
+> > then feel free to take it via net-next. I think, it is actually
+> > preferred, unless this is some fix which needs to go via DT (Rob's) tree.
+> >
+> > If you don't have these acks, then better don't take it :) unless it's
+> > really waiting too long on the lists. I hope it's not that case.
+>
+> GTK, thanks. I'm also often confused by the correct tree for DT patches.
 
-Instead of retrieving the backlight brightness in struct
-backlight_properties manually, and then checking whether the backlight
-should be on at all, use backlight_get_brightness() which does all
-this and insulates this from future changes.
+It is documented in
+Documentation/devicetree/bindings/submitting-patches.rst, section II.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: linuxppc-dev@lists.ozlabs.org
----
-Changes since v2: clarified commit title
----
- drivers/macintosh/via-pmu-backlight.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+The default is bindings should go thru subsystem trees. Given netdev's
+tendency to apply bindings before DT review and even semi-automated
+checks, but skipping standalone patches, I haven't minded picking them
+up.
 
-diff --git a/drivers/macintosh/via-pmu-backlight.c b/drivers/macintosh/via-pmu-backlight.c
-index 2194016122d2..c2d87e7fa85b 100644
---- a/drivers/macintosh/via-pmu-backlight.c
-+++ b/drivers/macintosh/via-pmu-backlight.c
-@@ -71,12 +71,7 @@ static int pmu_backlight_get_level_brightness(int level)
- static int __pmu_backlight_update_status(struct backlight_device *bd)
- {
- 	struct adb_request req;
--	int level = bd->props.brightness;
--
--
--	if (bd->props.power != FB_BLANK_UNBLANK ||
--	    bd->props.fb_blank != FB_BLANK_UNBLANK)
--		level = 0;
-+	int level = backlight_get_brightness(bd);
- 
- 	if (level > 0) {
- 		int pmulevel = pmu_backlight_get_level_brightness(level);
-
-base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
--- 
-2.30.2
-
+Rob
