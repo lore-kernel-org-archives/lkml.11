@@ -2,51 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B015AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E45C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359194AbiFPGbQ (ORCPT
+        id S1359202AbiFPGbU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 02:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51090 "EHLO
+        Thu, 16 Jun 2022 02:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359124AbiFPGbJ (ORCPT
+        with ESMTP id S233903AbiFPGbK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 02:31:09 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C1B56B26
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:31:08 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 4440468AA6; Thu, 16 Jun 2022 08:31:04 +0200 (CEST)
-Date:   Thu, 16 Jun 2022 08:31:04 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Hans =?iso-8859-1?Q?M=FCller?= <schreibemirhalt@gmail.com>,
-        arve@android.com, christian@brauner.io, hch@lst.de,
-        hridya@google.com, joel@joelfernandes.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org, maco@android.com,
-        surenb@google.com, tkjos@android.com
-Subject: Re: [PATCH] staging: remove ashmem
-Message-ID: <20220616063104.GA5494@lst.de>
-References: <YjCTL/2ZJW8EWLHL@kroah.com> <3f8d25aa-17a6-e6aa-4b6d-d3388ef35201@gmail.com> <YqrN38V/qS9ljk8+@kroah.com>
+        Thu, 16 Jun 2022 02:31:10 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2E05677B;
+        Wed, 15 Jun 2022 23:31:09 -0700 (PDT)
+X-UUID: e2f21dbf73474e5f9da3f5ed59914ac8-20220616
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:88c4ec7a-a239-46ba-bf62-aefc6af4ef11,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:b14ad71,CLOUDID:9b7d71f6-e099-41ba-a32c-13b8bfe63214,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: e2f21dbf73474e5f9da3f5ed59914ac8-20220616
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1300391025; Thu, 16 Jun 2022 14:31:03 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Thu, 16 Jun 2022 14:31:02 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 16 Jun 2022 14:31:00 +0800
+Message-ID: <2d0f49294a8bac34dd5dd1ce4201f009a207b7a7.camel@mediatek.com>
+Subject: Re: [PATCH v3 6/6] iommu: mtk_iommu: Lookup phandle to retrieve
+ syscon to pericfg
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+CC:     <joro@8bytes.org>, <will@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <iommu@lists.linux-foundation.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <krzysztof.kozlowski@linaro.org>
+Date:   Thu, 16 Jun 2022 14:30:57 +0800
+In-Reply-To: <80c7fa61-e25a-fc45-bdcb-60ac3796b96e@collabora.com>
+References: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
+         <20220609100802.54513-7-angelogioacchino.delregno@collabora.com>
+         <db422fe4d0b5391ee2aacae989d7e48209e1095f.camel@mediatek.com>
+         <80c7fa61-e25a-fc45-bdcb-60ac3796b96e@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqrN38V/qS9ljk8+@kroah.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 08:29:51AM +0200, Greg KH wrote:
-> That is a "Android 7-based" system?  That's old, how are they supporting
-> that anymore with the security stuff that has happened since then?
+On Mon, 2022-06-13 at 10:13 +0200, AngeloGioacchino Del Regno wrote:
+> Il 13/06/22 07:32, Yong Wu ha scritto:
+> > On Thu, 2022-06-09 at 12:08 +0200, AngeloGioacchino Del Regno
+> > wrote:
+> > > On some SoCs (of which only MT8195 is supported at the time of
+> > > writing),
+> > > the "R" and "W" (I/O) enable bits for the IOMMUs are in the
+> > > pericfg_ao
+> > > register space and not in the IOMMU space: as it happened already
+> > > with
+> > > infracfg, it is expected that this list will grow.
+> > 
+> > Currently I don't see the list will grow. As commented before, In
+> > the
+> > lastest SoC, The IOMMU enable bits for IOMMU will be in ATF, rather
+> > than in this pericfg register region. In this case, Is this patch
+> > unnecessary? or we could add this patch when there are 2 SoCs use
+> > this
+> > setting at least?  what's your opinion?
+> > 
 > 
-> Anyway, if this were to come back, I need a maintainer who agrees to
-> maintain it and fix and support it.  Are you able to do that?  If so, I
-> think it would probably be easier to fix up anbox to use memfd instead,
-> is anyone doing that (I couldn't figure that out from the github
-> issue...)
+> Perhaps I've misunderstood... besides, can you please check if
+> there's any
+> other SoC (not just chromebooks, also smartphone SoCs) that need this
+> logic?
 
-I'm very much against this.  ashmem is a mess and we should not maintain
-it for some kind of retro computing group.
+As far as I know, SmartPhone SoCs don't enable the infra iommu until
+now. they don't have this logic. I don't object this patch, I think we
+could add it when at least 2 SoCs need this.
+
+Thanks very much for help improving here.
+
+> 
+> Thanks,
+> Angelo
+> 
+> 
+
