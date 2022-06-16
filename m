@@ -2,228 +2,291 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE7CAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE18C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359259AbiFPGlM (ORCPT
+        id S1358659AbiFPGl4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 02:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58592 "EHLO
+        Thu, 16 Jun 2022 02:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359255AbiFPGkv (ORCPT
+        with ESMTP id S1358838AbiFPGlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 02:40:51 -0400
-Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A1B583AB
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:40:50 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id 401C83200B3D;
-        Thu, 16 Jun 2022 02:40:49 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 16 Jun 2022 02:40:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1655361648; x=1655448048; bh=MH
-        jenYqjbc5iX1DDQJLjs+/Q4o7cKcluDYa/ibxYolQ=; b=onjoECb1FpSrXJCS/Z
-        dGfDdPKPqcy+ugDA3IPIwTu539hY/LrBhXjU1sDZ+NRRcEeVlvzsOjGpoWdZ25Ft
-        7rzPDNqXWQbWz8r/+L4eTtdZOBSt06EFfjUaU2AXxWjFhZfJKDNCbe9oBJ1Sl3eV
-        CoThwcyUvpV2SV0rXIGXNIZ9JJMMCbsj5ihvde+0wJdjzQiloUHG2KCVwxoSoIDs
-        LpydQOCWvArPm6s9bdxZddwdqTjH0BUJlb8X1fTOVD8kwPjLMWm5U5ZaP+DyzVZ1
-        g+P+KvKOeqMRPwJxa6l3Wsp8ja716H3DrR7DxUhtEFiY61bQUe0mP46h3Nf/FNds
-        k0/Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1655361648; x=1655448048; bh=MHjenYqjbc5iX
-        1DDQJLjs+/Q4o7cKcluDYa/ibxYolQ=; b=ZQumxlvxPeRsrOH9vREPiNuwKRnrE
-        e6ZOPExBR1beMVWdbAznpM5ObZlHSRQUvpKdQmvkshq4CQwjd53UkWoqTooDyZ5L
-        BCU9l9Tp43wAJpo+OnBS2+OAsTSfrchJXpXloseLWcQK1SVwgJiHfPkXTH6ZyWEN
-        R5qGrnv8kM8BbGy+QEfLS9MdzqBYbF5NVduqA6Kzyp5P19wnhfUvCBC0iz0MTqiG
-        mKQ0Sye/ibs9JUEi5P3rYXpYmp4dNogCh183Km/+i8HjW3eLUh/DcLKfP3wq0bbE
-        zkOgb5KR/QZlXubrKhdMvdb/v3m/XkB5fQQvDN9P8TLBBb1nvuLhGb63w==
-X-ME-Sender: <xms:cNCqYg_KQ1voYWBh7E0VZojE6_B5EIYlJ8-kdFVPDLu2WzgYL95YZg>
-    <xme:cNCqYoueMFP0zR76yYnZGE7VTJ1GCDnJP-e3Quu6KjBo8dbUqu-dLZ3CmYv2mBFxf
-    xO3l5OpfEmGj1JngA>
-X-ME-Received: <xmr:cNCqYmC7qMO4fFjl7xKtl4QjQHsZoK2CRW4IKYMGyIRLYN5eVULc66o1T0Sdihp0rrnrXhkeeRnTyD4iLkH3BZbromyjjuVuMsSJNYVXxDHioZL1CTw9-sgyvZ8esHkz10t4Vw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddvvddguddtkecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghm
-    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeeh
-    gfdufeeitdevteenucevlhhushhtvghrufhiiigvpedvnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:cNCqYgd0kyiiQJ86e2vSuWUyUXjAz6yIWi7aC1yiQwnjYeB_ISjpew>
-    <xmx:cNCqYlN1vgW0yN5eEEbMFsSJoBnM_wMBiHxrIOzNIal5xoDHoD-2iA>
-    <xmx:cNCqYqki6zJVX__ed6nFZfPzuB85_c-kvym3NaNTyXm5mChG-K5IRg>
-    <xmx:cNCqYpl-MLciV_OUz5LqoUH52lW8Mn_Suh884K_N9-dCyVeJv5LJvw>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 16 Jun 2022 02:40:48 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Guo Ren <guoren@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Wei Xu <xuwei5@hisilicon.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: [PATCH v2 6/6] irqchip/sifive-plic: Separate the enable and mask operations
-Date:   Thu, 16 Jun 2022 01:40:28 -0500
-Message-Id: <20220616064028.57933-7-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220616064028.57933-1-samuel@sholland.org>
-References: <20220616064028.57933-1-samuel@sholland.org>
+        Thu, 16 Jun 2022 02:41:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC9655A0BC
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:41:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655361709;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=33qxPl1yzMZ2ON25XfmJwFn/7hkH/1jNSByKPnqWkCE=;
+        b=JEyrehx90gd3SL8wUyDnfqDnFci8n0aXLyQQezkCrf3FLQNueKz0EHSFD2UcPeIimb8sQG
+        09PZcttEVg9VuIYvrtwZJFah9d/rOc1eomnP/FIkO5iURO3uQC95QvPkYaZQYOE55Bsss1
+        mjEA/bUTyTtYgtcGOIQppdMG5bhbdfc=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-414-JbtJl_OQO0a-OJ1ZmVn5Sg-1; Thu, 16 Jun 2022 02:41:48 -0400
+X-MC-Unique: JbtJl_OQO0a-OJ1ZmVn5Sg-1
+Received: by mail-wm1-f70.google.com with SMTP id l4-20020a05600c1d0400b0039c60535405so223125wms.6
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:41:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=33qxPl1yzMZ2ON25XfmJwFn/7hkH/1jNSByKPnqWkCE=;
+        b=lhEwiT/3092Y1ZYaTEoP2QIGHHBVuJUrPCWE4Di135r+AQGTdqSjrmmmao7Y5/IYay
+         6xyuaJodqa9g4POxbovbBgVlw39hCMWCXv3tCogL3w3vKZNynkVZO26irertMhR6O3Qg
+         wSaSy5Z4iTdQSPxkQQ4z8yhQMjIilZSNjBzj5UTCJT6HxW8HUp95PgIKS+5GiJR7uwh+
+         K0IX1LCXAwn5PmSnQ6xEFxJmc5T2FbjWzV5X8R7s5YzFZ85Y6Viqyy/r6C+sjRUtcitD
+         uGXBz4gMi7XdJYOie/znxjkwKg90/nGl128KdkruQ37wEfrm2f8sopzIAP91yRXWomrP
+         JQKQ==
+X-Gm-Message-State: AJIora9WkAkKpBVqsXhJtoUktUiEtxGYN33HYG0phHvIDR9cROXmov3X
+        VR4yF0vDQ/VKOoKdvTxbCOhdHCluj3jPwEkD/k1Go83c9rZGFUd9eNclntWxL1g0/HjFJlpanbF
+        VgkWqCr5iCrZ1X6XXG4tK8V5X
+X-Received: by 2002:a05:600c:a4c:b0:39c:34d0:fd25 with SMTP id c12-20020a05600c0a4c00b0039c34d0fd25mr3272706wmq.172.1655361707070;
+        Wed, 15 Jun 2022 23:41:47 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uj7j+Imm2QnYHEeavtspJbw5pJdXR2qZqmqSGicIKEcXokVbl/SLeeDQjVR6hopXzX0S8vZQ==
+X-Received: by 2002:a05:600c:a4c:b0:39c:34d0:fd25 with SMTP id c12-20020a05600c0a4c00b0039c34d0fd25mr3272690wmq.172.1655361706812;
+        Wed, 15 Jun 2022 23:41:46 -0700 (PDT)
+Received: from redhat.com ([2a03:c5c0:107d:d500:e9ae:3150:6c35:ac38])
+        by smtp.gmail.com with ESMTPSA id w5-20020a7bc105000000b003976fbfbf00sm1171293wmi.30.2022.06.15.23.41.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 23:41:46 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 02:41:37 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Albert Huang <huangjie.albert@bytedance.com>
+Cc:     jasowang@redhat.com, yuanzhu@bytedance.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] virtio_ring : keep used_wrap_counter in
+ vq->last_used_idx
+Message-ID: <20220616023904-mutt-send-email-mst@kernel.org>
+References: <CACGkMEtz-1=3=+zUZvc+CX4LrufZZfZO=_zONo5GuAUX+BrpAQ@mail.gmail.com>
+ <20220616051221.28506-1-huangjie.albert@bytedance.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220616051221.28506-1-huangjie.albert@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PLIC has two per-IRQ checks before sending an IRQ to a hart context.
-First, it checks that the IRQ's priority is nonzero. Then, it checks
-that the enable bit is set for that combination of IRQ and context.
+On Thu, Jun 16, 2022 at 01:12:21PM +0800, Albert Huang wrote:
+> From: "huangjie.albert" <huangjie.albert@bytedance.com>
+> 
+> the used_wrap_counter and the vq->last_used_idx may get
+> out of sync if they are separate assignment，and interrupt
+> might use an incorrect value to check for the used index.
+> 
+> for example:OOB access
+> ksoftirqd may consume the packet and it will call:
+> virtnet_poll
+> 	-->virtnet_receive
+> 		-->virtqueue_get_buf_ctx
+> 			-->virtqueue_get_buf_ctx_packed
+> and in virtqueue_get_buf_ctx_packed:
+> 
+> vq->last_used_idx += vq->packed.desc_state[id].num;
+> if (unlikely(vq->last_used_idx >= vq->packed.vring.num)) {
+>          vq->last_used_idx -= vq->packed.vring.num;
+>          vq->packed.used_wrap_counter ^= 1;
+> }
+> 
+> if at the same time, there comes a vring interrupt，in vring_interrupt:
+> we will call:
+> vring_interrupt
+> 	-->more_used
+> 		-->more_used_packed
+> 			-->is_used_desc_packed
+> in is_used_desc_packed, the last_used_idx maybe >= vq->packed.vring.num.
+> so this could case a memory out of bounds bug.
+> 
+> this patch is to keep the used_wrap_counter in vq->last_used_idx
+> so we can get the correct value to check for used index in interrupt.
+> 
+> v1->v2:
+> - reuse the VRING_PACKED_EVENT_F_WRAP_CTR
+> - Remove parameter judgment in is_used_desc_packed,
+> because it can't be illegal
+> 
+> Signed-off-by: huangjie.albert <huangjie.albert@bytedance.com>
+> ---
+>  drivers/virtio/virtio_ring.c | 57 ++++++++++++++++++++----------------
+>  1 file changed, 31 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> index 13a7348cedff..b22d97c9a755 100644
+> --- a/drivers/virtio/virtio_ring.c
+> +++ b/drivers/virtio/virtio_ring.c
+> @@ -111,7 +111,12 @@ struct vring_virtqueue {
+>  	/* Number we've added since last sync. */
+>  	unsigned int num_added;
+>  
+> -	/* Last used index we've seen. */
+> +	/* Last used index  we've seen.
+> +	 * for split ring, it just contains last used index
+> +	 * for packed ring, it not only contains last used index, but also
+> +	 * used_wrap_counter, the VRING_PACKED_EVENT_F_WRAP_CTR is
+> +	 * the bit shift in last_used_idx
+> +	 */
+>  	u16 last_used_idx;
+>  
+>  	/* Hint for event idx: already triggered no need to disable. */
+> @@ -154,9 +159,6 @@ struct vring_virtqueue {
+>  			/* Driver ring wrap counter. */
+>  			bool avail_wrap_counter;
+>  
+> -			/* Device ring wrap counter. */
+> -			bool used_wrap_counter;
+> -
+>  			/* Avail used flags. */
+>  			u16 avail_used_flags;
+>  
+> @@ -1406,8 +1408,12 @@ static inline bool is_used_desc_packed(const struct vring_virtqueue *vq,
+>  
+>  static inline bool more_used_packed(const struct vring_virtqueue *vq)
+>  {
+> -	return is_used_desc_packed(vq, vq->last_used_idx,
+> -			vq->packed.used_wrap_counter);
+> +	u16 last_used;
+> +	bool used_wrap_counter;
+> +
+> +	last_used = vq->last_used_idx & ~(1 << VRING_PACKED_EVENT_F_WRAP_CTR);
+> +	used_wrap_counter = !!((vq->last_used_idx) >> VRING_PACKED_EVENT_F_WRAP_CTR);
+> +	return is_used_desc_packed(vq, last_used, used_wrap_counter);
 
-Currently, the PLIC driver sets both the priority value and the enable
-bit in its (un)mask operations. However, modifying the enable bit is
-problematic for two reasons:
-  1) The enable bits are packed, so changes are not atomic and require
-     taking a spinlock.
-  2) The following requirement from the PLIC spec, which explains the
-     racy (un)mask operations in plic_irq_eoi():
+Hmm.
 
-       If the completion ID does not match an interrupt source
-       that is currently enabled for the target, the completion
-       is silently ignored.
+If vq->last_used_idx is read twice like this the values can be inconsistent,
+no idea what the result will be if so.
 
-Both of these problems are solved by using the priority value to mask
-IRQs. Each IRQ has a separate priority register, so writing the priority
-value is atomic. And since the enable bit remains set while an IRQ is
-masked, the EOI operation works normally. The enable bits are still used
-to control the IRQ's affinity.
+I think we need to read vq->last_used_idx with READ_ONCE.
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+And I guess write it with WRITE_ONCE for symmetry.
 
-(no changes since v1)
 
- drivers/irqchip/irq-sifive-plic.c | 53 +++++++++++++++++++------------
- 1 file changed, 32 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/irqchip/irq-sifive-plic.c b/drivers/irqchip/irq-sifive-plic.c
-index bf7d5bee0c0c..53d266a571be 100644
---- a/drivers/irqchip/irq-sifive-plic.c
-+++ b/drivers/irqchip/irq-sifive-plic.c
-@@ -103,9 +103,7 @@ static inline void plic_irq_toggle(const struct cpumask *mask,
- 				   struct irq_data *d, int enable)
- {
- 	int cpu;
--	struct plic_priv *priv = irq_data_get_irq_chip_data(d);
- 
--	writel(enable, priv->regs + PRIORITY_BASE + d->hwirq * PRIORITY_PER_ID);
- 	for_each_cpu(cpu, mask) {
- 		struct plic_handler *handler = per_cpu_ptr(&plic_handlers, cpu);
- 
-@@ -113,16 +111,37 @@ static inline void plic_irq_toggle(const struct cpumask *mask,
- 	}
- }
- 
--static void plic_irq_unmask(struct irq_data *d)
-+static void plic_irq_enable(struct irq_data *d)
- {
- 	plic_irq_toggle(irq_data_get_effective_affinity_mask(d), d, 1);
- }
- 
--static void plic_irq_mask(struct irq_data *d)
-+static void plic_irq_disable(struct irq_data *d)
- {
- 	plic_irq_toggle(irq_data_get_effective_affinity_mask(d), d, 0);
- }
- 
-+static void plic_irq_unmask(struct irq_data *d)
-+{
-+	struct plic_priv *priv = irq_data_get_irq_chip_data(d);
-+
-+	writel(1, priv->regs + PRIORITY_BASE + d->hwirq * PRIORITY_PER_ID);
-+}
-+
-+static void plic_irq_mask(struct irq_data *d)
-+{
-+	struct plic_priv *priv = irq_data_get_irq_chip_data(d);
-+
-+	writel(0, priv->regs + PRIORITY_BASE + d->hwirq * PRIORITY_PER_ID);
-+}
-+
-+static void plic_irq_eoi(struct irq_data *d)
-+{
-+	struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
-+
-+	writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
-+}
-+
- #ifdef CONFIG_SMP
- static int plic_set_affinity(struct irq_data *d,
- 			     const struct cpumask *mask_val, bool force)
-@@ -141,32 +160,21 @@ static int plic_set_affinity(struct irq_data *d,
- 	if (cpu >= nr_cpu_ids)
- 		return -EINVAL;
- 
--	plic_irq_mask(d);
-+	plic_irq_disable(d);
- 
- 	irq_data_update_effective_affinity(d, cpumask_of(cpu));
- 
--	if (!irqd_irq_masked(d))
--		plic_irq_unmask(d);
-+	if (!irqd_irq_disabled(d))
-+		plic_irq_enable(d);
- 
- 	return IRQ_SET_MASK_OK_DONE;
- }
- #endif
- 
--static void plic_irq_eoi(struct irq_data *d)
--{
--	struct plic_handler *handler = this_cpu_ptr(&plic_handlers);
--
--	if (irqd_irq_masked(d)) {
--		plic_irq_unmask(d);
--		writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
--		plic_irq_mask(d);
--	} else {
--		writel(d->hwirq, handler->hart_base + CONTEXT_CLAIM);
--	}
--}
--
- static struct irq_chip plic_chip = {
- 	.name		= "SiFive PLIC",
-+	.irq_enable	= plic_irq_enable,
-+	.irq_disable	= plic_irq_disable,
- 	.irq_mask	= plic_irq_mask,
- 	.irq_unmask	= plic_irq_unmask,
- 	.irq_eoi	= plic_irq_eoi,
-@@ -372,8 +380,11 @@ static int __init plic_init(struct device_node *node,
- 			i * CONTEXT_ENABLE_SIZE;
- 		handler->priv = priv;
- done:
--		for (hwirq = 1; hwirq <= nr_irqs; hwirq++)
-+		for (hwirq = 1; hwirq <= nr_irqs; hwirq++) {
- 			plic_toggle(handler, hwirq, 0);
-+			writel(1, priv->regs + PRIORITY_BASE +
-+				  hwirq * PRIORITY_PER_ID);
-+		}
- 		nr_handlers++;
- 	}
- 
--- 
-2.35.1
+>  }
+>  
+>  static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+> @@ -1416,6 +1422,7 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+>  {
+>  	struct vring_virtqueue *vq = to_vvq(_vq);
+>  	u16 last_used, id;
+> +	bool used_wrap_counter;
+>  	void *ret;
+>  
+>  	START_USE(vq);
+> @@ -1434,7 +1441,8 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+>  	/* Only get used elements after they have been exposed by host. */
+>  	virtio_rmb(vq->weak_barriers);
+>  
+> -	last_used = vq->last_used_idx;
+> +	used_wrap_counter = !!((vq->last_used_idx >> VRING_PACKED_EVENT_F_WRAP_CTR));
+> +	last_used = (vq->last_used_idx) & (~(1 << VRING_PACKED_EVENT_F_WRAP_CTR));
+>  	id = le16_to_cpu(vq->packed.vring.desc[last_used].id);
+>  	*len = le32_to_cpu(vq->packed.vring.desc[last_used].len);
+>  
+> @@ -1451,12 +1459,15 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+>  	ret = vq->packed.desc_state[id].data;
+>  	detach_buf_packed(vq, id, ctx);
+>  
+> -	vq->last_used_idx += vq->packed.desc_state[id].num;
+> -	if (unlikely(vq->last_used_idx >= vq->packed.vring.num)) {
+> -		vq->last_used_idx -= vq->packed.vring.num;
+> -		vq->packed.used_wrap_counter ^= 1;
+> +	last_used += vq->packed.desc_state[id].num;
+> +	if (unlikely(last_used >= vq->packed.vring.num)) {
+> +		last_used -= vq->packed.vring.num;
+> +		used_wrap_counter ^= 1;
+>  	}
+>  
+> +	last_used = (last_used | (used_wrap_counter << VRING_PACKED_EVENT_F_WRAP_CTR));
+> +	vq->last_used_idx = last_used;
+> +
+>  	/*
+>  	 * If we expect an interrupt for the next entry, tell host
+>  	 * by writing event index and flush out the write before
+> @@ -1465,9 +1476,7 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+>  	if (vq->packed.event_flags_shadow == VRING_PACKED_EVENT_FLAG_DESC)
+>  		virtio_store_mb(vq->weak_barriers,
+>  				&vq->packed.vring.driver->off_wrap,
+> -				cpu_to_le16(vq->last_used_idx |
+> -					(vq->packed.used_wrap_counter <<
+> -					 VRING_PACKED_EVENT_F_WRAP_CTR)));
+> +				cpu_to_le16(vq->last_used_idx));
+>  
+>  	LAST_ADD_TIME_INVALID(vq);
+>  
+> @@ -1499,9 +1508,7 @@ static unsigned int virtqueue_enable_cb_prepare_packed(struct virtqueue *_vq)
+>  
+>  	if (vq->event) {
+>  		vq->packed.vring.driver->off_wrap =
+> -			cpu_to_le16(vq->last_used_idx |
+> -				(vq->packed.used_wrap_counter <<
+> -				 VRING_PACKED_EVENT_F_WRAP_CTR));
+> +			cpu_to_le16(vq->last_used_idx);
+>  		/*
+>  		 * We need to update event offset and event wrap
+>  		 * counter first before updating event flags.
+> @@ -1518,8 +1525,7 @@ static unsigned int virtqueue_enable_cb_prepare_packed(struct virtqueue *_vq)
+>  	}
+>  
+>  	END_USE(vq);
+> -	return vq->last_used_idx | ((u16)vq->packed.used_wrap_counter <<
+> -			VRING_PACKED_EVENT_F_WRAP_CTR);
+> +	return vq->last_used_idx;
+>  }
+>  
+>  static bool virtqueue_poll_packed(struct virtqueue *_vq, u16 off_wrap)
+> @@ -1550,9 +1556,9 @@ static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
+>  	if (vq->event) {
+>  		/* TODO: tune this threshold */
+>  		bufs = (vq->packed.vring.num - vq->vq.num_free) * 3 / 4;
+> -		wrap_counter = vq->packed.used_wrap_counter;
+> +		wrap_counter = !!(vq->last_used_idx >> VRING_PACKED_EVENT_F_WRAP_CTR);
+>  
+> -		used_idx = vq->last_used_idx + bufs;
+> +		used_idx = (vq->last_used_idx & ~(1 << VRING_PACKED_EVENT_F_WRAP_CTR)) + bufs;
+>  		if (used_idx >= vq->packed.vring.num) {
+>  			used_idx -= vq->packed.vring.num;
+>  			wrap_counter ^= 1;
+> @@ -1582,9 +1588,9 @@ static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
+>  	 */
+>  	virtio_mb(vq->weak_barriers);
+>  
+> -	if (is_used_desc_packed(vq,
+> -				vq->last_used_idx,
+> -				vq->packed.used_wrap_counter)) {
+> +	wrap_counter = !!(vq->last_used_idx >> VRING_PACKED_EVENT_F_WRAP_CTR);
+> +	used_idx = (vq->last_used_idx & ~(1 << VRING_PACKED_EVENT_F_WRAP_CTR));
+> +	if (is_used_desc_packed(vq, used_idx, wrap_counter)) {
+>  		END_USE(vq);
+>  		return false;
+>  	}
+> @@ -1689,7 +1695,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
+>  	vq->notify = notify;
+>  	vq->weak_barriers = weak_barriers;
+>  	vq->broken = true;
+> -	vq->last_used_idx = 0;
+> +	vq->last_used_idx = 0 | (1 << VRING_PACKED_EVENT_F_WRAP_CTR);
+>  	vq->event_triggered = false;
+>  	vq->num_added = 0;
+>  	vq->packed_ring = true;
+> @@ -1720,7 +1726,6 @@ static struct virtqueue *vring_create_virtqueue_packed(
+>  
+>  	vq->packed.next_avail_idx = 0;
+>  	vq->packed.avail_wrap_counter = 1;
+> -	vq->packed.used_wrap_counter = 1;
+>  	vq->packed.event_flags_shadow = 0;
+>  	vq->packed.avail_used_flags = 1 << VRING_PACKED_DESC_F_AVAIL;
+>  
+> -- 
+> 2.31.1
 
