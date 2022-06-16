@@ -2,301 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6A9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 17:02:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C22C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 17:04:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356345AbiFPRCp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 13:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39436 "EHLO
+        id S229844AbiFPREI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 13:04:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348065AbiFPRCe (ORCPT
+        with ESMTP id S233152AbiFPREE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 13:02:34 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F218F4924C;
-        Thu, 16 Jun 2022 10:02:26 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id D1E4E5FD03;
-        Thu, 16 Jun 2022 20:02:23 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1655398943;
-        bh=c8nGHSoCYKivIqQ2DHZGOgnkq8MRyBYS9rcB3G6l1og=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=lraNj3hbANOZtyyp9vN1jcz9gbXumsTAbW7rdcBSZ0rU3BWwT6DZO+4StTQ6Xxyq4
-         sP19lwbFtAIblYisGpjBYYNFxNK9DTw31cKH+RlrWGQrNDuYCtuqw/45DN2bYRzPJ4
-         uScEJEZ2ICBPrPaoIsYAIjNZhyGXN7i0cXvqeFErDRSMjQq6wDisfrotcDEHOmcN3E
-         l9saVFO1jiXpzG27CcsMi4f88lHAL4bM5/awLnRe7pM145mZzOozjbG8elrHm/DmAc
-         Mg3z2/4j0Gdjl9TiAbJvgknDrqmxqOxMijOIxJ5jB+HDzV16+S+pXp+BcQbj8XcO4y
-         +8uXu9LBCjldw==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 16 Jun 2022 20:02:23 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Topic: [PATCH v3 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Index: AQHYgW2+up0uMWdZgUWEAW/5cCPkBq1RwVQAgABPMQA=
-Date:   Thu, 16 Jun 2022 17:02:08 +0000
-Message-ID: <20220616170218.dihjli46spimozeg@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220616104211.9257-1-ddrokosov@sberdevices.ru>
- <20220616104211.9257-3-ddrokosov@sberdevices.ru>
- <CAHp75Vc0+ckNnm2tzLMPrjeFRjwoj3zy0C4koNShFRG3kP8b6w@mail.gmail.com>
-In-Reply-To: <CAHp75Vc0+ckNnm2tzLMPrjeFRjwoj3zy0C4koNShFRG3kP8b6w@mail.gmail.com>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <F15C7B2110EABF4AB31F523C4E5315CF@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Thu, 16 Jun 2022 13:04:04 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AD1B18372
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 10:04:03 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EFD3511FB;
+        Thu, 16 Jun 2022 10:04:02 -0700 (PDT)
+Received: from e120937-lin.home (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B76BC3F73B;
+        Thu, 16 Jun 2022 10:04:01 -0700 (PDT)
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     sudeep.holla@arm.com, robin.murphy@arm.com,
+        nicola.mazzucato@arm.com, vincent.guittot@linaro.org,
+        f.fainelli@gmail.com, Cristian Marussi <cristian.marussi@arm.com>
+Subject: [PATCH] firmware: arm_scmi: Relax CLOCK_DESCRIBE_RATES out-of-spec checks
+Date:   Thu, 16 Jun 2022 18:03:47 +0100
+Message-Id: <20220616170347.2800771-1-cristian.marussi@arm.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/06/16 07:44:00 #19785775
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Andy,
+A reply to CLOCK_DESCRIBE_RATES issued against a non rate-discrete clock
+should be composed of a triplet of rates descriptors (min/max/step)
+returned all in one reply message.
 
-Thank you for the quick review. Please find my comments below.
+This is not always the case when dealing with some SCMI server deployed in
+the wild: relax such constraint while maintaining memory safety by checking
+carefully the returned payload size.
 
-On Thu, Jun 16, 2022 at 02:18:52PM +0200, Andy Shevchenko wrote:
-> On Thu, Jun 16, 2022 at 12:42 PM Dmitry Rokosov
-> <DDRokosov@sberdevices.ru> wrote:
+While at that cleanup a stale debug printout.
 
-...
+Fixes: 7bc7caafe6b1 ("firmware: arm_scmi: Use common iterators in the clock protocol")
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+---
+ drivers/firmware/arm_scmi/clock.c     | 26 +++++++++++++++++++++++++-
+ drivers/firmware/arm_scmi/driver.c    |  1 +
+ drivers/firmware/arm_scmi/protocols.h |  3 +++
+ 3 files changed, 29 insertions(+), 1 deletion(-)
 
-> > +enum msa311_fields {
-> > +       F_SOFT_RESET_I2C, F_SOFT_RESET_SPI,
-> > +
-> > +       F_ORIENT_INT, F_S_TAP_INT, F_D_TAP_INT, F_ACTIVE_INT, F_FREEFAL=
-L_INT,
-> > +
-> > +       F_NEW_DATA_INT,
-> > +
-> > +       F_TAP_SIGN, F_TAP_FIRST_X, F_TAP_FIRST_Y, F_TAP_FIRST_Z, F_ACTV=
-_SIGN,
-> > +       F_ACTV_FIRST_X, F_ACTV_FIRST_Y, F_ACTV_FIRST_Z,
-> > +
-> > +       F_ORIENT_Z, F_ORIENT_X_Y,
-> > +
-> > +       F_FS,
-> > +
-> > +       F_X_AXIS_DIS, F_Y_AXIS_DIS, F_Z_AXIS_DIS, F_ODR,
-> > +
-> > +       F_PWR_MODE, F_LOW_POWER_BW,
-> > +
-> > +       F_X_POLARITY, F_Y_POLARITY, F_Z_POLARITY, F_X_Y_SWAP,
-> > +
-> > +       F_ORIENT_INT_EN, F_S_TAP_INT_EN, F_D_TAP_INT_EN, F_ACTIVE_INT_E=
-N_Z,
-> > +       F_ACTIVE_INT_EN_Y, F_ACTIVE_INT_EN_X,
-> > +
-> > +       F_NEW_DATA_INT_EN, F_FREEFALL_INT_EN,
-> > +
-> > +       F_INT1_ORIENT, F_INT1_S_TAP, F_INT1_D_TAP, F_INT1_ACTIVE,
-> > +       F_INT1_FREEFALL,
-> > +
-> > +       F_INT1_NEW_DATA,
-> > +
-> > +       F_INT1_OD, F_INT1_LVL,
-> > +
-> > +       F_RESET_INT, F_LATCH_INT,
-> > +
-> > +       F_FREEFALL_MODE, F_FREEFALL_HY,
-> > +
-> > +       F_ACTIVE_DUR,
-> > +
-> > +       F_TAP_QUIET, F_TAP_SHOCK, F_TAP_DUR,
-> > +
-> > +       F_TAP_TH,
-> > +
-> > +       F_ORIENT_HYST, F_ORIENT_BLOCKING, F_ORIENT_MODE,
-> > +
-> > +       F_Z_BLOCKING,
-> > +
-> > +       F_MAX_FIELDS,
->=20
-> Not sure why you put those blank lines herey, it makes code not compact.
->=20
+diff --git a/drivers/firmware/arm_scmi/clock.c b/drivers/firmware/arm_scmi/clock.c
+index c7a83f6e38e5..3ed7ae0d6781 100644
+--- a/drivers/firmware/arm_scmi/clock.c
++++ b/drivers/firmware/arm_scmi/clock.c
+@@ -194,6 +194,7 @@ static int rate_cmp_func(const void *_r1, const void *_r2)
+ }
+ 
+ struct scmi_clk_ipriv {
++	struct device *dev;
+ 	u32 clk_id;
+ 	struct scmi_clock_info *clk;
+ };
+@@ -223,6 +224,29 @@ iter_clk_describe_update_state(struct scmi_iterator_state *st,
+ 	st->num_returned = NUM_RETURNED(flags);
+ 	p->clk->rate_discrete = RATE_DISCRETE(flags);
+ 
++	/* Warn about out of spec replies ... */
++	if (!p->clk->rate_discrete &&
++	    (st->num_returned != 3 || st->num_remaining != 0)) {
++		dev_warn(p->dev,
++			 "Out-of-spec CLOCK_DESCRIBE_RATES reply for %s - returned:%d remaining:%d rx_len:%zd\n",
++			 p->clk->name, st->num_returned, st->num_remaining,
++			 st->rx_len);
++
++		/*
++		 * A known quirk: a triplet is returned but num_returned != 3
++		 * Check for a safe payload size and fix.
++		 */
++		if (st->num_returned != 3 && st->num_remaining == 0 &&
++		    st->rx_len == sizeof(*r) + sizeof(__le32) * 2 * 3) {
++			st->num_returned = 3;
++			st->num_remaining = 0;
++		} else {
++			dev_err(p->dev,
++				"Cannot fix out-of-spec reply !\n");
++			return -EPROTO;
++		}
++	}
++
+ 	return 0;
+ }
+ 
+@@ -255,7 +279,6 @@ iter_clk_describe_process_response(const struct scmi_protocol_handle *ph,
+ 
+ 		*rate = RATE_TO_U64(r->rate[st->loop_idx]);
+ 		p->clk->list.num_rates++;
+-		//XXX dev_dbg(ph->dev, "Rate %llu Hz\n", *rate);
+ 	}
+ 
+ 	return ret;
+@@ -275,6 +298,7 @@ scmi_clock_describe_rates_get(const struct scmi_protocol_handle *ph, u32 clk_id,
+ 	struct scmi_clk_ipriv cpriv = {
+ 		.clk_id = clk_id,
+ 		.clk = clk,
++		.dev = ph->dev,
+ 	};
+ 
+ 	iter = ph->hops->iter_response_init(ph, &ops, SCMI_MAX_NUM_RATES,
+diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
+index c1922bd650ae..8b7ac6663d57 100644
+--- a/drivers/firmware/arm_scmi/driver.c
++++ b/drivers/firmware/arm_scmi/driver.c
+@@ -1223,6 +1223,7 @@ static int scmi_iterator_run(void *iter)
+ 		if (ret)
+ 			break;
+ 
++		st->rx_len = i->t->rx.len;
+ 		ret = iops->update_state(st, i->resp, i->priv);
+ 		if (ret)
+ 			break;
+diff --git a/drivers/firmware/arm_scmi/protocols.h b/drivers/firmware/arm_scmi/protocols.h
+index c679f3fb8718..51c31379f9b3 100644
+--- a/drivers/firmware/arm_scmi/protocols.h
++++ b/drivers/firmware/arm_scmi/protocols.h
+@@ -179,6 +179,8 @@ struct scmi_protocol_handle {
+  * @max_resources: Maximum acceptable number of items, configured by the caller
+  *		   depending on the underlying resources that it is querying.
+  * @loop_idx: The iterator loop index in the current multi-part reply.
++ * @rx_len: Size in bytes of the currenly processed message; it can be used by
++ *	    the user of the iterator to verify a reply size.
+  * @priv: Optional pointer to some additional state-related private data setup
+  *	  by the caller during the iterations.
+  */
+@@ -188,6 +190,7 @@ struct scmi_iterator_state {
+ 	unsigned int num_remaining;
+ 	unsigned int max_resources;
+ 	unsigned int loop_idx;
++	size_t rx_len;
+ 	void *priv;
+ };
+ 
+-- 
+2.32.0
 
-Here I use blank lines to split fields from different registers.
-In other words, in the msa311_fields enum one line contains fields from one
-register. But for some heavy registers (like TAP_ACTIVE_STS) we have so man=
-y
-fields and their declaration doesn't fit to 80 symbols.
-So I've made a decision to split registers using blank lines.
-
-...
-
-> > +struct msa311_priv {
->=20
-> > +       struct i2c_client *i2c;
->=20
-> Not sure you need this. Dropping i2c dependency from this structure
-> allows much easier to add, e.g. SPI support of the same hardware.
->=20
-
-Mainly I use i2c pointer in the probe() path, and you are right, we can
-change i2c pointer to dev and generalize msa311_priv struct from bus
-perspective.
-
-> > +       struct mutex lock; /* state guard */
-> > +
-> > +       struct iio_trigger *new_data_trig;
-> > +
-> > +       struct regmap *regs;
->=20
-> I believe this is used most, so making this a first member in the
-> structure saves  some instructions (check with bloat-o-meter).
->=20
-
-Are you talking about archs where offset calculation adds more bytes to
-instruction? And when offset equals to 0, we can save some space.
-
-...
-
-> > +       struct regmap_field *fields[F_MAX_FIELDS];
-> > +};
->=20
-> ...
->=20
-> > +       wait_ms =3D (USEC_PER_SEC * MSEC_PER_SEC) / freq_uhz;
->=20
-> This looks very odd from a physics perspective: sec * sec * sec =3D=3D se=
-c ?!
->=20
-> Perhaps you meant some HZ* macros from units.h?
->=20
-
-I suppose because of UHZ calculation I have to use NANO instead of
-USEC_PER_SEC in the following line:
-
-	freq_uhz =3D msa311_odr_table[odr].val * USEC_PER_SEC +
-		   msa311_odr_table[odr].val2;
-
-But below line is right from physics perspective. 1sec =3D 1/Hz, so
-msec =3D (USEC_PER_SEC / freq_uhz) * MSEC_PER_SEC:
-
-	wait_ms =3D (USEC_PER_SEC * MSEC_PER_SEC) / freq_uhz;
-
-Or do you mean that I should change MSEC_PER_SEC to just MILLI?
-
-> > +       err =3D -EINVAL;
-> > +       mutex_lock(&msa311->lock);
-> > +       for (odr =3D 0; odr < ARRAY_SIZE(msa311_odr_table); ++odr)
-> > +               if (val =3D=3D msa311_odr_table[odr].val &&
-> > +                   val2 =3D=3D msa311_odr_table[odr].val2) {
-> > +                       err =3D msa311_set_odr(msa311, odr);
->=20
-> > +                       if (err) {
-> > +                               dev_err(dev, "cannot update freq (%d)\n=
-", err);
-> > +                               goto failed;
-> > +                       }
->=20
-> Why is this inside the loop and more important under lock? Also you
-> may cover the initial error code by this message when moving it out of
-> the loop and lock.
->=20
-> Ditto for other code snippets in other function(s) where applicable.
->=20
-
-Yes, I can move dev_err() outside of loop. But all ODR search loop
-should be under lock fully, because other msa311 operations should not
-be executed when we search proper ODR place.
-
-...
-
-> > +       mutex_lock(&msa311->lock);
-> > +       err =3D regmap_field_write(msa311->fields[F_NEW_DATA_INT_EN], s=
-tate);
-> > +       mutex_unlock(&msa311->lock);
->=20
-> > +
->=20
-> No need.
->=20
-
-Sorry, I don't understand. We do not need to call it under lock, right?
-I think we have to wrap it by msa311 lock, because other msa311
-operations should not be executed when we enable or disable new data
-interrupt (for example ODR value changing or something else).
-
-> > +       if (err)
-> > +               dev_err(dev,
-> > +                       "cannot %s buffer due to new_data_int failure (=
-%d)\n",
-> > +                       state ? "enable" : "disable", err);
->=20
-> str_enable_disable()
->=20
-> ...
->=20
-
-Kernel has solutions on all occasions :-)
-
-...
-
-> > +       /* TODO: send motion events if needed */
->=20
-> Are you going to address all TODOs? If no, drop ones that you are not
-> going to address in the future, better to put into the top of the file
-> comment what is supported and what's not.
->=20
-> ...
->=20
-
-Yes, I plan to maintain this driver and implement all motion event,
-that's why I've placed TODO throughout the code.
-
-> > +       indio_dev->modes =3D INDIO_DIRECT_MODE; /* setup buffered mode =
-later */
->=20
-> Leaving it 0 is probably better, it's a pity that we don't have
-> INDIO_NO_MODE_SET 0 there. However, I haven't checked if it's possible
-> to leave it unset like this.
->=20
-> ...
->=20
-
-I set INDIO_DIRECT_MODE by default, because this driver support noirq
-mode, when device tree doesn't have irq setup.
-
-...
-
-> > +       mutex_lock(&msa311->lock);
-> > +       err =3D msa311_set_pwr_mode(msa311, MSA311_PWR_MODE_NORMAL);
-> > +       mutex_unlock(&msa311->lock);
->=20
-> > +
->=20
-> No need.
->=20
-
-Again I don't understand why, sorry. We do not want to get sporadic
-MSA311 attributes changing during power mode transition from another
-userspace process.
-
---=20
-Thank you,
-Dmitry=
