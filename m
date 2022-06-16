@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F55C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 01:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B2F1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 01:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350609AbiFPBvF (ORCPT
+        id S1350401AbiFPBvd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 21:51:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53682 "EHLO
+        Wed, 15 Jun 2022 21:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350856AbiFPBui (ORCPT
+        with ESMTP id S1350198AbiFPBvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 21:50:38 -0400
+        Wed, 15 Jun 2022 21:51:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CFA2583AB;
-        Wed, 15 Jun 2022 18:50:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010BD58388;
+        Wed, 15 Jun 2022 18:51:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E942F61CF6;
-        Thu, 16 Jun 2022 01:50:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC31C3411E;
-        Thu, 16 Jun 2022 01:50:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9110F61CC7;
+        Thu, 16 Jun 2022 01:51:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E68FAC3411A;
+        Thu, 16 Jun 2022 01:50:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655344231;
-        bh=mF0NndCR6m2d49GRqn5l9HYgTOrCNWb0rl8SH0KCYY4=;
+        s=k20201202; t=1655344260;
+        bh=4U5Lj/b/Nnw+5T77ExxngXXDFdxOraiwkpEje5p7KTU=;
         h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=opLJdMyu8LUgCovtfIzecb3R3SgxjUiw3Rv1gfluPdDdXn1T+IVznD78Vg1Jq/O7h
-         v5MKxaYs96WBoPOLxfwEmZgPmb2X2dSmCeh79wkVLGWvNBy5GYe8e2j0ivltoCNlZm
-         iBAJmRdSGtO4tg4BmQ5gOpTBhOUsBFx/7hpXhj8f+HO0Kc2HORVRvIh4ycwklkVpp2
-         DWECHtysvSumzPdhLruMeOYXYo4DDcfbQoDARgW8YVnAPNCPpWGTV1D7Z+0WMyntD2
-         FImowNT/ADNvC2zdFJg8sq4Qtva9qfQVPtHLW2YLhqFNcWVJVHtBOANargIEElDbzh
-         I+BS2zylGFcQg==
+        b=CtlotVeT91CLGG4UkX+Gnwkhe1AIRE5ubXXYSpecAlUEGQ9SjZEYZkLGdSRbGVCOT
+         3aycrxRrgAOHgxXIIGInEqijPmvJbuO/48ZDkce4qnhNa6xDRMHE9dXK7tE9K44hnT
+         1fikloK8vPgcZGR272scLnjvK1VgD5weJnl3dMAiWYoq4bDo1a0hDX5sMocq1ziii9
+         1gngOsjsyJWA3oK0QTl9Gjmddil6Ifg3q0zRgosDN7RWI/KcsyBicEb93h3na61Apo
+         TXKLyloEB8iIWnLKPXq6M+uQEmKH5vDZgur33S4m0Ac+NCLTBfCDU/gVj2AK663mou
+         YBwWyta05xgkQ==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220523093346.28493-3-rex-bc.chen@mediatek.com>
-References: <20220523093346.28493-1-rex-bc.chen@mediatek.com> <20220523093346.28493-3-rex-bc.chen@mediatek.com>
-Subject: Re: [RESEND v8 02/19] clk: mediatek: reset: Fix written reset bit offset
+In-Reply-To: <20220523093346.28493-5-rex-bc.chen@mediatek.com>
+References: <20220523093346.28493-1-rex-bc.chen@mediatek.com> <20220523093346.28493-5-rex-bc.chen@mediatek.com>
+Subject: Re: [RESEND v8 04/19] clk: mediatek: reset: Extract common drivers to update function
 From:   Stephen Boyd <sboyd@kernel.org>
 Cc:     p.zabel@pengutronix.de, angelogioacchino.delregno@collabora.com,
         nfraprado@collabora.com, chun-jie.chen@mediatek.com,
@@ -51,23 +51,19 @@ Cc:     p.zabel@pengutronix.de, angelogioacchino.delregno@collabora.com,
 To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
         krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
         mturquette@baylibre.com, robh+dt@kernel.org
-Date:   Wed, 15 Jun 2022 18:50:28 -0700
+Date:   Wed, 15 Jun 2022 18:50:56 -0700
 User-Agent: alot/0.10
-Message-Id: <20220616015031.4CC31C3411E@smtp.kernel.org>
+Message-Id: <20220616015059.E68FAC3411A@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Rex-BC Chen (2022-05-23 02:33:29)
-> Original assert/deassert bit is BIT(0), but it's more resonable to modify
-> them to BIT(id % 32) which is based on id.
+Quoting Rex-BC Chen (2022-05-23 02:33:31)
+> To make drivers more clear and readable, we extract common code
+> within assert and deassert to mtk_reset_update_set_clr() and
+> mtk_reset_update().
 >=20
-> This patch will not influence any previous driver because the reset is
-> only used for thermal. The id (MT8183_INFRACFG_AO_THERM_SW_RST) is 0.
->=20
-> Fixes: 64ebb57a3df6 ("clk: reset: Modify reset-controller driver")
 > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
 > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collab=
 ora.com>
 > Reviewed-by: N=C3=ADcolas F. R. A. Prado <nfraprado@collabora.com>
