@@ -2,110 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8EA1CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:00:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13EC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:01:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378823AbiFPVA5 (ORCPT
+        id S1378840AbiFPVBE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 17:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48794 "EHLO
+        Thu, 16 Jun 2022 17:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378787AbiFPVAy (ORCPT
+        with ESMTP id S1378825AbiFPVA4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 17:00:54 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B436007B;
-        Thu, 16 Jun 2022 14:00:53 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id g7so3793636eda.3;
-        Thu, 16 Jun 2022 14:00:53 -0700 (PDT)
+        Thu, 16 Jun 2022 17:00:56 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6A96006D;
+        Thu, 16 Jun 2022 14:00:54 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id j5-20020a05600c1c0500b0039c5dbbfa48so3399907wms.5;
+        Thu, 16 Jun 2022 14:00:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9PnHnVLahiLFldPLozedmiE5cWgmYzHNZk7Z8fYNdbI=;
-        b=pf+DTNRN9rHEQXYSlj7DZF3u2MserPjhDCdRZHb9CrMHuri6opM0vB70wO7GHf+mny
-         PpcYMdnjulHRlQ+cYKhaz0WRm8o9h9/C8dVdnBF9GCTg0ypqLzaEEat8b16HBXECnGz2
-         KYXedFs+liAU/OKwpto0ajykiBkDBfqZDUW4X1BH7BaGatw7d3ZTqXqF+jdGsg+bvJMF
-         H6vh8Vn+JZ26/sSDfHYifsDliOMfzyIUfGp8t14ybC8Z1TVb4K80FgBVcCV9AqT9aEOV
-         NF/DGp482cA9pv0jkr2Kzima8E7RzhVJ1B78WD7CvOCwqLBzhbbJJyPC5D7ooND9K78q
-         ZT4Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=raPY/hCjGIt20pynbedv9SDuvusSbEqlEbu0G5lGIn0=;
+        b=UL70T9SBdT4nNt5Jm2X76BLM/y8crPm9BBOvZV664PpOHbcjuAVurIxpyxdvVIXvXJ
+         A5/VoCI+R+IgSg5/3lVAPyB5k8b9rbKcoYsx3qTHq79lDzoIDiO80IQmmksdpbTa8BDC
+         SRNJnFQXpTEd2R4S6+DvX2j+azjSFrmerdP0Utz4IzmwLbJaRVOQS5lRST8EHP1JVeGx
+         WhqrFn8CFSyhAkCM2//yFXxJiOVwfa3gAb6YsuLTYmuSzfuwxup5ZTvArFsCZyvRrlXJ
+         3qi0PP7FVPi2pf/wlHErE0VdZWlgGb0xTliLhealscXBsq0gdOQShA1hu8DKNUrzJGaJ
+         Ks2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9PnHnVLahiLFldPLozedmiE5cWgmYzHNZk7Z8fYNdbI=;
-        b=lbIkTfK59YTTc1Uf1oF7fn713hKTQJb6eBJoef/0bCgmWlLSmdFPhndVmg4Snc/gKr
-         5Vd2o9k88jD3adctDtr/3kbbwSWuFjQKKaW54lGLyYh2k5n3qQJtX3pQXKgKaheHOoHh
-         9wM/3L5tZpjH4TxVHTTZKtny8+atkyCglmGCTPyxPeCzGixfyk1WnVG/K+a1oFECdk3U
-         VyLjRIsEjSxYqvgcrHnqVUt7uJ1xX7ElnVw1PoynF1q6hQ+oilAeHjwumQ42tm6XxIss
-         AV8bvESSfBQV6DSVIeyo8pRBXjJbL1+9Otvq4MT7HfvQoSp/tlQG5Qa94xmbUKsh9Z1a
-         /fOw==
-X-Gm-Message-State: AJIora/0Y1KTUnk6RpfHlXO3jAPfk7cV/tBLmUs3MWnmIzyDzCS6JyLu
-        ZW4GkuYsw6WaUwJlyqjcOKsJ0ndf92TlE2dSnj0=
-X-Google-Smtp-Source: AGRyM1sTFo3+eTpM3qi6KGpkSVRl6TIch5Ti1q3gSKfZhOhUyWj/GLSvHcJbG2Ouoe8dybz6xNmQoHJnnyS0hpfzz48=
-X-Received: by 2002:aa7:c450:0:b0:431:55c6:29f9 with SMTP id
- n16-20020aa7c450000000b0043155c629f9mr8805858edr.14.1655413251761; Thu, 16
- Jun 2022 14:00:51 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=raPY/hCjGIt20pynbedv9SDuvusSbEqlEbu0G5lGIn0=;
+        b=yvV/mxsXpUcssaPFRbkiNErNABHF4crXXyfHH3NiOCPHekB50SO8Er8T6R4F9isep1
+         hLUQ4/k3zbx27HvHxkFJpX1LG25Yn+wwvUriQ1U+0OFg8h0C37OzEXjDE7X/jatfuXQc
+         psfuwRWkHLLYK8jtIsRiflGCJHzNU5eQwUzAH4StNaNs9GMQU9mBOoam6woGmTYF9JgJ
+         +4L7u+WVsYl/HqIUFYp/3AOrblgc57VvqLAtI2/puioZw/ULX6YRq8SbuBvJhKBqxKs3
+         cpKLd94E5NbV+dDXWP1u2DBZrdGmDXS2oXr8yb/Ex58Zc5eKt6Ab94oD9rn4uUvuxy+Z
+         pv+Q==
+X-Gm-Message-State: AJIora/b+p/PihdIPPPrXzWIJKvG1Find7IrHnSPuUUtGt5GbEHMUw6/
+        g9bqeIAEzNS9JMjtFjjUJ/E=
+X-Google-Smtp-Source: AGRyM1sbuwm3ki89XTDlpELf5UO5x8ktqFA0y6YKQOdmG82oyMaOtgiF3NvWim6izHEnGX0jH2mTnA==
+X-Received: by 2002:a7b:c389:0:b0:39c:49fe:25df with SMTP id s9-20020a7bc389000000b0039c49fe25dfmr6744751wmj.164.1655413253290;
+        Thu, 16 Jun 2022 14:00:53 -0700 (PDT)
+Received: from localhost.localdomain (host-87-6-98-182.retail.telecomitalia.it. [87.6.98.182])
+        by smtp.gmail.com with ESMTPSA id bt28-20020a056000081c00b0020fcc655e4asm2658043wrb.5.2022.06.16.14.00.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 14:00:51 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     David Sterba <dsterba@suse.com>
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        Nick Terrell <terrelln@fb.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        John David Anglin <dave.anglin@bell.net>,
+        linux-parisc@vger.kernel.org,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Subject: [RESEND PATCH v4 0/2] btrfs: Replace kmap() with kmap_local_page() in zstd.c 
+Date:   Thu, 16 Jun 2022 23:00:34 +0200
+Message-Id: <20220616210037.7060-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220603055156.2830463-1-irogers@google.com> <165428101333.23591.13242354654538988127.git-patchwork-notify@kernel.org>
- <CAP-5=fWwKkj1HtAvOXxGxcrG99gpy8v4ReW_Jh7uumbQMiJYng@mail.gmail.com>
-In-Reply-To: <CAP-5=fWwKkj1HtAvOXxGxcrG99gpy8v4ReW_Jh7uumbQMiJYng@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 16 Jun 2022 14:00:40 -0700
-Message-ID: <CAEf4BzYYcnu1PHoudKnvpjPJAszgu3TFSbNe=E6vctgh9JLkTg@mail.gmail.com>
-Subject: Re: [PATCH v2] libbpf: Fix is_pow_of_2
-To:     Ian Rogers <irogers@google.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Yuze Chi <chiyuze@google.com>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 1:41 PM Ian Rogers <irogers@google.com> wrote:
->
-> On Fri, Jun 3, 2022 at 11:30 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
-> >
-> > Hello:
-> >
-> > This patch was applied to bpf/bpf-next.git (master)
-> > by Andrii Nakryiko <andrii@kernel.org>:
-> >
-> > On Thu,  2 Jun 2022 22:51:56 -0700 you wrote:
-> > > From: Yuze Chi <chiyuze@google.com>
-> > >
-> > > Move the correct definition from linker.c into libbpf_internal.h.
-> > >
-> > > Reported-by: Yuze Chi <chiyuze@google.com>
-> > > Signed-off-by: Yuze Chi <chiyuze@google.com>
-> > > Signed-off-by: Ian Rogers <irogers@google.com>
-> > >
-> > > [...]
-> >
-> > Here is the summary with links:
-> >   - [v2] libbpf: Fix is_pow_of_2
-> >     https://git.kernel.org/bpf/bpf-next/c/f913ad6559e3
-> >
-> > You are awesome, thank you!
->
-> Will this patch get added to 5.19?
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/lib/bpf/libbpf.c#n4948
->
+This is a little series which serves the purpose to replace kmap() with
+kmap_local_page() in btrfs/zstd.c. Actually this task is only
+accomplished in patch 2/2.
 
-I've applied it to bpf-next, so as it stands right now - no. Do you
-need this for perf?
+Instead patch 1/2 is a pre-requisite for the above-mentioned replacement,
+but, above all else, it has the purpose to conform the prototypes of
+__kunmap_{local,atomic}() to their own correct semantic. Since those
+functions don't make changes to the memory pointed by their arguments,
+change the type of those arguments to become pointers to const void.
 
-> Thanks,
-> Ian
->
-> > --
-> > Deet-doot-dot, I am a bot.
-> > https://korg.docs.kernel.org/patchwork/pwbot.html
-> >
-> >
+This little series has version number 4, despite it's the first time the
+two component patches have been re-united in a series. This may be a
+questionable choice, however patch 1/2 should be at its v4 and patch 2/2
+should be at its v3. I've tried to preserve the logs of version changes.
+
+v4 is due to the fact that, when I sent v3, I forgot to Cc several people
+and mailing lists. Furthermore, Andrew M. made me notice that I've made
+confusion with the tree structure: this is why now I have to send this
+series again.
+
+I want to apologize for the noise to people who have received these two
+patches more times than it should have been.
+
+Fabio M. De Francesco (2):
+  highmem: Make __kunmap_{local,atomic}() take "const void *"
+  btrfs: Replace kmap() with kmap_local_page() in zstd.c
+
+ arch/parisc/include/asm/cacheflush.h |  6 ++--
+ arch/parisc/kernel/cache.c           |  2 +-
+ fs/btrfs/zstd.c                      | 42 +++++++++++++++-------------
+ include/linux/highmem-internal.h     | 10 +++----
+ mm/highmem.c                         |  2 +-
+ 5 files changed, 33 insertions(+), 29 deletions(-)
+
+-- 
+2.36.1
+
