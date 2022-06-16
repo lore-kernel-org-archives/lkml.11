@@ -2,148 +2,344 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A9EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 586E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 07:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359607AbiFPHjH (ORCPT
+        id S1359384AbiFPHkC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 03:39:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58722 "EHLO
+        Thu, 16 Jun 2022 03:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359588AbiFPHis (ORCPT
+        with ESMTP id S1359652AbiFPHjt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 03:38:48 -0400
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50088.outbound.protection.outlook.com [40.107.5.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA8F5C76E;
-        Thu, 16 Jun 2022 00:38:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mMUq2z7LYvb7Kprh+QDTJrri9c/GUt8p+2ivP356M+8Irhv4xqVaFhRhJbWVUa+rK8EowVpd/G7W9kgTFn8wV260pUxUFEvkn+PZIt6PimVylxe6CZENt6YyNtBHJKefFng6gHbRV07dOr/A3wcXV3QfXSFQ7RMpeARX3WeVDIjrfPcohAtdT3FvmS9LYUdFvwcQWdHPb8+KSoGBMhnDRAQCyOT4JRkukQd2v9fVfhhPrD/NiZBhNNrKES7LUPUlC5xcPBPlaJCs+EZG2EwJhfrv7Pk+q4O+AvOhYOagzR+w6eaNlDm1GUoxW8pRNtzCIKAi9pr7bH9u0tz7N6HxoA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ymUGPRpz3OOaWpL2pCtzaVqk5IlZwDt+HVG4vReJvIg=;
- b=CZxh41ue+7+o/W1KkIwzjUlYZ8w4vIO9IVjyWZdm1tOe42YRF5UJznWzNZAkh34/2Bk5PVtMbkBBkaZ1k7a9CAx8nUxsAjMKRElVdV/kOvbjNej6fAvup4dMUm9KwBwvMSQTsCajMqMQyjz6yl3VcJN4F0FNeVj+VIcDPRrget2kNOQ6SKs+lyWEM61Hemn+Tw+68XzPvFlNreOou77HtofXDMVkrMC338ysLmrbJD/7DkkxIUm87RkvDMtDJAvx5wD4q9XYpsk+6gC+F//YuF08J1tBiCSFas/76/1wFetgdK+fKdZcVif8T4Yi4opQDlaEZSZEMRdT3HjF3xmztg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ymUGPRpz3OOaWpL2pCtzaVqk5IlZwDt+HVG4vReJvIg=;
- b=LOGAVyoB0vQipf1SDQqY1UiTrKCCVEFr6A4nX3p8QFRIKopfjcUYqvEahNHrQ5k71Q9NUBTn/wlCsvewhEkhvu8MGyw2PGTf0J/4XXmSOubIjHtjAhIjzl3s37gB/OdbguPTiIh+jSbumWawbdDPjgJWs2zQWeQepdOv5/pHnmw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DB8PR04MB5739.eurprd04.prod.outlook.com (2603:10a6:10:a5::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.13; Thu, 16 Jun
- 2022 07:38:44 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::a892:e4a9:4769:13a5]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::a892:e4a9:4769:13a5%7]) with mapi id 15.20.5353.014; Thu, 16 Jun 2022
- 07:38:44 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc:     festevam@gmail.com, linux-imx@nxp.com,
-        laurent.pinchart@ideasonboard.com, paul.elder@ideasonboard.com,
-        marex@denx.de, aford173@gmail.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Peng Fan <peng.fan@nxp.com>
-Subject: [PATCH V2 8/8] arm64: dts: imx8mp: add interconnect for hsio blk ctrl
-Date:   Thu, 16 Jun 2022 15:39:53 +0800
-Message-Id: <20220616073953.2204978-9-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220616073953.2204978-1-peng.fan@oss.nxp.com>
-References: <20220616073953.2204978-1-peng.fan@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR01CA0048.apcprd01.prod.exchangelabs.com
- (2603:1096:4:193::17) To DU0PR04MB9417.eurprd04.prod.outlook.com
- (2603:10a6:10:358::11)
+        Thu, 16 Jun 2022 03:39:49 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 930C65C370
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 00:39:39 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id 19so663684iou.12
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 00:39:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=2NZfzUnIe15BwHtBAtHoh9uWwKk1w8MTJsEiQyPaxBs=;
+        b=tBAKsSvEfqgDarYzQTRCAEedLAuYfAyGBoL/2VuGwV+goK3InU2AUZfry4u1jZnVYL
+         mf73/4tPVcWPg+50mLipV2tcJ1wZgRy4xHvYA31y6EBXiPR1HJ1uxMb59jz01Q8lCKNC
+         yaXuxS4mcHaZLzpBw+7MmbeImPpclMeC/nuHa35wt9vsFIkrxQd2gdh51b2lH1P4M83i
+         qbeH3avti0j/Mg8Ul1oeNRfuT34NtcIDybyUoFYgtvJufX9WDiazzDG8k2NRPZqK4SDw
+         42mPng/84taeiUMKevGI/jK1VYV+okNaoUxwOG3w1Pb8o+eksr4wzEugc841pEF241Jz
+         Uf9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2NZfzUnIe15BwHtBAtHoh9uWwKk1w8MTJsEiQyPaxBs=;
+        b=qmxTUi6BTZ5w1zgVLSYcIpGlPLlomK/BpeTzBg30PWQLNBXgmRdUIDVT0sUwguqot3
+         LFENbsPPuXLWuy5eeesaFEfNSZ7+Gh4kqRPkxxBg0vOrTcR9vH5MPw+G4ltUrhuTKuvA
+         95iFk3IfM1sNziX2uJrVptHQqYiNcTmRnwwz7S3CvwH2PQ0eDGZjg40RAWbZ56pL1Zta
+         LDZUrZPf337+kRBZx/W8FHmgbe7EJp0jcpYmjhBK/DzgvOaObZeHeU79fhY6TloFOS+E
+         X3PuizqNxiMh5bGXqmKW5JAAZS+dCb1uR5bRXdhOFlUXFNqfIyZ14FeNFrqBERLxw9EP
+         eVDQ==
+X-Gm-Message-State: AJIora+tw2DUFFYXN2L8g/oTaaP2i/FKY6iYMvl08kQXACOKj8tCfn4Y
+        zhgLoVsMdxfqV6WmFMQc1nXAC801Fa1PWz8rpEOxWEuxX8IWcoGp
+X-Google-Smtp-Source: AGRyM1t951G+xl/vdyFM3ALX07JLGqjnGB4fK8qm11VpocSYE7w+3oPKk3sh+jFbe3BazyA9BnOF0ujccmvFJEDkQhg=
+X-Received: by 2002:a05:6638:1117:b0:331:4bc8:3856 with SMTP id
+ n23-20020a056638111700b003314bc83856mr1834203jal.128.1655365178965; Thu, 16
+ Jun 2022 00:39:38 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b88137fc-45cb-4448-1179-08da4f6b3d84
-X-MS-TrafficTypeDiagnostic: DB8PR04MB5739:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <DB8PR04MB57399F9E1B704739D6D5219CC9AC9@DB8PR04MB5739.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0pfVd3MGZCru6Uv38HINIx//YqgAJofPlyZwgxEIbTydEG/UXsyupF8gPp8FbFs6UDmJIFmhkTImLi0NQeEffr2UHXqKGp42VWvhBuVx0yDHkoibU6sBjofmz4K+JqT5fd2l2Qyu/x27voFLfvBJINqtfi/UKSVAM3duw1C1YDFPw5i1/S5uprhL/oMeybptX2IFZIFTKwIdeZWCqZNYVnuOX8vWivlaaqe/ve3C9fuS94/gUqA8gxUcnB6+bo4JyhO3wZPjnq4d5wibwCjwuXviGhTcw3jsNybTWzIBGyXG7dXfIytYHmmFt0g4Slcg1L69POF8/zNSskYzh4R7Dr80ZtTb1ctopgeSzqzqDIDK4sSY/fVmKYE72Y8DosWjlOgRJzsE0Y0luqf/+1b+tz15nj+2/wf+lb9A1LPsTMY5udI+qfqLBZRngnib0OUO921cE1g85g4TJLVrmjQspFjyJHJGf1IGBNcNAQoLQ+NPbjI+HaHvUtMlD1aRdgnGhZ+tmjDkfrHV5NhoQz3lJD1iTJPws7zHg3AZCTAith/77V0R4bNEFiQXfrN8qhmeLBrwj1C262k9HDeNUtRygu/j6ac0DrMYqtaxJr+TVptRCScRyjGmLJ9JWYKCYuE8CLpkQwzh/vXcznGWh41NqhdPGXpqAAZpJrzmGNFrHNnxCyljAwdGqhmTqDS2lkJtPcy7SpS4cy5/En7iSPbdZk6xSQWG1xLoFTs6vGJDG6E=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(1076003)(38350700002)(38100700002)(66946007)(316002)(8936002)(2616005)(86362001)(6666004)(186003)(26005)(66476007)(66556008)(4744005)(4326008)(8676002)(7416002)(6506007)(52116002)(5660300002)(2906002)(508600001)(6486002)(6512007)(32563001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mzKnGU+QILEvH7mrpi7A6DvptmEWR6ClmUi8Zx120yznGl4mUGf663rRxSRG?=
- =?us-ascii?Q?DU518Q9iR+vyzJgd4nxN8YIRqt8IM11hukP3fwz9IQJNKtUHlBL+tEnWhHCh?=
- =?us-ascii?Q?OHXJfjFv7++taZaYK0wUPolTlx8h4vZlueVdTg49ufHLRYuASvgS0WLMC7hP?=
- =?us-ascii?Q?EKYkur/9opafQCxNMA2Oo7+nZLdhifkaK1YBadck2Q0iad/OJ7BFmZs2ZCHr?=
- =?us-ascii?Q?l0EILwxU/0LtSZ94RiAeWtHP96qyyQahbsN87l3+BZf+9q2r09QJpfgiPzu7?=
- =?us-ascii?Q?IJlECOIeAPZ3H+3b2nmigvnwryrAMkKeLxzbGShXdZThoE50cjbFn5LG26XY?=
- =?us-ascii?Q?S8a1pPLRCkuGvWECgLkaZ5bpAh3h037ssqy92Mx/yB7teDvOQiVq8VcUQl7q?=
- =?us-ascii?Q?XucABZDVm/yY/M1srY5NXvaCBi8/lClJkD5fnmJenTlW4IsdlKO4xVozR2MU?=
- =?us-ascii?Q?N9u8E+MV5cVvR1U40KNey/Kj/bggcjINt/JmR7J8RUBzeWsPC0+av6tiP2An?=
- =?us-ascii?Q?o34KneOffi2OUuLPr+hjMtz7vdglfoUjsaYBmtDE5Z7EgyHPmeMbH2QrdNEe?=
- =?us-ascii?Q?snEha9A0Y4vsEXck8EuC/1bWYP3H8knBMdP5qWNHA045/K55/d9kQSXyF4MR?=
- =?us-ascii?Q?gfm4nZ4nUQFQRf41TWuK2minm7Hg/Wirs+aWlqm/C5KmiCyRnQLe+/qPlKg2?=
- =?us-ascii?Q?2liB8w8i/HnZP7icJOyS5tDoxkEfXp3ZtdLfjxfRKcONMAXNqo7QLRhpKT8w?=
- =?us-ascii?Q?GO77LjEElfJa2PcRrjugTyKBlIzbVRRLshL0JcgcLSQPfE99Fjk3gcM4DOdR?=
- =?us-ascii?Q?m2gxThg2x/aYKn/It6N8UlJRqQrOJWsbbUe8cchh8Dmn9kY62OJXSeHUTNPu?=
- =?us-ascii?Q?ype6f1pr0l9Bc7Na7Q7gZzCJ9mrAXivLlLjK20uOWi/4HrmY08jIsMSZiNHL?=
- =?us-ascii?Q?zVwKeB1ax+SK6i7VNT78Pfl44JA0uBJHQSZYDO0aJ+rrk6x3Dx0/QntmeLsX?=
- =?us-ascii?Q?dkYG3buHkk06u9/LmNY4aNjCnuuI2OR6X/TUSVP6Aq4Ads3cwgFYzo3LQDpP?=
- =?us-ascii?Q?6fwlAfRdjrxtwhqqeLejDGnfiRCXtqny0it0+jOM4NyMnbQJ/QKsfn5/uq1H?=
- =?us-ascii?Q?Mb1lsKBSl8a+k1mIItKIN93hB80TC1zZZhbhI81rQBbXYSt1Y/clAOVJWXqA?=
- =?us-ascii?Q?PK8KdsVnA9+b5HeIZJBpK9XsE/Kvtgwbw7biYzDmCMb7JHdfvZYNkee+i0Ci?=
- =?us-ascii?Q?6Efy2J4QP0tZ8UBEUD42BCRP1qol1rdb60ISzwTQJ/yz6sGw/mpFJjnpI6LP?=
- =?us-ascii?Q?WSLcE4DoTXi6zN9Bnr8HkR7l4XOfksKJNhI/fZKdA7z9gro88KbsQ3FwJC+7?=
- =?us-ascii?Q?qXaL9dsiVWZWu+mPArLCyIFEViBHsW0Er3zbI/sk8zIftxKWifj2FcIZBsda?=
- =?us-ascii?Q?dprIaRvHkOK2qYmB0UvXlGMYPYNgXX2ug4OTnBpfcHG5qoAwA7+a5lUOTyOj?=
- =?us-ascii?Q?XtF3kai2UAyU5lTavdsgKDhw61M27qF3GnhCbNBLMo8vekvfPitmPoaLfNhO?=
- =?us-ascii?Q?TT7TLYJIatmIlVnMh7d78dZrslpy3yE+It1uvTUoWyp48Spx3EwRU9gz6+Gv?=
- =?us-ascii?Q?0OnHYBdZRanKsfKQemoy3H4E4PlKITWRSL9Ud2rqQUIA3VCfqzQq7inXG7cG?=
- =?us-ascii?Q?Qmay3W/rWCoB2gPKgEcrdVx44J8N2ojSaYdXZhovVfBJDMG1Azulv5tcI7xS?=
- =?us-ascii?Q?Ooboon+xGQ=3D=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b88137fc-45cb-4448-1179-08da4f6b3d84
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2022 07:38:44.1943
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: H70hCkFpnj3XLuNdSvpR64KnG/j+Y6PLIkBDDoJKYmJLYgUqLIQLE1rSRsZKFGiBMCnf+GAOLft/Ss0Gjv+AhQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB5739
+References: <CACGkMEtz-1=3=+zUZvc+CX4LrufZZfZO=_zONo5GuAUX+BrpAQ@mail.gmail.com>
+ <20220616051221.28506-1-huangjie.albert@bytedance.com> <20220616015331-mutt-send-email-mst@kernel.org>
+ <20220616024148-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220616024148-mutt-send-email-mst@kernel.org>
+From:   =?UTF-8?B?6buE5p2w?= <huangjie.albert@bytedance.com>
+Date:   Thu, 16 Jun 2022 15:39:27 +0800
+Message-ID: <CABKxMyM5+eWLUenLgR+PHYErXX_-h5MNSwxaZNeZVmDL4Hy0Wg@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH v2] virtio_ring : keep used_wrap_counter in vq->last_used_idx
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     jasowang@redhat.com, yuanzhu@bytedance.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+Michael S. Tsirkin <mst@redhat.com> =E4=BA=8E2022=E5=B9=B46=E6=9C=8816=E6=
+=97=A5=E5=91=A8=E5=9B=9B 14:42=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Thu, Jun 16, 2022 at 02:07:19AM -0400, Michael S. Tsirkin wrote:
+> > On Thu, Jun 16, 2022 at 01:12:21PM +0800, Albert Huang wrote:
+> > > From: "huangjie.albert" <huangjie.albert@bytedance.com>
+> > >
+> > > the used_wrap_counter and the vq->last_used_idx may get
+> > > out of sync if they are separate assignment=EF=BC=8Cand interrupt
+> > > might use an incorrect value to check for the used index.
+> > >
+> > > for example:OOB access
+> > > ksoftirqd may consume the packet and it will call:
+> > > virtnet_poll
+> > >     -->virtnet_receive
+> > >             -->virtqueue_get_buf_ctx
+> > >                     -->virtqueue_get_buf_ctx_packed
+> > > and in virtqueue_get_buf_ctx_packed:
+> > >
+> > > vq->last_used_idx +=3D vq->packed.desc_state[id].num;
+> > > if (unlikely(vq->last_used_idx >=3D vq->packed.vring.num)) {
+> > >          vq->last_used_idx -=3D vq->packed.vring.num;
+> > >          vq->packed.used_wrap_counter ^=3D 1;
+> > > }
+> > >
+> > > if at the same time, there comes a vring interrupt=EF=BC=8Cin vring_i=
+nterrupt:
+> > > we will call:
+> > > vring_interrupt
+> > >     -->more_used
+> > >             -->more_used_packed
+> > >                     -->is_used_desc_packed
+> > > in is_used_desc_packed, the last_used_idx maybe >=3D vq->packed.vring=
+.num.
+> > > so this could case a memory out of bounds bug.
+> > >
+> > > this patch is to keep the used_wrap_counter in vq->last_used_idx
+> > > so we can get the correct value to check for used index in interrupt.
+> > >
+> > > v1->v2:
+> > > - reuse the VRING_PACKED_EVENT_F_WRAP_CTR
+> > > - Remove parameter judgment in is_used_desc_packed,
+> > > because it can't be illegal
+> > >
+> > > Signed-off-by: huangjie.albert <huangjie.albert@bytedance.com>
+> >
+> >
+> > This looks good, just a small suggestion below:
+> >
+> > > ---
+> > >  drivers/virtio/virtio_ring.c | 57 ++++++++++++++++++++--------------=
+--
+> > >  1 file changed, 31 insertions(+), 26 deletions(-)
+> > >
+> > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_rin=
+g.c
+> > > index 13a7348cedff..b22d97c9a755 100644
+> > > --- a/drivers/virtio/virtio_ring.c
+> > > +++ b/drivers/virtio/virtio_ring.c
+> > > @@ -111,7 +111,12 @@ struct vring_virtqueue {
+> > >     /* Number we've added since last sync. */
+> > >     unsigned int num_added;
+> > >
+> > > -   /* Last used index we've seen. */
+> > > +   /* Last used index  we've seen.
+> > > +    * for split ring, it just contains last used index
+> > > +    * for packed ring, it not only contains last used index, but als=
+o
+> > > +    * used_wrap_counter, the VRING_PACKED_EVENT_F_WRAP_CTR is
+> > > +    * the bit shift in last_used_idx
+> > > +    */
+> > >     u16 last_used_idx;
+> > >
+> > >     /* Hint for event idx: already triggered no need to disable. */
+> > > @@ -154,9 +159,6 @@ struct vring_virtqueue {
+> > >                     /* Driver ring wrap counter. */
+> > >                     bool avail_wrap_counter;
+> > >
+> > > -                   /* Device ring wrap counter. */
+> > > -                   bool used_wrap_counter;
+> > > -
+> > >                     /* Avail used flags. */
+> > >                     u16 avail_used_flags;
+> > >
+> > > @@ -1406,8 +1408,12 @@ static inline bool is_used_desc_packed(const s=
+truct vring_virtqueue *vq,
+> > >
+> > >  static inline bool more_used_packed(const struct vring_virtqueue *vq=
+)
+> > >  {
+> > > -   return is_used_desc_packed(vq, vq->last_used_idx,
+> > > -                   vq->packed.used_wrap_counter);
+> > > +   u16 last_used;
+> > > +   bool used_wrap_counter;
+> > > +
+> > > +   last_used =3D vq->last_used_idx & ~(1 << VRING_PACKED_EVENT_F_WRA=
+P_CTR);
+> >
+> > This only works if last_used_idx is 16 bit and
+> > VRING_PACKED_EVENT_F_WRAP_CTR is 15.
+> >
+> > I think you want
+> > /* all bits below VRING_PACKED_EVENT_F_WRAP_CTR */
+> > vq->last_used_idx & ~(-(1 << VRING_PACKED_EVENT_F_WRAP_CTR));
+> >
+> >
+> > > +   used_wrap_counter =3D !!((vq->last_used_idx) >> VRING_PACKED_EVEN=
+T_F_WRAP_CTR);
+> >
+> >
+> > A bit more efficient and clear:
+> >
+> > !!(q->last_used_idx & (1 << VRING_PACKED_EVENT_F_WRAP_CTR))
+> >
+> >
+> >
+> > Also this logic is repeated in multiple places. Let's add a couple of i=
+nline
+> > functions:
+> >
+> > static inline bool packed_used_wrap_counter(vq)
+> >
+> > static inline u16 packed_last_used(vq)
+>
+> Or better:
+>
+> packed_used_wrap_counter(u16 last_used_idx)
+> packed_last_used(u16 last_used_idx)
+>
 
-Add interconnect property for hsio blk ctrl
+This one does look better, Jason what is your take?
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
----
- arch/arm64/boot/dts/freescale/imx8mp.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
+thanks.
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-index c9bd2e502b26..751b5fafe203 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
-@@ -1108,6 +1108,11 @@ hsio_blk_ctrl: blk-ctrl@32f10000 {
- 						<&pgc_hsiomix>, <&pgc_pcie_phy>;
- 				power-domain-names = "bus", "usb", "usb-phy1",
- 						     "usb-phy2", "pcie", "pcie-phy";
-+				interconnects = <&noc IMX8MP_ICM_NOC_PCIE &noc IMX8MP_ICN_HSIO>,
-+						<&noc IMX8MP_ICM_USB1 &noc IMX8MP_ICN_HSIO>,
-+						<&noc IMX8MP_ICM_USB2 &noc IMX8MP_ICN_HSIO>,
-+						<&noc IMX8MP_ICM_PCIE &noc IMX8MP_ICN_HSIO>;
-+				interconnect-names = "noc-pcie", "usb1", "usb2", "pcie";
- 				#power-domain-cells = <1>;
- 			};
- 		};
--- 
-2.25.1
-
+> > then use these everywhere.
+> >
+> >
+> > > +   return is_used_desc_packed(vq, last_used, used_wrap_counter);
+> > >  }
+> > >
+> > >  static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+> > > @@ -1416,6 +1422,7 @@ static void *virtqueue_get_buf_ctx_packed(struc=
+t virtqueue *_vq,
+> > >  {
+> > >     struct vring_virtqueue *vq =3D to_vvq(_vq);
+> > >     u16 last_used, id;
+> > > +   bool used_wrap_counter;
+> > >     void *ret;
+> > >
+> > >     START_USE(vq);
+> > > @@ -1434,7 +1441,8 @@ static void *virtqueue_get_buf_ctx_packed(struc=
+t virtqueue *_vq,
+> > >     /* Only get used elements after they have been exposed by host. *=
+/
+> > >     virtio_rmb(vq->weak_barriers);
+> > >
+> > > -   last_used =3D vq->last_used_idx;
+> > > +   used_wrap_counter =3D !!((vq->last_used_idx >> VRING_PACKED_EVENT=
+_F_WRAP_CTR));
+> > > +   last_used =3D (vq->last_used_idx) & (~(1 << VRING_PACKED_EVENT_F_=
+WRAP_CTR));
+> > >     id =3D le16_to_cpu(vq->packed.vring.desc[last_used].id);
+> > >     *len =3D le32_to_cpu(vq->packed.vring.desc[last_used].len);
+> > >
+> > > @@ -1451,12 +1459,15 @@ static void *virtqueue_get_buf_ctx_packed(str=
+uct virtqueue *_vq,
+> > >     ret =3D vq->packed.desc_state[id].data;
+> > >     detach_buf_packed(vq, id, ctx);
+> > >
+> > > -   vq->last_used_idx +=3D vq->packed.desc_state[id].num;
+> > > -   if (unlikely(vq->last_used_idx >=3D vq->packed.vring.num)) {
+> > > -           vq->last_used_idx -=3D vq->packed.vring.num;
+> > > -           vq->packed.used_wrap_counter ^=3D 1;
+> > > +   last_used +=3D vq->packed.desc_state[id].num;
+> > > +   if (unlikely(last_used >=3D vq->packed.vring.num)) {
+> > > +           last_used -=3D vq->packed.vring.num;
+> > > +           used_wrap_counter ^=3D 1;
+> > >     }
+> > >
+> > > +   last_used =3D (last_used | (used_wrap_counter << VRING_PACKED_EVE=
+NT_F_WRAP_CTR));
+> > > +   vq->last_used_idx =3D last_used;
+> > > +
+> > >     /*
+> > >      * If we expect an interrupt for the next entry, tell host
+> > >      * by writing event index and flush out the write before
+> > > @@ -1465,9 +1476,7 @@ static void *virtqueue_get_buf_ctx_packed(struc=
+t virtqueue *_vq,
+> > >     if (vq->packed.event_flags_shadow =3D=3D VRING_PACKED_EVENT_FLAG_=
+DESC)
+> > >             virtio_store_mb(vq->weak_barriers,
+> > >                             &vq->packed.vring.driver->off_wrap,
+> > > -                           cpu_to_le16(vq->last_used_idx |
+> > > -                                   (vq->packed.used_wrap_counter <<
+> > > -                                    VRING_PACKED_EVENT_F_WRAP_CTR)))=
+;
+> > > +                           cpu_to_le16(vq->last_used_idx));
+> > >
+> > >     LAST_ADD_TIME_INVALID(vq);
+> > >
+> > > @@ -1499,9 +1508,7 @@ static unsigned int virtqueue_enable_cb_prepare=
+_packed(struct virtqueue *_vq)
+> > >
+> > >     if (vq->event) {
+> > >             vq->packed.vring.driver->off_wrap =3D
+> > > -                   cpu_to_le16(vq->last_used_idx |
+> > > -                           (vq->packed.used_wrap_counter <<
+> > > -                            VRING_PACKED_EVENT_F_WRAP_CTR));
+> > > +                   cpu_to_le16(vq->last_used_idx);
+> > >             /*
+> > >              * We need to update event offset and event wrap
+> > >              * counter first before updating event flags.
+> > > @@ -1518,8 +1525,7 @@ static unsigned int virtqueue_enable_cb_prepare=
+_packed(struct virtqueue *_vq)
+> > >     }
+> > >
+> > >     END_USE(vq);
+> > > -   return vq->last_used_idx | ((u16)vq->packed.used_wrap_counter <<
+> > > -                   VRING_PACKED_EVENT_F_WRAP_CTR);
+> > > +   return vq->last_used_idx;
+> > >  }
+> > >
+> > >  static bool virtqueue_poll_packed(struct virtqueue *_vq, u16 off_wra=
+p)
+> > > @@ -1550,9 +1556,9 @@ static bool virtqueue_enable_cb_delayed_packed(=
+struct virtqueue *_vq)
+> > >     if (vq->event) {
+> > >             /* TODO: tune this threshold */
+> > >             bufs =3D (vq->packed.vring.num - vq->vq.num_free) * 3 / 4=
+;
+> > > -           wrap_counter =3D vq->packed.used_wrap_counter;
+> > > +           wrap_counter =3D !!(vq->last_used_idx >> VRING_PACKED_EVE=
+NT_F_WRAP_CTR);
+> > >
+> > > -           used_idx =3D vq->last_used_idx + bufs;
+> > > +           used_idx =3D (vq->last_used_idx & ~(1 << VRING_PACKED_EVE=
+NT_F_WRAP_CTR)) + bufs;
+> > >             if (used_idx >=3D vq->packed.vring.num) {
+> > >                     used_idx -=3D vq->packed.vring.num;
+> > >                     wrap_counter ^=3D 1;
+> > > @@ -1582,9 +1588,9 @@ static bool virtqueue_enable_cb_delayed_packed(=
+struct virtqueue *_vq)
+> > >      */
+> > >     virtio_mb(vq->weak_barriers);
+> > >
+> > > -   if (is_used_desc_packed(vq,
+> > > -                           vq->last_used_idx,
+> > > -                           vq->packed.used_wrap_counter)) {
+> > > +   wrap_counter =3D !!(vq->last_used_idx >> VRING_PACKED_EVENT_F_WRA=
+P_CTR);
+> > > +   used_idx =3D (vq->last_used_idx & ~(1 << VRING_PACKED_EVENT_F_WRA=
+P_CTR));
+> > > +   if (is_used_desc_packed(vq, used_idx, wrap_counter)) {
+> > >             END_USE(vq);
+> > >             return false;
+> > >     }
+> > > @@ -1689,7 +1695,7 @@ static struct virtqueue *vring_create_virtqueue=
+_packed(
+> > >     vq->notify =3D notify;
+> > >     vq->weak_barriers =3D weak_barriers;
+> > >     vq->broken =3D true;
+> > > -   vq->last_used_idx =3D 0;
+> > > +   vq->last_used_idx =3D 0 | (1 << VRING_PACKED_EVENT_F_WRAP_CTR);
+> > >     vq->event_triggered =3D false;
+> > >     vq->num_added =3D 0;
+> > >     vq->packed_ring =3D true;
+> > > @@ -1720,7 +1726,6 @@ static struct virtqueue *vring_create_virtqueue=
+_packed(
+> > >
+> > >     vq->packed.next_avail_idx =3D 0;
+> > >     vq->packed.avail_wrap_counter =3D 1;
+> > > -   vq->packed.used_wrap_counter =3D 1;
+> > >     vq->packed.event_flags_shadow =3D 0;
+> > >     vq->packed.avail_used_flags =3D 1 << VRING_PACKED_DESC_F_AVAIL;
+> > >
+> > > --
+> > > 2.31.1
+>
