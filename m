@@ -2,104 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84235C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 12:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD3BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 12:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376427AbiFPMeI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 08:34:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44418 "EHLO
+        id S230303AbiFPMgL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 08:36:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbiFPMeC (ORCPT
+        with ESMTP id S229702AbiFPMgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 08:34:02 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2844A4F9C4
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 05:34:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655382841; x=1686918841;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=VdIfYFjnAHQRKCvjB/PosFc98TS07Kc3GzWERBcZLLM=;
-  b=bg7/qTSIEls6VRj+hfUBMXKUEf4mgi8t2LLPgkBllRXIfsIBqjKBGEIO
-   U0Zl/245nr350K3AybvXXJKYS474unD/7a+r6RhD82ePYZcAx9xUeCBTB
-   r+x+uXcRYegR3o3vwmVmdoPiWbcpVELAnwba256tHKpy3UoKbEL/zQQq8
-   aJ0zp4AxtYqN2Alw6LpBMptUQkaqPuTMyozi/AH2JWjJsd0iAsD3+kl0g
-   kaERXIE6yvQhet3HdBYTFJAouDcr1WLqkA+JyPrxPhUnnNjj3f5mLe3MO
-   qTY3gLayQM/bCInNyAvqsVNAigw7F653cdzCNmsZeeYRpcTXI3S/jdTTP
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259091008"
-X-IronPort-AV: E=Sophos;i="5.91,305,1647327600"; 
-   d="scan'208";a="259091008"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 05:34:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,305,1647327600"; 
-   d="scan'208";a="713338690"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 16 Jun 2022 05:33:59 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1ohD-000ONS-3T;
-        Thu, 16 Jun 2022 12:33:59 +0000
-Date:   Thu, 16 Jun 2022 20:33:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [sudeep-holla:wip/acpi_ffh_opregion 2/3]
- drivers/acpi/acpi_ffh.c:16:12: warning: no previous prototype for
- 'acpi_ffh_address_space_arch_setup'
-Message-ID: <202206162019.SclXvEpW-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Thu, 16 Jun 2022 08:36:09 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCF1522EF
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 05:36:04 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VGaLZ.H_1655382938;
+Received: from localhost(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VGaLZ.H_1655382938)
+          by smtp.aliyun-inc.com;
+          Thu, 16 Jun 2022 20:36:02 +0800
+From:   Liu Song <liusong@linux.alibaba.com>
+To:     catalin.marinas@arm.com, will@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] arm64: cpufeature: make sure cpu_mitigations_off then kpti off
+Date:   Thu, 16 Jun 2022 20:35:38 +0800
+Message-Id: <1655382938-126283-1-git-send-email-liusong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git wip/acpi_ffh_opregion
-head:   0ca2d8d167ffa471639fc885ecd9ca010cb04deb
-commit: 42de507063eebc8c7d728fbac4012e35c8b854df [2/3] ACPI: Implement a generic FFH Opregion handler
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220616/202206162019.SclXvEpW-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git/commit/?id=42de507063eebc8c7d728fbac4012e35c8b854df
-        git remote add sudeep-holla https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git
-        git fetch --no-tags sudeep-holla wip/acpi_ffh_opregion
-        git checkout 42de507063eebc8c7d728fbac4012e35c8b854df
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/acpi/ kernel/trace/
+From: Liu Song <liusong@linux.alibaba.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+If kaslr is enabled, kpti cannot be turned off even if "mitigations=off",
+adjust the code order to ensure that kpti is off when "mitigations=off".
 
-All warnings (new ones prefixed by >>):
+Signed-off-by: Liu Song <liusong@linux.alibaba.com>
+---
+ arch/arm64/kernel/cpufeature.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
->> drivers/acpi/acpi_ffh.c:16:12: warning: no previous prototype for 'acpi_ffh_address_space_arch_setup' [-Wmissing-prototypes]
-      16 | int __weak acpi_ffh_address_space_arch_setup(void *handler_ctxt,
-         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/acpi/acpi_ffh.c:22:12: warning: no previous prototype for 'acpi_ffh_address_space_arch_handler' [-Wmissing-prototypes]
-      22 | int __weak acpi_ffh_address_space_arch_handler(acpi_integer *value,
-         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/acpi_ffh_address_space_arch_setup +16 drivers/acpi/acpi_ffh.c
-
-    15	
-  > 16	int __weak acpi_ffh_address_space_arch_setup(void *handler_ctxt,
-    17						     void **region_ctxt)
-    18	{
-    19		return -EOPNOTSUPP;
-    20	}
-    21	
-  > 22	int __weak acpi_ffh_address_space_arch_handler(acpi_integer *value,
-    23						       void *region_context)
-    24	{
-    25		return -EOPNOTSUPP;
-    26	}
-    27	
-
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index 42ea2bd..27d4850 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -1616,6 +1616,11 @@ static bool unmap_kernel_at_el0(const struct arm64_cpu_capabilities *entry,
+ 		__kpti_forced = -1;
+ 	}
+ 
++	if (cpu_mitigations_off() && !__kpti_forced) {
++		str = "mitigations=off";
++		__kpti_forced = -1;
++	}
++
+ 	/* Useful for KASLR robustness */
+ 	if (kaslr_requires_kpti()) {
+ 		if (!__kpti_forced) {
+@@ -1624,11 +1629,6 @@ static bool unmap_kernel_at_el0(const struct arm64_cpu_capabilities *entry,
+ 		}
+ 	}
+ 
+-	if (cpu_mitigations_off() && !__kpti_forced) {
+-		str = "mitigations=off";
+-		__kpti_forced = -1;
+-	}
+-
+ 	if (!IS_ENABLED(CONFIG_UNMAP_KERNEL_AT_EL0)) {
+ 		pr_info_once("kernel page table isolation disabled by kernel configuration\n");
+ 		return false;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+1.8.3.1
+
