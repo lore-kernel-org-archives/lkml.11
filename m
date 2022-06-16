@@ -2,266 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B13CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 10:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C994C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 10:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359777AbiFPKmE (ORCPT
+        id S1359844AbiFPKme (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 06:42:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56072 "EHLO
+        Thu, 16 Jun 2022 06:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbiFPKmB (ORCPT
+        with ESMTP id S229744AbiFPKma (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 06:42:01 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA475DBD5;
-        Thu, 16 Jun 2022 03:42:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655376120; x=1686912120;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZOvbw99JvmDg4H99wsOmPD3+DITNMSCjWUsS1KotlXI=;
-  b=O91SlD+nFZ03qOp9jqKMfrPRyJHAOK0t/OYkhJ5kjsFoj5WOVMJuu8HQ
-   HoQSoxuyrDcpXs6PWg72i3mnh89xs2zo64ktBk3oTWfxkW0JNEDJCZeSD
-   lR1ZSr+xl+jErpzD92DhGc3NN8VAkmbox9vmxIb3CezlZjAwwCZy/oTBv
-   VbdquXhfvPucrtzMalFSmGEzLFhtDcVDophlbICVVei7+BrsPHNN+orYv
-   jepNq6/n/RR07aZdRaf24SHml2xjYOh2yQvl6ayUtUkfGSQIhloOLvjtj
-   RLoyVA8zNKDfQNZqYam57NvTkt4bsCFCrou2DZk9zaerhnwUAhNWN87Uu
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="262239693"
-X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="262239693"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 03:41:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="559706072"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 16 Jun 2022 03:40:56 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1mvn-000OIZ-Th;
-        Thu, 16 Jun 2022 10:40:55 +0000
-Date:   Thu, 16 Jun 2022 18:40:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de
-Cc:     kbuild-all@lists.01.org, festevam@gmail.com, linux-imx@nxp.com,
-        laurent.pinchart@ideasonboard.com, paul.elder@ideasonboard.com,
-        marex@denx.de, aford173@gmail.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH V2 5/8] soc: imx: add icc paths for i.MX8MP hsio/hdmi blk
- ctrl
-Message-ID: <202206161809.ZDbwd4YD-lkp@intel.com>
-References: <20220616073953.2204978-6-peng.fan@oss.nxp.com>
+        Thu, 16 Jun 2022 06:42:30 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9767F5DBF4;
+        Thu, 16 Jun 2022 03:42:25 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 98ECE5FD08;
+        Thu, 16 Jun 2022 13:42:22 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1655376142;
+        bh=4WTbYTWDLhhgTS67muyZDtMlrhdeT3xvO3sQtHUBKtQ=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=M7mSvU4Qo49MKybqh2w8Bv8LEZ/IHlZIjiQHhhvlwn3ThyNS+gA4Ph8TsIdzw5XAZ
+         7y3Hf3QEKzofDV6fzGABxLNCJT1UZr9Pw/ZhPN6vv9oeSks8Wb1MrHE3WyRZVQB/bk
+         pNIp6OM4zZpKcdeCwCzZbEREGFQnKVdR40HkroQYDuA59feZ3VoyOgYRRQJBkDjDGE
+         Np7Uj9e8/HDE/8bCMU5mRWZdGXoShP1FF2l7qE52gNfX2ZNaG/OjqSsS0BPRB53gly
+         hoshz0Iu1TRL/O9LdVnbOYHP6UrVWHwpcmpGOrP5BVKX4hSiDZdUcwc7W/lyZ3tbDB
+         v2K1rDIl7rBug==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Thu, 16 Jun 2022 13:42:22 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>
+CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Subject: [PATCH v3 0/3] iio: accel: add MSA311 accelerometer driver
+Thread-Topic: [PATCH v3 0/3] iio: accel: add MSA311 accelerometer driver
+Thread-Index: AQHYgW26LqZ9c++eGEOe7yxXxZ05Kg==
+Date:   Thu, 16 Jun 2022 10:42:09 +0000
+Message-ID: <20220616104211.9257-1-ddrokosov@sberdevices.ru>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220616073953.2204978-6-peng.fan@oss.nxp.com>
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/06/16 07:44:00 #19785775
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Peng,
+MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
+sensitivity consumer applications. It has dynamical user selectable full
+scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
+with output data rates from 1Hz to 1000Hz.
 
-Thank you for the patch! Yet something to improve:
+Datasheet can be found at following URL:
+https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
 
-[auto build test ERROR on robh/for-next]
-[also build test ERROR on shawnguo/for-next linus/master v5.19-rc2 next-20220616]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+This driver supports following MSA311 features:
+    - IIO interface
+    - Different power modes: NORMAL and SUSPEND (using pm_runtime)
+    - ODR (Output Data Rate) selection
+    - Scale and samp_freq selection
+    - IIO triggered buffer, IIO reg access
+    - NEW_DATA interrupt + trigger
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Peng-Fan-OSS/Add-interconnect-for-i-MX8MP-blk-ctrl/20220616-153932
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: arc-randconfig-r043-20220616 (https://download.01.org/0day-ci/archive/20220616/202206161809.ZDbwd4YD-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/60034edb256677d3671a2409c83c8a0a2c11d101
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Peng-Fan-OSS/Add-interconnect-for-i-MX8MP-blk-ctrl/20220616-153932
-        git checkout 60034edb256677d3671a2409c83c8a0a2c11d101
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/soc/imx/
+Below features to be done:
+    - Motion Events: ACTIVE, TAP, ORIENT, FREEFALL
+    - Low Power mode
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Also this patchset has new vendor prefix for MEMSensing Microsystems and
+MSA311 dt-binding schema.
 
-All errors (new ones prefixed by >>):
+You can test msa311 driver using libiio and gnuplot following below
+instructions:
+  $ # Create hrtimer trigger object
+  $ mkdir /sys/kernel/config/iio/triggers/hrtimer/iio_hrtimer_trigger
+  $ # Read 4K samples using msa311-new-data trigger (irq) and
+  $ # buffer with depth equals to 64 samples and rotate device a little bit
+  $ iio_readdev -u "local:" -b 64 -s 4096 -t msa311-new-data -T 0 \
+  $             msa311 > /tmp/msa311.dat
+  $ # Or using hrtimer trigger instead of msa311-new-data trigger
+  $ iio_readdev -u "local:" -b 64 -s 4096 -t iio_hrtimer_trigger -T 0 \
+  $                msa311 > /data/local/tmp/msa311.dat
+  $ cat <<EOF >> msa311_data.gnu
+  set title "MSA311 Accel Data"
 
-   drivers/soc/imx/imx8mp-blk-ctrl.c: In function 'imx8mp_blk_ctrl_probe':
->> drivers/soc/imx/imx8mp-blk-ctrl.c:539:23: error: implicit declaration of function 'devm_of_icc_bulk_get'; did you mean 'of_icc_bulk_get'? [-Werror=implicit-function-declaration]
-     539 |                 ret = devm_of_icc_bulk_get(dev, data->num_paths, domain->paths);
-         |                       ^~~~~~~~~~~~~~~~~~~~
-         |                       of_icc_bulk_get
-   cc1: some warnings being treated as errors
+  set key below
 
+  set xdata time
+  set format x "%H:%M\n%.4S"
+  set xlabel "timestamp"
 
-vim +539 drivers/soc/imx/imx8mp-blk-ctrl.c
+  set autoscale y
 
-   466	
-   467	static int imx8mp_blk_ctrl_probe(struct platform_device *pdev)
-   468	{
-   469		const struct imx8mp_blk_ctrl_data *bc_data;
-   470		struct device *dev = &pdev->dev;
-   471		struct imx8mp_blk_ctrl *bc;
-   472		void __iomem *base;
-   473		int num_domains, i, ret;
-   474	
-   475		struct regmap_config regmap_config = {
-   476			.reg_bits	= 32,
-   477			.val_bits	= 32,
-   478			.reg_stride	= 4,
-   479		};
-   480	
-   481		bc = devm_kzalloc(dev, sizeof(*bc), GFP_KERNEL);
-   482		if (!bc)
-   483			return -ENOMEM;
-   484	
-   485		bc->dev = dev;
-   486	
-   487		bc_data = of_device_get_match_data(dev);
-   488		num_domains = bc_data->num_domains;
-   489	
-   490		base = devm_platform_ioremap_resource(pdev, 0);
-   491		if (IS_ERR(base))
-   492			return PTR_ERR(base);
-   493	
-   494		regmap_config.max_register = bc_data->max_reg;
-   495		bc->regmap = devm_regmap_init_mmio(dev, base, &regmap_config);
-   496		if (IS_ERR(bc->regmap))
-   497			return dev_err_probe(dev, PTR_ERR(bc->regmap),
-   498					     "failed to init regmap\n");
-   499	
-   500		bc->domains = devm_kcalloc(dev, num_domains,
-   501					   sizeof(struct imx8mp_blk_ctrl_domain),
-   502					   GFP_KERNEL);
-   503		if (!bc->domains)
-   504			return -ENOMEM;
-   505	
-   506		bc->onecell_data.num_domains = num_domains;
-   507		bc->onecell_data.xlate = imx8m_blk_ctrl_xlate;
-   508		bc->onecell_data.domains =
-   509			devm_kcalloc(dev, num_domains,
-   510				     sizeof(struct generic_pm_domain *), GFP_KERNEL);
-   511		if (!bc->onecell_data.domains)
-   512			return -ENOMEM;
-   513	
-   514		bc->bus_power_dev = genpd_dev_pm_attach_by_name(dev, "bus");
-   515		if (IS_ERR(bc->bus_power_dev))
-   516			return dev_err_probe(dev, PTR_ERR(bc->bus_power_dev),
-   517					     "failed to attach bus power domain\n");
-   518	
-   519		bc->power_off = bc_data->power_off;
-   520		bc->power_on = bc_data->power_on;
-   521	
-   522		for (i = 0; i < num_domains; i++) {
-   523			const struct imx8mp_blk_ctrl_domain_data *data = &bc_data->domains[i];
-   524			struct imx8mp_blk_ctrl_domain *domain = &bc->domains[i];
-   525			int j;
-   526	
-   527			domain->data = data;
-   528	
-   529			for (j = 0; j < data->num_clks; j++)
-   530				domain->clks[j].id = data->clk_names[j];
-   531	
-   532			for (j = 0; j < data->num_paths; j++) {
-   533				domain->paths[j].name = data->path_names[j];
-   534				/* Fake value for now, just let ICC could configure NoC mode/priority */
-   535				domain->paths[j].avg_bw = 1;
-   536				domain->paths[j].peak_bw = 1;
-   537			}
-   538	
- > 539			ret = devm_of_icc_bulk_get(dev, data->num_paths, domain->paths);
-   540			if (ret) {
-   541				dev_err_probe(dev, ret, "failed to get noc entries\n");
-   542				goto cleanup_pds;
-   543			}
-   544	
-   545	
-   546			ret = devm_clk_bulk_get(dev, data->num_clks, domain->clks);
-   547			if (ret) {
-   548				dev_err_probe(dev, ret, "failed to get clock\n");
-   549				goto cleanup_pds;
-   550			}
-   551	
-   552			domain->power_dev =
-   553				dev_pm_domain_attach_by_name(dev, data->gpc_name);
-   554			if (IS_ERR(domain->power_dev)) {
-   555				dev_err_probe(dev, PTR_ERR(domain->power_dev),
-   556					      "failed to attach power domain %s\n",
-   557					      data->gpc_name);
-   558				ret = PTR_ERR(domain->power_dev);
-   559				goto cleanup_pds;
-   560			}
-   561			dev_set_name(domain->power_dev, "%s", data->name);
-   562	
-   563			domain->genpd.name = data->name;
-   564			domain->genpd.power_on = imx8mp_blk_ctrl_power_on;
-   565			domain->genpd.power_off = imx8mp_blk_ctrl_power_off;
-   566			domain->bc = bc;
-   567			domain->id = i;
-   568	
-   569			ret = pm_genpd_init(&domain->genpd, NULL, true);
-   570			if (ret) {
-   571				dev_err_probe(dev, ret, "failed to init power domain\n");
-   572				dev_pm_domain_detach(domain->power_dev, true);
-   573				goto cleanup_pds;
-   574			}
-   575	
-   576			/*
-   577			 * We use runtime PM to trigger power on/off of the upstream GPC
-   578			 * domain, as a strict hierarchical parent/child power domain
-   579			 * setup doesn't allow us to meet the sequencing requirements.
-   580			 * This means we have nested locking of genpd locks, without the
-   581			 * nesting being visible at the genpd level, so we need a
-   582			 * separate lock class to make lockdep aware of the fact that
-   583			 * this are separate domain locks that can be nested without a
-   584			 * self-deadlock.
-   585			 */
-   586			lockdep_set_class(&domain->genpd.mlock,
-   587					  &blk_ctrl_genpd_lock_class);
-   588	
-   589			bc->onecell_data.domains[i] = &domain->genpd;
-   590		}
-   591	
-   592		ret = of_genpd_add_provider_onecell(dev->of_node, &bc->onecell_data);
-   593		if (ret) {
-   594			dev_err_probe(dev, ret, "failed to add power domain provider\n");
-   595			goto cleanup_pds;
-   596		}
-   597	
-   598		bc->power_nb.notifier_call = bc_data->power_notifier_fn;
-   599		ret = dev_pm_genpd_add_notifier(bc->bus_power_dev, &bc->power_nb);
-   600		if (ret) {
-   601			dev_err_probe(dev, ret, "failed to add power notifier\n");
-   602			goto cleanup_provider;
-   603		}
-   604	
-   605		dev_set_drvdata(dev, bc);
-   606	
-   607		return 0;
-   608	
-   609	cleanup_provider:
-   610		of_genpd_del_provider(dev->of_node);
-   611	cleanup_pds:
-   612		for (i--; i >= 0; i--) {
-   613			pm_genpd_remove(&bc->domains[i].genpd);
-   614			dev_pm_domain_detach(bc->domains[i].power_dev, true);
-   615		}
-   616	
-   617		dev_pm_domain_detach(bc->bus_power_dev, true);
-   618	
-   619		return ret;
-   620	}
-   621	
+  plot 'msa311.dat' binary endian=3Dlittle \
+                    format=3D'%int16%int16%int16%uint16%uint64' using \
+                    (\$5/1000000000):(int(\$1)/16) title "acc_x" \
+                    with lines,\\
+       'msa311.dat' binary endian=3Dlittle \
+                    format=3D'%int16%int16%int16%uint16%uint64' using \
+                    (\$5/1000000000):(int(\$2)/16) title "acc_y" \
+                    with lines,\\
+       'msa311.dat' binary endian=3Dlittle \
+                    format=3D'%int16%int16%int16%uint16%uint64' using \
+                    (\$5/1000000000):(int(\$3)/16) title "acc_z" with lines
+  EOF
+  $ gnuplot --persist msa311_data.gnu
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Changes:
+* v2->v3:
+    - removed MSA311_TIMESTAMP_CHANNEL() macro, used IIO_CHAN_SOFT_TIMESTAM=
+P
+      directly
+    - do not call dev_err_probe() inside functions, which is used not only
+      from probe() path
+    - simplified error handling a little bit
+    - used iio_device_claim_direct_mode() and
+      iio_device_release_direct_mode() to lock attributes when buffer mode
+      is enabled
+    - prohibited sampling frequency changing during buffer usage because
+      otherwise sometimes MSA311 returns outliers when frequency values
+      grow up in the read operation moment
+    - allowed scale value changing when buffer mode is enabled
+    - removed IRQF_TRIGGER_RISING irq flag from irg registration because
+      it's provided from device tree directly
+    - do not switch off autosuspend from powerdown() devm callback,
+      because it's already done from pm_runtime_disable() during
+      devm pm_runtime actions
+    - provided more information why we need force suspend state for MSA311
+      in the powerdown flow
+    - reworked comments stuff: removed obvious extra comments, provided
+      more details in the complex driver code places
+
+* v1->v2:
+    - memsensing vendor prefix was moved to right place by
+      alphabetical order
+    - LOW mode mention was deleted, because LOW mode isn't supported
+      in the current driver version
+    - reworked some enums with gaps to defines
+    - reworked register names as Jonathan mentioned in the v1
+    - do not use regmap_field API for entire registers
+    - deleted all extra comments
+    - supported info_mask_*_avail bitmaps instead of explicit IIO attrs
+      definitions, implemented read_avail() callback for samp_freq and
+      scale values
+    - msa311 mutex is still used to protect msa311 power transitions,
+      samp_freq/scale tune and axes data handling; described this lock
+      more informative
+    - ask new_data interruption status from appropriate register,
+      do not hold atomic variable for that
+    - optimized reads of axes data by I2C using regmap_bulk API
+    - use dev_err_probe() instead of dev_err() for all probe() code paths
+    - from now all I2C bus communication failures are interpreted as errors
+    - described wait_from_next() semantic better
+    - deleted all unneeded pm wrappers
+    - interpreter all axes data as __le16 type and adjust them to right
+      format (endianness + sign) for raw() flow only
+    - redesigned msa311_fs_table[] to 2D matrix (it's more comfortable
+      format for read_avail() callback)
+    - align and initialize msa311 buffer before pushing properly
+    - use pm_runtime resume and suspend from buffer preenable/postdisable,
+      deleted them from trigger set_state
+    - supported multiple trigger usage (tested with external hrtimer
+      trigger and internal new_data trigger)
+    - moved all irq related stuff to msa311_setup_interrupts() routine
+    - implemented msa311_powerdown() devm release action
+    - reworked initialization of pm_runtime msa311 flow, use
+      autosuspend logic
+    - purged driver remove() callback, because of devm release logic runs
+      all deinit stuff fully
+    - fixed dts bindings problems
+    - changed irq type in the dt-binding description, because interrupt
+      type for msa311 should have the same type as i2c irq, for example
+      using the gpio_intc it's IRQ_TYPE_EDGE_RISING usually. Otherwise
+      we may lose irq map on the second and further insmod attempts
+
+Dmitry Rokosov (3):
+  dt-bindings: vendor-prefixes: add MEMSensing Microsystems Co., Ltd.
+  iio: add MEMSensing MSA311 3-axis accelerometer driver
+  dt-bindings: iio: accel: add dt-binding schema for msa311 accel driver
+
+ .../bindings/iio/accel/memsensing,msa311.yaml |   52 +
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ MAINTAINERS                                   |    7 +
+ drivers/iio/accel/Kconfig                     |   13 +
+ drivers/iio/accel/Makefile                    |    2 +
+ drivers/iio/accel/msa311.c                    | 1312 +++++++++++++++++
+ 6 files changed, 1388 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/memsensing,=
+msa311.yaml
+ create mode 100644 drivers/iio/accel/msa311.c
+
+--=20
+2.36.0
