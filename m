@@ -2,113 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E051DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:59:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233681AbiFPN7S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
+        id S233737AbiFPN7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 09:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377367AbiFPN6q (ORCPT
+        with ESMTP id S1377285AbiFPN6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:58:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1524CF4;
-        Thu, 16 Jun 2022 06:58:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C14A61D4F;
-        Thu, 16 Jun 2022 13:58:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 660E7C34114;
-        Thu, 16 Jun 2022 13:58:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655387924;
-        bh=GtFu1yL7NBd00sE3MZWv/Se2J2i0SxpzD43fBfzA+sE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=myEfOqwXVIWO0A5Ij7Qyf0VDfFGPNxUM865ziyMoXJBCCmgQn3EqqmHj2Z/BibH9f
-         RV3lbanRVPg9U4xxxGj2nwbDTelT528XU07AAejifGhiWyQA7GssJzDUZvDDpH1Uiw
-         gkOT3pJsx8gkiUZzkyIStW2vESo6yZRBG7r5ZcRwSbbhi1SuzU0lnFE7fLzD/TDz3+
-         nQUEHMFCDC4BWTZRKrg0/TeUvYgmBiH86G6yMMZBd97uYyo2QN6Qz0VZ1WfbSWbVTK
-         Jy5du4pHCvAliAJStdyVXVv3qnB0yikwoZ8gCNm1H0QUZxfcSPgyFaCStjyMSbG8TD
-         IWor6n8XUCN3w==
-Date:   Thu, 16 Jun 2022 06:58:43 -0700
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org, linux-amarula@amarulasolutions.com,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, dmaengine@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3] dmaengine: mxs: fix driver registering
-Message-ID: <Yqs3E0ipEpsCT2T2@matsya>
-References: <20220614101751.3636028-1-dario.binacchi@amarulasolutions.com>
+        Thu, 16 Jun 2022 09:58:13 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19A126132;
+        Thu, 16 Jun 2022 06:58:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655387890; x=1686923890;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=D/GW/lXKpR6TmmSVXUJ9+ZueanAvikeiMgT1O9er88U=;
+  b=IiZKzGYVXd8/CF7JtP0hWT0f0GiqzvrDIgXL/3I1m9HAd7iASuGeOKQV
+   mnZ+LjMa9cZfky2Z/C+kYJMjvCqJXKQbY6NQq1R14XsVMejaocgonnnGs
+   xfsyZDp/6MYdYJY0lvFmbW0L7DuZaVYTr0T0sJx4I4GHgVoqq5AKiOj1m
+   LmxkM7aV+ozUC6opIqL23+W22RyAmV6LDipDq332XZet+/tgJDQTeknht
+   dccXNb5IbegN7ueqgoPbYtIUJsypTGVEe2g79HYlOhV/n7xGstydWUyGY
+   +16ElDZvG5bQX0rLkXYQ8J/IxjZDl1lbj+LwVNN2DTeX6MBIPV4fKERyP
+   A==;
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="168685559"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Jun 2022 06:58:10 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 16 Jun 2022 06:58:09 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 16 Jun 2022 06:58:07 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <patrice.chotard@foss.st.com>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v3 4/4] serial: st-asc: remove include of pm_runtime.h
+Date:   Thu, 16 Jun 2022 17:00:24 +0300
+Message-ID: <20220616140024.2081238-5-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220616140024.2081238-1-claudiu.beznea@microchip.com>
+References: <20220616140024.2081238-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614101751.3636028-1-dario.binacchi@amarulasolutions.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14-06-22, 12:17, Dario Binacchi wrote:
-> Driver registration fails on SOC imx8mn as its supplier, the clock
-> control module, is not ready. Since platform_driver_probe(), as
-> reported by its description, is incompatible with deferred probing,
-> we have to use platform_driver_register().
-> 
-> Fixes: a580b8c5429a ("dmaengine: mxs-dma: add dma support for i.MX23/28")
-> Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-> Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-> Cc: stable@vger.kernel.org
-> 
-> ---
-> 
-> Changes in v3:
-> - Restore __init in front of mxs_dma_init() definition.
-> 
-> Changes in v2:
-> - Add the tag "Cc: stable@vger.kernel.org" in the sign-off area.
-> 
->  drivers/dma/mxs-dma.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/dma/mxs-dma.c b/drivers/dma/mxs-dma.c
-> index 994fc4d2aca4..6e90540fedc4 100644
-> --- a/drivers/dma/mxs-dma.c
-> +++ b/drivers/dma/mxs-dma.c
-> @@ -741,7 +741,7 @@ static struct dma_chan *mxs_dma_xlate(struct of_phandle_args *dma_spec,
->  				     ofdma->of_node);
->  }
->  
-> -static int __init mxs_dma_probe(struct platform_device *pdev)
-> +static int mxs_dma_probe(struct platform_device *pdev)
+st-asc driver doesn't use helpers from pm_runtime.h thus remove its
+include.
 
-why drop __init here, if there is a reason for that please split this
-change and document such reason...
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
+---
+ drivers/tty/serial/st-asc.c | 1 -
+ 1 file changed, 1 deletion(-)
 
->  {
->  	struct device_node *np = pdev->dev.of_node;
->  	const struct mxs_dma_type *dma_type;
-> @@ -839,10 +839,7 @@ static struct platform_driver mxs_dma_driver = {
->  		.name	= "mxs-dma",
->  		.of_match_table = mxs_dma_dt_ids,
->  	},
-> +	.probe = mxs_dma_probe,
->  };
->  
-> -static int __init mxs_dma_module_init(void)
-> -{
-> -	return platform_driver_probe(&mxs_dma_driver, mxs_dma_probe);
-> -}
-> -subsys_initcall(mxs_dma_module_init);
-> +module_platform_driver(mxs_dma_driver);
-> -- 
-> 2.32.0
-
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 1b0da603ab54..cce42f4c9bc2 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -17,7 +17,6 @@
+ #include <linux/tty_flip.h>
+ #include <linux/delay.h>
+ #include <linux/spinlock.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/of.h>
+ #include <linux/of_platform.h>
+ #include <linux/serial_core.h>
 -- 
-~Vinod
+2.34.1
+
