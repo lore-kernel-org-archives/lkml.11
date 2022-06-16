@@ -2,121 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A51CCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 23:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9245BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 23:43:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379222AbiFPXjd (ORCPT
+        id S1379363AbiFPXn4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 19:39:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35404 "EHLO
+        Thu, 16 Jun 2022 19:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbiFPXjb (ORCPT
+        with ESMTP id S229995AbiFPXnx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 19:39:31 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F7B6163B
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 16:39:31 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id k24so3647586oij.2
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 16:39:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=p6AMxpkA8TTGmEn1Bk60SJEuUpFSzeYyFwi5LwIblKY=;
-        b=QoS7HSJcdZbZ6I1shW8c8Ggj/S/yYty4RWZXUUryK1d2L/wd7sLzx8TtlNWAr5tKPh
-         AnyYnAmWsf3hi92uObQ0MmlBsoxc2/xtqjixO2sIOx+fxaF8R06D9WWa6K1q2kC9XnOW
-         0eQNoUmCMLsWlyATgVG8WVyxWQX5zBwuwAGOs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=p6AMxpkA8TTGmEn1Bk60SJEuUpFSzeYyFwi5LwIblKY=;
-        b=V8DzLRguWMOE5rWuBrJig+USTro4js+f4pvo7A/9YWZCxJix0ZvsIB4YndNiVEYznp
-         +dU1LdVSODY8KJr9h02BEImVBmOtMKAKb1kAkfQdTLIKQLPMLu7CRfqg9PrygP2MH7k8
-         Cf4CEcjmuAwu8XZHQ1Ih3STrPUVpDYWV+lA7gFSGqLVeQPF+FOikqwDbx8/AgTsmZs0p
-         bQcWQAmPG8N6zEhf49JfM7kgjljD179iT0kglOAmwOAk7lRavGWvGWuZObUimZ14Wpez
-         P+Nm0ZNLygCuoRqZQXTNHDa/SoKVyDXiLXPemlmQdDtmN7tM3AGb4DIYyDrnNWRFzUrL
-         5JpQ==
-X-Gm-Message-State: AJIora9RppF02RRAJjhNXD0fBxIyGqJTk0DwE4YyAAzcFJCJG24jA3Xp
-        +7pW2jbibmuQbF0qk3PFbHxmFbq7Kh7/+nhFjgpQdQ==
-X-Google-Smtp-Source: AGRyM1tJkP1MW9aiih9SxFvzYQIAdzAgdaP270BY5q2s7l4Xb6sprjP3JR24sFt3jyoliB8V5lZ19MPRnckBuygfQro=
-X-Received: by 2002:a05:6808:e87:b0:32e:4789:d2c with SMTP id
- k7-20020a0568080e8700b0032e47890d2cmr3721825oil.193.1655422770319; Thu, 16
- Jun 2022 16:39:30 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 16 Jun 2022 16:39:29 -0700
+        Thu, 16 Jun 2022 19:43:53 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A8F843393
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 16:43:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655423032; x=1686959032;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gvd8jlhw50cWYlW87KaSp82+5jOEFw1C0vFTcwNzk9I=;
+  b=Vzw9uXPAso2hnzmLJGq/H/TAqXKf34RfuzZ1Rp9DjFPY0+l3Myhee2C3
+   aVc0py3IZIZFQIztP58e2647pEjEgWrGTrrAy6vnc9R0M9P4ysz34gt2x
+   aUdysVeK+ANsrl+K60zX2Ghfe6iQX8ZiBMiN080+0/T/bTxekEhdkHGTb
+   AMTKSiPnPTbtTMfSqVjVrliXTFkAmKQ85XD015nFZHl5SEWD0XxyGH8RB
+   BFi5PcMN+G7PFj4Rhvz7/b0usteXUCNckJmF0G+3G4eWffxMpskWQqlAr
+   1rXnxp6LV9glxuMqIKAqUySFO6yZIHHZ0DjD2vjbNeP6i5+Zd1F6/GkbR
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="262398404"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="262398404"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 16:43:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="576182859"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 16 Jun 2022 16:43:47 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 473B5109; Fri, 17 Jun 2022 02:43:52 +0300 (EEST)
+Date:   Fri, 17 Jun 2022 02:43:52 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "peterz@infradead.org" <peterz@infradead.org>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "kcc@google.com" <kcc@google.com>,
+        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "dvyukov@google.com" <dvyukov@google.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "ryabinin.a.a@gmail.com" <ryabinin.a.a@gmail.com>,
+        "glider@google.com" <glider@google.com>
+Subject: Re: [PATCHv3 0/8] Linear Address Masking enabling
+Message-ID: <20220616234352.2h4f64a4fw46atrs@black.fi.intel.com>
+References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
+ <fdc44a96f0734682338930aec4884d9a2b39650d.camel@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <1655411200-7255-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1655411200-7255-1-git-send-email-quic_khsieh@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Thu, 16 Jun 2022 16:39:29 -0700
-Message-ID: <CAE-0n529kPSzweLuwq60b2d7Z49PZO+N_x3rxQW9iHKGgcqrjw@mail.gmail.com>
-Subject: Re: [PATCH v9] drm/msm/dp: force link training for display resolution change
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
-        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
-        dianders@chromium.org, dmitry.baryshkov@linaro.org,
-        robdclark@gmail.com, sean@poorly.run, vkoul@kernel.org
-Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
-        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fdc44a96f0734682338930aec4884d9a2b39650d.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Kuogee Hsieh (2022-06-16 13:26:40)
-> Display resolution change is implemented through drm modeset. Older
-> modeset (resolution) has to be disabled first before newer modeset
-> (resolution) can be enabled. Display disable will turn off both
-> pixel clock and main link clock so that main link have to be
-> re-trained during display enable to have new video stream flow
-> again. At current implementation, display enable function manually
-> kicks up irq_hpd_handle which will read panel link status and start
-> link training if link status is not in sync state.
->
-> However, there is rare case that a particular panel links status keep
-> staying in sync for some period of time after main link had been shut
-> down previously at display disabled. In this case, main link retraining
-> will not be executed by irq_hdp_handle(). Hence video stream of newer
-> display resolution will fail to be transmitted to panel due to main
-> link is not in sync between host and panel.
->
-> This patch will bypass irq_hpd_handle() in favor of directly call
-> dp_ctrl_on_stream() to always perform link training in regardless of
-> main link status. So that no unexpected exception resolution change
-> failure cases will happen. Also this implementation are more efficient
-> than manual kicking off irq_hpd_handle function.
->
-> Changes in v2:
-> -- set force_link_train flag on DP only (is_edp == false)
->
-> Changes in v3:
-> -- revise commit  text
-> -- add Fixes tag
->
-> Changes in v4:
-> -- revise commit  text
->
-> Changes in v5:
-> -- fix spelling at commit text
->
-> Changes in v6:
-> -- split dp_ctrl_on_stream() for phy test case
-> -- revise commit text for modeset
->
-> Changes in v7:
-> -- drop 0 assignment at local variable (ret = 0)
->
-> Changes in v8:
-> -- add patch to remove pixel_rate from dp_ctrl
->
-> Changes in v9:
-> -- forward declare dp_ctrl_on_stream_phy_test_report()
->
-> Fixes: 62671d2ef24b ("drm/msm/dp: fixes wrong connection state caused by failure of link train")
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-> ---
+On Thu, Jun 16, 2022 at 10:52:14PM +0000, Edgecombe, Rick P wrote:
+> On Fri, 2022-06-10 at 17:35 +0300, Kirill A. Shutemov wrote:
+> > Linear Address Masking[1] (LAM) modifies the checking that is applied
+> > to
+> > 64-bit linear addresses, allowing software to use of the untranslated
+> > address bits for metadata.
+> > 
+> > The patchset brings support for LAM for userspace addresses.
+> 
+> Arm has this documentation about which memory operations support being
+> passed tagged pointers, and which do not:
+> Documentation/arm64/tagged-address-abi.rst
+> 
+> Is the idea that LAM would have something similar, or exactly mirror
+> the arm ABI? It seems like it is the same right now. Should the docs be
+> generalized?
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+It is somewhat similar, but not exact. ARM TBI interface implies tag size
+and placement. ARM TBI is per-thread and LAM is per-process.
+
+-- 
+ Kirill A. Shutemov
