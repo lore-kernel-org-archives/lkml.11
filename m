@@ -2,167 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DA8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 04:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89690CCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 04:09:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358583AbiFPEI5 (ORCPT
+        id S1358588AbiFPEJj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 00:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
+        Thu, 16 Jun 2022 00:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358594AbiFPEIi (ORCPT
+        with ESMTP id S1347756AbiFPEJg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 00:08:38 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6B756F89
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 21:08:35 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id e4so187018ljl.1
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 21:08:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=FBtM5WGvRPEJgUOnS34Z7iJV8/9Y1vR0E19ucVmPQ3M=;
-        b=UB5nurzzD04+1pIxtILOfGgDih/srzcyloZ3DgfyURK9qjOpEN4yB7ygzzJsCJIYz4
-         /9T8Dd7i6FhH0metYuL+PPPaLXSvH3uf3Lq4yg/bq8B48fbIGmKGY8FLHIcfetgwaUU3
-         maWdLV3k//aT8HQ1mibec9XRkbQ98lC1vGgtFWKd3QohAUKrAUE5CCUt/3/kGnqfWUER
-         Ls4wSnwxMpY4u8ATWlNXbjoE1kOBuIR9ec168TogcrHc8/dgRGoWL8AtV8fKDb96XKsn
-         PI1Am6C6fbvpOTzFisUwJdnoB5YUVT82M3dW3chW28hpG12Yv/TiGToCYPBxfw+LF1jt
-         aulQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FBtM5WGvRPEJgUOnS34Z7iJV8/9Y1vR0E19ucVmPQ3M=;
-        b=1h+xHv0VY0OVaMkjw6bp+N4KUidxLoekio4OU/GhcEfGhHsuH4F/lxojaxwG2IJItt
-         8IT88GBtiz7avbgET5+AAg/5Ko/XDbfX51Md0swKgnjpn2ZvRdaM4aTZPSYG2fKC+Wcn
-         GozlWtM1ZzhxmEBtTvDnDBkOWOeWYouGODZD82zvtOCeqVCqeULA58uTgnImgX4/bRzR
-         UBw7X7yZt1cmzX/quwIDgn0MmojX7f0v1FN47XIcj4gxMhuqeT4Dolt9DxH2x7bwNBSG
-         lvR/I3BwfQndTlPNP2jMwFDlNeHatGpbOIpHmD+Ge5tyhMyczPHRvhWwXKm1LYYEUgrO
-         TyHg==
-X-Gm-Message-State: AJIora+cfQpmjDfb+YiNhbUOe65YNG4vOItCm0kl883AsWTHIorssDvm
-        kBBx2GV6wzAoMApOb+VNAaKeaZLmJ+EXFCUqzuk=
-X-Google-Smtp-Source: AGRyM1vS/6FI6l5qeqNasa6II+pXlJKkXHvfh+y66TNlxmt10he+2WKAzkzOy89IJmXIaMtfYPV0ih8No1pkyWiYfCc=
-X-Received: by 2002:a05:651c:506:b0:255:bc1f:80b5 with SMTP id
- o6-20020a05651c050600b00255bc1f80b5mr1530074ljp.391.1655352513179; Wed, 15
- Jun 2022 21:08:33 -0700 (PDT)
+        Thu, 16 Jun 2022 00:09:36 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17BA856F94
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 21:09:35 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C88DD12FC;
+        Wed, 15 Jun 2022 21:09:34 -0700 (PDT)
+Received: from a077893.blr.arm.com (unknown [10.162.42.8])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 93C323F7F5;
+        Wed, 15 Jun 2022 21:09:32 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org
+Cc:     hch@infradead.org, Anshuman Khandual <anshuman.khandual@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V3 0/2] mm/mmap: Drop __SXXX/__PXXX macros from across platforms
+Date:   Thu, 16 Jun 2022 09:39:22 +0530
+Message-Id: <20220616040924.1022607-1-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220430085344.3127346-1-chenhuacai@loongson.cn>
- <87v8uk6kfa.wl-maz@kernel.org> <f9bafd6c-0819-9046-e0dd-11e2dd98da38@flygoat.com>
- <87a6am3v0y.wl-maz@kernel.org>
-In-Reply-To: <87a6am3v0y.wl-maz@kernel.org>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Thu, 16 Jun 2022 12:08:22 +0800
-Message-ID: <CAAhV-H7EtD2mVGCg3772M5S56Y-hB5gxtfosbp55kMAbB3vkcw@mail.gmail.com>
-Subject: Re: [PATCH V11 00/10] irqchip: Add LoongArch-related irqchip drivers
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Jianmin Lv <lvjianmin@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Marc,
+__SXXX/__PXXX macros is an unnecessary abstraction layer in creating the
+generic protection_map[] array which is used for vm_get_page_prot(). This
+abstraction layer can be avoided, if the platforms just define the array
+protection_map[] for all possible vm_flags access permission combinations.
 
-On Thu, Jun 9, 2022 at 8:01 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> + Jianmin Lv
->
-> On Fri, 20 May 2022 16:04:28 +0100,
-> Jiaxun Yang <jiaxun.yang@flygoat.com> wrote:
-> >
-> >
-> >
-> > =E5=9C=A8 2022/5/5 16:58, Marc Zyngier =E5=86=99=E9=81=93:
-> > >> LoongArch use ACPI, but ACPI tables cannot describe the hierarchy of
-> > >> irqchips, so we initilize the irqchip subsystem in this way (from ar=
-ch
-> > >> code):
-> > >>
-> > >>    cpu_domain =3D loongarch_cpu_irq_init();
-> > >>    liointc_domain =3D liointc_acpi_init(cpu_domain, acpi_liointc);
-> > >>    eiointc_domain =3D eiointc_acpi_init(cpu_domain, acpi_eiointc);
-> > >>    pch_pic_domain =3D pch_pic_acpi_init(eiointc_domain, acpi_pchpic)=
-;
-> > >>    pch_msi_domain =3D pch_msi_acpi_init(eiointc_domain, acpi_pchmsi)=
-;
-> > > I said no to this in the past, and I'm going to reiterate: this is
-> > > *not* acceptable. This obviously doesn't scale and isn't manageable i=
-n
-> > > the long run. Hardcoding the topology and the probing order in the
-> > > kernel code has repeatedly proved to be a disaster, and yet you refus=
-e
-> > > to take any input from past experience. This is pretty worrying.
-> > Just my two cents here.
-> >
-> > Those drivers have such a topology just because this was my design to
-> > handle irqchip differences between RS780E and LS7A for MIPS-era Loongso=
-n.
-> >
-> > TBH, for LoongArch-era Loongson, they should be handled by the same dri=
-ver,
-> > cuz the topology behind them just looks like GIC PPI SPI and MSI for
-> > Arm GIC.
-> >
-> > PCH PIC and eiointc in combination relays interrupts from
-> > peripherals just like SPI.  liointc is doing the PPI job. They are
-> > not separated modules in hardware, they are interlocked.
->
-> That was my impression too, but I keep getting pushback on that. I
-> wouldn't mind leaving the existing drivers for MIPS only and get new
-> ones for Loongson if that made things clearer.
->
-> > The system should be treated as a whole, pretty much like how we see
-> > Arm's GIC. The topology will last forever for every ACPI enabled
-> > LoongArch PC.
-> >
-> > I see no reason they should be described separately. Adding complicitie=
-s to
-> > ACPI bindings brings no benefit. Changing ACPI binding which is already=
- in
-> > final draft stage can only leave us with chaos.
->
-> OK. So how do we move forward? You seem to have a good grasp on how
-> this should be structured, so can you work with Jianmin Lv to make
-> some progress on this?
-Thank you for helping us to move this forward, and I have some
-considerations below:
-1, Jianmin Lv and I have both made some effort on the irqchip driver
-design, but Jianmin more or less lacks some community experience, so
-he has made some mistakes as most new-comers. I think he will improve
-in the future.
-2, And then, maybe we can temporarily ignore those new-comers'
-mistakes and focus on the key problem. I think the key problem is that
-our irqchip topology is fixed in hardware (not re-organizable, which
-can nearly be treated as a whole, as Jiaxun described before), and the
-ACPI spec is frozen in late 2021.
-3, To solve the key problem, Jianmin and I propose two different
-designs. My solution is in V11 and previous versions: initialize the
-root irqchip in the arch code, and return the root domain, then the
-downstream irqchip takes the root domain as its parent to initialize
-itself, and so on. While Jianmin's design is in RFC versions: the arch
-code only calls irqchip_init() which causes it to initialize the root
-irqchip, and the root irqchip driver explicitly calls its downstream
-irqchips' initialization. I think this is the main difference between
-them.
-4, There is coupling between arch and driver in my solution, and there
-is coupling between one driver and some other drivers in Jianmin's
-solution. Both of the two solutions are not perfect (or we can even
-say they are ugly). Which one do you think is a little better?
+This series drops __SXXX/__PXXX macros from across platforms in the tree.
+First it makes protection_map[] array private (static) on platforms which
+enable ARCH_HAS_VM_GET_PAGE_PROT, later moves protection_map[] array into
+arch for all remaining platforms (!ARCH_HAS_VM_GET_PAGE_PROT), dropping
+the generic one. In the process __SXXX/__PXXX macros become redundant and
+thus get dropped off completely. I understand that the diff stat is large
+here, but please do suggest if there is a better way. This series applies
+on v5.19-rc1 and has been build tested for multiple platforms.
 
+The CC list for this series has been reduced to just minimum, until there
+is some initial agreement.
 
-Huacai
+- Anshuman
 
->
-> Thanks,
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
+Changes in V3:
+
+- Fix build issues on powerpc and riscv
+
+Changes in V2:
+
+https://lore.kernel.org/all/20220613053354.553579-1-anshuman.khandual@arm.com/
+
+- Add 'const' identifier to protection_map[] on powerpc
+- Dropped #ifndef CONFIG_ARCH_HAS_VM_GET_PAGE_PROT check from sparc 32
+- Dropped protection_map[] init from sparc 64
+- Dropped all new platform changes subscribing ARCH_HAS_VM_GET_PAGE_PROT
+- Added a second patch which moves generic protection_map[] array into
+  all remaining platforms (!ARCH_HAS_VM_GET_PAGE_PROT)
+
+Changes in V1:
+
+https://lore.kernel.org/linux-mm/20220603101411.488970-1-anshuman.khandual@arm.com/
+
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
+
+Anshuman Khandual (2):
+  mm/mmap: Restrict generic protection_map[] array visibility
+  mm/mmap: Drop generic protection_map[] array
+
+ arch/alpha/include/asm/pgtable.h          | 17 -------
+ arch/alpha/mm/init.c                      | 21 +++++++++
+ arch/arc/include/asm/pgtable-bits-arcv2.h | 18 --------
+ arch/arc/mm/mmap.c                        | 19 ++++++++
+ arch/arm/include/asm/pgtable.h            | 17 -------
+ arch/arm/lib/uaccess_with_memcpy.c        |  2 +-
+ arch/arm/mm/mmu.c                         | 19 ++++++++
+ arch/arm64/include/asm/pgtable-prot.h     | 18 --------
+ arch/arm64/mm/mmap.c                      | 21 +++++++++
+ arch/csky/include/asm/pgtable.h           | 18 --------
+ arch/csky/mm/init.c                       | 19 ++++++++
+ arch/hexagon/include/asm/pgtable.h        | 27 ------------
+ arch/hexagon/mm/init.c                    | 41 +++++++++++++++++
+ arch/ia64/include/asm/pgtable.h           | 18 --------
+ arch/ia64/mm/init.c                       | 27 +++++++++++-
+ arch/loongarch/include/asm/pgtable-bits.h | 19 --------
+ arch/loongarch/mm/cache.c                 | 45 +++++++++++++++++++
+ arch/m68k/include/asm/mcf_pgtable.h       | 54 -----------------------
+ arch/m68k/include/asm/motorola_pgtable.h  | 22 ---------
+ arch/m68k/include/asm/sun3_pgtable.h      | 17 -------
+ arch/m68k/mm/mcfmmu.c                     | 54 +++++++++++++++++++++++
+ arch/m68k/mm/motorola.c                   | 19 ++++++++
+ arch/m68k/mm/sun3mmu.c                    | 19 ++++++++
+ arch/microblaze/include/asm/pgtable.h     | 17 -------
+ arch/microblaze/mm/init.c                 | 19 ++++++++
+ arch/mips/include/asm/pgtable.h           | 22 ---------
+ arch/mips/mm/cache.c                      |  2 +
+ arch/nios2/include/asm/pgtable.h          | 16 -------
+ arch/nios2/mm/init.c                      | 19 ++++++++
+ arch/openrisc/include/asm/pgtable.h       | 18 --------
+ arch/openrisc/mm/init.c                   | 19 ++++++++
+ arch/parisc/include/asm/pgtable.h         | 18 --------
+ arch/parisc/mm/init.c                     | 19 ++++++++
+ arch/powerpc/include/asm/pgtable.h        | 18 --------
+ arch/powerpc/mm/book3s64/pgtable.c        |  6 +++
+ arch/powerpc/mm/pgtable.c                 | 20 +++++++++
+ arch/riscv/include/asm/pgtable.h          | 20 ---------
+ arch/riscv/mm/init.c                      | 19 ++++++++
+ arch/s390/include/asm/pgtable.h           | 17 -------
+ arch/s390/mm/mmap.c                       | 19 ++++++++
+ arch/sh/include/asm/pgtable.h             | 17 -------
+ arch/sh/mm/mmap.c                         | 19 ++++++++
+ arch/sparc/include/asm/pgtable_32.h       | 19 --------
+ arch/sparc/include/asm/pgtable_64.h       | 19 --------
+ arch/sparc/mm/init_32.c                   | 19 ++++++++
+ arch/sparc/mm/init_64.c                   |  3 ++
+ arch/um/include/asm/pgtable.h             | 17 -------
+ arch/um/kernel/mem.c                      | 19 ++++++++
+ arch/x86/include/asm/pgtable_types.h      | 19 --------
+ arch/x86/mm/pgprot.c                      | 19 ++++++++
+ arch/x86/um/mem_32.c                      |  2 +-
+ arch/xtensa/include/asm/pgtable.h         | 18 --------
+ arch/xtensa/mm/init.c                     | 19 ++++++++
+ include/linux/mm.h                        |  2 +
+ mm/mmap.c                                 | 19 --------
+ 55 files changed, 547 insertions(+), 522 deletions(-)
+
+-- 
+2.25.1
+
