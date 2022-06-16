@@ -2,135 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABBABCCA47A
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 10:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8FBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 10:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376514AbiFPKvH (ORCPT
+        id S1376549AbiFPKvn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 06:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37582 "EHLO
+        Thu, 16 Jun 2022 06:51:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376370AbiFPKvA (ORCPT
+        with ESMTP id S1376529AbiFPKvk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 06:51:00 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8E05DD00
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 03:50:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655376659; x=1686912659;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dea6+J/lzTy4mTQTAX5+OHD7W4Cv1JGiuyOOmO/Pki8=;
-  b=Vy0YkOKPH0+p1rcCrzuHN+5zvUyoqroOQjEfD8Mn/5eZbEzdZD8axza/
-   xuZN5v46SNoomDHyv7KUKTWM0lN2Say2XXGtfUOQNY5sNCrTCMdheDkYN
-   oaYReSJXiyFMBEeBeT1SIIVjPuJ201WAiBIY4QlLYQvUQovCQQN8FN9Mj
-   z16bHgNHTfzLHzNGviABUIP3eBuq1kJfNHC4BAmmKKdfaGfOEqfh3gIOZ
-   ew68ivinpLF79P4tDKMwRED89QbV5rpHdzUWTX9JM0AI0/tMPqo1nD/5i
-   gDB71/a/GJQklBlRSqM9KKJJD5maTXhr4savkhNsc2kJTZffkwT8wSBqe
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="276796187"
-X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="276796187"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 03:50:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="687769188"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 16 Jun 2022 03:50:56 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1n5U-000OJ0-73;
-        Thu, 16 Jun 2022 10:50:56 +0000
-Date:   Thu, 16 Jun 2022 18:50:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>,
-        mike.kravetz@oracle.com
-Cc:     kbuild-all@lists.01.org, songmuchun@bytedance.com,
-        akpm@linux-foundation.org, catalin.marinas@arm.com,
-        will@kernel.org, anshuman.khandual@arm.com,
-        baolin.wang@linux.alibaba.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH] arm64/hugetlb: Implement arm64 specific
- hugetlb_mask_last_hp
-Message-ID: <202206161848.w1bWqr7O-lkp@intel.com>
-References: <7256dbe078d7231f45b0f47c2c52a3bd3aa10da7.1655350193.git.baolin.wang@linux.alibaba.com>
+        Thu, 16 Jun 2022 06:51:40 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4B85DE65;
+        Thu, 16 Jun 2022 03:51:39 -0700 (PDT)
+X-UUID: 9b50985884a84c46adb1bdf62b903f58-20220616
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:d6659d84-6966-4c58-b866-1cd65f7fccde,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.6,REQID:d6659d84-6966-4c58-b866-1cd65f7fccde,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:b14ad71,CLOUDID:4e537cf6-e099-41ba-a32c-13b8bfe63214,C
+        OID:37c0074fa499,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 9b50985884a84c46adb1bdf62b903f58-20220616
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 244618540; Thu, 16 Jun 2022 18:51:32 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 16 Jun 2022 18:51:31 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 16 Jun 2022 18:51:31 +0800
+Message-ID: <bd0183b088c4c2849837f49b4b35b26d9079ac5f.camel@mediatek.com>
+Subject: Re: [PATCH v11 12/12] drm/mediatek: dpi: Add matrix_sel helper
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     CK Hu <ck.hu@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 16 Jun 2022 18:51:31 +0800
+In-Reply-To: <de65caa980c270e4dedcf134d45185d41cd4c0ae.camel@mediatek.com>
+References: <20220613064841.10481-1-rex-bc.chen@mediatek.com>
+         <20220613064841.10481-13-rex-bc.chen@mediatek.com>
+         <de65caa980c270e4dedcf134d45185d41cd4c0ae.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7256dbe078d7231f45b0f47c2c52a3bd3aa10da7.1655350193.git.baolin.wang@linux.alibaba.com>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Baolin,
+On Tue, 2022-06-14 at 14:20 +0800, CK Hu wrote:
+> Hi, Bo-Chen:
+> 
+> On Mon, 2022-06-13 at 14:48 +0800, Bo-Chen Chen wrote:
+> > From: Guillaume Ranquet <granquet@baylibre.com>
+> > 
+> > Add a mtk_dpi_matrix_sel() helper to update the DPI_MATRIX_SET
+> > register depending on the color format.
+> 
+> Why set DPI_MATRIX_SET? New feature or bug fix? What does this matrix
+> work for?
+> 
+> Regards,
+> CK
+> 
 
-I love your patch! Yet something to improve:
+Matrix selection is a new feature for both dpi and dpintf of MT8195.
+I will add this in next version.
 
-[auto build test ERROR on arm64/for-next/core]
-[also build test ERROR on linus/master v5.19-rc2 next-20220616]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> > 
+> > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> > ---
+> >  drivers/gpu/drm/mediatek/mtk_dpi.c      | 21 +++++++++++++++++++++
+> >  drivers/gpu/drm/mediatek/mtk_dpi_regs.h |  3 +++
+> >  2 files changed, 24 insertions(+)
+> > 
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > index 9668bd5dd14a..dc355a512963 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > @@ -387,6 +387,25 @@ static void mtk_dpi_config_disable_edge(struct
+> > mtk_dpi *dpi)
+> >  		mtk_dpi_mask(dpi, dpi->conf->reg_h_fre_con, 0,
+> > EDGE_SEL_EN);
+> >  }
+> >  
+> > +static void mtk_dpi_matrix_sel(struct mtk_dpi *dpi, enum
+> > mtk_dpi_out_color_format format)
+> > +{
+> > +	u32 matrix_sel = 0;
+> > +
+> > +	switch (format) {
+> > +	case MTK_DPI_COLOR_FORMAT_YCBCR_422:
+> > +	case MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL:
+> > +	case MTK_DPI_COLOR_FORMAT_YCBCR_444:
+> > +	case MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL:
+> > +	case MTK_DPI_COLOR_FORMAT_XV_YCC:
+> > +		if (dpi->mode.hdisplay <= 720)
+> > +			matrix_sel = 0x2;
+> > +		break;
+> > +	default:
+> > +		break;
+> > +	}
+> > +	mtk_dpi_mask(dpi, DPI_MATRIX_SET, matrix_sel,
+> > INT_MATRIX_SEL_MASK);
+> > +}
+> > +
+> >  static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+> >  					enum mtk_dpi_out_color_format
+> > format)
+> >  {
+> > @@ -394,6 +413,7 @@ static void mtk_dpi_config_color_format(struct
+> > mtk_dpi *dpi,
+> >  	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
+> >  		mtk_dpi_config_yuv422_enable(dpi, false);
+> >  		mtk_dpi_config_csc_enable(dpi, true);
+> > +		mtk_dpi_matrix_sel(dpi, format);
+> >  		if (dpi->conf->swap_input_support)
+> >  			mtk_dpi_config_swap_input(dpi, false);
+> >  		mtk_dpi_config_channel_swap(dpi,
+> > MTK_DPI_OUT_CHANNEL_SWAP_BGR);
+> > @@ -401,6 +421,7 @@ static void mtk_dpi_config_color_format(struct
+> > mtk_dpi *dpi,
+> >  		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
+> >  		mtk_dpi_config_yuv422_enable(dpi, true);
+> >  		mtk_dpi_config_csc_enable(dpi, true);
+> > +		mtk_dpi_matrix_sel(dpi, format);
+> >  		if (dpi->conf->swap_input_support)
+> >  			mtk_dpi_config_swap_input(dpi, true);
+> >  		mtk_dpi_config_channel_swap(dpi,
+> > MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> > b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> > index f7f0272dbd6a..96c117202d0d 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> > +++ b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> > @@ -230,4 +230,7 @@
+> >  #define EDGE_SEL_EN			BIT(5)
+> >  #define H_FRE_2N			BIT(25)
+> >  
+> > +#define DPI_MATRIX_SET		0xB4
+> > +#define INT_MATRIX_SEL_MASK	(0x1F << 0)
+> > +
+> >  #endif /* __MTK_DPI_REGS_H */
+> 
+> 
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Baolin-Wang/arm64-hugetlb-Implement-arm64-specific-hugetlb_mask_last_hp/20220616-113640
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
-config: arm64-buildonly-randconfig-r001-20220616 (https://download.01.org/0day-ci/archive/20220616/202206161848.w1bWqr7O-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/f1309dfbc2b70ec5dd72ac38e95a49b7be42b9b6
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Baolin-Wang/arm64-hugetlb-Implement-arm64-specific-hugetlb_mask_last_hp/20220616-113640
-        git checkout f1309dfbc2b70ec5dd72ac38e95a49b7be42b9b6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/mm/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arch/arm64/mm/hugetlbpage.c:371:15: warning: no previous prototype for 'hugetlb_mask_last_hp' [-Wmissing-prototypes]
-     371 | unsigned long hugetlb_mask_last_hp(struct hstate *h)
-         |               ^~~~~~~~~~~~~~~~~~~~
-   arch/arm64/mm/hugetlbpage.c: In function 'hugetlb_mask_last_hp':
->> arch/arm64/mm/hugetlbpage.c:380:9: error: duplicate case value
-     380 |         case PMD_SIZE:
-         |         ^~~~
-   arch/arm64/mm/hugetlbpage.c:376:9: note: previously used here
-     376 |         case PUD_SIZE:
-         |         ^~~~
-
-
-vim +380 arch/arm64/mm/hugetlbpage.c
-
-   370	
-   371	unsigned long hugetlb_mask_last_hp(struct hstate *h)
-   372	{
-   373		unsigned long hp_size = huge_page_size(h);
-   374	
-   375		switch (hp_size) {
-   376		case PUD_SIZE:
-   377			return PGDIR_SIZE - PUD_SIZE;
-   378		case CONT_PMD_SIZE:
-   379			return PUD_SIZE - CONT_PMD_SIZE;
- > 380		case PMD_SIZE:
-   381			return PUD_SIZE - PMD_SIZE;
-   382		case CONT_PTE_SIZE:
-   383			return PMD_SIZE - CONT_PTE_SIZE;
-   384		default:
-   385			break;
-   386		}
-   387	
-   388		return ~0UL;
-   389	}
-   390	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
