@@ -2,141 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C4BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D46C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:51:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377580AbiFPPvG (ORCPT
+        id S1377668AbiFPPvb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56842 "EHLO
+        Thu, 16 Jun 2022 11:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233010AbiFPPvD (ORCPT
+        with ESMTP id S1377612AbiFPPv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:51:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E0C427DE;
-        Thu, 16 Jun 2022 08:51:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 950D260BAD;
-        Thu, 16 Jun 2022 15:51:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC4FFC34114;
-        Thu, 16 Jun 2022 15:51:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655394661;
-        bh=PaJOcCCOZMISwlBFFb5mPfz00LQCHmckbNW4/JT3HXk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AJwMwl3EcuRXCCpQxreHZ6QaquYE/XW383MEso/dl9qitr2DVDmVF6thuxBSgQ/pG
-         kSOWLWpUDJCutV6kF3GPsZAp56WVvvze0QpwMVBfO3uOQtoAmzikVSDv4l8QK6AUlz
-         89MAdBBNXGy3ib+sAKGjK5Ozjj6stT+yVu8a7qB5Ov4G0GXSd5Po0XO0YQmc6Vpq2v
-         3oE6ItDnKNuTH0O5fpnhi/77bCHAmZ7TQrOVoB+P2PJFABV9XcbRAkKfPudPBb4APH
-         jPIAtTE+8di9C+A0CkXE48GvMs+Cw8+G2EHH1oA9AYUtC9bRiQlj7I1MgPhvPL/iQE
-         eoJFHesoxzsSw==
-Date:   Thu, 16 Jun 2022 08:50:59 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     =?UTF-8?B?5qKB5paH6Z+s?= <wentao_liang_g@163.com>
-Cc:     jdmason@kudzu.us, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] [PATCH net v2]vexy: Fix a use-after-free bug in
- vxge-main.c
-Message-ID: <20220616085059.680dc215@kernel.org>
-In-Reply-To: <1f10f9f8.6c02.1816cb0dc51.Coremail.wentao_liang_g@163.com>
-References: <20220615013816.6593-1-Wentao_Liang_g@163.com>
-        <20220615195050.6e4785ef@kernel.org>
-        <1f10f9f8.6c02.1816cb0dc51.Coremail.wentao_liang_g@163.com>
+        Thu, 16 Jun 2022 11:51:29 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 416CC42A2C
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:51:28 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-100eb6f7782so2384996fac.2
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:51:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/gQbIaU17eRw5sO/hecNb5FpluiGnQGygV2egDmXIIk=;
+        b=ehE/gd4tah9jS/e8Ze0l+xwI3htCbpaNOqoUJX7AbepMSAJB7sjMCvDJmqYls5FM/e
+         F+y7gfLeUntwqRbT824JObmT4UsnMPnZepY+gdttD59wtsyHuqRPnFlASHQpgPMKidRb
+         BCO5iBlThav5VCTLbd9PY0Av71Kt15RjOCU8k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/gQbIaU17eRw5sO/hecNb5FpluiGnQGygV2egDmXIIk=;
+        b=sy7UH8uJc6HD4jXdiQKgetxNAjkrj1+vTK1dudQbYNgUBB+t8oJo840g5MeY8Q5her
+         1Lqnya5Tye1DYH6XhmfvjwTsMhF3L6gFb/B/gULEF9BijIF7R3FhmLgFy2sjr90BnH1a
+         lp5sNUxJYwo97X4rSt+swDjXUaUSZdC7RxXC0BoPxkUNTKTCuUJXmoZaola+csHxVvv2
+         digMSrJSECl0JsFMaz52AeQR86N1eXiA4bDbNW+9cYYlleZa8coB25UqSsjEKXUBclSy
+         WEfRDa8lUwuvIBDbePZrqXkCdXoUBBrTwUp09ru19a5wcVDuzcsjoyJQKhI77ws1Bhuq
+         0NBA==
+X-Gm-Message-State: AJIora+aqO9OKuHZTA9/CDkeYBLpoGIe8ph+hOXE8PbT19UdRxgokP47
+        Yl0LNIEfR4X+uDYIzZHlZ/rRs3zPKj7Cpg==
+X-Google-Smtp-Source: AGRyM1uTHC4tPEJZ9kOessXlZmZ0QVxt5XKFbDKXQiEfLfsJ7NulWwBC8DUw+mdAOicAh0QlUdnhpg==
+X-Received: by 2002:a05:6870:1c8:b0:f3:3165:d271 with SMTP id n8-20020a05687001c800b000f33165d271mr3309348oad.64.1655394687270;
+        Thu, 16 Jun 2022 08:51:27 -0700 (PDT)
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com. [209.85.167.173])
+        by smtp.gmail.com with ESMTPSA id y125-20020acae183000000b00325cda1ff8esm1001519oig.13.2022.06.16.08.51.27
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jun 2022 08:51:27 -0700 (PDT)
+Received: by mail-oi1-f173.google.com with SMTP id h187so2354478oif.4
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:51:27 -0700 (PDT)
+X-Received: by 2002:a05:6870:5247:b0:fb:2e60:26c6 with SMTP id
+ o7-20020a056870524700b000fb2e6026c6mr3012759oai.241.1655394200150; Thu, 16
+ Jun 2022 08:43:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220504232102.469959-1-evgreen@chromium.org> <20220506160807.GA1060@bug>
+ <CAE=gft6m75T0UC2DBhfFhuSMW6TK7aatD_04sQ18WosgGVsATw@mail.gmail.com>
+ <CAJZ5v0gxq=EA_WWUiCR_w8o87iTHDR7OC5wi=GRBaAQS2ofd5w@mail.gmail.com> <CAE=gft6V6RLc-d4AOuRUVU2u1jMGghDRSrFqiCqMCLxemui8Pw@mail.gmail.com>
+In-Reply-To: <CAE=gft6V6RLc-d4AOuRUVU2u1jMGghDRSrFqiCqMCLxemui8Pw@mail.gmail.com>
+From:   Evan Green <evgreen@chromium.org>
+Date:   Thu, 16 Jun 2022 08:42:43 -0700
+X-Gmail-Original-Message-ID: <CAE=gft5OYAgosqmwNkk=Cwoooeg93Njmnzfz=gwCaLB0Ts+=sw@mail.gmail.com>
+Message-ID: <CAE=gft5OYAgosqmwNkk=Cwoooeg93Njmnzfz=gwCaLB0Ts+=sw@mail.gmail.com>
+Subject: Re: [PATCH 00/10] Encrypted Hibernation
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Pavel Machek <pavel@ucw.cz>, LKML <linux-kernel@vger.kernel.org>,
+        Matthew Garrett <mgarrett@aurora.tech>,
+        Daniil Lunev <dlunev@google.com>, zohar@linux.ibm.com,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        linux-integrity@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Hao Wu <hao.wu@rubrik.com>, James Morris <jmorris@namei.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Len Brown <len.brown@intel.com>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        "Serge E. Hallyn" <serge@hallyn.com>, axelj <axelj@axis.com>,
+        keyrings@vger.kernel.org,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-security-module@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022 21:25:39 +0800 (CST) =E6=A2=81=E6=96=87=E9=9F=AC wrote:
-> >The driver is not called "vexy" as far as I can tell.
-> > =20
-> >> The pointer vdev points to a memory region adjacent to a net_device
-> >> structure ndev, which is a field of hldev. At line 4740, the invocation
-> >> to vxge_device_unregister unregisters device hldev, and it also releas=
-es
-> >> the memory region pointed by vdev->bar0. At line 4743, the freed memory
-> >> region is referenced (i.e., iounmap(vdev->bar0)), resulting in a
-> >> use-after-free vulnerability. We can fix the bug by calling iounmap
-> >> before vxge_device_unregister. =20
+On Tue, May 17, 2022 at 10:34 AM Evan Green <evgreen@chromium.org> wrote:
+>
+> Hi Rafael,
+>
+> On Tue, May 17, 2022 at 9:06 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
 > >
-> >Are you sure the bar0 is not needed by the netdev? You're freeing =20
-> >memory that the netdev may need until it's unregistered. =20
+> > On Mon, May 9, 2022 at 6:44 PM Evan Green <evgreen@chromium.org> wrote:
+> > >
+> > > On Fri, May 6, 2022 at 9:08 AM Pavel Machek <pavel@ucw.cz> wrote:
+> > > >
+> > > > Hi!
+> > > >
+> > > > > We are exploring enabling hibernation in some new scenarios. However,
+> > > > > our security team has a few requirements, listed below:
+> > > > > 1. The hibernate image must be encrypted with protection derived from
+> > > > >    both the platform (eg TPM) and user authentication data (eg
+> > > > >    password).
+> > > > > 2. Hibernation must not be a vector by which a malicious userspace can
+> > > > >    escalate to the kernel.
+> > > >
+> > > > Can you (or your security team) explain why requirement 2. is needed?
+> > > >
+> > > > On normal systems, trusted userspace handles kernel upgrades (for example),
+> > > > so it can escalate to kernel priviledges.
+> > > >
+> > >
+> > > Our systems are a little more sealed up than a normal distro, we use
+> > > Verified Boot [1]. To summarize, RO firmware with an embedded public
+> > > key verifies that the kernel+commandline was signed by Google. The
+> > > commandline includes the root hash of the rootfs as well (where the
+> > > modules live). So when an update is applied (A/B style, including the
+> > > whole rootfs), assuming the RO firmware stayed RO (which requires
+> > > physical measures to defeat), we can guarantee that the kernel,
+> > > commandline, and rootfs have not been tampered with.
+> > >
+> > > Verified boot gives us confidence that on each boot, we're at least
+> > > starting from known code. This makes it more challenging for an
+> > > attacker to persist an exploit across reboot. With the kernel and
+> > > modules verified, we try to make it non-trivial for someone who does
+> > > manage to gain root execution once from escalating to kernel
+> > > execution. Hibernation would be one obvious escalation route, so we're
+> > > hoping to find a way to enable it without handing out that easy
+> > > primitive.
+> > >
+> > > [1] https://www.chromium.org/chromium-os/chromiumos-design-docs/verified-boot/
+> >
+> > So I guess this really is an RFC.
+>
+> Yes, I suppose it is.
+>
+> >
+> > Honestly, I need more time to go through this and there are pieces of
+> > it that need to be looked at other people (like the TPM-related
+> > changes).
+>
+> No problem, thanks for the reply to let me know. I expect some back
+> and forth in terms of what should be hidden behind abstractions and
+> where exactly things should live. But I wanted to get this out to
+> upstream as early as I could, just to get initial reactions on the
+> overall concept and design. Looking forward to hearing your thoughts
+> when you get a chance, and let me know if there are others I should be
+> adding that I've missed.
 
-> We try unregister the device in a patched kernel. The device is successfu=
-lly
->  removed and there is not any warning or exception. See the following=20
-> snapshot. I use lspci to list pci devices, we can see that the device=20
-> (00:03.0 Unclassified ...Gigabit ethernet PCIe (rev 10)) is removed safel=
-y.=20
-> Thus, I believe that the bar0 is not needed when freeing the device.
+Gentle bump in case this dropped off of radars, I'd still appreciate
+any feedback folks had on this series.
+-Evan
 
-You need to reply in plain text, no HTML, the mailing lit rejects
-emails with HTML in them.
-
-No errors happening during a test is not a sufficient proof of
-correctness. You need to analyze the driver and figure out what bar0=20
-is used for.
-
-Alternatively just save the address of bar0 to a local variable, let
-the netdev unregister happen, and then call *unmap() on the local
-variable. That won't move the unmap and avoid the UAF.
-
-But please LMK how you use these cards first.
-
-> /************************************************************************=
-********/
-> root@kernel:~# lspci
-> 00:00.0 Host bridge: Intel Corporation 82G33/G31/P35/P31 Express DRAM=20
-> Controller
-> 00:01.0 VGA compatible controller: Device 1234:1111 (rev 02)
-> 00:02.0 Ethernet controller: Intel Corporation 82574L Gigabit Network=20
-> Connection
-> 00:03.0 Unclassified device [00ff]: Exar Corp. X3100 Series 10 Gigabit=20
-> Ethernet PCIe (rev 10)
-
-Is this a real NIC card, or just a emulated / virtualized one?=20
-Do you use it day to day?=20
-
-> 00:1d.0 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI=20
-> Controller #1 (rev 03)
-> 00:1d.1 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI=20
-> Controller #2 (rev 03)
-> 00:1d.2 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI=20
-> Controller #3 (rev 03)
-> 00:1d.7 USB controller: Intel Corporation 82801I (ICH9 Family) USB2 EHCI=
-=20
-> Controller #1 (rev 03)
-> 00:1f.0 ISA bridge: Intel Corporation 82801IB (ICH9) LPC Interface=20
-> Controller (rev 02)
-> 00:1f.2 SATA controller: Intel Corporation 82801IR/IO/IH (ICH9R/DO/DH) 6
->  port SATA Controller [AHCI mode] (rev 02)
-> 00:1f.3 SMBus: Intel Corporation 82801I (ICH9 Family) SMBus Controller=20
-> (rev 02)
-> root@kernel:~# echo 1 > /sys/bus/pci/devices/0000:00:03.0/remove
-> root@kernel:~# lspci
-> 00:00.0 Host bridge: Intel Corporation 82G33/G31/P35/P31 Express DRAM
->  Controller
-> 00:01.0 VGA compatible controller: Device 1234:1111 (rev 02)
-> 00:02.0 Ethernet controller: Intel Corporation 82574L Gigabit Network
->  Connection
-> 00:1d.0 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI
->  Controller #1 (rev 03)
-> 00:1d.1 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI
->  Controller #2 (rev 03)
-> 00:1d.2 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI
->  Controller #3 (rev 03)
-> 00:1d.7 USB controller: Intel Corporation 82801I (ICH9 Family) USB2 EHCI
->  Controller #1 (rev 03)
-> 00:1f.0 ISA bridge: Intel Corporation 82801IB (ICH9) LPC Interface=20
-> Controller (rev 02)
-> 00:1f.2 SATA controller: Intel Corporation 82801IR/IO/IH (ICH9R/DO/DH) 6=
-=20
-> port SATA Controller [AHCI mode] (rev 02)
-> 00:1f.3 SMBus: Intel Corporation 82801I (ICH9 Family) SMBus=20
-> Controller (rev 02)
+>
+> -Evan
+>
+> >
+> > Thanks!
