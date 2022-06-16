@@ -2,95 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 708BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A2DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:30:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232444AbiFPN3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
+        id S233433AbiFPNao (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 09:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232138AbiFPN3w (ORCPT
+        with ESMTP id S233379AbiFPNal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:29:52 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABCB140C5
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:29:51 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-313a8a8b95aso13882637b3.5
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:29:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=S4Rth2T8dY5O32h9DT2ztkebr91/U2eF/Sf0RxQK/FQ=;
-        b=G10a5zdkOQdNTP0AbXjEj6kRfJFY2b6IvG1bgL75n9mc+TJdfZwMmtveVAjC4++975
-         OubqAvI2DCGbh7pZMPqAZfSJWj7JS+XCC0bdm99zn4hhVYqWBd2whUKxDP78IxVcDnDH
-         sFoPUQ2r6Z7o4+2ke3bBYqW8ozlObTsMAVqB2O2U8q+v6gh+gJrwnJU8XRbmJ7WImqLP
-         PDagWx2QfGCMizzni9CLLSXiAxdFcEbuaK6U/IQoRqFkObWPu4rec0K1jiyYjHA/co4l
-         KH5N0AuDpn8k+baLVP/79rQxke959qyd7KqnFulN5I8lVwgOrsfPcJsIZPTaKoRuvVA3
-         TqAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S4Rth2T8dY5O32h9DT2ztkebr91/U2eF/Sf0RxQK/FQ=;
-        b=QzCKsBrGynjo0ciMvMdDniAnlWhYmvo/WGDkuwiiGzaIwjQBcISmX08AkxfdO4AJDY
-         StptNffMlKx9PGwAfcJxHZG6exPKCww7R7SqMvqyGv5p/pZo0xX5in/NS/64qitQJ7xQ
-         ZS7zbWtnDutBJbzdhOmcCtDXiSzJ6QEp3nunJ80FyfHndsnQqfqt3l/DHE6N8RnQCIZM
-         hDrFE6yjul7lUs8IQ+/u5qtdBSc1BTEP0Dkof92EwacQvtV6vHGzxmKb/rn2au1KXCIh
-         w4SWf03ecrq6BCJMKCVnQ+tGQzbHt4qwljcls0AfApZiPGllxZ2ON2xZrX+v234KmWWi
-         nuYg==
-X-Gm-Message-State: AJIora8aLSDg7uTNdfi8zhO+9mNzFAGOedH9LRiUTfWDmBVAf2pymz7H
-        1KK+vs35CB9fJGVnOoRC8ixOa6N0u1CAU85P1UfAaA==
-X-Google-Smtp-Source: AGRyM1uXkiUuSLdEs1ASKLxAXK6AYMSIEjGeNtbA1b/G6Effm6lpPwlZAq6cTbaG9DSHKdJ0ukrhCskqThLfiMIs5P0=
-X-Received: by 2002:a81:1154:0:b0:2fe:d5a4:f26b with SMTP id
- 81-20020a811154000000b002fed5a4f26bmr5792489ywr.140.1655386190157; Thu, 16
- Jun 2022 06:29:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220613145709.3729053-1-robh@kernel.org>
-In-Reply-To: <20220613145709.3729053-1-robh@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 16 Jun 2022 15:29:39 +0200
-Message-ID: <CACRpkdb6KCRfqOMEqm+9SfQORNwWPyWa7-XL1+n2BLr3MfDpRg@mail.gmail.com>
-Subject: Re: [PATCH v2] dt-bindings: display: Add Arm virtual platforms display
-To:     Rob Herring <robh@kernel.org>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Liviu Dudau <Liviu.Dudau@arm.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        Thu, 16 Jun 2022 09:30:41 -0400
+Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03D6D286D1
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:30:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=lt4cZ
+        XCiaVcjGvhuT4ufqgA61fK3nl/LsSYLL/GBPXI=; b=XDNa0blq5lRe7Gk3wyjyI
+        Sefm5EB7e9LHXt3544UvMIyDR3cALbRtuhodZtrvlBk7DQQ/r+NRa3COXXrSr0zy
+        WH3oYsio2xoCpPhOC9b9w2eU6exS3e78wtpCPETyk4wH7TNo7Q06opgzxRVaUNHP
+        mgRwif0MnZ4KoyAMYw8O/g=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp10 (Coremail) with SMTP id NuRpCgCH51szMKtitIMkEw--.42762S2;
+        Thu, 16 Jun 2022 21:29:25 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     oss@buserror.net, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, christophe.leroy@csgroup.eu
+Cc:     windhl@126.com, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH] arch: powerpc: platforms: 85xx: Fix refcount leak bug in ksi8560.c
+Date:   Thu, 16 Jun 2022 21:29:22 +0800
+Message-Id: <20220616132922.3987053-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NuRpCgCH51szMKtitIMkEw--.42762S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtF4UXry8JryrKryfGFWDXFb_yoW3CrgEkw
+        n3Aa1UCrs5Cr4ktF4qyr1rKr1jq3yrWFWUGr1Ig3W7JFy5ZanxGwsrXF4xu3W5Xr4IkrWa
+        qFZrG3s8CasakjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRMa9-UUUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/xtbBGg0iF1-HZT6SiQAAs6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 4:57 PM Rob Herring <robh@kernel.org> wrote:
+In ksi8560_setup_arch(), of_find_compatible_node() will return a
+node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-> 'arm,rtsm-display' is a panel for Arm, Ltd. virtual platforms (e.g. FVP).
-> The binding has been in use for a long time, but was never documented.
->
-> Some users and an example have a 'panel-dpi' compatible, but that's not
-> needed without a 'panel-timing' node which none of the users have since
-> commit 928faf5e3e8d ("arm64: dts: fvp: Remove panel timings"). The
-> example does have a 'panel-timing' node, but it should not for the
-> same reasons the node was removed in the dts files. So update the
-> example in arm,pl11x.yaml to match the schema.
->
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Andre Przywara <andre.przywara@arm.com>
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
-> v2:
->  - Make arm,rtsm-display its own schema file instead of using
->    panel-simple.
+Signed-off-by: Liang He <windhl@126.com>
+---
+ arch/powerpc/platforms/85xx/ksi8560.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Thanks for fixing this Rob!
+diff --git a/arch/powerpc/platforms/85xx/ksi8560.c b/arch/powerpc/platforms/85xx/ksi8560.c
+index bdf9d42f8521..a22f02b0fc77 100644
+--- a/arch/powerpc/platforms/85xx/ksi8560.c
++++ b/arch/powerpc/platforms/85xx/ksi8560.c
+@@ -133,6 +133,8 @@ static void __init ksi8560_setup_arch(void)
+ 	else
+ 		printk(KERN_ERR "Can't find CPLD in device tree\n");
+ 
++	of_node_put(cpld);
++
+ 	if (ppc_md.progress)
+ 		ppc_md.progress("ksi8560_setup_arch()", 0);
+ 
+-- 
+2.25.1
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
