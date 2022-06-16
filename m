@@ -2,140 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2EFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 01:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B98C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 01:07:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344800AbiFPBD6 (ORCPT
+        id S1348020AbiFPBHE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 21:03:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41160 "EHLO
+        Wed, 15 Jun 2022 21:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356571AbiFPBDj (ORCPT
+        with ESMTP id S243357AbiFPBG7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 21:03:39 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C7A2FFDC;
-        Wed, 15 Jun 2022 18:03:36 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 3989F1FAAF;
-        Thu, 16 Jun 2022 00:56:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1655340970; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ag5m5a+2z0K0KERFvs1DIq8kLpl4y1mEEs07NPdG8AI=;
-        b=duanDr83X78qaYiegZLK2uyIKAtOfoZvf962cfwyNMQSG1WInTAeJTJEJUJSOEea8Cp40k
-        vzPrzdVDu1U5ajpk5nWnKg7hBcKuo5iY2l14vj1kFEDSzJDVcLxvMnt6++QODAWlWlJ6RP
-        dyzCDTD3jh3m0NyQf5sWIvp+nGCYj7Y=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1655340970;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ag5m5a+2z0K0KERFvs1DIq8kLpl4y1mEEs07NPdG8AI=;
-        b=4DfCkt3hNcuaspefPQPCA7LSYMFUj0dibas3CIAOQ42w97LFZ48tXs1aQlS/ghUttMXn1D
-        WnwxW4LfX80q/wCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 48A7F13A35;
-        Thu, 16 Jun 2022 00:56:06 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id HZ2XAaZ/qmJLfQAAMHmgww
-        (envelope-from <neilb@suse.de>); Thu, 16 Jun 2022 00:56:06 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 15 Jun 2022 21:06:59 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804693586A;
+        Wed, 15 Jun 2022 18:06:58 -0700 (PDT)
+Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LNkVr5qKrzjY5V;
+        Thu, 16 Jun 2022 09:05:24 +0800 (CST)
+Received: from [10.174.177.174] (10.174.177.174) by
+ dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 16 Jun 2022 09:06:55 +0800
+Message-ID: <57de3897-3428-c241-2d1e-13d42a037864@huawei.com>
+Date:   Thu, 16 Jun 2022 09:06:55 +0800
 MIME-Version: 1.0
-From:   "NeilBrown" <neilb@suse.de>
-To:     "Daire Byrne" <daire@dneg.com>
-Cc:     "Al Viro" <viro@zeniv.linux.org.uk>,
-        "Trond Myklebust" <trond.myklebust@hammerspace.com>,
-        "Chuck Lever" <chuck.lever@oracle.com>,
-        "Linux NFS Mailing List" <linux-nfs@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        "LKML" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RFC 00/12] Allow concurrent directory updates.
-In-reply-to: <CAPt2mGNjWXad6e7nSUTu=0ez1qU1wBNegrntgHKm5hOeBs5gQA@mail.gmail.com>
-References: <165516173293.21248.14587048046993234326.stgit@noble.brown>,
- <CAPt2mGNjWXad6e7nSUTu=0ez1qU1wBNegrntgHKm5hOeBs5gQA@mail.gmail.com>
-Date:   Thu, 16 Jun 2022 10:55:46 +1000
-Message-id: <165534094600.26404.4349155093299535793@noble.neil.brown.name>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 1/4] ext4: add EXT4_INODE_HAVE_XATTR_SPACE macro in
+ xattr.h
+To:     Jan Kara <jack@suse.cz>
+CC:     <linux-ext4@vger.kernel.org>, <tytso@mit.edu>,
+        <adilger.kernel@dilger.ca>, <ritesh.list@gmail.com>,
+        <lczerner@redhat.com>, <enwlinux@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>,
+        <yebin10@huawei.com>, <yukuai3@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>
+References: <20220615040630.808783-1-libaokun1@huawei.com>
+ <20220615040630.808783-2-libaokun1@huawei.com>
+ <20220615124633.6uddzv5msnmwi7c4@quack3.lan>
+From:   Baokun Li <libaokun1@huawei.com>
+In-Reply-To: <20220615124633.6uddzv5msnmwi7c4@quack3.lan>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.174]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500021.china.huawei.com (7.185.36.21)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022, Daire Byrne wrote:
-...
-> With the patch, the aggregate increases to 15 creates/s for 10 clients
-> which again matches the results of a single patched client. Not quite
-> a x10 increase but a healthy improvement nonetheless.
+在 2022/6/15 20:46, Jan Kara 写道:
+> On Wed 15-06-22 12:06:27, Baokun Li wrote:
+>> When adding an xattr to an inode, we must ensure that the inode_size is
+>> not less than EXT4_GOOD_OLD_INODE_SIZE + extra_isize + pad. Otherwise,
+>> the end position may be greater than the start position, resulting in UAF.
+>>
+>> Signed-off-by: Baokun Li <libaokun1@huawei.com>
+> ...
+>
+>> +/*
+>> + * If we want to add an xattr to the inode, we should make sure that
+>> + * i_extra_isize is not 0 and that the inode size is not less than
+>> + * EXT4_GOOD_OLD_INODE_SIZE + extra_isize + pad.
+>> + *   EXT4_GOOD_OLD_INODE_SIZE   extra_isize header   entry   pad  data
+>> + * |--------------------------|------------|------|---------|---|-------|
+>> + */
+>> +#define EXT4_INODE_HAVE_XATTR_SPACE(inode)				\
+> Gramatically correct would be EXT4_INODE_**HAS**_XATTR_SPACE and I'd be for
+> using that. Otherwise the whole series looks good so feel free to add:
+>
+> Reviewed-by: Jan Kara <jack@suse.cz>
+>
+> 								Honza
 
-Great!
+I'm sorry, I didn't notice it was "HAS." Thank you very much for your 
+correction.
 
->=20
-> However, it is at this point that I started to experience some
-> stability issues with the re-export server that are not present with
-> the vanilla unpatched v5.19-rc2 kernel. In particular the knfsd
-> threads start to lock up with stack traces like this:
->=20
-> [ 1234.460696] INFO: task nfsd:5514 blocked for more than 123 seconds.
-> [ 1234.461481]       Tainted: G        W   E     5.19.0-1.dneg.x86_64 #1
-> [ 1234.462289] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
-> disables this message.
-> [ 1234.463227] task:nfsd            state:D stack:    0 pid: 5514
-> ppid:     2 flags:0x00004000
-> [ 1234.464212] Call Trace:
-> [ 1234.464677]  <TASK>
-> [ 1234.465104]  __schedule+0x2a9/0x8a0
-> [ 1234.465663]  schedule+0x55/0xc0
-> [ 1234.466183]  ? nfs_lookup_revalidate_dentry+0x3a0/0x3a0 [nfs]
-> [ 1234.466995]  __nfs_lookup_revalidate+0xdf/0x120 [nfs]
+I will send a patch V3 with the changes suggested by you. Thanks again!
 
-I can see the cause of this - I forget a wakeup.  This patch should fix
-it, though I hope to find a better solution.
+-- 
+With Best Regards,
+Baokun Li
+.
 
-diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
-index 54c2c7adcd56..072130d000c4 100644
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -2483,17 +2483,16 @@ int nfs_unlink(struct inode *dir, struct dentry *dent=
-ry)
- 	if (!(dentry->d_flags & DCACHE_PAR_UPDATE)) {
- 		/* Must have exclusive lock on parent */
- 		did_set_par_update =3D true;
-+		lock_acquire_exclusive(&dentry->d_update_map, 0,
-+				       0, NULL, _THIS_IP_);
- 		dentry->d_flags |=3D DCACHE_PAR_UPDATE;
- 	}
-=20
- 	spin_unlock(&dentry->d_lock);
- 	error =3D nfs_safe_remove(dentry);
- 	nfs_dentry_remove_handle_error(dir, dentry, error);
--	if (did_set_par_update) {
--		spin_lock(&dentry->d_lock);
--		dentry->d_flags &=3D ~DCACHE_PAR_UPDATE;
--		spin_unlock(&dentry->d_lock);
--	}
-+	if (did_set_par_update)
-+		d_unlock_update(dentry);
- out:
- 	trace_nfs_unlink_exit(dir, dentry, error);
- 	return error;
-
->=20
-> So all in all, the performance improvements in the knfsd re-export
-> case is looking great and we have real world use cases that this helps
-> with (batch processing workloads with latencies >10ms). If we can
-> figure out the hanging knfsd threads, then I can test it more heavily.
-
-Hopefully the above patch will allow the more heavy testing to continue.
-In any case, thanks a lot for the testing so far,
-
-NeilBrown
