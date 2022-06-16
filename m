@@ -2,67 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4383C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4FB9C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 14:17:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377605AbiFPOQW (ORCPT
+        id S1376387AbiFPORM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 10:16:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53858 "EHLO
+        Thu, 16 Jun 2022 10:17:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233419AbiFPOQU (ORCPT
+        with ESMTP id S233436AbiFPORJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 10:16:20 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF0924BF2;
-        Thu, 16 Jun 2022 07:16:09 -0700 (PDT)
-X-QQ-mid: bizesmtp73t1655388936te84ol4k
-Received: from localhost.localdomain ( [153.0.97.30])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 16 Jun 2022 22:15:30 +0800 (CST)
-X-QQ-SSF: 01000000003000D0I000B00A0000000
-X-QQ-FEAT: rDVzBkvD//YLDwnPANlvrHAlKPDEbPwgQ2HSKDcek4Llnwe5aVQKtmWVbq2qr
-        u80NhtcuRwxAuSsC0lvRI43BtAKe0tVS5DU3YHjokYpFYw+kBRGrkfLRttT9zO1pAyM5hWx
-        gLkkCTee6jy+lp4hv7GA8t2l7zrqZk7m1BGYqO57B3HNJm2A6jTa1uNSXL6flmNtMk/BPtr
-        0ghpYmixSjWIvmXK//RyAfJxYUEKzJ+dxDbEFUwo5GjnlXhrm4nl33xQvrSoxv502N9v965
-        PbWYevjr2La5fyF7GIipgHCy+mChpYRDGxOACy+bMpLkzijzbcsLk3rU8=
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     jic23@kernel.org
-Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] iio: Fix typo in comment
-Date:   Thu, 16 Jun 2022 22:15:22 +0800
-Message-Id: <20220616141522.2238-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 16 Jun 2022 10:17:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09DD3344C6;
+        Thu, 16 Jun 2022 07:17:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD619B8216D;
+        Thu, 16 Jun 2022 14:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC2E2C34114;
+        Thu, 16 Jun 2022 14:17:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655389026;
+        bh=4N0hBtR+SyS25pTqTpY1XXhf0OdTDS8HRBE+v+SkUaU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VU2a/TXPByQwnAX7hH2naRcQHMYUTMhF1YLcALCrrLHhovVp/GLqM+6+b7gwLFRDA
+         /pTXQE4B8T3waGUgshRjaEIZK0l0z0GUJTVhHq7Yq+qbljhu5d+Bm0ujVqOw8MoubK
+         4GVKzdCQ65tCJ4+bsH3uc/JSJ4yZe2d7Tz+5+GPc6ObWb8Ii0yAjXRB5UASFPyg6nx
+         CbQOnSQCmi0NcWY9PNbilmjeFNZad4M1AvNal16z8T83TZFSJyThfml1Usthi9B/Gy
+         a+yasFWIttcRUy4NKt+aGl8NUMegAXBkEHZ2/zoaluHy9NrAjcz5ov15x8tKMgkUAG
+         +DpEU4Pu5zAXg==
+Date:   Thu, 16 Jun 2022 07:17:05 -0700
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] dmaengine: apple-admac: Use {low,upp}er_32_bits() to
+ split 64-bit address
+Message-ID: <Yqs7YSR12L42zFL5@matsya>
+References: <20220616141312.1953819-1-geert@linux-m68k.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
+In-Reply-To: <20220616141312.1953819-1-geert@linux-m68k.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'in'.
+On 16-06-22, 16:13, Geert Uytterhoeven wrote:
+> If CONFIG_PHYS_ADDR_T_64BIT is not set:
+> 
+>     drivers/dma/apple-admac.c: In function ‘admac_cyclic_write_one_desc’:
+>     drivers/dma/apple-admac.c:213:22: error: right shift count >= width of type [-Werror=shift-count-overflow]
+>       213 |  writel_relaxed(addr >> 32,       ad->base + REG_DESC_WRITE(channo));
+>           |                      ^~
+> 
+> Fix this by using the {low,upp}er_32_bits() helper macros to obtain the
+> address parts.
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
----
- drivers/iio/gyro/bmg160_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Applied, thanks
 
-diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-index 81a6d09788bd..cedd9f02ea21 100644
---- a/drivers/iio/gyro/bmg160_core.c
-+++ b/drivers/iio/gyro/bmg160_core.c
-@@ -766,7 +766,7 @@ static int bmg160_write_event_config(struct iio_dev *indio_dev,
- 		return 0;
- 	}
- 	/*
--	 * We will expect the enable and disable to do operation in
-+	 * We will expect the enable and disable to do operation
- 	 * in reverse order. This will happen here anyway as our
- 	 * resume operation uses sync mode runtime pm calls, the
- 	 * suspend operation will be delayed by autosuspend delay
 -- 
-2.36.1
-
+~Vinod
