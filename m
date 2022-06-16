@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C81C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:49:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B001C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376311AbiFPIty (ORCPT
+        id S1376359AbiFPIt7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:49:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35266 "EHLO
+        Thu, 16 Jun 2022 04:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376319AbiFPIsv (ORCPT
+        with ESMTP id S1376283AbiFPIsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:48:51 -0400
+        Thu, 16 Jun 2022 04:48:47 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 627261BE88;
-        Thu, 16 Jun 2022 01:47:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CDD15705;
+        Thu, 16 Jun 2022 01:47:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655369264; x=1686905264;
+  t=1655369262; x=1686905262;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=FSN5H84gs5D/Dj5DTDmZALwdCo8U9STbNybYgwFnfzI=;
-  b=hGua9T3ZLslif9K98H+1ZuG6OEUTAVy55qzpkheZN4kKDnvPj8lCDU5O
-   13xZbkLGscPb9ZZXXziIaHOMKVhkL7Vs5XbIncI9I9LeBQZzQ1JRc58L3
-   Jaoxo7YOFseoZvE0wrbkuDY1JybMnO+KexI+b3sme4fyIeLieYvdvjP61
-   QGvTXksdFIjsnhUlIiol6lsTHkkyWuvcttv6jEmJnX4wo2KdOYmv1YCIE
-   MzcY1peqHUZYP/jxDajaGMuO2d83T48a1yp2N9H5Lw8FBeHPqNph/71w9
-   eCs1Ku0mWOb3RncJUsEqwpaewCYeUI2vhOZdDiLbRVW/Xa3owZNm+lc2g
+  bh=IKjbYcydGhUQOtO5VnHy7aAu+jLJsu2LqXV0XPrI8+M=;
+  b=UhUIz0bj+7pY7qY4tlLJlE0hP5ByrHMA//lR3Kg3Ty8zBbQzouplfuLc
+   M6FLBZ2r4/Q86hy3JUq+TW34W1dfN+b+uRm6wuv6EC9FUqZNYBHYgwmi4
+   WjWp5G9zqoXZIl3dVUN5p6GovVanBcO2JLfMejx31W0XlSTHvCUBGW0X9
+   bJdRsp5wnzT8K3hKAYyyeBUU9Zm2GWZU3I+LzGi2qQ7rbUwggxZZqqzf3
+   NzXBpNnZ1ZkbqgQgSv4bNAEG6KgHNbMAp992+IjWygSddr7HOwq1Hx2NK
+   2ZVfERhB6gyJstaC7wolTVVkAKKE0gcAfJYx5ARTEbwRfxvmfoefqyFNB
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664554"
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664550"
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="259664554"
+   d="scan'208";a="259664550"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:41 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="613083133"
+   d="scan'208";a="613083128"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
@@ -44,9 +44,9 @@ To:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
         rick.p.edgecombe@intel.com
 Cc:     weijiang.yang@intel.com, Yu-cheng Yu <yu-cheng.yu@intel.com>,
         Kees Cook <keescook@chromium.org>
-Subject: [PATCH 03/19] x86/cpufeatures: Enable CET CR4 bit for shadow stack
-Date:   Thu, 16 Jun 2022 04:46:27 -0400
-Message-Id: <20220616084643.19564-4-weijiang.yang@intel.com>
+Subject: [PATCH 01/19] x86/cet/shstk: Add Kconfig option for Shadow Stack
+Date:   Thu, 16 Jun 2022 04:46:25 -0400
+Message-Id: <20220616084643.19564-2-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220616084643.19564-1-weijiang.yang@intel.com>
 References: <20220616084643.19564-1-weijiang.yang@intel.com>
@@ -58,22 +58,12 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Yu-cheng Yu <yu-cheng.yu@intel.com>
 
-Utilizing CET features requires a CR4 bit to be enabled as well as bits
-to be set in CET MSRs. Setting the CR4 bit does two things:
- 1. Enables the usage of WRUSS instruction, which the kernel can use to
-    write to userspace shadow stacks.
- 2. Allows those individual aspects of CET to be enabled later via the MSR.
-
-While future patches will allow the MSR values to be saved and restored
-per task, the CR4 bit will allow for WRUSS to be used regardless of if a
-tasks CET MSRs have been restored.
-
-Kernel IBT already enables the CR4 bit. Modify the logic to enable it for
-when the kernel is configured with and detects shadow stack support, as
-well.
-
-Rename cet_disable() to ibt_disable() since it no longer applies to all
-CET features in the kernel.
+Shadow Stack provides protection against function return address
+corruption. It is active when the processor supports it, the kernel has
+CONFIG_X86_SHADOW_STACK enabled, and the application is built for the
+feature. This is only implemented for the 64-bit kernel. When it is
+enabled, legacy non-Shadow Stack applications continue to work, but without
+protection.
 
 Signed-off-by: Yu-cheng Yu <yu-cheng.yu@intel.com>
 Co-developed-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
@@ -83,86 +73,64 @@ Cc: Kees Cook <keescook@chromium.org>
 
 ---
 v2:
- - Drop no_user_shstk (Dave Hansen)
- - Elaborate on what the CR4 bit does in the commit log
- - Integrate with Kernel IBT logic
-
-v1:
- - Moved kernel-parameters.txt changes here from patch 1.
+ - Remove already wrong kernel size increase info (tlgx)
+ - Change prompt to remove "Intel" (tglx)
+ - Update line about what CPUs are supported (Dave)
 
 Yu-cheng v25:
- - Remove software-defined X86_FEATURE_CET.
+ - Remove X86_CET and use X86_SHADOW_STACK directly.
 
 Yu-cheng v24:
- - Update #ifdef placement to reflect Kconfig changes of splitting shadow stack
-   and ibt.
+ - Update for the splitting X86_CET to X86_SHADOW_STACK and X86_IBT.
 
- arch/x86/include/asm/cpu.h         |  2 +-
- arch/x86/kernel/cpu/common.c       | 14 +++++++-------
- arch/x86/kernel/machine_kexec_64.c |  2 +-
- 3 files changed, 9 insertions(+), 9 deletions(-)
+ arch/x86/Kconfig           | 17 +++++++++++++++++
+ arch/x86/Kconfig.assembler |  1 +
+ 2 files changed, 18 insertions(+)
 
-diff --git a/arch/x86/include/asm/cpu.h b/arch/x86/include/asm/cpu.h
-index 8cbf623f0ecf..a56270838435 100644
---- a/arch/x86/include/asm/cpu.h
-+++ b/arch/x86/include/asm/cpu.h
-@@ -74,7 +74,7 @@ void init_ia32_feat_ctl(struct cpuinfo_x86 *c);
- static inline void init_ia32_feat_ctl(struct cpuinfo_x86 *c) {}
- #endif
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 9783ebc4e021..79c6b0490350 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -26,6 +26,7 @@ config X86_64
+ 	depends on 64BIT
+ 	# Options that are inherently 64-bit kernel only:
+ 	select ARCH_HAS_GIGANTIC_PAGE
++	select ARCH_HAS_SHADOW_STACK
+ 	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
+ 	select ARCH_USE_CMPXCHG_LOCKREF
+ 	select HAVE_ARCH_SOFT_DIRTY
+@@ -1969,6 +1970,22 @@ config X86_SGX
  
--extern __noendbr void cet_disable(void);
-+extern __noendbr void ibt_disable(void);
+ 	  If unsure, say N.
  
- struct ucode_cpu_info;
- 
-diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index c296cb1c0113..86102a8d451e 100644
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -598,23 +598,23 @@ __noendbr void ibt_restore(u64 save)
- 
- static __always_inline void setup_cet(struct cpuinfo_x86 *c)
- {
-+	bool kernel_ibt = HAS_KERNEL_IBT && cpu_feature_enabled(X86_FEATURE_IBT);
- 	u64 msr = CET_ENDBR_EN;
- 
--	if (!HAS_KERNEL_IBT ||
--	    !cpu_feature_enabled(X86_FEATURE_IBT))
--		return;
-+	if (kernel_ibt)
-+		wrmsrl(MSR_IA32_S_CET, msr);
- 
--	wrmsrl(MSR_IA32_S_CET, msr);
--	cr4_set_bits(X86_CR4_CET);
-+	if (kernel_ibt || cpu_feature_enabled(X86_FEATURE_SHSTK))
-+		cr4_set_bits(X86_CR4_CET);
- 
--	if (!ibt_selftest()) {
-+	if (kernel_ibt && !ibt_selftest()) {
- 		pr_err("IBT selftest: Failed!\n");
- 		setup_clear_cpu_cap(X86_FEATURE_IBT);
- 		return;
- 	}
- }
- 
--__noendbr void cet_disable(void)
-+__noendbr void ibt_disable(void)
- {
- 	if (cpu_feature_enabled(X86_FEATURE_IBT))
- 		wrmsrl(MSR_IA32_S_CET, 0);
-diff --git a/arch/x86/kernel/machine_kexec_64.c b/arch/x86/kernel/machine_kexec_64.c
-index 0611fd83858e..745024654fcd 100644
---- a/arch/x86/kernel/machine_kexec_64.c
-+++ b/arch/x86/kernel/machine_kexec_64.c
-@@ -311,7 +311,7 @@ void machine_kexec(struct kimage *image)
- 	/* Interrupts aren't acceptable while we reboot */
- 	local_irq_disable();
- 	hw_breakpoint_disable();
--	cet_disable();
-+	ibt_disable();
- 
- 	if (image->preserve_context) {
- #ifdef CONFIG_X86_IO_APIC
++config ARCH_HAS_SHADOW_STACK
++	def_bool n
++
++config X86_SHADOW_STACK
++	prompt "X86 Shadow Stack"
++	def_bool n
++	depends on ARCH_HAS_SHADOW_STACK
++	help
++	  Shadow Stack protection is a hardware feature that detects function
++	  return address corruption. Today the kernel's support is limited to
++	  virtualizing it in KVM guests.
++
++	  CPUs supporting shadow stacks were first released in 2020.
++
++	  If unsure, say N.
++
+ config EFI
+ 	bool "EFI runtime service support"
+ 	depends on ACPI
+diff --git a/arch/x86/Kconfig.assembler b/arch/x86/Kconfig.assembler
+index 26b8c08e2fc4..41428391e475 100644
+--- a/arch/x86/Kconfig.assembler
++++ b/arch/x86/Kconfig.assembler
+@@ -19,3 +19,4 @@ config AS_TPAUSE
+ 	def_bool $(as-instr,tpause %ecx)
+ 	help
+ 	  Supported by binutils >= 2.31.1 and LLVM integrated assembler >= V7
++
 -- 
 2.27.0
 
