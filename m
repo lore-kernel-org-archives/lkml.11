@@ -2,130 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5624BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:09:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E55B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 06:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359033AbiFPGJh (ORCPT
+        id S1359005AbiFPGJj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 02:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
+        Thu, 16 Jun 2022 02:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359006AbiFPGJa (ORCPT
+        with ESMTP id S1359010AbiFPGJa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 16 Jun 2022 02:09:30 -0400
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB6D29828;
-        Wed, 15 Jun 2022 23:09:24 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id 5D4403200B93;
-        Thu, 16 Jun 2022 02:09:23 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Thu, 16 Jun 2022 02:09:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1655359762; x=1655446162; bh=vz
-        nRDmlsb3zTjKCOceYDuGVn1WQxrFjMwm/ALiW9ePA=; b=rl3sp9hOPvz3C0ndZ3
-        irR9rMiB3QyZTl6B946b3+/YWwGZ745+V1mqz03/xBpAHVG/Mlzfu851c1dHsxIP
-        G0WQYWX/p/DHMLuqJOVTnv4DImaF4ULRHSDcEb2FRxtG5JAVZeL6PGvqSvj2dmbX
-        8W6YVuFf3FIOgD6IHjQP37d7mXsI2AgBpyE5lJOfyDoNk/dWrSaZdn6z2PAfSIAg
-        udgtBYIYKH8JuwIRT/lAkterwehK5XTUj/4jX9omUIwS8iv9KyC0g/WP0ymeoclb
-        frL6Fk+tGZTrtC1SAbana69rGtVbwheyOkbv5cCx5j4JwVIPwhT2VVQRJNVS9KLz
-        COQA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1655359762; x=1655446162; bh=vznRDmlsb3zTj
-        KCOceYDuGVn1WQxrFjMwm/ALiW9ePA=; b=Nb1jXD3F9NeGHW5HGa4/oKlcmvWrh
-        NWPE34E2kZnZs9udAcvthSA2sqHECfO8+7kyGxwQuj4cjWoQr6WW50nG22/QZ3gC
-        258gq4pBWvRnsNlswadBdYyYTX1dpaxO7vx3Dtx++w8P3RwzDKLA1ux/sZ2bWehJ
-        5RutMocfm6DU+etmUjLSTqojVUAguoW5jSjoi5qv5cx47hlQagxNCv5MXLjxBJ5l
-        u5nlxX4IAXw5saf9WGDchm/fdygJYypLuapacdAr5kdt3VuBjIdfGBAeUppb27jk
-        TBmFlX6giBYhwLIbwH9pB8RFl/85nQeP9ms6/uQMo+/g9/sPCTYFzUL2A==
-X-ME-Sender: <xms:EsmqYgFgluQEI6K_D0AyCDSZjSfYLIzUMCrc5GPeJ6gk8LqtEGw80A>
-    <xme:EsmqYpXiKRUKZBUpKonJhx2JrQWHR1boA9HHvlaY8g01P15SMq0hiHt-O1LpF8bTE
-    DS-UHAyCOaKkf9isg>
-X-ME-Received: <xmr:EsmqYqKvI7POzX8zvjU2m2FOF-1oPd4woyiexcLkh0r9h1LN1ifIsRWdOEYxIWau37coUxoeUya-KtwyB5R1FuWzcRJGgG4aa7xgtnlilmHqF3rku6wzaEo_qfy_hQ1i8mqMDQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddvvddguddtfecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghm
-    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeeh
-    gfdufeeitdevteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:EsmqYiHAOADJRDGLatb0sJ45ufflsCfts-bPEsQlgicKUXIzfDMqRA>
-    <xmx:EsmqYmU4dw2c72eDifJN-Ydnmyyp7W9KVjbXBWca5mbt9JfIY98Dig>
-    <xmx:EsmqYlNdcOwfw_nJafFpMYAg4gHYjlmpdLvKZU6HyzFEp8FJoOrFnA>
-    <xmx:EsmqYqrEhVD46On-txYs8tcvDQkRBKjk19A3_q4cPPgo3jTAFxXLIg>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 16 Jun 2022 02:09:21 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Chen-Yu Tsai <wens@csie.org>, Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/4] mfd: axp20x: Add AXP221/AXP223/AXP809 GPIO cells
-Date:   Thu, 16 Jun 2022 01:09:13 -0500
-Message-Id: <20220616060915.48325-3-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220616060915.48325-1-samuel@sholland.org>
-References: <20220616060915.48325-1-samuel@sholland.org>
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33BBD2A71B
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:09:26 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id y6so514443plg.0
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 23:09:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=0wP+cMH+Uc8nndXud5ubhnBWs0aIbuoS+iQdIEaJNiI=;
+        b=j3pNVhiqRfcJsT5F+t4Xia4CIwJMeKOYOmX0EX/ojefR78yfC+MYC+A80po+5TVvTt
+         z7NflypW4GI0b1aWqcCJkcXYb3Ael0//cXPkFG2CjZoPhgbLGtpK0nzmbTNC+mpmoMUm
+         BTyo3acf/YQkGq0VZpwV3o0xGP6N9s+1MwAafGgGULeobIlnCYONxNuPqyqt54/r4ki9
+         pHf0uRhX+CE1QHTzNDIOEVdpc8/SoKxIwvJnp50YHna9qXhKVQ+pw6GH/Vy7POwpJRNK
+         SZI4fY0AmrHkd7HcPTAKBeLTvGNmtX2R2RDADYIzxZPBTRXzFK6rYEk1+yR78csXkcOC
+         /8Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=0wP+cMH+Uc8nndXud5ubhnBWs0aIbuoS+iQdIEaJNiI=;
+        b=vl03jC2LzbsyxKPBh7OkpI+MFmc35vIHPCj6JmB16s0rVkH3TLXLr5qpu/fDnexib2
+         rDg8RSX4Kf7f7v9u/l2qSPJ1gB/pyt+QK2zc5JeWPp3g11XIjU8bnqURbusJMDbM7PlL
+         FF54F2U9Jyll6mlNLIVmeEIYpeqYZkG6ns5v2ZtHwciO0blf+d1tOeehJNwu0qASA8aS
+         UXpEVNn3WoFHQ68hoSC5hucg9SO7nZLv7/KouIv5ctwKxwDxyazs5mEpgI1EonUhekOa
+         YoKnWANo4hTrlPHWK7eugb+c546VahjXjYXM1S938CB+KBkqguOtQpPzlPybUXW5uOPu
+         VQtg==
+X-Gm-Message-State: AJIora/DNp6ilm/mKMLONstorx8+6HTpeWUgPyaqVNizMFSZTHoGgIyx
+        /GvwIhysTXEIzPXjwOMsEF7dbg==
+X-Google-Smtp-Source: AGRyM1vXN4pBq4tJYBrUoaqp9fFqKxyIt0So1hcfx92hSBOT96m8/K5gDXj9amAFYWhcO6+K6k6BFw==
+X-Received: by 2002:a17:90a:bd89:b0:1e3:50de:5ccf with SMTP id z9-20020a17090abd8900b001e350de5ccfmr3376576pjr.104.1655359765668;
+        Wed, 15 Jun 2022 23:09:25 -0700 (PDT)
+Received: from [10.5.8.36] ([139.177.225.228])
+        by smtp.gmail.com with ESMTPSA id d16-20020a637350000000b003fdd2aa9811sm704365pgn.60.2022.06.15.23.09.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 23:09:25 -0700 (PDT)
+Message-ID: <29b3bbe6-24dc-d0ee-8426-7cb3b6cfbc1e@bytedance.com>
+Date:   Thu, 16 Jun 2022 14:09:21 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [External] Re: [PATCH] ext4: fix trim range leak
+To:     Lukas Czerner <lczerner@redhat.com>
+Cc:     tytso@mit.edu, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220614044647.21846-1-hanjinke.666@bytedance.com>
+ <20220615084017.xwexup5ckrrpevhe@fedora>
+From:   hanjinke <hanjinke.666@bytedance.com>
+In-Reply-To: <20220615084017.xwexup5ckrrpevhe@fedora>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These PMICs all contain a compatible GPIO controller.
+hi
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+thanks for your reply.
 
- drivers/mfd/axp20x.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Your point mentioned in the last email is very useful to me.
 
-diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-index 8161a5dc68e8..88a212a8168c 100644
---- a/drivers/mfd/axp20x.c
-+++ b/drivers/mfd/axp20x.c
-@@ -619,6 +619,9 @@ static const struct mfd_cell axp20x_cells[] = {
- 
- static const struct mfd_cell axp221_cells[] = {
- 	{
-+		.name		= "axp20x-gpio",
-+		.of_compatible	= "x-powers,axp221-gpio",
-+	}, {
- 		.name		= "axp221-pek",
- 		.num_resources	= ARRAY_SIZE(axp22x_pek_resources),
- 		.resources	= axp22x_pek_resources,
-@@ -645,6 +648,9 @@ static const struct mfd_cell axp221_cells[] = {
- 
- static const struct mfd_cell axp223_cells[] = {
- 	{
-+		.name		= "axp20x-gpio",
-+		.of_compatible	= "x-powers,axp221-gpio",
-+	}, {
- 		.name		= "axp221-pek",
- 		.num_resources	= ARRAY_SIZE(axp22x_pek_resources),
- 		.resources	= axp22x_pek_resources,
-@@ -785,6 +791,9 @@ static const struct mfd_cell axp806_cells[] = {
- 
- static const struct mfd_cell axp809_cells[] = {
- 	{
-+		.name		= "axp20x-gpio",
-+		.of_compatible	= "x-powers,axp221-gpio",
-+	}, {
- 		.name		= "axp221-pek",
- 		.num_resources	= ARRAY_SIZE(axp809_pek_resources),
- 		.resources	= axp809_pek_resources,
--- 
-2.35.1
+I also think performance gains should be based on impeccable logic and 
+the semantic of trim should be promised too.
 
+Can I send a patch v2 based on your suggestion ?
+
+Jinke
+
+在 2022/6/15 下午4:40, Lukas Czerner 写道:
+> On Tue, Jun 14, 2022 at 12:46:47PM +0800, Jinke Han wrote:
+>> From: hanjinke <hanjinke.666@bytedance.com>
+>>
+>> When release group lock, a large number of blocks may be alloc from
+>> the group(e.g. not from the rest of target trim range). This may
+>> lead end of the loop and leave the rest of trim range unprocessed.
+> 
+> Hi,
+> 
+> you're correct. Indeed it's possible to miss some of the blocks this
+> way.
+> 
+> But I wonder how much of a problem this actually is? I'd think that the
+> optimization you just took out is very usefull, especially with larger
+> minlen and more fragmented free space it'll save us a lot of cycles.
+> Do you have any performance numbers for this change?
+> 
+> Perhaps we don't have to remove it completely, rather zero the
+> free_count every time bb_free changes? Would that be worth it?
+> 
+> -Lukas
+> 
+>>
+>> Signed-off-by: hanjinke <hanjinke.666@bytedance.com>
+>> ---
+>>   fs/ext4/mballoc.c | 6 +-----
+>>   1 file changed, 1 insertion(+), 5 deletions(-)
+>>
+>> diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+>> index 9f12f29bc346..45eb9ee20947 100644
+>> --- a/fs/ext4/mballoc.c
+>> +++ b/fs/ext4/mballoc.c
+>> @@ -6345,14 +6345,13 @@ static int ext4_try_to_trim_range(struct super_block *sb,
+>>   __acquires(ext4_group_lock_ptr(sb, e4b->bd_group))
+>>   __releases(ext4_group_lock_ptr(sb, e4b->bd_group))
+>>   {
+>> -	ext4_grpblk_t next, count, free_count;
+>> +	ext4_grpblk_t next, count;
+>>   	void *bitmap;
+>>   
+>>   	bitmap = e4b->bd_bitmap;
+>>   	start = (e4b->bd_info->bb_first_free > start) ?
+>>   		e4b->bd_info->bb_first_free : start;
+>>   	count = 0;
+>> -	free_count = 0;
+>>   
+>>   	while (start <= max) {
+>>   		start = mb_find_next_zero_bit(bitmap, max + 1, start);
+>> @@ -6367,7 +6366,6 @@ __releases(ext4_group_lock_ptr(sb, e4b->bd_group))
+>>   				break;
+>>   			count += next - start;
+>>   		}
+>> -		free_count += next - start;
+>>   		start = next + 1;
+>>   
+>>   		if (fatal_signal_pending(current)) {
+>> @@ -6381,8 +6379,6 @@ __releases(ext4_group_lock_ptr(sb, e4b->bd_group))
+>>   			ext4_lock_group(sb, e4b->bd_group);
+>>   		}
+>>   
+>> -		if ((e4b->bd_info->bb_free - free_count) < minblocks)
+>> -			break;
+>>   	}
+>>   
+>>   	return count;
+>> -- 
+>> 2.20.1
+>>
+> 
