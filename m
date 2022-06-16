@@ -2,238 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA20C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 615EFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 21:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378916AbiFPVFE (ORCPT
+        id S1378936AbiFPVFm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 17:05:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53586 "EHLO
+        Thu, 16 Jun 2022 17:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378761AbiFPVFC (ORCPT
+        with ESMTP id S1378925AbiFPVFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 17:05:02 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E001A606CF
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 14:04:59 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id k7so2223096plg.7
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 14:04:59 -0700 (PDT)
+        Thu, 16 Jun 2022 17:05:39 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E4E606F1
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 14:05:37 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id t2so2225824pld.4
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 14:05:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=2r8CtVI1tPNHi16JfLtZURG5y2oQUhHCkL352qctEB4=;
-        b=ZFKQQZDng7Udj+pP4+RgtZnW1aSKCMk7IL9cjW+d5bxsPVxEaELqcuxnw3P7JeVFKS
-         1fXiCRT5Q1vr004plkuABaw9LXvOqnJiBiZmFqKNzJYWb3rhtRCveZSG2cmOwcw2Wazl
-         z99IQOgdWuudInHw5HuTXVn25rLkWfTJSWCX+3e+ZeJLBgqDRmDCFnMHd8Q9b4Ixot9q
-         yH7J1yGkvuJ4NPEdXxIlhvGUrWmpwHCYjHtkEX/0P7rMNfp81kupvOKg1geFVAc+NncQ
-         /mCx9UcVLtH4Z9vUGeOybVyloIJPvG8U91NIWnQiex/Bc2hBC89BnOubOYLd2JL4w47L
-         7ZFg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qWeAN6wBOdgTg8JbowHd+2FzjeCfu8a+6968a4QI8WI=;
+        b=N5ZFoL+aFoUS6hB954SKMlb7yCUNVwnEz5QTGbIWpo81EwQ1sMXtUJNQgQWUFXyaqj
+         B3EKyPgnhgeP6Zxqc0o0AXWyPWgb2jZKHij8R6bu7VXYG/qL6Jeu3Pus4aTVrIH5N/up
+         1mVgnWLjqxO/IM/TYAske9+86aHB4TE/sPT2q6jKDvKrVbIRbqCUop88VsbKe70HL/Xn
+         WD13w1gMuXTC77dfwj7AUO0e7PAT47hYpwj/3hqPUXU+ijawuZQFwT1JvD33vRGoqe5d
+         JySTlKChot+aWilu0E/PsGcDvuRxR9SgKE0cOeMTOx1RDYK8f3vG2bi+O+s59MTFKM8U
+         9Wlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=2r8CtVI1tPNHi16JfLtZURG5y2oQUhHCkL352qctEB4=;
-        b=HC/ive89iFQ8JBwIUMTLV5VjbpSbUIOKwCTcRDWDeKEN5VPtocVC6ACw7kQC3tdG8p
-         u8lhZwWQwz0BGqBWwJEANLuLCAJzN7ldn37Mrt+p01cyGlSquLdbPizYpzPQc4hlDnjg
-         hMPdjWqSJAhObfT00mjZnjs6W7/P1K6j0O3h/IgTEMWRnCZeIC7OF/jxYVc+Y8u/ibaW
-         iakRiEnVqJ51YIZ6qDxlEM4RlY/YbJWtNxZZwNzzgeeDtB+CUPxRH7kqsiNSI5loWRwj
-         +UljxbZEfqLW6CVdXVwqB/iSPLeLZ0vOCilkh/n3deYgcyb+2Jn6EyQxXnC1kNS0iHnd
-         hQrw==
-X-Gm-Message-State: AJIora9QjTGhG9HWPRzYrqIDGlDeK+4SyrxGDVWA0aJrPpw125E5NZWq
-        rVi4/Jkf6w24ypqUaP3JFJBN
-X-Google-Smtp-Source: AGRyM1sVCVLZiQnwkLWkMn+Hi9sjJLB7RwFgvwfnbLBljTOQAMY/4zVK+qkWOZfhGcVP9L6MlXDOcw==
-X-Received: by 2002:a17:903:120c:b0:167:8847:21f2 with SMTP id l12-20020a170903120c00b00167884721f2mr6648461plh.11.1655413499281;
-        Thu, 16 Jun 2022 14:04:59 -0700 (PDT)
-Received: from thinkpad ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id b21-20020a170902d89500b0015e8d4eb2cdsm2041555plz.279.2022.06.16.14.04.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 14:04:58 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 02:34:56 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Serge Semin <fancer.lancer@gmail.com>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Frank Li <Frank.Li@nxp.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 00/18] PCI: dwc: Various fixes and cleanups
-Message-ID: <20220616210456.GH2889@thinkpad>
-References: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
- <20220610082919.4wetzo7wj4bnjp45@mobilestation>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qWeAN6wBOdgTg8JbowHd+2FzjeCfu8a+6968a4QI8WI=;
+        b=Hs6shr11+Bws3ilTVbJC6ymiNMNs9b5vVFIkIazRwsFQcAtoEp2BPs3xClGj+nuTOr
+         i1anfnRPY8UpGjBQB1nqZir2GVFU54bVlITVgbMjT/gm1Ix5XD46W9zUOdesW3BDTfXj
+         Z5sj3xxZh0v18z2j59UyiuKg70KG7/xTyq7BrFFzmYykK+8UEXydvhokdvgchlEKEFsY
+         FO5OtMbsH67IynynFHadw1wLjeFbhYK9Ln2WPwsUU5rhitA16hSv1t+KXdsLLYby882P
+         LQwVTVzkgM6pPvfifCDZBDb0onu7JGL+r+1Oh+WDgSjI5Bee7IFOfw4nX68bL2fko41s
+         hZ9Q==
+X-Gm-Message-State: AJIora9cO20KbU6TaYvPP9ucd5utGiwyKbUX4sX+m6SzR9rGpf7nVhbI
+        3a+62a/CnNIGx19oWdtaX3mkrQ==
+X-Google-Smtp-Source: AGRyM1unXZ92n4cSgCY+nW05HkVgMJnrvjv1CRQe+KwLgKR+A0HSLHUM2FUPV+vxq7K020P5WmFE0w==
+X-Received: by 2002:a17:90b:4d8a:b0:1e6:87ad:bfd3 with SMTP id oj10-20020a17090b4d8a00b001e687adbfd3mr7000104pjb.138.1655413536660;
+        Thu, 16 Jun 2022 14:05:36 -0700 (PDT)
+Received: from [172.22.33.138] ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id y5-20020a17090ad70500b001dd16b86fc0sm4249403pju.19.2022.06.16.14.05.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jun 2022 14:05:36 -0700 (PDT)
+Message-ID: <dd9b9be2-7bdf-6cb6-b8ad-d7c0a0d5b98a@linaro.org>
+Date:   Thu, 16 Jun 2022 14:05:34 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220610082919.4wetzo7wj4bnjp45@mobilestation>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 02/15] dt-bindings: power: supply: Add Mediatek MT6370
+ Charger
+Content-Language: en-US
+To:     ChiaEn Wu <peterwu.pub@gmail.com>, jic23@kernel.org,
+        lars@metafoo.de, matthias.bgg@gmail.com, lee.jones@linaro.org,
+        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com, ChiaEn Wu <chiaen_wu@richtek.com>
+References: <20220613111146.25221-1-peterwu.pub@gmail.com>
+ <20220613111146.25221-3-peterwu.pub@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220613111146.25221-3-peterwu.pub@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 11:29:19AM +0300, Serge Semin wrote:
-> On Fri, Jun 10, 2022 at 11:25:16AM +0300, Serge Semin wrote:
-> > This patchset is a first one in the series created in the framework of
-> > my Baikal-T1 PCIe/eDMA-related work:
-> > 
-> > [1: In-progress v4] PCI: dwc: Various fixes and cleanups
-> > Link: ---you are looking at it---
-> > [2: In-progress v2] PCI: dwc: Add hw version and dma-ranges support
-> > Link: https://lore.kernel.org/linux-pci/20220503214638.1895-1-Sergey.Semin@baikalelectronics.ru/
-> > [3: In-progress v2] PCI: dwc: Add extended YAML-schema and Baikal-T1 support
-> > Link: https://lore.kernel.org/linux-pci/20220503214638.1895-1-Sergey.Semin@baikalelectronics.ru/
-> > [4: In-progress v2] dmaengine: dw-edma: Add RP/EP local DMA support
-> > Link: https://lore.kernel.org/linux-pci/20220503225104.12108-1-Sergey.Semin@baikalelectronics.ru/
-> > 
-> > Note it is very recommended to merge the patchsets in the same order as
-> > they are placed in the list above in order to prevent possible merge
-> > conflicts. Nothing prevents them from being reviewed synchronously though.
-> > Any tests are very welcome!
-> > 
-> > As it can be easily inferred from the patchset title, this series is about
-> > the DW PCIe Root Port/Endpoint driver fixes and the code cleanups, where
-> > fixes come before the cleanup patches. The patchset starts with adding the
-> > stop_link() platform-specific method invocation in case of the PCIe host
-> > probe procedure errors. It has been missing in the cleanup-on-error path
-> > of the DW PCIe Host initialization method. After that the unrolled CSRs
-> > layout is added to the iATU disable procedure. In third the disable iATU
-> > procedure is fixed to be called only for the internal ATU as being
-> > specific for the internal ATU implementation. Then the outbound iATU
-> > extended region setup procedure is fixed to have the INCREASE_REGION_SIZE
-> > flag set based on the limit-address - not the region size one. The last
-> > but not least the CDM-check enabling procedure is fixed to be independent
-> > from the non-related num_lanes field state.
-> > 
-> > Afterwards there is a series of cleanups. It concerns the changes like
-> > adding braces to the multi-line if-else constructions, trailing new-lines
-> > to the print format-string, dropping unnecessary version checking, and
-> > various code simplifications and optimizations.
-> > 
-> > New features like adding two-level DT bindings abstraction, adding better
-> > structured IP-core version interface, adding iATU regions size detection
-> > and the PCIe regions verification procedure, adding dma-ranges support,
-> > introducing a set of generic platform clocks and resets and finally adding
-> > Baikal-T1 PCIe interface support will be submitted in the next part of the
-> > series.
-> > 
-> > Link: https://lore.kernel.org/linux-pci/20220324012524.16784-1-Sergey.Semin@baikalelectronics.ru/
-> > Changelog v2:
-> > - Fix the end address of the example in the patch log with
-> >   the INCREASE_REGION_SIZE flag usage fixup. It should be
-> >   0x1000FFFF and not 0x0000FFFF (@Manivannan).
-> > - Add the cleanup-on-error path to the dw_pcie_ep_init() function.
-> >   (@Manivannan)
-> > 
-> > Link: https://lore.kernel.org/linux-pci/20220503212300.30105-1-Sergey.Semin@baikalelectronics.ru/
-> > Changelog v3:
-> > - Convert region variable type to u32 in order to fix the implicit type
-> >   conversion peculiarity. (@kbot)
-> > - Rebase onto v5.18-rc6.
-> > 
-> > Link: https://lore.kernel.org/linux-pci/20220517125058.18488-1-Sergey.Semin@baikalelectronics.ru/
-> > Changelog v4:
-> > - Move the patch "PCI: dwc: Deallocate EPC memory on EP init error" to
-> >   being applied before the cleanup patches.
+On 13/06/2022 04:11, ChiaEn Wu wrote:
+> From: ChiaEn Wu <chiaen_wu@richtek.com>
 > 
-> > - Add a new fixes patch: "PCI: dwc: Enable CDM-check independently from
-> >   the num_lanes value".
-> > - Add a new cleanup patch: "PCI: dwc: Organize local variables usage".
-> > - Add a new cleanup patch: "PCI: dwc: Re-use local pointer to the
-> >   resource data".
-> > - Add a new cleanup patch: "PCI: dwc: Add start_link/stop_link inliners".
-> > - Add a new cleanup patch: "PCI: dwc: Move io_cfg_atu_shared to the Root
-> >   Port descriptor".
-> > - Add a new cleanup patch: "PCI: dwc: Add dw_ prefix to the pcie_port
-> >   structure name".
-> > - Drop the patch "PCI: dwc: Don't use generic IO-ops for DBI-space
-> >   access". (@Rob)
-> > - Drop Manivannan tested tag from the changed patches.
+> Add Mediatek MT6370 Charger binding documentation.
 > 
-> @Mani, there are several brand new patches in this series and a few
-> ones updated (@Rob requests). Could you please have a look at the
-> patchset one more time?
+> Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
+> ---
+>  .../power/supply/mediatek,mt6370-charger.yaml | 60 +++++++++++++++++++
+>  1 file changed, 60 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
 > 
+> diff --git a/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml b/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
+> new file mode 100644
+> index 000000000000..b63553ebb15b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
+> @@ -0,0 +1,60 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/power/supply/mediatek,mt6370-charger.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Mediatek MT6370 Battery Charger
+> +
+> +maintainers:
+> +  - ChiaEn Wu <chiaen_wu@richtek.com>
+> +
+> +description: |
+> +  This module is part of the MT6370 MFD device.
+> +  Provides Battery Charger, Boost for OTG devices and BC1.2 detection.
+> +
+> +properties:
+> +  compatible:
+> +    const: mediatek,mt6370-charger
+> +
+> +  interrupts:
+> +    description: |
+> +      Specify what irqs are needed to be handled by MT6370 Charger driver. IRQ
+> +      "MT6370_IRQ_CHG_MIVR", "MT6370_IRQ_ATTACH" and "MT6370_IRQ_OVPCTRL_UVP_D"
+> +      are required.
+> +    items:
+> +      - description: BC1.2 done irq
+> +      - description: usb plug in irq
+> +      - description: mivr irq
+> +
+> +  interrupt-names:
+> +    items:
+> +      - const: attach_i
+> +      - const: uvp_d_evt
+> +      - const: mivr
+> +
+> +  io-channels:
+> +    description: |
+> +      Use ADC channel to read vbus, ibus, ibat, etc., info. Ibus ADC channel
+> +      is required.
 
-Yep, this is on my todo list. But I'm in a company wide meetup currently.
-Will take a look once I'm back this weekend.
+Add io-channel-names and describe each item - what type of ADC it is
+expected to be.
 
-I'll also give this series (and other ones) a go on my hardware.
+> +    minItems: 1
+> +    maxItems: 9
+> +
+> +  usb-otg-vbus-regulator:
+> +    type: object
+> +    description: OTG boost regulator.
+> +    $ref: /schemas/regulator/regulator.yaml#
 
-Thanks,
-Mani
+unevaluatedProperties: false
 
-> -Sergey
-> 
-> > - Rebase onto v5.18.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-> > Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-> > Cc: Jingoo Han <jingoohan1@gmail.com>
-> > Cc: Gustavo Pimentel <gustavo.pimentel@synopsys.com>
-> > Cc: "Krzysztof Wilczyński" <kw@linux.com>
-> > Cc: Frank Li <Frank.Li@nxp.com>
-> > Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > Cc: linux-pci@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > 
-> > Serge Semin (18):
-> >   PCI: dwc: Stop link in the host init error and de-initialization
-> >   PCI: dwc: Add unroll iATU space support to the regions disable method
-> >   PCI: dwc: Disable outbound windows for controllers with iATU
-> >   PCI: dwc: Set INCREASE_REGION_SIZE flag based on limit address
-> >   PCI: dwc: Deallocate EPC memory on EP init error
-> >   PCI: dwc: Enable CDM-check independently from the num_lanes value
-> >   PCI: dwc: Add braces to the multi-line if-else statements
-> >   PCI: dwc: Add trailing new-line literals to the log messages
-> >   PCI: dwc: Discard IP-core version checking on unrolled iATU detection
-> >   PCI: dwc: Convert Link-up status method to using dw_pcie_readl_dbi()
-> >   PCI: dwc: Organize local variables usage
-> >   PCI: dwc: Re-use local pointer to the resource data
-> >   PCI: dwc: Add start_link/stop_link inliners
-> >   PCI: dwc: Move io_cfg_atu_shared to the Root Port descriptor
-> >   PCI: dwc: Add dw_ prefix to the pcie_port structure name
-> >   PCI: dwc-plat: Simplify the probe method return value handling
-> >   PCI: dwc-plat: Discard unused regmap pointer
-> >   PCI: dwc-plat: Drop dw_plat_pcie_of_match forward declaration
-> > 
-> >  drivers/pci/controller/dwc/pci-dra7xx.c       |  12 +-
-> >  drivers/pci/controller/dwc/pci-exynos.c       |   6 +-
-> >  drivers/pci/controller/dwc/pci-imx6.c         |   6 +-
-> >  drivers/pci/controller/dwc/pci-keystone.c     |  20 ++--
-> >  .../pci/controller/dwc/pci-layerscape-ep.c    |  12 --
-> >  drivers/pci/controller/dwc/pci-layerscape.c   |   2 +-
-> >  drivers/pci/controller/dwc/pci-meson.c        |   2 +-
-> >  drivers/pci/controller/dwc/pcie-al.c          |   6 +-
-> >  drivers/pci/controller/dwc/pcie-armada8k.c    |   4 +-
-> >  drivers/pci/controller/dwc/pcie-artpec6.c     |   4 +-
-> >  .../pci/controller/dwc/pcie-designware-ep.c   |  30 +++--
-> >  .../pci/controller/dwc/pcie-designware-host.c | 104 ++++++++++--------
-> >  .../pci/controller/dwc/pcie-designware-plat.c |  25 +----
-> >  drivers/pci/controller/dwc/pcie-designware.c  |  72 +++++++-----
-> >  drivers/pci/controller/dwc/pcie-designware.h  |  46 +++++---
-> >  drivers/pci/controller/dwc/pcie-dw-rockchip.c |   4 +-
-> >  drivers/pci/controller/dwc/pcie-fu740.c       |   2 +-
-> >  drivers/pci/controller/dwc/pcie-histb.c       |  10 +-
-> >  drivers/pci/controller/dwc/pcie-intel-gw.c    |   6 +-
-> >  drivers/pci/controller/dwc/pcie-keembay.c     |   4 +-
-> >  drivers/pci/controller/dwc/pcie-kirin.c       |   2 +-
-> >  drivers/pci/controller/dwc/pcie-qcom.c        |   4 +-
-> >  drivers/pci/controller/dwc/pcie-spear13xx.c   |   6 +-
-> >  drivers/pci/controller/dwc/pcie-tegra194.c    |  22 ++--
-> >  drivers/pci/controller/dwc/pcie-uniphier.c    |  10 +-
-> >  drivers/pci/controller/dwc/pcie-visconti.c    |   6 +-
-> >  26 files changed, 225 insertions(+), 202 deletions(-)
-> > 
-> > -- 
-> > 2.35.1
-> > 
+> +
+> +    properties:
+> +      enable-gpio:
 
--- 
-மணிவண்ணன் சதாசிவம்
+"gpios", so:
+enable-gpios
+
+> +        maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - interrupts
+> +  - interrupt-names
+> +  - io-channels
+> +
+> +additionalProperties: false
+> +
+> +...
+
+
+Best regards,
+Krzysztof
