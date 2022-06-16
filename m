@@ -2,84 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E7DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01AE3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233842AbiFPQgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 12:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
+        id S233858AbiFPQio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 12:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230319AbiFPQgm (ORCPT
+        with ESMTP id S230319AbiFPQin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 12:36:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75D12018A;
-        Thu, 16 Jun 2022 09:36:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 16 Jun 2022 12:38:43 -0400
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7245F78
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:38:41 -0700 (PDT)
+Received: from pps.filterd (m0134423.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25GGTJUF002050;
+        Thu, 16 Jun 2022 16:38:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=pps0720; bh=qU7x0Sr1f6xDT8ap/JifFyAc8mtbe0McXQjK8Nk1ZmI=;
+ b=el3VI22T12XTR2RC8kSx7tREZebvkss9zz9TeaeEY4pdleWn88MRZac58VmbM5WGBryk
+ GxInHY6e56ns2fX6L000GyUBOqJKZzVFKHZNByGf3WU3RfHDw8ZXx59bLxMBsHzeDv7s
+ Eb3NtxCLKdnt/lPDDGG7xh/78ULN3GQzmPxLewyhbWsMh0h05lF48n+jiU9tJbBSbtka
+ RPkNlg4QvT5TvYaYFumLdKPzYugregi9FHymF6C5u8jr2TvUH9sAbPUL0Fyr+NQMHhn6
+ LD0sk0HrwKuJpK56dEeMp6q4tOX1lrU97AncaVJf+V9Tt3hcCE3XgaizOHQDXZF9wMuO 1Q== 
+Received: from p1lg14880.it.hpe.com (p1lg14880.it.hpe.com [16.230.97.201])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3gr82wg2jk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 16 Jun 2022 16:38:38 +0000
+Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C24061321;
-        Thu, 16 Jun 2022 16:36:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88016C34114;
-        Thu, 16 Jun 2022 16:36:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655397399;
-        bh=4bBttLeEIwKrz4DRXfq17+e2lCYP8BZEDmlEuYZcq0Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=O2cYv2qd6jc/9qBcilbSyxtV8W6f7oCo9I6lSpr+pLzQ3KFS+8iiXWqTv821K4rL/
-         vCRtyGk1eDVTFS6uVeTpFX7z1kLn8VlQPdZE29cHwL/xYsW+S8v4k4RiPIyO4UJtEh
-         28ui/h46YBebZtro+Jv8J51z1n7Zpk3WqfS/1nrOEmx7a1+yrgc87pSnG5HS81PfXY
-         3mtCpeMJ2f2K3X3DmNLhzwHQBhBiG2zJ21eZVH4V52nko91bnfMAAbr5vBKRKHPdw7
-         naNsvhlgIYH61BPUurUEE0jYgadZxHyqec+sLwsNC9LJCfFwVH3a0yvMuam3K+5Lo9
-         T1XTIV7qTh+9Q==
-Date:   Thu, 16 Jun 2022 17:36:34 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-hardening@vger.kernel.org, Jason@zx2c4.com,
-        linux-xfs@vger.kernel.org, urezki@gmail.com, joe@perches.com,
-        gregkh@linuxfoundation.org, torvalds@linux-foundation.org,
-        willy@infradead.org
-Subject: Re: [PATCH] usercopy: use unsigned long instead of uintptr_t
-Message-ID: <YqtcEnD3f8KrGfIZ@sirena.org.uk>
-References: <20220616143617.449094-1-Jason@zx2c4.com>
- <165539694985.1107767.16603574353239972239.b4-ty@chromium.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Tb/+ssbSziytONKl"
+        by p1lg14880.it.hpe.com (Postfix) with ESMTPS id 06593800260;
+        Thu, 16 Jun 2022 16:38:37 +0000 (UTC)
+Received: from swahl-home.5wahls.com (unknown [16.231.227.36])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTPS id 75220809102;
+        Thu, 16 Jun 2022 16:38:36 +0000 (UTC)
+Date:   Thu, 16 Jun 2022 11:38:34 -0500
+From:   Steve Wahl <steve.wahl@hpe.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Steve Wahl <steve.wahl@hpe.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
+Subject: Re: include/linux/dmar.h:21:33: error: 'CONFIG_DMAR_UNITS_SUPPORTED'
+ undeclared here (not in a function); did you mean 'DMAR_UNITS_SUPPORTED'?
+Message-ID: <YqtcijngpsVCrNOw@swahl-home.5wahls.com>
+References: <202206162309.0IdGIck1-lkp@intel.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <165539694985.1107767.16603574353239972239.b4-ty@chromium.org>
-X-Cookie: Pass with care.
+In-Reply-To: <202206162309.0IdGIck1-lkp@intel.com>
+X-Proofpoint-GUID: Z8EvBHg1sp7Y3gLS6irSWhHE8JG9RcuB
+X-Proofpoint-ORIG-GUID: Z8EvBHg1sp7Y3gLS6irSWhHE8JG9RcuB
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-16_13,2022-06-16_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ lowpriorityscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ impostorscore=0 priorityscore=1501 adultscore=0 mlxlogscore=999
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206160068
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This is another instance that should no longer be a problem after
+Baolu's patches to make intel-iommu.h private.
 
---Tb/+ssbSziytONKl
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--> Steve Wahl
 
-On Thu, Jun 16, 2022 at 09:29:12AM -0700, Kees Cook wrote:
 
-> Given Linus's confirmation: applied to for-next/hardening, thanks! I
-> do note, however, that we have almost 1700 uses of uintptr_t in the
-> kernel. Perhaps we need to add a section to the CodingStyle doc?
+On Thu, Jun 16, 2022 at 11:40:45PM +0800, kernel test robot wrote:
+> tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220616-024802/Steve-Wahl/iommu-vt-d-Increase-DMAR_UNITS_SUPPORTED/20220506-035321
+> head:   3e005e10e4d8627a55a987d047c19dba233ba66b
+> commit: 3e005e10e4d8627a55a987d047c19dba233ba66b iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
+> date:   21 hours ago
+> config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220616/202206162309.0IdGIck1-lkp@intel.com/config)
+> compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+> reproduce (this is a W=1 build):
+>         # https://github.com/intel-lab-lkp/linux/commit/3e005e10e4d8627a55a987d047c19dba233ba66b
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review UPDATE-20220616-024802/Steve-Wahl/iommu-vt-d-Increase-DMAR_UNITS_SUPPORTED/20220506-035321
+>         git checkout 3e005e10e4d8627a55a987d047c19dba233ba66b
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    In file included from include/linux/intel-iommu.h:21,
+>                     from drivers/char/agp/intel-gtt.c:23:
+> >> include/linux/dmar.h:21:33: error: 'CONFIG_DMAR_UNITS_SUPPORTED' undeclared here (not in a function); did you mean 'DMAR_UNITS_SUPPORTED'?
+>       21 | #define DMAR_UNITS_SUPPORTED    CONFIG_DMAR_UNITS_SUPPORTED
+>          |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/intel-iommu.h:531:35: note: in expansion of macro 'DMAR_UNITS_SUPPORTED'
+>      531 |         unsigned int iommu_refcnt[DMAR_UNITS_SUPPORTED];
+>          |                                   ^~~~~~~~~~~~~~~~~~~~
+> 
+> 
+> vim +21 include/linux/dmar.h
+> 
+>     20	
+>   > 21	#define	DMAR_UNITS_SUPPORTED	CONFIG_DMAR_UNITS_SUPPORTED
+>     22	
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
 
-checkpatch too.
-
---Tb/+ssbSziytONKl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKrXBEACgkQJNaLcl1U
-h9DsGQf/agnYcZJzmyyvrdJhNgIHMLJGc23uAFrdPZmjZSTg6Os0hMz791GpS37j
-MERQ+fyUISX3EiwrP/6O1lwNeGjmy0OmS5uiv4naFkbCLhb43Ezg0Rh7VtnwWeON
-zIBbdK8C1HGQLpBZ85Egn45aVAE8KptFPhEuNoXrTwzaJ6UOpXBsTjn3kit0ISlH
-Hmi+RCovff+W2FVgaVLOjn2NVQBmyEi0e7E55mjf+aWd0N2ZJGyb1nKtWB5GVFW6
-JXSTAJbi2ZaiSll80jw9vM2drADebwxWjHcRQyukLTUgG9vGhg+1W3A2rZtYM1ZD
-rcElvH8xc/LtO6pzC/1eeQCbSOlrDw==
-=XYsA
------END PGP SIGNATURE-----
-
---Tb/+ssbSziytONKl--
+-- 
+Steve Wahl, Hewlett Packard Enterprise
