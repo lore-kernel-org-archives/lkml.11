@@ -2,135 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C6EBC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 12:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EB7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 12:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377066AbiFPMdo (ORCPT
+        id S1359672AbiFPMeE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 08:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
+        Thu, 16 Jun 2022 08:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376998AbiFPMdl (ORCPT
+        with ESMTP id S230224AbiFPMeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 08:33:41 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E824BFC5;
-        Thu, 16 Jun 2022 05:33:40 -0700 (PDT)
+        Thu, 16 Jun 2022 08:34:02 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0274F9E2
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 05:34:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655382820; x=1686918820;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UEAtVi5CbjSvC5o9X0UlIfBwcav5LyW1HQ2wFacU4jg=;
-  b=IUUQM2h3tW2kQ0sM2RdCmtORIeZdcxXZMcdoTPdYTys5ee/Otlg3HnhD
-   ZXgP013F26bdfLUn62DBa9MkxRkNNeXco3K2AVpMPl7o0GGpHrD8K5Lqb
-   LIJHGXBjvQyKowFumvIpftBFW2553zkTmf4N+oJ91LXmOiWd+RCfJTU81
-   RwdQm89ktDw6hjikL8fd8ExaX/eb6t+yakeo/2WtRhz0lFRAxKhKeS2XA
-   e+3NwWDAPqji1RrQWIb62RBwJgBPdPnufu7ep8urSY1rDkAgit9yIEpHi
-   uI6ejZIVH1OPi4uqy+Z03oLSzJxPHZSeTIfh4eVqZIrdyLx9QxWevBdHh
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259699864"
+  t=1655382841; x=1686918841;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Ta/VM6wcR0NLR8ZmbTDHO2IFmcawcFYqymRSGS1up0g=;
+  b=LYWXRQ541AR9h/AzADVwRZ0aGYNGfhMM8AfE9tq0o6+2vJZvW9u8k7O4
+   9g5Z9NCGcl/AtFFtsy069PL7P4nvq4+hJASXK0fb6WobtQ+G4HC0PWmd0
+   Bwo6fobYwqhfKBYRMkhlLagnSvEfodc8ftipVduSgAGPU7Lm2Y9Xkswfg
+   HJigIgw7lHHDsVAKvv8fbGfZ+ClaPekmtt3NUNhndSTlCQgBIcUv9VaTN
+   b3CZUAjyP1SBisXsbkv8JyA9AJX2/aIKeCGzEo6TgBfOxkALoHPwiZ//C
+   egqe5jn/BKzgNvRRiV02Wgj0dKgIs5/y3N6Hz6RGWXL2p+mCqvAXHknK2
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="365591169"
 X-IronPort-AV: E=Sophos;i="5.91,305,1647327600"; 
-   d="scan'208";a="259699864"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 05:33:38 -0700
+   d="scan'208";a="365591169"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 05:34:01 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,305,1647327600"; 
-   d="scan'208";a="674999504"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 05:33:34 -0700
-Received: by lahna (sSMTP sendmail emulation); Thu, 16 Jun 2022 15:33:31 +0300
-Date:   Thu, 16 Jun 2022 15:33:31 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Oleksandr Ocheretnyi <oocheret@cisco.com>
-Cc:     tudor.ambarus@microchip.com, miquel.raynal@bootlin.com,
-        p.yadav@ti.com, michael@walle.cc, richard@nod.at, vigneshr@ti.com,
-        broonie@kernel.org, linux-mtd@lists.infradead.org,
-        linux-spi@vger.kernel.org, mauro.lima@eclypsium.com,
-        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        xe-linux-external@cisco.com
-Subject: Re: [PATCH v2] mtd: spi-nor: handle unsupported FSR opcodes properly
-Message-ID: <YqsjGx54+Gd8Aws/@lahna>
-References: <YqsHcL5NPcZ4De77@lahna>
- <20220616121446.293408-1-oocheret@cisco.com>
+   d="scan'208";a="641520219"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 16 Jun 2022 05:33:59 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o1ohD-000ONP-2m;
+        Thu, 16 Jun 2022 12:33:59 +0000
+Date:   Thu, 16 Jun 2022 20:33:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vineet Gupta <vgupta@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org
+Subject: net/ipv4/tcp_cong.c:238:22: sparse: sparse: incorrect type in
+ assignment (different address spaces)
+Message-ID: <202206162029.baVzc1JE-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220616121446.293408-1-oocheret@cisco.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 05:14:45AM -0700, Oleksandr Ocheretnyi wrote:
-> Originally commit 094d3b9 ("mtd: spi-nor: Add USE_FSR flag for n25q*
-> entries") and following one 8f93826 ("mtd: spi-nor: micron-st: convert
-> USE_FSR to a manufacturer flag") enabled SPINOR_OP_RDFSR opcode handling
-> ability, however some controller drivers still cannot handle it properly
-> in the micron_st_nor_ready() call what breaks some mtd callbacks with
-> next error logs:
-> 
-> mtdblock: erase of region [address1, size1] on "BIOS" failed
-> mtdblock: erase of region [address2, size2] on "BIOS" failed
-> 
-> The Intel SPI controller does not support low level operations, like
-> reading the flag status register (FSR). It only exposes a set of high
-> level operations for software to use. For this reason check the return
-> value of micron_st_nor_read_fsr() and if the operation was not
-> supported, use the status register value only. This allows the chip to
-> work even when attached to Intel SPI controller (there are such systems
-> out there).
-> 
-> Signed-off-by: Oleksandr Ocheretnyi <oocheret@cisco.com>
-> Link: https://lore.kernel.org/lkml/YmZUCIE%2FND82BlNh@lahna/
-> ---
->  PATCH v2 updates PATCH v1 taking into account changes from
->  https://lore.kernel.org/linux-mtd/20220506105158.43613-1-mika.westerberg@linux.intel.com
->  to check -EOPNOTSUPP value from micron_st_nor_read_fsr() as well.
-> 
->  drivers/mtd/spi-nor/micron-st.c | 12 ++++++++++--
->  drivers/spi/spi-intel.c         |  3 ++-
->  2 files changed, 12 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
-> index a96f74e0f568..fd52e8feea44 100644
-> --- a/drivers/mtd/spi-nor/micron-st.c
-> +++ b/drivers/mtd/spi-nor/micron-st.c
-> @@ -399,8 +399,16 @@ static int micron_st_nor_ready(struct spi_nor *nor)
->  		return sr_ready;
->  
->  	ret = micron_st_nor_read_fsr(nor, nor->bouncebuf);
-> -	if (ret)
-> -		return ret;
-> +	if (ret < 0) {
-> +		/*
-> +		 * Some controllers, such as Intel SPI, do not support low
-> +		 * level operations such as reading the flag status
-> +		 * register. They only expose small amount of high level
-> +		 * operations to the software. If this is the case we use
-> +		 * only the status register value.
-> +		 */
-> +		return (ret == -ENOTSUPP || ret == -EOPNOTSUPP) ? sr_ready : ret;
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   30306f6194cadcc29c77f6ddcd416a75bf5c0232
+commit: e188f3330a13df904d77003846eafd3edf99009d ARC: cmpxchg/xchg: rewrite as macros to make type safe
+date:   10 months ago
+config: arc-randconfig-s031-20220616 (https://download.01.org/0day-ci/archive/20220616/202206162029.baVzc1JE-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-30-g92122700-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e188f3330a13df904d77003846eafd3edf99009d
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout e188f3330a13df904d77003846eafd3edf99009d
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arc SHELL=/bin/bash net/ipv4/
 
-The -EOPNOTSUPP here is not needed as you change the Intel SPI driver in
-the below.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> +	}
->  
->  	if (nor->bouncebuf[0] & (FSR_E_ERR | FSR_P_ERR)) {
->  		if (nor->bouncebuf[0] & FSR_E_ERR)
-> diff --git a/drivers/spi/spi-intel.c b/drivers/spi/spi-intel.c
-> index 50f42983b950..f0313a718d1b 100644
-> --- a/drivers/spi/spi-intel.c
-> +++ b/drivers/spi/spi-intel.c
-> @@ -352,7 +352,8 @@ static int intel_spi_hw_cycle(struct intel_spi *ispi, u8 opcode, size_t len)
->  		val |= HSFSTS_CTL_FCYCLE_RDSR;
->  		break;
->  	default:
-> -		return -EINVAL;
-> +		dev_dbg(ispi->dev, "%#x not supported\n", opcode);
-> +		return -ENOTSUPP;
->  	}
->  
->  	if (len > INTEL_SPI_FIFO_SZ)
-> -- 
-> 2.27.0
+
+sparse warnings: (new ones prefixed by >>)
+   net/ipv4/tcp_cong.c:238:24: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct tcp_congestion_ops const [noderef] __rcu *_val_ @@     got struct tcp_congestion_ops *[assigned] ca @@
+   net/ipv4/tcp_cong.c:238:24: sparse:     expected struct tcp_congestion_ops const [noderef] __rcu *_val_
+   net/ipv4/tcp_cong.c:238:24: sparse:     got struct tcp_congestion_ops *[assigned] ca
+>> net/ipv4/tcp_cong.c:238:22: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct tcp_congestion_ops const *prev @@     got struct tcp_congestion_ops const [noderef] __rcu *[assigned] _val_ @@
+   net/ipv4/tcp_cong.c:238:22: sparse:     expected struct tcp_congestion_ops const *prev
+   net/ipv4/tcp_cong.c:238:22: sparse:     got struct tcp_congestion_ops const [noderef] __rcu *[assigned] _val_
+
+vim +238 net/ipv4/tcp_cong.c
+
+317a76f9a44b43 Stephen Hemminger 2005-06-23  219  
+317a76f9a44b43 Stephen Hemminger 2005-06-23  220  /* Used by sysctl to change default congestion control */
+6670e152447732 Stephen Hemminger 2017-11-14  221  int tcp_set_default_congestion_control(struct net *net, const char *name)
+317a76f9a44b43 Stephen Hemminger 2005-06-23  222  {
+317a76f9a44b43 Stephen Hemminger 2005-06-23  223  	struct tcp_congestion_ops *ca;
+6670e152447732 Stephen Hemminger 2017-11-14  224  	const struct tcp_congestion_ops *prev;
+6670e152447732 Stephen Hemminger 2017-11-14  225  	int ret;
+317a76f9a44b43 Stephen Hemminger 2005-06-23  226  
+6670e152447732 Stephen Hemminger 2017-11-14  227  	rcu_read_lock();
+6670e152447732 Stephen Hemminger 2017-11-14  228  	ca = tcp_ca_find_autoload(net, name);
+6670e152447732 Stephen Hemminger 2017-11-14  229  	if (!ca) {
+6670e152447732 Stephen Hemminger 2017-11-14  230  		ret = -ENOENT;
+0baf26b0fcd74b Martin KaFai Lau  2020-01-08  231  	} else if (!bpf_try_module_get(ca, ca->owner)) {
+6670e152447732 Stephen Hemminger 2017-11-14  232  		ret = -EBUSY;
+8d432592f30fcc Jonathon Reinhart 2021-05-01  233  	} else if (!net_eq(net, &init_net) &&
+8d432592f30fcc Jonathon Reinhart 2021-05-01  234  			!(ca->flags & TCP_CONG_NON_RESTRICTED)) {
+8d432592f30fcc Jonathon Reinhart 2021-05-01  235  		/* Only init netns can set default to a restricted algorithm */
+8d432592f30fcc Jonathon Reinhart 2021-05-01  236  		ret = -EPERM;
+6670e152447732 Stephen Hemminger 2017-11-14  237  	} else {
+6670e152447732 Stephen Hemminger 2017-11-14 @238  		prev = xchg(&net->ipv4.tcp_congestion_control, ca);
+6670e152447732 Stephen Hemminger 2017-11-14  239  		if (prev)
+0baf26b0fcd74b Martin KaFai Lau  2020-01-08  240  			bpf_module_put(prev, prev->owner);
+317a76f9a44b43 Stephen Hemminger 2005-06-23  241  
+6670e152447732 Stephen Hemminger 2017-11-14  242  		ca->flags |= TCP_CONG_NON_RESTRICTED;
+317a76f9a44b43 Stephen Hemminger 2005-06-23  243  		ret = 0;
+317a76f9a44b43 Stephen Hemminger 2005-06-23  244  	}
+6670e152447732 Stephen Hemminger 2017-11-14  245  	rcu_read_unlock();
+317a76f9a44b43 Stephen Hemminger 2005-06-23  246  
+317a76f9a44b43 Stephen Hemminger 2005-06-23  247  	return ret;
+317a76f9a44b43 Stephen Hemminger 2005-06-23  248  }
+317a76f9a44b43 Stephen Hemminger 2005-06-23  249  
+
+:::::: The code at line 238 was first introduced by commit
+:::::: 6670e152447732ba90626f36dfc015a13fbf150e tcp: Namespace-ify sysctl_tcp_default_congestion_control
+
+:::::: TO: Stephen Hemminger <stephen@networkplumber.org>
+:::::: CC: David S. Miller <davem@davemloft.net>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
