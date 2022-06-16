@@ -2,121 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D182C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 22:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65AA9C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 23:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379301AbiFPW7r (ORCPT
+        id S1379321AbiFPXBx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 18:59:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36408 "EHLO
+        Thu, 16 Jun 2022 19:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379286AbiFPW7o (ORCPT
+        with ESMTP id S1379308AbiFPXBv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 18:59:44 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3525962A1E;
-        Thu, 16 Jun 2022 15:59:42 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 987F7121DA9;
-        Thu, 16 Jun 2022 22:59:41 +0000 (UTC)
-Received: from pdx1-sub0-mail-a312.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 2039C121D8E;
-        Thu, 16 Jun 2022 22:59:41 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1655420381; a=rsa-sha256;
-        cv=none;
-        b=B85/YcjPapY22mVOAwMM4r5F6nEaSu94rVTx+MvJNpaOn5e+mDWFTOtZjWYyv8Jb3QyHun
-        W6bV216mtDytsG0qLvwtgcDDqefR0Rd2btmO0UAjLki/bxnYbaej9F436VvYumKyrbNQM2
-        Kjb0TMNvHXWlfAq7hUOj6wSVwqWqBwt20wiHr0q0dn9Bf/1nepthbfbPdNq5+TnRVWFtBy
-        d5nx5xULo24gALh0xB3uVnGBYItp4HzDu0Y5p68V1Mxd6Y7AWoTtX3j5MK3AA9b9g98ZLI
-        iNzxO+NLBY+EsDEyVj6wo7TrdNAEbVCTt6Okj4xnmDCNQZ4S9UFHu/e77sxetA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1655420381;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=KMUJjasGhtZ6xtzJgMJ6iOnVpbo7qM4ta3eH7kPU4uY=;
-        b=ybQzlj9KH9kXIUILAj32OwMxa1xTUg72X4S1bIGRT2v58P5an51znBQanqyB/zP/8ORgPr
-        6EiHW7fNYXMIhavRHnzncqLh3ShU/ReLluU2PTX/60WRuLvt2mMOrKPnCDD+x3ZWNwKDfk
-        xSzz13zX2Lnk9+Nte3cjamZWK1ldTf6PKb/JDrl92h9ul0Znkfot1Vaxvvo2sLbSzkTtRe
-        3bq314IJ91aQiBGJUnF96Nxr9dWvg3K03X53gFvGk1M+lWV7oB+X2UHq9h5m9fGXp1g91R
-        6AvDkJ8A44A+ejheaVFQ2sDGDMQwjVMd5gNGBiMm/7ZwZ9uWn2errQSyw//iig==
-ARC-Authentication-Results: i=1;
-        rspamd-786f5898df-9jkmw;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Duck-Turn: 14413558197c5ca4_1655420381448_582639351
-X-MC-Loop-Signature: 1655420381448:1891084837
-X-MC-Ingress-Time: 1655420381448
-Received: from pdx1-sub0-mail-a312.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.112.55.213 (trex/6.7.1);
-        Thu, 16 Jun 2022 22:59:41 +0000
-Received: from offworld (unknown [104.36.31.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a312.dreamhost.com (Postfix) with ESMTPSA id 4LPHgJ1P4szCY;
-        Thu, 16 Jun 2022 15:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1655420380;
-        bh=KMUJjasGhtZ6xtzJgMJ6iOnVpbo7qM4ta3eH7kPU4uY=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=JEO7plbhII07lJxR/lL+83K9pMnfPPGk9KxDsztsv1Rtb3c+hKRIJyPI0PQcp6moT
-         h2+oo9gkiQeIGFePYy0BTGhXWjbaRp3X2JIWEJco+mTW0DSvTtabSqQ7SQGbIrbdkC
-         os69Zfq2hA5I6jflJjXZIqwVhpqaGFRRZ0S5lxZzXxhLFfH2uUEuU5xN6qHpJQqNzs
-         tt6YEYRNptkbguHN5Tu4+SS/KWDty26C7Oz6XMCRecO2mvMfUV7fL6nG/AAAU00iYk
-         JGLM+HygCI4HJ3Bm3FLeqrjvxbJ5rLAvMpiQZ+Ohu6bzdT6WEzI4oIFNV0ddxbbdX/
-         YHziBk0rNi4Sg==
-Date:   Thu, 16 Jun 2022 15:45:25 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Alison Schofield <alison.schofield@intel.com>
-Cc:     "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Weiny, Ira" <ira.weiny@intel.com>,
-        "Verma, Vishal L" <vishal.l.verma@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "a.manzanares@samsung.com" <a.manzanares@samsung.com>
-Subject: Re: [PATCH 2/3] cxl/mbox: Add GET_POISON_LIST mailbox command support
-Message-ID: <20220616224525.fufa4dnpw4vl344n@offworld>
-References: <cover.1655250669.git.alison.schofield@intel.com>
- <382a9c35ef43e89db85670637d88371f9197b7a2.1655250669.git.alison.schofield@intel.com>
- <20220616194334.pvorvoozt4rrzr66@offworld>
- <20220616203400.GA1529208@alison-desk>
+        Thu, 16 Jun 2022 19:01:51 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A03462A2A
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 16:01:50 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id y17so1900883ilj.11
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 16:01:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dxYlFYa08li+b2bH2lpzssUgCCuwu/1aYyeRjozsoxA=;
+        b=WI575e9Yb3UURQikbwMwnVlY7aFjJ5HZCCsnkaOWrdzEauSAVut+sqOcHZgLf0S7xa
+         zqp6pmpRe8FHVecMzWb/PTiZZfyk5w2koS6iDe4Vg1KswQd3pBxNC++CyRGIgIveOAOf
+         EDkFaZlrYPNMKdPMa8l9eLQGJYIp65QDsGwnE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dxYlFYa08li+b2bH2lpzssUgCCuwu/1aYyeRjozsoxA=;
+        b=cA0PZ/TF7c8FHuwJHiNIwjIc53D+fEgzY85Y9gvVzVSCbjnNoa3sg8f7WD4gC671W5
+         gpyUmPPh3RVHNYehaUaEs4kJl36pB/U7bStk7BceAADiCkMhq6P5si5pfU6EcLqw70UG
+         QYtD/GYPpNJJdFPsTqD/by4o3vx2E/SQtN30eqHjsRR0EMCJ/Tcw6s+Mk/oGl9ENwW8d
+         mfhADeaHvk6vCDbP0wqze4iAbEgsXst4d8eq/HbpPzf7AaQFkq6Mx1t0+cvT64XaUqG2
+         +yrlkvcX2kffiQ03QBz2Z6fACWxmogh6omAx7AcVHZ0RuVDidEP1TWBcEhKZa3MrRdXR
+         sd6Q==
+X-Gm-Message-State: AJIora867aeKXpss8pLvcOgCgxd8EDOogRjvvf47DOtDTc9/Yi9qkl/O
+        SKa+E/KBCn3tQukj5h4p3kjdfN1op7TFAw==
+X-Google-Smtp-Source: AGRyM1s7LIyJLY6T2Uw2EEkj6wJqA6dr2rUEctCYF7at0sSK8+Zh7zsCGDCfSXKU0oW2S2jL2LftaQ==
+X-Received: by 2002:a05:6e02:152f:b0:2d4:980:a529 with SMTP id i15-20020a056e02152f00b002d40980a529mr4197820ilu.72.1655420509530;
+        Thu, 16 Jun 2022 16:01:49 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id s71-20020a02514a000000b0033171dafaa0sm1414627jaa.178.2022.06.16.16.01.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jun 2022 16:01:49 -0700 (PDT)
+Subject: Re: [PATCH] selftests/proc: Fix proc-pid-vm for vsyscall=xonly.
+To:     Dylan Hatch <dylanbhatch@google.com>, Shuah Khan <shuah@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220616211016.4037482-1-dylanbhatch@google.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <941e0991-eb3e-f988-8262-3d51ff8badad@linuxfoundation.org>
+Date:   Thu, 16 Jun 2022 17:01:48 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220616203400.GA1529208@alison-desk>
-User-Agent: NeoMutt/20220429
+In-Reply-To: <20220616211016.4037482-1-dylanbhatch@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022, Alison Schofield wrote:
+On 6/16/22 3:10 PM, Dylan Hatch wrote:
+> This test would erroneously fail the /proc/$PID/maps case if
+> vsyscall=xonly since the existing probe of the vsyscall page only
+> succeeds if the process has read permissions. Fix this by checking for
+> either no vsyscall mapping OR an execute-only vsyscall mapping in the
+> case were probing the vsyscall page segfaults.
+> 
 
->cxl list --media-errors -m mem1
->	lists media errors for requested memdev
->
->cxl list --media-errors -r region#
+Does this fix include skipping the test with a clear message that
+says why test is skipped?
 
-A quick question on the tooling front: the above goes nicely with
-cxl-list, but what about the rest of the poisoning cmds? Do you have
-anything in mind? Do we want something specific for media and poison
-management instead? Ie:
+> Signed-off-by: Dylan Hatch <dylanbhatch@google.com>
+> ---
+>   tools/testing/selftests/proc/proc-pid-vm.c | 20 +++++++++++++++-----
+>   1 file changed, 15 insertions(+), 5 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/proc/proc-pid-vm.c b/tools/testing/selftests/proc/proc-pid-vm.c
+> index 28604c9f805c..5ca85520131f 100644
+> --- a/tools/testing/selftests/proc/proc-pid-vm.c
+> +++ b/tools/testing/selftests/proc/proc-pid-vm.c
+> @@ -213,9 +213,12 @@ static int make_exe(const uint8_t *payload, size_t len)
+>   
+>   static bool g_vsyscall = false;
+>   
+> -static const char str_vsyscall[] =
+> +static const char str_vsyscall_rx[] =
+>   "ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]\n";
+>   
+> +static const char str_vsyscall_x[] =
+> +"ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]\n";
+> +
+>   #ifdef __x86_64__
+>   static void sigaction_SIGSEGV(int _, siginfo_t *__, void *___)
+>   {
+> @@ -261,6 +264,7 @@ int main(void)
+>   	int exec_fd;
+>   
+>   	vsyscall();
+> +	const char *str_vsyscall = g_vsyscall ? str_vsyscall_rx : str_vsyscall_x;
+>   
+>   	atexit(ate);
+>   
+> @@ -314,7 +318,8 @@ int main(void)
+>   
+>   	/* Test /proc/$PID/maps */
+>   	{
+> -		const size_t len = strlen(buf0) + (g_vsyscall ? strlen(str_vsyscall) : 0);
+> +		const size_t len_buf0 = strlen(buf0);
+> +		const size_t len_vsys = strlen(str_vsyscall);
+>   		char buf[256];
+>   		ssize_t rv;
+>   		int fd;
+> @@ -325,11 +330,16 @@ int main(void)
+>   			return 1;
+>   		}
+>   		rv = read(fd, buf, sizeof(buf));
+> -		assert(rv == len);
+> -		assert(memcmp(buf, buf0, strlen(buf0)) == 0);
+>   		if (g_vsyscall) {
+> -			assert(memcmp(buf + strlen(buf0), str_vsyscall, strlen(str_vsyscall)) == 0);
+> +			assert(rv == len_buf0 + len_vsys);
+> +		} else {
+> +			/* If vsyscall isn't readable, it's either x-only or not mapped at all */
+> +			assert(rv == len_buf0 + len_vsys || rv == len_buf0);
+>   		}
+> +		assert(memcmp(buf, buf0, len_buf0) == 0);
+> +		/* Check for vsyscall mapping if buf is long enough */
+> +		if (rv == len_buf0 + len_vsys)
+> +			assert(memcmp(buf + len_buf0, str_vsyscall, len_vsys) == 0);
+>   	}
+>   
+>   	/* Test /proc/$PID/smaps */
+> 
 
-cxl media --list-errors <params>
-cxl media --inject-errors <params>
-cxl media --clear-errors <params>
+The change looks good to me. Doesn't look like it skips the test though?
 
-Thanks,
-Davidlohr
+thanks,
+-- Shuah
