@@ -2,66 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19778C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 00:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B500C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 00:56:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350807AbiFPA4B (ORCPT
+        id S1354709AbiFPA4F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 20:56:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56530 "EHLO
+        Wed, 15 Jun 2022 20:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350384AbiFPAzP (ORCPT
+        with ESMTP id S1351063AbiFPAzP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 15 Jun 2022 20:55:15 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A3E5838F
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 17:54:39 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id 129so12925831pgc.2
-        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 17:54:39 -0700 (PDT)
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC37F58393
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 17:54:40 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id 187so97988pfu.9
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 17:54:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Cm99/QV8MCKPId9CWvCx5513sd3/VdteWTSHrf5MAuA=;
-        b=NImzwtWbzdvjUciZzZ75bBK/ifBtQCZkTq+I1tvB5kYDZlwJY1su2Do4UoxE5UiHgj
-         O2LtXBlTm7opVfjpc+JOpFzW8+XVh+884mDVoYKN5JBJpgOtuLx4ETAYlnjLNR5uwVIe
-         TVkK5bo/jcOh4muVk0zCtb0jZ4IVrOoxpiOF59CgcR5ceEHdH7h1VavQansFMHD9vckL
-         qSXsnirrqPtGftr9HkreIf43CjEYNXotGKzTqNJj86AoqFeHs7nWihktHu2x4b2dkKIk
-         WGvIET3t7Pzh7cJeUwZxj4vLfWp4s1dRuzxAnxq+hCq9MHzFrfZNY1unyrgqjkWgkNYy
-         DofA==
+        bh=itsEy92F8LgvkoK7MoKZ9B/GZxw2SAC9YAvwl0r5wg8=;
+        b=z5mXx8sye4HKPIB7GYHCqOmGAGj5X42fg9fh791Lw1DXhV5zcZncP75cSXTXhLmtq4
+         g7lrX/EsU75RaPEGf5B5G1LkIlaX4z9WqBVCWdYV3NN27afzgqvw16AH9OKxJNmBTI2m
+         XTDqrwImsp+HwpXvH5JaGdLGEAu+TZO0/v34UfNt4ZZA45u4YGMymWhC/aBPrG0ASGVG
+         hsX/qyXqmismIyIMdc0A5XjYmziMgoCcf19URCMHJwhvGapnII2ctHcbpH3j7geIyCiQ
+         xS+DWBIbMyt2NXaLdJSFA9QX4Sp/Wr1fLXKOQnkCYfh0v1mwUsly2UpmfRNpv8frmavd
+         UHLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Cm99/QV8MCKPId9CWvCx5513sd3/VdteWTSHrf5MAuA=;
-        b=Ftwbs/M1GLa2a6w9Wz+VjTHYnNL6OXtrtaaNvpRNDQfxFr1kAsKSXDeewH6hELBu44
-         KcV95vGlCTvmmh+VhcUjhMXaLvTYI+4xfUiiD9C629svFTUqxPS2tVKSBvmXYBXGk86/
-         1V4v5aVNnrA4jgBA4sfsTIKcsk/XGgNQet84eHdFveMxRAZMmVnRo2UhYtlObPizjqwZ
-         HzmLEpq9bUnN21lKXCcaghY+zHUuMv1sZWG99ktN8P7hoqq3UnKjX/xKx51n/g2wUOIZ
-         u7Wf7NdnfQy1pFBcW5oGWdFAs86iIuGW7A8n56YoxZrvRK1pRCcc8Z9glsEX5Vnn1n+C
-         +wyQ==
-X-Gm-Message-State: AJIora8d9yRJsDEIgmB/7g5gqJtsz7KtKxKHtdg9kqZwDYeo3/aRzDdG
-        G5RrnLWJFkgwbOV/QZHgXcCcRg==
-X-Google-Smtp-Source: AGRyM1ug3gEOXzVVQQttqWJAvEAq5QpOxIQ2fPNT12FaVtr4iUPT5YzVyIzHD563V5L5mFFB8He6wA==
-X-Received: by 2002:a63:8a4b:0:b0:408:ab3d:4af3 with SMTP id y72-20020a638a4b000000b00408ab3d4af3mr2150393pgd.72.1655340877628;
-        Wed, 15 Jun 2022 17:54:37 -0700 (PDT)
+        bh=itsEy92F8LgvkoK7MoKZ9B/GZxw2SAC9YAvwl0r5wg8=;
+        b=XTet57WC31wgNq1Qo0+PO6rGOv7bP0U7n+3D4PUZgExep3aKM6NfdMn3UvGGqsanN9
+         pu6SbI2L1YNQ4X9PVRo22eQMfGzYJWgt9tmlMgCCsty7RGlTfEA96Zzswcviz30GOLkQ
+         sNl3x2SiIGD83t78/0Wczw6wx3Pc+kM9rTfIZrmFW4KwQ30NlgiGLu4LQ9cKIriceDIJ
+         qd661Yds0ycUs5X5pc9BLi1SlIguMamRvjeyHKaL0dXu/qoREYWMQnVip8TkAUjUW3T6
+         PAF6u0nznMYg5mTMMvRUk5ln6EUel2PtC/O4g/tuP4K8kJ0J6cOQPNP6xVIt56MBJC43
+         NRkg==
+X-Gm-Message-State: AJIora95P05kuo35c7/HHTieSiO/4PWN8rS4gKwOlogcVkkKGz2juuii
+        RQXUUaN/MRu67Dl0TeDkmNdSZw==
+X-Google-Smtp-Source: AGRyM1szTLtkES0t0cjWcjNlUNx3yfAdHRv1dieHB+qKOWjH/ekzn2LDX9kEaCAIRz7t5icSAt9ApA==
+X-Received: by 2002:a63:f415:0:b0:408:808b:238f with SMTP id g21-20020a63f415000000b00408808b238fmr2093682pgi.469.1655340880158;
+        Wed, 15 Jun 2022 17:54:40 -0700 (PDT)
 Received: from krzk-bin.. ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id p4-20020a170902780400b0016760c06b76sm233660pll.194.2022.06.15.17.54.36
+        by smtp.gmail.com with ESMTPSA id p4-20020a170902780400b0016760c06b76sm233660pll.194.2022.06.15.17.54.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 17:54:37 -0700 (PDT)
+        Wed, 15 Jun 2022 17:54:39 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     arm@kernel.org, soc@kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Michal Simek <michal.simek@xilinx.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 29/40] arm64: dts: ti: align gpio-key node names with dtschema
-Date:   Wed, 15 Jun 2022 17:53:22 -0700
-Message-Id: <20220616005333.18491-29-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 31/40] ARM: dts: xilinx: align gpio-key node names with dtschema
+Date:   Wed, 15 Jun 2022 17:53:24 -0700
+Message-Id: <20220616005333.18491-31-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org>
 References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org>
@@ -76,50 +75,44 @@ The node names should be generic and DT schema expects certain pattern
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/ti/k3-am654-base-board.dts        | 4 ++--
- arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/zynq-zc702.dts         | 4 ++--
+ arch/arm/boot/dts/zynq-zturn-common.dtsi | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am654-base-board.dts b/arch/arm64/boot/dts/ti/k3-am654-base-board.dts
-index 57497cb1ed68..31039f7e36ac 100644
---- a/arch/arm64/boot/dts/ti/k3-am654-base-board.dts
-+++ b/arch/arm64/boot/dts/ti/k3-am654-base-board.dts
-@@ -73,13 +73,13 @@ gpio-keys {
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&push_button_pins_default>;
- 
--		sw5 {
-+		switch-5 {
- 			label = "GPIO Key USER1";
- 			linux,code = <BTN_0>;
- 			gpios = <&wkup_gpio0 24 GPIO_ACTIVE_LOW>;
+diff --git a/arch/arm/boot/dts/zynq-zc702.dts b/arch/arm/boot/dts/zynq-zc702.dts
+index cf70aff26c66..d23201ba8cd7 100644
+--- a/arch/arm/boot/dts/zynq-zc702.dts
++++ b/arch/arm/boot/dts/zynq-zc702.dts
+@@ -30,14 +30,14 @@ chosen {
+ 	gpio-keys {
+ 		compatible = "gpio-keys";
+ 		autorepeat;
+-		sw14 {
++		switch-14 {
+ 			label = "sw14";
+ 			gpios = <&gpio0 12 0>;
+ 			linux,code = <108>; /* down */
+ 			wakeup-source;
+ 			autorepeat;
  		};
- 
--		sw6 {
-+		switch-6 {
- 			label = "GPIO Key USER2";
- 			linux,code = <BTN_1>;
- 			gpios = <&wkup_gpio0 27 GPIO_ACTIVE_LOW>;
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-index 2bc26a296496..b1691ac3442d 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-@@ -26,13 +26,13 @@ gpio_keys: gpio-keys {
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&sw10_button_pins_default &sw11_button_pins_default>;
- 
--		sw10: sw10 {
-+		sw10: switch-10 {
- 			label = "GPIO Key USER1";
- 			linux,code = <BTN_0>;
- 			gpios = <&main_gpio0 0 GPIO_ACTIVE_LOW>;
- 		};
- 
--		sw11: sw11 {
-+		sw11: switch-11 {
- 			label = "GPIO Key USER2";
- 			linux,code = <BTN_1>;
- 			gpios = <&wkup_gpio0 7 GPIO_ACTIVE_LOW>;
+-		sw13 {
++		switch-13 {
+ 			label = "sw13";
+ 			gpios = <&gpio0 14 0>;
+ 			linux,code = <103>; /* up */
+diff --git a/arch/arm/boot/dts/zynq-zturn-common.dtsi b/arch/arm/boot/dts/zynq-zturn-common.dtsi
+index bf5d1c4568b0..dfb1fbafe3aa 100644
+--- a/arch/arm/boot/dts/zynq-zturn-common.dtsi
++++ b/arch/arm/boot/dts/zynq-zturn-common.dtsi
+@@ -49,7 +49,7 @@ usr-led2 {
+ 	gpio-keys {
+ 		compatible = "gpio-keys";
+ 		autorepeat;
+-		K1 {
++		key {
+ 			label = "K1";
+ 			gpios = <&gpio0 0x32 0x1>;
+ 			linux,code = <0x66>;
 -- 
 2.34.1
 
