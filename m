@@ -2,113 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5893EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 708BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377117AbiFPN2r (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33456 "EHLO
+        id S232444AbiFPN3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 09:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377215AbiFPN2h (ORCPT
+        with ESMTP id S232138AbiFPN3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:28:37 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD708248E5
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:28:36 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id g4so1876444wrh.11
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:28:36 -0700 (PDT)
+        Thu, 16 Jun 2022 09:29:52 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABCB140C5
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:29:51 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-313a8a8b95aso13882637b3.5
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 06:29:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8h+FpcXrrgVVoUz/iXyZW+h/bqUW6xveKHdamK/cuQc=;
-        b=a998jYD2CZKZZJVPrXyeBC/bJFux5MWHfso4bLTv11q7pyesMZCgv6WDOku9YPqUvN
-         FDO7eR32YMlOe5kqaNv2yHLYNYJoiH6vO2OsGb8ebqOlPhV7cgdAwR1XqfKuhU6XIxMC
-         PbYddJwmRfjU352RIVPwrjRL0TvqL9DkN3gq9ORZzp2kx06lrCfYe4G1JqzzvCf9MtJ2
-         IIf+uhCuWz9ReVq4LmWp8OK/fNqP6QpLWUJtZKS4JxpCMjvqewjRX21/4VV938rWiKhr
-         2IErU1R/CFnngTA39KwYkqVv+idN2Xl0GNfF2QS4Up29Yg8c753g4dUoRGvuNYzYhcgp
-         qy5w==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S4Rth2T8dY5O32h9DT2ztkebr91/U2eF/Sf0RxQK/FQ=;
+        b=G10a5zdkOQdNTP0AbXjEj6kRfJFY2b6IvG1bgL75n9mc+TJdfZwMmtveVAjC4++975
+         OubqAvI2DCGbh7pZMPqAZfSJWj7JS+XCC0bdm99zn4hhVYqWBd2whUKxDP78IxVcDnDH
+         sFoPUQ2r6Z7o4+2ke3bBYqW8ozlObTsMAVqB2O2U8q+v6gh+gJrwnJU8XRbmJ7WImqLP
+         PDagWx2QfGCMizzni9CLLSXiAxdFcEbuaK6U/IQoRqFkObWPu4rec0K1jiyYjHA/co4l
+         KH5N0AuDpn8k+baLVP/79rQxke959qyd7KqnFulN5I8lVwgOrsfPcJsIZPTaKoRuvVA3
+         TqAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8h+FpcXrrgVVoUz/iXyZW+h/bqUW6xveKHdamK/cuQc=;
-        b=WUDeJGFYGd9x5NmpU2UqJlPBXUCWUQcbxbNNVKUanRgy0+7dBYi3rrHr07df8j0Ank
-         5dbol8R0sVr1lpZhZAW0t5b+oNi+cPB+4ydWCJIhngib5dtoxoUYlb+FcasZ/UEFQ1Qh
-         wEehxURT7SPDr5SByGlNY5hJ5XLRc4et7sL3xT7La0wSgTThINExxcdVEoqYAFVDqcy3
-         5yXvTQ9D2ImE58FLGNIu6fdRr2MduvGKCibWVR9lilYE8FNMff47/XmShz3ZnMNabWD4
-         BdyZuvYrXF88tHvauZbFIZVpOx/BcRmfWyr08pbfm3RL8p4eFqZnc5Bckf17w+j2DObc
-         hYog==
-X-Gm-Message-State: AJIora/4q0FXP2RdN5wgByLMIhaqJJ9f3cAU7VWowdJFuWRtSh4D3/3i
-        xjwsNgD3Va4wKbGKkl3NqO8=
-X-Google-Smtp-Source: AGRyM1unnhtSqt7GBcBXkXPGLTuYxnFiOMYFOgsWaPoDEka0FPVYkml3TItU5PtGNRR2Jfz0hmT2dg==
-X-Received: by 2002:adf:fe90:0:b0:210:7e22:186e with SMTP id l16-20020adffe90000000b002107e22186emr4837864wrr.321.1655386115274;
-        Thu, 16 Jun 2022 06:28:35 -0700 (PDT)
-Received: from [192.168.1.145] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id bg27-20020a05600c3c9b00b003974d0d981dsm6360986wmb.35.2022.06.16.06.28.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jun 2022 06:28:34 -0700 (PDT)
-Message-ID: <085be77f-3833-628e-b76a-b2b888db3b78@gmail.com>
-Date:   Thu, 16 Jun 2022 15:28:33 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S4Rth2T8dY5O32h9DT2ztkebr91/U2eF/Sf0RxQK/FQ=;
+        b=QzCKsBrGynjo0ciMvMdDniAnlWhYmvo/WGDkuwiiGzaIwjQBcISmX08AkxfdO4AJDY
+         StptNffMlKx9PGwAfcJxHZG6exPKCww7R7SqMvqyGv5p/pZo0xX5in/NS/64qitQJ7xQ
+         ZS7zbWtnDutBJbzdhOmcCtDXiSzJ6QEp3nunJ80FyfHndsnQqfqt3l/DHE6N8RnQCIZM
+         hDrFE6yjul7lUs8IQ+/u5qtdBSc1BTEP0Dkof92EwacQvtV6vHGzxmKb/rn2au1KXCIh
+         w4SWf03ecrq6BCJMKCVnQ+tGQzbHt4qwljcls0AfApZiPGllxZ2ON2xZrX+v234KmWWi
+         nuYg==
+X-Gm-Message-State: AJIora8aLSDg7uTNdfi8zhO+9mNzFAGOedH9LRiUTfWDmBVAf2pymz7H
+        1KK+vs35CB9fJGVnOoRC8ixOa6N0u1CAU85P1UfAaA==
+X-Google-Smtp-Source: AGRyM1uXkiUuSLdEs1ASKLxAXK6AYMSIEjGeNtbA1b/G6Effm6lpPwlZAq6cTbaG9DSHKdJ0ukrhCskqThLfiMIs5P0=
+X-Received: by 2002:a81:1154:0:b0:2fe:d5a4:f26b with SMTP id
+ 81-20020a811154000000b002fed5a4f26bmr5792489ywr.140.1655386190157; Thu, 16
+ Jun 2022 06:29:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 1/5] iommu/mediatek: Use dev_err_probe to mute
- probe_defer err log
-Content-Language: en-US
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>
-Cc:     iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        mingyuan.ma@mediatek.com, yf.wang@mediatek.com,
-        libo.kang@mediatek.com, chengci.xu@mediatek.com,
-        youlin.pei@mediatek.com, anan.sun@mediatek.com,
-        xueqi.zhang@mediatek.com, Guenter Roeck <groeck@chromium.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220616054203.11365-1-yong.wu@mediatek.com>
- <20220616054203.11365-2-yong.wu@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220616054203.11365-2-yong.wu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220613145709.3729053-1-robh@kernel.org>
+In-Reply-To: <20220613145709.3729053-1-robh@kernel.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 16 Jun 2022 15:29:39 +0200
+Message-ID: <CACRpkdb6KCRfqOMEqm+9SfQORNwWPyWa7-XL1+n2BLr3MfDpRg@mail.gmail.com>
+Subject: Re: [PATCH v2] dt-bindings: display: Add Arm virtual platforms display
+To:     Rob Herring <robh@kernel.org>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Liviu Dudau <Liviu.Dudau@arm.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jun 13, 2022 at 4:57 PM Rob Herring <robh@kernel.org> wrote:
 
-
-On 16/06/2022 07:41, Yong Wu wrote:
-> Mute the probe defer log:
-> 
-> [    2.654806] mtk-iommu 14018000.iommu: mm dts parse fail(-517).
-> [    2.656168] mtk-iommu 1c01f000.iommu: mm dts parse fail(-517).
-> 
-> Fixes: d2e9a1102cfc ("iommu/mediatek: Contain MM IOMMU flow with the MM TYPE")
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> Reviewed-by: Guenter Roeck <groeck@chromium.org>
-
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-
+> 'arm,rtsm-display' is a panel for Arm, Ltd. virtual platforms (e.g. FVP).
+> The binding has been in use for a long time, but was never documented.
+>
+> Some users and an example have a 'panel-dpi' compatible, but that's not
+> needed without a 'panel-timing' node which none of the users have since
+> commit 928faf5e3e8d ("arm64: dts: fvp: Remove panel timings"). The
+> example does have a 'panel-timing' node, but it should not for the
+> same reasons the node was removed in the dts files. So update the
+> example in arm,pl11x.yaml to match the schema.
+>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Andre Przywara <andre.przywara@arm.com>
+> Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
->   drivers/iommu/mtk_iommu.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index bb9dd92c9898..3b2489e8a6dd 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -1204,7 +1204,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
->   	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
->   		ret = mtk_iommu_mm_dts_parse(dev, &match, data);
->   		if (ret) {
-> -			dev_err(dev, "mm dts parse fail(%d).", ret);
-> +			dev_err_probe(dev, ret, "mm dts parse fail.");
->   			goto out_runtime_disable;
->   		}
->   	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) &&
+> v2:
+>  - Make arm,rtsm-display its own schema file instead of using
+>    panel-simple.
+
+Thanks for fixing this Rob!
+
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+Yours,
+Linus Walleij
