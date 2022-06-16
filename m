@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF0B4CCA47D
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C35BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376337AbiFPItd (ORCPT
+        id S1376377AbiFPItf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:49:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35510 "EHLO
+        Thu, 16 Jun 2022 04:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359805AbiFPIs5 (ORCPT
+        with ESMTP id S1359798AbiFPIs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 16 Jun 2022 04:48:57 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1BE47073;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7966D424B3;
         Thu, 16 Jun 2022 01:47:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1655369272; x=1686905272;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=v/7Hxi1rfyLkWH5fyO+/GGs23bb1kzLn7mLAwHLFcrM=;
-  b=TMplK1Oas0gDOjny6Jx05R1OaoGfDsJw8db9F9a+z8cKs1Eu/GDCY8V5
-   pwpjU1F8nNgeBM/uaannLKeJw/qHHmHZdGp6hBEtrwV8nuaif3owVX9t/
-   xgIgJU6e4vPT4m3RlQM5uClhj3NCbkDEJZbECzYFq1Ef8p9w2ZI5oiiTh
-   vTen0JaDlyclqsqtoTZ2W6iX5Qw0mub0G1pmVye7tugEPWa5nkb26n0S/
-   jOsHYbH7MCRgYo5fNnQ7er0CEhk/8SlEF7OY7q27qSQU255yA9svLCVim
-   l1xVuhwpLZ5F3OF6oGE3c/3rZ86CMyYoNiVRY7DPYb/8f5sXul2l7qvTS
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664560"
+  bh=GeWyVkmGWKHPsJgw/B+NoLBgTSesUAxxZOkxfdZhD8M=;
+  b=M9Lb0UZYW77ejhpzJ3WIAy0cr79DmW+jn8PdKyDn+RLjC/9JSFkslhA6
+   Fy8gDw3wK0UnEzUhhhKv+1s/wb0Xb/zMZiyo31QUeepsLM0zp9SQcZOAZ
+   w9oSHaPkflT9Ae5LYhWoJd1MP6aWja5lZQ5v9id7a2ptU1hbxRL0HZsBb
+   01NCGX8PH4U1VG6m8WZ34TwDfR6LBddo7FoqDXCJJ2wkZbkrJOkJ4J4p/
+   gK+Eg2XQBkRUB3hiKW6GViREKBcHVf6XW4gyVCFdn3fvUcvEHUXrUFr+6
+   lolK3EDXFrUNNPfLpHfjUSS3wLwv10a2maX29W5wXWP+V+J4KcmogLLPj
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259664559"
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="259664560"
+   d="scan'208";a="259664559"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:41 -0700
 X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="613083149"
+   d="scan'208";a="613083140"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         rick.p.edgecombe@intel.com
-Cc:     weijiang.yang@intel.com,
-        Sean Christopherson <sean.j.christopherson@intel.com>
-Subject: [PATCH 08/19] KVM: x86: Load guest fpu state when accessing MSRs managed by XSAVES
-Date:   Thu, 16 Jun 2022 04:46:32 -0400
-Message-Id: <20220616084643.19564-9-weijiang.yang@intel.com>
+Cc:     weijiang.yang@intel.com, Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 05/19] x86/fpu: Add helper for modifying xstate
+Date:   Thu, 16 Jun 2022 04:46:29 -0400
+Message-Id: <20220616084643.19564-6-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220616084643.19564-1-weijiang.yang@intel.com>
 References: <20220616084643.19564-1-weijiang.yang@intel.com>
@@ -56,80 +55,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Rick Edgecombe <rick.p.edgecombe@intel.com>
 
-If new feature MSRs are supported in XSS and passed through to the guest
-they are saved and restored by XSAVES/XRSTORS, i.e. in the guest's FPU
-state.
+Just like user xfeatures, supervisor xfeatures can be active in the
+registers or present in the task FPU buffer. If the registers are
+active, the registers can be modified directly. If the registers are
+not active, the modification must be performed on the task FPU buffer.
 
-Load the guest's FPU state if userspace is accessing MSRs whose values are
-managed by XSAVES so that the MSR helper, e.g. kvm_{get,set}_xsave_msr(),
-can simply do {RD,WR}MSR to access the guest's value.
+When the state is not active, the kernel could perform modifications
+directly to the buffer. But in order for it to do that, it needs
+to know where in the buffer the specific state it wants to modify is
+located. Doing this is not robust against optimizations that compact
+the FPU buffer, as each access would require computing where in the
+buffer it is.
 
-Because is also used for the KVM_GET_MSRS device ioctl(), explicitly
-check that @vcpu is non-null before attempting to load guest state.  The
-XSS supporting MSRs cannot be retrieved via the device ioctl() without
-loading guest FPU state (which doesn't exist).
+The easiest way to modify supervisor xfeature data is to force restore
+the registers and write directly to the MSRs. Often times this is just fine
+anyway as the registers need to be restored before returning to userspace.
+Do this for now, leaving buffer writing optimizations for the future.
 
-Note that guest_cpuid_has() is not queried as host userspace is allowed
-to access MSRs that have not been exposed to the guest, e.g. it might do
-KVM_SET_MSRS prior to KVM_SET_CPUID2.
+Add a new function fpregs_lock_and_load() that can simultaneously call
+fpregs_lock() and do this restore. Also perform some extra sanity
+checks in this function since this will be used in non-fpu focused code.
 
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Co-developed-by: Yang Weijiang <weijiang.yang@intel.com>
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
 Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
----
- arch/x86/kvm/x86.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 06fbd3daf393..506454e17afc 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -130,6 +130,9 @@ static int kvm_vcpu_do_singlestep(struct kvm_vcpu *vcpu);
- static int __set_sregs2(struct kvm_vcpu *vcpu, struct kvm_sregs2 *sregs2);
- static void __get_sregs2(struct kvm_vcpu *vcpu, struct kvm_sregs2 *sregs2);
- 
-+static void kvm_load_guest_fpu(struct kvm_vcpu *vcpu);
-+static void kvm_put_guest_fpu(struct kvm_vcpu *vcpu);
-+
- struct kvm_x86_ops kvm_x86_ops __read_mostly;
- 
- #define KVM_X86_OP(func)					     \
-@@ -4138,6 +4141,11 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+---
+v2:
+ - Drop optimization of writing directly the buffer, and change API
+   accordingly.
+ - fpregs_lock_and_load() suggested by tglx
+ - Some commit log verbiage from dhansen
+
+v1:
+ - New patch.
+
+ arch/x86/include/asm/fpu/api.h |  7 ++++++-
+ arch/x86/kernel/fpu/core.c     | 19 +++++++++++++++++++
+ 2 files changed, 25 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/fpu/api.h b/arch/x86/include/asm/fpu/api.h
+index 6b0f31fb53f7..4f34812b4dd5 100644
+--- a/arch/x86/include/asm/fpu/api.h
++++ b/arch/x86/include/asm/fpu/api.h
+@@ -82,6 +82,12 @@ static inline void fpregs_unlock(void)
+ 		preempt_enable();
  }
- EXPORT_SYMBOL_GPL(kvm_get_msr_common);
  
-+static bool is_xsaves_msr(u32 index)
++/*
++ * Lock and load the fpu state into the registers, if they are not already
++ * loaded.
++ */
++void fpu_lock_and_load(void);
++
+ #ifdef CONFIG_X86_DEBUG_FPU
+ extern void fpregs_assert_state_consistent(void);
+ #else
+@@ -163,5 +169,4 @@ static inline bool fpstate_is_confidential(struct fpu_guest *gfpu)
+ 
+ /* prctl */
+ extern long fpu_xstate_prctl(int option, unsigned long arg2);
+-
+ #endif /* _ASM_X86_FPU_API_H */
+diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+index 0531d6a06df5..4d250dba1619 100644
+--- a/arch/x86/kernel/fpu/core.c
++++ b/arch/x86/kernel/fpu/core.c
+@@ -756,6 +756,25 @@ void switch_fpu_return(void)
+ }
+ EXPORT_SYMBOL_GPL(switch_fpu_return);
+ 
++void fpu_lock_and_load(void)
 +{
-+	return index == MSR_IA32_U_CET || index == MSR_IA32_PL3_SSP;
-+}
++	/*
++	 * fpregs_lock() only disables preemption (mostly). So modifing state
++	 * in an interrupt could screw up some in progress fpregs operation,
++	 * but appear to work. Warn about it.
++	 */
++	WARN_ON_ONCE(!irq_fpu_usable());
++	WARN_ON_ONCE(current->flags & PF_KTHREAD);
 +
++	fpregs_lock();
++
++	fpregs_assert_state_consistent();
++
++	if (test_thread_flag(TIF_NEED_FPU_LOAD))
++		fpregs_restore_userregs();
++}
++EXPORT_SYMBOL_GPL(fpu_lock_and_load);
++
+ #ifdef CONFIG_X86_DEBUG_FPU
  /*
-  * Read or write a bunch of msrs. All parameters are kernel addresses.
-  *
-@@ -4148,11 +4156,20 @@ static int __msr_io(struct kvm_vcpu *vcpu, struct kvm_msrs *msrs,
- 		    int (*do_msr)(struct kvm_vcpu *vcpu,
- 				  unsigned index, u64 *data))
- {
-+	bool fpu_loaded = false;
- 	int i;
- 
--	for (i = 0; i < msrs->nmsrs; ++i)
-+	for (i = 0; i < msrs->nmsrs; ++i) {
-+		if (vcpu && !fpu_loaded && kvm_caps.supported_xss &&
-+		    is_xsaves_msr(entries[i].index)) {
-+			kvm_load_guest_fpu(vcpu);
-+			fpu_loaded = true;
-+		}
- 		if (do_msr(vcpu, entries[i].index, &entries[i].data))
- 			break;
-+	}
-+	if (fpu_loaded)
-+		kvm_put_guest_fpu(vcpu);
- 
- 	return i;
- }
+  * If current FPU state according to its tracking (loaded FPU context on this
 -- 
 2.27.0
 
