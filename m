@@ -2,136 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B16A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 10:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0332BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 10:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231468AbiFPKbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 06:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47652 "EHLO
+        id S1345993AbiFPKbq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 06:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiFPKbm (ORCPT
+        with ESMTP id S229479AbiFPKbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 06:31:42 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 67B3B5DBDC
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 03:31:41 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0FAB912FC;
-        Thu, 16 Jun 2022 03:31:41 -0700 (PDT)
-Received: from [10.57.82.209] (unknown [10.57.82.209])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 053D13F792;
-        Thu, 16 Jun 2022 03:31:37 -0700 (PDT)
-Message-ID: <521ed82e-f213-f635-6f5e-3e35ff8cc020@arm.com>
-Date:   Thu, 16 Jun 2022 11:31:32 +0100
+        Thu, 16 Jun 2022 06:31:44 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68CD65DBDC;
+        Thu, 16 Jun 2022 03:31:43 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25G5bV9E020293;
+        Thu, 16 Jun 2022 05:30:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=SWjGMvo8oAklPuUAPr0GO8gsjG1MhEdsELaW6hchfiw=;
+ b=BipmMncsH74v8veNumsPG80f69ITxRoIc7MJV5Zi2rL3bQ5+mk51dE2OhSzmVSXcq7gH
+ PEGgFbnUqvwGXfIrqJ+5fjoPCs/Ec0Xkqzid+BtBguxF7AGz3jEk9HM97FUnz0llfj2J
+ SnaDhpCKFjCiclLcSST3ThiOhMPJANt3/jQlGnqJBJU3znPc2cnzoHs2T5JeP00r4vW1
+ +i2GvVWeZtsvJEW+DVZc6JY+bzUtTbpkOGfl5P2UwepAFVGjZ9KNqVBGJKLeMv/iBE60
+ omgqxkY1nHhzKD6lTOH8noQqMiYRamjt+moKRGOZFv1oaYgr5Yax3RQkuoMHdxAE2o+x DQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gmrf35mrv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 16 Jun 2022 05:30:47 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 16 Jun
+ 2022 11:30:45 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
+ Transport; Thu, 16 Jun 2022 11:30:45 +0100
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 59ACC11D1;
+        Thu, 16 Jun 2022 10:30:45 +0000 (UTC)
+Date:   Thu, 16 Jun 2022 10:30:45 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Sameer Pujar <spujar@nvidia.com>
+CC:     <broonie@kernel.org>, <lgirdwood@gmail.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <thierry.reding@gmail.com>,
+        <jonathanh@nvidia.com>, <alsa-devel@alsa-project.org>,
+        <linux-tegra@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ASoC: tegra: Fix clock DAI format on Tegra210
+Message-ID: <20220616103045.GD38351@ediswmail.ad.cirrus.com>
+References: <1655280277-4701-1-git-send-email-spujar@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 2/5] iommu/mediatek: Add error path for loop of
- mm_dts_parse
-Content-Language: en-GB
-To:     Yong Wu <yong.wu@mediatek.com>
-Cc:     Joerg Roedel <joro@8bytes.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        mingyuan.ma@mediatek.com, yf.wang@mediatek.com,
-        libo.kang@mediatek.com, chengci.xu@mediatek.com,
-        youlin.pei@mediatek.com, anan.sun@mediatek.com,
-        xueqi.zhang@mediatek.com, Guenter Roeck <groeck@chromium.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220616054203.11365-1-yong.wu@mediatek.com>
- <20220616054203.11365-3-yong.wu@mediatek.com>
- <e2091397-b6e2-7296-1378-dc10b24c6ef4@arm.com>
- <b2ea919315d0084adb465378e6970dbfa4f0829e.camel@mediatek.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <b2ea919315d0084adb465378e6970dbfa4f0829e.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1655280277-4701-1-git-send-email-spujar@nvidia.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-GUID: Wz0DY6398pYy0H8B1wlsGdEhSyg4wtwQ
+X-Proofpoint-ORIG-GUID: Wz0DY6398pYy0H8B1wlsGdEhSyg4wtwQ
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-16 11:08, Yong Wu wrote:
-> On Thu, 2022-06-16 at 09:59 +0100, Robin Murphy wrote:
->> On 2022-06-16 06:42, Yong Wu wrote:
->>> The mtk_iommu_mm_dts_parse will parse the smi larbs nodes. if the
->>> i+1
->>> larb is parsed fail(return -EINVAL), we should of_node_put for the
->>> 0..i
->>> larbs. In the fail path, one of_node_put matches with
->>> of_parse_phandle in
->>> it.
->>>
->>> Fixes: d2e9a1102cfc ("iommu/mediatek: Contain MM IOMMU flow with
->>> the MM TYPE")
->>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->>> ---
->>>    drivers/iommu/mtk_iommu.c | 21 ++++++++++++++++-----
->>>    1 file changed, 16 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
->>> index 3b2489e8a6dd..ab24078938bf 100644
->>> --- a/drivers/iommu/mtk_iommu.c
->>> +++ b/drivers/iommu/mtk_iommu.c
->>> @@ -1071,12 +1071,12 @@ static int mtk_iommu_mm_dts_parse(struct
->>> device *dev, struct component_match **m
->>>    
->>>    		plarbdev = of_find_device_by_node(larbnode);
->>>    		if (!plarbdev) {
->>> -			of_node_put(larbnode);
->>> -			return -ENODEV;
->>> +			ret = -ENODEV;
->>> +			goto err_larbnode_put;
->>>    		}
->>>    		if (!plarbdev->dev.driver) {
->>> -			of_node_put(larbnode);
->>> -			return -EPROBE_DEFER;
->>> +			ret = -EPROBE_DEFER;
->>> +			goto err_larbnode_put;
->>>    		}
->>>    		data->larb_imu[id].dev = &plarbdev->dev;
->>>    
->>> @@ -1107,9 +1107,20 @@ static int mtk_iommu_mm_dts_parse(struct
->>> device *dev, struct component_match **m
->>>    			       DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
->>>    	if (!link) {
->>>    		dev_err(dev, "Unable to link %s.\n", dev_name(data-
->>>> smicomm_dev));
->>> -		return -EINVAL;
->>> +		ret = -EINVAL;
->>> +		goto err_larbnode_put;
->>>    	}
->>>    	return 0;
->>> +
->>> +err_larbnode_put:
->>> +	while (i--) {
->>> +		larbnode = of_parse_phandle(dev->of_node,
->>> "mediatek,larbs", i);
->>> +		if (larbnode && of_device_is_available(larbnode)) {
->>> +			of_node_put(larbnode);
->>> +			of_node_put(larbnode);
->>> +		}
->>
->> This looks a bit awkward - could we not just iterate through
->> data->larb_imu and put dev->of_node for each valid dev?
+On Wed, Jun 15, 2022 at 01:34:37PM +0530, Sameer Pujar wrote:
+> I2S reset failures are seen on Tegra210 and later platforms. This indicates
+> absence of I2S bit clock, which is required to perform the reset operation.
+> Following failures are seen with I2S based tests on Tegra210 and later:
 > 
-> It should work. Thanks very much.
+>   tegra210-i2s 2901100.i2s: timeout: failed to reset I2S for playback
+>   tegra210-i2s 2901100.i2s: ASoC: PRE_PMU: I2S2 RX event failed: -110
+>   tegra210-i2s 2901100.i2s: timeout: failed to reset I2S for capture
+>   tegra210-i2s 2901100.i2s: ASoC: PRE_PMU: I2S2 TX event failed: -110
 > 
->>
->> Also, of_find_device_by_node() takes a reference on the struct
->> device
->> itself, so strictly we should be doing put_device() on those as well
->> if we're bailing out.
+> The commit d92ad6633fa7 ("ASoC: tegra: Update to use set_fmt_new callback")
+> regressed I2S functionality on Tegra platforms. Basically it flipped clock
+> provider and consumer DAI formats. This configures Tegra I2S in consumer
+> mode by default now and there is none to provide bit clock during loopback
+> tests. The external codec based tests also fail because both Tegra I2S and
+> codec I2S get configured in consumer mode.
 > 
-> Thanks for this hint. A new reference for me. I will add it.
+> ASoC core flips the DAI format before calling set_fmt() for CPU DAIs. This
+> is negated in above commit. Fix this by swapping SND_SOC_DAIFMT_BC_FC and
+> SND_SOC_DAIFMT_BP_FP switch cases.
+> 
+> Fixes: d92ad6633fa7 ("ASoC: tegra: Update to use set_fmt_new callback")
+> Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+> Cc: Charles Keepax <ckeepax@opensource.cirrus.com>
+> ---
 
-In fact, thinking about it some more we may as well do the of_node_put() 
-unconditionally immediately after the of_find_device_by_node() call, so 
-then it's *only* the device references we'd need to worry about cleaning 
-up in the failure path.
+Ah.... I see what has happened there. As this device is one of
+the few CPU side components defining non_legacy_dai_naming whilst
+processing the DAI links the core would have been flipping the
+format for this driver as it would have mistaken it for a CODEC
+to CODEC link, so unlike the other CPU side components the flags
+shouldn't have been inverted when I converted this driver.
 
-Robin.
+Apologies for missing this whilst doing the updates, and thank
+you for fixing. I will check if there are any other cases of this
+that need to be hit.
+
+A bit late but for what it is worth:
+
+Reviewed-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+
+Thanks,
+Charles
