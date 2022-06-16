@@ -2,72 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76323C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4391BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377721AbiFPPBT (ORCPT
+        id S1377741AbiFPPCG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:01:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40328 "EHLO
+        Thu, 16 Jun 2022 11:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377684AbiFPPBR (ORCPT
+        with ESMTP id S236304AbiFPPCE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:01:17 -0400
-Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 80DBD3DA5A
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:01:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=84+Pu
-        5fnKooo8qCA8FiEHjFCWoachPuybfQHB/YT+D4=; b=Js2gilubOdDxh+PD8PWF3
-        YqzMmab94jo7Bzhp09vLZkmKEnuMlQBZPUARqUsIHwfR/i0YBgsISxpgIcTSQOA7
-        v/b5L0p4NE6mirAZNW49dGm32dKEt+HTy8xZqwnc2oS9s5DKgpTpa+gyciVdxoCQ
-        PZtd1slQAPnQ2QXMMcMQr0=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp8 (Coremail) with SMTP id NORpCgBXxHCARatitiMWFw--.50124S2;
-        Thu, 16 Jun 2022 23:00:16 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     linux@armlinux.org.uk, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com
-Cc:     windhl@126.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] arm: mach-imx: Fix refcount leak in mm-imx3.c
-Date:   Thu, 16 Jun 2022 23:00:15 +0800
-Message-Id: <20220616150015.3988416-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 16 Jun 2022 11:02:04 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4F13DA5A;
+        Thu, 16 Jun 2022 08:02:03 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id D04FA21D3C;
+        Thu, 16 Jun 2022 15:02:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655391721;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LG13+PzXyKkJJ354mhg9xbVpFu1cjtccEn2WqANniac=;
+        b=mbh8tz7rXmsWOg5e2UVivIlGK7FzI5U7F3c56jFPvl6mXdCGlc9iLdZtow9p9dRUmJ1KWr
+        m9y7qQ4aM9HJCLzPqk1BAjTCqynFZzLZUeUP0QUOkcWwlNQNMG7AHAtiGbmlbuRqQuTsYw
+        l2AIB/zgWvmncuK5HsM5Q3HBVdXzQK0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655391721;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LG13+PzXyKkJJ354mhg9xbVpFu1cjtccEn2WqANniac=;
+        b=/APgIUcaHjm7RI2mc8s+qU5gLnvZ/D0ZLdsUEFQN5wluO7t9WWzjyrkRxlomCfEGWu29YP
+        4X/Ufg+xwF6F9PCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 73BD41344E;
+        Thu, 16 Jun 2022 15:02:01 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id y8Y4G+lFq2IcOgAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Thu, 16 Jun 2022 15:02:01 +0000
+Date:   Thu, 16 Jun 2022 16:57:27 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     dsterba@suse.cz,
+        syzbot <syzbot+d2dd123304b4ae59f1bd@syzkaller.appspotmail.com>,
+        akpm@linux-foundation.org, clm@fb.com, dsterba@suse.com,
+        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
+        willy@infradead.org
+Subject: Re: [syzbot] KASAN: use-after-free Read in
+ copy_page_from_iter_atomic (2)
+Message-ID: <20220616145727.GB20633@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Christoph Hellwig <hch@lst.de>,
+        syzbot <syzbot+d2dd123304b4ae59f1bd@syzkaller.appspotmail.com>,
+        akpm@linux-foundation.org, clm@fb.com, dsterba@suse.com,
+        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
+        willy@infradead.org
+References: <0000000000003ce9d105e0db53c8@google.com>
+ <00000000000085068105e112a117@google.com>
+ <20220613193912.GI20633@twin.jikos.cz>
+ <20220614071757.GA1207@lst.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NORpCgBXxHCARatitiMWFw--.50124S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtF4UXry8JryrKry3KF4xCrg_yoW3WFc_ZF
-        4SgwnrJr4rCF4vvr1Uuw4fKa12va1rCFs8Ww1jy3WDtwsIvF17CrsFvFyIqa45Gw43KrW5
-        ArWkuF4Yy34akjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUj1rW7UUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi3AAiF1pEDu8btAAAs5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614071757.GA1207@lst.de>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In imx31_init_early(), of_find_compatible_node() will return a
-node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+On Tue, Jun 14, 2022 at 09:17:57AM +0200, Christoph Hellwig wrote:
+> On Mon, Jun 13, 2022 at 09:39:12PM +0200, David Sterba wrote:
+> > On Fri, Jun 10, 2022 at 12:10:19AM -0700, syzbot wrote:
+> > > syzbot has bisected this issue to:
+> > > 
+> > > commit 4cd4aed63125ccd4efc35162627827491c2a7be7
+> > > Author: Christoph Hellwig <hch@lst.de>
+> > > Date:   Fri May 27 08:43:20 2022 +0000
+> > > 
+> > >     btrfs: fold repair_io_failure into btrfs_repair_eb_io_failure
+> > 
+> > Josef also reported a crash and found a bug in the patch, now added as
+> > fixup that'll be in for-next:
+> 
+> The patch looks correct to me.  Two things to note here:
+> 
+>  - I hadn't realized you had queued up the series.
 
-Signed-off-by: Liang He <windhl@126.com>
----
- arch/arm/mach-imx/mm-imx3.c | 1 +
- 1 file changed, 1 insertion(+)
+I did a review and as it looked ok I added it to the for-next for
+testing coverage, but I don't think I've sent any notice about that.
 
-diff --git a/arch/arm/mach-imx/mm-imx3.c b/arch/arm/mach-imx/mm-imx3.c
-index 28db97289ee8..0944ffb08f40 100644
---- a/arch/arm/mach-imx/mm-imx3.c
-+++ b/arch/arm/mach-imx/mm-imx3.c
-@@ -107,6 +107,7 @@ void __init imx31_init_early(void)
- 	arm_pm_idle = imx31_idle;
- 	np = of_find_compatible_node(NULL, NULL, "fsl,imx31-ccm");
- 	mx3_ccm_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	BUG_ON(!mx3_ccm_base);
- }
- #endif /* ifdef CONFIG_SOC_IMX31 */
--- 
-2.25.1
+>  I've actually
+>    started to merge some of my bio work with the bio split at
+>    submission time work from Qu and after a few iterations I think
+>    I would do the repair code a bit differently based on that.
+>    Can you just drop the series for now?
 
+Yeah, we consistently hit 2 crashes, one of them has a fix but the other
+not, so I removed the topic branch from for-next. I'll wait for the
+reworked version you mention.
