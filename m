@@ -2,122 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D05C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:26:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C2AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:26:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377888AbiFPP0F (ORCPT
+        id S1377884AbiFPP0j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:26:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34460 "EHLO
+        Thu, 16 Jun 2022 11:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377466AbiFPP0B (ORCPT
+        with ESMTP id S233352AbiFPP0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:26:01 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06752E09A;
-        Thu, 16 Jun 2022 08:25:59 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id 20so2735020lfz.8;
-        Thu, 16 Jun 2022 08:25:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8ZuOwtq+9/VZTy3ADMx01Z5TJDecADF7IqscILS0mik=;
-        b=UpuPv1+qHiaeoBAs0xq2geW/piGdYhV79fhXrIXnZK6hzwORi8+yDhUNvIFCZbBAY7
-         W/d4GwXJAHWEdjxkQN8M6vw+9OGo1XHxXNP952NiyVyAFfAm/3pHSrpwxGBUuJupyEQy
-         U1ViGSyDAW56Au/YCMrcwo5cC8HGN+yKj49jC5wrBTOTX3iujMBifuFUI30tmH7AkGXb
-         tHIHW/+wUTbldWGvSZpO+iK0+JaIa0VsZleIGia4qruIM02pjSJGJo/oXbk0X6HYQWVV
-         r+umFUHOujGvtKTtDKuqiy2J6KeoYFIGRQK5dV5gfhmEPCY/2lcg9CZcoXzuR79KZ0hx
-         Mvug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8ZuOwtq+9/VZTy3ADMx01Z5TJDecADF7IqscILS0mik=;
-        b=Dawb9dBILlXFn8ghAm2OzSh27b9FbKKw+0/z530DigtkCfceLPg/ZKbNlTvQLFOXgj
-         WBfl6F/29jfF+cToNm/VUCyTMzRVlbINKfO0qkjX/3+IVgZxQCbWnGJFj9nddVqzQ9f5
-         LbianYlnmiuK/Sf9moHyXs+aE8EE9UR8mAuT0/YpUvgEkBMMAPrQuETXFAV4xy91WorT
-         kqty4TEnKBCqwO9WG8qL+1qGdY/2SsUZcrR9PdLeU5w9m9sHXR7BRbluYstULyYkMpPy
-         2jTbi5Nc20HS4wzOI91EDxOQIqYHc0J7VHpoL9BeHobSsHebqfo4jdsHRm1/ePer1n8b
-         xwUA==
-X-Gm-Message-State: AJIora9rglcQHcO5VRjpB3yNSJ/5YXK8/EQEM9nAipGECnniqgs4di2L
-        /BVlmKiqjS9GmmcOKfwCi9w=
-X-Google-Smtp-Source: AGRyM1swYi8yLV5/KLt9zHbj7cSXbJfccEEblBu6x3wtEFG6lr+CfAaV+P0StJVkAcVnu2+Qtluupw==
-X-Received: by 2002:a05:6512:1050:b0:47d:c714:10ba with SMTP id c16-20020a056512105000b0047dc71410bamr2962362lfb.165.1655393158203;
-        Thu, 16 Jun 2022 08:25:58 -0700 (PDT)
-Received: from localhost.localdomain (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
-        by smtp.gmail.com with ESMTPSA id a10-20020a19660a000000b0047e789b9700sm272794lfc.118.2022.06.16.08.25.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 08:25:57 -0700 (PDT)
-From:   Peter Ujfalusi <peter.ujfalusi@gmail.com>
-To:     dmitry.torokhov@gmail.com
-Cc:     tony@atomide.com, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Subject: [PATCH] Input: twl4030-vibra - Drop legacy, non DT boot support
-Date:   Thu, 16 Jun 2022 18:33:23 +0300
-Message-Id: <20220616153323.29464-1-peter.ujfalusi@gmail.com>
+        Thu, 16 Jun 2022 11:26:35 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2081.outbound.protection.outlook.com [40.107.244.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE4E3E0DE;
+        Thu, 16 Jun 2022 08:26:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tbnhsc3E4UQYDXIGfcTHkcH3l52rg99/tiyMDXwfG/AbNVGBYUQ8z70o+K9J7i7976K7Gft6WhYaIrT5SgdKhLzP8Dkjs+2ScVnYz9OV7vdBES4GJo1NkwR9Pxm4LC25lCa695+QirwgtQ/uIF0ivCRsSJFU88WTQU+4oQxAq8eGkEX4DHk3yc85P2mcUctA8jIjg7hAB0vpIRuMh10VoplVEmJjpgTpES9HgSPKpKeLhr18Aum716R0Qhee26G/4iOiHHoS9jbR5AUscz2PRZjGD3R21jH3gwMCh6Nw/aWPAtzxluamFhfuJth+yPkgqXG14DdA5iH/kGX+3WPJPA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=056zqaav/O9xoKQlj4ASR/869+2G+tddCqrZV62HdDs=;
+ b=lQ+3TU5kSqtKje5+uXiY6FjA+bRscvx5ZQi8Sw40P+QBYtUvplfUtA0tk2b8JCEBBODzwmnU2yosWQW1tKOfOUtgXAgj8O4HAfP9AbuEMqYkqKwbQtSpo3sy4i1fi+GZiiK+oCgXYfPfbeB8rs5fUOqHEH9jjk8yXJfsKRGumP2+pB26/PMcC0U2njTgGz6J77zjhYfliDewp13B/xa7FyNzTVPqZg+sN9ElNe/q6j8qSb071q1dYfGzhEGQFSHmv8DtkzR5RIooILhjAgDtMi3YwiQWwhAwU7PuIbTyWfbY5tRc21/CautgU1ehKX0XOFofyK5xrmNENcpUnzQzaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=056zqaav/O9xoKQlj4ASR/869+2G+tddCqrZV62HdDs=;
+ b=N3c3kniTI+UJcteEedK3Mw+4RLSN+v8SAt9Q20tBwzyMmJkJ1Rt3IrXYeUZYP981DGlQ/v04HVh6c+rNlw+tzBYRjYIS1xsqan2EYlyqnYCtXPlSZf9aAOSl74RNlUc/r9MpAz+GKLyyXfjwzE2x5m949zMkswP89nkMPbe2qWM=
+Received: from DM3PR08CA0001.namprd08.prod.outlook.com (2603:10b6:0:52::11) by
+ MN2PR12MB4437.namprd12.prod.outlook.com (2603:10b6:208:26f::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.14; Thu, 16 Jun
+ 2022 15:26:32 +0000
+Received: from DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:0:52:cafe::51) by DM3PR08CA0001.outlook.office365.com
+ (2603:10b6:0:52::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14 via Frontend
+ Transport; Thu, 16 Jun 2022 15:26:32 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT059.mail.protection.outlook.com (10.13.172.92) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5332.12 via Frontend Transport; Thu, 16 Jun 2022 15:26:32 +0000
+Received: from tlendack-t1.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 16 Jun
+ 2022 10:26:30 -0500
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+To:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        John Allen <john.allen@amd.com>,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Michael Roth <michael.roth@amd.com>
+Subject: [PATCH] crypto: ccp - During shutdown, check SEV data pointer before using
+Date:   Thu, 16 Jun 2022 10:26:18 -0500
+Message-ID: <7be057567582b480fd10a8d3d8d6574af4a73f2a.1655393178.git.thomas.lendacky@amd.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b3ddbd94-ee49-4277-92df-08da4fac97c0
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4437:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB4437DE20196F6C25874EBFD5ECAC9@MN2PR12MB4437.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: L8ShrgbVUPzpbrnZV6XyKfGFJzAvdKvl7zCSONeQnO184k59LzYFxgtirHQI3Q4UoxYV4Em3QDlnnX6rF+EMj/563zT0uKGodniojY+veh27ya6PLyPxlpMkm8wK4SdDHZAxK8Pfxjqf2l8c8FCNiqiacHCq45NIgV76XB9aGubsfRYmqOI35bB6HXbGgUKMuYb6zcSP5Noox/gP+A6wxNjvlGmaNGyDZa0EoxfRjIfJOmYWcMVAltu5Fakgx/EOBeuqPJllUAA4ECx/1R6ZpmoOjOrqEplxRkziErOw8zUM6mpfmuFUkflIqIPU6q6YkFzLHY5ia2VK95xcrD2g4/LKkKBMUW7ZDdtR9HoZCb14PoylRI4vQwNfcVIxZgHZXn7yqnpQycmYMScAqNqyVaS273PfpyUnPT/0boOR3EB68AWjGhRBfT3rx2BamOkc9WzplgIik66A3+H3YQYUvjrTINgwi/jHuPyeHl7cUmC6HXE2MvsdTsK374thGrlY81ltE0B77fWBhxH74zyR2LMsgV+8O76CXYCV+r8rUEQCbzruoHW8RIlqCdQOmj7pYpD5ow6192Q5glzPURwn6xFdeUIXnPh8p0kNWWM8ZvKCaPKTaO3DL5MK7ZntmVYQNWO6ud36CQ0OvFdTTdyFtx++re4X9+21hjJjJ/vcYy3myn4GyskM67BcwB4nMMJrJQ6rDUxLljh0XHKpx8iGFQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(36840700001)(40470700004)(46966006)(110136005)(498600001)(356005)(8936002)(54906003)(40460700003)(316002)(5660300002)(81166007)(4326008)(8676002)(70586007)(70206006)(6666004)(83380400001)(36860700001)(16526019)(426003)(2616005)(47076005)(186003)(86362001)(26005)(82310400005)(2906002)(336012)(36756003)(7696005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2022 15:26:32.4202
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3ddbd94-ee49-4277-92df-08da4fac97c0
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4437
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Legacy or non DT boot is no longer possible on systems where the
-tw4030/5030 is used.
+On shutdown, each CCP device instance performs shutdown processing.
+However, __sev_platform_shutdown_locked() uses the controlling psp
+structure to obtain the pointer to the sev_device structure. However,
+during driver initialization, it is possible that an error can be received
+from the firmware that results in the sev_data pointer being cleared from
+the controlling psp structure. The __sev_platform_shutdown_locked()
+function does not check for this situation and will segfault.
 
-Drop the support for handling legacy pdata.
+While not common, this scenario should be accounted for. Add a check for a
+NULL sev_device structure before attempting to use it.
 
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+Fixes: 5441a07a127f ("crypto: ccp - shutdown SEV firmware on kexec")
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
 ---
- drivers/input/misc/twl4030-vibra.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ drivers/crypto/ccp/sev-dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/input/misc/twl4030-vibra.c b/drivers/input/misc/twl4030-vibra.c
-index e0ff616fb857..5619996da86f 100644
---- a/drivers/input/misc/twl4030-vibra.c
-+++ b/drivers/input/misc/twl4030-vibra.c
-@@ -163,14 +163,10 @@ static int __maybe_unused twl4030_vibra_resume(struct device *dev)
- static SIMPLE_DEV_PM_OPS(twl4030_vibra_pm_ops,
- 			 twl4030_vibra_suspend, twl4030_vibra_resume);
- 
--static bool twl4030_vibra_check_coexist(struct twl4030_vibra_data *pdata,
--			      struct device_node *parent)
-+static bool twl4030_vibra_check_coexist(struct device_node *parent)
- {
- 	struct device_node *node;
- 
--	if (pdata && pdata->coexist)
--		return true;
--
- 	node = of_get_child_by_name(parent, "codec");
- 	if (node) {
- 		of_node_put(node);
-@@ -182,13 +178,12 @@ static bool twl4030_vibra_check_coexist(struct twl4030_vibra_data *pdata,
- 
- static int twl4030_vibra_probe(struct platform_device *pdev)
- {
--	struct twl4030_vibra_data *pdata = dev_get_platdata(&pdev->dev);
- 	struct device_node *twl4030_core_node = pdev->dev.parent->of_node;
- 	struct vibra_info *info;
+diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+index 799b476fc3e8..7baf7659c7c5 100644
+--- a/drivers/crypto/ccp/sev-dev.c
++++ b/drivers/crypto/ccp/sev-dev.c
+@@ -503,7 +503,7 @@ static int __sev_platform_shutdown_locked(int *error)
+ 	struct sev_device *sev = psp_master->sev_data;
  	int ret;
  
--	if (!pdata && !twl4030_core_node) {
--		dev_dbg(&pdev->dev, "platform_data not available\n");
-+	if (!twl4030_core_node) {
-+		dev_dbg(&pdev->dev, "twl4030 OF node is missing\n");
- 		return -EINVAL;
- 	}
+-	if (sev->state == SEV_STATE_UNINIT)
++	if (!sev || sev->state == SEV_STATE_UNINIT)
+ 		return 0;
  
-@@ -197,7 +192,7 @@ static int twl4030_vibra_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	info->dev = &pdev->dev;
--	info->coexist = twl4030_vibra_check_coexist(pdata, twl4030_core_node);
-+	info->coexist = twl4030_vibra_check_coexist(twl4030_core_node);
- 	INIT_WORK(&info->play_work, vibra_play_work);
- 
- 	info->input_dev = devm_input_allocate_device(&pdev->dev);
+ 	ret = __sev_do_cmd_locked(SEV_CMD_SHUTDOWN, NULL, error);
 -- 
 2.36.1
 
