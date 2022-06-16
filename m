@@ -2,67 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E681C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E46CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 13:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231378AbiFPN6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 09:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
+        id S1377513AbiFPN6s (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 09:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377352AbiFPN5h (ORCPT
+        with ESMTP id S1377430AbiFPN6M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 09:57:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF01CD0;
-        Thu, 16 Jun 2022 06:57:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48E8EB823C4;
-        Thu, 16 Jun 2022 13:57:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5616C34114;
-        Thu, 16 Jun 2022 13:57:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655387847;
-        bh=7OGNMTwV/KFRHTVu5XLpdbkyVzZASMOM/AiJOgjfH0k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ADTKtU0M4BMysZHUWVTX6MILWsaoSnp2ganp0Mdr2spIMzSfITiAbGnHuQ5QTpzAY
-         WxADUUDkxr2aywRH8sPIdjcNYhO3FvCxvfkr8HKMhQCtz4AfqCs4cLGcvO+QkDlMX9
-         9RVePZuXTELG5kx0Ln/BROb2FEhItNzc2CKDF8yp2c/NUNtpiQWBLVALnTXCq0mGWD
-         VzY86WCRoNKbY2IRMjC4QNOlBmXBBRVi+kr/lD+yzaTBKOWuJSc7IhHoxz/vD6LlEa
-         x0SqzrPZUL1Ug6cAwfgAMJ4s/9i6bTPSivAVeohwjQCzEFmeLa5cv9E20Bu6SYBR5R
-         /cAmJ8zDISJzQ==
-Date:   Thu, 16 Jun 2022 06:57:27 -0700
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: dma: apple,admac: Fix example interrupt
- parsing
-Message-ID: <Yqs2x+BPbCxJvI6I@matsya>
-References: <20220614152503.1410755-1-robh@kernel.org>
+        Thu, 16 Jun 2022 09:58:12 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC8515A14;
+        Thu, 16 Jun 2022 06:57:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655387885; x=1686923885;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Ym97UMCJzp/R175RT3xO1NFJ8cZwyDX4UgHmRfmcHZo=;
+  b=IezYgq93mGC77la7Sy34xtaA+gh4Gsx1x2oPOMQOGGeqoXrDJeZdfTvL
+   tcCLDZzBhG6RdKb4kJ5pVzKF4X9shUXCLmUZybqie1GJdLRDdmecNvy6M
+   AEB7+zzO9w8SSPCzd+FYoUV8AT1l08bCKyNJsv8aMOWpoYUHSv0E2lOvN
+   iSY7vkqqT7h0Boa4Vb//0ZmuFe+qTUBiux3qmrLRyowyyoxSx7c0J+zJC
+   TreFeTZJcxBi9al57oQUnBoLxmubKdmC9dJGOGwD4N/DAM9FwCxYeLowV
+   Le50lppR8M5K3gqdOCB6DyQfXEwNRnDvMXGAg4DF/qSlWOqImGYrBzXGQ
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="168685529"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Jun 2022 06:57:58 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 16 Jun 2022 06:57:57 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 16 Jun 2022 06:57:55 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <richard.genoud@gmail.com>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <patrice.chotard@foss.st.com>
+CC:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v3 0/4] serial: atmel: cleanup code
+Date:   Thu, 16 Jun 2022 17:00:20 +0300
+Message-ID: <20220616140024.2081238-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614152503.1410755-1-robh@kernel.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14-06-22, 09:25, Rob Herring wrote:
-> Commit 873971f8fb08 ("dt-bindings: dma: Add Apple ADMAC") has a warning
-> in its example:
-> 
-> Documentation/devicetree/bindings/dma/apple,admac.example.dtb: dma-controller@238200000: interrupts-extended: [[0], [4294967295, 0, 626, 4, 0, 0]] is too short
-> 	From schema: /builds/robherring/linux-dt/Documentation/devicetree/bindings/dma/apple,admac.yaml
-> 
-> The problem is the number of interrupt cells can't be guessed when
-> there are empty '0' entries. So the example must have a valid interrupt
-> controller defining the number of interrupt cells.
+Hi,
 
-Applied, thanks
+The following patches does some cleanup for atmel_serial driver by
+switching to dev_pm_ops and improving clock management code. Along with
+it I took the chance and introduced a patch for st-asc which removes the
+include of pm_runtime.h.
+
+Thank you,
+Claudiu Beznea
+
+Changes in v3:
+- removed "int ret;" from atmel_console_setup() as suggested in
+  the review of v1
+  
+Changes in v2:
+- split patch 2/3 from v1 in patch 2/4 and patch 3/4 in this
+  series
+- collected tags
+
+Claudiu Beznea (4):
+  tty: serial: atmel: stop using legacy pm ops
+  tty: serial: atmel: use devm_clk_get()
+  tty: serial: atmel: remove enable/disable clock due to
+    atmel_console_setup()
+  serial: st-asc: remove include of pm_runtime.h
+
+ drivers/tty/serial/atmel_serial.c | 94 +++++++++----------------------
+ drivers/tty/serial/st-asc.c       |  1 -
+ 2 files changed, 26 insertions(+), 69 deletions(-)
 
 -- 
-~Vinod
+2.34.1
+
