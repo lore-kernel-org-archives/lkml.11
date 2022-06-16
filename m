@@ -2,53 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C758C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359562AbiFPIye (ORCPT
+        id S1376374AbiFPIzV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45880 "EHLO
+        Thu, 16 Jun 2022 04:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359801AbiFPIyR (ORCPT
+        with ESMTP id S1376717AbiFPIyu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:54:17 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 34A825E15A;
-        Thu, 16 Jun 2022 01:52:03 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id AD90D812F;
-        Thu, 16 Jun 2022 08:46:55 +0000 (UTC)
-Date:   Thu, 16 Jun 2022 11:51:41 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+        Thu, 16 Jun 2022 04:54:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EBD931F;
+        Thu, 16 Jun 2022 01:53:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E1EE60A52;
+        Thu, 16 Jun 2022 08:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FC38C34114;
+        Thu, 16 Jun 2022 08:53:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655369586;
+        bh=D+RdnsGxCjpna2nFhDsPH8yn1kQWXeuteyiCbSjG4Ok=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Cyn9DqW2Bo3mTonREJvlbSy94eHhheJutfKkKp95w8UonnXD/cBAVYT49zitJOw0h
+         Njb5JNPyai8ZEzJ2wsmM/OeHwfADxJrgtU4ktEFJIhuxjlHbjIge6BTgah+IppHcJ9
+         +RZii4ZnqzTrJbAcOhsNBrcxK/OwbQy3+gXUa9jbNQnJzL3bQXwatqRIrhgi6l/kAc
+         mtHG21XDf9NbXqpe8SWE2LEf3NT31JizOozm0/7vv9XQWcizJdDc9EzTpKDGDXjN2U
+         VuACe89/ZSQJKOhPijA0LeXaoEmnyMOM4y2EGre4RrjwA/fJhAZtfRTgi6byfPeltp
+         Iry4eYOCNY6gw==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Federico Vaga <federico.vaga@gmail.com>,
+        Giancarlo Asnaghi <giancarlo.asnaghi@st.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Jacopo Mondi <jacopo@jmondi.org>, linux-media@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] serial: core: Start managing serial controllers
- to enable runtime PM
-Message-ID: <YqrvHSjiRGLC4z9p@atomide.com>
-References: <20220615062455.15490-1-tony@atomide.com>
- <YqmjnaawQ2gye/pe@smile.fi.intel.com>
+Subject: [PATCH] media: sta2x11: remove VIRT_TO_BUS dependency
+Date:   Thu, 16 Jun 2022 10:52:42 +0200
+Message-Id: <20220616085254.2275372-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqmjnaawQ2gye/pe@smile.fi.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Andy Shevchenko <andriy.shevchenko@linux.intel.com> [220615 09:12]:
-> However, I dunno if it will get a lot of benefit, would be nice to see
-> bloat-o-meter output for your variant and my proposal.
+From: Arnd Bergmann <arnd@arndb.de>
 
-Yup this saves some instructions, I'm seeing a 0.19% reduction.
+This driver does not use the virt_to_bus() function, though it
+depends on x86 specific fixups in the swiotlb code, which was
+last rewritten in commit e380a0394c36 ("x86/PCI: sta2x11: use
+default DMA address translation").
 
-Regards,
+It is possible that the driver still fails to build on some
+architectures that are missing CONFIG_VIRT_TO_BUS, but it is
+always set on x86 machines with the STA2X11 platform enabled.
 
-Tony
+More likely though is that it was never meant to depend on
+CONFIG_VIRT_TO_BUS, and the Kconfig dependency was kept from
+an out-of-tree version when the driver was originally merged.
+
+Fixes: efeb98b4e2b2 ("[media] STA2X11 VIP: new V4L2 driver")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/media/pci/sta2x11/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/pci/sta2x11/Kconfig b/drivers/media/pci/sta2x11/Kconfig
+index a96e170ab04e..118b922c08c3 100644
+--- a/drivers/media/pci/sta2x11/Kconfig
++++ b/drivers/media/pci/sta2x11/Kconfig
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config STA2X11_VIP
+ 	tristate "STA2X11 VIP Video For Linux"
+-	depends on PCI && VIDEO_DEV && VIRT_TO_BUS && I2C
++	depends on PCI && VIDEO_DEV && I2C
+ 	depends on STA2X11 || COMPILE_TEST
+ 	select GPIOLIB if MEDIA_SUBDRV_AUTOSELECT
+ 	select VIDEO_ADV7180 if MEDIA_SUBDRV_AUTOSELECT
+-- 
+2.29.2
+
