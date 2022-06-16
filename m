@@ -2,52 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA993C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE39EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 08:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359857AbiFPIsk (ORCPT
+        id S1376487AbiFPItF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 04:48:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
+        Thu, 16 Jun 2022 04:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359750AbiFPIsL (ORCPT
+        with ESMTP id S1376282AbiFPIsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 04:48:11 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B455DD0F;
-        Thu, 16 Jun 2022 01:47:08 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1o1l9Z-007gHw-SD; Thu, 16 Jun 2022 18:47:03 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 16 Jun 2022 16:47:02 +0800
-Date:   Thu, 16 Jun 2022 16:47:02 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     David Howells <dhowells@redhat.com>
-Cc:     Simo Sorce <simo@redhat.com>, Jarkko Sakkinen <jarkko@kernel.org>,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] certs: Add FIPS self-test for signature verification
-Message-ID: <YqruBocst8LHEVxB@gondor.apana.org.au>
-References: <YqleGzRD4ax4msjL@gondor.apana.org.au>
- <165515741424.1554877.9363755381201121213.stgit@warthog.procyon.org.uk>
- <2689861.1655332458@warthog.procyon.org.uk>
+        Thu, 16 Jun 2022 04:48:47 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20AF6140F4;
+        Thu, 16 Jun 2022 01:47:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655369262; x=1686905262;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=JCzwZqsQLcwAChNZSNEP8E57myWOINezNqkUJ+d22/E=;
+  b=E7T2NxjN1uDnhZWqhF/IfGuj6ZqE2BJdleQZLFtSGc+Wn7trzG4Keees
+   1qKyZpE0TYwql7WDDOKWxVYp+MSqPEejwWQxgxHk6WDNHh0RAajP1l15J
+   gUbBVdxpy2fhz6d6fow7vxB+Itf6NGBTnXlr+ooqH3pcbABnsw/X9sXCJ
+   1pqh/PXifnd37YPqYKJ/C8VkY+TYZq8lDmqgUac8swMe/Uq37Pq0S7Xb4
+   P8HakVyZXt+kqyjFrYi9EX5ZRHPbQXn4XfFMYJmcuKWFsy7nF7DcnWZJ2
+   pSBP6B6hIhWJqcKeJ9SoDa+i/s37EhbRgxwkldSItuuLGeJcrC+klzRJ5
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259055230"
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
+   d="scan'208";a="259055230"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:41 -0700
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
+   d="scan'208";a="613083163"
+Received: from embargo.jf.intel.com ([10.165.9.183])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 01:47:40 -0700
+From:   Yang Weijiang <weijiang.yang@intel.com>
+To:     pbonzini@redhat.com, seanjc@google.com, x86@kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rick.p.edgecombe@intel.com
+Cc:     weijiang.yang@intel.com,
+        Sean Christopherson <sean.j.christopherson@intel.com>
+Subject: [PATCH 12/19] KVM: VMX: Emulate reads and writes to CET MSRs
+Date:   Thu, 16 Jun 2022 04:46:36 -0400
+Message-Id: <20220616084643.19564-13-weijiang.yang@intel.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220616084643.19564-1-weijiang.yang@intel.com>
+References: <20220616084643.19564-1-weijiang.yang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2689861.1655332458@warthog.procyon.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 11:34:18PM +0100, David Howells wrote:
-> Herbert Xu <herbert@gondor.apana.org.au> wrote:
-> 
-> > It looks OK to me.
-> 
-> Can I put that down as a Reviewed-by?
+Add support for emulating read and write accesses to CET MSRs.
+CET MSRs are universally "special" as they are either context
+switched via dedicated VMCS fields or via XSAVES, i.e. no
+additional in-memory tracking is needed, but emulated reads/writes
+are more expensive.
 
-Reviewd-by: Herbert Xu <herbert@gondor.apana.org.au>
+Co-developed-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
+---
+ arch/x86/kvm/vmx/vmx.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+ arch/x86/kvm/x86.h     | 31 +++++++++++++++++++++++++++++++
+ 2 files changed, 73 insertions(+)
+
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 5e14e4c40007..d1f2ffa07576 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -1767,6 +1767,26 @@ static int vmx_get_msr_feature(struct kvm_msr_entry *msr)
+ 	}
+ }
+ 
++static bool cet_is_msr_accessible(struct kvm_vcpu *vcpu,
++				  struct msr_data *msr)
++{
++	if (!kvm_cet_user_supported())
++		return false;
++
++	if (msr->host_initiated)
++		return true;
++
++	if (!guest_cpuid_has(vcpu, X86_FEATURE_SHSTK) &&
++	    !guest_cpuid_has(vcpu, X86_FEATURE_IBT))
++		return false;
++
++	if (msr->index == MSR_IA32_PL3_SSP &&
++	    !guest_cpuid_has(vcpu, X86_FEATURE_SHSTK))
++		return false;
++
++	return true;
++}
++
+ /*
+  * Reads an msr value (of 'msr_info->index') into 'msr_info->data'.
+  * Returns 0 on success, non-0 otherwise.
+@@ -1906,6 +1926,12 @@ static int vmx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		else
+ 			msr_info->data = vmx->pt_desc.guest.addr_a[index / 2];
+ 		break;
++	case MSR_IA32_U_CET:
++	case MSR_IA32_PL3_SSP:
++		if (!cet_is_msr_accessible(vcpu, msr_info))
++			return 1;
++		kvm_get_xsave_msr(msr_info);
++		break;
+ 	case MSR_IA32_DEBUGCTLMSR:
+ 		msr_info->data = vmcs_read64(GUEST_IA32_DEBUGCTL);
+ 		break;
+@@ -2238,6 +2264,22 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		else
+ 			vmx->pt_desc.guest.addr_a[index / 2] = data;
+ 		break;
++	case MSR_IA32_U_CET:
++		if (!cet_is_msr_accessible(vcpu, msr_info))
++			return 1;
++		if ((data & GENMASK(9, 6)) ||
++		    is_noncanonical_address(data, vcpu))
++			return 1;
++		kvm_set_xsave_msr(msr_info);
++		break;
++	case MSR_IA32_PL3_SSP:
++		if (!cet_is_msr_accessible(vcpu, msr_info))
++			return 1;
++		if ((data & GENMASK(2, 0)) ||
++		    is_noncanonical_address(data, vcpu))
++			return 1;
++		kvm_set_xsave_msr(msr_info);
++		break;
+ 	case MSR_IA32_PERF_CAPABILITIES:
+ 		if (data && !vcpu_to_pmu(vcpu)->version)
+ 			return 1;
+diff --git a/arch/x86/kvm/x86.h b/arch/x86/kvm/x86.h
+index 01493b7ae150..f6000e3fb195 100644
+--- a/arch/x86/kvm/x86.h
++++ b/arch/x86/kvm/x86.h
+@@ -2,6 +2,7 @@
+ #ifndef ARCH_X86_KVM_X86_H
+ #define ARCH_X86_KVM_X86_H
+ 
++#include <asm/fpu/api.h>
+ #include <linux/kvm_host.h>
+ #include <asm/mce.h>
+ #include <asm/pvclock.h>
+@@ -323,6 +324,16 @@ static inline bool kvm_mpx_supported(void)
+ 		== (XFEATURE_MASK_BNDREGS | XFEATURE_MASK_BNDCSR);
+ }
+ 
++/*
++ * Guest CET user mode states depend on host XSAVES/XRSTORS to save/restore
++ * when vCPU enter/exit user space. If host doesn't support CET user bit in
++ * XSS msr, then treat this case as KVM doesn't support CET user mode.
++ */
++static inline bool kvm_cet_user_supported(void)
++{
++	return !!(kvm_caps.supported_xss & XFEATURE_MASK_CET_USER);
++}
++
+ extern unsigned int min_timer_period_us;
+ 
+ extern bool enable_vmware_backdoor;
+@@ -491,4 +502,24 @@ int kvm_sev_es_string_io(struct kvm_vcpu *vcpu, unsigned int size,
+ 			 unsigned int port, void *data,  unsigned int count,
+ 			 int in);
+ 
++/*
++ * We've already loaded guest MSRs in __msr_io() when check the MSR index.
++ * In case vcpu has been preempted, we need to disable preemption, check
++ * and reload the guest fpu states before issue MSR read/write,
++ * fpu_lock_and_load() serves the purpose well.
++ */
++static inline void kvm_get_xsave_msr(struct msr_data *msr_info)
++{
++	fpu_lock_and_load();
++	rdmsrl(msr_info->index, msr_info->data);
++	fpregs_unlock();
++}
++
++static inline void kvm_set_xsave_msr(struct msr_data *msr_info)
++{
++	fpu_lock_and_load();
++	wrmsrl(msr_info->index, msr_info->data);
++	fpregs_unlock();
++}
++
+ #endif
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.27.0
+
