@@ -2,84 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A004BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 18:01:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B022FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 18:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240948AbiFPSBA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 14:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
+        id S243374AbiFPSC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 14:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiFPSA6 (ORCPT
+        with ESMTP id S229561AbiFPSC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 14:00:58 -0400
-Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9EFF13F44;
-        Thu, 16 Jun 2022 11:00:57 -0700 (PDT)
-Received: by mail-io1-f53.google.com with SMTP id a10so2249450ioe.9;
-        Thu, 16 Jun 2022 11:00:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fQXZSJhht4X5yNvw03hLRu3BZWLlJCfLhF7rU9SmcRw=;
-        b=SBDuUIjY3V9QWdkZKbh/lMHW/CKxuk9YPjIQ+0wyD0H2Pq3wQA3BIljWG4eU4hU42U
-         vuN1cP6Vge93K9x+1axw9YeKyMz3aOtOtBBbZp39N7xDDsqnZFJ6OJ/XRJqfI7Pgst/K
-         g88Jf5BJyhp0grG+ZP2z6I/mo/lWghnC2C+8n1bF0ogeQ/Gm176HIM47IITFJ7dAje6p
-         7iFOt9OVF1RJ2wpvDU9DP7xMoyBfOhtZ2i9YbMyhdHiWFp4dJ1QJ9ywfP2tgMsoeLIi5
-         4Oa+tTaTHmpXQWx2fytKf5oNYNvSL+5/13Vz0STCiBJOstG4lLaHTTuOI0zJTsyP5Rfl
-         JnYg==
-X-Gm-Message-State: AJIora/JK/aPjNXZfiKvSUxpaeBwUVHWaTWZjlaSeF1VpCkjgCVy9m93
-        UUfj9RKnoSFz+R8+d9t8FQ==
-X-Google-Smtp-Source: AGRyM1spQJ7T8UrCvJ5pQYvBWRSSImqT+IRmKQ5FRE4451GZSxPWdZRJu8178mpfIlKesP0Ydg80uw==
-X-Received: by 2002:a05:6602:2c4c:b0:64f:a897:80cb with SMTP id x12-20020a0566022c4c00b0064fa89780cbmr3138193iov.139.1655402457088;
-        Thu, 16 Jun 2022 11:00:57 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id y203-20020a6bc8d4000000b00669c07fbcb5sm1457589iof.5.2022.06.16.11.00.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 11:00:56 -0700 (PDT)
-Received: (nullmailer pid 3729785 invoked by uid 1000);
-        Thu, 16 Jun 2022 18:00:54 -0000
-Date:   Thu, 16 Jun 2022 12:00:54 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Wolfram Sang <wsa@kernel.org>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>, linux-serial@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-spi@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>
-Subject: Re: [PATCH] dt-bindings: efm32: remove bindings for deleted platform
-Message-ID: <20220616180054.GA3728782-robh@kernel.org>
-References: <20220615210720.6363-1-wsa@kernel.org>
+        Thu, 16 Jun 2022 14:02:58 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 284ECE0DF
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 11:02:57 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0B50111FB;
+        Thu, 16 Jun 2022 11:02:57 -0700 (PDT)
+Received: from [10.57.82.209] (unknown [10.57.82.209])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C70CA3F73B;
+        Thu, 16 Jun 2022 11:02:55 -0700 (PDT)
+Message-ID: <5fa97307-19d7-a834-dbb9-c7001969a011@arm.com>
+Date:   Thu, 16 Jun 2022 19:02:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220615210720.6363-1-wsa@kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] firmware: arm_scmi: Relax CLOCK_DESCRIBE_RATES
+ out-of-spec checks
+Content-Language: en-GB
+To:     Cristian Marussi <cristian.marussi@arm.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     sudeep.holla@arm.com, nicola.mazzucato@arm.com,
+        vincent.guittot@linaro.org, f.fainelli@gmail.com
+References: <20220616170347.2800771-1-cristian.marussi@arm.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220616170347.2800771-1-cristian.marussi@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 23:07:19 +0200, Wolfram Sang wrote:
-> Commit cc6111375cec ("ARM: drop efm32 platform") removed the platform,
-> so no need to still carry the bindings.
+On 2022-06-16 18:03, Cristian Marussi wrote:
+> A reply to CLOCK_DESCRIBE_RATES issued against a non rate-discrete clock
+> should be composed of a triplet of rates descriptors (min/max/step)
+> returned all in one reply message.
 > 
-> Signed-off-by: Wolfram Sang <wsa@kernel.org>
-> ---
->  .../devicetree/bindings/clock/efm32-clock.txt | 11 -----
->  .../devicetree/bindings/i2c/i2c-efm32.txt     | 33 --------------
->  .../devicetree/bindings/serial/efm32-uart.txt | 20 ---------
->  .../devicetree/bindings/spi/efm32-spi.txt     | 39 -----------------
->  include/dt-bindings/clock/efm32-cmu.h         | 43 -------------------
->  5 files changed, 146 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/clock/efm32-clock.txt
->  delete mode 100644 Documentation/devicetree/bindings/i2c/i2c-efm32.txt
->  delete mode 100644 Documentation/devicetree/bindings/serial/efm32-uart.txt
->  delete mode 100644 Documentation/devicetree/bindings/spi/efm32-spi.txt
->  delete mode 100644 include/dt-bindings/clock/efm32-cmu.h
+> This is not always the case when dealing with some SCMI server deployed in
+> the wild: relax such constraint while maintaining memory safety by checking
+> carefully the returned payload size.
 > 
+> While at that cleanup a stale debug printout.
 
-Deletions are automatically applied, thanks! ;)
+I know we're testing on the same platform so it's of limited value, but 
+for the record this does indeed make my display work again, so FWIW:
+
+Tested-by: Robin Murphy <robin.murphy@arm.com>
+
+Thanks for the quick turnaround!
+Robin.
+
+> Fixes: 7bc7caafe6b1 ("firmware: arm_scmi: Use common iterators in the clock protocol")
+> Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+> ---
+>   drivers/firmware/arm_scmi/clock.c     | 26 +++++++++++++++++++++++++-
+>   drivers/firmware/arm_scmi/driver.c    |  1 +
+>   drivers/firmware/arm_scmi/protocols.h |  3 +++
+>   3 files changed, 29 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/firmware/arm_scmi/clock.c b/drivers/firmware/arm_scmi/clock.c
+> index c7a83f6e38e5..3ed7ae0d6781 100644
+> --- a/drivers/firmware/arm_scmi/clock.c
+> +++ b/drivers/firmware/arm_scmi/clock.c
+> @@ -194,6 +194,7 @@ static int rate_cmp_func(const void *_r1, const void *_r2)
+>   }
+>   
+>   struct scmi_clk_ipriv {
+> +	struct device *dev;
+>   	u32 clk_id;
+>   	struct scmi_clock_info *clk;
+>   };
+> @@ -223,6 +224,29 @@ iter_clk_describe_update_state(struct scmi_iterator_state *st,
+>   	st->num_returned = NUM_RETURNED(flags);
+>   	p->clk->rate_discrete = RATE_DISCRETE(flags);
+>   
+> +	/* Warn about out of spec replies ... */
+> +	if (!p->clk->rate_discrete &&
+> +	    (st->num_returned != 3 || st->num_remaining != 0)) {
+> +		dev_warn(p->dev,
+> +			 "Out-of-spec CLOCK_DESCRIBE_RATES reply for %s - returned:%d remaining:%d rx_len:%zd\n",
+> +			 p->clk->name, st->num_returned, st->num_remaining,
+> +			 st->rx_len);
+> +
+> +		/*
+> +		 * A known quirk: a triplet is returned but num_returned != 3
+> +		 * Check for a safe payload size and fix.
+> +		 */
+> +		if (st->num_returned != 3 && st->num_remaining == 0 &&
+> +		    st->rx_len == sizeof(*r) + sizeof(__le32) * 2 * 3) {
+> +			st->num_returned = 3;
+> +			st->num_remaining = 0;
+> +		} else {
+> +			dev_err(p->dev,
+> +				"Cannot fix out-of-spec reply !\n");
+> +			return -EPROTO;
+> +		}
+> +	}
+> +
+>   	return 0;
+>   }
+>   
+> @@ -255,7 +279,6 @@ iter_clk_describe_process_response(const struct scmi_protocol_handle *ph,
+>   
+>   		*rate = RATE_TO_U64(r->rate[st->loop_idx]);
+>   		p->clk->list.num_rates++;
+> -		//XXX dev_dbg(ph->dev, "Rate %llu Hz\n", *rate);
+>   	}
+>   
+>   	return ret;
+> @@ -275,6 +298,7 @@ scmi_clock_describe_rates_get(const struct scmi_protocol_handle *ph, u32 clk_id,
+>   	struct scmi_clk_ipriv cpriv = {
+>   		.clk_id = clk_id,
+>   		.clk = clk,
+> +		.dev = ph->dev,
+>   	};
+>   
+>   	iter = ph->hops->iter_response_init(ph, &ops, SCMI_MAX_NUM_RATES,
+> diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
+> index c1922bd650ae..8b7ac6663d57 100644
+> --- a/drivers/firmware/arm_scmi/driver.c
+> +++ b/drivers/firmware/arm_scmi/driver.c
+> @@ -1223,6 +1223,7 @@ static int scmi_iterator_run(void *iter)
+>   		if (ret)
+>   			break;
+>   
+> +		st->rx_len = i->t->rx.len;
+>   		ret = iops->update_state(st, i->resp, i->priv);
+>   		if (ret)
+>   			break;
+> diff --git a/drivers/firmware/arm_scmi/protocols.h b/drivers/firmware/arm_scmi/protocols.h
+> index c679f3fb8718..51c31379f9b3 100644
+> --- a/drivers/firmware/arm_scmi/protocols.h
+> +++ b/drivers/firmware/arm_scmi/protocols.h
+> @@ -179,6 +179,8 @@ struct scmi_protocol_handle {
+>    * @max_resources: Maximum acceptable number of items, configured by the caller
+>    *		   depending on the underlying resources that it is querying.
+>    * @loop_idx: The iterator loop index in the current multi-part reply.
+> + * @rx_len: Size in bytes of the currenly processed message; it can be used by
+> + *	    the user of the iterator to verify a reply size.
+>    * @priv: Optional pointer to some additional state-related private data setup
+>    *	  by the caller during the iterations.
+>    */
+> @@ -188,6 +190,7 @@ struct scmi_iterator_state {
+>   	unsigned int num_remaining;
+>   	unsigned int max_resources;
+>   	unsigned int loop_idx;
+> +	size_t rx_len;
+>   	void *priv;
+>   };
+>   
