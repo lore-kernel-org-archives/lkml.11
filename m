@@ -2,93 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 00:46:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93DEFCCA47D
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 00:48:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345483AbiFPAq3 (ORCPT
+        id S1347931AbiFPAs3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 15 Jun 2022 20:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
+        Wed, 15 Jun 2022 20:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiFPAq1 (ORCPT
+        with ESMTP id S1348260AbiFPAs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 15 Jun 2022 20:46:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5511FA67;
-        Wed, 15 Jun 2022 17:46:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F7B861B44;
-        Thu, 16 Jun 2022 00:46:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E60D4C3411C;
-        Thu, 16 Jun 2022 00:46:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655340385;
-        bh=Ka9NDcozxCqNwltwXXzj3Lfwvi1TlTiVEFw4V4KHWD8=;
-        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
-        b=r/puVxYETDOZCxUQCfuaj3xXycJAnIOLqJqr4OOZTzcpAusNRdD+sCDBhqnXBpd+L
-         VEAGcTDgHRjE5+O25FTl58K22H6Yw7+197rqfH+5H+CmNQeobZYub+ENenC77gC904
-         k8E1xcE3wRKqn04oGvPXf/O4TA64eAIR3HZwkvrfvRkGQfg+Fl4piPH10FsW19Pcoe
-         G6h+Oauivdpdzp8Ib1Y9Y7+Epav727KmZOpLUN9LGTgF3iQZIslfzbULvlewkXu4zJ
-         Ced5EICzRsQZ8dZkIgGGxDcPklA/wfKqbe6ZIuNJJKgtUKSyYiWuJqWcwNu4BTAnJ6
-         35XJb/LMqK6VQ==
-Received: by mail-wr1-f49.google.com with SMTP id q9so153484wrd.8;
-        Wed, 15 Jun 2022 17:46:25 -0700 (PDT)
-X-Gm-Message-State: AJIora+bLlqVQ6ADlOtS9MtbzTZ8687WorUO6HamDcTPTAVkxPE6CtBo
-        xjQfSnqmT0MXEpvk0Jncod8kJclHO+mjZDoBOpg=
-X-Google-Smtp-Source: AGRyM1tljmyc4LcN3jmT6djVfMgx8ZZLu1PyXYU1jz9TRziGsSv7ycvdKNWpR1ICxQlVLqmfXWmIhAwh+tZ7Go7CFCg=
-X-Received: by 2002:adf:ed45:0:b0:210:2f9c:f269 with SMTP id
- u5-20020adfed45000000b002102f9cf269mr2254360wro.470.1655340384125; Wed, 15
- Jun 2022 17:46:24 -0700 (PDT)
+        Wed, 15 Jun 2022 20:48:27 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7906056C12
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 17:48:26 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id u37so106122pfg.3
+        for <linux-kernel@vger.kernel.org>; Wed, 15 Jun 2022 17:48:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=qp3edhQcRtMcVJoA9hlhbeV2zjC7yml5vSoU96PZRCs=;
+        b=L+UOgh6JQRaNTE/JReN21PZAoB/6nnToA8fEWd5A+dV/kER0XwItK85xWljunHAbTj
+         gOaYlkoLs9AiT21Vx1wjmuduTErEd1/98fh87mBOcBvIwRDs7OMQg+T9OkjjR38w5sga
+         LmpXul/uvGcZVf+0MZIjD0IOMj5eNX1KXKh9uEOiRQP1MphFTgqUEf/wocXBm9tkhGOs
+         3oVI5BeEmbGRlqhvnxG5msKYLs4O6Y39pClLn2jaUo+RbTZoTSNpakdN7Wus8OCgGfgP
+         /RTmsCBnKxT9chsIAsIQHwGGdaZs/ySBEqpyKS8SMvKvTZZUxNMPQI63L5K188AIDF2J
+         i1GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=qp3edhQcRtMcVJoA9hlhbeV2zjC7yml5vSoU96PZRCs=;
+        b=jjVkQLNBFIWTv0Yabapb5KmKBF1E+fBjw/yB0XDEDF3teMssGE9009xyF8VpIN2bep
+         UY5JFJ2ir1fwgFVwhtQ5p1TLPqKm2wPxOfZ4LJ6SnPEfrWJMkIdMLPKr+DUEKE2qj7lW
+         GluTMMXteWfbe7YUcMZKEllnouIiG3iVvUSptoPuPxmo+GzGxPvV3UJNOZlt10Vxg4MY
+         2q5SMxXOK2N3ZsiXboyv0uKsLiWFwYHT6VQbhHFj/+bVTG8j4kXfpfKSXaVgw3KVi9O5
+         F4ZpMQ3y0mdSPEyVl26PS/7DbwTN9ROUStSt6/wrmjAm4nHn76wSLBDNT2zIZ7JuAnDE
+         fsHg==
+X-Gm-Message-State: AJIora9MB73542LkK7jDWuI6mO4RZJiMBp+JOCRw2KvPyMaU+tWGTdpX
+        6440QIM4dttApfk6Oc4kI1tgcEVD8XsfJg==
+X-Google-Smtp-Source: AGRyM1ueSK+tw3uFtmBZQL6kWbqp7RpDDRh7PzZWAcZOgdQZukfyMUyAAaRPhzF5ukPOnTqzdqLexw==
+X-Received: by 2002:a63:6f0b:0:b0:408:b8d9:f491 with SMTP id k11-20020a636f0b000000b00408b8d9f491mr2152776pgc.496.1655340505789;
+        Wed, 15 Jun 2022 17:48:25 -0700 (PDT)
+Received: from krzk-bin.. ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id f11-20020a170902684b00b001635c9e7f77sm253518pln.57.2022.06.15.17.48.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Jun 2022 17:48:25 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        arm@kernel.org, Olof Johansson <olof@lixom.net>,
+        linux-arm-kernel@lists.infradead.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-samsung-soc@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        soc@kernel.org
+Subject: Re: (subset) [PATCH v2 48/48] ARM: dts: s5pv210: align gpio-key node names with dtschema
+Date:   Wed, 15 Jun 2022 17:48:22 -0700
+Message-Id: <165534049853.17040.18012306290229997818.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220609114047.380793-9-krzysztof.kozlowski@linaro.org>
+References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org> <20220609114047.380793-9-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Received: by 2002:a05:6000:18ad:0:0:0:0 with HTTP; Wed, 15 Jun 2022 17:46:23
- -0700 (PDT)
-In-Reply-To: <SEZPR06MB526945BC172186A13FA60B11E8A69@SEZPR06MB5269.apcprd06.prod.outlook.com>
-References: <20220607024942.811-1-frank.li@vivo.com> <CAKYAXd99NAbQP6m93P3bcjvWTN-T8Qy59DHJyfyTHqdH-7aWBQ@mail.gmail.com>
- <SEZPR06MB526945BC172186A13FA60B11E8A69@SEZPR06MB5269.apcprd06.prod.outlook.com>
-From:   Namjae Jeon <linkinjeon@kernel.org>
-Date:   Thu, 16 Jun 2022 09:46:23 +0900
-X-Gmail-Original-Message-ID: <CAKYAXd_j-MAYP_8a3xEi2MmxZ9Po8t2di5_yi+7V1xXJuD006A@mail.gmail.com>
-Message-ID: <CAKYAXd_j-MAYP_8a3xEi2MmxZ9Po8t2di5_yi+7V1xXJuD006A@mail.gmail.com>
-Subject: =?UTF-8?B?UmU6IOetlOWkjTogW1BBVENIXSBleGZhdDogaW50b3JkdWNlIHNraXBfc3RyZWFtX2NoZQ==?=
-        =?UTF-8?B?Y2sgbW91bnQgb3B0?=
-To:     =?UTF-8?B?5p2O5oms6Z+s?= <frank.li@vivo.com>
-Cc:     "sj1557.seo@samsung.com" <sj1557.seo@samsung.com>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-2022-06-10 22:07 GMT+09:00, =E6=9D=8E=E6=89=AC=E9=9F=AC <frank.li@vivo.com>=
-:
-> HI Namjae,
->
->> Still having problem on linux-exfat after recovering it using windows
->> chkdsk?
->
-> After repairing with the chkdsk tool on the windows platform, the current
-> file can be accessed normally on linux.
-> However, it can be accessed normally on the Windows platform itself, and =
-no
-> tools are required to repair it.
-> Imagine that if some users do not have a Windows environment and do not
-> understand repair tools, they
-> cannot access these files on Linux.
->
-> Why not just skip the stream entry like Windows does and allow access
-> without fixing it?
-If the name hash is not checked, file lookup performance will degrade.
-Probably you don't want the overall performance degrade for a few
-corrupted files. I suggest fixing it by fsck in exfatprogs before
-mounting. We are preparing repair function release in fsck to do that
-in next month.
+On Thu, 9 Jun 2022 13:40:47 +0200, Krzysztof Kozlowski wrote:
+> The node names should be generic and DT schema expects certain pattern
+> (e.g. with key/button/switch).
+> 
+> 
 
-Thanks!
->
-> Thx,
-> Yangtao
->
+Applied, thanks!
+
+[48/48] ARM: dts: s5pv210: align gpio-key node names with dtschema
+        https://git.kernel.org/krzk/linux/c/8b86f733c0e512f92e43a9db1559498ef64d244e
+
+Best regards,
+-- 
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
