@@ -2,117 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D520FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 11:11:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A33CACCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 11:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376751AbiFPLLG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 07:11:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
+        id S232994AbiFPLPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 07:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376718AbiFPLLE (ORCPT
+        with ESMTP id S229566AbiFPLPQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 07:11:04 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76285C86F
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 04:11:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655377863; x=1686913863;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ElqTQA2q3JJdVEoPTlRhlCy86mX4DEjMIOBabJdatbE=;
-  b=dkA5RvRjwjMYW6Rc13TKek+yej6iFta8v07ZMUo5UNhY+xo0WauNkxWM
-   FsgU3CVDveZEmO7q7TacNN5IuRd8UZaSEMvzsGC5CgINbuLEz4qSlZ7x7
-   +fozZjHdYUXn9PMWsp7bC1yp0vQ+xZub2uoNjpoiPyjNqkbMivDsW3Qbb
-   s2aNExQBVLfj5E9Kwi6tGiESzN+6muKX2GWooK2fC6G4J36HDOF4whs5G
-   099VFm8WvTHZxlnCZBFlJMXacre+RJVfUIpUjNh5rcWd9T+FbkZypL39P
-   mmiIrvq0nWFL7kACqky/44/KLjsl8Ma3kInyYxWSdlf1QX0Y3CuI39UFp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="280258051"
-X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="280258051"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 04:11:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; 
-   d="scan'208";a="583594878"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 16 Jun 2022 04:11:02 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1nOq-000OJf-Og;
-        Thu, 16 Jun 2022 11:10:56 +0000
-Date:   Thu, 16 Jun 2022 19:10:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [avpatel:riscv_kvm_aia_v1 7/29] arch/riscv/kernel/smp.c:166:50:
- sparse: sparse: incorrect type in argument 4 (different address spaces)
-Message-ID: <202206161946.96McdGxQ-lkp@intel.com>
+        Thu, 16 Jun 2022 07:15:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B318C5C872;
+        Thu, 16 Jun 2022 04:15:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C2461876;
+        Thu, 16 Jun 2022 11:15:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C61BCC34114;
+        Thu, 16 Jun 2022 11:15:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655378113;
+        bh=tKlEDA1EasKYeVLhTpK38Q4V6iDP/hsRbWMhaW6i57c=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=GiVwek66noUKCP/MpxO6ww/WST+HByktPkLVJ3P54zuvLopaypPwCcIRx6ezoLG6q
+         DaTjS/OJP3HgmoY3ECFRd3v5mqu2c8izuJGFmHBOq5sZee2Cmnswv4AO6UtmhB5/MB
+         lpBLKrBNQ6bBuUrJVioxOsPFAp6mkL5snuBCHfDDOS9LDTDc6LnEdEZp9aHLUeUhsl
+         zlKmjr+I+FbwBpd2/JB8khbW2xiM1KPpz3pE4W3+gUEs70G4yT/7r0RpHzMu5R50kJ
+         f4JVA8CLTwFTHArpp4C6Ms1vtz1nyC1LPxVwKD4YS1Ieuw/zKnzP1DA4mDw8wXfxd0
+         fnv/8qawZzlKg==
+From:   Mark Brown <broonie@kernel.org>
+To:     yung-chuan.liao@linux.intel.com,
+        Colin Ian King <colin.king@intel.com>,
+        ranjani.sridharan@linux.intel.com, perex@perex.cz,
+        alsa-devel@alsa-project.org, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com,
+        peter.ujfalusi@linux.intel.com, liam.r.girdwood@linux.intel.com,
+        kai.vehmanen@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+In-Reply-To: <20220614183809.163531-1-colin.i.king@gmail.com>
+References: <20220614183809.163531-1-colin.i.king@gmail.com>
+Subject: Re: [PATCH] ASoC: Intel: Skylake: remove redundant re-assignments to pointer array
+Message-Id: <165537811030.677284.4884559545577351783.b4-ty@kernel.org>
+Date:   Thu, 16 Jun 2022 12:15:10 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/avpatel/linux.git riscv_kvm_aia_v1
-head:   00790a8b765d864a8a1d0be2f7985954cb719031
-commit: 018fd952c6dfbad5bd2abd914c5b955a0bffb3b9 [7/29] RISC-V: Treat IPIs as normal Linux IRQs
-config: riscv-randconfig-s032-20220616 (https://download.01.org/0day-ci/archive/20220616/202206161946.96McdGxQ-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-30-g92122700-dirty
-        # https://github.com/avpatel/linux/commit/018fd952c6dfbad5bd2abd914c5b955a0bffb3b9
-        git remote add avpatel https://github.com/avpatel/linux.git
-        git fetch --no-tags avpatel riscv_kvm_aia_v1
-        git checkout 018fd952c6dfbad5bd2abd914c5b955a0bffb3b9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
+On Tue, 14 Jun 2022 19:38:09 +0100, Colin Ian King wrote:
+> There are two occurrences where the pointer array is being assigned a value
+> that is never read, the pointer gets updated in the next iteration of a
+> loop. These assignments are redundant and can be removed.
+> 
+> Cleans up clang scan-build warnings:
+> sound/soc/intel/skylake/skl-topology.c:2953:3: warning: Value stored to
+> 'array' is never read [deadcode.DeadStores]
+> sound/soc/intel/skylake/skl-topology.c:3602:3: warning: Value stored to
+> 'array' is never read [deadcode.DeadStores]
+> 
+> [...]
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Applied to
 
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-sparse warnings: (new ones prefixed by >>)
->> arch/riscv/kernel/smp.c:166:50: sparse: sparse: incorrect type in argument 4 (different address spaces) @@     expected void [noderef] __percpu *percpu_dev_id @@     got int * @@
-   arch/riscv/kernel/smp.c:166:50: sparse:     expected void [noderef] __percpu *percpu_dev_id
-   arch/riscv/kernel/smp.c:166:50: sparse:     got int *
+Thanks!
 
-vim +166 arch/riscv/kernel/smp.c
+[1/1] ASoC: Intel: Skylake: remove redundant re-assignments to pointer array
+      commit: 1ec0c91f6d6b21703c17d5e89f32d52feac5887e
 
-   151	
-   152	void riscv_ipi_set_virq_range(int virq, int nr)
-   153	{
-   154		int i, err;
-   155	
-   156		if (WARN_ON(ipi_virq_base))
-   157			return;
-   158	
-   159		WARN_ON(nr < IPI_MAX);
-   160		nr_ipi = min(nr, IPI_MAX);
-   161		ipi_virq_base = virq;
-   162	
-   163		/* Request IPIs */
-   164		for (i = 0; i < nr_ipi; i++) {
-   165			err = request_percpu_irq(ipi_virq_base + i, handle_IPI,
- > 166						 "IPI", &ipi_virq_base);
-   167			WARN_ON(err);
-   168	
-   169			ipi_desc[i] = irq_to_desc(ipi_virq_base + i);
-   170			irq_set_status_flags(ipi_virq_base + i, IRQ_HIDDEN);
-   171		}
-   172	
-   173		/* Enabled IPIs for boot CPU immediately */
-   174		riscv_ipi_enable();
-   175	}
-   176	EXPORT_SYMBOL_GPL(riscv_ipi_set_virq_range);
-   177	
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
