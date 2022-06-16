@@ -2,211 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C2AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 15:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 391A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 16:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378071AbiFPP7t (ORCPT
+        id S1378086AbiFPQAO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 11:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36622 "EHLO
+        Thu, 16 Jun 2022 12:00:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378110AbiFPP7l (ORCPT
+        with ESMTP id S1377806AbiFPQAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 11:59:41 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED9B483AE
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 08:59:36 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 2DD331F7AB;
-        Thu, 16 Jun 2022 15:59:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655395175; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MhO8fx+N0t/ZLpQ+sMzhgl7vGpI2fxQcQAASoCjQrlE=;
-        b=bt/65kyRXDmJD9B6Mfex4CmXNZpULdJOEmHZTFOcFCOykT47YgmDngb9h6SURkwUGIA29j
-        M1JS3jILhGOOx1M0oXMnN6aRNbgFJEkTh4yKb+EYQOJ7yIau/Q6+XmcFpgd/Sh1qmzvlKe
-        +Sarv/sxALURpL6+qUiMPu17LqqXuEs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655395175;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MhO8fx+N0t/ZLpQ+sMzhgl7vGpI2fxQcQAASoCjQrlE=;
-        b=dE7415pV/JQhObWc64P3wIuMigOwne1KfssobhSNON3HaoBXVhoUPdtgZKOCghirighPQQ
-        FqIfxCwvT6wj8ABA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0750613A70;
-        Thu, 16 Jun 2022 15:59:35 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 4qQRAWdTq2JGTwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 16 Jun 2022 15:59:35 +0000
-Message-ID: <af8f5c7d-5f7f-17ad-835e-1fdea2d8dda8@suse.cz>
-Date:   Thu, 16 Jun 2022 17:59:34 +0200
+        Thu, 16 Jun 2022 12:00:12 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744B443486
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:00:11 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id d14so2786939eda.12
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:00:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BJ2jAaiEzLNQ93crLBAe3sDvH4iCO/x2lZ+zRlgdV/4=;
+        b=cxj6vejdZIrdWg7i57fno7dIoPvsbKilzHyEXWvFkAoBv9r+QoFdy7bpOwZp2Ylk3B
+         pfE/wp7Kfj88bh8j/WDUFirzzoX10qWcVrp+aqFo0r03zBUiPzkWhr4H7OcxpoTJRrbK
+         rSMSCgfc1ly2bqQk3lU50OAV7bXFWH86uHjt0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BJ2jAaiEzLNQ93crLBAe3sDvH4iCO/x2lZ+zRlgdV/4=;
+        b=IO9ew9bxjYZ8Jr+lHMDtjo+vmzljDYydBOKcp+uDCXYn/t5j+mo5MurMPqGGXjLgan
+         KMFd7IgPy+Qxap4gD+Uc31Mu+SVsF4Lb5AUjWSKQyUzJnqn13FMqnGC8ztThrbRGH3t+
+         dlIV8dJIWgI8a4hTGMUHNgfB6xzb046IgPIl+JcV6/Y0MGuTFic8Wvy7qKDcqdvnmioV
+         rhpF/ROFdATTujWWc95sKmUy2SDetAt5B/reeOJLKdKJD+s4bMa/Xb0sYJiqhxiAly1A
+         yCJ+v7hyho0MzccufO3t/fdbhEzxuhj6y66haqyyAKNyBGGuLrEGklTKkc0EIYZbluCU
+         2sYA==
+X-Gm-Message-State: AJIora/0P5fALIUi2g3I/ooRJJYPg95+0D3nxephLcplCj/C/1bq9lzm
+        i44RAspwPiqKsL29++rNKyy117h/MgpLZTfM3qI=
+X-Google-Smtp-Source: AGRyM1vIVFQEYEryzeT+Fdzkg8lrScGzcAxW+JfxjxlqKoDh6TTjQooYqE8S7iQnMjBCTJ/LOQ75Eg==
+X-Received: by 2002:a05:6402:35c4:b0:42f:b0f8:6a69 with SMTP id z4-20020a05640235c400b0042fb0f86a69mr7420567edc.180.1655395209591;
+        Thu, 16 Jun 2022 09:00:09 -0700 (PDT)
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
+        by smtp.gmail.com with ESMTPSA id sb8-20020a1709076d8800b007094f98788csm943446ejc.113.2022.06.16.09.00.08
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jun 2022 09:00:08 -0700 (PDT)
+Received: by mail-wr1-f53.google.com with SMTP id o8so2466006wro.3
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 09:00:08 -0700 (PDT)
+X-Received: by 2002:a5d:47aa:0:b0:218:5ac8:f3a8 with SMTP id
+ 10-20020a5d47aa000000b002185ac8f3a8mr5432558wrb.442.1655395207618; Thu, 16
+ Jun 2022 09:00:07 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 5/7] mm/page_alloc: Protect PCP lists with a spinlock
-Content-Language: en-US
-To:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220613125622.18628-1-mgorman@techsingularity.net>
- <20220613125622.18628-6-mgorman@techsingularity.net>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220613125622.18628-6-mgorman@techsingularity.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220616143617.449094-1-Jason@zx2c4.com> <YqtAShjjo1zC6EgO@casper.infradead.org>
+ <YqtDXPWdFQ/fqgDo@zx2c4.com> <YqtKjAZRPBVjlE8S@casper.infradead.org>
+In-Reply-To: <YqtKjAZRPBVjlE8S@casper.infradead.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 16 Jun 2022 08:59:51 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wj2OHy-5e+srG1fy+ZU00TmZ1NFp6kFLbVLMXHe7A1d-g@mail.gmail.com>
+Message-ID: <CAHk-=wj2OHy-5e+srG1fy+ZU00TmZ1NFp6kFLbVLMXHe7A1d-g@mail.gmail.com>
+Subject: Re: [PATCH] usercopy: use unsigned long instead of uintptr_t
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        linux-hardening@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/13/22 14:56, Mel Gorman wrote:
-> Currently the PCP lists are protected by using local_lock_irqsave to
-> prevent migration and IRQ reentrancy but this is inconvenient.  Remote
-> draining of the lists is impossible and a workqueue is required and every
-> task allocation/free must disable then enable interrupts which is
-> expensive.
-> 
-> As preparation for dealing with both of those problems, protect the lists
-> with a spinlock.  The IRQ-unsafe version of the lock is used because IRQs
-> are already disabled by local_lock_irqsave.  spin_trylock is used in
-> preparation for a time when local_lock could be used instead of
-> lock_lock_irqsave.
-> 
-> The per_cpu_pages still fits within the same number of cache lines after
-> this patch relative to before the series.
-> 
-> struct per_cpu_pages {
->         spinlock_t                 lock;                 /*     0     4 */
->         int                        count;                /*     4     4 */
->         int                        high;                 /*     8     4 */
->         int                        batch;                /*    12     4 */
->         short int                  free_factor;          /*    16     2 */
->         short int                  expire;               /*    18     2 */
-> 
->         /* XXX 4 bytes hole, try to pack */
-> 
->         struct list_head           lists[13];            /*    24   208 */
-> 
->         /* size: 256, cachelines: 4, members: 7 */
->         /* sum members: 228, holes: 1, sum holes: 4 */
->         /* padding: 24 */
-> } __attribute__((__aligned__(64)));
-> 
-> There is overhead in the fast path due to acquiring the spinlock even
-> though the spinlock is per-cpu and uncontended in the common case.  Page
-> Fault Test (PFT) running on a 1-socket reported the following results on a
-> 1 socket machine.
-> 
->                                      5.18.0-rc1               5.18.0-rc1
->                                         vanilla         mm-pcpdrain-v2r1
-> Hmean     faults/sec-1   886331.5718 (   0.00%)   885462.7479 (  -0.10%)
-> Hmean     faults/sec-3  2337706.1583 (   0.00%)  2332130.4909 *  -0.24%*
-> Hmean     faults/sec-5  2851594.2897 (   0.00%)  2844123.9307 (  -0.26%)
-> Hmean     faults/sec-7  3543251.5507 (   0.00%)  3516889.0442 *  -0.74%*
-> Hmean     faults/sec-8  3947098.0024 (   0.00%)  3916162.8476 *  -0.78%*
-> Stddev    faults/sec-1     2302.9105 (   0.00%)     2065.0845 (  10.33%)
-> Stddev    faults/sec-3     7275.2442 (   0.00%)     6033.2620 (  17.07%)
-> Stddev    faults/sec-5    24726.0328 (   0.00%)    12525.1026 (  49.34%)
-> Stddev    faults/sec-7     9974.2542 (   0.00%)     9543.9627 (   4.31%)
-> Stddev    faults/sec-8     9468.0191 (   0.00%)     7958.2607 (  15.95%)
-> CoeffVar  faults/sec-1        0.2598 (   0.00%)        0.2332 (  10.24%)
-> CoeffVar  faults/sec-3        0.3112 (   0.00%)        0.2587 (  16.87%)
-> CoeffVar  faults/sec-5        0.8670 (   0.00%)        0.4404 (  49.21%)
-> CoeffVar  faults/sec-7        0.2815 (   0.00%)        0.2714 (   3.60%)
-> CoeffVar  faults/sec-8        0.2399 (   0.00%)        0.2032 (  15.28%)
-> 
-> There is a small hit in the number of faults per second but given that the
-> results are more stable, it's borderline noise.
-> 
-> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-> Tested-by: Minchan Kim <minchan@kernel.org>
-> Acked-by: Minchan Kim <minchan@kernel.org>
-> Reviewed-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+On Thu, Jun 16, 2022 at 8:21 AM Matthew Wilcox <willy@infradead.org> wrote:
+>
+> I don't know why people call uintptr_t a "userspace type".  It's a type
+> invented by C99 that is an integer type large enough to hold a pointer.
+> Which is exactly what we want here.
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+On the other hand, "unsigned long" has existed since the first version
+of C, and is an integer type large enough to hold a pointer.
 
-With comments:
+Which is exactly what we want here, and what we use everywhere else too.
 
-> -static void free_unref_page_commit(struct page *page, int migratetype,
-> -				   unsigned int order)
-> +/* Returns true if the page was committed to the per-cpu list. */
-> +static bool free_unref_page_commit(struct page *page, int migratetype,
-> +				   unsigned int order, bool locked)
+The whole "uintptr_t handles the historical odd cases with pointers
+that are smaller than a 'long'" is entirely irrelevant, since those
+odd cases are just not a factor.
 
-'bool locked' schemes are frowned upon. Although this does some preparatory
-work outside of the locked section...
+And the "pointers are _larger_ than a 'long'" case is similarly
+irrelevant, since we very much want to use arithmetic on these things,
+and they are 'long' later. They aren't used as pointers, they are used
+as integer indexes into the virtual address space that we do odd
+operations on.
 
->  {
->  	struct zone *zone = page_zone(page);
->  	struct per_cpu_pages *pcp;
->  	int high;
->  	int pindex;
->  	bool free_high;
-> +	unsigned long __maybe_unused UP_flags;
->  
->  	__count_vm_event(PGFREE);
->  	pcp = this_cpu_ptr(zone->per_cpu_pageset);
->  	pindex = order_to_pindex(migratetype, order);
+Honestly, even if you believe in the 128-bit pointer thing, changing
+one cast in one random place to be different from everything else is
+*not* productive. We're never going to do some "let's slowly migrate
+from one to the other".
 
-... maybe it would be simpler to just do the locking always outside? We
-aren't expecting any contention anyway except if draining is in progress,
-and thus making the lock hold time a bunch of instructions longer won't make
-any difference?
+And honestly, we're never going to do that using "uintptr_t" anyway,
+since it would be based on a kernel config variable and be a very
+specific type, and would need to be type-safe for any sane conversion.
 
-That said I don't know yet how patches 6 and 7 change this...
+IOW, in a hypothetical word where the address size is larger than the
+word-size, it would have to be something like out "pte_t", which is
+basically wrapped in a struct so that C implicit type conversion
+doesn't bite you in the arse.
 
-[...]
+So no. There is ABSOLUTELY ZERO reason to ever use 'uintptr_t' in the
+kernel. It's wrong. It's wrong *even* for actual user space interfaces
+where user space might use 'uintptr_t', because those need to be
+specific kernel types so that we control them (think for compat
+reasons etc).
 
-> @@ -3465,10 +3510,19 @@ void free_unref_page(struct page *page, unsigned int order)
->  void free_unref_page_list(struct list_head *list)
->  {
->  	struct page *page, *next;
-> +	struct per_cpu_pages *pcp;
-> +	struct zone *locked_zone;
->  	unsigned long flags;
->  	int batch_count = 0;
->  	int migratetype;
->  
-> +	/*
-> +	 * An empty list is possible. Check early so that the later
-> +	 * lru_to_page() does not potentially read garbage.
-> +	 */ 
-> +	if (list_empty(list))
-> +		return;
+We use the user-space types in a few places, and they have caused
+problems, but at least they are really traditional and the compiler
+actually enforces them for some really standard functions. I'm looking
+at 'size_t' in particular, which caused problems exactly because it's
+a type that is strictly speaking not under our control.
 
-There's another check below and list_for_each_entry_safe() is fine with an
-empty list, so this one seems unnecessary?
+'size_t' is actually a great example of why 'uintptr_t' is a horrid
+thing. It's effectively a integer type that is large enough to hold a
+pointer difference. On unsegmented architectures, that ends up being a
+type large enough to hold a pointer.
 
->  	/* Prepare pages for freeing */
->  	list_for_each_entry_safe(page, next, list, lru) {
->  		unsigned long pfn = page_to_pfn(page);
-> @@ -3489,8 +3543,31 @@ void free_unref_page_list(struct list_head *list)
->  		}
->  	}
->  
-> +	/*
-> +	 * Preparation could have drained the list due to failing to prepare
-> +	 * or all pages are being isolated.
-> +	 */
-> +	if (list_empty(list))
-> +		return;
-> +
->  	local_lock_irqsave(&pagesets.lock, flags);
-> +
-> +	page = lru_to_page(list);
+Sound familiar?
+
+And does it sound familiar how on some architectures it's "unsigned
+int", and on others it is "unsigned long"? It's very annoying, and
+it's been annoying over the years. The latest annoyance was literally
+less than a week ago in 1c27f1fc1549 ("iov_iter: fix build issue due
+to possible type mis-match").
+
+Again, "unsigned long" is superior.
+
+And the only reason to migrate away from it is because you want
+something *type-safe*, which uintptr_t very much is not. As
+exemplified by size_t, it's the opposite of type-safe. It's actively
+likely to be type-confused.
+
+              Linus
