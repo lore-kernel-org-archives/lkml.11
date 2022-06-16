@@ -2,92 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3431EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 19:19:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F76C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 16 Jun 2022 19:19:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236066AbiFPTTU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 15:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
+        id S230142AbiFPTTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 15:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232660AbiFPTTS (ORCPT
+        with ESMTP id S233994AbiFPTTs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 15:19:18 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49FB55498
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 12:19:17 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id w27so3483694edl.7
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 12:19:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xpcGuEMSHNtJO6AL8yUFZTbd1w1Zp8LDaZt4zG7HQg8=;
-        b=egGfdeT+mpO40XdFqHUt/mNRkwROuAaGPwmvBbc9V8CKQtgzMIeJ5dydpj2F6YqAWD
-         jWaLyXMYcKZAUkbCHTdiuA4JkddfCRJMKfg3Rr2z7QYsJo+0kuIs2gL8w23PGhI7/UU1
-         zp0PY/UWDuWBbGaf5HZQqxyladpYTQRU+gj7E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xpcGuEMSHNtJO6AL8yUFZTbd1w1Zp8LDaZt4zG7HQg8=;
-        b=tIyi1aW2+E8kUrrU/DzetbUqTtpXwu54e4Fp+Wr1l8SohjU03Q7ILHIX9EUG3MRhRP
-         mBk1TTIc7JIcK7Kd9zUP5QeizgsrGHLO0CtiEATauG136WxXWc9AuEanM1YlnfbqKNp6
-         Wy4o60QswaiOsgsETNF6lYif/7mklR6ve9u4m6bTAL2XufjVTTUfG2x+VaGMZYiqqeyt
-         25geK5b26d4XF0cO9qzxy9HvXF2afbvYAuMpjVKHs3JVjh6eBLmHAbyKJOizq1L6ItOp
-         ZtmuK2fSHQnz3I+BeBxz3CwvkVdRccerml14PEGsS99nxJpiEO6VSAIEZ3O2tpqpByqO
-         4gFQ==
-X-Gm-Message-State: AJIora8CsMeV8AWI/nGXMAOWZ2Q3v/gedOZ9vtQ/8jEJewsTnU5BYJeD
-        TWW+QJlqPPVoUl2+l2xXbnQLcJNuplNbSK6V
-X-Google-Smtp-Source: AGRyM1sKdczklSjtx9f9RcireLDCs9ku45Sy2khR2rFrC+gzGE4YzlHKLKLILFI+wg/dpvcGSiP1Xw==
-X-Received: by 2002:a05:6402:2714:b0:431:6a31:6530 with SMTP id y20-20020a056402271400b004316a316530mr8376771edd.245.1655407156090;
-        Thu, 16 Jun 2022 12:19:16 -0700 (PDT)
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
-        by smtp.gmail.com with ESMTPSA id y21-20020a056402441500b0042dcbc3f302sm2395462eda.36.2022.06.16.12.19.14
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Jun 2022 12:19:14 -0700 (PDT)
-Received: by mail-wr1-f45.google.com with SMTP id o8so3076928wro.3
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 12:19:14 -0700 (PDT)
-X-Received: by 2002:a5d:47aa:0:b0:218:5ac8:f3a8 with SMTP id
- 10-20020a5d47aa000000b002185ac8f3a8mr6159072wrb.442.1655407153820; Thu, 16
- Jun 2022 12:19:13 -0700 (PDT)
+        Thu, 16 Jun 2022 15:19:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E57318B3C;
+        Thu, 16 Jun 2022 12:19:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A0B661D27;
+        Thu, 16 Jun 2022 19:19:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B2B0C34114;
+        Thu, 16 Jun 2022 19:19:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655407186;
+        bh=0oI584spUy6KbItThEajQaOi6DeQhyouguYy6HKNLas=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=h+gkzZwjbdyAZUUYeibcOTJ66aaXewoe+/NgBx8b9tz4VrCN1M9Z7oZIUsMlnYkUR
+         xCKCWNNk1udphrNMraCj9P+bik29lW7BON4nWa6TW9ZIUzWQ8IMrNlDhPMhjeuKdwN
+         C2CIp3tgs+0PbxuFHDL2QOVoFeQSTmcVuX7vPVY3kLbesnFHUIXMeN4c2/a8lrdZlm
+         PKTjQFmIA3aIeMUsdc/mZqths2GxfTNCUOqRvezX9w59+gnOmJBD0/b+VGK+6y/zFI
+         yf0IVAYOEEB71OQwut09Q0td/0JfvdEWOmS6aiNp0ZRhb6uv2nyYm7Qi2HChCPagJY
+         dHJ4GtrAKeU1g==
+Date:   Thu, 16 Jun 2022 14:19:44 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com,
+        bhelgaas@google.com, michals@xilinx.com, robh@kernel.org
+Subject: Re: [PATCH v5 2/2] PCI: xilinx-cpm: Add support for Versal CPM5 Root
+ Port
+Message-ID: <20220616191944.GA1102555@bhelgaas>
 MIME-Version: 1.0
-References: <20220616143617.449094-1-Jason@zx2c4.com> <YqtAShjjo1zC6EgO@casper.infradead.org>
- <YqtDXPWdFQ/fqgDo@zx2c4.com> <YqtKjAZRPBVjlE8S@casper.infradead.org>
- <CAHk-=wj2OHy-5e+srG1fy+ZU00TmZ1NFp6kFLbVLMXHe7A1d-g@mail.gmail.com>
- <Yqtd6hTS52mbb9+q@casper.infradead.org> <CAHk-=wj_K2MnhC6N_LyY6ezmQyWzqBnfobXC354HJuKdqMePzA@mail.gmail.com>
- <CAHk-=whS3xhJ=quD5bzDb6JsAhKd0vem4K-U=DhUGf-tDJUMHg@mail.gmail.com>
-In-Reply-To: <CAHk-=whS3xhJ=quD5bzDb6JsAhKd0vem4K-U=DhUGf-tDJUMHg@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 16 Jun 2022 12:18:57 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi28vwsG-JNJEz_kc=qwPkYtYfh_14eHOUZsaGESDBDBA@mail.gmail.com>
-Message-ID: <CAHk-=wi28vwsG-JNJEz_kc=qwPkYtYfh_14eHOUZsaGESDBDBA@mail.gmail.com>
-Subject: Re: [PATCH] usercopy: use unsigned long instead of uintptr_t
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-xfs <linux-xfs@vger.kernel.org>,
-        linux-hardening@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Uladzislau Rezki <urezki@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616124429.12917-3-bharat.kumar.gogada@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 12:14 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> In that situation, we'd probably just see "long long" being 128-bit
-> ("I32LP64LL128").
+On Thu, Jun 16, 2022 at 06:14:29PM +0530, Bharat Kumar Gogada wrote:
+> Xilinx Versal Premium series has CPM5 block which supports Root Port
+> functioning at Gen5 speed.
+> 
+> Xilinx Versal CPM5 has few changes with existing CPM block.
+> - CPM5 has dedicated register space for control and status registers.
+> - CPM5 legacy interrupt handling needs additional register bit
+>   to enable and handle legacy interrupts.
+> 
+> Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+> ---
+>  drivers/pci/controller/pcie-xilinx-cpm.c | 62 ++++++++++++++++++++++--
+>  1 file changed, 59 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/pcie-xilinx-cpm.c b/drivers/pci/controller/pcie-xilinx-cpm.c
+> index c7cd44ed4dfc..0bcd11d27eeb 100644
+> --- a/drivers/pci/controller/pcie-xilinx-cpm.c
+> +++ b/drivers/pci/controller/pcie-xilinx-cpm.c
+> @@ -35,6 +35,10 @@
+>  #define XILINX_CPM_PCIE_MISC_IR_ENABLE	0x00000348
+>  #define XILINX_CPM_PCIE_MISC_IR_LOCAL	BIT(1)
+>  
+> +#define XILINX_CPM_PCIE_IR_STATUS       0x000002A0
+> +#define XILINX_CPM_PCIE_IR_ENABLE       0x000002A8
+> +#define XILINX_CPM_PCIE_IR_LOCAL        BIT(0)
+> +
+>  /* Interrupt registers definitions */
+>  #define XILINX_CPM_PCIE_INTR_LINK_DOWN		0
+>  #define XILINX_CPM_PCIE_INTR_HOT_RESET		3
+> @@ -98,6 +102,16 @@
+>  /* Phy Status/Control Register definitions */
+>  #define XILINX_CPM_PCIE_REG_PSCR_LNKUP		BIT(11)
+>  
+> +/**
+> + * struct xilinx_cpm_variant - CPM variant information
+> + * @cpm_version: CPM5 has few changes compared to CPM block.
+> + *      CPM5 has dedicated register space for control and status registers.
+> + *
 
-Looking around, it looks like people prefer "long long long" (or in
-the kernel, just "u128") for this, because so many have already gotten
-used to "long long" being 64-bit, and 32-bit architectures (where
-"long" is 32-bit and "long long" is 64-bit) are still relevant enough
-that people want to keep that.
+Superfluous blank line.
 
-             Linus
+> + */
+> +struct xilinx_cpm_variant {
+> +	bool cpm_version;
+
+This is not really a bool, unless you want to preclude the possibility
+of ever having a CPM6 or other future variants.
+
+> +};
+> +
+>  /**
+>   * struct xilinx_cpm_pcie - PCIe port information
+>   * @dev: Device pointer
+> @@ -109,6 +123,7 @@
+>   * @intx_irq: legacy interrupt number
+>   * @irq: Error interrupt number
+>   * @lock: lock protecting shared register access
+> + * @is_cpm5: value to check cpm version
+>   */
+>  struct xilinx_cpm_pcie {
+>  	struct device			*dev;
+> @@ -120,6 +135,7 @@ struct xilinx_cpm_pcie {
+>  	int				intx_irq;
+>  	int				irq;
+>  	raw_spinlock_t			lock;
+> +	bool                            is_cpm5;
+>  };
+>  
+>  static u32 pcie_read(struct xilinx_cpm_pcie *port, u32 reg)
+> @@ -285,6 +301,14 @@ static void xilinx_cpm_pcie_event_flow(struct irq_desc *desc)
+>  		generic_handle_domain_irq(port->cpm_domain, i);
+>  	pcie_write(port, val, XILINX_CPM_PCIE_REG_IDR);
+>  
+> +	if (port->is_cpm5) {
+> +		val = readl_relaxed(port->cpm_base + XILINX_CPM_PCIE_IR_STATUS);
+> +		if (val)
+> +			writel_relaxed(val,
+> +				       port->cpm_base +
+> +				       XILINX_CPM_PCIE_IR_STATUS);
+> +	}
+> +
+>  	/*
+>  	 * XILINX_CPM_PCIE_MISC_IR_STATUS register is mapped to
+>  	 * CPM SLCR block.
+> @@ -484,6 +508,12 @@ static void xilinx_cpm_pcie_init_port(struct xilinx_cpm_pcie *port)
+>  	 */
+>  	writel(XILINX_CPM_PCIE_MISC_IR_LOCAL,
+>  	       port->cpm_base + XILINX_CPM_PCIE_MISC_IR_ENABLE);
+> +
+> +	if (port->is_cpm5) {
+> +		writel(XILINX_CPM_PCIE_IR_LOCAL,
+> +		       port->cpm_base + XILINX_CPM_PCIE_IR_ENABLE);
+> +	}
+> +
+>  	/* Enable the Bridge enable bit */
+>  	pcie_write(port, pcie_read(port, XILINX_CPM_PCIE_REG_RPSC) |
+>  		   XILINX_CPM_PCIE_REG_RPSC_BEN,
+> @@ -503,6 +533,10 @@ static int xilinx_cpm_pcie_parse_dt(struct xilinx_cpm_pcie *port,
+>  	struct device *dev = port->dev;
+>  	struct platform_device *pdev = to_platform_device(dev);
+>  	struct resource *res;
+> +	const struct xilinx_cpm_variant *variant =
+> +		of_device_get_match_data(dev);
+> +
+> +	port->is_cpm5 = variant->cpm_version;
+
+It's a little clunky to use booleans for a potentially multi-valued
+version and to copy them around.  Something like this might leave room
+for future variants that need more knobs:
+
+  enum xilinx_cpm_version {
+    CPM,
+    CPM5,
+  };
+
+  struct xilinx_cpm_variant {
+    enum xilinx_cpm_version version;
+  };
+
+  struct xilinx_cpm_pcie {
+    ...
+    const struct xilinx_cpm_variant   *variant;
+
+  static const struct xilinx_cpm_variant cpm5 = {
+    .version = CPM5,
+  };
+
+  xilinx_cpm_pcie_event_flow()
+  {
+    ...
+    if (port->variant->version == CPM5)
+
+  xilinx_cpm_pcie_probe()
+  {
+    ...
+    port->variant = of_device_get_match_data(dev);
+
+
+>  	port->cpm_base = devm_platform_ioremap_resource_byname(pdev,
+>  							       "cpm_slcr");
+> @@ -518,7 +552,14 @@ static int xilinx_cpm_pcie_parse_dt(struct xilinx_cpm_pcie *port,
+>  	if (IS_ERR(port->cfg))
+>  		return PTR_ERR(port->cfg);
+>  
+> -	port->reg_base = port->cfg->win;
+> +	if (port->is_cpm5) {
+> +		port->reg_base = devm_platform_ioremap_resource_byname(pdev,
+> +								       "cpm_csr");
+> +		if (IS_ERR(port->reg_base))
+> +			return PTR_ERR(port->reg_base);
+> +	} else {
+> +		port->reg_base = port->cfg->win;
+> +	}
+>  
+>  	return 0;
+>  }
+> @@ -591,9 +632,24 @@ static int xilinx_cpm_pcie_probe(struct platform_device *pdev)
+>  	return err;
+>  }
+>  
+> +static const struct xilinx_cpm_variant cpm_host = {
+> +	.cpm_version = false,
+> +};
+> +
+> +static const struct xilinx_cpm_variant cpm5_host = {
+> +	.cpm_version = true,
+> +};
+> +
+>  static const struct of_device_id xilinx_cpm_pcie_of_match[] = {
+> -	{ .compatible = "xlnx,versal-cpm-host-1.00", },
+> -	{}
+> +	{
+> +		.compatible = "xlnx,versal-cpm-host-1.00",
+> +		.data = &cpm_host,
+> +	},
+> +	{
+> +		.compatible = "xlnx,versal-cpm5-host",
+> +		.data = &cpm5_host,
+> +	},
+> +	{},
+>  };
+>  
+>  static struct platform_driver xilinx_cpm_pcie_driver = {
+> -- 
+> 2.17.1
+> 
