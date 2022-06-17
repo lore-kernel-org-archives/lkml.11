@@ -2,218 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A9F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 02:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F2DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 02:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379704AbiFQCIR (ORCPT
+        id S1379651AbiFQCKl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 22:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
+        Thu, 16 Jun 2022 22:10:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379689AbiFQCIM (ORCPT
+        with ESMTP id S243043AbiFQCKj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 22:08:12 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EB727CD7;
-        Thu, 16 Jun 2022 19:08:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655431682; x=1686967682;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=3/pGXYtwBNUoL/U8pvjgYsSt+Nl1CqQfA5RoTzhAlOw=;
-  b=fB2wUv3zx0zWXP2w82PO4C3kWx14XXQPya/OT5MTJpsqaD0flznl6+GV
-   TX0cl/skMQEAXVZhYrJXh8ATyjbDO7RpcGtBDAf2RMLCXFeuHrPSgtez+
-   yCX79fOZb7tAqLqW3KBWdHX3AjRwIxkJ0nLkb9T0iWS27IrdEJVunJlmp
-   dtOzXSBmVVwr6G5bUqqCJoKW4P/7MqXS/BAQYFvIbJSSagepARCKlZ4Ps
-   CmROKHs5dS4l+MSyGpNuTUuODaBeJFVL1Ymm4NIv6QniYJi4vosbkfrV+
-   rxfPlL2+3uW8A6tlfOAMOGYT1tyH9lASDsVUyryBvOKcASzPKkreh43oM
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="365750337"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="365750337"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 19:07:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="831831735"
-Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by fmsmga006.fm.intel.com with ESMTP; 16 Jun 2022 19:07:49 -0700
-From:   Tianfei Zhang <tianfei.zhang@intel.com>
-To:     yilun.xu@intel.com, lee.jones@linaro.org
-Cc:     hao.wu@intel.com, trix@redhat.com, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org, russell.h.weight@intel.com,
-        matthew.gerlach@linux.intel.com,
-        Tianfei Zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v2 4/4] mfd: intel-m10-bmc: support multiple register layouts
-Date:   Thu, 16 Jun 2022 22:04:05 -0400
-Message-Id: <20220617020405.128352-5-tianfei.zhang@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220617020405.128352-1-tianfei.zhang@intel.com>
-References: <20220617020405.128352-1-tianfei.zhang@intel.com>
+        Thu, 16 Jun 2022 22:10:39 -0400
+Received: from progateway7-pub.mail.pro1.eigbox.com (gproxy5-pub.mail.unifiedlayer.com [67.222.38.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4913364BCB
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 19:10:39 -0700 (PDT)
+Received: from cmgw14.mail.unifiedlayer.com (unknown [10.0.90.129])
+        by progateway7.mail.pro1.eigbox.com (Postfix) with ESMTP id 65F4710048315
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 02:10:38 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id 21RVoQNvRSReQ21RWoHhNT; Fri, 17 Jun 2022 02:10:38 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=MPylJOVl c=1 sm=1 tr=0 ts=62abe29e
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=JPEYwPQDsx4A:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=Ikd4Dj_1AAAA:8 a=HaFmDPmJAAAA:8 a=UGG5zPGqAAAA:8 a=Ya-HtxX5zRGB2Al-8G4A:9
+ a=QEXdDO2ut3YA:10:nop_charset_2 a=AjGcO6oz07-iQ99wixmX:22
+ a=nmWuMzfKamIsx3l42hEX:22 a=17ibUXfGiVyGqR_YBevW:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:In-Reply-To:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=OrqZ5LGlxlFOVquUDVyuhvmjfqRySOJhv2yBIb+Vw3w=; b=RerQUGOoYsLIzu+o696/2vOscO
+        8jzMm6pZo1Z674db2WIWABm1Vfw+jQl0gRutz6YZd1So75wvZ4CKS3XHiIVFINe7ILM1ieuc8Y4e8
+        OkihOUIB2G0xsqf7T0j5cslfZ33oDOMg4VaA8IDW2n4XKogMwcjYGDfwwA+tdqFvJ5a1F8vksH9E+
+        ADidj1J4pbQWgPHPU2Tv8Mqja27I7O4Yu63nwhqNbIDGZk1/WnGzCCWLAI0A09Yl7bpyZhydwGNxD
+        w99gcYDEd0lleENONoDlBW+kzbdzJzMUJ+IgP4ZCkPWVjeKItXR+5Sa3v99WNxRuIVci4lfVas9dG
+        uYW7qePg==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:44666 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1o21RV-001fkm-81;
+        Thu, 16 Jun 2022 20:10:37 -0600
+Subject: Re: [PATCH] random: quiet urandom warning ratelimit suppression
+ message
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>
+References: <81bda7cc-fd95-8f54-4ad7-3fad9a81b831@nvidia.com>
+ <20220616132029.443033-1-Jason@zx2c4.com>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220616132029.443033-1-Jason@zx2c4.com>
+Message-ID: <f4dc15ff-10cf-bb73-5f72-874dd2b85f1a@w6rz.net>
+Date:   Thu, 16 Jun 2022 19:10:36 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1o21RV-001fkm-81
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:44666
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are different base addresses for the MAX10 CSR register.
-Introducing a new data structure m10bmc_csr for the register
-definition of MAX10 CSR. Embedded m10bmc_csr into struct
-intel_m10bmc to support multiple register layouts.
+On 6/16/22 6:20 AM, Jason A. Donenfeld wrote:
+> random.c ratelimits how much it warns about uninitialized urandom reads
+> using __ratelimit. When the RNG is finally initialized, it prints the
+> number of missed messages due to ratelimiting.
+>
+> It has been this way since that functionality was introduced back in
+> 2018. Recently, cc1e127bfa95 ("random: remove ratelimiting for in-kernel
+> unseeded randomness") put a bit more stress on the urandom ratelimiting,
+> which teased out a bug in the implementation.
+>
+> Specifically, when under pressure, __ratelimit() will print its own
+> message and reset the count back to 0, making the final message at the
+> end less useful. Secondly, it does so as a pr_warn(), which apparently
+> is undesirable for people's CI.
+>
+> Fortunately, __ratelimit() has the RATELIMIT_MSG_ON_RELEASE flag exactly
+> for this purpose, so we set the flag.
+>
+> Fixes: 4e00b339e264 ("random: rate limit unseeded randomness warnings")
+> Cc: stable@vger.kernel.org
+> Reported-by: Jon Hunter <jonathanh@nvidia.com>
+> Reported-by: Ron Economos <re@w6rz.net>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>   drivers/char/random.c           |  2 +-
+>   include/linux/ratelimit_types.h | 12 ++++++++----
+>   2 files changed, 9 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/char/random.c b/drivers/char/random.c
+> index d0e4c89c4fcb..07a022e24057 100644
+> --- a/drivers/char/random.c
+> +++ b/drivers/char/random.c
+> @@ -87,7 +87,7 @@ static struct fasync_struct *fasync;
+>   
+>   /* Control how we warn userspace. */
+>   static struct ratelimit_state urandom_warning =
+> -	RATELIMIT_STATE_INIT("warn_urandom_randomness", HZ, 3);
+> +	RATELIMIT_STATE_INIT_FLAGS("urandom_warning", HZ, 3, RATELIMIT_MSG_ON_RELEASE);
+>   static int ratelimit_disable __read_mostly =
+>   	IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM);
+>   module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
+> diff --git a/include/linux/ratelimit_types.h b/include/linux/ratelimit_types.h
+> index c21c7f8103e2..002266693e50 100644
+> --- a/include/linux/ratelimit_types.h
+> +++ b/include/linux/ratelimit_types.h
+> @@ -23,12 +23,16 @@ struct ratelimit_state {
+>   	unsigned long	flags;
+>   };
+>   
+> -#define RATELIMIT_STATE_INIT(name, interval_init, burst_init) {		\
+> -		.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),	\
+> -		.interval	= interval_init,			\
+> -		.burst		= burst_init,				\
+> +#define RATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, flags_init) { \
+> +		.lock		= __RAW_SPIN_LOCK_UNLOCKED(name.lock),		  \
+> +		.interval	= interval_init,				  \
+> +		.burst		= burst_init,					  \
+> +		.flags		= flags_init,					  \
+>   	}
+>   
+> +#define RATELIMIT_STATE_INIT(name, interval_init, burst_init) \
+> +	RATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, 0)
+> +
+>   #define RATELIMIT_STATE_INIT_DISABLED					\
+>   	RATELIMIT_STATE_INIT(ratelimit_state, 0, DEFAULT_RATELIMIT_BURST)
+>   
 
-Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
----
- drivers/mfd/intel-m10-bmc-core.c  | 30 +++++++++++++++++++++++++-----
- include/linux/mfd/intel-m10-bmc.h | 20 +++++++++++++++++++-
- 2 files changed, 44 insertions(+), 6 deletions(-)
+Tested on 5.15.48 kernel for RISC-V RV64. Works good, urandom_read_iter 
+warnings are suppressed.
 
-diff --git a/drivers/mfd/intel-m10-bmc-core.c b/drivers/mfd/intel-m10-bmc-core.c
-index c6a1a4c28357..f85f8e2aa9a1 100644
---- a/drivers/mfd/intel-m10-bmc-core.c
-+++ b/drivers/mfd/intel-m10-bmc-core.c
-@@ -10,6 +10,22 @@
- #include <linux/mfd/intel-m10-bmc.h>
- #include <linux/module.h>
- 
-+static const struct m10bmc_csr m10bmc_pmci_csr = {
-+	.base = M10BMC_PMCI_SYS_BASE,
-+	.build_version = M10BMC_PMCI_BUILD_VER,
-+	.fw_version = NIOS2_PMCI_FW_VERSION,
-+	.mac_low = M10BMC_PMCI_MAC_LOW,
-+	.mac_high = M10BMC_PMCI_MAC_HIGH,
-+};
-+
-+static const struct m10bmc_csr m10bmc_spi_csr = {
-+	.base = M10BMC_SYS_BASE,
-+	.build_version = M10BMC_BUILD_VER,
-+	.fw_version = NIOS2_FW_VERSION,
-+	.mac_low = M10BMC_MAC_LOW,
-+	.mac_high = M10BMC_MAC_HIGH,
-+};
-+
- static struct mfd_cell m10bmc_n6000_bmc_subdevs[] = {
- 	{ .name = "n6000bmc-hwmon" },
- 	{ .name = "n6000bmc-sec-update" }
-@@ -36,7 +52,7 @@ static ssize_t bmc_version_show(struct device *dev,
- 	unsigned int val;
- 	int ret;
- 
--	ret = m10bmc_sys_read(ddata, M10BMC_BUILD_VER, &val);
-+	ret = m10bmc_sys_read(ddata, ddata->csr->build_version, &val);
- 	if (ret)
- 		return ret;
- 
-@@ -51,7 +67,7 @@ static ssize_t bmcfw_version_show(struct device *dev,
- 	unsigned int val;
- 	int ret;
- 
--	ret = m10bmc_sys_read(ddata, NIOS2_FW_VERSION, &val);
-+	ret = m10bmc_sys_read(ddata, ddata->csr->fw_version, &val);
- 	if (ret)
- 		return ret;
- 
-@@ -66,11 +82,11 @@ static ssize_t mac_address_show(struct device *dev,
- 	unsigned int macaddr_low, macaddr_high;
- 	int ret;
- 
--	ret = m10bmc_sys_read(ddata, M10BMC_MAC_LOW, &macaddr_low);
-+	ret = m10bmc_sys_read(ddata, ddata->csr->mac_low, &macaddr_low);
- 	if (ret)
- 		return ret;
- 
--	ret = m10bmc_sys_read(ddata, M10BMC_MAC_HIGH, &macaddr_high);
-+	ret = m10bmc_sys_read(ddata, ddata->csr->mac_high, &macaddr_high);
- 	if (ret)
- 		return ret;
- 
-@@ -91,7 +107,7 @@ static ssize_t mac_count_show(struct device *dev,
- 	unsigned int macaddr_high;
- 	int ret;
- 
--	ret = m10bmc_sys_read(ddata, M10BMC_MAC_HIGH, &macaddr_high);
-+	ret = m10bmc_sys_read(ddata, ddata->csr->mac_high, &macaddr_high);
- 	if (ret)
- 		return ret;
- 
-@@ -163,18 +179,22 @@ int m10bmc_dev_init(struct intel_m10bmc *m10bmc)
- 	case M10_N3000:
- 		cells = m10bmc_pacn3000_subdevs;
- 		n_cell = ARRAY_SIZE(m10bmc_pacn3000_subdevs);
-+		m10bmc->csr = &m10bmc_spi_csr;
- 		break;
- 	case M10_D5005:
- 		cells = m10bmc_d5005_subdevs;
- 		n_cell = ARRAY_SIZE(m10bmc_d5005_subdevs);
-+		m10bmc->csr = &m10bmc_spi_csr;
- 		break;
- 	case M10_N5010:
- 		cells = m10bmc_n5010_subdevs;
- 		n_cell = ARRAY_SIZE(m10bmc_n5010_subdevs);
-+		m10bmc->csr = &m10bmc_spi_csr;
- 		break;
- 	case M10_N6000:
- 		cells = m10bmc_n6000_bmc_subdevs;
- 		n_cell = ARRAY_SIZE(m10bmc_n6000_bmc_subdevs);
-+		m10bmc->csr = &m10bmc_pmci_csr;
- 		break;
- 	default:
- 		return -ENODEV;
-diff --git a/include/linux/mfd/intel-m10-bmc.h b/include/linux/mfd/intel-m10-bmc.h
-index 83c4d3993dcb..3a4fdab2acbd 100644
---- a/include/linux/mfd/intel-m10-bmc.h
-+++ b/include/linux/mfd/intel-m10-bmc.h
-@@ -125,6 +125,11 @@
- #define M10BMC_PMCI_TELEM_START		0x400
- #define M10BMC_PMCI_TELEM_END		0x78c
- 
-+#define M10BMC_PMCI_BUILD_VER   0x0
-+#define NIOS2_PMCI_FW_VERSION   0x4
-+#define M10BMC_PMCI_MAC_LOW    0x20
-+#define M10BMC_PMCI_MAC_HIGH    0x24
-+
- /* Supported MAX10 BMC types */
- enum m10bmc_type {
- 	M10_N3000,
-@@ -133,16 +138,29 @@ enum m10bmc_type {
- 	M10_N6000
- };
- 
-+/**
-+ * struct m10bmc_csr - Intel MAX 10 BMC CSR register
-+ */
-+struct m10bmc_csr {
-+	unsigned int base;
-+	unsigned int build_version;
-+	unsigned int fw_version;
-+	unsigned int mac_low;
-+	unsigned int mac_high;
-+};
-+
- /**
-  * struct intel_m10bmc - Intel MAX 10 BMC parent driver data structure
-  * @dev: this device
-  * @regmap: the regmap used to access registers by m10bmc itself
-  * @type: the type of MAX10 BMC
-+ * @csr: the register definition of MAX10 BMC
-  */
- struct intel_m10bmc {
- 	struct device *dev;
- 	struct regmap *regmap;
- 	enum m10bmc_type type;
-+	const struct m10bmc_csr *csr;
- };
- 
- /*
-@@ -174,7 +192,7 @@ m10bmc_raw_read(struct intel_m10bmc *m10bmc, unsigned int addr,
-  * M10BMC_SYS_BASE accordingly.
-  */
- #define m10bmc_sys_read(m10bmc, offset, val) \
--	m10bmc_raw_read(m10bmc, M10BMC_SYS_BASE + (offset), val)
-+	m10bmc_raw_read(m10bmc, m10bmc->csr->base + (offset), val)
- 
- /*
-  * MAX10 BMC Core support
--- 
-2.26.2
+Tested-by: Ron Economos <re@w6rz.net>
 
