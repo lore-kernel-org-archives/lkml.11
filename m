@@ -2,59 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0AA0C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:45:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FAA3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:45:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381323AbiFQJpI (ORCPT
+        id S1381450AbiFQJpO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 05:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33406 "EHLO
+        Fri, 17 Jun 2022 05:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235845AbiFQJpE (ORCPT
+        with ESMTP id S235845AbiFQJpK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 05:45:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A0D663D7;
-        Fri, 17 Jun 2022 02:45:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A545C61B94;
-        Fri, 17 Jun 2022 09:45:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF937C3411B;
-        Fri, 17 Jun 2022 09:45:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655459103;
-        bh=28LBqy3HcvKdeZQsGUI6OYkekuDfqo0DvEihQHEpnfc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uDb+il7dGJcEAQDvlZJrn1W1F+OLuJILTcq+Z4+VUFUnAPaCQntEqhskIEyWFWN41
-         pw+Y3BFrePp9FnrkoN6FGsmJmXd5IHbprKJGQblGJVkp4+mWGy9an1pcjVdUof5Rf4
-         Su7RPo9YqC4bkQL8hVx10eao+LqVxsUkfoOtt0EU=
-Date:   Fri, 17 Jun 2022 11:45:00 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial <linux-serial@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] MAINTAINERS: Update DW 8250 UART maintainership
-Message-ID: <YqxNHJ5mGA1tJamh@kroah.com>
-References: <be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com>
+        Fri, 17 Jun 2022 05:45:10 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9058C66FB2;
+        Fri, 17 Jun 2022 02:45:08 -0700 (PDT)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LPYyF19rzzjXbg;
+        Fri, 17 Jun 2022 17:43:33 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by dggpeml500022.china.huawei.com
+ (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 17 Jun
+ 2022 17:45:06 +0800
+From:   Zhang Zekun <zhangzekun11@huawei.com>
+To:     <ezequiel@vanguardiasur.com.ar>, <mchehab@kernel.org>,
+        <gregkh@linuxfoundation.org>
+CC:     <linux-media@vger.kernel.org>,
+        <linux-rockchip@lists.infradead.org>,
+        <linux-staging@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] media:rkvdec:Remove redundant memset
+Date:   Fri, 17 Jun 2022 09:39:25 +0000
+Message-ID: <20220617093925.44985-1-zhangzekun11@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <be58b398-71ff-7c12-1bf1-a09181d9c80@linux.intel.com>
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500022.china.huawei.com (7.185.36.66)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 12:39:29PM +0300, Ilpo Järvinen wrote:
-> Add myself as maintainer for DW 8250 UART and up it to Supported.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+As dma_alloc_coherent() will return a zeroed buffer, we
+don't need to memset the returned buffer.
+priv_tbl = dma_alloc_coherent() and count_tbl = dma_alloc_coherent()
+should be enough.
 
-Obviously I need an ack from Andy too.  And thanks for doing this and
-all the work you have already done so far, it's appreciated.
+-see commit 750afb08ca71 ("cross-tree: phase out dma_zalloc_coherent()")
 
-greg k-h
+Signed-off-by: Zhang Zekun <zhangzekun11@huawei.com>
+---
+ drivers/staging/media/rkvdec/rkvdec-vp9.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/staging/media/rkvdec/rkvdec-vp9.c b/drivers/staging/media/rkvdec/rkvdec-vp9.c
+index 311a12656072..c2f42e76be10 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-vp9.c
++++ b/drivers/staging/media/rkvdec/rkvdec-vp9.c
+@@ -1015,7 +1015,6 @@ static int rkvdec_vp9_start(struct rkvdec_ctx *ctx)
+ 
+ 	vp9_ctx->priv_tbl.size = sizeof(*priv_tbl);
+ 	vp9_ctx->priv_tbl.cpu = priv_tbl;
+-	memset(priv_tbl, 0, sizeof(*priv_tbl));
+ 
+ 	count_tbl = dma_alloc_coherent(rkvdec->dev, RKVDEC_VP9_COUNT_SIZE,
+ 				       &vp9_ctx->count_tbl.dma, GFP_KERNEL);
+@@ -1026,7 +1025,6 @@ static int rkvdec_vp9_start(struct rkvdec_ctx *ctx)
+ 
+ 	vp9_ctx->count_tbl.size = RKVDEC_VP9_COUNT_SIZE;
+ 	vp9_ctx->count_tbl.cpu = count_tbl;
+-	memset(count_tbl, 0, sizeof(*count_tbl));
+ 	rkvdec_init_v4l2_vp9_count_tbl(ctx);
+ 
+ 	return 0;
+-- 
+2.17.1
+
