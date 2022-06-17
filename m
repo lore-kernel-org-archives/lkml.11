@@ -2,175 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F9FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D89C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:16:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380488AbiFQHNv (ORCPT
+        id S1380559AbiFQHQB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 03:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
+        Fri, 17 Jun 2022 03:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380490AbiFQHNs (ORCPT
+        with ESMTP id S1380558AbiFQHP7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 03:13:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7555414014
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:13:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1441A61F02
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:13:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F295C3411F
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:13:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655450026;
-        bh=JGsCs4tK5qbRzU6e76TvouliJTtVdOcvkKSP1d4FvN8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=rFSMzLL28gebcqUNwv6dNIfwXx6mjXTybMchpSUqCq+amHVxcnDV/9Ev3x3a/fjh2
-         CLLHCLurghcHoKaBADI1u41OUendrbrjOOVRoctr302G6vZBVJ1ocNHSiSB4ieCB/X
-         f3CQmLxZvKTPEPVXfYjjD34KcKDJm620KQs69qKUv0GImOqs5ab/k+NripFU+VnYpF
-         nv1+AGOPgCvN+xHppS1XmTH1fMTY17cCAjdXM0lec7/vMt8PSOVyDhqW7Q6sw5GnRP
-         UxJFoqJtHIWR79uCKrxo9fmEMO67miz7I0pdt58OlkfatsgmkP8bouNeD2PryfQvbC
-         MTS5BestcToGw==
-Received: by mail-vk1-f169.google.com with SMTP id g15so1634953vkm.0
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:13:46 -0700 (PDT)
-X-Gm-Message-State: AJIora/RQQDlElLM0TrZnrAZy6pMSYnKFQ1/S8IspxTuBCtZcsjAyJju
-        GP3kMJvMQpgE+YJVS63rAnsIsu79xyz/pgxP7RM=
-X-Google-Smtp-Source: AGRyM1uDRVDa8eQB+G81iuPumuflNDu9ljX1ubP/DF7PcHOXMpglAYADvAhiMjjJUZwLamPMD/eQI6zK1yl6bM7Fx04=
-X-Received: by 2002:ac5:c1c9:0:b0:35c:bd7c:2deb with SMTP id
- g9-20020ac5c1c9000000b0035cbd7c2debmr4079969vkk.2.1655450025379; Fri, 17 Jun
- 2022 00:13:45 -0700 (PDT)
+        Fri, 17 Jun 2022 03:15:59 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8581A13DEC
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:15:57 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id r24so3830881ljn.2
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:15:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nCXTiSXIa6VZd+sgUkAbHZ+KTe0Z37C/bputo1uDhXI=;
+        b=BAArAmCenEHg6LD90XC12T8L2DajyIDpwPTMkGTA1PxVXkX55YokJR8h4IVTzob3Gi
+         nXJAJcuvCykMvUrMbYOSAORrk+TD4Yrs1jrGexsUR+cJiY1Uacgu3kJTQ3yX/bbt+Z2r
+         cEucls6ZPewssAVvR8C81iH/kOqku4Fyss7Kk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nCXTiSXIa6VZd+sgUkAbHZ+KTe0Z37C/bputo1uDhXI=;
+        b=6D8nqCrtIIH4bdezPM2D2m2E9T9FJYbrbnt61Mb/RESLLYvfxOQ69pmd+Zu+4J/lWJ
+         Mdy7LHtIXEbC/V2mLbKZoxVtoex/pYRtqm6ItwzAMEPOmf6ySE7yu+qcXPkiC46R8tkq
+         doo5mxNS6sGvZdLvZXy9MjR9U9isyyftDSjR03ZI9N44mll1yvjE7HF8Tnbv/pSol2Mg
+         kHNM/pnhoUZzGfnJP8XbdPnUUI1+LwMfk5d9EfI5yXkiUWW87Yx2y+G1QrTz05zETRr4
+         b2X+TM0XRtuqWNSUxLBZuIJ8/0FnuNnyKDYHz1vAmGMUh1nNeBh5/gZRn05Lubx9KTBN
+         ZFgw==
+X-Gm-Message-State: AJIora+AhYAW5Uv95u/QXxFpcEgXUdO5XJZvMTvoUGd7eN3MD+hi6l52
+        E0sTcKCw/VT4bI5qk/t8ylWlhStxjs9A1gw7
+X-Google-Smtp-Source: AGRyM1sfSqFa7LRrxVhIQobqHlZS8rNikbm1y7T3Fg6d5VUiCPfGy4SG5EsY2q52tIBRh3gONpP3TA==
+X-Received: by 2002:a2e:bf1c:0:b0:259:f33:a4db with SMTP id c28-20020a2ebf1c000000b002590f33a4dbmr4180159ljr.454.1655450155437;
+        Fri, 17 Jun 2022 00:15:55 -0700 (PDT)
+Received: from [172.16.11.74] ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id l1-20020a194941000000b0047255d21205sm528170lfj.308.2022.06.17.00.15.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jun 2022 00:15:54 -0700 (PDT)
+Message-ID: <d0798b26-9c77-7209-8c16-0d067ea5720c@rasmusvillemoes.dk>
+Date:   Fri, 17 Jun 2022 09:15:53 +0200
 MIME-Version: 1.0
-References: <20220606123750.2884245-1-xianting.tian@linux.alibaba.com>
- <b2a45f97-0f97-6621-bb7e-11f51282c468@huawei.com> <b1098514-d185-e649-6dea-3c2f01e97ea8@linux.alibaba.com>
- <9fa53c5b-361a-a044-a08b-57458d7fcab8@linux.alibaba.com>
-In-Reply-To: <9fa53c5b-361a-a044-a08b-57458d7fcab8@linux.alibaba.com>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Fri, 17 Jun 2022 15:13:34 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTSjfmYS+5Q2TVb2p+5afkvv4yU12W+eiiMhgo2d8Z+2fA@mail.gmail.com>
-Message-ID: <CAJF2gTSjfmYS+5Q2TVb2p+5afkvv4yU12W+eiiMhgo2d8Z+2fA@mail.gmail.com>
-Subject: Re: [PATCH v3] RISC-V: Add fixup to support fast call of crash_kexec()
-To:     Xianting Tian <xianting.tian@linux.alibaba.com>
-Cc:     Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
-        Vitaly Wool <vitaly.wool@konsulko.com>, tongtiangen@huawei.com,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH RFCv4 3/4] lib/test_printf.c: split write-beyond-buffer
+ check in two
+Content-Language: en-US
+To:     Petr Mladek <pmladek@suse.com>, Jia He <justin.he@arm.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org,
+        Kent Overstreet <kent.overstreet@gmail.com>
+References: <20210615154952.2744-1-justin.he@arm.com>
+ <20210615154952.2744-4-justin.he@arm.com> <YMtZcVy4gvmMtYv+@alley>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+In-Reply-To: <YMtZcVy4gvmMtYv+@alley>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Xianting,
+On 17/06/2021 16.17, Petr Mladek wrote:
+> On Tue 2021-06-15 23:49:51, Jia He wrote:
+>> From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+>>
+>> Before each invocation of vsnprintf(), do_test() memsets the entire
+>> allocated buffer to a sentinel value. That buffer includes leading and
+>> trailing padding which is never included in the buffer area handed to
+>> vsnprintf (spaces merely for clarity):
+>>
+>>   pad  test_buffer      pad
+>>   **** **************** ****
+>>
+>> Then vsnprintf() is invoked with a bufsize argument <=
+>> BUF_SIZE. Suppose bufsize=10, then we'd have e.g.
+>>
+>>  |pad |   test_buffer    |pad |
+>>   **** pizza0 **** ****** ****
+>>  A    B      C    D           E
+>>
+>> where vsnprintf() was given the area from B to D.
+>>
+>> It is obviously a bug for vsnprintf to touch anything between A and B
+>> or between D and E. The former is checked for as one would expect. But
+>> for the latter, we are actually a little stricter in that we check the
+>> area between C and E.
+>>
+>> Split that check in two, providing a clearer error message in case it
+>> was a genuine buffer overrun and not merely a write within the
+>> provided buffer, but after the end of the generated string.
+>>
+>> So far, no part of the vsnprintf() implementation has had any use for
+>> using the whole buffer as scratch space, but it's not unreasonable to
+>> allow that, as long as the result is properly nul-terminated and the
+>> return value is the right one. However, it is somewhat unusual, and
+>> most %<something> won't need this, so keep the [C,D] check, but make
+>> it easy for a later patch to make that part opt-out for certain tests.
+> 
+> Excellent commit message.
+> 
+>> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+>> Tested-by: Jia He <justin.he@arm.com>
+>> Signed-off-by: Jia He <justin.he@arm.com>
+> 
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-On Fri, Jun 17, 2022 at 2:40 PM Xianting Tian
-<xianting.tian@linux.alibaba.com> wrote:
->
-> Hi Palmer
->
-> Will you apply this patch for 5.19?
-Maybe we could update tile with [PATCH v3] RISC-V: Fixup fast call of
-crash_kexec() for a V4.
+Hi Petr
 
-It's a fixup not feature, that would mislead maintainer. And add
-"Reviewed-by: Kefeng Wang".
+It seems Justin's series got stalled, but I still think this patch makes
+sense on its own (especially since another series in flight mucks about
+in this area), so can you please pick it up directly?
 
->
-> thanks
->
-> =E5=9C=A8 2022/6/7 =E4=B8=8A=E5=8D=889:46, Xianting Tian =E5=86=99=E9=81=
-=93:
-> >
-> > =E5=9C=A8 2022/6/7 =E4=B8=8A=E5=8D=889:21, Kefeng Wang =E5=86=99=E9=81=
-=93:
-> >>
-> >> On 2022/6/6 20:37, Xianting Tian wrote:
-> >>> Currently, almost all archs (x86, arm64, mips...) support fast call
-> >>> of crash_kexec() when "regs && kexec_should_crash()" is true. But
-> >>> RISC-V not, it can only enter crash system via panic(). However panic=
-()
-> >>> doesn't pass the regs of the real accident scene to crash_kexec(),
-> >>> it caused we can't get accurate backtrace via gdb,
-> >>>     $ riscv64-linux-gnu-gdb vmlinux vmcore
-> >>>     Reading symbols from vmlinux...
-> >>>     [New LWP 95]
-> >>>     #0  console_unlock () at kernel/printk/printk.c:2557
-> >>>     2557                    if (do_cond_resched)
-> >>>     (gdb) bt
-> >>>     #0  console_unlock () at kernel/printk/printk.c:2557
-> >>>     #1  0x0000000000000000 in ?? ()
-> >>>
-> >>> With the patch we can get the accurate backtrace,
-> >>>     $ riscv64-linux-gnu-gdb vmlinux vmcore
-> >>>     Reading symbols from vmlinux...
-> >>>     [New LWP 95]
-> >>>     #0  0xffffffe00063a4e0 in test_thread (data=3D<optimized out>) at
-> >>> drivers/test_crash.c:81
-> >>>     81             *(int *)p =3D 0xdead;
-> >>>     (gdb)
-> >>>     (gdb) bt
-> >>>     #0  0xffffffe00064d5c0 in test_thread (data=3D<optimized out>) at
-> >>> drivers/test_crash.c:81
-> >>>     #1  0x0000000000000000 in ?? ()
-> >>>
-> >>> Test code to produce NULL address dereference in test_crash.c,
-> >>>     void *p =3D NULL;
-> >>>     *(int *)p =3D 0xdead;
-> >>>
-> >>> Fixes: 76d2a0493a17 ("RISC-V: Init and Halt Code")
-> >>> Reviewed-by: Guo Ren <guoren@kernel.org>
-> >>> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-> >>> ---
-> >>> Changes from v1:
-> >>> - simplify the commit message
-> >>> Changes from v2:
-> >>> - add fixup in title
-> >>> ---
-> >>>   arch/riscv/kernel/traps.c | 4 ++++
-> >>>   1 file changed, 4 insertions(+)
-> >>>
-> >>> diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
-> >>> index b40426509244..39d0f8bba4b4 100644
-> >>> --- a/arch/riscv/kernel/traps.c
-> >>> +++ b/arch/riscv/kernel/traps.c
-> >>> @@ -16,6 +16,7 @@
-> >>>   #include <linux/mm.h>
-> >>>   #include <linux/module.h>
-> >>>   #include <linux/irq.h>
-> >>> +#include <linux/kexec.h>
-> >>>     #include <asm/asm-prototypes.h>
-> >>>   #include <asm/bug.h>
-> >>> @@ -44,6 +45,9 @@ void die(struct pt_regs *regs, const char *str)
-> >>>         ret =3D notify_die(DIE_OOPS, str, regs, 0, regs->cause, SIGSE=
-GV);
-> >>>   +    if (regs && kexec_should_crash(current))
-> >>> +        crash_kexec(regs);
-> >>> +
-> >>
-> >> It seems that the regs won't be null, right? except that,
-> >
-> > Autually both regs won't be null, But if it is triggered by panic() ,
-> > the regs are got via riscv_crash_save_regs(), which are the regs of
-> > that moment, but not the real accident scene.
-> >
-> >>
-> >> Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-> >>
-> >>>       bust_spinlocks(0);
-> >>>       add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
-> >>>       spin_unlock_irq(&die_lock);
+The lore link for the above is
+https://lore.kernel.org/lkml/20210615154952.2744-4-justin.he@arm.com/ ,
+while my original submission is at
+https://lore.kernel.org/lkml/20210615085044.1923788-1-linux@rasmusvillemoes.dk/
+.
 
-
-
---=20
-Best Regards
- Guo Ren
-
-ML: https://lore.kernel.org/linux-csky/
+Rasmus
