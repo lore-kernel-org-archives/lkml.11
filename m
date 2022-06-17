@@ -2,79 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E07C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 13:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AAF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 13:33:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236122AbiFQNb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 09:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
+        id S1382038AbiFQNdf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 09:33:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236792AbiFQNby (ORCPT
+        with ESMTP id S236792AbiFQNdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 09:31:54 -0400
-Received: from out28-77.mail.aliyun.com (out28-77.mail.aliyun.com [115.124.28.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5CBCF5
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 06:31:45 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.09729436|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.0811532-0.0012695-0.917577;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047192;MF=victor@allwinnertech.com;NM=1;PH=DS;RN=10;RT=10;SR=0;TI=SMTPD_---.O76jcEA_1655472657;
-Received: from 192.168.220.136(mailfrom:victor@allwinnertech.com fp:SMTPD_---.O76jcEA_1655472657)
-          by smtp.aliyun-inc.com;
-          Fri, 17 Jun 2022 21:31:31 +0800
-Message-ID: <ecabcfa6-7408-d10b-7d88-b1a202b2a90d@allwinnertech.com>
-Date:   Fri, 17 Jun 2022 21:30:57 +0800
+        Fri, 17 Jun 2022 09:33:33 -0400
+Received: from m15112.mail.126.com (m15112.mail.126.com [220.181.15.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 01F7EB483
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 06:33:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=7u6qK
+        ltsp5jSRpjg0OvbbT6LXIqaBGbVUZXXet7le4E=; b=i2NSrUiWLcHvbVI1dRkFw
+        oy11kkjprzeWXsw5lr7qxd9AnvzIt8NIY1Yo8JwqkvpYN++yVqhgQ5rJdKcz/V+e
+        W7owMLW5Y1ERhKylMHygsC8cFkO30pcJ3yYlm9ZW/b90kUu2Ebnxjf97eDeBIRtN
+        6nyU54yjzmrowf2drNtN64=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp2 (Coremail) with SMTP id DMmowACnrgJZgqxim2kiDg--.21116S2;
+        Fri, 17 Jun 2022 21:32:10 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     daniel.lezcano@linaro.org, tglx@linutronix.de,
+        linux-kernel@vger.kernel.org, windhl@126.com
+Subject: [PATCH] clocksource: Fix refcount leak bug in time-ti-dm-systimer
+Date:   Fri, 17 Jun 2022 21:32:09 +0800
+Message-Id: <20220617133209.4049325-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] ARM: mmu: fix access to illegal address when using
- earlycon & memblock=debug
-Content-Language: en-US
-From:   Victor Hassan <victor@allwinnertech.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     linux@armlinux.org.uk, rmk+kernel@armlinux.org.uk,
-        yanfei.xu@windriver.com, ardb@kernel.org, tglx@linutronix.de,
-        mirq-linux@rere.qmqm.pl, arnd@arndb.de,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220316023356.120595-1-victor@allwinnertech.com>
- <CACRpkdabVpD8fQYowCFibdc-r7of6JQnUJAeo0Quqg=cCuOjAQ@mail.gmail.com>
- <0fa192d1-b6cc-4a8a-c319-36471cba79e8@allwinnertech.com>
-In-Reply-To: <0fa192d1-b6cc-4a8a-c319-36471cba79e8@allwinnertech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DMmowACnrgJZgqxim2kiDg--.21116S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZFyxAF1xZw17GFyrKF4fuFg_yoWkWwc_Ww
+        s7XF9rJrW3urn7G39rCw13Z39xKrnavr48Z3WIqr9xJ3WxZw15ArnrZrn7ua48uay3tFyD
+        C3y7JrW7Zr17GjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRtgAwDUUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2hAjF1uwMOVH-gABs4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/18/2022 11:08 PM, Victor Hassan wrote:
-> On 18/04/2022 07:21, Linus Walleij wrote:
->> On Wed, Mar 16, 2022 at 3:33 AM Victor Hassan 
->> <victor@allwinnertech.com> wrote:
->>
->>> earlycon uses fixmap to create a memory map,
->>> So we need to close earlycon before closing fixmap,
->>> otherwise printk will access illegal addresses.
->>> After creating a new memory map, we open earlycon again.
->>>
->>> Signed-off-by: Victor Hassan <victor@allwinnertech.com>
->>
->> I think noone really noticed this because everyone on Arm systems
->> use CONFIG_DEBUG_LL, and that makes printascii hammer out
->> stuff on the console very early, it even accounts for whether we have
->> MMU on or not.
->>
-> Hi Linus,
-> Thank you for the reply. I used earlycon, in early_fixmap_shutdown, the 
-> base address of earlycon is in the critical stage of release and 
-> reassignment, so early_fixmap_shutdown -> create_mapping should not call 
-> earlycon in this process, and create_mapping has a lot of conditions 
-> that trigger print, memblock=debug just makes it easier to expose problems.
-> 
->> How are you using this on Arm even? What system and what serial
->> driver?
-> I'm using serial driver 8250 on arm32, with cmdline: memblock=debug.
-> CONFIG_SERIAL_8250=y
-> CONFIG_SERIAL_8520_CONSOLE=y
->>
->> That said, it looks correct.
->> Acked-by: Linus Walleij <linus.walleij@linaro.org>
+In dmtimer_percpu_quirk_init(), of_find_compatible_node() will return
+a node pointer with refcount incremented. We should use of_node_put()
+in fail path or when it is not used anymore.
 
-Hi Linus,
-Sorry to disturb. Is there any question about this issue? Thank you :)
+Signed-off-by: Liang He <windhl@126.com>
+---
+ drivers/clocksource/timer-ti-dm-systimer.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/clocksource/timer-ti-dm-systimer.c b/drivers/clocksource/timer-ti-dm-systimer.c
+index 2737407ff069..f414cb553649 100644
+--- a/drivers/clocksource/timer-ti-dm-systimer.c
++++ b/drivers/clocksource/timer-ti-dm-systimer.c
+@@ -690,10 +690,11 @@ static int __init dmtimer_percpu_quirk_init(struct device_node *np, u32 pa)
+ 
+ 	arm_timer = of_find_compatible_node(NULL, NULL, "arm,armv7-timer");
+ 	if (of_device_is_available(arm_timer)) {
++		of_node_put(arm_timer);
+ 		pr_warn_once("ARM architected timer wrap issue i940 detected\n");
+ 		return 0;
+ 	}
+-
++	of_node_put(arm_timer);
+ 	if (pa == 0x4882c000)           /* dra7 dmtimer15 */
+ 		return dmtimer_percpu_timer_init(np, 0);
+ 	else if (pa == 0x4882e000)      /* dra7 dmtimer16 */
+-- 
+2.25.1
+
