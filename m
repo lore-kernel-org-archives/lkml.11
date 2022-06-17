@@ -2,91 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6060DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 03:50:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B76D0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 03:51:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379819AbiFQDuw (ORCPT
+        id S1379850AbiFQDvE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 23:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
+        Thu, 16 Jun 2022 23:51:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379797AbiFQDue (ORCPT
+        with ESMTP id S1379833AbiFQDu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 23:50:34 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D3E663DF;
-        Thu, 16 Jun 2022 20:50:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9B69FCE2852;
-        Fri, 17 Jun 2022 03:50:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ED674C341C0;
-        Fri, 17 Jun 2022 03:50:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655437827;
-        bh=7s2Si8GUuMlYSlLe8xg2+g+yctYqF9/Kblkx+6BbW58=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hp+idzWuPLU5CiP4phj6ma+XSty4Bb2ur9EzV1IBtUru/FjuS74O9U7PGTJS9Lgel
-         QOtrXuVwAyUlXNCoc3gXI3sssqcz1YnPkF31XR7AR0W4PM7o3bzCr8cx7MKO2MoMXA
-         R+lY5TtRiPNNgcwjyT7ZjsJg8AF871Z0efXcRe+LXWDj7pmamEnAuNAho6HJSi8g0G
-         MZ4RxSNvbL9bOLf61ZuvC+IJm9XvvqSNYA5LrwoH7OVab/as4ktcP1boIeLHzShuGo
-         MsVh/F0UrO6xKDi5X4U2HOVyWMIsceRPxCXEXsW9cnmMfOgw3bG44eIkX7r8sE6QAs
-         7xWqlU/FbRaWg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D11C4E73867;
-        Fri, 17 Jun 2022 03:50:26 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 16 Jun 2022 23:50:57 -0400
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17E4663FF;
+        Thu, 16 Jun 2022 20:50:56 -0700 (PDT)
+Received: by mail-pf1-f173.google.com with SMTP id u2so3146609pfc.2;
+        Thu, 16 Jun 2022 20:50:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Q1Tw5gtlbm60jQgJOmSoiCUD1TeB/fsK0N0NTHe/6HI=;
+        b=hMiFIuYhYV5Q4OkfRPt36XS+aI4r9sVrFzQwi/ueqcxuS46zD1TqtNy3WoGA9jjqPT
+         /YEeRmDffJZlQ3XDwpdTAsI2LEFXI13tvqVcE4DqWyLRZobhC0bOPk7bRvP7EYJrX1no
+         AyThKFD3LKezL7vpIZFuQ69qJIjrSI7nO2ov9GSO+ccethw9t9QwyQiC4Mk8TxdeTs4m
+         V0TEeRMqPxWyCdRUCLpMTqECBnS/MxyzJHb70YVPQ1wuKSWVuFHuUko0Abr1yTwANoHq
+         UFGB5svqWZyLv8M6VhLFiWdMlNJdfxV/Sx3JBIG8CYbXyFVBMoEqmnGzf6+azkt3M0tg
+         osIw==
+X-Gm-Message-State: AJIora+25ELLLQhO/OKagYeS4TIjXDf2owEiY+6/0DWrJQyIpwwr1BoS
+        Z0097UcDIf2mAV1wBsrgBS8THN5HHRI=
+X-Google-Smtp-Source: AGRyM1s9OsXBGRQWFItQf69mSxYRhA6/ZQgWKvQqGrgAgMRlNCuNPlWjLWaSNAVKQnerbzJoMZ5UAA==
+X-Received: by 2002:a63:5205:0:b0:401:7586:74f6 with SMTP id g5-20020a635205000000b00401758674f6mr7228645pgb.591.1655437855982;
+        Thu, 16 Jun 2022 20:50:55 -0700 (PDT)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id a14-20020a63704e000000b00408c592db61sm2588606pgn.71.2022.06.16.20.50.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jun 2022 20:50:55 -0700 (PDT)
+Message-ID: <2205b7c0-53d5-a485-72e3-12810d8c0a42@acm.org>
+Date:   Thu, 16 Jun 2022 20:50:53 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] net: ipa: more multi-channel event ring work
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165543782685.2027.6817582809766832078.git-patchwork-notify@kernel.org>
-Date:   Fri, 17 Jun 2022 03:50:26 +0000
-References: <20220615165929.5924-1-elder@linaro.org>
-In-Reply-To: <20220615165929.5924-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, mka@chromium.org, evgreen@chromium.org,
-        bjorn.andersson@linaro.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4] scsi: support packing multi-segment in UNMAP command
+Content-Language: en-US
+To:     Chao Yu <chao@kernel.org>, jejb@linux.ibm.com,
+        martin.petersen@oracle.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hch@infradead.org
+References: <20220616013617.2284341-1-chao@kernel.org>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220616013617.2284341-1-chao@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 15 Jun 2022 11:59:24 -0500 you wrote:
-> This series makes a little more progress toward supporting multiple
-> channels with a single event ring.  The first removes the assumption
-> that consecutive events are associated with the same RX channel.
+On 6/15/22 18:36, Chao Yu wrote:
+> As SCSI SBC4 specification section 5.30.2 describes that it can
+> support unmapping one or more LBA range in single UNMAP command.
 > 
-> The second derives the channel associated with an event from the
-> event itself, and the next does a small cleanup enabled by that.
+> However, previously we only pack one LBA range in UNMAP command
+> by default no matter device gives the block limits that says it
+> can support unmapping multiple LBA ranges with a single UNMAP
+> command.
 > 
-> [...]
+> This patch sets max_discard_segments config according to block
+> limits of device, and supports unmapping multiple LBA ranges with
+> a single UNMAP command.
 
-Here is the summary with links:
-  - [net-next,1/5] net: ipa: don't assume one channel per event ring
-    https://git.kernel.org/netdev/net-next/c/dd5a046cbbed
-  - [net-next,2/5] net: ipa: don't pass channel when mapping transaction
-    https://git.kernel.org/netdev/net-next/c/8eec78319585
-  - [net-next,3/5] net: ipa: pass GSI pointer to gsi_evt_ring_rx_update()
-    https://git.kernel.org/netdev/net-next/c/2f48fb0edc0d
-  - [net-next,4/5] net: ipa: call gsi_evt_ring_rx_update() unconditionally
-    https://git.kernel.org/netdev/net-next/c/9f1c3ad65406
-  - [net-next,5/5] net: ipa: move more code out of gsi_channel_update()
-    https://git.kernel.org/netdev/net-next/c/81765eeac1b0
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
