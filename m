@@ -2,136 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 688F3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC1B1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381138AbiFQKCN (ORCPT
+        id S1381367AbiFQKCx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 06:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47124 "EHLO
+        Fri, 17 Jun 2022 06:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235280AbiFQKCI (ORCPT
+        with ESMTP id S234702AbiFQKCu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 06:02:08 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCDF692A4;
-        Fri, 17 Jun 2022 03:02:06 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LPZM46LC4zDrMM;
-        Fri, 17 Jun 2022 18:01:36 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 17 Jun
- 2022 18:02:04 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <viro@zeniv.linux.org.uk>, <ebiederm@xmission.com>,
-        <keescook@chromium.org>
-CC:     <linux-fsdevel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, Ye Bin <yebin10@huawei.com>
-Subject: [PATCH -next] exec: remove recheck path_noexec in do_open_execat and uselib
-Date:   Fri, 17 Jun 2022 18:15:06 +0800
-Message-ID: <20220617101506.2743155-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Fri, 17 Jun 2022 06:02:50 -0400
+Received: from jari.cn (unknown [218.92.28.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C713CFD1C
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 03:02:46 -0700 (PDT)
+Received: by ajax-webmail-localhost.localdomain (Coremail) ; Fri, 17 Jun
+ 2022 17:57:21 +0800 (GMT+08:00)
+X-Originating-IP: [182.148.14.60]
+Date:   Fri, 17 Jun 2022 17:57:21 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "XueBing Chen" <chenxuebing@jari.cn>
+To:     sammy@sammy.net, geert@linux-m68k.org
+Cc:     linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] m68k/sun3: use __func__ to get funcion's name in an output
+ message
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
+ Copyright (c) 2002-2022 www.mailtech.cn
+ mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+Message-ID: <3461c09c.be8.1817118854e.Coremail.chenxuebing@jari.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: AQAAfwAHEW8BUKxi1atBAA--.765W
+X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAACmFEYxssuAACsA
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We got issue as follows:
-may_open [pid=1900]: path=file0 mode=1 exec=0
-path_mount [pid = 1901]: mnt_flags=0x64 sb_flags=0x1 flags=0x4029 name=/
-do_open_execat [pid=1900]: file=./file0 mode = 8828 exec=1 mnt_flags=1064 s_iflags=0, path=file0
-------------[ cut here ]------------
-WARNING: CPU: 3 PID: 1900 at fs/exec.c:943 do_open_execat+0x24a/0x570
-Modules linked in:
-CPU: 3 PID: 1900 Comm: rep Not tainted 5.19.0-rc2-next-20220615+ #240
-RIP: 0010:do_open_execat+0x24a/0x570
-RSP: 0018:ffff88810243fcf8 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 1ffff11020487fa4 RCX: ffff888126db6900
-RDX: 0000000000000000 RSI: ffff888126db6900 RDI: 0000000000000002
-RBP: ffff88810c022200 R08: ffffffff86a52a3a R09: 0000000000000000
-R10: 0000000000000005 R11: ffffed1075e5e4e2 R12: ffff8881098c23c0
-R13: 0000000000000001 R14: ffff8881098c23e0 R15: ffff8881098c23d0
-FS:  00007fd72a66c700(0000) GS:ffff8883af2c0000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000200013c0 CR3: 0000000123548000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- bprm_execve+0x2c7/0xd70
- do_execveat_common.isra.0+0x338/0x420
- __x64_sys_execveat+0x71/0x80
- do_syscall_64+0x3b/0x90
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-The above issue is caused by remount the file system as noexec concurrently.
-As commit 0fd338b2d2cd move path_noexec to may_open, and add recheck at end.
-This kind of repeated check is unnecessary, because it also occurs in some
-scenarios. Even if we guarantee the order of the file opening and remounting
-process, there will still be binaries executing under the noexec file system.
-The current process can at least ensure that binary files cannot be executed
-after the file system is remounted into noexec. So it is safe to delete this
-check
-
-Fixes:0fd338b2d2cd("exec: move path_noexec() check earlier")
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- fs/exec.c | 21 ---------------------
- 1 file changed, 21 deletions(-)
-
-diff --git a/fs/exec.c b/fs/exec.c
-index f2cde361bdb1..3419c4158a70 100644
---- a/fs/exec.c
-+++ b/fs/exec.c
-@@ -140,16 +140,6 @@ SYSCALL_DEFINE1(uselib, const char __user *, library)
- 	if (IS_ERR(file))
- 		goto out;
- 
--	/*
--	 * may_open() has already checked for this, so it should be
--	 * impossible to trip now. But we need to be extra cautious
--	 * and check again at the very end too.
--	 */
--	error = -EACCES;
--	if (WARN_ON_ONCE(!S_ISREG(file_inode(file)->i_mode) ||
--			 path_noexec(&file->f_path)))
--		goto exit;
--
- 	fsnotify_open(file);
- 
- 	error = -ENOEXEC;
-@@ -168,7 +158,6 @@ SYSCALL_DEFINE1(uselib, const char __user *, library)
- 			break;
- 	}
- 	read_unlock(&binfmt_lock);
--exit:
- 	fput(file);
- out:
-   	return error;
-@@ -925,16 +914,6 @@ static struct file *do_open_execat(int fd, struct filename *name, int flags)
- 	if (IS_ERR(file))
- 		goto out;
- 
--	/*
--	 * may_open() has already checked for this, so it should be
--	 * impossible to trip now. But we need to be extra cautious
--	 * and check again at the very end too.
--	 */
--	err = -EACCES;
--	if (WARN_ON_ONCE(!S_ISREG(file_inode(file)->i_mode) ||
--			 path_noexec(&file->f_path)))
--		goto exit;
--
- 	err = deny_write_access(file);
- 	if (err)
- 		goto exit;
--- 
-2.31.1
-
+ClByZWZlciB1c2luZyAnIiVzLi4uIiwgX19mdW5jX18nIHRvIGdldCBjdXJyZW50IGZ1bmN0aW9u
+J3MgbmFtZSBpbgphbiBvdXRwdXQgbWVzc2FnZS4KClNpZ25lZC1vZmYtYnk6IFh1ZUJpbmcgQ2hl
+biA8Y2hlbnh1ZWJpbmdAamFyaS5jbj4KLS0tCiBhcmNoL202OGsvc3VuMy9tbXVfZW11LmMgfCA4
+ICsrKystLS0tCiAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygt
+KQoKZGlmZiAtLWdpdCBhL2FyY2gvbTY4ay9zdW4zL21tdV9lbXUuYyBiL2FyY2gvbTY4ay9zdW4z
+L21tdV9lbXUuYwppbmRleCA3ZWMyMDgxN2MwYzkuLjUxNDgwZjcwM2RjOCAxMDA2NDQKLS0tIGEv
+YXJjaC9tNjhrL3N1bjMvbW11X2VtdS5jCisrKyBiL2FyY2gvbTY4ay9zdW4zL21tdV9lbXUuYwpA
+QCAtMjExLDcgKzIxMSw3IEBAIHZvaWQgY2xlYXJfY29udGV4dCh1bnNpZ25lZCBsb25nIGNvbnRl
+eHQpCiAKICAgICAgaWYoY29udGV4dCkgewogCSAgICAgaWYoIWN0eF9hbGxvY1tjb250ZXh0XSkK
+LQkJICAgICBwYW5pYygiY2xlYXJfY29udGV4dDogY29udGV4dCBub3QgYWxsb2NhdGVkXG4iKTsK
+KwkJICAgICBwYW5pYygiJXM6IGNvbnRleHQgbm90IGFsbG9jYXRlZFxuIiwgX19mdW5jX18pOwog
+CiAJICAgICBjdHhfYWxsb2NbY29udGV4dF0tPmNvbnRleHQgPSBTVU4zX0lOVkFMSURfQ09OVEVY
+VDsKIAkgICAgIGN0eF9hbGxvY1tjb250ZXh0XSA9IChzdHJ1Y3QgbW1fc3RydWN0ICopMDsKQEAg
+LTI2MSw3ICsyNjEsNyBAQCB1bnNpZ25lZCBsb25nIGdldF9mcmVlX2NvbnRleHQoc3RydWN0IG1t
+X3N0cnVjdCAqbW0pCiAJCX0KIAkJLy8gY2hlY2sgdG8gbWFrZSBzdXJlIG9uZSB3YXMgcmVhbGx5
+IGZyZWUuLi4KIAkJaWYobmV3ID09IENPTlRFWFRTX05VTSkKLQkJCXBhbmljKCJnZXRfZnJlZV9j
+b250ZXh0OiBmYWlsZWQgdG8gZmluZCBmcmVlIGNvbnRleHQiKTsKKwkJCXBhbmljKCIlczogZmFp
+bGVkIHRvIGZpbmQgZnJlZSBjb250ZXh0IiwgX19mdW5jX18pOwogCX0KIAogCWN0eF9hbGxvY1tu
+ZXddID0gbW07CkBAIC0zNjksNyArMzY5LDcgQEAgaW50IG1tdV9lbXVfaGFuZGxlX2ZhdWx0ICh1
+bnNpZ25lZCBsb25nIHZhZGRyLCBpbnQgcmVhZF9mbGFnLCBpbnQga2VybmVsX2ZhdWx0KQogCX0K
+IAogI2lmZGVmIERFQlVHX01NVV9FTVUKLQlwcl9pbmZvKCJtbXVfZW11X2hhbmRsZV9mYXVsdDog
+dmFkZHI9JWx4IHR5cGU9JXMgY3JwPSVwXG4iLAorCXByX2luZm8oIiVzOiB2YWRkcj0lbHggdHlw
+ZT0lcyBjcnA9JXBcbiIsIF9fZnVuY19fLAogCQl2YWRkciwgcmVhZF9mbGFnID8gInJlYWQiIDog
+IndyaXRlIiwgY3JwKTsKICNlbmRpZgogCkBAIC0zNzcsNyArMzc3LDcgQEAgaW50IG1tdV9lbXVf
+aGFuZGxlX2ZhdWx0ICh1bnNpZ25lZCBsb25nIHZhZGRyLCBpbnQgcmVhZF9mbGFnLCBpbnQga2Vy
+bmVsX2ZhdWx0KQogCW9mZnNldCAgPSAodmFkZHIgPj4gU1VOM19QVEVfU0laRV9CSVRTKSAmIDB4
+RjsKIAogI2lmZGVmIERFQlVHX01NVV9FTVUKLQlwcl9pbmZvKCJtbXVfZW11X2hhbmRsZV9mYXVs
+dDogc2VnbWVudD0lbHggb2Zmc2V0PSVseFxuIiwgc2VnbWVudCwKKwlwcl9pbmZvKCIlczogc2Vn
+bWVudD0lbHggb2Zmc2V0PSVseFxuIiwgX19mdW5jX18sIHNlZ21lbnQsCiAJCW9mZnNldCk7CiAj
+ZW5kaWYKIAotLSAKMi4zNi4xCgoKCg==
