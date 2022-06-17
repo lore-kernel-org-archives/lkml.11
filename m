@@ -2,76 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD03BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 21:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ADB8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 21:53:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234642AbiFQVxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 17:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41098 "EHLO
+        id S236373AbiFQVxf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 17:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236194AbiFQVw6 (ORCPT
+        with ESMTP id S236719AbiFQVxX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 17:52:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADF213F1A;
-        Fri, 17 Jun 2022 14:52:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA909620CE;
-        Fri, 17 Jun 2022 21:52:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A843C341C0;
-        Fri, 17 Jun 2022 21:52:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655502777;
-        bh=CHYf7wPblugaOOHON/B4cUZtYdtCO/G6QCOlC6YwWBU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ALU3NVZKdfyEBaJrg+gRyGt1phOVFMXGhZPBQV1ed/5iu0tDxdy+GjpvYV75Jp+C+
-         XnJAayrbg5tR1zP4LKDqG1uH2Sl2uCp4yvyB3Mh6BPMfX0njDXlk+7EvhGIZrKNPVA
-         65/j4+y5QILpPEzaGKh7QtTrGxdKT64KVTPfu+1zULBBwD0uNv3UJWkyMrPoCXvxQw
-         EwliwL2onf1+97ogkDqsLoqGozpz5B2XcO4Ne1BlU8IdvqIqK6GgApilLcqctVdwkj
-         L5DhlBwquIulFbX2Gf/rBp9yTvyYRgp4LWPKoDgCxBW6LBwcB90Mz92vJq3jbeDxpj
-         70qDcu81hX23g==
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-317741c86fdso52483497b3.2;
-        Fri, 17 Jun 2022 14:52:57 -0700 (PDT)
-X-Gm-Message-State: AJIora9mvYOWs8MImCXOBmCxNHBef4HBrSWADdCwjxxL2LQ4Ycz0RKsm
-        GxC1PFdLnMEiciRt6k1PUXh8eASHltTbPY60bPI=
-X-Google-Smtp-Source: AGRyM1vQ8Sa8Q4UM+oDO3hrf72jWP5A0jUUFHNSLXlE5u2/U9YUgyIoEz9eu2Q4f9c46TQJjSp0bcXR4wcwL4qzps80=
-X-Received: by 2002:a81:7505:0:b0:30c:45e3:71bc with SMTP id
- q5-20020a817505000000b0030c45e371bcmr14301902ywc.460.1655502776275; Fri, 17
- Jun 2022 14:52:56 -0700 (PDT)
+        Fri, 17 Jun 2022 17:53:23 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736D01408C;
+        Fri, 17 Jun 2022 14:53:22 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 21:53:19 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655502800;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PcfnOHV5Bp8+Ur3r0BXq4INHHC+9B8ptbgLOlJRz1nU=;
+        b=FQEpO4bskcdgwDcy9z+yvR7K9Vpl9+IMcdlAfDIFDnfTuuD9Z3Fpd9Lu49Eb4tJe6Axj7u
+        Q2QpEIAsreiPXAbIDs8fajkP3iWjNW24qmruFit04x9tt5b9ibx7GBaiYR1ebZD3HwgDN3
+        j7mbhMrEDOFbEMqulgVql6LsY+fgaqY0tdbT7fsbWqoqgsAFFerGwaE+v1s4ThfzwTGSrM
+        tPZRLdUnueiVFEHaq2855v+8BsbgjJfTvb63uTANneu/7S5BhwfdSs1Mdw0rVXkifg/LZv
+        fnfXTq42iAUmqgRyubpkaf5b/kER9p3/KIY/EMgiK+mfvjyWYLyebYJgZ/nMLw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655502800;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PcfnOHV5Bp8+Ur3r0BXq4INHHC+9B8ptbgLOlJRz1nU=;
+        b=ICXbvaBXHALub84M3Z/hNXbDL/GbDzNT8PgTJU4mqvq4rBzEIK1pXxrwgSaPusXLU2WxZ4
+        mvMH3F/O6j2WVwAg==
+From:   "tip-bot2 for Kirill A. Shutemov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/tdx: Fix early #VE handling
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220614120135.14812-2-kirill.shutemov@linux.intel.com>
+References: <20220614120135.14812-2-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-References: <20220608162756.144600-1-logang@deltatee.com> <20220608162756.144600-2-logang@deltatee.com>
- <Yqwe6NXL9sedvx7v@infradead.org>
-In-Reply-To: <Yqwe6NXL9sedvx7v@infradead.org>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 17 Jun 2022 14:52:45 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7Vqn3Njf5nt1Pgu9A9+Ov2DUZnGvScfdFjsoiLX5CPeA@mail.gmail.com>
-Message-ID: <CAPhsuW7Vqn3Njf5nt1Pgu9A9+Ov2DUZnGvScfdFjsoiLX5CPeA@mail.gmail.com>
-Subject: Re: [PATCH v4 01/11] md/raid5-ppl: Fix argument order in bio_alloc_bioset()
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Logan Gunthorpe <logang@deltatee.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-raid <linux-raid@vger.kernel.org>,
-        Donald Buczek <buczek@molgen.mpg.de>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Xiao Ni <xni@redhat.com>, Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>,
-        Christoph Hellwig <hch@lst.de>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <165550279938.4207.12499626093792732000.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 11:28 PM Christoph Hellwig <hch@infradead.org> wrote:
->
-> While I think this whole series needs to get in of course, this one
-> seems even morge urgent.  Song, can you send it to Jens ASAP, please?
+The following commit has been merged into the x86/urgent branch of tip:
 
-This is already in Jens' block-5.19 branch. :)
+Commit-ID:     60428d8bc27f52e8f1540f98e1b6ef0156d43f0d
+Gitweb:        https://git.kernel.org/tip/60428d8bc27f52e8f1540f98e1b6ef0156d43f0d
+Author:        Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+AuthorDate:    Tue, 14 Jun 2022 15:01:33 +03:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Wed, 15 Jun 2022 10:52:59 -07:00
 
-https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git/commit/?h=block-5.19&id=f34fdcd4a0e7a0b92340ad7e48e7bcff9393fab5
+x86/tdx: Fix early #VE handling
 
-Thanks,
-Song
+tdx_early_handle_ve() does not increment RIP after successfully
+handling the exception.  That leads to infinite loop of exceptions.
+
+Move RIP when exceptions are successfully handled.
+
+[ dhansen: make problem statement more clear ]
+
+Fixes: 32e72854fa5f ("x86/tdx: Port I/O: Add early boot support")
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220614120135.14812-2-kirill.shutemov@linux.intel.com
+---
+ arch/x86/coco/tdx/tdx.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+index 03deb4d..faae53f 100644
+--- a/arch/x86/coco/tdx/tdx.c
++++ b/arch/x86/coco/tdx/tdx.c
+@@ -447,13 +447,17 @@ static bool handle_io(struct pt_regs *regs, u32 exit_qual)
+ __init bool tdx_early_handle_ve(struct pt_regs *regs)
+ {
+ 	struct ve_info ve;
++	bool ret;
+ 
+ 	tdx_get_ve_info(&ve);
+ 
+ 	if (ve.exit_reason != EXIT_REASON_IO_INSTRUCTION)
+ 		return false;
+ 
+-	return handle_io(regs, ve.exit_qual);
++	ret = handle_io(regs, ve.exit_qual);
++	if (ret)
++		regs->ip += ve.instr_len;
++	return ret;
+ }
+ 
+ void tdx_get_ve_info(struct ve_info *ve)
