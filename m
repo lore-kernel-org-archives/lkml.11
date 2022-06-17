@@ -2,360 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA4B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 20:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 20:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383722AbiFQUnH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 16:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47564 "EHLO
+        id S244943AbiFQUqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 16:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383611AbiFQUmv (ORCPT
+        with ESMTP id S234461AbiFQUqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 16:42:51 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDE15DBCB;
-        Fri, 17 Jun 2022 13:40:52 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 9AC5D81C3D;
-        Fri, 17 Jun 2022 20:40:50 +0000 (UTC)
-Received: from pdx1-sub0-mail-a312.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id EC95481BD3;
-        Fri, 17 Jun 2022 20:40:49 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1655498450; a=rsa-sha256;
-        cv=none;
-        b=Tpd2yyDntqlMU2V3crqNRy7l32e+tOrYkOTu672CLdYmdsoRMG5tAdB+AZd5NormH7moWJ
-        4l1DLWwWf5oK1u4MfN6knukpTeluw0VpFle8IYOzmTbJDOsMyiMf6uJA/VNSgEU2/igfFO
-        L/U3sNXP+JOlTGr0WFpJdbv3+yluVYSfWOTnzWRgXg26i+0Lgg+x5hf83vzw50ZhoWnff+
-        Vzcm3pT9QqEsaPCDL1VFqzAWby+YY8fkn/lqz+AtabchRpNPhTXnUlZbbOiELOHB4EclbV
-        PULlOG3AnINgs30hB8Ff44aojerMmN0V/2KeOrTs3ztnvOtsMqsrGMX26yGB3A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1655498450;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=lykkFNFOZt2FNRu8ye1JiltrQXiKX3YS6Z0KwMe5t+A=;
-        b=a4GUn6f89hPru0lAdg6fp0olXpgGOm2LHGdc80pJuKw4cT+sDqQa5eVXOtdCK47fW5bOA8
-        1YvjD6a68faw8UM92qx/eYAVv4sX/o5d5iIKaV8I+dbcAT7Bz1kFKKP5LWItlnPfyYGUTR
-        fhNVSIsKSmZMajs+28vY1GSL/m6/tJprtQI9nwTp3bn/cknWUwsUfwFnGME4Z8dQKYedRi
-        hlNEPVbGpAjOPc4ZgvCLEbZM1jOwVHa6JOo0sY33xs2a3+6CJu9WnlRaIN4eQD2RLA0aDu
-        B3w40CsJ4oyY47JRbKeYgDuUctzvIR9+iMjhh6uWSJOqBNqOugO6BsenbvpORQ==
-ARC-Authentication-Results: i=1;
-        rspamd-848669fb87-5ggpz;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Dime-Bubble: 075ab45a0c46bfcc_1655498450381_1563642052
-X-MC-Loop-Signature: 1655498450381:944370204
-X-MC-Ingress-Time: 1655498450381
-Received: from pdx1-sub0-mail-a312.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.115.45.51 (trex/6.7.1);
-        Fri, 17 Jun 2022 20:40:50 +0000
-Received: from offworld (unknown [104.36.31.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a312.dreamhost.com (Postfix) with ESMTPSA id 4LPrXc6zkPz23;
-        Fri, 17 Jun 2022 13:40:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1655498449;
-        bh=lykkFNFOZt2FNRu8ye1JiltrQXiKX3YS6Z0KwMe5t+A=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=hS7tj7gUaj5TRliMGlbeoU1+ope3BBKKY5DSoTT2PctnfK1AO16RI7XgznA2G8H0H
-         ru+BrpZSdfz2JWdMKXeaqDiVEHcCr7IbkMvHudjTx4blAIKUaSyskAtCdkRmu/P0yX
-         joOrhJ24RDAmqCFRdJVtEZfhDdFNfN8UrXZu9+ywIMUon1fFbKPck2Q6FJYns9IQEY
-         VjhhcPJnLwZJhdMN4WnIH4en1Winrd2fixTLhVcTKoa8/X7xHlxjQECIkV2YESeQxw
-         jcNBwxw2d7YrU4nDJbWeQL3pM7CahQD8p3lLV5JzxXUyfxi/ARt5yfEEfD6Nv10BMH
-         dhugcMvqb7Zbg==
-Date:   Fri, 17 Jun 2022 13:40:46 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     "ira.weiny@intel.com" <ira.weiny@intel.com>
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org, a.manzanares@samsung.com
-Subject: Re: [PATCH v11 4/8] cxl/pci: Create PCI DOE mailbox's for memory
- devices
-Message-ID: <20220617204046.qdkza6iemkfv2aze@offworld>
-References: <20220610202259.3544623-1-ira.weiny@intel.com>
- <20220610202259.3544623-5-ira.weiny@intel.com>
+        Fri, 17 Jun 2022 16:46:50 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54D458E5F
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 13:46:49 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id w21so5128835pfc.0
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 13:46:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GXaclX1FL0h8CGb7nidVOvl5KYslHnP1qP5vHuFEg/o=;
+        b=lSFDDXp8fJxd3k1/NPPifUGgBLPdaE22CTJKPLAyp43SGjKFomXAGiePTZ42BlIrJh
+         odqD9O7PRMXQHJrgctB/Y5S4MWjuJgaJD8WmZ8sebu3eFFWTXjdDxTbzEMVwKQUMkU4q
+         U6exfnONG79nydNKJedyEQ72Xcs+9MEgrbF4s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GXaclX1FL0h8CGb7nidVOvl5KYslHnP1qP5vHuFEg/o=;
+        b=W68mlgHoQC7o+PLg5JEPyHLfjcZROayf51Y/BK559YCOzgxfzoWCo22jkzd0WSa49d
+         wDUfslaqg9DqheM61LMBrja//8Zuin8+x2mCKwAIqyu9zD9RgJZAropmWDvIZcGd5jHg
+         8pFvLBmC9uX1/FlBDCDOnTDSf8GH3ceDP+9ch4JWa66uHnd2ZSaC3yGBVYhcvtVxvV4J
+         BpvfI+luUTCp5tSAQ/YS6mJPmW4FVdwRpFTggjpNVHymk9L0ILIy4RJX3d5L5QrlFHsI
+         UPjrAVJW4a0uyoQU34jso60wa6at0wqzYgHSfT0VWo//4cx1Hz2epiOxpNobPmREka0i
+         7FXw==
+X-Gm-Message-State: AJIora/34uNJnEjCOeqqDsSGa6wlMWul/+5Gx895cE0nwY40ldOIc/KF
+        WfeDpJlOJ5FMarwrr0GzSvROsQ==
+X-Google-Smtp-Source: AGRyM1tK3U/ZG9n4Mvxa/4Mm4J4wxTavnLkXJYks8NkYt9StAA0o/gzzGm6jYf7ZHj2JUirJCeCBHg==
+X-Received: by 2002:a05:6a00:b8c:b0:51c:2d3d:4595 with SMTP id g12-20020a056a000b8c00b0051c2d3d4595mr11829256pfj.80.1655498809321;
+        Fri, 17 Jun 2022 13:46:49 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:6844:cedc:a28c:44b2])
+        by smtp.gmail.com with ESMTPSA id p7-20020a17090a428700b001e2f383110bsm5904549pjg.11.2022.06.17.13.46.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 13:46:48 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 13:46:46 -0700
+From:   Brian Norris <briannorris@chromium.org>
+To:     Judy Hsiao <judyhsiao@chromium.org>
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Chen-Yu Tsai <wenst@chromium.org>, alsa-devel@alsa-project.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] ASoC: rockchip: i2s: switch BCLK to GPIO
+Message-ID: <YqzoNqd3Mpv3r2tS@google.com>
+References: <20220616155836.3401420-1-judyhsiao@chromium.org>
+ <20220617044251.4029697-1-judyhsiao@chromium.org>
+ <20220617044251.4029697-2-judyhsiao@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220610202259.3544623-5-ira.weiny@intel.com>
-User-Agent: NeoMutt/20220429
+In-Reply-To: <20220617044251.4029697-2-judyhsiao@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 10 Jun 2022, ira.weiny@intel.com wrote:
->+++ b/drivers/cxl/cxlmem.h
->@@ -191,6 +191,8 @@ struct cxl_endpoint_dvsec_info {
->  * @component_reg_phys: register base of component registers
->  * @info: Cached DVSEC information about the device.
->  * @serial: PCIe Device Serial Number
+Hi,
 
-Missing doc:
+On Fri, Jun 17, 2022 at 04:42:49AM +0000, Judy Hsiao wrote:
+> We discovered that the state of BCLK on, LRCLK off and SD_MODE on
+> may cause the speaker melting issue. Removing LRCLK while BCLK
+> is present can cause unexpected output behavior including a large
+> DC output voltage as described in the Max98357a datasheet.
+> 
+> In order to:
+>   1. prevent BCLK from turning on by other component.
+>   2. keep BCLK and LRCLK being present at the same time
+> 
+> This patch switches BCLK to GPIO func before LRCLK output, and
+> configures BCLK func back during LRCLK is output.
+> 
+> Without this fix, BCLK is turned on 11 ms earlier than LRCK by the
+> da7219.
+> With this fix, BCLK is turned on only 0.4 ms earlier than LRCK by
+> the rockchip codec.
+> 
+> Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
+> ---
+>  sound/soc/rockchip/rockchip_i2s.c | 167 ++++++++++++++++++++++--------
+>  1 file changed, 121 insertions(+), 46 deletions(-)
+> 
+> diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
+> index 47a3971a9ce1..5e3cb06377a1 100644
+> --- a/sound/soc/rockchip/rockchip_i2s.c
+> +++ b/sound/soc/rockchip/rockchip_i2s.c
 
-@doe_use_irq: Use interrupt vectors for DOEs over polling.
+> @@ -92,39 +122,46 @@ static inline struct rk_i2s_dev *to_info(struct snd_soc_dai *dai)
+>  	return snd_soc_dai_get_drvdata(dai);
+>  }
+>  
+> -static void rockchip_snd_txctrl(struct rk_i2s_dev *i2s, int on)
+> +static int rockchip_snd_txctrl(struct rk_i2s_dev *i2s, int on)
+>  {
+>  	unsigned int val = 0;
+>  	int retry = 10;
+> -
+> +	int ret = 0;
+> +
+>  	spin_lock(&i2s->lock);
+>  	if (on) {
+> -		regmap_update_bits(i2s->regmap, I2S_DMACR,
+> -				   I2S_DMACR_TDE_ENABLE, I2S_DMACR_TDE_ENABLE);
+> -
+> -		regmap_update_bits(i2s->regmap, I2S_XFER,
+> -				   I2S_XFER_TXS_START | I2S_XFER_RXS_START,
+> -				   I2S_XFER_TXS_START | I2S_XFER_RXS_START);
+> -
+> +		ret = regmap_update_bits(i2s->regmap, I2S_DMACR,
+> +			I2S_DMACR_TDE_ENABLE, I2S_DMACR_TDE_ENABLE);
+> +		if (ret < 0)
+> +			goto end;
+> +		ret = regmap_update_bits(i2s->regmap, I2S_XFER,
+> +			I2S_XFER_TXS_START | I2S_XFER_RXS_START,
+> +			I2S_XFER_TXS_START | I2S_XFER_RXS_START);
 
-However introducing such flags is not pretty, and this is only used by
-devm_cxl_pci_create_doe(). Do we really need it? See below.
+This still isn't how I'd expect the indentation to look, but I think I
+will stop complaining about whitespace. Maybe you can either use
+'clang-format' (sparingly), or else see what Mark thinks.
 
->+ * @doe_mbs: PCI DOE mailbox array
->+ * @num_mbs: Number of DOE mailboxes
->  * @mbox_send: @dev specific transport for transmitting mailbox commands
->  *
->  * See section 8.2.9.5.2 Capacity Configuration and Label Storage for
->@@ -224,6 +226,10 @@ struct cxl_dev_state {
->	resource_size_t component_reg_phys;
->	u64 serial;
->
->+	bool doe_use_irq;
->+	struct pci_doe_mb **doe_mbs;
->+	int num_mbs;
->+
->	int (*mbox_send)(struct cxl_dev_state *cxlds, struct cxl_mbox_cmd *cmd);
-> };
->
->diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
->index 5a0ae46d4989..72c7b535f5df 100644
->--- a/drivers/cxl/pci.c
->+++ b/drivers/cxl/pci.c
->@@ -8,6 +8,7 @@
-> #include <linux/mutex.h>
-> #include <linux/list.h>
-> #include <linux/pci.h>
->+#include <linux/pci-doe.h>
-> #include <linux/io.h>
-> #include "cxlmem.h"
-> #include "cxlpci.h"
->@@ -386,6 +387,116 @@ static int cxl_setup_regs(struct pci_dev *pdev, enum cxl_regloc_type type,
->	return rc;
-> }
->
->+static void cxl_pci_free_irq_vectors(void *data)
->+{
->+	pci_free_irq_vectors(data);
->+}
->+
->+static void cxl_doe_destroy_mb(void *ds)
->+{
->+	struct cxl_dev_state *cxlds = ds;
->+	int i;
->+
->+	for (i = 0; i < cxlds->num_mbs; i++) {
->+		if (cxlds->doe_mbs[i])
->+			pci_doe_destroy_mb(cxlds->doe_mbs[i]);
->+	}
->+}
->+
->+static void cxl_alloc_irq_vectors(struct cxl_dev_state *cxlds)
->+{
->+	struct device *dev = cxlds->dev;
->+	struct pci_dev *pdev = to_pci_dev(dev);
->+	int max_irqs = 0;
->+	int off = 0;
->+	int rc;
->+
->+	/* Account for all the DOE vectors needed */
->+	pci_doe_for_each_off(pdev, off) {
->+		int irq = pci_doe_get_irq_num(pdev, off);
->+
->+		if (irq < 0)
->+			continue;
->+		max_irqs = max(max_irqs, irq + 1);
->+	}
->+
->+	if (!max_irqs)
->+		return;
->+
->+	cxlds->doe_use_irq = false;
+> +		if (ret < 0)
+> +			goto end;
+>  		i2s->tx_start = true;
+>  	} else {
+>  		i2s->tx_start = false;
+>  
+...
 
-Is this unnecessary, it should already be 0 per the devm_kzalloc().
+>  static void rockchip_snd_rxctrl(struct rk_i2s_dev *i2s, int on)
 
->+
->+	/*
->+	 * Allocate enough vectors for the DOE's
->+	 */
->+	rc = pci_alloc_irq_vectors(pdev, max_irqs, max_irqs, PCI_IRQ_MSI |
->+							     PCI_IRQ_MSIX);
->+	if (rc != max_irqs) {
->+		pci_err(pdev, "Not enough interrupts; use polling\n");
->+		/* Some got allocated; clean them up */
->+		if (rc > 0)
->+			cxl_pci_free_irq_vectors(pdev);
->+		return;
->+	}
->+
->+	rc = devm_add_action_or_reset(dev, cxl_pci_free_irq_vectors, pdev);
->+	if (rc)
->+		return;
->+
->+	cxlds->doe_use_irq = true;
->+}
->+
->+/**
->+ * devm_cxl_pci_create_doe - Scan and set up DOE mailboxes
->+ *
->+ * @cxlds: The CXL device state
->+ */
->+static void devm_cxl_pci_create_doe(struct cxl_dev_state *cxlds)
->+{
->+	struct device *dev = cxlds->dev;
->+	struct pci_dev *pdev = to_pci_dev(dev);
->+	u16 off = 0;
->+	int num_mbs = 0;
->+	int rc;
->+
->+	pci_doe_for_each_off(pdev, off)
->+		num_mbs++;
->+
->+	if (!num_mbs) {
->+		pci_dbg(pdev, "0 DOE mailbox's found\n");
->+		return;
->+	}
->+
->+	cxlds->doe_mbs = devm_kcalloc(dev, num_mbs, sizeof(*cxlds->doe_mbs),
->+				      GFP_KERNEL);
->+	if (!cxlds->doe_mbs)
->+		return;
->+
->+	pci_doe_for_each_off(pdev, off) {
->+		struct pci_doe_mb *doe_mb;
->+		int irq = -1;
->+
->+		if (cxlds->doe_use_irq)
->+			irq = pci_doe_get_irq_num(pdev, off);
->+
->+		doe_mb = pci_doe_create_mb(pdev, off, irq);
->+		if (IS_ERR(doe_mb)) {
->+			pci_err(pdev,
->+				"Failed to create MB object for MB @ %x\n",
->+				off);
->+			doe_mb = NULL;
->+		}
->+
->+		cxlds->doe_mbs[cxlds->num_mbs] = doe_mb;
->+		cxlds->num_mbs++;
->+	}
->+
->+	rc = devm_add_action_or_reset(dev, cxl_doe_destroy_mb, cxlds);
->+	if (rc)
->+		return;
->+
->+	pci_info(pdev, "Configured %d DOE mailbox's\n", cxlds->num_mbs);
->+}
->+
-> static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> {
->	struct cxl_register_map map;
->@@ -434,6 +545,9 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->
->	cxlds->component_reg_phys = cxl_regmap_to_base(pdev, &map);
->
->+	cxl_alloc_irq_vectors(cxlds);
->+	devm_cxl_pci_create_doe(cxlds);
+I didn't think I needed to call this out, because you already got build
+bots complaining about this, but...
+...did you even compile-test this? You should be making this function
+return 'int', not 'void', because you're adding return values below.
 
-Should cxl_alloc_irq_vectors() just be called directly from devm_cxl_pci_create_doe()
-instead? Also if devm_cxl_pci_create_doe() fails (say ENOMEM), why do we
-bother continuing the cxl_pci probing?
+>  {
+>  	unsigned int val = 0;
+>  	int retry = 10;
+> +	int ret = 0;
+>  
+...
+> +end:
+>  	spin_unlock(&i2s->lock);
+> +	if (ret < 0)
+> +		dev_err(i2s->dev, "lrclk update failed\n");
+> +
+> +	return ret;
 
-Thanks,
-Davidlohr
+^^ here.
 
-------
-diff --git a/drivers/cxl/cxlmem.h b/drivers/cxl/cxlmem.h
-index ce5b00f3ebcb..44098c785a8b 100644
---- a/drivers/cxl/cxlmem.h
-+++ b/drivers/cxl/cxlmem.h
-@@ -230,7 +230,6 @@ struct cxl_dev_state {
-	resource_size_t component_reg_phys;
-	u64 serial;
+>  }
+>  
+>  static int rockchip_i2s_set_fmt(struct snd_soc_dai *cpu_dai,
 
--	bool doe_use_irq;
-	struct pci_doe_mb **doe_mbs;
-	int num_mbs;
+Aside from those, I think this looks OK to the best of my
+(not-very-familiar with sounds/soc/) ability:
 
-diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
-index 72c7b535f5df..47c3741f7768 100644
---- a/drivers/cxl/pci.c
-+++ b/drivers/cxl/pci.c
-@@ -403,7 +403,7 @@ static void cxl_doe_destroy_mb(void *ds)
-	}
-  }
-
--static void cxl_alloc_irq_vectors(struct cxl_dev_state *cxlds)
-+static int cxl_alloc_irq_vectors(struct cxl_dev_state *cxlds)
-  {
-	struct device *dev = cxlds->dev;
-	struct pci_dev *pdev = to_pci_dev(dev);
-@@ -421,9 +421,7 @@ static void cxl_alloc_irq_vectors(struct cxl_dev_state *cxlds)
-	}
-
-	if (!max_irqs)
--		return;
--
--	cxlds->doe_use_irq = false;
-+		return -ENOMEM;
-
-	/*
-	 * Allocate enough vectors for the DOE's
-@@ -435,14 +433,10 @@ static void cxl_alloc_irq_vectors(struct cxl_dev_state *cxlds)
-		/* Some got allocated; clean them up */
-		if (rc > 0)
-			cxl_pci_free_irq_vectors(pdev);
--		return;
-+		return -ENOMEM;
-	}
-
--	rc = devm_add_action_or_reset(dev, cxl_pci_free_irq_vectors, pdev);
--	if (rc)
--		return;
--
--	cxlds->doe_use_irq = true;
-+	return devm_add_action_or_reset(dev, cxl_pci_free_irq_vectors, pdev);
-  }
-
-  /**
-@@ -457,6 +451,10 @@ static void devm_cxl_pci_create_doe(struct cxl_dev_state *cxlds)
-	u16 off = 0;
-	int num_mbs = 0;
-	int rc;
-+	bool doe_use_irq = false;
-+
-+	if (cxl_alloc_irq_vectors(cxlds))
-+		doe_use_irq = true;
-
-	pci_doe_for_each_off(pdev, off)
-		num_mbs++;
-@@ -475,7 +473,7 @@ static void devm_cxl_pci_create_doe(struct cxl_dev_state *cxlds)
-		struct pci_doe_mb *doe_mb;
-		int irq = -1;
-
--		if (cxlds->doe_use_irq)
-+		if (doe_use_irq)
-			irq = pci_doe_get_irq_num(pdev, off);
-
-		doe_mb = pci_doe_create_mb(pdev, off, irq);
-@@ -545,7 +543,6 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-
-	cxlds->component_reg_phys = cxl_regmap_to_base(pdev, &map);
-
--	cxl_alloc_irq_vectors(cxlds);
-	devm_cxl_pci_create_doe(cxlds);
-
-	rc = cxl_pci_setup_mailbox(cxlds);
+Reviewed-by: Brian Norris <briannorris@chromium.org>
