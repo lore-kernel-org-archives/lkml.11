@@ -2,86 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0BD0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 02:06:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 893C7C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 02:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379570AbiFQCGF (ORCPT
+        id S1379612AbiFQCHq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 22:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54102 "EHLO
+        Thu, 16 Jun 2022 22:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230527AbiFQCGE (ORCPT
+        with ESMTP id S1379573AbiFQCHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 22:06:04 -0400
-Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401DA61633
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 19:06:03 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id LYX00100;
-        Fri, 17 Jun 2022 10:06:00 +0800
-Received: from localhost.localdomain (10.200.104.97) by
- jtjnmail201602.home.langchao.com (10.100.2.2) with Microsoft SMTP Server id
- 15.1.2308.27; Fri, 17 Jun 2022 10:05:59 +0800
-From:   Bo Liu <liubo03@inspur.com>
-To:     <joro@8bytes.org>, <will@kernel.org>
-CC:     <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
-        Bo Liu <liubo03@inspur.com>
-Subject: [PATCH] iommu: Remove usage of the deprecated ida_simple_xxx API
-Date:   Thu, 16 Jun 2022 22:05:55 -0400
-Message-ID: <20220617020555.2361-1-liubo03@inspur.com>
-X-Mailer: git-send-email 2.18.2
+        Thu, 16 Jun 2022 22:07:44 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212A61F61F;
+        Thu, 16 Jun 2022 19:07:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655431663; x=1686967663;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ApzyEuuaqntfaLHpghKAi3bl7usIGTVwvAQnSAu3KBs=;
+  b=m6Ku36IZzVK9vnOWv+wj7HzAC0SKCDDl9InscPmAlFZ+89TjPuxnHFoE
+   SCVOd7xaVUeg0OQGA89rjcwGTUFZpFnBf5bmCuMWq5QuwRsJ6ymseoSMj
+   1AEp8Ljo906wlRPhV1GM6Z06fNVsN/MRSLsnN/k2vbQ883frZqc4jThO8
+   ZDDDirHGnKSs6YVe4PvqbcDBwxQGKHcWBWv4p6tapy4t2x2H3uxs1mbHe
+   +PXr3l6CDt0CbTvCOBPDlVaTFL1ajG1ZGkDWS+4wnmHHEJmp8fmQpo0nP
+   Xtq+anJy3hNFzdwHq8asIyWFBzozWJzy5Xkfxf4LEBjb9OihwVjWL0b8m
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="365750316"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="365750316"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 19:07:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="831831701"
+Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
+  by fmsmga006.fm.intel.com with ESMTP; 16 Jun 2022 19:07:39 -0700
+From:   Tianfei Zhang <tianfei.zhang@intel.com>
+To:     yilun.xu@intel.com, lee.jones@linaro.org
+Cc:     hao.wu@intel.com, trix@redhat.com, linux-kernel@vger.kernel.org,
+        linux-fpga@vger.kernel.org, russell.h.weight@intel.com,
+        matthew.gerlach@linux.intel.com,
+        Tianfei Zhang <tianfei.zhang@intel.com>
+Subject: [PATCH v2 0/4] add PMCI driver support
+Date:   Thu, 16 Jun 2022 22:04:01 -0400
+Message-Id: <20220617020405.128352-1-tianfei.zhang@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.200.104.97]
-tUid:   2022617100600453ddd2e082b575ad03dc12b7589ef45
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ida_alloc_xxx()/ida_free() instead of
-ida_simple_get()/ida_simple_remove().
-The latter is deprecated and more verbose.
+PMCI(Platform Management Control Interface) is a software-visible
+interface, connected to card BMC which provided telemetry and mailbox
+functionalities for Intel PAC FPGA card.
 
-Signed-off-by: Bo Liu <liubo03@inspur.com>
----
- drivers/iommu/iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Currently, intel-m10-bmc driver support Intel MAX10 BMC functions via
+SPI interface. To support multiple bus interfaces, splits the common
+code from intel-m10-bmc driver into intel-m10-bmc-core. On the other
+hand, it leverages the regmap APIs to support Intel specific Indirect
+Register Interface for register read/write on PMCI driver. 
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 847ad47a2dfd..cdc86c39954e 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -600,7 +600,7 @@ static void iommu_group_release(struct kobject *kobj)
- 	if (group->iommu_data_release)
- 		group->iommu_data_release(group->iommu_data);
- 
--	ida_simple_remove(&iommu_group_ida, group->id);
-+	ida_free(&iommu_group_ida, group->id);
- 
- 	if (group->default_domain)
- 		iommu_domain_free(group->default_domain);
-@@ -641,7 +641,7 @@ struct iommu_group *iommu_group_alloc(void)
- 	INIT_LIST_HEAD(&group->devices);
- 	INIT_LIST_HEAD(&group->entry);
- 
--	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
-+	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
- 	if (ret < 0) {
- 		kfree(group);
- 		return ERR_PTR(ret);
-@@ -651,7 +651,7 @@ struct iommu_group *iommu_group_alloc(void)
- 	ret = kobject_init_and_add(&group->kobj, &iommu_group_ktype,
- 				   NULL, "%d", group->id);
- 	if (ret) {
--		ida_simple_remove(&iommu_group_ida, group->id);
-+		ida_free(&iommu_group_ida, group->id);
- 		kobject_put(&group->kobj);
- 		return ERR_PTR(ret);
- 	}
+This patchset adding a driver for the PMCI-base interface of Intel MAX10
+BMC controller.
+
+patch 1: use ddata for local variables which directly interacts with
+dev_get_drvdata()/dev_set_drvdata().
+patch 2: split the common code from intel-m10-bmc driver into
+intel-m10-bmc-core.
+patch 3: add a driver for PMCI.
+patch 4: introduce a new data structure m10bmc_csr for the different
+register definition of MAX10 CSRs.
+
+v2:
+  - use regmap APIs to support Intel specific Indirect Register Interface
+    on PMCI driver.
+  - fix compile warning reported by lkp.
+  - rebased on 5.19-rc2
+
+Tianfei Zhang (4):
+  mfd: intel-m10-bmc: rename the local variables
+  mfd: intel-m10-bmc: split into core and spi
+  mfd: intel-m10-bmc: add PMCI driver
+  mfd: intel-m10-bmc: support multiple register layouts
+
+ .../ABI/testing/sysfs-driver-intel-m10-bmc    |   8 +-
+ drivers/mfd/Kconfig                           |  34 +++-
+ drivers/mfd/Makefile                          |   6 +-
+ .../{intel-m10-bmc.c => intel-m10-bmc-core.c} | 148 ++++++--------
+ drivers/mfd/intel-m10-bmc-pmci.c              | 190 ++++++++++++++++++
+ drivers/mfd/intel-m10-bmc-spi.c               |  83 ++++++++
+ include/linux/mfd/intel-m10-bmc.h             |  43 +++-
+ 7 files changed, 413 insertions(+), 99 deletions(-)
+ rename drivers/mfd/{intel-m10-bmc.c => intel-m10-bmc-core.c} (56%)
+ create mode 100644 drivers/mfd/intel-m10-bmc-pmci.c
+ create mode 100644 drivers/mfd/intel-m10-bmc-spi.c
+
 -- 
-2.27.0
+2.26.2
 
