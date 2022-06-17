@@ -2,96 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 895A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 13:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9718AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 13:59:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382623AbiFQN6t (ORCPT
+        id S1382642AbiFQN7B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 09:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38300 "EHLO
+        Fri, 17 Jun 2022 09:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382604AbiFQN6i (ORCPT
+        with ESMTP id S1382571AbiFQN6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 09:58:38 -0400
-Received: from mail-io1-f47.google.com (mail-io1-f47.google.com [209.85.166.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DCD236E06;
-        Fri, 17 Jun 2022 06:58:37 -0700 (PDT)
-Received: by mail-io1-f47.google.com with SMTP id d123so4587258iof.10;
-        Fri, 17 Jun 2022 06:58:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=vuzioXxWsL/LcXE/Jqc7Srz2yPLtSw7sPrasQK3imCE=;
-        b=UrbAbQQqewa3ugHyygGUF81t1gS0So1VJ+L2kxtco84NxolnV0pk1OSyCaB3cap0bU
-         N2ji5zf1DgsCAMAvuK9IzyVh6Zu2HoK/gJij88xPrdt6yMKPqtXoNxLMdv+UTcaAxT3J
-         YDo6Kq050Cbs1eiCA8Mi9fslFjDlaqPOR2IzaG/h6MdOkyxMhAHbdNu/2rlaCG4eqAtp
-         paAyLc31jHrq4gLI1tl6GSLmggqXVe2uHZqIZ3IUi2Y77n9r9JdQ+9fZMHpWonDUnaIh
-         BAVPy1bY/AmHNQJJJ9ZshOkBFWMvUYTQ4NBjMDMX2MfmRxvWJfpD8HryP9kHceiD2bFi
-         LN/w==
-X-Gm-Message-State: AJIora+wi1EaIm2dIMXvs0kiONBut9aLXe8pcrNzoUfoflt0jC1mD3Cg
-        AvoVuGQYhL+bODsbIDrvGw==
-X-Google-Smtp-Source: AGRyM1vYq1BYKmRuq3VRfAghK7cb6KqmC2erUpwmgKbKRaDaFDu43hXLoJnn3kmyeL2LSr8JhE19lw==
-X-Received: by 2002:a05:6638:5b0:b0:331:61eb:618a with SMTP id b16-20020a05663805b000b0033161eb618amr5695136jar.164.1655474316816;
-        Fri, 17 Jun 2022 06:58:36 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id a12-20020a029f8c000000b00337de103c08sm356429jam.27.2022.06.17.06.58.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 06:58:36 -0700 (PDT)
-Received: (nullmailer pid 1508990 invoked by uid 1000);
-        Fri, 17 Jun 2022 13:58:32 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-Cc:     Nicolas.Ferre@microchip.com, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        Claudiu.Beznea@microchip.com, krzysztof.kozlowski@linaro.org,
-        UNGLinuxDriver@microchip.com
-In-Reply-To: <20220617130729.12072-2-kavyasree.kotagiri@microchip.com>
-References: <20220617130729.12072-1-kavyasree.kotagiri@microchip.com> <20220617130729.12072-2-kavyasree.kotagiri@microchip.com>
-Subject: Re: [PATCH v4 1/3] dt-bindings: mfd: atmel,flexcom: Convert to json-schema
-Date:   Fri, 17 Jun 2022 07:58:32 -0600
-Message-Id: <1655474312.882258.1508989.nullmailer@robh.at.kernel.org>
+        Fri, 17 Jun 2022 09:58:53 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496A84C400;
+        Fri, 17 Jun 2022 06:58:46 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LPgXn6pykzBrmp;
+        Fri, 17 Jun 2022 21:55:21 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 17 Jun 2022 21:58:24 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 17 Jun
+ 2022 21:58:23 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <axboe@kernel.dk>, <ming.lei@redhat.com>
+CC:     <jack@suse.cz>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH RFC -next] sbitmap: fix possible io hung due to lost wakeups
+Date:   Fri, 17 Jun 2022 22:11:25 +0800
+Message-ID: <20220617141125.3024491-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 17 Jun 2022 18:37:27 +0530, Kavyasree Kotagiri wrote:
-> Convert the Atmel flexcom device tree bindings to json schema.
-> 
-> Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-> ---
-> v3 -> v4:
->  - Corrected format of enum used for compatible string.
-> 
-> v2 -> v3:
->  - used enum for compatible string.
->  - changed irq flag to IRQ_TYPE_LEVEL_HIGH in example.
->  - fixed dtschema errors.
-> 
-> v1 -> v2:
->  - Fix title.
-> 
->  .../bindings/mfd/atmel,flexcom.yaml           | 104 ++++++++++++++++++
->  .../devicetree/bindings/mfd/atmel-flexcom.txt |  63 -----------
->  2 files changed, 104 insertions(+), 63 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
->  delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
-> 
+Currently, same waitqueue might be woken up continuously:
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+__sbq_wake_up		__sbq_wake_up
+ sbq_wake_ptr -> assume	0
+			 sbq_wake_ptr -> 0
+ atomic_dec_return
+			atomic_dec_return
+ atomic_cmpxchg -> succeed
+			 atomic_cmpxchg -> failed
+			  return true
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+			__sbq_wake_up
+			 sbq_wake_ptr
+			  atomic_read(&sbq->wake_index) -> still 0
+ sbq_index_atomic_inc -> inc to 1
+			  if (waitqueue_active(&ws->wait))
+			   if (wake_index != atomic_read(&sbq->wake_index))
+			    atomic_set -> reset from 1 to 0
+ wake_up_nr -> wake up first waitqueue
+			    // continue to wake up in first waitqueue
 
-Full log is available here: https://patchwork.ozlabs.org/patch/
+What's worse, io hung is possible in theory because wakeups might be
+missed. For example, 2 * wake_batch tags are put, while only wake_batch
+threads are worken:
 
+__sbq_wake_up
+ atomic_cmpxchg -> reset wait_cnt
+			__sbq_wake_up -> decrease wait_cnt
+			...
+			__sbq_wake_up -> wait_cnt is decreased to 0 again
+			 atomic_cmpxchg
+			 sbq_index_atomic_inc -> increase wake_index
+			 wake_up_nr -> wake up and waitqueue might be empty
+ sbq_index_atomic_inc -> increase again, one waitqueue is skipped
+ wake_up_nr -> invalid wake up because old wakequeue might be empty
 
-flexcom@f0000000: spi@400:compatible:0: 'atmel,at91rm9200-spi' was expected
-	arch/arm/boot/dts/at91-sam9x60ek.dtb
+To fix the problem, refactor to make sure waitqueues will be woken up
+one by one,
 
-flexcom@f0000000: spi@400:compatible: ['microchip,sam9x60-spi', 'atmel,at91rm9200-spi'] is too long
-	arch/arm/boot/dts/at91-sam9x60ek.dtb
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ lib/sbitmap.c | 83 ++++++++++++++++++++++++++-------------------------
+ 1 file changed, 43 insertions(+), 40 deletions(-)
+
+diff --git a/lib/sbitmap.c b/lib/sbitmap.c
+index ae4fd4de9ebe..dc2959cb188c 100644
+--- a/lib/sbitmap.c
++++ b/lib/sbitmap.c
+@@ -574,66 +574,69 @@ void sbitmap_queue_min_shallow_depth(struct sbitmap_queue *sbq,
+ }
+ EXPORT_SYMBOL_GPL(sbitmap_queue_min_shallow_depth);
+ 
+-static struct sbq_wait_state *sbq_wake_ptr(struct sbitmap_queue *sbq)
++static void sbq_update_wake_index(struct sbitmap_queue *sbq,
++				  int old_wake_index)
+ {
+ 	int i, wake_index;
+-
+-	if (!atomic_read(&sbq->ws_active))
+-		return NULL;
++	struct sbq_wait_state *ws;
+ 
+ 	wake_index = atomic_read(&sbq->wake_index);
+-	for (i = 0; i < SBQ_WAIT_QUEUES; i++) {
+-		struct sbq_wait_state *ws = &sbq->ws[wake_index];
++	if (old_wake_index != wake_index)
++		return;
+ 
++	for (i = 1; i < SBQ_WAIT_QUEUES; i++) {
++		wake_index = sbq_index_inc(wake_index);
++		ws = &sbq->ws[wake_index];
++		/* Find the next active waitqueue in round robin manner */
+ 		if (waitqueue_active(&ws->wait)) {
+-			if (wake_index != atomic_read(&sbq->wake_index))
+-				atomic_set(&sbq->wake_index, wake_index);
+-			return ws;
++			atomic_cmpxchg(&sbq->wake_index, old_wake_index,
++				       wake_index);
++			return;
+ 		}
+-
+-		wake_index = sbq_index_inc(wake_index);
+ 	}
+-
+-	return NULL;
+ }
+ 
+ static bool __sbq_wake_up(struct sbitmap_queue *sbq)
+ {
+ 	struct sbq_wait_state *ws;
+ 	unsigned int wake_batch;
+-	int wait_cnt;
++	int wait_cnt, wake_index;
+ 
+-	ws = sbq_wake_ptr(sbq);
+-	if (!ws)
++	if (!atomic_read(&sbq->ws_active))
+ 		return false;
+ 
+-	wait_cnt = atomic_dec_return(&ws->wait_cnt);
+-	if (wait_cnt <= 0) {
+-		int ret;
+-
+-		wake_batch = READ_ONCE(sbq->wake_batch);
+-
+-		/*
+-		 * Pairs with the memory barrier in sbitmap_queue_resize() to
+-		 * ensure that we see the batch size update before the wait
+-		 * count is reset.
+-		 */
+-		smp_mb__before_atomic();
++	wake_index = atomic_read(&sbq->wake_index);
++	ws = &sbq->ws[wake_index];
++	/*
++	 * This can only happen in the first wakeup when sbitmap waitqueues
++	 * are no longer idle.
++	 */
++	if (!waitqueue_active(&ws->wait)) {
++		sbq_update_wake_index(sbq, wake_index);
++		return true;
++	}
+ 
+-		/*
+-		 * For concurrent callers of this, the one that failed the
+-		 * atomic_cmpxhcg() race should call this function again
+-		 * to wakeup a new batch on a different 'ws'.
+-		 */
+-		ret = atomic_cmpxchg(&ws->wait_cnt, wait_cnt, wake_batch);
+-		if (ret == wait_cnt) {
+-			sbq_index_atomic_inc(&sbq->wake_index);
+-			wake_up_nr(&ws->wait, wake_batch);
+-			return false;
+-		}
++	wait_cnt = atomic_dec_return(&ws->wait_cnt);
++	if (wait_cnt > 0)
++		return false;
+ 
++	sbq_update_wake_index(sbq, wake_index);
++	/*
++	 * Concurrent callers should call this function again
++	 * to wakeup a new batch on a different 'ws'.
++	 */
++	if (wait_cnt < 0)
+ 		return true;
+-	}
++
++	wake_batch = READ_ONCE(sbq->wake_batch);
++	/*
++	 * Pairs with the memory barrier in sbitmap_queue_resize() to
++	 * ensure that we see the batch size update before the wait
++	 * count is reset.
++	 */
++	smp_mb__before_atomic();
++	atomic_set(&ws->wait_cnt, wake_batch);
++	wake_up_nr(&ws->wait, wake_batch);
+ 
+ 	return false;
+ }
+-- 
+2.31.1
 
