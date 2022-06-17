@@ -2,106 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E097DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED10C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380328AbiFQIio (ORCPT
+        id S1381017AbiFQIiw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 04:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50032 "EHLO
+        Fri, 17 Jun 2022 04:38:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380211AbiFQIid (ORCPT
+        with ESMTP id S1380352AbiFQIio (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 04:38:33 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E22E689AB
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:38:31 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id 184so3488114pga.12
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:38:31 -0700 (PDT)
+        Fri, 17 Jun 2022 04:38:44 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A52369298
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:38:39 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id u37so3622370pfg.3
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:38:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=K+DkLreQJFdtzIaPZdznlpaTpcwmK3UqwA6ApgLZ4TQ=;
-        b=Lk366whEMkptSrLGRqAclQQ2FcZrq04kAssYDgRTppdYfoFU9F8gaIEBPsIOZ7WgdH
-         7hRdbHaR+fLKNo99gbAdrz9+6McDkQp0stDBWrUqEP6bmBGyOdzvvyDeH4Y+ZXwbNkcn
-         qkh89tsvJEYcOetnsx3qNK1W3/0tGw/saX9r0=
+        bh=Ak/3+BuQZPayyHcZgGcyHRrIZ/8v8tKL6L3S32n4JYk=;
+        b=EpUGberfrYQ9nVCS5lYRWlTyhUO4ZoVu1Da8yhexf+xots8csRHJG8I1O0kr08bTiK
+         UyFMjNP3Dpv1TrfycA7YM55pgJMT7wBkAZWSPbpZZh212nLXRV8GCL8cAqyMdlhwSs3P
+         qRbPWlbxQoZzLBe1qsPs/XMlyF3ctrxxvHAjSWOyZppO0eF8dF+BKJvl/BzCayYqwIxE
+         FxCC0GhNlmzjz1yAfrzAHSsWIoCjmgRI0TNH2LToGN2YpsvIQoBL0AT1g7YiU6fPjXJ1
+         SqbJCO1d5IYbC21C8UykgyOC6MQQx2pbL8Ol+aZYiPfm2tfaWGyYkC7O181ltBe1UADg
+         d95Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=K+DkLreQJFdtzIaPZdznlpaTpcwmK3UqwA6ApgLZ4TQ=;
-        b=sJpT/ggpsqGyytHwWiVDkCzWaJLixcHhO5BACbUlp/7Sb25h6rUPl2D1kF+6PFu6Rt
-         7cCzP3g2Xw5mzyXyMiSRanQlDdCEUmOKMb44hmWveIATUT/0h6mZW4m/kmloLhwYlZc1
-         wBjMVklYzhYg1j8Xv4GlQpDMCT69UIYD3ppL1lnqW6NrL4odkw+TOCtDxa83gbtrcEvc
-         wk7dk+EhmMiMg8NutvrIOWDEqiJgkW3oEaBBhdTr6IdzJI1b4wrlnLZkeQNY7WqFLupf
-         TbqidxMFBtWsV2Boil0s8979lD5fXtDL1MQFohXh6sUVozZ6/I0ln7kBn2sp+XpeKvFa
-         rsug==
-X-Gm-Message-State: AJIora98+vMEVfgAGdB+CRawgZ+S/wgMknj1JpU8Y+YXKM8r00Fi5LRM
-        xHRtlrE0JNcyvtOVcV3v5KN9BA==
-X-Google-Smtp-Source: AGRyM1vwvZ9tYychzYFYTXO02HMgABTJZ+teUXxcNrO+NvkZckUklScM0dCZh5cI4L6b+8J6tXMMSQ==
-X-Received: by 2002:a05:6a00:2999:b0:51b:e3c8:9e30 with SMTP id cj25-20020a056a00299900b0051be3c89e30mr8750954pfb.41.1655455110868;
-        Fri, 17 Jun 2022 01:38:30 -0700 (PDT)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:a0dc:9427:fea8:f78a])
-        by smtp.gmail.com with ESMTPSA id d12-20020a62f80c000000b005185407eda5sm3154103pfh.44.2022.06.17.01.38.28
+        bh=Ak/3+BuQZPayyHcZgGcyHRrIZ/8v8tKL6L3S32n4JYk=;
+        b=tRXvfxWekPrXHwaiqVPPRJ98BEvjF9ndSj9IyUU1PkqlP36sRyI378/SvsLZn0Be6h
+         ri9ajPaV0svH5bgg/YT0sntxljEeTfex/qa4uS59St0cYqF+vRmTBN4CN189vacWsNyY
+         fA/NlwlekNgLTSfXheDyU4vOsJB7luNqjQ57m2yiXFet4H6s7t2oEEDSs8GazQjbpMBP
+         s2Ykz9o8X2RrXQKeQy51D2exJUFIObNCkVCX42c+tA610aas8SoyuPWyK3wkNlYqY8z2
+         +BmnSNOg9MF93nhWrPtMDdOSJe33UCJoTF5A4KdqyppeWWDTgBJfa9seKhoZ/riqSyHU
+         4dnw==
+X-Gm-Message-State: AJIora+VJzf1Fd/B8gpncM2rTsOqGfeg9A4OrD/qyGp1VJGW5qlAgKIb
+        2y4IMC5YsBsduT4WZzfedPigZaAf/BuJewch3pM=
+X-Google-Smtp-Source: AGRyM1sML4mzdm2IzfHLLLIFa1pM+mhWo+dk8gDIqG/7wtIC5Vr0Pb47JfVpwWQ8v4Ta/5cP6D8P9A==
+X-Received: by 2002:a62:7cca:0:b0:4fd:e594:fac0 with SMTP id x193-20020a627cca000000b004fde594fac0mr8931045pfc.79.1655455118327;
+        Fri, 17 Jun 2022 01:38:38 -0700 (PDT)
+Received: from localhost.localdomain ([139.177.225.254])
+        by smtp.gmail.com with ESMTPSA id z14-20020a170902ccce00b001635b86a790sm2988179ple.44.2022.06.17.01.38.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 01:38:30 -0700 (PDT)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Phillip Lougher <phillip@squashfs.org.uk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Xiongwei Song <Xiongwei.Song@windriver.com>,
-        Zheng Liang <zhengliang6@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Miao Xie <miaoxie@huawei.com>,
-        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
-        "squashfs-devel @ lists . sourceforge . net" 
-        <squashfs-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v7 0/4] Implement readahead for squashfs
-Date:   Fri, 17 Jun 2022 16:38:07 +0800
-Message-Id: <20220617083810.337573-1-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+        Fri, 17 Jun 2022 01:38:37 -0700 (PDT)
+From:   wuchi <wuchi.zero@gmail.com>
+To:     gregkh@linuxfoundation.org, rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] lib/kobject: Simplify checking of parameters in kobj_ns_type_register.
+Date:   Fri, 17 Jun 2022 16:38:32 +0800
+Message-Id: <20220617083832.85287-1-wuchi.zero@gmail.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 9eec1d897139("squashfs: provide backing_dev_info in order to
-disable read-ahead") mitigates the performance drop issue for squashfs
-by closing readahead for it.
+1. Merge checking of following code:
+    if (type >= KOBJ_NS_TYPES)
+    ...
+    if (type <= KOBJ_NS_TYPE_NONE)
 
-This series implements readahead callback for squashfs. The previous
-discussions are in [1] and [2].
+2. Move the checking of parameters out of critical section, there is
+no need to check that with spinlock.
 
-[1]
-https://lore.kernel.org/all/CAJMQK-g9G6KQmH-V=BRGX0swZji9Wxe_2c7ht-MMAapdFy2pXw@mail.gmail.com/T/
-[2]
-https://lore.kernel.org/linux-mm/Yn5Yij9pRPCzDozt@casper.infradead.org/t/#m4af4473b94f98a4996cb11756b633a07e5e059d1
+Signed-off-by: wuchi <wuchi.zero@gmail.com>
+---
+ lib/kobject.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-v7 adds the patch to support reading fragments in readahead call[3]. No
-changes on other patches since v6, which is included in next-20220617.
-
-[3]
-https://patchwork.kernel.org/project/linux-mm/patch/20220617030345.24712-1-phillip@squashfs.org.uk/
-
-Hsin-Yi Wang (2):
-  Revert "squashfs: provide backing_dev_info in order to disable
-    read-ahead"
-  squashfs: implement readahead
-
-Phillip Lougher (2):
-  squashfs: always build "file direct" version of page actor
-  squashfs: support reading fragments in readahead call
-
- fs/squashfs/Makefile     |   4 +-
- fs/squashfs/file.c       | 133 ++++++++++++++++++++++++++++++++++++++-
- fs/squashfs/page_actor.h |  46 --------------
- fs/squashfs/super.c      |  33 ----------
- 4 files changed, 134 insertions(+), 82 deletions(-)
-
+diff --git a/lib/kobject.c b/lib/kobject.c
+index 5f0e71ab292c..6a8b009682b8 100644
+--- a/lib/kobject.c
++++ b/lib/kobject.c
+@@ -996,19 +996,13 @@ static const struct kobj_ns_type_operations *kobj_ns_ops_tbl[KOBJ_NS_TYPES];
+ int kobj_ns_type_register(const struct kobj_ns_type_operations *ops)
+ {
+ 	enum kobj_ns_type type = ops->type;
+-	int error;
+-
+-	spin_lock(&kobj_ns_type_lock);
++	int error = -EBUSY;
+ 
+-	error = -EINVAL;
+-	if (type >= KOBJ_NS_TYPES)
+-		goto out;
++	if (unlikely(type >= KOBJ_NS_TYPES || type <= KOBJ_NS_TYPE_NONE))
++		return -EINVAL;
+ 
+-	error = -EINVAL;
+-	if (type <= KOBJ_NS_TYPE_NONE)
+-		goto out;
++	spin_lock(&kobj_ns_type_lock);
+ 
+-	error = -EBUSY;
+ 	if (kobj_ns_ops_tbl[type])
+ 		goto out;
+ 
 -- 
-2.36.1.476.g0c4daa206d-goog
+2.20.1
 
