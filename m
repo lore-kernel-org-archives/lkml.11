@@ -2,100 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C310C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:09:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF814CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382365AbiFQMJm (ORCPT
+        id S1381134AbiFQMNR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 08:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36318 "EHLO
+        Fri, 17 Jun 2022 08:13:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239096AbiFQMJi (ORCPT
+        with ESMTP id S239096AbiFQMNQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 08:09:38 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5754517598;
-        Fri, 17 Jun 2022 05:09:36 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-136-92.dynamic.spd-mgts.ru [109.252.136.92])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 2A982660179A;
-        Fri, 17 Jun 2022 13:09:34 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655467775;
-        bh=i83+JJRH3W4qGEUUYF7SQgp3g5O/kI5O54Jr6yQ71BE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=XIolfYkv5wCh7FeJg7jAXVgOWno+AIsYz2EAAkTSiosvk+Zk6BZE97kOvD8Y3jxIc
-         gJ6mIOFP6jopreRU78cYaOG1ksMT5d9sfuvpTdJqozYEKZazAHBPeBzJMQxMm2QFdb
-         /eW6AT6ci5okv6oddXQcLPOAVV2b4YXjYui2rvZBtPeIhcMvEo1UGuAftRnuK1aaSh
-         fgunC+t7IEtZyroUMbpsy315Y5f3fBwgdWFy6nyo8HK3y14/UkRcN+PVvJfHJxayLh
-         lHGQKhTmNhRbLd4LJMBF/f0+6fw1V0HtcxbbzvzH8CvWDdhwTwFNXRo5cVNAnuEtJG
-         InSQmD26Arhiw==
-Message-ID: <223d33be-4c73-8605-e2bb-33e4a14682d2@collabora.com>
-Date:   Fri, 17 Jun 2022 15:09:31 +0300
+        Fri, 17 Jun 2022 08:13:16 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F85E3D;
+        Fri, 17 Jun 2022 05:13:15 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id i81-20020a1c3b54000000b0039c76434147so4269153wma.1;
+        Fri, 17 Jun 2022 05:13:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hnlyRioGpxx+rbPm2S0jS6ADUAhgKmqzSuVKtSCygKE=;
+        b=DtNHpfpHlFlaeqXduwx0230ymigZwE3YzhrDwapDz6K7xjYWim1sOMYwnNqiFUtIdO
+         LtRUjjUdSifY8JlG/rs5SUmn3NvK1rDYkFwODdcErzXrabvUSYS6mj4qWre9UNA3jsQK
+         xmj00Gg7lW4qkYffU+wUvpcHXY0opEJwW1UU+pRlFBzqK6r7gXx+2mrjZ7dHbiln8iau
+         aA4Zxc0DzqPAg1WlyEPnvDkBb3KXdViTCXE2bjYWMqb00WQlM4W9FibqQv4HJ8ttXTET
+         MHmzHNaZFdWHVCRulhu6KHWpPB1ewT73HoTPmPZwu6AvVbcPeALy6jsLwbHzpT6at+0U
+         YiDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hnlyRioGpxx+rbPm2S0jS6ADUAhgKmqzSuVKtSCygKE=;
+        b=enFkf3sOmvcejbNwl+4Q8xiXB1ldCQkAac1KzcBnEdGlPl+Lal5XkZVkBK4EJiDxmj
+         D7jBfOEsYXY27NrHfPd2NUjkBNxpqLWIWZrkItL/+miB00swyvcBEME0O/N1eeLf4tzK
+         ri0P4GSKiPq/wUUyzR7NzFmjuQgtH/og2gNGYloPDGawFg0qjs5nZctIuXgMjk0jyPKg
+         kHBtBaHv9YoZn2gTF7zRROiylSNdnexwoE/PEzbztyAHEtg8ekfSk1LfP1FNhQkhei9+
+         1T9K9dnBObisreVt/PMsUuouCpFR+BU0hu8PylvXNjYYF9fStVvYf8gJ2DnUNmvbfGuZ
+         76Kg==
+X-Gm-Message-State: AJIora8ChZXnxCAmKtu1f0u5N6Oa94zwDuOJj05D0i755pH3pLWdaBh/
+        CBw0o2ndZAMvTqVRTNr82NXfJ54RhRs=
+X-Google-Smtp-Source: AGRyM1tQeLWeg+xDGUA28c6lmAfKslWy7OeQwCiqFA+VwETfyXI6hxyyCo/pbQbUgFGCRx13Tp54qw==
+X-Received: by 2002:a05:600c:190b:b0:39c:7704:74a4 with SMTP id j11-20020a05600c190b00b0039c770474a4mr9806897wmq.92.1655467994150;
+        Fri, 17 Jun 2022 05:13:14 -0700 (PDT)
+Received: from [192.168.0.160] ([170.253.36.171])
+        by smtp.gmail.com with ESMTPSA id d8-20020adfc088000000b00213ba0cab3asm4526185wrf.44.2022.06.17.05.13.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jun 2022 05:13:13 -0700 (PDT)
+Message-ID: <fe7c52f9-5ff3-95a5-2692-20f81d6decf7@gmail.com>
+Date:   Fri, 17 Jun 2022 14:13:12 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 08/31] cpufreq: tegra20: Migrate to
- dev_pm_opp_set_config()
+ Thunderbird/91.10.0
+Subject: Ping: [PATCH] uapi: Make __{u,s}64 match {u,}int64_t in userspace
 Content-Language: en-US
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-pm@vger.kernel.org,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Rafael Wysocki <rjw@rjwysocki.net>,
-        Stephen Boyd <sboyd@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1653564321.git.viresh.kumar@linaro.org>
- <4b38ceed657bfcf87ff9ab0dd69dd1f2f5658b24.1653564321.git.viresh.kumar@linaro.org>
- <793e49ea-aeb0-a47a-9fe8-742a6397bb35@collabora.com>
- <5c0e697e-abca-bcf0-cf68-d9c240d82527@collabora.com>
- <20220530075256.lpw6bhupejy2dnqi@vireshk-i7>
- <20220607084351.i4s5veww6irmaf3t@vireshk-i7>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <20220607084351.i4s5veww6irmaf3t@vireshk-i7>
-Content-Type: text/plain; charset=UTF-8
+To:     Cyril Hrubis <chrubis@suse.cz>
+Cc:     "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        libc-alpha@sourceware.org,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Laight <David.Laight@aculab.com>,
+        Zack Weinberg <zack@owlfolio.org>,
+        "ltp@lists.linux.it" <ltp@lists.linux.it>,
+        David Howells <dhowells@redhat.com>
+References: <b8d6f890-e5aa-44bf-8a55-5998efa05967@www.fastmail.com>
+ <YZvIlz7J6vOEY+Xu@yuki> <1618289.1637686052@warthog.procyon.org.uk>
+ <ff8fc4470c8f45678e546cafe9980eff@AcuMS.aculab.com> <YaTAffbvzxGGsVIv@yuki>
+ <CAK8P3a1Rvf_+qmQ5pyDeKweVOFM_GoOKnG4HA3Ffs6LeVuoDhA@mail.gmail.com>
+ <913509.1638457313@warthog.procyon.org.uk> <YbDQW6uakG3XD8jV@yuki>
+From:   Alejandro Colomar <alx.manpages@gmail.com>
+In-Reply-To: <YbDQW6uakG3XD8jV@yuki>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/7/22 11:43, Viresh Kumar wrote:
-> On 30-05-22, 13:22, Viresh Kumar wrote:
->> On 29-05-22, 19:59, Dmitry Osipenko wrote:
->>>> Please keep the PTR_ERR_OR_ZERO.
+Hi Cyril,
+
+On 12/8/21 16:33, Cyril Hrubis wrote:
+> Hi!
+>>> I could be persuaded otherwise with an example of a program for which
+>>> changing __s64 from 'long long' to 'long' would break *binary* backward
+>>> compatibility, or similarly for __u64.
 >>
->> Ahh, sorry about that. Fixed.
->>
->>>> tegra20-cpufreq tegra20-cpufreq: failed to set OPP config: -1042688000
->>>
->>> With that fixed, now there is another error:
->>>
->>> [    1.761945] cpu cpu0: _of_add_opp_table_v2: no supported OPPs
->>> [    1.761960] cpu cpu0: OPP table can't be empty
->>
->> So we failed to find any OPPs which work with the hardware version of
->> updated with dev_pm_opp_set_config(). I tried to follow the path and
->> see if there is something wrong here. Failed to find that :(
->>
->>> I see this on Tegra30, but not on Tegra20. Apparently OPP table
->>> refcounting is broken on Tegra30 by this patchset. To make it clear,
->>> there are no error without these OPP patches applied. I may take a
->>> closer look if will be needed, just ping me.
->>
->> Yes, it would be very helpful as I don't have the necessary hardware.
+>> C++ could break.
 > 
-> Hey, any updates on this ? I am looking to resend the series soon, would be nice
-> to fix this before that.
+> Thinking of this again we can detect C++ as well so it can be safely
+> enabled just for C with:
+> 
+> #if !defined(__KERNEL__) && !defined(__cplusplus) && __BITSPERLONG == 64
+> # include <asm-generic/int-l64.h>
+> #else
+> # include <asm-generic/int-ll64.h>
+> #endif
 > 
 
-I'll take a look over this weekend. Sorry for the delay.
+I'm very interested in seeing this merged, as that would allow 
+simplifying the man-pages by removing unnecessary kernel details such as 
+u64[1].  How is the state of this patch?
+
+Cheers,
+
+Alex
+
+
+[1]: 
+<https://lore.kernel.org/linux-man/20210423230609.13519-1-alx.manpages@gmail.com/T/#u>
 
 -- 
-Best regards,
-Dmitry
+Alejandro Colomar
+<http://www.alejandro-colomar.es/>
