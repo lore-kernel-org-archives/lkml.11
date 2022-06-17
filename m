@@ -2,145 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD006C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 01:25:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17980C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 01:26:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230173AbiFQBZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 21:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51382 "EHLO
+        id S1379523AbiFQB0i (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 16 Jun 2022 21:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379513AbiFQBZl (ORCPT
+        with ESMTP id S232424AbiFQB0h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 21:25:41 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B05163537
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 18:25:33 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id w17so3870692wrg.7
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 18:25:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uNbNtYNUOkpq4DQQYD/bNQd8Np096f4o4ecAA/LLibg=;
-        b=VHF+oQVqevD5c6rS1Dz6843WU5L6AgsnakYt/4mxKpLAGz9+OTYEMjgA2rRCnGloJy
-         mihdf5Yfw9Co5rbDvexaeb+HN5aFOFbsUBWHXcDDyrVUbeMVsYLaKQaULsUvZHWI0dqp
-         y7IIV2x+CnmHfTWdB9x1dwL5yVW/DRgiAEJbac30yOqgvj4zd/iKnkOBuRK9cUIEmA3U
-         2+/OrMYQjWOj3ac/T2mNqDrx7CgnrZiYsVC6kPnXqXpOstK3nskxjtTIWOHhXUs3onTS
-         tOIb4dr8tg2qHY4OXi+hOv8xHuvsYNL6KM9Ya1zWOkZId7CeSBWDZqhws4h/XNitWjAE
-         oByg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uNbNtYNUOkpq4DQQYD/bNQd8Np096f4o4ecAA/LLibg=;
-        b=iJT0w8Lc9Lmq/9jegwC1vnuF2Ur+f6S/1CSK17wpPb9+oO91s9KiMJYrePyxXwlPWf
-         pf4k7u6GmNJ7KFA+UyJ7/C2v/qp+2GGCPYzF1YDP9cZVTqNPMOqwTAmu+g+P1yDtuR+N
-         le+JXs124DzRcz8Xj4KAw76OzqsJRT2qb7+kkbwQqEHyhbadCnKQSMJX+PuPvDRrEncj
-         uuo1wkR1B9gP+I+JwWtfHpMP22f/yepRlI2AGJPMcdmon+gUXBMfSHHlC4uotIFTlaBP
-         USx5/1RBwmeKhrlBcgQJrI+vkCjbQhFObvDEtYcQ1xBd1Or3SiDoLCDf1k2lGrkeEReQ
-         zAtw==
-X-Gm-Message-State: AJIora83DVaNrxRCMVl5q8L6Va//O7P9yCTSLMIeYThWhS0PyF0cc/KX
-        /S3pXpuxlnTu/H72223AEhJa/Ihx83IKFJmH23O8Yg==
-X-Google-Smtp-Source: AGRyM1u4B9pMpm2deQth0yQOPQYn3dwuz9UuLSAJFr/qfwTvYClla643fCKd2wzXCjLopKl4LX5mONAYT7rJ5OP1BHY=
-X-Received: by 2002:a05:6000:1a8d:b0:219:e3f2:c092 with SMTP id
- f13-20020a0560001a8d00b00219e3f2c092mr7105521wry.375.1655429131650; Thu, 16
- Jun 2022 18:25:31 -0700 (PDT)
+        Thu, 16 Jun 2022 21:26:37 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6E8633BE;
+        Thu, 16 Jun 2022 18:26:36 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LPLvW22g4zjXY8;
+        Fri, 17 Jun 2022 09:25:27 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 17 Jun
+ 2022 09:26:33 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next v2] ext4: fix warning in ext4_iomap_begin as race between bmap and write
+Date:   Fri, 17 Jun 2022 09:39:35 +0800
+Message-ID: <20220617013935.397596-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220603055156.2830463-1-irogers@google.com> <165428101333.23591.13242354654538988127.git-patchwork-notify@kernel.org>
- <CAP-5=fWwKkj1HtAvOXxGxcrG99gpy8v4ReW_Jh7uumbQMiJYng@mail.gmail.com>
- <CAEf4BzYYcnu1PHoudKnvpjPJAszgu3TFSbNe=E6vctgh9JLkTg@mail.gmail.com>
- <CAP-5=fUANeeEHyCrynbJRrE4cU0BNrWYXN2G=MikjZS0cTJ1ZA@mail.gmail.com> <CAEf4BzbTJGbixzP7ZoUNTYPAa1=7AqrXoUutZPiHS97Dik4Xfw@mail.gmail.com>
-In-Reply-To: <CAEf4BzbTJGbixzP7ZoUNTYPAa1=7AqrXoUutZPiHS97Dik4Xfw@mail.gmail.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Thu, 16 Jun 2022 18:25:18 -0700
-Message-ID: <CAP-5=fV1LXNEi3U_RZxt12xPze41W9s27X_Gc6DbY6oDMJ4WvQ@mail.gmail.com>
-Subject: Re: [PATCH v2] libbpf: Fix is_pow_of_2
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Yuze Chi <chiyuze@google.com>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 4:55 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Thu, Jun 16, 2022 at 2:07 PM Ian Rogers <irogers@google.com> wrote:
-> >
-> > On Thu, Jun 16, 2022 at 2:00 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Tue, Jun 14, 2022 at 1:41 PM Ian Rogers <irogers@google.com> wrote:
-> > > >
-> > > > On Fri, Jun 3, 2022 at 11:30 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
-> > > > >
-> > > > > Hello:
-> > > > >
-> > > > > This patch was applied to bpf/bpf-next.git (master)
-> > > > > by Andrii Nakryiko <andrii@kernel.org>:
-> > > > >
-> > > > > On Thu,  2 Jun 2022 22:51:56 -0700 you wrote:
-> > > > > > From: Yuze Chi <chiyuze@google.com>
-> > > > > >
-> > > > > > Move the correct definition from linker.c into libbpf_internal.h.
-> > > > > >
-> > > > > > Reported-by: Yuze Chi <chiyuze@google.com>
-> > > > > > Signed-off-by: Yuze Chi <chiyuze@google.com>
-> > > > > > Signed-off-by: Ian Rogers <irogers@google.com>
-> > > > > >
-> > > > > > [...]
-> > > > >
-> > > > > Here is the summary with links:
-> > > > >   - [v2] libbpf: Fix is_pow_of_2
-> > > > >     https://git.kernel.org/bpf/bpf-next/c/f913ad6559e3
-> > > > >
-> > > > > You are awesome, thank you!
-> > > >
-> > > > Will this patch get added to 5.19?
-> > > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/lib/bpf/libbpf.c#n4948
-> > > >
-> > >
-> > > I've applied it to bpf-next, so as it stands right now - no. Do you
-> > > need this for perf?
-> >
-> > Nope. We carry it as a patch against 5.19 in Google and was surprised
-> > to see I didn't need to drop the patch.  Our internal code had
-> > encountered the bug, hence needing the fix. I'd expect others could
-> > encounter it, but I'm unaware of an issue with it and perf.
-> >
->
-> So the fix is in Github mirror ([0]) and it is expected that everyone
-> is using libbpf based on Github repo, so not sure why you'd care about
-> this fix in bpf tree. I somehow assumed that you need it due to perf,
-> but was a bit surprised that perf is affected because I don't think
-> it's using BPF ringbuf.
->
-> So I guess the question I have is why you don't use libbpf from [0]
-> and what can be done to switch to the official libbpf repo?
->
->   [0] https://github.com/libbpf/libbpf
+We got issue as follows:
+------------[ cut here ]------------
+WARNING: CPU: 3 PID: 9310 at fs/ext4/inode.c:3441 ext4_iomap_begin+0x182/0x5d0
+RIP: 0010:ext4_iomap_begin+0x182/0x5d0
+RSP: 0018:ffff88812460fa08 EFLAGS: 00010293
+RAX: ffff88811f168000 RBX: 0000000000000000 RCX: ffffffff97793c12
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: ffff88812c669160 R08: ffff88811f168000 R09: ffffed10258cd20f
+R10: ffff88812c669077 R11: ffffed10258cd20e R12: 0000000000000001
+R13: 00000000000000a4 R14: 000000000000000c R15: ffff88812c6691ee
+FS:  00007fd0d6ff3740(0000) GS:ffff8883af180000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fd0d6dda290 CR3: 0000000104a62000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ iomap_apply+0x119/0x570
+ iomap_bmap+0x124/0x150
+ ext4_bmap+0x14f/0x250
+ bmap+0x55/0x80
+ do_vfs_ioctl+0x952/0xbd0
+ __x64_sys_ioctl+0xc6/0x170
+ do_syscall_64+0x33/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Agreed on not following Linus' tree for libbpf. Not sure about having
-such an obvious bug in Linus' tree.
+Above issue may happen as follows:
+          bmap                    write
+bmap
+  ext4_bmap
+    iomap_bmap
+      ext4_iomap_begin
+                            ext4_file_write_iter
+			      ext4_buffered_write_iter
+			        generic_perform_write
+				  ext4_da_write_begin
+				    ext4_da_write_inline_data_begin
+				      ext4_prepare_inline_data
+				        ext4_create_inline_data
+					  ext4_set_inode_flag(inode,
+						EXT4_INODE_INLINE_DATA);
+      if (WARN_ON_ONCE(ext4_has_inline_data(inode))) ->trigger bug_on
 
-Thanks,
-Ian
+To solved above issue hold inode lock in ext4_bamp.
 
-> > Thanks,
-> > Ian
-> >
-> > > > Thanks,
-> > > > Ian
-> > > >
-> > > > > --
-> > > > > Deet-doot-dot, I am a bot.
-> > > > > https://korg.docs.kernel.org/patchwork/pwbot.html
-> > > > >
-> > > > >
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ fs/ext4/inode.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 53877ffe3c41..9e520a324e37 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -3142,13 +3142,15 @@ static sector_t ext4_bmap(struct address_space *mapping, sector_t block)
+ {
+ 	struct inode *inode = mapping->host;
+ 	journal_t *journal;
++	sector_t ret = 0;
+ 	int err;
+ 
++	inode_lock_shared(inode);
+ 	/*
+ 	 * We can get here for an inline file via the FIBMAP ioctl
+ 	 */
+ 	if (ext4_has_inline_data(inode))
+-		return 0;
++		goto out;
+ 
+ 	if (mapping_tagged(mapping, PAGECACHE_TAG_DIRTY) &&
+ 			test_opt(inode->i_sb, DELALLOC)) {
+@@ -3187,10 +3189,14 @@ static sector_t ext4_bmap(struct address_space *mapping, sector_t block)
+ 		jbd2_journal_unlock_updates(journal);
+ 
+ 		if (err)
+-			return 0;
++			goto out;
+ 	}
+ 
+-	return iomap_bmap(mapping, block, &ext4_iomap_ops);
++	ret = iomap_bmap(mapping, block, &ext4_iomap_ops);
++
++out:
++	inode_unlock_shared(inode);
++	return ret;
+ }
+ 
+ static int ext4_read_folio(struct file *file, struct folio *folio)
+-- 
+2.31.1
+
