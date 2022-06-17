@@ -2,90 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C73C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36421CCA479
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:23:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380879AbiFQIVm (ORCPT
+        id S1380882AbiFQIXV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 04:21:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59346 "EHLO
+        Fri, 17 Jun 2022 04:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380880AbiFQIVi (ORCPT
+        with ESMTP id S231694AbiFQIXU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 04:21:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04806833F
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:21:37 -0700 (PDT)
+        Fri, 17 Jun 2022 04:23:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D71464BD2;
+        Fri, 17 Jun 2022 01:23:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D01061FC5
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:21:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB40DC3411C;
-        Fri, 17 Jun 2022 08:21:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDAFC61FA7;
+        Fri, 17 Jun 2022 08:23:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20996C3411F;
+        Fri, 17 Jun 2022 08:23:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655454097;
-        bh=TVBg5TUqmJ3DbwyAKF9/lGS3yxg1EAZzDLwreRtXFR8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hClBi+dIgHgInU5OuG2o9R0VySfMitU7OtMISNX58Tg011LM1/7OtL/u79W8VhtSm
-         28cfnwF/5QA3ZMDjwCk5Yqo1UnclL4zXkjbPvXI6cS2BVGPTe5AWbaSqTHvyqAGkz2
-         yl9Sml25UenvNnq2dl4QQ6VJQdtGJjt3e5LUarBfRAz4KRlOgXkIwx1zZr45BpPpE7
-         RsjGWNQ09VUxFwGRqArg9L41CaRM12NMISCb/UoEw60Fh+e5GkzuyM5OcYY1BjyEQd
-         ag/H9uxd+tEMq1N2F0H4/SXerY8sKj70fMiBYApZzCUdLhSY1HGc/P4nEvKRb7SlpJ
-         hxKUZ6qZlHZug==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=valley-girl.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <maz@kernel.org>)
-        id 1o27EU-001F6o-Ig;
-        Fri, 17 Jun 2022 09:21:34 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Quentin Perret <qperret@google.com>,
-        kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
-        James Morse <james.morse@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     Mike Rapoport <rppt@kernel.org>, kernel-team@android.com
-Subject: Re: [PATCH] KVM: arm64: Prevent kmemleak from accessing pKVM memory
-Date:   Fri, 17 Jun 2022 09:21:31 +0100
-Message-Id: <165545408679.771055.5076080259874437048.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220616161135.3997786-1-qperret@google.com>
-References: <20220616161135.3997786-1-qperret@google.com>
+        s=k20201202; t=1655454198;
+        bh=ZG1PRw5VnASc89o/sYJOq7OiWVJgsMuC9yddKS4CDrA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lT4Ro3kc+A+y+QX6qf1iKCZL6VGsTamd7TWyXJxZ2TgoTwfV5oSwsiZ05/Bq3z9IC
+         2uNbFIfQvVNRYjJkhVFsY2BWsYBvW3xuP9vMO9+85A0paewaFf0eXvtE+dLv59lF/i
+         KU3d1/XThv0zX0yeZ0/g47Y7eAIgVru13ITMzQYfhXy45s0giDW8i8MvMj8LAtTck+
+         cd3I++eF16H73f81p1ss27mLF6cf1fcCqRGxSsVhFVR/qZSO4fWgnjJsdhv0DVrOnE
+         iUIlBWlrsurY4mh7jG3/giMqgCMcoDTIoUsfJKtC9I7e0yzq2Cv+NACt0wYW3+LrpB
+         Fv6MAEBlZtZjA==
+Date:   Fri, 17 Jun 2022 09:23:12 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     David Owens <daowens01@gmail.com>
+Cc:     Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Jarkko Nikula <jarkko.nikula@bitmer.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        David Owens <dowens@precisionplanting.com>,
+        alsa-devel@alsa-project.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] ASoC: ti: omap-mcbsp: duplicate sysfs error
+Message-ID: <Yqw58Jt9Pky/mYdc@sirena.org.uk>
+References: <20220616202645.1645972-1-dowens@precisionplanting.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: suzuki.poulose@arm.com, alexandru.elisei@arm.com, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, qperret@google.com, kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org, james.morse@arm.com, will@kernel.org, rppt@kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xbvFMKB/P2J9t+zG"
+Content-Disposition: inline
+In-Reply-To: <20220616202645.1645972-1-dowens@precisionplanting.com>
+X-Cookie: 98% lean.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022 16:11:34 +0000, Quentin Perret wrote:
-> Commit a7259df76702 ("memblock: make memblock_find_in_range method
-> private") changed the API using which memory is reserved for the pKVM
-> hypervisor. However, it seems that memblock_phys_alloc() differs
-> from the original API in terms of kmemleak semantics -- the old one
-> excluded the reserved regions from kmemleak scans when the new one
-> doesn't seem to. Unfortunately, when protected KVM is enabled, all
-> kernel accesses to pKVM-private memory result in a fatal exception,
-> which can now happen because of kmemleak scans:
-> 
-> [...]
 
-Applied to fixes, thanks!
+--xbvFMKB/P2J9t+zG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[1/1] KVM: arm64: Prevent kmemleak from accessing pKVM memory
-      commit: 9e5afa8a537f742bccc2cd91bc0bef4b6483ee98
+On Thu, Jun 16, 2022 at 03:26:45PM -0500, David Owens wrote:
 
-Cheers,
+> sysfs: cannot create duplicate filename '/devices/platform/68000000.ocp/4=
+9022000.mcbsp/max_tx_thres'
+>=20
+> Signed-off-by: David Owens <dowens@precisionplanting.com>
+> ---
 
-	M.
--- 
-Marc Zyngier <maz@kernel.org>
+Please carry forward tags like acks unless you make changes to the patch
+which would invalidate them.  No need to resend for this alone.
 
+--xbvFMKB/P2J9t+zG
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKsOfAACgkQJNaLcl1U
+h9AURwf/f6I/e2bDkIEEwNwEPBB1bwhn2Ume/aTTU7/TGFfAbhYa83++IgU/cF7B
+AQHpwlpoktSXH+1RkSCKAcyEyGUPqTZ1eCkvQKz+jWwY/SkVBkBCfDyol1nwkemY
+lLjSMOqiHyD3f1APtYct9T394Ds92LRQoobqwxB8cQoOjbjIIEpODoUCvexMGRMC
+YnQLl4E0CLydjipC3buAjqYF3oR7z2E4ntVVhYUGUID5pDgCqE+ELWluwwUf+tL1
+jCtSMlGORLrIojhA8G8+eYzFy6X0niIbWBRfHaD5XC1wkX1S5BqsbXLgoaSvOHpX
+hkIjUyYdMzPeGTUy3TNzBlGZ5hFqdA==
+=rwQu
+-----END PGP SIGNATURE-----
+
+--xbvFMKB/P2J9t+zG--
