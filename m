@@ -2,206 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6665CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F32DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:27:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234583AbiFQH1r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 03:27:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38902 "EHLO
+        id S1380440AbiFQH1w (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 03:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380440AbiFQH1j (ORCPT
+        with ESMTP id S1380489AbiFQH1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 03:27:39 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 310F1D84
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:27:34 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id v1so7082896ejg.13
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:27:34 -0700 (PDT)
+        Fri, 17 Jun 2022 03:27:40 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6495F5F44
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:27:38 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id n20so337253ejz.10
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:27:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yhUmQjlVEm98FuejkV49ied/cxReTiKl0adLMVVp/04=;
-        b=Fwy6VFGlfabLlQay+AyWPbhL+ymPIcSSw58I4ati4Gu0SX90FZZKiGyRY5UnAcOseE
-         Y3xhGsNfU1XWjeGEnkOeCvGy/apeySedKcr9vJN8aZiwgr2uLYVnmMexlPpBihkQg5hd
-         FrBxkl+1NsMB326LOIBSFwqXnnYIUqiLXUW0ztajyB2NbM18KVmxAzdaagHfjjjzxr12
-         zoBq0x3czBzLLcR3X8YtRJaiunBvRQxe+B/o8cSP9qFXVJ5s8DsBsINfLTOn5u5fTzAo
-         ldfOfMYNHM+KpTLP7vSOmCezgWlLpERpCvHziL82YSvjUl5YiJuY2LzqdNF7rTP0WHmq
-         fnEA==
+        bh=q9idDRq6f3uYrzI3egJYajHbXTVkkHjkaJS35JiKo5s=;
+        b=6H9drCsPt8M+NIiyJPKb4587xiV22pW3oj9lwi5MYAq1j7952D1vbkCIKvjXX4JHPu
+         Kzl6rmIElgbwknvul+uMyPEuSOeUn98NTgLT45/PsMX9zmb8gDmVqD/Qvi3zuR7CIX3K
+         u6KvCmzO4Tj/Yl5FswgaEnqB5s8x3zNHFJa/ji6HQ18NtK219d6IUy102aOL6i4B7oeC
+         vUmHoTAb+nDoDgsgBXS2RDGSwzQnHBsdQhmXUU9op8yt4VADkkPefasOkNYAD/dKTyO4
+         ZL4MYbX+7fZju56fviKeLNpMG1NGHS1iqizwMnsPwgHRh2dtBYf/xgSNfdgQ1yNo/5hg
+         FHWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yhUmQjlVEm98FuejkV49ied/cxReTiKl0adLMVVp/04=;
-        b=2ZE6S3hu2IY2kt+F+DZ6QzFXcssKQzaTNY8yftl551k+zoSZ54PfdBKHhKW3ygo6c1
-         tua9C3QgA4cvbyyDqRM85m6VHg9l8SdXXx6zIxptkkpoV6bFfkzQFciCL6VVJaqRHl66
-         AP5+hZurjlYcdhXOSMLRPrJzuNzNgcmBqzKuuTaTEtADGN5No4VczbeRVHXyzFAIDWQY
-         LVoj4lkODq+i4JfH/CxFenoe6AOsRbZiCrWlXCXv+YOncxA3KYvgp+0DNf0lXOaHbsZI
-         6UgfD2FjQozrYEMOWZRUbuWQ0tVeTnO2QfmXx2ODj6zwzhPQ71dkz1mbrxMxJt/v9Iy0
-         g6DA==
-X-Gm-Message-State: AJIora9mfw5BmMcK2ycMI1B5GEDXM8YXitxVqBiV/7Vw3VF0x8h8qOe7
-        BayaT4OblqVCgLK7efJLBLPAmw==
-X-Google-Smtp-Source: AGRyM1sHnxSHzWDAa3DPinyDjLvfprasBj5z+3vPJoKmBnT+Zar+MTgF0gDYVJTREtggVIPIp4jIJw==
-X-Received: by 2002:a17:907:a427:b0:71b:6f0b:8beb with SMTP id sg39-20020a170907a42700b0071b6f0b8bebmr5651272ejc.496.1655450852661;
-        Fri, 17 Jun 2022 00:27:32 -0700 (PDT)
+        bh=q9idDRq6f3uYrzI3egJYajHbXTVkkHjkaJS35JiKo5s=;
+        b=ocAKwqra3B67+yLQP+l2cnqdNU+mr8kuH7nNtmKppHIoJ1G43yhj1AsM2YtaC6WAnh
+         hXCatRZjYrTCOP2TqJ7xjYu6RV4havWE/AgQBIMs2hNxAerDv2l9/D3oao31equU4x6v
+         dwriauT4CwxOusUy5MYHrbT6tREDD0lE28URB5CbxqjnxK2Chz+rTqtQ5zuFmcBanPaz
+         2hsK54lrLV3Uk7fHeFxkqkNkdoIGLht2/fQ3IBy+C3gRaznSCsKWCJMn1NJqU4iSn6Ks
+         +j+JvUbtePyicv8XJUriHGK8z4hOSNY6dxucK5JNC4MsEG7n19LFyJxRD6lUQzDLsEyN
+         vCug==
+X-Gm-Message-State: AJIora/Mngn3ByLajzvlgyxT/N/BHFi6CaizZiGtdoEWJpIniOWS2NhB
+        aNLVm9QoP2DhVvk1ltRHu2AJ8A==
+X-Google-Smtp-Source: AGRyM1sPClhBZJqQrDM2bRzVMulZY7Z3bJ92cneBfVP/qtfPh6WkSoXLtPRCEsdYdzQgVqM3UlotIg==
+X-Received: by 2002:a17:906:ee1:b0:70d:d293:7b30 with SMTP id x1-20020a1709060ee100b0070dd2937b30mr7854309eji.134.1655450856868;
+        Fri, 17 Jun 2022 00:27:36 -0700 (PDT)
 Received: from localhost.localdomain ([2001:861:44c0:66c0:d227:8f3c:286a:d9d8])
-        by smtp.gmail.com with ESMTPSA id n9-20020a170906840900b006fec56a80a8sm1762556ejx.115.2022.06.17.00.27.31
+        by smtp.gmail.com with ESMTPSA id n9-20020a170906840900b006fec56a80a8sm1762556ejx.115.2022.06.17.00.27.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 00:27:32 -0700 (PDT)
+        Fri, 17 Jun 2022 00:27:36 -0700 (PDT)
 From:   Neil Armstrong <narmstrong@baylibre.com>
-To:     dri-devel@lists.freedesktop.org,
-        martin.blumenstingl@googlemail.com, devicetree@vger.kernel.org
+To:     dri-devel@lists.freedesktop.org, martin.blumenstingl@googlemail.com
 Cc:     linux-amlogic@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Neil Armstrong <narmstrong@baylibre.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 1/6] dt-bindings: display: add Amlogic MIPI DSI Host Controller bindings
-Date:   Fri, 17 Jun 2022 09:27:18 +0200
-Message-Id: <20220617072723.1742668-2-narmstrong@baylibre.com>
+        Jagan Teki <jagan@amarulasolutions.com>
+Subject: [PATCH v3 5/6] drm/meson: add DSI encoder
+Date:   Fri, 17 Jun 2022 09:27:22 +0200
+Message-Id: <20220617072723.1742668-6-narmstrong@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220617072723.1742668-1-narmstrong@baylibre.com>
 References: <20220617072723.1742668-1-narmstrong@baylibre.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3532; h=from:subject; bh=nfzFDo4vSJe6xj0FTwEJ/U/lIAnr1DaEgJJpcHdVaxw=; b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBirCyqY5ZuFCHuvgCYy0WNIdOndZlC1wP7beVGnIlw N220U86JAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCYqwsqgAKCRB33NvayMhJ0ZnOD/ 448XF+A0HBYCR8G5hsszIj07/nBsQTDfXg2FAGCrmM5l6izU4QwCKijtYxwRJcQUAeI+n2/F3bkehj fuLHK4tfiXXGDNIYISm6fuo3b4OjI5uTJ7TK03SF+kRszl2OACvBIkK91dvD30r9Vt3ukMxOkbP7bR qtDueOf0BcQnXOx+cZ6RAY9LbqdEbmKkTYUIQn+CsVYZ6OSUD57FiN2BILOltKIhdoINejZUnvQbso Nrko/HA5QbZ/6nCqXFmxaGERRxuP/wofeRCdvX1aZXamS2/+7jRPAYZ+hUHIF3EwRTHENxT5FdOsXL 04hdOPjYXQEFWRFQrBnzgQs3uwKruSsG0OIB3Xbug4kUmX8HXSERS1ZnSgV5XOlQBRbQJho9y1a6Lc tsqxbFPHI7sfy/FsgaJhgbqoIF5T5kaI/Wf8+8p3luA+0U28tRkwGad6252bLdjyHxtjSYUIbZ9Bcn dmhwxY36KKto7GqwdbHmyeK2r08GCrSmhfkKuJKS68RPkLG/DWbfPOBHU8b72GFJHaI4QKz5qta8n+ 8ddmyn1Nrgk8NkOGKRqnQEgxqO4qhvLbIGyha4tRf5owRWD9UlhPbS0SFR3/KOx92iZAD5a2QxHLNh RnGc64vBzoOuhrJkCdRvoqCVClQB+8YhKSTGFdRVn25OVDMwH/O91clAu6Fw==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=8193; h=from:subject; bh=5SY+f9FZbEJP2uh/90AJVMp0SJeiVB72aKbSQ+lKbKw=; b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBirCyrRAp2aas4pFiDuPnKF1I1V3k2lhmdwsB7mny9 9VwsiyqJAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCYqwsqwAKCRB33NvayMhJ0SJlD/ 9gsEdJBcBwjjIuBLZ5IJfYnwhpX6Ey27tU8+qMxilIboOin3AT8ubqLPrr6MPAq20rSuSu+aBk16P/ rIjRrIXcIl/5/BVE2B7nIwPHny9RG9FVnuFir1NiIs1seryI5mYgFixaZ3GvC0MXLQEn7VWERKcccu cuwi+z1Uq8meRNgZnxo7SCZpyJK57xsBP9EGXcOHHuRX4hd70P+gLrNXCk3XGRxeRCF0OxvIFRujrH 3V+rcQdPWXP6ovjtbn3rqnwKRP/OwsfGsqibENIsOox4JAuUO1DILH7WfbiCL9wlwtAc67GUUAejKz QVGacvGOlx/LqsIJ6G6V+i8VeJbtssRbH92WbVRgU9tkRecMBXBA4BHp+mQP0+tLWsPrlulRETkeFA DFhwjq0KdkEPtDCZ1pmmBbQnNb5MzlU8iM37/iSd1DVQzB1U3831FonJW9Fih/gCAZh5pj3e5WeoKE xmYlWH0RdFkqRQ2HHVV0q3oC4qDAwTnFTPjFYxqK697ndkhIuvrNGm+eCPkcwYQY9dCVy4turhCLHE cp0IIGz6ZxMg/Vo91j9WolA+z08rAtQEmlrLOslYVhM5NZ++7pS+75NBk89coZKAfxsKXEiFd2YpWe x4VpRi9gI9p43fw4qhQKEFmDfJbTzEuBDwHJyHz966j2n6aobVBfWLMs7BQg==
 X-Developer-Key: i=narmstrong@baylibre.com; a=openpgp; fpr=89EC3D058446217450F22848169AB7B1A4CFF8AE
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Amlogic G12A, G12B & SM1 SoCs embeds a Synopsys DW-MIPI-DSI transceiver (ver 1.21a),
-with a custom glue managing the IP resets, clock and data input similar to the DW-HDMI Glue
-on the same Amlogic SoCs.
+This adds an encoder bridge designed to drive a MIPI-DSI display
+by using the ENCL encoder through the internal MIPI DSI transceiver
+connected to the output of the ENCL pixel encoder.
 
 Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
 ---
- .../display/amlogic,meson-dw-mipi-dsi.yaml    | 116 ++++++++++++++++++
- 1 file changed, 116 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/display/amlogic,meson-dw-mipi-dsi.yaml
+ drivers/gpu/drm/meson/Makefile            |   2 +-
+ drivers/gpu/drm/meson/meson_drv.c         |   7 +
+ drivers/gpu/drm/meson/meson_encoder_dsi.c | 160 ++++++++++++++++++++++
+ drivers/gpu/drm/meson/meson_encoder_dsi.h |  12 ++
+ 4 files changed, 180 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/gpu/drm/meson/meson_encoder_dsi.c
+ create mode 100644 drivers/gpu/drm/meson/meson_encoder_dsi.h
 
-diff --git a/Documentation/devicetree/bindings/display/amlogic,meson-dw-mipi-dsi.yaml b/Documentation/devicetree/bindings/display/amlogic,meson-dw-mipi-dsi.yaml
+diff --git a/drivers/gpu/drm/meson/Makefile b/drivers/gpu/drm/meson/Makefile
+index 3afa31bdc950..833e18c20603 100644
+--- a/drivers/gpu/drm/meson/Makefile
++++ b/drivers/gpu/drm/meson/Makefile
+@@ -2,7 +2,7 @@
+ meson-drm-y := meson_drv.o meson_plane.o meson_crtc.o meson_encoder_cvbs.o
+ meson-drm-y += meson_viu.o meson_vpp.o meson_venc.o meson_vclk.o meson_overlay.o
+ meson-drm-y += meson_rdma.o meson_osd_afbcd.o
+-meson-drm-y += meson_encoder_hdmi.o
++meson-drm-y += meson_encoder_hdmi.o meson_encoder_dsi.o
+ 
+ obj-$(CONFIG_DRM_MESON) += meson-drm.o
+ obj-$(CONFIG_DRM_MESON_DW_HDMI) += meson_dw_hdmi.o
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index 1b70938cfd2c..896994862ad7 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -34,6 +34,7 @@
+ #include "meson_registers.h"
+ #include "meson_encoder_cvbs.h"
+ #include "meson_encoder_hdmi.h"
++#include "meson_encoder_dsi.h"
+ #include "meson_viu.h"
+ #include "meson_vpp.h"
+ #include "meson_rdma.h"
+@@ -324,6 +325,12 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
+ 	if (ret)
+ 		goto exit_afbcd;
+ 
++	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
++		ret = meson_encoder_dsi_init(priv);
++		if (ret)
++			goto free_drm;
++	}
++
+ 	ret = meson_plane_create(priv);
+ 	if (ret)
+ 		goto exit_afbcd;
+diff --git a/drivers/gpu/drm/meson/meson_encoder_dsi.c b/drivers/gpu/drm/meson/meson_encoder_dsi.c
 new file mode 100644
-index 000000000000..e057659545a9
+index 000000000000..20485a254ac4
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/display/amlogic,meson-dw-mipi-dsi.yaml
-@@ -0,0 +1,116 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+# Copyright 2020 BayLibre, SAS
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/display/amlogic,meson-dw-mipi-dsi.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++++ b/drivers/gpu/drm/meson/meson_encoder_dsi.c
+@@ -0,0 +1,160 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2016 BayLibre, SAS
++ * Author: Neil Armstrong <narmstrong@baylibre.com>
++ * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
++ */
 +
-+title: Amlogic specific extensions to the Synopsys Designware MIPI DSI Host Controller
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/of_graph.h>
 +
-+maintainers:
-+  - Neil Armstrong <narmstrong@baylibre.com>
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_simple_kms_helper.h>
++#include <drm/drm_bridge.h>
++#include <drm/drm_bridge_connector.h>
++#include <drm/drm_device.h>
++#include <drm/drm_probe_helper.h>
 +
-+description: |
-+  The Amlogic Meson Synopsys Designware Integration is composed of
-+  - A Synopsys DesignWare MIPI DSI Host Controller IP
-+  - A TOP control block controlling the Clocks & Resets of the IP
++#include "meson_drv.h"
++#include "meson_encoder_dsi.h"
++#include "meson_registers.h"
++#include "meson_venc.h"
++#include "meson_vclk.h"
 +
-+allOf:
-+  - $ref: dsi-controller.yaml#
++struct meson_encoder_dsi {
++	struct drm_encoder encoder;
++	struct drm_bridge bridge;
++	struct drm_bridge *next_bridge;
++	struct meson_drm *priv;
++};
 +
-+properties:
-+  compatible:
-+    enum:
-+      - amlogic,meson-g12a-dw-mipi-dsi
++#define bridge_to_meson_encoder_dsi(x) \
++	container_of(x, struct meson_encoder_dsi, bridge)
 +
-+  reg:
-+    maxItems: 1
++static int meson_encoder_dsi_attach(struct drm_bridge *bridge,
++				    enum drm_bridge_attach_flags flags)
++{
++	struct meson_encoder_dsi *encoder_dsi = bridge_to_meson_encoder_dsi(bridge);
 +
-+  clocks:
-+    minItems: 2
++	return drm_bridge_attach(bridge->encoder, encoder_dsi->next_bridge,
++				 &encoder_dsi->bridge, flags);
++}
 +
-+  clock-names:
-+    minItems: 2
-+    items:
-+      - const: pclk
-+      - const: px_clk
-+      - const: meas_clk
++static void meson_encoder_dsi_mode_set(struct drm_bridge *bridge,
++				       const struct drm_display_mode *mode,
++				       const struct drm_display_mode *adjusted_mode)
++{
++	struct meson_encoder_dsi *encoder_dsi = bridge_to_meson_encoder_dsi(bridge);
++	struct meson_drm *priv = encoder_dsi->priv;
 +
-+  resets:
-+    minItems: 1
++	meson_vclk_setup(priv, MESON_VCLK_TARGET_DSI, mode->clock, 0, 0, 0, false);
 +
-+  reset-names:
-+    items:
-+      - const: top
++	meson_venc_mipi_dsi_mode_set(priv, mode);
++	meson_encl_load_gamma(priv);
 +
-+  phys:
-+    minItems: 1
++	writel_relaxed(0, priv->io_base + _REG(ENCL_VIDEO_EN));
 +
-+  phy-names:
-+    items:
-+      - const: dphy
++	writel_bits_relaxed(ENCL_VIDEO_MODE_ADV_VFIFO_EN, ENCL_VIDEO_MODE_ADV_VFIFO_EN,
++			    priv->io_base + _REG(ENCL_VIDEO_MODE_ADV));
++	writel_relaxed(0, priv->io_base + _REG(ENCL_TST_EN));
++}
 +
-+  ports:
-+    $ref: /schemas/graph.yaml#/properties/ports
++static void meson_encoder_dsi_atomic_enable(struct drm_bridge *bridge,
++					    struct drm_bridge_state *bridge_state)
++{
++	struct meson_encoder_dsi *encoder_dsi = bridge_to_meson_encoder_dsi(bridge);
++	struct meson_drm *priv = encoder_dsi->priv;
 +
-+    properties:
-+      port@0:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: Input node to receive pixel data.
++	writel_bits_relaxed(BIT(0), 0, priv->io_base + _REG(VPP_WRAP_OSD1_MATRIX_EN_CTRL));
 +
-+      port@1:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: DSI output node to panel.
++	writel_relaxed(1, priv->io_base + _REG(ENCL_VIDEO_EN));
++}
 +
-+    required:
-+      - port@0
-+      - port@1
++static void meson_encoder_dsi_atomic_disable(struct drm_bridge *bridge,
++					     struct drm_bridge_state *bridge_state)
++{
++	struct meson_encoder_dsi *meson_encoder_dsi =
++					bridge_to_meson_encoder_dsi(bridge);
++	struct meson_drm *priv = meson_encoder_dsi->priv;
 +
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - resets
-+  - reset-names
-+  - phys
-+  - phy-names
-+  - ports
++	writel_relaxed(0, priv->io_base + _REG(ENCL_VIDEO_EN));
 +
-+unevaluatedProperties: false
++	writel_bits_relaxed(BIT(0), BIT(0), priv->io_base + _REG(VPP_WRAP_OSD1_MATRIX_EN_CTRL));
++}
 +
-+examples:
-+  - |
-+    dsi@7000 {
-+          compatible = "amlogic,meson-g12a-dw-mipi-dsi";
-+          reg = <0x6000 0x400>;
-+          resets = <&reset_top>;
-+          reset-names = "top";
-+          clocks = <&clk_pclk>, <&clk_px>;
-+          clock-names = "pclk", "px_clk";
-+          phys = <&mipi_dphy>;
-+          phy-names = "dphy";
++static const struct drm_bridge_funcs meson_encoder_dsi_bridge_funcs = {
++	.attach	= meson_encoder_dsi_attach,
++	/*
++	 * TOFIX: remove when dw-mipi-dsi moves out of mode_set
++	 * We should get rid of mode_set, but until dw-mipi-dsi uses it
++	 * we need to setup the pixel clock before the following
++	 * bridge tries to setup the HW.
++	 */
++	.mode_set = meson_encoder_dsi_mode_set,
++	.atomic_enable = meson_encoder_dsi_atomic_enable,
++	.atomic_disable	= meson_encoder_dsi_atomic_disable,
++	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
++	.atomic_destroy_state = drm_atomic_helper_bridge_destroy_state,
++	.atomic_reset = drm_atomic_helper_bridge_reset,
++};
 +
-+          ports {
-+              #address-cells = <1>;
-+              #size-cells = <0>;
++int meson_encoder_dsi_init(struct meson_drm *priv)
++{
++	struct meson_encoder_dsi *meson_encoder_dsi;
++	struct device_node *remote;
++	int ret;
 +
-+              /* VPU VENC Input */
-+              mipi_dsi_venc_port: port@0 {
-+                  reg = <0>;
++	meson_encoder_dsi = devm_kzalloc(priv->dev, sizeof(*meson_encoder_dsi), GFP_KERNEL);
++	if (!meson_encoder_dsi)
++		return -ENOMEM;
 +
-+                  mipi_dsi_in: endpoint {
-+                       remote-endpoint = <&dpi_out>;
-+                  };
-+              };
++	/* DSI Transceiver Bridge */
++	remote = of_graph_get_remote_node(priv->dev->of_node, 2, 0);
++	if (!remote) {
++		dev_err(priv->dev, "DSI transceiver device is disabled");
++		return 0;
++	}
 +
-+              /* DSI Output */
-+              mipi_dsi_panel_port: port@1 {
-+                  reg = <1>;
++	meson_encoder_dsi->next_bridge = of_drm_find_bridge(remote);
++	if (!meson_encoder_dsi->next_bridge) {
++		dev_dbg(priv->dev, "Failed to find DSI transceiver bridge\n");
++		return -EPROBE_DEFER;
++	}
 +
-+                  mipi_out_panel: endpoint {
-+                      remote-endpoint = <&mipi_in_panel>;
-+                  };
-+              };
-+          };
-+    };
++	/* DSI Encoder Bridge */
++	meson_encoder_dsi->bridge.funcs = &meson_encoder_dsi_bridge_funcs;
++	meson_encoder_dsi->bridge.of_node = priv->dev->of_node;
++	meson_encoder_dsi->bridge.type = DRM_MODE_CONNECTOR_DSI;
++
++	drm_bridge_add(&meson_encoder_dsi->bridge);
++
++	meson_encoder_dsi->priv = priv;
++
++	/* Encoder */
++	ret = drm_simple_encoder_init(priv->drm, &meson_encoder_dsi->encoder,
++				      DRM_MODE_ENCODER_DSI);
++	if (ret) {
++		dev_err(priv->dev, "Failed to init DSI encoder: %d\n", ret);
++		return ret;
++	}
++
++	meson_encoder_dsi->encoder.possible_crtcs = BIT(0);
++
++	/* Attach DSI Encoder Bridge to Encoder */
++	ret = drm_bridge_attach(&meson_encoder_dsi->encoder, &meson_encoder_dsi->bridge, NULL, 0);
++	if (ret) {
++		dev_err(priv->dev, "Failed to attach bridge: %d\n", ret);
++		return ret;
++	}
++
++	/*
++	 * We should have now in place:
++	 * encoder->[dsi encoder bridge]->[dw-mipi-dsi bridge]->[panel bridge]->[panel]
++	 */
++
++	dev_dbg(priv->dev, "DSI encoder initialized\n");
++
++	return 0;
++}
+diff --git a/drivers/gpu/drm/meson/meson_encoder_dsi.h b/drivers/gpu/drm/meson/meson_encoder_dsi.h
+new file mode 100644
+index 000000000000..0f4b641eb633
+--- /dev/null
++++ b/drivers/gpu/drm/meson/meson_encoder_dsi.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (C) 2021 BayLibre, SAS
++ * Author: Neil Armstrong <narmstrong@baylibre.com>
++ */
++
++#ifndef __MESON_ENCODER_DSI_H
++#define __MESON_ENCODER_DSI_H
++
++int meson_encoder_dsi_init(struct meson_drm *priv);
++
++#endif /* __MESON_ENCODER_DSI_H */
 -- 
 2.25.1
 
