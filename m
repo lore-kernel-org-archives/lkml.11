@@ -2,111 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B197EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 23:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA4EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 23:16:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235680AbiFQXPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 19:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46772 "EHLO
+        id S243982AbiFQXQC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 19:16:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383540AbiFQXNu (ORCPT
+        with ESMTP id S236843AbiFQXPc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 19:13:50 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE6E5D5D2
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 16:13:47 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id f16so4040388pjj.1
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 16:13:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=10mVd//XJbMVb3Cy5Pks+pC6niMtAwguM0D0PFkeb/0=;
-        b=ftsgA9iCXVg14SM3UhGJNZroNcKteQOV8fhn/TQ4qmubLGEYc9goTyY9cqxWv/Vujz
-         vvqm9Hc1xj1CilJkuFjGUkxiPQmxIGRA6ZWY937f+DBGH4jZKoO1kMpGaa8atsr2iy+c
-         jInXea+ezAu5ezkR5e9DqoDPRxhK80c23I0Rxem6Hv76djU0l3rMSkohW6NtZA/wT8Xq
-         kkbN94pT99l5RfQhhgeyyK0XqowM7S3hyzY9US2HlPGSSPmBn1VE+8RMyrvOvwk/qSQO
-         VuNIIi8ERnbIixzMX8MQ/LZDa52WzzLDJSlri5vEF8FF0NVgt/kmQO5wufOCoypheUaN
-         mQ7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=10mVd//XJbMVb3Cy5Pks+pC6niMtAwguM0D0PFkeb/0=;
-        b=vOHmax+Bl3elOWY6ToZef/mqs2Ins99CKjElFpQSmYZywhPU5bAV1pyIcNo5XILlc6
-         79Pxja+o3+Gqtu/3ed6Z+B6zsD04F2o0ewK9eUqxdIepcyaqi3CKRQ5zTWiwwhBgnL0q
-         axg8qdBSHlffdQJgmXD0fdGmDlB+0qi/fluSSs4n/2kwUA29lW3Oi1QbCyJUsLBbXXv/
-         YFr+p9HqPhn8K+40/SkQ2PYsmPJ0g987maYwzuCORu6eRey69qxIqslPdwYtLcxG5zuV
-         svPPJv+8EJ1v1VvnAgnycZ11/nBJ+f7JCl5/q3s8XwhrHVOrZQbPfOhJHWPp+d1DwylB
-         ME1Q==
-X-Gm-Message-State: AJIora8+MKFtNA+frhwbxvy4Gxm1tvje15gOe7afTnzIOFbIQ5lhbOOE
-        p5dAIY3dLVjzwNHuYwCy46+Gsw==
-X-Google-Smtp-Source: AGRyM1t/dM7EAh0Y7mmMWaeiTHeXaEw5ea7tY/IXesEX0mn/1dH62oUOXAC46KuZhDOj2XfNQPbrog==
-X-Received: by 2002:a17:90b:3701:b0:1ea:9f82:59ef with SMTP id mg1-20020a17090b370100b001ea9f8259efmr13153806pjb.239.1655507627413;
-        Fri, 17 Jun 2022 16:13:47 -0700 (PDT)
-Received: from [172.31.235.92] ([216.9.110.6])
-        by smtp.gmail.com with ESMTPSA id j1-20020a170903028100b0016784c93f23sm4054315plr.197.2022.06.17.16.13.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jun 2022 16:13:46 -0700 (PDT)
-Message-ID: <9b567f78-e12b-d665-2f11-96436fe9ed08@linaro.org>
-Date:   Fri, 17 Jun 2022 16:13:42 -0700
+        Fri, 17 Jun 2022 19:15:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9892265418;
+        Fri, 17 Jun 2022 16:15:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51A0DB82BFD;
+        Fri, 17 Jun 2022 23:15:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E501C3411D;
+        Fri, 17 Jun 2022 23:15:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655507729;
+        bh=Zr7o5Ip/n+Z6hADKBqwvFtgoYqGmemiH5sEu5Gmn6Uo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NvVeNGxSrEC2+wGfvxgrs2TZcmVlqb9wr0ncY/ByguBP1mXwzGWAVvdmf0LsH45HE
+         +DVp7mKlZSLTYhJNRz702Z034GHzBrZSGhEi7q4FIV2U3kshY8BMvSYmdb+5xtENhU
+         aOhuH0AzI7OYW9MXFHzcNhQl5SWvGC2m7YN5Hcv5/jzNLjMJ0DDRUzeXuagimtgw27
+         awG2KiyAITkD+LLOhe4OSfaeOtFcNHjs0QgJLRrHV8Q8HLHsmCNrnwD1JswlENPK18
+         gCyduAV/sX5u5WEf5PpkQChZr7H4NGUzwZ5qJlJOUrySZ3ZrXvj2TgS8eEPgjgWe94
+         V6Yc55jAL7BpQ==
+Date:   Sat, 18 Jun 2022 00:15:24 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Sameer Pujar <spujar@nvidia.com>
+Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        jonathanh@nvidia.com, alsa-devel@alsa-project.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: ops: Fix multiple value control type
+Message-ID: <Yq0LDPDQitt22GDk@sirena.org.uk>
+References: <1655492828-5471-1-git-send-email-spujar@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 05/15] dt-bindings: backlight: Add Mediatek MT6370
- backlight
-Content-Language: en-US
-To:     ChiaEn Wu <peterwu.pub@gmail.com>
-Cc:     jic23@kernel.org, lars@metafoo.de, matthias.bgg@gmail.com,
-        lee.jones@linaro.org, Daniel Thompson <daniel.thompson@linaro.org>,
-        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com, ChiYuan Huang <cy_huang@richtek.com>
-References: <20220613111146.25221-1-peterwu.pub@gmail.com>
- <20220613111146.25221-6-peterwu.pub@gmail.com>
- <9c38f708-1376-aa89-2c56-c08d320bcf2b@linaro.org>
- <CABtFH5KhijZDRA+K=stpOV0t8K3cqCMoLXpLShcdm9F8emrKCA@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CABtFH5KhijZDRA+K=stpOV0t8K3cqCMoLXpLShcdm9F8emrKCA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="pPAHYp+62yWsAIkg"
+Content-Disposition: inline
+In-Reply-To: <1655492828-5471-1-git-send-email-spujar@nvidia.com>
+X-Cookie: 98% lean.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/06/2022 03:35, ChiaEn Wu wrote:
-> +        - 3: 6
->>
->> Nope, I said last time:
->> "In any case you cannot have values mapping"
->>
->> Please use proper real world value, not some register bits. The property
->> name also needs fixing.
-> 
-> I so apologized for misunderstanding your meaning...
-> I try to modify it like below.
-> --------
-> mediatek,bled-pwm-hys-input-threshold-steps:
->   $ref: /schemas/types.yaml#/definitions/uint8
->   enum: [1, 4, 16, 64]
->   description: |
->     The selection of the upper and lower bounds threshold of backlight
->     PWM resolution. If we choose selection 64, the variation of PWM
->     resolution needs over 64 steps.
-> --------
-> If these changes meet your expectations, I will try to modify
-> "bled-ovp-microvolt" and "bled-ocp-microamp" in the same way.
-> Thank you so much.
-> 
 
-This looks good. Thank you.
+--pPAHYp+62yWsAIkg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+On Sat, Jun 18, 2022 at 12:37:08AM +0530, Sameer Pujar wrote:
+> The commit aa2a4b897132("ASoC: ops: Fix boolean/integer detection for
+> simple controls") fixes false positives with controls not ending in
+> " Volume" string. But it now forces boolean type for the multi value
+> controls. Fix this by adding a max check before assigning types.
 
-Best regards,
-Krzysztof
+Thanks but someone already sent a fix for this.
+
+--pPAHYp+62yWsAIkg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKtCwsACgkQJNaLcl1U
+h9AzxAf/SF+Y2CEG3+wWqNxOf7VedEGHhfsNyQFyPMLv59ISuaZSpNk3P2M7VdqQ
+5bXsu6P51V8UqWIk6beNVh/GBfTbOtzyWGbzNhDXD/1TUzNUgJfhOXrrNZTX9BpN
+DzMsk/R1wkvbW23S27uAbgJ8FiLuo4vm7WLWNTucX5qbuG38Zpubo4yQPvTsvohz
+jgegrI/x1W5kzYPxIOiKkFzewnpsFcmjepQMSrJq0bVzpSRzI3moUPgrg/tN8lli
+wS41tgbu4I7kDVubBqg0oTYceaic03bTQrsnG8Ayof0SvFpStpCTHdwGh45QQWYg
+pqVKaC5OXvQzKnp2QBa8Jgv15AI4BQ==
+=pb6W
+-----END PGP SIGNATURE-----
+
+--pPAHYp+62yWsAIkg--
