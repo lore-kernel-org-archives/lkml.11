@@ -2,148 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C63B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:05:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 089F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382605AbiFQOFf (ORCPT
+        id S1382615AbiFQOHg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 10:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
+        Fri, 17 Jun 2022 10:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233854AbiFQOFd (ORCPT
+        with ESMTP id S1381543AbiFQOHf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 10:05:33 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243E24C7B7
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:05:24 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25HDuhhw013449;
-        Fri, 17 Jun 2022 14:04:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : message-id : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=cQ/SwfImF0iKXyQ+vRdYEwPl1VNj0ID776cob3LAmOE=;
- b=aretrqeSZKp7wgWEOxg50nRj4FBz3vcj4gT3dTNu/bTdtDt/5hMETEBTP7QbfQ3ePjz4
- 8tWTS9QCOeEz6SVkqGaN/+sPybp4WOxcvf4hvIOfEUgA3gHhkM253pMFZ8iU48Cz4MaD
- N/ng8smAimVmFYhdmqelNxSfvBlsKDcJH4j3mrlEiee0nLEkygx3EFGAivB5s+K/SX1m
- u6R1PqxNmwbNAF+PB3VRAdeb/EQTI6DSQX3GoT18q62kkck7yL8UqyMKodGZuWnMzt/P
- /yJNwALFezrgSpPRqYuEkgrGl3FBgZ4DrZ84fnrHL3hocVovJUycZSzmNGWd2wtffcUM cw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3grtxnr61r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 17 Jun 2022 14:04:55 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25HDvHiV018747;
-        Fri, 17 Jun 2022 14:04:55 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3grtxnr614-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 17 Jun 2022 14:04:55 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25HDov0X007041;
-        Fri, 17 Jun 2022 14:04:53 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma01fra.de.ibm.com with ESMTP id 3gmjp8xxrs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 17 Jun 2022 14:04:53 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25HE4o4E19071304
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 17 Jun 2022 14:04:50 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9A48B4C046;
-        Fri, 17 Jun 2022 14:04:50 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 327204C040;
-        Fri, 17 Jun 2022 14:04:50 +0000 (GMT)
-Received: from localhost (unknown [9.43.107.233])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 17 Jun 2022 14:04:50 +0000 (GMT)
-Date:   Fri, 17 Jun 2022 19:34:48 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [RFC PATCH 4/4] objtool/powerpc: Add --mcount specific
- implementation
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        Chen Zhongjin <chenzhongjin@huawei.com>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        Sathvika Vasireddy <sv@linux.ibm.com>,
-        Sathvika Vasireddy <sv@linux.vnet.ibm.com>
-References: <20220523175548.922671-1-sv@linux.ibm.com>
-        <20220523175548.922671-5-sv@linux.ibm.com>
-        <6be5c941-07b0-64d5-7f36-fe5770fb5244@csgroup.eu>
-        <59170f18-1356-1140-70e3-30cb627f00bc@linux.vnet.ibm.com>
-        <578ec055-0d63-e579-0caa-ad57846b8995@csgroup.eu>
-        <f1decbb7-b441-a241-469a-4ba118e08212@csgroup.eu>
-        <c1e2cf35-2a8d-87e6-3a7e-7f144392db23@csgroup.eu>
-        <1655386289.uh0k7sgl1r.naveen@linux.ibm.com>
-        <30f3791c-0fdd-e635-4a85-ec457f990fae@csgroup.eu>
-        <Yqs235037JrOOhBA@hirez.programming.kicks-ass.net>
-        <d095fe9d-e713-def1-6096-540c0d0da298@csgroup.eu>
-In-Reply-To: <d095fe9d-e713-def1-6096-540c0d0da298@csgroup.eu>
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1655474054.lvnbqfz64f.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: _eAZPF0wTyF7jvfU_B1dMSxze1-sffUC
-X-Proofpoint-ORIG-GUID: MZdaLXiAsAdUOPu_g21V41VhfRtfUdST
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Fri, 17 Jun 2022 10:07:35 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4319FF11
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:07:34 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-fb6b4da1dfso5706805fac.4
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:07:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dpaZ8e8VGQb+BpielLCrmJsF4upPaG4g9PcgtNKJNx8=;
+        b=WZ27kY1CncLf6C6gidqBYDfqwWoYVu7cndc5pjkptu6pXJ8OXdVklLOceW5B5yr05C
+         Y6zbok6paHAJSNxOGA39aAnlFw4VTUW35dIyL8BKUgsyvLX2/4hyHYTXLybsw6BjLY+m
+         C8FqVNljqoBnokRx5UZzldzcWQiLq4RPYF6Is=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dpaZ8e8VGQb+BpielLCrmJsF4upPaG4g9PcgtNKJNx8=;
+        b=srlrVRXEavh6cwjdbF1m0nIsYeNE66PMNhDp6DBcRNB2LPEZ1qyVMEpX6m9cAwzCuC
+         9VTiGGRq34i7WWTlPzc98wNAvwBKsneIJHaMRNKIbCuptD0YdAsRO7Yqw7BdKJ7XPQ/r
+         QpLiRDNnoE3LZfdqOoSYJOHUAXJAIo6lxMhvH+AtbrFa7YIYHjraEHcWIHqD5AhdbxbK
+         bhIdRA2eFeKCRAvaWL6IySgdpsX01S4EQqAz3nKvfdZ4dOcY5FgTDu7Ij/9gFcBAFfZe
+         ThYoxL9xvdyNN3BGkqQNMmqqMzhS7qO7XJUb3hDRzvQk+fxvti3GFCj+ODCjENJr0avo
+         tFVA==
+X-Gm-Message-State: AJIora8x+cuwuu4+HiCquvt8TGPAxe1+PZePDpd7sJiRAgWzXPPPwnRW
+        jUyM6Oi+5R0bXFxSSEahdXJfx0oqSBkyJw9h
+X-Google-Smtp-Source: AGRyM1vOBYgemGcqG+kDMAdUyTyGtTuHYu8bZzoRwplmkkdIHLJt2io2dKOC4crkyyQyZr0CpWL11A==
+X-Received: by 2002:a05:6870:e98b:b0:fe:219a:2449 with SMTP id r11-20020a056870e98b00b000fe219a2449mr11651926oao.228.1655474853304;
+        Fri, 17 Jun 2022 07:07:33 -0700 (PDT)
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com. [209.85.160.42])
+        by smtp.gmail.com with ESMTPSA id k19-20020a056830243300b0060603221255sm2481975ots.37.2022.06.17.07.07.31
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jun 2022 07:07:32 -0700 (PDT)
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-101bc0d279cso649667fac.0
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:07:31 -0700 (PDT)
+X-Received: by 2002:a05:6870:4799:b0:f1:46f8:6ea4 with SMTP id
+ c25-20020a056870479900b000f146f86ea4mr5544524oaq.223.1655474851271; Fri, 17
+ Jun 2022 07:07:31 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-17_08,2022-06-17_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 phishscore=0 malwarescore=0 mlxlogscore=999 lowpriorityscore=0
- clxscore=1015 impostorscore=0 suspectscore=0 adultscore=0 bulkscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206170060
+References: <20220617103645.71560-1-ribalda@chromium.org> <20220617103645.71560-3-ribalda@chromium.org>
+ <YqyFIq8iv/FZ6tNe@pendragon.ideasonboard.com>
+In-Reply-To: <YqyFIq8iv/FZ6tNe@pendragon.ideasonboard.com>
+From:   Ricardo Ribalda <ribalda@chromium.org>
+Date:   Fri, 17 Jun 2022 16:07:20 +0200
+X-Gmail-Original-Message-ID: <CANiDSCuZ0O3iv2Kk3b7Ui9ZWYM3PVsZAsF2DAL54XY9MkyHuLg@mail.gmail.com>
+Message-ID: <CANiDSCuZ0O3iv2Kk3b7Ui9ZWYM3PVsZAsF2DAL54XY9MkyHuLg@mail.gmail.com>
+Subject: Re: [PATCH v7 2/8] media: uvcvideo: Add support for per-device
+ control mapping overrides
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tfiga@chromium.org, senozhatsky@chromium.org, yunkec@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christophe Leroy wrote:
->=20
->=20
-> Le 16/06/2022 =C3=A0 15:57, Peter Zijlstra a =C3=A9crit=C2=A0:
->> On Thu, Jun 16, 2022 at 01:40:34PM +0000, Christophe Leroy wrote:
->>> sizeof(u64) is always 8 by definition.
->>>
->>> So if size is 8 we are working on a binary file for a 64 bits target, if
->>> not it means we are working for a 32 bits target.
->>=20
->> Cross-builds invalidate this I think. Best to look at something like:
->>=20
->>    elf->ehdr.e_ident[EI_CLASS] =3D=3D ELFCLASS32
->>=20
->>=20
->=20
-> Yes that's what it does indirectly:
->=20
-> 	int size =3D elf_class_size(elf);
->=20
->=20
-> With
->=20
-> static inline int elf_class_size(struct elf *elf)
-> {
-> 	if (elf->ehdr.e_ident[EI_CLASS] =3D=3D ELFCLASS32)
-> 		return sizeof(u32);
-> 	else
-> 		return sizeof(u64);
-> }
+Hi Laurent
 
-Ok, those come from the below patch:
-https://lore.kernel.org/all/c4b06b5b314183d85615765a5ce421a057674bd8.165339=
-8233.git.christophe.leroy@csgroup.eu/T/#u
+On Fri, 17 Jun 2022 at 15:44, Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+>
+> Hi Ricardo,
+>
+> Thank you for the patch.
+>
+> On Fri, Jun 17, 2022 at 12:36:39PM +0200, Ricardo Ribalda wrote:
+> > Some devices do not implement all their controls in a way that complies
+> > with the UVC specification. This is for instance the case for several
+> > devices that do not support the disabled mode for the power line
+> > frequency control. Add a mechanism to allow per-device control mapping
+> > overrides to avoid errors when accessing non-compliant controls.
+> >
+> > Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+> > Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> > ---
+> >  drivers/media/usb/uvc/uvc_ctrl.c | 35 ++++++++++++++++++++++++++------
+> >  drivers/media/usb/uvc/uvcvideo.h |  1 +
+> >  2 files changed, 30 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/drivers/media/usb/uvc/uvc_ctrl.c b/drivers/media/usb/uvc/uvc_ctrl.c
+> > index a709ebbb4d69..092decfdaa62 100644
+> > --- a/drivers/media/usb/uvc/uvc_ctrl.c
+> > +++ b/drivers/media/usb/uvc/uvc_ctrl.c
+> > @@ -2403,9 +2403,8 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
+> >  {
+> >       const struct uvc_control_info *info = uvc_ctrls;
+> >       const struct uvc_control_info *iend = info + ARRAY_SIZE(uvc_ctrls);
+> > -     const struct uvc_control_mapping *mapping = uvc_ctrl_mappings;
+> > -     const struct uvc_control_mapping *mend =
+> > -             mapping + ARRAY_SIZE(uvc_ctrl_mappings);
+> > +     const struct uvc_control_mapping *mapping;
+> > +     const struct uvc_control_mapping *mend;
+> >
+> >       /* XU controls initialization requires querying the device for control
+> >        * information. As some buggy UVC devices will crash when queried
+> > @@ -2433,14 +2432,38 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
+> >       if (!ctrl->initialized)
+> >               return;
+> >
+> > -     /* Process common mappings first. */
+> > -     for (; mapping < mend; ++mapping) {
+> > +     /*
+> > +      * First check if the device provides a custom mapping for this control,
+> > +      * used to override standard mappings for non-conformant devices. Don't
+> > +      * process standard mappings if a custom mapping is found. This
+> > +      * mechanism doesn't support combining standard and custom mappings for
+> > +      * a single control.
+> > +      */
+> > +     if (chain->dev->info->mappings) {
+> > +             bool custom = false;
+> > +             unsigned int i;
+> > +
+> > +             for (i = 0; (mapping = chain->dev->info->mappings[i]); ++i) {
+> > +                     if (uvc_entity_match_guid(ctrl->entity, mapping->entity) &&
+> > +                         ctrl->info.selector == mapping->selector) {
+> > +                             __uvc_ctrl_add_mapping(chain, ctrl, mapping);
+> > +                             custom = true;
+> > +                     }
+> > +             }
+> > +
+> > +             if (custom)
+> > +                     return;
+> > +     }
+> > +
+> > +     /* Process common mappings next. */
+> > +     mend = mapping + ARRAY_SIZE(uvc_ctrl_mappings);
+>
+> I don't think mapping has the right value here, it could even be
+> uninitialized. Let's make this
+>
+>         mapping = uvc_ctrl_mappings;
+>         mend = mapping + ARRAY_SIZE(uvc_ctrl_mappings);
+>
+>         for (; mapping < mend; ++mapping) {
+>
+> to match the code below.
 
-I guess it would have been clearer if 'size' was named differently:=20
-'addr_size' perhaps?
+ups, sorry about that :(
+. Will send as a new version
+>
+> > +     for (mapping = uvc_ctrl_mappings; mapping < mend; ++mapping) {
+> >               if (uvc_entity_match_guid(ctrl->entity, mapping->entity) &&
+> >                   ctrl->info.selector == mapping->selector)
+> >                       __uvc_ctrl_add_mapping(chain, ctrl, mapping);
+> >       }
+> >
+> > -     /* And then version-specific mappings. */
+> > +     /* Finally process version-specific mappings. */
+> >       if (chain->dev->uvc_version < 0x0150) {
+> >               mapping = uvc_ctrl_mappings_uvc11;
+> >               mend = mapping + ARRAY_SIZE(uvc_ctrl_mappings_uvc11);
+> > diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+> > index c5b4febd2d94..fff5c5c99a3d 100644
+> > --- a/drivers/media/usb/uvc/uvcvideo.h
+> > +++ b/drivers/media/usb/uvc/uvcvideo.h
+> > @@ -667,6 +667,7 @@ struct uvc_device_info {
+> >       u32     quirks;
+> >       u32     meta_format;
+> >       u16     uvc_version;
+> > +     const struct uvc_control_mapping **mappings;
+> >  };
+> >
+> >  struct uvc_device {
+>
+> --
+> Regards,
+>
+> Laurent Pinchart
 
 
-- Naveen
+
+-- 
+Ricardo Ribalda
