@@ -2,121 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1612EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 18:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 283EBC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 18:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382982AbiFQSM5 (ORCPT
+        id S1383457AbiFQSO5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 14:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45594 "EHLO
+        Fri, 17 Jun 2022 14:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383595AbiFQSMq (ORCPT
+        with ESMTP id S231429AbiFQSOz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 14:12:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACBFE038;
-        Fri, 17 Jun 2022 11:12:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9364661F41;
-        Fri, 17 Jun 2022 18:12:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA29FC341C5;
-        Fri, 17 Jun 2022 18:12:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655489563;
-        bh=bUPFzcA2bwrfrcLXD7x3oRlhBEAEkGwIHCdUjnjME3U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TzEkn0jgFwCR+zHucfSU4ACpiT+fNkS2SkFZmgsY4v8y5M3CnzX+KS6IUY8wdxqZv
-         bPLoZOVE6WGVIg4R5nrb0saH0gbx+9qBInXQ7heDbJSX8lK99o/MiR2N3JljAbl+Oc
-         CHZfNqt4+z7CCQ60+9dGyhQG57CnXBJ5hiaQBq7wd0Zn+i7HklQdvGyT+nOeCs0T0K
-         nPdmfyat8StE/e95a3xGNcHoNzE8dcYkRMwuLn5EGmwVPd/8upE+ubrIKgU2QFOCOB
-         JUuoF3x8Z8kSPF89Xm2v3RZQF8VoEdbTFhp7XhKPcsZWVbiPv7cJ60RiD+VZK88Ppb
-         9JEPbYeNFIQTg==
-Date:   Fri, 17 Jun 2022 19:12:37 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     David Owens <daowens01@gmail.com>
-Cc:     Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Jarkko Nikula <jarkko.nikula@bitmer.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        David Owens <dowens@precisionplanting.com>,
-        alsa-devel@alsa-project.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] ASoC: ti: omap-mcbsp: duplicate sysfs error
-Message-ID: <YqzEFX1rIRIwJCnl@sirena.org.uk>
-References: <20220616202645.1645972-1-dowens@precisionplanting.com>
+        Fri, 17 Jun 2022 14:14:55 -0400
+Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B194013FA4
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 11:14:54 -0700 (PDT)
+Received: by mail-ua1-x929.google.com with SMTP id x21so718850uat.2
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 11:14:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sIEAK66uF4B5e7pJ+nU+n3T6LF4OnfLjyiO3Rsbq+aY=;
+        b=qrEixrWbRWmJWXA1nsDRXFZdAjJ84cC1B/zdoUw6B93LbjqUSEHl/jWUe5uiYSO5jt
+         vgJvW4XM1vvDWFqXRv/hQ5RS4+3uFVlM3iOUlBDkwWCRa3/qiAOn+q3wHQMH0V2VkhOx
+         VYVH2wl+i6RnlS7bw3bQAr25YerYEyT5VQMEqPCAtSwlaxwDg/zyfrgrcUVKKipKejad
+         vc9+jcTqy3uDXBvZK69oUCum7Vhtr8pCT04B55Fod9RrrMBHhH0WYkZqz90xgGcqGPdK
+         1bKmH3IoUqwRSTSZLHMmZKqoBvkk7x6sySjpnIAVJWumEslZLoGz/L2rgyghatfxzfU2
+         U4yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sIEAK66uF4B5e7pJ+nU+n3T6LF4OnfLjyiO3Rsbq+aY=;
+        b=aDvF78cDZIgcOz17iCI0ca681j1JNO1CVA4f2rDUXI4Ok/EC17gg7CbPdOnjZoSQQ5
+         a4d5GU6rCkze9joGEKEp3bN3+HdJCg66O+RwDjQD10zUurKewTEfBja7h6adPkz4K89k
+         bdHq/+3oUgxYhbC41wpDrS9k1Tq4Nsv3YlrN2KKomrYSQhMiqSJI4DQ7hlBdMXUIuYdS
+         +HMhRVMaL5TKkTarOF1I+e3uJ23HLFQ5tOjfUgP6h7xZmN37tkEFk5/iI3H8Iaoyu7nT
+         ZSc7Cue3otSgYYBLD/+BnJla3c8HXdBR1yzQ0DjVAnqjawWAAHCfjSJ75XD0qEMnPcHi
+         EsZw==
+X-Gm-Message-State: AJIora+9M7ywLqfh9n18fNUq8pmpqUu7/jOkI2fqkK6gPmO10X3JTszV
+        AJgX0A8IwVPSa5pka/pTmp/Yydsxv7fAvvDRoWpsHA==
+X-Google-Smtp-Source: AGRyM1tELyDu0ySYNUSlQ6O9dDzcNcsCCKWPYTlYCS5LfPjTM7ZqQ/s5TR8hBE8f3dM1Ccbkzzc2nVKEj2f4XNuyGQA=
+X-Received: by 2002:ab0:2311:0:b0:37f:6d6:8822 with SMTP id
+ a17-20020ab02311000000b0037f06d68822mr630437uao.20.1655489693605; Fri, 17 Jun
+ 2022 11:14:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="u2XbzTKFvyqRa/q5"
-Content-Disposition: inline
-In-Reply-To: <20220616202645.1645972-1-dowens@precisionplanting.com>
-X-Cookie: My life is a patio of fun!
+References: <20220616195759.3214538-1-samitolvanen@google.com> <CAKwvOd=KWfNsUFcW4Enq5i94t0zyi7+C9p1-+QUP8+SvoHs=NA@mail.gmail.com>
+In-Reply-To: <CAKwvOd=KWfNsUFcW4Enq5i94t0zyi7+C9p1-+QUP8+SvoHs=NA@mail.gmail.com>
+From:   Ramji Jiyani <ramjiyani@google.com>
+Date:   Fri, 17 Jun 2022 11:14:42 -0700
+Message-ID: <CAKUd0B_2PcLW5Lj+4rG=AeVKBQx86x5bM2zL2YGORfKsk1EFyQ@mail.gmail.com>
+Subject: Re: [PATCH] kbuild: Ignore __this_module in gen_autoksyms.sh
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Steve Muckle <smuckle@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jun 17, 2022 at 10:28 AM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> + Sedat
+> Re: https://lore.kernel.org/linux-kbuild/CAKwvOdmb5xdF70TzNp=4STCpzkGh16FnuKE1KbdzDhHt=OuRFA@mail.gmail.com/
+> In case this helps.
+>
+> + Ramji
+> Ramji, it sounds like you helped test this downstream? If that's the
+> case, mind supplying your tested-by tag for the record? Thanks for
+> help verifying this change. Thanks too, Steve!
+>
+> On Thu, Jun 16, 2022 at 12:58 PM Sami Tolvanen <samitolvanen@google.com> wrote:
+> >
+> > Module object files can contain an undefined reference to __this_module,
+> > which isn't resolved until we link the final .ko. The kernel doesn't
+> > export this symbol, so ignore it in gen_autoksyms.sh. This avoids an
+> > unnecessary vmlinux rebuild with UNUSED_KSYMS_WHITELIST when we have a
+> > symbol list that already contains all the module dependencies.
+>
+> Worth mentioning that this also fixes a significant build time
+> regression made more painful by CONFIG_LTO_CLANG_FULL when using
+> CONFIG_UNUSED_KSYMS_WHITELIST.
+>
 
---u2XbzTKFvyqRa/q5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Yes, I tested it and it resolves the build time regression with modules.
 
-On Thu, Jun 16, 2022 at 03:26:45PM -0500, David Owens wrote:
-> Convert to managed versions of sysfs and clk allocation to simplify
-> unbinding and error handling in probe.  Managed sysfs node
-> creation specifically addresses the following error seen the second time
-> probe is attempted after sdma_pcm_platform_register() previously requested
-> probe deferral:
+Tested-by: Ramji Jiyani <ramjiyani@google.com>
 
-This breaks an x86 allmodconfig build:
+Thanks,
+Ramji
 
-In file included from /build/stage/linux/include/linux/kobject.h:20,
-                 from /build/stage/linux/include/linux/module.h:21,
-                 from /build/stage/linux/sound/soc/ti/omap-mcbsp.c:12:
-/build/stage/linux/sound/soc/ti/omap-mcbsp.c:604:18: error: =E2=80=98additi=
-onal_groups=E2=80=99 defined but not used [-Werror=3Dunused-variable]
-  604 | ATTRIBUTE_GROUPS(additional);
-      |                  ^~~~~~~~~~
-/build/stage/linux/include/linux/sysfs.h:154:38: note: in definition of mac=
-ro =E2=80=98__ATTRIBUTE_GROUPS=E2=80=99
-  154 | static const struct attribute_group *_name##_groups[] =3D {       \
-      |                                      ^~~~~
-/build/stage/linux/sound/soc/ti/omap-mcbsp.c:604:1: note: in expansion of m=
-acro =E2=80=98ATTRIBUTE_GROUPS=E2=80=99
-  604 | ATTRIBUTE_GROUPS(additional);
-      | ^~~~~~~~~~~~~~~~
-In file included from /build/stage/linux/include/linux/kobject.h:20,
-                 from /build/stage/linux/include/linux/module.h:21,
-                 from /build/stage/linux/sound/soc/ti/omap-mcbsp-st.c:12:
-/build/stage/linux/sound/soc/ti/omap-mcbsp-st.c:299:18: error: =E2=80=98sid=
-etone_groups=E2=80=99 defined but not used [-Werror=3Dunused-variable]
-  299 | ATTRIBUTE_GROUPS(sidetone);
-      |                  ^~~~~~~~
-/build/stage/linux/include/linux/sysfs.h:154:38: note: in definition of mac=
-ro =E2=80=98__ATTRIBUTE_GROUPS=E2=80=99
-  154 | static const struct attribute_group *_name##_groups[] =3D {       \
-      |                                      ^~~~~
-/build/stage/linux/sound/soc/ti/omap-mcbsp-st.c:299:1: note: in expansion o=
-f macro =E2=80=98ATTRIBUTE_GROUPS=E2=80=99
-  299 | ATTRIBUTE_GROUPS(sidetone);
-      | ^~~~~~~~~~~~~~~~
-cc1: all warnings being treated as errors
-
---u2XbzTKFvyqRa/q5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKsxBQACgkQJNaLcl1U
-h9CbVAf/bLEYqN9UltUUtE4QfUjkIThFiIGPqM6T7Lr0oitKtqpZGp9i2uqREP8Y
-67Eks5a6Zs3SZr7ERZ4nYj/rurE+Jd5YgjxQ5SnGtj8tEFEe6/bzOmCzql0eyRX/
-VuFTxyaDKi7QwfejecS3lQIxtWKLbUKw3rRBTF8LMH55Hnw2/oCNYL9djV80lena
-GoaJVJYcxFU5Glv4J0ISgs1Oih1rHpI8SegCxqpdiHH2mPELxGB7BcyIyLS3x9yb
-BL0dxS8LNRDmakViC8B2csXBjMIq310UogmzfMGyTtV2o/bijJ2eM0LiORCPOAGh
-EdOyjsMBlX00w5lh3tyDdOYltpf8IQ==
-=VZEL
------END PGP SIGNATURE-----
-
---u2XbzTKFvyqRa/q5--
+> Thanks for the patch!
+> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+>
+> >
+> > Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+> > ---
+> >  scripts/gen_autoksyms.sh | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/scripts/gen_autoksyms.sh b/scripts/gen_autoksyms.sh
+> > index faacf7062122..653fadbad302 100755
+> > --- a/scripts/gen_autoksyms.sh
+> > +++ b/scripts/gen_autoksyms.sh
+> > @@ -56,4 +56,7 @@ EOT
+> >  # point addresses.
+> >  sed -e 's/^\.//' |
+> >  sort -u |
+> > +# Ignore __this_module. It's not an exported symbol, and will be resolved
+> > +# when the final .ko's are linked.
+> > +grep -v '^__this_module$' |
+> >  sed -e 's/\(.*\)/#define __KSYM_\1 1/' >> "$output_file"
+> > --
+> > 2.36.1.476.g0c4daa206d-goog
+> >
+>
+>
+> --
+> Thanks,
+> ~Nick Desaulniers
