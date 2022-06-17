@@ -2,144 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA44C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:24:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56B08CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:25:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380912AbiFQIYy (ORCPT
+        id S1380921AbiFQIZq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 04:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34596 "EHLO
+        Fri, 17 Jun 2022 04:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380867AbiFQIYv (ORCPT
+        with ESMTP id S232020AbiFQIZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 04:24:51 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 118A064BE9
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:24:51 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DA8681474;
-        Fri, 17 Jun 2022 01:24:50 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.39.168])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6A6193F792;
-        Fri, 17 Jun 2022 01:24:47 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 09:24:44 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-Subject: Re: [PATCH -next v5 2/8] arm64: extable: make uaaccess helper use
- extable type EX_TYPE_UACCESS_ERR_ZERO
-Message-ID: <Yqw6TP3MhEqnQ+2o@FVFF77S0Q05N>
-References: <20220528065056.1034168-1-tongtiangen@huawei.com>
- <20220528065056.1034168-3-tongtiangen@huawei.com>
+        Fri, 17 Jun 2022 04:25:43 -0400
+Received: from out199-7.us.a.mail.aliyun.com (out199-7.us.a.mail.aliyun.com [47.90.199.7])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA966831D;
+        Fri, 17 Jun 2022 01:25:40 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VGe5yuS_1655454335;
+Received: from B-LB6YLVDL-0141.local(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VGe5yuS_1655454335)
+          by smtp.aliyun-inc.com;
+          Fri, 17 Jun 2022 16:25:37 +0800
+Subject: Re: [PATCH 4.9] mm: page_alloc: validate buddy page before using
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     akpm@linux-foundation.org, ziy@nvidia.com, stable@vger.kernel.org,
+        guoren@kernel.org, huanyi.xj@alibaba-inc.com, guohanjun@huawei.com,
+        zjb194813@alibaba-inc.com, tianhu.hh@alibaba-inc.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220616161928.3565294-1-xianting.tian@linux.alibaba.com>
+ <Yqw5ZPyeMemfeKKY@kroah.com>
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+Message-ID: <c091b3a2-394a-59b4-dd98-98774e33afea@linux.alibaba.com>
+Date:   Fri, 17 Jun 2022 16:25:35 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220528065056.1034168-3-tongtiangen@huawei.com>
+In-Reply-To: <Yqw5ZPyeMemfeKKY@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 28, 2022 at 06:50:50AM +0000, Tong Tiangen wrote:
-> Currnetly, the extable type used by __arch_copy_from/to_user() is
-> EX_TYPE_FIXUP. In fact, It is more clearly to use meaningful
-> EX_TYPE_UACCESS_*.
-> 
-> Suggested-by: Mark Rutland <mark.rutland@arm.com>
-> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-> ---
->  arch/arm64/include/asm/asm-extable.h |  8 ++++++++
->  arch/arm64/include/asm/asm-uaccess.h | 12 ++++++------
->  2 files changed, 14 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/arm64/include/asm/asm-extable.h b/arch/arm64/include/asm/asm-extable.h
-> index 56ebe183e78b..9c94ac1f082c 100644
-> --- a/arch/arm64/include/asm/asm-extable.h
-> +++ b/arch/arm64/include/asm/asm-extable.h
-> @@ -28,6 +28,14 @@
->  	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_FIXUP, 0)
->  	.endm
->  
-> +/*
-> + * Create an exception table entry for uaccess `insn`, which will branch to `fixup`
-> + * when an unhandled fault is taken.
-> + * ex->data = ~0 means both reg_err and reg_zero is set to wzr(x31).
-> + */
-> +	.macro          _asm_extable_uaccess, insn, fixup
-> +	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_UACCESS_ERR_ZERO, ~0)
-> +	.endm
 
-I'm not too keen on using `~0` here, since that also sets other bits in the
-data field, and its somewhat opaque.
+在 2022/6/17 下午4:20, Greg KH 写道:
+> On Fri, Jun 17, 2022 at 12:19:28AM +0800, Xianting Tian wrote:
+>> Commit 787af64d05cd ("mm: page_alloc: validate buddy before check its migratetype.")
+>> fixes a bug in 1dd214b8f21c and there is a similar bug in d9dddbf55667 that
+>> can be fixed in a similar way too.
+>>
+>> In addition, for RISC-V arch the first 2MB RAM could be reserved for opensbi,
+>> so it would have pfn_base=512 and mem_map began with 512th PFN when
+>> CONFIG_FLATMEM=y.
+>> But __find_buddy_pfn algorithm thinks the start pfn 0, it could get 0 pfn or
+>> less than the pfn_base value. We need page_is_buddy() to verify the buddy to
+>> prevent accessing an invalid buddy.
+>>
+>> Fixes: d9dddbf55667 ("mm/page_alloc: prevent merging between isolated and other pageblocks")
+>> Cc: stable@vger.kernel.org
+>> Reported-by: zjb194813@alibaba-inc.com
+>> Reported-by: tianhu.hh@alibaba-inc.com
+>> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+>> ---
+>>   mm/page_alloc.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+>>
+>> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+>> index a6e682569e5b..1c423faa4b62 100644
+>> --- a/mm/page_alloc.c
+>> +++ b/mm/page_alloc.c
+>> @@ -864,6 +864,9 @@ static inline void __free_one_page(struct page *page,
+>>   
+>>   			buddy_idx = __find_buddy_index(page_idx, order);
+>>   			buddy = page + (buddy_idx - page_idx);
+>> +
+>> +			if (!page_is_buddy(page, buddy, order))
+>> +				goto done_merging;
+>>   			buddy_mt = get_pageblock_migratetype(buddy);
+>>   
+>>   			if (migratetype != buddy_mt
+>> -- 
+>> 2.17.1
+>>
+> What is the git commit id of this change in Linus's tree?
 
-How painful is it to generate the data fields as with the C version of this
-macro, so that we can pass in wzr explciitly for the two sub-fields?
+It is this one,
 
-Other than that, this looks good to me.
+commit 787af64d05cd528aac9ad16752d11bb1c6061bb9
+Author: Zi Yan <ziy@nvidia.com>
+Date:   Wed Mar 30 15:45:43 2022 -0700
 
-Thanks,
-Mark.
+     mm: page_alloc: validate buddy before check its migratetype.
 
->  /*
->   * Create an exception table entry for `insn` if `fixup` is provided. Otherwise
->   * do nothing.
-> diff --git a/arch/arm64/include/asm/asm-uaccess.h b/arch/arm64/include/asm/asm-uaccess.h
-> index 0557af834e03..75b211c98dea 100644
-> --- a/arch/arm64/include/asm/asm-uaccess.h
-> +++ b/arch/arm64/include/asm/asm-uaccess.h
-> @@ -61,7 +61,7 @@ alternative_else_nop_endif
->  
->  #define USER(l, x...)				\
->  9999:	x;					\
-> -	_asm_extable	9999b, l
-> +	_asm_extable_uaccess	9999b, l
->  
->  /*
->   * Generate the assembly for LDTR/STTR with exception table entries.
-> @@ -73,8 +73,8 @@ alternative_else_nop_endif
->  8889:		ldtr	\reg2, [\addr, #8];
->  		add	\addr, \addr, \post_inc;
->  
-> -		_asm_extable	8888b,\l;
-> -		_asm_extable	8889b,\l;
-> +		_asm_extable_uaccess	8888b, \l;
-> +		_asm_extable_uaccess	8889b, \l;
->  	.endm
->  
->  	.macro user_stp l, reg1, reg2, addr, post_inc
-> @@ -82,14 +82,14 @@ alternative_else_nop_endif
->  8889:		sttr	\reg2, [\addr, #8];
->  		add	\addr, \addr, \post_inc;
->  
-> -		_asm_extable	8888b,\l;
-> -		_asm_extable	8889b,\l;
-> +		_asm_extable_uaccess	8888b,\l;
-> +		_asm_extable_uaccess	8889b,\l;
->  	.endm
->  
->  	.macro user_ldst l, inst, reg, addr, post_inc
->  8888:		\inst		\reg, [\addr];
->  		add		\addr, \addr, \post_inc;
->  
-> -		_asm_extable	8888b,\l;
-> +		_asm_extable_uaccess	8888b, \l;
->  	.endm
->  #endif
-> -- 
-> 2.25.1
-> 
+     Whenever a buddy page is found, page_is_buddy() should be called to
+     check its validity.  Add the missing check during pageblock merge 
+check.
+
+     Fixes: 1dd214b8f21c ("mm: page_alloc: avoid merging 
+non-fallbackable pageblocks with others")
+     Link: 
+https://lore.kernel.org/all/20220330154208.71aca532@gandalf.local.home/
+     Reported-and-tested-by: Steven Rostedt <rostedt@goodmis.org>
+     Signed-off-by: Zi Yan <ziy@nvidia.com>
+     Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+
+>
+> thanks,
+>
+> greg k-h
