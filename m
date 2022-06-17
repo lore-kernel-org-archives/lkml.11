@@ -2,154 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A73C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78348C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381443AbiFQL2O (ORCPT
+        id S1380407AbiFQL3P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 07:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
+        Fri, 17 Jun 2022 07:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380502AbiFQL2B (ORCPT
+        with ESMTP id S235810AbiFQL3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 07:28:01 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F35659A;
-        Fri, 17 Jun 2022 04:27:58 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id g25so8168677ejh.9;
-        Fri, 17 Jun 2022 04:27:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+xDLkTUrpIGE4sdGGpQ0KY6HGXBhkSTOiPmSfBkAp5k=;
-        b=TCuRdB8VNcvWdnfJqBpCQQEjN8N9CIUOHyN8ThmgD7De0DKDCpReBrE4+LKP9ZVflZ
-         RYxg1fvr3G4Ss8FgXvg1Rh8JPxSw39CkpeKAOeefcpCcT2emXZnoZz/s+PCQhqPzUO4K
-         tgunpJTO30yDyp2Cs1KG4kTOcXZDFfD6W+G2EnBkhlbZH5IeEK7HBLuKI5d3YTVTa4zv
-         9p+dCX976pXpMlTP8WShtJFfCaeivhMH3ljSq3uRVUehyj/8LWmMh1c/fWco0YN4985i
-         nRiEYdIVBN3owBHtx7ea8aC7y96CjXCyw90f99CLLGWVoou9HCLUMJuJmxt4DASQsfoO
-         cMfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+xDLkTUrpIGE4sdGGpQ0KY6HGXBhkSTOiPmSfBkAp5k=;
-        b=OjoZ5hAiLbKcuFf7PuBXk1PBFebQccgQ4QjsGSd74zryVQAPZVfSlt20K8qPQa5uO4
-         rubswdN2/84h+KAA+OR6yEwv/Jteb9nGIvH/bfFoxHE61LNBSlW0C5TwjxyByv3mzajw
-         HpQYG6jee7qGgzqftdbLDfEhvJVtdYr03IQrYnzlKYfcWkAPjTx8CqOy83TIPxWZ8CCL
-         DSR3wKRzA9FnYK4inSQp5sBgAGGeHSbQLIRi52/5JohkL+I9NuEon6Fk3NrTcXysLC8y
-         LlBMFLz0CrTaTfJJuSaiaBf3CWcxDBZRq2wna1b7JAtl6N1KzsIYzq7KTtxH4VRZddVM
-         jUVQ==
-X-Gm-Message-State: AJIora9IFRLJcbxh2n7SZjt0PFSaYTkXGJ33wmqAzcuqbawJbjVHKJ2m
-        kpdtirfOhbgj0m1ZSC1LK79HrF5s9Y8=
-X-Google-Smtp-Source: AGRyM1sVMoDeVGIVOiBygy8ZNHe4NgUk2yZVZz8h6NeBnaTDM0Ve2cZvsAZ5uuhI60r31L8B2x4u+w==
-X-Received: by 2002:a17:907:9805:b0:710:858f:ae0d with SMTP id ji5-20020a170907980500b00710858fae0dmr8651090ejc.360.1655465276533;
-        Fri, 17 Jun 2022 04:27:56 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id 18-20020a170906211200b006fea43db5c1sm2072128ejt.21.2022.06.17.04.27.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 04:27:56 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Fri, 17 Jun 2022 13:27:54 +0200
-To:     "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf v2 0/2] rethook: Reject getting a rethook if RCU is
- not watching
-Message-ID: <YqxlOuz8xur5xqYf@krava>
-References: <165461825202.280167.12903689442217921817.stgit@devnote2>
+        Fri, 17 Jun 2022 07:29:11 -0400
+Received: from m15114.mail.126.com (m15114.mail.126.com [220.181.15.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 315036CA81
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:29:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=O/gfj
+        iM+/dFXgLyDX8wONUfp/rIAwYsakkpB/GaAurk=; b=Vr3o8xiieKrrrlgnddW/w
+        s9lxmQXAdM8azHPs8X4zP73tsYyzzomAKFUaoodb8Koskz0K52ppxEOXFj7WjG3s
+        gj/Bmh67ql+61IR+ujsnV7CXfostj9RwIDUyOm4NdpUn7UlVV80Y1PAnLYLzxZV2
+        PVenFWunVvRjV+M2z4PweA=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp7 (Coremail) with SMTP id DsmowACn5_bsZKximyZLDg--.20485S2;
+        Fri, 17 Jun 2022 19:26:38 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        akpm@linux-foundation.org, rppt@kernel.org,
+        christophe.leroy@csgroup.eu, wangkefeng.wang@huawei.com,
+        gpiccoli@igalia.com, aneesh.kumar@linux.ibm.com,
+        dmitry.osipenko@collabora.com
+Cc:     windhl@126.com, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] powerpc: kernel: Change the order of of_node_put()
+Date:   Fri, 17 Jun 2022 19:26:36 +0800
+Message-Id: <20220617112636.4041671-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <165461825202.280167.12903689442217921817.stgit@devnote2>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DsmowACn5_bsZKximyZLDg--.20485S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7GF48Jw1UWw1UAFWUur1fXrb_yoWxKrX_t3
+        yxX3ZI9r4vyrsa9rsrAF4fXr1Dtw4kXr1Fk3Wv9w47t3Z8Xw4UAr98Z3WkJr9xuryUt39F
+        934Dtws8tF40vjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRM-eo7UUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi3A4jF1pEDvX86gAAsV
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 01:10:52AM +0900, Masami Hiramatsu (Google) wrote:
-> Hi,
-> 
-> Here is the 2nd version of the patches to reject rethook if RCU is
-> not watching. The 1st version is here;
-> 
-> https://lore.kernel.org/all/165189881197.175864.14757002789194211860.stgit@devnote2/
-> 
-> This is actually related to the idle function tracing issue
-> reported by Jiri on LKML (*)
-> 
-> (*) https://lore.kernel.org/bpf/20220515203653.4039075-1-jolsa@kernel.org/
-> 
-> Jiri reported that fprobe (and rethook) based kprobe-multi bpf
-> trace kicks "suspicious RCU usage" warning. This is because the
-> RCU operation is used in the kprobe-multi handler. However, I
-> also found that the similar issue exists in the rethook because
-> the rethook uses RCU operation.
-> 
-> I added a new patch [1/2] to test this issue by fprobe_example.ko.
-> (with this patch, it can avoid using printk() which also involves
-> the RCU operation.)
-> 
->  ------
->  # insmod fprobe_example.ko symbol=arch_cpu_idle use_trace=1 stackdump=0 
->  fprobe_init: Planted fprobe at arch_cpu_idle
->  # rmmod fprobe_example.ko 
->  
->  =============================
->  WARNING: suspicious RCU usage
->  5.18.0-rc5-00019-gcae4ec21e87a-dirty #30 Not tainted
->  -----------------------------
->  include/trace/events/lock.h:37 suspicious rcu_dereference_check() usage!
->  
->  other info that might help us debug this:
->  
->  rcu_scheduler_active = 2, debug_locks = 1
->  
->  
->  RCU used illegally from extended quiescent state!
->  no locks held by swapper/0/0.
->  
->  stack backtrace:
->  CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.18.0-rc5-00019-gcae4ec21e87a-dirty #30
->  ------
->  
-> After applying [2/2] fix (which avoid initializing rethook on
-> function entry if !rcu_watching()), this warning was gone.
-> 
->  ------
->  # insmod fprobe_example.ko symbol=arch_cpu_idle use_trace=1 stackdump=0
->  fprobe_init: Planted fprobe at arch_cpu_idle
->  # rmmod fprobe_example.ko 
->  fprobe_exit: fprobe at arch_cpu_idle unregistered. 225 times hit, 230 times missed
->  ------
-> 
-> Note that you can test this program until the arch_cpu_idle()
-> is marked as noinstr. After that, the function can not be
-> traced.
-> 
-> Thank you,
-> 
-> ---
-> 
-> Masami Hiramatsu (Google) (2):
->       fprobe: samples: Add use_trace option and show hit/missed counter
->       rethook: Reject getting a rethook if RCU is not watching
+In add_pcspkr(), it is better to call of_node_put() after the
+'if(!np)' check.
 
-LGTM
+Signed-off-by: Liang He <windhl@126.com>
+---
+ arch/powerpc/kernel/setup-common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Jiri Olsa <jolsa@kernel.org>
+diff --git a/arch/powerpc/kernel/setup-common.c b/arch/powerpc/kernel/setup-common.c
+index eb0077b302e2..761817d1f4db 100644
+--- a/arch/powerpc/kernel/setup-common.c
++++ b/arch/powerpc/kernel/setup-common.c
+@@ -563,9 +563,9 @@ static __init int add_pcspkr(void)
+ 	int ret;
+ 
+ 	np = of_find_compatible_node(NULL, NULL, "pnpPNP,100");
+-	of_node_put(np);
+ 	if (!np)
+ 		return -ENODEV;
++	of_node_put(np);
+ 
+ 	pd = platform_device_alloc("pcspkr", -1);
+ 	if (!pd)
+-- 
+2.25.1
 
-jirka
-
-> 
-> 
->  kernel/trace/rethook.c          |    9 +++++++++
->  samples/fprobe/fprobe_example.c |   21 +++++++++++++++++----
->  2 files changed, 26 insertions(+), 4 deletions(-)
-> 
-> --
-> Signature
