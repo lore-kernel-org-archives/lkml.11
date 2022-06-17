@@ -2,110 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8839DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:45:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B5CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381732AbiFQLp2 (ORCPT
+        id S1381507AbiFQLqe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 07:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42152 "EHLO
+        Fri, 17 Jun 2022 07:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234717AbiFQLp0 (ORCPT
+        with ESMTP id S234717AbiFQLqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 07:45:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E926CF45;
-        Fri, 17 Jun 2022 04:45:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 551EDB829CF;
-        Fri, 17 Jun 2022 11:45:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9898DC3411B;
-        Fri, 17 Jun 2022 11:45:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655466323;
-        bh=G02EHsP0i0hcRdjLFNd0iVg8HQg/SfUQ/ToemVQl0rE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mgqIzxXuf+ImZ4rEI3dxKP09dcoIV8IiXHXBXN/k0t56pc6yCwEg3N/KK1HII5Gsp
-         XRN+yN3qdfqaTZ4bKG6acyLDhwQlav7x8as3HOsA4JC0QMSrKZ0942b/KADOey6suN
-         37hagpMtaEunJPklqJSGldFvBP87RfrTk2xLWU0vZ0qU87BHq8bRBpq1tXestMvyAt
-         hdLic6IPyk3hNXUcL9Qxq2BRHx5Q6VF1LsUXRmzV1SyIvHshV99/Y+RGnvOkgLVKws
-         9d5VP/UAAuwc8hvhy4wR0S8JLfeoJYhvxTHEsqtetcvk0gT/O2ZarZnYVXP0VOnpKR
-         KM95Xhnstdlmg==
-Date:   Fri, 17 Jun 2022 12:45:18 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Jon Lin <jon.lin@rock-chips.com>
-Cc:     heiko@sntech.de, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] spi: rockchip: Disable local irq when pio write out of
- interrupt service
-Message-ID: <YqxpTqvaQb4cohTh@sirena.org.uk>
-References: <20220613092744.9726-1-jon.lin@rock-chips.com>
- <YqcveggUU7yaXuk1@sirena.org.uk>
- <b97ee70c-70ee-6b15-65d6-a176125dcfd8@rock-chips.com>
+        Fri, 17 Jun 2022 07:46:32 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C4D6CF48;
+        Fri, 17 Jun 2022 04:46:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655466388; x=1687002388;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=rUrUGf34kDrDC4stey+5q/ue6Jew8NaeJPenPSRedGo=;
+  b=bqhLXLBzBcHVSOtf24yrcKRxllQkeANzhs3BXfejsGjdjMowrhgNCZ/V
+   +f63ZtdP4Mq3PAS5WMyKxFpAZFdQgofkNNWcRaxDA7MOukuTWnWbltVM/
+   qighGjlYOoZUcHBFvuRVFfzvpzoB27rSVdZD84VsuwXtVm+rG+W3QenHT
+   I9HPQXAC9kHtDXEku0kmcLXzAs9bm5Ad3F0+Pm+K3TLT0rNJItPRQ1JdE
+   PdA7w2LW/clLdzbMuoSqx4L2koQZwAkGhCkFiNNPulp9CTHHR808M2o/q
+   kVkH8sw+YN/RubP8PcIPtX+e2fYG/hiQTfMSmLIv2RaPw7t2hDOvF+ykp
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="178383739"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Jun 2022 04:46:27 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 17 Jun 2022 04:46:26 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 17 Jun 2022 04:46:24 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Lee Jones" <lee.jones@linaro.org>
+CC:     Daire McNamara <daire.mcnamara@microchip.com>,
+        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v3 0/2] Add support for Microchip's pwm fpga core
+Date:   Fri, 17 Jun 2022 12:44:41 +0100
+Message-ID: <20220617114442.998357-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="CLGvc6v7On6xFTSG"
-Content-Disposition: inline
-In-Reply-To: <b97ee70c-70ee-6b15-65d6-a176125dcfd8@rock-chips.com>
-X-Cookie: 98% lean.
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hey Uwe,
+Got a ~v2~ v3 for you...
+I added some comments explaining the calculations and a documentation link
+so hopefully things are a bit easier to follow.
 
---CLGvc6v7On6xFTSG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Code wise, I went through and sorted out a bunch of issues that cycling
+through the different periods/duties threw up. Along the way I found
+some other problems - especially with the longer periods which I have
+fixed. I also added a write to the sync register in the apply function,
+which will resolve to a NOP for channels without "shadow registers".
 
-On Fri, Jun 17, 2022 at 02:24:10PM +0800, Jon Lin wrote:
-> On 2022/6/13 20:37, Mark Brown wrote:
-> > On Mon, Jun 13, 2022 at 05:27:44PM +0800, Jon Lin wrote:
+Other than that, I managed to ditch the mchp_core_pwm_registers struct
+entirely but had to add a short delay before reading back the registers
+in order to compute the duty.
 
-> > > +	spin_unlock_irqrestore(&rs->lock, flags);
+Thanks,
+Conor.
 
-> > So this is effectively just disabling interrupts during PIO, there's no
-> > other users of the lock which is rather heavyweight.  What's the actual
-> > issue here?  We should also have something saying what's going on in the
-> > code since right now the lock just looks redundant.
+Changes from v2:
+- fix percieved idempotency and rounding issues when shadow registers were
+  enabled
+- use do_div() for divide of u64 tmp in apply_period()
 
-> For lock: In order to avoid special situations, such as when the CPU
-> frequency drops to close to the IO rate, the water line interrupt is
-> triggered during FIFO filling (triggered by other CPUs), resulting in
-> critical resources still not being protected in place. For local IRQ
+Changes from v1:
+- account for edge "quirk" while inverted
+- block changing enabled channels' period
+- document the hardware/driver limitations
+- rearrange get_state() more logically
+- fix cast sizes in get_state()
+- fix remove() and probe error paths
+- delete mchp_core_pwm_registers
+- simplify .apply() logic
+- don't warn in calculate_base()
+- fix period calculation
+- fix duty cycle calculation
+- add COREPWM prefix to defines
+- add a documentation link
 
-So essentially we're so slow in filling the FIFO when starting a
-transfer that the interrupt triggers in the middle of the initial FIFO
-fill?  Something that tricky *really* needs a comment adding.
+Conor Dooley (2):
+  pwm: add microchip soft ip corePWM driver
+  MAINTAINERS: add pwm to PolarFire SoC entry
 
-Ideally we'd just leave the interrupt masked until the FIFO is filled
-though, looking at the driver I see that there is an interrupt mask
-register which seems to have some level of masking available and I do
-note that in rockchip_spi_prepare_irq() we unmask interrupts before we
-start filling the FIFO rather than afterwards.  Would reversing the
-unmask order there address the issue more cleanly?
+ MAINTAINERS                      |   1 +
+ drivers/pwm/Kconfig              |  10 +
+ drivers/pwm/Makefile             |   1 +
+ drivers/pwm/pwm-microchip-core.c | 325 +++++++++++++++++++++++++++++++
+ 4 files changed, 337 insertions(+)
+ create mode 100644 drivers/pwm/pwm-microchip-core.c
 
-> disable: Turning off the local interrupt is mainly to prevent the CPU
-> schedule from being interrupted when filling FIFO.
 
-If it were just this then there's preempt_disable(), but what's the
-problem with being preempted during the FIFO fill?
+base-commit: 61114e734ccb804bc12561ab4020745e02c468c2
+-- 
+2.36.1
 
---CLGvc6v7On6xFTSG
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKsaU0ACgkQJNaLcl1U
-h9B+Lgf/aLgqdBeHId+v7ymWQ/Ek1vdJ2rjI0CAdGbF8OAmLPqjmOXm8neX8rAJc
-OSrQaiXEUmHSsWanCg2AuyX2kQ++TDePT55bA1wCTMwR8ICHSdK6GbdQaxUg7hk3
-H2uyaPCZWr9bEsH0xM2//kgl26MqQ1PZhO/rirE+E3OHi0AOjeX/wSipAOn/X6+4
-YNz/UW3cvbYWO+Oa8Lz5m2AB56Med0qOswwl65jp/jyF9f16UuwUfEyCbdY469/m
-yUpz2PdongU1+0DVlaB8a4nUsUlOCENQzYmy+aPVIRp888Tbz4OYBq9ISjbPY2zU
-WIleNV4RTnqq6TcM6o3thBpkJGuW/w==
-=fIJJ
------END PGP SIGNATURE-----
-
---CLGvc6v7On6xFTSG--
