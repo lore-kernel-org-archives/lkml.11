@@ -2,104 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF18C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 16:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DE0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 16:53:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383059AbiFQQwN (ORCPT
+        id S1383481AbiFQQxX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 12:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57018 "EHLO
+        Fri, 17 Jun 2022 12:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382967AbiFQQvv (ORCPT
+        with ESMTP id S1383455AbiFQQxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 12:51:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7240753724
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 09:50:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C0D50CE2964
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 16:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5784C3411C;
-        Fri, 17 Jun 2022 16:50:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655484621;
-        bh=prjUJrbVE5x0yiMzgyo3mK2A9LSWth8Gi1HX3PvfTp0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OTyy4eLFepkJl5S9gSy7oHiErOL6sTJtIx0492eQEMH/6N5jsFc9onMCQ+ptZHGmw
-         Ns+rhHPxCW18IZjEWd90XlcKuHwxI7kp1eDtiQ5PF2onODY5sCAv0Nh5aZv19y9KQr
-         Rmqix7rw8rtse2JlJqBUsWFbnRAiFP0U1WcQID7E8Q3P9rT5xAeli9M+vxhV763Hgl
-         RtVqNk+mOUQkkNXyKLzimMxmucAX7hyQiFBRsX1TupL59AcFgL32YBJSyphHDLC6SS
-         iAQUj4s9I5siLd0uWA/VSE1FjopbL8opasJM2xSruv+jnGjzSN4PfztamyEuzKpIBR
-         /H9LsimG4/zxA==
-Date:   Fri, 17 Jun 2022 09:50:19 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Subject: Re: [GIT PULL] Char/Misc driver fixes 5.19-rc3
-Message-ID: <Yqywy+Md2AfGDu8v@dev-arch.thelio-3990X>
-References: <Yqw4Jujzz5ZzZ2Wg@kroah.com>
+        Fri, 17 Jun 2022 12:53:02 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B095A0A1
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 09:51:52 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 18:51:48 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655484710;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UykvkKuHPgfnuKIJnIaYfKgo9S8iB+wmFcj7vk45wVs=;
+        b=eUu/qClCX/d2AouxGZPJTmu48AdbHUOAEqK6i7LTOzrgE4GEiltOUP/aJutgp44nPnjM1S
+        ulO0fZvQYiVcMfcod60L0fl3em63i+QghmCscjAvwGb0MsWcIiu7iqKCZEdO+OY50UIAWi
+        Fzew3TXJ8JyJ31M5UjJ+UNJvMh+wufip+FNl1U45LGUmqJTGg/BwzaScUhjC14W2WpoYGb
+        MWR63P+t6DeKQTXOdDHQPaH/tLPjlCbOP0/O0DhvtyiUkuQZUOA81nEFSDVBi44tlsUGpt
+        q5eEmHXyFIG5Y6DNq8uYSnfp7/EMsOHcfSZWSQnIs/N65YiLViv4oc/1Ii/WQw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655484710;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UykvkKuHPgfnuKIJnIaYfKgo9S8iB+wmFcj7vk45wVs=;
+        b=+gB6pnNuCevctPh8aBUsQrzYo/gPjJ8DZnaghzrYDBDxO0I6SqrmLwluRFEY2z9zzM9Eox
+        CDKIjQ9JrIzSaRBg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Dmitry Vyukov <dvyukov@google.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Alexander Potapenko <glider@google.com>,
+        Marco Elver <elver@google.com>, kasan-dev@googlegroups.com
+Subject: Re: [PATCH printk v5 1/1] printk: extend console_lock for
+ per-console locking
+Message-ID: <YqyxJJ8Jrr4zEPmM@linutronix.de>
+References: <87fslyv6y3.fsf@jogness.linutronix.de>
+ <51dfc4a0-f6cf-092f-109f-a04eeb240655@samsung.com>
+ <87k0b6blz2.fsf@jogness.linutronix.de>
+ <32bba8f8-dec7-78aa-f2e5-f62928412eda@samsung.com>
+ <87y1zkkrjy.fsf@jogness.linutronix.de>
+ <CAMuHMdVmoj3Tqz65VmSuVL2no4+bGC=qdB8LWoB=vyASf9vS+g@mail.gmail.com>
+ <87fske3wzw.fsf@jogness.linutronix.de>
+ <YqHgdECTYFNJgdGc@zx2c4.com>
+ <CACT4Y+ajfVUkqAjAin73ftqAz=HmLX=p=S=HRV1qe-8_y36J+A@mail.gmail.com>
+ <YqHnH+Yc4TCOXa9X@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Yqw4Jujzz5ZzZ2Wg@kroah.com>
+In-Reply-To: <YqHnH+Yc4TCOXa9X@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+On 2022-06-09 14:27:11 [+0200], Jason A. Donenfeld wrote:
+> Hi Dmitry,
+> 
+> On Thu, Jun 09, 2022 at 02:18:19PM +0200, Dmitry Vyukov wrote:
+> > > AFAIK, CONFIG_PROVE_RAW_LOCK_NESTING is useful for teasing out cases
+> > > where RT's raw spinlocks will nest wrong with RT's sleeping spinlocks.
+> > > But nobody who wants an RT kernel will be using KFENCE. So this seems
+> > > like a non-issue? Maybe just add a `depends on !KFENCE` to
+> > > PROVE_RAW_LOCK_NESTING?
+> > 
+> > Don't know if there are other good solutions (of similar simplicity).
+> 
+> Fortunately, I found one that solves things without needing to
+> compromise on anything:
+> https://lore.kernel.org/lkml/20220609121709.12939-1-Jason@zx2c4.com/
+> 
+> > Btw, should this new CONFIG_PROVE_RAW_LOCK_NESTING be generally
+> > enabled on testing systems? We don't have it enabled on syzbot.
+> 
+> Last time I spoke with RT people about this, the goal was eventually to
+> *always* enable it when lock proving is enabled, but there are too many
+> bugs and cases now to do that, so it's an opt-in. I might be
+> misremembering, though, so CC'ing Sebastian in case he wants to chime
+> in.
 
-On Fri, Jun 17, 2022 at 10:15:34AM +0200, Greg KH wrote:
-> The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
-> 
->   Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git tags/char-misc-5.19-rc3
-> 
-> for you to fetch changes up to 0a35780c755ccec097d15c6b4ff8b246a89f1689:
-> 
->   eeprom: at25: Split reads into chunks and cap write size (2022-06-10 16:42:48 +0200)
-> 
-> ----------------------------------------------------------------
-> Char/Misc driver fixes for 5.19-rc3
-> 
-> Here are some small char/misc driver fixes for 5.19-rc3 that resolve
-> some reported issues.
-> 
-> They include:
-> 	- mei driver fixes
-> 	- comedi driver fix
-> 	- rtsx build warning fix
-> 	- fsl-mc-bus driver fix
-> 
-> All of these have been in linux-next for a while with no reported
-> issues.
-> 
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+That is basically still the case. If CONFIG_PROVE_RAW_LOCK_NESTING yells
+then there will be yelling on PREEMPT_RT, too. We would like to get
+things fixed ;)
 
-I think you tagged the wrong branch (char-misc-next vs. char-misc-linus)?
-The commits below do not match the tag description above.
+Without going through this thread, John is looking at printk and printk
+triggers a few of those. That is one of reasons why this is not enabled
+by default.
 
-Cheers,
-Nathan
+> Jason
 
-> ----------------------------------------------------------------
-> Brad Bishop (1):
->       eeprom: at25: Split reads into chunks and cap write size
-> 
-> Miaoqian Lin (1):
->       misc: atmel-ssc: Fix IRQ check in ssc_probe
-> 
-> Shreenidhi Shedi (1):
->       char: lp: remove redundant initialization of err
-> 
->  drivers/char/lp.c          |  2 +-
->  drivers/misc/atmel-ssc.c   |  4 +-
->  drivers/misc/eeprom/at25.c | 93 ++++++++++++++++++++++++++--------------------
->  3 files changed, 56 insertions(+), 43 deletions(-)
-> 
+Sebastian
