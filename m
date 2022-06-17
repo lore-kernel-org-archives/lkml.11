@@ -2,75 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC1B1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:02:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C86C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381367AbiFQKCx (ORCPT
+        id S1381512AbiFQKF6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 06:02:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48018 "EHLO
+        Fri, 17 Jun 2022 06:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234702AbiFQKCu (ORCPT
+        with ESMTP id S235899AbiFQKF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 06:02:50 -0400
-Received: from jari.cn (unknown [218.92.28.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C713CFD1C
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 03:02:46 -0700 (PDT)
-Received: by ajax-webmail-localhost.localdomain (Coremail) ; Fri, 17 Jun
- 2022 17:57:21 +0800 (GMT+08:00)
-X-Originating-IP: [182.148.14.60]
-Date:   Fri, 17 Jun 2022 17:57:21 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "XueBing Chen" <chenxuebing@jari.cn>
-To:     sammy@sammy.net, geert@linux-m68k.org
-Cc:     linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] m68k/sun3: use __func__ to get funcion's name in an output
- message
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Fri, 17 Jun 2022 06:05:57 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764026973B;
+        Fri, 17 Jun 2022 03:05:56 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id w21so3805662pfc.0;
+        Fri, 17 Jun 2022 03:05:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UsSZBHD+dC7GrwKTJVORhTtMkWQaUMYhTHlNEePAZE4=;
+        b=qdReN3dAz1mYJBHqwTdhlnBd74ohn3O1tlw2IudfGirZbjlJ61PQe4r+hnXuBs3V68
+         +I5XerQ+d0Bd/iiFZErv8Vsksox4LxB2KdiLRyEJIaGDf9zuKWtWNA8Gygb+BHQMCLwH
+         NctofkCWXLiKqqf/Oi7f2azfE6DIRgiRUPDwUHWe+7W7IJOIxOKbFfpneFKR8RyGA0pG
+         chCr+34GfOvcBdUBm+psUKm0lOZ79FARQ+wHH7qu/cj5RzIsJCFE25mfMB+9od5Fh9N0
+         1HZpi3p0u0gMkk1qQt3WrIGER+fTwkwa0L53gnkFsfte0NMGU+ApQPPKiFcZTz6R2/lp
+         N11A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UsSZBHD+dC7GrwKTJVORhTtMkWQaUMYhTHlNEePAZE4=;
+        b=lhDxfQ8StUKoXWO5M/ZhkyGC3NoJvJzL0MB9XI04ffbIo/VqIOUSPy9puEDXygHGw9
+         IeoePIAsPq4sdw6RKcn+/9IqnD+sxmxpj6yCP1tkKOB7xljGjwpGNtf8AmcvspPvjEvh
+         wpRUYCxciHVW+HGw0bh1FmaYNwPLC3yjK47JlD+GJf6DLFWO9fLzIRqNqXXbF/wChTjG
+         PESLT2dB2jEx3U02FalBoJ69rHw5na5WUI1GsK4DtSVelCMyM5ll/E7zEntTVUOZqBbZ
+         Ml2WuWz2cUPshSntm9EMV2QqB+Z/751CpxW5QqXuG51foP4EsPdTXQSpYXRFQj5baCng
+         Wl/w==
+X-Gm-Message-State: AJIora8s7MKnOgYZBumGqTg3z2WPzbb4HIthapFc7Z31bWhaNCAFbuSs
+        kbqBNqfzNrHFDDTl6INBR2E=
+X-Google-Smtp-Source: AGRyM1tkVsndYhxOI0C8m0x1TrG9buGTLA1YBx//u8Q+tvAXNHQF4MMquwwOAnZChIUKtAnRUER+mw==
+X-Received: by 2002:a05:6a00:2349:b0:51c:29c0:82f6 with SMTP id j9-20020a056a00234900b0051c29c082f6mr9393082pfj.32.1655460355918;
+        Fri, 17 Jun 2022 03:05:55 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.10])
+        by smtp.gmail.com with ESMTPSA id h10-20020a170902f7ca00b001621ce92196sm3126210plw.86.2022.06.17.03.05.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 03:05:55 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     edumazet@google.com
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, imagedong@tencent.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org,
+        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v4 0/8] net: tcp: add skb drop reasons to tcp state change
+Date:   Fri, 17 Jun 2022 18:05:06 +0800
+Message-Id: <20220617100514.7230-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Message-ID: <3461c09c.be8.1817118854e.Coremail.chenxuebing@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwAHEW8BUKxi1atBAA--.765W
-X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAACmFEYxssuAACsA
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ClByZWZlciB1c2luZyAnIiVzLi4uIiwgX19mdW5jX18nIHRvIGdldCBjdXJyZW50IGZ1bmN0aW9u
-J3MgbmFtZSBpbgphbiBvdXRwdXQgbWVzc2FnZS4KClNpZ25lZC1vZmYtYnk6IFh1ZUJpbmcgQ2hl
-biA8Y2hlbnh1ZWJpbmdAamFyaS5jbj4KLS0tCiBhcmNoL202OGsvc3VuMy9tbXVfZW11LmMgfCA4
-ICsrKystLS0tCiAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygt
-KQoKZGlmZiAtLWdpdCBhL2FyY2gvbTY4ay9zdW4zL21tdV9lbXUuYyBiL2FyY2gvbTY4ay9zdW4z
-L21tdV9lbXUuYwppbmRleCA3ZWMyMDgxN2MwYzkuLjUxNDgwZjcwM2RjOCAxMDA2NDQKLS0tIGEv
-YXJjaC9tNjhrL3N1bjMvbW11X2VtdS5jCisrKyBiL2FyY2gvbTY4ay9zdW4zL21tdV9lbXUuYwpA
-QCAtMjExLDcgKzIxMSw3IEBAIHZvaWQgY2xlYXJfY29udGV4dCh1bnNpZ25lZCBsb25nIGNvbnRl
-eHQpCiAKICAgICAgaWYoY29udGV4dCkgewogCSAgICAgaWYoIWN0eF9hbGxvY1tjb250ZXh0XSkK
-LQkJICAgICBwYW5pYygiY2xlYXJfY29udGV4dDogY29udGV4dCBub3QgYWxsb2NhdGVkXG4iKTsK
-KwkJICAgICBwYW5pYygiJXM6IGNvbnRleHQgbm90IGFsbG9jYXRlZFxuIiwgX19mdW5jX18pOwog
-CiAJICAgICBjdHhfYWxsb2NbY29udGV4dF0tPmNvbnRleHQgPSBTVU4zX0lOVkFMSURfQ09OVEVY
-VDsKIAkgICAgIGN0eF9hbGxvY1tjb250ZXh0XSA9IChzdHJ1Y3QgbW1fc3RydWN0ICopMDsKQEAg
-LTI2MSw3ICsyNjEsNyBAQCB1bnNpZ25lZCBsb25nIGdldF9mcmVlX2NvbnRleHQoc3RydWN0IG1t
-X3N0cnVjdCAqbW0pCiAJCX0KIAkJLy8gY2hlY2sgdG8gbWFrZSBzdXJlIG9uZSB3YXMgcmVhbGx5
-IGZyZWUuLi4KIAkJaWYobmV3ID09IENPTlRFWFRTX05VTSkKLQkJCXBhbmljKCJnZXRfZnJlZV9j
-b250ZXh0OiBmYWlsZWQgdG8gZmluZCBmcmVlIGNvbnRleHQiKTsKKwkJCXBhbmljKCIlczogZmFp
-bGVkIHRvIGZpbmQgZnJlZSBjb250ZXh0IiwgX19mdW5jX18pOwogCX0KIAogCWN0eF9hbGxvY1tu
-ZXddID0gbW07CkBAIC0zNjksNyArMzY5LDcgQEAgaW50IG1tdV9lbXVfaGFuZGxlX2ZhdWx0ICh1
-bnNpZ25lZCBsb25nIHZhZGRyLCBpbnQgcmVhZF9mbGFnLCBpbnQga2VybmVsX2ZhdWx0KQogCX0K
-IAogI2lmZGVmIERFQlVHX01NVV9FTVUKLQlwcl9pbmZvKCJtbXVfZW11X2hhbmRsZV9mYXVsdDog
-dmFkZHI9JWx4IHR5cGU9JXMgY3JwPSVwXG4iLAorCXByX2luZm8oIiVzOiB2YWRkcj0lbHggdHlw
-ZT0lcyBjcnA9JXBcbiIsIF9fZnVuY19fLAogCQl2YWRkciwgcmVhZF9mbGFnID8gInJlYWQiIDog
-IndyaXRlIiwgY3JwKTsKICNlbmRpZgogCkBAIC0zNzcsNyArMzc3LDcgQEAgaW50IG1tdV9lbXVf
-aGFuZGxlX2ZhdWx0ICh1bnNpZ25lZCBsb25nIHZhZGRyLCBpbnQgcmVhZF9mbGFnLCBpbnQga2Vy
-bmVsX2ZhdWx0KQogCW9mZnNldCAgPSAodmFkZHIgPj4gU1VOM19QVEVfU0laRV9CSVRTKSAmIDB4
-RjsKIAogI2lmZGVmIERFQlVHX01NVV9FTVUKLQlwcl9pbmZvKCJtbXVfZW11X2hhbmRsZV9mYXVs
-dDogc2VnbWVudD0lbHggb2Zmc2V0PSVseFxuIiwgc2VnbWVudCwKKwlwcl9pbmZvKCIlczogc2Vn
-bWVudD0lbHggb2Zmc2V0PSVseFxuIiwgX19mdW5jX18sIHNlZ21lbnQsCiAJCW9mZnNldCk7CiAj
-ZW5kaWYKIAotLSAKMi4zNi4xCgoKCg==
+From: Menglong Dong <imagedong@tencent.com>
+
+In this series patches, skb drop reasons are add to code path of TCP
+state change, which we have not done before. It is hard to pass these
+reasons from the function to its caller, where skb is dropped. In order
+to do this, we have to make some functions return skb drop reasons, or
+pass the pointer of 'reason' to these function as an new function
+argument.
+
+=============================
+In order to get skb drop reasons during tcp connect requesting code path,
+we have to pass the pointer of the 'reason' as a new function argument of
+conn_request() in 'struct inet_connection_sock_af_ops'. As the return
+value of conn_request() can be positive or negative or 0, it's not
+flexible to make it return drop reasons. This work is done in the 7th
+patch, and functions that used as conn_request() is also modified:
+
+  dccp_v4_conn_request()
+  dccp_v6_conn_request()
+  tcp_v4_conn_request()
+  tcp_v6_conn_request()
+  subflow_v4_conn_request()
+  subflow_v6_conn_request()
+
+As our target is TCP, dccp and mptcp are not handled more.
+
+=============================
+In the 6th patch, skb drop reasons are add to
+tcp_timewait_state_process() by adding a function argument to it. In the
+origin code, all skb are dropped for tw socket. In order to make less
+noise, use consume_skb() for the 'good' skb. This can be checked by the
+caller of tcp_timewait_state_process() from the value of drop reason.
+If the drop reason is SKB_NOT_DROPPED_YET, it means this skb should not
+be dropped.
+
+=============================
+In the 7th patch, skb drop reasons are add to the route_req() in struct
+tcp_request_sock_ops. Following functions are involved:
+
+  tcp_v4_route_req()
+  tcp_v6_route_req()
+  subflow_v4_route_req()
+  subflow_v6_route_req()
+
+In this series patches, following new drop reasons are added:
+
+- SOCKET_DESTROYED
+- LISTENOVERFLOWS
+- TCP_REQQFULLDROP
+- TIMEWAIT
+- LSM
+
+Changes since v3:
+- Eric says what I did to tcp_rcv_state_process() is too invasive, so I
+  removed that part (for now).
+- As Eric suggested, make kfree_skb_reason(skb, SKB_NOT_DROPPED) the same
+  as consume_skb(skb), which make code simplier. This is used in
+  5th and 6th patch.
+
+Changes since v2:
+- move drop reasons to standalone header in another series
+
+Changes since v1:
+6/9 - fix the compile errors of dccp and mptcp (kernel test robot)
+7/9 - skb is not freed on TCP_TW_ACK and 'ret' is not initizalized, fix
+      it (Eric Dumazet)
+
+Menglong Dong (8):
+  net: skb: use SKB_NOT_DROPPED in kfree_skb_reason() as consume_skb()
+  net: skb: introduce __skb_queue_purge_reason()
+  net: sock: introduce sk_stream_kill_queues_reason()
+  net: inet: add skb drop reason to inet_csk_destroy_sock()
+  net: tcp: add skb drop reasons to tcp connect requesting
+  net: tcp: add skb drop reasons to tcp tw code path
+  net: tcp: add skb drop reasons to route_req()
+  net: tcp: use LINUX_MIB_TCPABORTONLINGER in tcp_rcv_state_process()
+
+ include/linux/skbuff.h             | 12 ++++++++---
+ include/net/dropreason.h           | 23 +++++++++++++++++++++
+ include/net/inet_connection_sock.h |  3 ++-
+ include/net/sock.h                 |  8 +++++++-
+ include/net/tcp.h                  | 19 +++++++++--------
+ net/core/skbuff.c                  | 11 ++++++++--
+ net/core/stream.c                  |  7 ++++---
+ net/dccp/dccp.h                    |  3 ++-
+ net/dccp/input.c                   |  3 ++-
+ net/dccp/ipv4.c                    |  3 ++-
+ net/dccp/ipv6.c                    |  5 +++--
+ net/ipv4/inet_connection_sock.c    |  2 +-
+ net/ipv4/tcp_input.c               | 26 ++++++++++++++---------
+ net/ipv4/tcp_ipv4.c                | 31 ++++++++++++++++++++--------
+ net/ipv4/tcp_minisocks.c           | 23 +++++++++++++++++----
+ net/ipv6/tcp_ipv6.c                | 33 ++++++++++++++++++++++--------
+ net/mptcp/subflow.c                | 18 +++++++++-------
+ 17 files changed, 168 insertions(+), 62 deletions(-)
+
+-- 
+2.36.1
+
