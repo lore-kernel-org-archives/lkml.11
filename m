@@ -2,80 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14064C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FADC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382475AbiFQPkO convert rfc822-to-8bit (ORCPT
+        id S1382674AbiFQPke (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 11:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36754 "EHLO
+        Fri, 17 Jun 2022 11:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380553AbiFQPkM (ORCPT
+        with ESMTP id S1382669AbiFQPkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 11:40:12 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D034ECE4
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:40:10 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1o2E4a-00013h-Dp; Fri, 17 Jun 2022 17:39:48 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1o2E4V-0015Kw-5S; Fri, 17 Jun 2022 17:39:44 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1o2E4V-000AxJ-U4; Fri, 17 Jun 2022 17:39:43 +0200
-Message-ID: <fb559ee2b165eeb83f40086ded8c44231cabd372.camel@pengutronix.de>
-Subject: Re: [PATCH] arm: mach-imx: Fix refcount leak bug in src
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Liang He <windhl@126.com>, linux@armlinux.org.uk,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, saravanak@google.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Fri, 17 Jun 2022 17:39:43 +0200
-In-Reply-To: <20220617121235.4047670-1-windhl@126.com>
-References: <20220617121235.4047670-1-windhl@126.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
-MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Fri, 17 Jun 2022 11:40:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C82C4EDCB;
+        Fri, 17 Jun 2022 08:40:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50197B82B10;
+        Fri, 17 Jun 2022 15:40:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA9CCC3411B;
+        Fri, 17 Jun 2022 15:40:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655480429;
+        bh=ztzdNE1IDuG+GmM/fpyvAZcK/yNVVOOFoLXAhy7ZfEs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BULfSdRd5jVeewOqCYAXdHG5rCesP16GVg2/KESyf0y0jM2YCUP+v94MBbxUp0efC
+         q0g+E3s9nGBzcI+ag6XhwbtYzWY2wJB8/3TJdhgUMf003uTzczxiz3Ma6GjxQFuW01
+         TCuWK2lF9lGWLkrgpDKoyhixxD4Y93Qv50/teDsVTY4iM4qz1PAcxU3zGXYQQb3z+x
+         0E9GPgBJ8VeytL+LNKIO9UKuVbC3FNbKqNyHJ3Ipdzh0UKaTI0CGrE2+++DC+9CF+c
+         lAvocFnMKxrChQOC5ARKn3Nxpkv3DOlmC4m4ZocD0sR4ogPl6BDcZcFKWFQjxePBbS
+         OlAtGElAHaRUg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o2E5C-001KXa-LR;
+        Fri, 17 Jun 2022 16:40:26 +0100
+Date:   Fri, 17 Jun 2022 16:40:26 +0100
+Message-ID: <87ilozpac5.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Matt Ranostay <mranostay@ti.com>
+Cc:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stable@vger.kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Nishanth Menon <nm@ti.com>
+Subject: Re: [PATCH v3] arm64: dts: ti: k3-j721s2: fix overlapping GICD memory region
+In-Reply-To: <20220617151304.446607-1-mranostay@ti.com>
+References: <20220617151304.446607-1-mranostay@ti.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: mranostay@ti.com, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-stable@vger.kernel.org, robin.murphy@arm.com, nm@ti.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, 17 Jun 2022 16:13:04 +0100,
+Matt Ranostay <mranostay@ti.com> wrote:
+> 
+> GICD region was overlapping with GICR causing the latter to not map
+> successfully, and in turn the gic-v3 driver would fail to initialize.
+> 
+> This issue was hidden till commit 2b2cd74a06c3 ("irqchip/gic-v3: Claim
+> iomem resources") replaced of_iomap() calls with of_io_request_and_map()
+> that internally called request_mem_region().
+> 
+> Respective console output before this patchset:
+> 
+> [    0.000000] GICv3: /bus@100000/interrupt-controller@1800000: couldn't map region 0
+> 
+> Fixes: b8545f9d3a54 ("arm64: dts: ti: Add initial support for J721S2 SoC")
+> Cc: linux-stable@vger.kernel.org
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Nishanth Menon <nm@ti.com>
+> Signed-off-by: Matt Ranostay <mranostay@ti.com>
 
-On Fr, 2022-06-17 at 20:12 +0800, Liang He wrote:
-> In imx7_src_init(), of_find_compatible_node() will return a node
-> pointer with refcount incremented. We should use of_node_put() when
-> it is not used anymore.
-> 
-> Signed-off-by: Liang He <windhl@126.com>
-> ---
->  arch/arm/mach-imx/src.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/arch/arm/mach-imx/src.c b/arch/arm/mach-imx/src.c
-> index 59a8e8cc4469..fff2776f9180 100644
-> --- a/arch/arm/mach-imx/src.c
-> +++ b/arch/arm/mach-imx/src.c
-> @@ -195,6 +195,7 @@ void __init imx7_src_init(void)
->  		return;
->  
-> 
-> 
-> 
->  	src_base = of_iomap(np, 0);
-> +	of_node_put(np);
+Acked-by: Marc Zyngier <maz@kernel.org>
 
-Thank you for the patch. There is another instance of this pattern a
-few lines above, in imx_src_init().
+	M.
 
-regards
-Philipp
+-- 
+Without deviation from the norm, progress is not possible.
