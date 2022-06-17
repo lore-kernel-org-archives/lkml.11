@@ -2,305 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4F1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 03:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0549CCA47A
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 03:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379429AbiFQDRu (ORCPT
+        id S1379980AbiFQDSB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 23:17:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53972 "EHLO
+        Thu, 16 Jun 2022 23:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232706AbiFQDRr (ORCPT
+        with ESMTP id S230220AbiFQDRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 23:17:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F47720F53;
-        Thu, 16 Jun 2022 20:17:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A3F561D60;
-        Fri, 17 Jun 2022 03:17:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0824C3411C;
-        Fri, 17 Jun 2022 03:17:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655435862;
-        bh=8x6liXDdkpB75klnw3/vgwOZ5VjePIJsxbGKq8YeHKs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tYHMzLTAokUl9hFA1zgq7/ie7lmsqJ9skKkgBV8/d/w6t2I5cH7LdSVXDwYsvqiAB
-         fzAgMjjSXzGNLBot+a9K80IOStIPRAtEWSnJDUhjWu2DfoXPa1ZO9IcnDyIGSk2eU+
-         UUIDGxInywyrEfkUBWvNYsr+8o7HN6SgnA+MckcEvxCGJkzadB+P6Y1rR8Xdsw3wq1
-         X8byMqwd+3k1Zt0eaYBWR+C5RT+Jb7x1NX7zE4LYhRA/n6B0J9rYt4gcGoRM+tAsBE
-         H1/JxNS0LVUUgZI3b1/8Rcmwc+r1jnJVuf3tJ+W3PQlBOC/nv+59Du8grFcOmUFRiD
-         XYBZjDuV8eHiQ==
-Received: by mail-vk1-f181.google.com with SMTP id m30so1452516vkf.11;
-        Thu, 16 Jun 2022 20:17:42 -0700 (PDT)
-X-Gm-Message-State: AJIora+l9UfPCUmljiSXjVPES6Df+pD5pWjC69KW+SFdzGMarsRUEdKj
-        RNgtCHY50Xdw+SyPTZLjaWd8b3dv9ciWKoe8Vh0=
-X-Google-Smtp-Source: AGRyM1sgjAJTBFXSSpms3qQuIIgaKXWTXxGsnMUvIxnYQDVdP/ISYbTrmH4++uPSUKy+5RLEO+p28tzUWfWpZFHdc3M=
-X-Received: by 2002:a1f:b292:0:b0:368:b49d:de17 with SMTP id
- b140-20020a1fb292000000b00368b49dde17mr3688756vkf.10.1655435861713; Thu, 16
- Jun 2022 20:17:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220613131046.3009889-1-xianting.tian@linux.alibaba.com>
- <0262A4FB-5A9B-47D3-8F1A-995509F56279@nvidia.com> <CAJF2gTQGXAubtas4wAzrg298dGQJntu38X48V2OzcK8xZ_vPJg@mail.gmail.com>
- <D667F530-E286-4E75-B7CE-63E120E440C8@nvidia.com> <CAJF2gTSsaaseds=T_y-Ddt5Np2rYhk3ENumzSZDZUSXFwT3u-g@mail.gmail.com>
- <435B45C3-E6A5-43B2-A5A2-318C748691FC@nvidia.com> <b65b9edd-ff3e-aa44-029a-49fa5ba66b47@linux.alibaba.com>
- <18330D9A-F433-4136-A226-F24173293BF3@nvidia.com> <5526fab6-c7e1-bddc-912b-e4d9b2769d4e@linux.alibaba.com>
- <417EC421-DC05-4B35-954B-35DF873A2C40@nvidia.com> <20f49e70-32e0-a141-907c-5f58c543d70b@redhat.com>
-In-Reply-To: <20f49e70-32e0-a141-907c-5f58c543d70b@redhat.com>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Fri, 17 Jun 2022 11:17:30 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTS+u4RVDM5k8+pKpP6sr1F9zcucaET71MKwNGRKGPzbAg@mail.gmail.com>
-Message-ID: <CAJF2gTS+u4RVDM5k8+pKpP6sr1F9zcucaET71MKwNGRKGPzbAg@mail.gmail.com>
-Subject: Re: [RESEND PATCH] mm: page_alloc: validate buddy before check the migratetype
-To:     David Hildenbrand <david@redhat.com>, Zi Yan <ziy@nvidia.com>
-Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable@vger.kernel.org, huanyi.xj@alibaba-inc.com,
-        zjb194813@alibaba-inc.com, tianhu.hh@alibaba-inc.com,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Laura Abbott <labbott@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 16 Jun 2022 23:17:55 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6597520F7C;
+        Thu, 16 Jun 2022 20:17:53 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1CC271A7D32;
+        Fri, 17 Jun 2022 05:17:52 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 8AA8F1A5000;
+        Fri, 17 Jun 2022 05:17:51 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 00AD21820F56;
+        Fri, 17 Jun 2022 11:17:48 +0800 (+08)
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
+        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
+        alexandre.belloni@bootlin.com, fido_max@inbox.ru,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, pabeni@redhat.com,
+        kuba@kernel.org, edumazet@google.com, andrew@lunn.ch,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        vladimir.oltean@nxp.com, leoyang.li@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com
+Subject: [PATCH v2 net-next] net: dsa: felix: update base time of time-aware shaper when adjusting PTP time
+Date:   Fri, 17 Jun 2022 11:24:23 +0800
+Message-Id: <20220617032423.13852-1-xiaoliang.yang_1@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David & Zi Yan
+When adjusting the PTP clock, the base time of the TAS configuration
+will become unreliable. We need reset the TAS configuration by using a
+new base time.
 
+For example, if the driver gets a base time 0 of Qbv configuration from
+user, and current time is 20000. The driver will set the TAS base time
+to be 20000. After the PTP clock adjustment, the current time becomes
+10000. If the TAS base time is still 20000, it will be a future time,
+and TAS entry list will stop running. Another example, if the current
+time becomes to be 10000000 after PTP clock adjust, a large time offset
+can cause the hardware to hang.
 
-On Thu, Jun 16, 2022 at 11:04 PM David Hildenbrand <david@redhat.com> wrote=
-:
->
-> On 16.06.22 16:01, Zi Yan wrote:
-> > On 15 Jun 2022, at 12:15, Xianting Tian wrote:
-> >
-> >> =E5=9C=A8 2022/6/15 =E4=B8=8B=E5=8D=889:55, Zi Yan =E5=86=99=E9=81=93:
-> >>> On 15 Jun 2022, at 2:47, Xianting Tian wrote:
-> >>>
-> >>>> =E5=9C=A8 2022/6/14 =E4=B8=8A=E5=8D=888:14, Zi Yan =E5=86=99=E9=81=
-=93:
-> >>>>> On 13 Jun 2022, at 19:47, Guo Ren wrote:
-> >>>>>
-> >>>>>> On Tue, Jun 14, 2022 at 3:49 AM Zi Yan <ziy@nvidia.com> wrote:
-> >>>>>>> On 13 Jun 2022, at 12:32, Guo Ren wrote:
-> >>>>>>>
-> >>>>>>>> On Mon, Jun 13, 2022 at 11:23 PM Zi Yan <ziy@nvidia.com> wrote:
-> >>>>>>>>> Hi Xianting,
-> >>>>>>>>>
-> >>>>>>>>> Thanks for your patch.
-> >>>>>>>>>
-> >>>>>>>>> On 13 Jun 2022, at 9:10, Xianting Tian wrote:
-> >>>>>>>>>
-> >>>>>>>>>> Commit 787af64d05cd ("mm: page_alloc: validate buddy before ch=
-eck its migratetype.")
-> >>>>>>>>>> added buddy check code. But unfortunately, this fix isn't back=
-ported to
-> >>>>>>>>>> linux-5.17.y and the former stable branches. The reason is it =
-added wrong
-> >>>>>>>>>> fixes message:
-> >>>>>>>>>>        Fixes: 1dd214b8f21c ("mm: page_alloc: avoid merging non=
--fallbackable
-> >>>>>>>>>>                            pageblocks with others")
-> >>>>>>>>> No, the Fixes tag is right. The commit above does need to valid=
-ate buddy.
-> >>>>>>>> I think Xianting is right. The =E2=80=9CFixes:" tag is not accur=
-ate and the
-> >>>>>>>> page_is_buddy() is necessary here.
-> >>>>>>>>
-> >>>>>>>> This patch could be applied to the early version of the stable t=
-ree
-> >>>>>>>> (eg: Linux-5.10.y, not the master tree)
-> >>>>>>> This is quite misleading. Commit 787af64d05cd applies does not me=
-an it is
-> >>>>>>> intended to fix the preexisting bug. Also it does not apply clean=
-ly
-> >>>>>>> to commit d9dddbf55667, there is a clear indentation mismatch. At=
- best,
-> >>>>>>> you can say the way of 787af64d05cd fixing 1dd214b8f21c also fixe=
-s d9dddbf55667.
-> >>>>>>> There is no way you can apply 787af64d05cd to earlier trees and c=
-all it a day.
-> >>>>>>>
-> >>>>>>> You can mention 787af64d05cd that it fixes a bug in 1dd214b8f21c =
-and there is
-> >>>>>>> a similar bug in d9dddbf55667 that can be fixed in a similar way =
-too. Saying
-> >>>>>>> the fixes message is wrong just misleads people, making them thin=
-k there is
-> >>>>>>> no bug in 1dd214b8f21c. We need to be clear about this.
-> >>>>>> First, d9dddbf55667 is earlier than 1dd214b8f21c in Linus tree. Th=
-e
-> >>>>>> origin fixes could cover the Linux-5.0.y tree if they give the
-> >>>>>> accurate commit number and that is the cause we want to point out.
-> >>>>> Yes, I got that d9dddbf55667 is earlier and commit 787af64d05cd fix=
-es
-> >>>>> the issue introduced by d9dddbf55667. But my point is that 787af64d=
-05cd
-> >>>>> is not intended to fix d9dddbf55667 and saying it has a wrong fixes
-> >>>>> message is misleading. This is the point I want to make.
-> >>>>>
-> >>>>>> Second, if the patch is for d9dddbf55667 then it could cover any t=
-ree
-> >>>>>> in the stable repo. Actually, we only know Linux-5.10.y has the
-> >>>>>> problem.
-> >>>>> But it is not and does not apply to d9dddbf55667 cleanly.
-> >>>>>
-> >>>>>> Maybe, Gregkh could help to direct us on how to deal with the issu=
-e:
-> >>>>>> (Fixup a bug which only belongs to the former stable branch.)
-> >>>>>>
-> >>>>> I think you just need to send this patch without saying =E2=80=9Cco=
-mmit
-> >>>>> 787af64d05cd fixes message is wrong=E2=80=9D would be a good start.=
- You also
-> >>>>> need extra fix to mm/page_isolation.c for kernels between 5.15 and =
-5.17
-> >>>>> (inclusive). So there will need to be two patches:
-> >>>>>
-> >>>>> 1) your patch to stable tree prior to 5.15 and
-> >>>>>
-> >>>>> 2) your patch with an additional mm/page_isolation.c fix to stable =
-tree
-> >>>>> between 5.15 and 5.17.
-> >>>>>
-> >>>>>>> Also, you will need to fix the mm/page_isolation.c code too to ma=
-ke this patch
-> >>>>>>> complete, unless you can show that PFN=3D0x1000 is never going to=
- be encountered
-> >>>>>>> in the mm/page_isolation.c code I mentioned below.
-> >>>>>> No, we needn't fix mm/page_isolation.c in linux-5.10.y, because it=
- had
-> >>>>>> pfn_valid_within(buddy_pfn) check after __find_buddy_pfn() to prev=
-ent
-> >>>>>> buddy_pfn=3D0.
-> >>>>>> The root cause comes from __find_buddy_pfn():
-> >>>>>> return page_pfn ^ (1 << order);
-> >>>>> Right. But pfn_valid_within() was removed since 5.15. So your fix i=
-s
-> >>>>> required for kernels between 5.15 and 5.17 (inclusive).
-> >>>>>
-> >>>>>> When page_pfn is the same as the order size, it will return the
-> >>>>>> previous buddy not the next. That is the only exception for this
-> >>>>>> algorithm, right?
-> >>>>>>
-> >>>>>>
-> >>>>>>
-> >>>>>>
-> >>>>>> In fact, the bug is a very long time to reproduce and is not easy =
-to
-> >>>>>> debug, so we want to contribute it to the community to prevent oth=
-er
-> >>>>>> guys from wasting time. Although there is no new patch at all.
-> >>>>> Thanks for your reporting and sending out the patch. I really
-> >>>>> appreciate it. We definitely need your inputs. Throughout the email
-> >>>>> thread, I am trying to help you clarify the bug and how to fix it
-> >>>>> properly:
-> >>>>>
-> >>>>> 1. The commit 787af64d05cd does not apply cleanly to commits
-> >>>>> d9dddbf55667, meaning you cannot just cherry-pick that commit to
-> >>>>> fix the issue. That is why we need your patch to fix the issue.
-> >>>>> And saying it has a wrong fixes message in this patch=E2=80=99s git=
- log is
-> >>>>> misleading.
-> >>>>>
-> >>>>> 2. For kernels between 5.15 and 5.17 (inclusive), an additional fix
-> >>>>> to mm/page_isolation.c is also needed, since pfn_valid_within() was
-> >>>>> removed since 5.15 and the issue can appear during page isolation.
-> >>>>>
-> >>>>> 3. For kernels before 5.15, this patch will apply.
-> >>>> Zi Yan, Guo Ren,
-> >>>>
-> >>>> I think we still need some imporvemnt for MASTER branch, as we discu=
-ssed above, we will get an illegal buddy page if buddy_pfn is 0,
-> >>>>
-> >>>> within page_is_buddy(), it still use the illegal buddy page to do th=
-e check. I think in most of cases, page_is_buddy() can return false,  but i=
-t still may return true with very low probablity.
-> >>> Can you elaborate more on this? What kind of page can lead to page_is=
-_buddy()
-> >>> returning true? You said it is buddy_pfn is 0, but if the page is res=
-erved,
-> >>> if (!page_is_guard(buddy) && !PageBuddy(buddy)) should return false.
-> >>> Maybe show us the dump_page() that offending page.
-> >>>
-> >>> Thanks.
-> >>
-> >> Let=E2=80=98s take the issue we met on RISC-V arch for example,
-> >>
-> >> pfn_base is 512 as we reserved 2M RAM for opensbi, mem_map's value is =
-0xffffffe07e205000, which is the page address of PFN 512.
-> >>
-> >> __find_buddy_pfn() returned 0 for PFN 0x2000 with order 0xd.
-> >> We know PFN 0 is not a valid pfn for buddy system, because 512 is the =
-first PFN for buddy system.
-> >>
-> >> Then it use below code to get buddy page with buddy_pfn 0:
-> >> buddy =3D page + (buddy_pfn - pfn);
-> >> So buddy page address is:
-> >> 0xffffffe07e1fe000 =3D (struct page*)0xffffffe07e26e000 + (0 - 0x2000)
-> >>
-> >> we can know this buddy page's address is less than mem_map(0xffffffe07=
-e1fe000 < 0xffffffe07e205000),
-> >> actually 0xffffffe07e1fe000 is not a valid page's address. If we use 0=
-xffffffe07e1fe000
-> >> as the page's address to extract the value of a member in 'struct page=
-', we may get an uncertain value.
-> >> That's why I say page_is_buddy() may return true with very low probabl=
-ity.
-> >>
-> >> So I think we need to add the code the verify buddy_pfn in the first p=
-lace:
-> >>      pfn_valid(buddy_pfn)
-> >>
-> >
-> > +DavidH on how memory section works.
-> >
-> > This 2MB RAM reservation does not sound right to me. How does it work i=
-n sparsemem?
-> > RISC-V has SECTION_SIZE_BITS=3D27, i.e., 128MB a section. All pages wit=
-hin
-> > a section should have their corresponding struct page (mem_map). So in =
-this case,
-> > the first 2MB pages should have mem_map and can be marked as PageReserv=
-ed. As a
-> > result, page_is_buddy() will return false.
-Actually, we had a patch to fix that, have a look:
-https://lore.kernel.org/linux-riscv/20211123015717.542631-2-guoren@kernel.o=
-rg/
-What do you think of the above patch?
+This patch introduces a tas_clock_adjust() function to reset the TAS
+module by using a new base time after the PTP clock adjustment. This can
+avoid issues above.
 
-A lot of arch maintainers do not recognize that the buddy system has
-an implied limitation that the start of the phy ram address must align
-with (1 << MAX_ORDER-1).
+Due to PTP clock adjustment can occur at any time, it may conflict with
+the TAS configuration. We introduce a new TAS lock to serialize the
+access to the TAS registers.
 
->
-> Yes. Unless there is a BUG :)
->
-> init_unavailable_range() is supposed to initialize the memap of
-> unavailable ranges and mark it reserved.
->
-> I wonder if we're missing a case in memmap_init(), to also initialize
-> holes at the beginning of a section, before RAM (we do handle sections
-> in a special way if the end of RAM falls in the middle of a section).
->
-> If it's not initialized, it might contain garbage.
->
-> --
-> Thanks,
->
-> David / dhildenb
->
+Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+---
+v2: Update ocelot_ptp_adjtime() function to avoid tas_clock_adjust() be
+called twice.
+---
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 83 ++++++++++++++++++++++++--
+ drivers/net/ethernet/mscc/ocelot.c     |  1 +
+ drivers/net/ethernet/mscc/ocelot_ptp.c |  8 +++
+ include/soc/mscc/ocelot.h              |  7 +++
+ 4 files changed, 93 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 570d0204b7be..dd9085ae0922 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1196,10 +1196,13 @@ static void vsc9959_tas_gcl_set(struct ocelot *ocelot, const u32 gcl_ix,
+ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 				    struct tc_taprio_qopt_offload *taprio)
+ {
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 	struct timespec64 base_ts;
+ 	int ret, i;
+ 	u32 val;
+ 
++	mutex_lock(&ocelot->tas_lock);
++
+ 	if (!taprio->enable) {
+ 		ocelot_rmw_rix(ocelot,
+ 			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
+@@ -1207,15 +1210,20 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
+ 			       QSYS_TAG_CONFIG, port);
+ 
++		mutex_unlock(&ocelot->tas_lock);
+ 		return 0;
+ 	}
+ 
+ 	if (taprio->cycle_time > NSEC_PER_SEC ||
+-	    taprio->cycle_time_extension >= NSEC_PER_SEC)
+-		return -EINVAL;
++	    taprio->cycle_time_extension >= NSEC_PER_SEC) {
++		ret = -EINVAL;
++		goto err;
++	}
+ 
+-	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX)
+-		return -ERANGE;
++	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX) {
++		ret = -ERANGE;
++		goto err;
++	}
+ 
+ 	/* Enable guard band. The switch will schedule frames without taking
+ 	 * their length into account. Thus we'll always need to enable the
+@@ -1236,8 +1244,10 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 	 * config is pending, need reset the TAS module
+ 	 */
+ 	val = ocelot_read(ocelot, QSYS_PARAM_STATUS_REG_8);
+-	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING)
+-		return  -EBUSY;
++	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING) {
++		ret = -EBUSY;
++		goto err;
++	}
+ 
+ 	ocelot_rmw_rix(ocelot,
+ 		       QSYS_TAG_CONFIG_ENABLE |
+@@ -1248,6 +1258,8 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 		       QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES_M,
+ 		       QSYS_TAG_CONFIG, port);
+ 
++	ocelot_port->base_time = taprio->base_time;
++
+ 	vsc9959_new_base_time(ocelot, taprio->base_time,
+ 			      taprio->cycle_time, &base_ts);
+ 	ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
+@@ -1271,9 +1283,67 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 				 !(val & QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE),
+ 				 10, 100000);
+ 
++err:
++	mutex_unlock(&ocelot->tas_lock);
++
+ 	return ret;
+ }
+ 
++static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
++{
++	struct ocelot_port *ocelot_port;
++	struct timespec64 base_ts;
++	u64 cycletime;
++	int port;
++	u32 val;
++
++	mutex_lock(&ocelot->tas_lock);
++
++	for (port = 0; port < ocelot->num_phys_ports; port++) {
++		val = ocelot_read_rix(ocelot, QSYS_TAG_CONFIG, port);
++		if (!(val & QSYS_TAG_CONFIG_ENABLE))
++			continue;
++
++		ocelot_rmw(ocelot,
++			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port),
++			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M,
++			   QSYS_TAS_PARAM_CFG_CTRL);
++
++		ocelot_rmw_rix(ocelot,
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
++			       QSYS_TAG_CONFIG_ENABLE |
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
++			       QSYS_TAG_CONFIG, port);
++
++		cycletime = ocelot_read(ocelot, QSYS_PARAM_CFG_REG_4);
++		ocelot_port = ocelot->ports[port];
++
++		vsc9959_new_base_time(ocelot, ocelot_port->base_time,
++				      cycletime, &base_ts);
++
++		ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
++		ocelot_write(ocelot, lower_32_bits(base_ts.tv_sec),
++			     QSYS_PARAM_CFG_REG_2);
++		val = upper_32_bits(base_ts.tv_sec);
++		ocelot_rmw(ocelot,
++			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB(val),
++			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB_M,
++			   QSYS_PARAM_CFG_REG_3);
++
++		ocelot_rmw(ocelot, QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
++			   QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
++			   QSYS_TAS_PARAM_CFG_CTRL);
++
++		ocelot_rmw_rix(ocelot,
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF) |
++			       QSYS_TAG_CONFIG_ENABLE,
++			       QSYS_TAG_CONFIG_ENABLE |
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
++			       QSYS_TAG_CONFIG, port);
++	}
++	mutex_unlock(&ocelot->tas_lock);
++}
++
+ static int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
+ 				    struct tc_cbs_qopt_offload *cbs_qopt)
+ {
+@@ -2210,6 +2280,7 @@ static const struct ocelot_ops vsc9959_ops = {
+ 	.psfp_filter_del	= vsc9959_psfp_filter_del,
+ 	.psfp_stats_get		= vsc9959_psfp_stats_get,
+ 	.cut_through_fwd	= vsc9959_cut_through_fwd,
++	.tas_clock_adjust	= vsc9959_tas_clock_adjust,
+ };
+ 
+ static const struct felix_info felix_info_vsc9959 = {
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 8da7e25a47c9..d4649e4ee0e7 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -3367,6 +3367,7 @@ int ocelot_init(struct ocelot *ocelot)
+ 	mutex_init(&ocelot->ptp_lock);
+ 	mutex_init(&ocelot->mact_lock);
+ 	mutex_init(&ocelot->fwd_domain_lock);
++	mutex_init(&ocelot->tas_lock);
+ 	spin_lock_init(&ocelot->ptp_clock_lock);
+ 	spin_lock_init(&ocelot->ts_id_lock);
+ 	snprintf(queue_name, sizeof(queue_name), "%s-stats",
+diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.c b/drivers/net/ethernet/mscc/ocelot_ptp.c
+index 87ad2137ba06..09c703efe946 100644
+--- a/drivers/net/ethernet/mscc/ocelot_ptp.c
++++ b/drivers/net/ethernet/mscc/ocelot_ptp.c
+@@ -72,6 +72,10 @@ int ocelot_ptp_settime64(struct ptp_clock_info *ptp,
+ 	ocelot_write_rix(ocelot, val, PTP_PIN_CFG, TOD_ACC_PIN);
+ 
+ 	spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
++
++	if (ocelot->ops->tas_clock_adjust)
++		ocelot->ops->tas_clock_adjust(ocelot);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(ocelot_ptp_settime64);
+@@ -105,6 +109,9 @@ int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 		ocelot_write_rix(ocelot, val, PTP_PIN_CFG, TOD_ACC_PIN);
+ 
+ 		spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
++
++		if (ocelot->ops->tas_clock_adjust)
++			ocelot->ops->tas_clock_adjust(ocelot);
+ 	} else {
+ 		/* Fall back using ocelot_ptp_settime64 which is not exact. */
+ 		struct timespec64 ts;
+@@ -117,6 +124,7 @@ int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 
+ 		ocelot_ptp_settime64(ptp, &ts);
+ 	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(ocelot_ptp_adjtime);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 5f88385a7748..3737570116c3 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -575,6 +575,7 @@ struct ocelot_ops {
+ 	int (*psfp_stats_get)(struct ocelot *ocelot, struct flow_cls_offload *f,
+ 			      struct flow_stats *stats);
+ 	void (*cut_through_fwd)(struct ocelot *ocelot);
++	void (*tas_clock_adjust)(struct ocelot *ocelot);
+ };
+ 
+ struct ocelot_vcap_policer {
+@@ -691,6 +692,9 @@ struct ocelot_port {
+ 	int				bridge_num;
+ 
+ 	int				speed;
++
++	/* Store the AdminBaseTime of EST fetched from userspace. */
++	s64				base_time;
+ };
+ 
+ struct ocelot {
+@@ -757,6 +761,9 @@ struct ocelot {
+ 	/* Lock for serializing forwarding domain changes */
+ 	struct mutex			fwd_domain_lock;
+ 
++	/* Lock for serializing Time-Aware Shaper changes */
++	struct mutex			tas_lock;
++
+ 	struct workqueue_struct		*owq;
+ 
+ 	u8				ptp:1;
+-- 
+2.17.1
 
---
-Best Regards
- Guo Ren
-
-ML: https://lore.kernel.org/linux-csky/
