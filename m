@@ -2,136 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1777CCA483
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:58:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382420AbiFQM6w (ORCPT
+        id S1382408AbiFQM6S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 08:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47124 "EHLO
+        Fri, 17 Jun 2022 08:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382459AbiFQM6g (ORCPT
+        with ESMTP id S1382226AbiFQM6L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 08:58:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9272B1B5
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:58:35 -0700 (PDT)
+        Fri, 17 Jun 2022 08:58:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E5262B1AF;
+        Fri, 17 Jun 2022 05:58:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD18F61FD0
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:58:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B42BC341C5
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:58:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD2F6B82682;
+        Fri, 17 Jun 2022 12:58:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 593ABC3411F;
+        Fri, 17 Jun 2022 12:58:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655470714;
-        bh=aJe/IuNfbjZ9EniMI2KMI/OYNV3Ky7QaQrPqbpHqWEU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=YceFDQKz6Qp3semAVSe6go/03+fq5w2gdDcUhzRXBfGfw6Ck0mm2h1bKcOkDCqSE1
-         LXx0To+qfIBp/c1sr/dS4FDhi/Bc2BNaQZ8kgH/SmwPzsepWIwsuWH3z2AYqlVIi5W
-         /wrAEbkctqOvhA3FUpQ8+2dC1DpLULN/r+3b+uSJXvJXAkyQI2j5SRwyqlg6iDW6VV
-         wBzGl0XmWM4AWBd0zSb68+xsRmah96Oh0e79gl+48h6rG3GWm3OxeqoLmYNboook0C
-         g4eFIahW5BQQoVgtZtpKZW2dk0p7iAlXYmmbDrGZ8gT0D64qumRJZlBahLyw/m7zjR
-         n3v6InWaJwKug==
-Received: by mail-lj1-f172.google.com with SMTP id s10so4632445ljh.12
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:58:34 -0700 (PDT)
-X-Gm-Message-State: AJIora8+Kxr24g8jWwl7pQCfg/bbY/zsXCpfNcdxFLqxB6wk8hHqOm3E
-        aOaycM8JILULhDVxT3vLg44fUTM7+6nouTyQ1+Q9JQ==
-X-Google-Smtp-Source: AGRyM1uqosFaBOhZZC5A81VpQaFlEvVkSB4BPtOu6MTbFLXMRKLMCZXs1CEtapjf6SQr5wJTaVMHzlCzz1PP2y5pmko=
-X-Received: by 2002:a2e:8609:0:b0:255:6eb1:46a0 with SMTP id
- a9-20020a2e8609000000b002556eb146a0mr4963421lji.336.1655470712245; Fri, 17
- Jun 2022 05:58:32 -0700 (PDT)
+        s=k20201202; t=1655470687;
+        bh=PHa+k1YPCB+2jgYk545vxPTI79A930ycNAnnkPIO8Q0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nLNheZIMb11YnK30s1ue4ClOfmXib4scSxsRBkan3jiCrsYF14v8dRzqdsbD07xD/
+         7CVlJX/9vypOil3A0ym7H4qwTjHxFVs2953dx4vTr/1tKVrlExjRwnVrNjB56/54b8
+         mI5c0Afql8VfQwtkoOtgPCBjeHOOsjVos0BnP7RKevmdbYMVMVehSfmRtWEVM7Zo+0
+         32Oor1aZzOjFgybMMdE7DBEwLj2FGEfKPYV0Lcgg2w1dTdhpLzSWnnUROwn+W6xw1r
+         brAoIaL/gkUAawWzU4UY6DLRjidv0/55hJJFNX7mCSRMsy9E0xCQG8rGi327Q83BHu
+         JVJbuHA/NBGRA==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        iommu@lists.linux-foundation.org,
+        Khalid Aziz <khalid@gonehiking.org>,
+        "Maciej W . Rozycki" <macro@orcam.me.uk>,
+        Matt Wang <wwentao@vmware.com>,
+        Miquel van Smoorenburg <mikevs@xs4all.net>,
+        Mark Salyzyn <salyzyn@android.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-parisc@vger.kernel.org, Denis Efremov <efremov@linux.com>
+Subject: [PATCH v2 1/3] scsi: dpt_i2o: drop stale VIRT_TO_BUS dependency
+Date:   Fri, 17 Jun 2022 14:57:48 +0200
+Message-Id: <20220617125750.728590-2-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220617125750.728590-1-arnd@kernel.org>
+References: <20220617125750.728590-1-arnd@kernel.org>
 MIME-Version: 1.0
-References: <20220616202537.303655-1-daniel.lezcano@linaro.org>
-In-Reply-To: <20220616202537.303655-1-daniel.lezcano@linaro.org>
-From:   Amit Kucheria <amitk@kernel.org>
-Date:   Fri, 17 Jun 2022 18:28:21 +0530
-X-Gmail-Original-Message-ID: <CAHLCerNcat-uvXYA4jHK9_wQR1HFYXisXD2Pj+TuGWcgM0u=-g@mail.gmail.com>
-Message-ID: <CAHLCerNcat-uvXYA4jHK9_wQR1HFYXisXD2Pj+TuGWcgM0u=-g@mail.gmail.com>
-Subject: Re: [PATCH 1/3] thermal/drivers/qcom: Remove get_trend function
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Thara Gopinath <thara.gopinath@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        "open list:QUALCOMM TSENS THERMAL DRIVER" 
-        <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 1:56 AM Daniel Lezcano
-<daniel.lezcano@linaro.org> wrote:
->
-> There is a get_trend function which is a wrapper to call a private
-> get_trend function. However, this private get_trend function is not
-> assigned anywhere.
->
-> Remove this dead code.
->
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+From: Arnd Bergmann <arnd@arndb.de>
 
-Acked-by: Amit Kucheria <amitk@kernel.org>
+The dpt_i2o driver was fixed to stop using virt_to_bus() in 2008, but
+it still has a stale reference in an error handling code path that could
+never work.
 
-> ---
->  drivers/thermal/qcom/tsens.c | 12 ------------
->  drivers/thermal/qcom/tsens.h |  2 --
->  2 files changed, 14 deletions(-)
->
-> diff --git a/drivers/thermal/qcom/tsens.c b/drivers/thermal/qcom/tsens.c
-> index 7963ee33bf75..e49f58e83513 100644
-> --- a/drivers/thermal/qcom/tsens.c
-> +++ b/drivers/thermal/qcom/tsens.c
-> @@ -933,17 +933,6 @@ static int tsens_get_temp(void *data, int *temp)
->         return priv->ops->get_temp(s, temp);
->  }
->
-> -static int tsens_get_trend(void *data, int trip, enum thermal_trend *trend)
-> -{
-> -       struct tsens_sensor *s = data;
-> -       struct tsens_priv *priv = s->priv;
-> -
-> -       if (priv->ops->get_trend)
-> -               return priv->ops->get_trend(s, trend);
-> -
-> -       return -ENOTSUPP;
-> -}
-> -
->  static int  __maybe_unused tsens_suspend(struct device *dev)
->  {
->         struct tsens_priv *priv = dev_get_drvdata(dev);
-> @@ -1004,7 +993,6 @@ MODULE_DEVICE_TABLE(of, tsens_table);
->
->  static const struct thermal_zone_of_device_ops tsens_of_ops = {
->         .get_temp = tsens_get_temp,
-> -       .get_trend = tsens_get_trend,
->         .set_trips = tsens_set_trips,
->  };
->
-> diff --git a/drivers/thermal/qcom/tsens.h b/drivers/thermal/qcom/tsens.h
-> index 1471a2c00f15..ba05c8233356 100644
-> --- a/drivers/thermal/qcom/tsens.h
-> +++ b/drivers/thermal/qcom/tsens.h
-> @@ -65,7 +65,6 @@ struct tsens_sensor {
->   * @disable: Function to disable the tsens device
->   * @suspend: Function to suspend the tsens device
->   * @resume: Function to resume the tsens device
-> - * @get_trend: Function to get the thermal/temp trend
->   */
->  struct tsens_ops {
->         /* mandatory callbacks */
-> @@ -77,7 +76,6 @@ struct tsens_ops {
->         void (*disable)(struct tsens_priv *priv);
->         int (*suspend)(struct tsens_priv *priv);
->         int (*resume)(struct tsens_priv *priv);
-> -       int (*get_trend)(struct tsens_sensor *s, enum thermal_trend *trend);
->  };
->
->  #define REG_FIELD_FOR_EACH_SENSOR11(_name, _offset, _startbit, _stopbit) \
-> --
-> 2.25.1
->
+Fix it up to build without VIRT_TO_BUS and remove the Kconfig dependency.
+
+The alternative to this would be to just remove the driver, as it is
+clearly obsolete. The i2o driver layer was removed in 2015 with commit
+4a72a7af462d ("staging: remove i2o subsystem"), but the even older
+dpt_i2o scsi driver stayed around.
+
+The last non-cleanup patches I could find were from Miquel van Smoorenburg
+and Mark Salyzyn back in 2008, they might know if there is any chance
+of the hardware still being used anywhere.
+
+Fixes: 67af2b060e02 ("[SCSI] dpt_i2o: move from virt_to_bus/bus_to_virt to dma_alloc_coherent")
+Cc: Miquel van Smoorenburg <mikevs@xs4all.net>
+Cc: Mark Salyzyn <salyzyn@android.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/scsi/Kconfig   | 2 +-
+ drivers/scsi/dpt_i2o.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/scsi/Kconfig b/drivers/scsi/Kconfig
+index a9fe5152addd..cf75588a2587 100644
+--- a/drivers/scsi/Kconfig
++++ b/drivers/scsi/Kconfig
+@@ -460,7 +460,7 @@ config SCSI_MVUMI
+ 
+ config SCSI_DPT_I2O
+ 	tristate "Adaptec I2O RAID support "
+-	depends on SCSI && PCI && VIRT_TO_BUS
++	depends on SCSI && PCI
+ 	help
+ 	  This driver supports all of Adaptec's I2O based RAID controllers as 
+ 	  well as the DPT SmartRaid V cards.  This is an Adaptec maintained
+diff --git a/drivers/scsi/dpt_i2o.c b/drivers/scsi/dpt_i2o.c
+index 2e9155ba7408..55dfe7011912 100644
+--- a/drivers/scsi/dpt_i2o.c
++++ b/drivers/scsi/dpt_i2o.c
+@@ -52,11 +52,11 @@ MODULE_DESCRIPTION("Adaptec I2O RAID Driver");
+ 
+ #include <linux/timer.h>
+ #include <linux/string.h>
++#include <linux/io.h>
+ #include <linux/ioport.h>
+ #include <linux/mutex.h>
+ 
+ #include <asm/processor.h>	/* for boot_cpu_data */
+-#include <asm/io.h>		/* for virt_to_bus, etc. */
+ 
+ #include <scsi/scsi.h>
+ #include <scsi/scsi_cmnd.h>
+@@ -2112,7 +2112,7 @@ static irqreturn_t adpt_isr(int irq, void *dev_id)
+ 		} else {
+ 			/* Ick, we should *never* be here */
+ 			printk(KERN_ERR "dpti: reply frame not from pool\n");
+-			reply = (u8 *)bus_to_virt(m);
++			goto out;
+ 		}
+ 
+ 		if (readl(reply) & MSG_FAIL) {
+-- 
+2.29.2
+
