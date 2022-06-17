@@ -2,72 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F91C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 04:12:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56161C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 04:12:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379840AbiFQEMF (ORCPT
+        id S1379859AbiFQEM1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 00:12:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34040 "EHLO
+        Fri, 17 Jun 2022 00:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231650AbiFQEME (ORCPT
+        with ESMTP id S231650AbiFQEMY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 00:12:04 -0400
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1AB165433;
-        Thu, 16 Jun 2022 21:11:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=n2N7s
-        6BnjSWl2Opp1oE4L1xAtlp8vuylpNqGoBcOilc=; b=cwh1xEDNzptnVZqr3Wf0v
-        2/F6+2/sqWVnlv1bf5KWR0HidTRw7c9mC5YkPBXJdTn8DBu3xpIQuYeKusbvpmYW
-        LTHiQ0SmpBd7jtGAHxsIUF4UOurVqwTlvYqajjgjUoI+dkyP0xnimlK9jQ6HOEVL
-        gBSDZC3weZT2mEsCLvBPBw=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp1 (Coremail) with SMTP id C8mowACHY9xx96tiYuLiEg--.19761S2;
-        Fri, 17 Jun 2022 11:39:39 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     john@phrozen.org, tsbogend@alpha.franken.de
-Cc:     windhl@126.com, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] mips: ralink: Fix refcount leak in of.c
-Date:   Fri, 17 Jun 2022 11:39:29 +0800
-Message-Id: <20220617033929.4002832-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 17 Jun 2022 00:12:24 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6C765D25;
+        Thu, 16 Jun 2022 21:12:21 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R961e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0VGd7QNO_1655439102;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VGd7QNO_1655439102)
+          by smtp.aliyun-inc.com;
+          Fri, 17 Jun 2022 12:12:18 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     peterz@infradead.org
+Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, tglx@linutronix.de, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] perf/x86/core: Replace snprintf() with sysfs_emit()
+Date:   Fri, 17 Jun 2022 12:11:40 +0800
+Message-Id: <20220617041140.83705-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowACHY9xx96tiYuLiEg--.19761S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtF4UXry8JryrKry3uw13CFg_yoWxKFXEq3
-        WIgws7ur43Awn5WayDCa13Was8Z3s3Wrn3Gw1xtFWIyr90vF1DKrWSqr1DXry8W39rtFW8
-        A3srAa1Y9w4a9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRKFApDUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi7R0jF1pEANzNhwAAsM
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In plat_of_remap_node(), plat_of_remap_node() will return a node
-pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+coccicheck complains about the use of snprintf() in sysfs show
+functions.
 
-Signed-off-by: Liang He <windhl@126.com>
+./arch/x86/events/core.c:2627:8-16: WARNING: use scnprintf or sprintf.
+
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- arch/mips/ralink/of.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/events/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/mips/ralink/of.c b/arch/mips/ralink/of.c
-index 587c7b998769..ea8072acf8d9 100644
---- a/arch/mips/ralink/of.c
-+++ b/arch/mips/ralink/of.c
-@@ -40,6 +40,8 @@ __iomem void *plat_of_remap_node(const char *node)
- 	if (of_address_to_resource(np, 0, &res))
- 		panic("Failed to get resource for %s", node);
+diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
+index f969410d0c90..7a1a42768122 100644
+--- a/arch/x86/events/core.c
++++ b/arch/x86/events/core.c
+@@ -2624,7 +2624,7 @@ static ssize_t max_precise_show(struct device *cdev,
+ 				  struct device_attribute *attr,
+ 				  char *buf)
+ {
+-	return snprintf(buf, PAGE_SIZE, "%d\n", x86_pmu_max_precise());
++	return sysfs_emit(buf, "%d\n", x86_pmu_max_precise());
+ }
  
-+	of_node_put(np);
-+
- 	if (!request_mem_region(res.start,
- 				resource_size(&res),
- 				res.name))
+ static DEVICE_ATTR_RO(max_precise);
 -- 
-2.25.1
+2.20.1.7.g153144c
 
