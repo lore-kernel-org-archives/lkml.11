@@ -2,90 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 514B2CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 636BBC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235309AbiFQMq2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 08:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37348 "EHLO
+        id S235960AbiFQMvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 08:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232477AbiFQMq1 (ORCPT
+        with ESMTP id S232477AbiFQMvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 08:46:27 -0400
-Received: from mail-m12736.qiye.163.com (mail-m12736.qiye.163.com [115.236.127.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B278B2DD72;
-        Fri, 17 Jun 2022 05:46:26 -0700 (PDT)
-Received: from [172.16.12.167] (unknown [58.22.7.114])
-        by mail-m12736.qiye.163.com (Hmail) with ESMTPA id CE3957E01C7;
-        Fri, 17 Jun 2022 20:46:24 +0800 (CST)
-Message-ID: <41af9d13-fff5-a416-87cc-4f69e77d6409@rock-chips.com>
-Date:   Fri, 17 Jun 2022 20:46:24 +0800
+        Fri, 17 Jun 2022 08:51:21 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48E9437BE8
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:51:20 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-155-h3wWc7x7P72brAvjq1zRbg-1; Fri, 17 Jun 2022 13:51:17 +0100
+X-MC-Unique: h3wWc7x7P72brAvjq1zRbg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Fri, 17 Jun 2022 13:51:15 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Fri, 17 Jun 2022 13:51:15 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+CC:     Matthew Wilcox <willy@infradead.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        "Kees Cook" <keescook@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>
+Subject: RE: [PATCH] usercopy: use unsigned long instead of uintptr_t
+Thread-Topic: [PATCH] usercopy: use unsigned long instead of uintptr_t
+Thread-Index: AQHYgY56+B40USEpAkCPXvMJQcFna61SGkAAgAADqACAAAiSAIAACqGAgAAMdQCAAANVgIAAJpIAgADVkYCAADQtAIAAGqDA
+Date:   Fri, 17 Jun 2022 12:51:15 +0000
+Message-ID: <2b4f67aed7c64abe83eb868c351656dc@AcuMS.aculab.com>
+References: <20220616143617.449094-1-Jason@zx2c4.com>
+ <YqtAShjjo1zC6EgO@casper.infradead.org> <YqtDXPWdFQ/fqgDo@zx2c4.com>
+ <YqtKjAZRPBVjlE8S@casper.infradead.org>
+ <CAHk-=wj2OHy-5e+srG1fy+ZU00TmZ1NFp6kFLbVLMXHe7A1d-g@mail.gmail.com>
+ <Yqtd6hTS52mbb9+q@casper.infradead.org>
+ <CAHk-=wj_K2MnhC6N_LyY6ezmQyWzqBnfobXC354HJuKdqMePzA@mail.gmail.com>
+ <CAHk-=whS3xhJ=quD5bzDb6JsAhKd0vem4K-U=DhUGf-tDJUMHg@mail.gmail.com>
+ <CAMuHMdXxAwbCQPn4jg8X=_p5cYkpvNE4bXfQHWk2vz2Y6hL2-w@mail.gmail.com>
+ <ec7f0c59-f67e-1d7e-c0b3-b0a409623e98@csgroup.eu>
+In-Reply-To: <ec7f0c59-f67e-1d7e-c0b3-b0a409623e98@csgroup.eu>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] spi: rockchip: Disable local irq when pio write out of
- interrupt service
-To:     Mark Brown <broonie@kernel.org>
-Cc:     heiko@sntech.de, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220613092744.9726-1-jon.lin@rock-chips.com>
- <YqcveggUU7yaXuk1@sirena.org.uk>
- <b97ee70c-70ee-6b15-65d6-a176125dcfd8@rock-chips.com>
- <YqxpTqvaQb4cohTh@sirena.org.uk>
-From:   Jon Lin <jon.lin@rock-chips.com>
-In-Reply-To: <YqxpTqvaQb4cohTh@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFJSktLSjdXWS1ZQUlXWQ8JGhUIEh9ZQVkZGkpMVh0fQkNNHx9PH01DS1UTARMWGhIXJB
-        QOD1lXWRgSC1lBWU5DVUlJVUxVSkpPWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MUk6Fxw4Hz06F0kdARdREyMP
-        DEMKCitVSlVKTU5OT01CQkNOSEpJVTMWGhIXVREUFVUXEhU7CRQYEFYYExILCFUYFBZFWVdZEgtZ
-        QVlOQ1VJSVVMVUpKT1lXWQgBWUFITk9PNwY+
-X-HM-Tid: 0a8171b34ce8b20fkuuuce3957e01c7
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+RnJvbTogQ2hyaXN0b3BoZSBMZXJveQ0KPiBTZW50OiAxNyBKdW5lIDIwMjIgMTI6MDYNCj4gDQo+
+IExlIDE3LzA2LzIwMjIgw6AgMDk6NTgsIEdlZXJ0IFV5dHRlcmhvZXZlbiBhIMOpY3JpdMKgOg0K
+PiA+PiBCdXQgaXQgdGhlbiBjYXVzZXMgcG9pbnRsZXNzIHByb2JsZW1zIHdoZW4gcGVvcGxlIGNh
+bid0IHJlYWxseSByZWx5IG9uDQo+ID4+IG1vcmUgdGhhbiAzMiBiaXRzIGZvciBhdG9taWMgYml0
+IG9wZXJhdGlvbnMsIGFuZCBvbiA2NC1iaXQNCj4gPj4gYXJjaGl0ZWN0dXJlcyB3ZSB1bm5lY2Vz
+c2FyaWx5IHVzZSAibG9uZyIgYW5kIHdhc3RlIHRoZSB1cHBlciBiaXRzLg0KPiA+DQo+ID4gV2Vs
+bCwgYXRvbWljIHdvcmtzIHVwIHRvIG5hdGl2ZSB3b3JkIHNpemUsIGkuZS4gbG9uZy4NCj4gPg0K
+PiANCj4gcG93ZXJwYzY0IGhhcyBhIHBhaXIgb2YgaW5zdHJ1Y3Rpb25zIHRvIHBlcmZvcm0gMTI4
+Yml0cyBhdG9taWMNCj4gb3BlcmF0aW9ucyA6IGxxYXJ4IC8gc3RxY3guDQoNCkFzIGRvZXMgeDg2
+LTY0IChhbmQgMzJiaXQgaGFzIGEgNjRiaXQgYXRvbWljIGNvbXBhcmUrZXhjaGFuZ2UpLg0KDQpB
+bm5veWluZ2x5IHRoZSB4ODYtNjQgZG9lc24ndCBoYXZlIDEyOGJpdCByZWFkL3dyaXRlIHJlZ2lz
+dGVyDQpwYWlyIGluc3RydWN0aW9ucyB0aGF0IHdvdWxkIGdlbmVyYXRlIGEgMTI4Yml0IFBDSWUg
+VExQLg0KWW91IGNhbiB1c2UgQVZYIGluc3RydWN0aW9ucyB0byBnZW5lcmF0ZSBsYXJnZSBUTFAg
+LSBidXQgbm90DQppbiB0aGUgbGludXgga2VybmVsIC0geW91IHdhbnQgMSBiaWcgcmVnaXN0ZXIu
+DQoNCkV2ZW4gdGhlIGh1bWJsZSA2ODAyMCBoYXMgYSBjYXMyIGluc3RydWN0aW9uIHRoYXQgd2ls
+bCBkbyBhDQo2NGJpdCBhdG9taWMgb3BlcmF0aW9uLg0KSSBkaWQgbWFuYWdlIHRvIHVzZSBpdCBv
+bmNlLCBidXQgaXQgaXMgZWFzaWVyIHRvIGRpc2FibGUgaW50ZXJydXB0cy4NCkknbSBub3Qgc3Vy
+ZSBob3cgbWFueSBTTVAgNjgwMjAgc3lzdGVtcyB3ZXJlIGV2ZXIgYnVpbHQuDQpZb3UnZCBuZWVk
+IGEgbWF0Y2hlZCBwYWlyIG9mIGNwdSAob3IgZXh0cmVtZSBjYXJlKSBzaW5jZSBpdA0KdGVuZHMg
+dG8gc3RhY2sgbWljcm9jb2RlIGRhdGEgb24gbWlkLWluc3RydWN0aW9uIGZhdWx0cy4NCg0KCURh
+dmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3Vu
+dCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3
+Mzg2IChXYWxlcykNCg==
 
-
-On 2022/6/17 19:45, Mark Brown wrote:
-> On Fri, Jun 17, 2022 at 02:24:10PM +0800, Jon Lin wrote:
->> On 2022/6/13 20:37, Mark Brown wrote:
->>> On Mon, Jun 13, 2022 at 05:27:44PM +0800, Jon Lin wrote:
-> 
->>>> +	spin_unlock_irqrestore(&rs->lock, flags);
-> 
->>> So this is effectively just disabling interrupts during PIO, there's no
->>> other users of the lock which is rather heavyweight.  What's the actual
->>> issue here?  We should also have something saying what's going on in the
->>> code since right now the lock just looks redundant.
-> 
->> For lock: In order to avoid special situations, such as when the CPU
->> frequency drops to close to the IO rate, the water line interrupt is
->> triggered during FIFO filling (triggered by other CPUs), resulting in
->> critical resources still not being protected in place. For local IRQ
-> 
-> So essentially we're so slow in filling the FIFO when starting a
-> transfer that the interrupt triggers in the middle of the initial FIFO
-> fill?  Something that tricky *really* needs a comment adding.
-> 
-> Ideally we'd just leave the interrupt masked until the FIFO is filled
-> though, looking at the driver I see that there is an interrupt mask
-> register which seems to have some level of masking available and I do
-> note that in rockchip_spi_prepare_irq() we unmask interrupts before we
-> start filling the FIFO rather than afterwards.  Would reversing the
-> unmask order there address the issue more cleanly?
-
-This idea is workable, and it's more efficient than previous code, So I 
-send a new commit:
-https://patchwork.kernel.org/project/spi-devel-general/patch/20220617124251.5051-1-jon.lin@rock-chips.com/
-> 
->> disable: Turning off the local interrupt is mainly to prevent the CPU
->> schedule from being interrupted when filling FIFO.
-> 
-> If it were just this then there's preempt_disable(), but what's the
-> problem with being preempted during the FIFO fill?
-
-I think
