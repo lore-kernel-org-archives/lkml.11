@@ -2,97 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A3B4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 13:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD240C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 13:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382405AbiFQNxE (ORCPT
+        id S1382473AbiFQNy2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 09:53:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
+        Fri, 17 Jun 2022 09:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381052AbiFQNw7 (ORCPT
+        with ESMTP id S232133AbiFQNy0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 09:52:59 -0400
-X-Greylist: delayed 393 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 17 Jun 2022 06:52:54 PDT
-Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [208.88.110.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABC62703;
-        Fri, 17 Jun 2022 06:52:52 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id A4BE79C035C;
-        Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
-Received: from mail.savoirfairelinux.com ([127.0.0.1])
-        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id RxSxonNRBtIm; Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id 1D95C9C035E;
-        Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.savoirfairelinux.com 1D95C9C035E
+        Fri, 17 Jun 2022 09:54:26 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4AD2DD79;
+        Fri, 17 Jun 2022 06:54:25 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id o16so5867635wra.4;
+        Fri, 17 Jun 2022 06:54:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=savoirfairelinux.com; s=DFC430D2-D198-11EC-948E-34200CB392D2;
-        t=1655473579; bh=6FyXPE9HabKRcoxbNWsYdPeExADy1asgHfS0MpAMcCo=;
-        h=From:To:Date:Message-Id:MIME-Version;
-        b=dAW53u5txvU6CYNBr0Hue4BIbjb7YFmVNt0s+111UGLqXYZF192BtJC2bSDB4DI9F
-         zw/y0j5vAqmS9KhZV+GvaX+M5FuKNYoHbH7dcI02nK4Uo1coBIOhhsaMnDSrMe6uT2
-         V2xZ5Rh8AwFNoikmoKeae+9ANcFDDs+6K+Zej0NBCyMjWyNAOO4Tyo65fWluzwLeFU
-         CZgOru1q3+1YxjeQEKiy+YWHFDBVBU3Ztxsu/u1p/vYHrAVuxrbyx1BgYQkzaitQ8U
-         QPBD+JeyYElNVGqh6opkB2rDadHSFcl7VObwCn70e/v0Ly5QyBEeJkqLuFeOgEe124
-         vWvgPKFx4QREQ==
-X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
-Received: from mail.savoirfairelinux.com ([127.0.0.1])
-        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id gBJqZQIRYTyR; Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
-Received: from sfl-deribaucourt.rennes.sfl (lfbn-ren-1-676-174.w81-53.abo.wanadoo.fr [81.53.245.174])
-        by mail.savoirfairelinux.com (Postfix) with ESMTPSA id 18E839C035C;
-        Fri, 17 Jun 2022 09:46:18 -0400 (EDT)
-From:   Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-To:     andrew@lunn.ch, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, hkallweit1@gmail.com,
-        Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-Subject: [PATCH] net: dp83822: disable false carrier interrupt
-Date:   Fri, 17 Jun 2022 15:46:11 +0200
-Message-Id: <20220617134611.695690-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
-X-Mailer: git-send-email 2.25.1
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=e/ZwI6/BN3As4V+Hk45i5RGBnBZ09YbFMnFnKVxdi/0=;
+        b=mxbO4JHVFPGycvF6Kck5+xt1v3pUIG34WdSxN3Zscw1aDTFFvMISdJ577B/pQgeHLS
+         6GA95yiYw9ruQFUuR6O/DNo3LRe9oMkbr14DfuZnL43GWrKrLoMhaSAKSm2AHGwI90lN
+         JveYcstlfj5EOCJ84SnTJ+aVKptbPbWlM3VXv2cN6I1+nezx3UwepoVWJjlc2cA590Et
+         1GsAbh3PZPNol33H1hRx/O+amN7Vae0rMaPPy2cHp9UjqQJuBuaf5aF0hT8RQxSdc/CH
+         RnXPg95UwcC9mgfgARh4njHEucCC6hHOHxIPdKMaCB/m5JNRv3MYzh5xwRjpr5nlcDsq
+         PCtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=e/ZwI6/BN3As4V+Hk45i5RGBnBZ09YbFMnFnKVxdi/0=;
+        b=5SqR5Ntb86Uw4tzGuikSUfdLIG9KCwiHZZGZ+fJUp0XmNvc1Mnkdh4ZmcYR34bDlYo
+         A9pFFoFYUij+KgxTsR3C1oqysdkUNbMH22VBT5HiK2VntytvVVc36aBSb0NmOtDh8E0S
+         29dh5y+7kdJvDimQMDFub5znepyNcUIqJQLzqG83dCjEZpSL2/AVwxunc5XV8C8Saezv
+         tozZTxORW4vk7uhnw50fYL8xUGgSDIyEYZKWzJNd9APjQQ8fxhVvWiRTHEdnUyBwnd5k
+         ns0sCgYULAboKt8GBRzQJHWr3zTWUNSW85KC2yPIouG09X0qT9bplF1Q6aamKZyRCN4O
+         xHTw==
+X-Gm-Message-State: AJIora/0u3qGp5xbdwzkZjCbc4VBzmOnbGJ3v43gckvFLPU5NKnlYO8r
+        Kk6eVWBRgGsxAcFSQXGkZWo=
+X-Google-Smtp-Source: AGRyM1sSLJUnCFbcAfX8EfAMF/K4WBamM2ADKZuuEFvt75ViRCv5x+dyFKeJE6a2Tzxcv53Oy5ls4g==
+X-Received: by 2002:a5d:5190:0:b0:217:1567:d311 with SMTP id k16-20020a5d5190000000b002171567d311mr9600267wrv.225.1655474063515;
+        Fri, 17 Jun 2022 06:54:23 -0700 (PDT)
+Received: from [192.168.0.24] (80.174.78.229.dyn.user.ono.com. [80.174.78.229])
+        by smtp.gmail.com with ESMTPSA id m13-20020a5d4a0d000000b0021a2c923c72sm4824146wrq.69.2022.06.17.06.54.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jun 2022 06:54:21 -0700 (PDT)
+Message-ID: <5f53e0a4-f6d5-f9be-222b-e6361b837071@gmail.com>
+Date:   Fri, 17 Jun 2022 15:54:18 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v20 0/6] Add mutex support for MDP
+Content-Language: en-US
+To:     Moudy Ho <moudy.ho@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Rob Landley <rob@landley.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Alexandre Courbot <acourbot@chromium.org>, tfiga@chromium.org,
+        drinkcat@chromium.org, pihsun@chromium.org, hsinyi@google.com,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        daoyuan huang <daoyuan.huang@mediatek.com>,
+        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
+        allen-kh.cheng@mediatek.com, xiandong.wang@mediatek.com,
+        randy.wu@mediatek.com, jason-jh.lin@mediatek.com,
+        roy-cw.yeh@mediatek.com, river.cheng@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        cellopoint.kai@gmail.com
+References: <20220610063424.7800-1-moudy.ho@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220610063424.7800-1-moudy.ho@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When unplugging an Ethernet cable, false carrier events were produced by
-the PHY at a very high rate. Once the false carrier counter full, an
-interrupt was triggered every few clock cycles until the cable was
-replugged. This resulted in approximately 10k/s interrupts.
 
-Since the false carrier counter (FCSCR) is never used, we can safely
-disable this interrupt.
 
-In addition to improving performance, this also solved MDIO read
-timeouts I was randomly encountering with an i.MX8 fec MAC because of
-the interrupt flood. The interrupt count and MDIO timeout fix were
-tested on a v5.4.110 kernel.
+On 10/06/2022 08:34, Moudy Ho wrote:
+> Change since V19:
+> - Reduce parameters pass to function "mtk_mutex_write_sof"
+>    to avoid redundant action.
+> 
+> Change since V18:
+> - Rebase on v5.19-rc1
+> - Remove unnecessary functions:
+>    "mtk_mutex_set_mod", "mtk_mutex_clear_mod",
+>    "mtk_mutex_set_sof" and "mtk_mutex_clear_sof", and export
+>    "mtk_mutex_write_mod" and "mtk_mutex_write_sof" to
+>    set MOD/SOF directly.
+> - Remove unnecessary SOF tables and add new enumerations of SOF instead.
+> - Adjust the error checking for CMDQ operations.
+> 
+> Change since V17:
+> - Rebase on v5.18-rc6
+> - Fix undeclared identifier causing compilation to fail.
+> 
+> Change since V16:
+> - Rebase on v5.18-rc4
+> - Fix misplacement of definition "CONFIG_MTK_CMDQ" which
+>    caused compilation error when CMD is not supported.
+> 
+> Change since V15:
+> - Rebase on linux-next.
+> - As suggested by Angelo, split common parts into independent functions to
+>    make functions more concise.
+> - Based on safety considerations, increase the returned error number and
+>    message to facilitate error handling.
+> 
+> Change since V14:
+> - Rebase on linux-next.
+> - Add new SOF and MOD table for general interface to integrate the requirement
+>    of different modules.
+> - Remove unnecessary MOD structure.
+> - By Rob Herring's suggestion, revise the description of
+>    "mediatek,gce-client-reg" in MUTEX dt-bindings.
+> - Delete the redundant definition of MTK_MUTEX_ENABLE and modify corresponding
+>    function.
+> 
+> Change since V13:
+> - Rebase on linux-next tag:next-20220316
+> - Adjust the MUTEX MOD table structure and corresponding functions.
+> - Adjust the definition style about 8183 MDP MOD.
+> - Remove redundant definitions and enumerations.
+> - Adjust the CMDQ operation in MUTEX to be backward compatible
+> 
+> Change since V12:
+> - Rebase on linux-next
+> - Remove ISP related settings in MMSYS
+> - Removed CMDQ operations previously used by MDP in MMSYS
+> - Move mediatek MUTEX dt-binding path
+> - Add additional property in MUTEX for CMDQ operations
+> 
+> Change since V11:
+> - Rebase on v5.17-rc6.
+> 
+> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/matthias.bgg/linux.git/commit/?h=v5.17-next/soc&id=5f9b5b757e44de47ebdc116c14b90e3cc8bc7acb
+> [2]: https://git.kernel.org/pub/scm/linux/kernel/git/matthias.bgg/linux.git/commit/?h=v5.17-next/soc&id=831785f0e5b919c29e1bc5f9a74e9ebd38289e24
+> [3]: https://git.kernel.org/pub/scm/linux/kernel/git/matthias.bgg/linux.git/commit/?h=v5.17-next/soc&id=15f1768365aed810826a61fef4a744437aa5b426
+> 
+> Change since v10:
+> - For some ISP application scenarios, such as preview and recording
+>    at the same time.
+>    The routing table needs to be discarded, and the calculation result
+>    on the SCP side is used to write a suitable mux setting for
+>    1 input and 2 output.
+> - Adjust the GCE client register parsing method to avoid redundant warning logs.
+> 
+> Change since v9:
+> - Add API for MDP getting mutex mod.
+> 
+> Hi,
+> 
+> This patch splits mmsys and mutex settings from Media Data Path 3 (MDP3),
+> and original mailling list list below:
+> https://patchwork.kernel.org/project/linux-mediatek/cover/20211201095031.31606-1-moudy.ho@mediatek.com/
+> Corresponding settings and interfaces are added for MDP operation in the
+> mmsys and mutex drivers, which increases the independence of the modules
+> 
+> Moudy Ho (6):
+>    soc: mediatek: mutex: add common interface for modules setting
+>    soc: mediatek: mutex: add 8183 MUTEX MOD settings for MDP
+>    dt-bindings: soc: mediatek: move out common module from display folder
+>    dt-bindings: soc: mediatek: add gce-client-reg for MUTEX
+>    dts: arm64: mt8183: add GCE client property for Mediatek MUTEX
 
-Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirf=
-airelinux.com>
----
- drivers/net/phy/dp83822.c | 1 -
- 1 file changed, 1 deletion(-)
+If fixed the commit subject to arm64: dts: mt8183...
+Whole series applied,
 
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index e6ad3a494d32..95ef507053a6 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -230,7 +230,6 @@ static int dp83822_config_intr(struct phy_device *phy=
-dev)
- 			return misr_status;
-=20
- 		misr_status |=3D (DP83822_RX_ERR_HF_INT_EN |
--				DP83822_FALSE_CARRIER_HF_INT_EN |
- 				DP83822_LINK_STAT_INT_EN |
- 				DP83822_ENERGY_DET_INT_EN |
- 				DP83822_LINK_QUAL_INT_EN);
---=20
-2.25.1
+Thanks!
 
+>    soc: mediatek: mutex: add functions that operate registers by CMDQ
+> 
+>   .../mediatek/mediatek,mutex.yaml              |  14 ++-
+>   arch/arm64/boot/dts/mediatek/mt8183.dtsi      |   1 +
+>   drivers/soc/mediatek/mtk-mutex.c              | 119 +++++++++++++++++-
+>   include/linux/soc/mediatek/mtk-mutex.h        |  27 ++++
+>   4 files changed, 159 insertions(+), 2 deletions(-)
+>   rename Documentation/devicetree/bindings/{display => soc}/mediatek/mediatek,mutex.yaml (81%)
+> 
