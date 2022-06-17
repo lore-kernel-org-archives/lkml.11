@@ -2,103 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35161C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01714C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380944AbiFQKil (ORCPT
+        id S1381869AbiFQKkT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 06:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55944 "EHLO
+        Fri, 17 Jun 2022 06:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380514AbiFQKig (ORCPT
+        with ESMTP id S1381209AbiFQKkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 06:38:36 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A889656B23
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 03:38:35 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 85BF7E0003;
-        Fri, 17 Jun 2022 10:38:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1655462314;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=mpdxVeMQmq6NbsmT6VbTrJcO0H4eYfAO0o9n2OBIBmg=;
-        b=omxlk4Ni6JnP1XlKjlRilks5/FDMs6/PaQrD/Ep9SC2NECbuog37ZexMvUeqYaIJcIvDSx
-        QVT+k/6VHpfSsXqJpfECUrQb7TXGZPkgVxs3kO3rulRFlZ02sJgVnY8jb9MUNwrvrRcbwY
-        /CJgOZ89VtnUNB4/JaS7+hbP2qXElpK+Shk7vlKJeDyxV9pPgEIAqsbGIgBXAm96FDqXHs
-        0bFvKc47S3QJYrQ9VS4kYhhk+GeChwn9Vjyk+/2nvSzqk/xdHpOQMbMLjfc1efeX5JDRyG
-        ONf4v/b24io3DM9lq8LfPhNveDMn+SQAWKn1ZEPmnEtxh9kL0V20KCGbB8+rmQ==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [PATCH] reset: microchip-sparx5: allow building as a module
-Date:   Fri, 17 Jun 2022 12:37:30 +0200
-Message-Id: <20220617103730.490588-1-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 17 Jun 2022 06:40:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC5D62CD8;
+        Fri, 17 Jun 2022 03:40:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2C19B8299B;
+        Fri, 17 Jun 2022 10:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 57AF1C3411D;
+        Fri, 17 Jun 2022 10:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655462414;
+        bh=SIXB8pddVz1MMGWlkLcLLpXBpuhXOlmh3rxuxpd7Tos=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TXQHCHskqpRVv5nRKTmuoqzyjwrEo6ZkzURjP9bjvSBf8K3yiXflycBnoVVkdB4U6
+         qupcAeExngDlpueR1MMYCAYShrJWOj3rqzkXd3Q3CdMQoNFo0coTWms9T7emAaOZDP
+         5CjvDcOFElBzvyEoKLAreZLCtDXBuu2W54Bxd/drdRpkWIeFyoSc9NJOXgibt9Usuo
+         uOErBxRg5bxhgVfAzVaojSlCnrZZZdrGJ6m8MXlT8RAqSMM/68+dTA/L0WLD8VGz6/
+         Ofbjzg2DjuDdOPTsVOzjAPBiYELdPkTcOnomeCffeIZdWFhxK3QvFC1x5ZGOunLtKe
+         C0gIoUgSiKH/Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 39273E7385E;
+        Fri, 17 Jun 2022 10:40:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] hamradio: 6pack: fix array-index-out-of-bounds in
+ decode_std_command()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165546241422.18293.12311208765232374431.git-patchwork-notify@kernel.org>
+Date:   Fri, 17 Jun 2022 10:40:14 +0000
+References: <1655458266-27879-1-git-send-email-xujia39@huawei.com>
+In-Reply-To: <1655458266-27879-1-git-send-email-xujia39@huawei.com>
+To:     Xu Jia <xujia39@huawei.com>
+Cc:     linux-hams@vger.kernel.org, pabeni@redhat.com,
+        ajk@comnets.uni-bremen.de, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set RESET_MCHP_SPARX5 as a tristate and add MODULE_DEVICE_TABLE() to
-allow building this driver as a module.
+Hello:
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- drivers/reset/Kconfig                  | 2 +-
- drivers/reset/reset-microchip-sparx5.c | 8 ++------
- 2 files changed, 3 insertions(+), 7 deletions(-)
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/reset/Kconfig b/drivers/reset/Kconfig
-index 93c8d07ee328..5afbe2daecb1 100644
---- a/drivers/reset/Kconfig
-+++ b/drivers/reset/Kconfig
-@@ -115,7 +115,7 @@ config RESET_LPC18XX
- 	  This enables the reset controller driver for NXP LPC18xx/43xx SoCs.
- 
- config RESET_MCHP_SPARX5
--	bool "Microchip Sparx5 reset driver"
-+	tristate "Microchip Sparx5 reset driver"
- 	depends on ARCH_SPARX5 || SOC_LAN966 || COMPILE_TEST
- 	default y if SPARX5_SWITCH
- 	select MFD_SYSCON
-diff --git a/drivers/reset/reset-microchip-sparx5.c b/drivers/reset/reset-microchip-sparx5.c
-index 00b612a0effa..3d54dda3593e 100644
---- a/drivers/reset/reset-microchip-sparx5.c
-+++ b/drivers/reset/reset-microchip-sparx5.c
-@@ -149,6 +149,7 @@ static const struct of_device_id mchp_sparx5_reset_of_match[] = {
- 	},
- 	{ }
- };
-+MODULE_DEVICE_TABLE(of, mchp_sparx5_reset_of_match);
- 
- static struct platform_driver mchp_sparx5_reset_driver = {
- 	.probe = mchp_sparx5_reset_probe,
-@@ -158,12 +159,7 @@ static struct platform_driver mchp_sparx5_reset_driver = {
- 	},
- };
- 
--static int __init mchp_sparx5_reset_init(void)
--{
--	return platform_driver_register(&mchp_sparx5_reset_driver);
--}
--
--postcore_initcall(mchp_sparx5_reset_init);
-+module_platform_driver(mchp_sparx5_reset_driver);
- 
- MODULE_DESCRIPTION("Microchip Sparx5 switch reset driver");
- MODULE_AUTHOR("Steen Hegelund <steen.hegelund@microchip.com>");
+On Fri, 17 Jun 2022 17:31:06 +0800 you wrote:
+> Hulk Robot reports incorrect sp->rx_count_cooked value in decode_std_command().
+> This should be caused by the subtracting from sp->rx_count_cooked before.
+> It seems that sp->rx_count_cooked value is changed to 0, which bypassed the
+> previous judgment.
+> 
+> The situation is shown below:
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2] hamradio: 6pack: fix array-index-out-of-bounds in decode_std_command()
+    https://git.kernel.org/netdev/net/c/2b04495e21cd
+
+You are awesome, thank you!
 -- 
-2.36.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
