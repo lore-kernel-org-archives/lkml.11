@@ -2,162 +2,312 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B6DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 02:02:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B99E6C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 02:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379551AbiFQCCc (ORCPT
+        id S1379256AbiFQCE0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 22:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50334 "EHLO
+        Thu, 16 Jun 2022 22:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379535AbiFQCCZ (ORCPT
+        with ESMTP id S232401AbiFQCEX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 22:02:25 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1642863BEC;
-        Thu, 16 Jun 2022 19:02:25 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25H0Xv6I026644;
-        Fri, 17 Jun 2022 02:02:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
- from : message-id : references : date : in-reply-to : content-type :
- mime-version; s=corp-2021-07-09;
- bh=SBuh6gY9CRAaqHqjT5tk5DipCz8YtcIii7B3btVof2A=;
- b=JKIWparUDfYGkY+LRfSkwytEeHnD0wpFLim3UV275FlX7IG44d3ZgV3OBEhsYMmWxFM2
- 2B4OcvH0k5uOpnHB7jqE0hK1J3kPTPefLK1z9qHib29VxA2pRnrPBXGjblA4IxYOcS+i
- 7NcUnszAMODoKzahZH6VLNVcqsdYnmrWno1Q6vJCEFBrrK0wwkmFcJ7AqgBQvtb5YnMo
- BYf0ekI2VxjQ1MR6xtN59IFmAJ28XwmbXBMatzNVcYMBLwusT4dwwWVpN6LwxeqhH2vd
- LYRcacCiwCU5yz9lqY54oXGVltsUWNsNCHCWxucd0Jl1gDg2sod3cPboI8H10CTuwsTo Ug== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmhn0mshc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 17 Jun 2022 02:02:05 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25H1u1Ud022600;
-        Fri, 17 Jun 2022 02:02:04 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2176.outbound.protection.outlook.com [104.47.55.176])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gpr7qqae0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 17 Jun 2022 02:02:04 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HheykNQAeFme35hxyRASPlEoRj+kS+eKYmo18Uy8tll0liljb2/oh3/DoyRvAXnOIWOMKHiX00Eix37MvQNb3+LknexCqqeqEObfJ/vqUtD41X7eyS5CpREX20Mr/GFduJ2vzmAMAuj3aJ8HgyzrVnkpMyglWwxOShOYPk43YN+H7GKCXeL6RlKlvWN3JKjt0VPKttbZvIDWaEgOwFkvby+SZLNI0tv6FSmWpYw8Ns3Xk77mlXqkaBuwwsmUDP5JkkcbMw9u5h6853C8M9PEP/EuQg1879G8QPHvkGNrPm1sbCKh5Hz1K/FAb9BMEdUyUjjxRgq8yYMYzgf5WVUTgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SBuh6gY9CRAaqHqjT5tk5DipCz8YtcIii7B3btVof2A=;
- b=QFLJeFjUxQki1d5pQw4X8nqtSMeI7nnIf3nqVWHlXRCi//fNfStoGzMvZ2KoV6/smk7ADD+y2UdmOjFsL/q8eQcpJwjsl5/la3eloWZpbSHtSb6hHkKmpbcwXhxVdXA5YklpNw/TC7UYkP67a0ufmbBr6AtkAEyllfDyWz6lXJPWQPgSZSNb36KtuivJTApysNEkbGd4kYeyDVNAl0ez8VlJ2e74IHWRhp2Ke4j1HL7TdfYkBp2lDyvpqUwvqgcIV4LLeCXHNncp85Hpgca5xqw6XaYNrCV9ZsBUiGWlE58TIsPi4i8R3UAFpJsRG8Uget1/xFw7t4/rDXjkr1/OZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Thu, 16 Jun 2022 22:04:23 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29DCA61602
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 19:04:21 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id d13so2681612plh.13
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 19:04:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SBuh6gY9CRAaqHqjT5tk5DipCz8YtcIii7B3btVof2A=;
- b=Kf/4uQQtsfIWoCJNRL3eTIiD4YMC/rnSwkFqdDy18rxu8q4EPPu/drHHiC7baxPQDUCr1UhVA1Rdpo3kgwB4n4qpWBJ6DbtWeHIjdVqC0kKeEJDT+aDuBHeEPmMttiDHLKF6HUpevlU7hub0A5eH0XWoHGcZpA/esD4jyanyfko=
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com (2603:10b6:510:3d::12)
- by DM5PR10MB2028.namprd10.prod.outlook.com (2603:10b6:3:111::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.17; Fri, 17 Jun
- 2022 02:02:02 +0000
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::6516:e908:d2bd:ca45]) by PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::6516:e908:d2bd:ca45%5]) with mapi id 15.20.5353.015; Fri, 17 Jun 2022
- 02:02:02 +0000
-To:     Chao Yu <chao@kernel.org>
-Cc:     jejb@linux.ibm.com, martin.petersen@oracle.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hch@infradead.org, bvanassche@acm.org
-Subject: Re: [PATCH v4] scsi: support packing multi-segment in UNMAP command
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <yq1wndgnj4i.fsf@ca-mkp.ca.oracle.com>
-References: <20220616013617.2284341-1-chao@kernel.org>
-Date:   Thu, 16 Jun 2022 22:01:59 -0400
-In-Reply-To: <20220616013617.2284341-1-chao@kernel.org> (Chao Yu's message of
-        "Thu, 16 Jun 2022 09:36:17 +0800")
-Content-Type: text/plain
-X-ClientProxiedBy: DM6PR02CA0136.namprd02.prod.outlook.com
- (2603:10b6:5:1b4::38) To PH0PR10MB4759.namprd10.prod.outlook.com
- (2603:10b6:510:3d::12)
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cSMpGids9UDkbuNot6QlyA8Acj1imseCpqUM2yQS8Hw=;
+        b=Trj/2Ke47Mh4YYG3nOrj/qAt3qMeVPnXr4Fj5l+jj+XxVab0xSvsudBvvXzkvQt6/z
+         vOYNcpl2emKUNjH2UASVNWWFnXxkVp2DXknC0yZNdSeo3qdQnVLaUzpppwmsI3z2oL3k
+         8iwY5JhB7MEafnWjDyOqXHz2H3/ralcRtj0GqkaCi6UNe6FopPTrvt/fALeN6K2nlDw4
+         juwr3EIaWQC3/VQm/xF9nhdEaMydjaCF5xRTaqIPHTDEqNrpNSL4NhzoL0uvmii2WML+
+         WLNW24x66OGaiHRi7KJSzNgnAusVQVwHzECeLek4O4fSuiKRfQjfP57rdMKhOiGRIrv7
+         WeQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cSMpGids9UDkbuNot6QlyA8Acj1imseCpqUM2yQS8Hw=;
+        b=eJN82wuV/U7L+f4gsDoRmCovvfNPmsqW9kTd5DIGEKfolqHO7wWmP+XnVGdkZ5OX9z
+         2j90ZxWHsb2J0fE1uTWD70kV8S3A2zD7rgn+Wkp+/PBUrj52lh73soWL6BG7IK5IPFnJ
+         0kwe/5OdgvPTlU1Xj5qbgvrcIBhnyzgfwRMIgdxhdcfP4qTVRmtkE3pZSJbWwj0sRuPC
+         UyDv83pC8AbeQMq4oLVhyYRrWDwx7Zlq8iJ1O+OMqMpZsLZkg8PgdNPOFCB6WKyTChGW
+         AHZISn1CHgAfL1eBcw2FmtS5eExm0lsPWi/bDKtvBAptuNvo+EshfCrwTtbiVJUDcjHO
+         G2TQ==
+X-Gm-Message-State: AJIora8iY9xGPtZzyzIXO0Zsqj7lN3Da+IpzFR5dEViGRyij/cwcl303
+        IzvsiE+Cdwnb/N1p9YzSnuT4KJUUR0IdGlE/leg=
+X-Google-Smtp-Source: AGRyM1t2Lpmw9ybw1/rldNysMUsspyJJkhGp6x2hi1Op7v6KC10fe5Y6Vbo0R6qLtchL2myKjhRvCA==
+X-Received: by 2002:a17:90b:3142:b0:1e3:1253:be27 with SMTP id ip2-20020a17090b314200b001e31253be27mr8147267pjb.44.1655431460609;
+        Thu, 16 Jun 2022 19:04:20 -0700 (PDT)
+Received: from C02FG34NMD6R.bytedance.net ([139.177.225.231])
+        by smtp.gmail.com with ESMTPSA id p14-20020a170902e74e00b00163bfaf0b17sm2280007plf.233.2022.06.16.19.04.17
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 16 Jun 2022 19:04:19 -0700 (PDT)
+From:   Albert Huang <huangjie.albert@bytedance.com>
+To:     mst@redhat.com
+Cc:     yuanzhu@bytedance.com,
+        "huangjie.albert" <huangjie.albert@bytedance.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4] virtio_ring : keep used_wrap_counter in vq->last_used_idx
+Date:   Fri, 17 Jun 2022 10:04:11 +0800
+Message-Id: <20220617020411.80367-1-huangjie.albert@bytedance.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <20220616101823-mutt-send-email-mst@kernel.org>
+References: <20220616101823-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d08a1291-e117-483c-7f81-08da50055eb0
-X-MS-TrafficTypeDiagnostic: DM5PR10MB2028:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR10MB202881B75B8C8041978945F08EAF9@DM5PR10MB2028.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Z8EFoJJ+KQk2yT4msppNXOoYiAami0/0zmF2XcqfHFFbT8kbPBk1evoawGgipWMc8uo5z4hwNZ5zv0+yWa6zCcRfkeiXCqHpUXFhG58lqPYuzZUvazCHvRILje5OZXCLeb2k5keMWA+V8NNFPoHqn0p2l3vYmcXdZE4NC8IkCdw/J0ZHBidraNvb8haOwBUt6a3Jo+n7nd/24Q9bEWsmg6TUGwYl4H8ppK3k7HngiN2pYQNS6N2kTLzwJ9WWnv0zuYzxVwwe57KN7ekvdCNOCDBDskSu/IYUCLUB4aSvTXuq6aYrKObynhjsk1kM9I+RAo82+yBBvMIU3JoyN78DmIhSLfy+OW8YFdpU47xzD7EVTsmx5zjO6NAifqxhSlEpBCerOGlOAOfsehm/duch0tEu7o2XTE3Hl7WyA+sQC5u81Ap5N/1NumADK1BVp/lnECrpg5obGeRMptF5kiszAIvola9x0ap1f7q+XwusHlzthk36nBqaIM6gqq+L5yb/4VfmTyN58gDK4QR6Eqe59TzzKHLDkKrthvKZHvjgG2bvP4NmWOTcAkDNvJ9338/7CK/RVUDHymFTnRDx2QCPKQg3cXLLo77if1PCRWxnxhruSkJ0xjnVjLAKGC0VRXb4vjXP2AyzavbDIhIglN2lKEDRr2bHXxgcxLytSMfuNHNah2cIzPa9BDcn+zOwHOgnfVoSCuzRB7ued4DD+vYzNw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4759.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(66556008)(186003)(38350700002)(5660300002)(8936002)(66476007)(66946007)(4744005)(83380400001)(498600001)(38100700002)(8676002)(316002)(2906002)(6916009)(36916002)(6512007)(26005)(6486002)(86362001)(6506007)(6666004)(4326008)(52116002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KvAfjj0cLS3ZwkYFtLUx3d8cm2vSJihEnIrAs/9E50aHlZ3opTaN/npDSVAO?=
- =?us-ascii?Q?O2L9eGaj6878R+sBNZHcUk3JiH4EfMpcY0KR4iqLT3zgY6AtDWBmkyi3zVbr?=
- =?us-ascii?Q?Hp6LyoqVsPsvUwPBcaSnTpdm8BJTb+VdFVhhSkBW/xU/XagGaqL8hwq9uUAr?=
- =?us-ascii?Q?fzjVk2hqh0i0lKnu3VeXc9NF+Gp2GLBHdfAnzIURcf6OG7bXSwr9jMeklVIo?=
- =?us-ascii?Q?V/+KQ4XTT+MoL5Ni21oT1hH/Ix6dLdrHoVWViXw1ZzgzU90J3hT2i5ORtNH/?=
- =?us-ascii?Q?umqt9D0psCl2qewZ9wnU8m1vXuzTexmqOVEKFZm1EeGwO9aZL/4c2+Sy3Mm9?=
- =?us-ascii?Q?hDqd+3Psk8Ql0lFT7H2tLqAbwFFV2y7CkTGJn9kBCxa/DFCHljPF9oAXW3Ua?=
- =?us-ascii?Q?gw8Q4FZfS1/F+0Nm4gBMwW2I2VuJHs79uXTANBzlI+98rNS0YeXMhq3DRo+D?=
- =?us-ascii?Q?3t5JH/hi5li6Ih4f16EEzwqNYc/GYO3XXtyCDG9fQTzhp+NElKAvhy4+w9uY?=
- =?us-ascii?Q?MCplJ3Jy100dyLKFTqDwJZoa6heTWIYxu/fewMHpVwLSsnOZwBdm4lJYjTLS?=
- =?us-ascii?Q?q/ZS7Ah/Y6+Y8js+wZd2aq6h/BY9uMg9vEMsSdXtrN2S009V6NC+ukwlxR56?=
- =?us-ascii?Q?JVIZ1O2Pj2MFspu184VtOo3FUKjeTX61V9crrlUCXZTwK9lhtyBMBWM01ijq?=
- =?us-ascii?Q?h5g2fcYwO2QEuhw5EardruwfVUoDHvYDBai1NoNKNAPLwII7jUcC/tWzN3Li?=
- =?us-ascii?Q?cwpUX/DTgiLsOl/kcz/GdyEVGZT9g3RkoyOPJxGYIi3lIctmvrImaaZ9Asxq?=
- =?us-ascii?Q?ImDWUum5EX8oYLfqCHs+d1HgfNArts0TkhsxBIUnUzfD2FYsIcKeax8At4g1?=
- =?us-ascii?Q?mzh2jJJBF/W+DceCdS94YXXBqXSwqBbF9Un3+rAczTnwVCjGsusBfa/0iEEz?=
- =?us-ascii?Q?DbN85p9mZ5OKg1b+MAf9d62TkEnUeZN0ZLAUz4XHepLiIEozUtgK4bPwLzQF?=
- =?us-ascii?Q?jVZoLXtg4Zj1Xdxws9tH2A99hQ3Eln4JDegijZjOMvoXsQbkImQ048ZYuMWm?=
- =?us-ascii?Q?fZS8kNbCjCaKwayYkdUwaY08xkhBWo0XaWwicXIuYe+8kiznQYXQ9vWmDW3n?=
- =?us-ascii?Q?dOlMxtf7nNcya73ZO5S/NtI7qyOf6F9LX+SnwIJoiVPv3WSrlHO+AGKfNvKK?=
- =?us-ascii?Q?nJu/lLmjxAJPoSPtlLkRVUnLJfmlm+REiyuOj7tLShuz0MZQwhPbD0U2FQC7?=
- =?us-ascii?Q?9b6jYByGvlulpr3RxgUK5YXGCXVnCGINh9Gj4rHrFihtdobnvoQW7/yKaguQ?=
- =?us-ascii?Q?AOaODJxOrpgmHYAmspR2Lq+Pq25fvsN/p0IwrBmb0bLYMSRDufIZBmtPHfmA?=
- =?us-ascii?Q?TKHvVHtpx7w85b/1er3nj0ArxdxGamNd1/Z8wMpUs8Nu81VvHTov96aO3IXF?=
- =?us-ascii?Q?ghk5EC5gt5JUqfaDpEqckWe0gP/67mhWNWlonjXgscARmq5qecVNBNCKPcB8?=
- =?us-ascii?Q?0o/tzdz+2V2/8JWhVSTyuX53UReqtCmNpq2UTtnMPm2CWkvnfcHQn9GcqKgd?=
- =?us-ascii?Q?aTpJaKFTmy3HlCwwsPlGMHSxqNf8W/M3VPNfzIxs7Wc+3a4rvIr2MjLv/vgU?=
- =?us-ascii?Q?f/HMrIWYSjRqjz718zbZQ1eE2modrSkTAG04r0C16jOngTr9gUae0WhfQ2fg?=
- =?us-ascii?Q?yo2+K3xTNYykUdwu6tO5eSN/kR1+Y/o/5tmBnkwR22Ndfedzd2i0Hy80JSJn?=
- =?us-ascii?Q?HAyoR517Cx5zUoNiHKbHp3BFqyeb+cw=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d08a1291-e117-483c-7f81-08da50055eb0
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4759.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 02:02:02.2217
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: q69gfPFghZ7sZQtS2O3ZIhjmPLLYi6Bo3O0jcT9TGLuK/Aw5UJ7/C//L8sKzS3aiJcvHzt3DdJo4oFhoeZlfMn5TT9fRPbNJ+K8qjRJeQkM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB2028
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-06-16_18:2022-06-16,2022-06-16 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 mlxscore=0
- adultscore=0 suspectscore=0 mlxlogscore=850 spamscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206170007
-X-Proofpoint-GUID: T7HGnRwBOGbR05GDKJHV8IzBObB3wDkn
-X-Proofpoint-ORIG-GUID: T7HGnRwBOGbR05GDKJHV8IzBObB3wDkn
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: "huangjie.albert" <huangjie.albert@bytedance.com>
 
-Chao,
+the used_wrap_counter and the vq->last_used_idx may get
+out of sync if they are separate assignment，and interrupt
+might use an incorrect value to check for the used index.
 
-> As SCSI SBC4 specification section 5.30.2 describes that it can
-> support unmapping one or more LBA range in single UNMAP command.
->
-> However, previously we only pack one LBA range in UNMAP command by
-> default no matter device gives the block limits that says it can
-> support unmapping multiple LBA ranges with a single UNMAP command.
->
-> This patch sets max_discard_segments config according to block limits
-> of device, and supports unmapping multiple LBA ranges with a single
-> UNMAP command.
+for example:OOB access
+ksoftirqd may consume the packet and it will call:
+virtnet_poll
+	-->virtnet_receive
+		-->virtqueue_get_buf_ctx
+			-->virtqueue_get_buf_ctx_packed
+and in virtqueue_get_buf_ctx_packed:
 
-This looks OK to me. Will test with a variety of targets.
+vq->last_used_idx += vq->packed.desc_state[id].num;
+if (unlikely(vq->last_used_idx >= vq->packed.vring.num)) {
+         vq->last_used_idx -= vq->packed.vring.num;
+         vq->packed.used_wrap_counter ^= 1;
+}
 
+if at the same time, there comes a vring interrupt，in vring_interrupt:
+we will call:
+vring_interrupt
+	-->more_used
+		-->more_used_packed
+			-->is_used_desc_packed
+in is_used_desc_packed, the last_used_idx maybe >= vq->packed.vring.num.
+so this could case a memory out of bounds bug.
+
+this patch is to keep the used_wrap_counter in vq->last_used_idx
+so we can get the correct value to check for used index in interrupt.
+
+v3->v4:
+- use READ_ONCE/WRITE_ONCE to get/set vq->last_used_idx
+
+v2->v3:
+- add inline function to get used_wrap_counter and last_used
+- when use vq->last_used_idx, only read once
+  if vq->last_used_idx is read twice, the values can be inconsistent.
+- use last_used_idx & ~(-(1 << VRING_PACKED_EVENT_F_WRAP_CTR))
+  to get the all bits below VRING_PACKED_EVENT_F_WRAP_CTR
+
+v1->v2:
+- reuse the VRING_PACKED_EVENT_F_WRAP_CTR
+- Remove parameter judgment in is_used_desc_packed,
+because it can't be illegal
+
+Signed-off-by: huangjie.albert <huangjie.albert@bytedance.com>
+---
+ drivers/virtio/virtio_ring.c | 75 ++++++++++++++++++++++--------------
+ 1 file changed, 47 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index 13a7348cedff..719fbbe716d6 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -111,7 +111,12 @@ struct vring_virtqueue {
+ 	/* Number we've added since last sync. */
+ 	unsigned int num_added;
+ 
+-	/* Last used index we've seen. */
++	/* Last used index  we've seen.
++	 * for split ring, it just contains last used index
++	 * for packed ring:
++	 * bits up to VRING_PACKED_EVENT_F_WRAP_CTR include the last used index.
++	 * bits from VRING_PACKED_EVENT_F_WRAP_CTR include the used wrap counter.
++	 */
+ 	u16 last_used_idx;
+ 
+ 	/* Hint for event idx: already triggered no need to disable. */
+@@ -154,9 +159,6 @@ struct vring_virtqueue {
+ 			/* Driver ring wrap counter. */
+ 			bool avail_wrap_counter;
+ 
+-			/* Device ring wrap counter. */
+-			bool used_wrap_counter;
+-
+ 			/* Avail used flags. */
+ 			u16 avail_used_flags;
+ 
+@@ -973,6 +975,15 @@ static struct virtqueue *vring_create_virtqueue_split(
+ /*
+  * Packed ring specific functions - *_packed().
+  */
++static inline bool packed_used_wrap_counter(u16 last_used_idx)
++{
++	return !!(last_used_idx & (1 << VRING_PACKED_EVENT_F_WRAP_CTR));
++}
++
++static inline u16 packed_last_used(u16 last_used_idx)
++{
++	return last_used_idx & ~(-(1 << VRING_PACKED_EVENT_F_WRAP_CTR));
++}
+ 
+ static void vring_unmap_extra_packed(const struct vring_virtqueue *vq,
+ 				     struct vring_desc_extra *extra)
+@@ -1406,8 +1417,14 @@ static inline bool is_used_desc_packed(const struct vring_virtqueue *vq,
+ 
+ static inline bool more_used_packed(const struct vring_virtqueue *vq)
+ {
+-	return is_used_desc_packed(vq, vq->last_used_idx,
+-			vq->packed.used_wrap_counter);
++	u16 last_used;
++	u16 last_used_idx;
++	bool used_wrap_counter;
++
++	last_used_idx = READ_ONCE(vq->last_used_idx);
++	last_used = packed_last_used(last_used_idx);
++	used_wrap_counter = packed_used_wrap_counter(last_used_idx);
++	return is_used_desc_packed(vq, last_used, used_wrap_counter);
+ }
+ 
+ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+@@ -1415,7 +1432,8 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+ 					  void **ctx)
+ {
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
+-	u16 last_used, id;
++	u16 last_used, id, last_used_idx;
++	bool used_wrap_counter;
+ 	void *ret;
+ 
+ 	START_USE(vq);
+@@ -1434,7 +1452,9 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+ 	/* Only get used elements after they have been exposed by host. */
+ 	virtio_rmb(vq->weak_barriers);
+ 
+-	last_used = vq->last_used_idx;
++	last_used_idx = READ_ONCE(vq->last_used_idx);
++	used_wrap_counter = packed_used_wrap_counter(last_used_idx);
++	last_used = packed_last_used(last_used_idx);
+ 	id = le16_to_cpu(vq->packed.vring.desc[last_used].id);
+ 	*len = le32_to_cpu(vq->packed.vring.desc[last_used].len);
+ 
+@@ -1451,12 +1471,15 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+ 	ret = vq->packed.desc_state[id].data;
+ 	detach_buf_packed(vq, id, ctx);
+ 
+-	vq->last_used_idx += vq->packed.desc_state[id].num;
+-	if (unlikely(vq->last_used_idx >= vq->packed.vring.num)) {
+-		vq->last_used_idx -= vq->packed.vring.num;
+-		vq->packed.used_wrap_counter ^= 1;
++	last_used += vq->packed.desc_state[id].num;
++	if (unlikely(last_used >= vq->packed.vring.num)) {
++		last_used -= vq->packed.vring.num;
++		used_wrap_counter ^= 1;
+ 	}
+ 
++	last_used = (last_used | (used_wrap_counter << VRING_PACKED_EVENT_F_WRAP_CTR));
++	WRITE_ONCE(vq->last_used_idx, last_used);
++
+ 	/*
+ 	 * If we expect an interrupt for the next entry, tell host
+ 	 * by writing event index and flush out the write before
+@@ -1465,9 +1488,7 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
+ 	if (vq->packed.event_flags_shadow == VRING_PACKED_EVENT_FLAG_DESC)
+ 		virtio_store_mb(vq->weak_barriers,
+ 				&vq->packed.vring.driver->off_wrap,
+-				cpu_to_le16(vq->last_used_idx |
+-					(vq->packed.used_wrap_counter <<
+-					 VRING_PACKED_EVENT_F_WRAP_CTR)));
++				cpu_to_le16(vq->last_used_idx));
+ 
+ 	LAST_ADD_TIME_INVALID(vq);
+ 
+@@ -1499,9 +1520,7 @@ static unsigned int virtqueue_enable_cb_prepare_packed(struct virtqueue *_vq)
+ 
+ 	if (vq->event) {
+ 		vq->packed.vring.driver->off_wrap =
+-			cpu_to_le16(vq->last_used_idx |
+-				(vq->packed.used_wrap_counter <<
+-				 VRING_PACKED_EVENT_F_WRAP_CTR));
++			cpu_to_le16(vq->last_used_idx);
+ 		/*
+ 		 * We need to update event offset and event wrap
+ 		 * counter first before updating event flags.
+@@ -1518,8 +1537,7 @@ static unsigned int virtqueue_enable_cb_prepare_packed(struct virtqueue *_vq)
+ 	}
+ 
+ 	END_USE(vq);
+-	return vq->last_used_idx | ((u16)vq->packed.used_wrap_counter <<
+-			VRING_PACKED_EVENT_F_WRAP_CTR);
++	return vq->last_used_idx;
+ }
+ 
+ static bool virtqueue_poll_packed(struct virtqueue *_vq, u16 off_wrap)
+@@ -1537,7 +1555,7 @@ static bool virtqueue_poll_packed(struct virtqueue *_vq, u16 off_wrap)
+ static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
+ {
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
+-	u16 used_idx, wrap_counter;
++	u16 used_idx, wrap_counter, last_used_idx;
+ 	u16 bufs;
+ 
+ 	START_USE(vq);
+@@ -1550,9 +1568,10 @@ static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
+ 	if (vq->event) {
+ 		/* TODO: tune this threshold */
+ 		bufs = (vq->packed.vring.num - vq->vq.num_free) * 3 / 4;
+-		wrap_counter = vq->packed.used_wrap_counter;
++		last_used_idx = READ_ONCE(vq->last_used_idx);
++		wrap_counter = packed_used_wrap_counter(last_used_idx);
+ 
+-		used_idx = vq->last_used_idx + bufs;
++		used_idx = packed_last_used(last_used_idx) + bufs;
+ 		if (used_idx >= vq->packed.vring.num) {
+ 			used_idx -= vq->packed.vring.num;
+ 			wrap_counter ^= 1;
+@@ -1582,9 +1601,10 @@ static bool virtqueue_enable_cb_delayed_packed(struct virtqueue *_vq)
+ 	 */
+ 	virtio_mb(vq->weak_barriers);
+ 
+-	if (is_used_desc_packed(vq,
+-				vq->last_used_idx,
+-				vq->packed.used_wrap_counter)) {
++	last_used_idx = READ_ONCE(vq->last_used_idx);
++	wrap_counter = packed_used_wrap_counter(last_used_idx);
++	used_idx = packed_last_used(last_used_idx);
++	if (is_used_desc_packed(vq, used_idx, wrap_counter)) {
+ 		END_USE(vq);
+ 		return false;
+ 	}
+@@ -1689,7 +1709,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
+ 	vq->notify = notify;
+ 	vq->weak_barriers = weak_barriers;
+ 	vq->broken = true;
+-	vq->last_used_idx = 0;
++	vq->last_used_idx = 0 | (1 << VRING_PACKED_EVENT_F_WRAP_CTR);
+ 	vq->event_triggered = false;
+ 	vq->num_added = 0;
+ 	vq->packed_ring = true;
+@@ -1720,7 +1740,6 @@ static struct virtqueue *vring_create_virtqueue_packed(
+ 
+ 	vq->packed.next_avail_idx = 0;
+ 	vq->packed.avail_wrap_counter = 1;
+-	vq->packed.used_wrap_counter = 1;
+ 	vq->packed.event_flags_shadow = 0;
+ 	vq->packed.avail_used_flags = 1 << VRING_PACKED_DESC_F_AVAIL;
+ 
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.31.1
+
