@@ -2,98 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 17:50:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB596C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 17:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383434AbiFQRuv (ORCPT
+        id S1382906AbiFQRvh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 13:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56956 "EHLO
+        Fri, 17 Jun 2022 13:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230465AbiFQRuu (ORCPT
+        with ESMTP id S229975AbiFQRvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 13:50:50 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516FC49F95;
-        Fri, 17 Jun 2022 10:50:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655488249; x=1687024249;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5u5FYKOyuT299I3BoB0ioyZU3Fi1j7bhWjLsZJxMg3Y=;
-  b=DU2+fq8rkY2laCFr+xcqzL2GATsPcM29fQ2Eliyk57FKJFZ9CvrSpkId
-   /Ni6EiDZSRgdEVrN1L+aGPux39sBPOuNxulaJUC7YME93cbhkFUBi11p/
-   lVYeFvJEF4Vo5n4LzkF718S5DWa2LwTZV6mzDTDQpB81zX+GuBzJxBmQx
-   8wEdgoOd2X3auWdcvcHuVAxYMiOlTGd7RaRio/4UnvysiETmvMm7eDnYo
-   zMa1/NIroOmVMUnmYUEKvHw1KHqeW3YjLY/qlI3Jzxj7nOQZlG7qfSFhI
-   2OXWnrdPRfu2LoljI1k7rYoMFsVZX0cNBSfDzo5VIYRlKJkI4R2HTibaX
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="277093888"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="277093888"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 10:27:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="912682470"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 17 Jun 2022 10:27:50 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o2Fl8-000PdZ-60;
-        Fri, 17 Jun 2022 17:27:50 +0000
-Date:   Sat, 18 Jun 2022 01:27:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Lei He <helei.sig11@bytedance.com>, herbert@gondor.apana.org.au,
-        davem@davemloft.net, dhowells@redhat.com, mst@redhat.com
-Cc:     kbuild-all@lists.01.org, arei.gonglei@huawei.com,
-        jasowang@redhat.com, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pizhenwei@bytedance.com,
-        helei.sig11@bytedance.com, f4bug@amsat.org, berrange@redhat.com
-Subject: Re: [PATCH 4/4] virtio-crypto: support ECDSA algorithm
-Message-ID: <202206180117.Jk42sS41-lkp@intel.com>
-References: <20220617070754.73667-6-helei.sig11@bytedance.com>
+        Fri, 17 Jun 2022 13:51:36 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E0E4AE19;
+        Fri, 17 Jun 2022 10:51:35 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id h8so5245941iof.11;
+        Fri, 17 Jun 2022 10:51:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=grjrAGI4VNuEsZ3QNXKvxidIo/MX1HBbCbb5NRnse+k=;
+        b=SMzhwmMFoTT6L9qoBI9jQ7LbYRxV1Q/MJDuIgZaqzIQtm5Z9mHNC92pKhWfzWLV0L+
+         zJYYvFHCrajTHFLC6tGPTj+3QkxkZ4TuxjxBc+VaXDeLvV1ou3j6PJolzwgH/ohJlqAu
+         Q9er51KtPCUlE1mcV0CGJ3WQvE1qFl1cTmU1rLW+Po39o4ZxwEuwYo4uxH68aVtZM200
+         JQ7lEdwFCj70Je4tkJK93P6iuZq1xcmgkMkS7+B7kfELwD0rv+BaSw8CGGnlaHQ4/A5j
+         yJXMbmxkZTV4KtqoVRDDnDeWDgSSsuOdFX862Zeoau5vYNpbYJQZJ5BwcYvpqjQtglAw
+         6kIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=grjrAGI4VNuEsZ3QNXKvxidIo/MX1HBbCbb5NRnse+k=;
+        b=4aqlbskYkbx5ebirnxz01NWizVmnG6ZGwPtUWTEpmZ0mTRYzAEMlw41qDtS/K+S+nn
+         N5CFyHDJtY3r8sFMf+xwWX7VX8ONq7ZkSiAlqs93zgxrn/4KRjQkFUJwOfoRqJ108HdI
+         zBYlXUZKmx9U/Lk1jyvn/wIwoB9ktOJw7UAuzhk+5TQarVSKWYmlZgoCikCPRNRvzPWh
+         ECX3xb206aDPPFP631JaopmIcGDSakHprvJv5DUKlEKthxp3hTMYEN9O8HrE5AnlDAxD
+         jvaKHS80dVmPA8DPKvr6SI5moTqXqSVobXti00VLaWkG19SBkFgo3Jf/utfQLFIk0DPY
+         FpAA==
+X-Gm-Message-State: AJIora+qAgoyGcfmFgd7/oK8gg65eoTC8XluOpmTKS/koN7iKKrA8SKu
+        8tys++A+i54SJHPh+42LfM+hEsV2rDXzwzWaLeTH0HjDamI=
+X-Google-Smtp-Source: AGRyM1stNa4oiKHeh/+bvfYGv7PV+gk7a4nSJEBQ6BNXihalHF+mrDme9X1gUVtaoWweJP+wfGjJtKOh3haTKHT9S8k=
+X-Received: by 2002:a05:6638:1415:b0:331:d318:83ab with SMTP id
+ k21-20020a056638141500b00331d31883abmr6251119jad.126.1655488294457; Fri, 17
+ Jun 2022 10:51:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220617070754.73667-6-helei.sig11@bytedance.com>
+References: <20220616104541.16289-1-jslaby@suse.cz> <CA+icZUW8O-HUSpw-656o6YZOiR2ZiCXjxsJwm2kctT6DHrs=4g@mail.gmail.com>
+ <CA+icZUV6bM2_jxyROK5B4XRid6fv8oX6YYNEdHUX8e_1OAdQYA@mail.gmail.com>
+ <CA+icZUUSTcrJqZB-gwNYt5objVg1J5+Ous6_hof0_A6eVCM-Kg@mail.gmail.com> <CAKwvOdmb5xdF70TzNp=4STCpzkGh16FnuKE1KbdzDhHt=OuRFA@mail.gmail.com>
+In-Reply-To: <CAKwvOdmb5xdF70TzNp=4STCpzkGh16FnuKE1KbdzDhHt=OuRFA@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Fri, 17 Jun 2022 19:50:58 +0200
+Message-ID: <CA+icZUWZKGEQ_VbnRL03SRAicEMi4r4J0dLRgXJgHvRg7DBM7A@mail.gmail.com>
+Subject: Re: [PATCH] kbuild: pass jobserver to cmd_ld_vmlinux.o
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Lei,
+On Fri, Jun 17, 2022 at 6:32 PM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> On Fri, Jun 17, 2022 at 3:35 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> >
+> > On Fri, Jun 17, 2022 at 12:53 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> > >
+> > > On Thu, Jun 16, 2022 at 4:09 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> > > >
+> > > > On Thu, Jun 16, 2022 at 12:45 PM Jiri Slaby <jslaby@suse.cz> wrote:
+> > > > >
+> > > > > Until the link-vmlinux.sh split (cf. the commit below), the linker was
+> > > > > run with jobserver set in MAKEFLAGS. After the split, the command in
+> > > > > Makefile.vmlinux_o is not prefixed by "+" anymore, so this information
+> > > > > is lost.
+> > > > >
+> > > > > Restore it as linkers working in parallel (esp. the LTO ones) make a use
+> > > > > of it.
+>
+> TBH, I agree with Masahiro. I didn't understand this comment "esp. the
+> LTO ones."  Jiri, can you clarify what you mean here?
+>
+> > [ CC Nathan and Sami ]
+> >
+> > I re-checked as my build-time takes approx. 15mins more than usual
+> > with Linux v5.17.
+> >
+> > [ Perf - seconds time elapsed ]
+> > v5.17: approx. 12500
+> > v5.19: approx. 13500
+> >
+> > +1.000 secs = +16,67mins
+>
+> Does this patch make a difference?
+> https://lore.kernel.org/linux-kbuild/20220616195759.3214538-1-samitolvanen@google.com/
+>
 
-Thank you for the patch! Yet something to improve:
+Running a new build...
 
-[auto build test ERROR on herbert-cryptodev-2.6/master]
-[also build test ERROR on herbert-crypto-2.6/master linus/master v5.19-rc2 next-20220617]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Lei-He/virtio-crypto-support-ECDSA-algorithm/20220617-151113
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git master
-config: i386-randconfig-s001 (https://download.01.org/0day-ci/archive/20220618/202206180117.Jk42sS41-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-30-g92122700-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/d335068e54f1217848445185702d75739116b1fe
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Lei-He/virtio-crypto-support-ECDSA-algorithm/20220617-151113
-        git checkout d335068e54f1217848445185702d75739116b1fe
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "ecdsa_max_signature_size" [drivers/crypto/virtio/virtio_crypto.ko] undefined!
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+-sed@-
