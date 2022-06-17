@@ -2,138 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8256C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F59ECCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382026AbiFQKo4 (ORCPT
+        id S1382036AbiFQKpR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 06:44:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38716 "EHLO
+        Fri, 17 Jun 2022 06:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236113AbiFQKoy (ORCPT
+        with ESMTP id S236113AbiFQKpP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 06:44:54 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2936B649;
-        Fri, 17 Jun 2022 03:44:53 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 7CA631F86B;
-        Fri, 17 Jun 2022 10:44:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655462692; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=61q2Dy+gZjuH4Bh0Xd2gu4uqaiCBzwX90MvJbzqaUOU=;
-        b=KfxmhOgSgc2oQDKIMz6oIIAqpRyswGOkAWCzNgyVp9AbeV+0WT+7vija1JwYUmp9BCosX6
-        hFI4tjQDgfKw8IdPpl2EErSllzYgxmWGzbyyVftU2CDjarm9cfgpMR81WSWKkR+l0+KHc4
-        aq3TyyfWG7aUuU770QuMT6nLrwR7yWI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655462692;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=61q2Dy+gZjuH4Bh0Xd2gu4uqaiCBzwX90MvJbzqaUOU=;
-        b=UgbpnSTK0x8HK0BqJjnkWsv7lPyzpJHbc61J4zgxH2LmyaP4Br4Y9O8uK09VdOGKEQvwvU
-        D38QdmekCR4nX9CA==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id C9D372C142;
-        Fri, 17 Jun 2022 10:44:50 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id E035AA0632; Fri, 17 Jun 2022 12:44:41 +0200 (CEST)
-Date:   Fri, 17 Jun 2022 12:44:41 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Li Lingfeng <lilingfeng3@huawei.com>
-Cc:     linux-ext4@vger.kernel.org, tytso@mit.edu,
-        adilger.kernel@dilger.ca, linux-kernel@vger.kernel.org,
-        jack@suse.cz, yi.zhang@huawei.com, yukuai3@huawei.com,
-        libaokun2@huawei.com
-Subject: Re: [PATCH -next] ext4: recover csum seed of tmp_inode after
- migrating to extents
-Message-ID: <20220617104441.lfhuca6tflg2oxah@quack3.lan>
-References: <20220617062515.2113438-1-lilingfeng3@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220617062515.2113438-1-lilingfeng3@huawei.com>
+        Fri, 17 Jun 2022 06:45:15 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08DD6B655;
+        Fri, 17 Jun 2022 03:45:14 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3B6D220000C;
+        Fri, 17 Jun 2022 12:45:13 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id CEC9020001F;
+        Fri, 17 Jun 2022 12:45:12 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 90B32180219B;
+        Fri, 17 Jun 2022 18:45:11 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
+        broonie@kernel.org, lorenzo.pieralisi@arm.com, festevam@gmail.com,
+        francesco.dolcini@toradex.com
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v13 0/15] PCI: imx6: refine codes and add the error propagation
+Date:   Fri, 17 Jun 2022 18:30:59 +0800
+Message-Id: <1655461874-16908-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 17-06-22 14:25:15, Li Lingfeng wrote:
-> When migrating to extents, the checksum seed of temporary inode
-> need to be replaced by inode's, otherwise the inode checksums
-> will be incorrect when swapping the inodes data.
-> 
-> However, the temporary inode can not match it's checksum to
-> itself since it has lost it's own checksum seed.
-> 
-> mkfs.ext4 -F /dev/sdc
-> mount /dev/sdc /mnt/sdc
-> xfs_io -fc "pwrite 4k 4k" -c "fsync" /mnt/sdc/testfile
-> chattr -e /mnt/sdc/testfile
-> chattr +e /mnt/sdc/testfile
-> umount /dev/sdc
-> fsck -fn /dev/sdc
-> 
-> ========
-> ...
-> Pass 1: Checking inodes, blocks, and sizes
-> Inode 13 passes checks, but checksum does not match inode.  Fix? no
-> ...
-> ========
-> 
-> The fix is simple, save the checksum seed of temporary inode, and
-> recover it after migrating to extents.
-> 
-> Fixes: e81c9302a6c3 ("ext4: set csum seed in tmp inode while migrating to extents")
-> Signed-off-by: Li Lingfeng <lilingfeng3@huawei.com>
+This series patches refine pci-imx6 driver and do the following main changes.
+- Encapsulate the clock enable into one standalone function
+- Add the error propagation from host_init and resume
+- Turn off regulator when the system is in suspend mode
+- Let the probe successfully when link never comes up
+- Do not hide the phy driver callbacks in core reset and clk_enable.
+BTW, this series are verified on i.MX8MM EVK board when one NVME is used.
 
-Yeah, the migration code and checksums never quite worked together. That's
-the reason why we'd decided to deprecate this code. But I guess this fix is
-simple enough and improves things so feel free to add:
+Main changes from v12 to v13:
+- Call imx6_pcie_host_init() instead of duplicating codes in resume.
+- Move the regulator enable out of imx6_pcie_deassert_core_reset().
+  Re-format the error handling in imx6_pcie_deassert_core_reset()
+  and imx6_pcie_host_init() accordingly.
 
-Reviewed-by: Jan Kara <jack@suse.cz>
+Main changes from v11 to v12 issued by Bjorn:
+- Add four intro patches to move code around to collect similar things
+  (PHY management, reset management) together.  This makes the first
+  diff to collect clock enables simpler because it's not cluttered with
+  unrelated things that didn't actually change.
+- Factor out ref clock disables so the disable function structure matches
+  the enable structure.
+- Drop unused "ret" from "Reduce resume time ..." to avoid bisection
+  hole, then add it back in "Do not hide phy driver ..." where we start
+  using it again.
+- Add patch to make imx6_pcie_clk_disable() symmetric with
+  imx6_pcie_clk_enable() in terms of enable/disable ordering.
 
-								Honza
+Main changes from v10 to v11:
+No code changes, just do the following operations refer to Bjorn's comments.
+  - Split #6 patch into two patches.
+  - Rebase to v5.19-rc1 based on for-next branch of Shawn's git.
 
-> ---
->  fs/ext4/migrate.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/fs/ext4/migrate.c b/fs/ext4/migrate.c
-> index 49912814f3d8..04320715d61f 100644
-> --- a/fs/ext4/migrate.c
-> +++ b/fs/ext4/migrate.c
-> @@ -417,7 +417,7 @@ int ext4_ext_migrate(struct inode *inode)
->  	struct inode *tmp_inode = NULL;
->  	struct migrate_struct lb;
->  	unsigned long max_entries;
-> -	__u32 goal;
-> +	__u32 goal, tmp_csum_seed;
->  	uid_t owner[2];
->  
->  	/*
-> @@ -465,6 +465,7 @@ int ext4_ext_migrate(struct inode *inode)
->  	 * the migration.
->  	 */
->  	ei = EXT4_I(inode);
-> +	tmp_csum_seed = EXT4_I(tmp_inode)->i_csum_seed;
->  	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
->  	i_size_write(tmp_inode, i_size_read(inode));
->  	/*
-> @@ -575,6 +576,7 @@ int ext4_ext_migrate(struct inode *inode)
->  	 * the inode is not visible to user space.
->  	 */
->  	tmp_inode->i_blocks = 0;
-> +	EXT4_I(tmp_inode)->i_csum_seed = tmp_csum_seed;
->  
->  	/* Reset the extent details */
->  	ext4_ext_tree_init(handle, tmp_inode);
-> -- 
-> 2.31.1
-> 
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Main changes from v9 to v10:
+- Add the "Reviewed-by: Lucas Stach <l.stach@pengutronix.de>" tag into #3
+  and #4 patches.
+- Refer to Bjorn's comments:
+  - refine the commit of the first patch
+  - keep alignment of the message format in the second patch
+  - More specific commit and subject of the #5 and #7 patches.
+- Move the regualtor_disable into suspend, turn off the regulator when bus
+  is powered off and system in suspend mode.
+- Let the driver probe successfully, return zero in imx6_pcie_start_link()
+  when PCIe link is down. 
+  In this link down scenario, only start the PCIe link training in resume
+  when the link is up before system suspend to avoid the long latency in
+  the link training period.
+- Don't hide phy driver callbacks in core reset and clk_enable, and refine
+  the error handling accordingly.
+- Drop the #8 patch of v9 series, since the clocks and powers are not gated
+  off anymore when link is down.
+
+Main changes from v8 to v9:
+- Don't change pcie-designware codes, and do the error exit process only in
+  pci-imx6 driver internally.
+- Move the phy driver callbacks to the proper places
+
+Main changes from v7 to v8:
+Regarding Bjorn's review comments.
+- Align the format of the dev_info message and refine commit log of
+  #6/7/8 patches.
+- Rename the err_reset_phy label, since there is no PHY reset in the out
+
+Main changes from v6 to v7:
+- Keep the regulator usage counter balance in the #5 patch of v6 series.
+
+Main changes from v5 to v6:
+- Refer to the following discussion with Fabio, fix the dump by his patch.
+  https://patchwork.kernel.org/project/linux-pci/patch/1641368602-20401-6-git-send-email-hongxing.zhu@nxp.com/
+  Refine and rebase this patch-set after Fabio' dump fix patch is merged.
+- Add one new #4 patch to disable i.MX6QDL REF clock too when disable clocks
+- Split the regulator refine codes into one standalone patch #5 in this version.
+
+Main changes from v4 to v5:
+- Since i.MX8MM PCIe support had been merged. Based on Lorenzo's git repos,
+  resend the patch-set after rebase.
+
+Main changes from v3 to v4:
+- Regarding Mark's comments, delete the regulator_is_enabled() check.
+- Squash #3 and #6 of v3 patch into #5 patch of v4 set.
+
+Main changes from v2 to v3:
+- Add "Reviewed-by: Lucas Stach <l.stach@pengutronix.de>" tag into
+  first two patches.
+- Add a Fixes tag into #3 patch.
+- Split the #4 of v2 to two patches, one is clock disable codes move,
+  the other one is the acutal clock unbalance fix.
+- Add a new host_exit() callback into dw_pcie_host_ops, then it could be
+  invoked to handle the unbalance issue in the error handling after
+  host_init() function when link is down.
+- Add a new host_exit() callback for i.MX PCIe driver to handle this case
+  in the error handling after host_init.
+
+Main changes from v1 to v2:
+Regarding Lucas' comments.
+  - Move the placement of the new imx6_pcie_clk_enable() to avoid the
+    forward declarition.
+  - Seperate the second patch of v1 patch-set to three patches.
+  - Use the module_param to replace the kernel command line.
+Regarding Bjorn's comments:
+  - Use the cover-letter for a multi-patch series.
+  - Correct the subject line, and refine the commit logs. For example,
+    remove the timestamp of the logs.
+
+Bjorn Helgaas (5):
+  PCI: imx6: Move imx6_pcie_grp_offset(), imx6_pcie_configure_type()
+    earlier
+  PCI: imx6: Move PHY management functions together
+  PCI: imx6: Move imx6_pcie_enable_ref_clk() earlier
+  PCI: imx6: Factor out ref clock disable to match enable
+  PCI: imx6: Disable clocks in reverse order of enable
+
+Richard Zhu (10):
+  PCI: imx6: Move imx6_pcie_clk_disable() earlier
+  PCI: imx6: Collect clock enables in imx6_pcie_clk_enable()
+  PCI: imx6: Propagate .host_init() errors to caller
+  PCI: imx6: Disable i.MX6QDL clock when disabling ref clocks
+  PCI: imx6: Call host init function directly in resume
+  PCI: imx6: Turn off regulator when system is in suspend mode
+  PCI: imx6: Move regulator enable out of
+    imx6_pcie_deassert_core_reset()
+  PCI: imx6: Mark the link down as non-fatal error
+  PCI: imx6: Reduce resume time by only starting link if it was up
+    before suspend
+  PCI: imx6: Do not hide phy driver callbacks and refine the error
+    handling
+
+drivers/pci/controller/dwc/pci-imx6.c | 574 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------------------------------------------------------------------------------------
+1 file changed, 308 insertions(+), 266 deletions(-)
+
