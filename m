@@ -2,251 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CADC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 780C7CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381725AbiFQKOh (ORCPT
+        id S1381740AbiFQKPj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 06:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
+        Fri, 17 Jun 2022 06:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381719AbiFQKOg (ORCPT
+        with ESMTP id S1381614AbiFQKPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 06:14:36 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580E669716
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 03:14:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655460875; x=1686996875;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=lwtGDgL2YUQVqHYSSjpLd7IM+/rgncZqOiGGX7isCDU=;
-  b=LL++V2SFXvR8Er1Hy9/KJeu0zuWJoU9NOh1iQKBpSusbtIpXBVgopiYL
-   Shf7sxbPstp9s1hs6DUB5n95nPozuEfOTxQEcUWHpMkphcXf97y55cD68
-   agEnrsKd0epZk8Nax54skMfJKp3moBEmeXsaukSshWpNypLI15x7gH9DC
-   +L7Z08mtYE5cJvZ42xwk5Bdw0S68OY9sxdKSdpAUNkyCp4qcuiJgW5Mse
-   YGownnNYGVtOlRm+4l8u88gtejcNtNDq1sbRRTF4ztaEHW6Thti8It3ov
-   5Hw+m8/9UZo6lOZJqR/OzKFuTj7jcE3UxMNDFggBg5/4qDG2vkEXZP833
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="268162410"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="268162410"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 03:11:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="675440956"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 17 Jun 2022 03:11:38 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o28x0-000PLv-47;
-        Fri, 17 Jun 2022 10:11:38 +0000
-Date:   Fri, 17 Jun 2022 18:11:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Matthew Auld <matthew.auld@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Dominik Behr <dbehr@chromium.org>,
-        =?iso-8859-1?Q?St=E9phane?= Marchesin <marcheu@chromium.org>
-Subject: [jsarha:topic/cros-sof-v4.14 721/9354] mm/shmem.c:4284:14: warning:
- no previous declaration for 'shmem_file_setup_with_mnt'
-Message-ID: <202206171849.CWMWuyjV-lkp@intel.com>
+        Fri, 17 Jun 2022 06:15:37 -0400
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130094.outbound.protection.outlook.com [40.107.13.94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A624C6A071;
+        Fri, 17 Jun 2022 03:15:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QHbUh9YEyx/oDWi0pjTyYwbB6xfaBJ17Gw5zIoG4w83JZhHXTUG0n+Qf85/wXqwFkv5Mb0y+AmA937UK+2WBwM+rOiaXtoAO25ICyEOuYAZ0yJdPVYb4W236wX2T0xk3PZilOVsCUD5s9Cd9y9IHhWCbZPKL3Wqv7YBzRH09xkCGOm7IRUlGbvn5/TfyrDVLuBAd/d1Uvq/y8876eP9k62oUAzWwsx2TwjMcC7yDoxbsKiU0z0T3HiJprKkc+brec0kf3WN2SoTbDBsRnI0ghqiS+y8Y83mFSx5oAT9X8Qj7+XaUnKUpQ79I1FBAquZ1zkwu8p8VT3yvo6WET4/cow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=R0grRUAdVC9dfkS5ShW9SPJ1khQ1T028r6DVkgOHjw8=;
+ b=j02AiewKJShhhlSP+K/ASL9QY4g8wUfLTd32HXtZfXHwxCc9T3lKrwInXwD9P6BapgBrwgpl9EQ6FdQU4fBxobl5bNnl51KJTJA4QtNxq0rQXAP8c9ZTLJNHul9hrMNiVq+2SHudz16QoVGnZFOMCCAjiO+Z2EBw86sE48PtZNXHkrcLSDdWe7/5G4RZID1gOYu5TF8kXp+AokDz59KHnbsHFgUtVD/fu2IGM8QzmNP5MI6smD+F45IU2F2RnAVilvMt0c7AAqZ+lPjhlpBU6I1H532DHB+plOqnbJaqRrGvOalTblEu6PeMJbwyVFJd9FHK1TrAVOJZxGIZPlKZLA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=R0grRUAdVC9dfkS5ShW9SPJ1khQ1T028r6DVkgOHjw8=;
+ b=rkY0rZ94vSZohvIj5Nvfl5kwd7pbkKqdWBhiSp/RdKQ2hETyRHwCVJcArThuibEbC7GMkAlAWhasCFjbmkEs2zRkfYtUWX8PwvxD2fru/T2frqCUWkslk8CX3Gas4CWM1U0TrFKLDPQcQJqz99kinv9wPP/lX/6LYPtN3Hp4QSk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+Received: from GV1P190MB2019.EURP190.PROD.OUTLOOK.COM (2603:10a6:150:5b::20)
+ by AM4P190MB0051.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:5b::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14; Fri, 17 Jun
+ 2022 10:15:31 +0000
+Received: from GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
+ ([fe80::25a3:3edc:9320:f35e]) by GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
+ ([fe80::25a3:3edc:9320:f35e%3]) with mapi id 15.20.5353.016; Fri, 17 Jun 2022
+ 10:15:31 +0000
+From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+To:     netdev@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>
+Subject: [PATCH V2 net-next 0/4] net: marvell: prestera: add MDB offloading support
+Date:   Fri, 17 Jun 2022 13:15:16 +0300
+Message-Id: <20220617101520.19794-1-oleksandr.mazur@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: BEXP281CA0005.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10::15)
+ To GV1P190MB2019.EURP190.PROD.OUTLOOK.COM (2603:10a6:150:5b::20)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 31f07ceb-41d8-492f-6051-08da504a4f3a
+X-MS-TrafficTypeDiagnostic: AM4P190MB0051:EE_
+X-Microsoft-Antispam-PRVS: <AM4P190MB0051C050D465C5BF5EACD49CE4AF9@AM4P190MB0051.EURP190.PROD.OUTLOOK.COM>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: b8CkuOmCzHw3oChdRiX+gg9WG8GIzj6ookt0PSuzSGrhtJ94yRiMt5SmcN+XXe1FcDPaf9KxIaSeN8QQkePpVy6T+xLleYTNkbEMVDUvtnt0lKFaew4L+SUxeY6X4hB6XGH0r+1Y6b1JWXZkHuLJxCfOhjSWEet9dCMTrUNFS6KqOzt1ylXT0ZX84EMMVZHb6FoFreDYp8SMWWADvD96TUbKZTBGxogwRsGcqOIwWp5xdVHLFJRP8aGyL7p/WSPZRsQKbaReYwKEnQQmV5C139Tl8HzE8ut+fZxhfqZC35XDV3nBIlGui5j/7rmdX2xa8gmoakTmduEWSm0w1UjHQvFFOOlsPuI+gauSAJq4t7R+0QHkozsPRUzH7EjLG/YsSThdAMTeGEV8ad4y4m+WEjvJ8WEr/8tkygoSz6W2x2uuWkQzMzVoNXxD6fungYvM8SDKvB7qebk3WwZSIimAtUjmTHnUCnztHIe9Ve6yhb6j+v/rR1zTdg+SWfNqo3KAaYwDvyd3UKDORPSyDWmXPjqkQAzwIBg7WejAH5eRjReTkp0OHONHRHn7Bf81l07oxYa2tzjrYkH71udTBK9QAqkG9c9j3GVbNYMwKnK1oCig+OFcR3Kru/QL7FWAI1uASLz/uJxDYkqElIZF3aBFVjYlfn2OPfPjwzSVfgfCJkdkYqbq/jxWYCl/idw5YC685OfBO7AOwfPFIRfp7KI3KA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1P190MB2019.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(136003)(39830400003)(366004)(44832011)(8936002)(26005)(41300700001)(83380400001)(186003)(6486002)(5660300002)(508600001)(1076003)(107886003)(52116002)(6512007)(86362001)(66574015)(66556008)(66476007)(2906002)(4326008)(2616005)(66946007)(6506007)(316002)(110136005)(38100700002)(54906003)(36756003)(8676002)(6666004)(38350700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SiyJG5Gz5QoyOykQRRiIKhbACGHhH334w+LHuORNk7Gv8LOxnbSi7zgKreiT?=
+ =?us-ascii?Q?m/GUvowRzcqHxcJ6rqbq2Q9MuHPGhb4YzqmqdMjbSmsTHafm/d5E69DpLY8I?=
+ =?us-ascii?Q?zwJ6kxhvYFSwVcOp9Sr0kqJ20clQ72BOGtlWRJvjxGrAb2vZpXN/geKPrw1T?=
+ =?us-ascii?Q?NRLSSGnE2UPnvCEb/9Ce8atsxf1NpCcsRzvV2giMRn6FLQoExb9VUfezP/Wm?=
+ =?us-ascii?Q?U4LbX9BTVRJZ8J3VPUx8oCVU2JcjSSD3+e+4S5Mvj/fH+pt+Q1VGXjW3Pwju?=
+ =?us-ascii?Q?8/hWMRH5LOHZyv9P2DMXY3ATJXfFDXScDiuNiUfDz2rrw72iynyjRm99BR2y?=
+ =?us-ascii?Q?p4ZIQZdg1ZLbS6wXbmEkLILeHleJadKvY2HKE7Zj6BPpeJUXgYrpnOPVLOQp?=
+ =?us-ascii?Q?056ZoTF5guFNVwBy1QHxOmvdF1hhVWRiMPNtYGmB6EBRve7uqku9U2IkzZaq?=
+ =?us-ascii?Q?9hvwj/HZPpQkaBxjLIHcmlEH6zRB265IX1AcARywHbpKBhe9QR+liTBeQFOw?=
+ =?us-ascii?Q?HCxTfvmlPZvesSSn5HRhlOJBDb6Ef4SNOjBU0cWK1q+XUVbUzHJ1DDDNAFQW?=
+ =?us-ascii?Q?+cCtV3gYQClr9LC0RUr6Cj1Z/fXRohY81vglRUb1il5115M2oXmEhtIv7nfJ?=
+ =?us-ascii?Q?QZyR45hXxt+0PqhQxIIrXX53CzAjI4TjXXEAbmKJgFpdHmNuEJTQAFw/hj/p?=
+ =?us-ascii?Q?jUFS3nbg0Jhn7mqJtYlmHZbpPZmOPHMz853Wb0rRVtjAYR0H+HWIUeMauHI+?=
+ =?us-ascii?Q?a9diQhaByEpXlNgGESQgxnW5GLG127euLv5uS3YQpOwAhImy3GSpniITMqFb?=
+ =?us-ascii?Q?1CZUQ1sbicT7nK43UpGhbuhERvhfFVpLI3T2wBBpQoOvvvP2+WD91Fklkpn5?=
+ =?us-ascii?Q?gTyNNCKnnV6dhqnTb2r8vDhBpoHGwczRUJfAfFHb17o6+6h4S6xRD6GSXTmC?=
+ =?us-ascii?Q?qcRMoNCHFtTO0Qol4Q8BW3BLIu1ShKpTj81+ymJzhO9XbuPJEqGEfK0/2pJx?=
+ =?us-ascii?Q?SNaPdBJ055c/Ki+yFy8zOXsCNIvHikejLnNXr7BJFBR54feKp8fAGO5vlsd1?=
+ =?us-ascii?Q?tfKE+aLZ9AtPHp0RFRc952zNWHSrUyB4po2hq5sEhQGKcvgIn9kJM+zDfDtu?=
+ =?us-ascii?Q?AbsutCz5W7bvUD0SK8yHWqK8B4Nx9DyZZMqDhy8fnzu7nIfKJUFf3hdgxlKa?=
+ =?us-ascii?Q?iCaTOi9SPxS33jFhvvYt9UyLfH1n83u9XJekr6+l1Q+pkMSU4e6pC8wz1Ap1?=
+ =?us-ascii?Q?TeUxIzXT+Z1hfqVYY3lsfaKkg5VHAhf9RvCqom26CBbLxTi6YL94lSPC6cbc?=
+ =?us-ascii?Q?OVoQCVkpAtBMR4wc16n++lFZ1rxo42tcGJWD7JkaK9g9bPuXxCtRVf7WnmH5?=
+ =?us-ascii?Q?vVWM1zE2dLUkKHA8bI8LAP8R4+JqTdf93CNd7HQ00k0JzNKIR1mI+fCFNbyh?=
+ =?us-ascii?Q?YjL3yyAWu0n18qGgn6N42zo2lJG3LIHgF7OMEeBlR3BeZs0s28yZyfU79tXt?=
+ =?us-ascii?Q?sWJWBFF1dWYKVigcNipHiFS3kVC4q5dltEnl/aEJCn9qUtGuf1xB0tRCrs6z?=
+ =?us-ascii?Q?EGIS3Od3p9exaNikJL+EsQhiqRkXLXV745KI0gQDb1TqxJiHz6CFsiOYvskL?=
+ =?us-ascii?Q?3LcL3Z8zohGDOKMnmkk97xWtt6PFgVNooS+d6ektIv8R/VhDuJSBTR5ogoSE?=
+ =?us-ascii?Q?KPV0pMLBbByEWlC7f8t9msa7k1plKll6K+/gsxWMSQwihEc9IgCsPSaEhJTW?=
+ =?us-ascii?Q?k7vTQSkRXBNI9nHExbv/7b4crh2cO2M=3D?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 31f07ceb-41d8-492f-6051-08da504a4f3a
+X-MS-Exchange-CrossTenant-AuthSource: GV1P190MB2019.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 10:15:31.5405
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 97IEupk43fL5GSteZ07DNsJ1d0V3WWvb91dW0OSAuH0dSqvpCbnjEONupcot11CzTHmkRrwWhN4F/8wYYORH5wPKceSZxwLGTvhsLNyRPWo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4P190MB0051
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Matthew,
+This patch series adds support for the MDB handling for the marvell
+Prestera Driver. It's used to propagate IGMP groups registered within
+the Kernel to the underlying HW (offload registered groups).
 
-FYI, the error/warning still remains.
+Features:
+ - define (and implement) main internal MDB-related objects;
+ - define (and implement) main HW APIs for MDB handling;
+ - add MDB handling support for both regular ports as well as Bond
+   interfaces;
+ - Mirrored behavior of Bridge driver upon multicast router appearance
+   (all traffic flooded when there's no mcast router; mcast router
+    receives all mcast traffic, and only group-specific registered mcast
+    traffic is being received by ports who've explicitly joined any group
+    when there's a registered mcast router);
+ - Reworked prestera driver bridge flags (especially multicast)
+   setting - thus making it possible to react over mcast disabled messages
+   properly by offloading this state to the underlying HW
+   (disabling multicast flooding);
 
-tree:   https://github.com/jsarha/linux topic/cros-sof-v4.14
-head:   6f750b16c322c9191168a3a97c427c90581d9144
-commit: e29409586a0344a13ac2258d76df738f10772cff [721/9354] UPSTREAM: mm/shmem: introduce shmem_file_setup_with_mnt
-config: i386-tinyconfig (https://download.01.org/0day-ci/archive/20220617/202206171849.CWMWuyjV-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
-reproduce (this is a W=1 build):
-        # https://github.com/jsarha/linux/commit/e29409586a0344a13ac2258d76df738f10772cff
-        git remote add jsarha https://github.com/jsarha/linux
-        git fetch --no-tags jsarha topic/cros-sof-v4.14
-        git checkout e29409586a0344a13ac2258d76df738f10772cff
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+Limitations:
+ - Not full (partial) IGMPv3 support (due to limited switchdev
+   notification capabilities:
+     MDB events are being propagated only with a single MAC entry,
+     while IGMPv3 has Group-Specific requests and responses);
+ - It's possible that multiple IP groups would receive traffic from
+   other groups, as MDB events are being propagated with a single MAC
+   entry, which makes it possible to map a few IPs over same MAC;
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Co-developed-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 
-All warnings (new ones prefixed by >>):
+PATCH V2:
+ - include all the patches of patch series (V1's been sent to
+   closed net-next, also had not all patches included);
 
-   mm/shmem.c:4133:12: warning: no previous declaration for 'shmem_init' [-Wmissing-declarations]
-    int __init shmem_init(void)
-               ^~~~~~~~~~
-   mm/shmem.c:4143:5: warning: no previous declaration for 'shmem_unuse' [-Wmissing-declarations]
-    int shmem_unuse(swp_entry_t swap, struct page *page)
-        ^~~~~~~~~~~
-   mm/shmem.c:4148:5: warning: no previous declaration for 'shmem_lock' [-Wmissing-declarations]
-    int shmem_lock(struct file *file, int lock, struct user_struct *user)
-        ^~~~~~~~~~
-   mm/shmem.c:4153:6: warning: no previous declaration for 'shmem_unlock_mapping' [-Wmissing-declarations]
-    void shmem_unlock_mapping(struct address_space *mapping)
-         ^~~~~~~~~~~~~~~~~~~~
-   mm/shmem.c:4158:15: warning: no previous declaration for 'shmem_get_unmapped_area' [-Wmissing-declarations]
-    unsigned long shmem_get_unmapped_area(struct file *file,
-                  ^~~~~~~~~~~~~~~~~~~~~~~
-   mm/shmem.c:4166:6: warning: no previous declaration for 'shmem_truncate_range' [-Wmissing-declarations]
-    void shmem_truncate_range(struct inode *inode, loff_t lstart, loff_t lend)
-         ^~~~~~~~~~~~~~~~~~~~
-   mm/shmem.c:4252:14: warning: no previous declaration for 'shmem_kernel_file_setup' [-Wmissing-declarations]
-    struct file *shmem_kernel_file_setup(const char *name, loff_t size, unsigned long flags)
-                 ^~~~~~~~~~~~~~~~~~~~~~~
-   mm/shmem.c:4263:14: warning: no previous declaration for 'shmem_file_setup' [-Wmissing-declarations]
-    struct file *shmem_file_setup(const char *name, loff_t size, unsigned long flags)
-                 ^~~~~~~~~~~~~~~~
->> mm/shmem.c:4284:14: warning: no previous declaration for 'shmem_file_setup_with_mnt' [-Wmissing-declarations]
-    struct file *shmem_file_setup_with_mnt(struct vfsmount *mnt, const char *name,
-                 ^~~~~~~~~~~~~~~~~~~~~~~~~
-   mm/shmem.c:4295:5: warning: no previous declaration for 'shmem_zero_setup' [-Wmissing-declarations]
-    int shmem_zero_setup(struct vm_area_struct *vma)
-        ^~~~~~~~~~~~~~~~
-   mm/shmem.c:4336:14: warning: no previous declaration for 'shmem_read_mapping_page_gfp' [-Wmissing-declarations]
-    struct page *shmem_read_mapping_page_gfp(struct address_space *mapping,
-                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+Oleksandr Mazur (4):
+  net: marvell: prestera: rework bridge flags setting
+  net: marvell: prestera: define MDB/flood domain entries and HW API to
+    offload them to the HW
+  net: marvell: prestera: define and implement MDB / flood domain API
+    for entires creation and deletion
+  net: marvell: prestera: implement software MDB entries allocation
 
-
-vim +/shmem_file_setup_with_mnt +4284 mm/shmem.c
-
-  4165	
-> 4166	void shmem_truncate_range(struct inode *inode, loff_t lstart, loff_t lend)
-  4167	{
-  4168		truncate_inode_pages_range(inode->i_mapping, lstart, lend);
-  4169	}
-  4170	EXPORT_SYMBOL_GPL(shmem_truncate_range);
-  4171	
-  4172	#define shmem_vm_ops				generic_file_vm_ops
-  4173	#define shmem_file_operations			ramfs_file_operations
-  4174	#define shmem_get_inode(sb, dir, mode, dev, flags)	ramfs_get_inode(sb, dir, mode, dev)
-  4175	#define shmem_acct_size(flags, size)		0
-  4176	#define shmem_unacct_size(flags, size)		do {} while (0)
-  4177	
-  4178	#endif /* CONFIG_SHMEM */
-  4179	
-  4180	/* common code */
-  4181	
-  4182	static const struct dentry_operations anon_ops = {
-  4183		.d_dname = simple_dname
-  4184	};
-  4185	
-  4186	static struct file *__shmem_file_setup(struct vfsmount *mnt, const char *name, loff_t size,
-  4187					       unsigned long flags, unsigned int i_flags)
-  4188	{
-  4189		struct file *res;
-  4190		struct inode *inode;
-  4191		struct path path;
-  4192		struct super_block *sb;
-  4193		struct qstr this;
-  4194	
-  4195		if (IS_ERR(mnt))
-  4196			return ERR_CAST(mnt);
-  4197	
-  4198		if (size < 0 || size > MAX_LFS_FILESIZE)
-  4199			return ERR_PTR(-EINVAL);
-  4200	
-  4201		if (shmem_acct_size(flags, size))
-  4202			return ERR_PTR(-ENOMEM);
-  4203	
-  4204		res = ERR_PTR(-ENOMEM);
-  4205		this.name = name;
-  4206		this.len = strlen(name);
-  4207		this.hash = 0; /* will go */
-  4208		sb = mnt->mnt_sb;
-  4209		path.mnt = mntget(mnt);
-  4210		path.dentry = d_alloc_pseudo(sb, &this);
-  4211		if (!path.dentry)
-  4212			goto put_memory;
-  4213		d_set_d_op(path.dentry, &anon_ops);
-  4214	
-  4215		res = ERR_PTR(-ENOSPC);
-  4216		inode = shmem_get_inode(sb, NULL, S_IFREG | S_IRWXUGO, 0, flags);
-  4217		if (!inode)
-  4218			goto put_memory;
-  4219	
-  4220		inode->i_flags |= i_flags;
-  4221		d_instantiate(path.dentry, inode);
-  4222		inode->i_size = size;
-  4223		clear_nlink(inode);	/* It is unlinked */
-  4224		res = ERR_PTR(ramfs_nommu_expand_for_mapping(inode, size));
-  4225		if (IS_ERR(res))
-  4226			goto put_path;
-  4227	
-  4228		res = alloc_file(&path, FMODE_WRITE | FMODE_READ,
-  4229			  &shmem_file_operations);
-  4230		if (IS_ERR(res))
-  4231			goto put_path;
-  4232	
-  4233		return res;
-  4234	
-  4235	put_memory:
-  4236		shmem_unacct_size(flags, size);
-  4237	put_path:
-  4238		path_put(&path);
-  4239		return res;
-  4240	}
-  4241	
-  4242	/**
-  4243	 * shmem_kernel_file_setup - get an unlinked file living in tmpfs which must be
-  4244	 * 	kernel internal.  There will be NO LSM permission checks against the
-  4245	 * 	underlying inode.  So users of this interface must do LSM checks at a
-  4246	 *	higher layer.  The users are the big_key and shm implementations.  LSM
-  4247	 *	checks are provided at the key or shm level rather than the inode.
-  4248	 * @name: name for dentry (to be seen in /proc/<pid>/maps
-  4249	 * @size: size to be set for the file
-  4250	 * @flags: VM_NORESERVE suppresses pre-accounting of the entire object size
-  4251	 */
-  4252	struct file *shmem_kernel_file_setup(const char *name, loff_t size, unsigned long flags)
-  4253	{
-  4254		return __shmem_file_setup(shm_mnt, name, size, flags, S_PRIVATE);
-  4255	}
-  4256	
-  4257	/**
-  4258	 * shmem_file_setup - get an unlinked file living in tmpfs
-  4259	 * @name: name for dentry (to be seen in /proc/<pid>/maps
-  4260	 * @size: size to be set for the file
-  4261	 * @flags: VM_NORESERVE suppresses pre-accounting of the entire object size
-  4262	 */
-  4263	struct file *shmem_file_setup(const char *name, loff_t size, unsigned long flags)
-  4264	{
-  4265		return __shmem_file_setup(shm_mnt, name, size, flags, 0);
-  4266	}
-  4267	EXPORT_SYMBOL_GPL(shmem_file_setup);
-  4268	
-  4269	void shmem_set_file(struct vm_area_struct *vma, struct file *file)
-  4270	{
-  4271		if (vma->vm_file)
-  4272			fput(vma->vm_file);
-  4273		vma->vm_file = file;
-  4274		vma->vm_ops = &shmem_vm_ops;
-  4275	}
-  4276	
-  4277	/**
-  4278	 * shmem_file_setup_with_mnt - get an unlinked file living in tmpfs
-  4279	 * @mnt: the tmpfs mount where the file will be created
-  4280	 * @name: name for dentry (to be seen in /proc/<pid>/maps
-  4281	 * @size: size to be set for the file
-  4282	 * @flags: VM_NORESERVE suppresses pre-accounting of the entire object size
-  4283	 */
-> 4284	struct file *shmem_file_setup_with_mnt(struct vfsmount *mnt, const char *name,
-  4285					       loff_t size, unsigned long flags)
-  4286	{
-  4287		return __shmem_file_setup(mnt, name, size, flags, 0);
-  4288	}
-  4289	EXPORT_SYMBOL_GPL(shmem_file_setup_with_mnt);
-  4290	
+ .../net/ethernet/marvell/prestera/prestera.h  |  47 ++
+ .../ethernet/marvell/prestera/prestera_hw.c   | 126 +--
+ .../ethernet/marvell/prestera/prestera_hw.h   |  15 +-
+ .../ethernet/marvell/prestera/prestera_main.c | 191 +++++
+ .../marvell/prestera/prestera_switchdev.c     | 730 +++++++++++++++++-
+ 5 files changed, 1018 insertions(+), 91 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
