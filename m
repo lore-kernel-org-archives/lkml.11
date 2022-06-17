@@ -2,137 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE3CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9AC5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380577AbiFQJyc (ORCPT
+        id S1380340AbiFQJz7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 05:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
+        Fri, 17 Jun 2022 05:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380092AbiFQJyZ (ORCPT
+        with ESMTP id S233978AbiFQJz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 05:54:25 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE844AE2C;
-        Fri, 17 Jun 2022 02:54:24 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 52DD021C94;
-        Fri, 17 Jun 2022 09:54:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1655459663; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zG2cqcDSXyzEvp5pVF9J1GNp84hIzLKr5Bwlm1OtUos=;
-        b=fYDb7qEjT6oS5z9kwaQkczLFF3PPeqPcqRDmr2MpJlZLGF16glOXU2IlKNWSd/PjZK4OzO
-        n1ckLKV4vxlzBpnHZL5CYrRjQDJlHD4lAO1EWFBTk8D8mn25FJNZoTz+a6K51qGY+1FFk1
-        hVOqQ1euxW3Q1vl4/80FdC6E4s1JWyI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1655459663;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zG2cqcDSXyzEvp5pVF9J1GNp84hIzLKr5Bwlm1OtUos=;
-        b=UKL/MDgbZ5+ZWynN5FFH+8Jm2XrytgHofQZl6xnqeSlGuab+NWFhsiZryhY9S2SR4DOZE3
-        FLNZEpcajUBLO2AQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AB8F41348E;
-        Fri, 17 Jun 2022 09:54:22 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id K5YqJ05PrGLDOwAAMHmgww
-        (envelope-from <osalvador@suse.de>); Fri, 17 Jun 2022 09:54:22 +0000
-Date:   Fri, 17 Jun 2022 11:54:21 +0200
-From:   Oscar Salvador <osalvador@suse.de>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Muchun Song <songmuchun@bytedance.com>, corbet@lwn.net,
-        akpm@linux-foundation.org, paulmck@kernel.org,
-        mike.kravetz@oracle.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com
-Subject: Re: [PATCH v2 2/2] mm: memory_hotplug: introduce
- SECTION_CANNOT_OPTIMIZE_VMEMMAP
-Message-ID: <YqxPTUuqdDpoU9o3@localhost.localdomain>
-References: <20220520025538.21144-1-songmuchun@bytedance.com>
- <20220520025538.21144-3-songmuchun@bytedance.com>
- <53024884-0182-df5f-9ca2-00652c64ce36@redhat.com>
- <YqqqPjkh9r8ZrH0r@localhost.localdomain>
- <24d5ec20-9c9e-93aa-11f4-c4619f51f7d1@redhat.com>
- <YqwVTT+50vt5WpeG@localhost.localdomain>
- <186924ab-651f-71a1-93d2-3500a67dffee@redhat.com>
+        Fri, 17 Jun 2022 05:55:56 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1AC4F4AE2C;
+        Fri, 17 Jun 2022 02:55:55 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D5D4812FC;
+        Fri, 17 Jun 2022 02:55:54 -0700 (PDT)
+Received: from ampere-altra-2-1.usa.Arm.com (ampere-altra-2-1.usa.arm.com [10.118.91.158])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 974FE3F73B;
+        Fri, 17 Jun 2022 02:55:54 -0700 (PDT)
+From:   Yoan Picchi <yoan.picchi@arm.com>
+To:     Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>, qat-linux@intel.com,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Andre Przywara <andre.przywara@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: [PATCH 0/2] Crypto: Remove x86 dependency on QAT drivers
+Date:   Fri, 17 Jun 2022 09:55:48 +0000
+Message-Id: <20220617095548.436758-1-yoan.picchi@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <186924ab-651f-71a1-93d2-3500a67dffee@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 09:43:33AM +0200, David Hildenbrand wrote:
-> VmemmapSelfHosted, then the function names get nicer.
+The QAT acceleration card can be very helpfull for some tasks like dealing
+with IPSEC but it is currently restricted to be used only on x86 machine.
+Looking at the code we didn't see any reasons why those drivers might not
+work on other architectures. We've successfully built all of them on x86,
+arm64, arm32, mips64, powerpc64, riscv64 and sparc64.
 
-Definitely.
+We also have tested the driver with an Intel Corporation C62x Chipset
+QuickAssist Technology (rev 04) PCIe card on an arm64 server. After the numa
+patch, it works with the AF_ALG crypto userland interface, allowing us to
+encrypt some data with cbc for instance. We've also successfully created some
+VF, bound them to DPDK, and used the card this way, thus showing some real
+life usecases of x86 do work on arm64 too.
 
-> 
-> > +#endif
-> > +
-> >  /*
-> >   * On an anonymous page mapped into a user virtual memory area,
-> >   * page->mapping points to its anon_vma, not to a struct address_space;
-> > diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
-> > index 1089ea8a9c98..e2de7ed27e9e 100644
-> > --- a/mm/hugetlb_vmemmap.c
-> > +++ b/mm/hugetlb_vmemmap.c
-> > @@ -101,6 +101,14 @@ void hugetlb_vmemmap_free(struct hstate *h, struct page *head)
-> >  {
-> >  	unsigned long vmemmap_addr = (unsigned long)head;
-> >  	unsigned long vmemmap_end, vmemmap_reuse, vmemmap_pages;
-> > +	struct mem_section *ms = __pfn_to_section(page_to_pfn(head));
-> > +	struct page *memmap;
-> > +
-> > +	memmap = sparse_decode_mem_map(ms->section_mem_map,
-> > +				       pfn_to_section_nr(page_to_pfn(head)));
-> 
-> Why can't we check the head page directly? Either I need more coffee or
-> this can be simplified.
+Changelog v1 ... v2:
+- add COMPILE_TEST to Kconfig
 
-Uhm, maybe I'm the one who needs coffe here but we have something like:
+Changelog v2 ... v3:
+- Add the Crypto tag to the commit header
 
-[    hot-plugges section   ]
-[memmap pages][normal pages]
+Andre Przywara (1):
+  crypto: qat: replace get_current_node() with numa_node_id()
 
-we only mark as VmemmapSelfHosted the memmap pages.
+Yoan Picchi (1):
+  Removes the x86 dependency on the QAT drivers
 
-head page points to [normal pages] range, that is why we need to go
-and get its mem_map to see whether those pages are marked.
-
-Does it make sense? Or am I missing something?
-         
-
-> > +
-> > +	if (PageVmemmap_self_hosted(memmap))
-> 
-> Maybe that's the right place for a comment, an ascii art, and how it is
-> safe to only check the first vmemmap page due to alignment restrictions.
-
-Yes, definitely worth putting in a comment.
-
-  
-> > +	/*
-> > +	 * Let us flag self-hosted memmap
-> > +	 */
-> 
-> I think that comment can be dropped because the code does exactly that.
-
-Yeah, was mainly to picture it, but it needs to go as it is worthless.
-
+ drivers/crypto/qat/Kconfig                     | 14 +++++++-------
+ drivers/crypto/qat/qat_common/adf_common_drv.h |  5 -----
+ drivers/crypto/qat/qat_common/qat_algs.c       |  4 ++--
+ drivers/crypto/qat/qat_common/qat_asym_algs.c  |  4 ++--
+ 4 files changed, 11 insertions(+), 16 deletions(-)
 
 -- 
-Oscar Salvador
-SUSE Labs
+2.25.1
+
