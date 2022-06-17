@@ -2,110 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC90BC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 17:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DEEDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 17:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383256AbiFQRWq (ORCPT
+        id S1383272AbiFQRXh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 13:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
+        Fri, 17 Jun 2022 13:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382911AbiFQRWo (ORCPT
+        with ESMTP id S1382906AbiFQRXe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 13:22:44 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D2FED2612
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 10:22:41 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F03EE1474;
-        Fri, 17 Jun 2022 10:22:40 -0700 (PDT)
-Received: from [10.57.84.65] (unknown [10.57.84.65])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0344E3F792;
-        Fri, 17 Jun 2022 10:22:39 -0700 (PDT)
-Message-ID: <88080559-0c96-ec91-6f72-df05a2d0c5af@arm.com>
-Date:   Fri, 17 Jun 2022 18:22:35 +0100
+        Fri, 17 Jun 2022 13:23:34 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADBB918383;
+        Fri, 17 Jun 2022 10:23:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655486613; x=1687022613;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5r0rapPYszeZBBEbJ/ZlpHIsTYM/ozOqcBVhPIANdrM=;
+  b=eO+bj2hEeWAUudtg5CU9yl9fxz0asyamHWOeYHJ1EqkZMBoywm3DB07O
+   aGX083DvfOXZPN2ZXOmJI1ZgcaGukg1qroBnoGQ44xP2o8WFM+BeCkroY
+   rh4bWzzWk+OKKYO7SlwsYvamyMbMbntL3o0TRfPYlxn71wfwPsUjPs997
+   VpHzLjF8EJp3GU56yeCLC9Cd98FD81sLzoTPTPSA04zuJncDwl5qnKvvp
+   dDxBqAAkjRdtKVR1jj6BBg4lxGKmo83PxNNP67U5qSyrpa7eiLOlP28Ua
+   zGd05SBQxpAtIZDuL2dJMWgkX3KRRT8yqKE2dqZYhJkiV9k/NWy6nmCbr
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="259358208"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="259358208"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 10:06:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="560563793"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 17 Jun 2022 10:06:50 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o2FQn-000Pcp-M0;
+        Fri, 17 Jun 2022 17:06:49 +0000
+Date:   Sat, 18 Jun 2022 01:06:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mike Kravetz <mike.kravetz@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc:     kbuild-all@lists.01.org, Muchun Song <songmuchun@bytedance.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        James Houghton <jthoughton@google.com>,
+        Mina Almasry <almasrymina@google.com>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.vnet.ibm.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        catalin.marinas@arm.com, will@kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Subject: Re: [PATCH 1/4] hugetlb: skip to end of PT page mapping when pte not
+ present
+Message-ID: <202206180021.rcc4B1by-lkp@intel.com>
+References: <20220616210518.125287-2-mike.kravetz@oracle.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: helping with remapping vmem for dma
-Content-Language: en-GB
-To:     Frank Wunderlich <frank-w@public-files.de>,
-        Christoph Hellwig <hch@lst.de>
-Cc:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-References: <trinity-2d26eb5e-6a3f-485a-aed7-134c1e164942-1655482643278@3c-app-gmx-bap03>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <trinity-2d26eb5e-6a3f-485a-aed7-134c1e164942-1655482643278@3c-app-gmx-bap03>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616210518.125287-2-mike.kravetz@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-17 17:17, Frank Wunderlich wrote:
-> Am 15. Juni 2022 15:17:00 MESZ schrieb Christoph Hellwig <hch@lst.de>:
->> On Wed, Jun 15, 2022 at 02:15:33PM +0100, Robin Murphy wrote:
->>> Put simply, if you want to call dma_map_single() on a buffer, then that
->>> buffer needs to be allocated with kmalloc() (or technically alloc_pages(),
->>> but then dma_map_page() would make more sense when dealing with entire
->>> pages.
->>
->> Yes.  It sounds like the memory here comes from the dma coherent
->> allocator, in which case the code need to use the address returned
->> by that and not create another mapping.
-> 
-> Hi
-> 
-> traced it to buffer allocated as simple uint8-array [1]:
-> 
-> UINT_8 aucBuffer[sizeof(INIT_HIF_RX_HEADER_T) + sizeof(INIT_EVENT_CMD_RESULT)];
+Hi Mike,
 
-Ah, so it's trying to do DMA with a stack variable? CONFIG_DMA_API_DEBUG 
-is your friend; it should have screamed about that specifically. 
-Allocate this buffer properly to begin with, and free it again on the 
-way out of the function (it's surely not worth having to make a 
-temporary copy further down the callchain). The kmalloc flags can 
-probably be regular GFP_KERNEL, unless this can be called from more 
-restrictive contexts like an IRQ handler - the fact that it might be 
-mapped for DMA later is essentially irrelevant in that respect.
+I love your patch! Yet something to improve:
 
-Thanks,
-Robin.
+[auto build test ERROR on soc/for-next]
+[also build test ERROR on linus/master v5.19-rc2 next-20220617]
+[cannot apply to arm64/for-next/core arm/for-next kvmarm/next xilinx-xlnx/master]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-> 
-> and then called as
-> 
-> nicRxWaitResponse(prAdapter,0,aucBuffer,sizeof(INIT_HIF_RX_HEADER_T) + sizeof(INIT_EVENT_CMD_RESULT),/* 4B + 4B */
-> 					&u4RxPktLength)
-> 
-> this calls [2]:
-> 
-> WLAN_STATUS
-> nicRxWaitResponse(IN P_ADAPTER_T prAdapter,
-> 		  IN UINT_8 ucPortIdx, OUT PUINT_8 pucRspBuffer, IN UINT_32 u4MaxRespBufferLen, OUT PUINT_32 pu4Length)
-> {
-> ...
-> HAL_PORT_RD(prAdapter,ucPortIdx == 0 ? MCR_WRDR0 : MCR_WRDR1, u4PktLen, pucRspBuffer, u4MaxRespBufferLen);
-> }
-> 
-> 
-> nicRxWaitResponse contains a do-while(true)-loop, but it looks like this is failing on first call (i see my debug before call of HAL_PORT_RD only once)...
-> 
-> do i need kmalloc before call of nicRxWaitResponse and if yes which flags are right here?
-> https://www.kernel.org/doc/htmldocs/kernel-api/API-kmalloc.html
-> 
-> callstack is like this:
-> 
-> [  126.919569]  __dma_page_dev_to_cpu from kalDevPortRead+0x3a0/0x6b4 [wlan_gen2]
-> [  126.928643]  kalDevPortRead [wlan_gen2] from nicRxWaitResponse+0x4c0/0x61c [wlan_gen2]
-> [  126.939752]  nicRxWaitResponse [wlan_gen2] from wlanImageSectionDownloadStatus.part.0+0xd0/0x26c [wlan_gen2]
-> [  126.952783]  wlanImageSectionDownloadStatus.part.0 [wlan_gen2] from wlanImageSectionDownload+0x168/0x36c [wlan_gen2]
-> [  126.966511]  wlanImageSectionDownload [wlan_gen2] from wlanAdapterStart+0x674/0xf94 [wlan_gen2]
-> [  126.978367]  wlanAdapterStart [wlan_gen2] from wlanProbe+0x318/0xbe8 [wlan_gen2]
-> [  126.988951]  wlanProbe [wlan_gen2] from HifAhbProbe+0x54/0x88 [wlan_gen2]
-> [  126.998905]  HifAhbProbe [wlan_gen2] from wmt_func_wifi_on+0x4c/0x150
-> 
-> regards Frank
-> 
-> [1] https://github.com/frank-w/BPI-R2-4.14/blob/5.18-main/drivers/misc/mediatek/connectivity/wlan/gen2/common/wlan_lib.c#L3046
-> [2] https://github.com/frank-w/BPI-R2-4.14/blob/5.18-main/drivers/misc/mediatek/connectivity/wlan/gen2/nic/nic_rx.c#L3604
+url:    https://github.com/intel-lab-lkp/linux/commits/Mike-Kravetz/hugetlb-speed-up-linear-address-scanning/20220617-050726
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
+config: i386-debian-10.3 (https://download.01.org/0day-ci/archive/20220618/202206180021.rcc4B1by-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/4c647687607f10fece04967b8180c0dadaf765e6
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Mike-Kravetz/hugetlb-speed-up-linear-address-scanning/20220617-050726
+        git checkout 4c647687607f10fece04967b8180c0dadaf765e6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   mm/hugetlb.c: In function 'hugetlb_mask_last_page':
+>> mm/hugetlb.c:6901:9: error: duplicate case value
+    6901 |         case PUD_SIZE:
+         |         ^~~~
+   mm/hugetlb.c:6899:9: note: previously used here
+    6899 |         case P4D_SIZE:
+         |         ^~~~
+
+
+vim +6901 mm/hugetlb.c
+
+  6886	
+  6887	/*
+  6888	 * Return a mask that can be used to update an address to the last huge
+  6889	 * page in a page table page mapping size.  Used to skip non-present
+  6890	 * page table entries when linearly scanning address ranges.  Architectures
+  6891	 * with unique huge page to page table relationships can define their own
+  6892	 * version of this routine.
+  6893	 */
+  6894	unsigned long hugetlb_mask_last_page(struct hstate *h)
+  6895	{
+  6896		unsigned long hp_size = huge_page_size(h);
+  6897	
+  6898		switch (hp_size) {
+  6899		case P4D_SIZE:
+  6900			return PGDIR_SIZE - P4D_SIZE;
+> 6901		case PUD_SIZE:
+  6902			return P4D_SIZE - PUD_SIZE;
+  6903		case PMD_SIZE:
+  6904			return PUD_SIZE - PMD_SIZE;
+  6905		default:
+  6906			break; /* Should never happen */
+  6907		}
+  6908	
+  6909		return ~(0UL);
+  6910	}
+  6911	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
