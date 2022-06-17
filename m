@@ -2,202 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3227BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:40:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7694DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382788AbiFQOkt (ORCPT
+        id S1382798AbiFQOkw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 10:40:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44170 "EHLO
+        Fri, 17 Jun 2022 10:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233234AbiFQOks (ORCPT
+        with ESMTP id S1382591AbiFQOks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 17 Jun 2022 10:40:48 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43FEE39684;
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6C7F3983E;
         Fri, 17 Jun 2022 07:40:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1655476847; x=1687012847;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=nUf3VSmAhMT7KhA0SZgvMeAAppiMPu6TfIssmeBBkZ0=;
-  b=Iu3o569Zq7X/KFY3ys6MNnLHLpzc43WCvCoXjM/MTeGREhs7gOA174ob
-   KDPIe+QVFKcoVut3CyIRjkJDbJUoVbqhBkfT73wxDpupUtOKZhYaYqIZU
-   0jD6NdgGjGnEMLcmwKFibowiD9qMjZUM6UPwFrSvfqIJyptPrffZYbnIM
-   IPp6E8grhv2V4maIQVenz3ZvaRRWpElzY3oUR8Bgalc73z4zbsmCkexoO
-   LCsl6XLlb0EMw7GG1vfALSrTdAKeT0C/L3PWTiA4sCgt1LLSAWyTFs5gV
-   XjjvN1/Buh7p12rKXvgMwm583NZ9D4mkt04OnDhRo2P7EnDNUw2oCEToE
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="341193588"
+  bh=Ta2YQsulj3jZHsDIUgd4bbq30vgKTah6y6arAvOavz4=;
+  b=Wc4MgatVSs6c8pbM7yzqIoAkfiwf7TPv6nN4/YpQjO6+dCnhBAWU5UFJ
+   koTkDZn3l43wKWx5Kukv21t/8HoStbeylItOWbliBLEpSzngmG0/x25FI
+   cqQQofDk+X3JNrgct3xsUGWgUxaYKCkxo8LOvu7dFF0Ngw32SCzGcr/yX
+   Zpxu9o7ORW2pbDXuMHJDK+pe1PvNb8sChRuCWnpzx7vjn6/peJ6IhIvoV
+   ruq8Y/JI5wBI0ejtgqPDaRBRaaG3sQb0Fi+dGOAZmBA0ZbSbmNbS1Tay1
+   jrT98P9Evrjvs14lDnTZKTUfSC7ixPjoXR5GP1m0a0OAKezjXCUdc6wTt
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280570680"
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="341193588"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 07:40:46 -0700
+   d="scan'208";a="280570680"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 07:40:47 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="713789777"
+   d="scan'208";a="590137364"
 Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 17 Jun 2022 07:40:44 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 17 Jun 2022 07:40:44 -0700
 Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1o2D9P-000PVx-Mp;
+        id 1o2D9P-000PW1-O6;
         Fri, 17 Jun 2022 14:40:43 +0000
-Date:   Fri, 17 Jun 2022 22:40:25 +0800
+Date:   Fri, 17 Jun 2022 22:40:36 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Ricardo Ribalda <ribalda@chromium.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-kernel@vger.kernel.org, tfiga@chromium.org,
-        senozhatsky@chromium.org, yunkec@google.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-media@vger.kernel.org, Ricardo Ribalda <ribalda@chromium.org>
-Subject: Re: [PATCH v7 2/8] media: uvcvideo: Add support for per-device
- control mapping overrides
-Message-ID: <202206172239.M4dQBUhz-lkp@intel.com>
-References: <20220617103645.71560-3-ribalda@chromium.org>
+To:     Lei He <helei.sig11@bytedance.com>, herbert@gondor.apana.org.au,
+        davem@davemloft.net, dhowells@redhat.com, mst@redhat.com
+Cc:     kbuild-all@lists.01.org, arei.gonglei@huawei.com,
+        jasowang@redhat.com, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pizhenwei@bytedance.com,
+        helei.sig11@bytedance.com, f4bug@amsat.org, berrange@redhat.com
+Subject: Re: [PATCH 4/4] virtio-crypto: support ECDSA algorithm
+Message-ID: <202206172202.d2j2nFUX-lkp@intel.com>
+References: <20220617070754.73667-6-helei.sig11@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220617103645.71560-3-ribalda@chromium.org>
+In-Reply-To: <20220617070754.73667-6-helei.sig11@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ricardo,
+Hi Lei,
 
-I love your patch! Perhaps something to improve:
+Thank you for the patch! Yet something to improve:
 
-[auto build test WARNING on media-tree/master]
-[also build test WARNING on linus/master v5.19-rc2 next-20220617]
+[auto build test ERROR on herbert-cryptodev-2.6/master]
+[also build test ERROR on herbert-crypto-2.6/master linus/master v5.19-rc2 next-20220617]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
 https://git-scm.com/docs/git-format-patch]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ricardo-Ribalda/uvcvideo-Fix-handling-of-power_line_frequency/20220617-185644
-base:   git://linuxtv.org/media_tree.git master
-config: hexagon-randconfig-r045-20220617 (https://download.01.org/0day-ci/archive/20220617/202206172239.M4dQBUhz-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d764aa7fc6b9cc3fbe960019018f5f9e941eb0a6)
+url:    https://github.com/intel-lab-lkp/linux/commits/Lei-He/virtio-crypto-support-ECDSA-algorithm/20220617-151113
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git master
+config: i386-randconfig-m021 (https://download.01.org/0day-ci/archive/20220617/202206172202.d2j2nFUX-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
 reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/10bdca4191d7a8be97c77dbe4ba89c05713ee0e2
+        # https://github.com/intel-lab-lkp/linux/commit/d335068e54f1217848445185702d75739116b1fe
         git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Ricardo-Ribalda/uvcvideo-Fix-handling-of-power_line_frequency/20220617-185644
-        git checkout 10bdca4191d7a8be97c77dbe4ba89c05713ee0e2
+        git fetch --no-tags linux-review Lei-He/virtio-crypto-support-ECDSA-algorithm/20220617-151113
+        git checkout d335068e54f1217848445185702d75739116b1fe
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/media/usb/uvc/
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
->> drivers/media/usb/uvc/uvc_ctrl.c:2442:6: warning: variable 'mapping' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (chain->dev->info->mappings) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/media/usb/uvc/uvc_ctrl.c:2459:9: note: uninitialized use occurs here
-           mend = mapping + ARRAY_SIZE(uvc_ctrl_mappings);
-                  ^~~~~~~
-   drivers/media/usb/uvc/uvc_ctrl.c:2442:2: note: remove the 'if' if its condition is always true
-           if (chain->dev->info->mappings) {
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/media/usb/uvc/uvc_ctrl.c:2406:43: note: initialize the variable 'mapping' to silence this warning
-           const struct uvc_control_mapping *mapping;
-                                                    ^
-                                                     = NULL
-   1 warning generated.
+   ld: drivers/crypto/virtio/virtio_crypto_akcipher_algs.o: in function `virtio_crypto_ecdsa_max_size':
+>> drivers/crypto/virtio/virtio_crypto_akcipher_algs.c:602: undefined reference to `ecdsa_max_signature_size'
 
 
-vim +2442 drivers/media/usb/uvc/uvc_ctrl.c
+vim +602 drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
 
-  2396	
-  2397	/*
-  2398	 * Add control information and hardcoded stock control mappings to the given
-  2399	 * device.
-  2400	 */
-  2401	static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
-  2402				       struct uvc_control *ctrl)
-  2403	{
-  2404		const struct uvc_control_info *info = uvc_ctrls;
-  2405		const struct uvc_control_info *iend = info + ARRAY_SIZE(uvc_ctrls);
-  2406		const struct uvc_control_mapping *mapping;
-  2407		const struct uvc_control_mapping *mend;
-  2408	
-  2409		/* XU controls initialization requires querying the device for control
-  2410		 * information. As some buggy UVC devices will crash when queried
-  2411		 * repeatedly in a tight loop, delay XU controls initialization until
-  2412		 * first use.
-  2413		 */
-  2414		if (UVC_ENTITY_TYPE(ctrl->entity) == UVC_VC_EXTENSION_UNIT)
-  2415			return;
-  2416	
-  2417		for (; info < iend; ++info) {
-  2418			if (uvc_entity_match_guid(ctrl->entity, info->entity) &&
-  2419			    ctrl->index == info->index) {
-  2420				uvc_ctrl_add_info(chain->dev, ctrl, info);
-  2421				/*
-  2422				 * Retrieve control flags from the device. Ignore errors
-  2423				 * and work with default flag values from the uvc_ctrl
-  2424				 * array when the device doesn't properly implement
-  2425				 * GET_INFO on standard controls.
-  2426				 */
-  2427				uvc_ctrl_get_flags(chain->dev, ctrl, &ctrl->info);
-  2428				break;
-  2429			 }
-  2430		}
-  2431	
-  2432		if (!ctrl->initialized)
-  2433			return;
-  2434	
-  2435		/*
-  2436		 * First check if the device provides a custom mapping for this control,
-  2437		 * used to override standard mappings for non-conformant devices. Don't
-  2438		 * process standard mappings if a custom mapping is found. This
-  2439		 * mechanism doesn't support combining standard and custom mappings for
-  2440		 * a single control.
-  2441		 */
-> 2442		if (chain->dev->info->mappings) {
-  2443			bool custom = false;
-  2444			unsigned int i;
-  2445	
-  2446			for (i = 0; (mapping = chain->dev->info->mappings[i]); ++i) {
-  2447				if (uvc_entity_match_guid(ctrl->entity, mapping->entity) &&
-  2448				    ctrl->info.selector == mapping->selector) {
-  2449					__uvc_ctrl_add_mapping(chain, ctrl, mapping);
-  2450					custom = true;
-  2451				}
-  2452			}
-  2453	
-  2454			if (custom)
-  2455				return;
-  2456		}
-  2457	
-  2458		/* Process common mappings next. */
-  2459		mend = mapping + ARRAY_SIZE(uvc_ctrl_mappings);
-  2460		for (mapping = uvc_ctrl_mappings; mapping < mend; ++mapping) {
-  2461			if (uvc_entity_match_guid(ctrl->entity, mapping->entity) &&
-  2462			    ctrl->info.selector == mapping->selector)
-  2463				__uvc_ctrl_add_mapping(chain, ctrl, mapping);
-  2464		}
-  2465	
-  2466		/* Finally process version-specific mappings. */
-  2467		if (chain->dev->uvc_version < 0x0150) {
-  2468			mapping = uvc_ctrl_mappings_uvc11;
-  2469			mend = mapping + ARRAY_SIZE(uvc_ctrl_mappings_uvc11);
-  2470		} else {
-  2471			mapping = uvc_ctrl_mappings_uvc15;
-  2472			mend = mapping + ARRAY_SIZE(uvc_ctrl_mappings_uvc15);
-  2473		}
-  2474	
-  2475		for (; mapping < mend; ++mapping) {
-  2476			if (uvc_entity_match_guid(ctrl->entity, mapping->entity) &&
-  2477			    ctrl->info.selector == mapping->selector)
-  2478				__uvc_ctrl_add_mapping(chain, ctrl, mapping);
-  2479		}
-  2480	}
-  2481	
+   596	
+   597	static unsigned int virtio_crypto_ecdsa_max_size(struct crypto_akcipher *tfm)
+   598	{
+   599		struct virtio_crypto_akcipher_ctx *ctx = akcipher_tfm_ctx(tfm);
+   600		struct virtio_crypto_ecdsa_ctx *ecdsa_ctx = &ctx->ecdsa_ctx;
+   601	
+ > 602		return ecdsa_max_signature_size(ecdsa_ctx->curve);
+   603	}
+   604	
 
 -- 
 0-DAY CI Kernel Test Service
