@@ -2,73 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D924EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:18:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235372AbiFQJSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 05:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
+        id S235530AbiFQJSb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 05:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbiFQJSE (ORCPT
+        with ESMTP id S235678AbiFQJS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 05:18:04 -0400
-Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id A647B1F2F1
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 02:17:59 -0700 (PDT)
-Received: from fedora33.wangsu.com (unknown [59.61.78.232])
-        by app2 (Coremail) with SMTP id SyJltAC3vuK9RqxiNskEAA--.8183S2;
-        Fri, 17 Jun 2022 17:17:55 +0800 (CST)
-From:   Lin Feng <linf@wangsu.com>
-To:     gregkh@linuxfoundation.org, tj@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linf@wangsu.com
-Subject: [PATCH] kernfs/file.c: remove redundant error return counter assignment
-Date:   Fri, 17 Jun 2022 17:17:46 +0800
-Message-Id: <20220617091746.206515-1-linf@wangsu.com>
-X-Mailer: git-send-email 2.31.1
+        Fri, 17 Jun 2022 05:18:28 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4755677A;
+        Fri, 17 Jun 2022 02:18:26 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LPYLv5d4Qz1K9xM;
+        Fri, 17 Jun 2022 17:16:23 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 17 Jun 2022 17:18:16 +0800
+Received: from localhost.localdomain (10.175.112.70) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 17 Jun 2022 17:18:15 +0800
+From:   Xu Jia <xujia39@huawei.com>
+To:     <linux-hams@vger.kernel.org>, <pabeni@redhat.com>,
+        <ajk@comnets.uni-bremen.de>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <xujia39@huawei.com>
+Subject: [PATCH v2] hamradio: 6pack: fix array-index-out-of-bounds in decode_std_command()
+Date:   Fri, 17 Jun 2022 17:31:06 +0800
+Message-ID: <1655458266-27879-1-git-send-email-xujia39@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: SyJltAC3vuK9RqxiNskEAA--.8183S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrGr4kCw1rCF1kurWrtry8AFb_yoWxGFX_JF
-        W8AryxCr4jvr1Iqr1kCw4Fvrn093Z3Zr1rK3y5tr1DKrn8X3yUGr9Yy3W5Ary5Jry3Gryk
-        AFs8ur4Y9w4UtjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbxAFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wA2ocxC64kI
-        II0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7
-        xvwVC0I7IYx2IY6xkF7I0E14v26F4UJVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28E
-        F7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F4
-        0EFcxC0VAKzVAqx4xG6I80ewAv7VACjcxG62k0Y48FwI0_Gr0_Cr1lYx0E74AGY7Cv6cx2
-        6r48McIj6xkF7I0En7xvr7AKxVW8Jr0_Cr1UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0x
-        vY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4fMxAIw28IcxkI
-        7VAKI48JMxAIw28IcVCjz48v1sIEY20_Gr4l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
-        Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r12
-        6r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
-        kF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AK
-        xVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0J
-        UmzuAUUUUU=
-X-CM-SenderInfo: holqwq5zdqw23xof0z/
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since previous 'rc = -EINVAL;', rc value doesn't change, so not
-necessary to re-assign it again.
+Hulk Robot reports incorrect sp->rx_count_cooked value in decode_std_command().
+This should be caused by the subtracting from sp->rx_count_cooked before.
+It seems that sp->rx_count_cooked value is changed to 0, which bypassed the
+previous judgment.
 
-Signed-off-by: Lin Feng <linf@wangsu.com>
+The situation is shown below:
+
+         (Thread 1)			|  (Thread 2)
+decode_std_command()		| resync_tnc()
+...					|
+if (rest == 2)			|
+	sp->rx_count_cooked -= 2;	|
+else if (rest == 3)			| ...
+					| sp->rx_count_cooked = 0;
+	sp->rx_count_cooked -= 1;	|
+for (i = 0; i < sp->rx_count_cooked; i++) // report error
+	checksum += sp->cooked_buf[i];
+
+sp->rx_count_cooked is a shared variable but is not protected by a lock.
+The same applies to sp->rx_count. This patch adds a lock to fix the bug.
+
+The fail log is shown below:
+=======================================================================
+UBSAN: array-index-out-of-bounds in drivers/net/hamradio/6pack.c:925:31
+index 400 is out of range for type 'unsigned char [400]'
+CPU: 3 PID: 7433 Comm: kworker/u10:1 Not tainted 5.18.0-rc5-00163-g4b97bac0756a #2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xcd/0x134
+ ubsan_epilogue+0xb/0x50
+ __ubsan_handle_out_of_bounds.cold+0x62/0x6c
+ sixpack_receive_buf+0xfda/0x1330
+ tty_ldisc_receive_buf+0x13e/0x180
+ tty_port_default_receive_buf+0x6d/0xa0
+ flush_to_ldisc+0x213/0x3f0
+ process_one_work+0x98f/0x1620
+ worker_thread+0x665/0x1080
+ kthread+0x2e9/0x3a0
+ ret_from_fork+0x1f/0x30
+ ...
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Xu Jia <xujia39@huawei.com>
 ---
- fs/kernfs/file.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/hamradio/6pack.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
-index e3abfa843879..54b2a13ac9a2 100644
---- a/fs/kernfs/file.c
-+++ b/fs/kernfs/file.c
-@@ -484,7 +484,6 @@ static int kernfs_fop_mmap(struct file *file, struct vm_area_struct *vma)
- 	 * It is not possible to successfully wrap close.
- 	 * So error if someone is trying to use close.
- 	 */
--	rc = -EINVAL;
- 	if (vma->vm_ops && vma->vm_ops->close)
- 		goto out_put;
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index ff2bb3d..833dcc7 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -99,6 +99,7 @@ struct sixpack {
+ 
+ 	unsigned int		rx_count;
+ 	unsigned int		rx_count_cooked;
++	spinlock_t		rxlock;
+ 
+ 	int			mtu;		/* Our mtu (to spot changes!) */
+ 	int			buffsize;       /* Max buffers sizes */
+@@ -565,6 +566,7 @@ static int sixpack_open(struct tty_struct *tty)
+ 	sp->dev = dev;
+ 
+ 	spin_lock_init(&sp->lock);
++	spin_lock_init(&sp->rxlock);
+ 	refcount_set(&sp->refcnt, 1);
+ 	init_completion(&sp->dead);
+ 
+@@ -913,6 +915,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
+ 			sp->led_state = 0x60;
+ 			/* fill trailing bytes with zeroes */
+ 			sp->tty->ops->write(sp->tty, &sp->led_state, 1);
++			spin_lock_bh(&sp->rxlock);
+ 			rest = sp->rx_count;
+ 			if (rest != 0)
+ 				 for (i = rest; i <= 3; i++)
+@@ -930,6 +933,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
+ 				sp_bump(sp, 0);
+ 			}
+ 			sp->rx_count_cooked = 0;
++			spin_unlock_bh(&sp->rxlock);
+ 		}
+ 		break;
+ 	case SIXP_TX_URUN: printk(KERN_DEBUG "6pack: TX underrun\n");
+@@ -959,8 +963,11 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
+ 			decode_prio_command(sp, inbyte);
+ 		else if ((inbyte & SIXP_STD_CMD_MASK) != 0)
+ 			decode_std_command(sp, inbyte);
+-		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK)
++		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK) {
++			spin_lock_bh(&sp->rxlock);
+ 			decode_data(sp, inbyte);
++			spin_unlock_bh(&sp->rxlock);
++		}
+ 	}
+ }
  
 -- 
-2.31.1
+1.8.3.1
 
