@@ -2,95 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E91A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 03:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 03:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379905AbiFQDBA (ORCPT
+        id S1379706AbiFQDD0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 23:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41822 "EHLO
+        Thu, 16 Jun 2022 23:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232810AbiFQDA4 (ORCPT
+        with ESMTP id S1379532AbiFQDDT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 23:00:56 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3DE66214;
-        Thu, 16 Jun 2022 20:00:53 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 25H30DH80017567, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 25H30DH80017567
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 17 Jun 2022 11:00:13 +0800
-Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 17 Jun 2022 11:00:12 +0800
-Received: from localhost.localdomain (172.21.177.191) by
- RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 17 Jun 2022 11:00:12 +0800
-From:   Edward Wu <edwardwu@realtek.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Hannes Reinecke <hare@suse.de>,
-        Edward Wu <edwardwu@realtek.com>, Tejun Heo <tj@kernel.org>,
-        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <stable@vger.kernel.org>
-Subject: [PATCH v3] ata: libata: add qc->flags in ata_qc_complete_template tracepoint
-Date:   Fri, 17 Jun 2022 11:00:06 +0800
-Message-ID: <20220617030007.21768-1-edwardwu@realtek.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220616001615.11636-1-edwardwu@realtek.com>
-References: <20220616001615.11636-1-edwardwu@realtek.com>
+        Thu, 16 Jun 2022 23:03:19 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 264342A73D
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 20:03:16 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id BE8415C0172;
+        Thu, 16 Jun 2022 23:03:13 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 16 Jun 2022 23:03:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1655434993; x=
+        1655521393; bh=jEzCc3JeLlFHDgfBc5h9JcPzQeM03k0MCLfDjduKd98=; b=s
+        7O+jdOSp5HZdN/Gfr43zbiLuNmzjh53xJZ6o7vavlksDRFj135MmToZ5sIfMoYR8
+        RHbzXs6O49GNhjGLjYc9FPlcDG08L51NMs5hCDt7ZegJEBMqaqZmx99mqzs6FqVL
+        R8Z6jFr08sMoZZMkSJN27Y8EO2oHu5qG6cV523LIsokgAWLZQOxITIS0NuCrYoUM
+        vP2FV3g8c6zvD+VBpm8XVcGmRrmQde0RffVo9jQkMNFLoSUDLq0ijfd5og2bd1bB
+        n2kPuAsamHibqWwbBg+Xv7rX83XSRIOYNrYb9aVLPwZr2zE6I8bztJ06dmmNsR3x
+        5tm7h8OdcsDYqC+dVXq/Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1655434993; x=
+        1655521393; bh=jEzCc3JeLlFHDgfBc5h9JcPzQeM03k0MCLfDjduKd98=; b=m
+        x6coN2S29eeKnGin+7uziw3IkxvCwzwfE9qNCB20bhN1KdrYNXI2kG5FvxM1m/6e
+        XV/VehkYqAlndUfKztK1fKF/YJIEg4Xbvl2PmDwYG0Wi/JKxxkmJEY2vrZ3oBui1
+        SvBk1hpsw3tTGM+OyezRzyP/K3Juji8SpWjMeHF6G8XBc164mmpoktCCNtgvX6c0
+        IuN9z2GFFeLyoSkXfVClkwrguMH1VWtqgEwRYDU+Saz2K3uPVrNllAtqOF/cNJBq
+        XYtMLwcakKQp+NYC18LQHw+HDo3fJgEwRbCksfmpkbiiL3fXxQZheztIHZG9fLOk
+        /e8I6gCm9TVY6PokcDBtw==
+X-ME-Sender: <xms:8e6rYtL64OQpoPBLC-BLYsw9Clcriwst7y7Ps7xPcPh03P6KzVa_dw>
+    <xme:8e6rYpKTsTJX0pknfRXaGRRR7shaiLwcaupu3GFLr7JKeXw9zHVhO-LIFBC03Uh6g
+    N3QqWDCU7p1QX0fnA>
+X-ME-Received: <xmr:8e6rYltZKb45MelRcq5dHpS7TfDwlpqYnxKf3CsraAELRzsCOFxN0yRVEHtyqbjhYovI6--F4JlqVpoGJpvjMNirH0n3Hb0rSN9AKFq7qhVbgYuYe4Sfh8GJYw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddvgedgieehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpefftdevkedvgeekueeutefgteffieelvedukeeuhfehledvhfei
+    tdehudfhudehhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:8e6rYuY5qqwNlaYswIuBtDYjC0oA6sHQdfHRgGlcX9fSWRdnB7wRGg>
+    <xmx:8e6rYkYPy4QT3vpmriOsOHBTJ8-sELwIyJsQF_7TvB6WenJ-RhNlcg>
+    <xmx:8e6rYiABnUOfWM50Z_cuxeAOmRxL9w6jfDXIIn82Qf_wQV5XLxDcXA>
+    <xmx:8e6rYk4mz9LqVHcYyvLFOKjwvsHOnuce1jpnRE0OhpWTtMVpJn7Cbg>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 16 Jun 2022 23:03:12 -0400 (EDT)
+Subject: Re: [PATCH] drm/sun4i: Add DMA mask and segment size
+To:     Jernej Skrabec <jernej.skrabec@gmail.com>, mripard@kernel.org,
+        wens@csie.org
+Cc:     airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+References: <20220616213240.392041-1-jernej.skrabec@gmail.com>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <e4a73a0f-c725-fad2-021b-5b5ee5ead1b3@sholland.org>
+Date:   Thu, 16 Jun 2022 22:03:11 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.21.177.191]
-X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
- RTEXMBS03.realtek.com.tw (172.21.6.96)
-X-KSE-ServerInfo: RTEXMBS03.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: trusted connection
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 06/17/2022 02:41:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzYvMTcgpFekyCAwMToxMjowMA==?=
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+In-Reply-To: <20220616213240.392041-1-jernej.skrabec@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add flags value to check the result of ata completion
+Hi Jernej,
 
-Fixes: 255c03d15a29 ("libata: Add tracepoints")
-Cc: stable@vger.kernel.org
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Edward Wu <edwardwu@realtek.com>
----
-Thanks for your kindly guiding.
+On 6/16/22 4:32 PM, Jernej Skrabec wrote:
+> Kernel occasionally complains that there is mismatch in segment size
+> when trying to render HW decoded videos and rendering them directly with
+> sun4i DRM driver.
+> 
+> Fix that by setting DMA mask and segment size.
+> 
+> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> ---
+>  drivers/gpu/drm/sun4i/sun4i_drv.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
+> index 275f7e4a03ae..83f4e87f77f6 100644
+> --- a/drivers/gpu/drm/sun4i/sun4i_drv.c
+> +++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
+> @@ -7,6 +7,7 @@
+>   */
+>  
+>  #include <linux/component.h>
+> +#include <linux/dma-mapping.h>
+>  #include <linux/kfifo.h>
+>  #include <linux/module.h>
+>  #include <linux/of_graph.h>
+> @@ -367,6 +368,9 @@ static int sun4i_drv_probe(struct platform_device *pdev)
+>  
+>  	INIT_KFIFO(list.fifo);
+>  
+> +	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 
- include/trace/events/libata.h | 1 +
- 1 file changed, 1 insertion(+)
+Isn't this already the default, from of_dma_configure_id or setup_pdev_dma_masks?
 
-diff --git a/include/trace/events/libata.h b/include/trace/events/libata.h
-index d4e631aa976f..6025dd8ba4aa 100644
---- a/include/trace/events/libata.h
-+++ b/include/trace/events/libata.h
-@@ -288,6 +288,7 @@ DECLARE_EVENT_CLASS(ata_qc_complete_template,
- 		__entry->hob_feature	= qc->result_tf.hob_feature;
- 		__entry->nsect		= qc->result_tf.nsect;
- 		__entry->hob_nsect	= qc->result_tf.hob_nsect;
-+		__entry->flags		= qc->flags;
- 	),
- 
- 	TP_printk("ata_port=%u ata_dev=%u tag=%d flags=%s status=%s " \
--- 
-2.17.1
+> +	dma_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(32));
 
+This looks like a good change. In fact, I think we need a similar change in some
+other drivers.
+
+Regards,
+Samuel
