@@ -2,81 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B73FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:17:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D902C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383089AbiFQPRY (ORCPT
+        id S1382810AbiFQPSI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 11:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47460 "EHLO
+        Fri, 17 Jun 2022 11:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383075AbiFQPRW (ORCPT
+        with ESMTP id S1382588AbiFQPSG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 11:17:22 -0400
-Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 64B133D4B6
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:17:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=vy1/z
-        mDGugMG37ryPH+Tv9++kz/jYiS+PNBOnKejF74=; b=BLYii+CdmmgloV+8qoUs6
-        5D5Gkl9KEhdNq39k35e9sspeBUc+UlYSxr5/X/izQ+2caoRxwtj+O/d83Mofx1Q6
-        0gcIIFxsOv5nRugHhtamRuw7BUJAtW+FJ6BVr+4LjOv1ZdggYQWzd6w5NVIycomT
-        uZTMn5PBwkRbyz5rv0p+9U=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp3 (Coremail) with SMTP id DcmowADHZZf0maxiKDiLDg--.37809S2;
-        Fri, 17 Jun 2022 23:12:53 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        christophe.leroy@csgroup.eu, joel@jms.id.au
-Cc:     windhl@126.com, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] powerpc: sysdev: Fix refcount leak bug in mpic_msgr
-Date:   Fri, 17 Jun 2022 23:12:52 +0800
-Message-Id: <20220617151252.4051291-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 17 Jun 2022 11:18:06 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8623D20BDB
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:18:05 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 2D62921C24;
+        Fri, 17 Jun 2022 15:18:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1655479084; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=rIuqjHFmC+w6nfNOwP4JflZgc1+ZlZz9xW15jPNBpZw=;
+        b=ChVBhRxNj+HYybXR2zGqDGZC507KYxHqlTCKlpDNAXa9q78C/ZPLjQOScESbeB8VtdQGTJ
+        xwckAhe2kH4U4zD3Sa1TkR/iU92+KZDDh8ieOHLgW56URdCh088E5OxVRQ1GywxRjQOyes
+        3Z9IXE/W93fDzfwXGO/u3XEw3vHZe6o=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id B16EE2C141;
+        Fri, 17 Jun 2022 15:18:03 +0000 (UTC)
+Date:   Fri, 17 Jun 2022 17:18:03 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Peter Geis <pgwipeout@gmail.com>, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] printk fixups for 5.19-rc3
+Message-ID: <YqybK+kFriV9yeIx@alley>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcmowADHZZf0maxiKDiLDg--.37809S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrKr1kKr1UGr1ftF1kWF13CFg_yoWfZrcEk3
-        Z2g34kAFWkJr48ZFsxZrWrX3Z5A3WfWrn8Jrn2qa17Aw1aqa17Xw47X395AryqgFsFy3yr
-        AFn3Wrnaga40yjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUjnYwUUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbiuBYjF2JVj6in2AAAs1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In mpic_msgr_number_of_blocks() and mpic_msgr_block_number(),
-of_find_node_by_name() will return a node pointer with refcount
-incremented. We should use of_node_put() when it is not used
-anymore.
+Hi Linus,
 
-Signed-off-by: Liang He <windhl@126.com>
----
- arch/powerpc/sysdev/mpic_msgr.c | 2 ++
- 1 file changed, 2 insertions(+)
+please pull two printk fixups from
 
-diff --git a/arch/powerpc/sysdev/mpic_msgr.c b/arch/powerpc/sysdev/mpic_msgr.c
-index 698fefaaa6dd..c2a235d9eb09 100644
---- a/arch/powerpc/sysdev/mpic_msgr.c
-+++ b/arch/powerpc/sysdev/mpic_msgr.c
-@@ -122,6 +122,7 @@ static unsigned int mpic_msgr_number_of_blocks(void)
- 			count += 1;
- 		}
- 	}
-+	of_node_put(aliases);
- 
- 	return count;
- }
-@@ -150,6 +151,7 @@ static int mpic_msgr_block_number(struct device_node *node)
- 		if (node == of_find_node_by_path(prop->value))
- 			break;
- 	}
-+	of_node_put(aliases);
- 
- 	return index == number_of_blocks ? -1 : index;
- }
--- 
-2.25.1
+  git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.19-rc3
 
+=============================
+
+- Make the global console_sem available for CPU that is handling
+  panic() or shutdown. It is an old problem when an existing
+  console lock owner might block console output. It became
+  more visible with the kthreads.
+
+=============================
+
+I am sorry for the late pull request. I wanted to give it at
+least two days in linux-next.
+
+----------------------------------------------------------------
+Petr Mladek (3):
+      printk: Block console kthreads when direct printing will be required
+      printk: Wait for the global console lock when the system is going down
+      Merge branch 'rework/kthreads' into for-linus
+
+ include/linux/printk.h      |  5 +++++
+ kernel/panic.c              |  2 ++
+ kernel/printk/internal.h    |  2 ++
+ kernel/printk/printk.c      |  8 +++++++-
+ kernel/printk/printk_safe.c | 32 ++++++++++++++++++++++++++++++++
+ kernel/reboot.c             |  2 ++
+ 6 files changed, 50 insertions(+), 1 deletion(-)
