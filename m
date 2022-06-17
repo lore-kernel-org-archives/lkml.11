@@ -2,419 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94CECC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E694AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381102AbiFQIn5 (ORCPT
+        id S1381141AbiFQIn7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 04:43:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
+        Fri, 17 Jun 2022 04:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381073AbiFQInu (ORCPT
+        with ESMTP id S1381080AbiFQInw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 04:43:50 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF416692A7;
-        Fri, 17 Jun 2022 01:43:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655455429; x=1686991429;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GXr8x6pjgu6O/dHc0jQehzD0HMYVyAbKzYL8SmPK+Sk=;
-  b=2Gp2q3fONxgj+Cg7f5Bn2XGCpt2iNJ6Y8XFxRki+BjO/4LpUUVeLzADj
-   WoA1NofL8n7w9iPPo/aUGMjuFC7++zZNF0ALPeI6CmkYf6uuNvWEHB2QI
-   19gjlx1wt3cdPWW4JB3praRtETWIX+5PR86v4IpOqxBVKV8Vin6q6dbz9
-   25S+7Er5FVNTUbowEFfntDYpvNr6HJRDPqrNhT+x8QeLvYnDlduclFO/i
-   TEyfbbYk1wC1iBxZKf0PaGZs0xgL1kdHiZPvtbPaue1/AOz+nQ8xgUsmy
-   pF7HHPqeZGBUjvRAXsu1lLqggzsntfFz+y3uBJfhlp3xTHPlPiFSzx7ue
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="178368444"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Jun 2022 01:43:49 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 17 Jun 2022 01:43:48 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 17 Jun 2022 01:43:44 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>
-Subject: [Patch net-next 02/11] net: dsa: microchip: move switch chip_id detection to ksz_common
-Date:   Fri, 17 Jun 2022 14:12:46 +0530
-Message-ID: <20220617084255.19376-3-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220617084255.19376-1-arun.ramadoss@microchip.com>
-References: <20220617084255.19376-1-arun.ramadoss@microchip.com>
+        Fri, 17 Jun 2022 04:43:52 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8DCAC69483
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:43:51 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5C51E12FC;
+        Fri, 17 Jun 2022 01:43:51 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.39.168])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DFAF43F792;
+        Fri, 17 Jun 2022 01:43:47 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 09:43:44 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     James Morse <james.morse@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Xie XiuQi <xiexiuqi@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+Subject: Re: [PATCH -next v5 4/8] arm64: extable: cleanup redundant extable
+ type EX_TYPE_FIXUP
+Message-ID: <Yqw+wKSUFMZN5P/M@FVFF77S0Q05N>
+References: <20220528065056.1034168-1-tongtiangen@huawei.com>
+ <20220528065056.1034168-5-tongtiangen@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220528065056.1034168-5-tongtiangen@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KSZ87xx and KSZ88xx have chip_id representation at reg location 0. And
-KSZ9477 compatible switch and LAN937x switch have same chip_id detection
-at location 0x01 and 0x02. To have the common switch detect
-functionality for ksz switches, ksz_switch_detect function is
-introduced.
+On Sat, May 28, 2022 at 06:50:52AM +0000, Tong Tiangen wrote:
+> Currently, extable type EX_TYPE_FIXUP is no place to use, We can safely
+> remove it.
+> 
+> Suggested-by: Mark Rutland <mark.rutland@arm.com>
+> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz8795.c     | 48 +--------------
- drivers/net/dsa/microchip/ksz8795_reg.h | 16 -----
- drivers/net/dsa/microchip/ksz9477.c     | 21 -------
- drivers/net/dsa/microchip/ksz9477_reg.h |  1 -
- drivers/net/dsa/microchip/ksz_common.c  | 78 +++++++++++++++++++++++--
- drivers/net/dsa/microchip/ksz_common.h  | 19 +++++-
- 6 files changed, 93 insertions(+), 90 deletions(-)
+Acked-by: Mark Rutland <mark.rutland@arm.com>
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 12a599d5e61a..3cc51ee5fb6c 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1272,7 +1272,7 @@ static void ksz8_config_cpu_port(struct dsa_switch *ds)
- 			continue;
- 		if (!ksz_is_ksz88x3(dev)) {
- 			ksz_pread8(dev, i, regs[P_REMOTE_STATUS], &remote);
--			if (remote & PORT_FIBER_MODE)
-+			if (remote & KSZ8_PORT_FIBER_MODE)
- 				p->fiber = 1;
- 		}
- 		if (p->fiber)
-@@ -1424,51 +1424,6 @@ static u32 ksz8_get_port_addr(int port, int offset)
- 	return PORT_CTRL_ADDR(port, offset);
- }
- 
--static int ksz8_switch_detect(struct ksz_device *dev)
--{
--	u8 id1, id2;
--	u16 id16;
--	int ret;
--
--	/* read chip id */
--	ret = ksz_read16(dev, REG_CHIP_ID0, &id16);
--	if (ret)
--		return ret;
--
--	id1 = id16 >> 8;
--	id2 = id16 & SW_CHIP_ID_M;
--
--	switch (id1) {
--	case KSZ87_FAMILY_ID:
--		if ((id2 != CHIP_ID_94 && id2 != CHIP_ID_95))
--			return -ENODEV;
--
--		if (id2 == CHIP_ID_95) {
--			u8 val;
--
--			id2 = 0x95;
--			ksz_read8(dev, REG_PORT_STATUS_0, &val);
--			if (val & PORT_FIBER_MODE)
--				id2 = 0x65;
--		} else if (id2 == CHIP_ID_94) {
--			id2 = 0x94;
--		}
--		break;
--	case KSZ88_FAMILY_ID:
--		if (id2 != CHIP_ID_63)
--			return -ENODEV;
--		break;
--	default:
--		dev_err(dev->dev, "invalid family id: %d\n", id1);
--		return -ENODEV;
--	}
--	id16 &= ~0xff;
--	id16 |= id2;
--	dev->chip_id = id16;
--
--	return 0;
--}
--
- static int ksz8_switch_init(struct ksz_device *dev)
- {
- 	struct ksz8 *ksz8 = dev->priv;
-@@ -1522,7 +1477,6 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.freeze_mib = ksz8_freeze_mib,
- 	.port_init_cnt = ksz8_port_init_cnt,
- 	.shutdown = ksz8_reset_switch,
--	.detect = ksz8_switch_detect,
- 	.init = ksz8_switch_init,
- 	.exit = ksz8_switch_exit,
- };
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index 4109433b6b6c..b8f6ad7581bc 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -14,23 +14,10 @@
- #define KS_PRIO_M			0x3
- #define KS_PRIO_S			2
- 
--#define REG_CHIP_ID0			0x00
--
--#define KSZ87_FAMILY_ID			0x87
--#define KSZ88_FAMILY_ID			0x88
--
--#define REG_CHIP_ID1			0x01
--
--#define SW_CHIP_ID_M			0xF0
--#define SW_CHIP_ID_S			4
- #define SW_REVISION_M			0x0E
- #define SW_REVISION_S			1
- #define SW_START			0x01
- 
--#define CHIP_ID_94			0x60
--#define CHIP_ID_95			0x90
--#define CHIP_ID_63			0x30
--
- #define KSZ8863_REG_SW_RESET		0x43
- 
- #define KSZ8863_GLOBAL_SOFTWARE_RESET	BIT(4)
-@@ -217,8 +204,6 @@
- #define REG_PORT_4_STATUS_0		0x48
- 
- /* For KSZ8765. */
--#define PORT_FIBER_MODE			BIT(7)
--
- #define PORT_REMOTE_ASYM_PAUSE		BIT(5)
- #define PORT_REMOTE_SYM_PAUSE		BIT(4)
- #define PORT_REMOTE_100BTX_FD		BIT(3)
-@@ -322,7 +307,6 @@
- 
- #define REG_PORT_CTRL_5			0x05
- 
--#define REG_PORT_STATUS_0		0x08
- #define REG_PORT_STATUS_1		0x09
- #define REG_PORT_LINK_MD_CTRL		0x0A
- #define REG_PORT_LINK_MD_RESULT		0x0B
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 7afc06681c02..7d3c8f6908b6 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1360,23 +1360,6 @@ static u32 ksz9477_get_port_addr(int port, int offset)
- 	return PORT_CTRL_ADDR(port, offset);
- }
- 
--static int ksz9477_switch_detect(struct ksz_device *dev)
--{
--	u32 id32;
--	int ret;
--
--	/* read chip id */
--	ret = ksz_read32(dev, REG_CHIP_ID0__1, &id32);
--	if (ret)
--		return ret;
--
--	dev_dbg(dev->dev, "Switch detect: ID=%08x\n", id32);
--
--	dev->chip_id = id32 & 0x00FFFF00;
--
--	return 0;
--}
--
- static int ksz9477_switch_init(struct ksz_device *dev)
- {
- 	u8 data8;
-@@ -1407,8 +1390,6 @@ static int ksz9477_switch_init(struct ksz_device *dev)
- 	dev->features = GBIT_SUPPORT;
- 
- 	if (dev->chip_id == KSZ9893_CHIP_ID) {
--		/* Chip is from KSZ9893 design. */
--		dev_info(dev->dev, "Found KSZ9893\n");
- 		dev->features |= IS_9893;
- 
- 		/* Chip does not support gigabit. */
-@@ -1416,7 +1397,6 @@ static int ksz9477_switch_init(struct ksz_device *dev)
- 			dev->features &= ~GBIT_SUPPORT;
- 		dev->phy_port_cnt = 2;
- 	} else {
--		dev_info(dev->dev, "Found KSZ9477 or compatible\n");
- 		/* Chip uses new XMII register definitions. */
- 		dev->features |= NEW_XMII;
- 
-@@ -1443,7 +1423,6 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.freeze_mib = ksz9477_freeze_mib,
- 	.port_init_cnt = ksz9477_port_init_cnt,
- 	.shutdown = ksz9477_reset_switch,
--	.detect = ksz9477_switch_detect,
- 	.init = ksz9477_switch_init,
- 	.exit = ksz9477_switch_exit,
- };
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index 7a2c8d4767af..077e35ab11b5 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -25,7 +25,6 @@
- 
- #define REG_CHIP_ID2__1			0x0002
- 
--#define CHIP_ID_63			0x63
- #define CHIP_ID_66			0x66
- #define CHIP_ID_67			0x67
- #define CHIP_ID_77			0x77
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 9ca8c8d7740f..bb710e5daff6 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -930,6 +930,72 @@ void ksz_port_stp_state_set(struct dsa_switch *ds, int port,
- }
- EXPORT_SYMBOL_GPL(ksz_port_stp_state_set);
- 
-+static int ksz_switch_detect(struct ksz_device *dev)
-+{
-+	u8 id1, id2;
-+	u16 id16;
-+	u32 id32;
-+	int ret;
-+
-+	/* read chip id */
-+	ret = ksz_read16(dev, REG_CHIP_ID0, &id16);
-+	if (ret)
-+		return ret;
-+
-+	id1 = FIELD_GET(SW_FAMILY_ID_M, id16);
-+	id2 = FIELD_GET(SW_CHIP_ID_M, id16);
-+
-+	switch (id1) {
-+	case KSZ87_FAMILY_ID:
-+		if (id2 == KSZ87_CHIP_ID_95) {
-+			u8 val;
-+
-+			dev->chip_id = KSZ8795_CHIP_ID;
-+
-+			ksz_read8(dev, KSZ8_PORT_STATUS_0, &val);
-+			if (val & KSZ8_PORT_FIBER_MODE)
-+				dev->chip_id = KSZ8765_CHIP_ID;
-+		} else if (id2 == KSZ87_CHIP_ID_94) {
-+			dev->chip_id = KSZ8794_CHIP_ID;
-+		} else {
-+			return -ENODEV;
-+		}
-+		break;
-+	case KSZ88_FAMILY_ID:
-+		if (id2 == KSZ88_CHIP_ID_63)
-+			dev->chip_id = KSZ8830_CHIP_ID;
-+		else
-+			return -ENODEV;
-+		break;
-+	default:
-+		ret = ksz_read32(dev, REG_CHIP_ID0, &id32);
-+		if (ret)
-+			return ret;
-+
-+		dev->chip_rev = FIELD_GET(SW_REV_ID_M, id32);
-+		id32 &= ~0xFF;
-+
-+		switch (id32) {
-+		case KSZ9477_CHIP_ID:
-+		case KSZ9897_CHIP_ID:
-+		case KSZ9893_CHIP_ID:
-+		case KSZ9567_CHIP_ID:
-+		case LAN9370_CHIP_ID:
-+		case LAN9371_CHIP_ID:
-+		case LAN9372_CHIP_ID:
-+		case LAN9373_CHIP_ID:
-+		case LAN9374_CHIP_ID:
-+			dev->chip_id = id32;
-+			break;
-+		default:
-+			dev_err(dev->dev,
-+				"unsupported switch detected %x)\n", id32);
-+			return -ENODEV;
-+		}
-+	}
-+	return 0;
-+}
-+
- struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
- {
- 	struct dsa_switch *ds;
-@@ -986,10 +1052,9 @@ int ksz_switch_register(struct ksz_device *dev,
- 	mutex_init(&dev->alu_mutex);
- 	mutex_init(&dev->vlan_mutex);
- 
--	dev->dev_ops = ops;
--
--	if (dev->dev_ops->detect(dev))
--		return -EINVAL;
-+	ret = ksz_switch_detect(dev);
-+	if (ret)
-+		return ret;
- 
- 	info = ksz_lookup_info(dev->chip_id);
- 	if (!info)
-@@ -998,10 +1063,15 @@ int ksz_switch_register(struct ksz_device *dev,
- 	/* Update the compatible info with the probed one */
- 	dev->info = info;
- 
-+	dev_info(dev->dev, "found switch: %s, rev %i\n",
-+		 dev->info->dev_name, dev->chip_rev);
-+
- 	ret = ksz_check_device_id(dev);
- 	if (ret)
- 		return ret;
- 
-+	dev->dev_ops = ops;
-+
- 	ret = dev->dev_ops->init(dev);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 8500eaedad67..e6bc5fb2b130 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -90,6 +90,7 @@ struct ksz_device {
- 
- 	/* chip specific data */
- 	u32 chip_id;
-+	u8 chip_rev;
- 	int cpu_port;			/* port connected to CPU */
- 	int phy_port_cnt;
- 	phy_interface_t compat_interface;
-@@ -182,7 +183,6 @@ struct ksz_dev_ops {
- 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
- 	void (*port_init_cnt)(struct ksz_device *dev, int port);
- 	int (*shutdown)(struct ksz_device *dev);
--	int (*detect)(struct ksz_device *dev);
- 	int (*init)(struct ksz_device *dev);
- 	void (*exit)(struct ksz_device *dev);
- };
-@@ -353,6 +353,23 @@ static inline void ksz_regmap_unlock(void *__mtx)
- #define PORT_RX_ENABLE			BIT(1)
- #define PORT_LEARN_DISABLE		BIT(0)
- 
-+/* Switch ID Defines */
-+#define REG_CHIP_ID0			0x00
-+
-+#define SW_FAMILY_ID_M			GENMASK(15, 8)
-+#define KSZ87_FAMILY_ID			0x87
-+#define KSZ88_FAMILY_ID			0x88
-+
-+#define KSZ8_PORT_STATUS_0		0x08
-+#define KSZ8_PORT_FIBER_MODE		BIT(7)
-+
-+#define SW_CHIP_ID_M			GENMASK(7, 4)
-+#define KSZ87_CHIP_ID_94		0x6
-+#define KSZ87_CHIP_ID_95		0x9
-+#define KSZ88_CHIP_ID_63		0x3
-+
-+#define SW_REV_ID_M			GENMASK(7, 4)
-+
- /* Regmap tables generation */
- #define KSZ_SPI_OP_RD		3
- #define KSZ_SPI_OP_WR		2
--- 
-2.36.1
+Mark.
 
+> ---
+>  arch/arm64/include/asm/asm-extable.h | 20 ++++----------------
+>  arch/arm64/mm/extable.c              |  9 ---------
+>  2 files changed, 4 insertions(+), 25 deletions(-)
+> 
+> diff --git a/arch/arm64/include/asm/asm-extable.h b/arch/arm64/include/asm/asm-extable.h
+> index d01bd94cc4c2..1f2974467273 100644
+> --- a/arch/arm64/include/asm/asm-extable.h
+> +++ b/arch/arm64/include/asm/asm-extable.h
+> @@ -3,11 +3,10 @@
+>  #define __ASM_ASM_EXTABLE_H
+>  
+>  #define EX_TYPE_NONE			0
+> -#define EX_TYPE_FIXUP			1
+> -#define EX_TYPE_BPF			2
+> -#define EX_TYPE_UACCESS_ERR_ZERO	3
+> -#define EX_TYPE_LOAD_UNALIGNED_ZEROPAD	4
+> -#define EX_TYPE_KACCESS_ERR_ZERO	5
+> +#define EX_TYPE_BPF			1
+> +#define EX_TYPE_UACCESS_ERR_ZERO	2
+> +#define EX_TYPE_LOAD_UNALIGNED_ZEROPAD	3
+> +#define EX_TYPE_KACCESS_ERR_ZERO	4
+>  
+>  #ifdef __ASSEMBLY__
+>  
+> @@ -20,14 +19,6 @@
+>  	.short		(data);				\
+>  	.popsection;
+>  
+> -/*
+> - * Create an exception table entry for `insn`, which will branch to `fixup`
+> - * when an unhandled fault is taken.
+> - */
+> -	.macro		_asm_extable, insn, fixup
+> -	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_FIXUP, 0)
+> -	.endm
+> -
+>  /*
+>   * Create an exception table entry for uaccess `insn`, which will branch to `fixup`
+>   * when an unhandled fault is taken.
+> @@ -62,9 +53,6 @@
+>  	".short		(" data ")\n"			\
+>  	".popsection\n"
+>  
+> -#define _ASM_EXTABLE(insn, fixup) \
+> -	__ASM_EXTABLE_RAW(#insn, #fixup, __stringify(EX_TYPE_FIXUP), "0")
+> -
+>  #define EX_DATA_REG_ERR_SHIFT	0
+>  #define EX_DATA_REG_ERR		GENMASK(4, 0)
+>  #define EX_DATA_REG_ZERO_SHIFT	5
+> diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
+> index 056591e5ca80..228d681a8715 100644
+> --- a/arch/arm64/mm/extable.c
+> +++ b/arch/arm64/mm/extable.c
+> @@ -16,13 +16,6 @@ get_ex_fixup(const struct exception_table_entry *ex)
+>  	return ((unsigned long)&ex->fixup + ex->fixup);
+>  }
+>  
+> -static bool ex_handler_fixup(const struct exception_table_entry *ex,
+> -			     struct pt_regs *regs)
+> -{
+> -	regs->pc = get_ex_fixup(ex);
+> -	return true;
+> -}
+> -
+>  static bool ex_handler_uaccess_err_zero(const struct exception_table_entry *ex,
+>  					struct pt_regs *regs)
+>  {
+> @@ -72,8 +65,6 @@ bool fixup_exception(struct pt_regs *regs)
+>  		return false;
+>  
+>  	switch (ex->type) {
+> -	case EX_TYPE_FIXUP:
+> -		return ex_handler_fixup(ex, regs);
+>  	case EX_TYPE_BPF:
+>  		return ex_handler_bpf(ex, regs);
+>  	case EX_TYPE_UACCESS_ERR_ZERO:
+> -- 
+> 2.25.1
+> 
