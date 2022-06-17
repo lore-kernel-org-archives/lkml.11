@@ -2,87 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C30FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 739ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382950AbiFQPBm convert rfc822-to-8bit (ORCPT
+        id S1382710AbiFQPCY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 11:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34118 "EHLO
+        Fri, 17 Jun 2022 11:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382627AbiFQPBk (ORCPT
+        with ESMTP id S1382695AbiFQPCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 11:01:40 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A64A3E0E4
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:01:39 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-56-yIBenb7EPhWdGuPCD_Wigg-1; Fri, 17 Jun 2022 16:01:36 +0100
-X-MC-Unique: yIBenb7EPhWdGuPCD_Wigg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Fri, 17 Jun 2022 16:01:34 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Fri, 17 Jun 2022 16:01:34 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Petr Mladek' <pmladek@suse.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-CC:     John Ogness <john.ogness@linutronix.de>,
-        Marco Elver <elver@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: 5.19 printk breaks message ordering
-Thread-Topic: 5.19 printk breaks message ordering
-Thread-Index: AQHYglWHYY5jQBSQoEy5fw0dudLMr61Tr9rQ
-Date:   Fri, 17 Jun 2022 15:01:33 +0000
-Message-ID: <a35dc47eb9924d56bb6dca7868c34c94@AcuMS.aculab.com>
-References: <YqyANveL50uxupfQ@zx2c4.com> <YqyN20jpRw1SaaTw@alley>
-In-Reply-To: <YqyN20jpRw1SaaTw@alley>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Fri, 17 Jun 2022 11:02:06 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4922341308;
+        Fri, 17 Jun 2022 08:02:04 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id BB97321E1A;
+        Fri, 17 Jun 2022 15:02:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655478122; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pPx6aFu2+C8m/s4I7i764IkxIpymMdXz3MEbjj3vaT0=;
+        b=oATsqTy3tWG8Ye+OffaNGYq3oEgZNgmCNzza7t3ngrO1yGVyypI7yt2ZirBjSr64rnPsZN
+        MiHEKYDroCoqvAJrUhXooL3TtOE1FOvf+qTsMQM97PhAhUH7kWhk/5PUjdsHIbdN/odghh
+        plZA8x1CptqK4GLO1FXyfzp6DaSp76s=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655478122;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pPx6aFu2+C8m/s4I7i764IkxIpymMdXz3MEbjj3vaT0=;
+        b=DEw9fjGnI3YFS2Qar0UQ2i6XX8xUnKrGi548MpVPHdzQMbwoCyfx/htX8EycNF2hVzziS1
+        PkrETsjvUBzFRzDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A8A151348E;
+        Fri, 17 Jun 2022 15:02:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 7OoAKGqXrGLnPQAAMHmgww
+        (envelope-from <chrubis@suse.cz>); Fri, 17 Jun 2022 15:02:02 +0000
+Date:   Fri, 17 Jun 2022 17:04:12 +0200
+From:   Cyril Hrubis <chrubis@suse.cz>
+To:     Alejandro Colomar <alx.manpages@gmail.com>
+Cc:     "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        libc-alpha@sourceware.org,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Laight <David.Laight@aculab.com>,
+        Zack Weinberg <zack@owlfolio.org>,
+        "ltp@lists.linux.it" <ltp@lists.linux.it>,
+        David Howells <dhowells@redhat.com>
+Subject: Re: Ping: [PATCH] uapi: Make __{u,s}64 match {u,}int64_t in userspace
+Message-ID: <YqyX7E954/b+yKS3@yuki>
+References: <b8d6f890-e5aa-44bf-8a55-5998efa05967@www.fastmail.com>
+ <YZvIlz7J6vOEY+Xu@yuki>
+ <1618289.1637686052@warthog.procyon.org.uk>
+ <ff8fc4470c8f45678e546cafe9980eff@AcuMS.aculab.com>
+ <YaTAffbvzxGGsVIv@yuki>
+ <CAK8P3a1Rvf_+qmQ5pyDeKweVOFM_GoOKnG4HA3Ffs6LeVuoDhA@mail.gmail.com>
+ <913509.1638457313@warthog.procyon.org.uk>
+ <YbDQW6uakG3XD8jV@yuki>
+ <fe7c52f9-5ff3-95a5-2692-20f81d6decf7@gmail.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fe7c52f9-5ff3-95a5-2692-20f81d6decf7@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Mladek
-> Sent: 17 June 2022 15:21
-...
-> > I assume this is mostly caused by your threaded printk patchset
+Hi!
+> >>> I could be persuaded otherwise with an example of a program for which
+> >>> changing __s64 from 'long long' to 'long' would break *binary* backward
+> >>> compatibility, or similarly for __u64.
+> >>
+> >> C++ could break.
+> > 
+> > Thinking of this again we can detect C++ as well so it can be safely
+> > enabled just for C with:
+> > 
+> > #if !defined(__KERNEL__) && !defined(__cplusplus) && __BITSPERLONG == 64
+> > # include <asm-generic/int-l64.h>
+> > #else
+> > # include <asm-generic/int-ll64.h>
+> > #endif
+> > 
 > 
-> Console has never been fully synchronous. printk() did console_trylock()
-> and flushed the message to the console only the lock was available.
-> The console kthreads made it asynchronous always when the kthreads
-> are available and system is in normal state.
+> I'm very interested in seeing this merged, as that would allow 
+> simplifying the man-pages by removing unnecessary kernel details such as 
+> u64[1].  How is the state of this patch?
 
-What priority do these kthreads run at?
+I guess that it stalled because I haven't posted it as an actual patch,
+I should do so to get this back on a track.
 
-I'd have thought they ought to run at a high priority?
-That should tend to give kernel messages priority over user ones.
-
-Quite how high is another matter.
-Probably a bit below the RT/FIFO:50 of threaded ISR.
-
-Although if an x86 one ends up doing software scrolling of
-the vga text buffer using the ISA speed accesses that usually
-requires maybe not!
-Maybe that is faster on modern systems - but I doubt it.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+-- 
+Cyril Hrubis
+chrubis@suse.cz
