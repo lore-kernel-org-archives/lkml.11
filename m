@@ -2,127 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 079F3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 05:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF4A1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 05:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379944AbiFQE77 (ORCPT
+        id S1380022AbiFQFBh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 00:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
+        Fri, 17 Jun 2022 01:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234216AbiFQE76 (ORCPT
+        with ESMTP id S234216AbiFQFBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 00:59:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C468663CE
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 21:59:56 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o245C-00045B-Mw; Fri, 17 Jun 2022 06:59:46 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o2459-000zh1-32; Fri, 17 Jun 2022 06:59:44 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o2459-00FBSf-RL; Fri, 17 Jun 2022 06:59:43 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 1/1] net: phy: at803x: fix NULL pointer dereference on AR9331 PHY
-Date:   Fri, 17 Jun 2022 06:59:43 +0200
-Message-Id: <20220617045943.3618608-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Fri, 17 Jun 2022 01:01:34 -0400
+Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F27663CF
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 22:01:32 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id 246poVa8MZfs8246poo0ha; Fri, 17 Jun 2022 07:01:30 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Fri, 17 Jun 2022 07:01:30 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <0ca5ee14-a382-0935-66be-820975501f45@wanadoo.fr>
+Date:   Fri, 17 Jun 2022 07:01:27 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] powerpc: powernv: Fix refcount leak bug in opal-powercap
+Content-Language: en-GB
+To:     Liang He <windhl@126.com>, mpe@ellerman.id.au,
+        benh@kernel.crashing.org, paulus@samba.org
+Cc:     nick.child@ibm.com, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+References: <20220617042038.4003704-1-windhl@126.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220617042038.4003704-1-windhl@126.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Latest kernel will explode on the PHY interrupt config, since it depends
-now on allocated priv. So, run probe to allocate priv to fix it.
+Le 17/06/2022 à 06:20, Liang He a écrit :
+> In opal_powercap_init(), of_find_compatible_node() will return
+> a node pointer with refcount incremented. We should use of_node_put()
+> in fail path or when it is not used anymore.
+> 
+> Besides, for_each_child_of_node() will automatically *inc* and *dec*
+> refcount during iteration. However, we should add the of_node_put()
+> if there is a break.
 
- ar9331_switch ethernet.1:10 lan0 (uninitialized): PHY [!ahb!ethernet@1a000000!mdio!switch@10:00] driver [Qualcomm Atheros AR9331 built-in PHY] (irq=13)
- CPU 0 Unable to handle kernel paging request at virtual address 0000000a, epc == 8050e8a8, ra == 80504b34
-         ...
- Call Trace:
- [<8050e8a8>] at803x_config_intr+0x5c/0xd0
- [<80504b34>] phy_request_interrupt+0xa8/0xd0
- [<8050289c>] phylink_bringup_phy+0x2d8/0x3ac
- [<80502b68>] phylink_fwnode_phy_connect+0x118/0x130
- [<8074d8ec>] dsa_slave_create+0x270/0x420
- [<80743b04>] dsa_port_setup+0x12c/0x148
- [<8074580c>] dsa_register_switch+0xaf0/0xcc0
- [<80511344>] ar9331_sw_probe+0x370/0x388
- [<8050cb78>] mdio_probe+0x44/0x70
- [<804df300>] really_probe+0x200/0x424
- [<804df7b4>] __driver_probe_device+0x290/0x298
- [<804df810>] driver_probe_device+0x54/0xe4
- [<804dfd50>] __device_attach_driver+0xe4/0x130
- [<804dcb00>] bus_for_each_drv+0xb4/0xd8
- [<804dfac4>] __device_attach+0x104/0x1a4
- [<804ddd24>] bus_probe_device+0x48/0xc4
- [<804deb44>] deferred_probe_work_func+0xf0/0x10c
- [<800a0ffc>] process_one_work+0x314/0x4d4
- [<800a17fc>] worker_thread+0x2a4/0x354
- [<800a9a54>] kthread+0x134/0x13c
- [<8006306c>] ret_from_kernel_thread+0x14/0x1c
+Hi,
 
-Same Issue would affect some other PHYs (QCA8081, QCA9561), so fix it
-too.
+I'm not sure that your patch is right here. Because of this *inc* and 
+*dec* things, do we still need to of_node_put(powercap) once we have 
+entered for_each_child_of_node?
 
-Fixes: 3265f4218878 ("net: phy: at803x: add fiber support")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
-changes v2:
-- add fixes for QCA8081 and QCA9561
+I think that this reference will be released on the first iteration of 
+the loop.
 
- drivers/net/phy/at803x.c | 6 ++++++
- 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 6a467e7817a6..59fe356942b5 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -2072,6 +2072,8 @@ static struct phy_driver at803x_driver[] = {
- 	/* ATHEROS AR9331 */
- 	PHY_ID_MATCH_EXACT(ATH9331_PHY_ID),
- 	.name			= "Qualcomm Atheros AR9331 built-in PHY",
-+	.probe			= at803x_probe,
-+	.remove			= at803x_remove,
- 	.suspend		= at803x_suspend,
- 	.resume			= at803x_resume,
- 	.flags			= PHY_POLL_CABLE_TEST,
-@@ -2087,6 +2089,8 @@ static struct phy_driver at803x_driver[] = {
- 	/* Qualcomm Atheros QCA9561 */
- 	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
- 	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
-+	.probe			= at803x_probe,
-+	.remove			= at803x_remove,
- 	.suspend		= at803x_suspend,
- 	.resume			= at803x_resume,
- 	.flags			= PHY_POLL_CABLE_TEST,
-@@ -2151,6 +2155,8 @@ static struct phy_driver at803x_driver[] = {
- 	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
- 	.name			= "Qualcomm QCA8081",
- 	.flags			= PHY_POLL_CABLE_TEST,
-+	.probe			= at803x_probe,
-+	.remove			= at803x_remove,
- 	.config_intr		= at803x_config_intr,
- 	.handle_interrupt	= at803x_handle_interrupt,
- 	.get_tunable		= at803x_get_tunable,
--- 
-2.30.2
+Maybe of_node_put(powercap) should be duplicated everywhere it is 
+relevant and removed from the error handling path?
+Or an additional reference should be taken before the loop?
+Or adding a new label with "powercap = NULL" and branching there when 
+needed?
+
+CJ
+
+> 
+> Signed-off-by: Liang He <windhl@126.com>
+> ---
+>   arch/powerpc/platforms/powernv/opal-powercap.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/powerpc/platforms/powernv/opal-powercap.c b/arch/powerpc/platforms/powernv/opal-powercap.c
+> index 64506b46e77b..b102477d3f95 100644
+> --- a/arch/powerpc/platforms/powernv/opal-powercap.c
+> +++ b/arch/powerpc/platforms/powernv/opal-powercap.c
+> @@ -153,7 +153,7 @@ void __init opal_powercap_init(void)
+>   	pcaps = kcalloc(of_get_child_count(powercap), sizeof(*pcaps),
+>   			GFP_KERNEL);
+>   	if (!pcaps)
+> -		return;
+> +		goto out_powercap;
+>   
+>   	powercap_kobj = kobject_create_and_add("powercap", opal_kobj);
+>   	if (!powercap_kobj) {
+> @@ -236,6 +236,9 @@ void __init opal_powercap_init(void)
+>   		kfree(pcaps[i].pg.name);
+>   	}
+>   	kobject_put(powercap_kobj);
+> +	of_node_put(node);
+>   out_pcaps:
+>   	kfree(pcaps);
+> +out_powercap:
+> +	of_node_put(powercap);
+>   }
 
