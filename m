@@ -2,105 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D08C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E95C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381909AbiFQLJJ (ORCPT
+        id S1382037AbiFQLJX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 07:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38902 "EHLO
+        Fri, 17 Jun 2022 07:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381744AbiFQLJF (ORCPT
+        with ESMTP id S1381867AbiFQLJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 07:09:05 -0400
-Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D0D6C557
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:09:04 -0700 (PDT)
-Received: by mail-vs1-xe29.google.com with SMTP id r12so3747036vsg.8
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:09:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=iIEeHvBevRYx5KHGWEwipfYQCoE5aCyjLy4vD88fcbo=;
-        b=d0BqO6jBx7MutG6zvxgG2JmgODDAHDAeCBF0YIyl66fjeAA35Iw6j0wz8I7ySubg0x
-         ERihgcoAK/3tZXHnNLS4uq/EmODS0C8r9CRmJ34p1FLblp4RvKmK9jsYKNL/dxbVjfQg
-         ZeCOX6qJkiNS9TCuUltTiizUeaXp29/QSv+Ny0nnXTIdVE56BoDEZmmpzX9/GDjjmAjC
-         Dr/6XoqmKktN0GtUAyl5iWSVkZai3S0Y6jjguOlKyIXmdwmhMu0/4BtSbJ9TFf1HYEBH
-         uXN266rusJwlrGuAFlUqtwHOp8ugV8DO/Ow4zUvzdBpQ9Y1M2T2G6YYOxVOZEnBUyMPt
-         wjGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=iIEeHvBevRYx5KHGWEwipfYQCoE5aCyjLy4vD88fcbo=;
-        b=6YeSeVd/XjAv8Rs1V2/CeMIzaBEV3TJDf0wEtvA0jRWhnM+PQ0N8PgSM1rs5lc3tf/
-         zsG58GS9iorNSmu91TavP6hqPNViCP7XVCX2TBMDFZMIiy6TqN6vhEK0VbkPPekk+H3K
-         uS85e6FvO/sSnhjpN+C6ro3+yiDVe1tZrjtYnJ+49WmbyxyISrABNHuYkqtjeaBVWwTS
-         0Alpxx3wCHinLQGMzthGe34Wwmo9JDCEAlhTY5pYGJBFt8uKeCHomcQsDabS1wHDC9Tk
-         +U7v1GcEhcGpKa/gdkR7h0Bs5BxQET3XHkBCeOhSIzX8Vd8nqCreFtkqjdHASbFPdZgB
-         1duw==
-X-Gm-Message-State: AJIora+EQHZMwUMKE1okgAfztY5l78X4Cz0Osxcu8VxiPzuaNJ+CdkfI
-        BW1Z8o6rwb/42I4dCC5gGarepvVFnZRTWvGUDSySUQ==
-X-Google-Smtp-Source: AGRyM1s+HZ+wmktJSd1qw0a1Y/fQutOX1arYz/VAV7ymqfu7MND0PP6mt1+DLEuWU0eqpBSLGzr+ljGrJ/bGmCcXyeg=
-X-Received: by 2002:a05:6102:30ab:b0:349:eab0:fda1 with SMTP id
- y11-20020a05610230ab00b00349eab0fda1mr3829487vsd.14.1655464143892; Fri, 17
- Jun 2022 04:09:03 -0700 (PDT)
+        Fri, 17 Jun 2022 07:09:22 -0400
+X-Greylist: delayed 2317 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 17 Jun 2022 04:09:20 PDT
+Received: from mail.xenproject.org (mail.xenproject.org [104.130.215.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480E76C561
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:09:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=xen.org;
+        s=20200302mail; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
+        Subject:Cc:To:From; bh=YulpAZhbVg6y+ee/fL/9bL7V1W2kdnst8Vz1P9ePPw0=; b=yf+iJk
+        yI71j1TcQ4ladswWyndbvQfuGP+BeLRZoU4udUHEybiof1cl2Fr/+byepGeDvJasr+2dCKEBnxxBu
+        DPB6qIORYjKdpEdJFJiyXbOStaI0yFq+dN7RFbQlrGIzeveTqzSRllFMOKZj0kJQtXhSRv74V1xNH
+        5FsmH/+gdpQ=;
+Received: from xenbits.xenproject.org ([104.239.192.120])
+        by mail.xenproject.org with esmtp (Exim 4.92)
+        (envelope-from <julien@xen.org>)
+        id 1o29FQ-0000GD-Nm; Fri, 17 Jun 2022 10:30:40 +0000
+Received: from 54-240-197-232.amazon.com ([54.240.197.232] helo=dev-dsk-jgrall-1b-035652ec.eu-west-1.amazon.com)
+        by xenbits.xenproject.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <julien@xen.org>)
+        id 1o29FQ-0003sg-DK; Fri, 17 Jun 2022 10:30:40 +0000
+From:   Julien Grall <julien@xen.org>
+To:     xen-devel@lists.xenproject.org
+Cc:     sstabellini@kernel.org, jgross@suse.com,
+        oleksandr_tyshchenko@epam.com, linux-kernel@vger.kernel.org,
+        Julien Grall <jgrall@amazon.com>
+Subject: [PATCH] x86/xen: Remove undefined behavior in setup_features()
+Date:   Fri, 17 Jun 2022 11:30:37 +0100
+Message-Id: <20220617103037.57828-1-julien@xen.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-From:   Stephane Eranian <eranian@google.com>
-Date:   Fri, 17 Jun 2022 14:08:52 +0300
-Message-ID: <CABPqkBRVF9qmxKFgmjZpzN3tx=U+_8udECMLHs7BrtzfPwmuhQ@mail.gmail.com>
-Subject: [RFC] pr_warn_once() issue in x86 MSR extable code
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>, jpoimboe@redhat.com,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Julien Grall <jgrall@amazon.com>
 
-Some changes to the way invalid MSR accesses are reported by the kernel is
-causing some problems with messages printed on the console.
+1 << 31 is undefined. So switch to 1U << 31.
 
-We have seen several cases of ex_handler_msr() printing invalid MSR
-accesses once but
-the callstack multiple times causing confusion on the console.
+Fixes: 5ead97c84fa7 ("xen: Core Xen implementation")
+Signed-off-by: Julien Grall <jgrall@amazon.com>
 
-The last time the exception MSR code was modified (5.16) by PeterZ was:
+---
 
-  d52a7344bdfa x86/msr: Remove .fixup usage:
+This was actually caught because I wasn't able to boot Linux 5.18
+and onwards when built with GCC 7.3 and UBSAN enabled. There was
+no message but instead an early crash because the instruction "cli
+was used too early.
 
-  if (!safe && wrmsr &&  pr_warn_once("unchecked MSR access error: ..."))
-               show_stack_regs(regs);
+This issue has always been there but it only shows after Linux
+switched from C89 to C11.
+---
+ drivers/xen/features.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Note that this code pattern was also present, though in a different
-form, before this commit.
+diff --git a/drivers/xen/features.c b/drivers/xen/features.c
+index 7b591443833c..87f1828d40d5 100644
+--- a/drivers/xen/features.c
++++ b/drivers/xen/features.c
+@@ -42,7 +42,7 @@ void xen_setup_features(void)
+ 		if (HYPERVISOR_xen_version(XENVER_get_features, &fi) < 0)
+ 			break;
+ 		for (j = 0; j < 32; j++)
+-			xen_features[i * 32 + j] = !!(fi.submap & 1<<j);
++			xen_features[i * 32 + j] = !!(fi.submap & 1U << j);
+ 	}
+ 
+ 	if (xen_pv_domain()) {
+-- 
+2.32.0
 
-The problem here is that another earlier commit (5.13):
-
-a358f40600b3 once: implement DO_ONCE_LITE for non-fast-path "do once"
-functionality
-
-Modifies all the pr_*_once() calls to always return true claiming that
-no caller is ever
-checking the return value of the functions.
-
-This is why we are seeing the callstack printed without the associated
-printk() msg.
-
-I believe that having the pr_*_once() functions return true the first
-time they are called
-is useful especially when extra information, such as callstack, must
-be printed to help
-track the origin of the problem.
-
-The exception handling code seems to be the only place where the
-return value is checked
-for pr_warn_once(). A minimal change would be to create another
-version of that function
-that calls DO_ONCE() instead of DO_ONCE_LITE(), e.g., pr_warn_once_return().
-
-I can post a patch to that effect if we all agree on the approach.
-
-Thanks.
