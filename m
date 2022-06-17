@@ -2,97 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A247C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E240C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:19:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380390AbiFQJTa (ORCPT
+        id S1380572AbiFQJTb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 05:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37248 "EHLO
+        Fri, 17 Jun 2022 05:19:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235609AbiFQJTZ (ORCPT
+        with ESMTP id S1380369AbiFQJT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 05:19:25 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B48085AEF3
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 02:19:23 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-220-s7RJKPWvOuOU30OW3UVyvA-1; Fri, 17 Jun 2022 10:19:20 +0100
-X-MC-Unique: s7RJKPWvOuOU30OW3UVyvA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Fri, 17 Jun 2022 10:19:17 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Fri, 17 Jun 2022 10:19:17 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Linus Torvalds' <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>
-CC:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Linux-MM <linux-mm@kvack.org>,
-        linux-xfs <linux-xfs@vger.kernel.org>,
-        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Uladzislau Rezki <urezki@gmail.com>,
-        "Kees Cook" <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>
-Subject: RE: [PATCH] usercopy: use unsigned long instead of uintptr_t
-Thread-Topic: [PATCH] usercopy: use unsigned long instead of uintptr_t
-Thread-Index: AQHYgbX7+B40USEpAkCPXvMJQcFna61TTqwg
-Date:   Fri, 17 Jun 2022 09:19:17 +0000
-Message-ID: <169e9522f5494a47bd99c6febf90d931@AcuMS.aculab.com>
-References: <20220616143617.449094-1-Jason@zx2c4.com>
- <YqtAShjjo1zC6EgO@casper.infradead.org> <YqtDXPWdFQ/fqgDo@zx2c4.com>
- <YqtKjAZRPBVjlE8S@casper.infradead.org>
- <CAHk-=wj2OHy-5e+srG1fy+ZU00TmZ1NFp6kFLbVLMXHe7A1d-g@mail.gmail.com>
- <Yqtd6hTS52mbb9+q@casper.infradead.org>
- <CAHk-=wj_K2MnhC6N_LyY6ezmQyWzqBnfobXC354HJuKdqMePzA@mail.gmail.com>
- <CAHk-=whS3xhJ=quD5bzDb6JsAhKd0vem4K-U=DhUGf-tDJUMHg@mail.gmail.com>
- <CAHk-=wi28vwsG-JNJEz_kc=qwPkYtYfh_14eHOUZsaGESDBDBA@mail.gmail.com>
-In-Reply-To: <CAHk-=wi28vwsG-JNJEz_kc=qwPkYtYfh_14eHOUZsaGESDBDBA@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Fri, 17 Jun 2022 05:19:29 -0400
+Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF9B5AEDA
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 02:19:24 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id MHL00020;
+        Fri, 17 Jun 2022 17:19:20 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201602.home.langchao.com (10.100.2.2) with Microsoft SMTP Server id
+ 15.1.2308.27; Fri, 17 Jun 2022 17:19:19 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <maarten.lankhorst@linux.intel.com>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <airlied@linux.ie>, <daniel@ffwll.ch>
+CC:     <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] drm/connector: Remove usage of the deprecated ida_simple_xxx API
+Date:   Fri, 17 Jun 2022 04:23:19 -0400
+Message-ID: <20220617082319.7599-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   20226171719206e264a16480dc3f810127f676d9583a4
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogTGludXMgVG9ydmFsZHMNCj4gU2VudDogMTYgSnVuZSAyMDIyIDIwOjE5DQo+IA0KPiBP
-biBUaHUsIEp1biAxNiwgMjAyMiBhdCAxMjoxNCBQTSBMaW51cyBUb3J2YWxkcw0KPiA8dG9ydmFs
-ZHNAbGludXgtZm91bmRhdGlvbi5vcmc+IHdyb3RlOg0KPiA+DQo+ID4gSW4gdGhhdCBzaXR1YXRp
-b24sIHdlJ2QgcHJvYmFibHkganVzdCBzZWUgImxvbmcgbG9uZyIgYmVpbmcgMTI4LWJpdA0KPiA+
-ICgiSTMyTFA2NExMMTI4IikuDQo+IA0KPiBMb29raW5nIGFyb3VuZCwgaXQgbG9va3MgbGlrZSBw
-ZW9wbGUgcHJlZmVyICJsb25nIGxvbmcgbG9uZyIgKG9yIGluDQo+IHRoZSBrZXJuZWwsIGp1c3Qg
-InUxMjgiKSBmb3IgdGhpcywgYmVjYXVzZSBzbyBtYW55IGhhdmUgYWxyZWFkeSBnb3R0ZW4NCj4g
-dXNlZCB0byAibG9uZyBsb25nIiBiZWluZyA2NC1iaXQsIGFuZCAzMi1iaXQgYXJjaGl0ZWN0dXJl
-cyAod2hlcmUNCj4gImxvbmciIGlzIDMyLWJpdCBhbmQgImxvbmcgbG9uZyIgaXMgNjQtYml0KSBh
-cmUgc3RpbGwgcmVsZXZhbnQgZW5vdWdoDQo+IHRoYXQgcGVvcGxlIHdhbnQgdG8ga2VlcCB0aGF0
-Lg0KDQpDaGFuZ2luZyAnbG9uZyBsb25nJyB0byAxMjggYml0cyB3aWxsIGJyZWFrIHRoaW5ncy4N
-Ck11Y2ggbGlrZSBhIGNlcnRhaW4gT1MgdGhhdCBpcyBJTDMyUDY0TEw2NCBiZWNhdXNlIHRvbyBt
-dWNoDQpjb2RlIHVzZWQgJ2xvbmcnIHRvIG1lYW4gMzJiaXRzIHdoZW4gaW50IHdhcyAxNiBiaXRz
-LiANCg0KZ2NjIGFscmVhZHkgaGFzIHN1cHBvcnQgZm9yIDEyOGJpdCBpbnRlZ2VycyAob24gNjRi
-aXQgc3lzdGVtcykNCmVtdWxhdGVkIHVzaW5nIHR3byA2NGJpdCByZWdpc3RlcnMgKF9fdTEyOCA/
-PykNCg0KQW55dGhpbmcgd2FudGluZyB0aGVtIHByb2JhYmx5IHdhbnRzIHRoZW0gZXhwbGljaXRs
-eSBhbmQgZXZlbiBkZWNpZGluZw0KdGhhdCB1aW50bWF4X3QgaXMgc3VkZGVubHkgMTI4IGJpdCB3
-aWxsIHByb2JhYmx5IGJyZWFrIHRoaW5ncyENCg0KVGhlIG9ubHkgcGxhY2UgSSBjYW4gaW1hZ2lu
-ZSAnbG9uZyBsb25nIGxvbmcnIGJlaW5nIHVzZWQNCmlzIGFzICIlbGxsZCIgaW4gcHJpbnRmIGZv
-cm1hdHMuDQoNClNpbmNlICdzaG9ydCcgYW5kICdsb25nJyBhcmUgYm90aCB0eXBlcyBhbmQgcXVh
-bGlmaWVycw0KeW91IGNhbiBoYXZlICdsb25nIGNoYXIsICdsb25nIHNob3J0JyBhbmQgJ3Nob3J0
-IGxvbmcnLg0KVGhlc2UgY291bGQgYmUgaW50ZXJlc3Rpbmcgb24gYW4gSTY0TDI1NiBzeXN0ZW0g
-Oi0pDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkg
-Um9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlv
-biBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+Use ida_alloc_xxx()/ida_free() instead of
+ida_simple_get()/ida_simple_remove().
+The latter is deprecated and more verbose.
+
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ drivers/gpu/drm/drm_connector.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
+index 1c48d162c77e..cfba71724f84 100644
+--- a/drivers/gpu/drm/drm_connector.c
++++ b/drivers/gpu/drm/drm_connector.c
+@@ -250,7 +250,7 @@ int drm_connector_init(struct drm_device *dev,
+ 	connector->funcs = funcs;
+ 
+ 	/* connector index is used with 32bit bitmasks */
+-	ret = ida_simple_get(&config->connector_ida, 0, 32, GFP_KERNEL);
++	ret = ida_alloc_max(&config->connector_ida, 31, GFP_KERNEL);
+ 	if (ret < 0) {
+ 		DRM_DEBUG_KMS("Failed to allocate %s connector index: %d\n",
+ 			      drm_connector_enum_list[connector_type].name,
+@@ -262,7 +262,7 @@ int drm_connector_init(struct drm_device *dev,
+ 
+ 	connector->connector_type = connector_type;
+ 	connector->connector_type_id =
+-		ida_simple_get(connector_ida, 1, 0, GFP_KERNEL);
++		ida_alloc_min(connector_ida, 1, GFP_KERNEL);
+ 	if (connector->connector_type_id < 0) {
+ 		ret = connector->connector_type_id;
+ 		goto out_put_id;
+@@ -322,10 +322,10 @@ int drm_connector_init(struct drm_device *dev,
+ 	connector->debugfs_entry = NULL;
+ out_put_type_id:
+ 	if (ret)
+-		ida_simple_remove(connector_ida, connector->connector_type_id);
++		ida_free(connector_ida, connector->connector_type_id);
+ out_put_id:
+ 	if (ret)
+-		ida_simple_remove(&config->connector_ida, connector->index);
++		ida_free(&config->connector_ida, connector->index);
+ out_put:
+ 	if (ret)
+ 		drm_mode_object_unregister(dev, &connector->base);
+@@ -479,11 +479,10 @@ void drm_connector_cleanup(struct drm_connector *connector)
+ 	list_for_each_entry_safe(mode, t, &connector->modes, head)
+ 		drm_mode_remove(connector, mode);
+ 
+-	ida_simple_remove(&drm_connector_enum_list[connector->connector_type].ida,
++	ida_free(&drm_connector_enum_list[connector->connector_type].ida,
+ 			  connector->connector_type_id);
+ 
+-	ida_simple_remove(&dev->mode_config.connector_ida,
+-			  connector->index);
++	ida_free(&dev->mode_config.connector_ida, connector->index);
+ 
+ 	kfree(connector->display_info.bus_formats);
+ 	drm_mode_object_unregister(dev, &connector->base);
+-- 
+2.27.0
 
