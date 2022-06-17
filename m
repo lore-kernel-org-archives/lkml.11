@@ -2,110 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DE0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 16:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2FAFCCA481
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 16:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383481AbiFQQxX (ORCPT
+        id S1383396AbiFQQxh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 12:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58950 "EHLO
+        Fri, 17 Jun 2022 12:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383455AbiFQQxC (ORCPT
+        with ESMTP id S234889AbiFQQxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 12:53:02 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B095A0A1
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 09:51:52 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 18:51:48 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1655484710;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UykvkKuHPgfnuKIJnIaYfKgo9S8iB+wmFcj7vk45wVs=;
-        b=eUu/qClCX/d2AouxGZPJTmu48AdbHUOAEqK6i7LTOzrgE4GEiltOUP/aJutgp44nPnjM1S
-        ulO0fZvQYiVcMfcod60L0fl3em63i+QghmCscjAvwGb0MsWcIiu7iqKCZEdO+OY50UIAWi
-        Fzew3TXJ8JyJ31M5UjJ+UNJvMh+wufip+FNl1U45LGUmqJTGg/BwzaScUhjC14W2WpoYGb
-        MWR63P+t6DeKQTXOdDHQPaH/tLPjlCbOP0/O0DhvtyiUkuQZUOA81nEFSDVBi44tlsUGpt
-        q5eEmHXyFIG5Y6DNq8uYSnfp7/EMsOHcfSZWSQnIs/N65YiLViv4oc/1Ii/WQw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1655484710;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UykvkKuHPgfnuKIJnIaYfKgo9S8iB+wmFcj7vk45wVs=;
-        b=+gB6pnNuCevctPh8aBUsQrzYo/gPjJ8DZnaghzrYDBDxO0I6SqrmLwluRFEY2z9zzM9Eox
-        CDKIjQ9JrIzSaRBg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Dmitry Vyukov <dvyukov@google.com>,
-        John Ogness <john.ogness@linutronix.de>,
+        Fri, 17 Jun 2022 12:53:14 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 483705D191;
+        Fri, 17 Jun 2022 09:52:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655484722; x=1687020722;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RrGMYQ9AwVKb0nm3YeK2st1qMloseK6LRdC/eA92LbY=;
+  b=WTjWhq1weTOUjK7ieqCpSvXuVZgWoStR/uL7Oatz2TZN5WEBuVX5Tpq/
+   ZIzOJHWiYy1v/n7vpglTffPNDIcbmIYO37hgEddKzslFtky4S3bxPY+Zx
+   ZVt2G7ajgKbHBbGl14z58waBPqY3Vzus/1T+VLPjD2twuEhZ88HUIRUnM
+   alkMYVUvo0/2OoZI0XKH1sfgudRh81nYkQdmFz0iCPiNu/ZUsxTrB7J6n
+   4rCt2wF/7MsOpGxGrgO5WfMBka+LDwcb/q9wT/S0rkCvSTfV2H3+WTGNa
+   FntjeR0LsoKGgnDSqVPhfEgQyqVVKWL4nLswMcVL7YQMIC4JGRNu0CyAe
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="279540803"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="279540803"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 07:41:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="642050130"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga008.fm.intel.com with ESMTP; 17 Jun 2022 07:40:48 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25HEeXl6024161;
+        Fri, 17 Jun 2022 15:40:42 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matt Turner <mattst88@gmail.com>,
+        Brian Cain <bcain@quicinc.com>,
         Geert Uytterhoeven <geert@linux-m68k.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Alexander Potapenko <glider@google.com>,
-        Marco Elver <elver@google.com>, kasan-dev@googlegroups.com
-Subject: Re: [PATCH printk v5 1/1] printk: extend console_lock for
- per-console locking
-Message-ID: <YqyxJJ8Jrr4zEPmM@linutronix.de>
-References: <87fslyv6y3.fsf@jogness.linutronix.de>
- <51dfc4a0-f6cf-092f-109f-a04eeb240655@samsung.com>
- <87k0b6blz2.fsf@jogness.linutronix.de>
- <32bba8f8-dec7-78aa-f2e5-f62928412eda@samsung.com>
- <87y1zkkrjy.fsf@jogness.linutronix.de>
- <CAMuHMdVmoj3Tqz65VmSuVL2no4+bGC=qdB8LWoB=vyASf9vS+g@mail.gmail.com>
- <87fske3wzw.fsf@jogness.linutronix.de>
- <YqHgdECTYFNJgdGc@zx2c4.com>
- <CACT4Y+ajfVUkqAjAin73ftqAz=HmLX=p=S=HRV1qe-8_y36J+A@mail.gmail.com>
- <YqHnH+Yc4TCOXa9X@zx2c4.com>
+        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 4/7] bitops: define const_*() versions of the non-atomics
+Date:   Fri, 17 Jun 2022 16:40:28 +0200
+Message-Id: <20220617144031.2549432-5-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220617144031.2549432-1-alexandr.lobakin@intel.com>
+References: <20220617144031.2549432-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YqHnH+Yc4TCOXa9X@zx2c4.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-09 14:27:11 [+0200], Jason A. Donenfeld wrote:
-> Hi Dmitry,
-> 
-> On Thu, Jun 09, 2022 at 02:18:19PM +0200, Dmitry Vyukov wrote:
-> > > AFAIK, CONFIG_PROVE_RAW_LOCK_NESTING is useful for teasing out cases
-> > > where RT's raw spinlocks will nest wrong with RT's sleeping spinlocks.
-> > > But nobody who wants an RT kernel will be using KFENCE. So this seems
-> > > like a non-issue? Maybe just add a `depends on !KFENCE` to
-> > > PROVE_RAW_LOCK_NESTING?
-> > 
-> > Don't know if there are other good solutions (of similar simplicity).
-> 
-> Fortunately, I found one that solves things without needing to
-> compromise on anything:
-> https://lore.kernel.org/lkml/20220609121709.12939-1-Jason@zx2c4.com/
-> 
-> > Btw, should this new CONFIG_PROVE_RAW_LOCK_NESTING be generally
-> > enabled on testing systems? We don't have it enabled on syzbot.
-> 
-> Last time I spoke with RT people about this, the goal was eventually to
-> *always* enable it when lock proving is enabled, but there are too many
-> bugs and cases now to do that, so it's an opt-in. I might be
-> misremembering, though, so CC'ing Sebastian in case he wants to chime
-> in.
+Define const_*() variants of the non-atomic bitops to be used when
+the input arguments are compile-time constants, so that the compiler
+will be always able to resolve those to compile-time constants as
+well. Those are mostly direct aliases for generic_*() with one
+exception for const_test_bit(): the original one is declared
+atomic-safe and thus doesn't discard the `volatile` qualifier, so
+in order to let optimize code, define it separately disregarding
+the qualifier.
+Add them to the compile-time type checks as well just in case.
 
-That is basically still the case. If CONFIG_PROVE_RAW_LOCK_NESTING yells
-then there will be yelling on PREEMPT_RT, too. We would like to get
-things fixed ;)
+Suggested-by: Marco Elver <elver@google.com>
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+---
+ .../asm-generic/bitops/generic-non-atomic.h   | 31 +++++++++++++++++++
+ include/linux/bitops.h                        |  1 +
+ 2 files changed, 32 insertions(+)
 
-Without going through this thread, John is looking at printk and printk
-triggers a few of those. That is one of reasons why this is not enabled
-by default.
+diff --git a/include/asm-generic/bitops/generic-non-atomic.h b/include/asm-generic/bitops/generic-non-atomic.h
+index b85b8a2ac239..3d5ebd24652b 100644
+--- a/include/asm-generic/bitops/generic-non-atomic.h
++++ b/include/asm-generic/bitops/generic-non-atomic.h
+@@ -127,4 +127,35 @@ generic_test_bit(unsigned long nr, const volatile unsigned long *addr)
+ 	return 1UL & (addr[BIT_WORD(nr)] >> (nr & (BITS_PER_LONG-1)));
+ }
+ 
++/*
++ * const_*() definitions provide good compile-time optimizations when
++ * the passed arguments can be resolved at compile time.
++ */
++#define const___set_bit			generic___set_bit
++#define const___clear_bit		generic___clear_bit
++#define const___change_bit		generic___change_bit
++#define const___test_and_set_bit	generic___test_and_set_bit
++#define const___test_and_clear_bit	generic___test_and_clear_bit
++#define const___test_and_change_bit	generic___test_and_change_bit
++
++/**
++ * const_test_bit - Determine whether a bit is set
++ * @nr: bit number to test
++ * @addr: Address to start counting from
++ *
++ * A version of generic_test_bit() which discards the `volatile` qualifier to
++ * allow a compiler to optimize code harder. Non-atomic and to be called only
++ * for testing compile-time constants, e.g. by the corresponding macros, not
++ * directly from "regular" code.
++ */
++static __always_inline bool
++const_test_bit(unsigned long nr, const volatile unsigned long *addr)
++{
++	const unsigned long *p = (const unsigned long *)addr + BIT_WORD(nr);
++	unsigned long mask = BIT_MASK(nr);
++	unsigned long val = *p;
++
++	return !!(val & mask);
++}
++
+ #endif /* __ASM_GENERIC_BITOPS_GENERIC_NON_ATOMIC_H */
+diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+index 87087454a288..d393297287d5 100644
+--- a/include/linux/bitops.h
++++ b/include/linux/bitops.h
+@@ -37,6 +37,7 @@ extern unsigned long __sw_hweight64(__u64 w);
+ /* Check that the bitops prototypes are sane */
+ #define __check_bitop_pr(name)						\
+ 	static_assert(__same_type(arch_##name, generic_##name) &&	\
++		      __same_type(const_##name, generic_##name) &&	\
+ 		      __same_type(name, generic_##name))
+ 
+ __check_bitop_pr(__set_bit);
+-- 
+2.36.1
 
-> Jason
-
-Sebastian
