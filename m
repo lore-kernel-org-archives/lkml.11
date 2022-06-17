@@ -2,69 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:07:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78590C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380370AbiFQHG7 (ORCPT
+        id S1380386AbiFQHIN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 03:06:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43522 "EHLO
+        Fri, 17 Jun 2022 03:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380086AbiFQHGz (ORCPT
+        with ESMTP id S1380379AbiFQHIK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 03:06:55 -0400
-Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35766006C
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:06:51 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id LDX00144;
-        Fri, 17 Jun 2022 15:06:44 +0800
-Received: from localhost.localdomain (10.200.104.97) by
- jtjnmail201602.home.langchao.com (10.100.2.2) with Microsoft SMTP Server id
- 15.1.2308.27; Fri, 17 Jun 2022 15:06:45 +0800
-From:   Bo Liu <liubo03@inspur.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, Bo Liu <liubo03@inspur.com>
-Subject: [PATCH] virtio: Remove unnecessary variable assignments
-Date:   Fri, 17 Jun 2022 01:59:52 -0400
-Message-ID: <20220617055952.5364-1-liubo03@inspur.com>
-X-Mailer: git-send-email 2.18.2
+        Fri, 17 Jun 2022 03:08:10 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCE06350A
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:08:09 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id k12-20020a17090a404c00b001eaabc1fe5dso3843317pjg.1
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:08:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Lk5TQemGz4PyySED1h1MgKjL3fjCTm3RMzKUK+BNj/8=;
+        b=48cJHCpC+kdwm41s7RKBZpaVl+QSSQRhazKV8kkkj73Xuu0QfibG5U+rMFk1mPQbnd
+         jZ6LFuEifpMJkyjYZCZGZhNKkVqNookFx3a7dYC1rdIlmmeWd2DLr9EtEkxVgomliEUb
+         WwyZGRq0/l3L+mjygQ38gHSCjsAIJ+BOupQmvLd7zioM/3Vhcw1QveLccjlDobfxjpqb
+         W0N6Cht9/ThiD5dHPwiJh0Wjo2nV4L4dDCty9E/A2ue7CzI1ULNbHROMt89HFHqkIqaN
+         P4FsEJcSzVOJcGT5xqUHOFYGagQ9AANYp9MGa2D1A/8HQpIAD+uvMiVZmdoiJ6qKgLGY
+         B3Cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Lk5TQemGz4PyySED1h1MgKjL3fjCTm3RMzKUK+BNj/8=;
+        b=f+INd0pbv/f8xDkMLv5/h4QdR/BBUmUNntsS1zTIZaWz/Hs5BpeGVohsNzEPvgijUr
+         0limvSxAi1d1rKsIkcE1B4ZFCQ6jCV9TFuatEedIahoNREkfMdSNTjR9zcV8imudABQe
+         S/o+Ig8g01eugkkHII2yp3tRdvlXDoO71Su0VkWg20TBFx76irqeamPyB2lfcLjLJyWT
+         H3zS1RaAKF2Nph2kQpqDJPMKdWIm7FSNDoAXFf3DIgKJ41rnEJTO0J6SdeaQ7Ketnijq
+         SnaP/6/tWl/0ihcmxlgsM3MaQ5Zj9NdMrnLm6rTOhVF6bCIZXvQ7fDb7bw08dHD8xpIY
+         P7pg==
+X-Gm-Message-State: AJIora8D/x40wDgEfFsJVCylcnp3Wbs5JBvtfqvliRuOUT/7aigsSzoT
+        kQ7FYH+HceXcCrOKzwwCVKvcXA==
+X-Google-Smtp-Source: AGRyM1uShlsBG6cg32B4UqtkQrFFeu6daHuFrC5T456ZKsJaJxX4yiKett4P5mZ3krl4Nq80expTng==
+X-Received: by 2002:a17:902:e5c9:b0:166:34ff:72a3 with SMTP id u9-20020a170902e5c900b0016634ff72a3mr8318177plf.80.1655449689047;
+        Fri, 17 Jun 2022 00:08:09 -0700 (PDT)
+Received: from FVFDK26JP3YV.bytedance.net ([139.177.225.234])
+        by smtp.gmail.com with ESMTPSA id j1-20020a170903028100b00163d4c3ffabsm2757868plr.304.2022.06.17.00.08.04
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 Jun 2022 00:08:08 -0700 (PDT)
+From:   Lei He <helei.sig11@bytedance.com>
+To:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        dhowells@redhat.com, mst@redhat.com
+Cc:     arei.gonglei@huawei.com, jasowang@redhat.com,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pizhenwei@bytedance.com, helei.sig11@bytedance.com,
+        f4bug@amsat.org, berrange@redhat.com
+Subject: [PATCH 0/4] virtio-crypto: support ECDSA algorithm
+Date:   Fri, 17 Jun 2022 15:07:49 +0800
+Message-Id: <20220617070754.73667-1-helei.sig11@bytedance.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.200.104.97]
-tUid:   2022617150644eebf72efbf489856870321ce69408a8d
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In function vp_modern_probe(), "mdev->pci_dev" is assigned to
-variable "pci_dev", variable "pci_dev" and "mdev->pci_dev" have
-the same value. There is no need to assign variable "pci_dev" to
-"mdev->pci_dev". So remove it.
+From: lei he <helei.sig11@bytedance.com>
 
-Signed-off-by: Bo Liu <liubo03@inspur.com>
----
- drivers/virtio/virtio_pci_modern_dev.c | 2 --
- 1 file changed, 2 deletions(-)
+This patch supports the ECDSA algorithm for virtio-crypto:
+1. fixed the problem that the max_signature_size of ECDSA is
+incorrectly calculated.
+2. make pkcs8_private_key_parser can identify ECDSA private keys.
+3. implement ECDSA algorithm for virtio-crypto device
 
-diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
-index b790f30b2b56..fa2a9445bb18 100644
---- a/drivers/virtio/virtio_pci_modern_dev.c
-+++ b/drivers/virtio/virtio_pci_modern_dev.c
-@@ -220,8 +220,6 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
- 
- 	check_offsets();
- 
--	mdev->pci_dev = pci_dev;
--
- 	/* We only own devices >= 0x1000 and <= 0x107f: leave the rest. */
- 	if (pci_dev->device < 0x1000 || pci_dev->device > 0x107f)
- 		return -ENODEV;
+lei he (4):
+  crypto: fix the calculation of max_size for ECDSA
+  crypto: pkcs8 parser support ECDSA private keys
+  crypto: remove unused field in pkcs8_parse_context
+  virtio-crypto: support ECDSA algorithm
+
+ crypto/Kconfig                                |   1 +
+ crypto/Makefile                               |   2 +
+ crypto/akcipher.c                             |  10 +
+ crypto/asymmetric_keys/pkcs8.asn1             |   2 +-
+ crypto/asymmetric_keys/pkcs8_parser.c         |  46 +++-
+ crypto/ecdsa.c                                |   3 +-
+ crypto/ecdsa_helper.c                         |  45 +++
+ .../virtio/virtio_crypto_akcipher_algs.c      | 259 ++++++++++++++++--
+ include/crypto/internal/ecdsa.h               |  15 +
+ include/linux/asn1_encoder.h                  |   2 +
+ lib/asn1_encoder.c                            |   3 +-
+ 11 files changed, 360 insertions(+), 28 deletions(-)
+ create mode 100644 crypto/ecdsa_helper.c
+ create mode 100644 include/crypto/internal/ecdsa.h
+
 -- 
-2.27.0
+2.20.1
 
