@@ -2,255 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA199C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BAAFC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382336AbiFQMGD (ORCPT
+        id S1382341AbiFQMGw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 08:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60296 "EHLO
+        Fri, 17 Jun 2022 08:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382214AbiFQMFz (ORCPT
+        with ESMTP id S1381162AbiFQMGt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 08:05:55 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678766B7CD;
-        Fri, 17 Jun 2022 05:05:54 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id me5so8390094ejb.2;
-        Fri, 17 Jun 2022 05:05:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=An4VqlbV85lFxIwTKixxFZWGiBTSsqtaMQNOxgii35g=;
-        b=E8NhQjtf3V5xxVM/puZlkNVsq/WnHH46QoEAkyGYxPh9eRM+RpvMQgusQIS+tzBteG
-         bQ+c3M0+UV0TAL/at3SeV5qcaezmv8wGdazzZ7cfd0G4ds+JZXhKMn3ay74Y1wcwZwyZ
-         yruQrJAlgez1XgAbH9lCGzI9RkAG6xxKfBe4SPqRmllUbuAksKzw0JFzHmkGfVKkLhSB
-         o2RXGs6Wd/+3ye+WVxQBhGtchWVzztMipZBQ8FE89s+tKzjW6s2dEJuOCloO71ce9wBp
-         wbQqvzwNulaM5oiyV/yqzMoSoEzhtKx84UxfxVIqdxAyhltPydf9xDfUBJcQS5qeFFPe
-         mx1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=An4VqlbV85lFxIwTKixxFZWGiBTSsqtaMQNOxgii35g=;
-        b=KvV3SR6g5OdzT3DNLJN+Rjik9deL+eT0KixpFjGFknctQMAgfS2A08sXwWctxA3BA5
-         wI6tHGs+Jnsot05eCWutO0iQteFryMQ9QKe/tHxtSoS9cRZAMyFG9ECkXUXpaSjiFY0P
-         u2Zzf3RH6McI/jMZyX8YeURu4iUvalG+IlKvXIXtni6bJj8lpJukd5vPoRTkHqhq3Kof
-         sv4Kyrt7vnDEwZlZ5fY7dEq0tCVjmaluIc4xlg7T5Wzhu6mYKxz9Dnw7WmG3wXhuzxjz
-         Vm20ume+pWChDh/m2cx67tfUx1zzk/8TYK0b9FTkA6FqSRhgWV/zB8fYJkbdexBsl4o6
-         yfPg==
-X-Gm-Message-State: AJIora/1VHfxur/2VRhw74+DppHuzFnBu6dCMw3he6NDQ+uw79j0ddJB
-        74nl3h328448iF05kMW6b9LU+DAxQHk=
-X-Google-Smtp-Source: AGRyM1upGBjBu4f3AX1HjebEDy6OWQ9rPP1SDaYiCLaIq14AZU3ea98jPecg0S5wHVUeuxoQFeG8Rw==
-X-Received: by 2002:a17:907:7245:b0:711:d1ff:2ca4 with SMTP id ds5-20020a170907724500b00711d1ff2ca4mr9092563ejc.753.1655467552905;
-        Fri, 17 Jun 2022 05:05:52 -0700 (PDT)
-Received: from localhost.localdomain (host-87-6-98-182.retail.telecomitalia.it. [87.6.98.182])
-        by smtp.gmail.com with ESMTPSA id kw2-20020a170907770200b007121361d54asm2135179ejc.25.2022.06.17.05.05.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 05:05:51 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Nick Terrell <terrelln@fb.com>,
-        Chris Down <chris@chrisdown.name>,
-        Filipe Manana <fdmanana@suse.com>, Qu Wenruo <wqu@suse.com>,
-        Nikolay Borisov <nborisov@suse.com>,
-        Gabriel Niebler <gniebler@suse.com>,
-        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Subject: [RFC PATCH v2 3/3] btrfs: Use kmap_local_page() on "in_page" in zlib_compress_pages()
-Date:   Fri, 17 Jun 2022 14:05:38 +0200
-Message-Id: <20220617120538.18091-4-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220617120538.18091-1-fmdefrancesco@gmail.com>
-References: <20220617120538.18091-1-fmdefrancesco@gmail.com>
+        Fri, 17 Jun 2022 08:06:49 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 232BC6BFEB
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:06:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=W7dioW9GckbO/QAEw6YwwZqu+Fq9mZEtJ5kA67FvXx4=; b=KfYUuFq1DBF5HuBWNMM7NkLgXQ
+        3KzIOSpvVPRYtex03vRT5DpF640FP8RTVAgf62cINM4zYQXNBiPjKPtmRs1D2PB36XjfPH+PYvAzI
+        G2orTgW6Ix5fvhzU6i577n00Clc2AWaSSZ6uie+fJresZkzX+fVAh4L7CMzZWNpteS00la8CistwS
+        kGrt/ELeBx4xQbXOcZwElyD+VVHzEDNxQV5eIWPV7WkaeNgouuYVIYYWSyj/XGQVdMhZktJ8v87Uw
+        eKQvRxx3arybpNJDLjZfkPXi7PaNecpTED3jL6shXnpcw3kvd45GtZ85LWu3MTL2EdypYN5o/PpqY
+        lx3hnUzA==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o2AkG-008gAP-HW; Fri, 17 Jun 2022 12:06:37 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id C3F299816B5; Fri, 17 Jun 2022 14:06:34 +0200 (CEST)
+Date:   Fri, 17 Jun 2022 14:06:34 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>
+Subject: Re: [RFC][PATCH] ftrace,objtool: PC32 based __mcount_loc
+Message-ID: <YqxuSgj3DEACVukJ@worktop.programming.kicks-ass.net>
+References: <YqxkhV1YcI6e+xXp@worktop.programming.kicks-ass.net>
+ <5c759021-99ce-7633-699d-49b3229df339@csgroup.eu>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <5c759021-99ce-7633-699d-49b3229df339@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The use of kmap() is being deprecated in favor of kmap_local_page(). With
-kmap_local_page(), the mapping is per thread, CPU local and not globally
-visible.
+On Fri, Jun 17, 2022 at 11:44:49AM +0000, Christophe Leroy wrote:
+> 
+> 
+> Le 17/06/2022 à 13:24, Peter Zijlstra a écrit :
+> > 
+> > Hi,
+> > 
+> > I recently noticed that __mcount_loc is 64bit wide, containing absolute
+> > addresses. Since __mcount_loc is a permanent section (not one we drop
+> > after boot), this bloats the kernel memory usage for no real purpose.
+> 
+> I guess you mean it is 64bit wide on 64 bits architectures ? Because it 
+> seems to be defined as 'long' so will be 32bit on 32 bits architectures ?
 
-Therefore, use kmap_local_page() / kunmap_local() on "in_page" in
-zlib_compress_pages() because in this function the mappings are per thread
-and are not visible in other contexts.
-
-Use an array based stack in order to take note of the order of mappings
-and un-mappings to comply to the rules of nesting local mappings.
-
-Tested with xfstests on QEMU + KVM 32 bits VM with 4GB of RAM and
-HIGHMEM64G enabled. This patch passes 26/26 tests of group "compress".
-
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
- fs/btrfs/zlib.c | 65 ++++++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 53 insertions(+), 12 deletions(-)
-
-diff --git a/fs/btrfs/zlib.c b/fs/btrfs/zlib.c
-index c7c69ce4a1a9..1f16014e8ff3 100644
---- a/fs/btrfs/zlib.c
-+++ b/fs/btrfs/zlib.c
-@@ -99,6 +99,8 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
- 	int ret;
- 	char *data_in = NULL;
- 	char *cpage_out = NULL;
-+	char mstack[2];
-+	int sind = 0;
- 	int nr_pages = 0;
- 	struct page *in_page = NULL;
- 	struct page *out_page = NULL;
-@@ -126,6 +128,8 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
- 		ret = -ENOMEM;
- 		goto out;
- 	}
-+	mstack[sind] = 'A';
-+	sind++;
- 	cpage_out = kmap_local_page(out_page);
- 	pages[0] = out_page;
- 	nr_pages = 1;
-@@ -148,26 +152,32 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
- 				int i;
- 
- 				for (i = 0; i < in_buf_pages; i++) {
--					if (in_page) {
--						kunmap(in_page);
-+					if (data_in) {
-+						sind--;
-+						kunmap_local(data_in);
- 						put_page(in_page);
- 					}
- 					in_page = find_get_page(mapping,
- 								start >> PAGE_SHIFT);
--					data_in = kmap(in_page);
-+					mstack[sind] = 'B';
-+					sind++;
-+					data_in = kmap_local_page(in_page);
- 					memcpy(workspace->buf + i * PAGE_SIZE,
- 					       data_in, PAGE_SIZE);
- 					start += PAGE_SIZE;
- 				}
- 				workspace->strm.next_in = workspace->buf;
- 			} else {
--				if (in_page) {
--					kunmap(in_page);
-+				if (data_in) {
-+					sind--;
-+					kunmap_local(data_in);
- 					put_page(in_page);
- 				}
- 				in_page = find_get_page(mapping,
- 							start >> PAGE_SHIFT);
--				data_in = kmap(in_page);
-+				mstack[sind] = 'B';
-+				sind++;
-+				data_in = kmap_local_page(in_page);
- 				start += PAGE_SIZE;
- 				workspace->strm.next_in = data_in;
- 			}
-@@ -196,23 +206,39 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
- 		 * the stream end if required
- 		 */
- 		if (workspace->strm.avail_out == 0) {
-+			sind--;
-+			kunmap_local(data_in);
-+			data_in = NULL;
-+
-+			sind--;
- 			kunmap_local(cpage_out);
- 			cpage_out = NULL;
-+
- 			if (nr_pages == nr_dest_pages) {
- 				out_page = NULL;
-+				put_page(in_page);
- 				ret = -E2BIG;
- 				goto out;
- 			}
-+
- 			out_page = alloc_page(GFP_NOFS);
- 			if (out_page == NULL) {
-+				put_page(in_page);
- 				ret = -ENOMEM;
- 				goto out;
- 			}
-+
-+			mstack[sind] = 'A';
-+			sind++;
- 			cpage_out = kmap_local_page(out_page);
- 			pages[nr_pages] = out_page;
- 			nr_pages++;
- 			workspace->strm.avail_out = PAGE_SIZE;
- 			workspace->strm.next_out = cpage_out;
-+
-+			mstack[sind] = 'B';
-+			sind++;
-+			data_in = kmap_local_page(in_page);
- 		}
- 		/* we're all done */
- 		if (workspace->strm.total_in >= len)
-@@ -235,10 +261,16 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
- 			goto out;
- 		} else if (workspace->strm.avail_out == 0) {
- 			/* get another page for the stream end */
-+			sind--;
-+			kunmap_local(data_in);
-+			data_in = NULL;
-+
-+			sind--;
- 			kunmap_local(cpage_out);
- 			cpage_out = NULL;
- 			if (nr_pages == nr_dest_pages) {
- 				out_page = NULL;
-+				put_page(in_page);
- 				ret = -E2BIG;
- 				goto out;
- 			}
-@@ -247,11 +279,18 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
- 				ret = -ENOMEM;
- 				goto out;
- 			}
-+
-+			mstack[sind] = 'A';
-+			sind++;
- 			cpage_out = kmap_local_page(out_page);
- 			pages[nr_pages] = out_page;
- 			nr_pages++;
- 			workspace->strm.avail_out = PAGE_SIZE;
- 			workspace->strm.next_out = cpage_out;
-+
-+			mstack[sind] = 'B';
-+			sind++;
-+			data_in = kmap_local_page(in_page);
- 		}
- 	}
- 	zlib_deflateEnd(&workspace->strm);
-@@ -266,13 +305,15 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
- 	*total_in = workspace->strm.total_in;
- out:
- 	*out_pages = nr_pages;
--	if (cpage_out)
--		kunmap_local(cpage_out);
--
--	if (in_page) {
--		kunmap(in_page);
--		put_page(in_page);
-+	while (--sind >= 0) {
-+		if (mstack[sind] == 'B') {
-+			kunmap_local(data_in);
-+			put_page(in_page);
-+		} else {
-+			kunmap_local(cpage_out);
-+		}
- 	}
-+
- 	return ret;
- }
- 
--- 
-2.36.1
-
+Right, it's an absolute address in the native size. Clearly I'm somewhat
+64bit biassed :-)
