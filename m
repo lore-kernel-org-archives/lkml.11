@@ -2,129 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BABDBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57332C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382681AbiFQOVT (ORCPT
+        id S1382690AbiFQOWo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 10:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
+        Fri, 17 Jun 2022 10:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234827AbiFQOVS (ORCPT
+        with ESMTP id S1382687AbiFQOWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 10:21:18 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7D946B02
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:21:17 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id D09CC21DF8;
-        Fri, 17 Jun 2022 14:21:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1655475675; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AoMA7wBr+paG/i85/41XbAdh1quVJxGCMyNZ98196S4=;
-        b=WzU4WQAPCdTIM5/lqe61HmKX7T6mdkVce7Pf0MxDFWIn8zkJWcrvl9O5RAkpPN2Qcz7+ht
-        Mgcm4ziMDrtOciVFpwEwSOnItnYNqeE2Sbxw0tFxJP2nQ80PY9CGk0/9eU/rwN7IVM6vcg
-        /n6W8Ppvug8Bw/4bvxtIRl72NaQynj4=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id AE6932C141;
-        Fri, 17 Jun 2022 14:21:15 +0000 (UTC)
-Date:   Fri, 17 Jun 2022 16:21:15 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Marco Elver <elver@google.com>, linux-kernel@vger.kernel.org
-Subject: Re: 5.19 printk breaks message ordering
-Message-ID: <YqyN20jpRw1SaaTw@alley>
-References: <YqyANveL50uxupfQ@zx2c4.com>
+        Fri, 17 Jun 2022 10:22:39 -0400
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4005F1097;
+        Fri, 17 Jun 2022 07:22:36 -0700 (PDT)
+Received: by mail-wr1-f44.google.com with SMTP id o8so5991900wro.3;
+        Fri, 17 Jun 2022 07:22:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=c8VmtpTRYG5fhkhWdPkEXbN1LxbOk6olcANxFq8csnQ=;
+        b=ybyOK7AZaWu7i7rfGrUnoTlebrZAGhO1PfUJCbZM3ItbZAL6gKOT/AJHYAAldBBLNj
+         Fc8Bfx65/75qVBhPz0ihFLpJ8j+ujR0sapX9CBIC9amp2XIPiz9PiiO/Rk538WTicCMD
+         SfeYEL557T6kOtq98d19efs48B5KzTYeSYL4CWNMxI6+SyGbXYRTIfJpqBxryooB6FtD
+         LATu3R2X+t/FEGsREnjAJOLi3KB6q7PNBDVc3X6gKvVvt4IxPxJiQvtkmk9Q52p/pIhU
+         n8hMOtd7jnBORf129DWR00IyhJWD0UL7pAAJrjZnbDf20o0juewrSMcg1nSxjsVeMhd/
+         Jk8A==
+X-Gm-Message-State: AJIora+/2U7LEynKNfTkNUbJyH9Eb7/1XpQq6K66EaNOuaxYEvejCNY7
+        wfSeHrxN1osAOKlj1768WX88TwDt0gI=
+X-Google-Smtp-Source: AGRyM1svLN+L856cKvC0yfI0oeQW01EZyuX42LKqkUuD4s1Qyo3rOUCVkk+zmey1GaU8/hWqKhZkQw==
+X-Received: by 2002:adf:c64c:0:b0:21a:7a3:54a4 with SMTP id u12-20020adfc64c000000b0021a07a354a4mr9694977wrg.163.1655475754694;
+        Fri, 17 Jun 2022 07:22:34 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id k7-20020a7bc407000000b0039c747a1e8fsm10482373wmi.7.2022.06.17.07.22.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 07:22:34 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 14:22:32 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Wei Liu <wei.liu@kernel.org>,
+        Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>,
+        kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+        sthemmin@microsoft.com, Michael Kelley <mikelley@microsoft.com>
+Subject: [GIT PULL] Hyper-V fixes for 5.19-rc3
+Message-ID: <20220617142232.urp25kc2oi3yorqw@liuwe-devbox-debian-v2>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YqyANveL50uxupfQ@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 2022-06-17 15:23:02, Jason A. Donenfeld wrote:
-> Hi John & folks,
-> 
-> In 5.19, I'm seeing some changes in message ordering / interleaving
-> which lead to confusion. The most obvious (and benign) example appears
-> on system boot, in which the "Run /init as init process" message gets
-> intermixed with the messages that init actually writes() to stdout. For
-> example, here's a snippet from build.wireguard.com:
-> 
->     [    0.469732] Freeing unused kernel image (initmem) memory: 4576K
->     [    0.469738] Write protecting the kernel read-only data: 10240k
->     [    0.473823] Freeing unused kernel image (text/rodata gap) memory: 2044K
->     [    0.475228] Freeing unused kernel image (rodata/data gap) memory: 1136K
->     [    0.475236] Run /init as init process
->     
->     
->         WireGuard Test Suite on Linux 5.19.0-rc2+ x86_64
->     
->     
->     [+] Mounting filesystems...
->     [+] Module self-tests:
->      *  allowedips self-tests: pass
->      *  nonce counter self-tests: pass
->      *  ratelimiter self-tests: pass
->     [+] Enabling logging...
->     [+] Launching tests...
->     [    0.475237]   with arguments:
->     [    0.475238]     /init
->     [    0.475238]   with environment:
->     [    0.475239]     HOME=/
->     [    0.475240]     TERM=linux
->     [+] ip netns add wg-test-46-0
->     [+] ip netns add wg-test-46-1
+Hi Linus
 
-I see.
+The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
 
-> But the bigger issue for me is that it makes it very confusing to
-> interpret CI results later on. Prior, I would nice a nice correlation
-> of:
-> 
-> [+] some userspace command
-> [    1.2345 ] some kernel log output
-> [+] some userspace command
-> [    1.2346 ] some kernel log output
-> [+] some userspace command
-> [    1.2347 ] some kernel log output
-> 
-> I assume this is mostly caused by your threaded printk patchset
+  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
 
-Console has never been fully synchronous. printk() did console_trylock()
-and flushed the message to the console only the lock was available.
-The console kthreads made it asynchronous always when the kthreads
-are available and system is in normal state.
+are available in the Git repository at:
 
-> This probably has important benefits. But it certainly makes CI
-> and related debugging a bit trickier as a result.
+  ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git tags/hyperv-fixes-signed-20220617
 
-I could imagine.
+for you to fetch changes up to 49d6a3c062a1026a5ba957c46f3603c372288ab6:
 
-> So I was wondering if there was some way to boot the kernel with a
-> command line option or compile-time flag that always flushes printk
-> messages when they're made, or does something to make the ordering a bit
-> more faithful.
+  x86/Hyper-V: Add SEV negotiate protocol support in Isolation VM (2022-06-15 18:27:40 +0000)
 
-I am pretty sure that we will have to add such an option sooner or
-later. We did not want to do it from the beginning because otherwise
-people would use it and would not tell use about their problematic
-use-cases ;-)
+----------------------------------------------------------------
+hyperv-fixes for 5.19-rc3
+ - Fix hv_init_clocksource annotation (Masahiro Yamada)
+ - Two bug fixes for vmbus driver (Saurabh Sengar)
+ - Fix SEV negotiation (Tianyu Lan)
+ - Fix comments in code (Xiang Wang)
+ - One minor fix to HID driver (Michael Kelley)
+----------------------------------------------------------------
+Masahiro Yamada (1):
+      clocksource: hyper-v: unexport __init-annotated hv_init_clocksource()
 
-In fact, in your case you might get even better synchronization
-if you do it the other way and write userspace messages into
-the kernel log via /dev/kmsg:
+Michael Kelley (1):
+      HID: hyperv: Correctly access fields declared as __le16
 
-     echo "Hello world" > /dev/kmsg
+Saurabh Sengar (2):
+      Drivers: hv: vmbus: Don't assign VMbus channel interrupts to isolated CPUs
+      Drivers: hv: vmbus: Release cpu lock in error case
 
-That said. I am going to look at your patch the following week.
-I also want to wait for an opinion from John.
+Tianyu Lan (1):
+      x86/Hyper-V: Add SEV negotiate protocol support in Isolation VM
 
-Best Regards,
-Petr
+Xiang wangx (1):
+      Drivers: hv: Fix syntax errors in comments
+
+ arch/x86/hyperv/hv_init.c          |  6 +++
+ arch/x86/hyperv/ivm.c              | 84 +++++++++++++++++++++++++++++++++++---
+ arch/x86/include/asm/mshyperv.h    |  4 ++
+ drivers/clocksource/hyperv_timer.c |  1 -
+ drivers/hid/hid-hyperv.c           |  5 ++-
+ drivers/hv/channel_mgmt.c          | 18 +++++---
+ drivers/hv/hv_kvp.c                |  2 +-
+ drivers/hv/vmbus_drv.c             |  4 ++
+ 8 files changed, 109 insertions(+), 15 deletions(-)
