@@ -2,124 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC358C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A675BC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382859AbiFQOqd (ORCPT
+        id S1382358AbiFQOrJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 10:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49472 "EHLO
+        Fri, 17 Jun 2022 10:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382802AbiFQOqb (ORCPT
+        with ESMTP id S233719AbiFQOrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 10:46:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B71C53FDA1
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:46:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655477189;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9WJ3fcpXL0f2WOS1lh4X7CDZ3Ewdk0gaVvZYQvOA7jA=;
-        b=d+rJIo9fNstpU1X52hJPrUAmMGTnhuVSTgZJxHx5yiPtBQ4cisIRDhWuE1pnzCV7bC7GWh
-        tx1aWNFGVWyWWluaLAdj8+BPtU1wjIVqOBmxhMtMVlCyCpZmnU2bPvxYTfXV2xiDtIRST2
-        4NA1TwnLZMfj1U5+T1d5YTWoCAbdJuI=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-169-WPjPXVGsO82LwYy5duO4Rg-1; Fri, 17 Jun 2022 10:46:28 -0400
-X-MC-Unique: WPjPXVGsO82LwYy5duO4Rg-1
-Received: by mail-qk1-f200.google.com with SMTP id bi36-20020a05620a31a400b006a79f0706e5so5223659qkb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:46:28 -0700 (PDT)
+        Fri, 17 Jun 2022 10:47:06 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10657427D0
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:47:05 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id 184so4230158pga.12
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:47:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M5N+8KCowyqZRNZ7vTw4m9NdGwB8bBd3Ii7+WdPJ9As=;
+        b=QmqjE+ET9LH2TybmyoABnVijArR93RQ9RTCIbNa0idxuojBQSuRJmw7T/4311JlEm0
+         NidNnq/eY3bttx4fDLE9drZ4uQnxvnFYAK/Yd5IHRRZGGghHZImUgvBXQ4NuL/iDC81v
+         fI+C1Tb4T0ndTSA0PQHyqci7iBqQjvMeDz19lYSr9z0W9OG3nu95qMC6Bm/1v2DqyaIk
+         HPxd9MEjudGIKZ5ii39uR7Of69zVL5ZDxn6ryl4EA1djYYGossKbw2DRmBv80g23NAPY
+         RBSDgN/QVjmlaZ6NbiThkn5GR5F4dQbyrW5FCThdeppQ8J17LDNV6J3X1ytWy3J+MJ6y
+         9VVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=9WJ3fcpXL0f2WOS1lh4X7CDZ3Ewdk0gaVvZYQvOA7jA=;
-        b=W78abTdmoAS/XujHCyeDIZhIfE8QJRU+/IiFle7HvlUxMp9wj8H/YUhRi4cFbEFIUG
-         gSJ5POQB+8weGJhE+Q3G8d64w1v/Ac6XvahD5hQ3G2WVjo5x5fpQUjL1dhLzUJ3GZ+Ty
-         OwVWM+MSbnEOmEQgzGyAhMA7bm4LSwbAFox6objJoCRRr+GSAmfsy3FBZTbMptV7Ureh
-         TwBzHsBRfNE/GmoTsNB7+y+uEXAtXkR+mhM62gWSkFFCOKMkUq19g7IMd77pXWo+b5xQ
-         1aaMDsNakzh3gXWnjt2RWOx8xbvP5glPYNx+aSgoxX20/cDGRHAt7HLkd/7afQZF2nU7
-         xvtA==
-X-Gm-Message-State: AJIora8Zo86mlSmIQkmZLaJwVNC+ZYydWe3ARXY1B30OHiXqONKp/o5O
-        WY+xW5aoqLJERdijYpkmsd7dsUfe+h7uaWCzIsHz4Aa8ySaIt5naa4JXpESY4rYArBnZbMoRT1Z
-        0CUM408YwlC2mUeQjT3eFa7u6
-X-Received: by 2002:ad4:5c4a:0:b0:464:5920:7c1a with SMTP id a10-20020ad45c4a000000b0046459207c1amr8736674qva.58.1655477188328;
-        Fri, 17 Jun 2022 07:46:28 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tAXwW2mpsUavrlypnLTFvGbZu5tQk5+gn1Z1EAvySMi1FHasDEGVadg1bRJOm3lqNdYXoCAg==
-X-Received: by 2002:ad4:5c4a:0:b0:464:5920:7c1a with SMTP id a10-20020ad45c4a000000b0046459207c1amr8736646qva.58.1655477188058;
-        Fri, 17 Jun 2022 07:46:28 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id a15-20020ac85b8f000000b00304e38fb3dasm4813173qta.35.2022.06.17.07.46.26
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M5N+8KCowyqZRNZ7vTw4m9NdGwB8bBd3Ii7+WdPJ9As=;
+        b=euiGS3tVtmmRDEBjDYpVz5GT7ZvPoCaJQQPGXIfN2t0/rx9d8kORUm8xYiuacksZBZ
+         RnyKdz34VIlZXMxeht/SQMBwXZzehTva5Vb9yXMTx/lWQVOew0Q6rjT8X3icXMggMjRb
+         mQ/lvNUsrRZiNY1cRh43MH6A92x18qDAMCFoTDv6WXw9a+Xfnz7pf6KglnjYgLcCXrD2
+         dgak05hoIaRWQiHenA1SshgxLE9J0+tUpvEHGGJb4BvDICXy9VOFsaI0v5VS9qpbv8UG
+         tvp+yq20oCOQfJix53KUhV3o0nuPTYqg8AnQFHVpTR/S9aEkVhpa6Bt7+qg4P36ZZWg/
+         2JoQ==
+X-Gm-Message-State: AJIora+FYN+3gacH7I8MEQvmm1MccGvrk6wngozQhFpcuU6LAel1UN/n
+        Exs06Fq1MoY2EXSYFKOUCMOWETE4pkuAww==
+X-Google-Smtp-Source: AGRyM1vwyOr0pxz9T9hqeEPcia/apCBzxMZUCLKLRxNuFdc/fX72cl41sXHf+QgTK26m9lLsQ/NrYA==
+X-Received: by 2002:a05:6a00:a21:b0:522:9134:c620 with SMTP id p33-20020a056a000a2100b005229134c620mr10488475pfh.68.1655477224599;
+        Fri, 17 Jun 2022 07:47:04 -0700 (PDT)
+Received: from localhost.localdomain (ec2-13-113-80-70.ap-northeast-1.compute.amazonaws.com. [13.113.80.70])
+        by smtp.gmail.com with ESMTPSA id o12-20020a63a80c000000b003db822e2170sm3832453pgf.23.2022.06.17.07.47.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 07:46:27 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Tao Zhou <tao.zhou@linux.dev>, linux-kernel@vger.kernel.org,
-        kexec@lists.infradead.org, linux-rt-users@vger.kernel.org,
-        Eric Biederman <ebiederm@xmission.com>,
-        Arnd Bergmann <arnd@arndb.de>,
+        Fri, 17 Jun 2022 07:47:04 -0700 (PDT)
+From:   Zhang Boyang <zhangboyang.id@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ferdinand Blomqvist <ferdinand.blomqvist@gmail.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Juri Lelli <jlelli@redhat.com>,
-        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
-Subject: Re: [PATCH] panic, kexec: Don't mutex_trylock() in __crash_kexec()
-In-Reply-To: <YqyHGxPCgiXuep3/@alley>
-References: <20220616123709.347053-1-vschneid@redhat.com>
- <Yqxaf6V+hvCSXQSM@geo.homenetwork>
- <xhsmhh74j7biy.mognet@vschneid.remote.csb> <YqyHGxPCgiXuep3/@alley>
-Date:   Fri, 17 Jun 2022 15:46:23 +0100
-Message-ID: <xhsmhczf773gg.mognet@vschneid.remote.csb>
+        Kees Cook <keescook@chromium.org>,
+        Ivan Djelic <ivan.djelic@parrot.com>,
+        Boris Brezillon <boris.brezillon@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: rslib: Several improvements
+Date:   Fri, 17 Jun 2022 22:46:19 +0800
+Message-Id: <20220617144624.158973-1-zhangboyang.id@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/06/22 15:52, Petr Mladek wrote:
-> On Fri 2022-06-17 12:52:05, Valentin Schneider wrote:
->> If you look at __crash_kexec() in isolation yes, but if you look at panic()
->> and nmi_panic() only a single NMI can get in there. I think that is also
->> true for invocations via crash_kexec().
->
-> It is true that panic() could be called only once, see this code
-> in panic():
->
-> 	 * Only one CPU is allowed to execute the panic code from here. For
-> 	this_cpu = raw_smp_processor_id();
-> 	old_cpu  = atomic_cmpxchg(&panic_cpu, PANIC_CPU_INVALID, this_cpu);
->
-> 	if (old_cpu != PANIC_CPU_INVALID && old_cpu != this_cpu)
-> 		panic_smp_self_stop();
->
->
-> One the other hand, the aproach with two variables is strage
-> and brings exactly these questions.
->
-> If a trylock is enough that the mutex can be replaced by two
-> simple atomic operations. The mutex would be needed only
-> when a user really would need to wait for another one.
->
->
-> 	atomic_t crash_kexec_lock;
->
-> 	/* trylock part */
-> 	if (atomic_cmpxchg_acquire(&crash_kexec_lock, 0, 1) != 0)
-> 		return -EBUSY;
->
-> 	/* do anything guarded by crash_kexec_lock */
->
-> 	/* release lock */
-> 	atomic_set_release(&crash_kexec_lock, 0);
->
-> The _acquire, _release variants will do the barriers correctly.
->
+Hello,
 
-Looks saner! I can't think of anything wrong with it so I'll shove that in
-v2. Thanks!
+I made several improvements to reed-solomon library.
+Please have a look. :)
 
-> Best Regards,
-> Petr
+Thanks!
+
+Best Regards,
+Zhang Boyang
+
+===
+
+Changes in [PATCH v2]:
+Added more patches. Removed init_rs16(), since init_rs_non_canonical()
+can do the same job.
+
+Changes in [PATCH v1]:
+Added init_rs16().
+Link: https://lore.kernel.org/all/20220606101901.83538-1-zhangboyang.id@gmail.com/
+
+[RFC PATCH]:
+Link: https://lore.kernel.org/all/20220605073857.126497-1-zhangboyang.id@gmail.com/
+
 
