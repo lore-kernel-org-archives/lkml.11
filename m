@@ -2,103 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79670C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:28:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 859CEC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380358AbiFQO2q (ORCPT
+        id S1382589AbiFQO3a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 10:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35898 "EHLO
+        Fri, 17 Jun 2022 10:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234468AbiFQO2p (ORCPT
+        with ESMTP id S234468AbiFQO31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 10:28:45 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F126A54693
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:28:43 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id h1so4009474plf.11
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:28:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:cc:from:to:message-id;
-        bh=Tcqogqr7saSROb6VJsAgZfCbPF8TWLw9G8OGokI3FTg=;
-        b=E+4Jz3GGbPeUBX1+iOzQKk5b9D+kTxwstYr74i+tyWOs4q5olcWYlxQTD+bNKoXBRI
-         amXrbYO2XleVeyrFW123CtKxnGQUGn+D/QCzkZoVqoY4xii4i+D4YVF5ATiRYFn+nyMn
-         NJoeCFYUYL8z8BvPzsuLQSjRJUIRV9cQXjWkaFzla0uTQElu8y3uFgAoMKQQUsw7893K
-         bs2qE8ZJNQXl/dsRMdt3a8wIGoVYTPa+fLuQ0h/m093JHgjB1YLwEkndjCPqM6f3LYEK
-         IYPth2ugj1/I1fSbYZr7sZrtxN/RIaZiQx/1t3HQ56tKleur6cM/7pNP6SJ4/cUZC6y4
-         vjyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:cc:from:to:message-id;
-        bh=Tcqogqr7saSROb6VJsAgZfCbPF8TWLw9G8OGokI3FTg=;
-        b=i+ETlEcttQ3/pl5uE4bS98uhS0RkUekBaszowmblX3QFPr+bzyvJKOWjpV4HsVTHgu
-         A1kPR10IaZyr4lvJyiRJxlgVDic8mcGqC31ILPqSS8T7BopTibyayZxXq791bCbwnRyC
-         6UBTdXFuJqeE2Ce/BOGkT8oP3plOv2D0TMW4cmN+gU7+dMa7OQIbzslTaLWnLalRNUuV
-         RBXZcH5yv8fu517GIYFAX5Uevl1bW+pCPTBztjAdruP2mEuu2NopTq6ChEazycz+v1mS
-         ZcM/6EYNiRcWxByHSJ7R8vmRZR5v+vkU2aQ1jkjjjRLHWcA2PFrOC1qF2XKZfaJDdL1C
-         Hhhg==
-X-Gm-Message-State: AJIora9FtiPsud1bTRyVTnkhNy/Ia7aEI8sA1ltVSukUDKapV4DeeKCP
-        5YlOdfVnkYz32KW8PSgMarzUY6pRmKCiag==
-X-Google-Smtp-Source: AGRyM1sQZnAyDmRJkonXd8bV0/gW4lFtzB5JN6E3PmH6DvPKId+IFv/dku2ioZg+/nr1ZDvNRhr14g==
-X-Received: by 2002:a17:903:32c4:b0:163:e765:5071 with SMTP id i4-20020a17090332c400b00163e7655071mr9695779plr.153.1655476122875;
-        Fri, 17 Jun 2022 07:28:42 -0700 (PDT)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id ik4-20020a170902ab0400b001637704269fsm3606589plb.223.2022.06.17.07.28.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 07:28:41 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 07:28:41 -0700 (PDT)
-X-Google-Original-Date: Fri, 17 Jun 2022 07:28:39 PDT (-0700)
-Subject: [GIT PULL] RISC-V Fixes for 5.19-rc3
-CC:         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Message-ID: <mhng-67f78725-bcd9-4c12-920d-2377a998b9f0@palmer-mbp2014>
+        Fri, 17 Jun 2022 10:29:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 00EEF4B1FF
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:29:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655476164;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gAYVwqMN/CZe6fC+f9RsMLvHlUb8Q6jQz2uIGknDWoM=;
+        b=SEwtLNpdrXbYew4TN+GBpOmDx75UUbxosmWArGQWfYZ3mipQdaxQP05cqihZ9bPXTiwRKC
+        pJ/OzLo3iU1GJnzEWHNBHRwl30nAkDZdEx3JWIGuUkKMoAlNMHMkGAgbLF5pFfT9edVNUv
+        MgVe1aaBP5/XbOF4cgMYSxi2iq8eEAI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-660-wjrKsoReO4ibwa5joUp36A-1; Fri, 17 Jun 2022 10:29:21 -0400
+X-MC-Unique: wjrKsoReO4ibwa5joUp36A-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 124AB2932481;
+        Fri, 17 Jun 2022 14:29:21 +0000 (UTC)
+Received: from [10.22.18.98] (unknown [10.22.18.98])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9E8762026609;
+        Fri, 17 Jun 2022 14:29:20 +0000 (UTC)
+Message-ID: <b92bdb56-bfed-9cd2-5eb2-0b96a68b21d8@redhat.com>
+Date:   Fri, 17 Jun 2022 10:29:20 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: Lockups due to "locking/rwsem: Make handoff bit handling more
+ consistent"
+Content-Language: en-US
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Zhenhua Ma <mazhenhua@xiaomi.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michal Hocko <mhocko@suse.com>
+References: <20220617134325.GC30825@techsingularity.net>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220617134325.GC30825@techsingularity.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+On 6/17/22 09:43, Mel Gorman wrote:
+> Hi Waiman,
+>
+> I've received reports of lockups happening in kernels including
+> commit d257cc8cb8d5 ("locking/rwsem: Make handoff bit handling more
+> consistent"). The exact symptoms vary but usually it's either a soft lockup
+> (older kernel with a backport), the task hanging and never exiting or the
+> machine becomes generally unresponsive and ssh is broken.  The problem
+> started in 5.16 and reliably bisected to commit d257cc8cb8d5. Reverting
+> the patch in 5.16, 5.17 and 5.18 finish the test successfully but I didn't
+> test a revert on 5.19-rc2 because of other changes layered on top.
+>
+> The reproducer is simple -- start pairs of CPU hogs pinned to a CPU with
+> different SCHED_RR priorities that run for a few seconds. It does not
+> hit every time but usually happens within 10 attempts. On 5.16 at least,
+> the tasks failed to exit and kept retrying to exit using the following path
+>
+> [<0>] rwsem_down_write_slowpath+0x2ad/0x580
+> [<0>] unlink_file_vma+0x2c/0x50
+> [<0>] free_pgtables+0xbe/0x110
+> [<0>] exit_mmap+0xc1/0x220
+> [<0>] mmput+0x52/0x110
+> [<0>] do_exit+0x2ec/0xb00
+> [<0>] do_group_exit+0x2d/0x90
+> [<0>] get_signal+0xb6/0x920
+> [<0>] arch_do_signal_or_restart+0xba/0x700
+> [<0>] exit_to_user_mode_prepare+0xb7/0x230
+> [<0>] irqentry_exit_to_user_mode+0x5/0x20
+> [<0>] asm_sysvec_apic_timer_interrupt+0x12/0x20
+> [<0>] preempt_schedule_thunk+0x16/0x18
+> [<0>] rwsem_down_write_slowpath+0x2ad/0x580
+> [<0>] unlink_file_vma+0x2c/0x50
+> [<0>] free_pgtables+0xbe/0x110
+> [<0>] exit_mmap+0xc1/0x220
+> [<0>] mmput+0x52/0x110
+> [<0>] do_exit+0x2ec/0xb00
+> [<0>] do_group_exit+0x2d/0x90
+> [<0>] get_signal+0xb6/0x920
+> [<0>] arch_do_signal_or_restart+0xba/0x700
+> [<0>] exit_to_user_mode_prepare+0xb7/0x230
+> [<0>] irqentry_exit_to_user_mode+0x5/0x20
+> [<0>] asm_sysvec_apic_timer_interrupt+0x12/0x20
+>
+> The C file and shell script to run it are attached.
+>
+Thanks for the reproducer and I will try to reproduce it locally.
 
-  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
+It is a known issue that I have receive similar report from an Oracle 
+engineer. That is the reason I posted commit 1ee326196c66 
+("locking/rwsem: Always try to wake waiters in out_nolock path") that 
+was merged in v5.19. I believe it helps but it may not be able to 
+eliminate all possible race conditions. To make rwsem behave more like 
+before commit d257cc8cb8d5 ("locking/rwsem: Make handoff bit handling 
+more consistent"), I posted a follow-up patch
 
-are available in the Git repository at:
+https://lore.kernel.org/lkml/20220427173124.1428050-1-longman@redhat.com/
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.19-rc3
+But it hasn't gotten review yet.
 
-for you to fetch changes up to c836d9d17a7d102ded1ba4dbd4ee0bc42ba26211:
+I will try your reproducer to see if these patches are able to address 
+the lockup problem.
 
-  RISC-V: Some Svpbmt fixes (2022-06-16 15:48:39 -0700)
+Thanks,
+Longman
 
-----------------------------------------------------------------
-RISC-V Fixes for 5.19-rc3
+commit d257cc8cb8d5 ("locking/rwsem: Make handoff bit handling more
+consistent").
 
-* A fix for the PolarFire SOC's device tree.
-* A handful of fixes for the recently added Svpmbt support.
-* An improvement to the Kconfig text for Svpbmt.
-
-----------------------------------------------------------------
-This is my first time taking an actual pull request, so sorry if I screwed
-something up.  It's just a single patch and I checked over things last night,
-though now that I look at this again I see that pretty much everyone is using
-the git URLs instead of the SSH URLs.  Happy to re-spin this for next week if
-that's a problem, but it looks like I've done that a handful of times before.
-
-----------------------------------------------------------------
-Conor Dooley (1):
-      riscv: dts: microchip: re-add pdma to mpfs device tree
-
-Heiko Stuebner (3):
-      riscv: fix dependency for t-head errata
-      riscv: drop cpufeature_apply_feature tracking variable
-      riscv: Improve description for RISCV_ISA_SVPBMT Kconfig symbol
-
-Palmer Dabbelt (2):
-      Merge tag 'dt-fixes-for-palmer-5.19-rc3' of ssh://gitolite.kernel.org/pub/scm/linux/kernel/git/conor/linux into fixes
-      RISC-V: Some Svpbmt fixes
-
- arch/riscv/Kconfig                      | 9 +++++++--
- arch/riscv/Kconfig.erratas              | 1 +
- arch/riscv/boot/dts/microchip/mpfs.dtsi | 9 +++++++++
- arch/riscv/kernel/cpufeature.c          | 5 +----
- 4 files changed, 18 insertions(+), 6 deletions(-)
