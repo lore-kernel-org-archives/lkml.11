@@ -2,103 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8429EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E097DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:38:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380059AbiFQIig (ORCPT
+        id S1380328AbiFQIio (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 04:38:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49894 "EHLO
+        Fri, 17 Jun 2022 04:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380387AbiFQIi2 (ORCPT
+        with ESMTP id S1380211AbiFQIid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 04:38:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0750F69295
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:38:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E657B827CC
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:38:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 602D8C3411B;
-        Fri, 17 Jun 2022 08:38:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655455104;
-        bh=/+PA0s6iDokI32NSUKyXUB8BkzRNE2/BPEMG8iwbzJo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lzhXz8zt15gWuroBUz4xp7oQIAyE2Zg7k0+EuLpVXGyzcayS5RLRo4utGjS2qT7Dy
-         vZVNLx9AI4uoL3jm1N+xkt6pzKuDQ4n37PcWbOpIMDgcjt8g9IGect8wXJ2r1uk6gN
-         ZcMijsDAlGeFKXDRQwAyc+uQj2mQk+qOKHFWpzHdERbvHu55fL2JxvFQQCcjB6ZsgN
-         r42QoQ2bPbWgQlVapm7YHnn7gc79lQ/r1sr8/D2jAHFJXCHAdazY+kHfzMqXRxGqKb
-         z6zabU/HjuYTH08Un3rRyqRTKm5VzO57zZpaxBeDlUbKH6UQE6z6FD2evVHpL1DdOB
-         EHylArov6qpuA==
-Date:   Fri, 17 Jun 2022 11:38:14 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Quentin Perret <qperret@google.com>,
-        kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
-        James Morse <james.morse@arm.com>,
-        Will Deacon <will@kernel.org>, kernel-team@android.com
-Subject: Re: [PATCH] KVM: arm64: Prevent kmemleak from accessing pKVM memory
-Message-ID: <Yqw9dou3qgpAKQkZ@kernel.org>
-References: <20220616161135.3997786-1-qperret@google.com>
- <165545408679.771055.5076080259874437048.b4-ty@kernel.org>
+        Fri, 17 Jun 2022 04:38:33 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E22E689AB
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:38:31 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id 184so3488114pga.12
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:38:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K+DkLreQJFdtzIaPZdznlpaTpcwmK3UqwA6ApgLZ4TQ=;
+        b=Lk366whEMkptSrLGRqAclQQ2FcZrq04kAssYDgRTppdYfoFU9F8gaIEBPsIOZ7WgdH
+         7hRdbHaR+fLKNo99gbAdrz9+6McDkQp0stDBWrUqEP6bmBGyOdzvvyDeH4Y+ZXwbNkcn
+         qkh89tsvJEYcOetnsx3qNK1W3/0tGw/saX9r0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K+DkLreQJFdtzIaPZdznlpaTpcwmK3UqwA6ApgLZ4TQ=;
+        b=sJpT/ggpsqGyytHwWiVDkCzWaJLixcHhO5BACbUlp/7Sb25h6rUPl2D1kF+6PFu6Rt
+         7cCzP3g2Xw5mzyXyMiSRanQlDdCEUmOKMb44hmWveIATUT/0h6mZW4m/kmloLhwYlZc1
+         wBjMVklYzhYg1j8Xv4GlQpDMCT69UIYD3ppL1lnqW6NrL4odkw+TOCtDxa83gbtrcEvc
+         wk7dk+EhmMiMg8NutvrIOWDEqiJgkW3oEaBBhdTr6IdzJI1b4wrlnLZkeQNY7WqFLupf
+         TbqidxMFBtWsV2Boil0s8979lD5fXtDL1MQFohXh6sUVozZ6/I0ln7kBn2sp+XpeKvFa
+         rsug==
+X-Gm-Message-State: AJIora98+vMEVfgAGdB+CRawgZ+S/wgMknj1JpU8Y+YXKM8r00Fi5LRM
+        xHRtlrE0JNcyvtOVcV3v5KN9BA==
+X-Google-Smtp-Source: AGRyM1vwvZ9tYychzYFYTXO02HMgABTJZ+teUXxcNrO+NvkZckUklScM0dCZh5cI4L6b+8J6tXMMSQ==
+X-Received: by 2002:a05:6a00:2999:b0:51b:e3c8:9e30 with SMTP id cj25-20020a056a00299900b0051be3c89e30mr8750954pfb.41.1655455110868;
+        Fri, 17 Jun 2022 01:38:30 -0700 (PDT)
+Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:a0dc:9427:fea8:f78a])
+        by smtp.gmail.com with ESMTPSA id d12-20020a62f80c000000b005185407eda5sm3154103pfh.44.2022.06.17.01.38.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 01:38:30 -0700 (PDT)
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+To:     Phillip Lougher <phillip@squashfs.org.uk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Xiongwei Song <Xiongwei.Song@windriver.com>,
+        Zheng Liang <zhengliang6@huawei.com>,
+        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
+        Miao Xie <miaoxie@huawei.com>,
+        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
+        "squashfs-devel @ lists . sourceforge . net" 
+        <squashfs-devel@lists.sourceforge.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v7 0/4] Implement readahead for squashfs
+Date:   Fri, 17 Jun 2022 16:38:07 +0800
+Message-Id: <20220617083810.337573-1-hsinyi@chromium.org>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <165545408679.771055.5076080259874437048.b4-ty@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 09:21:31AM +0100, Marc Zyngier wrote:
-> On Thu, 16 Jun 2022 16:11:34 +0000, Quentin Perret wrote:
-> > Commit a7259df76702 ("memblock: make memblock_find_in_range method
-> > private") changed the API using which memory is reserved for the pKVM
-> > hypervisor. However, it seems that memblock_phys_alloc() differs
-> > from the original API in terms of kmemleak semantics -- the old one
-> > excluded the reserved regions from kmemleak scans when the new one
-> > doesn't seem to. Unfortunately, when protected KVM is enabled, all
-> > kernel accesses to pKVM-private memory result in a fatal exception,
-> > which can now happen because of kmemleak scans:
-> > 
-> > [...]
-> 
-> Applied to fixes, thanks!
-> 
-> [1/1] KVM: arm64: Prevent kmemleak from accessing pKVM memory
->       commit: 9e5afa8a537f742bccc2cd91bc0bef4b6483ee98
+Commit 9eec1d897139("squashfs: provide backing_dev_info in order to
+disable read-ahead") mitigates the performance drop issue for squashfs
+by closing readahead for it.
 
-I'd really like to update the changelog to this:
+This series implements readahead callback for squashfs. The previous
+discussions are in [1] and [2].
 
-Commit a7259df76702 ("memblock: make memblock_find_in_range method
-private") changed the API using which memory is reserved for the pKVM
-hypervisor. However, memblock_phys_alloc() differs from the original API in
-terms of kmemleak semantics -- the old one didn't report the reserved
-regions to kmemleak while the new one does. Unfortunately, when protected
-KVM is enabled, all kernel accesses to pKVM-private memory result in a
-fatal exception, which can now happen because of kmemleak scans:
+[1]
+https://lore.kernel.org/all/CAJMQK-g9G6KQmH-V=BRGX0swZji9Wxe_2c7ht-MMAapdFy2pXw@mail.gmail.com/T/
+[2]
+https://lore.kernel.org/linux-mm/Yn5Yij9pRPCzDozt@casper.infradead.org/t/#m4af4473b94f98a4996cb11756b633a07e5e059d1
 
-$ echo scan > /sys/kernel/debug/kmemleak
-[   34.991354] kvm [304]: nVHE hyp BUG at: [<ffff800008fa3750>] __kvm_nvhe_handle_host_mem_abort+0x270/0x290!
-...
+v7 adds the patch to support reading fragments in readahead call[3]. No
+changes on other patches since v6, which is included in next-20220617.
 
-Fix this by explicitly excluding the hypervisor's memory pool from
-kmemleak like we already do for the hyp BSS.
+[3]
+https://patchwork.kernel.org/project/linux-mm/patch/20220617030345.24712-1-phillip@squashfs.org.uk/
 
+Hsin-Yi Wang (2):
+  Revert "squashfs: provide backing_dev_info in order to disable
+    read-ahead"
+  squashfs: implement readahead
 
-> Cheers,
-> 
-> 	M.
-> -- 
-> Marc Zyngier <maz@kernel.org>
-> 
+Phillip Lougher (2):
+  squashfs: always build "file direct" version of page actor
+  squashfs: support reading fragments in readahead call
+
+ fs/squashfs/Makefile     |   4 +-
+ fs/squashfs/file.c       | 133 ++++++++++++++++++++++++++++++++++++++-
+ fs/squashfs/page_actor.h |  46 --------------
+ fs/squashfs/super.c      |  33 ----------
+ 4 files changed, 134 insertions(+), 82 deletions(-)
 
 -- 
-Sincerely yours,
-Mike.
+2.36.1.476.g0c4daa206d-goog
+
