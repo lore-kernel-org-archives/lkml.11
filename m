@@ -2,168 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79766C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD64C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382342AbiFQM2U (ORCPT
+        id S1382192AbiFQMa0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 08:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
+        Fri, 17 Jun 2022 08:30:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382197AbiFQM2F (ORCPT
+        with ESMTP id S1382160AbiFQMaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 08:28:05 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989B219C2D;
-        Fri, 17 Jun 2022 05:28:01 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id eo8so6031104edb.0;
-        Fri, 17 Jun 2022 05:28:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6n/2pFzaPVH0G41YfmWwCvM9JbKPxBYICuNwYJcUzhA=;
-        b=fxhyTLXRaQmjffcKebPAhrCz0/mBiSKvbvixB62cf8rYpxCrrWB3sLGzva5Uv3T0Jn
-         U+g+S70QYfa0DqM10QWK/LtOF3nfKUn7tiL9lwwRH4OQ1g/nxTDz99ZpzglVnVIWQiIf
-         WdkddcrkB/IhonbMcSBAJBgV00Txr5jwJud3+/mrxN/oCrohWHrSMC3YakheI5IVvyFs
-         t9beg4gcrrsWJjPK7YnbBOXpbv+lPn/0iyoOuKSbnQ60FOkulzdnMafdFnp0fV3TcVTN
-         T1bblB/Hs+jV8rL8vC/814vWkNNPTzQazsEjHWlRxudbDBl+kRlup6gUshlgf3iqgmz1
-         azwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6n/2pFzaPVH0G41YfmWwCvM9JbKPxBYICuNwYJcUzhA=;
-        b=tAMqP1oDPKNuR9Bb0jZf5bOFTWKWzA666Dqff0d2NDEGP0d2xZZo3XSkM66/JePK/+
-         FgaAsxVxJC8VBk4t/apATQyl/d59XkYPbmyZzCqN7kbH3W4clPo/vVq5wernmRUwfvKR
-         L47/3M3c4GBCWObCUhzk5HpQw9WLywFB7X4FFJ7nEoH5P9mYJ6/MzUs4DaPlpGcWQinz
-         6KAsQ08ouyXxQ4GQFpq8VDHrw+wcuKJSreaa2bsyvmOlM7EyP/Y99BjpSet3u0OQ1Ide
-         eCQBcQqzErvLzNDJuirXGZ6bsy3/mvnXTHm7/FWf6+7rn3abNVMmXp1wSKppQ36vPN/r
-         VPrw==
-X-Gm-Message-State: AJIora/u8WMEs/PDj2WQPyIJB7pTh7ubkb9aCistAshb+UaPAqEmhSJ/
-        caGpSWm58TlbKh/6/qDryDQ=
-X-Google-Smtp-Source: AGRyM1vqbq5YK6BFxrltot0aDVi3HLTVaJltTlM/iLoLlIzIMjxdHKy2O657RN12iRQ7fUpbzwnuIw==
-X-Received: by 2002:a05:6402:3482:b0:42d:e063:7c1d with SMTP id v2-20020a056402348200b0042de0637c1dmr12337169edc.40.1655468880253;
-        Fri, 17 Jun 2022 05:28:00 -0700 (PDT)
-Received: from localhost (92.40.168.194.threembb.co.uk. [92.40.168.194])
-        by smtp.gmail.com with ESMTPSA id e7-20020a50ec87000000b0043561e0c9adsm1032499edr.52.2022.06.17.05.27.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 05:27:59 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     linus.walleij@linaro.org, paul@crapouillou.net
-Cc:     maz@kernel.org, andy.shevchenko@gmail.com,
-        linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Fri, 17 Jun 2022 08:30:25 -0400
+Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6374C60DB7
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:30:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=xvV3S
+        hcwPUAxPUy8RY8/spKuTd4n6cJ6dM39gAWGT9o=; b=hsQtTn/b7QSI/8IR91sFQ
+        SefLSW+wFhORPfQpkrQ5/fUEOzTLs8zPNg4fI7t8gtcJi+bBmXa+jRvJs+++CEBD
+        b79wAyX7E0tpDxoe3AcOpD/ge0ymFPqul1r7PdWZLM3eeqADH1oLRa4YhV/d3coT
+        M/gNLWNyqSDn857BpmUypk=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp8 (Coremail) with SMTP id NORpCgAHlYHLc6xiv4JwFw--.38903S2;
+        Fri, 17 Jun 2022 20:30:03 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     linus.walleij@linaro.org, linux@armlinux.org.uk
+Cc:     windhl@126.com, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] pinctrl: ingenic: Convert to immutable irq chip
-Date:   Fri, 17 Jun 2022 13:28:55 +0100
-Message-Id: <20220617122855.739190-3-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220617122855.739190-1-aidanmacdonald.0x0@gmail.com>
-References: <20220617122855.739190-1-aidanmacdonald.0x0@gmail.com>
+Subject: [PATCH] arm: mach-versatile: Fix refcount leak bug in tc2_pm
+Date:   Fri, 17 Jun 2022 20:30:03 +0800
+Message-Id: <20220617123003.4048328-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NORpCgAHlYHLc6xiv4JwFw--.38903S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7uFy3Aw45CF4xtFy7JrWDArb_yoW8GrW7pr
+        10k395Jr10gw1DKa95KFyDZrWFya4q9FW0vr1a93Wak3Z7X3y8AF18tryFyF1DGayrAan5
+        Ar15KF17uan8C3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07U0385UUUUU=
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2gwjF1uwMOUJngAAsL
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the driver to use an immutable IRQ chip to fix this warning:
+In tc2_pm_init(), of_find_compatible_node() will return a node pointer
+with refcount incremented. We should use of_node_put() in fail path or
+when it is not used anymore.
 
-    "not an immutable chip, please consider fixing it!"
-
-Preserve per-chip labels by adding an irq_print_chip callback.
-
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Signed-off-by: Liang He <windhl@126.com>
 ---
- drivers/pinctrl/pinctrl-ingenic.c | 41 ++++++++++++++++++++-----------
- 1 file changed, 27 insertions(+), 14 deletions(-)
+ arch/arm/mach-versatile/tc2_pm.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/pinctrl-ingenic.c b/drivers/pinctrl/pinctrl-ingenic.c
-index 69e0d88665d3..787a8daa400e 100644
---- a/drivers/pinctrl/pinctrl-ingenic.c
-+++ b/drivers/pinctrl/pinctrl-ingenic.c
-@@ -22,6 +22,7 @@
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
- #include <linux/slab.h>
-+#include <linux/seq_file.h>
+diff --git a/arch/arm/mach-versatile/tc2_pm.c b/arch/arm/mach-versatile/tc2_pm.c
+index 0fe78da0c109..2a7aeab7b3da 100644
+--- a/arch/arm/mach-versatile/tc2_pm.c
++++ b/arch/arm/mach-versatile/tc2_pm.c
+@@ -212,19 +212,24 @@ static int __init tc2_pm_init(void)
+ 	np = of_find_compatible_node(NULL, NULL,
+ 			"arm,vexpress-scc,v2p-ca15_a7");
+ 	scc = of_iomap(np, 0);
+-	if (!scc)
++	if (!scc) {
++		of_node_put(np);
+ 		return -ENODEV;
++	}
  
- #include "core.h"
- #include "pinconf.h"
-@@ -135,7 +136,6 @@ struct ingenic_pinctrl {
- struct ingenic_gpio_chip {
- 	struct ingenic_pinctrl *jzpc;
- 	struct gpio_chip gc;
--	struct irq_chip irq_chip;
- 	unsigned int irq, reg_base;
- };
- 
-@@ -3419,6 +3419,8 @@ static void ingenic_gpio_irq_enable(struct irq_data *irqd)
- 	struct ingenic_gpio_chip *jzgc = gpiochip_get_data(gc);
- 	irq_hw_number_t irq = irqd_to_hwirq(irqd);
- 
-+	gpiochip_enable_irq(gc, irq);
-+
- 	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770))
- 		ingenic_gpio_set_bit(jzgc, JZ4770_GPIO_INT, irq, true);
- 	else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
-@@ -3443,6 +3445,8 @@ static void ingenic_gpio_irq_disable(struct irq_data *irqd)
- 		ingenic_gpio_set_bit(jzgc, JZ4740_GPIO_SELECT, irq, false);
- 	else
- 		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_GPIER, irq, false);
-+
-+	gpiochip_disable_irq(gc, irq);
- }
- 
- static void ingenic_gpio_irq_ack(struct irq_data *irqd)
-@@ -3687,6 +3691,27 @@ static void ingenic_gpio_irq_release(struct irq_data *data)
- 	return gpiochip_relres_irq(gpio_chip, irq);
- }
- 
-+static void ingenic_gpio_irq_print_chip(struct irq_data *data, struct seq_file *p)
-+{
-+	struct gpio_chip *gpio_chip = irq_data_get_irq_chip_data(data);
-+
-+	seq_printf(p, "%s", gpio_chip->label);
-+}
-+
-+static const struct irq_chip ingenic_gpio_irqchip = {
-+	.irq_enable		= ingenic_gpio_irq_enable,
-+	.irq_disable		= ingenic_gpio_irq_disable,
-+	.irq_unmask		= ingenic_gpio_irq_unmask,
-+	.irq_mask		= ingenic_gpio_irq_mask,
-+	.irq_ack		= ingenic_gpio_irq_ack,
-+	.irq_set_type		= ingenic_gpio_irq_set_type,
-+	.irq_set_wake		= ingenic_gpio_irq_set_wake,
-+	.irq_request_resources	= ingenic_gpio_irq_request,
-+	.irq_release_resources	= ingenic_gpio_irq_release,
-+	.irq_print_chip		= ingenic_gpio_irq_print_chip,
-+	.flags			= IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_IMMUTABLE,
-+};
-+
- static int ingenic_pinmux_set_pin_fn(struct ingenic_pinctrl *jzpc,
- 		int pin, int func)
- {
-@@ -4175,20 +4200,8 @@ static int __init ingenic_gpio_probe(struct ingenic_pinctrl *jzpc,
- 	if (!jzgc->irq)
+ 	a15_cluster_id = readl_relaxed(scc + A15_CONF) & 0xf;
+ 	a7_cluster_id = readl_relaxed(scc + A7_CONF) & 0xf;
+-	if (a15_cluster_id >= TC2_CLUSTERS || a7_cluster_id >= TC2_CLUSTERS)
++	if (a15_cluster_id >= TC2_CLUSTERS || a7_cluster_id >= TC2_CLUSTERS) {
++		of_node_put(np);
  		return -EINVAL;
++	}
  
--	jzgc->irq_chip.name = jzgc->gc.label;
--	jzgc->irq_chip.irq_enable = ingenic_gpio_irq_enable;
--	jzgc->irq_chip.irq_disable = ingenic_gpio_irq_disable;
--	jzgc->irq_chip.irq_unmask = ingenic_gpio_irq_unmask;
--	jzgc->irq_chip.irq_mask = ingenic_gpio_irq_mask;
--	jzgc->irq_chip.irq_ack = ingenic_gpio_irq_ack;
--	jzgc->irq_chip.irq_set_type = ingenic_gpio_irq_set_type;
--	jzgc->irq_chip.irq_set_wake = ingenic_gpio_irq_set_wake;
--	jzgc->irq_chip.irq_request_resources = ingenic_gpio_irq_request;
--	jzgc->irq_chip.irq_release_resources = ingenic_gpio_irq_release;
--	jzgc->irq_chip.flags = IRQCHIP_MASK_ON_SUSPEND;
--
- 	girq = &jzgc->gc.irq;
--	girq->chip = &jzgc->irq_chip;
-+	gpio_irq_chip_set_chip(girq, &ingenic_gpio_irqchip);
- 	girq->parent_handler = ingenic_gpio_irq_handler;
- 	girq->num_parents = 1;
- 	girq->parents = devm_kcalloc(dev, 1, sizeof(*girq->parents),
+ 	sys_info = readl_relaxed(scc + SYS_INFO);
+ 	tc2_nr_cpus[a15_cluster_id] = (sys_info >> 16) & 0xf;
+ 	tc2_nr_cpus[a7_cluster_id] = (sys_info >> 20) & 0xf;
+ 
+ 	irq = irq_of_parse_and_map(np, 0);
++	of_node_put(np);
+ 
+ 	/*
+ 	 * A subset of the SCC registers is also used to communicate
 -- 
-2.35.1
+2.25.1
 
