@@ -2,169 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C385AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF640C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381444AbiFQI5c (ORCPT
+        id S1381359AbiFQI7I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 04:57:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
+        Fri, 17 Jun 2022 04:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381427AbiFQI53 (ORCPT
+        with ESMTP id S234952AbiFQI7G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 04:57:29 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A690C5250B;
-        Fri, 17 Jun 2022 01:57:27 -0700 (PDT)
-Received: (Authenticated sender: pbl@bestov.io)
-        by mail.gandi.net (Postfix) with ESMTPSA id 99015FF803;
-        Fri, 17 Jun 2022 08:57:19 +0000 (UTC)
-From:   Riccardo Paolo Bestetti <pbl@bestov.io>
-To:     Carlos Llamas <cmllamas@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Riccardo Paolo Bestetti <pbl@bestov.io>
-Cc:     kernel-team@android.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>
-Subject: [PATCH v2] ipv4: ping: fix bind address validity check
-Date:   Fri, 17 Jun 2022 10:54:35 +0200
-Message-Id: <20220617085435.193319-1-pbl@bestov.io>
-X-Mailer: git-send-email 2.36.1
+        Fri, 17 Jun 2022 04:59:06 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB7B377EE
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:59:05 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id c4so5926101lfj.12
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:59:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=TNJPOvqpvLagogQrvAiixWYiTcMoGzNoekIPuHssDkA=;
+        b=CA9F+WCKjwXAHY0Ubo0duZcqlgvFpybsPyEZCdXfd902XsdaMYDcMk8LM1cfgeDgcr
+         d2H6pLqxTf4IFJxPnJTrVMzGLgx73ku60HWFhSHZW0CpJQKVM7eloDEa+fhlwse1vmC/
+         zOnupAAF5wOlxs4Yj8y2Mp7sKmgXG4fRUdTL8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TNJPOvqpvLagogQrvAiixWYiTcMoGzNoekIPuHssDkA=;
+        b=VP6gMEP1uPhvYCrRbspSFunGhL6MMQ1tgSMGv21Fxshy48pCaXuEBcJvWP0gVN+f2Y
+         6/bigsultHnqoMbD9yeaevWA1ruErZi32N/WUEAwBahN/WpgTd5+mBNKrvwFA+xoyBio
+         IiUwUFO0ilbl9lY05/aN7byNCbXb8SjWwH7Eqk7B7A+GSJx4Oxgd19kXmgc7fikFw4n4
+         oxPTpOJBBYl1lkWTqp/MIFTP6m5+jTpE9Gqt3aNQJkm5ETm2zAYhQGJ2quFM4PbKDJYX
+         MihmETqaLEh16gutE7PLnaZFiYTyFwy/cnCLvyAwmQ6T0KB+ntLwwJu8TcYilcH7ZkvJ
+         QFSA==
+X-Gm-Message-State: AJIora9G3yYv/g0FapRwpz4dKsFwGKvyu9ZWez18g4wJahgDKCW6WB4s
+        5XyDtEF8bWKTfj8E+jDQdTPAMXclmGJXZvJz
+X-Google-Smtp-Source: AGRyM1vinlMEoex9SX+MRbPOhv00ibNgoAF7im+8kbyq/LF7OjTic8AX9sr3Kla4dysU2JTRY0jYEg==
+X-Received: by 2002:a05:6512:693:b0:479:892:3091 with SMTP id t19-20020a056512069300b0047908923091mr4951806lfe.122.1655456344005;
+        Fri, 17 Jun 2022 01:59:04 -0700 (PDT)
+Received: from [172.16.11.74] ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id y15-20020a056512044f00b00478ebc6be69sm558606lfk.261.2022.06.17.01.59.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jun 2022 01:59:03 -0700 (PDT)
+Message-ID: <0b4a9ba5-ed0d-e1a5-4982-8bad3e93f9b3@rasmusvillemoes.dk>
+Date:   Fri, 17 Jun 2022 10:59:02 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 03/33] vsprintf: Convert to printbuf
+Content-Language: en-US
+To:     Kent Overstreet <kent.overstreet@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     pmladek@suse.com, rostedt@goodmis.org
+References: <20220604193042.1674951-1-kent.overstreet@gmail.com>
+ <20220604193042.1674951-4-kent.overstreet@gmail.com>
+ <bc5daffb-e144-2a43-4657-eaf663e94750@rasmusvillemoes.dk>
+ <ba8d21b8-7aae-6bfb-3553-3baba2bbeee1@gmail.com>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+In-Reply-To: <ba8d21b8-7aae-6bfb-3553-3baba2bbeee1@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
-introduced a helper function to fold duplicated validity checks of bind
-addresses into inet_addr_valid_or_nonlocal(). However, this caused an
-unintended regression in ping_check_bind_addr(), which previously would
-reject binding to multicast and broadcast addresses, but now these are
-both incorrectly allowed as reported in [1].
+On 15/06/2022 20.44, Kent Overstreet wrote:
+> On 6/15/22 05:09, Rasmus Villemoes wrote:
 
-This patch restores the original check. A simple reordering is done to
-improve readability and make it evident that multicast and broadcast
-addresses should not be allowed. Also, add an early exit for INADDR_ANY
-which replaces lost behavior added by commit 0ce779a9f501 ("net: Avoid
-unnecessary inet_addr_type() call when addr is INADDR_ANY").
+>> Anyway, my main concern with this is that performance goes down the
+>> drain and the generated code will be awful. Have you done any
+>> measurements and/or looked at disassembly? Thanks to
+>> -fno-strict-aliasing (or perhaps just because we're writing through a
+>> char* pointer which IIRC may alias anything), I think the compiler will
+>> be forced to reload prt->pos and prt->size over and over and over. I may
+>> be wrong, of course, that happens often. Perhaps __restrict could
+>> help, IDK.
+> 
+> If we care that much about sprintf performance we must have some
+> benchmarks somewhere - could you point me at them?
 
-Furthermore, this patch introduces regression selftests to catch these
-specific cases.
+Try 'perf top'. Or copy the meat of vsprintf.c (all the %p gunk can be
+elided) and do some measurements in userspace, that's what I did when I
+improved the decimal conversion a few years back.
 
-[1] https://lore.kernel.org/netdev/CANP3RGdkAcDyAZoT1h8Gtuu0saq+eOrrTiWbxnOs+5zn+cpyKg@mail.gmail.com/
+And yes, "we" care about sprintf performance because it's used to
+generate all those files in /proc, /sys etc. etc. which many tools (e.g.
+top/ps) rely on.
 
-Fixes: 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
-Cc: Miaohe Lin <linmiaohe@huawei.com>
-Reported-by: Maciej Żenczykowski <maze@google.com>
-Signed-off-by: Carlos Llamas <cmllamas@google.com>
-Signed-off-by: Riccardo Paolo Bestetti <pbl@bestov.io>
----
-This patch is sent as a follow-up to the discussion on the v1 by Carlos
-Llamas.
-
-Original thread:
-https://lore.kernel.org/netdev/20220617020213.1881452-1-cmllamas@google.com/
-
- net/ipv4/ping.c                           | 10 ++++---
- tools/testing/selftests/net/fcnal-test.sh | 33 +++++++++++++++++++++++
- 2 files changed, 40 insertions(+), 3 deletions(-)
-
-diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
-index 1a43ca73f94d..3c6101def7d6 100644
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -319,12 +319,16 @@ static int ping_check_bind_addr(struct sock *sk, struct inet_sock *isk,
- 		pr_debug("ping_check_bind_addr(sk=%p,addr=%pI4,port=%d)\n",
- 			 sk, &addr->sin_addr.s_addr, ntohs(addr->sin_port));
- 
-+		if (addr->sin_addr.s_addr == htonl(INADDR_ANY))
-+			return 0;
-+
- 		tb_id = l3mdev_fib_table_by_index(net, sk->sk_bound_dev_if) ? : tb_id;
- 		chk_addr_ret = inet_addr_type_table(net, addr->sin_addr.s_addr, tb_id);
- 
--		if (!inet_addr_valid_or_nonlocal(net, inet_sk(sk),
--					         addr->sin_addr.s_addr,
--	                                         chk_addr_ret))
-+		if (chk_addr_ret == RTN_MULTICAST ||
-+		    chk_addr_ret == RTN_BROADCAST ||
-+		    (chk_addr_ret != RTN_LOCAL &&
-+		     !inet_can_nonlocal_bind(net, isk)))
- 			return -EADDRNOTAVAIL;
- 
- #if IS_ENABLED(CONFIG_IPV6)
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 54701c8b0cd7..75223b63e3c8 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -70,6 +70,10 @@ NSB_LO_IP6=2001:db8:2::2
- NL_IP=172.17.1.1
- NL_IP6=2001:db8:4::1
- 
-+# multicast and broadcast addresses
-+MCAST_IP=224.0.0.1
-+BCAST_IP=255.255.255.255
-+
- MD5_PW=abc123
- MD5_WRONG_PW=abc1234
- 
-@@ -308,6 +312,9 @@ addr2str()
- 	127.0.0.1) echo "loopback";;
- 	::1) echo "IPv6 loopback";;
- 
-+	${BCAST_IP}) echo "broadcast";;
-+	${MCAST_IP}) echo "multicast";;
-+
- 	${NSA_IP})	echo "ns-A IP";;
- 	${NSA_IP6})	echo "ns-A IPv6";;
- 	${NSA_LO_IP})	echo "ns-A loopback IP";;
-@@ -1800,6 +1807,19 @@ ipv4_addr_bind_novrf()
- 	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${NSA_DEV} -b
- 	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after device bind"
- 
-+	#
-+	# check that ICMP sockets cannot bind to broadcast and multicast addresses
-+	#
-+	a=${BCAST_IP}
-+	log_start
-+	run_cmd nettest -s -R -P icmp -l ${a} -b
-+	log_test_addr ${a} $? 1 "ICMP socket bind to broadcast address"
-+
-+	a=${MCAST_IP}
-+	log_start
-+	run_cmd nettest -s -R -P icmp -f -l ${a} -b
-+	log_test_addr ${a} $? 1 "ICMP socket bind to multicast address"
-+
- 	#
- 	# tcp sockets
- 	#
-@@ -1857,6 +1877,19 @@ ipv4_addr_bind_vrf()
- 	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${VRF} -b
- 	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after VRF bind"
- 
-+	#
-+	# check that ICMP sockets cannot bind to broadcast and multicast addresses
-+	#
-+	a=${BCAST_IP}
-+	log_start
-+	run_cmd nettest -s -R -P icmp -l ${a} -I ${VRF} -b
-+	log_test_addr ${a} $? 1 "ICMP socket bind to broadcast address after VRF bind"
-+
-+	a=${MCAST_IP}
-+	log_start
-+	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${VRF} -b
-+	log_test_addr ${a} $? 1 "ICMP socket bind to multicast address after VRF bind"
-+
- 	#
- 	# tcp sockets
- 	#
--- 
-2.36.1
-
+Rasmus
