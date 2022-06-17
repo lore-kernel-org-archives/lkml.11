@@ -2,74 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 549FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:43:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E24C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:43:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382579AbiFQOnl (ORCPT
+        id S1382851AbiFQOnt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 10:43:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
+        Fri, 17 Jun 2022 10:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382853AbiFQOn3 (ORCPT
+        with ESMTP id S1382876AbiFQOnr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 10:43:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF91025FF;
-        Fri, 17 Jun 2022 07:43:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 898506142F;
-        Fri, 17 Jun 2022 14:43:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05E0FC3411B;
-        Fri, 17 Jun 2022 14:43:24 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Huacai Chen <chenhuacai@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Guo Ren <guoren@kernel.org>,
-        Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [GIT PULL] LoongArch fixes for v5.19-rc3
-Date:   Fri, 17 Jun 2022 22:44:28 +0800
-Message-Id: <20220617144428.569247-1-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.27.0
+        Fri, 17 Jun 2022 10:43:47 -0400
+Received: from m15114.mail.126.com (m15114.mail.126.com [220.181.15.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D9924F9ED
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:43:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=oqTFS
+        HQR0LyoKRjMr2/vnSyFVI269+kRaqPVQCinquA=; b=YUbWt5fwnt/qeuRUmA3ks
+        eVCpZ2psR0iXF1+SWD6egNuCcjodxyAm8GSiCgo5o0xD45yq6mZpxNt31gJUPPWs
+        4Zu2nyVGceNZd+r9Q4L5CpPrlk6Q1FOH/wELEeUK5ApmuVtgj2z/Y/aZJBdZbCFY
+        jMmJxz4160rAY0fqjpIZ7A=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp7 (Coremail) with SMTP id DsmowACHJv+Ckqxin0VlDg--.21214S2;
+        Fri, 17 Jun 2022 22:41:07 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     jic23@kernel.org, lars@metafoo.de, joel@jms.id.au, andrew@aj.id.au,
+        p.zabel@pengutronix.de, lgirdwood@gmail.com, broonie@kernel.org,
+        billy_tsai@aspeedtech.com, colin.king@intel.com
+Cc:     windhl@126.com, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: Fix refcount leak bug in aspeed_adc
+Date:   Fri, 17 Jun 2022 22:41:06 +0800
+Message-Id: <20220617144106.4050677-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DsmowACHJv+Ckqxin0VlDg--.21214S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZF4fWry3Gry7Cr4UZr15XFb_yoW3CrcEgw
+        s7WwsxXrnrAFZ0vrWqvw1fXr909Fy8WFWkuF10v34fWa4UArZ7AryDWF4YvrWUZrs2va45
+        ZF4DX34xJrnxGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUjn2-3UUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbiuA0jF2JVj6h7ygABsh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3:
+In aspeed_adc_set_trim_data(), of_find_node_by_name() will return
+a node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
-  Linux 5.19-rc2 (2022-06-12 16:11:37 -0700)
+Signed-off-by: Liang He <windhl@126.com>
+---
+ drivers/iio/adc/aspeed_adc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-are available in the Git repository at:
+diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+index 0793d2474cdc..9341e0e0eb55 100644
+--- a/drivers/iio/adc/aspeed_adc.c
++++ b/drivers/iio/adc/aspeed_adc.c
+@@ -186,6 +186,7 @@ static int aspeed_adc_set_trim_data(struct iio_dev *indio_dev)
+ 		return -EOPNOTSUPP;
+ 	}
+ 	scu = syscon_node_to_regmap(syscon);
++	of_node_put(syscon);
+ 	if (IS_ERR(scu)) {
+ 		dev_warn(data->dev, "Failed to get syscon regmap\n");
+ 		return -EOPNOTSUPP;
+-- 
+2.25.1
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/chenhuacai/linux-loongson.git tags/loongarch-fixes-5.19-2
-
-for you to fetch changes up to 03dfb4a3abc4cc497850e6968b59005485592369:
-
-  docs/zh_CN/LoongArch: Fix notes rendering by using reST directives (2022-06-17 22:09:05 +0800)
-
-----------------------------------------------------------------
-LoongArch fixes for v5.19-rc3
-
-Add missing ELF_DETAILS in vmlinux.lds.S and fix documents rendering.
-
-----------------------------------------------------------------
-Yanteng Si (2):
-      docs/LoongArch: Fix notes rendering by using reST directives
-      docs/zh_CN/LoongArch: Fix notes rendering by using reST directives
-
-Youling Tang (1):
-      LoongArch: vmlinux.lds.S: Add missing ELF_DETAILS
-
- Documentation/loongarch/introduction.rst           | 15 +++++++++------
- Documentation/loongarch/irq-chip-model.rst         | 22 +++++++++++++---------
- .../translations/zh_CN/loongarch/introduction.rst  | 14 ++++++++------
- .../zh_CN/loongarch/irq-chip-model.rst             | 14 ++++++++------
- arch/loongarch/kernel/vmlinux.lds.S                |  1 +
- 5 files changed, 39 insertions(+), 27 deletions(-)
