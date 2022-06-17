@@ -2,72 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83658C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:41:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 293A7C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:42:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382388AbiFQMlg (ORCPT
+        id S1382394AbiFQMmY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 08:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33100 "EHLO
+        Fri, 17 Jun 2022 08:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245358AbiFQMld (ORCPT
+        with ESMTP id S245358AbiFQMmU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 08:41:33 -0400
-Received: from mail-m964.mail.126.com (mail-m964.mail.126.com [123.126.96.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4805F65D39
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:41:32 -0700 (PDT)
+        Fri, 17 Jun 2022 08:42:20 -0400
+Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4FE206622C
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:42:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=gq1uv
-        r1aBLtCddK9PhILvNreXkKlYFH70qW1RYLIJOI=; b=JQrviY/hXr75pi8Y+qUqG
-        6V7UMGh+pxGhfK/HcUMeeW/7Dn5R5yxnqUdMvWEp/V0s4Sfh1hTjJTFzY9d3w+eD
-        p41heEKzselCbBN6kCy7N9RomOiTmwbx3uj6rKiQEooiDV2wzc91gJXw2AXdxRwR
-        Xq3nQWdoH8LJqeV+G6rd/8=
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=TU2B9
+        l3UgYA6rfXiP8LSC5IMRVHoUDGy3g/V+/PidVk=; b=VHIIQ7hmoYv8Cd80eUAvj
+        4K/6vJW4qa/N7Nd6aHk2gH75i9iKFqFtA3l1IwqmRTsvggeSGIdEV8jaKpDxja0H
+        u3QiqSf3INUpAGru3BzteqItFA1djU7NUWuw6CKL6A55Jbhz6WaaCVpWYrmSe9h/
+        KO0dhs6Z4vByn3HKmzcYkw=
 Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp9 (Coremail) with SMTP id NeRpCgDn9LlPdqxiAcbnEw--.39061S2;
-        Fri, 17 Jun 2022 20:40:48 +0800 (CST)
+        by smtp1 (Coremail) with SMTP id C8mowAAnKiY6bqxiHzkiEw--.31307S2;
+        Fri, 17 Jun 2022 20:06:19 +0800 (CST)
 From:   Liang He <windhl@126.com>
-To:     mpe@ellerman.id.au, benh@kernel.crashing.org,
-        christophe.leroy@csgroup.eu
-Cc:     windhl@126.com, linuxppc-dev@lists.ozlabs.org,
+To:     dinguyen@kernel.org, linux@armlinux.org.uk
+Cc:     windhl@126.com, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] powerpc: maple: Fix refcount leak bug in time.c
-Date:   Fri, 17 Jun 2022 20:40:45 +0800
-Message-Id: <20220617124045.4048757-1-windhl@126.com>
+Subject: [PATCH] arm: mach-socfpga: Fix refcount leak bug in socfpga
+Date:   Fri, 17 Jun 2022 20:06:18 +0800
+Message-Id: <20220617120618.4047441-1-windhl@126.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NeRpCgDn9LlPdqxiAcbnEw--.39061S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtF1kKw45XFWfWFW8GrWUtwb_yoW3uwcEk3
-        Z7Aa1DXr4xGr4vyF4q9w4fGw12ywnrGF4DKr18X3WxJ3y5Xw13G39rZrW2k340v3yUtFWr
-        GayDGF9Fy3WS9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRt73vUUUUUU==
+X-CM-TRANSID: C8mowAAnKiY6bqxiHzkiEw--.31307S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWruFyfGr18WFyxAryfuF4DJwb_yoWDWFc_XF
+        9agay7XryrAa9YgrW7ua1agan7C393Cwn0qr10vr1qkw4YqF47Ar9IkF92qryUWr4akFWf
+        XanrJF1Yv392yjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUUIztUUUUUU==
 X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi3BIjF1pEDvZlvgAAsH
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2hwjF1uwMOTj7gAAsA
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In maple_get_boot_time(), of_find_compatible_node() will return
-a node pointer with refcount incremented. We should use of_node_put()
-in fail path or when it is not used anymore.
+In socfpga_sysmgr_init(), of_find_compatible_node() will return a
+node pointer with refcount incremented. We should use of_node_put()
+when it is not used anymore.
 
 Signed-off-by: Liang He <windhl@126.com>
 ---
- arch/powerpc/platforms/maple/time.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/mach-socfpga/socfpga.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/powerpc/platforms/maple/time.c b/arch/powerpc/platforms/maple/time.c
-index 823e219ef8ee..91606411d2e0 100644
---- a/arch/powerpc/platforms/maple/time.c
-+++ b/arch/powerpc/platforms/maple/time.c
-@@ -153,6 +153,7 @@ time64_t __init maple_get_boot_time(void)
- 		       maple_rtc_addr);
- 	}
-  bail:
-+	of_node_put(rtcs);
- 	if (maple_rtc_addr == 0) {
- 		maple_rtc_addr = RTC_PORT(0); /* legacy address */
- 		printk(KERN_INFO "Maple: No device node for RTC, assuming "
+diff --git a/arch/arm/mach-socfpga/socfpga.c b/arch/arm/mach-socfpga/socfpga.c
+index 9e4cb2ffd580..c561b3b7a9ee 100644
+--- a/arch/arm/mach-socfpga/socfpga.c
++++ b/arch/arm/mach-socfpga/socfpga.c
+@@ -36,12 +36,15 @@ static void __init socfpga_sysmgr_init(void)
+ 	sync_cache_w(&socfpga_cpu1start_addr);
+ 
+ 	sys_manager_base_addr = of_iomap(np, 0);
++	of_node_put(np);
+ 
+ 	np = of_find_compatible_node(NULL, NULL, "altr,rst-mgr");
+ 	rst_manager_base_addr = of_iomap(np, 0);
++	of_node_put(np);
+ 
+ 	np = of_find_compatible_node(NULL, NULL, "altr,sdr-ctl");
+ 	sdr_ctl_base_addr = of_iomap(np, 0);
++	of_node_put(np);
+ }
+ 
+ static void __init socfpga_init_irq(void)
 -- 
 2.25.1
 
