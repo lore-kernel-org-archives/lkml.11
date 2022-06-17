@@ -2,441 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CC6CCA479
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10DEFC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381490AbiFQJHL (ORCPT
+        id S1381499AbiFQJHP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 05:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53154 "EHLO
+        Fri, 17 Jun 2022 05:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381480AbiFQJHE (ORCPT
+        with ESMTP id S1381483AbiFQJHI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 05:07:04 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADEEE4B1DC
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 02:07:01 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id m125-20020a1ca383000000b0039c63fe5f64so2077151wme.0
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 02:07:01 -0700 (PDT)
+        Fri, 17 Jun 2022 05:07:08 -0400
+Received: from esa6.fujitsucc.c3s2.iphmx.com (esa6.fujitsucc.c3s2.iphmx.com [68.232.159.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1FAB53B43;
+        Fri, 17 Jun 2022 02:07:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj1;
+  t=1655456826; x=1686992826;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=6vM/8x/tpC2aCDqRJw0u9w4cSK0auWga9Oj4nGoRDYU=;
+  b=Wdziet6HjTqYLR3879c7KmzZWvdtlWoCXBa6g8YNlVI652/cfN41xY2l
+   R5u2nru0+gHmzIGMXhdCAEwWDEfqm4MI9TyK3mfv6d4+Nh1WC6UXQJKgc
+   wu24zdY52PTlRX9ewCWOIFzw428t1ArPB3vrn3+l6OBaQWzLOYt4eoRDB
+   9D8gOGk55q92FpW92JoTdgmftw21wKfD+7e/bp/OMIt/yutpOcvy9s0vI
+   +sdyjcP9dvYUq0MaqxISr/A7s3dWN0C+wO5ANQYP1RHw//HDBDKozzhe8
+   98C8MC9y/nQzdWT3+yPFRblrEHD7seYWSHt0f8MMyFnSkqJasMTpLmLF4
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="58378880"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650898800"; 
+   d="scan'208";a="58378880"
+Received: from mail-os0jpn01lp2108.outbound.protection.outlook.com (HELO JPN01-OS0-obe.outbound.protection.outlook.com) ([104.47.23.108])
+  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 18:06:56 +0900
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oKGqd7BcakIwTjE4nPkfZNUu7DCApgD+bQgPld3K2e/kWOaeF4Z3AiCCGC3ss6mZdDqpjPURcBGRm2q716mDuPMUlVAAJvQvqn+HeFCjTWB90SSLn60QP8mnbK69JlxNT3Ef3E2N+4RskaSa/puKwOWAys2os5ftYGvvYNtrrlf1QZak9SmIdZeESeTD7dWEKt1b1VeU2nv/TXZKVztSlkS7MLFwtXBNuumhPvwsRXmI+HUTVda/AOesO2+ec03i9gKio4EZFYXHua/SFCKFx/x3ITFCN785mAde89nDk/+vHlzL6K4E6cU++jYUrwckQ+CovAQdP44Lg8M2Jifrkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6vM/8x/tpC2aCDqRJw0u9w4cSK0auWga9Oj4nGoRDYU=;
+ b=mwmbB3YACxxDipSEoEbJiJ/PTzIpbre1yiuyo+G+mxCROxoq/VFB977COXWMboEDDIoRqPiXuJk1oy9AOMydXJqCC+revOproBQn/UQjb4uT3/wFll91ezlRH9WdKcv/3Ldq3U82+3lIau7lEBLJPy6jYlFtTU0XptwjMg72+HdKkpX1m9FoNMfHyuMnalgXleogGNpgVBOWqMyzV7EkISz29OxlqjPtfnsfhETALhogUDv2q+nphvWDK9Utr0ezcI53RwEQ7njauqw6iieYp/TO/a3M+0ikE2SMUWGkXMgFqvLEPvwcEX+mNQs08BuPjIhhL5WOJd3sTztUpib9VQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
+ dkim=pass header.d=fujitsu.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=tn2+73IZnewgJ/OBd8YkGwm83xwM1fZfAijQGohjw8U=;
-        b=EGLvBhcjlUQLXVHhM+BGruFOyZr/eP7Y3UY/tGpHshGHEbI336dSdSrZfhJV/cChyR
-         M898pBLTNUKOTtskF7nS/dxdpdwL7XGn/a1yw1rOWEpAdR+jZH1MLNXIgKdFqRUeGwHp
-         2p0tgwsjV+iU2Dt2ruIODZD4MjICDUDHnJR5TYZA19PK0GK0qzE/Shusw+LYY47jVgsa
-         hMB2opz0hRst2CpZ7grfg7+UzRWgAIYOdiHnX7B67Kc+NYDxN3d4ckVSTsGWTKb4akLR
-         XXk8ysYOemJgamzQRdeBQc8V0TvJLESMVLQn1bLfwmsj9nHrHc17zbA5vtvLzGlZL0Al
-         KyRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=tn2+73IZnewgJ/OBd8YkGwm83xwM1fZfAijQGohjw8U=;
-        b=I8JAzin5AV/NRgJTmhcPXXtB/T4Ny9iPyQsT+sJQOG6Iqtiu/aeYaiqPp73R0Z6P1C
-         pIlzex2ZCz443on78XOwBSM0+Ns+N5ROXfkm0e6vGR/jRpLOrHkuNflW2pxAVw3t+RUU
-         P5QIUQPwk24GZQjaRLJSP166ZaZFysnCo2YYBNhXURPZv/lv7D963PUia/onwW+r6PcC
-         teenxBdoXVtxr98SiP0Tb40nolEWIUYzvABsU+wizWq5C3sxeOWfDlFiw+ZJvJojPWvH
-         OLLIJvb7g5C4II62duaP8s7vkUc8yJQjAh2TR2sFh3QOlGtmS89uaZMcAZmHnDjneZWW
-         +tWg==
-X-Gm-Message-State: AOAM532B80GA7o3Andhk+8ryYgijTRXQ8jit4Ow3vD21/N5XP5zt8cgh
-        IddDPc3hNf1SaXgUb7Pnujg=
-X-Google-Smtp-Source: ABdhPJw+of8qGiCGBckT7kjXq9QKah28K1Wd2LCuooryHwMCOMS+z7XJGW5jaIoB8YIzYwuatk7WPA==
-X-Received: by 2002:a05:600c:1410:b0:39c:6fef:4b4c with SMTP id g16-20020a05600c141000b0039c6fef4b4cmr19305463wmi.124.1655456819994;
-        Fri, 17 Jun 2022 02:06:59 -0700 (PDT)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id k7-20020a7bc407000000b0039c747a1e8fsm9421789wmi.7.2022.06.17.02.06.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 02:06:59 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 11:06:55 +0200
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     heiko@sntech.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: rk3399-roc-pc does not boot
-Message-ID: <YqxEL/pgv3zuH6aS@Red>
+ d=fujitsu.onmicrosoft.com; s=selector2-fujitsu-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6vM/8x/tpC2aCDqRJw0u9w4cSK0auWga9Oj4nGoRDYU=;
+ b=FBzOwrm5k8mhKeZ+jlnog8ylZh6DgeGPaAsoqcET0QXouejsCyDd3C3FUcUpjfMBBNkKM4x3uSp8NixCjMBYFVzQlmsFaIhwgAcyvTbZFUfUmzZWO9TU320FTHWkNHvLlpl7Ux4aiHGTw397wIGtkPCvwGXcrdAlM3sDX4KCilg=
+Received: from TY2PR01MB2042.jpnprd01.prod.outlook.com (2603:1096:404:12::11)
+ by OSAPR01MB3684.jpnprd01.prod.outlook.com (2603:1096:604:5e::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Fri, 17 Jun
+ 2022 09:06:53 +0000
+Received: from TY2PR01MB2042.jpnprd01.prod.outlook.com
+ ([fe80::e13d:16ae:7ddb:a10a]) by TY2PR01MB2042.jpnprd01.prod.outlook.com
+ ([fe80::e13d:16ae:7ddb:a10a%3]) with mapi id 15.20.5332.023; Fri, 17 Jun 2022
+ 09:06:53 +0000
+From:   "tarumizu.kohei@fujitsu.com" <tarumizu.kohei@fujitsu.com>
+To:     'Linus Walleij' <linus.walleij@linaro.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "lenb@kernel.org" <lenb@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "eugenis@google.com" <eugenis@google.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "pcc@google.com" <pcc@google.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "marcos@orca.pet" <marcos@orca.pet>,
+        "marcan@marcan.st" <marcan@marcan.st>,
+        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "conor.dooley@microchip.com" <conor.dooley@microchip.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "ast@kernel.org" <ast@kernel.org>,
+        "peter.chen@kernel.org" <peter.chen@kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+        Paolo Valente <paolo.valente@unimore.it>
+Subject: RE: [PATCH v5 0/6] Add hardware prefetch control driver for A64FX and
+ x86
+Thread-Topic: [PATCH v5 0/6] Add hardware prefetch control driver for A64FX
+ and x86
+Thread-Index: AQHYemckLVPNFhFQbU+IAdEo3cwBO61IrLSAgAqvcWA=
+Date:   Fri, 17 Jun 2022 09:06:53 +0000
+Message-ID: <TY2PR01MB2042C88E285FE67CCBCC602280AF9@TY2PR01MB2042.jpnprd01.prod.outlook.com>
+References: <20220607120530.2447112-1-tarumizu.kohei@fujitsu.com>
+ <CACRpkdbPLFOoPdX4L6ABV8GKpC8cQGP3s2aN2AvRHEK49U9VMg@mail.gmail.com>
+In-Reply-To: <CACRpkdbPLFOoPdX4L6ABV8GKpC8cQGP3s2aN2AvRHEK49U9VMg@mail.gmail.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: =?utf-8?B?TVNJUF9MYWJlbF9hNzI5NWNjMS1kMjc5LTQyYWMtYWI0ZC0zYjBmNGZlY2Uw?=
+ =?utf-8?B?NTBfQWN0aW9uSWQ9Mjc2ODcwNTYtOWFmYS00MjM5LWE1Y2UtZGJlNjI0M2Jj?=
+ =?utf-8?B?OWJkO01TSVBfTGFiZWxfYTcyOTVjYzEtZDI3OS00MmFjLWFiNGQtM2IwZjRm?=
+ =?utf-8?B?ZWNlMDUwX0NvbnRlbnRCaXRzPTA7TVNJUF9MYWJlbF9hNzI5NWNjMS1kMjc5?=
+ =?utf-8?B?LTQyYWMtYWI0ZC0zYjBmNGZlY2UwNTBfRW5hYmxlZD10cnVlO01TSVBfTGFi?=
+ =?utf-8?B?ZWxfYTcyOTVjYzEtZDI3OS00MmFjLWFiNGQtM2IwZjRmZWNlMDUwX01ldGhv?=
+ =?utf-8?B?ZD1TdGFuZGFyZDtNU0lQX0xhYmVsX2E3Mjk1Y2MxLWQyNzktNDJhYy1hYjRk?=
+ =?utf-8?B?LTNiMGY0ZmVjZTA1MF9OYW1lPUZVSklUU1UtUkVTVFJJQ1RFRO+/ou++gA==?=
+ =?utf-8?B?776LO01TSVBfTGFiZWxfYTcyOTVjYzEtZDI3OS00MmFjLWFiNGQtM2IwZjRm?=
+ =?utf-8?B?ZWNlMDUwX1NldERhdGU9MjAyMi0wNi0xN1QwODo1ODo1NVo7TVNJUF9MYWJl?=
+ =?utf-8?B?bF9hNzI5NWNjMS1kMjc5LTQyYWMtYWI0ZC0zYjBmNGZlY2UwNTBfU2l0ZUlk?=
+ =?utf-8?Q?=3Da19f121d-81e1-4858-a9d8-736e267fd4c7;?=
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=fujitsu.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f84c3463-ff40-44a1-2fc8-08da5040b8b1
+x-ms-traffictypediagnostic: OSAPR01MB3684:EE_
+x-microsoft-antispam-prvs: <OSAPR01MB36847D4FF1CCD737B0A74C6A80AF9@OSAPR01MB3684.jpnprd01.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: bQ5Ed61RafxPHRI8s8MX38OjUxVfRCRFUUerKz7YkWwlMQijvNZg6IQY0COHW4wnZ0EeVB9oa/+ztjletqcUFQram90uexj7rhKFYFnZuraVCafRj8iuIAeG85i583xXi2LkZDFUUYj1Z094Z5/RKhAeJ39B4FOYqL/TOAjE05k7I2ghr32nDFCXIWYjXH6MI6AlYPcz1+Hkxg4c1LzzlApQ8v3g/sQmaVgZr4tSh1peG72ZBXfq/M/K2dofGgC57HtPhHygyneMCd8+HtAjEv9e5FJoiJVOEKFPu73JwI3nBcSzXgPShufnZ06+GE7lhjXDyVLdCDFq0G3DX51m5dUXNq+BAGgRH2GAT2gSjophZxo+dsIzF/q0/3Mqu81BzPj5scJ+nMgzo10NeFC4UHiqvpGopNF+CIUzchBkA82hsibsmf+Y0QBQcGvTZcMirjGEWC1lCuYhCTqsgibcgpcCNmJ1lso8oaRq6Fho7oBiGuteaS58XIDBbJTXWnWPfcACvzDb+HXUa45Otr8yIzoKb667L4B33FiLzVWXYrYMqCsXjYH8DOjmy1n8B5Ba5uh6Bg4cbsF0lCoUY7af3AsO3ysigHQKwQ115PqETvY7gFn/353/9mMa/u7F7quQUTj/z/kQ4xgSlNBeLuCZXdig5pdL94PK7hiXn7j1t+B1PtcZDbaEBi6JVSTGVI2sROMZKq/Jh+OqAwhpcnWEBw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB2042.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(66446008)(66476007)(76116006)(66556008)(64756008)(82960400001)(8676002)(7406005)(26005)(52536014)(110136005)(71200400001)(38070700005)(6506007)(66946007)(7416002)(7696005)(55016003)(316002)(2906002)(4326008)(186003)(54906003)(508600001)(85182001)(8936002)(33656002)(9686003)(5660300002)(83380400001)(86362001)(122000001)(38100700002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?eXc1U3Jva1ZkSVRVS3VadnNEMDA2T1RsRnFpVldCQzZ4K1lYZ0hvZzJPVDVD?=
+ =?utf-8?B?YWd4OVFQbGVyTFlxN0pEUVhvRU95by80Q2NRc05HMmVxTjJrT0ZKZVF0Z1VO?=
+ =?utf-8?B?ZVh1UUY3YUVOSmdkTmhCQnlUeElHWUhOdHp4a1Nwa3VlSm8xQVVNbDZHU0Er?=
+ =?utf-8?B?dTJqWXdJS1VTd2hLNDRrcUFDU3l1YUluM2ZPOEFyMVEzRm5FMXRDeVp3b1dQ?=
+ =?utf-8?B?bGc3eXhnODZlU2M0L0JoZ3J4N1E2R3JRR3JvTklQQlBSbkhMN1JKekp0TEdS?=
+ =?utf-8?B?REYrUlZrQXJydU1CZHBOdDY3dUtvOUJpR0RMSzVDNXVSNldoRXNpUVRyTldT?=
+ =?utf-8?B?ZWFvbmpIWWRuckI5NEdqVTNyTmV6aVVxTk1hdC9qL3F2ZmFDdC8xSllEK1Rr?=
+ =?utf-8?B?a0E5QkxRTW9lNXVQNFZSS0RoTFRMZDZHWFpFNnNJdVNRb1cyZlBhOUd6QU1N?=
+ =?utf-8?B?ZG1Mc3NXYlp0UStWakliTXVDMTJQV3JkcVZyU29XNEtpMGRVTVRPRGlOM25w?=
+ =?utf-8?B?TE1KaktkMFdyS09Za3pvZjZLUEZnN21FdVcwTmM4TUlMSUFlaklobkZUcGhW?=
+ =?utf-8?B?bUl2cnBwQkFCekhmNFNTRDBuSEllVjJHalBLU3d4QkFqbVRBQTVPQ0ZKNlpN?=
+ =?utf-8?B?RXFHa2YvVnd1OU1tclFhUExiSmJLL3ZqM2thYnZnMUN6MUpIbW5BWnQ2WGJE?=
+ =?utf-8?B?OEJkYnZHNXE3UFpLMVZpb2VKeE81NHlCajd4R1g5aFZkaUZBWUF4ZW1Kekxn?=
+ =?utf-8?B?ZUkycTk5VHhQSEVQYzBHdVgzR0FYZDRjQ1BXTlMrSnhCUllwVFIrUFJ2SnhR?=
+ =?utf-8?B?aytjNjBnRUhsNmZGYjN0QVhSRytBOS83bjJzSDdWR1RZU0hvbjZEaUdkQ2hi?=
+ =?utf-8?B?UUpwQ29rTUhYcjl2VjJqekxGM3Rpdnl5MmpaZkFXeVpFQ1dlY2IzbkFYdzU4?=
+ =?utf-8?B?YWRSVWxJSUZhM3dienRtRGtTd0JSR0dzdm94dytORFRacVd3N0lvSi9GemZB?=
+ =?utf-8?B?VSsxR01mMmlGUzhSTXVPWW14UW4zZDIvbmJWaFdzOXErb3hYMm1LMXNTUkY4?=
+ =?utf-8?B?NHF1aXdsOVhMVHFqZlBPaDJuRkpQazFGVENkNG4zb2tkRWMwd2Y2ZWFtWVF4?=
+ =?utf-8?B?RG51MWVXTDhaZitzRXB6OU1DY2FpTUxZT3V1WHZVY292d3dXZGE4SWZJODJh?=
+ =?utf-8?B?ZUhDNU9QYlNjaWxETzhDK2lla2lqb1JkT0o4RG8waVFCaFpCaUx1bUx6RXhx?=
+ =?utf-8?B?V0hMODh6T3RpOCtSZDROVEM3VHdkOGRUTE1QeGNZN3NrcEttM3o5bW55SEhG?=
+ =?utf-8?B?ZjJwZlF0M2lyVElEU3lNSWFwZjhoQ2cvajQrYXVEczZ3dmhYcHB1VTVXYUlR?=
+ =?utf-8?B?dHltQ01DdFNyanhhNDF5OTFqb2NObGlSMEVXUE4xcXFPSmVLdm1lZTNyMWlw?=
+ =?utf-8?B?N3JUSDROTjFzNWpuWmxjZ0dHWmdteVJRMlNOYzhkWlhmeWpNSHo5bWw1MElz?=
+ =?utf-8?B?a3M0R3ZkSzVIREhYRzJqSU8xTndBMDhzd295VFd2Mjg2YzBybExJYUdQMFJQ?=
+ =?utf-8?B?dGNjWklOb0xVcVorTDl0NlJsV0llQ2Nnb2o1SzBQUit6eVptZHZEZVNRTTc5?=
+ =?utf-8?B?NHc1aEhMdkdaQ01mWlFyL0ZNWUwrVkphWXZRb1NlWGdTSmdxcktzMTJHQXlx?=
+ =?utf-8?B?ajVJUU9yMjNub3ZOb2lvWDVWcWtINk5uMnpaYXNETXJZZWhIWjg1WVdUamdM?=
+ =?utf-8?B?QTFLa1Y4a2poby9SNlUyZUtSQUhiVXk5eTVFSFFod2ExSHl4U0p3WXJqd29O?=
+ =?utf-8?B?TUFCdVZ4S2ZVa1RIQk4veWVWak1XdXFOYXhhL3JpZmVVa29QQ2FpYlJvaUFa?=
+ =?utf-8?B?SEZrcVM1VEpwUWN3UTJDa2lSUlVTRDRZOExhRjJMMEs5OURUVFZmdHFOZjdV?=
+ =?utf-8?B?RXUzTy9UTmVkaXJ0NGRDTmdHaUNqZ0wySmloRkt0ZkFISVZRaUZ3SXNwOE11?=
+ =?utf-8?B?N1Z4Mm1ZZS9rbFBPQklRZXdZTHpJUVJpWGE5Ni9hNmcwc3F4b28vVW92d0pi?=
+ =?utf-8?B?cHpOVWRNaXNOa2NwbHNXc1k3bFE1VHdoalFackJuNEtqVUQ3WVVDTzVPUVJU?=
+ =?utf-8?B?eEZYanVFaVhKdHpscXJVVDdEdWY4MkZDTE1SVW1LR1VNODFxbUVYVGE3UFo1?=
+ =?utf-8?B?ZXNDSEc3WlAxRWt2UDhDb3ZjQzVQVE4zaWNQb1V2NlNxTlI5clVVOGxYNDJs?=
+ =?utf-8?B?amtjRTJvZHl3eUVrNFZ3S1g3M1Q5Rm5pVXVEUFJuU0JoYUc1ZnhBUldyOHE1?=
+ =?utf-8?B?WWoxcFJBc2VSbTJyTm92QWt6YWhMdTllZm8wWmtnM215SGQ5U1hkNk90UENq?=
+ =?utf-8?Q?7XaOaadTQMYhvPcI=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-OriginatorOrg: fujitsu.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB2042.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f84c3463-ff40-44a1-2fc8-08da5040b8b1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2022 09:06:53.2782
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mGbAgBMd5bbQL+v5Lq1QAHFjj7jL/Lq6n6kZsA/hZ2Ruk2el8bHuAtTvRvFHR8yB0DiUVvhAP7CZlECXAWd71gMlo665Whi6VMiNArHpmMM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB3684
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello
-
-I try to add rk3399-roc-pc to kernelCI but this board fail to ends its boot with any kernel I try.
-It boot normally up to starting init but it stucks shorty after.
-It fail on 5.10, 5.15, 5.17, 5.18 and linux-next.
-When disabling CONFIG_USB, the board boots successfully.
-
-In dmesg I see OF: graph: no port node found in /i2c@ff160000/usb-typec@22
-According to Documentation/devicetree/bindings/usb/fcs,fusb302.txt, the port is mandatory.
-Can it be possible that the problem was that the power port being disabled ?
-
-dmesg of a bad boot:
-[    0.000000] Linux version 5.19.0-rc2-next-20220614-00140-gf1da72cc3751 (compile@Red) (aarch64-unknown-linux-gnu-gcc (Gentoo 11.3.0 p4) 11.3.0, GNU ld (Gentoo 2.37_p1 p2) 2.37) #194 SMP PREEMPT Fri Jun 17 08:42:30 CEST 2022
-[    0.000000] Machine model: Firefly ROC-RK3399-PC Board
-[    0.000000] efi: UEFI not found.
-[    0.000000] NUMA: No NUMA configuration found
-[    0.000000] NUMA: Faking a node at [mem 0x0000000000200000-0x00000000f7ffffff]
-[    0.000000] NUMA: NODE_DATA [mem 0xf77ddb40-0xf77dffff]
-[    0.000000] Zone ranges:
-[    0.000000]   DMA      [mem 0x0000000000200000-0x00000000f7ffffff]
-[    0.000000]   DMA32    empty
-[    0.000000]   Normal   empty
-[    0.000000] Movable zone start for each node
-[    0.000000] Early memory node ranges
-[    0.000000]   node   0: [mem 0x0000000000200000-0x00000000f7ffffff]
-[    0.000000] Initmem setup node 0 [mem 0x0000000000200000-0x00000000f7ffffff]
-[    0.000000] On node 0, zone DMA: 512 pages in unavailable ranges
-[    0.000000] cma: Reserved 32 MiB at 0x00000000ee000000
-[    0.000000] psci: probing for conduit method from DT.
-[    0.000000] psci: PSCIv1.1 detected in firmware.
-[    0.000000] psci: Using standard PSCI v0.2 function IDs
-[    0.000000] psci: MIGRATE_INFO_TYPE not supported.
-[    0.000000] psci: SMC Calling Convention v1.2
-[    0.000000] percpu: Embedded 20 pages/cpu s44584 r8192 d29144 u81920
-[    0.000000] Detected VIPT I-cache on CPU0
-[    0.000000] CPU features: detected: GIC system register CPU interface
-[    0.000000] CPU features: detected: ARM erratum 845719
-[    0.000000] Fallback order for Node 0: 0 
-[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 999432
-[    0.000000] Policy zone: DMA
-[    0.000000] Kernel command line: console=ttyS2,1500000n8 root=/dev/ram0 ip=dhcp ip=dhcp
-[    0.000000] Dentry cache hash table entries: 524288 (order: 10, 4194304 bytes, linear)
-[    0.000000] Inode-cache hash table entries: 262144 (order: 9, 2097152 bytes, linear)
-[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
-[    0.000000] Memory: 3883504K/4061184K available (16064K kernel code, 3398K rwdata, 9040K rodata, 6976K init, 581K bss, 144912K reserved, 32768K cma-reserved)
-[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=6, Nodes=1
-[    0.000000] rcu: Preemptible hierarchical RCU implementation.
-[    0.000000] rcu: 	RCU event tracing is enabled.
-[    0.000000] rcu: 	RCU restricting CPUs from NR_CPUS=256 to nr_cpu_ids=6.
-[    0.000000] 	Trampoline variant of Tasks RCU enabled.
-[    0.000000] 	Tracing variant of Tasks RCU enabled.
-[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
-[    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=6
-[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
-[    0.000000] GICv3: GIC: Using split EOI/Deactivate mode
-[    0.000000] GICv3: 256 SPIs implemented
-[    0.000000] GICv3: 0 Extended SPIs implemented
-[    0.000000] Root IRQ handler: gic_handle_irq
-[    0.000000] GICv3: GICv3 features: 16 PPIs
-[    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x00000000fef00000
-[    0.000000] ITS [mem 0xfee20000-0xfee3ffff]
-[    0.000000] ITS@0x00000000fee20000: allocated 65536 Devices @480000 (flat, esz 8, psz 64K, shr 0)
-[    0.000000] ITS: using cache flushing for cmd queue
-[    0.000000] GICv3: using LPI property table @0x0000000000440000
-[    0.000000] GIC: using cache flushing for LPI property table
-[    0.000000] GICv3: CPU0: using allocated LPI pending table @0x0000000000450000
-[    0.000000] GICv3: GIC: PPI partition interrupt-partition-0[0] { /cpus/cpu@0[0] /cpus/cpu@1[1] /cpus/cpu@2[2] /cpus/cpu@3[3] }
-[    0.000000] GICv3: GIC: PPI partition interrupt-partition-1[1] { /cpus/cpu@100[4] /cpus/cpu@101[5] }
-[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
-[    0.000000] arch_timer: cp15 timer(s) running at 24.00MHz (phys).
-[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
-[    0.000001] sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
-[    0.004263] Console: colour dummy device 80x25
-[    0.004389] Calibrating delay loop (skipped), value calculated using timer frequency.. 48.00 BogoMIPS (lpj=96000)
-[    0.004409] pid_max: default: 32768 minimum: 301
-[    0.004533] LSM: Security Framework initializing
-[    0.004698] Mount-cache hash table entries: 8192 (order: 4, 65536 bytes, linear)
-[    0.004734] Mountpoint-cache hash table entries: 8192 (order: 4, 65536 bytes, linear)
-[    0.007236] cblist_init_generic: Setting adjustable number of callback queues.
-[    0.007256] cblist_init_generic: Setting shift to 3 and lim to 1.
-[    0.007383] cblist_init_generic: Setting shift to 3 and lim to 1.
-[    0.007640] rcu: Hierarchical SRCU implementation.
-[    0.008046] Platform MSI: interrupt-controller@fee20000 domain created
-[    0.008547] PCI/MSI: /interrupt-controller@fee00000/interrupt-controller@fee20000 domain created
-[    0.008870] fsl-mc MSI: interrupt-controller@fee20000 domain created
-[    0.015302] EFI services will not be available.
-[    0.015877] smp: Bringing up secondary CPUs ...
-[    0.016666] Detected VIPT I-cache on CPU1
-[    0.016715] GICv3: CPU1: found redistributor 1 region 0:0x00000000fef20000
-[    0.016737] GICv3: CPU1: using allocated LPI pending table @0x0000000000460000
-[    0.016799] CPU1: Booted secondary processor 0x0000000001 [0x410fd034]
-[    0.017650] Detected VIPT I-cache on CPU2
-[    0.017688] GICv3: CPU2: found redistributor 2 region 0:0x00000000fef40000
-[    0.017706] GICv3: CPU2: using allocated LPI pending table @0x0000000000470000
-[    0.017744] CPU2: Booted secondary processor 0x0000000002 [0x410fd034]
-[    0.018528] Detected VIPT I-cache on CPU3
-[    0.018563] GICv3: CPU3: found redistributor 3 region 0:0x00000000fef60000
-[    0.018581] GICv3: CPU3: using allocated LPI pending table @0x0000000000500000
-[    0.018617] CPU3: Booted secondary processor 0x0000000003 [0x410fd034]
-[    0.019430] CPU features: detected: Spectre-v2
-[    0.019441] CPU features: detected: Spectre-v3a
-[    0.019449] CPU features: detected: Spectre-BHB
-[    0.019460] CPU features: detected: ARM errata 1165522, 1319367, or 1530923
-[    0.019465] Detected PIPT I-cache on CPU4
-[    0.019500] GICv3: CPU4: found redistributor 100 region 0:0x00000000fef80000
-[    0.019518] GICv3: CPU4: using allocated LPI pending table @0x0000000000510000
-[    0.019558] CPU4: Booted secondary processor 0x0000000100 [0x410fd082]
-[    0.020382] Detected PIPT I-cache on CPU5
-[    0.020414] GICv3: CPU5: found redistributor 101 region 0:0x00000000fefa0000
-[    0.020430] GICv3: CPU5: using allocated LPI pending table @0x0000000000520000
-[    0.020462] CPU5: Booted secondary processor 0x0000000101 [0x410fd082]
-[    0.020577] smp: Brought up 1 node, 6 CPUs
-[    0.020589] SMP: Total of 6 processors activated.
-[    0.020596] CPU features: detected: 32-bit EL0 Support
-[    0.020600] CPU features: detected: 32-bit EL1 Support
-[    0.020607] CPU features: detected: CRC32 instructions
-[    0.021930] CPU: All CPU(s) started at EL2
-[    0.022004] alternatives: patching kernel code
-[    0.025032] devtmpfs: initialized
-[    0.035691] KASLR disabled due to lack of seed
-[    0.035877] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
-[    0.035895] futex hash table entries: 2048 (order: 5, 131072 bytes, linear)
-[    0.036700] pinctrl core: initialized pinctrl subsystem
-[    0.037742] DMI not present or invalid.
-[    0.038508] NET: Registered PF_NETLINK/PF_ROUTE protocol family
-[    0.040015] DMA: preallocated 512 KiB GFP_KERNEL pool for atomic allocations
-[    0.040446] DMA: preallocated 512 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
-[    0.040790] DMA: preallocated 512 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
-[    0.040849] audit: initializing netlink subsys (disabled)
-[    0.041054] audit: type=2000 audit(0.040:1): state=initialized audit_enabled=0 res=1
-[    0.042537] thermal_sys: Registered thermal governor 'step_wise'
-[    0.042544] thermal_sys: Registered thermal governor 'power_allocator'
-[    0.042968] cpuidle: using governor menu
-[    0.043150] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
-[    0.043333] ASID allocator initialised with 65536 entries
-[    0.043342] HugeTLB: can optimize 4095 vmemmap pages for hugepages-1048576kB
-[    0.043349] HugeTLB: can optimize 127 vmemmap pages for hugepages-32768kB
-[    0.043354] HugeTLB: can optimize 7 vmemmap pages for hugepages-2048kB
-[    0.043359] HugeTLB: can optimize 0 vmemmap pages for hugepages-64kB
-[    0.045524] Serial: AMBA PL011 UART driver
-[    0.076636] platform ff770000.syscon:phy@f780: Fixing up cyclic dependency with fe330000.mmc
-[    0.084251] platform ff940000.hdmi: Fixing up cyclic dependency with ff8f0000.vop
-[    0.084309] platform ff940000.hdmi: Fixing up cyclic dependency with ff900000.vop
-[    0.092195] rockchip-gpio ff720000.gpio: probed /pinctrl/gpio@ff720000
-[    0.093023] rockchip-gpio ff730000.gpio: probed /pinctrl/gpio@ff730000
-[    0.093575] rockchip-gpio ff780000.gpio: probed /pinctrl/gpio@ff780000
-[    0.094176] rockchip-gpio ff788000.gpio: probed /pinctrl/gpio@ff788000
-[    0.094721] rockchip-gpio ff790000.gpio: probed /pinctrl/gpio@ff790000
-[    0.115188] HugeTLB registered 1.00 GiB page size, pre-allocated 0 pages
-[    0.115199] HugeTLB registered 32.0 MiB page size, pre-allocated 0 pages
-[    0.115206] HugeTLB registered 2.00 MiB page size, pre-allocated 0 pages
-[    0.115212] HugeTLB registered 64.0 KiB page size, pre-allocated 0 pages
-[    0.117251] ACPI: Interpreter disabled.
-[    0.122071] iommu: Default domain type: Translated 
-[    0.122078] iommu: DMA domain TLB invalidation policy: strict mode 
-[    0.122353] SCSI subsystem initialized
-[    0.122741] usbcore: registered new interface driver usbfs
-[    0.122785] usbcore: registered new interface driver hub
-[    0.122819] usbcore: registered new device driver usb
-[    0.124733] pps_core: LinuxPPS API ver. 1 registered
-[    0.124738] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
-[    0.124752] PTP clock support registered
-[    0.124964] EDAC MC: Ver: 3.0.0
-[    0.127627] FPGA manager framework
-[    0.127725] Advanced Linux Sound Architecture Driver Initialized.
-[    0.128434] vgaarb: loaded
-[    0.128760] clocksource: Switched to clocksource arch_sys_counter
-[    0.129141] VFS: Disk quotas dquot_6.6.0
-[    0.129195] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
-[    0.129399] pnp: PnP ACPI: disabled
-[    0.138807] NET: Registered PF_INET protocol family
-[    0.139074] IP idents hash table entries: 65536 (order: 7, 524288 bytes, linear)
-[    0.143430] tcp_listen_portaddr_hash hash table entries: 2048 (order: 3, 32768 bytes, linear)
-[    0.143539] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
-[    0.143564] TCP established hash table entries: 32768 (order: 6, 262144 bytes, linear)
-[    0.143947] TCP bind bhash tables hash table entries: 32768 (order: 7, 786432 bytes, linear)
-[    0.144919] TCP: Hash tables configured (established 32768 bind 32768)
-[    0.145036] UDP hash table entries: 2048 (order: 4, 65536 bytes, linear)
-[    0.145179] UDP-Lite hash table entries: 2048 (order: 4, 65536 bytes, linear)
-[    0.145462] NET: Registered PF_UNIX/PF_LOCAL protocol family
-[    0.145924] RPC: Registered named UNIX socket transport module.
-[    0.145931] RPC: Registered udp transport module.
-[    0.145934] RPC: Registered tcp transport module.
-[    0.145938] RPC: Registered tcp NFSv4.1 backchannel transport module.
-[    0.145947] PCI: CLS 0 bytes, default 64
-[    0.146292] Trying to unpack rootfs image as initramfs...
-[    0.146985] hw perfevents: enabled with armv8_cortex_a53 PMU driver, 7 counters available
-[    0.147416] hw perfevents: enabled with armv8_cortex_a72 PMU driver, 7 counters available
-[    0.148134] kvm [1]: IPA Size Limit: 40 bits
-[    0.150097] kvm [1]: vgic-v2@fff20000
-[    0.150127] kvm [1]: GIC system register CPU interface enabled
-[    0.150356] kvm [1]: vgic interrupt IRQ18
-[    0.150571] kvm [1]: Hyp mode initialized successfully
-[    0.152166] Initialise system trusted keyrings
-[    0.152432] workingset: timestamp_bits=42 max_order=20 bucket_order=0
-[    0.159762] squashfs: version 4.0 (2009/01/31) Phillip Lougher
-[    0.160556] NFS: Registering the id_resolver key type
-[    0.160603] Key type id_resolver registered
-[    0.160607] Key type id_legacy registered
-[    0.160691] nfs4filelayout_init: NFSv4 File Layout Driver Registering...
-[    0.160697] nfs4flexfilelayout_init: NFSv4 Flexfile Layout Driver Registering...
-[    0.160959] 9p: Installing v9fs 9p2000 file system support
-[    0.225217] Key type asymmetric registered
-[    0.22
-[    2.398776] Freeing initrd memory: 30120K
-[    2.442065] tun: Universal TUN/TAP device driver, 1.6
-[    2.443653] thunder_xcv, ver 1.0
-[    2.443695] thunder_bgx, ver 1.0
-[    2.443729] nicpf, ver 1.0
-[    2.446229] hns3: Hisilicon Ethernet Network Driver for Hip08 Family - version
-[    2.446238] hns3: Copyright (c) 2017 Huawei Corporation.
-[    2.446298] hclge is initializing
-[    2.446316] e1000: Intel(R) PRO/1000 Network Driver
-[    2.446320] e1000: Copyright (c) 1999-2006 Intel Corporation.
-[    2.446359] e1000e: Intel(R) PRO/1000 Network Driver
-[    2.446362] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
-[    2.446400] igb: Intel(R) Gigabit Ethernet Network Driver
-[    2.446404] igb: Copyright (c) 2007-2014 Intel Corporation.
-[    2.446443] igbvf: Intel(R) Gigabit Virtual Function Network Driver
-[    2.446447] igbvf: Copyright (c) 2009 - 2012 Intel Corporation.
-[    2.447097] sky2: driver version 1.30
-[    2.449286] VFIO - User Level meta-driver version: 0.3
-[    2.457362] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
-[    2.457373] ehci-pci: EHCI PCI platform driver
-[    2.457409] ehci-platform: EHCI generic platform driver
-[    2.457678] ehci-orion: EHCI orion driver
-[    2.457883] ehci-exynos: EHCI Exynos driver
-[    2.458062] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
-[    2.458087] ohci-pci: OHCI PCI platform driver
-[    2.458133] ohci-platform: OHCI generic platform driver
-[    2.458377] ohci-exynos: OHCI Exynos driver
-[    2.459499] usbcore: registered new interface driver usb-storage
-[    2.464840] i2c_dev: i2c /dev entries driver
-[    2.483646] dw_wdt ff848000.watchdog: No valid TOPs array specified
-[    2.489132] sdhci: Secure Digital Host Controller Interface driver
-[    2.489141] sdhci: Copyright(c) Pierre Ossman
-[    2.490655] Synopsys Designware Multimedia Card Interface Driver
-[    2.492809] sdhci-pltfm: SDHCI platform and OF driver helper
-[    2.496050] mmc1: CQHCI version 5.10
-[    2.498229] ledtrig-cpu: registered to indicate activity on CPUs
-[    2.500422] SMCCC: SOC_ID: ARCH_SOC_ID not implemented, skipping ....
-[    2.501687] usbcore: registered new interface driver usbhid
-[    2.501694] usbhid: USB HID core driver
-[    2.513858] NET: Registered PF_PACKET protocol family
-[    2.514032] 9pnet: Installing 9P2000 support
-[    2.514102] Key type dns_resolver registered
-[    2.514738] registered taskstats version 1
-[    2.514757] Loading compiled-in X.509 certificates
-[    2.520908] mmc1: SDHCI controller on fe330000.mmc [fe330000.mmc] using ADMA
-[    2.567578] rockchip-usb2phy ff770000.syscon:usb2phy@e450: failed to create phy
-[    2.572233] rockchip-usb2phy ff770000.syscon:usb2phy@e460: failed to create phy
-[    2.596788] rk808 0-001b: chip id: 0x0
-[    2.603697] rk808-regulator rk808-regulator: there is no dvs0 gpio
-[    2.603742] rk808-regulator rk808-regulator: there is no dvs1 gpio
-[    2.624666] fan53555-regulator 0-0040: FAN53555 Option[8] Rev[1] Detected!
-[    2.629750] fan53555-regulator 0-0041: FAN53555 Option[8] Rev[1] Detected!
-[    2.636958] cpu cpu0: EM: created perf domain
-[    2.638707] cpu cpu4: EM: created perf domain
-[    2.662475] xhci-hcd xhci-hcd.0.auto: xHCI Host Controller
-[    2.662502] xhci-hcd xhci-hcd.0.auto: new USB bus registered, assigned bus number 1
-[    2.662622] xhci-hcd xhci-hcd.0.auto: hcc params 0x0220fe64 hci version 0x110 quirks 0x0000000002010010
-[    2.662646] xhci-hcd xhci-hcd.0.auto: irq 67, io mem 0xfe800000
-[    2.662788] xhci-hcd xhci-hcd.0.auto: xHCI Host Controller
-[    2.662796] xhci-hcd xhci-hcd.0.auto: new USB bus registered, assigned bus number 2
-[    2.662805] xhci-hcd xhci-hcd.0.auto: Host supports USB 3.0 SuperSpeed
-[    2.663832] hub 1-0:1.0: USB hub found
-[    2.663862] hub 1-0:1.0: 1 port detected
-[    2.664123] usb usb2: We don't know the algorithms for LPM for this host, disabling LPM.
-[    2.664619] hub 2-0:1.0: USB hub found
-[    2.664640] hub 2-0:1.0: 1 port detected
-[    2.674843] xhci-hcd xhci-hcd.1.auto: xHCI Host Controller
-[    2.674869] xhci-hcd xhci-hcd.1.auto: new USB bus registered, assigned bus number 3
-[    2.674997] xhci-hcd xhci-hcd.1.auto: hcc params 0x0220fe64 hci version 0x110 quirks 0x0000000002010010
-[    2.675051] xhci-hcd xhci-hcd.1.auto: irq 68, io mem 0xfe900000
-[    2.675201] xhci-hcd xhci-hcd.1.auto: xHCI Host Controller
-[    2.675211] xhci-hcd xhci-hcd.1.auto: new USB bus registered, assigned bus number 4
-[    2.675221] xhci-hcd xhci-hcd.1.auto: Host supports USB 3.0 SuperSpeed
-[    2.675766] hub 3-0:1.0: USB hub found
-[    2.675791] hub 3-0:1.0: 1 port detected
-[    2.676072] usb usb4: We don't know the algorithms for LPM for this host, disabling LPM.
-[    2.676442] hub 4-0:1.0: USB hub found
-[    2.676462] hub 4-0:1.0: 1 port detected
-[    2.682696] ehci-platform fe380000.usb: EHCI Host Controller
-[    2.682721] ehci-platform fe380000.usb: new USB bus registered, assigned bus number 5
-[    2.682835] ehci-platform fe380000.usb: irq 69, io mem 0xfe380000
-[    2.684546] ohci-platform fe3a0000.usb: Generic Platform OHCI controller
-[    2.684568] ohci-platform fe3a0000.usb: new USB bus registered, assigned bus number 6
-[    2.684689] ohci-platform fe3a0000.usb: irq 71, io mem 0xfe3a0000
-[    2.684773] ehci-platform fe3c0000.usb: EHCI Host Controller
-[    2.684788] ehci-platform fe3c0000.usb: new USB bus registered, assigned bus number 7
-[    2.684863] ehci-platform fe3c0000.usb: irq 70, io mem 0xfe3c0000
-[    2.686659] ohci-platform fe3e0000.usb: Generic Platform OHCI controller
-[    2.686682] ohci-platform fe3e0000.usb: new USB bus registered, assigned bus number 8
-[    2.686813] ohci-platform fe3e0000.usb: irq 72, io mem 0xfe3e0000
-[    2.688941] input: gpio-keys as /devices/platform/gpio-keys/input/input0
-[    2.689400] dwmmc_rockchip fe320000.mmc: IDMAC supports 32-bit address mode.
-[    2.689434] dwmmc_rockchip fe320000.mmc: Using internal DMA controller.
-[    2.689442] dwmmc_rockchip fe320000.mmc: Version ID is 270a
-[    2.689483] dwmmc_rockchip fe320000.mmc: DW MMC controller at irq 74,32 bit host data width,256 deep fifo
-[    2.689827] dwmmc_rockchip fe320000.mmc: Got CD GPIO
-[    2.700909] ehci-platform fe380000.usb: USB 2.0 started, EHCI 1.00
-[    2.701762] hub 5-0:1.0: USB hub found
-[    2.701796] hub 5-0:1.0: 1 port detected
-[    2.703670] mmc_host mmc0: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
-[    2.716867] ehci-platform fe3c0000.usb: USB 2.0 started, EHCI 1.00
-[    2.717615] hub 7-0:1.0: USB hub found
-[    2.717649] hub 7-0:1.0: 1 port detected
-[    2.749885] hub 8-0:1.0: USB hub found
-[    2.749935] hub 8-0:1.0: 1 port detected
-[    2.751419] hub 6-0:1.0: USB hub found
-[    2.751471] hub 6-0:1.0: 1 port detected
-[    2.772382] mmc_host mmc0: Bus speed (slot 0) = 100000000Hz (slot req 100000000Hz, actual 100000000HZ div = 0)
-[    2.973076] usb 7-1: new high-speed USB device number 2 using ehci-platform
-[    3.005758] dwmmc_rockchip fe320000.mmc: Successfully tuned phase to 136
-[    3.005789] mmc0: new ultra high speed SDR50 SDHC card at address 0007
-[    3.006862] mmcblk0: mmc0:0007 SD4GB 3.71 GiB 
-[    3.009227]  mmcblk0: p1 p2
-[    3.132986] hub 7-1:1.0: USB hub found
-[    3.133339] hub 7-1:1.0: 4 ports detected
-[   15.042378] ALSA device list:
-[   15.042404]   No soundcards found.
-[   15.042770] dw-apb-uart ff1a0000.serial: forbid DMA for kernel console
-[   15.047594] Freeing unused kernel memory: 6976K
-[   15.047708] Run /init as init process
-Starting syslogd: OK
-Starting klogd: OK
-Running sysctl: OK
-Populating /dev using udev: [   15.173509] udevd[180]: starting version 3.2.10
-[   33.092753] random: crng init done
-[   33.097189] udevd[181]: starting eudev-3.2.10
-[   33.270362] pwm-backlight backlight: supply power not found, using dummy regulator
-[   33.277620] rk_gmac-dwmac fe300000.ethernet: IRQ eth_wake_irq not found
-[   33.277630] rk_gmac-dwmac fe300000.ethernet: IRQ eth_lpi not found
-[   33.277718] rk_gmac-dwmac fe300000.ethernet: PTP uses main clock
-[   33.281235] rk_gmac-dwmac fe300000.ethernet: clock input or output? (input).
-[   33.281246] rk_gmac-dwmac fe300000.ethernet: TX delay(0x28).
-[   33.281250] rk_gmac-dwmac fe300000.ethernet: RX delay(0x11).
-[   33.281259] rk_gmac-dwmac fe300000.ethernet: integrated PHY? (no).
-[   33.281290] rk_gmac-dwmac fe300000.ethernet: cannot get clock clk_mac_speed
-[   33.281293] rk_gmac-dwmac fe300000.ethernet: clock input from PHY
-[   33.284736] rockchip-vop ff8f0000.vop: Adding to iommu group 2
-[   33.285547] rockchip-vop ff900000.vop: Adding to iommu group 3
-[   33.286307] rk_gmac-dwmac fe300000.ethernet: init for RGMII
-[   33.286461] rk_gmac-dwmac fe300000.ethernet: User ID: 0x10, Synopsys ID: 0x35
-[   33.286467] rk_gmac-dwmac fe300000.ethernet: 	DWMAC1000
-[   33.286470] rk_gmac-dwmac fe300000.ethernet: DMA HW capability register supported
-[   33.286473] rk_gmac-dwmac fe300000.ethernet: RX Checksum Offload Engine supported
-[   33.286475] rk_gmac-dwmac fe300000.ethernet: COE Type 2
-[   33.286478] rk_gmac-dwmac fe300000.ethernet: TX Checksum insertion supported
-[   33.286480] rk_gmac-dwmac fe300000.ethernet: Wake-Up On Lan supported
-[   33.286530] rk_gmac-dwmac fe300000.ethernet: Normal descriptors
-[   33.286533] rk_gmac-dwmac fe300000.ethernet: Ring mode enabled
-[   33.286535] rk_gmac-dwmac fe300000.ethernet: Enable RX Mitigation via HW Watchdog Timer
-[   33.287020] input: adc-keys as /devices/platform/adc-keys/input/input1
-[   33.287462] OF: graph: no port node found in /i2c@ff160000/usb-typec@22
-[   33.301175] mc: Linux media interface: v0.10
-[   33.304453] rockchip-drm display-subsystem: bound ff8f0000.vop (ops vop_component_ops [rockchipdrm])
-[   33.304557] [drm] unsupported AFBC format[3231564e]
-[   33.306210] rockchip-drm display-subsystem: bound ff900000.vop (ops vop_component_ops [rockchipdrm])
-[   33.306357] dwhdmi-rockchip ff940000.hdmi: supply avdd-0v9 not found, using dummy regulator
-[   33.306830] videodev: Linux video capture interface: v2.00
-[   33.308965] dwhdmi-rockchip ff940000.hdmi: supply avdd-1v8 not found, using dummy regulator
-[   33.309136] dwhdmi-rockchip ff940000.hdmi: Detected HDMI TX controller v2.11a with HDCP (DWC HDMI 2.0 TX PHY)
-[   33.312522] OF: graph: no port node found in /i2c@ff3d0000/usb-typec@22
-[   33.315768] rockchip-drm display-subsystem: bound ff940000.hdmi (ops dw_hdmi_rockchip_ops [rockchipdrm])
-[   33.317635] hantro_vpu: module is from the staging directory, the quality is unknown, you have been warned.
-[   33.317788] [drm] Initialized rockchip 1.0.0 20140818 for display-subsystem on minor 0
-[   33.317853] rockchip-drm display-subsystem: [drm] Cannot find any crtc or sizes
-[   33.317905] rockchip-drm display-subsystem: [drm] Cannot find any crtc or sizes
-[   33.320726] hantro-vpu ff650000.video-codec: Adding to iommu group 0
-[   33.321444] hantro-vpu ff650000.video-codec: registered rockchip,rk3399-vpu-enc as /dev/video0
-[   33.321556] hantro-vpu ff650000.video-codec: registered rockchip,rk3399-vpu-dec as /dev/video1
-[   33.326240] rk808-rtc rk808-rtc: registered as rtc0
-[   33.326745] rk808-rtc rk808-rtc: setting system clock to 2013-01-18T08:51:21 UTC (1358499081)
-
-Regards
+SGkgTGludXMsDQoNClRoYW5rcyBmb3IgdGhlIGNvbW1lbnQuDQoNCj4gT0sNCj4gDQo+ID4gQTY0
+RlggYW5kIHNvbWUgSW50ZWwgcHJvY2Vzc29ycyBoYXZlIGltcGxlbWVudGF0aW9uLWRlcGVuZGVu
+dCByZWdpc3Rlcg0KPiA+IGZvciBjb250cm9sbGluZyBDUFUncyBoYXJkd2FyZSBwcmVmZXRjaCBi
+ZWhhdmlvci4gQTY0RlggaGFzDQo+ID4gSU1QX1BGX1NUUkVBTV9ERVRFQ1RfQ1RSTF9FTDBbMV0s
+IGFuZCBJbnRlbCBwcm9jZXNzb3JzIGhhdmUgTVNSDQo+IDB4MWE0DQo+ID4gKE1TUl9NSVNDX0ZF
+QVRVUkVfQ09OVFJPTClbMl0uDQo+IA0KPiBIYXJkd2FyZSBwcmVmZXRjaCAoSSBndWVzcyBvZiBt
+ZW1vcnkgY29udGVudHMpIGlzIGEgbWVtb3J5IGhpZXJhcmNoeSBmZWF0dXJlLg0KPiANCj4gTGlu
+dXggaGFzIGEgbWVtb3J5IGhpZXJhcmNoeSBtYW5hZ2VyLCBjb252ZW5pZW50bHkgbmFtZWQgIm1t
+IiwgZGV2ZWxvcGVkDQo+IGJ5IHNvbWUgb2YgdGhlIHNtYXJ0ZXN0IHBlb3BsZSBJIGtub3cuIFRo
+ZSBtYWluIHByb2JsZW0gYWRkcmVzc2VkIGJ5IHRoYXQgaXMNCj4gcGFnaW5nLCBidXQgcHJlZmV0
+Y2hpbmcgaW50byB0aGUgQ1BVIGZyb20gdGhlIG5leHQgbG93ZXN0IGxldmVsIGluIHRoZSBtZW1v
+cnkNCj4gaGllcmFyY2h5IGlzIGp1c3QgYW5vdGhlciBtZW1vcnkgaGllcmFyY2h5IGhhcmR3YXJl
+IGZlYXR1cmUsIHN1Y2ggYXMgaGFyZA0KPiBkaXNrcywgcHJpbWFyeSBSQU0gZXRjLg0KPiANCj4g
+PiBUaGVzZSByZWdpc3RlcnMgY2Fubm90IGJlIGFjY2Vzc2VkIGZyb20gdXNlcnNwYWNlLg0KPiAN
+Cj4gR29vZC4gVGhlIGtlcm5lbCBtYW5hZ2VkIGhhcmR3YXJlLiBJZiB0aGUgbWVtb3J5IGhpZXJh
+cmNoeSBwZW9wbGUgaGF2ZQ0KPiB1c2Vyc3BhY2Ugbm93IGRvaW5nIHN0dWZmIGJlaGluZCB0aGVp
+ciBiYWNrLCB0aHJvdWdoIHNvbWUgc3BlY2lhbCBpbnRlcmZhY2UsDQo+IHRoYXQgbWFrZXMgdGhl
+aXIgd29ybGQgbW9yZSBjb21wbGljYXRlZC4NCj4gDQo+IFRoaXMgbG9va3MgbGlrZSBpdCBuZWVk
+cyBpbmZvcm1hdGlvbiBmcm9tIHRoZSBnZW5lcmljIG1lbW9yeSBtYW5hZ2VyLCBmcm9tIHRoZQ0K
+PiBzY2hlZHVsZXIsIGFuZCBwb3NzaWJseSBhbGwgdGhlIHdheSBkb3duIGZyb20gdGhlIGJsb2Nr
+IGxheWVyIHRvIGRvIHRoZSByaWdodA0KPiB0aGluZywgc28gaXQgaGFzIG5vIGJ1c2luZXNzIGlu
+IHVzZXJzcGFjZS4NCj4gSGF2ZSB5b3Ugc2VlbiBtbS9kYW1vbiBmb3IgZXhhbXBsZT8gQWNjZXNz
+IHRvIHN0YXRpc3RpY3MgZm9yIG1lbW9yeQ0KPiBhY2Nlc3MgcGF0dGVybnMgc2VlbXMgcmVhbGx5
+IHVzZWZ1bCBmb3IgdHVuaW5nIHRoZSBiZWhhdmlvdXIgb2YgdGhpcyBoYXJkd2FyZS4NCj4gSnVz
+dCBteSDigqwwLjAxLg0KDQpUaGFuayB5b3UgZm9yIHRoZSBpbmZvcm1hdGlvbi4gSSB3aWxsIHNl
+ZSBpZiBtbS9kYW1vbiBzdGF0aXN0aWNzIGNhbg0KYmUgdXNlZCBmb3IgdHVuaW5nLg0KDQo+IElm
+IGl0IGRvZXMgaW50ZXJhY3Qgd2l0aCB1c2Vyc3BhY2UgSSBzdXBwb3NlIGl0IHNob3VsZCBiZSB1
+c2luZyBjb250cm9sIGdyb3VwcywNCj4gbGlrZSBldmVyeXRoaW5nIGVsc2Ugb2YgdGhpcyB0eXBl
+LCBzZWUgZS5nLiBtbS9tZW1jb250cm9sLmMsIG5vdCBjdXN0b20gc3lzZnMNCj4gZmlsZXMuDQoN
+CkhhcmR3YXJlIHByZWZldGNoIHJlZ2lzdGVycyBleGlzdCBmb3IgZWFjaCBjb3JlLCBhbmQgdGhl
+IHNldHRpbmdzIGFyZQ0KaW5kZXBlbmRlbnQgZm9yIGVhY2ggY2FjaGUuIFRoZXJlZm9yZSwgY3Vy
+cmVudGx5LCBJIGNyZWF0ZWQgaXQgdW5kZXINCi9zeXMvZGV2aWNlcy9zeXN0ZW0vY3B1L2NwdSov
+Y2FjaGUvaW5kZXgqLg0KSG93ZXZlciwgd2hlbiB1c2VyIGFjdHVhbGx5IGNvbmZpZ3VyZSBpdCBm
+b3IgYW4gYXBwbGljYXRpb24sIHRoZXkgbWF5DQp3YW50IHRvIHNldCBpdCBvbiBhIHBlci1wcm9j
+ZXNzIGJhc2lzLiBDb25zaWRlcmluZyB0aGF0LCBJIHRoaW5rDQpjb250cm9sIGdyb3VwcyBpcyBz
+dWl0YWJsZSBmb3IgdGhpcyB1c2FnZS4NCg0KRm9yIGV4YW1wbGUsIGlzIHlvdXIgaWRlYSBvZiBp
+bnRlcmZhY2UgbGlrZSB0aGUgZm9sbG93aW5nPw0KDQpgYGANCiAgL3N5cy9mcy9jZ3JvdXAvbWVt
+b3J5L21lbW9yeS5oYXJkd2FyZV9wcmVmZXRjaGVyLmVuYWJsZQ0KYGBgDQoNCkNwdXNldCBjb250
+cm9sbGVyIGhhcyBpbmZvcm1hdGlvbiBhYm91dCB3aGljaCBDUFUgYSBwcm9jZXNzIGJlbG9uZ2lu
+Zw0KdG8gYSBncm91cCBpcyBib3VuZCB0bywgc28gbWF5YmUgY3B1c2V0IGNvbnRyb2xsZXIgaXMg
+bW9yZSBhcHByb3ByaWF0ZS4NCg0KQ29udHJvbCBncm91cHMgaGFzIGhpZXJhcmNoaWNhbCBzdHJ1
+Y3R1cmUsIHNvIGl0IGlzIG5lY2Vzc2FyeSB0bw0KY29uc2lkZXIgd2hldGhlciB0aGV5IGNhbiBt
+YXAgaGFyZHdhcmUgcHJlZmV0Y2ggYmVoYXZpb3Igd2VsbC4NCkN1cnJlbnRyeSBJIGhhdmUgdHdv
+IGNvbmNlcm5zLg0KRmlyc3QsIHVwcGVyIGhpZXJhcmNoeSBjb250YWlucyB0aGUgc2FtZSBDUFUg
+YXMgdGhlIGxvd2VyIGhpZXJhcmNoeS4NCkluIHRoaXMgY2FzZSwgaXQgbWF5IG5vdCBiZSBwb3Nz
+aWJsZSB0byBjb25maWd1cmUgaW5kZXBlbmRlbnQgc2V0dGluZw0KaW4gZWFjaCBoaWVyYXJjaHku
+DQpOZXh0LCBjb250ZXh0IHN3aXRjaCBjb25zaWRlcmF0aW9ucy4gVGhpcyBmdW5jdGlvbiByZXdy
+aXRlcyB0aGUNCnZhbHVlIG9mIHRoZSByZWdpc3RlciB0aGF0IGV4aXN0cyBmb3IgZWFjaCBjb3Jl
+LiBUaGVyZWZvcmUsIHRoZQ0KcmVnaXN0ZXIgdmFsdWUgbXVzdCBiZSBjaGFuZ2VkIGF0IHRoZSB0
+aW1pbmcgb2YgdGhlIGNvbnRleHQgc3dpdGNoDQp3aXRoIGEgcHJvY2VzcyBiZWxvbmdpbmcgdG8g
+YSBkaWZmZXJlbnQgZ3JvdXAuDQoNCj4gSnVzdCBhbiBleGFtcGxlIGZyb20gb25lIG9mIHRoZSBw
+YXRjaGVzOg0KPiANCj4gKyAgICAgICAgICAgICAgICAgICAgICAgLSAiKiBBZGphY2VudCBDYWNo
+ZSBMaW5lIFByZWZldGNoZXIgRGlzYWJsZSAoUi9XKSINCj4gKyAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIGNvcnJlc3BvbmRzIHRvIHRoZQ0KPiAiYWRqYWNlbnRfY2FjaGVfbGluZV9wcmVmZXRj
+aGVyX2VuYWJsZSINCj4gDQo+IEkgbWlnaHQgb25seSBiZSBvbiAiYSBsaXR0bGUga25vd2xlZGdl
+IGlzIGRhbmdlcm91cyIgb24gdGhlIG1lbW9yeSBtYW5hZ2VyDQo+IHRvcGljcywgYnV0IEkga25v
+dyBmb3Igc3VyZSB0aGF0IHRoZXkgYXQgdGltZXMgYWRqdXN0IHRoZSBtZW1iZXJzIG9mIHN0cnVj
+dHMgdG8gZml0DQo+IG5pY2VseSBvbiBjYWNoZSBsaW5lcy4gQW5kIG5vdyB0aGlzPyBJdCBsb29r
+cyByZWFsbHkgdXNlZnVsIGZvciBrZXJuZWwgbWFjaGluZXJ5DQo+IHRoYXQga25vdyB2ZXJ5IHdl
+bGwgd2hhdCBuZWVkcyB0byBnbyBpbnRvIHRoZSBjYWNoZSBsaW5lIG5leHQgYW5kIHdoZW4uDQo+
+IA0KPiBUYWxrIHRvIHRoZSBwZW9wbGUgb24gbGludXgtbW0gYW5kIG1lbW9yeSBtYWludGFpbmVy
+IEFuZHJldyBNb3J0b24gb24gaG93DQo+IHRvIGRvIHRoaXMgcmlnaHQsIGl0J3MgYSByZWFsbHkg
+aW50ZXJlc3RpbmcgZmVhdHVyZSEgQWxzbyBnaXZlbiB0aGF0IHBlb3BsZSBzYXkgdGhhdA0KPiB0
+aGUgbWVtb3J5IGhpZXJhcmNoeSBpcyBhbiBpbXBvcnRhbnQgcGFydCBpbiB0aGUgcGVyZm9ybWFu
+Y2Ugb2YgdGhlIEFwcGxlDQo+IE0xIChNMikgc2lsaWNvbiwgSSBleHBlY3QgdGhhdCBtYWNoaW5l
+IHRvIGhhdmUgdGhpcyB0b28/DQoNCkkgdGhpbmsgdGhpcyBwcm9wb3NhbCB3aWxsIGJlIHVzZWZ1
+bCBmb3IgdXNlcnMsIHNvIEkgd2lsbCBwcm9jZWVkDQp3aXRoIGNvbmNyZXRlIHN0dWRpZXMgYW5k
+IHRhbGsgdG8gdGhlIE1NIHBlb3BsZS4NCg==
