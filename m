@@ -2,62 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81031C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 00:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 00:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379450AbiFQAjL (ORCPT
+        id S1379441AbiFQAmP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 20:39:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52252 "EHLO
+        Thu, 16 Jun 2022 20:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbiFQAjJ (ORCPT
+        with ESMTP id S229734AbiFQAmN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 20:39:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186005FF1B;
-        Thu, 16 Jun 2022 17:39:09 -0700 (PDT)
+        Thu, 16 Jun 2022 20:42:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D145FF23
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 17:42:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA056B82678;
-        Fri, 17 Jun 2022 00:39:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72810C34114;
-        Fri, 17 Jun 2022 00:39:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 009FD619F4
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:42:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51544C34114;
+        Fri, 17 Jun 2022 00:42:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655426346;
-        bh=3zyM3B1L4dkBQNLZ6hSQTnSprTyRszI6LtRPOa9krqI=;
+        s=k20201202; t=1655426531;
+        bh=/+H3CqAWQnTcOrsHH9iU7Vvwsx/IawiHyKBRRlhRNBI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Oy0WYy722Fq152agcEDyh5Hfz6KKLFZc7aMQhj3MDGRsPCXDGojgaGauzS/e2tEx7
-         6NpMGX/cNwOSl4zltlWs3HAxFvRPyjNjxYLnirSmoLhhk9dBfdOfL0rBrjS+zyQud5
-         A0fLASr2NuvxgKUbUP4dhH/ErEkS+z4Pg3sh/8BdvpfvkLhD2u6+oMbtIp4uTDCcQJ
-         EmUhRW9fsu/ZBgggWxGhdpRpODjeix6c5axV1T4I14hoK82JaoRtRgvgaQKrSWMXcr
-         lAj0+m//euLM/u57w2McBosNULHy77EBdZXtGLU+GBRp3LTK0eMJ0bAzTX7TPfJJLC
-         K2CqHVIf0Il/Q==
-Date:   Thu, 16 Jun 2022 17:39:05 -0700
+        b=dRl3RvG382qDULYeHocragd9tn4WoMnHltJ5V6Lcq9pMqhgHPBeE6vsStnq5rRbE3
+         nUFOwhMKU5oxovKG+nqqsqsJLnewKLIq32zXmAQeQNnrKIf7gvUKDLynZi+qUIO/Y2
+         CjSZ0H2xr6Hq3Lg7nzxFYjBWpEfKy3ccvsY1IhDRS/lLX3Bi+8+E8kCmhUrFbbZR/n
+         u+nrFhrAAPMsG2lzxLRwURftQusgvWaYLwMltbs0mZzK/iVO8GbGASifad6X8iDf8B
+         8c0U2hCSQdEzveCqCM1QNLNo49bU1wmLQAPB3LzW/mU/hQQRMhDUojhHTqHNOb2I9N
+         uSvNoYP1qLscQ==
+Date:   Thu, 16 Jun 2022 17:42:10 -0700
 From:   Vinod Koul <vkoul@kernel.org>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-phy@lists.infradead.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: add include/dt-bindings/phy to GENERIC PHY
- FRAMEWORK
-Message-ID: <YqvNKXe78KXg2UBs@matsya>
-References: <20220613122621.18397-1-lukas.bulwahn@gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Ferry Toth <ftoth@exalondelft.nl>
+Subject: Re: [PATCH v1 1/1] phy: ti: tusb1210: Don't check for write errors
+ when powering on
+Message-ID: <YqvN4nMvVNq7fW3V@matsya>
+References: <20220613160848.82746-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220613122621.18397-1-lukas.bulwahn@gmail.com>
+In-Reply-To: <20220613160848.82746-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13-06-22, 14:26, Lukas Bulwahn wrote:
-> Maintainers of the directory Documentation/devicetree/bindings/phy
-> are also the maintainers of the corresponding directory
-> include/dt-bindings/phy.
+On 13-06-22, 19:08, Andy Shevchenko wrote:
+> On some platforms, like Intel Merrifield, the writing values during power on
+> may timeout:
 > 
-> Add the file entry for include/dt-bindings/phy to the appropriate
-> section in MAINTAINERS.
+>    tusb1210 dwc3.0.auto.ulpi: error -110 writing val 0x41 to reg 0x80
+>    phy phy-dwc3.0.auto.ulpi.0: phy poweron failed --> -110
+>    dwc3 dwc3.0.auto: error -ETIMEDOUT: failed to initialize core
+>    dwc3: probe of dwc3.0.auto failed with error -110
+> 
+> which effectively fails the probe of the USB controller.
+> Drop the check as it was before the culprit commit (see Fixes tag).
 
 Applied, thanks
 
