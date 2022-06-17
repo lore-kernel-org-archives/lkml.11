@@ -2,65 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A32B0CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 19:22:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CAB7C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 19:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231948AbiFQTW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 15:22:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
+        id S235809AbiFQTWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 15:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232457AbiFQTWY (ORCPT
+        with ESMTP id S240054AbiFQTWZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 15:22:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1B5496BE
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:22:24 -0700 (PDT)
+        Fri, 17 Jun 2022 15:22:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EEA5047A
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:22:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00127B82B49
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 19:22:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AE935C3411B;
-        Fri, 17 Jun 2022 19:22:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFCAA61FD0
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 19:22:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 29DD4C3411F;
+        Fri, 17 Jun 2022 19:22:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655493741;
-        bh=afgKFOZfhid1Z1GdrGk/y5v1z3bbFmUPlBQrjnLteew=;
+        s=k20201202; t=1655493744;
+        bh=opHcOqY3lNA7uBWgvv4l6To4qA0BGsqWH8iI5De73cA=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=o1ev2tsJqQXROBC8pHmlKcZOIMW4pFHFWGEE+FpqLPUALTTn/7h54VZY0c7pZMuDe
-         NyjUW7ZpKibJGnV0mOBbb3mYt8k0XCm+L60hQJGWG2ByvtuwO7G/FntlkzN/UiRiyH
-         33jHWuqZmVLYZAe3BXe2twM5hWHPF36KPlcy8nJhCIH1QWDuTCYJuMoNxPovCEUxEI
-         ORmlmintKCJhfNwAToWPEYdVEIzrI/JO5QuP8CZ9Tn5gpLXvE25BoKgw3Np9spCOF2
-         SYRuEBTzjRULmDfq7stjDkoD+w2lQSCg4VcVRZ3+cv3rAfr+r83m4SRTyTGetMqfMS
-         pixs3LZfSGuhg==
+        b=C5KEs/xeDPLrImeUN/7T5NWRliKrYcSoYFofHcCumBXzDyeata+yYjqXdYvZfiypX
+         gcuIJ8HGZrutsKWGxwMnDEwnU+k/sKEOQJf75q/52u+4/AdwweVAmBhWqZ/N6oWypk
+         3YDj3V3YiMRX4R1ixCzfn/mSDvwvkLjumwgcmX9TgEFynd55JP3Xjr/J+01lnl9uHF
+         8oubV72tH58oCcSCl0/+QJqPo4xgPnBW4R3LjUuiv5zshdlFLleusAOPoGnk9LtcJO
+         Dgp/eVtDlY1hIwhNwbEDYulBSMzg55qMpBhx3pWkh7SHYu1D36tabHFjZClgHpMcaB
+         ZevjB339D4GEA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9B9EBFD99FF;
-        Fri, 17 Jun 2022 19:22:21 +0000 (UTC)
-Subject: Re: [GIT PULL] RISC-V Fixes for 5.19-rc3
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 10399FD99FF;
+        Fri, 17 Jun 2022 19:22:24 +0000 (UTC)
+Subject: Re: [GIT PULL] arm64 fixes for 5.19-rc3/rc4
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <mhng-67f78725-bcd9-4c12-920d-2377a998b9f0@palmer-mbp2014>
-References: <mhng-67f78725-bcd9-4c12-920d-2377a998b9f0@palmer-mbp2014>
-X-PR-Tracked-List-Id: <linux-riscv.lists.infradead.org>
-X-PR-Tracked-Message-Id: <mhng-67f78725-bcd9-4c12-920d-2377a998b9f0@palmer-mbp2014>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.19-rc3
-X-PR-Tracked-Commit-Id: c836d9d17a7d102ded1ba4dbd4ee0bc42ba26211
+In-Reply-To: <YqzJa4UPCNQg2pAR@arm.com>
+References: <YqzJa4UPCNQg2pAR@arm.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YqzJa4UPCNQg2pAR@arm.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux tags/arm64-fixes
+X-PR-Tracked-Commit-Id: c50f11c6196f45c92ca48b16a5071615d4ae0572
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: f10516322ddab90e2d9b21990d8c8787c2236b26
-Message-Id: <165549374163.16480.17138300142059650834.pr-tracker-bot@kernel.org>
-Date:   Fri, 17 Jun 2022 19:22:21 +0000
-To:     Palmer Dabbelt <palmer@rivosinc.com>
+X-PR-Merge-Commit-Id: ef06e68290b2b1b674950da276d6f7724e0b9874
+Message-Id: <165549374406.16480.12162098435644479824.pr-tracker-bot@kernel.org>
+Date:   Fri, 17 Jun 2022 19:22:24 +0000
+To:     Catalin Marinas <catalin.marinas@arm.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 17 Jun 2022 07:28:41 -0700 (PDT):
+The pull request you sent on Fri, 17 Jun 2022 19:35:23 +0100:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.19-rc3
+> git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux tags/arm64-fixes
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/f10516322ddab90e2d9b21990d8c8787c2236b26
+https://git.kernel.org/torvalds/c/ef06e68290b2b1b674950da276d6f7724e0b9874
 
 Thank you!
 
