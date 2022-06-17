@@ -2,73 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CEF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A09C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382960AbiFQP4C (ORCPT
+        id S1383040AbiFQP47 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 11:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46030 "EHLO
+        Fri, 17 Jun 2022 11:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234143AbiFQPz7 (ORCPT
+        with ESMTP id S234143AbiFQP46 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 11:55:59 -0400
-Received: from jari.cn (unknown [218.92.28.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9D8421273
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:55:56 -0700 (PDT)
-Received: by ajax-webmail-localhost.localdomain (Coremail) ; Fri, 17 Jun
- 2022 23:50:19 +0800 (GMT+08:00)
-X-Originating-IP: [182.148.14.60]
-Date:   Fri, 17 Jun 2022 23:50:19 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "XueBing Chen" <chenxuebing@jari.cn>
-To:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        seanjc@google.com, clg@kaod.org, aik@ozlabs.ru
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject:  [PATCH] KVM: PPC: use __func__ to get funcion's name in an output
- message
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Fri, 17 Jun 2022 11:56:58 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9902F006
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:56:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=1og0G+jMuH4LpomwNdV+Rmme0bj4/1cUhjZZACY/B+U=; b=AbcDdyS+eoHqmJnCQ3xm3r+OXR
+        X+3ZJGQAychhV9rmwM3BecocG/MfYvwywj5HDCnl+o206Q/QgNMA4X2wC5VsvcMzYXrklfpHsCInD
+        JhUsbODDUBUORf46pLdCMDOsjoSa8jqL4+AAF4bJUzIadZTkd5IGWOlnYIO+ywZWshfw8x60BDYQ5
+        x3Yp18tEzVUsMHoOZD0rCSEt0N647eGXxZFB2yXuLFsM/ViNtvrDCRWfwu9n0dTtFyYiwZmMeeGWJ
+        +Xc5/m1HWAmtfDNwxfB9JEaCF3/sSrGAtYxG9CGxQMrAUffyMVcP1vpTsp4mfMHlGjctt/mqNKVjz
+        dL/mPlxQ==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o2EL0-008jGE-4Q; Fri, 17 Jun 2022 15:56:46 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 014CF9816B5; Fri, 17 Jun 2022 17:56:43 +0200 (CEST)
+Date:   Fri, 17 Jun 2022 17:56:43 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Waiman Long <longman@redhat.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Will Deacon <will@kernel.org>, Roman Penyaev <rpenyaev@suse.de>
+Subject: Re: [PATCH] locking/rwlocks: do not starve writers
+Message-ID: <YqykOzBJtNbTB9I6@worktop.programming.kicks-ass.net>
+References: <20220617091039.2257083-1-eric.dumazet@gmail.com>
+ <YqxufxqsnHjVfQOs@worktop.programming.kicks-ass.net>
+ <2dd754f9-3a79-ed17-e423-6b411c3afb69@redhat.com>
+ <CALvZod5ijDz=coEE8G8v_haPaKuUa5jHYzEwKvLVxHGphixsFA@mail.gmail.com>
+ <2730b855-8f99-5a9e-707e-697d3bd9811d@redhat.com>
+ <CANn89iJLWJMmNrLYQ0EU7_0Wri6c3Kn9vYMOiWu1Ds8Af2KOnw@mail.gmail.com>
 MIME-Version: 1.0
-Message-ID: <13b2c857.beb.181725bad35.Coremail.chenxuebing@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwD3AG+8oqxiEL9BAA--.788W
-X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAACmFEYxssuAAGsE
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iJLWJMmNrLYQ0EU7_0Wri6c3Kn9vYMOiWu1Ds8Af2KOnw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ClByZWZlciB1c2luZyAnIiVzLi4uIiwgX19mdW5jX18nIHRvIGdldCBjdXJyZW50IGZ1bmN0aW9u
-J3MgbmFtZSBpbgphbiBvdXRwdXQgbWVzc2FnZS4KClNpZ25lZC1vZmYtYnk6IFh1ZUJpbmcgQ2hl
-biA8Y2hlbnh1ZWJpbmdAamFyaS5jbj4KLS0tCiBhcmNoL3Bvd2VycGMva3ZtL2Jvb2szc182NF9t
-bXVfaHYuYyB8IDcgKysrLS0tLQogMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgNCBk
-ZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMva3ZtL2Jvb2szc182NF9tbXVf
-aHYuYyBiL2FyY2gvcG93ZXJwYy9rdm0vYm9vazNzXzY0X21tdV9odi5jCmluZGV4IDBhZWI1MTcz
-OGNhOS4uZTc5NWVkM2QxMzQ2IDEwMDY0NAotLS0gYS9hcmNoL3Bvd2VycGMva3ZtL2Jvb2szc182
-NF9tbXVfaHYuYworKysgYi9hcmNoL3Bvd2VycGMva3ZtL2Jvb2szc182NF9tbXVfaHYuYwpAQCAt
-MTE5NCw3ICsxMTk0LDcgQEAgc3RhdGljIGludCByZXNpemVfaHB0X2FsbG9jYXRlKHN0cnVjdCBr
-dm1fcmVzaXplX2hwdCAqcmVzaXplKQogCWlmIChyYyA8IDApCiAJCXJldHVybiByYzsKIAotCXJl
-c2l6ZV9ocHRfZGVidWcocmVzaXplLCAicmVzaXplX2hwdF9hbGxvY2F0ZSgpOiBIUFQgQCAweCVs
-eFxuIiwKKwlyZXNpemVfaHB0X2RlYnVnKHJlc2l6ZSwgIiVzKCk6IEhQVCBAIDB4JWx4XG4iLCBf
-X2Z1bmNfXywKIAkJCSByZXNpemUtPmhwdC52aXJ0KTsKIAogCXJldHVybiAwOwpAQCAtMTQzNSw3
-ICsxNDM1LDcgQEAgc3RhdGljIHZvaWQgcmVzaXplX2hwdF9wcmVwYXJlX3dvcmsoc3RydWN0IHdv
-cmtfc3RydWN0ICp3b3JrKQogCQkgKi8KIAkJbXV0ZXhfdW5sb2NrKCZrdm0tPmFyY2gubW11X3Nl
-dHVwX2xvY2spOwogCi0JCXJlc2l6ZV9ocHRfZGVidWcocmVzaXplLCAicmVzaXplX2hwdF9wcmVw
-YXJlX3dvcmsoKTogb3JkZXIgPSAlZFxuIiwKKwkJcmVzaXplX2hwdF9kZWJ1ZyhyZXNpemUsICIl
-cygpOiBvcmRlciA9ICVkXG4iLCBfX2Z1bmNfXywKIAkJCQkgcmVzaXplLT5vcmRlcik7CiAKIAkJ
-ZXJyID0gcmVzaXplX2hwdF9hbGxvY2F0ZShyZXNpemUpOwpAQCAtMTg3OSw4ICsxODc5LDcgQEAg
-c3RhdGljIHNzaXplX3Qga3ZtX2h0YWJfd3JpdGUoc3RydWN0IGZpbGUgKmZpbGUsIGNvbnN0IGNo
-YXIgX191c2VyICpidWYsCiAJCQlyZXQgPSBrdm1wcGNfdmlydG1vZGVfZG9faF9lbnRlcihrdm0s
-IEhfRVhBQ1QsIGksIHYsIHIsCiAJCQkJCQkJIHRtcCk7CiAJCQlpZiAocmV0ICE9IEhfU1VDQ0VT
-UykgewotCQkJCXByX2Vycigia3ZtX2h0YWJfd3JpdGUgcmV0ICVsZCBpPSVsZCB2PSVseCAiCi0J
-CQkJICAgICAgICJyPSVseFxuIiwgcmV0LCBpLCB2LCByKTsKKwkJCQlwcl9lcnIoIiVzIHJldCAl
-bGQgaT0lbGQgdj0lbHggcj0lbHhcbiIsIF9fZnVuY19fLCByZXQsIGksIHYsIHIpOwogCQkJCWdv
-dG8gb3V0OwogCQkJfQogCQkJaWYgKCFtbXVfcmVhZHkgJiYgaXNfdnJtYV9ocHRlKHYpKSB7Ci0t
-IAoyLjM2LjEK
+On Fri, Jun 17, 2022 at 05:24:58PM +0200, Eric Dumazet wrote:
+
+> If only tasklist_lock is problematic and needs the unfair variant,
+> then changing a few read_lock() for tasklist_lock will be less
+> invasive than ~1000 read_lock() elsewhere....
+
+This is unknown. tasklist_lock was the obvious one, there might be more.
+Lockdep should be able to tell you.
