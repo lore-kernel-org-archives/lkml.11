@@ -2,70 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A11C3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 13:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D01C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 13:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382565AbiFQN6q (ORCPT
+        id S1382586AbiFQN6s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 09:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
+        Fri, 17 Jun 2022 09:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382588AbiFQN6d (ORCPT
+        with ESMTP id S1382599AbiFQN6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 09:58:33 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5243701C;
-        Fri, 17 Jun 2022 06:58:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1655474308; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hTpuY0oYSZHQ44/dO0MgMZ94JAo9TbzfsR7GSf1Zc+k=;
-        b=j4SU46lu6M1TGmh/+r3yaG9ulrjq6iU72dNXVyQmnl+g0c/mqGmv4DuOHs4owK3P/7Xrbg
-        RKXqISsQ5QEVuf/Daz3pb4LqPbDq5cQe9Yc7SR1+qzMRtODjEhtbme+CbQNN+IUOkE5lD2
-        y0f3lDGy5eatqAXbssKo/kBnt/kdL4c=
-Date:   Fri, 17 Jun 2022 14:58:18 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v2 0/2] pinctrl: ingenic: Convert to immutable irq chip
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     linus.walleij@linaro.org, maz@kernel.org,
-        andy.shevchenko@gmail.com, linux-mips@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <65KMDR.VTVERMK75O601@crapouillou.net>
-In-Reply-To: <20220617122855.739190-1-aidanmacdonald.0x0@gmail.com>
-References: <20220617122855.739190-1-aidanmacdonald.0x0@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+        Fri, 17 Jun 2022 09:58:36 -0400
+Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B494C3701C;
+        Fri, 17 Jun 2022 06:58:35 -0700 (PDT)
+Received: by mail-io1-f54.google.com with SMTP id i16so4607102ioa.6;
+        Fri, 17 Jun 2022 06:58:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=lbcreYN4VPYy/7BTtnrYijE6k2/8OFKvf2b09R9U1rM=;
+        b=Upr96FBmxLEFb6NvmJk5S9is+NOJM4KdG9v5z3MvWky6p0yxlA+7ta80p+nJAn0fJK
+         QyujpS/heOzQbJZJVTdkOmsuV7Gw0AFTsyQznbpI4nnjiSqLVMuzkQKU6IGlLo2Ry9hD
+         CjZMG2WcaSyInE8M8Tbzya8tlnQUk7vTxymN74CMfsvBhKLU3msirDSHmlGpiZeW2dJU
+         xmYEbdlp3E3iW98Vz2Fc5Ha/6YAfmSKYCW2bBAW2K1uxki4GP4zO9vuxCkQTuqY2BW5h
+         zcQBGGJC+EN57wnUArAHNc/pZkiWLIwEePojX/NA8htpueEGkw7VVqsPgvPdhrmJY1nS
+         6wwQ==
+X-Gm-Message-State: AJIora+0gP1MBo/oLRjQB49A4RrK3r+V99JxT1yfskq0B6hr28vDQL6F
+        nf+HptAodoIC2AQ0cOwImg==
+X-Google-Smtp-Source: AGRyM1sZImmgKGvXl9lNZCtvIonUpMe2eH9SdATYtuai25d6h0SGbbNKAcwmJhGbh3nw4UVIq+uLiA==
+X-Received: by 2002:a05:6638:160f:b0:332:6ac:ed93 with SMTP id x15-20020a056638160f00b0033206aced93mr5660462jas.222.1655474314922;
+        Fri, 17 Jun 2022 06:58:34 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id i186-20020a6bb8c3000000b0065a47e16f44sm2556059iof.22.2022.06.17.06.58.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 06:58:34 -0700 (PDT)
+Received: (nullmailer pid 1508987 invoked by uid 1000);
+        Fri, 17 Jun 2022 13:58:32 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+Cc:     UNGLinuxDriver@microchip.com, Nicolas.Ferre@microchip.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, krzysztof.kozlowski@linaro.org,
+        Claudiu.Beznea@microchip.com, krzysztof.kozlowski+dt@linaro.org,
+        robh+dt@kernel.org
+In-Reply-To: <20220617130729.12072-3-kavyasree.kotagiri@microchip.com>
+References: <20220617130729.12072-1-kavyasree.kotagiri@microchip.com> <20220617130729.12072-3-kavyasree.kotagiri@microchip.com>
+Subject: Re: [PATCH v4 2/3] dt-bindings: mfd: atmel,flexcom: Add new compatible string for lan966x
+Date:   Fri, 17 Jun 2022 07:58:32 -0600
+Message-Id: <1655474312.871814.1508986.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Aidan,
+On Fri, 17 Jun 2022 18:37:28 +0530, Kavyasree Kotagiri wrote:
+> LAN966x SoC flexcoms has two optional I/O lines. Namely, CS0 and CS1
+> in flexcom SPI mode. CTS and RTS in flexcom USART mode. These pins
+> can be mapped to lan966x FLEXCOM_SHARED[0-20] pins and usage depends on
+> functions being configured.
+> 
+> Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+> ---
+> v3 -> v4:
+>  - Added else condition to allOf:if:then.
+> 
+> v2 -> v3:
+>  - Add reg property of lan966x missed in v2.
+> 
+> v1 -> v2:
+>  - Use allOf:if:then for lan966x dt properties
+> 
+>  .../bindings/mfd/atmel,flexcom.yaml           | 80 ++++++++++++++++++-
+>  1 file changed, 79 insertions(+), 1 deletion(-)
+> 
 
-Le ven., juin 17 2022 at 13:28:53 +0100, Aidan MacDonald=20
-<aidanmacdonald.0x0@gmail.com> a =E9crit :
-> Two cleanup patches for pinctrl-ingenic.
->=20
-> v2:
-> * Add print_chip callback to avoid changing /proc/interrupts output
-> * Add patch to use irqd_to_hwirq()
->=20
-> Aidan MacDonald (2):
->   pinctrl: ingenic: Use irqd_to_hwirq()
->   pinctrl: ingenic: Convert to immutable irq chip
->=20
->  drivers/pinctrl/pinctrl-ingenic.c | 64=20
-> +++++++++++++++++++------------
->  1 file changed, 40 insertions(+), 24 deletions(-)
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+yamllint warnings/errors:
 
-For the two patches.
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml: allOf:0:else:properties:reg: {'maxItems': 1, 'items': [{'description': 'Flexcom base regsiters map'}]} should not be valid under {'required': ['maxItems']}
+	hint: "maxItems" is not needed with an "items" list
+	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml: allOf:0:then:properties:reg: 'oneOf' conditional failed, one must be fixed:
+	[{'description': 'Flexcom base regsiters map'}, {'description': 'Flexcom shared registers map'}] is too long
+	[{'description': 'Flexcom base regsiters map'}, {'description': 'Flexcom shared registers map'}] is too short
+	False schema does not allow 2
+	1 was expected
+	hint: "minItems" is only needed if less than the "items" list length
+	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml: ignoring, error in schema: allOf: 0: else: properties: reg
+Documentation/devicetree/bindings/mfd/atmel,flexcom.example.dtb:0:0: /example-0/flexcom@f8034000: failed to match any schema with compatible: ['atmel,sama5d2-flexcom']
+Documentation/devicetree/bindings/mfd/atmel,flexcom.example.dtb:0:0: /example-0/flexcom@f8034000/spi@400: failed to match any schema with compatible: ['atmel,at91rm9200-spi']
+Documentation/devicetree/bindings/mfd/atmel,flexcom.example.dtb:0:0: /example-1/flexcom@e0064000: failed to match any schema with compatible: ['microchip,lan966x-flexcom']
+Documentation/devicetree/bindings/mfd/atmel,flexcom.example.dtb:0:0: /example-1/flexcom@e0064000/spi@400: failed to match any schema with compatible: ['atmel,at91rm9200-spi']
 
-Cheers,
--Paul
+doc reference errors (make refcheckdocs):
 
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
