@@ -2,207 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD37C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 16:51:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 141B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 16:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383063AbiFQQvS (ORCPT
+        id S1383071AbiFQQvh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 12:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56118 "EHLO
+        Fri, 17 Jun 2022 12:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382897AbiFQQvF (ORCPT
+        with ESMTP id S1382945AbiFQQvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 12:51:05 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB32658E79;
-        Fri, 17 Jun 2022 09:50:02 -0700 (PDT)
+        Fri, 17 Jun 2022 12:51:16 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411CA5AA69;
+        Fri, 17 Jun 2022 09:50:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655484602; x=1687020602;
+  t=1655484611; x=1687020611;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=zQS/FHBe/xvbUhzuffrSKUw2wu4SEZ9837E6Yr3LE3Y=;
-  b=colkhA1mwpG7qYdoioWSxkKuATNj286C0ZGgCRMxZ9NuBzg1bMoHhdw6
-   8UPWqkS9Z5Ww6pF8fWcYN02cQqBjyUFBq6A8ibS3o5gQa/ADgJCi1Joma
-   W6WfcsjiOtpX2EwiAMFXWx+H+wn2kxmOYTsb0pJRLBTBLlL1hsMXpTl5F
-   4yVeehgIVizk24j3v4FbOVgH7y6bb2uhsYOVNH5t0DUhzLD0/LCfohPXU
-   3cfEKvntcl7fnCWkT5Yv7osugtdqkpe1hA7oYjrre29rvm3jq3rK/LMbh
-   g7b7fl0cjzjnt5Kg9Ede8zkhDJP/UXrKG+y3M+Koz0jRHEdxJKlLSKGhN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="365830199"
+  bh=eVOsPXGOnxBBdqmEHxWZRZJJ9DlSeZf0/Z49Pzz2lag=;
+  b=MIbr6q/flU8pDbuUKwWsWz3C2zqp5hZwzMnPnnHdbV7MUsGjsrAdsh1i
+   qsOhZQv+2caXLN7VCqYFknQkg4NHDNUaQTGR6PTxCs4v00msSKebyvBNi
+   ZTjy97ns4VF/us+m5rlrRQOaP7YbFMKIcXokVwjtvRukHJAhA+U7fclSi
+   kXon7CezrDHF/+YhK7h4uZhMNm5OIUsKsoxQo1hrwpDIplZz+WGEFn+IZ
+   MeROj94Dv4nuSt7uxRrIKR0KWSPhAuFMd6eWgubhyy7A1htZlHeJJBJ90
+   rQ/gpULMgJaXA03THCDRUjS9/z31g4lP7DmhzJVIkDNq0kLisrkRzYEQI
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="259941427"
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="365830199"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 04:46:57 -0700
+   d="scan'208";a="259941427"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 07:40:42 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="642003930"
-Received: from spr.sh.intel.com ([10.239.53.118])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 04:46:53 -0700
-From:   Chao Gao <chao.gao@intel.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Chao Gao <chao.gao@intel.com>, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH] KVM: x86/vmx: Suppress posted interrupt notification when CPU is in host
-Date:   Fri, 17 Jun 2022 19:46:41 +0800
-Message-Id: <20220617114641.146243-1-chao.gao@intel.com>
-X-Mailer: git-send-email 2.25.1
+   d="scan'208";a="578081656"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga002.jf.intel.com with ESMTP; 17 Jun 2022 07:40:35 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25HEeXl2024161;
+        Fri, 17 Jun 2022 15:40:33 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matt Turner <mattst88@gmail.com>,
+        Brian Cain <bcain@quicinc.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/7] bitops: let optimize out non-atomic bitops on compile-time constants
+Date:   Fri, 17 Jun 2022 16:40:24 +0200
+Message-Id: <20220617144031.2549432-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PIN (Posted interrupt notification) is useless to host as KVM always syncs
-pending guest interrupts in PID to guest's vAPIC before each VM entry. In
-fact, Sending PINs to a CPU running in host will lead to additional
-overhead due to interrupt handling.
+While I was working on converting some structure fields from a fixed
+type to a bitmap, I started observing code size increase not only in
+places where the code works with the converted structure fields, but
+also where the converted vars were on the stack. That said, the
+following code:
 
-Currently, software path, vmx_deliver_posted_interrupt(), is optimized to
-issue PINs only if target vCPU is in IN_GUEST_MODE. But hardware paths
-(VT-d and Intel IPI virtualization) aren't optimized.
+	DECLARE_BITMAP(foo, BITS_PER_LONG) = { }; // -> unsigned long foo[1];
+	unsigned long bar = BIT(BAR_BIT);
+	unsigned long baz = 0;
 
-Set PID.SN right after VM exits and clear it before VM entry to minimize
-the chance of hardware issuing PINs to a CPU when it's in host.
+	__set_bit(FOO_BIT, foo);
+	baz |= BIT(BAZ_BIT);
 
-Also honour PID.SN bit in vmx_deliver_posted_interrupt().
+	BUILD_BUG_ON(!__builtin_constant_p(test_bit(FOO_BIT, foo));
+	BUILD_BUG_ON(!__builtin_constant_p(bar & BAR_BIT));
+	BUILD_BUG_ON(!__builtin_constant_p(baz & BAZ_BIT));
 
-When IPI virtualization is enabled, this patch increases "perf bench" [*]
-by 4% from 8.12 us/ops to 7.80 us/ops.
+triggers the first assertion on x86_64, which means that the
+compiler is unable to evaluate it to a compile-time initializer
+when the architecture-specific bitop is used even if it's obvious.
+I found that this is due to that many architecture-specific
+non-atomic bitop implementations use inline asm or other hacks which
+are faster or more robust when working with "real" variables (i.e.
+fields from the structures etc.), but the compilers have no clue how
+to optimize them out when called on compile-time constants.
 
-[*] test cmd: perf bench sched pipe -T. Note that we change the source
-code to pin two threads to two different vCPUs so that it can reproduce
-stable results.
+So, in order to let the compiler optimize out such cases, expand the
+test_bit() and __*_bit() definitions with a compile-time condition
+check, so that they will pick the generic C non-atomic bitop
+implementations when all of the arguments passed are compile-time
+constants, which means that the result will be a compile-time
+constant as well and the compiler will produce more efficient and
+simple code in 100% cases (no changes when there's at least one
+non-compile-time-constant argument).
+The condition itself:
 
-Signed-off-by: Chao Gao <chao.gao@intel.com>
----
- arch/x86/kvm/vmx/posted_intr.c | 28 ++--------------------------
- arch/x86/kvm/vmx/vmx.c         | 24 +++++++++++++++++++++++-
- 2 files changed, 25 insertions(+), 27 deletions(-)
+if (
+__builtin_constant_p(nr) &&	/* <- bit position is constant */
+__builtin_constant_p(!!addr) &&	/* <- compiler knows bitmap addr is
+				      always either NULL or not */
+addr &&				/* <- bitmap addr is not NULL */
+__builtin_constant_p(*addr)	/* <- compiler knows the value of
+				      the target bitmap */
+)
+	/* then pick the generic C variant
+else
+	/* old code path, arch-specific
 
-diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
-index 237a1f40f939..a0458f72df99 100644
---- a/arch/x86/kvm/vmx/posted_intr.c
-+++ b/arch/x86/kvm/vmx/posted_intr.c
-@@ -70,12 +70,6 @@ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu)
- 	 * needs to be changed.
- 	 */
- 	if (pi_desc->nv != POSTED_INTR_WAKEUP_VECTOR && vcpu->cpu == cpu) {
--		/*
--		 * Clear SN if it was set due to being preempted.  Again, do
--		 * this even if there is no assigned device for simplicity.
--		 */
--		if (pi_test_and_clear_sn(pi_desc))
--			goto after_clear_sn;
- 		return;
- 	}
- 
-@@ -99,12 +93,8 @@ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu)
- 	do {
- 		old.control = new.control = READ_ONCE(pi_desc->control);
- 
--		/*
--		 * Clear SN (as above) and refresh the destination APIC ID to
--		 * handle task migration (@cpu != vcpu->cpu).
--		 */
- 		new.ndst = dest;
--		new.sn = 0;
-+		new.sn = 1;
- 
- 		/*
- 		 * Restore the notification vector; in the blocking case, the
-@@ -114,19 +104,6 @@ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu)
- 	} while (pi_try_set_control(pi_desc, old.control, new.control));
- 
- 	local_irq_restore(flags);
--
--after_clear_sn:
--
--	/*
--	 * Clear SN before reading the bitmap.  The VT-d firmware
--	 * writes the bitmap and reads SN atomically (5.2.3 in the
--	 * spec), so it doesn't really have a memory barrier that
--	 * pairs with this, but we cannot do that and we need one.
--	 */
--	smp_mb__after_atomic();
--
--	if (!pi_is_pir_empty(pi_desc))
--		pi_set_on(pi_desc);
- }
- 
- static bool vmx_can_use_vtd_pi(struct kvm *kvm)
-@@ -154,13 +131,12 @@ static void pi_enable_wakeup_handler(struct kvm_vcpu *vcpu)
- 		      &per_cpu(wakeup_vcpus_on_cpu, vcpu->cpu));
- 	raw_spin_unlock(&per_cpu(wakeup_vcpus_on_cpu_lock, vcpu->cpu));
- 
--	WARN(pi_desc->sn, "PI descriptor SN field set before blocking");
--
- 	do {
- 		old.control = new.control = READ_ONCE(pi_desc->control);
- 
- 		/* set 'NV' to 'wakeup vector' */
- 		new.nv = POSTED_INTR_WAKEUP_VECTOR;
-+		new.sn = 0;
- 	} while (pi_try_set_control(pi_desc, old.control, new.control));
- 
- 	/*
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index a3c5504601a8..fa915b1680eb 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -4036,6 +4036,9 @@ static int vmx_deliver_posted_interrupt(struct kvm_vcpu *vcpu, int vector)
- 	if (pi_test_and_set_pir(vector, &vmx->pi_desc))
- 		return 0;
- 
-+	if (pi_test_sn(&vmx->pi_desc))
-+		return 0;
-+
- 	/* If a previous notification has sent the IPI, nothing to do.  */
- 	if (pi_test_and_set_on(&vmx->pi_desc))
- 		return 0;
-@@ -6520,8 +6523,17 @@ static int vmx_sync_pir_to_irr(struct kvm_vcpu *vcpu)
- 	if (KVM_BUG_ON(!enable_apicv, vcpu->kvm))
- 		return -EIO;
- 
--	if (pi_test_on(&vmx->pi_desc)) {
-+	if (pi_test_on(&vmx->pi_desc) || pi_test_sn(&vmx->pi_desc)) {
- 		pi_clear_on(&vmx->pi_desc);
-+
-+		/*
-+		 * IN_GUEST_MODE means we are about to enter vCPU. Allow
-+		 * PIN (posted interrupt notification) to deliver is key
-+		 * to interrupt posting. Clear PID.SN.
-+		 */
-+		if (vcpu->mode == IN_GUEST_MODE)
-+			pi_clear_sn(&vmx->pi_desc);
-+
- 		/*
- 		 * IOMMU can write to PID.ON, so the barrier matters even on UP.
- 		 * But on x86 this is just a compiler barrier anyway.
-@@ -6976,6 +6988,16 @@ static fastpath_t vmx_vcpu_run(struct kvm_vcpu *vcpu)
- 	/* The actual VMENTER/EXIT is in the .noinstr.text section. */
- 	vmx_vcpu_enter_exit(vcpu, vmx);
- 
-+	/*
-+	 * Suppress notification right after VM exits to minimize the
-+	 * window where VT-d or remote CPU may send a useless notification
-+	 * when posting interrupts to a VM. Note that the notification is
-+	 * useless because KVM syncs pending interrupts in PID.IRR to vAPIC
-+	 * IRR before VM entry.
-+	 */
-+	if (kvm_vcpu_apicv_active(vcpu))
-+		pi_set_sn(&vmx->pi_desc);
-+
- 	/*
- 	 * We do not use IBRS in the kernel. If this vCPU has used the
- 	 * SPEC_CTRL MSR it may have left it on; save the value and
+I also tried __is_constexpr() as suggested by Andy, but it was
+always returning 0 ('not a constant') for the 2,3 and 4th
+conditions.
+
+The savings are architecture, compiler and compiler flags dependent,
+for example, on x86_64 -O2:
+
+GCC 12: add/remove: 78/29 grow/shrink: 332/525 up/down: 31325/-61560 (-30235)
+LLVM 13: add/remove: 79/76 grow/shrink: 184/537 up/down: 55076/-141892 (-86816)
+LLVM 14: add/remove: 10/3 grow/shrink: 93/138 up/down: 3705/-6992 (-3287)
+
+and ARM64 (courtesy of Mark[0]):
+
+GCC 11: add/remove: 92/29 grow/shrink: 933/2766 up/down: 39340/-82580 (-43240)
+LLVM 14: add/remove: 21/11 grow/shrink: 620/651 up/down: 12060/-15824 (-3764)
+
+And the following:
+
+	DECLARE_BITMAP(flags, __IP_TUNNEL_FLAG_NUM) = { };
+	__be16 flags;
+
+	__set_bit(IP_TUNNEL_CSUM_BIT, flags);
+
+	tun_flags = cpu_to_be16(*flags & U16_MAX);
+
+	if (test_bit(IP_TUNNEL_VTI_BIT, flags))
+		tun_flags |= VTI_ISVTI;
+
+	BUILD_BUG_ON(!__builtin_constant_p(tun_flags));
+
+doesn't blow up anymore (which is being checked now at build time),
+so that we can now e.g. use fixed bitmaps in compile-time assertions
+etc.
+
+The series has been in intel-next for a while with no reported issues.
+
+From v2[1]:
+* collect several Reviewed-bys (Andy, Yury);
+* add a comment to generic_test_bit() that it is atomic-safe and
+  must always stay like that (the first version of this series
+  errorneously tried to change this) (Andy, Marco);
+* unify the way how architectures define platform-specific bitops,
+  both supporting instrumentation and not: now they define only
+  'arch_' versions and asm-generic includes take care of the rest;
+* micro-optimize the diffstat of 0004/0007 (__check_bitop_pr())
+  (Andy);
+* add compile-time tests to lib/test_bitmap to make sure everything
+  works as expected on any setup (Yury).
+
+From v1[2]:
+* change 'gen_' prefixes to '_generic' to disambiguate from
+  'generated' etc. (Mark);
+* define a separate 'const_' set to use in the optimization to keep
+  the generic test_bit() atomic-safe (Marco);
+* unify arch_{test,__*}_bit() as well and include them in the type
+  check;
+* add more relevant and up-to-date bloat-o-meter results, including
+  ARM64 (me, Mark);
+* pick a couple '*-by' tags (Mark, Yury).
+
+Also available on my open GH[3].
+
+[0] https://lore.kernel.org/all/Yp4GQFQYD32Rs9Cw@FVFF77S0Q05N
+[1] https://lore.kernel.org/linux-arch/20220610113427.908751-1-alexandr.lobakin@intel.com
+[2] https://lore.kernel.org/all/20220606114908.962562-1-alexandr.lobakin@intel.com
+[3] https://github.com/alobakin/linux/commits/bitops
+
+Alexander Lobakin (7):
+  ia64, processor: fix -Wincompatible-pointer-types in ia64_get_irr()
+  bitops: always define asm-generic non-atomic bitops
+  bitops: unify non-atomic bitops prototypes across architectures
+  bitops: define const_*() versions of the non-atomics
+  bitops: wrap non-atomic bitops with a transparent macro
+  bitops: let optimize out non-atomic bitops on compile-time constants
+  lib: test_bitmap: add compile-time optimization/evaluations assertions
+
+ arch/alpha/include/asm/bitops.h               |  32 ++--
+ arch/hexagon/include/asm/bitops.h             |  24 ++-
+ arch/ia64/include/asm/bitops.h                |  42 ++---
+ arch/ia64/include/asm/processor.h             |   2 +-
+ arch/m68k/include/asm/bitops.h                |  49 ++++--
+ arch/sh/include/asm/bitops-op32.h             |  34 ++--
+ arch/sparc/include/asm/bitops_32.h            |  18 +-
+ arch/sparc/lib/atomic32.c                     |  12 +-
+ arch/x86/include/asm/bitops.h                 |  22 +--
+ .../asm-generic/bitops/generic-non-atomic.h   | 161 ++++++++++++++++++
+ .../bitops/instrumented-non-atomic.h          |  35 ++--
+ include/asm-generic/bitops/non-atomic.h       | 121 +------------
+ .../bitops/non-instrumented-non-atomic.h      |  16 ++
+ include/linux/bitops.h                        |  50 ++++++
+ lib/test_bitmap.c                             |  45 +++++
+ tools/include/asm-generic/bitops/non-atomic.h |  34 ++--
+ tools/include/linux/bitops.h                  |  16 ++
+ 17 files changed, 476 insertions(+), 237 deletions(-)
+ create mode 100644 include/asm-generic/bitops/generic-non-atomic.h
+ create mode 100644 include/asm-generic/bitops/non-instrumented-non-atomic.h
+
 -- 
-2.25.1
+2.36.1
 
