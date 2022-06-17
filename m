@@ -2,33 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D98C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 05:15:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0567C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 05:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232820AbiFQFPK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 01:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46956 "EHLO
+        id S1380063AbiFQFPQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 01:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232386AbiFQFPF (ORCPT
+        with ESMTP id S1379854AbiFQFPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 01:15:05 -0400
-X-Greylist: delayed 360 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Jun 2022 22:15:03 PDT
-Received: from smtp03.aussiebb.com.au (2403-5800-3-25--1003.ip6.aussiebb.net [IPv6:2403:5800:3:25::1003])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4A563BE6;
+        Fri, 17 Jun 2022 01:15:06 -0400
+X-Greylist: delayed 357 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Jun 2022 22:15:04 PDT
+Received: from smtp03.aussiebb.com.au (smtp03.aussiebb.com.au [121.200.0.94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C9A63BEE;
         Thu, 16 Jun 2022 22:15:03 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by smtp03.aussiebb.com.au (Postfix) with ESMTP id A81321A0089;
-        Fri, 17 Jun 2022 15:09:00 +1000 (AEST)
+        by smtp03.aussiebb.com.au (Postfix) with ESMTP id 945521A00A3;
+        Fri, 17 Jun 2022 15:09:10 +1000 (AEST)
 X-Virus-Scanned: Debian amavisd-new at smtp03.aussiebb.com.au
 Received: from smtp03.aussiebb.com.au ([127.0.0.1])
         by localhost (smtp03.aussiebb.com.au [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Kkiu0vSoVOHC; Fri, 17 Jun 2022 15:09:00 +1000 (AEST)
+        with ESMTP id kGe32BYKn8Wr; Fri, 17 Jun 2022 15:09:10 +1000 (AEST)
 Received: by smtp03.aussiebb.com.au (Postfix, from userid 119)
-        id 94D6B1A0085; Fri, 17 Jun 2022 15:09:00 +1000 (AEST)
+        id 86B8C1A00A1; Fri, 17 Jun 2022 15:09:10 +1000 (AEST)
 Received: from donald.themaw.net (180-150-90-198.b4965a.per.nbn.aussiebb.net [180.150.90.198])
-        by smtp03.aussiebb.com.au (Postfix) with ESMTP id 7F66C1A0072;
-        Fri, 17 Jun 2022 15:08:58 +1000 (AEST)
-Subject: [PATCH 0/2] vfs: fix a couple of mount table handling problems
+        by smtp03.aussiebb.com.au (Postfix) with ESMTP id D31E01A0074;
+        Fri, 17 Jun 2022 15:09:09 +1000 (AEST)
+Subject: [PATCH 2/2] vfs: escape hash as well
 From:   Ian Kent <raven@themaw.net>
 To:     Al Viro <viro@ZenIV.linux.org.uk>
 Cc:     Siddhesh Poyarekar <siddhesh@gotplt.org>,
@@ -37,8 +38,10 @@ Cc:     Siddhesh Poyarekar <siddhesh@gotplt.org>,
         Carlos Maiolino <cmaiolino@redhat.com>,
         linux-fsdevel <linux-fsdevel@vger.kernel.org>,
         Kernel Mailing List <linux-kernel@vger.kernel.org>
-Date:   Fri, 17 Jun 2022 13:08:53 +0800
-Message-ID: <165544249242.247784.13096425754908440867.stgit@donald.themaw.net>
+Date:   Fri, 17 Jun 2022 13:09:09 +0800
+Message-ID: <165544254964.247784.15840426718395834690.stgit@donald.themaw.net>
+In-Reply-To: <165544249242.247784.13096425754908440867.stgit@donald.themaw.net>
+References: <165544249242.247784.13096425754908440867.stgit@donald.themaw.net>
 User-Agent: StGit/1.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -47,41 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-First, whenever a mount has an empty "source" (aka mnt_fsname), the
-glibc function getmntent incorrectly parses its input, resulting in
-reporting incorrect data to the caller.
+From: Siddhesh Poyarekar <siddhesh@gotplt.org>
 
-The problem is that the get_mnt_entry() function in glibc's
-misc/mntent_r.c assumes that leading whitespace on a line can always
-be discarded because it will always be followed by a # for the case
-of a comment or a non-whitespace character that's part of the value
-of the first field. However, this assumption is violated when the
-value of the first field is an empty string.
+When a filesystem is mounted with a name that starts with a #:
 
-This is fixed in the mount API code by simply checking for a pointer
-that contains a NULL and treating it as a NULL pointer.
+ # mount '#name' /mnt/bad -t tmpfs
 
-Second, when a filesystem is mounted with a name that starts with
-a # the glibc finction getmentent() will interpret the leading #
-as a comment so that the mount line will not appear in the output.
+this will cause the entry to look like this (leading space added so
+that git does not strip it out):
 
-This is fixed by adding a # to the to be translated string in
-fs/proc_namespace.c:mangle().
+ #name /mnt/bad tmpfs rw,seclabel,relatime,inode64 0 0
 
+This breaks getmntent and any code that aims to parse fstab as well as
+/proc/mounts with the same logic since they need to strip leading spaces
+or skip over comment lines, due to which they report incorrect output or
+skip over the line respectively.
+
+Solve this by translating the hash character into its octal encoding
+equivalent so that applications can decode the name correctly.
+
+Signed-off-by: Siddhesh Poyarekar <siddhesh@gotplt.org>
 Signed-off-by: Ian Kent <raven@themaw.net>
 ---
+ fs/proc_namespace.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ian Kent (1):
-      vfs: parse: deal with zero length string value
+diff --git a/fs/proc_namespace.c b/fs/proc_namespace.c
+index 49650e54d2f8..846f9455ae22 100644
+--- a/fs/proc_namespace.c
++++ b/fs/proc_namespace.c
+@@ -86,7 +86,7 @@ static void show_mnt_opts(struct seq_file *m, struct vfsmount *mnt)
+ 
+ static inline void mangle(struct seq_file *m, const char *s)
+ {
+-	seq_escape(m, s, " \t\n\\");
++	seq_escape(m, s, " \t\n\\#");
+ }
+ 
+ static void show_type(struct seq_file *m, struct super_block *sb)
 
-Siddhesh Poyarekar (1):
-      vfs: escape hash as well
-
-
- fs/fs_context.c     | 10 +++++++---
- fs/proc_namespace.c |  2 +-
- 2 files changed, 8 insertions(+), 4 deletions(-)
-
---
-Ian Kent
 
