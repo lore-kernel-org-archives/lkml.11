@@ -2,64 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6BB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22338C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:05:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382604AbiFQOEh (ORCPT
+        id S1382616AbiFQOFT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 10:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44418 "EHLO
+        Fri, 17 Jun 2022 10:05:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233854AbiFQOEg (ORCPT
+        with ESMTP id S233854AbiFQOFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 10:04:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5FC513FAD;
-        Fri, 17 Jun 2022 07:04:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F55EB82A3F;
-        Fri, 17 Jun 2022 14:04:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC5EC3411B;
-        Fri, 17 Jun 2022 14:04:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655474673;
-        bh=Zf8c2aIaTSHv0y2u4YrMfalwNIOLPu62kHzTrv8BfLo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=D3goTISFFxCpOY5iYC/ordW7UlIOvY9urCbEEOprR/4LCahHN8jtoro6U4wZxqFTh
-         xcmONjiHAnx63AYv0LGZG16Q9xCD4r0OEWAC1H8A9kfD9xxF12uauuUi37HdTrOvMw
-         ByNhhPGLZt2Ju51CVoe1picmbdQBX0g642dtfZ0gYq65RDd0peNyx5zMCDEUYD/mxG
-         yZY/uzwTPCAVaBu7oLuDOZbDxrmqzl5UjKSmneFidmQ+zwPzEG4UrOnUha4apZ8OaW
-         LI9+gniXcaXMDLMP2iO0L5B/hZG049xzePxUSIlzoo3vAhvg7JJ2BuRemde0Xh76/S
-         94YDIMzRQNwKg==
-Date:   Fri, 17 Jun 2022 08:04:29 -0600
-From:   Keith Busch <kbusch@kernel.org>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     axboe@kernel.dk, ming.lei@redhat.com, jack@suse.cz,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH RFC -next] sbitmap: fix possible io hung due to lost
- wakeups
-Message-ID: <YqyJ7dwUB0z0puNc@kbusch-mbp.dhcp.thefacebook.com>
-References: <20220617141125.3024491-1-yukuai3@huawei.com>
+        Fri, 17 Jun 2022 10:05:17 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7A413FAD;
+        Fri, 17 Jun 2022 07:05:16 -0700 (PDT)
+Received: from fraeml738-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LPgly0bmjz67yhs;
+        Fri, 17 Jun 2022 22:05:02 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml738-chm.china.huawei.com (10.206.15.219) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 17 Jun 2022 16:05:13 +0200
+Received: from localhost (10.81.209.131) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.24; Fri, 17 Jun
+ 2022 15:05:12 +0100
+Date:   Fri, 17 Jun 2022 15:05:08 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     <alison.schofield@intel.com>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, <linux-cxl@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/3] cxl/mbox: Add GET_POISON_LIST mailbox command
+ support
+Message-ID: <20220617150508.0000266a@Huawei.com>
+In-Reply-To: <382a9c35ef43e89db85670637d88371f9197b7a2.1655250669.git.alison.schofield@intel.com>
+References: <cover.1655250669.git.alison.schofield@intel.com>
+        <382a9c35ef43e89db85670637d88371f9197b7a2.1655250669.git.alison.schofield@intel.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220617141125.3024491-1-yukuai3@huawei.com>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.81.209.131]
+X-ClientProxiedBy: lhreml709-chm.china.huawei.com (10.201.108.58) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 10:11:25PM +0800, Yu Kuai wrote:
+On Tue, 14 Jun 2022 17:10:27 -0700
+alison.schofield@intel.com wrote:
+
+> From: Alison Schofield <alison.schofield@intel.com>
 > 
-> What's worse, io hung is possible in theory because wakeups might be
-> missed. For example, 2 * wake_batch tags are put, while only wake_batch
-> threads are worken:
+> CXL devices that support persistent memory maintain a list of locations
+> that are poisoned or result in poison if the addresses are accessed by
+> the host.
+> 
+> Per the spec (CXL 2.0 8.2.8.5.4.1), the device returns this Poison
+> list as a set of  Media Error Records that include the source of the
+> error, the starting device physical address and length. The length is
+> the number of adjacent DPAs in the record and is in units of 64 bytes.
+> 
+> Retrieve the list and log each Media Error Record as a trace event of
+> type cxl_poison_list.
+> 
+> Signed-off-by: Alison Schofield <alison.schofield@intel.com>
 
-Not just in theory, io hanging sounds like the problem reported here:
+A few more things inline.
 
-  https://bugzilla.kernel.org/show_bug.cgi?id=215679
+Otherwise, can confirm it works with some hack QEMU code.
+I'll tidy that up and post soon.
 
-I only knew that it had nothing to do with the nvme driver, though, but they
-closed the bug after it stopped happening with different hardware.
+> +int cxl_mem_get_poison_list(struct device *dev)
+> +{
+> +	struct cxl_memdev *cxlmd = to_cxl_memdev(dev);
+> +	struct cxl_dev_state *cxlds = cxlmd->cxlds;
+> +	struct cxl_mbox_poison_payload_out *po;
+> +	struct cxl_mbox_poison_payload_in pi;
+> +	int nr_records = 0;
+> +	int rc, i;
+> +
+> +	if (range_len(&cxlds->pmem_range)) {
+> +		pi.offset = cpu_to_le64(cxlds->pmem_range.start);
+> +		pi.length = cpu_to_le64(range_len(&cxlds->pmem_range));
+> +	} else {
+> +		return -ENXIO;
+> +	}
+> +
+> +	po = kvmalloc(cxlds->payload_size, GFP_KERNEL);
+> +	if (!po)
+> +		return -ENOMEM;
+> +
+> +	do {
+> +		rc = cxl_mbox_send_cmd(cxlds, CXL_MBOX_OP_GET_POISON, &pi,
+> +				       sizeof(pi), po, cxlds->payload_size);
+> +		if (rc)
+> +			goto out;
+> +
+> +		if (po->flags & CXL_POISON_FLAG_OVERFLOW) {
+> +			time64_t o_time = le64_to_cpu(po->overflow_timestamp);
+> +
+> +			dev_err(dev, "Poison list overflow at %ptTs UTC\n",
+> +				&o_time);
+> +			rc = -ENXIO;
+> +			goto out;
+> +		}
+> +
+> +		if (po->flags & CXL_POISON_FLAG_SCANNING) {
+> +			dev_err(dev, "Scan Media in Progress\n");
+> +			rc = -EBUSY;
+> +			goto out;
+> +		}
+> +
+> +		for (i = 0; i < le16_to_cpu(po->count); i++) {
+> +			u64 addr = le64_to_cpu(po->record[i].address);
+
+> +			u32 len = le32_to_cpu(po->record[i].length);
+
+
+> +			int source = FIELD_GET(CXL_POISON_SOURCE_MASK, addr);
+> +
+> +			if (!CXL_POISON_SOURCE_VALID(source)) {
+> +				dev_dbg(dev, "Invalid poison source %d",
+> +					source);
+> +				source = CXL_POISON_SOURCE_INVALID;
+> +			}
+> +
+> +			trace_cxl_poison_list(dev, source, addr, len);
+
+Need to mask off the lower 6 bits of addr as they contain the source
++ a few reserved bits.
+
+I was confused how you were geting better than 64 byte precision in your
+example.
+
+> +		}
+> +
+> +		/* Protect against an uncleared _FLAG_MORE */
+> +		nr_records = nr_records + le16_to_cpu(po->count);
+> +		if (nr_records >= cxlds->poison_max)
+> +			goto out;
+> +
+> +	} while (po->flags & CXL_POISON_FLAG_MORE);
+So.. A conundrum here.  What happens if:
+
+1. We get an error mid way through a set of multiple reads
+   (something intermittent - maybe a software issue)
+2. We will drop out of here fine and report the error.
+3. We run this function again.
+
+It will (I think) currently pick up where we left off, but we have
+no way of knowing that as there isn't a 'total records' count or
+any other form of index in the output payload.
+
+So, software solutions I think should work (though may warrant a note
+to be added to the spec).
+
+1. Read whole thing twice. First time is just to ensure we get
+   to the end and flush out any prior half done reads.
+2. Issue a read for a different region (perhaps length 0) first
+   and assume everything starts from scratch when we go back to
+   this region.
+
+Jonathan
+
+
+
+> +
+> +out:
+> +	kvfree(po);
+> +	return rc;
+> +}
+> +EXPORT_SYMBOL_NS_GPL(cxl_mem_get_poison_list, CXL);
+> +
+>  struct cxl_dev_state *cxl_dev_state_create(struct device *dev)
+>  {
+>  	struct cxl_dev_state *cxlds;
+
