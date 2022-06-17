@@ -2,79 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FAA3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDD5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:46:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381450AbiFQJpO (ORCPT
+        id S1381402AbiFQJqU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 05:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33468 "EHLO
+        Fri, 17 Jun 2022 05:46:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235845AbiFQJpK (ORCPT
+        with ESMTP id S235845AbiFQJqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 05:45:10 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9058C66FB2;
-        Fri, 17 Jun 2022 02:45:08 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LPYyF19rzzjXbg;
-        Fri, 17 Jun 2022 17:43:33 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by dggpeml500022.china.huawei.com
- (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 17 Jun
- 2022 17:45:06 +0800
-From:   Zhang Zekun <zhangzekun11@huawei.com>
-To:     <ezequiel@vanguardiasur.com.ar>, <mchehab@kernel.org>,
-        <gregkh@linuxfoundation.org>
-CC:     <linux-media@vger.kernel.org>,
-        <linux-rockchip@lists.infradead.org>,
-        <linux-staging@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] media:rkvdec:Remove redundant memset
-Date:   Fri, 17 Jun 2022 09:39:25 +0000
-Message-ID: <20220617093925.44985-1-zhangzekun11@huawei.com>
+        Fri, 17 Jun 2022 05:46:17 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD4B692A1;
+        Fri, 17 Jun 2022 02:46:16 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LPYz23g2bz1K9tp;
+        Fri, 17 Jun 2022 17:44:14 +0800 (CST)
+Received: from ubuntu1804.huawei.com (10.67.174.58) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 17 Jun 2022 17:46:14 +0800
+From:   Xiu Jianfeng <xiujianfeng@huawei.com>
+To:     <paul@paul-moore.com>, <stephen.smalley.work@gmail.com>,
+        <eparis@parisplace.org>
+CC:     <selinux@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH RESEND -next] selinux: Let the caller free the momory in *mnt_opts on error
+Date:   Fri, 17 Jun 2022 17:44:12 +0800
+Message-ID: <20220617094412.197479-1-xiujianfeng@huawei.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
+X-Originating-IP: [10.67.174.58]
 X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500022.china.huawei.com (7.185.36.66)
+ dggpeml500023.china.huawei.com (7.185.36.114)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As dma_alloc_coherent() will return a zeroed buffer, we
-don't need to memset the returned buffer.
-priv_tbl = dma_alloc_coherent() and count_tbl = dma_alloc_coherent()
-should be enough.
+It may allocate memory for @mnt_opts if NULL in selinux_add_opt(), and
+now some error paths goto @err label to free memory while others don't,
+as suggested by Paul, don't free memory in case of error and let the
+caller to cleanup on error.
 
--see commit 750afb08ca71 ("cross-tree: phase out dma_zalloc_coherent()")
+And also this patch changes the @s NULL check to return -EINVAL instead.
 
-Signed-off-by: Zhang Zekun <zhangzekun11@huawei.com>
+Link: https://lore.kernel.org/lkml/20220611090550.135674-1-xiujianfeng@huawei.com/T/
+Suggested-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
 ---
- drivers/staging/media/rkvdec/rkvdec-vp9.c | 2 --
- 1 file changed, 2 deletions(-)
+ security/selinux/hooks.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/staging/media/rkvdec/rkvdec-vp9.c b/drivers/staging/media/rkvdec/rkvdec-vp9.c
-index 311a12656072..c2f42e76be10 100644
---- a/drivers/staging/media/rkvdec/rkvdec-vp9.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-vp9.c
-@@ -1015,7 +1015,6 @@ static int rkvdec_vp9_start(struct rkvdec_ctx *ctx)
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index 4d20a139a86d..9d08b91e05a2 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -944,10 +944,12 @@ static int selinux_sb_clone_mnt_opts(const struct super_block *oldsb,
+ 	return rc;
+ }
  
- 	vp9_ctx->priv_tbl.size = sizeof(*priv_tbl);
- 	vp9_ctx->priv_tbl.cpu = priv_tbl;
--	memset(priv_tbl, 0, sizeof(*priv_tbl));
++/*
++ * NOTE: the caller is resposible for freeing the memory even if on error.
++ */
+ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+ {
+ 	struct selinux_mnt_opts *opts = *mnt_opts;
+-	bool is_alloc_opts = false;
+ 	u32 *dst_sid;
+ 	int rc;
  
- 	count_tbl = dma_alloc_coherent(rkvdec->dev, RKVDEC_VP9_COUNT_SIZE,
- 				       &vp9_ctx->count_tbl.dma, GFP_KERNEL);
-@@ -1026,7 +1025,6 @@ static int rkvdec_vp9_start(struct rkvdec_ctx *ctx)
+@@ -955,7 +957,7 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+ 		/* eaten and completely ignored */
+ 		return 0;
+ 	if (!s)
+-		return -ENOMEM;
++		return -EINVAL;
  
- 	vp9_ctx->count_tbl.size = RKVDEC_VP9_COUNT_SIZE;
- 	vp9_ctx->count_tbl.cpu = count_tbl;
--	memset(count_tbl, 0, sizeof(*count_tbl));
- 	rkvdec_init_v4l2_vp9_count_tbl(ctx);
+ 	if (!selinux_initialized(&selinux_state)) {
+ 		pr_warn("SELinux: Unable to set superblock options before the security server is initialized\n");
+@@ -967,7 +969,6 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+ 		if (!opts)
+ 			return -ENOMEM;
+ 		*mnt_opts = opts;
+-		is_alloc_opts = true;
+ 	}
  
- 	return 0;
+ 	switch (token) {
+@@ -1002,10 +1003,6 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+ 	return rc;
+ 
+ err:
+-	if (is_alloc_opts) {
+-		kfree(opts);
+-		*mnt_opts = NULL;
+-	}
+ 	pr_warn(SEL_MOUNT_FAIL_MSG);
+ 	return -EINVAL;
+ }
 -- 
 2.17.1
 
