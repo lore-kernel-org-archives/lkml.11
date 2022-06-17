@@ -2,110 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB596C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 17:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1631FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 17:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382906AbiFQRvh (ORCPT
+        id S1383029AbiFQRys (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 13:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57462 "EHLO
+        Fri, 17 Jun 2022 13:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229975AbiFQRvg (ORCPT
+        with ESMTP id S229473AbiFQRyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 13:51:36 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E0E4AE19;
-        Fri, 17 Jun 2022 10:51:35 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id h8so5245941iof.11;
-        Fri, 17 Jun 2022 10:51:35 -0700 (PDT)
+        Fri, 17 Jun 2022 13:54:47 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59884990F
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 10:54:46 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id d13so4457612plh.13
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 10:54:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=grjrAGI4VNuEsZ3QNXKvxidIo/MX1HBbCbb5NRnse+k=;
-        b=SMzhwmMFoTT6L9qoBI9jQ7LbYRxV1Q/MJDuIgZaqzIQtm5Z9mHNC92pKhWfzWLV0L+
-         zJYYvFHCrajTHFLC6tGPTj+3QkxkZ4TuxjxBc+VaXDeLvV1ou3j6PJolzwgH/ohJlqAu
-         Q9er51KtPCUlE1mcV0CGJ3WQvE1qFl1cTmU1rLW+Po39o4ZxwEuwYo4uxH68aVtZM200
-         JQ7lEdwFCj70Je4tkJK93P6iuZq1xcmgkMkS7+B7kfELwD0rv+BaSw8CGGnlaHQ4/A5j
-         yJXMbmxkZTV4KtqoVRDDnDeWDgSSsuOdFX862Zeoau5vYNpbYJQZJ5BwcYvpqjQtglAw
-         6kIQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3gaN4rlZjv7pyoxx/10QhPxWmkyRNv+DWEp7dRnF2tA=;
+        b=Ir8ob8eSfXh/HH50s8vvCR020YJRMHfOP3T/X6FrfKhlN8Zm6jUKaXQTbgdebNcmq0
+         mcuehygwrlVmwX92zJWUlGPMOkowxPtSVcSjaVkBqF1eGcrDaBTr4t2Dnf15asqGF1RN
+         rzVzYVG5pBiUrJMQ4qbz7eUF8+Cx2oXEOdhXwd5aBbVKekwD1x0xQ0KYp331g41Bs6Z7
+         pEGkUprw11PBDP66jvs+3i49greyGtXumHLEi3Hu6x2q9G+1kJT9kG/i5KsduQhJ0JkR
+         uMb6aPUawgQDbLYQG/iXz8cVxigb7sc5Hz7jkDiaTCjsPCJ6i5IgHo/Y+ksXThmB5ji1
+         zJlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=grjrAGI4VNuEsZ3QNXKvxidIo/MX1HBbCbb5NRnse+k=;
-        b=4aqlbskYkbx5ebirnxz01NWizVmnG6ZGwPtUWTEpmZ0mTRYzAEMlw41qDtS/K+S+nn
-         N5CFyHDJtY3r8sFMf+xwWX7VX8ONq7ZkSiAlqs93zgxrn/4KRjQkFUJwOfoRqJ108HdI
-         zBYlXUZKmx9U/Lk1jyvn/wIwoB9ktOJw7UAuzhk+5TQarVSKWYmlZgoCikCPRNRvzPWh
-         ECX3xb206aDPPFP631JaopmIcGDSakHprvJv5DUKlEKthxp3hTMYEN9O8HrE5AnlDAxD
-         jvaKHS80dVmPA8DPKvr6SI5moTqXqSVobXti00VLaWkG19SBkFgo3Jf/utfQLFIk0DPY
-         FpAA==
-X-Gm-Message-State: AJIora+qAgoyGcfmFgd7/oK8gg65eoTC8XluOpmTKS/koN7iKKrA8SKu
-        8tys++A+i54SJHPh+42LfM+hEsV2rDXzwzWaLeTH0HjDamI=
-X-Google-Smtp-Source: AGRyM1stNa4oiKHeh/+bvfYGv7PV+gk7a4nSJEBQ6BNXihalHF+mrDme9X1gUVtaoWweJP+wfGjJtKOh3haTKHT9S8k=
-X-Received: by 2002:a05:6638:1415:b0:331:d318:83ab with SMTP id
- k21-20020a056638141500b00331d31883abmr6251119jad.126.1655488294457; Fri, 17
- Jun 2022 10:51:34 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3gaN4rlZjv7pyoxx/10QhPxWmkyRNv+DWEp7dRnF2tA=;
+        b=0SemflLIjwSK7lW8Z+gTi+uI9zSRqEuXe4yUo8WlZLXy7mxaoiDA2NByVccH76yTe/
+         ZiV6B4hWrV8mwzATHW2U/tfQGzGmPTbdMAa8dQ3Bkjliwuy91sO5VYAgw7SZdr+/x0P+
+         8KjHXobwr3dBj/sF7Byfic68GxYlB1Pi5KYyom9odqSmw7bEWGI+zaq+AyrC8f5mLob9
+         /a8ITQDwEh4B8sw+o+axbmpOSmGSDznVQH41XB5FsMCF2glhjf1KQkT9o0BLURiPmYxq
+         70Jq4kKRrYS6vdots4cNu//1+FDIJYtievJLiAwqFkmYK02XzIy5CW0cNn8IMpLxkdfQ
+         qBDw==
+X-Gm-Message-State: AJIora/+aXSdUMbpuDl9YmuwO21gaiqnDD2NEiBRntZjnkn6xPlt+vkN
+        /cZ9AddSw7OKHzL2i0wIwLFw+ED9paQE+Wzgy0qZZuRI
+X-Google-Smtp-Source: AGRyM1uLvqf1RYrXRxCniewV8UG56bLn7cL9qqmDOYYqSGNvsaGfPis3g+CKrjY0mfsarm8UC+Gv4wo15BYCcA9v/KI=
+X-Received: by 2002:a17:902:8492:b0:167:6cbf:145b with SMTP id
+ c18-20020a170902849200b001676cbf145bmr11084646plo.26.1655488486189; Fri, 17
+ Jun 2022 10:54:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220616104541.16289-1-jslaby@suse.cz> <CA+icZUW8O-HUSpw-656o6YZOiR2ZiCXjxsJwm2kctT6DHrs=4g@mail.gmail.com>
- <CA+icZUV6bM2_jxyROK5B4XRid6fv8oX6YYNEdHUX8e_1OAdQYA@mail.gmail.com>
- <CA+icZUUSTcrJqZB-gwNYt5objVg1J5+Ous6_hof0_A6eVCM-Kg@mail.gmail.com> <CAKwvOdmb5xdF70TzNp=4STCpzkGh16FnuKE1KbdzDhHt=OuRFA@mail.gmail.com>
-In-Reply-To: <CAKwvOdmb5xdF70TzNp=4STCpzkGh16FnuKE1KbdzDhHt=OuRFA@mail.gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Fri, 17 Jun 2022 19:50:58 +0200
-Message-ID: <CA+icZUWZKGEQ_VbnRL03SRAicEMi4r4J0dLRgXJgHvRg7DBM7A@mail.gmail.com>
-Subject: Re: [PATCH] kbuild: pass jobserver to cmd_ld_vmlinux.o
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>
+References: <20220616174840.1202070-1-shy828301@gmail.com> <Yqu392qcUSp1imEi@google.com>
+In-Reply-To: <Yqu392qcUSp1imEi@google.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Fri, 17 Jun 2022 10:54:33 -0700
+Message-ID: <CAHbLzkp6kRZgXJF2XGEOjci0RQVca1LqwOeC0-Vf4yodVGa93Q@mail.gmail.com>
+Subject: Re: [mm-unstable v5 PATCH 0/7] Cleanup transhuge_xxx helpers
+To:     "Zach O'Keefe" <zokeefe@google.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 6:32 PM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
+On Thu, Jun 16, 2022 at 4:08 PM Zach O'Keefe <zokeefe@google.com> wrote:
 >
-> On Fri, Jun 17, 2022 at 3:35 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> On 16 Jun 10:48, Yang Shi wrote:
 > >
-> > On Fri, Jun 17, 2022 at 12:53 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
-> > >
-> > > On Thu, Jun 16, 2022 at 4:09 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
-> > > >
-> > > > On Thu, Jun 16, 2022 at 12:45 PM Jiri Slaby <jslaby@suse.cz> wrote:
-> > > > >
-> > > > > Until the link-vmlinux.sh split (cf. the commit below), the linker was
-> > > > > run with jobserver set in MAKEFLAGS. After the split, the command in
-> > > > > Makefile.vmlinux_o is not prefixed by "+" anymore, so this information
-> > > > > is lost.
-> > > > >
-> > > > > Restore it as linkers working in parallel (esp. the LTO ones) make a use
-> > > > > of it.
->
-> TBH, I agree with Masahiro. I didn't understand this comment "esp. the
-> LTO ones."  Jiri, can you clarify what you mean here?
->
-> > [ CC Nathan and Sami ]
+> > v5: * Removed transparent_hugepage_active() for !THP, per Zach.
+> >       Patch 4/7 and 5/7 were updated accordingly.
+> >     * Collected review tags.
+> > v4: * Consolidated the transhuge_vma_size_ok() helper proposed in the
+> >       earlier versions into transhuge_vma_suitable(), per Zach.
+> >     * Fixed the regression introduced by patch 3/7, per Zach and Miaohe.
+> >     * Reworded the comment for transhuge_vma_suitable(), per Zach.
+> >     * Removed khugepaged_enter() per Miaohe.
+> >     * More comments for hugepage_vma_check(), per Zach.
+> >     * Squashed patch 4/7 (mm: khugepaged: use transhuge_vma_suitable replace open-code)
+> >       in the earlier version into patch 2/7 of this version.
+> >     * Minor correction to the doc about THPeligible (patch 7/7), so the
+> >       total number of patches is kept 7.
+> > v3: * Fixed the comment from Willy
+> > v2: * Rebased to the latest mm-unstable
+> >     * Fixed potential regression for smaps's THPeligible
 > >
-> > I re-checked as my build-time takes approx. 15mins more than usual
-> > with Linux v5.17.
+> > This series is the follow-up of the discussion about cleaning up transhuge_xxx
+> > helpers at https://lore.kernel.org/linux-mm/627a71f8-e879-69a5-ceb3-fc8d29d2f7f1@suse.cz/.
 > >
-> > [ Perf - seconds time elapsed ]
-> > v5.17: approx. 12500
-> > v5.19: approx. 13500
+> > THP has a bunch of helpers that do VMA sanity check for different paths, they
+> > do the similar checks for the most callsites and have a lot duplicate codes.
+> > And it is confusing what helpers should be used at what conditions.
 > >
-> > +1.000 secs = +16,67mins
+> > This series reorganized and cleaned up the code so that we could consolidate
+> > all the checks into hugepage_vma_check().
+> >
+> > The transhuge_vma_enabled(), transparent_hugepage_active() and
+> > __transparent_hugepage_enabled() are killed by this series.
+> >
+> >
+> > Yang Shi (7):
+> >       mm: khugepaged: check THP flag in hugepage_vma_check()
+> >       mm: thp: consolidate vma size check to transhuge_vma_suitable
+> >       mm: khugepaged: better comments for anon vma check in hugepage_vma_revalidate
+> >       mm: thp: kill transparent_hugepage_active()
+> >       mm: thp: kill __transhuge_page_enabled()
+> >       mm: khugepaged: reorg some khugepaged helpers
+> >       doc: proc: fix the description to THPeligible
+> >
+> >  Documentation/filesystems/proc.rst |  4 ++-
+> >  fs/proc/task_mmu.c                 |  2 +-
+> >  include/linux/huge_mm.h            | 80 +++++++++++++++++++----------------------------------------
+> >  include/linux/khugepaged.h         | 30 ----------------------
+> >  mm/huge_memory.c                   | 81 +++++++++++++++++++++++++++++++++++++++++++++++++++--------
+> >  mm/khugepaged.c                    | 84 +++++++++++++++++++-------------------------------------------
+> >  mm/memory.c                        |  7 ++++--
+> >  7 files changed, 130 insertions(+), 158 deletions(-)
+> >
 >
-> Does this patch make a difference?
-> https://lore.kernel.org/linux-kbuild/20220616195759.3214538-1-samitolvanen@google.com/
->
+> Series LGTM. Thanks for these cleanups, Yang!
 
-Running a new build...
+Thank you so much for reviewing the patches.
 
--sed@-
+>
+> Best,
+> Zach
