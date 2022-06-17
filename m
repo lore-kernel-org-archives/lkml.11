@@ -2,99 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97EF4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46867C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380182AbiFQHaD (ORCPT
+        id S1380414AbiFQHbU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 03:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43186 "EHLO
+        Fri, 17 Jun 2022 03:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231313AbiFQHaA (ORCPT
+        with ESMTP id S229701AbiFQHbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 03:30:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8F5CB7C3
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:29:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655450999;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Fl5g9NFjvXIN0xGJA157NHcsEoJ12uvuRlfGLrOUGTg=;
-        b=UHPpzlb2Kv9v0LJJ6/6qOQYyfKiil5josN93Y837pPHG3nozBvWp+dTSXekZxnupgnoePI
-        PXZA40qyJnV/03q1TST2P2KqQQsSDkt40WxdicV6pjbbmD2Mkw3mgaXpQWD+LPfcV6kul2
-        ymL7PusPgWRdmg7LBw4QcG2/oeXkWpQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-656-ndiwV_2hPRySbG87GwEyPg-1; Fri, 17 Jun 2022 03:29:55 -0400
-X-MC-Unique: ndiwV_2hPRySbG87GwEyPg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5CD8D802C17;
-        Fri, 17 Jun 2022 07:29:55 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-13-87.pek2.redhat.com [10.72.13.87])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 68F4740C141F;
-        Fri, 17 Jun 2022 07:29:52 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] virtio-net: fix race between ndo_open() and virtio_device_ready()
-Date:   Fri, 17 Jun 2022 15:29:49 +0800
-Message-Id: <20220617072949.30734-1-jasowang@redhat.com>
+        Fri, 17 Jun 2022 03:31:18 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1344F38DAF
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:31:18 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id gl15so7140277ejb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:31:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=dCV6qGUI7Cqg9TdhqvU2+ai6zKfvgQ0lGjyyVFexPIU=;
+        b=HE7KhYE/xjUlakk27H3lZOjL19q7HyTLJa+vdphCgSnuB+czh4rVByLN78Sj1p+5RQ
+         4V8QTQUKTVuiHbxXI2U9QY6RCMYc0SE9qc/8DjOd/RNJh2EeSlQIZvmH4UDYmfpClkrl
+         zxOLypIgJzz2CVNok1B3vytvYEoiM+c6yd8QgJaLgL1RGKl6H42d3EGhsIT3QQxedVBT
+         /pDJN8p2MXO2g+YjtQasXNEcF/50BTHOazd2Wsicgek5gQPmLhMx5YXmrqLEyhjT3D/o
+         4Ws/cOypVK2Z5sotjuPIYRetuiLUSlLrH1Bu6fBSYPxTzUKdoVRUC2jHVFl2RKH8szvS
+         Zn1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=dCV6qGUI7Cqg9TdhqvU2+ai6zKfvgQ0lGjyyVFexPIU=;
+        b=nMJbgg07S/VhU4wuAlJTC9sOxHwprkCdIexng+WuWbVEYOk4GlV+A6l6o6XVIFR0cF
+         uUpM/kEDiv/B+ExEZJ7Ez8FfAE7EE6Pu8qsAbFBhda699/oUa+2KWiDagN6zWmukBFEY
+         pyBTa7DF0wV4VqkHGl9M7o9wxf6q2666CwuLsDYlGrmJrMt9ZmkMfrIFLTbeBICTd4s+
+         Jk2HtVLsxh4H1Nuva/Fci58g7XSce90BbhWskVyblQMpsjrt9675NULtd82rp71IKqQK
+         oDcAYYiHOR7rnL2cd9/2/Imo7F/6seXUvghd8K1UxgYM7FADNKlUfMKuL4GvZtZjLYmc
+         eURw==
+X-Gm-Message-State: AJIora/EVDWvHznRW+ObF60Q6K8R/aSNdybrbuorqNQJauSl9z468lP4
+        gjvuZSyC3f6WmKyLxAoY0jNkaA==
+X-Google-Smtp-Source: AGRyM1tZZKYyQmjR0eXxMRCwbJxX3hwGRDzNXhGufI0x/0CPupOmdiMHa8oj4351VL2iQ1h3Z8vNQg==
+X-Received: by 2002:a17:906:74cc:b0:712:381:9c5a with SMTP id z12-20020a17090674cc00b0071203819c5amr7885326ejl.466.1655451076601;
+        Fri, 17 Jun 2022 00:31:16 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:d227:8f3c:286a:d9d8? ([2001:861:44c0:66c0:d227:8f3c:286a:d9d8])
+        by smtp.gmail.com with ESMTPSA id 7-20020a170906300700b00702d8b37a03sm1852519ejz.17.2022.06.17.00.31.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jun 2022 00:31:16 -0700 (PDT)
+Message-ID: <54e1434d-e517-9283-3078-7f042c04385b@baylibre.com>
+Date:   Fri, 17 Jun 2022 09:31:13 +0200
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] soc: amlogic: Fix refcount leak in meson-secure-pwrc.c
+Content-Language: en-US
+To:     Liang He <windhl@126.com>, khilman@baylibre.com,
+        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220616144915.3988071-1-windhl@126.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <20220616144915.3988071-1-windhl@126.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We used to call virtio_device_ready() after netdev registration. This
-cause a race between ndo_open() and virtio_device_ready(): if
-ndo_open() is called before virtio_device_ready(), the driver may
-start to use the device before DRIVER_OK which violates the spec.
+On 16/06/2022 16:49, Liang He wrote:
+> In meson_secure_pwrc_probe(), there is a refcount leak in one fail
+> path.
+> 
+> Signed-off-by: Liang He <windhl@126.com>
+Fixes: b3dde5013e13 ("soc: amlogic: Add support for Secure power domains controller")
+> ---
+>   drivers/soc/amlogic/meson-secure-pwrc.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/soc/amlogic/meson-secure-pwrc.c b/drivers/soc/amlogic/meson-secure-pwrc.c
+> index a10a417a87db..e93518763526 100644
+> --- a/drivers/soc/amlogic/meson-secure-pwrc.c
+> +++ b/drivers/soc/amlogic/meson-secure-pwrc.c
+> @@ -152,8 +152,10 @@ static int meson_secure_pwrc_probe(struct platform_device *pdev)
+>   	}
+>   
+>   	pwrc = devm_kzalloc(&pdev->dev, sizeof(*pwrc), GFP_KERNEL);
+> -	if (!pwrc)
+> +	if (!pwrc) {
+> +		of_node_put(sm_np);
+>   		return -ENOMEM;
+> +	}
+>   
+>   	pwrc->fw = meson_sm_get(sm_np);
+>   	of_node_put(sm_np);
 
-Fixing this by switching to use register_netdevice() and protect the
-virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
-only be called after virtio_device_ready().
 
-Fixes: 4baf1e33d0842 ("virtio_net: enable VQs early")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
- drivers/net/virtio_net.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index db05b5e930be..8a5810bcb839 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -3655,14 +3655,20 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	if (vi->has_rss || vi->has_rss_hash_report)
- 		virtnet_init_default_rss(vi);
- 
--	err = register_netdev(dev);
-+	/* serialize netdev register + virtio_device_ready() with ndo_open() */
-+	rtnl_lock();
-+
-+	err = register_netdevice(dev);
- 	if (err) {
- 		pr_debug("virtio_net: registering device failed\n");
-+		rtnl_unlock();
- 		goto free_failover;
- 	}
- 
- 	virtio_device_ready(vdev);
- 
-+	rtnl_unlock();
-+
- 	err = virtnet_cpu_notif_add(vi);
- 	if (err) {
- 		pr_debug("virtio_net: registering cpu notifier failed\n");
--- 
-2.25.1
-
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
