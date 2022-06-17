@@ -2,70 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36FBCC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 01:23:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB2FCCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 01:24:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379372AbiFQBXI (ORCPT
+        id S1379456AbiFQBYv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 21:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
+        Thu, 16 Jun 2022 21:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379241AbiFQBXH (ORCPT
+        with ESMTP id S231899AbiFQBYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 21:23:07 -0400
-Received: from m1550.mail.126.com (m1550.mail.126.com [220.181.15.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 19FAE13F24
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 18:23:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=Cq+ut
-        oE+mzqgQ3KbNKOTWVc1zRuzyYEd9yXx+hs2Kq4=; b=QG88Z9PAD2tEhsPlrBTqn
-        rzuMe8lMtyjZ5HwYh4darp5KrKjLIRcPcTP7f8hb+i1umKZUroSmY1wLL0zQ0fdT
-        MKXe1Gh2cjVhqIFjDqKBujQqWFJosiO4KoEL3FUeRhbJoGDRxg/1OmOXqA24cLTn
-        NrbmhP50tdn1v9z4nKYaOk=
-Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr50
- (Coremail) ; Fri, 17 Jun 2022 09:22:52 +0800 (CST)
-X-Originating-IP: [124.16.139.61]
-Date:   Fri, 17 Jun 2022 09:22:52 +0800 (CST)
-From:   "Liang He" <windhl@126.com>
-To:     "Martin Blumenstingl" <martin.blumenstingl@googlemail.com>
-Cc:     "Neil Armstrong" <narmstrong@baylibre.com>, khilman@baylibre.com,
-        jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] soc: amlogic: Fix refcount leak in
- meson-secure-pwrc.c
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <CAFBinCB-WZmnMtvG1P=sWASQZCg9F9d-Hg0OzVNUsEutUFX0Cg@mail.gmail.com>
-References: <20220616144915.3988071-1-windhl@126.com>
- <CAFBinCB-WZmnMtvG1P=sWASQZCg9F9d-Hg0OzVNUsEutUFX0Cg@mail.gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        Thu, 16 Jun 2022 21:24:49 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6C515A1C;
+        Thu, 16 Jun 2022 18:24:48 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R531e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VGcIT1O_1655429084;
+Received: from B-LB6YLVDL-0141.local(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VGcIT1O_1655429084)
+          by smtp.aliyun-inc.com;
+          Fri, 17 Jun 2022 09:24:46 +0800
+Subject: Re: [PATCH] mm: page_alloc: validate buddy page before using
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     akpm@linux-foundation.org, ziy@nvidia.com, stable@vger.kernel.org,
+        guoren@kernel.org, huanyi.xj@alibaba-inc.com, guohanjun@huawei.com,
+        zjb194813@alibaba-inc.com, tianhu.hh@alibaba-inc.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220616161746.3565225-1-xianting.tian@linux.alibaba.com>
+ <b08725b1-2f4b-cea0-43fc-1ce0a2a7e8f4@linux.alibaba.com>
+ <YqtfTavoMNxQeFlg@kroah.com>
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+Message-ID: <7c52a1f2-b2c6-44d5-6c38-acad6088bbda@linux.alibaba.com>
+Date:   Fri, 17 Jun 2022 09:24:44 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-Message-ID: <12f4df52.f06.1816f417fcf.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: MsqowADHHPFs16ti+Q44AA--.53959W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/xtbBGgYiF1-HZUGFPAADsv
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+In-Reply-To: <YqtfTavoMNxQeFlg@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgoKQXQgMjAyMi0wNi0xNyAwNDoxNzoxOSwgIk1hcnRpbiBCbHVtZW5zdGluZ2wiIDxtYXJ0aW4u
-Ymx1bWVuc3RpbmdsQGdvb2dsZW1haWwuY29tPiB3cm90ZToKPkhlbGxvLAo+Cj5PbiBUaHUsIEp1
-biAxNiwgMjAyMiBhdCA0OjUwIFBNIExpYW5nIEhlIDx3aW5kaGxAMTI2LmNvbT4gd3JvdGU6Cj4+
-Cj4+IEluIG1lc29uX3NlY3VyZV9wd3JjX3Byb2JlKCksIHRoZXJlIGlzIGEgcmVmY291bnQgbGVh
-ayBpbiBvbmUgZmFpbAo+PiBwYXRoLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBMaWFuZyBIZSA8d2lu
-ZGhsQDEyNi5jb20+Cj5BY2tlZC1ieTogTWFydGluIEJsdW1lbnN0aW5nbCA8bWFydGluLmJsdW1l
-bnN0aW5nbEBnb29nbGVtYWlsLmNvbT4KPgo+Wy4uLl0KPj4gICAgICAgICBwd3JjID0gZGV2bV9r
-emFsbG9jKCZwZGV2LT5kZXYsIHNpemVvZigqcHdyYyksIEdGUF9LRVJORUwpOwo+PiAtICAgICAg
-IGlmICghcHdyYykKPj4gKyAgICAgICBpZiAoIXB3cmMpIHsKPj4gKyAgICAgICAgICAgICAgIG9m
-X25vZGVfcHV0KHNtX25wKTsKPj4gICAgICAgICAgICAgICAgIHJldHVybiAtRU5PTUVNOwo+PiAr
-ICAgICAgIH0KPkFub3RoZXIgYXBwcm9hY2ggd291bGQgYmUgdG8ganVzdCBtb3ZlIGRldm1fa3ph
-bGxvYygpIGEgZmV3IGxpbmVzCj5mdXJ0aGVyIHVwIChhYm92ZSBvZl9maW5kX2NvbXBhdGlibGVf
-bm9kZSgpKS4KPlRoYXQgd291bGQgY2F0Y2ggc2ltaWxhciBpc3N1ZXMgaW4gZnV0dXJlIHdoZW4g
-c29tZW9uZSB3YW50cyB0byBhZGQKPm1vcmUgY29kZSByaWdodCBhZnRlciBkZXZtX2t6YWxsb2Mo
-KS4gVGhhdCBzYWlkLCBJIGRvbid0IHRoaW5rIHRoYXQKPnRoaXMgaXMgYSBsaWtlbHkgc2NlbmFy
-aW8gc28gdGhlIHBhdGNoIGlzIGZpbmUgZm9yIG1lIGFzLWlzLgo+Cj5UaGFua3MgYSBsb3QgZm9y
-IHN1Ym1pdHRpbmcgdGhpcyEKPgo+Cj5CZXN0IHJlZ2FyZHMsCj5NYXJ0aW4KClRoYW5rcyBmb3Ig
-eW91ciBjb25maXJtLgoKTGlhbmcK
+Sorry for the misleading, I mean just this one in the series, not the 
+whole series, actually this patch is for 4.9, But I forget the add the 
+Label 4.9.
+
+So I send the patch for 4.9 again in
+
+https://lkml.org/lkml/2022/6/16/782 <https://lkml.org/lkml/2022/6/16/782>
+
+在 2022/6/17 上午12:50, Greg KH 写道:
+> On Fri, Jun 17, 2022 at 12:20:19AM +0800, Xianting Tian wrote:
+>> Sorry, please ignore this one.
+> Which "one"?  This was a series :(
