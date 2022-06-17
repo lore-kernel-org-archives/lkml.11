@@ -2,130 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C965CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8429EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:38:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231313AbiFQIiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 04:38:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48884 "EHLO
+        id S1380059AbiFQIig (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 04:38:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234710AbiFQIiK (ORCPT
+        with ESMTP id S1380387AbiFQIi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 04:38:10 -0400
-Received: from m1550.mail.126.com (m1550.mail.126.com [220.181.15.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA05A19C03
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:38:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=I7Pi+
-        Im12M8ou/QoSMecx1nm7zEUMo5TJmtZNFXx6oU=; b=RDb0KWoMRPSX7T87//JdG
-        5Fm5ZW6pY00uwrtQD1KnL09nwc+LMqKNd9qMu0Gy8VzsF3pGm8SRTwr0mwYcetuH
-        a0Q3bDyMfpHHm5tGOwYpGc7yGAqtocDRopwu2Ivps8lqk8OiUkQ39mkoZUlgsOM6
-        Eh2UmV3Qal7DiOkrmz7hC8=
-Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr50
- (Coremail) ; Fri, 17 Jun 2022 16:34:56 +0800 (CST)
-X-Originating-IP: [124.16.139.61]
-Date:   Fri, 17 Jun 2022 16:34:56 +0800 (CST)
-From:   "Liang He" <windhl@126.com>
-To:     Conor.Dooley@microchip.com
-Cc:     christophe.leroy@csgroup.eu, oss@buserror.net, mpe@ellerman.id.au,
-        benh@kernel.crashing.org, paulus@samba.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH v4] powerpc:85xx: Add missing of_node_put() in
- sgy_cst1000
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <33668b61-4ae7-f625-0eb3-e15d2119623c@microchip.com>
-References: <20220617060827.4004795-1-windhl@126.com>
- <eb72976a-9ca3-b894-b2d5-8283a4cf486d@csgroup.eu>
- <16f9a971.44e5.1817068ee3c.Coremail.windhl@126.com>
- <f79ebcc1-c060-f861-231d-85c377e2e885@csgroup.eu>
- <64ac3dc9.5bd1.18170bcb6a6.Coremail.windhl@126.com>
- <33668b61-4ae7-f625-0eb3-e15d2119623c@microchip.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Fri, 17 Jun 2022 04:38:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0750F69295
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:38:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9E657B827CC
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:38:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 602D8C3411B;
+        Fri, 17 Jun 2022 08:38:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655455104;
+        bh=/+PA0s6iDokI32NSUKyXUB8BkzRNE2/BPEMG8iwbzJo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lzhXz8zt15gWuroBUz4xp7oQIAyE2Zg7k0+EuLpVXGyzcayS5RLRo4utGjS2qT7Dy
+         vZVNLx9AI4uoL3jm1N+xkt6pzKuDQ4n37PcWbOpIMDgcjt8g9IGect8wXJ2r1uk6gN
+         ZcMijsDAlGeFKXDRQwAyc+uQj2mQk+qOKHFWpzHdERbvHu55fL2JxvFQQCcjB6ZsgN
+         r42QoQ2bPbWgQlVapm7YHnn7gc79lQ/r1sr8/D2jAHFJXCHAdazY+kHfzMqXRxGqKb
+         z6zabU/HjuYTH08Un3rRyqRTKm5VzO57zZpaxBeDlUbKH6UQE6z6FD2evVHpL1DdOB
+         EHylArov6qpuA==
+Date:   Fri, 17 Jun 2022 11:38:14 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Quentin Perret <qperret@google.com>,
+        kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
+        James Morse <james.morse@arm.com>,
+        Will Deacon <will@kernel.org>, kernel-team@android.com
+Subject: Re: [PATCH] KVM: arm64: Prevent kmemleak from accessing pKVM memory
+Message-ID: <Yqw9dou3qgpAKQkZ@kernel.org>
+References: <20220616161135.3997786-1-qperret@google.com>
+ <165545408679.771055.5076080259874437048.b4-ty@kernel.org>
 MIME-Version: 1.0
-Message-ID: <4be090c8.607e.18170cd11ad.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: MsqowABnvfGxPKxiGoc4AA--.57772W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi3AUjF1pEDvT03AABsg
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <165545408679.771055.5076080259874437048.b4-ty@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CkF0IDIwMjItMDYtMTcgMTY6Mjc6MDMsIENvbm9yLkRvb2xleUBtaWNyb2NoaXAuY29tIHdyb3Rl
-Ogo+T24gMTcvMDYvMjAyMiAwOToxNywgTGlhbmcgSGUgd3JvdGU6Cj4+IAo+PiAKPj4gCj4+IEF0
-IDIwMjItMDYtMTcgMTQ6NTM6MTMsICJDaHJpc3RvcGhlIExlcm95IiA8Y2hyaXN0b3BoZS5sZXJv
-eUBjc2dyb3VwLmV1PiB3cm90ZToKPj4+Cj4+Pgo+Pj4gTGUgMTcvMDYvMjAyMiDDoCAwODo0NSwg
-TGlhbmcgSGUgYSDDqWNyaXTCoDoKPj4+Pgo+Pj4+Cj4+Pj4KPj4+PiBBdCAyMDIyLTA2LTE3IDE0
-OjI4OjU2LCAiQ2hyaXN0b3BoZSBMZXJveSIgPGNocmlzdG9waGUubGVyb3lAY3Nncm91cC5ldT4g
-d3JvdGU6Cj4+Pj4+Cj4+Pj4+Cj4+Pj4+IExlIDE3LzA2LzIwMjIgw6AgMDg6MDgsIExpYW5nIEhl
-IGEgw6ljcml0wqA6Cj4+Pj4+PiBJbiBncGlvX2hhbHRfcHJvYmUoKSwgb2ZfZmluZF9tYXRjaGlu
-Z19ub2RlKCkgd2lsbCByZXR1cm4gYSBub2RlCj4+Pj4+PiBwb2ludGVyIHdpdGggcmVmY291bnQg
-aW5jcmVtZW50ZWQuIFdlIHNob3VsZCB1c2Ugb2Zfbm9kZV9wdXQoKSBpbgo+Pj4+Pj4gZmFpbCBw
-YXRoIG9yIHdoZW4gaXQgaXMgbm90IHVzZWQgYW55bW9yZS4KPj4+Pj4+Cj4+Pj4+PiBTaWduZWQt
-b2ZmLWJ5OiBMaWFuZyBIZSA8d2luZGhsQDEyNi5jb20+Cj4+Pj4+PiAtLS0KPj4+Pj4+ICAgICBj
-aGFuZ2Vsb2c6Cj4+Pj4+PiAgICAgdjQ6IHJldXNlIGV4aXN0ICdlcnInIGFuZCB1c2UgYSBzaW1w
-bGUgY29kZSBzdHlsZSwgYWR2aXNlZCBieSBDSgo+Pj4+Pj4gICAgIHYzOiB1c2UgbG9jYWwgJ2No
-aWxkX25vZGUnIGFkdmlzZWQgYnkgTWljaGFlbC4KPj4+Pj4+ICAgICB2MjogdXNlIGdvdG8tbGFi
-ZWwgcGF0Y2ggc3R5bGUgYWR2aXNlZCBieSBDaHJpc3RvcGhlIExlcm95Lgo+Pj4+Pj4gICAgIHYx
-OiBhZGQgb2Zfbm9kZV9wdXQoKSBiZWZvcmUgZWFjaCBleGl0Lgo+Pj4+Pj4KPj4+Pj4+ICAgICBh
-cmNoL3Bvd2VycGMvcGxhdGZvcm1zLzg1eHgvc2d5X2N0czEwMDAuYyB8IDM1ICsrKysrKysrKysr
-KysrLS0tLS0tLS0tCj4+Pj4+PiAgICAgMSBmaWxlIGNoYW5nZWQsIDIyIGluc2VydGlvbnMoKyks
-IDEzIGRlbGV0aW9ucygtKQo+Pj4+Pj4KPj4+Pj4+IGRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMv
-cGxhdGZvcm1zLzg1eHgvc2d5X2N0czEwMDAuYyBiL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvODV4
-eC9zZ3lfY3RzMTAwMC5jCj4+Pj4+PiBpbmRleCA5OGFlNjQwNzUxOTMuLmU0NTg4OTQzZmU3ZSAx
-MDA2NDQKPj4+Pj4+IC0tLSBhL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvODV4eC9zZ3lfY3RzMTAw
-MC5jCj4+Pj4+PiArKysgYi9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zLzg1eHgvc2d5X2N0czEwMDAu
-Ywo+Pj4+Pj4gQEAgLTcxLDYgKzcxLDcgQEAgc3RhdGljIGludCBncGlvX2hhbHRfcHJvYmUoc3Ry
-dWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPj4+Pj4+ICAgICB7Cj4+Pj4+PiAgICAgCWVudW0g
-b2ZfZ3Bpb19mbGFncyBmbGFnczsKPj4+Pj4+ICAgICAJc3RydWN0IGRldmljZV9ub2RlICpub2Rl
-ID0gcGRldi0+ZGV2Lm9mX25vZGU7Cj4+Pj4+PiArCXN0cnVjdCBkZXZpY2Vfbm9kZSAqY2hpbGRf
-bm9kZTsKPj4+Pj4+ICAgICAJaW50IGdwaW8sIGVyciwgaXJxOwo+Pj4+Pj4gICAgIAlpbnQgdHJp
-Z2dlcjsKPj4+Pj4+ICAgICAKPj4+Pj4+IEBAIC03OCwyNiArNzksMjkgQEAgc3RhdGljIGludCBn
-cGlvX2hhbHRfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPj4+Pj4+ICAgICAJ
-CXJldHVybiAtRU5PREVWOwo+Pj4+Pj4gICAgIAo+Pj4+Pj4gICAgIAkvKiBJZiB0aGVyZSdzIG5v
-IG1hdGNoaW5nIGNoaWxkLCB0aGlzIGlzbid0IHJlYWxseSBhbiBlcnJvciAqLwo+Pj4+Pj4gLQlo
-YWx0X25vZGUgPSBvZl9maW5kX21hdGNoaW5nX25vZGUobm9kZSwgY2hpbGRfbWF0Y2gpOwo+Pj4+
-Pj4gLQlpZiAoIWhhbHRfbm9kZSkKPj4+Pj4+ICsJY2hpbGRfbm9kZSA9IG9mX2ZpbmRfbWF0Y2hp
-bmdfbm9kZShub2RlLCBjaGlsZF9tYXRjaCk7Cj4+Pj4+PiArCWlmICghY2hpbGRfbm9kZSkKPj4+
-Pj4+ICAgICAJCXJldHVybiAwOwo+Pj4+Pj4gICAgIAo+Pj4+Pj4gICAgIAkvKiBUZWNobmljYWxs
-eSB3ZSBjb3VsZCBqdXN0IHJlYWQgdGhlIGZpcnN0IG9uZSwgYnV0IHB1bmlzaAo+Pj4+Pj4gICAg
-IAkgKiBEVCB3cml0ZXJzIGZvciBpbnZhbGlkIGZvcm0uICovCj4+Pj4+PiAtCWlmIChvZl9ncGlv
-X2NvdW50KGhhbHRfbm9kZSkgIT0gMSkKPj4+Pj4+IC0JCXJldHVybiAtRUlOVkFMOwo+Pj4+Pj4g
-KwlpZiAob2ZfZ3Bpb19jb3VudChjaGlsZF9ub2RlKSAhPSAxKSB7Cj4+Pj4+PiArCQllcnIgPSAt
-RUlOVkFMOwo+Pj4+Pj4gKwkJZ290byBlcnJfcHV0Owo+Pj4+Pj4gKwl9Cj4+Pj4+PiAgICAgCj4+
-Pj4+PiAgICAgCS8qIEdldCB0aGUgZ3BpbyBudW1iZXIgcmVsYXRpdmUgdG8gdGhlIGR5bmFtaWMg
-YmFzZS4gKi8KPj4+Pj4+IC0JZ3BpbyA9IG9mX2dldF9ncGlvX2ZsYWdzKGhhbHRfbm9kZSwgMCwg
-JmZsYWdzKTsKPj4+Pj4+IC0JaWYgKCFncGlvX2lzX3ZhbGlkKGdwaW8pKQo+Pj4+Pj4gLQkJcmV0
-dXJuIC1FSU5WQUw7Cj4+Pj4+PiArCWdwaW8gPSBvZl9nZXRfZ3Bpb19mbGFncyhjaGlsZF9ub2Rl
-LCAwLCAmZmxhZ3MpOwo+Pj4+Pj4gKwlpZiAoIWdwaW9faXNfdmFsaWQoZ3BpbykpIHsKPj4+Pj4+
-ICsJCWVyciA9IC1FSU5WQUw7Cj4+Pj4+PiArCQlnb3RvdCBlcnJfcHV0Owo+Pj4+Pgo+Pj4+PiBE
-aWQgeW91IHRlc3QgdGhlIGJ1aWxkID8KPj4+Pgo+Pj4+IFNvcnJ5IGZvciB0aGlzIGZhdWx0Lgo+
-Pj4+Cj4+Pj4gSW4gZmFjdCwgSSBhbSBzdGlsbCBmaW5kaW5nIGFuIGVmZmljaWVudCB3YXkgdG8g
-YnVpbGRpbmcgZGlmZmVyZW50IGFyY2ggc291cmNlIGNvZGUgYXMgSSBvbmx5IGhhdmUgeDg2LTY0
-Lgo+Pj4+Cj4+Pj4gTm93IEkgYW0gdHJ5IHVzaW5nIFFFTVUuCj4+Pj4KPj4+PiBBbnl3YXksIHNv
-cnJ5IGZvciB0aGlzIGZhdWx0Lgo+Pj4KPj4+IFlvdSBjYW4gZmluZCBjcm9zcyBjb21waWxlcnMg
-Zm9yIG1vc3QgYXJjaGl0ZWN0dXJlcyBmb3IgeDg2LTY0IGhlcmUgOgo+Pj4gaHR0cHM6Ly9taXJy
-b3JzLmVkZ2Uua2VybmVsLm9yZy9wdWIvdG9vbHMvY3Jvc3N0b29sLwo+Pj4KPj4+IENocmlzdG9w
-aGUKPj4gCj4+IEhpLCBDaHJpc3RvcGhlIGFuZCBDb25vci4KPj4gCj4+IFNvcnJ5IHRvIHRyb3Vi
-bGUgeW91IGFnYWluLgo+PiAKPj4gTm93IEkgb25seSBrbm93IGhvdyB0byBxdWlja2x5IGlkZW50
-aWZ5IHRoZSByZWZjb3VudGluZyBidWdzLCBidXQgSSBjYW5ub3QgZWZmaWNpZW50bHkgZ2l2ZSBh
-IGJ1aWxkIHRlc3QuCj4+IAo+PiBGb3IgZXhhbXBsZSwgSSB1c2UgdGhlIGNyb3NzIGNvbXBpbGVy
-cyAncG93ZXJwYy1saW51eC1nbnUtZ2NjJyB0byBjb21waWxlICdhcmNoL3Bvd2VycGMvcGxhdGZv
-cm1zLzg1eHgvc2d5X2N0czEwMDAuYycgd2l0aCAtZnN5bnRheC1vbmx5IGZsYWcuCj4+IEJ1dCBJ
-IG1lZXQgdG9vIG1hbnkgaGVhZGVyIGZpbGUgbWlzc2luZyBlcnJvcnMuIEV2ZW4gaWYgSSBhZGQg
-c29tZSAnaW5jbHVkZScgcGF0aGVzLCBlLmcuLCAuL2FyY2gvcG93ZXJwYy9pbmNsdWRlLCAuL2lu
-Y2x1ZGUsCj4+IHRoZXJlIGFyZSBzdGlsbCB0b28gbWFueSBvdGhlciBlcnJvcnMuCj4+IAo+PiBT
-byBpZiB0aGVyZSBpcyBhbnkgZWZmaWNpZW50IHdheSB0byBjaGVjayBteSBwYXRjaCBjb2RlIHRv
-IGF2b2lkICdnb3RvdCcgZXJyb3IgYWdhaW4uCj4KPmlkayBhbnl0aGluZyBhYm91dCBwb3dlcnBj
-LCBidXQgd2hhdCBJIGZpbmQgaXMgYSBuaWNlIHdheSB0byBnZXQgYSBjb21waWxlcgo+Zm9yIGFu
-IGFyY2ggSSBkb24ndCB1c2UgaXMgdG8gc2VhcmNoIG9uIGxvcmUua2VybmVsLm9yZyBmb3IgYSAw
-ZGF5IHJvYm90Cj5idWlsZCBlcnJvciBzaW5jZSBpdCBnaXZlcyBpbnN0cnVjdGlvbnMgZm9yIGJ1
-aWxkaW5nIG9uIHRoYXQgYXJjaC4KPkZvciBleGFtcGxlOgo+aHR0cHM6Ly9sb3JlLmtlcm5lbC5v
-cmcvbGludXhwcGMtZGV2LzIwMjIwNjA2MDkxMC5yWU5URnFkSS1sa3BAaW50ZWwuY29tLwo+Cj4K
-PkluIHRoaXMgY2FzZSwgeW91ciBidWcgc2VlbXMgb2J2aW91cz8gWW91IHR5cGVkICJnb3RvdCIg
-aW5zdGVhZCBvZiAiZ290byIuCj4KPkhvcGUgdGhhdCBoZWxwcywKPkNvbm9yLgo+Cj4+IAo+PiBU
-aGFua3MgYWdhaW4sIENocmlzdG9waGUgYW5kIENvbm9yLgo+PiAKPj4gTGlhbmcKCgpUaGFua3Mg
-c28gbXVjaCwgSSB3aWxsIHRyeSBpdC4=
+On Fri, Jun 17, 2022 at 09:21:31AM +0100, Marc Zyngier wrote:
+> On Thu, 16 Jun 2022 16:11:34 +0000, Quentin Perret wrote:
+> > Commit a7259df76702 ("memblock: make memblock_find_in_range method
+> > private") changed the API using which memory is reserved for the pKVM
+> > hypervisor. However, it seems that memblock_phys_alloc() differs
+> > from the original API in terms of kmemleak semantics -- the old one
+> > excluded the reserved regions from kmemleak scans when the new one
+> > doesn't seem to. Unfortunately, when protected KVM is enabled, all
+> > kernel accesses to pKVM-private memory result in a fatal exception,
+> > which can now happen because of kmemleak scans:
+> > 
+> > [...]
+> 
+> Applied to fixes, thanks!
+> 
+> [1/1] KVM: arm64: Prevent kmemleak from accessing pKVM memory
+>       commit: 9e5afa8a537f742bccc2cd91bc0bef4b6483ee98
+
+I'd really like to update the changelog to this:
+
+Commit a7259df76702 ("memblock: make memblock_find_in_range method
+private") changed the API using which memory is reserved for the pKVM
+hypervisor. However, memblock_phys_alloc() differs from the original API in
+terms of kmemleak semantics -- the old one didn't report the reserved
+regions to kmemleak while the new one does. Unfortunately, when protected
+KVM is enabled, all kernel accesses to pKVM-private memory result in a
+fatal exception, which can now happen because of kmemleak scans:
+
+$ echo scan > /sys/kernel/debug/kmemleak
+[   34.991354] kvm [304]: nVHE hyp BUG at: [<ffff800008fa3750>] __kvm_nvhe_handle_host_mem_abort+0x270/0x290!
+...
+
+Fix this by explicitly excluding the hypervisor's memory pool from
+kmemleak like we already do for the hyp BSS.
+
+
+> Cheers,
+> 
+> 	M.
+> -- 
+> Marc Zyngier <maz@kernel.org>
+> 
+
+-- 
+Sincerely yours,
+Mike.
