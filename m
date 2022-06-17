@@ -2,395 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00BDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 20:32:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C523C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 20:33:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237702AbiFQUcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 16:32:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33876 "EHLO
+        id S234703AbiFQUdC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 16:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbiFQUcs (ORCPT
+        with ESMTP id S241902AbiFQUc5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 16:32:48 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4599FFD;
-        Fri, 17 Jun 2022 13:32:46 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id a2so8538806lfg.5;
-        Fri, 17 Jun 2022 13:32:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Nt7BK1f6cRFHz6pLGJSxHQltGnG9CIf3ikjX+Fr4Z0c=;
-        b=iZtZd6M+uTIfLBlp270F0Meh1CS3eDV5RHh0StqLHjHyXEXHs5Nppx1XK5u7JQFthi
-         6bh8XC05k/qvhk0wG/MNjGl26sOHWSZkJT9r3viYgvtqFKocHdHcXjJs9YxmmEDKLk4N
-         ckgItRtZ535KiqlH8Y6bqGMnl+H7fuUmybY/tSDexrXzIfK/gXy4EACP0okZ8LvyhqPL
-         x2ejyKULTvtaEhQaVdw5eB8D+x6W67SKT4KOkQ7vgVywnkMVIQSF+27bHGi6Huah2KAk
-         WfBK1m2EHbz576XCtxNaK0eyB1pB9OC5BSbPchGneuvh37HOPgnA19qJo50q6b0KHC0F
-         w+ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Nt7BK1f6cRFHz6pLGJSxHQltGnG9CIf3ikjX+Fr4Z0c=;
-        b=djYBwgIkRSXVB7Zx4ctToHH1hjhu1BODOVfDVw8iz8bqqvnnEAzHseevFsuhgQgB0y
-         s6hD0AhuFkjpKCc4NiqVY5VjiNHyc+LujxZw1OvvxI+UY8kng9VxRonCxXWagwDaEvzj
-         xFq/dnji3UtXZqEk/lIW/GbLA3ecgxaBi6GYlk/4JiOgP2sTNrsYI5IClg0FLT+gF4XF
-         sHl1/kkGSC+vBBhH7CDt5vrAvmLtI74wpKGnn26cIX5EAHDliOVaI0fmmf7UDos6AKKe
-         j3ZjqLxxN0kJlO9nxPsy9450HQDHXQOaqFZhKn4W6c+5h4m9Op995ckME79HTp49Zjcp
-         aAGQ==
-X-Gm-Message-State: AJIora+xRLvK1LG7/c2u06d2/4Dbr5PYbMgj3RhDa3WXuJ74fgH46Zp4
-        oyJJp24iwBB3zSat131/9/U=
-X-Google-Smtp-Source: AGRyM1vW2061WCMUWRb0OHVW1/LX+0Q11W4LRpcWpCFqKpxFHErX9s6W+TmseVwJHw2QzXUPIT2xog==
-X-Received: by 2002:a05:6512:2623:b0:47d:ace7:c804 with SMTP id bt35-20020a056512262300b0047dace7c804mr6470255lfb.647.1655497964702;
-        Fri, 17 Jun 2022 13:32:44 -0700 (PDT)
-Received: from mobilestation ([95.79.189.214])
-        by smtp.gmail.com with ESMTPSA id j10-20020a056512344a00b0047939239567sm752948lfr.240.2022.06.17.13.32.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 13:32:44 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 23:32:42 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 16/23] ata: ahci: Introduce firmware-specific caps
- initialization
-Message-ID: <20220617203242.3ujyknllrx2frzmq@mobilestation>
-References: <20220610081801.11854-1-Sergey.Semin@baikalelectronics.ru>
- <20220610081801.11854-17-Sergey.Semin@baikalelectronics.ru>
- <c1fa74f0-28d7-3394-6c43-5063c62db666@opensource.wdc.com>
- <20220615211134.2wxzizbpmfl2akjh@mobilestation>
- <eb65ccc8-1a59-5847-77c4-80420864eb17@opensource.wdc.com>
+        Fri, 17 Jun 2022 16:32:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B06C15FDC;
+        Fri, 17 Jun 2022 13:32:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA1A862002;
+        Fri, 17 Jun 2022 20:32:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5542C3411B;
+        Fri, 17 Jun 2022 20:32:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655497974;
+        bh=WjorfQwH6E8hN5MzDsY4aBtjcQ1w6h/bD/WKIu6wqaM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=NpWWaQDsQrlhRYE9Y5iLyRQtUhmGo3LRH69xMlAYg3ohixvolV91Z9JCv9WMv+OtF
+         F/vyYyVaXNSkq/CJC1f6298aNY31U11AtAwl3SII6a/nTFbvSn4Uk1Ow25kxAa1B9h
+         WoC01+iw2POKAaOyXn9OtnWSeqdK8BAC2z5BrkuQvnTgV8SuGpM/DOMd/rBy4CSjK1
+         g22L9kSZ3m8rcwax5SvU3xbN4wceW/WyQ3rnAuBL48T6itcJntc/509OwFafgc3noP
+         lFCGa3zityWCztPZmdAjznVM7kw84KbfkdoP/OMOZyzovHh9M5CERs/1qDfj1pjS7e
+         MWk8TaJn8HjYg==
+Date:   Fri, 17 Jun 2022 15:32:52 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Lucas De Marchi <lucas.demarchi@intel.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        linux-pci@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, priyanka.dandamudi@intel.com,
+        matthew.auld@intel.com, Bjorn Helgaas <bhelgaas@google.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Sergei Miroshnichenko <s.miroshnichenko@yadro.com>
+Subject: Re: [Intel-gfx] [PATCH 1/2] drm/i915: Add support for LMEM PCIe
+ resizable bar
+Message-ID: <20220617203252.GA1203491@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <eb65ccc8-1a59-5847-77c4-80420864eb17@opensource.wdc.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220617184441.7kbs4al7gmpxjuuy@ldmartin-desk2>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 09:29:50AM +0900, Damien Le Moal wrote:
-> On 2022/06/16 6:11, Serge Semin wrote:
-> > On Tue, Jun 14, 2022 at 05:42:35PM +0900, Damien Le Moal wrote:
-> >> On 6/10/22 17:17, Serge Semin wrote:
-> >>> There are systems with no BIOS or comprehensive embedded firmware which
-> >>> could be able to properly initialize the SATA AHCI controller
-> >>> platform-specific capabilities. In that case a good alternative to having
-> >>> a clever bootloader is to create a device tree node with the properties
-> >>> well describing all the AHCI-related platform specifics. All the settings
-> >>> which are normally detected and marked as available in the HBA and its
-> >>> ports capabilities fields [1] could be defined in the platform DTB by
-> >>> means of a set of the dedicated properties. Such approach perfectly fits
-> >>> to the DTB-philosophy - to provide hardware/platform description.
-> >>>
-> >>> So here we suggest to extend the SATA AHCI device tree bindings with two
-> >>> additional DT-properties:
-> >>> 1) "hba-cap" - HBA platform generic capabilities like:
-> >>>    - SSS - Staggered Spin-up support.
-> >>>    - SMPS - Mechanical Presence Switch support.
-> >>> 2) "hba-port-cap" - HBA platform port capabilities like:
-> >>>    - HPCP - Hot Plug Capable Port.
-> >>>    - MPSP - Mechanical Presence Switch Attached to Port.
-> >>>    - CPD - Cold Presence Detection.
-> >>>    - ESP - External SATA Port.
-> >>>    - FBSCP - FIS-based Switching Capable Port.
-> >>> All of these capabilities require to have a corresponding hardware
-> >>> configuration. Thus it's ok to have them defined in DTB.
-> >>>
-> >>> Even though the driver currently takes into account the state of the ESP
-> >>> and FBSCP flags state only, there is nothing wrong with having all of them
-> >>> supported by the generic AHCI library in order to have a complete OF-based
-> >>> platform-capabilities initialization procedure. These properties will be
-> >>> parsed in the ahci_platform_get_resources() method and their values will
-> >>> be stored in the saved_* fields of the ahci_host_priv structure, which in
-> >>> its turn then will be used to restore the H.CAP, H.PI and P#.CMD
-> >>> capability fields on device init and after HBA reset.
-> >>>
-> >>> Please note this modification concerns the HW-init HBA and its ports flags
-> >>> only, which are by specification [1] are supposed to be initialized by the
-> >>> BIOS/platform firmware/expansion ROM and which are normally declared in
-> >>> the one-time-writable-after-reset register fields. Even though these flags
-> >>> aren't supposed to be cleared after HBA reset some AHCI instances may
-> >>> violate that rule so we still need to perform the fields resetting after
-> >>> each reset. Luckily the corresponding functionality has already been
-> >>> partly implemented in the framework of the ahci_save_initial_config() and
-> >>> ahci_restore_initial_config() methods.
-> >>>
-> >>> [1] Serial ATA AHCI 1.3.1 Specification, p. 103
-> >>>
-> >>> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> >>>
-> >>> ---
-> >>>
-> >>> Changelog v4:
-> >>> - Convert the boolean properties to the bitfield DT-properties. (@Rob)
-> >>> ---
-> >>>  drivers/ata/ahci.h             |  1 +
-> >>>  drivers/ata/libahci.c          | 51 ++++++++++++++++++++++++++++------
-> >>>  drivers/ata/libahci_platform.c | 41 +++++++++++++++++++++++++--
-> >>>  3 files changed, 82 insertions(+), 11 deletions(-)
-> >>>
-> >>> diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
-> >>> index 8b9826533ae5..0de221055961 100644
-> >>> --- a/drivers/ata/ahci.h
-> >>> +++ b/drivers/ata/ahci.h
-> >>> @@ -337,6 +337,7 @@ struct ahci_host_priv {
-> >>>  	u32			saved_cap;	/* saved initial cap */
-> >>>  	u32			saved_cap2;	/* saved initial cap2 */
-> >>>  	u32			saved_port_map;	/* saved initial port_map */
-> >>> +	u32			saved_port_cap[AHCI_MAX_PORTS]; /* saved port_cap */
-> >>>  	u32 			em_loc; /* enclosure management location */
-> >>>  	u32			em_buf_sz;	/* EM buffer size in byte */
-> >>>  	u32			em_msg_type;	/* EM message type */
-> >>> diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-> >>> index 1ffaa5f5f21a..954386a2b500 100644
-> >>> --- a/drivers/ata/libahci.c
-> >>> +++ b/drivers/ata/libahci.c
-> >>> @@ -16,6 +16,7 @@
-> >>>   * http://www.intel.com/technology/serialata/pdf/rev1_1.pdf
-> >>>   */
-> >>>  
-> >>> +#include <linux/bitops.h>
-> >>>  #include <linux/kernel.h>
-> >>>  #include <linux/gfp.h>
-> >>>  #include <linux/module.h>
-> >>> @@ -443,16 +444,28 @@ static ssize_t ahci_show_em_supported(struct device *dev,
-> >>>  void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
-> >>>  {
-> >>>  	void __iomem *mmio = hpriv->mmio;
-> >>> -	u32 cap, cap2, vers, port_map;
-> >>> +	void __iomem *port_mmio;
-> >>> +	unsigned long port_map;
-> >>> +	u32 cap, cap2, vers;
-> >>>  	int i;
-> >>>  
-> >>>  	/* make sure AHCI mode is enabled before accessing CAP */
-> >>>  	ahci_enable_ahci(mmio);
-> >>>  
-> >>> -	/* Values prefixed with saved_ are written back to host after
-> >>> -	 * reset.  Values without are used for driver operation.
-> >>> +	/*
-> >>> +	 * Values prefixed with saved_ are written back to the HBA and ports
-> >>> +	 * registers after reset. Values without are used for driver operation.
-> >>> +	 */
-> >>> +
-> >>> +	/*
-> >>> +	 * Override HW-init HBA capability fields with the platform-specific
-> >>> +	 * values. The rest of the HBA capabilities are defined as Read-only
-> >>> +	 * and can't be modified in CSR anyway.
-> >>>  	 */
-> >>> -	hpriv->saved_cap = cap = readl(mmio + HOST_CAP);
-> >>> +	cap = readl(mmio + HOST_CAP);
-> >>> +	if (hpriv->saved_cap)
-> >>> +		cap = (cap & ~(HOST_CAP_SSS | HOST_CAP_MPS)) | hpriv->saved_cap;
-> >>> +	hpriv->saved_cap = cap;
-> >>>  
-> >>>  	/* CAP2 register is only defined for AHCI 1.2 and later */
-> >>>  	vers = readl(mmio + HOST_VERSION);
-> >>> @@ -519,7 +532,7 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
-> >>>  	/* Override the HBA ports mapping if the platform needs it */
-> >>>  	port_map = readl(mmio + HOST_PORTS_IMPL);
-> >>>  	if (hpriv->saved_port_map && port_map != hpriv->saved_port_map) {
-> >>> -		dev_info(dev, "forcing port_map 0x%x -> 0x%x\n",
-> >>> +		dev_info(dev, "forcing port_map 0x%lx -> 0x%x\n",
-> >>
-> > 
-> >> This change is not necessary.
-> > 
-> > It is. The port_map type has been changed.
-> 
-> Ignore. When I read the patches the other day, the mailer font had that "l" look
-> like a "1" :) My mistake.
+[+cc Christian, author of pci_resize_resource(), Sergei, author of
+rebalancing patches]
 
-Ok.)
+Hi Lucas,
 
--Sergey
+On Fri, Jun 17, 2022 at 11:44:41AM -0700, Lucas De Marchi wrote:
+> Cc'ing intel-pci, lkml, Bjorn
+> 
+> On Fri, Jun 17, 2022 at 11:32:37AM +0300, Jani Nikula wrote:
+> > On Thu, 16 Jun 2022, priyanka.dandamudi@intel.com wrote:
+> > > From: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
+> > > 
+> > > Add support for the local memory PICe resizable bar, so that
+> > > local memory can be resized to the maximum size supported by the device,
+> > > and mapped correctly to the PCIe memory bar. It is usual that GPU
+> > > devices expose only 256MB BARs primarily to be compatible with 32-bit
+> > > systems. So, those devices cannot claim larger memory BAR windows size due
+> > > to the system BIOS limitation. With this change, it would be possible to
+> > > reprogram the windows of the bridge directly above the requesting device
+> > > on the same BAR type.
+> 
+> There is a big caveat here that this may be too late as other drivers
+> may have already mapped their BARs - so probably too late in the pci scan
+> for it to be effective. In fact, after using this for a while, it seems
+> to fail too often, particularly on CFL systems.
 
-> 
+Help me understand the "too late" part.  Do you mean that there is
+enough available space for the max BAR size, but it's fragmented and
+therefore not usable?  And that if we could do something earlier,
+before drivers have claimed their devices, we might be able to compact
+the BARs of other devices to make a larger contiguous available space?
+
+That is theoretically possible, but I think the current
+pci_resize_resource() only supports resizing of the specified BAR and
+any upstream bridge windows.  I don't think it supports moving BARs of
+other devices.
+
+Sergei did some nice work that might help with this situation because
+it can move BARs around more generally.  It hasn't quite achieved
+critical mass yet, but maybe this would help get there:
+
+  https://lore.kernel.org/linux-pci/20201218174011.340514-1-s.miroshnichenko@yadro.com/
+
+If I understand Sergei's series correctly, this rebalancing actually
+cannot be done during enumeration because we only move BARs if a
+driver for the device indicates that it supports it, so there would be
+no requirement to do this early.
+
+> Do we have any alternative to be done in the PCI subsystem during the
+> scan?  There is other work in progress to allow i915 to use the rest of
+> the device memory even with a smaller BAR, but it would be better if we
+> can improve our chances of succeeding the resize.
+
+> > > Signed-off-by: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
+> > > Signed-off-by: Michał Winiarski <michal.winiarski@intel.com>
+> > > Cc: Stuart Summers <stuart.summers@intel.com>
+> > > Cc: Michael J Ruhl <michael.j.ruhl@intel.com>
+> > > Cc: Prathap Kumar Valsan <prathap.kumar.valsan@intel.com>
+> > > Signed-off-by: Priyanka Dandamudi <priyanka.dandamudi@intel.com>
+> > > Reviewed-by: Matthew Auld <matthew.auld@intel.com>
 > > 
-> >>
-> >>>  			 port_map, hpriv->saved_port_map);
-> >>>  		port_map = hpriv->saved_port_map;
-> >>>  	} else {
-> >>> @@ -527,7 +540,7 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
-> >>>  	}
-> >>>  
-> >>>  	if (hpriv->mask_port_map) {
-> >>> -		dev_warn(dev, "masking port_map 0x%x -> 0x%x\n",
-> >>> +		dev_warn(dev, "masking port_map 0x%lx -> 0x%lx\n",
-> >>
-> >> Same.
+> > Please see https://lore.kernel.org/r/87pmj8vesm.fsf@intel.com
 > > 
-> > ditto
+> > > ---
+> > >  drivers/gpu/drm/i915/i915_driver.c | 92 ++++++++++++++++++++++++++++++
+> > >  1 file changed, 92 insertions(+)
+> > > 
+> > > diff --git a/drivers/gpu/drm/i915/i915_driver.c b/drivers/gpu/drm/i915/i915_driver.c
+> > > index d26dcca7e654..4bdb471cb2e2 100644
+> > > --- a/drivers/gpu/drm/i915/i915_driver.c
+> > > +++ b/drivers/gpu/drm/i915/i915_driver.c
+> > > @@ -303,6 +303,95 @@ static void sanitize_gpu(struct drm_i915_private *i915)
+> > >  		__intel_gt_reset(to_gt(i915), ALL_ENGINES);
+> > >  }
+> > > 
+> > > +static void __release_bars(struct pci_dev *pdev)
+> > > +{
+> > > +	int resno;
+> > > +
+> > > +	for (resno = PCI_STD_RESOURCES; resno < PCI_STD_RESOURCE_END; resno++) {
+> > > +		if (pci_resource_len(pdev, resno))
+> > > +			pci_release_resource(pdev, resno);
+> > > +	}
+> > > +}
+> > > +
+> > > +static void
+> > > +__resize_bar(struct drm_i915_private *i915, int resno, resource_size_t size)
+> > > +{
+> > > +	struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
+> > > +	int bar_size = pci_rebar_bytes_to_size(size);
+> > > +	int ret;
+> > > +
+> > > +	__release_bars(pdev);
+> > > +
+> > > +	ret = pci_resize_resource(pdev, resno, bar_size);
+> > > +	if (ret) {
+> > > +		drm_info(&i915->drm, "Failed to resize BAR%d to %dM (%pe)\n",
+> > > +			 resno, 1 << bar_size, ERR_PTR(ret));
+> > > +		return;
+> > > +	}
+> > > +
+> > > +	drm_info(&i915->drm, "BAR%d resized to %dM\n", resno, 1 << bar_size);
+> > > +}
+> > > +
+> > > +/* BAR size starts from 1MB - 2^20 */
+> > > +#define BAR_SIZE_SHIFT 20
+> > > +static resource_size_t
+> > > +__lmem_rebar_size(struct drm_i915_private *i915, int resno)
+> > > +{
+> > > +	struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
+> > > +	u32 rebar = pci_rebar_get_possible_sizes(pdev, resno);
+> > > +	resource_size_t size;
+> > > +
+> > > +	if (!rebar)
+> > > +		return 0;
+> > > +
+> > > +	size = 1ULL << (__fls(rebar) + BAR_SIZE_SHIFT);
+> > > +
+> > > +	if (size <= pci_resource_len(pdev, resno))
+> > > +		return 0;
+> > > +
+> > > +	return size;
+> > > +}
+> > > +
+> > > +#define LMEM_BAR_NUM 2
+> > > +static void i915_resize_lmem_bar(struct drm_i915_private *i915)
+> > > +{
+> > > +	struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
+> > > +	struct pci_bus *root = pdev->bus;
+> > > +	struct resource *root_res;
+> > > +	resource_size_t rebar_size = __lmem_rebar_size(i915, LMEM_BAR_NUM);
+> > > +	u32 pci_cmd;
+> > > +	int i;
+> > > +
+> > > +	if (!rebar_size)
+> > > +		return;
+> > > +
+> > > +	/* Find out if root bus contains 64bit memory addressing */
+> > > +	while (root->parent)
+> > > +		root = root->parent;
+> > > +
+> > > +	pci_bus_for_each_resource(root, root_res, i) {
+> > > +		if (root_res && root_res->flags & (IORESOURCE_MEM |
+> > > +					IORESOURCE_MEM_64) && root_res->start > 0x100000000ull)
+> > > +			break;
+> > > +	}
+> > > +
+> > > +	/* pci_resize_resource will fail anyways */
+> > > +	if (!root_res) {
+> > > +		drm_info(&i915->drm, "Can't resize LMEM BAR - platform support is missing\n");
+> > > +		return;
+> > > +	}
+> > > +
+> > > +	/* First disable PCI memory decoding references */
+> > > +	pci_read_config_dword(pdev, PCI_COMMAND, &pci_cmd);
+> > > +	pci_write_config_dword(pdev, PCI_COMMAND,
+> > > +			       pci_cmd & ~PCI_COMMAND_MEMORY);
+> > > +
+> > > +	__resize_bar(i915, LMEM_BAR_NUM, rebar_size);
+> > > +
+> > > +	pci_assign_unassigned_bus_resources(pdev->bus);
+> > > +	pci_write_config_dword(pdev, PCI_COMMAND, pci_cmd);
+> > > +}
+> > > +
+> > >  /**
+> > >   * i915_driver_early_probe - setup state not requiring device access
+> > >   * @dev_priv: device private
+> > > @@ -852,6 +941,9 @@ int i915_driver_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+> > > 
+> > >  	disable_rpm_wakeref_asserts(&i915->runtime_pm);
+> > > 
+> > > +	if (HAS_LMEM(i915))
+> > > +		i915_resize_lmem_bar(i915);
+> > > +
+> > >  	intel_vgpu_detect(i915);
+> > > 
+> > >  	ret = intel_gt_probe_all(i915);
 > > 
-> >>
-> >>>  			port_map,
-> >>>  			port_map & hpriv->mask_port_map);
-> >>>  		port_map &= hpriv->mask_port_map;
-> >>> @@ -546,7 +559,7 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
-> >>>  		 */
-> >>>  		if (map_ports > ahci_nr_ports(cap)) {
-> >>>  			dev_warn(dev,
-> >>> -				 "implemented port map (0x%x) contains more ports than nr_ports (%u), using nr_ports\n",
-> >>> +				 "implemented port map (0x%lx) contains more ports than nr_ports (%u), using nr_ports\n",
-> >>
-> >> Same.
-> > 
-> > ditto.
-> > 
-> >>
-> >>>  				 port_map, ahci_nr_ports(cap));
-> >>>  			port_map = 0;
-> >>>  		}
-> >>> @@ -555,12 +568,26 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
-> >>>  	/* fabricate port_map from cap.nr_ports for < AHCI 1.3 */
-> >>>  	if (!port_map && vers < 0x10300) {
-> >>>  		port_map = (1 << ahci_nr_ports(cap)) - 1;
-> >>> -		dev_warn(dev, "forcing PORTS_IMPL to 0x%x\n", port_map);
-> >>> +		dev_warn(dev, "forcing PORTS_IMPL to 0x%lx\n", port_map);
-> >>
-> >> And again not needed.
-> > 
-> > and ditto.
-> > 
-> >>
-> >>>  
-> >>>  		/* write the fixed up value to the PI register */
-> >>>  		hpriv->saved_port_map = port_map;
-> >>>  	}
-> >>>  
-> >>> +	/*
-> >>> +	 * Preserve the ports capabilities defined by the platform. Note there
-> >>> +	 * is no need in storing the rest of the P#.CMD fields since they are
-> >>> +	 * volatile.
-> >>> +	 */
-> >>> +	for_each_set_bit(i, &port_map, AHCI_MAX_PORTS) {
-> >>> +		if (hpriv->saved_port_cap[i])
-> >>> +			continue;
-> >>> +
-> >>> +		port_mmio = __ahci_port_base(hpriv, i);
-> >>> +		hpriv->saved_port_cap[i] =
-> >>> +			readl(port_mmio + PORT_CMD) & PORT_CMD_CAP;
-> >>> +	}
-> >>> +
-> >>>  	/* record values to use during operation */
-> >>>  	hpriv->cap = cap;
-> >>>  	hpriv->cap2 = cap2;
-> >>> @@ -590,13 +617,21 @@ EXPORT_SYMBOL_GPL(ahci_save_initial_config);
-> >>>  static void ahci_restore_initial_config(struct ata_host *host)
-> >>>  {
-> >>>  	struct ahci_host_priv *hpriv = host->private_data;
-> >>> +	unsigned long port_map = hpriv->port_map;
-> >>>  	void __iomem *mmio = hpriv->mmio;
-> >>> +	void __iomem *port_mmio;
-> >>> +	int i;
-> >>>  
-> >>>  	writel(hpriv->saved_cap, mmio + HOST_CAP);
-> >>>  	if (hpriv->saved_cap2)
-> >>>  		writel(hpriv->saved_cap2, mmio + HOST_CAP2);
-> >>>  	writel(hpriv->saved_port_map, mmio + HOST_PORTS_IMPL);
-> >>>  	(void) readl(mmio + HOST_PORTS_IMPL);	/* flush */
-> >>> +
-> >>> +	for_each_set_bit(i, &port_map, AHCI_MAX_PORTS) {
-> >>> +		port_mmio = __ahci_port_base(hpriv, i);
-> >>> +		writel(hpriv->saved_port_cap[i], port_mmio + PORT_CMD);
-> >>> +	}
-> >>>  }
-> >>>  
-> >>>  static unsigned ahci_scr_offset(struct ata_port *ap, unsigned int sc_reg)
-> >>> diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
-> >>> index efe640603f3f..8b542a8bc487 100644
-> >>> --- a/drivers/ata/libahci_platform.c
-> >>> +++ b/drivers/ata/libahci_platform.c
-> >>> @@ -23,6 +23,7 @@
-> >>>  #include <linux/pm_runtime.h>
-> >>>  #include <linux/of_platform.h>
-> >>>  #include <linux/reset.h>
-> >>> +
-> >>
-> >> white line change.
-> > 
-> > Ok. I'll drop it.
-> > 
-> > -Sergey
-> > 
-> >>
-> >>>  #include "ahci.h"
-> >>>  
-> >>>  static void ahci_host_stop(struct ata_host *host);
-> >>> @@ -383,6 +384,34 @@ static int ahci_platform_get_regulator(struct ahci_host_priv *hpriv, u32 port,
-> >>>  	return rc;
-> >>>  }
-> >>>  
-> >>> +static int ahci_platform_get_firmware(struct ahci_host_priv *hpriv,
-> >>> +				      struct device *dev)
-> >>> +{
-> >>> +	struct device_node *child;
-> >>> +	u32 port;
-> >>> +
-> >>> +	if (!of_property_read_u32(dev->of_node, "hba-cap", &hpriv->saved_cap))
-> >>> +		hpriv->saved_cap &= (HOST_CAP_SSS | HOST_CAP_MPS);
-> >>> +
-> >>> +	of_property_read_u32(dev->of_node,
-> >>> +			     "ports-implemented", &hpriv->saved_port_map);
-> >>> +
-> >>> +	for_each_child_of_node(dev->of_node, child) {
-> >>> +		if (!of_device_is_available(child))
-> >>> +			continue;
-> >>> +
-> >>> +		if (of_property_read_u32(child, "reg", &port)) {
-> >>> +			of_node_put(child);
-> >>> +			return -EINVAL;
-> >>> +		}
-> >>> +
-> >>> +		if (!of_property_read_u32(child, "hba-port-cap", &hpriv->saved_port_cap[port]))
-> >>> +			hpriv->saved_port_cap[port] &= PORT_CMD_CAP;
-> >>> +	}
-> >>> +
-> >>> +	return 0;
-> >>> +}
-> >>> +
-> >>>  /**
-> >>>   * ahci_platform_get_resources - Get platform resources
-> >>>   * @pdev: platform device to get resources for
-> >>> @@ -523,9 +552,6 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
-> >>>  		goto err_out;
-> >>>  	}
-> >>>  
-> >>> -	of_property_read_u32(dev->of_node,
-> >>> -			     "ports-implemented", &hpriv->saved_port_map);
-> >>> -
-> >>>  	if (child_nodes) {
-> >>>  		for_each_child_of_node(dev->of_node, child) {
-> >>>  			u32 port;
-> >>> @@ -590,6 +616,15 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
-> >>>  		if (rc == -EPROBE_DEFER)
-> >>>  			goto err_out;
-> >>>  	}
-> >>> +
-> >>> +	/*
-> >>> +	 * Retrieve firmware-specific flags which then will be used to set
-> >>> +	 * the HW-init fields of HBA and its ports
-> >>> +	 */
-> >>> +	rc = ahci_platform_get_firmware(hpriv, dev);
-> >>> +	if (rc)
-> >>> +		goto err_out;
-> >>> +
-> >>>  	pm_runtime_enable(dev);
-> >>>  	pm_runtime_get_sync(dev);
-> >>>  	hpriv->got_runtime_pm = true;
-> >>
-> >>
-> >> -- 
-> >> Damien Le Moal
-> >> Western Digital Research
-> 
-> 
-> -- 
-> Damien Le Moal
-> Western Digital Research
+> > -- 
+> > Jani Nikula, Intel Open Source Graphics Center
