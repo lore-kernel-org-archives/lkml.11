@@ -2,71 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9EDC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 04:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 079F3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 05:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380050AbiFQEoP (ORCPT
+        id S1379944AbiFQE77 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 00:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57080 "EHLO
+        Fri, 17 Jun 2022 00:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380017AbiFQEoN (ORCPT
+        with ESMTP id S234216AbiFQE76 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 00:44:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F2664D0C
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 21:44:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8E0D61E04
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:44:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 16A9EC3411B;
-        Fri, 17 Jun 2022 04:44:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655441052;
-        bh=7s9DpTvHeOxDSPMsQJSfiVg3fwACOC+KfYrtWEplkAg=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Yq/GRo2POpBsoJqWcr8cPFxIblNW2GJPEHnmxndUSjtw7KAzUscEFofBOFCXJWwak
-         Ws68Lb3lRght5pC6yDpnONDx0R6QvoCZTfRn+JVYWadRyfPGIUUxICmP+vqlYkR3ip
-         WL1FHI6LlArs88PJfM6Fpoy2obo5vvGs57QzG5C2IgOqNlPBZpS5XBSTsahUQiwTqs
-         63hh/vU1ASo4ae5GotPswqIjZtzaqo29yuRywFHeO2YYsZwwnijh5S9bvfr1MrNHMm
-         nZgR6O0U5Jgle4QGNa8S+D5V2OUPO07RhhK6AmKueDeuMh2fHPjPq3KvnVmtmGz5j1
-         Qcc7czb6b/2Qw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 03A49E6D466;
-        Fri, 17 Jun 2022 04:44:12 +0000 (UTC)
-Subject: Re: [git pull] drm fixes for 5.19-rc3
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAPM=9twTA=AXfjj=eq558KLmE_TfmkoRsm6Sm5MUB0zCZ174Wg@mail.gmail.com>
-References: <CAPM=9twTA=AXfjj=eq558KLmE_TfmkoRsm6Sm5MUB0zCZ174Wg@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAPM=9twTA=AXfjj=eq558KLmE_TfmkoRsm6Sm5MUB0zCZ174Wg@mail.gmail.com>
-X-PR-Tracked-Remote: git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-06-17
-X-PR-Tracked-Commit-Id: 65cf7c02cfc7c36a3e86f3da5818dabc32c270ff
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 47700948a4abb4a5ae13ef943ff682a7f327547a
-Message-Id: <165544105200.26112.4731974293198817958.pr-tracker-bot@kernel.org>
-Date:   Fri, 17 Jun 2022 04:44:12 +0000
-To:     Dave Airlie <airlied@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        Fri, 17 Jun 2022 00:59:58 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C468663CE
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 21:59:56 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o245C-00045B-Mw; Fri, 17 Jun 2022 06:59:46 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o2459-000zh1-32; Fri, 17 Jun 2022 06:59:44 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o2459-00FBSf-RL; Fri, 17 Jun 2022 06:59:43 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v2 1/1] net: phy: at803x: fix NULL pointer dereference on AR9331 PHY
+Date:   Fri, 17 Jun 2022 06:59:43 +0200
+Message-Id: <20220617045943.3618608-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 17 Jun 2022 14:13:41 +1000:
+Latest kernel will explode on the PHY interrupt config, since it depends
+now on allocated priv. So, run probe to allocate priv to fix it.
 
-> git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-06-17
+ ar9331_switch ethernet.1:10 lan0 (uninitialized): PHY [!ahb!ethernet@1a000000!mdio!switch@10:00] driver [Qualcomm Atheros AR9331 built-in PHY] (irq=13)
+ CPU 0 Unable to handle kernel paging request at virtual address 0000000a, epc == 8050e8a8, ra == 80504b34
+         ...
+ Call Trace:
+ [<8050e8a8>] at803x_config_intr+0x5c/0xd0
+ [<80504b34>] phy_request_interrupt+0xa8/0xd0
+ [<8050289c>] phylink_bringup_phy+0x2d8/0x3ac
+ [<80502b68>] phylink_fwnode_phy_connect+0x118/0x130
+ [<8074d8ec>] dsa_slave_create+0x270/0x420
+ [<80743b04>] dsa_port_setup+0x12c/0x148
+ [<8074580c>] dsa_register_switch+0xaf0/0xcc0
+ [<80511344>] ar9331_sw_probe+0x370/0x388
+ [<8050cb78>] mdio_probe+0x44/0x70
+ [<804df300>] really_probe+0x200/0x424
+ [<804df7b4>] __driver_probe_device+0x290/0x298
+ [<804df810>] driver_probe_device+0x54/0xe4
+ [<804dfd50>] __device_attach_driver+0xe4/0x130
+ [<804dcb00>] bus_for_each_drv+0xb4/0xd8
+ [<804dfac4>] __device_attach+0x104/0x1a4
+ [<804ddd24>] bus_probe_device+0x48/0xc4
+ [<804deb44>] deferred_probe_work_func+0xf0/0x10c
+ [<800a0ffc>] process_one_work+0x314/0x4d4
+ [<800a17fc>] worker_thread+0x2a4/0x354
+ [<800a9a54>] kthread+0x134/0x13c
+ [<8006306c>] ret_from_kernel_thread+0x14/0x1c
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/47700948a4abb4a5ae13ef943ff682a7f327547a
+Same Issue would affect some other PHYs (QCA8081, QCA9561), so fix it
+too.
 
-Thank you!
+Fixes: 3265f4218878 ("net: phy: at803x: add fiber support")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+changes v2:
+- add fixes for QCA8081 and QCA9561
 
+ drivers/net/phy/at803x.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index 6a467e7817a6..59fe356942b5 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -2072,6 +2072,8 @@ static struct phy_driver at803x_driver[] = {
+ 	/* ATHEROS AR9331 */
+ 	PHY_ID_MATCH_EXACT(ATH9331_PHY_ID),
+ 	.name			= "Qualcomm Atheros AR9331 built-in PHY",
++	.probe			= at803x_probe,
++	.remove			= at803x_remove,
+ 	.suspend		= at803x_suspend,
+ 	.resume			= at803x_resume,
+ 	.flags			= PHY_POLL_CABLE_TEST,
+@@ -2087,6 +2089,8 @@ static struct phy_driver at803x_driver[] = {
+ 	/* Qualcomm Atheros QCA9561 */
+ 	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
+ 	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
++	.probe			= at803x_probe,
++	.remove			= at803x_remove,
+ 	.suspend		= at803x_suspend,
+ 	.resume			= at803x_resume,
+ 	.flags			= PHY_POLL_CABLE_TEST,
+@@ -2151,6 +2155,8 @@ static struct phy_driver at803x_driver[] = {
+ 	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
+ 	.name			= "Qualcomm QCA8081",
+ 	.flags			= PHY_POLL_CABLE_TEST,
++	.probe			= at803x_probe,
++	.remove			= at803x_remove,
+ 	.config_intr		= at803x_config_intr,
+ 	.handle_interrupt	= at803x_handle_interrupt,
+ 	.get_tunable		= at803x_get_tunable,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.30.2
+
