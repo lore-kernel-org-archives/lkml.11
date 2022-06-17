@@ -2,97 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA07FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D08C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:09:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381933AbiFQLIJ (ORCPT
+        id S1381909AbiFQLJJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 07:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36320 "EHLO
+        Fri, 17 Jun 2022 07:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381774AbiFQLHz (ORCPT
+        with ESMTP id S1381744AbiFQLJF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 07:07:55 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6626B2FFE2
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:07:50 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id u12so8093195eja.8
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:07:50 -0700 (PDT)
+        Fri, 17 Jun 2022 07:09:05 -0400
+Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D0D6C557
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:09:04 -0700 (PDT)
+Received: by mail-vs1-xe29.google.com with SMTP id r12so3747036vsg.8
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:09:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oEwaem/xAtfULgaR3mIiQRybksdoP4gsjfxUSl3M7Wg=;
-        b=IRA3BGiTIVjH8IMjsPrY2AaWkXWzLbXVe3yTtmFYtKgF42jKNMXXn1TkJwxJOmK6mi
-         ql0r/Q/gFkBMxAeRmRDqF0sSl17OK6fLQ44mpQ5acpuXVp2zVQgs5aWUAxlrRiF76yf4
-         0U9yJ0sJKYFs+O97pzF0ofgOSq9xCM6RwyRCE=
+        d=google.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=iIEeHvBevRYx5KHGWEwipfYQCoE5aCyjLy4vD88fcbo=;
+        b=d0BqO6jBx7MutG6zvxgG2JmgODDAHDAeCBF0YIyl66fjeAA35Iw6j0wz8I7ySubg0x
+         ERihgcoAK/3tZXHnNLS4uq/EmODS0C8r9CRmJ34p1FLblp4RvKmK9jsYKNL/dxbVjfQg
+         ZeCOX6qJkiNS9TCuUltTiizUeaXp29/QSv+Ny0nnXTIdVE56BoDEZmmpzX9/GDjjmAjC
+         Dr/6XoqmKktN0GtUAyl5iWSVkZai3S0Y6jjguOlKyIXmdwmhMu0/4BtSbJ9TFf1HYEBH
+         uXN266rusJwlrGuAFlUqtwHOp8ugV8DO/Ow4zUvzdBpQ9Y1M2T2G6YYOxVOZEnBUyMPt
+         wjGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oEwaem/xAtfULgaR3mIiQRybksdoP4gsjfxUSl3M7Wg=;
-        b=LqaF4e4L31icRoY5pMFvPqRyG9fTyR7chPnZHQuBIhCRS2/dfSXDXfbsFiow7I9KcP
-         jwxBJTUKhPkwH4mz5fXrAiCX7lipakFLqWtY7bWmsPQt9nUtrBkRZ6tCQ6GSB6nFuWqS
-         bedhb7SATGdwZn5SMIqWCDiB2x7NWAlblVmZ0LfdOFSYuPRClIrq5NSqztR8RFlukct9
-         aTYfy4gGgebeGMQ8f7QZ1xnbC0pMd1oSpesPK/bUigFy86BJdekcwEmKNkadyL4YPxDd
-         h20eIXT4/p3UIwfgJbxe9dsyEARinJJor723g9VaMb7qvT8cKylOnJPT/7jgpICx1Ta5
-         6v8g==
-X-Gm-Message-State: AJIora8qzFb7U+SOEkhw9gcpr5OVHGraqAgfA84vO+bLX2YAIUcBOEqt
-        cR11DGocX6e4eT7mzUjOkJS6paZ/0uo5Mw==
-X-Google-Smtp-Source: AGRyM1sNsMGKRPI1TYMhzBkZ4ToM/6GTPDEmO8dYQ52LDJWKAuYTRn1ZxQWwo5Bcd1QRdVoCvH4W7g==
-X-Received: by 2002:a17:906:7a08:b0:712:12f6:243a with SMTP id d8-20020a1709067a0800b0071212f6243amr8838938ejo.619.1655464068597;
-        Fri, 17 Jun 2022 04:07:48 -0700 (PDT)
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com. [209.85.128.43])
-        by smtp.gmail.com with ESMTPSA id i27-20020a170906265b00b006fe89cafc42sm2047418ejc.172.2022.06.17.04.07.46
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jun 2022 04:07:47 -0700 (PDT)
-Received: by mail-wm1-f43.google.com with SMTP id m125-20020a1ca383000000b0039c63fe5f64so2233149wme.0
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:07:46 -0700 (PDT)
-X-Received: by 2002:a05:600c:2215:b0:39c:55a0:9531 with SMTP id
- z21-20020a05600c221500b0039c55a09531mr9687808wml.29.1655464066586; Fri, 17
- Jun 2022 04:07:46 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=iIEeHvBevRYx5KHGWEwipfYQCoE5aCyjLy4vD88fcbo=;
+        b=6YeSeVd/XjAv8Rs1V2/CeMIzaBEV3TJDf0wEtvA0jRWhnM+PQ0N8PgSM1rs5lc3tf/
+         zsG58GS9iorNSmu91TavP6hqPNViCP7XVCX2TBMDFZMIiy6TqN6vhEK0VbkPPekk+H3K
+         uS85e6FvO/sSnhjpN+C6ro3+yiDVe1tZrjtYnJ+49WmbyxyISrABNHuYkqtjeaBVWwTS
+         0Alpxx3wCHinLQGMzthGe34Wwmo9JDCEAlhTY5pYGJBFt8uKeCHomcQsDabS1wHDC9Tk
+         +U7v1GcEhcGpKa/gdkR7h0Bs5BxQET3XHkBCeOhSIzX8Vd8nqCreFtkqjdHASbFPdZgB
+         1duw==
+X-Gm-Message-State: AJIora+EQHZMwUMKE1okgAfztY5l78X4Cz0Osxcu8VxiPzuaNJ+CdkfI
+        BW1Z8o6rwb/42I4dCC5gGarepvVFnZRTWvGUDSySUQ==
+X-Google-Smtp-Source: AGRyM1s+HZ+wmktJSd1qw0a1Y/fQutOX1arYz/VAV7ymqfu7MND0PP6mt1+DLEuWU0eqpBSLGzr+ljGrJ/bGmCcXyeg=
+X-Received: by 2002:a05:6102:30ab:b0:349:eab0:fda1 with SMTP id
+ y11-20020a05610230ab00b00349eab0fda1mr3829487vsd.14.1655464143892; Fri, 17
+ Jun 2022 04:09:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220617100632.1447811-1-fshao@chromium.org> <YqxauLOp2sWOU/uc@sirena.org.uk>
-In-Reply-To: <YqxauLOp2sWOU/uc@sirena.org.uk>
-From:   Fei Shao <fshao@chromium.org>
-Date:   Fri, 17 Jun 2022 19:07:09 +0800
-X-Gmail-Original-Message-ID: <CAC=S1nhVSMfebqv9Kr-bkHdF9HcDMQVU-sTUzRch1d6bZO54Ug@mail.gmail.com>
-Message-ID: <CAC=S1nhVSMfebqv9Kr-bkHdF9HcDMQVU-sTUzRch1d6bZO54Ug@mail.gmail.com>
-Subject: Re: [PATCH] ASoC: mediatek: mt8186: Fix mutex double unlock in GPIO request
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Jiaxin Yu <jiaxin.yu@mediatek.com>, alsa-devel@alsa-project.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
+From:   Stephane Eranian <eranian@google.com>
+Date:   Fri, 17 Jun 2022 14:08:52 +0300
+Message-ID: <CABPqkBRVF9qmxKFgmjZpzN3tx=U+_8udECMLHs7BrtzfPwmuhQ@mail.gmail.com>
+Subject: [RFC] pr_warn_once() issue in x86 MSR extable code
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>, jpoimboe@redhat.com,
+        Steven Rostedt <rostedt@goodmis.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 6:43 PM Mark Brown <broonie@kernel.org> wrote:
->
-> On Fri, Jun 17, 2022 at 06:06:33PM +0800, Fei Shao wrote:
-> > The lockdep mechanism reveals an unbalanced unlocking on MT8186:
-> >
-> >   [    2.993966] WARNING: bad unlock balance detected!
-> >   [    2.993971] 5.15.46-421fef3b44d7-lockdep #16 Not tainted
-> >   [    2.993978] -------------------------------------
-> >   [    2.993983] kworker/u16:1/10 is trying to release lock (gpio_request_mutex) at:
-> >   [    2.993994] [<ffffffdcd9adebf8>] mt8186_afe_gpio_request+0xf8/0x210
-> >   [    2.994012] but there are no more locks to release!
-> >   [    2.994017]
-> >   [    2.994017] other info that might help us debug this:
->
-> Please think hard before including complete backtraces in upstream
-> reports, they are very large and contain almost no useful information
-> relative to their size so often obscure the relevant content in your
-> message. If part of the backtrace is usefully illustrative (it often is
-> for search engines if nothing else) then it's usually better to pull out
-> the relevant sections.
+Hi,
 
-Agreed, I'll resend the patch. Thank you for the feedback.
+Some changes to the way invalid MSR accesses are reported by the kernel is
+causing some problems with messages printed on the console.
 
-Regards,
-Fei
+We have seen several cases of ex_handler_msr() printing invalid MSR
+accesses once but
+the callstack multiple times causing confusion on the console.
+
+The last time the exception MSR code was modified (5.16) by PeterZ was:
+
+  d52a7344bdfa x86/msr: Remove .fixup usage:
+
+  if (!safe && wrmsr &&  pr_warn_once("unchecked MSR access error: ..."))
+               show_stack_regs(regs);
+
+Note that this code pattern was also present, though in a different
+form, before this commit.
+
+The problem here is that another earlier commit (5.13):
+
+a358f40600b3 once: implement DO_ONCE_LITE for non-fast-path "do once"
+functionality
+
+Modifies all the pr_*_once() calls to always return true claiming that
+no caller is ever
+checking the return value of the functions.
+
+This is why we are seeing the callstack printed without the associated
+printk() msg.
+
+I believe that having the pr_*_once() functions return true the first
+time they are called
+is useful especially when extra information, such as callstack, must
+be printed to help
+track the origin of the problem.
+
+The exception handling code seems to be the only place where the
+return value is checked
+for pr_warn_once(). A minimal change would be to create another
+version of that function
+that calls DO_ONCE() instead of DO_ONCE_LITE(), e.g., pr_warn_once_return().
+
+I can post a patch to that effect if we all agree on the approach.
+
+Thanks.
