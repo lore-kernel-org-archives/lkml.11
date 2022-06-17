@@ -2,262 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9C5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 20:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E29C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 20:34:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349418AbiFQUdx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 16:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35178 "EHLO
+        id S234782AbiFQUeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 16:34:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346993AbiFQUdl (ORCPT
+        with ESMTP id S1349453AbiFQUdm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 16:33:41 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2075.outbound.protection.outlook.com [40.107.22.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EA95A2E1;
-        Fri, 17 Jun 2022 13:33:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nvCX7sXoKjmsAsX1Q3urF8cZ6nmotqp2N1uHbUZuMIUR1LtWUpZ8tRbQOFhPz6plkRDbAxOo87+FOhG6oryKULC0evhInWpdL0f8WsH+T+MiqItdeIfM2Vsxq0ubdfIgSNy47a85sTb6kPW1BZWeG0bWoMsveiX53t3I6qKlqvf3/x2JCIDyJkN+q/N9BFf0Cgxr2/veU07vgx83KWsZ5bQLbtrECjn+obyF9Cbrnc13qTwyClPA9XB6+8YrjcMdKlZsfEzr7Y4w8mR3IOjgrn4QExmRqiAW0YFUPsfH2FeE+d+dfH0/QZwVH3A8+rDTn9aOFiMDmWdvuuJjl6vPkg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Zyj/IJmSRlxLfh2wYMw1EwqZzLeNjYFdA+pV4NCu+/I=;
- b=JSZQNhNMKX+CXUsivSG238r+41YpEZNHr/o7RviY3aJY/iqyqvFlXNJH1ofCuVe0qGSASujO3am0fs0DoWguvlh2xZ2omCxyvLkH96S5fvpDn7JdxP+vGbhUs6l0scwiBQlx7hkGEQ1NDgOnwV9sJbTvVC3JLWnslHKpiQkXkHo70czsW7hs9x3pCEaQB+I07+TsGEFCZJhDB7dLDVIgF5QvRoTRFYRtwbEUJ/rkt8EkgWoxqrxh8YSiUORMX+XTbsrZrvkArBNTDRyxe52mxxEnQFjaokCsQgpUzSJ5U3RxIiN7B1hwvz6ohmemZGpEdTfgQ+ypGHtt52VcWYWbGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zyj/IJmSRlxLfh2wYMw1EwqZzLeNjYFdA+pV4NCu+/I=;
- b=wkSSndBuQ72Dinsg7lkAw5pR2AffpZ6GpeJWATWf8fpxuhRlYbw0X4P4/N/h2Rzvlmx8aXRokwp6yd8Z8dox7lO2WvpFrLDVEQALYdNP2YYfj82AYulgXnig5kORqhxw7/uzZSbZwh06xaJzcbqbjF4lGMJyuyVl/yt2uWeaYlr/Z5dWqNDBkt8XTvI6YvZ6dFXpTQBdpf3NVccl8FsnD7bwiMpwNhkwxVo5urRuszb5oEkZlv3gEV4zqKLAqWiwcRJTLip8tlpusFSxAwBcIJTwvuQ7T8xPOHO0DX7lYMY0tuRUZBwxp4wLC4CGXh3lEsIwHKlJg0nwxaF+aYh9/A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from VI1PR03MB4973.eurprd03.prod.outlook.com (2603:10a6:803:c5::12)
- by DBAPR03MB6438.eurprd03.prod.outlook.com (2603:10a6:10:19f::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16; Fri, 17 Jun
- 2022 20:33:38 +0000
-Received: from VI1PR03MB4973.eurprd03.prod.outlook.com
- ([fe80::d18f:e481:f1fa:3e8d]) by VI1PR03MB4973.eurprd03.prod.outlook.com
- ([fe80::d18f:e481:f1fa:3e8d%7]) with mapi id 15.20.5353.016; Fri, 17 Jun 2022
- 20:33:38 +0000
-From:   Sean Anderson <sean.anderson@seco.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH net-next 02/28] dt-bindings: net: fman: Add additional interface properties
-Date:   Fri, 17 Jun 2022 16:32:46 -0400
-Message-Id: <20220617203312.3799646-3-sean.anderson@seco.com>
-X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
-In-Reply-To: <20220617203312.3799646-1-sean.anderson@seco.com>
-References: <20220617203312.3799646-1-sean.anderson@seco.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0384.namprd13.prod.outlook.com
- (2603:10b6:208:2c0::29) To VI1PR03MB4973.eurprd03.prod.outlook.com
- (2603:10a6:803:c5::12)
+        Fri, 17 Jun 2022 16:33:42 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80465A5B5
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 13:33:40 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id g7so7615837eda.3
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 13:33:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kGM6owAKWdqJSsOUHDqpYoze7aqTncMo34VzgmTxAdU=;
+        b=oMQYGmc82OXfxoFSmPDVYmgcWQaXhz/B0B69AsuztTlZwrqqvSAi9841ngCw4LKaV2
+         wHI5TejUzoQ89cwRUL6Kw2+TI0KjFebw6Xo3IcoMcvVkye9b5dnAgqzl4bcsJzBmIwuO
+         y1MIHM0aUqtlmbezX6K7NDmuFRVrXfX3MtsTI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kGM6owAKWdqJSsOUHDqpYoze7aqTncMo34VzgmTxAdU=;
+        b=Sa9VKkIDm48ef0HSWXb0gEmAR5Qiv6qx3eEVSQaMSZLK2qTG0vC7GNYHqTyI9xcr7O
+         jv7YqIHIHZJ2tlsC9pwrQA4dj3pWRWityuJHfurPA6CdNfmz9vWYTBVnAnwgRiAd5Gf3
+         68U/o0qirgf2Dr2TUV34MprVS67qJbUT5voKLAwXbb09rk4lLTpivzuTlTDzrokP3Kpj
+         6MLsMBI0Gw67v88wqk5GopZbFbRc2//ePu0uKoVvF23IVzyw84kRdw1iVo0zof7YQky2
+         AhBSGLrQB5QDHFvLlk0+VsNpX08TEsILEOL/L6UIdZa33W8mUO5EqVZZAWo18PXvEIom
+         E7GQ==
+X-Gm-Message-State: AJIora+iN7v5J5yBRjZd/ca4/6FI3gfPwO2b8AkTJHIJ2AyenVoZOohJ
+        9Kz1VqddwojUfNOPaKsmSoMmrW5EStRCwrx7WX0=
+X-Google-Smtp-Source: AGRyM1t+jZwunT9ZcbN4baujDJf6ekXnPoJgXNk4SqIgqNvSacNKt8AMOKd3cpCzQpYAGtDRX+5+ww==
+X-Received: by 2002:a05:6402:3222:b0:435:da0:3039 with SMTP id g34-20020a056402322200b004350da03039mr14880859eda.201.1655498019184;
+        Fri, 17 Jun 2022 13:33:39 -0700 (PDT)
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com. [209.85.128.54])
+        by smtp.gmail.com with ESMTPSA id 18-20020a170906201200b00705fa7087bbsm2619784ejo.142.2022.06.17.13.33.38
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jun 2022 13:33:38 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id m16-20020a7bca50000000b0039c8a224c95so2900022wml.2
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 13:33:38 -0700 (PDT)
+X-Received: by 2002:a05:600c:591:b0:39c:4544:b814 with SMTP id
+ o17-20020a05600c059100b0039c4544b814mr22300001wmd.118.1655498017647; Fri, 17
+ Jun 2022 13:33:37 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 460f1894-8877-4f75-597c-08da50a0a8bb
-X-MS-TrafficTypeDiagnostic: DBAPR03MB6438:EE_
-X-Microsoft-Antispam-PRVS: <DBAPR03MB6438E568673A1AF272D63B9A96AF9@DBAPR03MB6438.eurprd03.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3QcPa+Wtgd5cFCo7mSMQGgEh0zaJl32pCAy83Vww4Xwvz6xc16pAw7ooCf0dLb6WnaYQEg+r0Z++zY6zbCrxQpYFm7eDSrr+6qCZVOtRRgdOrfdQW9fw7begVfqdu8V2/l6v9PexpcPK9p5CeXcyR6mMrqO1f6ZrVInx+ZSYM8Kr42tJIh3H2wJcq5pQte+a1zqbc57U5xDVKdCTfzVgGIwp/RTp+mjk8emApKmF6EsLiaKmuOjkjO9g16z+qaX8DkHXUb2n11amRvI0jzZ7YwzrWuMSRdzjdj/dNlyPXjUIeNRPzjVuUyiadsTlqSpdffzX5yih2m5TVysP6T2wI4gxyK6o9ihlSYs1vz6lQHSBr6r+4D47vYxDig+7ZK7jOrccQPKheZorbU/dMpsTv5PEY3EaqJfI5pxCKUka/QDW6pdpzJ59nw9tptqAbilbMaYUckTg5Zh7pgqF4nW0Au7BUqWfB52BzD91F0kg19sSuEuk6ItRQl9O02ykbqSPJ59Jz78qAV6Es25cBaqqeBE2nSd4se4mi+eXR/9IGE75j0jXONaSJfP/zontBitabwYXye+SiwImHZzzrmL48XRd6U3YACCXAa2OWgnOHDxPuqVX4Ytv/Ewp8M581ft/iUNQM54PZEsFBmq6ux+0wZZ5x9ePTn+cCQk5zpp0J9UmfPAXEtSVY5D5ODiYvFYmIWXGYx6/hLeP47D9xOnoXw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB4973.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(44832011)(38350700002)(86362001)(7416002)(38100700002)(186003)(2616005)(5660300002)(6512007)(6486002)(52116002)(2906002)(6506007)(110136005)(8936002)(54906003)(498600001)(316002)(1076003)(66946007)(6666004)(36756003)(8676002)(26005)(83380400001)(4326008)(66556008)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?eA3YThmNpY6Xs2YWxLue1x4xsz/1PpcZbPzxmdX6PtJlPG33mqpbZG+pp0uJ?=
- =?us-ascii?Q?+a6glojD4t6PGygQcnhDQar0YdUIB8op4EttCmnRN6Zy1l4mZ9G9V8ulYfKn?=
- =?us-ascii?Q?89kDLKLc0xd+3rEb4vTegWUcSIjpQOckOvemJhMVbHSYIxC1zINGYtnpo3zn?=
- =?us-ascii?Q?zSnSsVRR3TQ59MIjwMDx0HYZSNVvIBj14aLgAuqQnwJeodSnh8XzlMX4sc6D?=
- =?us-ascii?Q?c5VV4rttWrJ6HfiI8Gl4PuL0XYStLFTBhfl+jGkXto6vCO5P2S3n6rpi9MBn?=
- =?us-ascii?Q?NZvqC7UNa90Vq9fM3gLUEnE+uXYeIUuPeu21sdor7Kh+qgX016E8twq0KsYJ?=
- =?us-ascii?Q?pRAa4jOwmmm7GKJL5xPYV51HTOSFYnox3Dmcq7zmMsyG1Enqze4PHz+9HUfM?=
- =?us-ascii?Q?8cIlG4vo8ZCwQA7ixAy8P4vEYmtqNuGsnwI43vpcBMkYln1KVFb3aPv7j9/G?=
- =?us-ascii?Q?9Kbi6wJfLxp+3oIdyDLoLjSQDZZ0bxMF6ip/du3IuniXmTgc8rtYi9rPsf/n?=
- =?us-ascii?Q?LbPMGzSp9x7CRC6Wqp1tY+ll+r1d6/Kg74m5kaU1nqkt0f/qiClQJQ5cMtjI?=
- =?us-ascii?Q?+9mUFCbX69gYP4l33ZS7+NIyIItceZn8zLQIsWqM4D/z9HQvjx7O1kLg5kTx?=
- =?us-ascii?Q?O0V835plupqTQpsD2YiW3FlnqLfjIpfLsOvQ28AKtd51H4DY9QqFUjT6ZAaF?=
- =?us-ascii?Q?3+E/MZrJMHW+nb1+tTjHr0b2uDcZ7MvBWvpAgZ7kU/5AzblUHDdH5TCfxbDQ?=
- =?us-ascii?Q?pqHxgCOgNuVEONMpQVpRzYKaRgd+BA6RdBiObdh24wqYmlnYSu/lg+3HFW5e?=
- =?us-ascii?Q?h7qT+/LTwvu94+aP01GFy30q4eEJxHF51ovVC29s7o32czYhrbN0qWSxsCh2?=
- =?us-ascii?Q?eYOGupx6mgiJQFecT5rpf3D74YtznjXk6eUfcgdzNGuzKc59KhJxz9UnlMrY?=
- =?us-ascii?Q?Byl2qu/bAym/vDsM6dxF7ylLlSpSKiri3cy0srPKAMVTEKtx1zOTGP2bc86r?=
- =?us-ascii?Q?Qr7ccGARqVTOkdUFLUzn3JlhbHphdE/yL4MlsYTe7c2nc43SevbBVIujze+8?=
- =?us-ascii?Q?Sd7Ggj407X04uCtE8D9Sta5xrYjs3UTIceXNK8zZWgW3rafVMnL1y7i6jQP4?=
- =?us-ascii?Q?5rO5axg4hSsKNd1+keK/T1ys/sZgzJjSfB6ROPE56KBvHMT1rQNt8MylM3yY?=
- =?us-ascii?Q?+kw6iw6GLLew1Yn+PduVEzXCeLZUuCfyPz11Yn0J9iryS9x7bL0tnQa2ZI0k?=
- =?us-ascii?Q?8rDKmnRxUiDEstsd/IISHIZlWV+yps6SR8sfSBchnwlTEhmgD7rzqKD39ZaI?=
- =?us-ascii?Q?KXYnXAwAs3tUGoFfkcbteY+yNaxCPbqivc4R5HccNIfmGUhXWS6PvZRpJ0E3?=
- =?us-ascii?Q?FdfC8ONLzkMns7y2BJtZ7T53jOmJM24P9168cmd3r3/Dia5HM3IuJIs/ZkhG?=
- =?us-ascii?Q?qT7oHgUdJOA9vr8EGsoQVoWaRQjZnAye6x95YX4u4yWexEf6zEiFmJEWs79P?=
- =?us-ascii?Q?Yd8Zlcy3OpEPPSSp9vjB5cupxbzhg5zg0NSTWOwRxHmQ1ukuNtF5LK0eLwrb?=
- =?us-ascii?Q?xxaBqdkZlu2va2xORSPFwnATIA1h+pAH9XCMmi9MLIohmKmePmChkCkF+tV7?=
- =?us-ascii?Q?o2V8aguYz8LdOPHc+Q2/iFiBrpfJc0nNzwsImCJ4F5FmPM6CHrcIvZHKebsY?=
- =?us-ascii?Q?uE3Iys3ngWJ44iBKjqjZRzy48c08j32NU/lF2AoMhrsRBpZGSWylqIFZP6Xx?=
- =?us-ascii?Q?a4ijhoAsGGFZdrs5ky2hKaulgB8rM7U=3D?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 460f1894-8877-4f75-597c-08da50a0a8bb
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB4973.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 20:33:38.3280
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h0kanxtJ2z37DRnn9KblS5AoQhsztuoJw+VIWbQ/LhioLe1sRjKRpq5/oZ5OMcubhj+ovMxRrdN/S2PlImzrgA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR03MB6438
+References: <20220617111021.v6.1.I9e299d3fa6fbf50df6fc7207050bf5c3a7bf4c61@changeid>
+ <20220617111021.v6.2.Id769ddc5dbf570ccb511db96da59f97d08f75a9c@changeid>
+In-Reply-To: <20220617111021.v6.2.Id769ddc5dbf570ccb511db96da59f97d08f75a9c@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 17 Jun 2022 13:33:25 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XTn0RuwDw8pxA4j4RP8EKbReeoPWzO0S237-sZFdi_9Q@mail.gmail.com>
+Message-ID: <CAD=FV=XTn0RuwDw8pxA4j4RP8EKbReeoPWzO0S237-sZFdi_9Q@mail.gmail.com>
+Subject: Re: [PATCH v6 2/6] arm64: dts: qcom: sc7180: Add wormdingler dts files
+To:     "Joseph S. Barrera III" <joebar@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At the moment, MEMACs are configured almost completely based on the
-phy-connection-type. That is, if the phy interface is RGMII, it assumed
-that RGMII is supported. For some interfaces, it is assumed that the
-RCW/bootloader has set up the SerDes properly. The actual link state is
-never reported.
+Hi,
 
-To address these shortcomings, the driver will need additional
-information. First, it needs to know how to access the PCS/PMAs (in
-order to configure them and get the link status). The SGMII PCS/PMA is
-the only currently-described PCS/PMA. Add the XFI and QSGMII PCS/PMAs as
-well. The XFI (and 1GBase-KR) PCS/PMA is a c45 "phy" which sits on the
-same MDIO bus as SGMII PCS/PMA. By default they will have conflicting
-addresses, but they are also not enabled at the same time by default.
-Therefore, we can let the default address for the XFI PCS/PMA be the
-same as for SGMII. This will allow for backwards-compatibility.
+On Fri, Jun 17, 2022 at 11:12 AM Joseph S. Barrera III
+<joebar@chromium.org> wrote:
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dts
+> new file mode 100644
+> index 000000000000..1a921a540075
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dts
+> @@ -0,0 +1,39 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Google Wormdingler board device tree source
+> + *
+> + * Copyright 2021 Google LLC.
+> + *
+> + * SKU: 0x401 => 1025
+> + *  - bits 11..8: Panel ID: 0x4 (BOE)
+> + */
+> +
+> +/dts-v1/;
+> +
+> +#include "sc7180-trogdor-wormdingler.dtsi"
+> +
+> +/ {
+> +       model = "Google Wormdingler rev1+ (BOE, rt5682s)";
+> +       compatible = "google,wormdingler-sku1025", "qcom,sc7180";
+> +};
+> +
+> +&panel {
+> +       compatible = "boe,tv110c9m-ll3";
+> +};
+> +
+> +&alc5682 {
+> +       compatible = "realtek,rt5682s";
+> +       realtek,dmic1-clk-pin = <2>;
+> +       realtek,dmic-clk-rate-hz = <2048000>;
+> +};
+> +
+> +&dsi_phy {
+> +       qcom,phy-rescode-offset-top = /bits/ 8 <31 31 31 31 (-32)>;
+> +       qcom,phy-rescode-offset-bot = /bits/ 8 <31 31 31 31 (-32)>;
+> +       qcom,phy-drive-ldo-level = <450>;> +};
 
-QSGMII, however, cannot work with the current binding. This is because
-the QSGMII PCS/PMAs are only present on one MAC's MDIO bus. At the
-moment this is worked around by having every MAC write to the PCS/PMA
-addresses (without checking if they are present). This only works if
-each MAC has the same configuration, and only if we don't need to know
-the status. Because the QSGMII PCS/PMA will typically be located on a
-different MDIO bus than the MAC's SGMII PCS/PMA, there is no fallback
-for the QSGMII PCS/PMA.
 
-MEMACs (across all SoCs) support the following protocols:
+This seems to have undone the changes I asked for previously. :(
+Please go back to what you had in v5 where
+`sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dts` includes
+`sc7180-trogdor-wormdingler-rev1-boe.dts` and just overrides the audio
+stuff.
 
-- MII
-- RGMII
-- SGMII, 1000Base-X, and 1000Base-KX
-- 2500Base-X (aka 2.5G SGMII)
-- QSGMII
-- 10GBase-R (aka XFI) and 10GBase-KR
-- XAUI and HiGig
 
-Each line documents a set of orthogonal protocols (e.g. XAUI is
-supported if and only if HiGig is supported). Additionally,
+> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dts
+> new file mode 100644
+> index 000000000000..1129e3fed165
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dts
+> @@ -0,0 +1,33 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Google Wormdingler board device tree source
+> + *
+> + * Copyright 2021 Google LLC.
+> + *
+> + * SKU: 0x0001 => 1
+> + *  - bits 11..8: Panel ID: 0x0 (INX)
+> + */
+> +
+> +/dts-v1/;
+> +
+> +#include "sc7180-trogdor-wormdingler.dtsi"
+> +
+> +/ {
+> +       model = "Google Wormdingler rev1+ (INX, rt5682s)";
+> +       compatible = "google,wormdingler-sku1", "qcom,sc7180";
+> +};
+> +
+> +&panel {
+> +       compatible = "innolux,hj110iz-01a";
+> +};
 
-- XAUI implies support for 10GBase-R
-- 10GBase-R is supported if and only if RGMII is not supported
-- 2500Base-X implies support for 1000Base-X
-- MII implies support for RGMII
+This seems to have undone the changes I asked for previously. :(
+Please go back to what you had in v5 where
+`sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dts` includes
+`sc7180-trogdor-wormdingler-rev1-inx.dts` and just overrides the audio
+stuff.
 
-To switch between different protocols, we must reconfigure the SerDes.
-This is done by using the standard phys property. We can also use it to
-validate whether different protocols are supported (e.g. using
-phy_validate). This will work for serial protocols, but not RGMII or
-MII. Additionally, we still need to be compatible when there is no
-SerDes.
 
-While we can detect 10G support by examining the port speed (as set by
-fsl,fman-10g-port), we cannot determine support for any of the other
-protocols based on the existing binding. In fact, the binding works
-against us in some respects, because pcsphy-handle is required even if
-there is no possible PCS/PMA for that MAC. To allow for backwards-
-compatibility, we use a boolean-style property for RGMII (instead of
-presence/absence-style). When the property for RGMII is missing, we will
-assume that it is supported. The exception is MII, since no existing
-device trees use it (as far as I could tell).
+> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler.dtsi
+> new file mode 100644
+> index 000000000000..cced926364e5
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler.dtsi
+> @@ -0,0 +1,417 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Google Wormdingler board device tree source
+> + *
+> + * Copyright 2021 Google LLC.
+> + */
+> +
+> +/dts-v1/;
+> +
+> +#include "sc7180.dtsi"
+> +
+> +ap_ec_spi: &spi6 {};
+> +ap_h1_spi: &spi0 {};
+> +
+> +#include "sc7180-trogdor.dtsi"
 
-Unfortunately, QSGMII support will be broken for old device trees. There
-is nothing we can do about this because of the PCS/PMA situation (as
-described above).
+Since you sent your v5, Stephen landed his "Simplify!" series. See commits:
 
-Signed-off-by: Sean Anderson <sean.anderson@seco.com>
----
+19794489fa24 arm64: dts: qcom: Only include sc7180.dtsi in sc7180-trogdor.dtsi
+d277cab7afc7 arm64: dts: qcom: sc7180-trogdor: Simplify spi0/spi6 labeling
+51d30402be75 arm64: dts: qcom: sc7180-trogdor: Simplify trackpad enabling
 
- .../devicetree/bindings/net/fsl-fman.txt      | 49 +++++++++++++++++--
- 1 file changed, 45 insertions(+), 4 deletions(-)
+Your series needs to take into account what Stephen did and do the
+same thing with the new boards you're adding. That means you shouldn't
+be doing thue weird spi6 / spi0 definitions here. It also means you
+shouldn't be including "sc7180.dtsi" directly in the wormdingler file.
+...and, of course, you'll need to see how the different trackpad
+enabling applies to your files.
 
-diff --git a/Documentation/devicetree/bindings/net/fsl-fman.txt b/Documentation/devicetree/bindings/net/fsl-fman.txt
-index 801efc7d6818..25c7288e1db2 100644
---- a/Documentation/devicetree/bindings/net/fsl-fman.txt
-+++ b/Documentation/devicetree/bindings/net/fsl-fman.txt
-@@ -322,10 +322,50 @@ PROPERTIES
- 		Value type: <phandle>
- 		Definition: A phandle for 1EEE1588 timer.
- 
-+- phys
-+		Usage optional for "fsl,fman-memac" MACs
-+		Value type: <prop-encoded-array>
-+		Definition: A phandle for the SerDes lanes which should be
-+		used. This property is required if a pcsphy-handle is
-+		specified.
-+
-+- phy-names
-+		Usage optional for "fsl,fman-memac" MACs
-+		Value type: <stringlist>
-+		Definition: Should be "serdes". Must be present if phys is.
-+
- - pcsphy-handle
-+		Usage optional for "fsl,fman-memac" MACs
-+		Value type: <prop-encoded-array>
-+		Definition: An array of phandles for PCS/PMA devices. Without a
-+		pcs-names property (see below) this should contain a phandle
-+		referencing the SGMII PCS/PMA. This property may be absent if
-+		no serial interfaces are supported.
-+
-+- pcs-names
-+		Usage optional for "fsl,fman-memac" MACs
-+		Value type: <stringlist>
-+		Definition: The type of each PCS/PMA, corresponding to
-+		pcsphy-handle. Each value may be one of
-+		- "sgmii"
-+		- "qsgmii"
-+		- "xfi"
-+		If "xfi" is absent, it will default to the value of "sgmii". If
-+		this property is absent, the first phandle in pcsphy-handle
-+		will be assumed to be "sgmii".
-+
-+- rgmii
- 		Usage required for "fsl,fman-memac" MACs
--		Value type: <phandle>
--		Definition: A phandle for pcsphy.
-+		Value type: <u32>
-+		Definition: This property should be 1 if RGMII is supported and
-+		0 otherwise.
-+
-+- mii
-+		Usage optional for "fsl,fman-memac" MACs
-+		Value type: <empty>
-+		Definition: This property should be present if MII is
-+		supported. rgmii must be enabled for this property to be
-+		effective.
- 
- - tbi-handle
- 		Usage required for "fsl,fman-dtsec" MACs
-@@ -446,8 +486,9 @@ For internal PHY device on internal mdio bus, a PHY node should be created.
- See the definition of the PHY node in booting-without-of.txt for an
- example of how to define a PHY (Internal PHY has no interrupt line).
- - For "fsl,fman-mdio" compatible internal mdio bus, the PHY is TBI PHY.
--- For "fsl,fman-memac-mdio" compatible internal mdio bus, the PHY is PCS PHY,
--  PCS PHY addr must be '0'.
-+- For "fsl,fman-memac-mdio" compatible internal mdio bus, the PHY is PCS PHY.
-+  The PCS PHY address should correspond to the value of the appropriate
-+  MDEV_PORT.
- 
- EXAMPLE
- 
--- 
-2.35.1.1320.gc452695387.dirty
-
+This is what I asked you do in my response to your v5:
+https://lore.kernel.org/r/CAD=FV=Vkiqxv5QRiEqCjZVSNUH=K1N+JuYEsXu=XtFNxRtvttw@mail.gmail.com/
