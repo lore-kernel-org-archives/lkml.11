@@ -2,96 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BFB6C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E140C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:13:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381707AbiFQKM4 (ORCPT
+        id S1381620AbiFQKNH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 06:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59164 "EHLO
+        Fri, 17 Jun 2022 06:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381689AbiFQKMx (ORCPT
+        with ESMTP id S1378259AbiFQKNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 06:12:53 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF55F10FD9;
-        Fri, 17 Jun 2022 03:12:49 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 932341E80D72;
-        Fri, 17 Jun 2022 18:11:02 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 9FD_6Uz1XKnf; Fri, 17 Jun 2022 18:10:59 +0800 (CST)
-Received: from localhost.localdomain (unknown [39.144.44.120])
-        (Authenticated sender: jiaming@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 69D9C1E80D66;
-        Fri, 17 Jun 2022 18:10:57 +0800 (CST)
-From:   Zhang Jiaming <jiaming@nfschina.com>
-To:     jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
-        suganath-prabu.subramani@broadcom.com,
-        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
-        Zhang Jiaming <jiaming@nfschina.com>
-Subject: [PATCH] scsi: mpt3sas: Fix space and spelling mistake
-Date:   Fri, 17 Jun 2022 18:11:03 +0800
-Message-Id: <20220617101103.3162-1-jiaming@nfschina.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 17 Jun 2022 06:13:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 095F912AEC
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 03:13:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655460784;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/Egh8+Gz6P7sJjajReRg4TwcxQZ6PNsT6qhTrjGb38E=;
+        b=dv2w+Fa+bcNMpJd3iTDJANgqRwLh9Cezh2AV95qadoD7CDAv6yG2X03mq2M4UuWe1Phv/Q
+        /uK8N+Ypr+xdfVXvPSHHzCRqtw57zMJ5RPdxxR3E2X0vbqd0PNPT6Id0n6wXGLFR/E2Q6y
+        Vmh5BPloWHaQWIAY7FhPaBW9tGtasb0=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-635-QFtBbfUOMPumlWQVcjTWmQ-1; Fri, 17 Jun 2022 06:13:03 -0400
+X-MC-Unique: QFtBbfUOMPumlWQVcjTWmQ-1
+Received: by mail-wr1-f71.google.com with SMTP id s14-20020adfa28e000000b0020ac7532f08so850597wra.15
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 03:13:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/Egh8+Gz6P7sJjajReRg4TwcxQZ6PNsT6qhTrjGb38E=;
+        b=HpS3SvE8lHDAbTQG8v/sQdfFI38ZvawnBQV1jTF+EGLqpp2uvXlpwuoBMVU55DohcC
+         EMhot3COXhAlx2wujKDoj/GhZ2w3H2zQIg/Am7so591700gc88IsF3d+UMwLLxnqXv3T
+         Zv0pDDWhvab8HhAY0i18w5EUeQQbpCon82eFKcUN5bOzKZFDcGsUINDl8Ueag62RGChV
+         LFl3mTi7xyNjrIIjhZagrW6hfYRirNgMQPiZwWQswsbdkzmlBNeIFDXwdALMtYsdwR3A
+         Kn1g6kLIk72FYDzV1kCxCnMk94hLPhfihIoflMy4xKF7+H2ANWukjgu5KlUTl2XnWYDq
+         f6vA==
+X-Gm-Message-State: AJIora9926FEQn07lw7+isTMKn+zAH16oGkB1sKI4Y/BYpn/lfL/+6lF
+        mxRwfUT+/Q+ZLw8UHCRTH/dhysGvbJFoHgBzEnJuGPm1DFo8Ok+nHFlHz55yTNnlac6YXuMbKmx
+        I+9LCS6AIMlxPMaG4ItGqM3ag
+X-Received: by 2002:a5d:6d8b:0:b0:218:4dc8:293e with SMTP id l11-20020a5d6d8b000000b002184dc8293emr8684810wrs.612.1655460781817;
+        Fri, 17 Jun 2022 03:13:01 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uCeVJ3V3dWfzRxiKB7fJuvCI0FPi1R5vsbVVS3gLAKJyU7vKwteL3gJz5FSVTdXRodiZ6DGg==
+X-Received: by 2002:a5d:6d8b:0:b0:218:4dc8:293e with SMTP id l11-20020a5d6d8b000000b002184dc8293emr8684788wrs.612.1655460781577;
+        Fri, 17 Jun 2022 03:13:01 -0700 (PDT)
+Received: from redhat.com ([2.54.189.19])
+        by smtp.gmail.com with ESMTPSA id i188-20020a1c3bc5000000b0039ee52c1345sm2137495wma.4.2022.06.17.03.12.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 03:13:01 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 06:12:57 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] virtio-net: fix race between ndo_open() and
+ virtio_device_ready()
+Message-ID: <20220617060632-mutt-send-email-mst@kernel.org>
+References: <20220617072949.30734-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220617072949.30734-1-jasowang@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a splling mistake in _base_sas_ioc_info. Change 'cant' to 'can't'.
-There are 3 space mistakes. Remove blank space before ','.
+On Fri, Jun 17, 2022 at 03:29:49PM +0800, Jason Wang wrote:
+> We used to call virtio_device_ready() after netdev registration. This
+> cause a race between ndo_open() and virtio_device_ready(): if
+> ndo_open() is called before virtio_device_ready(), the driver may
+> start to use the device before DRIVER_OK which violates the spec.
+> 
+> Fixing this by switching to use register_netdevice() and protect the
+> virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
+> only be called after virtio_device_ready().
+> 
+> Fixes: 4baf1e33d0842 ("virtio_net: enable VQs early")
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  drivers/net/virtio_net.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index db05b5e930be..8a5810bcb839 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3655,14 +3655,20 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  	if (vi->has_rss || vi->has_rss_hash_report)
+>  		virtnet_init_default_rss(vi);
+>  
+> -	err = register_netdev(dev);
+> +	/* serialize netdev register + virtio_device_ready() with ndo_open() */
+> +	rtnl_lock();
+> +
+> +	err = register_netdevice(dev);
+>  	if (err) {
+>  		pr_debug("virtio_net: registering device failed\n");
+> +		rtnl_unlock();
+>  		goto free_failover;
+>  	}
+>  
+>  	virtio_device_ready(vdev);
+>  
+> +	rtnl_unlock();
+> +
+>  	err = virtnet_cpu_notif_add(vi);
+>  	if (err) {
+>  		pr_debug("virtio_net: registering cpu notifier failed\n");
 
-Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
----
- drivers/scsi/mpt3sas/mpt3sas_base.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
-index 9a1ae52bb621..565339a0811d 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -873,7 +873,7 @@ mpt3sas_base_stop_watchdog(struct MPT3SAS_ADAPTER *ioc)
-  * @fault_code: fault code
-  */
- void
--mpt3sas_base_fault_info(struct MPT3SAS_ADAPTER *ioc , u16 fault_code)
-+mpt3sas_base_fault_info(struct MPT3SAS_ADAPTER *ioc, u16 fault_code)
- {
- 	ioc_err(ioc, "fault_state(0x%04x)!\n", fault_code);
- }
-@@ -1057,7 +1057,7 @@ _base_sas_ioc_info(struct MPT3SAS_ADAPTER *ioc, MPI2DefaultReply_t *mpi_reply,
- 		desc = "config no defaults";
- 		break;
- 	case MPI2_IOCSTATUS_CONFIG_CANT_COMMIT:
--		desc = "config cant commit";
-+		desc = "config can't commit";
- 		break;
- 
- /****************************************************************************
-@@ -1321,7 +1321,7 @@ _base_display_event_data(struct MPT3SAS_ADAPTER *ioc,
-  * @log_info: log info
-  */
- static void
--_base_sas_log_info(struct MPT3SAS_ADAPTER *ioc , u32 log_info)
-+_base_sas_log_info(struct MPT3SAS_ADAPTER *ioc, u32 log_info)
- {
- 	union loginfo_type {
- 		u32	loginfo;
-@@ -1393,7 +1393,7 @@ _base_display_reply_info(struct MPT3SAS_ADAPTER *ioc, u16 smid, u8 msix_index,
- 
- 	if ((ioc_status & MPI2_IOCSTATUS_MASK) &&
- 	    (ioc->logging_level & MPT_DEBUG_REPLY)) {
--		_base_sas_ioc_info(ioc , mpi_reply,
-+		_base_sas_ioc_info(ioc, mpi_reply,
- 		   mpt3sas_base_get_msg_frame(ioc, smid));
- 	}
- 
--- 
-2.25.1
+Looks good but then don't we have the same issue when removing the
+device?
+
+Actually I looked at  virtnet_remove and I see
+        unregister_netdev(vi->dev);
+
+        net_failover_destroy(vi->failover);
+
+        remove_vq_common(vi); <- this will reset the device
+
+a window here?
+
+
+Really, I think what we had originally was a better idea -
+instead of dropping interrupts they were delayed and
+when driver is ready to accept them it just enables them.
+We just need to make sure driver does not wait for
+interrupts before enabling them.
+
+And I suspect we need to make this opt-in on a per driver
+basis.
+
+
+
+> -- 
+> 2.25.1
 
