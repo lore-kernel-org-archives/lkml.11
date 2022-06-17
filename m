@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 19:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C906CCA479
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 19:06:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236365AbiFQTGB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 15:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52800 "EHLO
+        id S237134AbiFQTGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 15:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234889AbiFQTFr (ORCPT
+        with ESMTP id S234913AbiFQTFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 15:05:47 -0400
+        Fri, 17 Jun 2022 15:05:48 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B7F45795
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:05:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B33E45042
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:05:47 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 79CA96601856;
-        Fri, 17 Jun 2022 20:05:44 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id D653D660188F;
+        Fri, 17 Jun 2022 20:05:45 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655492744;
-        bh=AgP5Riz/FHb587iBL1vYiW/g4qmDc92BtRCaR0jjFGw=;
+        s=mail; t=1655492746;
+        bh=xMYv7v3aHxlEQIE2QtkE00E2gW9W0dS8yiKhilZWusw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i0IJQ4CM1JVpElwf2AKhAy23FWvVZ30CQEKxXqA/ohJKbUAyoKnY/4qsB3LxifWKl
-         +BUx8fo0BXRnHFUjAKUQJi946Y8wuLAIqKptm63nSm76kDiER5e2QvC5STkDH41aLo
-         jX2tFaizBFg2BUwQ6l9jxS5vEA7tTmpwd93ygXKVhU1qAUH75fCvFa8F+iGZMxj/V7
-         iVAqDp5jDB1Jv0epMXdgk9KccLklx+jZkjHSbpkHB1BPrLJXi9jbWcaajIPzH8h2T5
-         N33fcSGQngUR2zdUK9wq6dmvcGeVaAThMuvEK6c1Xyh4cb4oNOm3Z81Thq0zPBlaCt
-         Cz3/npceisA6w==
+        b=dAVY77wpcO6Bp+jrFpjoE6HElhGM5esj4asmzkFh4NMDCpZ3A74k/c0iCzIOYMZS6
+         AQZfO/+hVVQ8RGW8RkNqztDa2/GE6tMo4pp/OQ6f4Nwx7uqOsh8PAe1DN+wiIeGwJf
+         B2GSDYNmv82fggknXiLimmfaeIpHvicT9DlWhSsC6MKWRTggqfxPW/ZzP/bNgypdQj
+         e2J8X8WlP80Xj5iTMeJ3nPeZbccdqWQfBawZpUhA7IUiq46q7j1qi5NfD4VWz75jsO
+         IdrzFXcTHwkZ1WpOogrGpNNeATkqxOPal+8i0vgsMf7+J+uaQhu6G0rGxaDX2roFVh
+         BsuTV32LbSpPQ==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -44,57 +44,82 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v6 06/10] drm/i915: sanitize mem_flags for stolen buffers
-Date:   Fri, 17 Jun 2022 19:05:12 +0000
-Message-Id: <20220617190516.2805572-7-bob.beckett@collabora.com>
+Subject: [PATCH v6 08/10] drm/i915: allow memory region creators to alloc and free the region
+Date:   Fri, 17 Jun 2022 19:05:14 +0000
+Message-Id: <20220617190516.2805572-9-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220617190516.2805572-1-bob.beckett@collabora.com>
 References: <20220617190516.2805572-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stolen regions are not page backed or considered iomem.
-Prevent flags indicating such.
-This correctly prevents stolen buffers from attempting to directly map
-them.
-
-See i915_gem_object_has_struct_page() and i915_gem_object_has_iomem()
-usage for where it would break otherwise.
+add callbacks for alloc and free.
+this allows region creators to allocate any extra storage they may
+require.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/intel_memory_region.c | 16 +++++++++++++---
+ drivers/gpu/drm/i915/intel_memory_region.h |  2 ++
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-index 675e9ab30396..81c67ca9edda 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-@@ -14,6 +14,7 @@
- #include "gem/i915_gem_region.h"
- #include "gem/i915_gem_ttm.h"
- #include "gem/i915_gem_ttm_move.h"
-+#include "gem/i915_gem_stolen.h"
+diff --git a/drivers/gpu/drm/i915/intel_memory_region.c b/drivers/gpu/drm/i915/intel_memory_region.c
+index e38d2db1c3e3..3da07a712f90 100644
+--- a/drivers/gpu/drm/i915/intel_memory_region.c
++++ b/drivers/gpu/drm/i915/intel_memory_region.c
+@@ -231,7 +231,10 @@ intel_memory_region_create(struct drm_i915_private *i915,
+ 	struct intel_memory_region *mem;
+ 	int err;
  
- #include "gt/intel_engine_pm.h"
- #include "gt/intel_gt.h"
-@@ -124,8 +125,9 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
+-	mem = kzalloc(sizeof(*mem), GFP_KERNEL);
++	if (ops->alloc)
++		mem = ops->alloc();
++	else
++		mem = kzalloc(sizeof(*mem), GFP_KERNEL);
+ 	if (!mem)
+ 		return ERR_PTR(-ENOMEM);
  
- 	obj->mem_flags &= ~(I915_BO_FLAG_STRUCT_PAGE | I915_BO_FLAG_IOMEM);
+@@ -265,7 +268,10 @@ intel_memory_region_create(struct drm_i915_private *i915,
+ 	if (mem->ops->release)
+ 		mem->ops->release(mem);
+ err_free:
+-	kfree(mem);
++	if (mem->ops->free)
++		mem->ops->free(mem);
++	else
++		kfree(mem);
+ 	return ERR_PTR(err);
+ }
  
--	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
--		I915_BO_FLAG_STRUCT_PAGE;
-+	if (!i915_gem_object_is_stolen(obj))
-+		obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
-+			I915_BO_FLAG_STRUCT_PAGE;
+@@ -288,7 +294,11 @@ void intel_memory_region_destroy(struct intel_memory_region *mem)
  
- 	if (!obj->ttm.cache_level_override) {
- 		cache_level = i915_ttm_cache_level(to_i915(bo->base.dev),
+ 	GEM_WARN_ON(!list_empty_careful(&mem->objects.list));
+ 	mutex_destroy(&mem->objects.lock);
+-	if (!ret)
++	if (ret)
++		return;
++	if (mem->ops->free)
++		mem->ops->free(mem);
++	else
+ 		kfree(mem);
+ }
+ 
+diff --git a/drivers/gpu/drm/i915/intel_memory_region.h b/drivers/gpu/drm/i915/intel_memory_region.h
+index 3d8378c1b447..048955b5429f 100644
+--- a/drivers/gpu/drm/i915/intel_memory_region.h
++++ b/drivers/gpu/drm/i915/intel_memory_region.h
+@@ -61,6 +61,8 @@ struct intel_memory_region_ops {
+ 			   resource_size_t size,
+ 			   resource_size_t page_size,
+ 			   unsigned int flags);
++	struct intel_memory_region *(*alloc)(void);
++	void (*free)(struct intel_memory_region *mem);
+ };
+ 
+ struct intel_memory_region {
 -- 
 2.25.1
 
