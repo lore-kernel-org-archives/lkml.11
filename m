@@ -2,88 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78BB0C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 474EAC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380812AbiFQIPn (ORCPT
+        id S1380301AbiFQIQy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 04:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53420 "EHLO
+        Fri, 17 Jun 2022 04:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380002AbiFQIPi (ORCPT
+        with ESMTP id S231145AbiFQIQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 04:15:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B251668321
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:15:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45B9A61ECB
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:15:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53885C3411B;
-        Fri, 17 Jun 2022 08:15:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655453736;
-        bh=dUMiEbwFX3RN0LBwxHoVKxNIvOxIqcq0tzlOBtAruXQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=r8lhC75yIdIiisOdMupbIdV+SAUga7D+2/3T1ejsezxFbCt5iFYxfmTofuk6ChP7l
-         jOP3LY+4jEEfPAcwn+u8azHMXPIPBqeAmAT6tUptvm0f4zSCI8I4bJnPA+mRCVS5C+
-         GcVDS/z+nZWzYFsIzHipeoodBXaTvnHg2qG0hCR0=
-Date:   Fri, 17 Jun 2022 10:15:34 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Char/Misc driver fixes 5.19-rc3
-Message-ID: <Yqw4Jujzz5ZzZ2Wg@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Fri, 17 Jun 2022 04:16:51 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79F626830F;
+        Fri, 17 Jun 2022 01:16:50 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 90C121E80D95;
+        Fri, 17 Jun 2022 16:15:03 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id JPidF03qNBeW; Fri, 17 Jun 2022 16:15:00 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: renyu@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 507DF1E80D72;
+        Fri, 17 Jun 2022 16:15:00 +0800 (CST)
+From:   Ren Yu <renyu@nfschina.com>
+To:     jejb@linux.ibm.com
+Cc:     martin.petersen@oracle.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
+        qixu@nfschina.com, hukun@nfschina.com, yuzhe@nfschina.com,
+        Ren Yu <renyu@nfschina.com>
+Subject: [PATCH] drivers:scsi: fix typo in comment
+Date:   Fri, 17 Jun 2022 16:15:57 +0800
+Message-Id: <20220617081557.9009-1-renyu@nfschina.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+Spelling mistakes in comment,non-succesfull -> non-successful.
 
-  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
+Signed-off-by: Ren Yu <renyu@nfschina.com>
+---
+ drivers/scsi/mpt3sas/mpt3sas_scsih.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-are available in the Git repository at:
+diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
+index b519f4b59d30..a8a8c2d969c2 100644
+--- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
++++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
+@@ -5294,7 +5294,7 @@ _scsih_normalize_sense(char *sense_buffer, struct sense_info *data)
+ }
+ 
+ /**
+- * _scsih_scsi_ioc_info - translated non-succesfull SCSI_IO request
++ * _scsih_scsi_ioc_info - translated non-successful SCSI_IO request
+  * @ioc: per adapter object
+  * @scmd: pointer to scsi command object
+  * @mpi_reply: reply mf payload returned from firmware
+-- 
+2.11.0
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git tags/char-misc-5.19-rc3
-
-for you to fetch changes up to 0a35780c755ccec097d15c6b4ff8b246a89f1689:
-
-  eeprom: at25: Split reads into chunks and cap write size (2022-06-10 16:42:48 +0200)
-
-----------------------------------------------------------------
-Char/Misc driver fixes for 5.19-rc3
-
-Here are some small char/misc driver fixes for 5.19-rc3 that resolve
-some reported issues.
-
-They include:
-	- mei driver fixes
-	- comedi driver fix
-	- rtsx build warning fix
-	- fsl-mc-bus driver fix
-
-All of these have been in linux-next for a while with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Brad Bishop (1):
-      eeprom: at25: Split reads into chunks and cap write size
-
-Miaoqian Lin (1):
-      misc: atmel-ssc: Fix IRQ check in ssc_probe
-
-Shreenidhi Shedi (1):
-      char: lp: remove redundant initialization of err
-
- drivers/char/lp.c          |  2 +-
- drivers/misc/atmel-ssc.c   |  4 +-
- drivers/misc/eeprom/at25.c | 93 ++++++++++++++++++++++++++--------------------
- 3 files changed, 56 insertions(+), 43 deletions(-)
