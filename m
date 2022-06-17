@@ -2,120 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8521AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE37C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381669AbiFQM1c (ORCPT
+        id S1382148AbiFQM2B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 08:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
+        Fri, 17 Jun 2022 08:28:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245358AbiFQM1a (ORCPT
+        with ESMTP id S236185AbiFQM17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 08:27:30 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D37650B2B
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:27:30 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id s10so4548649ljh.12
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:27:29 -0700 (PDT)
+        Fri, 17 Jun 2022 08:27:59 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2943B18397;
+        Fri, 17 Jun 2022 05:27:58 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id s12so8496271ejx.3;
+        Fri, 17 Jun 2022 05:27:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=JnQ7ER3/BznrTK6nfzGkCBcRLScePRNEds8wSayDWBU=;
-        b=T640Ob++YeWd+T4ihz7vTm05LTeY1mBKCkrscFUItH+rfgs8IQ0zuI+rF5wsrv/uSE
-         4smrU/D1K55NAapM7LpLvaSXHuQP8eg2yb3SWc2rmTcxAS5KSD2hsN3fqqIII8A+6MiP
-         DbMWkdHmpqnFG0903QpZnEqTu9a5INuuekBkb8vVdCQirDUsG+lZHGpma8s/o7UzVIK8
-         t72yJNWYaYTxkgjlJmAJnETqJtChitTyUpd6IcxFgltNZKauQiOWqEAt71NVwEEkD52L
-         ivKggtaNSmYESsaOGpLfWglIE624MgV/4TyiIfLSanXQMC47IcQ/kflPwVGXVu68120j
-         q5NQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vDDq9mHhyyDJANgBiJC1PD/32/vKz/kB8FNf6uAGUXI=;
+        b=OmgmkAxCQCl/VTS5QiF7IoSfgPpsxMrkgxQQQkBfOCVCf+dBQ/1zggshNXg6vWteje
+         fAyfPn9avdQ1XWu9c4dSr2QfQmTh+2hThw939cvEPdZ6O001wPKxnCxwV6f50Ntttvqo
+         LyTkmawArzVakNRK7OCoHG4u7umFJX9Gn9XK3fMiR4is/8+VgGzn7O7zlazi3AecIsKM
+         R2fSMvrgBS9u0Cp2n+wTNqmFI/FdQYofxe7la5qQQ04a++i3/+3YnbYSkrO5qdyRTnCd
+         IJDnGdZ9LcjiR1Lk0eCFA3jeaXsCqMbmScprc3qMQnMOCGh+voWFTpbMa9GaUWo2H0yY
+         bOpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=JnQ7ER3/BznrTK6nfzGkCBcRLScePRNEds8wSayDWBU=;
-        b=yxVufD8p26MkHy1lQc4z8ELZrwFaMrnWMWs4EHXal4Icv19gNUJk+J4PL6EPi8dIap
-         XW6tmv6RFID8YBU5v7jfgfH0hAx7VLayY8inGA02bUMoUAtqc/eVLLHlTsirogIWsrbO
-         Y7XrCG84T3HvR/aKAf8dYPJjuIgExBoPqQZfnYZ2HX9ba9jv862Fi7oVEQLdkJpJ42mv
-         WL3J4o4YRDuE+1FpEx2+D35h2dzd3djnZBETlsIaAzT3KjCtXDJgDVEpTem4zAHSmKfn
-         IfG6YMEW7C7L4XFTxDMYlNnK26/5qJRAoQx7SWgb6x+Bp4XEYesWsnS8fUS1rDyPufyt
-         jRpA==
-X-Gm-Message-State: AJIora9Zx81ZF53mhgJl9cAiehgsXQ7EDn7zes3L4WqEB7vEAQrm24Us
-        yLkdB6TNE5SJkiydfc6MZTg=
-X-Google-Smtp-Source: AGRyM1thk1l/pNJzxUInKJ0RZ+VOJmvPhKqfi3rTTC9JzaLkrNZkk9MrxX7xO+x0ncaIaqoA7DXVtg==
-X-Received: by 2002:a2e:a783:0:b0:255:9be1:a471 with SMTP id c3-20020a2ea783000000b002559be1a471mr4816519ljf.215.1655468848267;
-        Fri, 17 Jun 2022 05:27:28 -0700 (PDT)
-Received: from [10.0.0.127] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
-        by smtp.gmail.com with ESMTPSA id x8-20020a056512046800b0047e0061a611sm621093lfd.235.2022.06.17.05.27.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jun 2022 05:27:27 -0700 (PDT)
-Message-ID: <bc447b49-a02c-5c4f-4e04-8071ecdfe1bd@gmail.com>
-Date:   Fri, 17 Jun 2022 15:28:59 +0300
+        bh=vDDq9mHhyyDJANgBiJC1PD/32/vKz/kB8FNf6uAGUXI=;
+        b=DKrNa8KTswQSv00A+oCko9NFTakiVYVNIv3QmGlfHZ/lGRS9i0cAVEmfqSKwgdtxpe
+         fOOg5LyZ679A6sOtb75g6S7LOI027tH9riGSfqbbECXQYZlwBNiZSoe1ksQtNF7PJukI
+         X/l1lC/mfVw4kJ7lirqWt3Du5FRI3fNCle3tU6aiOg6F5yCGO9rvI0VqLjSFuTMTrDU8
+         kHjjbGUPkvZyucDjNhvrhMHobznE1BGma05CMT5vr3HBZ55f+tfNqes33TJ3BSnx0ggY
+         YYlrk+Hz3iqObYb0RDYHS+GKEAUIJazDP2t+g7oHRu2ASQCwcZsbDrBdK2FZjgjX9rWN
+         DQAw==
+X-Gm-Message-State: AJIora+Pav9E7Q4ywwrQiUL7bHzMrsUsznwu+gQeLHz905IXGar/6pjp
+        o/QdCPo9ImoGXnQNqe/N/QI=
+X-Google-Smtp-Source: AGRyM1ua01kP5imXEyaVMetInj1S4e0MyZpfCj1SS9bmd2k/WBx/teUeSkfRSE0pMDK/1zboMCbBNQ==
+X-Received: by 2002:a17:906:58c8:b0:6fe:91d5:18d2 with SMTP id e8-20020a17090658c800b006fe91d518d2mr8865592ejs.190.1655468876724;
+        Fri, 17 Jun 2022 05:27:56 -0700 (PDT)
+Received: from localhost (92.40.168.194.threembb.co.uk. [92.40.168.194])
+        by smtp.gmail.com with ESMTPSA id e11-20020a170906248b00b0070f8590ee8fsm2098138ejb.159.2022.06.17.05.27.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 05:27:56 -0700 (PDT)
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     linus.walleij@linaro.org, paul@crapouillou.net
+Cc:     maz@kernel.org, andy.shevchenko@gmail.com,
+        linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/2] pinctrl: ingenic: Convert to immutable irq chip
+Date:   Fri, 17 Jun 2022 13:28:53 +0100
+Message-Id: <20220617122855.739190-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 11/11] ASoC: ti: davinci-mcasp: use
- pm_runtime_resume_and_get()
-Content-Language: en-US
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        alsa-devel@alsa-project.org
-Cc:     tiwai@suse.de, broonie@kernel.org,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220616220427.136036-1-pierre-louis.bossart@linux.intel.com>
- <20220616220427.136036-12-pierre-louis.bossart@linux.intel.com>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-In-Reply-To: <20220616220427.136036-12-pierre-louis.bossart@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pierre,
+Two cleanup patches for pinctrl-ingenic.
 
-On 17/06/2022 01:04, Pierre-Louis Bossart wrote:
-> The use of pm_runtime_get_sync() is buggy with no use of put_noidle on
-> error.
-> 
-> Use pm_runtime_resume_and_get() instead.
+v2:
+* Add print_chip callback to avoid changing /proc/interrupts output
+* Add patch to use irqd_to_hwirq()
 
-Thanks for the fix,
+Aidan MacDonald (2):
+  pinctrl: ingenic: Use irqd_to_hwirq()
+  pinctrl: ingenic: Convert to immutable irq chip
 
-Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-
-> 
-> Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-> Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-> Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-> Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-> ---
->  sound/soc/ti/davinci-mcasp.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/sound/soc/ti/davinci-mcasp.c b/sound/soc/ti/davinci-mcasp.c
-> index e2aab4729f3ab..0201000b619f6 100644
-> --- a/sound/soc/ti/davinci-mcasp.c
-> +++ b/sound/soc/ti/davinci-mcasp.c
-> @@ -2111,8 +2111,7 @@ static int davinci_mcasp_gpio_request(struct gpio_chip *chip, unsigned offset)
->  	}
->  
->  	/* Do not change the PIN yet */
-> -
-> -	return pm_runtime_get_sync(mcasp->dev);
-> +	return pm_runtime_resume_and_get(mcasp->dev);
->  }
->  
->  static void davinci_mcasp_gpio_free(struct gpio_chip *chip, unsigned offset)
+ drivers/pinctrl/pinctrl-ingenic.c | 64 +++++++++++++++++++------------
+ 1 file changed, 40 insertions(+), 24 deletions(-)
 
 -- 
-Péter
+2.35.1
+
