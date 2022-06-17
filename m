@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E67CCCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 765A1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380754AbiFQH70 (ORCPT
+        id S1380772AbiFQH7e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 03:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39612 "EHLO
+        Fri, 17 Jun 2022 03:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380702AbiFQH7V (ORCPT
+        with ESMTP id S1380748AbiFQH7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 03:59:21 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8DB5A2D8;
-        Fri, 17 Jun 2022 00:59:20 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id D230E201FAC;
-        Fri, 17 Jun 2022 09:59:18 +0200 (CEST)
+        Fri, 17 Jun 2022 03:59:25 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BAE167D03;
+        Fri, 17 Jun 2022 00:59:24 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E81A21A30BC;
+        Fri, 17 Jun 2022 09:59:22 +0200 (CEST)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 87E63201FA1;
-        Fri, 17 Jun 2022 09:59:18 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 9C0B81A2A06;
+        Fri, 17 Jun 2022 09:59:22 +0200 (CEST)
 Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 293381820F45;
-        Fri, 17 Jun 2022 15:59:17 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id B1A691820F57;
+        Fri, 17 Jun 2022 15:59:20 +0800 (+08)
 From:   Shengjiu Wang <shengjiu.wang@nxp.com>
 To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
         shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
         perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
         robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org
 Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/7] ASoC: fsl_sai: Add support for more sample rates
-Date:   Fri, 17 Jun 2022 15:44:33 +0800
-Message-Id: <1655451877-16382-4-git-send-email-shengjiu.wang@nxp.com>
+Subject: [PATCH v2 6/7] ASoC: dt-bindings: fsl-sai: Add new property to configure dataline
+Date:   Fri, 17 Jun 2022 15:44:36 +0800
+Message-Id: <1655451877-16382-7-git-send-email-shengjiu.wang@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1655451877-16382-1-git-send-email-shengjiu.wang@nxp.com>
 References: <1655451877-16382-1-git-send-email-shengjiu.wang@nxp.com>
@@ -42,48 +42,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for more sample rates, because PDM format
-bitstream has higher sample rates. for example DSD512
-format, the bit clock is 22.5792MHz, if the word width
-is U8_LE, then the max sample rate is 2822400.
+"fsl,dataline" is added to configure the dataline of SAI.
+It has 3 value for each configuration, first one means the type:
+I2S(1) or PDM(2), second one is dataline mask for 'rx', third one is
+dataline mask for 'tx'. for example:
+
+fsl,dataline = <1 0xff 0xff 2 0xff 0x11>,
+
+it means I2S type rx mask is 0xff, tx mask is 0xff, PDM type
+rx mask is 0xff, tx mask is 0x11 (dataline 1 and 4 enabled).
 
 Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
 ---
- sound/soc/fsl/fsl_sai.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/sound/fsl-sai.txt | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
-index d11ee3b6f163..9d2828b55c07 100644
---- a/sound/soc/fsl/fsl_sai.c
-+++ b/sound/soc/fsl/fsl_sai.c
-@@ -30,7 +30,8 @@
- static const unsigned int fsl_sai_rates[] = {
- 	8000, 11025, 12000, 16000, 22050,
- 	24000, 32000, 44100, 48000, 64000,
--	88200, 96000, 176400, 192000
-+	88200, 96000, 176400, 192000, 352800,
-+	384000, 705600, 768000, 1411200, 2822400,
- };
+diff --git a/Documentation/devicetree/bindings/sound/fsl-sai.txt b/Documentation/devicetree/bindings/sound/fsl-sai.txt
+index c71c5861d787..4c66e6a1a533 100644
+--- a/Documentation/devicetree/bindings/sound/fsl-sai.txt
++++ b/Documentation/devicetree/bindings/sound/fsl-sai.txt
+@@ -49,6 +49,14 @@ Required properties:
+ 			  receive data by following their own bit clocks and
+ 			  frame sync clocks separately.
  
- static const struct snd_pcm_hw_constraint_list fsl_sai_rate_constraints = {
-@@ -763,7 +764,7 @@ static struct snd_soc_dai_driver fsl_sai_dai_template = {
- 		.channels_min = 1,
- 		.channels_max = 32,
- 		.rate_min = 8000,
--		.rate_max = 192000,
-+		.rate_max = 2822400,
- 		.rates = SNDRV_PCM_RATE_KNOT,
- 		.formats = FSL_SAI_FORMATS,
- 	},
-@@ -772,7 +773,7 @@ static struct snd_soc_dai_driver fsl_sai_dai_template = {
- 		.channels_min = 1,
- 		.channels_max = 32,
- 		.rate_min = 8000,
--		.rate_max = 192000,
-+		.rate_max = 2822400,
- 		.rates = SNDRV_PCM_RATE_KNOT,
- 		.formats = FSL_SAI_FORMATS,
- 	},
++  - fsl,dataline        : configure the dataline. it has 3 value for each configuration
++                          first one means the type: I2S(1) or PDM(2)
++                          second one is dataline mask for 'rx'
++                          third one is dataline mask for 'tx'.
++                          for example: fsl,dataline = <1 0xff 0xff 2 0xff 0x11>;
++                          it means I2S type rx mask is 0xff, tx mask is 0xff, PDM type
++                          rx mask is 0xff, tx mask is 0x11 (dataline 1 and 4 enabled).
++
+ Optional properties:
+ 
+   - big-endian		: Boolean property, required if all the SAI
 -- 
 2.17.1
 
