@@ -2,294 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BDA0CCA479
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F77FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 08:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381263AbiFQIoh (ORCPT
+        id S1381249AbiFQIor (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 04:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57322 "EHLO
+        Fri, 17 Jun 2022 04:44:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381197AbiFQIob (ORCPT
+        with ESMTP id S1381202AbiFQIoj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 04:44:31 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83FEB69B58;
-        Fri, 17 Jun 2022 01:44:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655455463; x=1686991463;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CEEqajxT21VNjZqzYJWJfozkQLTxdrYptkPLYEplMds=;
-  b=kuZL+A0OVoIi2f8Vc9K1xvsqT7CLMtgPY+TtqX59Eb979qcu0cp1EUi7
-   oqHf1CgYPMYk6+FW4oiG1ZdkZiO9xg+X4J1pVuVzgMIFdAqDDtVIuCUZN
-   B12MYwrPyJcrjzEQ1UubG39zyXdxHl1hnA0HfjuL4yERwiLDT3EuirWaw
-   CSri5B69QRC1c9d+FQH/TKlMWv/vk+PgNLzcZtoyknn+RCrmaXa7Ev7KI
-   UOwkF3MCDurbpTHiDasaDS9jmmP+yWVyObsqWCV7ljUxlA2eJ3oRTt1+s
-   p29luDOpJDfmz0X7hZqO2+NZf19gvP+3rygQSgJqLveIHUQbiV3cJKCc0
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="100484902"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Jun 2022 01:44:22 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 17 Jun 2022 01:44:20 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 17 Jun 2022 01:44:16 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>
-Subject: [Patch net-next 05/11] net: dsa: microchip: move vlan functionality to ksz_common
-Date:   Fri, 17 Jun 2022 14:12:49 +0530
-Message-ID: <20220617084255.19376-6-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220617084255.19376-1-arun.ramadoss@microchip.com>
-References: <20220617084255.19376-1-arun.ramadoss@microchip.com>
+        Fri, 17 Jun 2022 04:44:39 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F3F6972F;
+        Fri, 17 Jun 2022 01:44:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=cRcPliFH8a5nYGYbcpuAxJdVHyV2ltCZ23v97rgf1A4=; b=KiuwHF6aDNvC5t/LWv3aUEPzwE
+        KBgvUpfkf5qDI6GElmlPwqGlCsWtGNTsSld0WuZewPo0/4mkHtzAiWM6dEK1eY4RySKpAlhO65R1D
+        WAwqSuEBlSHCf5DkNowUItxtdZkM4ZA/lqbf20XRt3tR3vQic1RG+gSiipHa082lrFeJntOO3nL6y
+        th0tSkAnySXos78OuuOupQOTbIqiHOC5RM5RDCtt86BUATvPwCygEQGPiY1c2rMXDglxq26ZxUHjd
+        msVefU68/GFcLY3Vs1Mt7LyDHUYqx6nUIuYz/IWEJAxO+kEDCvTyVrRF9ed8BsbP8AEHXp6NHAjQ4
+        s9lEnYkg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o27ag-006QLd-PI; Fri, 17 Jun 2022 08:44:30 +0000
+Date:   Fri, 17 Jun 2022 01:44:30 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Nicolin Chen <nicolinc@nvidia.com>
+Cc:     kwankhede@nvidia.com, corbet@lwn.net, hca@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
+        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
+        mjrosato@linux.ibm.com, pasic@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com,
+        akrowiak@linux.ibm.com, jjherne@linux.ibm.com,
+        alex.williamson@redhat.com, cohuck@redhat.com, jgg@nvidia.com,
+        kevin.tian@intel.com, jchrist@linux.ibm.com, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: Re: [RFT][PATCH v1 5/6] vfio/ccw: Add kmap_local_page() for memcpy
+Message-ID: <Yqw+7gM3Lz96UFdz@infradead.org>
+References: <20220616235212.15185-1-nicolinc@nvidia.com>
+ <20220616235212.15185-6-nicolinc@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616235212.15185-6-nicolinc@nvidia.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch moves the vlan dsa_switch_ops such as vlan_add, vlan_del and
-vlan_filtering from the individual files ksz8795.c, ksz9477.c to
-ksz_common.c file.
+On Thu, Jun 16, 2022 at 04:52:11PM -0700, Nicolin Chen wrote:
+> The pinned PFN list returned from vfio_pin_pages() is simply converted
+> using page_to_pfn() without protection, so direct access via memcpy()
+> will crash on S390 if the PFN is an IO PFN. Instead, the pages should
+> be touched using kmap_local_page().
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
----
- drivers/net/dsa/microchip/ksz8795.c    | 19 +++++++------
- drivers/net/dsa/microchip/ksz9477.c    | 19 +++++++------
- drivers/net/dsa/microchip/ksz_common.c | 37 ++++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h | 14 ++++++++++
- 4 files changed, 69 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 041956e3c7b1..16e946dbd9d4 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -958,11 +958,9 @@ static void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
- 	}
- }
- 
--static int ksz8_port_vlan_filtering(struct dsa_switch *ds, int port, bool flag,
-+static int ksz8_port_vlan_filtering(struct ksz_device *dev, int port, bool flag,
- 				    struct netlink_ext_ack *extack)
- {
--	struct ksz_device *dev = ds->priv;
--
- 	if (ksz_is_ksz88x3(dev))
- 		return -ENOTSUPP;
- 
-@@ -987,12 +985,11 @@ static void ksz8_port_enable_pvid(struct ksz_device *dev, int port, bool state)
- 	}
- }
- 
--static int ksz8_port_vlan_add(struct dsa_switch *ds, int port,
-+static int ksz8_port_vlan_add(struct ksz_device *dev, int port,
- 			      const struct switchdev_obj_port_vlan *vlan,
- 			      struct netlink_ext_ack *extack)
- {
- 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
--	struct ksz_device *dev = ds->priv;
- 	struct ksz_port *p = &dev->ports[port];
- 	u16 data, new_pvid = 0;
- 	u8 fid, member, valid;
-@@ -1060,10 +1057,9 @@ static int ksz8_port_vlan_add(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
--static int ksz8_port_vlan_del(struct dsa_switch *ds, int port,
-+static int ksz8_port_vlan_del(struct ksz_device *dev, int port,
- 			      const struct switchdev_obj_port_vlan *vlan)
- {
--	struct ksz_device *dev = ds->priv;
- 	u16 data, pvid;
- 	u8 fid, member, valid;
- 
-@@ -1398,9 +1394,9 @@ static const struct dsa_switch_ops ksz8_switch_ops = {
- 	.port_bridge_leave	= ksz_port_bridge_leave,
- 	.port_stp_state_set	= ksz8_port_stp_state_set,
- 	.port_fast_age		= ksz_port_fast_age,
--	.port_vlan_filtering	= ksz8_port_vlan_filtering,
--	.port_vlan_add		= ksz8_port_vlan_add,
--	.port_vlan_del		= ksz8_port_vlan_del,
-+	.port_vlan_filtering	= ksz_port_vlan_filtering,
-+	.port_vlan_add		= ksz_port_vlan_add,
-+	.port_vlan_del		= ksz_port_vlan_del,
- 	.port_fdb_dump		= ksz_port_fdb_dump,
- 	.port_mdb_add           = ksz_port_mdb_add,
- 	.port_mdb_del           = ksz_port_mdb_del,
-@@ -1465,6 +1461,9 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.r_mib_pkt = ksz8_r_mib_pkt,
- 	.freeze_mib = ksz8_freeze_mib,
- 	.port_init_cnt = ksz8_port_init_cnt,
-+	.vlan_filtering = ksz8_port_vlan_filtering,
-+	.vlan_add = ksz8_port_vlan_add,
-+	.vlan_del = ksz8_port_vlan_del,
- 	.shutdown = ksz8_reset_switch,
- 	.init = ksz8_switch_init,
- 	.exit = ksz8_switch_exit,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 4fb96e53487e..e230fe1d1917 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -372,12 +372,10 @@ static void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port)
- 	}
- }
- 
--static int ksz9477_port_vlan_filtering(struct dsa_switch *ds, int port,
-+static int ksz9477_port_vlan_filtering(struct ksz_device *dev, int port,
- 				       bool flag,
- 				       struct netlink_ext_ack *extack)
- {
--	struct ksz_device *dev = ds->priv;
--
- 	if (flag) {
- 		ksz_port_cfg(dev, port, REG_PORT_LUE_CTRL,
- 			     PORT_VLAN_LOOKUP_VID_0, true);
-@@ -391,11 +389,10 @@ static int ksz9477_port_vlan_filtering(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
--static int ksz9477_port_vlan_add(struct dsa_switch *ds, int port,
-+static int ksz9477_port_vlan_add(struct ksz_device *dev, int port,
- 				 const struct switchdev_obj_port_vlan *vlan,
- 				 struct netlink_ext_ack *extack)
- {
--	struct ksz_device *dev = ds->priv;
- 	u32 vlan_table[3];
- 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
- 	int err;
-@@ -428,10 +425,9 @@ static int ksz9477_port_vlan_add(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
--static int ksz9477_port_vlan_del(struct dsa_switch *ds, int port,
-+static int ksz9477_port_vlan_del(struct ksz_device *dev, int port,
- 				 const struct switchdev_obj_port_vlan *vlan)
- {
--	struct ksz_device *dev = ds->priv;
- 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
- 	u32 vlan_table[3];
- 	u16 pvid;
-@@ -1323,9 +1319,9 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.port_bridge_leave	= ksz_port_bridge_leave,
- 	.port_stp_state_set	= ksz9477_port_stp_state_set,
- 	.port_fast_age		= ksz_port_fast_age,
--	.port_vlan_filtering	= ksz9477_port_vlan_filtering,
--	.port_vlan_add		= ksz9477_port_vlan_add,
--	.port_vlan_del		= ksz9477_port_vlan_del,
-+	.port_vlan_filtering	= ksz_port_vlan_filtering,
-+	.port_vlan_add		= ksz_port_vlan_add,
-+	.port_vlan_del		= ksz_port_vlan_del,
- 	.port_fdb_dump		= ksz9477_port_fdb_dump,
- 	.port_fdb_add		= ksz9477_port_fdb_add,
- 	.port_fdb_del		= ksz9477_port_fdb_del,
-@@ -1407,6 +1403,9 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.r_mib_stat64 = ksz_r_mib_stats64,
- 	.freeze_mib = ksz9477_freeze_mib,
- 	.port_init_cnt = ksz9477_port_init_cnt,
-+	.vlan_filtering = ksz9477_port_vlan_filtering,
-+	.vlan_add = ksz9477_port_vlan_add,
-+	.vlan_del = ksz9477_port_vlan_del,
- 	.shutdown = ksz9477_reset_switch,
- 	.init = ksz9477_switch_init,
- 	.exit = ksz9477_switch_exit,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 25272647199c..d63af57c76e4 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -954,6 +954,43 @@ enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
- }
- EXPORT_SYMBOL_GPL(ksz_get_tag_protocol);
- 
-+int ksz_port_vlan_filtering(struct dsa_switch *ds, int port,
-+			    bool flag, struct netlink_ext_ack *extack)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	if (!dev->dev_ops->vlan_filtering)
-+		return -EOPNOTSUPP;
-+
-+	return dev->dev_ops->vlan_filtering(dev, port, flag, extack);
-+}
-+EXPORT_SYMBOL_GPL(ksz_port_vlan_filtering);
-+
-+int ksz_port_vlan_add(struct dsa_switch *ds, int port,
-+		      const struct switchdev_obj_port_vlan *vlan,
-+		      struct netlink_ext_ack *extack)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	if (!dev->dev_ops->vlan_add)
-+		return -EOPNOTSUPP;
-+
-+	return dev->dev_ops->vlan_add(dev, port, vlan, extack);
-+}
-+EXPORT_SYMBOL_GPL(ksz_port_vlan_add);
-+
-+int ksz_port_vlan_del(struct dsa_switch *ds, int port,
-+		      const struct switchdev_obj_port_vlan *vlan)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	if (!dev->dev_ops->vlan_del)
-+		return -EOPNOTSUPP;
-+
-+	return dev->dev_ops->vlan_del(dev, port, vlan);
-+}
-+EXPORT_SYMBOL_GPL(ksz_port_vlan_del);
-+
- static int ksz_switch_detect(struct ksz_device *dev)
- {
- 	u8 id1, id2;
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 21db6f79035f..1baa270859aa 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -180,6 +180,13 @@ struct ksz_dev_ops {
- 	void (*r_mib_pkt)(struct ksz_device *dev, int port, u16 addr,
- 			  u64 *dropped, u64 *cnt);
- 	void (*r_mib_stat64)(struct ksz_device *dev, int port);
-+	int  (*vlan_filtering)(struct ksz_device *dev, int port,
-+			       bool flag, struct netlink_ext_ack *extack);
-+	int  (*vlan_add)(struct ksz_device *dev, int port,
-+			 const struct switchdev_obj_port_vlan *vlan,
-+			 struct netlink_ext_ack *extack);
-+	int  (*vlan_del)(struct ksz_device *dev, int port,
-+			 const struct switchdev_obj_port_vlan *vlan);
- 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
- 	void (*port_init_cnt)(struct ksz_device *dev, int port);
- 	int (*shutdown)(struct ksz_device *dev);
-@@ -233,6 +240,13 @@ void ksz_get_strings(struct dsa_switch *ds, int port,
- 		     u32 stringset, uint8_t *buf);
- enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
- 					   int port, enum dsa_tag_protocol mp);
-+int ksz_port_vlan_filtering(struct dsa_switch *ds, int port,
-+			    bool flag, struct netlink_ext_ack *extack);
-+int ksz_port_vlan_add(struct dsa_switch *ds, int port,
-+		      const struct switchdev_obj_port_vlan *vlan,
-+		      struct netlink_ext_ack *extack);
-+int ksz_port_vlan_del(struct dsa_switch *ds, int port,
-+		      const struct switchdev_obj_port_vlan *vlan);
- 
- /* Common register access functions */
- 
--- 
-2.36.1
-
+I don't see how this helps.  kmap_local_page only works for either
+pages in the kernel direct map or highmem, but not for memory that needs
+to be ioremapped.  And there is no highmem on s390.
