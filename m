@@ -2,142 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E945BC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 19:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A0CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 19:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243311AbiFQTry (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 15:47:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
+        id S232457AbiFQTss (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 15:48:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbiFQTru (ORCPT
+        with ESMTP id S245188AbiFQTs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 15:47:50 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5E71182B
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:47:48 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id o7so10597470eja.1
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:47:48 -0700 (PDT)
+        Fri, 17 Jun 2022 15:48:29 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D385321278
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:48:27 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id g25so10545095ejh.9
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:48:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1zwRRGT+7U6kcOm23L9Lh8UyJA5oTQ09EyApKVWspK0=;
-        b=e2DlXCS6iKqa9GLoyvPsepDbCTXyGi98RLSEWodCnOkFJA74c2le7Q72NlLN0FGhO5
-         pLm9bgB/9qGbnuSMzlu5tDFZQC7xuU1iUCExxn5Hdj3lzBHhFD5/Lsq6bU4kOJOvCjhU
-         wm7pRl03A0DT+F2RuC3KT5SdOOfZiRlLmEhXk=
+        bh=+EKwqCsztIzjML5eTOI4DyB4igY/i9zv7rTWORQZJYU=;
+        b=V+sB5rMnGZRxn8yt2BHn5Ul5zj4u67xcYI16zxGhn/AndUz5pb4jxIvTXtTtF9VSs2
+         G6CGVFvL6OBJo0YqcNjRjvLqeMck9braWkKsDSqRhh4QFdy2VAq2Q+K7uWthjnQqVWIg
+         kyoo5rOek/vmTzszxHJfRJQnbXvu03AOFmSaM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1zwRRGT+7U6kcOm23L9Lh8UyJA5oTQ09EyApKVWspK0=;
-        b=O3M3naxQKcYiKD1V27K0HinrW9npiY4MiRk02S+mMW5JVAXMBvcrEiLogxaNHdvuiz
-         /OKN3ubmUrzz7Xy1F4aLFrdAcOnx6GWMOtEm1K9TRNVkE3matzKRltkj3BNLpUpKJ59t
-         nZrscGxWso/o0B8soI/+L7wRhQkayAXclzJqKaJlQxNWt785fh5HfT4GgEPm8OpxIDd8
-         KjW7FW0b45tLNptyAAZxqnzm0meFuuplZV51I89m+2kKe9KGaK2ydNy6ziGU2i3wT9l4
-         GGcqZaM3ky0xiVOVKX7sFOPCbq5WdaOKJeWWWx79lDMTwvOl0PbTScZz1t+du3emLbwE
-         Gwmg==
-X-Gm-Message-State: AJIora/EZKHWN3dL4g7HHYHeuwwuoFqpPDa8kMH5BJOTe48zkGb1JcZA
-        5FcmPEVtWqjM1ufz3VhllZgkiKOJQeR+SP3NiyE=
-X-Google-Smtp-Source: AGRyM1srCZv/Uddge2gr0sRzEZYWTzz34qgL6IAa5GrMTSLfsBELAX+nMYx66smFLhqMv+js+PtboQ==
-X-Received: by 2002:a17:906:308f:b0:709:af33:9fa7 with SMTP id 15-20020a170906308f00b00709af339fa7mr10395126ejv.369.1655495267153;
-        Fri, 17 Jun 2022 12:47:47 -0700 (PDT)
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com. [209.85.128.53])
-        by smtp.gmail.com with ESMTPSA id ec10-20020a0564020d4a00b0042bd75c53casm4230954edb.83.2022.06.17.12.47.46
+        bh=+EKwqCsztIzjML5eTOI4DyB4igY/i9zv7rTWORQZJYU=;
+        b=dxNjfySQB7QAf9PMeazkUGKQzgkjX7NqDKTF7h7ZykCmL2WOkbzG2xal1hP/iuHVFh
+         Ggfy6r2Zowt/5H6t+WcWQ1rv+tC21dBfuScj9J6n15dGX1S6G1W/dh3Nh2nyBezYUUiU
+         IJXaBhMQJCaWGZGMcWwXD/S/sGv8/V8T4QXfg+ztPIGhqceLfr0RfHFwVbn+To9+I5If
+         N0zE4lXqdCpPMJoS0K9re1WNQBdvHBFczkATEh6Skv/cXYCmWl+Oy8zsatYM1buxh/ON
+         eHY8V3Wt4UQEgPE+dKkyt5IesxyAacJGRE52pLd4/8uimF4ij9AviG5efWP9w2zT/ycc
+         iaEA==
+X-Gm-Message-State: AJIora8EOs6zVJ0wi2OHNWOuy+DCz0KFooz0B8FCIWK8IIWFv1jm2ehx
+        zn0wrm9RglQw9sAja86xWQC1WBqyHCpSaOLm
+X-Google-Smtp-Source: AGRyM1vziQFc5SgyDj00yxKjrntPVatXmBpNNcAnvHSJuFie6/zgxBVdiRGNGTjqMuA2SuzRm+rYEA==
+X-Received: by 2002:a17:907:c24:b0:711:d4c6:9161 with SMTP id ga36-20020a1709070c2400b00711d4c69161mr10978709ejc.760.1655495306192;
+        Fri, 17 Jun 2022 12:48:26 -0700 (PDT)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id i24-20020a05640200d800b0042dcac2afc6sm4234309edu.72.2022.06.17.12.48.25
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jun 2022 12:47:46 -0700 (PDT)
-Received: by mail-wm1-f53.google.com with SMTP id e5so2805339wma.0
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:47:46 -0700 (PDT)
-X-Received: by 2002:a05:600c:2054:b0:39c:3f73:3552 with SMTP id
- p20-20020a05600c205400b0039c3f733552mr11938914wmg.15.1655495265869; Fri, 17
- Jun 2022 12:47:45 -0700 (PDT)
+        Fri, 17 Jun 2022 12:48:25 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id q9so6954106wrd.8
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:48:25 -0700 (PDT)
+X-Received: by 2002:a05:6000:16c4:b0:20f:cd5d:4797 with SMTP id
+ h4-20020a05600016c400b0020fcd5d4797mr10819451wrf.193.1655495305221; Fri, 17
+ Jun 2022 12:48:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220617111021.v6.1.I9e299d3fa6fbf50df6fc7207050bf5c3a7bf4c61@changeid>
-In-Reply-To: <20220617111021.v6.1.I9e299d3fa6fbf50df6fc7207050bf5c3a7bf4c61@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 17 Jun 2022 12:47:34 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Wp=BMwkbXH+_cHyVP3_0Zh-KXO=N8Y7wg3SktEs7FEXQ@mail.gmail.com>
-Message-ID: <CAD=FV=Wp=BMwkbXH+_cHyVP3_0Zh-KXO=N8Y7wg3SktEs7FEXQ@mail.gmail.com>
-Subject: Re: [PATCH v6 1/6] FROMLIST: arm64: dts: qcom: sc7180-trogdor: Split
- out keyboard node and describe detachables
-To:     "Joseph S. Barrera III" <joebar@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+References: <20220617091039.2257083-1-eric.dumazet@gmail.com>
+ <YqxufxqsnHjVfQOs@worktop.programming.kicks-ass.net> <2dd754f9-3a79-ed17-e423-6b411c3afb69@redhat.com>
+ <CALvZod5ijDz=coEE8G8v_haPaKuUa5jHYzEwKvLVxHGphixsFA@mail.gmail.com>
+ <2730b855-8f99-5a9e-707e-697d3bd9811d@redhat.com> <CANn89iJLWJMmNrLYQ0EU7_0Wri6c3Kn9vYMOiWu1Ds8Af2KOnw@mail.gmail.com>
+ <7499dd05-30d1-669c-66b4-5cb06452b476@redhat.com> <CANn89iLxX_bqD8PvAkZXGWzKBKYxB3qaqQjxxdmoG91PfmvRnA@mail.gmail.com>
+ <YqzQKER4JRoudTJE@hirez.programming.kicks-ass.net> <CANn89iKO1koPa5R_mvK0k2dkFaq+F0PgcbvpVt+JpzzR5xsu6g@mail.gmail.com>
+ <CAHk-=wjLOLWV2NvBPozUj0krF6fvWv6mrC4xpCBVXc=e2+dqPQ@mail.gmail.com>
+ <CANn89i+wBM+ewcP9u+ZWDqv3zQeK7ovKB+YJf9S6Om5QkqhLHA@mail.gmail.com>
+ <CAHk-=wi9ut1VkB=Ja_gYtH67DZ7cc5QBG-uJCPkOpU=MZDJSUw@mail.gmail.com> <CANn89iJXeUJRV2+8reUdaeARxYPPbCoG+9atmRFfy4kv0XX00A@mail.gmail.com>
+In-Reply-To: <CANn89iJXeUJRV2+8reUdaeARxYPPbCoG+9atmRFfy4kv0XX00A@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 17 Jun 2022 14:48:08 -0500
+X-Gmail-Original-Message-ID: <CAHk-=wiEZmzBUFkZkBrJv3JSJkQ+qxaMZU_Sx1WTpMHs2SOAiQ@mail.gmail.com>
+Message-ID: <CAHk-=wiEZmzBUFkZkBrJv3JSJkQ+qxaMZU_Sx1WTpMHs2SOAiQ@mail.gmail.com>
+Subject: Re: [PATCH] locking/rwlocks: do not starve writers
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Waiman Long <longman@redhat.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Will Deacon <will@kernel.org>, Roman Penyaev <rpenyaev@suse.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Fri, Jun 17, 2022 at 11:12 AM Joseph S. Barrera III
-<joebar@chromium.org> wrote:
+On Fri, Jun 17, 2022 at 2:39 PM Eric Dumazet <edumazet@google.com> wrote:
 >
-> From: Stephen Boyd <swboyd@chromium.org>
->
-> Trogdor devices that have a detachable keyboard still have a
-> non-detachable keyboard input device present because we include the
-> cros-ec-keyboard.dtsi snippet in the top-level sc7180-trogdor.dtsi file
-> that every variant board includes. We do this because the
-> keyboard-controller node also provides some buttons like the power
-> button and volume buttons. Unfortunately, this means we register a
-> keyboard input device that doesn't do anything on boards with a
-> detachable keyboard.
->
-> Change the node's compatible on detachables to the newly introduced
-> "google,cros-ec-keyb-switches" compatible to indicate that there are
-> only switches and no keyboard to register. Similarly, move the keyboard
-> include that defines the keyboard-controller node out of
-> sc7180-trogdor.dtsi to boards that actually have a keyboard so that the
-> matrix properties are not defined on boards with the switches
-> compatible. Future boards can either use the include approach or the
-> node definition approach to describe a keyboard with possible switches
-> or just some switches.
->
-> Cc: Benson Leung <bleung@chromium.org>
-> Cc: Guenter Roeck <groeck@chromium.org>
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: Hsin-Yi Wang <hsinyi@chromium.org>
-> Cc: "Joseph S. Barrera III" <joebar@chromium.org>
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> (am from https://lore.kernel.org/r/20220518172525.3319993-1-swboyd@chromium.org)
->
->      evtest shows no more cros_ec device
->
-> Cq-Depend: chromium:3609017
-> Tested-by: Stephen Boyd <swboyd@chromium.org>
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
-> Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
+> I am converting RAW sockets to RCU.
 
-It's OK to re-post Stephen's patch with your series, but:
+RCU is usually absolutely the best approach. Use regular spinlocks for
+writers, and RCU for readers.
 
-1. The subject shouldn't have FROMLIST. That's just for patches picked
-back to a Chromium OS kernel.
+I'd love to see the tasklist_lock be converted to RCU too.  But that
+locks predates RCU (and probably 99% of all kernel code), and it's
+messy, so nobody sane has ever willingly tried to do that afaik.
 
-2. You shouldn't have "(am from...)". Again, just for patches picked
-back to a Chromium OS kernel.
-
-3. No Cq-Depend. That's something for patches picked back to a
-Chromium OS kernel.
-
-4. You should remove tags that were added by the Chromium review
-system, like Stephen's "Tested-by" and my "Reviewed-by".
-
-
-Another alternative is to not post Stephen's patch but add a note that
-your patch should be applied atop his, then point to his. AKA:
-
-https://lore.kernel.org/r/20220518172525.3319993-1-swboyd@chromium.org
-
--Doug
+               Linus
