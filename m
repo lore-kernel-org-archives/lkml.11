@@ -2,71 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC23CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 19:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 19:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233728AbiFQTEg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 15:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52150 "EHLO
+        id S234434AbiFQTFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 15:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229693AbiFQTEe (ORCPT
+        with ESMTP id S233495AbiFQTFo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 15:04:34 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BDA41996
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:04:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5vYR7KSYeCrksqMEKKx6lAlNtUm65l3b2zgw5cBNVZY=; b=GmKG+czD9r+6YuXcOU0eGuv1mB
-        bLV85SBAhzlxA68vumtThkIlv1ePcziOiXnzHAdxepI+RLkQk9w2XGgcn3GTfb7ZYkzLd4Dq8mb6S
-        mOt6F67sMH9VKDc3ygsoKqZ5S2YjX9x/0lgsFa3xYCkzRAqYk4S4x92j3YO/NtakgEb2FNUbWJox4
-        UaneyR3WbamjxPv7mKkMvi6shrVruBe0iUJYncdJxDTzxL8TaC9WsSxH/QsgF7DVVIpuBLU0eZmpf
-        k9UxA7aok0jv9QVgUMM9F02u8xFe+E/+oxQZXH9KeSDecOQq5N33wsXWu0iBx9Ie2OqUtmMmr2spo
-        FocKJ+uA==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o2HGM-008l30-Dp; Fri, 17 Jun 2022 19:04:10 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        Fri, 17 Jun 2022 15:05:44 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4A042EF9
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:05:43 -0700 (PDT)
+Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 29A36300212;
-        Fri, 17 Jun 2022 21:04:08 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 10E9F2020B7B6; Fri, 17 Jun 2022 21:04:08 +0200 (CEST)
-Date:   Fri, 17 Jun 2022 21:04:08 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Waiman Long <longman@redhat.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Will Deacon <will@kernel.org>, Roman Penyaev <rpenyaev@suse.de>
-Subject: Re: [PATCH] locking/rwlocks: do not starve writers
-Message-ID: <YqzQKER4JRoudTJE@hirez.programming.kicks-ass.net>
-References: <20220617091039.2257083-1-eric.dumazet@gmail.com>
- <YqxufxqsnHjVfQOs@worktop.programming.kicks-ass.net>
- <2dd754f9-3a79-ed17-e423-6b411c3afb69@redhat.com>
- <CALvZod5ijDz=coEE8G8v_haPaKuUa5jHYzEwKvLVxHGphixsFA@mail.gmail.com>
- <2730b855-8f99-5a9e-707e-697d3bd9811d@redhat.com>
- <CANn89iJLWJMmNrLYQ0EU7_0Wri6c3Kn9vYMOiWu1Ds8Af2KOnw@mail.gmail.com>
- <7499dd05-30d1-669c-66b4-5cb06452b476@redhat.com>
- <CANn89iLxX_bqD8PvAkZXGWzKBKYxB3qaqQjxxdmoG91PfmvRnA@mail.gmail.com>
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: bbeckett)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id BE19B66017DF;
+        Fri, 17 Jun 2022 20:05:41 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655492742;
+        bh=JT0TnJkB0rL8RAGj5L8WxKKfTjJ2qr1XwBthtCgxh3Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Anldpq7wlROSc+hLiByOyaVG5S6tpj3HJfdgyeyPL33JqkkObbaMHGcDKsRQbiIG4
+         OTFVRrz6NmQipgBNa/UMgY7A26gj10Sg87LhExWPNkxwaJJc3fOR+lC2tOFj9QAo8s
+         5ms5RFLPaY01NgjmjiSqmEIrsN0tFDxcBYUX8EiGx70yrQOc+GdBMp0xnAjw8mL9h7
+         bRgg1kVgAwLkJG1BhW0XhJMqxupSTZxISivyA3tVR8eTxnZ7a2wdC8KejAOFW5Q2ai
+         8pjNTAec65GInP6X9ybQIMEQ0okDHR6UrMNOTngJcxs32UBlFL4jT8NC57GxT0eEk5
+         NQZD1CcStKjwA==
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v6 02/10] drm/i915: limit ttm to dma32 for i965G[M]
+Date:   Fri, 17 Jun 2022 19:05:08 +0000
+Message-Id: <20220617190516.2805572-3-bob.beckett@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220617190516.2805572-1-bob.beckett@collabora.com>
+References: <20220617190516.2805572-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iLxX_bqD8PvAkZXGWzKBKYxB3qaqQjxxdmoG91PfmvRnA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 07:45:14PM +0200, Eric Dumazet wrote:
+i965G[M] cannot relocate objects above 4GiB.
+Ensure ttm uses dma32 on these systems.
 
-> Were rwlocks always unfair, and we have been lucky ?
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+---
+ drivers/gpu/drm/i915/intel_region_ttm.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Yes.
+diff --git a/drivers/gpu/drm/i915/intel_region_ttm.c b/drivers/gpu/drm/i915/intel_region_ttm.c
+index 62ff77445b01..fd2ecfdd8fa1 100644
+--- a/drivers/gpu/drm/i915/intel_region_ttm.c
++++ b/drivers/gpu/drm/i915/intel_region_ttm.c
+@@ -32,10 +32,15 @@
+ int intel_region_ttm_device_init(struct drm_i915_private *dev_priv)
+ {
+ 	struct drm_device *drm = &dev_priv->drm;
++	bool use_dma32 = false;
++
++	/* i965g[m] cannot relocate objects above 4GiB. */
++	if (IS_I965GM(dev_priv) || IS_I965G(dev_priv))
++		use_dma32 = true;
+ 
+ 	return ttm_device_init(&dev_priv->bdev, i915_ttm_driver(),
+ 			       drm->dev, drm->anon_inode->i_mapping,
+-			       drm->vma_offset_manager, false, false);
++			       drm->vma_offset_manager, false, use_dma32);
+ }
+ 
+ /**
+-- 
+2.25.1
+
