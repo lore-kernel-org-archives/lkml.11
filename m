@@ -2,129 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 283EBC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 18:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 18:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383457AbiFQSO5 (ORCPT
+        id S1383618AbiFQSPH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 14:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
+        Fri, 17 Jun 2022 14:15:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231429AbiFQSOz (ORCPT
+        with ESMTP id S1383168AbiFQSPF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 14:14:55 -0400
-Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B194013FA4
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 11:14:54 -0700 (PDT)
-Received: by mail-ua1-x929.google.com with SMTP id x21so718850uat.2
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 11:14:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sIEAK66uF4B5e7pJ+nU+n3T6LF4OnfLjyiO3Rsbq+aY=;
-        b=qrEixrWbRWmJWXA1nsDRXFZdAjJ84cC1B/zdoUw6B93LbjqUSEHl/jWUe5uiYSO5jt
-         vgJvW4XM1vvDWFqXRv/hQ5RS4+3uFVlM3iOUlBDkwWCRa3/qiAOn+q3wHQMH0V2VkhOx
-         VYVH2wl+i6RnlS7bw3bQAr25YerYEyT5VQMEqPCAtSwlaxwDg/zyfrgrcUVKKipKejad
-         vc9+jcTqy3uDXBvZK69oUCum7Vhtr8pCT04B55Fod9RrrMBHhH0WYkZqz90xgGcqGPdK
-         1bKmH3IoUqwRSTSZLHMmZKqoBvkk7x6sySjpnIAVJWumEslZLoGz/L2rgyghatfxzfU2
-         U4yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sIEAK66uF4B5e7pJ+nU+n3T6LF4OnfLjyiO3Rsbq+aY=;
-        b=aDvF78cDZIgcOz17iCI0ca681j1JNO1CVA4f2rDUXI4Ok/EC17gg7CbPdOnjZoSQQ5
-         a4d5GU6rCkze9joGEKEp3bN3+HdJCg66O+RwDjQD10zUurKewTEfBja7h6adPkz4K89k
-         bdHq/+3oUgxYhbC41wpDrS9k1Tq4Nsv3YlrN2KKomrYSQhMiqSJI4DQ7hlBdMXUIuYdS
-         +HMhRVMaL5TKkTarOF1I+e3uJ23HLFQ5tOjfUgP6h7xZmN37tkEFk5/iI3H8Iaoyu7nT
-         ZSc7Cue3otSgYYBLD/+BnJla3c8HXdBR1yzQ0DjVAnqjawWAAHCfjSJ75XD0qEMnPcHi
-         EsZw==
-X-Gm-Message-State: AJIora+9M7ywLqfh9n18fNUq8pmpqUu7/jOkI2fqkK6gPmO10X3JTszV
-        AJgX0A8IwVPSa5pka/pTmp/Yydsxv7fAvvDRoWpsHA==
-X-Google-Smtp-Source: AGRyM1tELyDu0ySYNUSlQ6O9dDzcNcsCCKWPYTlYCS5LfPjTM7ZqQ/s5TR8hBE8f3dM1Ccbkzzc2nVKEj2f4XNuyGQA=
-X-Received: by 2002:ab0:2311:0:b0:37f:6d6:8822 with SMTP id
- a17-20020ab02311000000b0037f06d68822mr630437uao.20.1655489693605; Fri, 17 Jun
- 2022 11:14:53 -0700 (PDT)
+        Fri, 17 Jun 2022 14:15:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B77B13D49;
+        Fri, 17 Jun 2022 11:15:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC41061F3D;
+        Fri, 17 Jun 2022 18:15:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B7EC3411B;
+        Fri, 17 Jun 2022 18:15:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655489704;
+        bh=QUh4kC7NXGm1YEXl3pKZXaJzSvNx6+iaW+R315T3U6U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=QgZ5tfMIqGFau4nNzCvsqcbXS4Qeth6Xu/MxBTR34OtX0oITanNZUiKgHXIvqx77P
+         fQaFNIBsEdeCvzAXC02upYo+kSY/xuyAXeW2lsdTS8hxoFrVM5GxndNEPAtX/aw4Tt
+         KnwljZzltunV6Ny+OKAKWV53igJoiXdaEmN5F+Fh2LD0rvnJP+P2QzvicHBozyQIHE
+         I8Q/FwQib+OCJ9AvjKhAjqJ/eddzlgUQgnlepxSJebMcbQrxBw9dbJsLKolSWFjXW+
+         GDdSalz/bhjOvgYBYOjlPTMLsgXboLgljM3tRPgS0TmigorIOXePej19rLiLAyCkic
+         T6Ob51Cv+YXQg==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H. Peter Anvin" <hpa@zytor.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Daniel Kolesa <daniel@octaforge.org>,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+        stable@vger.kernel.org
+Subject: [PATCH] x86/Kconfig: Fix CONFIG_CC_HAS_SANE_STACKPROTECTOR when cross compiling with clang
+Date:   Fri, 17 Jun 2022 11:08:46 -0700
+Message-Id: <20220617180845.2788442-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220616195759.3214538-1-samitolvanen@google.com> <CAKwvOd=KWfNsUFcW4Enq5i94t0zyi7+C9p1-+QUP8+SvoHs=NA@mail.gmail.com>
-In-Reply-To: <CAKwvOd=KWfNsUFcW4Enq5i94t0zyi7+C9p1-+QUP8+SvoHs=NA@mail.gmail.com>
-From:   Ramji Jiyani <ramjiyani@google.com>
-Date:   Fri, 17 Jun 2022 11:14:42 -0700
-Message-ID: <CAKUd0B_2PcLW5Lj+4rG=AeVKBQx86x5bM2zL2YGORfKsk1EFyQ@mail.gmail.com>
-Subject: Re: [PATCH] kbuild: Ignore __this_module in gen_autoksyms.sh
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Sami Tolvanen <samitolvanen@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Steve Muckle <smuckle@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 10:28 AM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> + Sedat
-> Re: https://lore.kernel.org/linux-kbuild/CAKwvOdmb5xdF70TzNp=4STCpzkGh16FnuKE1KbdzDhHt=OuRFA@mail.gmail.com/
-> In case this helps.
->
-> + Ramji
-> Ramji, it sounds like you helped test this downstream? If that's the
-> case, mind supplying your tested-by tag for the record? Thanks for
-> help verifying this change. Thanks too, Steve!
->
-> On Thu, Jun 16, 2022 at 12:58 PM Sami Tolvanen <samitolvanen@google.com> wrote:
-> >
-> > Module object files can contain an undefined reference to __this_module,
-> > which isn't resolved until we link the final .ko. The kernel doesn't
-> > export this symbol, so ignore it in gen_autoksyms.sh. This avoids an
-> > unnecessary vmlinux rebuild with UNUSED_KSYMS_WHITELIST when we have a
-> > symbol list that already contains all the module dependencies.
->
-> Worth mentioning that this also fixes a significant build time
-> regression made more painful by CONFIG_LTO_CLANG_FULL when using
-> CONFIG_UNUSED_KSYMS_WHITELIST.
->
+Chimera Linux notes that CONFIG_CC_HAS_SANE_STACKPROTECTOR cannot be
+enabled when cross compiling an x86_64 kernel with clang, even though it
+does work when natively compiling.
 
-Yes, I tested it and it resolves the build time regression with modules.
+When building on aarch64:
 
-Tested-by: Ramji Jiyani <ramjiyani@google.com>
+  $ make -sj"$(nproc)" ARCH=x86_64 LLVM=1 defconfig
 
-Thanks,
-Ramji
+  $ grep STACKPROTECTOR .config
 
-> Thanks for the patch!
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
->
-> >
-> > Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
-> > ---
-> >  scripts/gen_autoksyms.sh | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/scripts/gen_autoksyms.sh b/scripts/gen_autoksyms.sh
-> > index faacf7062122..653fadbad302 100755
-> > --- a/scripts/gen_autoksyms.sh
-> > +++ b/scripts/gen_autoksyms.sh
-> > @@ -56,4 +56,7 @@ EOT
-> >  # point addresses.
-> >  sed -e 's/^\.//' |
-> >  sort -u |
-> > +# Ignore __this_module. It's not an exported symbol, and will be resolved
-> > +# when the final .ko's are linked.
-> > +grep -v '^__this_module$' |
-> >  sed -e 's/\(.*\)/#define __KSYM_\1 1/' >> "$output_file"
-> > --
-> > 2.36.1.476.g0c4daa206d-goog
-> >
->
->
-> --
-> Thanks,
-> ~Nick Desaulniers
+When building on x86_64:
+
+  $ make -sj"$(nproc)" ARCH=x86_64 LLVM=1 defconfig
+
+  $ grep STACKPROTECTOR .config
+  CONFIG_CC_HAS_SANE_STACKPROTECTOR=y
+  CONFIG_HAVE_STACKPROTECTOR=y
+  CONFIG_STACKPROTECTOR=y
+  CONFIG_STACKPROTECTOR_STRONG=y
+
+When clang is invoked without a '--target' flag, code is generated for
+the default target, which is usually the host (it is configurable via
+cmake). As a result, the has-stack-protector scripts will generate code
+for the default target but check for x86 specific segment registers,
+which cannot succeed if the default target is not x86.
+
+$(CLANG_FLAGS) contains an explicit '--target' flag so pass that
+variable along to the has-stack-protector scripts so that the stack
+protector can be enabled when cross compiling with clang. The 32-bit
+stack protector cannot currently be enabled with clang, as it does not
+support '-mstack-protector-guard-symbol', so this results in no
+functional change for ARCH=i386 when cross compiling.
+
+Link: https://github.com/chimera-linux/cports/commit/0fb7e506d5f83fdf2104feb22cdac34934561226
+Link: https://github.com/llvm/llvm-project/issues/48553
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+
+Fixes: 2a61f4747eea ("stack-protector: test compiler capability in Kconfig and drop AUTO mode")
+
+might be appropriate; I am conflicted on fixes tags for problems that
+that arise due to use cases that were not considered at the time of a
+change, as it feels wrong to blame the commit for not looking far enough
+into the future where it might be common for people to have workstations
+running another architecture other than x86_64.
+
+Chimera appears to use a 5.15 kernel so a
+
+Cc: stable@vger.kernel.org
+
+might be nice but some maintainers are picky about that so I leave it up
+to you all.
+
+ arch/x86/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index be0b95e51df6..076adde7ead9 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -391,8 +391,8 @@ config PGTABLE_LEVELS
+ 
+ config CC_HAS_SANE_STACKPROTECTOR
+ 	bool
+-	default $(success,$(srctree)/scripts/gcc-x86_64-has-stack-protector.sh $(CC)) if 64BIT
+-	default $(success,$(srctree)/scripts/gcc-x86_32-has-stack-protector.sh $(CC))
++	default $(success,$(srctree)/scripts/gcc-x86_64-has-stack-protector.sh $(CC) $(CLANG_FLAGS)) if 64BIT
++	default $(success,$(srctree)/scripts/gcc-x86_32-has-stack-protector.sh $(CC) $(CLANG_FLAGS))
+ 	help
+ 	  We have to make sure stack protector is unconditionally disabled if
+ 	  the compiler produces broken code or if it does not let us control
+
+base-commit: b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
+-- 
+2.36.1
+
