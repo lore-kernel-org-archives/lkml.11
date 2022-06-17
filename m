@@ -2,79 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C233C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:25:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8521AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382141AbiFQMZ0 (ORCPT
+        id S1381669AbiFQM1c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 08:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
+        Fri, 17 Jun 2022 08:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381190AbiFQMZX (ORCPT
+        with ESMTP id S245358AbiFQM1a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 08:25:23 -0400
-Received: from www.linux-watchdog.org (www.linux-watchdog.org [185.87.125.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70BEC52539;
-        Fri, 17 Jun 2022 05:25:22 -0700 (PDT)
-Received: by www.linux-watchdog.org (Postfix, from userid 500)
-        id 9F58F40A00; Fri, 17 Jun 2022 12:48:20 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 www.linux-watchdog.org 9F58F40A00
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-watchdog.org;
-        s=odk20180602; t=1655462901;
-        bh=HXXTiuebscsk8opdJ/SRx0Re5yhwMY6rNsZHEejdWzc=;
-        h=Date:From:To:Cc:Subject:From;
-        b=QU/Xfrxvm+mpMjQBI4vC7qpQG/C3GGCheQP6iPX7OUuuXlubvSRx0Kv9XBEm5GyUz
-         I2fSHIzhqTSbW0lr9VM1eBV3nmpg13K8BrFQxLwIMp9BVKlYB6MZzIXLCKQRNhB+Of
-         Jd2gDffqtFgxOXrYbAU5Ob8QWJiCg64zXzCTn+Eg=
-Date:   Fri, 17 Jun 2022 12:48:20 +0200
-From:   Wim Van Sebroeck <wim@linux-watchdog.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [GIT PULL REQUEST] watchdog - v5.19-rc Fixes
-Message-ID: <20220617104820.GA10498@www.linux-watchdog.org>
+        Fri, 17 Jun 2022 08:27:30 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D37650B2B
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:27:30 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id s10so4548649ljh.12
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:27:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JnQ7ER3/BznrTK6nfzGkCBcRLScePRNEds8wSayDWBU=;
+        b=T640Ob++YeWd+T4ihz7vTm05LTeY1mBKCkrscFUItH+rfgs8IQ0zuI+rF5wsrv/uSE
+         4smrU/D1K55NAapM7LpLvaSXHuQP8eg2yb3SWc2rmTcxAS5KSD2hsN3fqqIII8A+6MiP
+         DbMWkdHmpqnFG0903QpZnEqTu9a5INuuekBkb8vVdCQirDUsG+lZHGpma8s/o7UzVIK8
+         t72yJNWYaYTxkgjlJmAJnETqJtChitTyUpd6IcxFgltNZKauQiOWqEAt71NVwEEkD52L
+         ivKggtaNSmYESsaOGpLfWglIE624MgV/4TyiIfLSanXQMC47IcQ/kflPwVGXVu68120j
+         q5NQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JnQ7ER3/BznrTK6nfzGkCBcRLScePRNEds8wSayDWBU=;
+        b=yxVufD8p26MkHy1lQc4z8ELZrwFaMrnWMWs4EHXal4Icv19gNUJk+J4PL6EPi8dIap
+         XW6tmv6RFID8YBU5v7jfgfH0hAx7VLayY8inGA02bUMoUAtqc/eVLLHlTsirogIWsrbO
+         Y7XrCG84T3HvR/aKAf8dYPJjuIgExBoPqQZfnYZ2HX9ba9jv862Fi7oVEQLdkJpJ42mv
+         WL3J4o4YRDuE+1FpEx2+D35h2dzd3djnZBETlsIaAzT3KjCtXDJgDVEpTem4zAHSmKfn
+         IfG6YMEW7C7L4XFTxDMYlNnK26/5qJRAoQx7SWgb6x+Bp4XEYesWsnS8fUS1rDyPufyt
+         jRpA==
+X-Gm-Message-State: AJIora9Zx81ZF53mhgJl9cAiehgsXQ7EDn7zes3L4WqEB7vEAQrm24Us
+        yLkdB6TNE5SJkiydfc6MZTg=
+X-Google-Smtp-Source: AGRyM1thk1l/pNJzxUInKJ0RZ+VOJmvPhKqfi3rTTC9JzaLkrNZkk9MrxX7xO+x0ncaIaqoA7DXVtg==
+X-Received: by 2002:a2e:a783:0:b0:255:9be1:a471 with SMTP id c3-20020a2ea783000000b002559be1a471mr4816519ljf.215.1655468848267;
+        Fri, 17 Jun 2022 05:27:28 -0700 (PDT)
+Received: from [10.0.0.127] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
+        by smtp.gmail.com with ESMTPSA id x8-20020a056512046800b0047e0061a611sm621093lfd.235.2022.06.17.05.27.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jun 2022 05:27:27 -0700 (PDT)
+Message-ID: <bc447b49-a02c-5c4f-4e04-8071ecdfe1bd@gmail.com>
+Date:   Fri, 17 Jun 2022 15:28:59 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.20 (2009-12-10)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 11/11] ASoC: ti: davinci-mcasp: use
+ pm_runtime_resume_and_get()
+Content-Language: en-US
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        alsa-devel@alsa-project.org
+Cc:     tiwai@suse.de, broonie@kernel.org,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220616220427.136036-1-pierre-louis.bossart@linux.intel.com>
+ <20220616220427.136036-12-pierre-louis.bossart@linux.intel.com>
+From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
+In-Reply-To: <20220616220427.136036-12-pierre-louis.bossart@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Hi Pierre,
 
-Please pull following watchdog changes for the v5.19 release cycle.
+On 17/06/2022 01:04, Pierre-Louis Bossart wrote:
+> The use of pm_runtime_get_sync() is buggy with no use of put_noidle on
+> error.
+> 
+> Use pm_runtime_resume_and_get() instead.
 
-This series contains:
-* gxp: Add missing MODULE_LICENSE
+Thanks for the fix,
 
-The output from git request-pull:
-----------------------------------------------------------------
-The following changes since commit 6bfb56e93bcef41859c2d5ab234ffd80b691be35:
+Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
 
-  cert host tools: Stop complaining about deprecated OpenSSL functions (2022-06-08 13:18:39 -0700)
+> 
+> Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+> Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+> Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+> ---
+>  sound/soc/ti/davinci-mcasp.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/sound/soc/ti/davinci-mcasp.c b/sound/soc/ti/davinci-mcasp.c
+> index e2aab4729f3ab..0201000b619f6 100644
+> --- a/sound/soc/ti/davinci-mcasp.c
+> +++ b/sound/soc/ti/davinci-mcasp.c
+> @@ -2111,8 +2111,7 @@ static int davinci_mcasp_gpio_request(struct gpio_chip *chip, unsigned offset)
+>  	}
+>  
+>  	/* Do not change the PIN yet */
+> -
+> -	return pm_runtime_get_sync(mcasp->dev);
+> +	return pm_runtime_resume_and_get(mcasp->dev);
+>  }
+>  
+>  static void davinci_mcasp_gpio_free(struct gpio_chip *chip, unsigned offset)
 
-are available in the git repository at:
-
-  git://www.linux-watchdog.org/linux-watchdog.git tags/linux-watchdog-5.19-rc3
-
-for you to fetch changes up to b6c8cd80ace30f308aeec0ecf946f55dec60cc68:
-
-  watchdog: gxp: Add missing MODULE_LICENSE (2022-06-09 12:20:34 +0200)
-
-----------------------------------------------------------------
-linux-watchdog 5.19-rc3 tag
-
-----------------------------------------------------------------
-Guenter Roeck (1):
-      watchdog: gxp: Add missing MODULE_LICENSE
-
- drivers/watchdog/gxp-wdt.c | 1 +
- 1 file changed, 1 insertion(+)
-----------------------------------------------------------------
-
-Kind regards,
-Wim.
-
+-- 
+Péter
