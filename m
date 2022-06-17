@@ -2,106 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89683C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 832B2C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 20:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242737AbiFTMk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:40:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
+        id S1345705AbiFQULj (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 16:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239184AbiFTMkz (ORCPT
+        with ESMTP id S244439AbiFQULi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:40:55 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EEA7666;
-        Mon, 20 Jun 2022 05:40:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655728843;
-        bh=KrVmb1xepHJ/Pzbfeisty0gKJhBZD1PGHrbEMv3MWpE=;
-        h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-        b=OFohnXD3oQUdewpBCd88CsFYJB0h2Uy9sbJsqevrEQy6ZrLMemiMrQNpPzkTeZ12x
-         kuCbjN+GS68fpEiIRY/+R26pW2Yd11cEQqI6RRw2+ThMzL8V9wklJL952Etl93ZUpr
-         wNalXpekHob7C2oHjBySGMxsmxE9W/4HsywR+8u8=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.174.149]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MS3mz-1oEyo41FXv-00TUH3; Mon, 20
- Jun 2022 14:40:43 +0200
-Message-ID: <e49b8686-6546-3b7f-dda3-6b4efb53d66c@gmx.de>
-Date:   Mon, 20 Jun 2022 14:40:21 +0200
+        Fri, 17 Jun 2022 16:11:38 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C631ADA2
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 13:11:37 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id 43so7986986qvb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 13:11:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=maine.edu; s=google;
+        h=from:date:to:cc:message-id:mime-version;
+        bh=c6HUnYkSdwKF6VwZqapAdI/2A9eVLq9BatAO2vrrJnw=;
+        b=IX2PByp4AaPYCaHsl6YaKxCQDBLcbzVfewb/i5gDZJp4jC5hZnUusDaeihpND2VR3b
+         2sZT0iz0pv92t3hD0zp1TvJBu9l8dLLbEi7+msWg7AfZOIXgxBr5+apxMEFg4MuWs2ty
+         lLkNS/F1s2iGiJZURZjQDd3QjCpnH5JBlqEoA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:message-id:mime-version;
+        bh=c6HUnYkSdwKF6VwZqapAdI/2A9eVLq9BatAO2vrrJnw=;
+        b=C/E5++CxqZEvBUKaIdF85dW5Wth7SdvmmatKkUNlXZ9MT0Hw21+TzveMnawTrwGRN5
+         tjgJVGcE+wRbn6kNCsbn0U555NKAVAdo7T4tByTu+unNz7z78nY02MaOXU5ysy7J1C5v
+         SfOeWmnD3K8mK419oHHrJZf8bNQGWEc2SIwtgQ9+vLqHUTHMJBE2XRyY8bZdUDXcp97S
+         P+L3Cp/cru2o1o/+JD7psFlDoUpOlJBxNUVvbu8LNNEgUop1ZGqd8O2KWg9afT1ZzjIm
+         L6YK16M20OwTxfs70gmH295VCZlKed7hsKgih98rxru4Ktau4yzmLoGC55YZKaTBoQIM
+         W4dg==
+X-Gm-Message-State: AJIora+439SUOCzIBOm2P2w1hXmTQ+pFQZC/UxjVGvHdISr/99rNlhk9
+        YZNn9E/Xz4od1ZJEg+HnS+aU9AtOuvZKsQ==
+X-Google-Smtp-Source: AGRyM1uH6N33lIH+urBS+pxdMchukdpm2KfvwVdoRWcIoCCFoYOXcO7VRs/OEyCpGYrMfI3DsYiOlg==
+X-Received: by 2002:ac8:5e4f:0:b0:305:1e3d:b829 with SMTP id i15-20020ac85e4f000000b003051e3db829mr10040332qtx.471.1655496695881;
+        Fri, 17 Jun 2022 13:11:35 -0700 (PDT)
+Received: from macbook-air.local (weaver.eece.maine.edu. [130.111.218.23])
+        by smtp.gmail.com with ESMTPSA id y29-20020a37f61d000000b006a3325fd985sm5011152qkj.13.2022.06.17.13.11.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 13:11:35 -0700 (PDT)
+From:   Vince Weaver <vincent.weaver@maine.edu>
+X-Google-Original-From: Vince Weaver <vince@maine.edu>
+Date:   Fri, 17 Jun 2022 16:11:34 -0400 (EDT)
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+cc:     Mark Rutland <mark.rutland@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>
+Message-ID: <db2031ec-cf4-4323-9d3-8262849add3d@maine.edu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 0/2] video: fbdev: Convert from PCI to generic power
- management
-Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>, linux-fbdev@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-pci@vger.kernel.org,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-References: <20220608180956.GA407517@bhelgaas>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220608180956.GA407517@bhelgaas>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:vj69s28dYdlp0K+pnq7qPonjf1zFbLqtRxTYLMIW3rnIz64pO0K
- GPro7+3Nk+TZXXbyqEDrpEeWKDeh1pazM91MBS6eDW/NULUOgMuFG0BrwPTOvIxgTCfJrw7
- cEO5qGh9+JrpeYB9NsDOx4Ql10Ly5RZ7Q9lWSywgjiC/0U4nVOh2MsaIe3kPxN4dnMD/R25
- JEhcKlgjDeLTMW5op8/8A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ZfI1ovxhKS4=:ICLoC3mKUmlhejdepfRPK4
- NvXiS9bgLm/qImY/psBb/kSI1M8w0FSG9t9TG/y/hSEkGOsLXP8kg3AjXEFVIZr23Gd0y+9Zm
- P4qDBwEjqjc3AJOeOMx8NU0yDJVkJ5TMju9bkmf377wPjv/6voayPgZL+Apbnr9f0262/JuVu
- raS95bjMEWP0PadIfiwDC6VPPUzhRnyt/KnXPyp7nwcAxKc6mKufp005hNlmzb4atyhjY3i42
- bIMrvqU9TR03xempBUFe3CiFz9wdKEfFwFGxWHGDWgJn+JYw282nJ4ewDZ9wXI6hdNFcYprwx
- 864h/bsxlM/cFnIflK0QnGDeuoNbuATolEe63eBP3aD/L4Dsv2oUnVx6qCX9Py+mQhf30jn/W
- 4HyDcnAU1bPGMNLO01oq7ateN+IjXpQSqOIRZDkC/xfr4A6Vg37q08CxB0rXNGMMNblCgbo6q
- VK8dij1RT4Hzpktb4GqEkE7EsPSVBWQv1V1y4Q/hLJLTmvw0UDOgJeVs0V8x7VM4mmhcNE0sO
- H+vWTXdSHvVbHPzFn4m+aUCrXPFqgyA7JlpLhddhUbTGzFVimKlwrv6/HNsESnBkvdA3Hx0RP
- 3bDTgtrhQSDmPTFr2lS/o6iTJINP0n1sZqcuDLXh2UGXcHODKFGMaDKqRNjW1ytkXNAq06fAy
- 4PHlNaqRkxtAma5WbXgQubbtRJ+57ri0vX8SxG/Fb2ydaY5CqhThi+AVh3ErPQ77rCUBHz0wD
- 7fJtvWyXkOOhRlvHjFXzEib0/INKydLkFlbU6M59i0fOAJmSP4hvrrTtURu5o3Fp3525YDnbW
- +iTzhz++W8st9zOU/LB3RnpNsw6fIZkadMmjYK7iNYWkE140SSMl2d21SSgo7KZbxM049EXD/
- mdxeXshOFOH6QZare0AMC7h2d0jIwOzPxSiWXd5zAsp3wFomsp5SLjIg5EkpMmW1lgCI/wT8n
- 8AUrDnyo6NXxIrr0HRUgQjgSI9cxBZ4Qpa05egXeakQBohdVz75IS/QvdZRuo7nswJk3sK/it
- JurjlrY3arwpEAaUy+E+OvP0TIvcIITBRax6CrmvD841dXNJvQJnMQ+YcKPZeqmK+Oi5ssuyN
- p2pAhU0OOYWC54xoyaIMG1kxIAM30kHYkbQMtBvsO20FLE1yDH0EhzNjA==
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/8/22 20:09, Bjorn Helgaas wrote:
-> On Wed, Jun 08, 2022 at 06:26:34PM +0200, Daniel Vetter wrote:
->> On Tue, Jun 07, 2022 at 06:11:10PM -0500, Bjorn Helgaas wrote:
->>> From: Bjorn Helgaas <bhelgaas@google.com>
->>>
->>> PCI-specific power management (pci_driver.suspend and pci_driver.resum=
-e) is
->>> deprecated.  If drivers implement power management, they should use th=
-e
->>> generic power management framework, not the PCI-specific hooks.
->>>
->>> No fbdev drivers actually implement PCI power management, but there ar=
-e a
->>> cirrusfb has some commented-out references to it and skeletonfb has
->>> examples of it.  Remove these.
->>
->> Is this holding up some cleanup on your side and so would be easier to
->> merge these through the pci tree? If so
->>
->> Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
->>
->> for merging through your tree. Otherwise I guess Helge will get around =
-to
->> pile them up for 5.20 (or 6.0) eventually.
->
-> No particular rush and nothing depending on these.
->
-> I added your ack to my local branch and if nothing happens for a
-> while, I'll merge them via my tree.
+Hello
 
-I've been on vacation, but picked them up now.
+Is the perf_mmap__read_self() interface as found in tools/lib/perf/mmap.c
+the "official" interface for accessing the perf mmap info from
+userspace?
 
-Thanks!
+Are the READ_ONCE() calls required?  If they are left out, will accessing 
+the mmap interface potentially fail?  Has this ever been seen in practice?
 
-Helge
+Part of why I am asking is both
+	tools/lib/perf/mmap.c
+and
+	tools/linux/compiler.h (which defines READ_ONCE)
+have SPDX headers indicating they are GPL-2.0 licensed, which means it 
+seems like it would not be possible to easily use the perf mmap interface 
+from BSD-licensed code.  Would it be possible to get those two files 
+re-licensed?
+
+The (BSD-licensed) PAPI is currently using a mmap reading interface 
+based on early documentation for the feature, but it isn't 100% the same 
+as the version from libperf (and isn't using READ_ONCE).  Life would be 
+easier if we could use the perf version of the code because then we would 
+have one less variable to deal with when trying to track down issues.
+
+Vince Weaver
+vincent.weaver@maine.edu
+
+
