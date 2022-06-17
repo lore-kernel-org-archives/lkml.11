@@ -2,145 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D1EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 13:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A3B4C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 13:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382417AbiFQNwo (ORCPT
+        id S1382405AbiFQNxE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 09:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60450 "EHLO
+        Fri, 17 Jun 2022 09:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382007AbiFQNwm (ORCPT
+        with ESMTP id S1381052AbiFQNw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 09:52:42 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF2245AF3;
-        Fri, 17 Jun 2022 06:52:32 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id EF39121DA1;
-        Fri, 17 Jun 2022 13:52:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1655473950; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=T1THTVu8jsvNWfYRgAb3JbU5dAAvtESDUxIyAXq6VH0=;
-        b=ZruHASuJWkYRWTXGUZK85EK1c2rCRi6u/ea2V1Xaju6kf537/p+6XgRLlQJzSioBoJNQwF
-        U1LqDOQcvtBm+JsMVeVtH5gNXUx4oiOhAxKTpx+ERTsaIO3ifeD369svwTH1+PorMfCSCC
-        cQfWK1DxwF3MVA+ZSLSitKv/W56CBbw=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 91CD52C141;
-        Fri, 17 Jun 2022 13:52:30 +0000 (UTC)
-Date:   Fri, 17 Jun 2022 15:52:27 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     Tao Zhou <tao.zhou@linux.dev>, linux-kernel@vger.kernel.org,
-        kexec@lists.infradead.org, linux-rt-users@vger.kernel.org,
-        Eric Biederman <ebiederm@xmission.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Juri Lelli <jlelli@redhat.com>,
-        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
-Subject: Re: [PATCH] panic, kexec: Don't mutex_trylock() in __crash_kexec()
-Message-ID: <YqyHGxPCgiXuep3/@alley>
-References: <20220616123709.347053-1-vschneid@redhat.com>
- <Yqxaf6V+hvCSXQSM@geo.homenetwork>
- <xhsmhh74j7biy.mognet@vschneid.remote.csb>
+        Fri, 17 Jun 2022 09:52:59 -0400
+X-Greylist: delayed 393 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 17 Jun 2022 06:52:54 PDT
+Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [208.88.110.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABC62703;
+        Fri, 17 Jun 2022 06:52:52 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id A4BE79C035C;
+        Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id RxSxonNRBtIm; Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id 1D95C9C035E;
+        Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.savoirfairelinux.com 1D95C9C035E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=savoirfairelinux.com; s=DFC430D2-D198-11EC-948E-34200CB392D2;
+        t=1655473579; bh=6FyXPE9HabKRcoxbNWsYdPeExADy1asgHfS0MpAMcCo=;
+        h=From:To:Date:Message-Id:MIME-Version;
+        b=dAW53u5txvU6CYNBr0Hue4BIbjb7YFmVNt0s+111UGLqXYZF192BtJC2bSDB4DI9F
+         zw/y0j5vAqmS9KhZV+GvaX+M5FuKNYoHbH7dcI02nK4Uo1coBIOhhsaMnDSrMe6uT2
+         V2xZ5Rh8AwFNoikmoKeae+9ANcFDDs+6K+Zej0NBCyMjWyNAOO4Tyo65fWluzwLeFU
+         CZgOru1q3+1YxjeQEKiy+YWHFDBVBU3Ztxsu/u1p/vYHrAVuxrbyx1BgYQkzaitQ8U
+         QPBD+JeyYElNVGqh6opkB2rDadHSFcl7VObwCn70e/v0Ly5QyBEeJkqLuFeOgEe124
+         vWvgPKFx4QREQ==
+X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id gBJqZQIRYTyR; Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
+Received: from sfl-deribaucourt.rennes.sfl (lfbn-ren-1-676-174.w81-53.abo.wanadoo.fr [81.53.245.174])
+        by mail.savoirfairelinux.com (Postfix) with ESMTPSA id 18E839C035C;
+        Fri, 17 Jun 2022 09:46:18 -0400 (EDT)
+From:   Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+To:     andrew@lunn.ch, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, hkallweit1@gmail.com,
+        Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+Subject: [PATCH] net: dp83822: disable false carrier interrupt
+Date:   Fri, 17 Jun 2022 15:46:11 +0200
+Message-Id: <20220617134611.695690-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <xhsmhh74j7biy.mognet@vschneid.remote.csb>
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 2022-06-17 12:52:05, Valentin Schneider wrote:
-> Hi Tao,
-> 
-> On 17/06/22 18:42, Tao Zhou wrote:
-> > Hi Valentin,
-> >
-> > On Thu, Jun 16, 2022 at 01:37:09PM +0100, Valentin Schneider wrote:
-> >> @@ -964,24 +966,31 @@ late_initcall(kexec_core_sysctl_init);
-> >>   */
-> >>  void __noclone __crash_kexec(struct pt_regs *regs)
-> >>  {
-> >> -	/* Take the kexec_mutex here to prevent sys_kexec_load
-> >> -	 * running on one cpu from replacing the crash kernel
-> >> -	 * we are using after a panic on a different cpu.
-> >> +	/*
-> >> +	 * This should be taking kexec_mutex before doing anything with the
-> >> +	 * kexec_crash_image, but this code can be run in NMI context which
-> >> +	 * means we can't even trylock.
-> >>  	 *
-> >> -	 * If the crash kernel was not located in a fixed area
-> >> -	 * of memory the xchg(&kexec_crash_image) would be
-> >> -	 * sufficient.  But since I reuse the memory...
-> >> +	 * Pairs with smp_mb() in do_kexec_load() and sys_kexec_file_load()
-> >>  	 */
-> >> -	if (mutex_trylock(&kexec_mutex)) {
-> >> -		if (kexec_crash_image) {
-> >> -			struct pt_regs fixed_regs;
-> >> -
-> >> -			crash_setup_regs(&fixed_regs, regs);
-> >> -			crash_save_vmcoreinfo();
-> >> -			machine_crash_shutdown(&fixed_regs);
-> >> -			machine_kexec(kexec_crash_image);
-> >> -		}
-> >> -		mutex_unlock(&kexec_mutex);
-> >> +	WRITE_ONCE(panic_wants_kexec, true);
-> >> +	smp_mb();
-> >> +	/*
-> >> +	 * If we're panic'ing while someone else is messing with the crash
-> >> +	 * kernel, this isn't going to end well.
-> >> +	 */
-> >> +	if (READ_ONCE(kexec_loading)) {
-> >> +		WRITE_ONCE(panic_wants_kexec, false);
-> >> +		return;
-> >> +	}
-> >
-> > So this is from NMI. The mutex guarantee that kexec_file_load() or 
-> > do_kexec_load() just one of them beat on cpu. NMI can happen on more
-> > than one cpu. That means that here be cumulativity here IMHO.
-> >
-> 
-> If you look at __crash_kexec() in isolation yes, but if you look at panic()
-> and nmi_panic() only a single NMI can get in there. I think that is also
-> true for invocations via crash_kexec().
+When unplugging an Ethernet cable, false carrier events were produced by
+the PHY at a very high rate. Once the false carrier counter full, an
+interrupt was triggered every few clock cycles until the cable was
+replugged. This resulted in approximately 10k/s interrupts.
 
-It is true that panic() could be called only once, see this code
-in panic():
+Since the false carrier counter (FCSCR) is never used, we can safely
+disable this interrupt.
 
-	 * Only one CPU is allowed to execute the panic code from here. For
-	this_cpu = raw_smp_processor_id();
-	old_cpu  = atomic_cmpxchg(&panic_cpu, PANIC_CPU_INVALID, this_cpu);
+In addition to improving performance, this also solved MDIO read
+timeouts I was randomly encountering with an i.MX8 fec MAC because of
+the interrupt flood. The interrupt count and MDIO timeout fix were
+tested on a v5.4.110 kernel.
 
-	if (old_cpu != PANIC_CPU_INVALID && old_cpu != this_cpu)
-		panic_smp_self_stop();
+Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirf=
+airelinux.com>
+---
+ drivers/net/phy/dp83822.c | 1 -
+ 1 file changed, 1 deletion(-)
 
+diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+index e6ad3a494d32..95ef507053a6 100644
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -230,7 +230,6 @@ static int dp83822_config_intr(struct phy_device *phy=
+dev)
+ 			return misr_status;
+=20
+ 		misr_status |=3D (DP83822_RX_ERR_HF_INT_EN |
+-				DP83822_FALSE_CARRIER_HF_INT_EN |
+ 				DP83822_LINK_STAT_INT_EN |
+ 				DP83822_ENERGY_DET_INT_EN |
+ 				DP83822_LINK_QUAL_INT_EN);
+--=20
+2.25.1
 
-One the other hand, the aproach with two variables is strage
-and brings exactly these questions.
-
-If a trylock is enough that the mutex can be replaced by two
-simple atomic operations. The mutex would be needed only
-when a user really would need to wait for another one.
-
-
-	atomic_t crash_kexec_lock;
-
-	/* trylock part */
-	if (atomic_cmpxchg_acquire(&crash_kexec_lock, 0, 1) != 0)
-		return -EBUSY;
-
-	/* do anything guarded by crash_kexec_lock */
-
-	/* release lock */
-	atomic_set_release(&crash_kexec_lock, 0);
-
-The _acquire, _release variants will do the barriers correctly.
-
-Best Regards,
-Petr
