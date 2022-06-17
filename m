@@ -2,99 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1076AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C0C1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382319AbiFQLL5 (ORCPT
+        id S1382329AbiFQLM4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 07:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41554 "EHLO
+        Fri, 17 Jun 2022 07:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381289AbiFQLL4 (ORCPT
+        with ESMTP id S1381154AbiFQLMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 07:11:56 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E9F6CA88
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:11:56 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id 73-20020a17090a0fcf00b001eaee69f600so3867697pjz.1
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:11:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oQLjYSyO5bnT1k2cMo+qtFEL9roIKTpXUxzFJ5E7YeU=;
-        b=WEXQJ2c0zXPPo70AqX4ePE2lo2jfTA7rpG+C5RBXENB1K0P1BBjGTUBKWrVNIRgYMx
-         HldHvQtAl/hTE2t7F2GKPeB/yiddMus1F8uOtTiwN9+rR9c0CSzHVt8S5NTgrhhhnsSe
-         xRiJJZNKdeC7o73Bc1I3uTPEccX3CTIDbP26E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oQLjYSyO5bnT1k2cMo+qtFEL9roIKTpXUxzFJ5E7YeU=;
-        b=PSn+Ux7E3xV7Kn5b3l8mrmPYfthZrVWLWalPkbJ+wWsAQ+7xkycafIjXiEzedFanv9
-         90uTZP8hBz8xcz039B0friRLtItAhYazEvn4e62IpKkIXK/mR0YlHNCkGU62NNCMecNe
-         oDY/wERO/N8dwST8TCioTv6re/xuxBgSrAsE31E3t1hi1vi9LdcfzN747cM4axHpal67
-         i10rAcb0G8cmU0woRGaxG76D11Quw3BQ+UDiYm2dAhhzD1v7XTzPe2C9HI7/6LnaIKS0
-         7xZyIzsZPsjkoIIfRv+F+gfjSyv4v/Gq9jGMMHkTBWE2t3IljTPmdg0JyURdBPx7fKw2
-         J4lg==
-X-Gm-Message-State: AJIora+QcH3OCgsHYTxLSEu9hMDvNoV7zTCM2/ojvn99oUZT/JNbk+Mv
-        IF3qF4XC5IkiToVeIrB0lv/leQ==
-X-Google-Smtp-Source: AGRyM1tf2bQGeUv5328p9BV+crG8b7G31H6qrJWwNOzsEDjIHBFrwQCM7E2x9VN5sMfX6/KCSapUnw==
-X-Received: by 2002:a17:903:32c4:b0:167:6e6f:204b with SMTP id i4-20020a17090332c400b001676e6f204bmr9221820plr.117.1655464315709;
-        Fri, 17 Jun 2022 04:11:55 -0700 (PDT)
-Received: from fshao-glinux.tpe.corp.google.com ([2401:fa00:1:10:e616:b34a:9b5b:24ef])
-        by smtp.gmail.com with ESMTPSA id 9-20020a170902c20900b00163f7935772sm3296754pll.46.2022.06.17.04.11.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 04:11:55 -0700 (PDT)
-From:   Fei Shao <fshao@chromium.org>
-To:     Mark Brown <broonie@kernel.org>, Jiaxin Yu <jiaxin.yu@mediatek.com>
-Cc:     Fei Shao <fshao@chromium.org>, alsa-devel@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH v2] ASoC: mediatek: mt8186: Fix mutex double unlock in GPIO request
-Date:   Fri, 17 Jun 2022 19:10:04 +0800
-Message-Id: <20220617111003.2014395-1-fshao@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+        Fri, 17 Jun 2022 07:12:54 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 308941A04A
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:12:52 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 97581113E;
+        Fri, 17 Jun 2022 04:12:52 -0700 (PDT)
+Received: from e120937-lin (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7371A3F73B;
+        Fri, 17 Jun 2022 04:12:51 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 12:12:45 +0100
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        sudeep.holla@arm.com, nicola.mazzucato@arm.com,
+        vincent.guittot@linaro.org, f.fainelli@gmail.com
+Subject: Re: [PATCH] firmware: arm_scmi: Relax CLOCK_DESCRIBE_RATES
+ out-of-spec checks
+Message-ID: <Yqxhrd/wMmW1WkN0@e120937-lin>
+References: <20220616170347.2800771-1-cristian.marussi@arm.com>
+ <5fa97307-19d7-a834-dbb9-c7001969a011@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5fa97307-19d7-a834-dbb9-c7001969a011@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The lockdep mechanism revealed an unbalanced unlocking on MT8186:
+On Thu, Jun 16, 2022 at 07:02:49PM +0100, Robin Murphy wrote:
+> On 2022-06-16 18:03, Cristian Marussi wrote:
+> > A reply to CLOCK_DESCRIBE_RATES issued against a non rate-discrete clock
+> > should be composed of a triplet of rates descriptors (min/max/step)
+> > returned all in one reply message.
+> > 
+> > This is not always the case when dealing with some SCMI server deployed in
+> > the wild: relax such constraint while maintaining memory safety by checking
+> > carefully the returned payload size.
+> > 
+> > While at that cleanup a stale debug printout.
+> 
+> I know we're testing on the same platform so it's of limited value, but for
+> the record this does indeed make my display work again, so FWIW:
+> 
+> Tested-by: Robin Murphy <robin.murphy@arm.com>
+> 
+> Thanks for the quick turnaround!
+> Robin.
+> 
 
-  [    2.993966] WARNING: bad unlock balance detected!
-  [    2.993978] -------------------------------------
-  [    2.993983] kworker/u16:1/10 is trying to release lock (gpio_request_mutex) at:
-  [    2.993994] [<ffffffdcd9adebf8>] mt8186_afe_gpio_request+0xf8/0x210
-  [    2.994012] but there are no more locks to release!
+Thanks Robin.
 
-The cause is that the mutex will be double unlocked if dai is unknown
-during GPIO selection, and this patch fixes it.
+Testing is never enough :P
 
-Fixes: cfa9a966f12a ("ASoC: mediatek: mt8186: support gpio control in platform driver")
+Thanks,
+Cristian
 
-Signed-off-by: Fei Shao <fshao@chromium.org>
----
-
-Changes in v2:
-- Trimmed the commit message
-
- sound/soc/mediatek/mt8186/mt8186-afe-gpio.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/sound/soc/mediatek/mt8186/mt8186-afe-gpio.c b/sound/soc/mediatek/mt8186/mt8186-afe-gpio.c
-index 255ffba637d3..274c0c8ec2f2 100644
---- a/sound/soc/mediatek/mt8186/mt8186-afe-gpio.c
-+++ b/sound/soc/mediatek/mt8186/mt8186-afe-gpio.c
-@@ -230,7 +230,6 @@ int mt8186_afe_gpio_request(struct device *dev, bool enable,
- 		sel = enable ? MT8186_AFE_GPIO_PCM_ON : MT8186_AFE_GPIO_PCM_OFF;
- 		break;
- 	default:
--		mutex_unlock(&gpio_request_mutex);
- 		dev_err(dev, "%s(), invalid dai %d\n", __func__, dai);
- 		goto unlock;
- 	}
--- 
-2.36.1.476.g0c4daa206d-goog
-
+> > Fixes: 7bc7caafe6b1 ("firmware: arm_scmi: Use common iterators in the clock protocol")
+> > Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+> > ---
+> >   drivers/firmware/arm_scmi/clock.c     | 26 +++++++++++++++++++++++++-
+> >   drivers/firmware/arm_scmi/driver.c    |  1 +
+> >   drivers/firmware/arm_scmi/protocols.h |  3 +++
+> >   3 files changed, 29 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/firmware/arm_scmi/clock.c b/drivers/firmware/arm_scmi/clock.c
+> > index c7a83f6e38e5..3ed7ae0d6781 100644
+> > --- a/drivers/firmware/arm_scmi/clock.c
+> > +++ b/drivers/firmware/arm_scmi/clock.c
+> > @@ -194,6 +194,7 @@ static int rate_cmp_func(const void *_r1, const void *_r2)
+> >   }
+> >   struct scmi_clk_ipriv {
+> > +	struct device *dev;
+> >   	u32 clk_id;
+> >   	struct scmi_clock_info *clk;
+> >   };
+> > @@ -223,6 +224,29 @@ iter_clk_describe_update_state(struct scmi_iterator_state *st,
+> >   	st->num_returned = NUM_RETURNED(flags);
+> >   	p->clk->rate_discrete = RATE_DISCRETE(flags);
+> > +	/* Warn about out of spec replies ... */
+> > +	if (!p->clk->rate_discrete &&
+> > +	    (st->num_returned != 3 || st->num_remaining != 0)) {
+> > +		dev_warn(p->dev,
+> > +			 "Out-of-spec CLOCK_DESCRIBE_RATES reply for %s - returned:%d remaining:%d rx_len:%zd\n",
+> > +			 p->clk->name, st->num_returned, st->num_remaining,
+> > +			 st->rx_len);
+> > +
+> > +		/*
+> > +		 * A known quirk: a triplet is returned but num_returned != 3
+> > +		 * Check for a safe payload size and fix.
+> > +		 */
+> > +		if (st->num_returned != 3 && st->num_remaining == 0 &&
+> > +		    st->rx_len == sizeof(*r) + sizeof(__le32) * 2 * 3) {
+> > +			st->num_returned = 3;
+> > +			st->num_remaining = 0;
+> > +		} else {
+> > +			dev_err(p->dev,
+> > +				"Cannot fix out-of-spec reply !\n");
+> > +			return -EPROTO;
+> > +		}
+> > +	}
+> > +
+> >   	return 0;
+> >   }
+> > @@ -255,7 +279,6 @@ iter_clk_describe_process_response(const struct scmi_protocol_handle *ph,
+> >   		*rate = RATE_TO_U64(r->rate[st->loop_idx]);
+> >   		p->clk->list.num_rates++;
+> > -		//XXX dev_dbg(ph->dev, "Rate %llu Hz\n", *rate);
+> >   	}
+> >   	return ret;
+> > @@ -275,6 +298,7 @@ scmi_clock_describe_rates_get(const struct scmi_protocol_handle *ph, u32 clk_id,
+> >   	struct scmi_clk_ipriv cpriv = {
+> >   		.clk_id = clk_id,
+> >   		.clk = clk,
+> > +		.dev = ph->dev,
+> >   	};
+> >   	iter = ph->hops->iter_response_init(ph, &ops, SCMI_MAX_NUM_RATES,
+> > diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
+> > index c1922bd650ae..8b7ac6663d57 100644
+> > --- a/drivers/firmware/arm_scmi/driver.c
+> > +++ b/drivers/firmware/arm_scmi/driver.c
+> > @@ -1223,6 +1223,7 @@ static int scmi_iterator_run(void *iter)
+> >   		if (ret)
+> >   			break;
+> > +		st->rx_len = i->t->rx.len;
+> >   		ret = iops->update_state(st, i->resp, i->priv);
+> >   		if (ret)
+> >   			break;
+> > diff --git a/drivers/firmware/arm_scmi/protocols.h b/drivers/firmware/arm_scmi/protocols.h
+> > index c679f3fb8718..51c31379f9b3 100644
+> > --- a/drivers/firmware/arm_scmi/protocols.h
+> > +++ b/drivers/firmware/arm_scmi/protocols.h
+> > @@ -179,6 +179,8 @@ struct scmi_protocol_handle {
+> >    * @max_resources: Maximum acceptable number of items, configured by the caller
+> >    *		   depending on the underlying resources that it is querying.
+> >    * @loop_idx: The iterator loop index in the current multi-part reply.
+> > + * @rx_len: Size in bytes of the currenly processed message; it can be used by
+> > + *	    the user of the iterator to verify a reply size.
+> >    * @priv: Optional pointer to some additional state-related private data setup
+> >    *	  by the caller during the iterations.
+> >    */
+> > @@ -188,6 +190,7 @@ struct scmi_iterator_state {
+> >   	unsigned int num_remaining;
+> >   	unsigned int max_resources;
+> >   	unsigned int loop_idx;
+> > +	size_t rx_len;
+> >   	void *priv;
+> >   };
