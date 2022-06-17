@@ -2,135 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97166C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 16:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DD9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 16:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382549AbiFQQqp (ORCPT
+        id S1382912AbiFQQsv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 12:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54946 "EHLO
+        Fri, 17 Jun 2022 12:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234569AbiFQQqo (ORCPT
+        with ESMTP id S1383405AbiFQQsY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 12:46:44 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36E02898E;
-        Fri, 17 Jun 2022 09:46:42 -0700 (PDT)
+        Fri, 17 Jun 2022 12:48:24 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9C112D35
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 09:48:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655484402; x=1687020402;
+  t=1655484502; x=1687020502;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=2VC7mik9w+9dUx7rYCUaY4bTWFXVK+BGRfFpvu1g5bI=;
-  b=F247KLP/eqCPlwQXpHGZXMTcqw8loBMKqafVkthrCYPP2AaWEapvSmuv
-   AI6ncwgMLYkF0mqL4JFNi4nzZXPWXCyK6GPzPauV+1GZf7rbWs2qWZEeE
-   SCSnEG57k2tsBaFHTTL9fZa1v/LcZwyhHPQ8osQ3zHylYKx2q48CpOamN
-   b9gZmn2nQUISR22PotOH8bpGz2/IA18yA5N7ulM+Gq1wJe4TpLiXWCIkl
-   X4xbrEwtjoKO7+guZB0/UTaqcqSlD/uG1m+bEs85dTLjFwvp2JyAVNiOe
-   MaQuwhmH2Ql2J0xHsWtw0LSpoG6Q6iOKmVyLolDH0+3te5Mvnx4jIWWHe
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="268229683"
+  bh=Tz/jD2Salb21vnVNTIoALhjVotJpZYYZiJs32UY8QMI=;
+  b=MOXms13hnV3f3HDTw4FKoTUVru6w5i0K8hLChXA02Z9V0jltRzxaEApj
+   zmGofuenrB3MVNUJENvrbHB3PJa+2W92R/7SA4HTkjlNQZLZHARRXWw0Q
+   MIFaW+GJBOpHGCFINYb+byG7SvLUd/9SaN4KSgc9GD6vHXRtyqK8Pl3LY
+   HwE6CpZBSMQFVqFpWaVS6SkJJBktFftdbThU06DCDTD90a4eHXRij6Ota
+   weV9g9sUSBF+A0U0dDwsXE4iZmejoNnFyE9P/041MmxQta9jGH9CRzkhJ
+   M6kIFFAxQkMqyQsnsL4zLBGGdRYz9Xadwk2bejaruf3aDHS9Yk9D+R2sG
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="259329840"
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="268229683"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 09:05:53 -0700
+   d="scan'208";a="259329840"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 05:17:44 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="763288840"
+   d="scan'208";a="584013616"
 Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 17 Jun 2022 09:05:48 -0700
+  by orsmga007.jf.intel.com with ESMTP; 17 Jun 2022 05:17:41 -0700
 Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1o2ETj-000Pa9-JG;
-        Fri, 17 Jun 2022 16:05:47 +0000
-Date:   Sat, 18 Jun 2022 00:05:36 +0800
+        id 1o2Auz-000PRE-6l;
+        Fri, 17 Jun 2022 12:17:41 +0000
+Date:   Fri, 17 Jun 2022 20:17:30 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        dri-devel@lists.freedesktop.org, robdclark@gmail.com,
-        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
-        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
-        agross@kernel.org, dmitry.baryshkov@linaro.org,
-        bjorn.andersson@linaro.org
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>,
+        mike.kravetz@oracle.com
 Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        quic_sbillaka@quicinc.com, linux-arm-msm@vger.kernel.org,
-        quic_abhinavk@quicinc.com, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        quic_aravindh@quicinc.com, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 2/2] drm/msm/dp: clean up pixel_rate from dp_ctrl.c
-Message-ID: <202206172356.J5CB8zDf-lkp@intel.com>
-References: <1655399361-10842-3-git-send-email-quic_khsieh@quicinc.com>
+        songmuchun@bytedance.com, akpm@linux-foundation.org,
+        catalin.marinas@arm.com, will@kernel.org,
+        anshuman.khandual@arm.com, baolin.wang@linux.alibaba.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH] arm64/hugetlb: Implement arm64 specific
+ hugetlb_mask_last_hp
+Message-ID: <202206172000.6Fwmo99P-lkp@intel.com>
+References: <7256dbe078d7231f45b0f47c2c52a3bd3aa10da7.1655350193.git.baolin.wang@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1655399361-10842-3-git-send-email-quic_khsieh@quicinc.com>
+In-Reply-To: <7256dbe078d7231f45b0f47c2c52a3bd3aa10da7.1655350193.git.baolin.wang@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kuogee,
+Hi Baolin,
 
-Thank you for the patch! Perhaps something to improve:
+I love your patch! Perhaps something to improve:
 
-[auto build test WARNING on drm/drm-next]
-[also build test WARNING on drm-exynos/exynos-drm-next]
-[cannot apply to drm-intel/for-linux-next tegra-drm/drm/tegra/for-next airlied/drm-next]
+[auto build test WARNING on arm64/for-next/core]
+[also build test WARNING on linus/master v5.19-rc2 next-20220617]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use '--base' as documented in
 https://git-scm.com/docs/git-format-patch]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Kuogee-Hsieh/force-link-training-for-display-resolution-change/20220617-011110
-base:   git://anongit.freedesktop.org/drm/drm drm-next
-config: hexagon-allmodconfig (https://download.01.org/0day-ci/archive/20220617/202206172356.J5CB8zDf-lkp@intel.com/config)
+url:    https://github.com/intel-lab-lkp/linux/commits/Baolin-Wang/arm64-hugetlb-Implement-arm64-specific-hugetlb_mask_last_hp/20220616-113640
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
+config: arm64-randconfig-r011-20220616 (https://download.01.org/0day-ci/archive/20220617/202206172000.6Fwmo99P-lkp@intel.com/config)
 compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f0e608de27b3d568000046eebf3712ab542979d6)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/b04f0b39a03a9fc3728e9414157f9d5f0b8b2366
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/f1309dfbc2b70ec5dd72ac38e95a49b7be42b9b6
         git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Kuogee-Hsieh/force-link-training-for-display-resolution-change/20220617-011110
-        git checkout b04f0b39a03a9fc3728e9414157f9d5f0b8b2366
+        git fetch --no-tags linux-review Baolin-Wang/arm64-hugetlb-Implement-arm64-specific-hugetlb_mask_last_hp/20220616-113640
+        git checkout f1309dfbc2b70ec5dd72ac38e95a49b7be42b9b6
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/gpu/drm/msm/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/mm/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
->> drivers/gpu/drm/msm/dp/dp_ctrl.c:1587:5: warning: no previous prototype for function 'dp_ctrl_on_stream_phy_test_report' [-Wmissing-prototypes]
-   int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl)
-       ^
-   drivers/gpu/drm/msm/dp/dp_ctrl.c:1587:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl)
+>> arch/arm64/mm/hugetlbpage.c:371:15: warning: no previous prototype for function 'hugetlb_mask_last_hp' [-Wmissing-prototypes]
+   unsigned long hugetlb_mask_last_hp(struct hstate *h)
+                 ^
+   arch/arm64/mm/hugetlbpage.c:371:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   unsigned long hugetlb_mask_last_hp(struct hstate *h)
    ^
    static 
    1 warning generated.
 
 
-vim +/dp_ctrl_on_stream_phy_test_report +1587 drivers/gpu/drm/msm/dp/dp_ctrl.c
+vim +/hugetlb_mask_last_hp +371 arch/arm64/mm/hugetlbpage.c
 
-  1586	
-> 1587	int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl)
-  1588	{
-  1589		int ret = 0;
-  1590		struct dp_ctrl_private *ctrl;
-  1591		unsigned long pixel_rate;
-  1592	
-  1593		ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
-  1594	
-  1595		pixel_rate = ctrl->panel->dp_mode.drm_mode.clock;
-  1596		ret = dp_ctrl_enable_stream_clocks(ctrl, pixel_rate);
-  1597		if (ret) {
-  1598			DRM_ERROR("Failed to start pixel clocks. ret=%d\n", ret);
-  1599			return ret;
-  1600		}
-  1601	
-  1602		dp_ctrl_send_phy_test_pattern(ctrl);
-  1603	
-  1604		return 0;
-  1605	}
-  1606	
+   370	
+ > 371	unsigned long hugetlb_mask_last_hp(struct hstate *h)
+   372	{
+   373		unsigned long hp_size = huge_page_size(h);
+   374	
+   375		switch (hp_size) {
+   376		case PUD_SIZE:
+   377			return PGDIR_SIZE - PUD_SIZE;
+   378		case CONT_PMD_SIZE:
+   379			return PUD_SIZE - CONT_PMD_SIZE;
+   380		case PMD_SIZE:
+   381			return PUD_SIZE - PMD_SIZE;
+   382		case CONT_PTE_SIZE:
+   383			return PMD_SIZE - CONT_PTE_SIZE;
+   384		default:
+   385			break;
+   386		}
+   387	
+   388		return ~0UL;
+   389	}
+   390	
 
 -- 
 0-DAY CI Kernel Test Service
