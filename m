@@ -2,100 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD60C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 05:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF2F3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 05:23:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379683AbiFQFVf (ORCPT
+        id S1379928AbiFQFXA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 01:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51444 "EHLO
+        Fri, 17 Jun 2022 01:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379928AbiFQFVb (ORCPT
+        with ESMTP id S1379464AbiFQFW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 01:21:31 -0400
-Received: from mx0b-00256a01.pphosted.com (mx0b-00256a01.pphosted.com [67.231.153.242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AC3F6542D
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 22:21:30 -0700 (PDT)
-Received: from pps.filterd (m0144081.ppops.net [127.0.0.1])
-        by mx0b-00256a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25GMdj1S021203
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:49:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nyu.edu; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding;
- s=20180315; bh=QKErT/DfxhZ300qNRsf1ijx1r9TNlZjtzOb7IB9qsls=;
- b=fIOGRB9ibdaB9Qbas07yDQfsb8pgsR/9C+WC272Ay5qxpwDCQxAZ1l0mDKR48pvFS5iT
- QbCrvAapigv1+Qxc8/MWUkhAlNuPmzIExv5kdZj8G/EKBkjqXAB0qIk6l6SNYqqZreqx
- elbA6NmKBlnFwdceM1g/TKzn2NeqQ79EykveD5jD2iOxmMYwBd5Fdv4V8bNcaDNMCXpa
- 8HCBONpyUTlZuBHNo5BWg3XNDxIWiMFinlrNx6qX0xbb3ArLzTSUcMYIF6A970lXsxma
- os4UoTi8f3nEN/MQDIJqhMe5mmQyU3zb6C0+eckh4x2LvfQxK3rWO7pujBzTTjsttNKM Og== 
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com [209.85.219.69])
-        by mx0b-00256a01.pphosted.com (PPS) with ESMTPS id 3grapaym8g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:49:02 -0400
-Received: by mail-qv1-f69.google.com with SMTP id x17-20020a0cfe11000000b004645917e45cso3669285qvr.4
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 21:49:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QKErT/DfxhZ300qNRsf1ijx1r9TNlZjtzOb7IB9qsls=;
-        b=EfPg4Tv1FNWStGrlQieNy1rBJ8bHka37kjV5Je0ld28y/6AdQ6m+GoUxvPnlMt8eNr
-         6NJvyYhI6aCPJpTbtpgHOk7yMlrtFYCXR7gPwdSkUDrANA3U72C3O8EMZS3B02yC+m+B
-         9liG4gGlEdJQPYV0PP4D+AuxwwF0rPWZBc03PZPX+sEV8F6GyuvcF421luKXPttRa62R
-         pC8/YcH8hE+P/uG3qkMZXhXwS1XRuACVGKjJfhf6MJms75bJaeh+BYX10Qc/BPOzVx86
-         0W6Cw1gN0z5I3uH5jB8LZOn5xDThZwed804ikRgxpxJqUfXq9mnszANOJRk6pWQY8fuD
-         t3cg==
-X-Gm-Message-State: AJIora8Z2g1tM02z/GJjbXpg1KRdRvwtDTZaqnY3OD/GfU6J0WwGDr2Q
-        inoS1031WTBuw+HFa6OfcK9Q24yCw4u/YVhKDdD2w/tBUaMIGFiZv5aYJfIdZbb6G6eECE5R8Bo
-        8MV++40CzcWSuZt+jJn2BoS0=
-X-Received: by 2002:a05:622a:3d2:b0:305:3477:4486 with SMTP id k18-20020a05622a03d200b0030534774486mr6921623qtx.209.1655441342339;
-        Thu, 16 Jun 2022 21:49:02 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tEBIiQkI1C+Aj5hd4g4sckIWlOyMCymnzAxzejv9VUyJuqSoVZS8GRKQzz1Tz0lXmujZcCyw==
-X-Received: by 2002:a05:622a:3d2:b0:305:3477:4486 with SMTP id k18-20020a05622a03d200b0030534774486mr6921613qtx.209.1655441342116;
-        Thu, 16 Jun 2022 21:49:02 -0700 (PDT)
-Received: from localhost.localdomain (cpe-66-65-49-54.nyc.res.rr.com. [66.65.49.54])
-        by smtp.gmail.com with ESMTPSA id h7-20020a05620a284700b006a65c58db99sm3446799qkp.64.2022.06.16.21.49.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 21:49:01 -0700 (PDT)
-From:   HighW4y2H3ll <huzh@nyu.edu>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     HighW4y2H3ll <huzh@nyu.edu>, linux-kernel@vger.kernel.org
-Subject: [PATCH] Fix use of uninitialized variable in rts5261_init_from_hw, when efuse_valid == 1.
-Date:   Fri, 17 Jun 2022 00:47:55 -0400
-Message-Id: <20220617044755.37535-1-huzh@nyu.edu>
-X-Mailer: git-send-email 2.35.1
+        Fri, 17 Jun 2022 01:22:57 -0400
+Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F92313E9B
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 22:22:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=0tJ4S
+        pzNNBnmG2C5jwqBC4QjnWPEch+HDg3rp/QBvCg=; b=Hm8dxOP3SZpJYO+bbs27h
+        dea4DapVSkn8rcQY24dP8Viai5KiG58jzA9uJ4uQ75yTS/SnrWT65FfqqSM42gvO
+        GfTvsC7WHVApOQCQ4kYLemf7Cn5vXHVY1qeYrjF2RLTGaiV4dMIpD/NxbpeC/ImC
+        OjYqxcBrXpQlXcjfCYlffA=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp10 (Coremail) with SMTP id NuRpCgD3XYKHD6xisFtmEw--.28813S2;
+        Fri, 17 Jun 2022 13:22:15 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     oss@buserror.net, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, christophe.jaillet@wanadoo.fr, windhl@126.com,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3] powerpc:85xx: Add missing of_node_put() in sgy_cst1000
+Date:   Fri, 17 Jun 2022 13:22:14 +0800
+Message-Id: <20220617052214.4004188-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: 0WCB6dlBv8LC1mza7LAWuvB0gNnIOigR
-X-Proofpoint-ORIG-GUID: 0WCB6dlBv8LC1mza7LAWuvB0gNnIOigR
-X-Orig-IP: 209.85.219.69
-X-Proofpoint-Spam-Details: rule=outbound_bp_notspam policy=outbound_bp score=0 priorityscore=1501
- clxscore=1011 mlxscore=0 suspectscore=0 spamscore=0 impostorscore=0
- lowpriorityscore=0 adultscore=0 mlxlogscore=999 bulkscore=0 malwarescore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206170021
+X-CM-TRANSID: NuRpCgD3XYKHD6xisFtmEw--.28813S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxZFWDXw4xtF1xAw15tF4kCrg_yoW5CrykpF
+        Z8CrZakrWkGw1xGw1Sya4DuFyayw18G3yxJw1fCan7C34UX34Dtr10vF15WrnxWrW8C3yr
+        Jr4aka4YkFZrZa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zR-B_UUUUUU=
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbiuAcjF2JVj6VAsQAAsn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: zhenghao hu <huzh@nyu.edu>
----
- drivers/misc/cardreader/rts5261.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+In gpio_halt_probe(), of_find_matching_node() will return a node
+pointer with refcount incremented. We should use of_node_put() in
+fail path or when it is not used anymore.
 
-diff --git a/drivers/misc/cardreader/rts5261.c b/drivers/misc/cardreader/rts5261.c
-index 749cc5a46d13..f22634b14dc8 100644
---- a/drivers/misc/cardreader/rts5261.c
-+++ b/drivers/misc/cardreader/rts5261.c
-@@ -403,7 +403,7 @@ static void rts5261_init_from_hw(struct rtsx_pcr *pcr)
- 			setting_reg1 = PCR_SETTING_REG4;
- 			setting_reg2 = PCR_SETTING_REG5;
- 		}
--	} else if (efuse_valid == 0) {
-+	} else {
- 		// default
- 		setting_reg1 = PCR_SETTING_REG1;
- 		setting_reg2 = PCR_SETTING_REG2;
+Signed-off-by: Liang He <windhl@126.com>
+---
+ arch/powerpc/platforms/85xx/sgy_cts1000.c | 39 +++++++++++++++--------
+ 1 file changed, 25 insertions(+), 14 deletions(-)
+
+diff --git a/arch/powerpc/platforms/85xx/sgy_cts1000.c b/arch/powerpc/platforms/85xx/sgy_cts1000.c
+index 98ae64075193..a8690fc552cf 100644
+--- a/arch/powerpc/platforms/85xx/sgy_cts1000.c
++++ b/arch/powerpc/platforms/85xx/sgy_cts1000.c
+@@ -71,33 +71,39 @@ static int gpio_halt_probe(struct platform_device *pdev)
+ {
+ 	enum of_gpio_flags flags;
+ 	struct device_node *node = pdev->dev.of_node;
++	struct device_node *child_node;
+ 	int gpio, err, irq;
+ 	int trigger;
++	int ret;
+ 
+ 	if (!node)
+ 		return -ENODEV;
+ 
+ 	/* If there's no matching child, this isn't really an error */
+-	halt_node = of_find_matching_node(node, child_match);
+-	if (!halt_node)
++	child_node = of_find_matching_node(node, child_match);
++	if (!child_node)
+ 		return 0;
+ 
+ 	/* Technically we could just read the first one, but punish
+ 	 * DT writers for invalid form. */
+-	if (of_gpio_count(halt_node) != 1)
+-		return -EINVAL;
++	if (of_gpio_count(child_node) != 1) {
++		ret = -EINVAL;
++		goto err_put;
++	}
+ 
+ 	/* Get the gpio number relative to the dynamic base. */
+-	gpio = of_get_gpio_flags(halt_node, 0, &flags);
+-	if (!gpio_is_valid(gpio))
+-		return -EINVAL;
++	gpio = of_get_gpio_flags(child_node, 0, &flags);
++	if (!gpio_is_valid(gpio)) {
++		ret = -EINVAL;
++		gotot err_put;
++	}
+ 
+ 	err = gpio_request(gpio, "gpio-halt");
+ 	if (err) {
+ 		printk(KERN_ERR "gpio-halt: error requesting GPIO %d.\n",
+ 		       gpio);
+-		halt_node = NULL;
+-		return err;
++		ret = err;
++		goto err_put;
+ 	}
+ 
+ 	trigger = (flags == OF_GPIO_ACTIVE_LOW);
+@@ -105,15 +111,15 @@ static int gpio_halt_probe(struct platform_device *pdev)
+ 	gpio_direction_output(gpio, !trigger);
+ 
+ 	/* Now get the IRQ which tells us when the power button is hit */
+-	irq = irq_of_parse_and_map(halt_node, 0);
++	irq = irq_of_parse_and_map(child_node, 0);
+ 	err = request_irq(irq, gpio_halt_irq, IRQF_TRIGGER_RISING |
+-			  IRQF_TRIGGER_FALLING, "gpio-halt", halt_node);
++			  IRQF_TRIGGER_FALLING, "gpio-halt", child_node);
+ 	if (err) {
+ 		printk(KERN_ERR "gpio-halt: error requesting IRQ %d for "
+ 		       "GPIO %d.\n", irq, gpio);
+ 		gpio_free(gpio);
+-		halt_node = NULL;
+-		return err;
++		ret = err;
++		goto err_put;
+ 	}
+ 
+ 	/* Register our halt function */
+@@ -122,8 +128,12 @@ static int gpio_halt_probe(struct platform_device *pdev)
+ 
+ 	printk(KERN_INFO "gpio-halt: registered GPIO %d (%d trigger, %d"
+ 	       " irq).\n", gpio, trigger, irq);
++	ret = 0;
++	halt_node = of_node_get(child_node);
+ 
+-	return 0;
++err_put:
++	of_node_put(child_node);
++	return ret;
+ }
+ 
+ static int gpio_halt_remove(struct platform_device *pdev)
+@@ -139,6 +149,7 @@ static int gpio_halt_remove(struct platform_device *pdev)
+ 
+ 		gpio_free(gpio);
+ 
++		of_node_put(halt_node);
+ 		halt_node = NULL;
+ 	}
+ 
 -- 
-2.35.1
+2.25.1
 
