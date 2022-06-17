@@ -2,111 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D252CCA479
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A98CCA479
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383045AbiFQPJg (ORCPT
+        id S1383067AbiFQPNM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 11:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
+        Fri, 17 Jun 2022 11:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383036AbiFQPJd (ORCPT
+        with ESMTP id S233854AbiFQPNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 11:09:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31BA35868;
-        Fri, 17 Jun 2022 08:09:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DF63B82ADA;
-        Fri, 17 Jun 2022 15:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B7D3C3411B;
-        Fri, 17 Jun 2022 15:09:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655478569;
-        bh=EqeIczttIjGDCNdZQIUDAQxE7sJSTKC4MZTUe2Cu0R0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tbu8deuodKH704UoDQYNcnzUbyUqxZkBljz7YZdlHTo7HTHCmlvghDrQazQsN4h35
-         FVG8VGGpbjCbQXdjC+a3mMY/gMtf1i61gKVDlgUfTUkVHTsKfI/k5k1jkoPvjKzqBs
-         qa4rHugmyoOBDgZ8l+pgxKWkUIaFpSnvnJiYjVGgShCN3ICSXiJ58126+uos465Bvd
-         kKc8YF3pp12EQgt2QI2RVGA7h0ahT/goQdSjrrTcDfJ4GSlvFPQDbRgeeCPAdvBIk+
-         grj8+IP5LXkLOPe3RG+iY0XVfee3+BC0iaW0c9P+R2ddYpJ/XuGjNJ531AZLN/Ct6E
-         La1uyAOzWiO2w==
-From:   Arnd Bergmann <arnd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        linux-kbuild@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] [RFC] Kbuild: change CONFIG_FRAME_WARN for 32-bit
-Date:   Fri, 17 Jun 2022 17:08:53 +0200
-Message-Id: <20220617150922.1878926-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        Fri, 17 Jun 2022 11:13:07 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742A4220F0;
+        Fri, 17 Jun 2022 08:13:05 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 17:13:01 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655478783;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wiu9PNjZtU75kIkIdHT6F9YTnsKXty0kUhXe7MZj/OY=;
+        b=VWsUFRPGgm0fCvp7HHY7pbSwdK24YjbQEDDPhkEAbehRCbREWJMzfhCBrLLK5m6E5KAcg3
+        s1imxbWmxgANfm+OdObHWUwrjG41h+XpIBjR/glouGvos/nuuA1c5mS8J+ORbVbD4vzgIe
+        Y+K8U3lc5Zjv+RK0YaQAzd5tXQpZX9M3+RR2Bg9prOimxiSXzliW+S7eVR/G/Sq4B9WC6u
+        6bbULRMq7dEuONqAlzPEzvy3OP2RboABzozdc/0jLYBgCEmMxAQQKdlEW6U6bXrGTDSFtm
+        bhAr0zL+bTgMOtWoqk+BW/cGduuC/hexfOwfJs85yM66l4IK2tQ+sBScJs1mzA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655478783;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wiu9PNjZtU75kIkIdHT6F9YTnsKXty0kUhXe7MZj/OY=;
+        b=5AJqEuLIJ5X0bNh+w9zDdl7BaWRhqliITi6SMcLGKXdiIjQ3+jnqt4RIpdbrpACZf5DNdE
+        E2KAP1r1XKwMeBCA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Valentin Schneider <vschneid@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kexec@lists.infradead.org,
+        linux-rt-users@vger.kernel.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Arnd Bergmann <arnd@arndb.de>, Petr Mladek <pmladek@suse.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Juri Lelli <jlelli@redhat.com>,
+        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Subject: Re: [PATCH] panic, kexec: Don't mutex_trylock() in __crash_kexec()
+Message-ID: <YqyZ/Uf14qkYtMDX@linutronix.de>
+References: <20220616123709.347053-1-vschneid@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220616123709.347053-1-vschneid@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On 2022-06-16 13:37:09 [+0100], Valentin Schneider wrote:
+> Regarding the original explanation for the WARN & return:
+> 
+> I don't get why 2) is a problem - if the lock is acquired by the trylock
+> then the critical section will be run without interruption since it
+> cannot sleep, the interrupted task may get boosted but that will not
+> have any actual impact AFAICT.
 
-The introduction of CONFIG_GCC_PLUGIN_LATENT_ENTROPY raised the
-warning limit for 32-bit architectures to a much higher value in
-2016. Initially this had no effect for Arm machines as their kernels
-tend to be cross-compiled, and the feature detection for the plugin did
-not work with common cross compilers.
+boosting an unrelated task is considered wrong. I don't know how bad
+it gets in terms of lock chains since a task is set as owner which did
+not actually ask for the lock.
 
-I could not find the original regression report that led to the warning
-limit getting raised, but I have been unable to reproduce this with gcc-12
-and linux-5.18 -- all frame sizes appear to be be below the normal 1024
-byte limit on at least arm32 and i386.
+> Regardless, even if this doesn't sleep, the ->wait_lock in the slowpath
+> isn't NMI safe so this needs changing.
 
-However, the KASAN feature introduced later on does raise the frame size
-of a number of functions above the warning limit, in almost all cases to
-somewhere below 1280 bytes. The effect is that an arm allmodconfig build
-produces no warnings because of the check for the latent entropy plugin,
-but a normal KASAN based build with gcc does produce build warnings or
-failures when CONFIG_WERROR is set.
+This includes the unlock path which may wake a waiter and deboost.
 
-The 1280 byte limit is an arbitrary choice here, as it disables almost
-all warnings but leaves a few outliers that are probably better addressed
-with code changes. There are a number of functions that are just below the
-normal 1024 byte limit at the moment, and an extra 256 bytes for those
-is within the expectation, but more than that is probably an indication
-of a bad design or a real bug.
+> I've thought about trying to defer the kexec out of an NMI (or IRQ)
+> context, but that pretty much means deferring the panic() which I'm
+> not sure is such a great idea.
 
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Cc: Masahiro Yamada <masahiroy@kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: linux-kbuild@vger.kernel.org
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- lib/Kconfig.debug | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If we could defer it out of NMI on RT then it would work non-RT, too. If
+the system is "stuck" and the NMI is the only to respond then I guess
+that it is not a great idea.
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 3da5f9acb966..8a3afd837e99 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -387,9 +387,9 @@ endif # DEBUG_INFO
- config FRAME_WARN
- 	int "Warn for stack frames larger than"
- 	range 0 8192
--	default 2048 if GCC_PLUGIN_LATENT_ENTROPY
- 	default 2048 if PARISC
- 	default 1536 if (!64BIT && XTENSA)
-+	default 1280 if (!64BIT && KASAN_STACK)
- 	default 1024 if !64BIT
- 	default 2048 if 64BIT
- 	help
--- 
-2.29.2
-
+Sebastian
