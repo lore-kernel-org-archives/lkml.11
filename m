@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F2A4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 19:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0D43C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 19:05:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234781AbiFQTFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 15:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52744 "EHLO
+        id S235279AbiFQTFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 15:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233779AbiFQTFo (ORCPT
+        with ESMTP id S233914AbiFQTFo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 17 Jun 2022 15:05:44 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7187F44756
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D943F45042
         for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 12:05:43 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 1F3E366017B7;
-        Fri, 17 Jun 2022 20:05:41 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 6D90666017FA;
+        Fri, 17 Jun 2022 20:05:42 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655492741;
-        bh=KHg3eOnYqUoUcg57EXhLlpoQHXoJLlQC7w8GyVbN4OU=;
+        s=mail; t=1655492742;
+        bh=8vOVoJXWNBNoAe7uHxF6kK6AtRixKpYtIjs6ocUktn4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IIBvAjFPtkVClQ1mBiVjn1VM/ywQXL4o4og1pGdVGyrzpuF5iXpLhcQYo71P14vqv
-         IfdgKx5TDnGAo0hLPWoBqPbwfdXkW0A5VVXh5T03hWVsLjacjA7G9ahSEkiSiy3CTv
-         yv1Vi1u+CqVqDDWAUVEpu59N/4mFHL7WQsSFAPv5ljRshFFo8GIYK8An6LQrkaLPgo
-         IxeX+z2sh21OclcQaQAfK63mioC1C6M3wisfOxHbiPCe23IbLNlaBvnYTVO8zniy7r
-         nc3G8eJCgU0wsB7wwSQ4TqVLGkv5XJa+8rVrPXDI/aDuMew8czB9g1L2Txm7e/6//R
-         Ol81QZJdjruOg==
+        b=GPTBn8NOGqnuUZcxrYuvmdiXrILvdzQYT9WQLvHPfa0X/+sokBAfL1UlCZFzFsiKM
+         aiT+fl7fyAbSYHinJ0wjc9QdskgUbkBRfcgOCI9nujh5TLviWQov79tPoQJ8zFmA8z
+         y/UWiwNg1SH7vBnn/TK+ez48JzKw+El5HueSMO6h6b7PIayMiwAZlSBVfGQDeODYfA
+         2iH8bzoYwYTlQ9o1ER5Mbajbu/Gp8bXKkzTd4yXGuPjVi/wtZJNXyIY1rdkaRusi+m
+         LJ/1FmwS5GMVREwBccCqk2H3YDNrcv+MwUF81JEdYaT6DNjxZIGYaq2ibDuOjczU5N
+         IF06SlMgd97ng==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -44,9 +44,9 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v6 01/10] drm/i915/ttm: dont trample cache_level overrides during ttm move
-Date:   Fri, 17 Jun 2022 19:05:07 +0000
-Message-Id: <20220617190516.2805572-2-bob.beckett@collabora.com>
+Subject: [PATCH v6 03/10] drm/i915/ttm: only trust snooping for dgfx when deciding default cache_level
+Date:   Fri, 17 Jun 2022 19:05:09 +0000
+Message-Id: <20220617190516.2805572-4-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220617190516.2805572-1-bob.beckett@collabora.com>
 References: <20220617190516.2805572-1-bob.beckett@collabora.com>
@@ -56,83 +56,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Various places within the driver override the default chosen cache_level.
-Before ttm, these overrides were permanent until explicitly changed again
-or for the lifetime of the buffer.
-
-TTM movement code came along and decided that it could make that
-decision at that time, which is usually well after object creation, so
-overrode the cache_level decision and reverted it back to its default
-decision.
-
-Add logic to indicate whether the caching mode has been set by anything
-other than the move logic. If so, assume that the code that overrode the
-defaults knows best and keep it.
+By default i915_ttm_cache_level() decides I915_CACHE_LLC if HAS_SNOOP.
+This is divergent from existing backends code which only considers
+HAS_LLC.
+Testing shows that trusting snooping on gen5- is unreliable and bsw via
+ggtt mappings, so limit DGFX for now and maintain previous behaviour.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_object.c       | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_object_types.h | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c          | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c     | 9 ++++++---
- 4 files changed, 9 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-index 06b1b188ce5a..519887769c08 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-@@ -125,6 +125,7 @@ void i915_gem_object_set_cache_coherency(struct drm_i915_gem_object *obj,
- 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
- 
- 	obj->cache_level = cache_level;
-+	obj->ttm.cache_level_override = true;
- 
- 	if (cache_level != I915_CACHE_NONE)
- 		obj->cache_coherent = (I915_BO_CACHE_COHERENT_FOR_READ |
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-index 2c88bdb8ff7c..6632ed52e919 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-@@ -605,6 +605,7 @@ struct drm_i915_gem_object {
- 		struct i915_gem_object_page_iter get_io_page;
- 		struct drm_i915_gem_object *backup;
- 		bool created:1;
-+		bool cache_level_override:1;
- 	} ttm;
- 
- 	/*
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-index 4c25d9b2f138..27d59639177f 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-@@ -1241,6 +1241,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
- 	i915_gem_object_init_memory_region(obj, mem);
- 	i915_ttm_adjust_domains_after_move(obj);
- 	i915_ttm_adjust_gem_after_move(obj);
-+	obj->ttm.cache_level_override = false;
- 	i915_gem_object_unlock(obj);
- 
- 	return 0;
 diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-index a10716f4e717..4c1de0b4a10f 100644
+index 4c1de0b4a10f..40249fa28a7a 100644
 --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
 +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-@@ -123,9 +123,12 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
- 	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
- 		I915_BO_FLAG_STRUCT_PAGE;
- 
--	cache_level = i915_ttm_cache_level(to_i915(bo->base.dev), bo->resource,
--					   bo->ttm);
--	i915_gem_object_set_cache_coherency(obj, cache_level);
-+	if (!obj->ttm.cache_level_override) {
-+		cache_level = i915_ttm_cache_level(to_i915(bo->base.dev),
-+						   bo->resource, bo->ttm);
-+		i915_gem_object_set_cache_coherency(obj, cache_level);
-+		obj->ttm.cache_level_override = false;
-+	}
- }
- 
- /**
+@@ -46,7 +46,9 @@ static enum i915_cache_level
+ i915_ttm_cache_level(struct drm_i915_private *i915, struct ttm_resource *res,
+ 		     struct ttm_tt *ttm)
+ {
+-	return ((HAS_LLC(i915) || HAS_SNOOP(i915)) &&
++	bool can_snoop = HAS_SNOOP(i915) && IS_DGFX(i915);
++
++	return ((HAS_LLC(i915) || can_snoop) &&
+ 		!i915_ttm_gtt_binds_lmem(res) &&
+ 		ttm->caching == ttm_cached) ? I915_CACHE_LLC :
+ 		I915_CACHE_NONE;
 -- 
 2.25.1
 
