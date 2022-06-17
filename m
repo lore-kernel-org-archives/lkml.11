@@ -2,72 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE5B9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1784C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380617AbiFQHgq (ORCPT
+        id S1380620AbiFQHiu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 03:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48280 "EHLO
+        Fri, 17 Jun 2022 03:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380565AbiFQHgp (ORCPT
+        with ESMTP id S1380565AbiFQHiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 03:36:45 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05B266FAB;
-        Fri, 17 Jun 2022 00:36:43 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LPW7L1R8YzDrCs;
-        Fri, 17 Jun 2022 15:36:14 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by dggpeml500022.china.huawei.com
- (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 17 Jun
- 2022 15:36:41 +0800
-From:   Zhang Zekun <zhangzekun11@huawei.com>
-To:     <ezequiel@vanguardiasur.com.ar>, <mchehab@kernel.org>,
-        <gregkh@linuxfoundation.org>, <andrzej.p@collabora.com>,
-        <hverkuil-cisco@xs4all.nl>
-CC:     <linux-media@vger.kernel.org>,
-        <linux-rockchip@lists.infradead.org>,
-        <linux-staging@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] media: rkvdec: Fix memset size error
-Date:   Fri, 17 Jun 2022 07:31:01 +0000
-Message-ID: <20220617073101.101234-1-zhangzekun11@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 17 Jun 2022 03:38:46 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D93550005
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:38:46 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id w5-20020a17090aea0500b001ec7c45794bso240214pjy.3
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:38:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=0JRZE0Z29r4UlodpfRtV08NQRTnigdJxgN3DP8hXpHY=;
+        b=NEY2iKtHtUL4IQc6zDdgegvPzcuaw41bP35nUj4lBy/tvaeYi7elW4M+N690lLhGq2
+         0rJfaSTXaD/T7z4qm+9e6kKlfFQlLg9rDkuMl4K8VoAZI8D9f/xlUf78quh946+BOpsD
+         qWyWBO4LGd/dmaYObpXd2Yttb5VUc766BKpIpyhI25Lbwh5ZkazF29qI1oBEL6FHlSSB
+         ohtbxmFYvqtW0Gi3MsDd1MW2rF1sTusEgoaTQKuAxO93n8+q9S16xOvtdu199048/KUN
+         jzKT9FYQpIMikudcJA71wbR9YJceiV8xJP6AGrJiw2KJ2/uavXGJMAJ4YWWhOWraM8lm
+         ZDMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=0JRZE0Z29r4UlodpfRtV08NQRTnigdJxgN3DP8hXpHY=;
+        b=dZXXxSpHeJgrrcJLL0uBnKCB4GBawWFF1yl5Q5wOCv6WMPO2UgNVNDn537ar096xZA
+         YZNmI+u5TVi2x+FkaXrYKa/d+zFSShTVgXqV550SJKCT0mfJm8Pofwt5B045MXnOBzzB
+         xgbEKr8Qn/iIOZQ2445KyTOYIurla9LocnkA3Qgh8BI44xmkAFcslfbkGAQ6p2Fs9hZ/
+         GQgb3vcuFt0RitdpO+SAIU9t8GhjFPo7uc1ZWl3p2sZ1AcCRhP8LTis8nly6cm592oTX
+         DzmrrzAEuS5D+4WD5wyDUWAKZG3CMmOOOjjnwaK/J6yLuEqnWhrdhHliCFXFEo/Rmw70
+         DI9A==
+X-Gm-Message-State: AJIora8CElmcY/V3CVUGmPZ89qJiiPpnEDBsIrtDbrPRxLy1Yb7uTBoo
+        LkmNrjDx70KSKX17w2bnLF54iw==
+X-Google-Smtp-Source: AGRyM1tUyfYz20VN7BXvpIfxhhyVOdn7+NV09gMOWoEO8ZHM10dORUVqR3B883OKoeWHwEhkbW7ejw==
+X-Received: by 2002:a17:902:ba8d:b0:168:ff8f:c1f with SMTP id k13-20020a170902ba8d00b00168ff8f0c1fmr8039334pls.6.1655451525503;
+        Fri, 17 Jun 2022 00:38:45 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s (n058152077154.netvigator.com. [58.152.77.154])
+        by smtp.gmail.com with ESMTPSA id w22-20020a1709026f1600b001676f87473fsm2827966plk.302.2022.06.17.00.38.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 00:38:45 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 15:38:40 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        German Gomez <german.gomez@arm.com>
+Subject: Re: [PATCH v2] perf test: Add ARM SPE system wide test
+Message-ID: <20220617073840.GA45710@leoy-ThinkPad-X240s>
+References: <20220616230546.1390813-1-namhyung@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500022.china.huawei.com (7.185.36.66)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220616230546.1390813-1-namhyung@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'dma_alloc_coherent()' alloc a 'RKVDEC_VP9_COUNT_SIZE' size area to
-'unsigned char *count_tbl', however, the memset() bellow only set
-'sizeof(*count_tbl)', which equals to 1, bytes to zero. This can
- cause unexpected error.
+Hi Namhyung,
 
-Fixes: f25709c4ff15 ("media: rkvdec: Add the VP9 backend")
-Signed-off-by: Zhang Zekun <zhangzekun11@huawei.com>
----
- drivers/staging/media/rkvdec/rkvdec-vp9.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Thu, Jun 16, 2022 at 04:05:46PM -0700, Namhyung Kim wrote:
 
-diff --git a/drivers/staging/media/rkvdec/rkvdec-vp9.c b/drivers/staging/media/rkvdec/rkvdec-vp9.c
-index 311a12656072..3ad303a3de48 100644
---- a/drivers/staging/media/rkvdec/rkvdec-vp9.c
-+++ b/drivers/staging/media/rkvdec/rkvdec-vp9.c
-@@ -1026,7 +1026,7 @@ static int rkvdec_vp9_start(struct rkvdec_ctx *ctx)
- 
- 	vp9_ctx->count_tbl.size = RKVDEC_VP9_COUNT_SIZE;
- 	vp9_ctx->count_tbl.cpu = count_tbl;
--	memset(count_tbl, 0, sizeof(*count_tbl));
-+	memset(count_tbl, 0, RKVDEC_VP9_COUNT_SIZE);
- 	rkvdec_init_v4l2_vp9_count_tbl(ctx);
- 
- 	return 0;
--- 
-2.17.1
+[...]
 
+> +arm_spe_system_wide_test() {
+> +	echo "Recording trace with system-wide mode $perfdata"
+> +	perf record -o ${perfdata} -e arm_spe// -a \
+> +		-- dd if=/dev/zero of=/dev/null count=100000 > /dev/null 2>&1
+> +
+> +	if [ $? != 0 ]; then
+> +		arm_spe_report "SPE system-wide testing" 2
+> +		return
+> +	fi
+
+I am awared the root permission issue after I saw German's suggestion.
+
+If the snapshot test is passed, no matter the system wide test is passed
+or not, we will always return 0 for 'passed' result.  But we might miss
+to capture the system-wide testing failure.
+
+How about use 'dummy' event to verіfy the root permission?
+(actually I referred to intel-pt test):
+
+        perf record -o ${tmpfile} -B -N --no-bpf-event -e dummy:u -a true 2>&1 >/dev/null
+        if [ $? != 0 ]; then
+        	arm_spe_report "SPE system-wide testing" 2
+        	return
+        fi
+
+        perf record -o ${perfdata} -e arm_spe// -a \
+                  -- dd if=/dev/zero of=/dev/null count=100000 > /dev/null 2>&1
+
+Thanks,
+Leo
+
+> +	perf_script_samples dd &&
+> +	perf_report_samples dd
+> +
+> +	err=$?
+> +	arm_spe_report "SPE system-wide testing" $err
+> +}
+> +
+>  arm_spe_snapshot_test
+> +arm_spe_system_wide_test
+> +
+>  exit $glb_err
+> -- 
+> 2.36.1.476.g0c4daa206d-goog
+> 
